@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
+import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -200,13 +201,13 @@ public static Object[][] executeSQL(String dbAlias, String query) {
 		connection = com.cannontech.database.PoolManager.getInstance().getConnection( dbAlias );
 		statement = connection.createStatement();
 		resultSet = statement.executeQuery( query );
-		java.util.Vector rows = new java.util.Vector();
+		Vector<Vector<Object>> rows = new Vector<Vector<Object>>();
 		int columnCount = 0;		
 		columnCount = resultSet.getMetaData().getColumnCount();
 		
 		while( resultSet.next() )
 		{
-			java.util.Vector rowData = new java.util.Vector();
+			Vector<Object> rowData = new Vector<Object>();
 			boolean nonNullRow = false;
 						
 			for( int i = 1; i <= columnCount; i++ )
@@ -227,7 +228,7 @@ public static Object[][] executeSQL(String dbAlias, String query) {
 		data = new Object[ rows.size() ][columnCount];
 		for( int i = 0; i < rows.size(); i++ )
 		{
-			java.util.Vector temp = (java.util.Vector) rows.elementAt(i);
+			Vector<Object> temp = rows.elementAt(i);
 			data[i] = temp.toArray();//temp.copyInto( data[i] );
 		}
 	}
@@ -272,7 +273,7 @@ public static Object[][] executeSQL(String dbAlias, String query) {
  * @param dbAlias java.lang.String
  * @param query java.lang.String
  */
-public static Object[][] executeSQL(String dbAlias, String query, Class[] types) {
+public static Object[][] executeSQL(String dbAlias, String query, Class<? extends Object>[] types) {
 	java.sql.Connection connection = null;
 	java.sql.Statement statement = null;
 	java.sql.ResultSet resultSet = null;
@@ -283,18 +284,18 @@ public static Object[][] executeSQL(String dbAlias, String query, Class[] types)
 		connection = com.cannontech.database.PoolManager.getInstance().getConnection( dbAlias );
 		statement = connection.createStatement();
 		resultSet = statement.executeQuery( query );
-		java.util.Vector rows = new java.util.Vector();
+		Vector<Vector<Object>> rows = new Vector<Vector<Object>>();
 		int columnCount = 0;		
 		columnCount = resultSet.getMetaData().getColumnCount();
 		
 		while( resultSet.next() )
 		{
-			java.util.Vector rowData = new java.util.Vector();
+			Vector<Object> rowData = new Vector<Object>();
 			boolean nonNullRow = false;
 						
 			for( int i = 1; i <= columnCount; i++ )
 			{
-				Class thisColumn = types[i-1];
+				Class<? extends Object> thisColumn = types[i-1];
 				Object o;
 				
 				if( thisColumn == Integer.class )
@@ -346,7 +347,7 @@ public static Object[][] executeSQL(String dbAlias, String query, Class[] types)
 		data = new Object[ rows.size() ][columnCount];
 		for( int i = 0; i < rows.size(); i++ )
 		{
-			java.util.Vector temp = (java.util.Vector) rows.elementAt(i);
+			Vector<Object> temp = rows.elementAt(i);
 			data[i] = temp.toArray();//temp.copyInto( data[i] );
 		}
 	}
@@ -407,13 +408,13 @@ public static Object[][] executeSQL(HttpSession session, String query )
 		connection = com.cannontech.database.PoolManager.getInstance().getConnection("yukon");
 		statement = connection.createStatement();
 		resultSet = statement.executeQuery( query );
-		java.util.Vector rows = new java.util.Vector();
+		Vector<Vector<Object>> rows = new Vector<Vector<Object>>();
 		int columnCount = 0;		
 		columnCount = resultSet.getMetaData().getColumnCount();
 		
 		while( resultSet.next() )
 		{
-			java.util.Vector rowData = new java.util.Vector();
+			Vector<Object> rowData = new Vector<Object>();
 			boolean nonNullRow = false;
 						
 			for( int i = 1; i <= columnCount; i++ )
@@ -434,7 +435,7 @@ public static Object[][] executeSQL(HttpSession session, String query )
 		data = new Object[ rows.size() ][columnCount];
 		for( int i = 0; i < rows.size(); i++ )
 		{
-			java.util.Vector temp = (java.util.Vector) rows.elementAt(i);
+			Vector<Object> temp = rows.elementAt(i);
 			data[i] = temp.toArray();//temp.copyInto( data[i] );
 		}
 	}
@@ -480,7 +481,7 @@ public static Object[][] executeSQL(HttpSession session, String query )
  * @return java.lang.Object[][]
  * @param session javax.servlet.http.HttpSession
  */
-public static Object[][] executeSQL(HttpSession session, String query, Class[] types ) 
+public static Object[][] executeSQL(HttpSession session, String query, Class<? extends Object>[] types ) 
 {
 	if( session == null )
 		return null;
@@ -495,18 +496,18 @@ public static Object[][] executeSQL(HttpSession session, String query, Class[] t
 		connection = com.cannontech.database.PoolManager.getInstance().getConnection("yukon");
 		statement = connection.createStatement();
 		resultSet = statement.executeQuery( query );
-		java.util.Vector rows = new java.util.Vector();
+		Vector<Vector<Object>> rows = new Vector<Vector<Object>>();
 		int columnCount = 0;		
 		columnCount = resultSet.getMetaData().getColumnCount();
 		
 		while( resultSet.next() )
 		{
-			java.util.Vector rowData = new java.util.Vector();
+			Vector<Object> rowData = new Vector<Object>();
 			boolean nonNullRow = false;
 						
 			for( int i = 1; i <= columnCount; i++ )
 			{
-				Class thisColumn = types[i-1];
+				Class<? extends Object> thisColumn = types[i-1];
 				Object o;
 				
 				if( thisColumn == Integer.class )
@@ -558,7 +559,7 @@ public static Object[][] executeSQL(HttpSession session, String query, Class[] t
 		data = new Object[ rows.size() ][columnCount];
 		for( int i = 0; i < rows.size(); i++ )
 		{
-			java.util.Vector temp = (java.util.Vector) rows.elementAt(i);
+			Vector<Object> temp = rows.elementAt(i);
 			data[i] = temp.toArray();//temp.copyInto( data[i] );
 		}
 	}
@@ -1247,22 +1248,23 @@ public static Date roundToMinute(Date toRound) {
      * @param newValue the value of the new parameter
      * @return a full path and query string
      */
-    public static String tweakRequestURI(HttpServletRequest request, String newParameter, String newValue) {
+    @SuppressWarnings("unchecked")
+	public static String tweakRequestURI(HttpServletRequest request, String newParameter, String newValue) {
         final String urlEncoding = "UTF-8"; 
         try {
             StringBuffer result = new StringBuffer();
             result.append(request.getRequestURI());
             result.append("?");
-            Map parameterMap = new HashMap(request.getParameterMap());
+            Map<String, String[]> parameterMap = new HashMap<String, String[]>(request.getParameterMap());
             if(newValue == null) {
             	parameterMap.remove(newParameter);
             }
             else {            	
             	parameterMap.put(newParameter, new String[] {newValue});
             }
-            List parameterPairs = new ArrayList(parameterMap.size());
-            for (Iterator iter = parameterMap.keySet().iterator(); iter.hasNext();) {
-                String thisParameter = (String) iter.next();
+            List<String> parameterPairs = new ArrayList<String>(parameterMap.size());
+            for (Iterator<String> iter = parameterMap.keySet().iterator(); iter.hasNext();) {
+                String thisParameter = iter.next();
                 String thisSafeParameter = URLEncoder.encode(thisParameter, urlEncoding);
                 String[] theseValues = (String[])parameterMap.get(thisParameter);
                 for (int i = 0; i < theseValues.length; i++) {
@@ -1454,4 +1456,55 @@ public static Date roundToMinute(Date toRound) {
             throw new RuntimeException("could not encode string", e);
         }
     }
+    
+    @SuppressWarnings("unchecked")
+    /**
+     * Helper method to put all String parameters with a given prefix into a map
+     */
+    public static Map<String, String> getStringParameters(HttpServletRequest request,
+            String prefix) {
+
+        Map<String, String> returnMap = new HashMap<String, String>();
+
+        Map<String, Object> parameterMap = request.getParameterMap();
+        for (String key : parameterMap.keySet()) {
+
+            if (key.startsWith(prefix)) {
+                String paramKey = key.substring(prefix.length());
+                String[] value = (String[]) parameterMap.get(key);
+
+                returnMap.put(paramKey, value[0]);
+            }
+
+        }
+
+        return returnMap;
+    }
+
+    @SuppressWarnings("unchecked")
+    /**
+     * Helper method to put all Integer parameters with a given prefix into a
+     * map
+     */
+    public static Map<String, Integer> getIntegerParameters(
+            HttpServletRequest request, String prefix) {
+
+        Map<String, Integer> returnMap = new HashMap<String, Integer>();
+
+        Map<String, Object> parameterMap = request.getParameterMap();
+        for (String key : parameterMap.keySet()) {
+
+            if (key.startsWith(prefix)) {
+                String paramKey = key.substring(prefix.length());
+                String[] object = (String[]) parameterMap.get(key);
+                Integer value = Integer.valueOf(object[0]);
+
+                returnMap.put(paramKey, value);
+            }
+
+        }
+
+        return returnMap;
+    }
+
 }

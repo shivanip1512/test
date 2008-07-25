@@ -64,6 +64,7 @@ public final class ContactDaoImpl implements ContactDao {
 		super();
 	}
 
+	@Transactional
     public LiteContact getContact(int contactId) {
 
         StringBuilder sql = new StringBuilder("SELECT *");
@@ -73,8 +74,6 @@ public final class ContactDaoImpl implements ContactDao {
         LiteContact contact = simpleJdbcTemplate.queryForObject(sql.toString(),
                                                                 rowMapper,
                                                                 contactId);
-        this.loadNotifications(contact);
-
         return contact;
 
     }
@@ -284,7 +283,7 @@ public final class ContactDaoImpl implements ContactDao {
 			CTILogger.error( "Unable to get the Unassigned Contacts from the database", se );
 		}
 
-		ArrayList contList = new ArrayList(32);
+		List<LiteContact> contList = new ArrayList<LiteContact>(32);
 
 		for( int i = 0; i < contIDs.length; i++ ) {
 			contList.add( getContact(contIDs[i]) );
@@ -322,7 +321,7 @@ public final class ContactDaoImpl implements ContactDao {
 	public LiteContactNotification[] getAllPINNotifDestinations( int contactID_ )
 	{
 		LiteContact contact = getContact( contactID_ );
-		ArrayList strList = new ArrayList(16);
+		List<LiteContactNotification> strList = new ArrayList<LiteContactNotification>(16);
 
 		//find all the PINs in the list ContactNotifications
 		for( int j = 0; j < contact.getLiteContactNotifications().size(); j++  )
@@ -344,7 +343,7 @@ public final class ContactDaoImpl implements ContactDao {
     public LiteContactNotification[] getAllPhonesNumbers( int contactID_ )
     {
         LiteContact contact = getContact( contactID_ );
-        ArrayList phoneList = new ArrayList(16);
+        List<LiteContactNotification> phoneList = new ArrayList<LiteContactNotification>(16);
 
         //find all the phone numbers in the list ContactNotifications
         for( int j = 0; j < contact.getLiteContactNotifications().size(); j++  )
@@ -378,10 +377,10 @@ public final class ContactDaoImpl implements ContactDao {
 	{
 		synchronized(databaseCache)	 
 		{
-			Iterator iter = databaseCache.getAllCICustomers().iterator();
+			Iterator<LiteCICustomer> iter = databaseCache.getAllCICustomers().iterator();
 			while( iter.hasNext() ) 
 			{
-				LiteCICustomer cst = (LiteCICustomer) iter.next();
+				LiteCICustomer cst = iter.next();
 				for( int i = 0; i < cst.getAdditionalContacts().size(); i++ )
 				{
 					if( ((LiteContact)cst.getAdditionalContacts().get(i)).getContactID() == addtlContactID_ )
@@ -403,10 +402,10 @@ public final class ContactDaoImpl implements ContactDao {
 	{
 		synchronized(databaseCache)	 
 		{
-			Iterator iter = databaseCache.getAllCICustomers().iterator();
+			Iterator<LiteCICustomer> iter = databaseCache.getAllCICustomers().iterator();
 			while( iter.hasNext() ) 
 			{
-				LiteCICustomer cst = (LiteCICustomer) iter.next();
+				LiteCICustomer cst = iter.next();
 				if( cst.getPrimaryContactID() == primaryContactID_)
 					return cst;
 			}		
@@ -463,9 +462,9 @@ public final class ContactDaoImpl implements ContactDao {
     public boolean hasPin(int contactId) {
         LiteContact contact = getContact( contactId );
         
-        List liteContactNotifications = contact.getLiteContactNotifications();
-        for (Iterator iter = liteContactNotifications.iterator(); iter.hasNext();) {
-            LiteContactNotification contactNotification = (LiteContactNotification) iter.next();
+        List<LiteContactNotification> liteContactNotifications = contact.getLiteContactNotifications();
+        for (Iterator<LiteContactNotification> iter = liteContactNotifications.iterator(); iter.hasNext();) {
+            LiteContactNotification contactNotification = iter.next();
             if (contactNotification.getNotificationCategoryID() == YukonListEntryTypes.YUK_ENTRY_ID_PIN) {
                 return true;
             }
@@ -474,6 +473,7 @@ public final class ContactDaoImpl implements ContactDao {
     }
 
     @Override
+    @Transactional
     public LiteContact getPrimaryContactForAccount(int accountId) {
 
         StringBuilder sql = new StringBuilder("SELECT c.*");
@@ -485,13 +485,12 @@ public final class ContactDaoImpl implements ContactDao {
         LiteContact contact = simpleJdbcTemplate.queryForObject(sql.toString(),
                                                                 rowMapper,
                                                                 accountId);
-        this.loadNotifications(contact);
-
         return contact;
     }
     
 
     @Override
+    @Transactional
     public List<LiteContact> getAdditionalContactsForCustomer(int customerId) {
         
         StringBuilder sql = new StringBuilder("SELECT c.*");
@@ -504,14 +503,11 @@ public final class ContactDaoImpl implements ContactDao {
                                                                  rowMapper,
                                                                  customerId);
 
-        for (LiteContact contact : contactList) {
-            this.loadNotifications(contact);
-        }
-
         return contactList;
     }
 
     @Override
+    @Transactional
     public List<LiteContact> getAdditionalContactsForAccount(int accountId) {
 
         StringBuilder sql = new StringBuilder("SELECT c.*");
@@ -525,10 +521,6 @@ public final class ContactDaoImpl implements ContactDao {
         List<LiteContact> contactList = simpleJdbcTemplate.query(sql.toString(),
                                                                  rowMapper,
                                                                  accountId);
-
-        for (LiteContact contact : contactList) {
-            this.loadNotifications(contact);
-        }
 
         return contactList;
     }
@@ -639,19 +631,9 @@ public final class ContactDaoImpl implements ContactDao {
     }
 
     /**
-     * Helper method to load the contact's notifications
-     * @param contact - Contact to load notifications for
-     */
-    private void loadNotifications(LiteContact contact) {
-
-        int contactID = contact.getContactID();
-        List<LiteContactNotification> notifications = contactNotificationDao.getNotificationsForContact(contactID);
-
-        contact.setNotifications(notifications);
-    }
-
-    /**
      * Helper class to map a result set into LiteContacts
+     * 
+     * Note: this mapper MUST be used within a transaction
      */
     private class LiteContactRowMapper implements
             ParameterizedRowMapper<LiteContact> {
@@ -671,6 +653,10 @@ public final class ContactDaoImpl implements ContactDao {
             contact.setContFirstName(firstName);
             contact.setContLastName(lastName);
 
+            List<LiteContactNotification> notifications = contactNotificationDao
+					.getNotificationsForContact(id);
+			contact.setNotifications(notifications);
+            
             return contact;
         }
 

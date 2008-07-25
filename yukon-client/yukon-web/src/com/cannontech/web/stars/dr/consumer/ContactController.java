@@ -1,7 +1,6 @@
 package com.cannontech.web.stars.dr.consumer;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +29,7 @@ import com.cannontech.i18n.MessageCodeGenerator;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.consumer.model.ContactNotificationOption;
@@ -146,13 +146,13 @@ public class ContactController extends AbstractConsumerController {
             HttpServletRequest request, int contactId) {
 
         // Create a map for each of the values in the notifications
-        Map<String, Integer> idMap = this.getIntegerParameters(request,
+        Map<String, Integer> idMap = ServletUtil.getIntegerParameters(request,
                                                                "notificationId_");
-        Map<String, Integer> typeMap = this.getIntegerParameters(request,
+        Map<String, Integer> typeMap = ServletUtil.getIntegerParameters(request,
                                                                  "notificationType_");
-        Map<String, String> textMap = this.getStringParameters(request,
+        Map<String, String> textMap = ServletUtil.getStringParameters(request,
                                                                "notificationText_");
-        Map<String, String> removeMap = this.getStringParameters(request,
+        Map<String, String> removeMap = ServletUtil.getStringParameters(request,
                                                                  "removeNotification_");
 
         List<LiteContactNotification> notificationList = new ArrayList<LiteContactNotification>();
@@ -204,56 +204,6 @@ public class ContactController extends AbstractConsumerController {
                                                                                "");
             notificationList.add(notification);
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    /**
-     * Helper method to put all String parameters with a given prefix into a map
-     */
-    private Map<String, String> getStringParameters(HttpServletRequest request,
-            String prefix) {
-
-        Map<String, String> returnMap = new HashMap<String, String>();
-
-        Map<String, Object> parameterMap = request.getParameterMap();
-        for (String key : parameterMap.keySet()) {
-
-            if (key.startsWith(prefix)) {
-                String paramKey = key.substring(prefix.length());
-                String[] value = (String[]) parameterMap.get(key);
-
-                returnMap.put(paramKey, value[0]);
-            }
-
-        }
-
-        return returnMap;
-    }
-
-    @SuppressWarnings("unchecked")
-    /**
-     * Helper method to put all Integer parameters with a given prefix into a
-     * map
-     */
-    private Map<String, Integer> getIntegerParameters(
-            HttpServletRequest request, String prefix) {
-
-        Map<String, Integer> returnMap = new HashMap<String, Integer>();
-
-        Map<String, Object> parameterMap = request.getParameterMap();
-        for (String key : parameterMap.keySet()) {
-
-            if (key.startsWith(prefix)) {
-                String paramKey = key.substring(prefix.length());
-                String[] object = (String[]) parameterMap.get(key);
-                Integer value = Integer.valueOf(object[0]);
-
-                returnMap.put(paramKey, value);
-            }
-
-        }
-
-        return returnMap;
     }
 
     @Autowired

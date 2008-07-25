@@ -298,12 +298,5 @@ public class LiteContact extends LiteBase
         liteContactNotifications = new Vector<LiteContactNotification>();
         liteContactNotifications.addAll(notificationList);
     }
-    
-    public Vector<LiteContactNotification> getNotifications(){
-        if(liteContactNotifications == null) {
-            return new Vector<LiteContactNotification>();
-        }
-        return liteContactNotifications;
-    }
 	
 }

@@ -96,10 +96,15 @@ public interface CustomerDao {
     public LiteCICustomer getCICustomerForUser(LiteYukonUser user);
     
     /**
-     * Method to get the customer that a user is associated with
-     * @param userId - User in question
-     * @return - User's customer
-     */
+	 * Method to get the customer that a user is associated with
+	 * 
+	 * @param userId - User in question
+	 * @return - User's customer
+	 * 
+	 * @throws IncorrectResultSizeDataAccessException
+	 *             if user doesn't have a contact or the contact doesn't have a
+	 *             customer.
+	 */
     public LiteCustomer getCustomerForUser(int userId);
 
 }

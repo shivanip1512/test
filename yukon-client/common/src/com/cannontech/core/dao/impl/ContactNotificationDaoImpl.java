@@ -241,7 +241,7 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao
             LiteContactNotification notification = new LiteContactNotification(id);
             notification.setContactID(contactId);
             notification.setNotificationCategoryID(categoryId);
-            notification.setDisableFlag(disableFlag);
+            notification.setDisableFlag(disableFlag.intern());
             notification.setNotification(notificationString);
             notification.setOrder(order);
 
