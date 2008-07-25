@@ -262,7 +262,7 @@ private void tryConnection()
  * Creation date: (1/24/2001 1:47:59 PM)
  * @param obj java.lang.Object
  */
-public void write(Object obj) {
+public void write(Message obj) {
     ClientConnection conn = getConnection();
 	if(conn.isValid()) { 
 		getConnection().write( obj);

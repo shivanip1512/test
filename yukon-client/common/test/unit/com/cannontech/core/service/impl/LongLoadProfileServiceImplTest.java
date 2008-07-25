@@ -1,6 +1,6 @@
 package com.cannontech.core.service.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -55,7 +55,7 @@ public class LongLoadProfileServiceImplTest {
             return false;
         }
 
-        public void queue(Object o) {
+        public void queue(Message o) {
             writtenOut.add((Message)o);
         }
 
@@ -63,7 +63,7 @@ public class LongLoadProfileServiceImplTest {
             listeners.remove(l);
         }
 
-        public void write(Object o) {
+        public void write(Message o) {
             if (failMode) {
                 throw new ConnectionException("Unable to write message");
             } else {

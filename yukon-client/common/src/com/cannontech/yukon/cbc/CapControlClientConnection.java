@@ -7,11 +7,8 @@ package com.cannontech.yukon.cbc;
  */
 import com.cannontech.common.util.MessageEvent;
 import com.cannontech.common.util.MessageEventListener;
-import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.core.dao.RoleDao;
 import com.cannontech.message.capcontrol.DefineCollectableCapControlServerResponse;
 import com.cannontech.message.util.ClientConnection;
-import com.cannontech.roles.yukon.SystemRole;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.DefineCollectable;
 

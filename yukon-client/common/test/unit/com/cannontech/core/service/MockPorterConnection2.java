@@ -30,7 +30,7 @@ public class MockPorterConnection2 implements BasicServerConnection, Initializin
         listeners.add(l);
     }
 
-    public void queue(Object o) {
+    public void queue(Message o) {
         write(o);
     }
 
@@ -38,7 +38,7 @@ public class MockPorterConnection2 implements BasicServerConnection, Initializin
         listeners.remove(l);
     }
 
-    public void write(Object o) {
+    public void write(Message o) {
         if (!(o instanceof Request)) return;
         final Request req = (Request) o;
         CTILogger.info("Received message: " + req);

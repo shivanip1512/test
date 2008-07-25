@@ -2,25 +2,32 @@ package com.cannontech.yukon;
 
 import java.util.Observer;
 
+import org.springframework.jmx.export.annotation.ManagedResource;
+
 
 /**
  * Base interface for all yukon server connections
  * @author alauinger
  */
+@ManagedResource
 public interface IServerConnection extends BasicServerConnection 
 {
-	boolean getAutoReconnect();
-	String getHost();
-	int getNumOutMessages();
-	int getPort();
+    public boolean getAutoReconnect();
 
-	int getTimeToReconnect();
-	boolean isMonitorThreadAlive(); 
+    public String getHost();
+	
+	public 	int getNumOutMessages();
+	
+	public int getPort();
 
-    void setAutoReconnect(boolean val);
+	public int getTimeToReconnect();
 
-	boolean isQueueMessages();
-	void setQueueMessages(boolean b);
+	public boolean isMonitorThreadAlive(); 
+
+	public void setAutoReconnect(boolean val);
+
+    public boolean isQueueMessages();
+    public void setQueueMessages(boolean b);
 
     public void disconnect();
 

@@ -4,6 +4,8 @@ package com.cannontech.message.util;
  * This type was created in VisualAge.
  */
 
+import java.util.concurrent.PriorityBlockingQueue;
+
 import com.cannontech.clientutils.CTILogger;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.VirtualOutputStream;
@@ -14,11 +16,11 @@ class OutThread extends Thread {
 	
 	VirtualOutputStream ostrm;
 	CollectableStreamer streamer;
-	java.util.ArrayList out;
+	PriorityBlockingQueue<Message> out;
 /**
  * OutThread constructor comment.
  */
-public OutThread(ClientConnection conn, VirtualOutputStream ostrm, CollectableStreamer streamer, java.util.ArrayList out) {
+public OutThread(ClientConnection conn, VirtualOutputStream ostrm, CollectableStreamer streamer, PriorityBlockingQueue<Message> out) {
 	super(conn.getName() + "OutThread");
 	setDaemon(true);
 	this.conn = conn;
@@ -44,21 +46,10 @@ public void run() {
 				
 		while(true)
 		{			
-			synchronized( out )
-			{										
-				if( (size = out.size()) > 0 ) {
-					
-					for(int i = 0; i < size; i++) {
-						ostrm.saveObject( out.get(i), streamer );
-					}
+		    Message msg = out.take();
+		    ostrm.saveObject( msg, streamer );
 
-					ostrm.flush();
-					out.clear();
-				}
-
-				// Wait until there is a message to consume
-				out.wait();
-			}			
+		    ostrm.flush();
 		}	
 	}
 	catch( java.io.IOException e )
@@ -70,6 +61,5 @@ public void run() {
 		CTILogger.info("InterruptedException in outThread");
 	}
 
-	//com.cannontech.clientutils.CTILogger.info("exiting OutThread::run");
 }
 }
