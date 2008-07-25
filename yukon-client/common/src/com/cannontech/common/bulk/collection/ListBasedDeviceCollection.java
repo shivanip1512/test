@@ -13,7 +13,7 @@ public abstract class ListBasedDeviceCollection implements DeviceCollection {
         return getDeviceList().iterator();
     }
 
-    public final List<YukonDevice> getDevices(int start, int size) {
+    public List<YukonDevice> getDevices(int start, int size) {
 
         List<YukonDevice> list = this.getDeviceList();
 

@@ -3,6 +3,7 @@ package com.cannontech.common.device.groups.dao.impl.providers;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -31,6 +32,8 @@ public abstract class DeviceGroupProviderBase implements DeviceGroupProvider {
     private DeviceGroupProviderDao mainDelegator;
     
     public abstract Set<YukonDevice> getChildDevices(DeviceGroup group);
+    
+    public abstract Set<YukonDevice> getChildDevices(DeviceGroup group, int MaxSize);
     
     public abstract String getChildDeviceGroupSqlWhereClause(DeviceGroup group, String identifier);
 
@@ -99,19 +102,31 @@ public abstract class DeviceGroupProviderBase implements DeviceGroupProvider {
     }
 
     public Set<YukonDevice> getDevices(DeviceGroup group) {
-        // we should consider rewriting this using getDeviceGroupSqlWhereClause()
-        Set<YukonDevice> deviceSet = new HashSet<YukonDevice>();
+        return getDevices(group, Integer.MAX_VALUE);
+    }
+    
+    public Set<YukonDevice> getDevices(DeviceGroup group, int maxSize) {
+        
+        Set<YukonDevice> deviceSet = new LinkedHashSet<YukonDevice>();
 
         // Get child devices
-        Set<YukonDevice> childDeviceList = getChildDevices(group);
+        Set<YukonDevice> childDeviceList = getChildDevices(group, maxSize);
         deviceSet.addAll(childDeviceList);
         
-        // Get child group's devices
-        List<? extends DeviceGroup> childGroups = getChildGroups(group);
-        for (DeviceGroup childGroup : childGroups) {
-            Set<YukonDevice> devices = mainDelegator.getDevices(childGroup);
-            deviceSet.addAll(devices);
+        if (deviceSet.size() < maxSize) {
+            
+            // Get child group's devices
+            List<? extends DeviceGroup> childGroups = getChildGroups(group);
+            for (DeviceGroup childGroup : childGroups) {
+                Set<YukonDevice> devices = mainDelegator.getDevices(childGroup, maxSize - deviceSet.size());
+                deviceSet.addAll(devices);
+                
+                if (deviceSet.size() >= maxSize) {
+                    break;
+                }
+            }
         }
+        
         return deviceSet;
     }
     

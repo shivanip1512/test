@@ -58,6 +58,16 @@ public interface DeviceGroupService {
     public Set<YukonDevice> getDevices(Collection<? extends DeviceGroup> groups);
     
     /**
+     * Returns a YukonDevice for every device contained in the DeviceGroup.
+     * This method works recursively on each child group of the requested group.
+     * Only returns number of devices up to maxSize.
+     * @param groups
+     * @param maxSize
+     * @return
+     */
+    public Set<YukonDevice> getDevices(Collection<? extends DeviceGroup> groups, int maxSize);
+    
+    /**
      * Returns a count of every device contained in the DeviceGroup.
      * This method works recursively on each child group of the requested group.
      * @param group

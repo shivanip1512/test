@@ -78,16 +78,25 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
     }
 
     public Set<YukonDevice> getDevices(Collection<? extends DeviceGroup> groups) {
+        return getDevices(groups, Integer.MAX_VALUE);
+    }
+    
+    public Set<YukonDevice> getDevices(Collection<? extends DeviceGroup> groups, int maxSize) {
+        
         if (groups.isEmpty()) {
             return Collections.emptySet();
-//        } else if (groups.size() == 1) {
-//            return deviceGroupDao.getDeviceIds(groups.iterator().next());
+            
         } else {
+            
             groups = removeDuplicates(groups); // doesn't touch passed in collection
             Set<YukonDevice> devices = new HashSet<YukonDevice>();
             for (DeviceGroup group: groups) {
-                Set<YukonDevice> groupDevices = deviceGroupDao.getDevices(group);
+                Set<YukonDevice> groupDevices = deviceGroupDao.getDevices(group, maxSize - devices.size());
                 devices.addAll(groupDevices);
+                
+                if (devices.size() >= maxSize) {
+                    break;
+                }
             }
             return devices;
         }        

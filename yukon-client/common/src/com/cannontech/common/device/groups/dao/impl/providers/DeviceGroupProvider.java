@@ -63,6 +63,16 @@ public interface DeviceGroupProvider {
     public Set<YukonDevice> getDevices(DeviceGroup group);
     
     /**
+     * Returns a list of the YukonDevices for each device that is a descendant of the given
+     * group. The implementation of this may be faster than calling getDeviceIds() if the
+     * YukonDevice object is needed. Only returns number of devices up to maxSize.
+     * @param group
+     * @param maxSize
+     * @return
+     */
+    public Set<YukonDevice> getDevices(DeviceGroup group, int maxSize);
+    
+    /**
      * This method gets a count of all of the devices that are a descendant of the
      * given group.
      * 

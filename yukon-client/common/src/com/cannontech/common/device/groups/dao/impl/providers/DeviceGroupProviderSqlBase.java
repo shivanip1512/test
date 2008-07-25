@@ -1,9 +1,11 @@
 package com.cannontech.common.device.groups.dao.impl.providers;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.common.device.YukonDevice;
@@ -11,6 +13,7 @@ import com.cannontech.common.device.groups.editor.dao.impl.YukonDeviceRowMapper;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.CollectionRowCallbackHandler;
+import com.cannontech.database.MaxCollectionResultSetExtractor;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
 
 public abstract class DeviceGroupProviderSqlBase extends DeviceGroupProviderBase {
@@ -51,11 +54,21 @@ public abstract class DeviceGroupProviderSqlBase extends DeviceGroupProviderBase
     
     @Override
     public Set<YukonDevice> getChildDevices(DeviceGroup group) {
+        return getChildDevices(group, Integer.MAX_VALUE);
+    }
+    
+    @Override
+    public Set<YukonDevice> getChildDevices(DeviceGroup group, int maxSize) {
+        
         String sql = deviceSql + getChildDeviceGroupSqlWhereClause(group, "ypo.paobjectId");
-        Set<YukonDevice> result = new HashSet<YukonDevice>();
-        CollectionRowCallbackHandler<YukonDevice> rch = new CollectionRowCallbackHandler<YukonDevice>(new YukonDeviceRowMapper(paoGroupsWrapper), result);
-        simpleJdbcTemplate.getJdbcOperations().query(sql, rch);
-        return result;
+        
+        Set<YukonDevice> childDeviceSet = new LinkedHashSet<YukonDevice>();
+        ParameterizedRowMapper<YukonDevice> mapper = new YukonDeviceRowMapper(paoGroupsWrapper);
+        MaxCollectionResultSetExtractor<YukonDevice> rse = new MaxCollectionResultSetExtractor<YukonDevice>(childDeviceSet, mapper, maxSize);
+        
+        simpleJdbcTemplate.getJdbcOperations().query(sql, rse);
+        
+        return childDeviceSet;
     }
     
     @Override

@@ -74,6 +74,19 @@ public class DeviceGroupCollectionHelperImpl implements DeviceGroupCollectionHel
             }
             
             @Override
+            public List<YukonDevice> getDevices(int start, int size) {
+
+                // more than we need so we can skip past start devices and retireve size devices
+                int retrieveCount = start + size;
+                
+                Set<YukonDevice> deviceSet = deviceGroupService.getDevices(Collections.singletonList(group), retrieveCount);
+                
+                List<YukonDevice> deviceList = new ArrayList<YukonDevice>(deviceSet);
+                 
+                return deviceList.subList(start, Math.min(retrieveCount, deviceList.size()));
+            }
+            
+            @Override
             public long getDeviceCount() {
                 return deviceGroupService.getDeviceCount(Collections.singletonList(group));
             }

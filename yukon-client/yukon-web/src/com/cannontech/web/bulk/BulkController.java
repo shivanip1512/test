@@ -93,9 +93,7 @@ public class BulkController extends BulkControllerBase {
             deviceInfo.put("Address", devicePaoObj.getAddress());
             deviceInfo.put("Route", paoDao.getRouteNameForRouteId(devicePaoObj.getRouteID()));
             
-            
             deviceInfoList.add(deviceInfo);
-            
         }
         
         if (deviceCollection.getDeviceCount() > MAX_SELECTED_DEVICES_DISPLAYED) {
