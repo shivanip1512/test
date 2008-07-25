@@ -19,6 +19,16 @@ public interface CommandDao {
      * @return
      */
     public Vector<LiteCommand> getAllCommandsByCategory(String category);
+    
+    /**
+     * Returns Vector of LiteCommands for Category = category
+     * Use sorted parameter to turn off default sorting based on LiteComparators.liteCommandComparator
+     * and use ordering defined in database.
+     * @param category
+     * @param sorted
+     * @return
+     */
+    public Vector<LiteCommand> getAllCommandsByCategory(String category, boolean sorted);
 
     public LiteCommand getCommand(int cmdID);
 

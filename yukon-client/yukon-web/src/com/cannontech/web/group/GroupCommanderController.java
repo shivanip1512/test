@@ -79,7 +79,7 @@ public class GroupCommanderController implements InitializingBean {
     private List<LiteCommand> meterCommands;
 
     public void afterPropertiesSet() {
-        this.meterCommands = commandDao.getAllCommandsByCategory(DeviceTypes.STRING_MCT_410IL[0]);
+        this.meterCommands = commandDao.getAllCommandsByCategory(DeviceTypes.STRING_MCT_410IL[0], false);
     }
     
     @Autowired
