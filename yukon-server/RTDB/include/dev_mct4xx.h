@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct4xx.h-arc  $
-* REVISION     :  $Revision: 1.38 $
-* DATE         :  $Date: 2008/06/06 20:28:44 $
+* REVISION     :  $Revision: 1.39 $
+* DATE         :  $Date: 2008/07/25 15:14:59 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -215,7 +215,7 @@ protected:
         int channel;
         int period;
         int command;
-        bool in_progress;
+        long in_progress;
     } _llpPeakInterest;
 
     //  this is more extensible than a pair

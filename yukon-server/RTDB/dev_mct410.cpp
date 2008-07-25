@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.163 $
-* DATE         :  $Date: 2008/07/23 19:02:31 $
+* REVISION     :  $Revision: 1.164 $
+* DATE         :  $Date: 2008/07/25 15:14:59 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2938,6 +2938,8 @@ INT CtiDeviceMCT410::decodeGetValueLoadProfilePeakReport(INMESS *InMessage, CtiT
             max_demand_timestamp < (_llpPeakInterest.time - _llpPeakInterest.period * 86400) )
         {
             result_string = "Peak timestamp (" + CtiTime(max_demand_timestamp).asString() + ") outside of requested range - retry report";
+            _llpPeakInterest.time = 0;
+            _llpPeakInterest.period = 0;
             status = NOTNORMAL;
         }
         else
@@ -2982,6 +2984,7 @@ INT CtiDeviceMCT410::decodeGetValueLoadProfilePeakReport(INMESS *InMessage, CtiT
         ReturnMsg->setResultString(result_string);
 
         retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+        InterlockedExchange(&_llpPeakInterest.in_progress, false);
     }
 
     return status;

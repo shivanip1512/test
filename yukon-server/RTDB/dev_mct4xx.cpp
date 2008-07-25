@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.80 $
-* DATE         :  $Date: 2008/07/08 22:56:59 $
+* REVISION     :  $Revision: 1.81 $
+* DATE         :  $Date: 2008/07/25 15:14:59 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -69,10 +69,11 @@ CtiDeviceMCT4xx::CtiDeviceMCT4xx()
     _llpInterest.retry       = 0;
     _llpInterest.failed      = false;
 
-    _llpPeakInterest.channel = 0;
-    _llpPeakInterest.command = 0;
-    _llpPeakInterest.period  = 0;
-    _llpPeakInterest.time    = 0;
+    _llpPeakInterest.channel     = 0;
+    _llpPeakInterest.command     = 0;
+    _llpPeakInterest.period      = 0;
+    _llpPeakInterest.time        = 0;
+    _llpPeakInterest.in_progress = false;
 
     for( int i = 0; i < LPChannels; i++ )
     {
@@ -855,12 +856,13 @@ INT CtiDeviceMCT4xx::executeGetValue( CtiRequestMsg        *pReq,
                 }
                 else if( !cmd.compare("peak") )
                 {
-                    /*
-                    if( InterlockedCompareExchange((PVOID *)&_llpPeakInterest.in_progress, (PVOID)true, (PVOID)false) )
+                    CtiString cmdString = parse.getCommandStr();
+                    if( InterlockedCompareExchange((PVOID *)&_llpPeakInterest.in_progress, (PVOID)true, (PVOID)false) &&
+                        !cmdString.contains("read") )
                     {
                         if( errRet )
                         {
-                            CtiString temp = "Load profile peak request already in progress - use \"getvalue lp peak cancel\" to cancel\n";
+                            CtiString temp = "Load profile peak request already in progress\n";
                             errRet->setResultString(temp);
                             errRet->setStatus(NOTNORMAL);
                             retList.push_back(errRet);
@@ -868,7 +870,6 @@ INT CtiDeviceMCT4xx::executeGetValue( CtiRequestMsg        *pReq,
                         }
                     }
                     else
-                    */
                     {
                         if( getDynamicInfo(Keys::Key_MCT_SSpec) == CtiDeviceMCT410::Sspec
                             && getDynamicInfo(Keys::Key_MCT_SSpecRevision) < CtiDeviceMCT410::SspecRev_NewLLP_Min )
@@ -881,6 +882,7 @@ INT CtiDeviceMCT4xx::executeGetValue( CtiRequestMsg        *pReq,
                                 ReturnMsg->setResultString(getName() + " / Load profile reporting for MCT 410 only supported for SSPECs " + CtiNumStr(CtiDeviceMCT410::Sspec) + " revision " + CtiNumStr((double)(CtiDeviceMCT410::SspecRev_NewLLP_Min) / 10.0, 1) + " and up");
 
                                 retMsgHandler( OutMessage->Request.CommandStr, NoMethod, ReturnMsg, vgList, retList, true );
+                                InterlockedExchange(&_llpPeakInterest.in_progress, false);
                             }
                         }
                         else
@@ -2007,6 +2009,7 @@ INT CtiDeviceMCT4xx::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< 
                                      InMessage->Priority);
 
                 newReq.setConnectionHandle((void *)InMessage->Return.Connection);
+                newReq.setCommandString(newReq.CommandString() + " read");
 
                 CtiDeviceBase::ExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList);
 
@@ -3839,6 +3842,12 @@ INT CtiDeviceMCT4xx::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
                 InterlockedExchange(&_llpInterest.in_progress, false);
             }
 
+            break;
+        }
+        case Emetcon::GetValue_LoadProfilePeakReport:
+        {
+            _llpPeakInterest.time = 0;//force a resubmit next time
+            InterlockedExchange(&_llpPeakInterest.in_progress, false);
             break;
         }
 
