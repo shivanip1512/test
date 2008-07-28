@@ -42,7 +42,9 @@
             <td style="padding:1"><%= ((String[]) links.get("CreateHardware.jsp"))[1] %></td>
           </tr>
          <%
-          	if (liteEC.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT) != null &&
+            YukonListEntry entry = liteEC.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT); 
+         
+          	if (entry != null && entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT &&
           		(DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, EnergyCompanyRole.METER_MCT_BASE_DESIGNATION)).compareTo(com.cannontech.stars.util.StarsUtils.METER_BASE_DESIGNATION) != 0) { %>
 	          <tr> 
 	            <td width="10"><%= ((String[]) links.get("CreateMCT.jsp"))[0] %></td>
