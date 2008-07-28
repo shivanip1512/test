@@ -42,9 +42,9 @@ public class MCT430Configuration extends ConfigurationBase {
     //
     // private Integer timeAdjustTolerance = 15;
 
-    private Boolean enableDst = null;
+    private Boolean enableDst = true;
     private Boolean txTestMessage = false;
-    private Boolean roleEnabled = null;
+    private Boolean roleEnabled = false;
 
     // private int channel3MeterConfig = 0;
     // private int channel2MeterConfig = 0;
@@ -52,9 +52,9 @@ public class MCT430Configuration extends ConfigurationBase {
     // private Integer outageCycles = 30;
 
     // Demand and LP
-    private Integer demandInterval = null;
-    private Integer loadProfileInterval = null;
-    private Integer loadProfileInterval2 = null;
+    private Integer demandInterval = 5;
+    private Integer loadProfileInterval1 = 60;
+    private Integer loadProfileInterval2 = 60;
 
     // Voltage Threshold
     // private Integer underVThreshold = null;
@@ -72,7 +72,7 @@ public class MCT430Configuration extends ConfigurationBase {
     // private Date holidayDate3 = null;
 
     // LP channels
-    private int channel1Type = 0;
+    private int channel1Type = 1;
     private int channel1PhysicalChannel = 0;
     private int channel1LPInterval = 0;
     private float channel1Multiplier = 1.0f;
@@ -201,12 +201,12 @@ public class MCT430Configuration extends ConfigurationBase {
         this.demandInterval = demandInterval;
     }
 
-    public Integer getLoadProfileInterval() {
-        return loadProfileInterval;
+    public Integer getLoadProfileInterval1() {
+        return loadProfileInterval1;
     }
 
-    public void setLoadProfileInterval(Integer loadProfileInterval) {
-        this.loadProfileInterval = loadProfileInterval;
+    public void setLoadProfileInterval1(Integer loadProfileInterval1) {
+        this.loadProfileInterval1 = loadProfileInterval1;
     }
 
     public Integer getLoadProfileInterval2() {

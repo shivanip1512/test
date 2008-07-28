@@ -62,7 +62,7 @@
 			<props>
 				<prop key="Time Zone Offset">timeZoneOffset</prop>
 				<prop key="Demand Interval">demandInterval</prop>
-				<prop key="Load Profile Interval">loadProfileInterval</prop>
+				<prop key="Load Profile Interval 1">loadProfileInterval1</prop>
 				<prop key="Load Profile Interval 2">loadProfileInterval2</prop>
 				<prop key="Channel Config 1">channelConfig1</prop>
 				<prop key="Channel Config 2">channelConfig2</prop>
@@ -211,9 +211,9 @@
 				<ref bean="dst430_470Category"/>
 				<ref bean="demandLP430_470Category"/>
 				<ref bean="mct430lpChannelsCategory"/>
-				<ref bean="mct430CofigurationByte"/>
 				
 				<!-- 
+				<ref bean="mct430CofigurationByte"/>
 				<ref bean="addressingCategory"/>
 				<ref bean="optionsCategory"/>
 				<ref bean="voltageThresholdCategory"/>
@@ -233,7 +233,7 @@
 			
 				<prop key="Time Zone Offset">timeZoneOffset</prop>
 				<prop key="Demand Interval">demandInterval</prop>
-				<prop key="Load Profile Interval">loadProfileInterval</prop>
+				<prop key="Load Profile Interval 1">loadProfileInterval1</prop>
 				<prop key="Load Profile Interval 2">loadProfileInterval2</prop>
 				<prop key="Channel Config 1">channelConfig1</prop>
 				<prop key="Channel Config 2">channelConfig2</prop>
@@ -413,7 +413,7 @@
 				<prop key="Options">options</prop>
 				<prop key="Outage Cycles">outageCycles</prop>
 				<prop key="Demand Interval">demandInterval</prop>
-				<prop key="Load Profile Interval">loadProfileInterval</prop>
+				<prop key="Load Profile Interval 1">loadProfileInterval1</prop>
 				<prop key="Voltage LP Interval">voltageLpInterval</prop>
 				<prop key="Demand V Interval">demandVInterval</prop>
 				<prop key="Load Profile Interval 2">loadProfileInterval2</prop>
@@ -1117,7 +1117,8 @@
 					</property>
 					<property name="security" ref="configEditSecurity" />
 				</bean>
-				<bean class="com.cannontech.web.input.InputBase">
+				<!--
+                <bean class="com.cannontech.web.input.InputBase">
 					<property name="displayName" value="Role Enabled" />
 					<property name="field" value="roleEnabled" />
 					<property name="description">
@@ -1128,6 +1129,7 @@
 					<property name="type" ref="inputBooleanType" />
 					<property name="security" ref="configEditSecurity" />
 				</bean>
+                 -->
 				<bean class="com.cannontech.web.input.InputBase">
 					<property name="displayName" value="Electronic Meter" />
 					<property name="field" value="electronicMeter" />
@@ -1207,8 +1209,8 @@
 					<property name="security" ref="configEditSecurity" />
 				</bean>
 				<bean class="com.cannontech.web.input.InputBase">
-					<property name="displayName" value="Load Profile Interval" />
-					<property name="field" value="loadProfileInterval" />
+					<property name="displayName" value="Load Profile Interval 1" />
+					<property name="field" value="loadProfileInterval1" />
 					<property name="description">
 						<value>
 							Interval in minutes over which load profile values are kept. Valid values are 5, 15, 30, and 0
@@ -1346,8 +1348,8 @@
 					<property name="security" ref="configEditSecurity" />
 				</bean>
 				<bean class="com.cannontech.web.input.InputBase">
-					<property name="displayName" value="Load Profile Interval" />
-					<property name="field" value="loadProfileInterval" />
+					<property name="displayName" value="Load Profile Interval 1" />
+					<property name="field" value="loadProfileInterval1" />
 					<property name="description">
 						<value>
 							Interval in minutes over which load profile values are kept. Valid values are 5, 15, 30, and 0
@@ -1710,11 +1712,11 @@
 							<property name="optionList">
 								<list>
 									<bean class="com.cannontech.web.input.type.InputOption">
-										<property name="text" value="#0" />
+										<property name="text" value="Load Profile Interval 1" />
 										<property name="value" value="0" />
 									</bean>
 									<bean class="com.cannontech.web.input.type.InputOption">
-										<property name="text" value="#1" />
+										<property name="text" value="Load Profile Interval 2" />
 										<property name="value" value="1" />
 									</bean>
 								</list>
@@ -2356,11 +2358,11 @@
 							<property name="optionList">
 								<list>
 									<bean class="com.cannontech.web.input.type.InputOption">
-										<property name="text" value="#0" />
+										<property name="text" value="Load Profile Interval 1" />
 										<property name="value" value="0" />
 									</bean>
 									<bean class="com.cannontech.web.input.type.InputOption">
-										<property name="text" value="#1" />
+										<property name="text" value="Load Profile Interval 2" />
 										<property name="value" value="1" />
 									</bean>
 								</list>

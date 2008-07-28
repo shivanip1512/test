@@ -669,7 +669,7 @@ public class MCT410Configuration extends ConfigurationBase {
 
     // Demand and LP
     private Integer demandInterval = null;
-    private Integer loadProfileInterval = null;
+    private Integer loadProfileInterval1 = null;
     private Integer voltageLpInterval = null;
     private Integer demandVInterval = null;
     private Integer loadProfileInterval2 = null;
@@ -682,12 +682,12 @@ public class MCT410Configuration extends ConfigurationBase {
         this.demandInterval = demandInterval;
     }
 
-    public Integer getLoadProfileInterval() {
-        return loadProfileInterval;
+    public Integer getLoadProfileInterval1() {
+        return loadProfileInterval1;
     }
 
-    public void setLoadProfileInterval(Integer loadProfileInterval) {
-        this.loadProfileInterval = loadProfileInterval;
+    public void setLoadProfileInterval1(Integer loadProfileInterval1) {
+        this.loadProfileInterval1 = loadProfileInterval1;
     }
 
     public Integer getVoltageLpInterval() {
