@@ -11,6 +11,7 @@ import java.util.Vector;
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.util.Pair;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LitePointUnit;
 import com.cannontech.database.db.graph.GraphDataSeries;
 
@@ -130,8 +131,12 @@ public class TrendSerie
 	 * @return int
 	 */
 	public int getDecimalPlaces() {
-        LitePointUnit pointUnit = DaoFactory.getPointDao().getPointUnit(gds.getPointID());
-        return pointUnit.getDecimalPlaces();
+	    try {
+	        LitePointUnit pointUnit = DaoFactory.getPointDao().getPointUnit(gds.getPointID());
+	        return pointUnit.getDecimalPlaces();
+	    }catch (NotFoundException e) {
+	        return 3;  //default to three if not available.
+	    }
 	}
 
 	/**
