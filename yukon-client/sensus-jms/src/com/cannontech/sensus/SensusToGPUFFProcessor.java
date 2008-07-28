@@ -31,6 +31,8 @@ public class SensusToGPUFFProcessor extends SensusMessageHandlerBase {
 
         if ((message.isStatusEventTransBit() || isIgnoreEventBit()) && message.getLastEvent().isPopulated()) {
             fault = message.getLastEvent().isFaultDetected();
+            long millis = toi.getTime() - message.getLastEvent().getSecondsSinceEvent() * 1000;
+            toi = new Date(millis);
         } else {
             fault = message.isStatusLatchedFault();
         }
