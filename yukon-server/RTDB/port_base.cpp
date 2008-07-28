@@ -7,11 +7,15 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.73 $
-* DATE         :  $Date: 2008/07/21 20:38:26 $
+* REVISION     :  $Revision: 1.74 $
+* DATE         :  $Date: 2008/07/28 15:41:16 $
 *
 * HISTORY      :
 * $Log: port_base.cpp,v $
+* Revision 1.74  2008/07/28 15:41:16  jrichter
+* YUK-5583
+* TAP Terminal baud rate is hard-coded to 1200 bps
+*
 * Revision 1.73  2008/07/21 20:38:26  jotteson
 * YUK-4556 CCU queue backs up and returns no error when uninitialized
 * Added expiration functionality regardless of port's state.
@@ -1115,7 +1119,7 @@ bool CtiPort::setPortForDevice(CtiDeviceSPtr  Device)
                 dout << CtiTime() << " Port is about to communicate with a TAP device. " << Device->getName() << endl;
             }
 
-            setLine(1200, 7, EVENPARITY, ONESTOPBIT);
+            setLine(getBaudRate(), 7, EVENPARITY, ONESTOPBIT);
             enableXONXOFF();
         }
         else if(Device->getType() == TYPE_RTM ||
