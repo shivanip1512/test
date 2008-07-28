@@ -47,7 +47,7 @@ function executeCommand(paoId, cmdId, commandName, controlType, reasonRequired, 
     var isReasonRequired = eval(reasonRequired);
     if (!isReasonRequired) {
         if(warn){
-            var yes = confirm('Are you sure you want to exectute the command '+commandName+'?');
+            var yes = confirm('Are you sure you want to execute the command '+commandName+'?');
             if(yes){
                 executeCommandController(paoId, cmdId, commandName, controlType);
             }
