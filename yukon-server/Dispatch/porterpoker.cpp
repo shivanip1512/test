@@ -10,8 +10,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2008/06/30 15:24:29 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2008/07/28 21:40:06 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,7 +29,6 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include <rw/toolpro/winsock.h>
 #include <rw/toolpro/sockport.h>
 #include <rw/toolpro/inetaddr.h>
-#include <boost/pool/poolfwd.hpp>
 
 #include "queue.h"
 #include "exchange.h"
@@ -265,34 +264,6 @@ void main(int argc, char **argv)
         }
 
     }
-
-    /*for( int i = 0; i< 100000; i++ )
-    {
-        CtiPointAccumulator *accumulator = (CtiPointAccumulator *)malloc(sizeof(CtiPointAccumulator));
-    }*/
-
-    //CtiPointAccumulator *accumulator = (CtiPointAccumulator *)malloc((100000*sizeof(CtiPointAccumulator)));
- /*   std::map<long, long> testMap;
-    
-    for( int i = 0; i<668000; i++ )
-    {
-        testMap.insert(std::make_pair(i,0));
-    }*/
-
-    std::multiset<std::pair<long, long> > testSet;
-    std::pair<long, long> tempPair;
-    for( int i = 0; i<668000; i++ )
-    {
-        tempPair.first = i;
-        tempPair.second = 0;
-        testSet.insert(tempPair);
-    }
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Poker Sleeping " << endl;
-        dout << " Point Accumulator Size: " << sizeof(CtiPointAccumulator) << endl;
-    }
-    Sleep(20000);
     
 
     // Make sure all the logs get output and done!
