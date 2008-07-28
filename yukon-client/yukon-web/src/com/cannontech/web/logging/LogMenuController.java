@@ -121,14 +121,11 @@ public class LogMenuController extends LogController {
      * @return
      * @throws Exception
      */
-    private SortedMap<String, List<String>> sortByAlphabet(
-            List<File> localLogList) throws Exception {
-
-        Pattern logPattern = Pattern.compile("^(\\S*).log$");
-        Map<String, String> searchMap = LogSortUtil.returnSearchMap(localLogList,
-                                                                    logPattern);
-        SortedMap<String, List<String>> sortResults = LogSortUtil.sortSearchMap(searchMap,
-                                                                                2);
+    private SortedMap<String, List<String>> sortByAlphabet(List<File> localLogList) throws Exception {
+        Pattern logPattern = Pattern.compile("^(.+\\s*)\\.log$", Pattern.CASE_INSENSITIVE);
+        
+        Map<String, String> searchMap = LogSortUtil.returnSearchMap(localLogList,logPattern);
+        SortedMap<String, List<String>> sortResults = LogSortUtil.sortSearchMap(searchMap,2);
         return sortResults;
     }
 
