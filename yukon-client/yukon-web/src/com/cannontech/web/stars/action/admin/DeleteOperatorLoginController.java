@@ -1,7 +1,5 @@
 package com.cannontech.web.stars.action.admin;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -27,19 +25,16 @@ public class DeleteOperatorLoginController extends StarsAdminActionController {
         int userID = ServletRequestUtils.getIntParameter(request, "UserID");
         List<Integer> operLoginIDs = energyCompany.getOperatorLoginIDs();
         
-        synchronized (operLoginIDs) {
-            Iterator<Integer> it = operLoginIDs.iterator();
-            while (it.hasNext()) {
-                int loginID = it.next().intValue();
-                if (userID == -1 || loginID == userID) {
-                    if (loginID == energyCompany.getUserID()) continue;
-                    
-                    com.cannontech.database.data.user.YukonUser.deleteOperatorLogin( new Integer(loginID) );
-                    
-                    LiteYukonUser liteUser = this.yukonUserDao.getLiteYukonUser(loginID);
-                    ServerUtils.handleDBChange(liteUser, DBChangeMsg.CHANGE_TYPE_DELETE);
-                    it.remove();
-                }
+        for (final Integer id : operLoginIDs) {
+            final int loginID = id.intValue();
+            
+            if (userID == -1 || loginID == userID) {
+                if (loginID == energyCompany.getUserID()) continue;
+                
+                com.cannontech.database.data.user.YukonUser.deleteOperatorLogin(id);
+                
+                LiteYukonUser liteUser = this.yukonUserDao.getLiteYukonUser(loginID);
+                ServerUtils.handleDBChange(liteUser, DBChangeMsg.CHANGE_TYPE_DELETE);
             }
         }
         

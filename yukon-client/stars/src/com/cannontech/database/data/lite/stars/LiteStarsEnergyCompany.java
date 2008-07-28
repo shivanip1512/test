@@ -16,6 +16,8 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.Vector;
 
+import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
@@ -29,6 +31,7 @@ import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.Transaction;
@@ -163,6 +166,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
         YukonSelectionListDefs.YUK_LIST_NAME_CI_CUST_TYPE
     };
     
+    private static final IntegerRowMapper integerRowMapper = new IntegerRowMapper();
+    
     private String name = null;
     private int primaryContactID = CtiUtilities.NONE_ZERO_ID;
     private int userID = com.cannontech.user.UserUtils.USER_DEFAULT_ID;
@@ -177,7 +182,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
     private List<YukonSelectionList> selectionLists = null;
     private List<LiteInterviewQuestion> interviewQuestions = null;
     
-    private List<Integer> operatorLoginIDs = null;
     private List<Integer> routeIDs = null;
     
     private Map<Integer,LiteLMThermostatSchedule> dftThermSchedules = null;
@@ -210,7 +214,9 @@ public class LiteStarsEnergyCompany extends LiteBase {
         YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
     private final StarsCustAccountInformationDao starsCustAccountInformationDao =
         YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
- 
+    private final SimpleJdbcTemplate simpleJdbcTemplate =
+        YukonSpringHook.getBean("simpleJdbcTemplate", SimpleJdbcTemplate.class);
+    
     public LiteStarsEnergyCompany() {
         super();
         setLiteType( LiteTypes.ENERGY_COMPANY );
@@ -304,7 +310,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
                 sql += ")";
                 
                 Object[][] serialGroupIDs = com.cannontech.util.ServletUtil.executeSQL(
-                        dbAlias, sql, new Class[] { Integer.class, Integer.class } );
+                        dbAlias, sql, new Class<?>[] { Integer.class, Integer.class } );
                 
                 // get a serial group whose serial number is set to 0, the route id of this group is the default route id
                 if (serialGroupIDs != null && serialGroupIDs.length > 0) {
@@ -321,7 +327,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
                     sql += ")";
                 
                     Object[][] versacomNameSerial = com.cannontech.util.ServletUtil.executeSQL(
-                            dbAlias, sql, new Class[] { String.class, Integer.class, Integer.class, Integer.class } );
+                            dbAlias, sql, new Class<?>[] { String.class, Integer.class, Integer.class, Integer.class } );
                     
                     if (versacomNameSerial != null) {
                         for (int i = 0; i < versacomNameSerial.length; i++) {
@@ -344,7 +350,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
                     sql += ")";
                    
                     Object[][] expresscomNameSerial = com.cannontech.util.ServletUtil.executeSQL(
-                            dbAlias, sql, new Class[] { String.class, Integer.class, Integer.class, Integer.class } );
+                            dbAlias, sql, new Class<?>[] { String.class, Integer.class, Integer.class, Integer.class } );
                     
                     if (expresscomNameSerial != null) {
                         for (int i = 0; i < expresscomNameSerial.length; i++) {
@@ -546,7 +552,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
         selectionLists = null;
         interviewQuestions = null;
         
-        operatorLoginIDs = null;
         routeIDs = null;
         dftThermSchedules = null;
         
@@ -935,41 +940,20 @@ public class LiteStarsEnergyCompany extends LiteBase {
         return substations;
     }
     
-    public synchronized List<Integer> getOperatorLoginIDs() {
-        if (operatorLoginIDs == null) {
-            operatorLoginIDs = new ArrayList<Integer>();
-            
-            SqlStatement stmt = new SqlStatement(
-                    "SELECT OperatorLoginID FROM EnergyCompanyOperatorLoginList WHERE EnergyCompanyID=" + getEnergyCompanyID(),
-                    CtiUtilities.getDatabaseAlias() );
-            
-            try {
-                stmt.execute();
-                
-                for (int i = 0; i < stmt.getRowCount(); i++) {
-                    int userID = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
-                    operatorLoginIDs.add( new Integer(userID) );
-                }
-                
-                CTILogger.info( "All operator logins loaded for energy company #" + getEnergyCompanyID() );
-            }
-            catch (CommandExecutionException e) {
-                CTILogger.error(e.getMessage(), e);
-            }
-        }
-        
-        return operatorLoginIDs;
+    public List<Integer> getOperatorLoginIDs() {
+        String sql = "SELECT OperatorLoginID FROM EnergyCompanyOperatorLoginList WHERE EnergyCompanyID = ?";
+        List<Integer> list = simpleJdbcTemplate.query(sql, integerRowMapper, getEnergyCompanyID());
+        return list;
     }
     
-    @SuppressWarnings("unchecked")
     public LiteYukonPAObject[] getRoutes(LiteYukonPAObject[] inheritedRoutes) {
         List<LiteYukonPAObject> routeList = new ArrayList<LiteYukonPAObject>();
         List<Integer> routeIDs = getRouteIDs();
         
         synchronized (routeIDs) {
-            Iterator it = routeIDs.iterator();
+            Iterator<Integer> it = routeIDs.iterator();
             while (it.hasNext()) {
-                Integer routeID = (Integer) it.next();
+                Integer routeID = it.next();
                 LiteYukonPAObject liteRoute = DaoFactory.getPaoDao().getLiteYukonPAO( routeID.intValue() );
                 
                 // Check to see if the route is already assigned to the parent company, if so, remove it from the member

@@ -1192,8 +1192,7 @@ public class StarsAdminUtil {
 			yukonUser.getYukonGroups().add( group );
 		}
 		
-		yukonUser = (com.cannontech.database.data.user.YukonUser)
-				Transaction.createTransaction(Transaction.INSERT, yukonUser).execute();
+		yukonUser = Transaction.createTransaction(Transaction.INSERT, yukonUser).execute();
 		
 		if (energyCompany != null) {
 			SqlStatement stmt = new SqlStatement(
@@ -1202,10 +1201,6 @@ public class StarsAdminUtil {
 					CtiUtilities.getDatabaseAlias()
 					);
 			stmt.execute();
-			
-			List<Integer> operatorLoginIDs = energyCompany.getOperatorLoginIDs();
-			if(! operatorLoginIDs.contains(yukonUser.getUserID()))
-			    operatorLoginIDs.add(yukonUser.getUserID());
 		}
 		
 		LiteYukonUser liteUser = new LiteYukonUser(
