@@ -46,7 +46,7 @@ public final class LogSortUtil {
             }else{
             
                 /* Uses a Pattern object to extract the wanted piece of the File Object's Name
-                 * that will be used later on in 
+                 * that will be used later on as the log groups header.
                  */
                 String logFile = file.getName();
                 Matcher patternMatches = regexPattern.matcher(logFile);
