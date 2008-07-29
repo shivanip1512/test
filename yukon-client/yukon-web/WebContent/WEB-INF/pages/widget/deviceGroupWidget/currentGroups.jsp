@@ -3,6 +3,12 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
+<cti:checkRole role="operator.DeviceActionsRole.ROLEID">
+<cti:checkProperty property="operator.DeviceActionsRole.DEVICE_GROUP_MODIFY">
+    <c:set var="modifyRole" value="true"/>
+</cti:checkProperty>
+</cti:checkRole>
+    
 <div class="widgetInternalSectionHeader">Current Groups</div>
     <c:choose>
         <c:when test="${not empty currentGroups}">
@@ -19,6 +25,8 @@
         
                         <a href="${groupEditorUrl}">${fn:escapeXml(group.fullName)}</a>
                     </td>
+                    
+                    <c:if test="${modifyRole}">
                     <td style="border: none; width: 15px; text-align: center;">
                         <c:choose>
                             <c:when test="${group.modifiable}">
@@ -31,6 +39,8 @@
                             </c:otherwise>
                         </c:choose>
                     </td>
+                    </c:if>
+                    
                 </tr>
                 
                 </c:if>

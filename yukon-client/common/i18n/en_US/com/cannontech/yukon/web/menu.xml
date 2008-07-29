@@ -22,6 +22,7 @@
 <entry key="yukon.web.menu.portal.metering.allTrends">All Trends</entry>
 <entry key="yukon.web.menu.portal.metering.bulkImporter">Bulk Importer</entry>
 <entry key="yukon.web.menu.portal.metering.metering">Metering</entry>
+<entry key="yukon.web.menu.portal.metering.bulkOperations">Bulk Operations</entry>
 
 <!-- Client Launcher -->
 <entry key="yukon.web.menu.portal.clientLauncher">Client Launcher</entry>

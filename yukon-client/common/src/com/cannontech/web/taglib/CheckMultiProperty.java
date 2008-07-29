@@ -1,12 +1,17 @@
 package com.cannontech.web.taglib;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.util.ReflectivePropertySearcher;
 
 /**
  * Checks two or more propertyids against the LiteYukonUser in the session
@@ -73,5 +78,17 @@ public class CheckMultiProperty extends BodyTagSupport {
 	public void setPropertyid(String propertyid) {
 		this.propertyid = propertyid;
 	}
+	
+	/**
+     * Sets the propertyid by searching for the property
+     * @param property The property to set
+     */
+    public void setProperty(String property){
+        List<Integer> propertyIds = new ArrayList<Integer>();
+        for (String propertyName : StringUtils.split(property, ",")) {
+            propertyIds.add(ReflectivePropertySearcher.getRoleProperty().getIntForName(propertyName));
+        }
+        this.propertyid = StringUtils.join(propertyIds.toArray(), ",");
+    }
 
 }

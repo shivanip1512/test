@@ -37,7 +37,10 @@
     
         
         <table cellspacing="10">
-        
+            
+            <cti:checkRole role="operator.DeviceActionsRole.ROLEID">
+            
+            <cti:checkProperty property="operator.DeviceActionsRole.BULK_IMPORT_OPERATION">
             <tr>
                 <td>
                     <form id="bulkImportForm" method="post" action="/spring/bulk/import/upload">
@@ -46,7 +49,10 @@
                 </td>
                 <td>Import a file to create meters.</td>
             </tr>
+            </cti:checkProperty>
             
+            
+            <cti:checkProperty property="operator.DeviceActionsRole.BULK_UPDATE_OPERATION">
             <tr>
                 <td>
                     <form id="bulkUpdateForm" method="post" action="/spring/bulk/update/upload">
@@ -55,6 +61,9 @@
                 </td>
                 <td>Import a file to update existing meters.</td>
             </tr>
+            </cti:checkProperty>
+            
+            </cti:checkRole>
             
             <tr>
                 <td>

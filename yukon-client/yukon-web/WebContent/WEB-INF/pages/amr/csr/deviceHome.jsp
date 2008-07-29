@@ -68,6 +68,8 @@
                         </c:otherwise>
                     </c:choose>
                     
+                    <cti:checkRole role="operator.MeteringRole.ROLEID">
+                    <cti:checkProperty property="operator.MeteringRole.HIGH_BILL_COMPLAINT">
                     <c:choose>
                         <c:when test="${highBillSupported}">
                             <c:url var="highBillUrl" value="/spring/csr/highBill/view">
@@ -79,8 +81,10 @@
                         High Bill Complaint (not supported)
                         </c:otherwise>
                     </c:choose>
-                    
                     <br/>
+                    </cti:checkProperty>
+                    </cti:checkRole>
+                    
 					<cti:checkRole role="CommanderRole.ROLEID">
                         
                         <!-- Actions: Profile -->

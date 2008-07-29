@@ -196,12 +196,8 @@ public class CommonModuleBuilder implements ModuleBuilder {
             Element child = (Element) iter.next();
             UserChecker checker  = null;
             String prop = child.getAttributeValue("value");
-            if (child.getName().equals("requireProperty")) {
-                checker = userCheckerFactory.createPropertyChecker(prop);
-            } else if (child.getName().equals("requireFalseProperty")) {
-                checker = userCheckerFactory.createFalsePropertyChecker(prop);
-            } else if (child.getName().equals("requireRole")) {
-                checker = userCheckerFactory.createRoleChecker(prop);
+            if (child.getName().equals("requireRoleProperty")) {
+                checker = userCheckerFactory.createRoleAndPropertyDescriptionChecker(prop);
             }
             
             if (checker != null) {

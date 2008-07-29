@@ -81,8 +81,12 @@
 				<input id="email" name="email" type="text" value="${email}" size="25" style="height:16px;">
 			</td>
 	  	    <td class="last" align="right">
-				<tags:widgetActionRefresh hide="${!isReadable}" method="initiateLoadProfile" label="Start" labelBusy="Start"/>
-			</td>
+                <cti:checkRole role="operator.MeteringRole.ROLEID">
+                <cti:checkProperty property="operator.MeteringRole.PROFILE_COLLECTION_SCANNING">
+				    <tags:widgetActionRefresh hide="${!isReadable}" method="initiateLoadProfile" label="Start" labelBusy="Start"/>
+			    </cti:checkProperty>
+                </cti:checkRole>
+            </td>
 		</tr>
 		
         </tr>

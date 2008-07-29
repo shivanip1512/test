@@ -69,7 +69,7 @@
         <property name="appMainClassJar" value="dbeditor.jar"/>
         <property name="appIcon" value="/WebConfig/yukon/Icons/DatabaseEditor64.gif" />
         <property name="userChecker">
-          <bean factory-bean="rolePropertyUserCheckerFactory" factory-method="createRoleChecker">
+          <bean factory-bean="rolePropertyUserCheckerFactory" factory-method="createRoleAndPropertyDescriptionChecker">
             <constructor-arg value="DBEditorRole.ROLEID"/>
           </bean>
         </property>
@@ -83,7 +83,7 @@
         <property name="appMainClassJar" value="tdc.jar"/>
         <property name="appIcon" value="/WebConfig/yukon/Icons/TDC64.gif" />
         <property name="userChecker">
-          <bean factory-bean="rolePropertyUserCheckerFactory" factory-method="createRoleChecker">
+          <bean factory-bean="rolePropertyUserCheckerFactory" factory-method="createRoleAndPropertyDescriptionChecker">
             <constructor-arg value="TDCRole.ROLEID"/>
           </bean>
         </property>
@@ -97,7 +97,7 @@
         <property name="appMainClassJar" value="graph.jar"/>
         <property name="appIcon" value="/WebConfig/yukon/Icons/GraphTrending64.gif" />
         <property name="userChecker">
-          <bean factory-bean="rolePropertyUserCheckerFactory" factory-method="createRoleChecker">
+          <bean factory-bean="rolePropertyUserCheckerFactory" factory-method="createRoleAndPropertyDescriptionChecker">
             <constructor-arg value="TrendingRole.ROLEID"/>
           </bean>
         </property>
@@ -111,7 +111,7 @@
         <property name="appMainClassJar" value="esub-editor.jar"/>
         <property name="appIcon" value="/WebConfig/yukon/Icons/Esubstation64.gif" />
         <property name="userChecker">
-          <bean factory-bean="rolePropertyUserCheckerFactory" factory-method="createRoleChecker">
+          <bean factory-bean="rolePropertyUserCheckerFactory" factory-method="createRoleAndPropertyDescriptionChecker">
             <constructor-arg value="EsubEditorRole.ROLEID"/>
           </bean>
         </property>
@@ -125,7 +125,7 @@
         <property name="appMainClassJar" value="yc.jar"/>
         <property name="appIcon" value="/WebConfig/yukon/Icons/Commander64.gif" />
         <property name="userChecker">
-          <bean factory-bean="rolePropertyUserCheckerFactory" factory-method="createRoleChecker">
+          <bean factory-bean="rolePropertyUserCheckerFactory" factory-method="createRoleAndPropertyDescriptionChecker">
             <constructor-arg value="CommanderRole.ROLEID"/>
           </bean>
         </property>

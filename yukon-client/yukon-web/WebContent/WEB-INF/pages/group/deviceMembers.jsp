@@ -4,12 +4,18 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
+    <cti:checkRole role="operator.DeviceActionsRole.ROLEID">
+    <cti:checkProperty property="operator.DeviceActionsRole.DEVICE_GROUP_MODIFY">
+        <c:set var="modifyRole" value="true"/>
+    </cti:checkProperty>
+    </cti:checkRole>
+                
 	<table style="width: 95%;" >
 		<c:choose>
 			<c:when test="${fn:length(deviceList) > 0}">
             
                 <%-- REMOVE ALL DEVICES LINK --%>
-                <c:if test="${group.modifiable}">
+                <c:if test="${modifyRole && group.modifiable}">
                 <tr>
                     <td colspan="2" align="right">
                         <cti:msg var="removeAllDevicesFromGroupLabel" key="yukon.web.deviceGroups.editor.membersContainer.removeAllDevicesFromGroupLabel"/>
@@ -25,6 +31,7 @@
                     </td>
                 </tr>
                 </c:if>
+                
             
 				<c:forEach var="device" items="${deviceList}">
 					<tr class="<tags:alternateRow odd="" even="altRow"/>">
@@ -35,6 +42,8 @@
             
 							<a href="${csrHomeUrl}"><cti:deviceName device="${device}" /></a>
 						</td>
+                        
+                        <c:if test="${modifyRole}">
 						<td style="border: none; width: 15px;text-align: center;">
 							
 							<c:choose>
@@ -52,6 +61,8 @@
 								</c:otherwise>
 							</c:choose>
 						</td>
+                        </c:if>
+                        
 					</tr>
 				</c:forEach>
 			</c:when>

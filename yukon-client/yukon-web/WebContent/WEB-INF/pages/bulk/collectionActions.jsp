@@ -49,9 +49,11 @@
         <cti:msg var="massDeleteLabel" key="yukon.common.device.bulk.collectionActions.massDeleteLabel"/>
         <cti:msg var="massDeleteDescription" key="yukon.common.device.bulk.collectionActions.massDeleteDescription"/>
         
+        <cti:checkRole role="operator.DeviceActionsRole.ROLEID">
         <table cellspacing="10">
         
             <%-- ADD TO GROUP --%>
+            <cti:checkProperty property="operator.DeviceActionsRole.DEVICE_GROUP_MODIFY">
             <tr>
                 <td>
                     <form id="deviceGroupAddForm" method="get" action="/spring/bulk/group/selectGroup">
@@ -62,8 +64,10 @@
                 </td>
                 <td>${addToGroupDescription}</td>
             </tr>
+            </cti:checkProperty>
             
             <%-- REMOVE FROM GROUP --%>
+            <cti:checkProperty property="operator.DeviceActionsRole.DEVICE_GROUP_MODIFY">
             <tr>
                 <td>
                     <form id="deviceGroupRemoveForm" method="get" action="/spring/bulk/group/selectGroup">
@@ -74,8 +78,10 @@
                 </td>
                 <td>${removeFromGroupDescription}</td>
             </tr>
+            </cti:checkProperty>
             
             <%-- GROUP COMMANDER --%>
+            <cti:checkProperty property="operator.DeviceActionsRole.GROUP_COMMANDER">
             <tr>
                 <td>
                     <form id="groupCommanderForm" method="get" action="/spring/group/commander/collectionProcessing">
@@ -85,8 +91,10 @@
                 </td>
                 <td>${sendCommandDescription}</td>
             </tr>
+            </cti:checkProperty>
             
             <%-- MASS CHANGE --%>
+            <cti:checkProperty property="operator.DeviceActionsRole.MASS_CHANGE">
             <tr>
                 <td>
                     <form id="massChangeForm" method="post" action="/spring/bulk/massChange/massChangeSelect">
@@ -96,8 +104,10 @@
                 </td>
                 <td>${massChangeDescription}</td>
             </tr>
+            </cti:checkProperty>
             
             <%-- LOCATE ROUTE --%>
+            <cti:checkProperty property="operator.DeviceActionsRole.LOCATE_ROUTE">
             <tr>
                 <td>
                     <form id="routeLocateForm" method="get" action="/spring/csr/routeLocate/home">
@@ -107,8 +117,10 @@
                 </td>
                 <td>${routeLocateDescription}</td>
             </tr>
+            </cti:checkProperty>
             
             <%-- MASS DELETE --%>
+            <cti:checkProperty property="operator.DeviceActionsRole.MASS_DELETE">
             <tr>
                 <td>
                     <form id="massDeleteForm" method="get" action="/spring/bulk/massChange/massDelete">
@@ -118,9 +130,11 @@
                 </td>
                 <td>${massDeleteDescription}</td>
             </tr>
+            </cti:checkProperty>
             
         </table>
-    
+        </cti:checkRole>
+        
     </tags:bulkActionContainer>
     
 </cti:standardPage>

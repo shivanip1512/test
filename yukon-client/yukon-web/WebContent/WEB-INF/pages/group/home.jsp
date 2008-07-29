@@ -8,80 +8,80 @@
 <cti:standardPage title="Groups Home" module="amr">
 <cti:standardMenu menuSelection="devicegroups|home"/>
 
-   	<cti:breadCrumbs>
-	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-	    <cti:crumbLink title="Groups Home" />
-	</cti:breadCrumbs>
-	
-	
-	<script type="text/javascript">
-		
-		function showGroupPopup(popupDiv, focusElem){
-			
-			$(popupDiv).toggle();
-			if($(popupDiv).visible() && focusElem != null){
-				$(focusElem).focus();
-			}
-			
-		}
-		
-		function addDevice(devices){
-		
-			var ids = '';
-			$(devices).each(function(device){
-				ids += device.paoId + ',';
-			});
-		
-			$('deviceToAdd').value = ids;
-			$('addDeviceForm').submit();
-			window.event.returnValue = false;
-		}
-		
-		function removeGroup(formName){
-			var confirmRemove = confirm("Are you sure you want to permanently remove this group and all of it's sub groups?  You will not be able to undo this removal.");
-			if(confirmRemove) {
-				
-				if(formName != null) {
-					$(formName).submit();
-				}
-				
-				return true;
-			}
-			
-			if(formName != null) {
-				return;
-			}
-			return false;
-		}
-		
-		function changeGroupName() {
-			
-			var newName = $F('newGroupName');
-			if(newName == null || newName == '' || (newName.indexOf('/') != -1) || (newName.indexOf('\\') != -1)) {
-				alert('Please enter a New Group Name.  Group names may not contain slashes.');
-			} else {
-				return true;
-			}
-			
-			$('newGroupName').focus();
-			
-			return false;
-		}
-		
-		function addSubGroup() {
-			
-			var subGroupName = $F('childGroupName');
-			if(subGroupName == null || subGroupName == '' || (subGroupName.indexOf('/') != -1) || (subGroupName.indexOf('\\') != -1)) {
-				alert('Please enter a Sub Group Name.  Group names may not contain slashes.');
-			} else {
-				return true;
-			}
-			
-			$('childGroupName').focus();
-			
-			return false;
-		}
-		
+    <cti:breadCrumbs>
+        <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
+        <cti:crumbLink title="Groups Home" />
+    </cti:breadCrumbs>
+    
+    
+    <script type="text/javascript">
+        
+        function showGroupPopup(popupDiv, focusElem){
+            
+            $(popupDiv).toggle();
+            if($(popupDiv).visible() && focusElem != null){
+                $(focusElem).focus();
+            }
+            
+        }
+        
+        function addDevice(devices){
+        
+            var ids = '';
+            $(devices).each(function(device){
+                ids += device.paoId + ',';
+            });
+        
+            $('deviceToAdd').value = ids;
+            $('addDeviceForm').submit();
+            window.event.returnValue = false;
+        }
+        
+        function removeGroup(formName){
+            var confirmRemove = confirm("Are you sure you want to permanently remove this group and all of it's sub groups?  You will not be able to undo this removal.");
+            if(confirmRemove) {
+                
+                if(formName != null) {
+                    $(formName).submit();
+                }
+                
+                return true;
+            }
+            
+            if(formName != null) {
+                return;
+            }
+            return false;
+        }
+        
+        function changeGroupName() {
+            
+            var newName = $F('newGroupName');
+            if(newName == null || newName == '' || (newName.indexOf('/') != -1) || (newName.indexOf('\\') != -1)) {
+                alert('Please enter a New Group Name.  Group names may not contain slashes.');
+            } else {
+                return true;
+            }
+            
+            $('newGroupName').focus();
+            
+            return false;
+        }
+        
+        function addSubGroup() {
+            
+            var subGroupName = $F('childGroupName');
+            if(subGroupName == null || subGroupName == '' || (subGroupName.indexOf('/') != -1) || (subGroupName.indexOf('\\') != -1)) {
+                alert('Please enter a Sub Group Name.  Group names may not contain slashes.');
+            } else {
+                return true;
+            }
+            
+            $('childGroupName').focus();
+            
+            return false;
+        }
+        
         function submitMoveGroupForm() {
         
             $('moveGroupForm').submit();
@@ -92,15 +92,15 @@
         
             $('copyContentsToGroupForm').submit();
         }
-		
-		function showDevices() {
-			
-			// escape the group name to escape problem characters
-			var groupName = '${cti:escapeJavaScript(group.fullName)}';
-			var params = {'groupName': groupName};
-    		new Ajax.Updater('deviceMembers', '/spring/group/editor/getDevicesForGroup', {method: 'post', parameters: params});
-			
-		}
+        
+        function showDevices() {
+            
+            // escape the group name to escape problem characters
+            var groupName = '${cti:escapeJavaScript(group.fullName)}';
+            var params = {'groupName': groupName};
+            new Ajax.Updater('deviceMembers', '/spring/group/editor/getDevicesForGroup', {method: 'post', parameters: params});
+            
+        }
         
     
         function confirmRemoveAllDevices(confirmText) {
@@ -111,26 +111,26 @@
                 $('removeAllDevicesFromGroupForm').submit();
             }
         }
-		
-	</script>
+        
+    </script>
 
-	<h2>Groups Home</h2>
-	<br>
-	<c:if test="${not empty param.errorMessage}">
-		<div style="color: red;">
-			${param.errorMessage}
-		</div>
-		<br/><br/>
-	</c:if>
+    <h2>Groups Home</h2>
+    <br>
+    <c:if test="${not empty param.errorMessage}">
+        <div style="color: red;">
+            ${param.errorMessage}
+        </div>
+        <br/><br/>
+    </c:if>
 
     <%-- GROUPS HIERARCHY BOX --%>
     
     
     
-	<div style="float: left; margin-right: .75em; margin-bottom: .5em; width: 450px;">
+    <div style="float: left; margin-right: .75em; margin-bottom: .5em; width: 450px;">
 
         <cti:msg key="yukon.web.deviceGroups.editor.groupsContainer.title" var="groupsTitle"/>
-		<tags:boxContainer title="${groupsTitle}" hideEnabled="false">
+        <tags:boxContainer title="${groupsTitle}" hideEnabled="false">
             
             <c:set var="selectedGroupParam">
                 <jsp:attribute name="value">
@@ -146,23 +146,23 @@
                                                 width="432"
                                                 height="600" />
                                 
-		</tags:boxContainer>
-	</div>
-	
+        </tags:boxContainer>
+    </div>
+    
     <%-- OPERATIONS BOX --%>
-	<div style="float: left; margin-right: .75em; margin-bottom: 10px; width: 450px;">
-		
+    <div style="float: left; margin-right: .75em; margin-bottom: 10px; width: 450px;">
+        
         <cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.title" var="operationsTitle"/>
         <cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.topLevelLabel" var="topLevelLabel"/>
-		<tags:boxContainer hideEnabled="false">
-			
-			<jsp:attribute name="title">
-				<table cellpadding="0px" cellspacing="0px">
-					<tr>
-						<td valign="top">
-							${operationsTitle}:&nbsp;&nbsp;
-						</td>
-						<td valign="top">
+        <tags:boxContainer hideEnabled="false">
+            
+            <jsp:attribute name="title">
+                <table cellpadding="0px" cellspacing="0px">
+                    <tr>
+                        <td valign="top">
+                            ${operationsTitle}:&nbsp;&nbsp;
+                        </td>
+                        <td valign="top">
                             <c:choose>
                                 <c:when test="${empty group.name}">
                                     [ ${topLevelLabel} ]
@@ -171,31 +171,36 @@
                                     ${fn:escapeXml(group.fullName)}
                                 </c:otherwise>
                             </c:choose>
-						</td>
-					</tr>
-				</table>
-			</jsp:attribute>
-			
-			<jsp:body>
-				<div style="font-size: .75em;">
-				
+                        </td>
+                    </tr>
+                </table>
+            </jsp:attribute>
+            
+            <jsp:body>
+                <div style="font-size: .75em;">
+                
                     <%-- EDIT GROUP --%>
+                    <cti:checkRole role="operator.DeviceActionsRole.ROLEID">
+                    <cti:checkMultiProperty property="operator.DeviceActionsRole.DEVICE_GROUP_EDIT,operator.DeviceActionsRole.DEVICE_GROUP_MODIFY">
                     <h4><cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.editGroupLabel"/></h4>
-					<c:choose>
-						<c:when test="${group.editable}">
+                    <c:choose>
+                        <c:when test="${group.editable}">
+                        
+                            <%-- need DEVICE_GROUP_EDIT role property to edit name, remove, move --%>
+                            <cti:checkProperty property="operator.DeviceActionsRole.DEVICE_GROUP_EDIT">
                         
                             <%-- EDIT NAME --%>
-							<a title="Click to edit group name" href="javascript:showGroupPopup('editGroupNameDiv', 'newGroupName');"><cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.editGroupNameText"/></a>
-							<div id="editGroupNameDiv" class="popUpDiv" style="width: 330px; display: none; background-color: white; border: 1px solid black;padding: 10px 10px;">
-								<div style="width: 100%; text-align: right;margin-bottom: 10px;">
-									<a href="javascript:showGroupPopup('editGroupNameDiv');"><cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.editGroupNameCancelText"/></a>
-								</div>
-								<form method="post" action="/spring/group/editor/updateGroupName" onsubmit="return changeGroupName();">
-									<cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.newGroupNameText"/>: <input id="newGroupName" name="newGroupName" type="text" value="${fn:escapeXml(group.name)}" />
-									<input type="hidden" name="groupName" value="${fn:escapeXml(group.fullName)}">
-									<input type="submit" value="<cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.newGroupNameSaveText"/>" onclick="return changeGroupName();">
-								</form>
-							</div>
+                            <a title="Click to edit group name" href="javascript:showGroupPopup('editGroupNameDiv', 'newGroupName');"><cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.editGroupNameText"/></a>
+                            <div id="editGroupNameDiv" class="popUpDiv" style="width: 330px; display: none; background-color: white; border: 1px solid black;padding: 10px 10px;">
+                                <div style="width: 100%; text-align: right;margin-bottom: 10px;">
+                                    <a href="javascript:showGroupPopup('editGroupNameDiv');"><cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.editGroupNameCancelText"/></a>
+                                </div>
+                                <form method="post" action="/spring/group/editor/updateGroupName" onsubmit="return changeGroupName();">
+                                    <cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.newGroupNameText"/>: <input id="newGroupName" name="newGroupName" type="text" value="${fn:escapeXml(group.name)}" />
+                                    <input type="hidden" name="groupName" value="${fn:escapeXml(group.fullName)}">
+                                    <input type="submit" value="<cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.newGroupNameSaveText"/>" onclick="return changeGroupName();">
+                                </form>
+                            </div>
                             
                             <%-- REMOVE --%>
                             <form id="removeGroupForm" action="/spring/group/editor/removeGroup" method="post">
@@ -234,14 +239,19 @@
                             </form>
                             </div>
                             
-						</c:when>
-						<c:otherwise>
-							<%-- <span><cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.cannotEditGroupText"/></span> --%>
-						</c:otherwise>
+                            </cti:checkProperty>
+                            
+                        </c:when>
+                        <c:otherwise>
+                            <%-- <span><cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.cannotEditGroupText"/></span> --%>
+                        </c:otherwise>
                         
-					</c:choose>
+                    </c:choose>
+                    
+                    
                     
                     <%-- COPY CONTENTS --%>
+                    <cti:checkProperty property="operator.DeviceActionsRole.DEVICE_GROUP_MODIFY">
                     <div>
                     <cti:msg var="copyContentsLinkText" key="yukon.web.deviceGroups.editor.operationsContainer.copyContents.linkText"/>
                     <cti:msg var="copyContentsLinkTitle" key="yukon.web.deviceGroups.editor.operationsContainer.copyContents.linkTitle"/>
@@ -273,8 +283,14 @@
                                                             noSelectionAlertText="${noGroupSelectedAlertText}" />
                     </form>
                     </div>
-					
+                    </cti:checkProperty>
+                    
+                    </cti:checkMultiProperty>
+                    </cti:checkRole>
+                    
                     <%-- ADD GROUPS --%>
+                    <cti:checkRole role="operator.DeviceActionsRole.ROLEID">
+                    <cti:checkProperty property="operator.DeviceActionsRole.DEVICE_GROUP_MODIFY">
                     <h4><cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.addGroupsLabel"/></h4>
                     <c:choose>
                         <c:when test="${group.modifiable}">
@@ -294,21 +310,27 @@
                             <span><cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.cannotAddSubgroupText"/></span>
                         </c:otherwise>
                     </c:choose>
+                    </cti:checkProperty>
+                    </cti:checkRole>
             
                     <%-- ADD DEVICES --%>
-					<h4><cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.addDevicesLabel"/></h4>
-		
-					<c:choose>
-						<c:when test="${groupModifiable}">
-							<c:url var="addByDeviceCollectionUrl" value="/spring/group/editor/showAddDevicesByCollection">
-								<c:param name="groupName" value="${group.fullName}" />
-							</c:url>
-							<a title="Click to add multiple devices" href="${addByDeviceCollectionUrl}">Select Devices to Add</a>
-						</c:when>
-						<c:otherwise>
-							Cannot add Devices to this group
-						</c:otherwise>
-					</c:choose>
+                    <cti:checkRole role="operator.DeviceActionsRole.ROLEID">
+                    <cti:checkProperty property="operator.DeviceActionsRole.DEVICE_GROUP_MODIFY">
+                    <h4><cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.addDevicesLabel"/></h4>
+        
+                    <c:choose>
+                        <c:when test="${groupModifiable}">
+                            <c:url var="addByDeviceCollectionUrl" value="/spring/group/editor/showAddDevicesByCollection">
+                                <c:param name="groupName" value="${group.fullName}" />
+                            </c:url>
+                            <a title="Click to add multiple devices" href="${addByDeviceCollectionUrl}">Select Devices to Add</a>
+                        </c:when>
+                        <c:otherwise>
+                            Cannot add Devices to this group
+                        </c:otherwise>
+                    </c:choose>
+                    </cti:checkProperty>
+                    </cti:checkRole>
                     
                     <%-- GENERATE REPORTS --%>
                     <h4><cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.generateReportsLabel"/></h4>
@@ -331,139 +353,163 @@
                     </c:choose>
                     
                     <%-- COLLECTION ACTION --%>
+                    <cti:checkRole role="operator.DeviceActionsRole.ROLEID">
                     <h4><cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.collectionActionLabel"/></h4>
                     <c:choose>
                         <c:when test="${deviceCount > 0}">
                             
+                            <cti:checkProperty property="operator.DeviceActionsRole.GROUP_COMMANDER">
                             <cti:link href="/spring/group/commander/collectionProcessing" key="yukon.web.deviceGroups.editor.operationsContainer.sendCommand">
                                 <cti:mapParam value="${deviceCollection.collectionParameters}"/>
                             </cti:link>
                             <br>
+                            </cti:checkProperty>
+                            
+                            <cti:checkProperty property="operator.DeviceActionsRole.MASS_CHANGE">
                             <cti:link href="/spring/bulk/massChange/massChangeSelect" key="yukon.web.deviceGroups.editor.operationsContainer.massChange">
                                 <cti:mapParam value="${deviceCollection.collectionParameters}"/>
                             </cti:link>
                             <br>
+                            </cti:checkProperty>
+                            
+                            <cti:checkProperty property="operator.DeviceActionsRole.MASS_DELETE">
                             <cti:link href="/spring/bulk/massChange/massDelete" key="yukon.web.deviceGroups.editor.operationsContainer.massDelete">
                                 <cti:mapParam value="${deviceCollection.collectionParameters}"/>
                             </cti:link>
                             <br>
+                            </cti:checkProperty>
+                            
+                            <cti:checkMultiProperty property="DeviceActionsRole.DEVICE_GROUP_MODIFY,DeviceActionsRole.GROUP_COMMANDER,DeviceActionsRole.MASS_CHANGE,DeviceActionsRole.LOCATE_ROUTE,DeviceActionsRole.MASS_DELETE">
                             <cti:link href="/spring/bulk/collectionActions" key="yukon.web.deviceGroups.editor.operationsContainer.otherActions">
                                 <cti:mapParam value="${deviceCollection.collectionParameters}"/>
                             </cti:link>
+                            </cti:checkMultiProperty>
                             
                         </c:when>
                         <c:otherwise>
                             No devices
                         </c:otherwise>
                     </c:choose>
-				</div>
-				
-			</jsp:body>
-			
-		</tags:boxContainer>
-	</div>
-	
+                    </cti:checkRole>
+                </div>
+                
+            </jsp:body>
+            
+        </tags:boxContainer>
+    </div>
+    
     <%-- MEMBERS BOX --%>
     <br>
-	<div style="float: left; margin-right: .75em; margin-bottom: .5em; width: 450px">
-	
-		<tags:boxContainer hideEnabled="false">
-		
-			<jsp:attribute name="title">
-				<table>
-					<tr>
-						<td valign="top">
-							<cti:msg key="yukon.web.deviceGroups.editor.membersContainer.membersLabel"/>
-						</td>
-						<td valign="top">
-							${fn:escapeXml((empty group.name)? '[ Top Level ]' : group.fullName)}
-						</td>
-					</tr>
-				</table>
-			</jsp:attribute>
-		
-			<jsp:body>
-				<div style="overflow: auto; height: 353px;">
-	
+    <div style="float: left; margin-right: .75em; margin-bottom: .5em; width: 450px">
+    
+        <tags:boxContainer hideEnabled="false">
+        
+            <jsp:attribute name="title">
+                <table>
+                    <tr>
+                        <td valign="top">
+                            <cti:msg key="yukon.web.deviceGroups.editor.membersContainer.membersLabel"/>
+                        </td>
+                        <td valign="top">
+                            ${fn:escapeXml((empty group.name)? '[ Top Level ]' : group.fullName)}
+                        </td>
+                    </tr>
+                </table>
+            </jsp:attribute>
+        
+            <jsp:body>
+                <div style="overflow: auto; height: 353px;">
+    
                     <%-- MEMBER SUBGROUPS --%>
-					<table style="width: 95%; border-bottom: 1px dotted black;padding-bottom: 10px; margin-bottom: 10px;" >
-						<c:choose>
-							<c:when test="${fn:length(subGroups) > 0}">
-								<c:forEach var="subGroup" items="${subGroups}">
-									<tr class="<tags:alternateRow odd="" even="altRow"/>">
-										<td style="border: none;">
-											<c:url var="homeUrl" value="/spring/group/editor/home">
-												<c:param name="groupName" value="${subGroup.fullName}" />
-											</c:url>
-										
-											<span title="${fn:escapeXml(subGroup.fullName)}">
-												<a href="${homeUrl}"><c:out value="${subGroup.name}"/></a>
-											</span>
-										</td>
-										<td style="border: none; width: 15px;text-align: center;">
-											<c:choose>
-												<c:when test="${groupModifiable}">
-										
-													<cti:uniqueIdentifier prefix="subGroup_" var="subId"/>
-													<form style="display: inline;" id="${subId}removeSubGroupForm" action="/spring/group/editor/removeGroup" method="post">
-														<input type="hidden" name="removeGroupName" value="${fn:escapeXml(subGroup.fullName)}">
-														<input type="hidden" name="groupName" value="${fn:escapeXml(group.fullName)}">
-														<input type="image" title="Delete Group" class="cssicon" src="<c:url value="/WebConfig/yukon/Icons/clearbits/close.gif"/>" onClick="return removeGroup()">
-													</form>
-												</c:when>
-												<c:otherwise>
+                    <table style="width: 95%; border-bottom: 1px dotted black;padding-bottom: 10px; margin-bottom: 10px;" >
+                        <c:choose>
+                            <c:when test="${fn:length(subGroups) > 0}">
+                            
+                                <cti:checkRole role="operator.DeviceActionsRole.ROLEID">
+                                <cti:checkProperty property="operator.DeviceActionsRole.DEVICE_GROUP_MODIFY">
+                                    <c:set var="modifyRole" value="true"/>
+                                </cti:checkProperty>
+                                </cti:checkRole>
+                            
+                                <c:forEach var="subGroup" items="${subGroups}">
+                                    <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                                        <td style="border: none;">
+                                            <c:url var="homeUrl" value="/spring/group/editor/home">
+                                                <c:param name="groupName" value="${subGroup.fullName}" />
+                                            </c:url>
+                                        
+                                            <span title="${fn:escapeXml(subGroup.fullName)}">
+                                                <a href="${homeUrl}"><c:out value="${subGroup.name}"/></a>
+                                            </span>
+                                        </td>
+                                        
+                                        <c:if test="${modifyRole}">
+                                        <td style="border: none; width: 15px;text-align: center;">
+                                            <c:choose>
+                                                <c:when test="${groupModifiable}">
+                                        
+                                                    <cti:uniqueIdentifier prefix="subGroup_" var="subId"/>
+                                                    <form style="display: inline;" id="${subId}removeSubGroupForm" action="/spring/group/editor/removeGroup" method="post">
+                                                        <input type="hidden" name="removeGroupName" value="${fn:escapeXml(subGroup.fullName)}">
+                                                        <input type="hidden" name="groupName" value="${fn:escapeXml(group.fullName)}">
+                                                        <input type="image" title="Delete Group" class="cssicon" src="<c:url value="/WebConfig/yukon/Icons/clearbits/close.gif"/>" onClick="return removeGroup()">
+                                                    </form>
+                                                </c:when>
+                                                <c:otherwise>
                                                     <cti:msg var="cannotDeleteGroupLinkTitle" key="yukon.web.deviceGroups.editor.membersContainer.cannotDeleteGroupLinkTitle"/>
-													<img class="graycssicon" title="${cannotDeleteGroupLinkTitle}" src="<c:url value="/WebConfig/yukon/Icons/clearbits/close.gif"/>" >
-												</c:otherwise>
-											</c:choose>
-										</td>
-									</tr>
-								</c:forEach>
-							</c:when> 
-							<c:otherwise>
-									<tr>
-										<td>
-											<cti:msg key="yukon.web.deviceGroups.editor.membersContainer.noChildGroups"/>
-										</td>
-									</tr>
-							</c:otherwise>
-						</c:choose>
-					</table>
-				
+                                                    <img class="graycssicon" title="${cannotDeleteGroupLinkTitle}" src="<c:url value="/WebConfig/yukon/Icons/clearbits/close.gif"/>" >
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </td>
+                                        </c:if>
+                                        
+                                    </tr>
+                                </c:forEach>
+                            </c:when> 
+                            <c:otherwise>
+                                    <tr>
+                                        <td>
+                                            <cti:msg key="yukon.web.deviceGroups.editor.membersContainer.noChildGroups"/>
+                                        </td>
+                                    </tr>
+                            </c:otherwise>
+                        </c:choose>
+                    </table>
+                
                     <%-- MEMBER DEVICES --%>
                     
     
-					<div id="deviceMembers">
-						<c:choose>
-							<c:when test="${not showImmediately && (showDevices == false )}">
-								<table style="width: 95%;" >
-									<tr>
-										<td>
+                    <div id="deviceMembers">
+                        <c:choose>
+                            <c:when test="${not showImmediately && (showDevices == false )}">
+                                <table style="width: 95%;" >
+                                    <tr>
+                                        <td>
                                             <cti:msg key="yukon.web.deviceGroups.editor.membersContainer.groupContainsCountLabel" arguments="${deviceCount}"/>
-											<c:if test="${deviceCount > 0}">
-												<a href="javascript:showDevices()">
+                                            <c:if test="${deviceCount > 0}">
+                                                <a href="javascript:showDevices()">
                                                     <cti:msg key="yukon.web.deviceGroups.editor.membersContainer.showDeviceslabel"/>
                                                 </a>
-											</c:if>
-										</td>
-									</tr>
-								</table>
-							</c:when>
-							<c:otherwise>
+                                            </c:if>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </c:when>
+                            <c:otherwise>
                                 <jsp:include page="deviceMembers.jsp">
                                     <jsp:param name="groupName" value="${group.fullName}"/>
                                 </jsp:include>
-							</c:otherwise>
-						</c:choose>
-					</div>
-				</div>
-				
-			</jsp:body>
-		
-		</tags:boxContainer>
-	
-	</div>
-	
-	<div style="clear: both" />
+                            </c:otherwise>
+                        </c:choose>
+                    </div>
+                </div>
+                
+            </jsp:body>
+        
+        </tags:boxContainer>
+    
+    </div>
+    
+    <div style="clear: both" />
 
 </cti:standardPage>

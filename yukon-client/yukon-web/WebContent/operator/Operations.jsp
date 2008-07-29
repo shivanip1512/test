@@ -96,7 +96,7 @@
 </cti:checkRole>
 
 <!-- Metering section -->
-<cti:checkMultiRole roles="operator.MeteringRole.ROLEID,application.BillingRole.ROLEID,TrendingRole.ROLEID">
+<cti:checkMultiRole roles="operator.MeteringRole.ROLEID,application.BillingRole.ROLEID,TrendingRole.ROLEID,operator.DeviceActionsRole.ROLEID">
 	<tags:operationSection sectionName="Metering" sectionImageName="MeteringLogo">
 		<cti:checkRole role="TrendingRole.ROLEID">
 			<tags:sectionLink>
@@ -104,11 +104,11 @@
 	        </tags:sectionLink>
         </cti:checkRole>
         <cti:checkRole role="MeteringRole.ROLEID">
-			<cti:isPropertyTrue property="operator.MeteringRole.IMPORTER_ENABLED">
+			<cti:checkProperty property="operator.MeteringRole.IMPORTER_ENABLED">
 				<tags:sectionLink>
 		        	<a href="/spring/amr/bulkimporter/home">Bulk Importer</a>
 		        </tags:sectionLink>
-	        </cti:isPropertyTrue>
+	        </cti:checkProperty>
         </cti:checkRole>
         <cti:checkMultiRole roles="operator.MeteringRole.ROLEID,application.BillingRole.ROLEID,SchedulerRole.ROLEID,CommanderRole.ROLEID">
 			<tags:sectionLink>
@@ -116,9 +116,11 @@
 	        </tags:sectionLink>
         </cti:checkMultiRole>
         
+        <cti:checkRole role="operator.DeviceActionsRole.ROLEID">
         <tags:sectionLink>
             <a href="<c:url value="/spring/bulk/bulkHome"/>">Bulk Operations</a>
         </tags:sectionLink>
+        </cti:checkRole>
         
 	</tags:operationSection>
 

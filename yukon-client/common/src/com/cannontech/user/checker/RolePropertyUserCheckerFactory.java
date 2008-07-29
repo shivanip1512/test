@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Required;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.util.ReflectivePropertySearcher;
 
 /**
  * This is both a base class and a factory for OptionPropertyCheckers.
@@ -19,7 +18,6 @@ import com.cannontech.util.ReflectivePropertySearcher;
 public class RolePropertyUserCheckerFactory {
     private static final UserCheckerBase nullChecker = new NullUserChecker();
     private AuthDao authDao;
-    private ReflectivePropertySearcher propertySearcher;
     private RoleAndPropertyDescriptionService descriptionService;
     
     /**
@@ -29,6 +27,11 @@ public class RolePropertyUserCheckerFactory {
      * @return an UserChecker
      */
     public UserChecker createRoleAndPropertyDescriptionChecker(final String descriptions) {
+        
+        if (StringUtils.isBlank(descriptions)) {
+            return nullChecker;
+        }
+        
         UserChecker checker = new UserCheckerBase() {
             @Override
             public boolean check(LiteYukonUser user) {
@@ -38,47 +41,6 @@ public class RolePropertyUserCheckerFactory {
                     descriptionService.checkIfAtLeaseOneExists(descriptions, user);
                 return isValidCheck;
             }
-        };
-        return checker;
-    }
-    
-    /**
-     * Create a UserChecker that will return true if the
-     * user has the indicated role.
-     * @param role to base the UserChecker on
-     * @return an UserChecker 
-     */
-    public UserChecker createRoleChecker(String role) {
-        if (StringUtils.isBlank(role)) {
-            return nullChecker;
-        }
-        final int roleId = propertySearcher.getIntForName(role);
-        UserCheckerBase checker = new UserCheckerBase() {
-            @Override
-            public boolean check(LiteYukonUser user) {
-                if (user == null) {
-                    return false;
-                }
-                return authDao.getRole(user,roleId) != null;
-            };
-        };
-        return checker;
-    }
-    
-    /**
-     * Create an UserChecker that will return true if the
-     * user has the indicated role property and it is set to true.
-     * @param property to base the UserChecker on
-     * @return an UserChecker
-     */
-    public UserChecker createPropertyChecker(String property) {
-        final int propertyId = propertySearcher.getIntForName(property);
-        
-        UserCheckerBase checker = new UserCheckerBase() {
-            @Override
-            public boolean check(LiteYukonUser user) {
-                return getBooleanForRoleProperty(propertyId, user);
-            };
         };
         return checker;
     }
@@ -100,24 +62,6 @@ public class RolePropertyUserCheckerFactory {
         return checker;
     }
     
-    /**
-     * Create an UserChecker that will return false if the
-     * user has the indicated role property and it is set to true.
-     * @param property to base the UserChecker on
-     * @return an UserChecker
-     */
-    public UserChecker createFalsePropertyChecker(String property) {
-        final int propertyId = propertySearcher.getIntForName(property);
-        
-        UserCheckerBase checker = new UserCheckerBase() {
-            @Override
-            public boolean check(LiteYukonUser user) {
-                return !getBooleanForRoleProperty(propertyId, user);
-            };
-        };
-        return checker;
-    }
-    
     private boolean getBooleanForRoleProperty(final int propertyId, LiteYukonUser user) {
         if (user == null) {
             return false;
@@ -133,10 +77,7 @@ public class RolePropertyUserCheckerFactory {
         this.authDao = authDao;
     }
 
-    public void setPropertySearcher(ReflectivePropertySearcher propertySearcher) {
-        this.propertySearcher = propertySearcher;
-    }
-    
+    @Required
     public void setDescriptionService(
             RoleAndPropertyDescriptionService descriptionService) {
         this.descriptionService = descriptionService;
