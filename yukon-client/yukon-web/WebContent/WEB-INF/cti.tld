@@ -155,9 +155,14 @@
   	<tag-class>com.cannontech.web.taglib.CheckMultiProperty</tag-class>
   	<attribute>
   		<name>propertyid</name>
-  		<required>true</required>
+  		<required>false</required>
   		<rtexprvalue>true</rtexprvalue>
   	</attribute>
+    <attribute>
+        <name>property</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
   </tag>
   
    <tag>
