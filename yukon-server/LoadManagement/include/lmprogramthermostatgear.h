@@ -29,8 +29,6 @@ class CtiLMProgramThermoStatGear : public CtiLMProgramDirectGear
 
 public:
 
-RWDECLARE_COLLECTABLE( CtiLMProgramThermoStatGear )
-
     CtiLMProgramThermoStatGear();
     CtiLMProgramThermoStatGear(RWDBReader& rdr);
     CtiLMProgramThermoStatGear(const CtiLMProgramThermoStatGear& thermogear);
@@ -52,11 +50,11 @@ RWDECLARE_COLLECTABLE( CtiLMProgramThermoStatGear )
     LONG getRestoreTime() const;
     float getRampRate() const;
 
-    CtiLMProgramThermoStatGear* replicate() const;
+    virtual CtiLMProgramDirectGear* replicate() const;
 
     //Members inherited from RWCollectable
-    void restoreGuts(RWvistream& );
-    void saveGuts(RWvostream& ) const;
+    //void restoreGuts(RWvistream& );
+    //void saveGuts(RWvostream& ) const;
 
     CtiLMProgramThermoStatGear& operator=(const CtiLMProgramThermoStatGear& right);
 

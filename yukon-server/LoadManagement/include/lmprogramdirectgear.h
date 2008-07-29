@@ -85,7 +85,7 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirectGear )
     CtiLMProgramDirectGear& setRampOutPercent(LONG outpercent);
     CtiLMProgramDirectGear& setKWReduction(DOUBLE kw);
 
-    CtiLMProgramDirectGear* replicate() const;
+    virtual CtiLMProgramDirectGear* replicate() const;
 
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );

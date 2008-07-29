@@ -25,8 +25,6 @@
 
 extern ULONG _LM_DEBUG;
 
-RWDEFINE_COLLECTABLE( CtiLMProgramThermoStatGear, CTILMPROGRAMTHERMOSTATGEAR_ID )
-
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
@@ -113,7 +111,7 @@ float CtiLMProgramThermoStatGear::getRampRate() const
     
     Restore self's state from the given stream
 --------------------------------------------------------------------------*/
-void CtiLMProgramThermoStatGear::restoreGuts(RWvistream& istrm)
+/*void CtiLMProgramThermoStatGear::restoreGuts(RWvistream& istrm)
 {
     CtiLMProgramDirectGear::restoreGuts( istrm );
 
@@ -131,14 +129,14 @@ void CtiLMProgramThermoStatGear::restoreGuts(RWvistream& istrm)
     >> _valuete
     >> _valuetf
     >> _rampRate;
-}
+}*/
 
 /*---------------------------------------------------------------------------
     saveGuts
     
     Save self's state onto the given stream
 ---------------------------------------------------------------------------*/
-void CtiLMProgramThermoStatGear::saveGuts(RWvostream& ostrm ) const  
+/*void CtiLMProgramThermoStatGear::saveGuts(RWvostream& ostrm ) const  
 {
     CtiLMProgramDirectGear::saveGuts( ostrm );
 
@@ -158,7 +156,7 @@ void CtiLMProgramThermoStatGear::saveGuts(RWvostream& ostrm ) const
     << _rampRate;
 
     return;
-}
+}*/
 
 /*---------------------------------------------------------------------------
     operator=
@@ -211,7 +209,7 @@ int CtiLMProgramThermoStatGear::operator!=(const CtiLMProgramThermoStatGear& rig
     
     Restores self's operation fields
 ---------------------------------------------------------------------------*/
-CtiLMProgramThermoStatGear* CtiLMProgramThermoStatGear::replicate() const
+CtiLMProgramDirectGear* CtiLMProgramThermoStatGear::replicate() const
 {
     return(CTIDBG_new CtiLMProgramThermoStatGear(*this));
 }
