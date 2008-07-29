@@ -6,28 +6,36 @@ var errorHighlight = new Date(); //this is to indicate when is the last error hi
 // Method to add fields to the selected fields select input
 function addToSelected(){
 	
-	var fields = $F('availableFields');
+	var field = $F('availableFields');
 	var selectedFields = $('selectedFields');
-	
-	for(var i = 0;i < fields.length; i++){
-		var tempOption = document.createElement('option');
-		tempOption.text = fields[i];
-		tempOption.setAttribute("format","");
-        tempOption.setAttribute("readingType", "ELECTRIC");
-		tempOption.setAttribute("maxLength","0");
-        tempOption.setAttribute("padChar"," ");
-        tempOption.setAttribute("padSide","none");
-		
-		// IE hack
-		try {
-			selectedFields.add(tempOption, null);
-		}
-		catch(ex){
-			selectedFields.add(tempOption);
-		}
-	}
-	
-	availableFieldsChanged();
+    
+    var newOpt = document.createElement('option');
+    newOpt.setAttribute('value', field);
+    
+    newOpt.setAttribute("format","");
+    if(field.include('timestamp')) {
+        newOpt.setAttribute("format","MM/dd/yyyy");
+    } else if (field.include('reading')) {
+        if (field.include('Demand')) {
+            newOpt.setAttribute("format","##0.00");
+        } else if (field.include('Consumption')) {
+            newOpt.setAttribute("format","#####");
+        }
+    }
+    newOpt.setAttribute("readingType", "ELECTRIC");
+	newOpt.setAttribute("maxLength","0");
+    newOpt.setAttribute("padChar"," ");
+    newOpt.setAttribute("padSide","none");
+    newOpt.setAttribute("selected","selected");
+    newOpt.appendChild(document.createTextNode(field));
+    selectedFields.appendChild(newOpt);
+    
+    $('upArrowButton').disabled = false;
+    
+    // move down to newly added item, just makes IE sad though =~(
+    selectedFields.selectedIndex = selectedFields.options.length - 1;
+    
+	selectedFieldsChanged();
 }
 
 // Method to remove fields from the selected fields select input
@@ -44,29 +52,17 @@ function removeFromSelected(){
 	selectedFieldsChanged();
 }
 
-function availableFieldsChanged() {
-
-	var availableFields = $('availableFields');
-
-	// Enable/Disable right arrow
-	var selectedAvailableFields = $F(availableFields);
-	if(selectedAvailableFields.length > 0) {
-		$('rightArrowButton').disabled = false;
-	} else {
-		$('rightArrowButton').disabled = true;
-	}
-	
-	updatePreview();
-} 
-
 function selectedFieldsChanged(){
 
 	var selectedFields = $('selectedFields');
 
 	// Enable/Disable left arrow
 	var selectedSelectedFields = $F(selectedFields);
+    
+    
+    
 	if(selectedSelectedFields.length > 0) {
-		$('leftArrowButton').disabled = false;
+		$('removeButton').disabled = false;
 		
 		// Enable/Disable up arrow
 		if(selectedFields.selectedIndex == 0) {
@@ -81,56 +77,71 @@ function selectedFieldsChanged(){
 		} else {
 			$('downArrowButton').disabled = false;
 		}
-
-		// Show format ui if applicable
-		if(selectedSelectedFields.length == 1) {
-			var option = selectedFields.options[selectedFields.selectedIndex];
-			
-            // Checks to see if the format is reading
-			var valueDiv = $("valueFormatDiv");
-			if(option.text.include('reading')) {
-				valueDiv.style.display = "block";
-				updateReadingFormatFields(option);
-			} else {
-				valueDiv.style.display = "none";
-			}
-
-            // Checks to see if the format is timestamp
-			var timestampDiv = $("timestampFormatDiv");
-            if(option.text.include('timestamp')) {
-				timestampDiv.style.display = "block";
-                updateTimestampFormatFields(timestampDiv, option);
-			} else {
-				timestampDiv.style.display = "none";
-			}
-
-            // Checks to see if the format is plain text
-			var plainTextDiv = $("plainTextDiv");
-            if(option.text == 'Plain Text') {
-				plainTextDiv.style.display = "block";
-                updatePlainTextFormatFields(plainTextDiv, option);
-			} else {
-				plainTextDiv.style.display = "none";
-			}
-
-            // Checks to see if it is non of the above cases
-            var genericFormatDiv = $("genericFormatDiv");
-            if(option.text.include('reading') || 
-               option.text.include('timestamp') ||
-               option.text == 'Plain Text'){
-               
-                genericFormatDiv.style.display = "none";
-            } else {
-				genericFormatDiv.style.display = "block";
-                updateGenericFormatFields(genericFormatDiv, option);
-            }
+        
+		// Show format ui
+		var option = selectedFields.options[selectedFields.selectedIndex];
+		
+        // Checks to see if the format is reading
+		var valueDiv = $("valueFormatDiv");
+		if(option.text.include('reading')) {
+			valueDiv.style.display = "block";
+			updateReadingFormatFields(option);
+		} else {
+			valueDiv.style.display = "none";
 		}
+
+        // Checks to see if the format is timestamp
+		var timestampDiv = $("timestampFormatDiv");
+        if(option.text.include('timestamp')) {
+			timestampDiv.style.display = "block";
+            updateTimestampFormatFields(timestampDiv, option);
+		} else {
+			timestampDiv.style.display = "none";
+		}
+
+        // Checks to see if the format is plain text
+		var plainTextDiv = $("plainTextDiv");
+        if(option.text == 'Plain Text') {
+			plainTextDiv.style.display = "block";
+            updatePlainTextFormatFields(plainTextDiv, option);
+		} else {
+			plainTextDiv.style.display = "none";
+		}
+
+        // Checks to see if it is non of the above cases
+        var genericFormatDiv = $("genericFormatDiv");
+        if(option.text.include('reading') || 
+           option.text.include('timestamp') ||
+           option.text == 'Plain Text'){
+           
+            genericFormatDiv.style.display = "none";
+        } else {
+			genericFormatDiv.style.display = "block";
+            updateGenericFormatFields(genericFormatDiv, option);
+        }
 		
 	} else {
-		$('leftArrowButton').disabled = true;
+		$('removeButton').disabled = true;
 	}
 
 	updatePreview();
+}
+
+
+function addFieldButton() {
+
+    $('addFieldsDropDown').toggle();
+
+    if ($('addFieldsDropDown').visible()) {
+    
+        $('addButton').disabled = true;
+    
+    } else {
+    
+        $('addButton').disabled = false;
+        
+    }
+    
 }
 
 function saveButton(){
@@ -541,4 +552,7 @@ function updateGenericFormatFields(genericFormatDiv, option){
         $('genericPadChar').disabled = false;
         $('genericPadCharSelect').disabled = false;
     }
+}
+function toggleHelperPopup(id) {
+    $(id).toggle();
 }

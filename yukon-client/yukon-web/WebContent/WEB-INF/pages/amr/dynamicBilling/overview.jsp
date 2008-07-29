@@ -74,11 +74,13 @@ function unfreeze(){ //used to enable or disable buttons
 		  </td>
 		  
 		  <td width="100px" valign="top">
-			<input type="button" id="create" name="create" value="Create" onclick="createButton();"  > <br/>
-			<input type="button" id="edit" name="edit" value="Edit" onclick="editButton();" disabled="disabled" > <br />
-			<input type="button" id="copy" name="copy" value="Copy" onclick="copyButton();" disabled="disabled"> <br />
-			<input type="button" id="delete" name="delete" value="Delete" onclick="deleteButton();" disabled="disabled" > <br />
-		  </td>
+            <div style="padding-left:10px;">
+    			<input type="button" id="create" name="create" value="Create" onclick="createButton();"  style="width:100px;margin-bottom:10px;">
+    			<input type="button" id="edit" name="edit" value="Edit" onclick="editButton();" disabled="disabled" style="width:100px;margin-bottom:10px;">
+    			<input type="button" id="copy" name="copy" value="Copy" onclick="copyButton();" disabled="disabled" style="width:100px;margin-bottom:10px;">
+    			<input type="button" id="delete" name="delete" value="Delete" onclick="deleteButton();" disabled="disabled" style="width:100px;margin-bottom:10px;">
+		    </div>
+          </td>
 
 		</tr>
 		

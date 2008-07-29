@@ -425,9 +425,6 @@ div.widgetPopup {
 }
 
 #timestampHelper, #valueHelper {
-	top:325px;
-	left:50px;
-	width: 50%;
 	background-color:#FFFFCC;
 }
 
