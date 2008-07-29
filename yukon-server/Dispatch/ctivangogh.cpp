@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.188 $
-* DATE         :  $Date: 2008/07/17 20:32:55 $
+* REVISION     :  $Revision: 1.189 $
+* DATE         :  $Date: 2008/07/29 15:14:25 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -6530,9 +6530,9 @@ int CtiVanGogh::checkNumericReasonability(CtiPointDataMsg *pData, CtiMultiWrappe
 {
     int alarm = NORMAL;
     string text;
-    pair<DOUBLE, DOUBLE> limits = PointMgr.getReasonabilityLimits(pointNumeric->getPointID());
-    DOUBLE highLimit = limits.first;
-    DOUBLE lowLimit = limits.second;
+    CtiPointClientManager::ReasonabilityLimitStruct limits = PointMgr.getReasonabilityLimits(pointNumeric->getPointID());
+    DOUBLE highLimit = limits.highLimit;
+    DOUBLE lowLimit = limits.lowLimit;
 
     try
     {

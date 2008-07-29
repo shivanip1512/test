@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/mgr_ptclients.cpp-arc  $
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2008/07/17 20:26:39 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2008/07/29 15:14:25 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -661,12 +661,12 @@ void CtiPointClientManager::refreshReasonabilityLimits(LONG pntID, LONG paoID)
     }
 
     int pointid;
-    double highlimit, lowlimit;
+    ReasonabilityLimitStruct limitValues;
     while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
     {
-        rdr >> pointid >> highlimit >> lowlimit;
-
-        _reasonabilityLimits.insert(std::make_pair(pointid, std::make_pair(highlimit, lowlimit)));
+        rdr >> pointid >> limitValues.highLimit >> limitValues.lowLimit;
+        
+        _reasonabilityLimits.insert(std::make_pair(pointid, limitValues));
     }
 
     if((stop = stop.now()).seconds() - start.seconds() > 5 )
@@ -787,9 +787,11 @@ bool CtiPointClientManager::hasReasonabilityLimits(LONG pointid)
 
 //Returns pair<HighLimit, LowLimit>
 //returns pair<0, 0> if the limit is invalid.
-pair<DOUBLE, DOUBLE> CtiPointClientManager::getReasonabilityLimits(LONG pointID)
+CtiPointClientManager::ReasonabilityLimitStruct CtiPointClientManager::getReasonabilityLimits(LONG pointID)
 {
-    pair<DOUBLE, DOUBLE> retVal(0,0);
+    ReasonabilityLimitStruct retVal;
+    retVal.highLimit = 0;
+    retVal.lowLimit = 0;
     coll_type::reader_lock_guard_t guard(getLock());
 
     if(!_reasonabilityLimits.empty())

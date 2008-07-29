@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/mgr_ptclients.h-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2008/07/17 20:26:39 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2008/07/29 15:14:25 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -44,10 +44,16 @@ class CtiPointRegistrationMsg;
 
 class IM_EX_CTIVANGOGH CtiPointClientManager : public CtiPointManager
 {
+public:
+    typedef struct ReasonabilityLimitStruct
+    {
+        double highLimit;
+        double lowLimit;
+    };
 private:
    typedef map<LONG, CtiPointWPtr>     PointMap;
    typedef map<LONG, PointMap>         ConnectionMgrPointMap;
-   typedef map<LONG, std::pair<double, double> > ReasonabilityLimitMap;
+   typedef map<LONG, ReasonabilityLimitStruct > ReasonabilityLimitMap;
    typedef set<CtiTablePointLimit>     PointLimitSet;
    typedef ConnectionMgrPointMap::iterator ConMgrPtMapIter;
    typedef map<LONG, CtiPointConnection> PointConnectionMap;
@@ -89,7 +95,7 @@ public:
    void RefreshDynamicData(LONG id = 0);
 
    bool hasReasonabilityLimits(LONG pointid);
-   std::pair<DOUBLE, DOUBLE> getReasonabilityLimits(LONG pointID);
+   ReasonabilityLimitStruct getReasonabilityLimits(LONG pointID);
    CtiTablePointLimit getPointLimit(LONG pointID, LONG limitNum);
 
    PointMap getRegistrationMap(LONG mgrID);
