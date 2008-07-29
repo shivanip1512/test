@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_alarm.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2008/07/14 14:49:55 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2008/07/29 14:49:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -337,7 +337,7 @@ void CtiTablePointAlarming::getSQL(string &sql, LONG pointID, LONG paoID)
    }
    else
    {
-       sql += " where alarmstates != ''";
+       sql += " where alarmstates != '\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001'";
    }
 
    if(paoID != 0)
