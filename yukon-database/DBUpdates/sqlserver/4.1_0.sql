@@ -924,6 +924,13 @@ INSERT INTO YukonRoleProperty VALUES (-21306,-213,'Locate Route','true','Control
 INSERT INTO YukonRoleProperty VALUES (-21307,-213,'Mass Delete','true','Controls access to mass delete devices action'); 
 /* End YUK-6220 */
 
+/* Start YUK-5870 */
+INSERT INTO Command VALUES (-144, 'putconfig emetcon channel 1 ied input 1', 'Configure 430 kW LP Collection', 'MCT-430A'); 
+
+INSERT INTO DeviceTypeCommand VALUES (-725, -144, 'MCT-430A', 30, 'N', -1); 
+INSERT INTO DeviceTypeCommand VALUES (-726, -144, 'MCT-430S4', 30, 'N', -1); 
+INSERT INTO DeviceTypeCommand VALUES (-727, -144, 'MCT-430SL', 30, 'N', -1); 
+/* End YUK-5870 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
