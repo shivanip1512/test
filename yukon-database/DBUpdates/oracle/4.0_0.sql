@@ -658,78 +658,6 @@ alter table CCSUBSTATIONSUBBUSLIST
       references CAPCONTROLSUBSTATIONBUS (SubstationBusID);
 /* End YUK-4707 */
 
-create or replace view CCINVENTORY_VIEW(Region, SubName, FeederName, subId, substationid, fdrId, CBCName, cbcId, capbankname, bankId, CapBankSize, Sequence, ControlStatus, SWMfgr, SWType, ControlType, Protocol, IPADDRESS, SlaveAddress, LAT, LON, DriveDirection, OpCenter, TA) as
-SELECT yp4.paoname AS Region, yp3.PAOName AS SubName, yp2.PAOName AS FeederName, yp3.PAObjectID AS subId, ssl.substationid AS substationid, yp2.PAObjectID AS fdrId, 
-                      yp.PAOName AS CBCName, yp.PAObjectID AS cbcId, yp1.PAOName AS capBankName, yp1.PAObjectID AS bankId, cb.BANKSIZE AS CapBankSize, 
-                      fb.ControlOrder AS Sequence, dcb.ControlStatus, cb.SwitchManufacture AS SWMfgr, cb.TypeOfSwitch AS SWType, 
-                      cb.OPERATIONALSTATE AS ControlType, cb.ControllerType AS Protocol, pts.IPADDRESS, da.SlaveAddress, 
-                                capa.latitude AS LAT, capa.longitude AS LON, capa.drivedirections AS DriveDirection, 
-                                cb.maplocationid AS OpCenter, capa.maintenanceareaid AS TA
-FROM CAPBANK cb INNER JOIN
-                      YukonPAObject yp ON yp.PAObjectID = cb.CONTROLDEVICEID INNER JOIN
-                      YukonPAObject yp1 ON yp1.PAObjectID = cb.DEVICEID INNER JOIN
-                      DynamicCCCapBank dcb ON dcb.CapBankID = yp1.PAObjectID INNER JOIN
-                      STATE s ON s.STATEGROUPID = 3 AND dcb.ControlStatus = s.RAWSTATE INNER JOIN
-                      CCFeederBankList fb ON fb.DeviceID = cb.DEVICEID INNER JOIN
-                      YukonPAObject yp2 ON yp2.PAObjectID = fb.FeederID INNER JOIN
-                      CCFeederSubAssignment sf ON fb.FeederID = sf.FeederID INNER JOIN
-                      YukonPAObject yp3 ON yp3.PAObjectID = sf.SubStationBusID INNER JOIN
-                      ccsubstationsubbuslist ssl on ssl.substationbusid = yp3.paobjectid INNER JOIN
-                      ccsubareaassignment sa on sa.substationbusid = ssl.substationid INNER JOIN
-                      yukonpaobject yp4 on yp4.paobjectid = sa.areaid INNER JOIN
-                      DeviceDirectCommSettings ddcs ON ddcs.DEVICEID = cb.CONTROLDEVICEID INNER JOIN
-                      DeviceAddress da ON da.DeviceID = cb.CONTROLDEVICEID INNER JOIN
-                      PORTTERMINALSERVER pts ON pts.PORTID = ddcs.PORTID INNER JOIN
-                      DeviceCBC cbc ON cbc.DEVICEID = cb.CONTROLDEVICEID INNER JOIN
-                      capbankadditional capa on capa.deviceid = cb.deviceid;
-
-
-create or replace view CCOPERATIONS_VIEW(cbcName, capbankname, opTime, operation, confTime, confStatus, feederName, feederId, subName, subBusId, substationid, region, BANKSIZE, protocol, ipAddress, serialNum, SlaveAddress, kvarAfter, kvarChange, kvarBefore) as
-SELECT 
-      yp3.PAOName cbcName, yp.PAOName capbankname, el.DateTime opTime, el.Text operation, 
-      el2.DateTime confTime, el2.Text confStatus, yp1.PAOName feederName, yp1.PAObjectID feederId, 
-        yp2.PAOName subName, yp2.PAObjectID subBusId, ssl.substationid substationid, yp4.paoname region, cb.BANKSIZE, 
-        cb.ControllerType protocol, p.Value ipAddress, cbc.SERIALNUMBER serialNum, da.SlaveAddress, 
-        el2.kvarAfter, el2.kvarChange, el2.kvarBefore
-FROM   
-      (SELECT op.LogID oid, MIN(aaa.confid) cid FROM
-              (SELECT LogID, PointID FROM CCEventLog 
-        WHERE Text LIKE '%Close sent%' OR Text LIKE '%Open sent%') op
-        LEFT OUTER JOIN 
-        (SELECT el.LogID opid, MIN(el2.LogID) confid 
-        FROM CCEventLog el INNER JOIN CCEventLog el2 ON el2.PointID = el.PointID AND el.LogID < el2.LogID 
-        LEFT OUTER JOIN
-        (SELECT a.LogID aid, MIN(b.LogID) next_aid FROM 
-        CCEventLog a INNER JOIN CCEventLog b ON a.PointID = b.PointID AND a.LogID < b.LogID 
-        WHERE (a.Text LIKE '%Close sent,%' OR a.Text LIKE '%Open sent,%') 
-        AND (b.Text LIKE '%Close sent,%' OR b.Text LIKE '%Open sent,%')
-        GROUP BY a.LogID) el3 ON el3.aid = el.LogID 
-      WHERE (el.Text LIKE '%Close sent,%' OR el.Text LIKE '%Open sent,%') 
-        AND (el2.Text LIKE 'Var: %') AND (el2.LogID < el3.next_aid) 
-      OR (el.Text LIKE '%Close sent,%' OR el.Text LIKE '%Open sent,%') 
-        AND (el2.Text LIKE 'Var: %') AND (el3.next_aid IS NULL)
-        GROUP BY el.LogID)  aaa ON op.LogID = aaa.opid
-GROUP BY op.LogID) OpConf INNER JOIN
-        CCEventLog el ON el.LogID = OpConf.oid LEFT OUTER JOIN
-        CCEventLog el2 ON el2.LogID = OpConf.cid INNER JOIN
-        POINT ON POINT.POINTID = el.PointID INNER JOIN
-        DynamicCCCapBank ON DynamicCCCapBank.CapBankID = POINT.PAObjectID INNER JOIN
-        YukonPAObject yp ON yp.PAObjectID = DynamicCCCapBank.CapBankID INNER JOIN
-        YukonPAObject yp1 ON yp1.PAObjectID = el.FeederID INNER JOIN
-        YukonPAObject yp2 ON yp2.PAObjectID = el.SubID INNER JOIN
-        CAPBANK cb ON cb.DEVICEID = DynamicCCCapBank.CapBankID LEFT OUTER JOIN
-        DeviceDirectCommSettings ddcs ON ddcs.DEVICEID = cb.CONTROLDEVICEID LEFT OUTER JOIN
-        DeviceAddress da ON da.DeviceID = cb.CONTROLDEVICEID INNER JOIN
-        YukonPAObject yp3 ON yp3.PAObjectID = cb.CONTROLDEVICEID LEFT OUTER JOIN
-        DeviceCBC cbc ON cbc.DEVICEID = cb.CONTROLDEVICEID LEFT OUTER JOIN
-        (SELECT EntryID, PAObjectID, Owner, InfoKey, Value, UpdateTime
-        FROM DynamicPAOInfo WHERE (InfoKey LIKE '%udp ip%')) 
-        p ON p.PAObjectID = cb.CONTROLDEVICEID LEFT OUTER JOIN
-        ccsubstationsubbuslist ssl on ssl.substationbusid = el.subid  LEFT OUTER JOIN
-        ccsubareaassignment csa on csa.substationbusid = ssl.substationid left outer join 
-        YukonPAObject yp4 ON yp4.paobjectid = csa.areaid;
-
-
 /* Start YUK-4730 */
 create table JOB  (
    JobID                INTEGER                         not null,
@@ -1946,56 +1874,6 @@ LEFT OUTER JOIN (SELECT EntryId, PAObjectId, Owner, InfoKey, Value, UpdateTime
 LEFT OUTER JOIN DeviceCBC CBC ON CBC.DeviceId = CB.ControlDeviceId 
 LEFT OUTER JOIN CapBankAdditional CAPA ON CAPA.DeviceId = CB.DeviceId
 LEFT OUTER JOIN DynamicCCTwoWayCBC DTWC ON CB.ControlDeviceId = DTWC.DeviceId;
-
-/*==============================================================*/
-/* View: CCOperations_View                                      */
-/*==============================================================*/
-create or replace view CCOperations_View as
-SELECT YP3.PAOName AS CBCName, YP.PAOName AS CapBankName, EL.DateTime AS OpTime, 
-       EL.Text AS Operation, EL2.DateTime AS ConfTime, EL2.Text AS ConfStatus, 
-       YP1.PAOName AS FeederName, YP1.PAObjectId AS FeederId, YP2.PAOName AS SubBusName, 
-       YP2.PAObjectId AS SubBusId, YP5.PAOName AS SubstationName, YP5.PAObjectId AS SubstationId, 
-       YP4.PAOName AS Region, YP4.PAObjectId AS AreaId, CB.BankSize, CB.ControllerType, 
-       EL.AdditionalInfo AS IPAddress, CBC.SerialNumber AS SerialNum, DA.SlaveAddress, 
-       EL2.KvarAfter, EL2.KvarChange, EL2.KvarBefore
-FROM (SELECT OP.LogId AS OId, MIN(aaa.confid) AS CId 
-      FROM (SELECT LogId, PointId 
-            FROM CCEventLog 
-            WHERE Text LIKE '%Close sent%' OR Text LIKE '%Open sent%') OP
-      LEFT OUTER JOIN (SELECT EL.LogId AS OpId, MIN(el2.LogID) AS ConfId 
-                       FROM CCEventLog EL 
-                       INNER JOIN CCEventLog EL2 ON EL2.PointId = EL.PointId AND EL.LogId < EL2.LogId 
-                       LEFT OUTER JOIN (SELECT A.LogId AS AId, MIN(b.LogID) AS NextAId 
-                                        FROM CCEventLog A 
-                                        INNER JOIN CCEventLog B ON A.PointId = B.PointId AND A.LogId < B.LogId 
-                                        WHERE (A.Text LIKE '%Close sent,%' OR A.Text LIKE '%Open sent,%') 
-                                        AND (B.Text LIKE '%Close sent,%' OR B.Text LIKE '%Open sent,%')
-                                        GROUP BY A.LogId) EL3 ON EL3.AId = EL.LogId 
-                       WHERE (EL.Text LIKE '%Close sent,%' OR EL.Text LIKE '%Open sent,%') 
-                       AND (EL2.Text LIKE 'Var: %') AND (EL2.LogId < EL3.NextAId) 
-                       OR (EL.Text LIKE '%Close sent,%' OR EL.Text LIKE '%Open sent,%') 
-                       AND (EL2.Text LIKE 'Var: %') AND (EL3.NextAId IS NULL)
-                       GROUP BY EL.LogId) AAA ON OP.LogId = AAA.OpId
-      GROUP BY OP.LogId) OpConf 
-      INNER JOIN CCEventLog EL ON EL.LogId = OpConf.OId 
-      LEFT OUTER JOIN CCEventLog EL2 ON EL2.LogId = OpConf.CId 
-      INNER JOIN Point ON Point.PointId = EL.PointId 
-      INNER JOIN DynamicCCCapBank ON DynamicCCCapBank.CapBankId = Point.PAObjectId 
-      INNER JOIN YukonPAObject YP ON YP.PAObjectId = DynamicCCCapBank.CapBankId 
-      INNER JOIN YukonPAObject YP1 ON YP1.PAObjectId = EL.FeederId 
-      INNER JOIN YukonPAObject YP2 ON YP2.PAObjectId = EL.SubId 
-      INNER JOIN CapBank CB ON CB.DeviceId = DynamicCCCapBank.CapBankId 
-      LEFT OUTER JOIN DeviceDirectCommSettings DDCS ON DDCS.DeviceId = CB.ControlDeviceId 
-      LEFT OUTER JOIN DeviceAddress DA ON DA.DeviceId = CB.ControlDeviceId 
-      INNER JOIN YukonPAObject YP3 ON YP3.PAObjectId = CB.ControlDeviceId 
-      LEFT OUTER JOIN DeviceCBC CBC ON CBC.DeviceId = CB.ControlDeviceId 
-      LEFT OUTER JOIN (SELECT EntryId, PAObjectId, Owner, InfoKey, Value, UpdateTime
-                       FROM DynamicPAOInfo 
-                       WHERE (InfoKey LIKE '%udp ip%')) P ON P.PAObjectId = CB.ControlDeviceId 
-      LEFT OUTER JOIN CCSubstationSubbusList SSL ON SSL.SubstationBusId = EL.SubId  
-      LEFT OUTER JOIN YukonPAObject YP5 ON YP5.PAObjectId =  SSL.SubstationBusId 
-      LEFT OUTER JOIN CCSubAreaAssignment CSA ON CSA.SubstationBusId = SSL.SubstationId 
-      LEFT OUTER JOIN YukonPAObject YP4 ON YP4.PAObjectId = CSA.AreaId;
 /* End YUK-5630 */
 
 /* Start YUK-5403 */
