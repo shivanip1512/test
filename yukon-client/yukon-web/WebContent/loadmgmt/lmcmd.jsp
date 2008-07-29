@@ -827,23 +827,40 @@ pageContext.setAttribute("nowDate", nowStartOrStop);%>
 				<%= LCUtils.getProgramValueAt(prg, ProgramTableModel.PROGRAM_NAME, userContext) %>
 				</div>
               </td>
-<% if( ILCCmds.AREA_START_PROGS.equals(cmd) ) { %>
+              
+              
+              
+<% 
+    if( ILCCmds.AREA_START_PROGS.equals(cmd) ) {
+
+        java.util.List<LMProgramDirectGear> gearList = 
+                        (prg instanceof IGearProgram
+                            ? (java.util.List<LMProgramDirectGear>)((IGearProgram)prg).getDirectGearVector()
+                            : new java.util.Vector() );
+        
+%>
+
               <td width="34"> 
                 <div align="right" class="TableCell">
                 <select name="dblarray2">
-                <%
-					for( int j = 1; j <= 4; j++ )
-					{
-				%>				
-                  <option value="<%= j %>" <%= (j == 1 ? "selected" : "") %> > 
-	                  <%= j %>
+<%
+        for(LMProgramDirectGear gear : gearList) {
+%>				
+                  <option value="<%= gear.getGearNumber() %>"> 
+	                  <%= gear.getGearName() %>
 				  </option>
-                <%		
-					}
-				%>
+<%		
+        }
+%>
                 </select></div>			
               </td>
-<% } %>
+<%
+    }
+%>
+
+
+
+
               <td width="81">
                 <div class="TableCell" align="center"><font color="<%= LCUtils.getFgColor(prg) %>">
 				  <%= LCUtils.getProgramValueAt(prg, ProgramTableModel.CURRENT_STATUS, userContext) %>
@@ -917,23 +934,32 @@ pageContext.setAttribute("nowDate", nowStartOrStop);%>
 				<%= LCUtils.getProgramValueAt(prgBase, ProgramTableModel.PROGRAM_NAME, userContext) %>
 				</div>
               </td>
-<% if( ILCCmds.SC_START.equals(cmd) ) { %>
+<% 
+    if( ILCCmds.SC_START.equals(cmd) ) { 
+
+    	java.util.List<LMProgramDirectGear> gearList = 
+            (prgBase instanceof IGearProgram
+                ? (java.util.List<LMProgramDirectGear>)((IGearProgram)prgBase).getDirectGearVector()
+                : new java.util.Vector() );
+
+%>
               <td width="34"> 
                 <div align="right" class="TableCell">
                 <select name="dblarray2">
-                <%
-					for( int j = 1; j <= 4; j++ )
-					{
-				%>				
-                  <option value="<%= j %>" <%= (j == prg.getStartGear() ? "selected" : "") %> > 
-	                  <%= j %>
-				  </option>
-                <%		
-					}
-				%>
+<%
+        for(LMProgramDirectGear gear : gearList) {
+%>				
+                  <option value="<%= gear.getGearNumber() %>" <%= (gear.getGearNumber() == prg.getStartGear() ? "selected" : "") %> > 
+                      <%= gear.getGearName() %>
+                  </option>
+<%		
+        }
+%>
                 </select></div>			
               </td>
-<% } %>
+<% 
+    }
+%>
               <td width="61">
                 <div class="TableCell" align="center"><font color="<%= LCUtils.getFgColor(prgBase) %>">
 				  <%= LCUtils.getProgramValueAt(prgBase, ProgramTableModel.CURRENT_STATUS, userContext) %>
