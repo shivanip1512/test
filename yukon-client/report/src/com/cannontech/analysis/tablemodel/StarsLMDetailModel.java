@@ -21,7 +21,7 @@ import com.cannontech.database.SqlUtils;
  * Created on May 20, 2005
  * @author snebben
  */
-public class StarsLMDetailModel extends ReportModelBase
+public class StarsLMDetailModel extends ReportModelBase<StarsLMDetail>
 {
 	/** Number of columns */
 	protected final int NUMBER_COLUMNS = 11;
@@ -85,8 +85,8 @@ public class StarsLMDetailModel extends ReportModelBase
 	        {
 			    if( getOrderBy() == ORDER_BY_STATE)
 			    {
-			        thisStrVal = DaoFactory.getYukonListDao().getYukonListName(((StarsLMDetail)o1).getEnrollStatus().intValue());
-					anotherStrVal = DaoFactory.getYukonListDao().getYukonListName(((StarsLMDetail)o2).getEnrollStatus().intValue());
+			        thisStrVal = DaoFactory.getYukonListDao().getYukonListName(o1.getEnrollStatus().intValue());
+					anotherStrVal = DaoFactory.getYukonListDao().getYukonListName(o2.getEnrollStatus().intValue());
 					if (thisStrVal.equalsIgnoreCase(anotherStrVal))
 					    tempOrderBy = ORDER_BY_ACCOUNT_NUMBER;	//Need to order by accountNumber
 			    }
@@ -177,18 +177,21 @@ public class StarsLMDetailModel extends ReportModelBase
 				" HARD.LMHARDWARETYPEID, AB.KWCAPACITY, AC.CATEGORYID, LMCEB.ACTIONID, Grp.PAONAME " +
 				" FROM CUSTOMERACCOUNT CA, CONTACT CONT, CUSTOMER CUST, ACCOUNTSITE SITE, LMHARDWAREBASE HARD, " +
 				" INVENTORYBASE IB, APPLIANCEBASE AB, LMHARDWARECONFIGURATION LMHC, LMGROUP LMG, LMCUSTOMEREVENTBASE LMCEB, " +
-                " APPLIANCECATEGORY AC, YUKONPAOBJECT Grp " +
+                " APPLIANCECATEGORY AC, YUKONPAOBJECT Grp, ECTOACCOUNTMAPPING ETAM " +
 				" WHERE CA.CUSTOMERID = CUST.CUSTOMERID " +
 				" AND CUST.PRIMARYCONTACTID = CONT.CONTACTID " +
 				" AND CA.ACCOUNTSITEID = SITE.ACCOUNTSITEID " +
 				" AND HARD.INVENTORYID = IB.INVENTORYID " +
 				" AND IB.ACCOUNTID = CA.ACCOUNTID " +
+				" AND CA.ACCOUNTID = ETAM.ACCOUNTID " +
 				" AND LMHC.INVENTORYID = HARD.INVENTORYID " +
 				" AND LMHC.APPLIANCEID = AB.APPLIANCEID " +
 				" AND LMG.DEVICEID = LMHC.ADDRESSINGGROUPID " +
 				" AND AB.APPLIANCECATEGORYID = AC.APPLIANCECATEGORYID " +
                 " AND LMG.DEVICEID = Grp.PAOBJECTID " +
-				" AND LMCEB.EVENTID = (SELECT MAX(EVENTID) FROM LMHARDWAREEVENT LMHE WHERE LMHC.INVENTORYID = LMHE.INVENTORYID) ") ;
+				" AND LMCEB.EVENTID = (SELECT MAX(EVENTID) FROM LMHARDWAREEVENT LMHE WHERE LMHC.INVENTORYID = LMHE.INVENTORYID) " +
+				" AND ETAM.ENERGYCOMPANYID = " + this.getEnergyCompanyID() +
+				" AND LMG.DEVICEID != 0");
 		
 		return sql;
 	}
@@ -199,7 +202,6 @@ public class StarsLMDetailModel extends ReportModelBase
 		//Reset all objects, new data being collected!
 		setData(null);
 		
-		int rowCount = 0;
 		StringBuffer sql = buildSQLStatement();
 		CTILogger.info(sql.toString());
 		
@@ -320,7 +322,7 @@ public class StarsLMDetailModel extends ReportModelBase
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnTypes()
 	 */
-	public Class[] getColumnTypes()
+	public Class<?>[] getColumnTypes()
 	{
 		if( columnTypes == null)
 		{

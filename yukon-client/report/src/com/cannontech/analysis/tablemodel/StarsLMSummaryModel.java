@@ -23,7 +23,7 @@ import com.cannontech.database.SqlUtils;
  * Created on May 20, 2005
  * @author snebben
  */
-public class StarsLMSummaryModel extends ReportModelBase
+public class StarsLMSummaryModel extends ReportModelBase<StarsLMSummary>
 {
 	/** Number of columns */
 	protected final int NUMBER_COLUMNS = 6;
@@ -65,44 +65,44 @@ public class StarsLMSummaryModel extends ReportModelBase
 	private static final String ATT_ORDER_BY = "orderBy";
 	private static final String ATT_SHOW_CAPACITY = "showCapacity";
 
-	public Comparator lmSummaryComparator = new java.util.Comparator()
+	public Comparator<StarsLMSummary> lmSummaryComparator = new Comparator<StarsLMSummary>()
 	{
-		public int compare(Object o1, Object o2){
+		public int compare(StarsLMSummary o1, StarsLMSummary o2){
 		    int thisVal = -1;
 		    int anotherVal = -1;
 		    if( getOrderBy() == ORDER_BY_GROUP_CAPACITY)
 		    {
-		        thisVal = ((StarsLMSummary)o1).getGroupCapacity().intValue();
-				anotherVal = ((StarsLMSummary)o2).getGroupCapacity().intValue();
+		        thisVal = o1.getGroupCapacity().intValue();
+				anotherVal = o2.getGroupCapacity().intValue();
 		    }
 		    else if( getOrderBy() == ORDER_BY_RECEIVERS_COUNT)
 		    {
-		        thisVal = ((StarsLMSummary)o1).getNumberOfReceivers().intValue();
-				anotherVal = ((StarsLMSummary)o2).getNumberOfReceivers().intValue();
+		        thisVal = o1.getNumberOfReceivers().intValue();
+				anotherVal = o2.getNumberOfReceivers().intValue();
 		    }
 
 		    else if( getOrderBy() == ORDER_BY_RECEIVERS_OUT_OF_SERVICE)
 		    {
-		        thisVal = ((StarsLMSummary)o1).getNumberOfReceiversOutOfService().intValue();
-				anotherVal = ((StarsLMSummary)o2).getNumberOfReceiversOutOfService().intValue();
+		        thisVal = o1.getNumberOfReceiversOutOfService().intValue();
+				anotherVal = o2.getNumberOfReceiversOutOfService().intValue();
 		    }
 
 		    else if( getOrderBy() == ORDER_BY_ADJUSTED_CAPACITY)
 		    {
-		        thisVal = ((StarsLMSummary)o1).getAdjustedGroupCapacity().intValue();
-				anotherVal = ((StarsLMSummary)o2).getAdjustedGroupCapacity().intValue();
+		        thisVal = o1.getAdjustedGroupCapacity().intValue();
+				anotherVal = o2.getAdjustedGroupCapacity().intValue();
 		    }
 
 		    else if( getOrderBy() == ORDER_BY_RECEIVERS_TOTAL_CAPACITY)
 		    {
-		        thisVal = ((StarsLMSummary)o1).getTotalReceiversOutOfServiceCapacity().intValue();
-				anotherVal = ((StarsLMSummary)o2).getTotalReceiversOutOfServiceCapacity().intValue();
+		        thisVal = o1.getTotalReceiversOutOfServiceCapacity().intValue();
+				anotherVal = o2.getTotalReceiversOutOfServiceCapacity().intValue();
 		    }
 		    if ( getOrderBy() == ORDER_BY_GROUP_NAME ||
 		            thisVal == anotherVal)	//Sort by GroupName if other values are the same
 		    {
-		        String thisStrVal = ((StarsLMSummary)o1).getGroupName();
-		        String anotherStrVal = ((StarsLMSummary)o2).getGroupName();
+		        String thisStrVal = o1.getGroupName();
+		        String anotherStrVal = o2.getGroupName();
 		        return ( thisStrVal.compareToIgnoreCase(anotherStrVal));
 		    }
 			return ( thisVal<anotherVal ? -1 : (thisVal==anotherVal ? 0 : 1));
@@ -135,11 +135,14 @@ public class StarsLMSummaryModel extends ReportModelBase
 	public StringBuffer buildSQLStatement()
 	{
 		StringBuffer sql = new StringBuffer	("SELECT PAONAME, LMG.KWCAPACITY, SUM(AB.KWCAPACITY), COUNT(DISTINCT MANUFACTURERSERIALNUMBER), PAO.PAOBJECTID " +
-		        " FROM YUKONPAOBJECT PAO, LMGROUP LMG, LMHARDWARECONFIGURATION LMHC, APPLIANCEBASE AB, LMHARDWAREBASE LMHB " +
+		        " FROM YUKONPAOBJECT PAO, LMGROUP LMG, LMHARDWARECONFIGURATION LMHC, APPLIANCEBASE AB, LMHARDWAREBASE LMHB, ECTOINVENTORYMAPPING ETIM " +
 		        " WHERE PAO.PAOBJECTID = LMG.DEVICEID " +
 		        " AND LMHC.INVENTORYID = LMHB.INVENTORYID " +
+		        " AND LMHB.INVENTORYID = ETIM.INVENTORYID " + 
 		        " AND LMG.DEVICEID = LMHC.ADDRESSINGGROUPID " +
 		        " AND LMHC.APPLIANCEID = AB.APPLIANCEID " + 
+		        " AND ETIM.ENERGYCOMPANYID = " + this.getEnergyCompanyID() + 
+		        " AND PAO.PAOBJECTID != 0 " + 
 		        " GROUP BY PAONAME, LMG.KWCAPACITY, PAO.PAOBJECTID ");
 		
 		return sql;
@@ -150,9 +153,8 @@ public class StarsLMSummaryModel extends ReportModelBase
 	{
 		//Reset all objects, new data being collected!
 		setData(null);
-		HashMap tempDataMap = new HashMap();
+		Map<Integer, StarsLMSummary> tempDataMap = new HashMap<Integer, StarsLMSummary>();
 		
-		int rowCount = 0;
 		StringBuffer sql = buildSQLStatement();
 		CTILogger.info(sql.toString());
 		
@@ -195,11 +197,13 @@ public class StarsLMSummaryModel extends ReportModelBase
 				int actionID = -1; 
 				int capacity = 0;
 				sql = new StringBuffer("SELECT ADDRESSINGGROUPID, LMCEB.ACTIONID, KWCAPACITY " +
-				        " FROM LMHARDWAREEVENT LMHE, LMCUSTOMEREVENTBASE LMCEB, LMHARDWARECONFIGURATION LMHC, APPLIANCEBASE AB " +
+				        " FROM LMHARDWAREEVENT LMHE, LMCUSTOMEREVENTBASE LMCEB, LMHARDWARECONFIGURATION LMHC, APPLIANCEBASE AB, ECTOLMCUSTOMEREVENTMAPPING ETLCM " +
 				        " WHERE LMHE.EVENTID = (SELECT MAX(EVENTID) FROM LMHARDWAREEVENT LMHE2 WHERE LMHE.INVENTORYID = LMHE2.INVENTORYID) " + 
 				        " AND LMHE.EVENTID = LMCEB.EVENTID " +
+				        " AND LMCEB.EVENTID = ETLCM.EVENTID " +
 				        " AND LMHC.INVENTORYID = LMHE.INVENTORYID " + 
 				        " AND AB.APPLIANCEID = LMHC.APPLIANCEID " +
+				        " AND ETLCM.ENERGYCOMPANYID =  " + this.getEnergyCompanyID() +
 				        " ORDER BY ADDRESSINGGROUPID ");
 				
 				pstmt = conn.prepareStatement(sql.toString());
@@ -214,7 +218,7 @@ public class StarsLMSummaryModel extends ReportModelBase
 				    {
 				        if( previousPaoId > -1 ) //not the first time through
 				        {
-				            StarsLMSummary sum = (StarsLMSummary)tempDataMap.get(new Integer(previousPaoId));
+				            StarsLMSummary sum = tempDataMap.get(new Integer(previousPaoId));
 				            if (sum != null)
 				            {
 				                sum.setNumberOfReceiversOutOfService(new Integer(outOfServiceCount));
@@ -237,7 +241,7 @@ public class StarsLMSummaryModel extends ReportModelBase
 				//Save the last one!...but only if we had at least one entry in rset (hence, currentpaoId > default value 
 			    if( currentPaoId > -1)
 			    {
-		            StarsLMSummary sum = (StarsLMSummary)tempDataMap.get(new Integer(previousPaoId));
+		            StarsLMSummary sum = tempDataMap.get(new Integer(previousPaoId));
 		            if (sum != null)
 		            {
 		                sum.setNumberOfReceiversOutOfService(new Integer(outOfServiceCount));
@@ -249,10 +253,10 @@ public class StarsLMSummaryModel extends ReportModelBase
 			//Load the data field with the map values
 			if( !tempDataMap.isEmpty())
 			{
-			    Iterator iter = tempDataMap.entrySet().iterator();
+			    Iterator<Map.Entry<Integer, StarsLMSummary>> iter = tempDataMap.entrySet().iterator();
 				while( iter.hasNext())
 				{
-				    getData().add( ((Map.Entry)iter.next()).getValue());
+				    getData().add( iter.next().getValue());
 				}			    
 				//Order the records
 				Collections.sort(getData(), lmSummaryComparator);
@@ -328,7 +332,7 @@ public class StarsLMSummaryModel extends ReportModelBase
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnTypes()
 	 */
-	public Class[] getColumnTypes()
+	public Class<?>[] getColumnTypes()
 	{
 		if( columnTypes == null)
 		{
