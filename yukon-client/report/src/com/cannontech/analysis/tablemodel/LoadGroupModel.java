@@ -36,7 +36,7 @@ import com.cannontech.database.db.pao.LMControlHistory;
  *  String annualControl		- LMControlHistory.currentAnnualControl (in seconds)
  * @author snebben
  */
-public class LoadGroupModel extends ReportModelBase
+public class LoadGroupModel extends ReportModelBase<LoadGroupModel.TempLMControlHistory>
 {
 	/** Number of columns */
 	protected final int NUMBER_COLUMNS = 11;
@@ -70,8 +70,6 @@ public class LoadGroupModel extends ReportModelBase
 	/** A string for the title of the data */
 	private static String title = "LOAD GROUP ACCOUNTING";
 	
-	/** A holder for the most recent soe_Tag returned in the query resultset */
-	private int lastSoeTag = -1;
 	/**
 	 * A flag to show all ActiveRestore types
 	 * When true - Show everything
@@ -183,7 +181,6 @@ public class LoadGroupModel extends ReportModelBase
 				Integer seasonalTime = new Integer(rset.getInt(9));
 				Integer annualTime = new Integer(rset.getInt(10));
 				String activeRestore = rset.getString(11);
-                String soeTag = rset.getString(12);
                 String paoName = rset.getString(13);
 				
 				LMControlHistory lmControlHist = new LMControlHistory(ctrlHistID);
@@ -248,7 +245,7 @@ public class LoadGroupModel extends ReportModelBase
 					" FROM UserPaoPermission us, " +
 					LMProgramDirectGroup.TABLE_NAME + " DG " +
 					" WHERE us.PaoID = DG.LMGROUPDEVICEID " +
-                    " AND us.permission = " + Permission.LM_VISIBLE +
+                    " AND us.permission = '" + Permission.LM_VISIBLE + "'" +
 					" AND us.userID IN (SELECT DISTINCT ECLL.OPERATORLOGINID " +
 					" FROM ENERGYCOMPANYOPERATORLOGINLIST ECLL " +
 					" WHERE ECLL.ENERGYCOMPANYID = " + getEnergyCompanyID().intValue() + " ) )");					
@@ -259,7 +256,7 @@ public class LoadGroupModel extends ReportModelBase
 					" FROM UserPaoPermission us, " +
 					GenericMacro.TABLE_NAME + " GM " +
 					" WHERE US.PAOID = GM.OWNERID " +
-                    " AND us.permission = " + Permission.LM_VISIBLE +
+                    " AND us.permission = '" + Permission.LM_VISIBLE + "'" +
 					" AND GM.MACROTYPE = '" + MacroTypes.GROUP + "' " +  
 					" AND US.USERID IN (SELECT DISTINCT ECLL.OPERATORLOGINID " +
 					" FROM ENERGYCOMPANYOPERATORLOGINLIST ECLL " +
@@ -296,7 +293,6 @@ public class LoadGroupModel extends ReportModelBase
 		//Reset all objects, new data being collected!
 		setData(null);
 				
-		int rowCount = 0;
 		StringBuffer sql = buildSQLStatement();
 		CTILogger.info(sql.toString());
 		
@@ -413,7 +409,7 @@ public class LoadGroupModel extends ReportModelBase
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnTypes()
 	 */
-	public Class[] getColumnTypes()
+	public Class<?>[] getColumnTypes()
 	{
 		if( columnTypes == null)
 		{
