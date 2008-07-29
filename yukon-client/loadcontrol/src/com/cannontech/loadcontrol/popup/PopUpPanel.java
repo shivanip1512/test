@@ -119,7 +119,7 @@ public class PopUpPanel {
 						final ConstraintResponsePanel constrPanel = new ConstraintResponsePanel();
 						OkCancelDialog diag = new OkCancelDialog(
 							CtiUtilities.getParentFrame(thisPopup.getInvoker()),
-							"Program Constraint Violation",
+							"Results of Constraint Check",
 							true,
 							constrPanel );
 
@@ -215,7 +215,7 @@ public class PopUpPanel {
                     final ConstraintResponsePanel constrPanel = new ConstraintResponsePanel();
                     OkCancelDialog diag = new OkCancelDialog(
                         CtiUtilities.getParentFrame(thisPopup.getInvoker()),
-                        "Program Constraint Violation",
+                        "Results of Constraint Check",
                         true,
                         constrPanel );
 

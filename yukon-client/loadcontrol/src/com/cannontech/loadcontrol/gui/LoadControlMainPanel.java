@@ -359,7 +359,7 @@ private void showContScenWindow( final int panelMode )
 					final ConstraintResponsePanel constrPanel = new ConstraintResponsePanel();
 					OkCancelDialog diag = new OkCancelDialog(
 						CtiUtilities.getParentFrame(this),
-						"Program Constraint Violation",
+						"Results of Constraint Check",
 						true,
 						constrPanel );
 

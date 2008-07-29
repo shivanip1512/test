@@ -70,7 +70,7 @@ boolean isOverrideAllowed = lmSession.isOverrideAllowed(
               <tr>
 			  <td>
 				<div align="center" class="boldMsg"><br>
-				  Constraint Violation Override<br>
+				  Results of Constraint Check<br>
 				  Select the constraints you would like to override, or
 				  allow the constraints to be enforced
 				</div>
