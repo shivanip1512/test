@@ -535,18 +535,11 @@ public synchronized List<LiteTOUDay> getAllTOUDays()
 	}
 }
 
-public synchronized List<LiteGear> getAllGears()
-{
-
-	if (allGears != null)
-		return allGears;
-	else
-	{
-		allGears = new ArrayList<LiteGear>();
-		GearLoader gearLoader = new GearLoader(allGears, databaseAlias);
-		gearLoader.run();
-		return allGears;
-	}
+public synchronized List<LiteGear> getAllGears(){
+	allGears = new ArrayList<LiteGear>();
+	GearLoader gearLoader = new GearLoader(allGears, databaseAlias);
+	gearLoader.run();
+	return allGears;
 }
 
 public synchronized List<LiteCommand> getAllCommands() {
