@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.RoleDao;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.LiteYukonGroup;
@@ -159,14 +160,8 @@ public class RoleDaoImpl implements RoleDao
         throws CommandExecutionException, TransactionException {
         
         String oldVal = getRolePropValueGroup( group, rolePropertyID, null );
-        if (oldVal != null && oldVal.equals(newVal)) {
-            return false;
-        }
-        
-        if (newVal == null || newVal.length() < 1){
-            newVal = " ";
-        }
-        
+        SqlUtils.convertStringToDbValue(newVal);
+
         if (oldVal != null) {
             String sql = " UPDATE YukonGroupRole SET Value = ? "+
                          " WHERE GroupID = ? "+
