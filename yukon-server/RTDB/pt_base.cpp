@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/pt_base.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2008/06/30 15:24:29 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2008/07/29 14:25:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,7 +19,7 @@
 #include "logger.h"
 #include "rwutil.h"
 
-CtiTablePointAlarming CtiPointBase::_StaticAlarm = CtiTablePointAlarming(0);
+CtiTablePointAlarming CtiPointBase::_defaultAlarming = CtiTablePointAlarming(0);
 
 void IM_EX_PNTDB DefDynamicFactory(const CtiPointBase& pt)
 {
@@ -98,7 +98,7 @@ CtiTablePointAlarming& CtiPointBase::getAlarming()
 {
     if(_alarming == NULL)
     {
-        return _StaticAlarm;
+        return _defaultAlarming;
     }
     else
     {
