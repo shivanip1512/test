@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.189 $
-* DATE         :  $Date: 2008/07/29 15:14:25 $
+* REVISION     :  $Revision: 1.190 $
+* DATE         :  $Date: 2008/07/30 19:49:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3597,14 +3597,12 @@ void CtiVanGogh::updateRuntimeDispatchTable(bool force)
     {
         if(force || !(callCounter % UPDATERTDB_RATE) )    // Only chase the queue once per CONFRONT_RATE seconds.
         {
-            unsigned long delay = force ? 30000 : 2500;
-
-            CtiServerExclusion server_guard(_server_exclusion, delay);      // Get a lock on it.
             CtiTime start;
-            if(server_guard.isAcquired())
             {
-                PointMgr.storeDirtyRecords();
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << "Writing dispatch dynamic table. " << endl;
             }
+            PointMgr.storeDirtyRecords();
             CtiTime stop;
 
             {

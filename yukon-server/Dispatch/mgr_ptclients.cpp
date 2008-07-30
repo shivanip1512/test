@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/mgr_ptclients.cpp-arc  $
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2008/07/29 15:14:25 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2008/07/30 19:49:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -35,6 +35,8 @@
 #include "con_mgr_vg.h"
 #include "pointdefs.h"
 #include "resolvers.h"
+#include "tbl_ptdispatch.h"
+#include <list>
 
 using namespace std;
 
@@ -461,53 +463,58 @@ void CtiPointClientManager::scanForArchival(const CtiTime &Now, CtiFIFOQueue<Cti
 void CtiPointClientManager::storeDirtyRecords()
 {
     int count = 0;
+    std::list<CtiTablePointDispatch>           updateList;
+    std::list<CtiTablePointDispatch>::iterator updateListIter;
 
     {
+        coll_type::writer_lock_guard_t guard(getLock());
+        spiterator itr = Inherited::begin();
+        spiterator end = Inherited::end();
+
+        for( ;itr != end; itr++)
         {
-            string dyndisp("dyndisp");
-            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-            RWDBConnection conn = getConnection();
+            CtiPointSPtr pPt = itr->second;
 
-            conn.beginTransaction(dyndisp.c_str());
-
-            coll_type::writer_lock_guard_t guard(getLock());
-            spiterator itr = Inherited::begin();
-            spiterator end = Inherited::end();
-
-            for( ;itr != end; itr++)
+            try
             {
-                CtiPointSPtr pPt = itr->second;
+                CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)pPt->getDynamic();
 
-                try
+                if(pDyn != NULL && pDyn->getDispatch().isDirty())
                 {
-                    CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)pPt->getDynamic();
+                    UINT statictags = pDyn->getDispatch().getTags();
+                    pDyn->getDispatch().resetTags();                    // clear them all!
+                    pDyn->getDispatch().setTags(pPt->adjustStaticTags(statictags));   // make the static tags match...
 
-                    if(pDyn != NULL && pDyn->getDispatch().isDirty())
-                    {
-                        UINT statictags = pDyn->getDispatch().getTags();
-                        pDyn->getDispatch().resetTags();                    // clear them all!
-                        pDyn->getDispatch().setTags(pPt->adjustStaticTags(statictags));   // make the static tags match...
+                    updateList.push_back(pDyn->getDispatch());
+                    pDyn->getDispatch().resetDirty();
 
-                        count++;
-                        RWDBStatus dbstat = pDyn->getDispatch().Update(conn);
-
-                        if(dbstat.isValid())                        // We are in there.
-                        {
-                            pDyn->getDispatch().setUpdatedFlag(TRUE);       // Memory image is the boss now!
-                        }
-                    }
-                }
-                catch(...)
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    count++;
                 }
             }
-
-            conn.commitTransaction(dyndisp.c_str());
+            catch(...)
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+            }
         }
+    }
+
+    {
+        string dyndisp("dyndisp");
+        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+        RWDBConnection conn = getConnection();
+
+        conn.beginTransaction(dyndisp.c_str());
+
+        for(updateListIter = updateList.begin(); updateListIter != updateList.end(); updateListIter++)
+        {
+            updateListIter->Update(conn);
+        }
+        updateList.clear();
+
+        conn.commitTransaction(dyndisp.c_str());
     }
 
     if(count > 0 && gDispatchDebugLevel & DISPATCH_DEBUG_VERBOSE)
