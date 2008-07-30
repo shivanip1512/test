@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.220 $
-* DATE         :  $Date: 2008/07/21 20:38:26 $
+* REVISION     :  $Revision: 1.221 $
+* DATE         :  $Date: 2008/07/30 20:34:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3179,6 +3179,13 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                     }
                     else if( !status && nack2 )
                     {
+                        if( (OutMessage->EventCode & BWORD) &&
+                            (OutMessage->Buffer.BSt.IO & Cti::Protocol::Emetcon::IO_Read ) )
+                        {
+                            //  we did get NACKed, but is this technically true?
+                            status = NACK1;
+                        }
+
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " **** Checkpoint - repeaters expected but not heard **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
