@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.190 $
-* DATE         :  $Date: 2008/07/30 19:49:44 $
+* REVISION     :  $Revision: 1.191 $
+* DATE         :  $Date: 2008/07/30 20:10:58 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -6529,22 +6529,20 @@ int CtiVanGogh::checkNumericReasonability(CtiPointDataMsg *pData, CtiMultiWrappe
     int alarm = NORMAL;
     string text;
     CtiPointClientManager::ReasonabilityLimitStruct limits = PointMgr.getReasonabilityLimits(pointNumeric->getPointID());
-    DOUBLE highLimit = limits.highLimit;
-    DOUBLE lowLimit = limits.lowLimit;
 
     try
     {
 
-        if(highLimit != lowLimit &&       // They must be different.
-           highLimit >  lowLimit )
+        if(limits.highLimit != limits.lowLimit &&       // They must be different.
+           limits.highLimit >  limits.lowLimit )
         {
             // Evaluate High Limit
-            if(highLimit < MAX_HIGH_REASONABILITY)  // Is the reasonability reasonable?
+            if(limits.highLimit < MAX_HIGH_REASONABILITY)  // Is the reasonability reasonable?
             {
                 alarm = CtiTablePointAlarming::highReasonability;
                 double val = pData->getValue();
 
-                if(val > highLimit)
+                if(val > limits.highLimit)
                 {
                     pData->setValue( pDyn->getValue() );          // Value of the CtiPointDataMsg must be be modified.
                     pData->setQuality( UnreasonableQuality );
@@ -6553,7 +6551,7 @@ int CtiVanGogh::checkNumericReasonability(CtiPointDataMsg *pData, CtiMultiWrappe
                     {
                         {
                             char tstr[120];
-                            _snprintf(tstr, sizeof(tstr), "Reasonability Limit Exceeded High. %.3f > %.3f", val, highLimit);
+                            _snprintf(tstr, sizeof(tstr), "Reasonability Limit Exceeded High. %.3f > %.3f", val, limits.highLimit);
                             text = string(tstr);
                         }
 
@@ -6585,12 +6583,12 @@ int CtiVanGogh::checkNumericReasonability(CtiPointDataMsg *pData, CtiMultiWrappe
                 }
             }
 
-            if(lowLimit > MIN_LOW_REASONABILITY)  // Is the reasonability reasonable?
+            if(limits.lowLimit > MIN_LOW_REASONABILITY)  // Is the reasonability reasonable?
             {
                 alarm = CtiTablePointAlarming::lowReasonability;
                 double val = pData->getValue();
 
-                if(val < lowLimit)
+                if(val < limits.lowLimit)
                 {
                     pData->setValue( pDyn->getValue() );          // Value of the CtiPointDataMsg must be be modified.
                     pData->setQuality( UnreasonableQuality );
@@ -6599,7 +6597,7 @@ int CtiVanGogh::checkNumericReasonability(CtiPointDataMsg *pData, CtiMultiWrappe
                     {
                         {
                             char tstr[120];
-                            _snprintf(tstr, sizeof(tstr), "Reasonability Limit Exceeded Low. %.3f < %.3f", val, lowLimit);
+                            _snprintf(tstr, sizeof(tstr), "Reasonability Limit Exceeded Low. %.3f < %.3f", val, limits.lowLimit);
                             text = string(tstr);
                         }
 
