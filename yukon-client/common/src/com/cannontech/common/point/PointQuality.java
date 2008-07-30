@@ -20,7 +20,8 @@ public enum PointQuality {
     Overflow(OVERFLOW_QUALITY),
     Powerfail(POWERFAIL_QUALITY),
     Unreasonable(UNREASONABLE_QUALITY),
-    Constant(CONSTANT_QUALITY);
+    Constant(CONSTANT_QUALITY),
+    Estimated(ESTIMATED_QUALITY);
     
     private final int value;
 
