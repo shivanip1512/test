@@ -229,7 +229,7 @@
 					</c:when>
 					<c:otherwise>
 						<div class="sideMenuLink">					
-							<a href="CommandDevice.jsp?deviceID=${device.yukonID}&manual&sa205" class="Link1">
+							<a href="CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&sa205" class="Link1">
 								DCU-205 Serial
 							</a>
 						</div>
