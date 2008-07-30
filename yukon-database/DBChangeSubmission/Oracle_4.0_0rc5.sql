@@ -2,7 +2,7 @@
 /* This script must be run manually using the SQL tool and not the DBToolsFrame tool. */
 /* START SPECIAL BLOCK */
 /* Start YUK-6093 */
-ALTER TABLE DynamicCCCapBank ALTER COLUMN beforeVar VARCHAR(48) NOT NULL; 
-ALTER TABLE DynamicCCCapBank ALTER COLUMN afterVar VARCHAR(48) NOT NULL; 
-ALTER TABLE DynamicCCCapBank ALTER COLUMN changeVar VARCHAR(48) NOT NULL; 
+ALTER TABLE DynamicCCCapBank ALTER COLUMN beforeVar VARCHAR(48); 
+ALTER TABLE DynamicCCCapBank ALTER COLUMN afterVar VARCHAR(48); 
+ALTER TABLE DynamicCCCapBank ALTER COLUMN changeVar VARCHAR(48); 
 /* End YUK-6093 */
