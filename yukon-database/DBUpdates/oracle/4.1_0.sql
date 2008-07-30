@@ -539,7 +539,6 @@ INSERT INTO YukonRoleProperty VALUES(-1703, -8, 'System Default TimeZone', ' ', 
 /* End YUK-5923 */
 
 /* Start YUK-5904 */
-/* @start-block */
 INSERT INTO DeviceGroup (DeviceGroupId,GroupName,ParentDeviceGroupId,Permission,Type) 
 VALUES ((Select Max(DeviceGroupID)
          FROM DeviceGroup 
@@ -551,7 +550,6 @@ VALUES ((Select Max(DeviceGroupID)
          AND ParentDeviceGroupId = 12), 
         'NOEDIT_NOMOD',
         'METERS_DISABLED');
-/* @end-block */
 /* End YUK-5904 */
 
 /* Start YUK-5269 */
