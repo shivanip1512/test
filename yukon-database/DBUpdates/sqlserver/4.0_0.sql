@@ -1962,15 +1962,6 @@ go
 /* @start-block */
 if exists (select 1
             from  sysobjects
-           where  id = object_id('CCOperations_View')
-            and   type = 'V')
-   drop view CCOperations_View
-go
-/* @end-block */
-
-/* @start-block */
-if exists (select 1
-            from  sysobjects
            where  id = object_id('CCInventory_View')
             and   type = 'V')
    drop view CCInventory_View
