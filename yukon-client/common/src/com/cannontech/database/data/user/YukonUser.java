@@ -1,11 +1,16 @@
 package com.cannontech.database.data.user;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
+
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.editor.EditorPanel;
 import com.cannontech.common.util.NativeIntVector;
 import com.cannontech.core.authorization.dao.PaoPermissionDao;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.contact.Contact;
@@ -21,9 +26,16 @@ import com.cannontech.spring.YukonSpringHook;
  */
 public class YukonUser extends DBPersistent implements com.cannontech.database.db.CTIDbChange, EditorPanel, IYukonRoleContainer
 {	
-	private com.cannontech.database.db.user.YukonUser yukonUser;
+    private static final Logger log = YukonLogManager.getLogger(YukonUser.class);
+    private static final Integer[] immutableUserIds = new Integer[] {
+        -1, // Admin
+        -2, // Yukon
+        -100 // DefaultCTI
+    };
+    
+    private com.cannontech.database.db.user.YukonUser yukonUser;
 	private Vector<YukonGroup> yukonGroups; //type = com.cannontech.database.db.user.YukonGroup
-	private Vector yukonUserRoles;  //type = com.cannontech.database.db.user.YukonUserRole
+	private Vector<YukonUserRole> yukonUserRoles;  //type = com.cannontech.database.db.user.YukonUserRole
 	private NativeIntVector yukonUserOwnedPAOs; //type = com.cannontech.database.db.user.UserPAOwner
 	private EnergyCompanyOperatorLoginList company;
 	/**
@@ -38,7 +50,8 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 		getYukonGroups().add( group );
 	}
 	
-	public void setDbConnection(java.sql.Connection conn) {
+	@Override
+    public void setDbConnection(java.sql.Connection conn) {
 		super.setDbConnection( conn );
 		getYukonUser().setDbConnection( conn );
 		
@@ -58,7 +71,7 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 		return getUserID();
 	}
 	
-	public Vector getYukonRoles()
+	public Vector<YukonUserRole> getYukonRoles()
 	{
 		return getYukonUserRoles();	
 	}
@@ -67,7 +80,7 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 	 * This method was created in VisualAge.
 	 * @param pointID java.lang.Integer
 	 */
-	public final static boolean isUsedByContact(int loginID_, String databaseAlias) throws java.sql.SQLException 
+	public final static boolean isUsedByContact(int loginID_, String databaseAlias) 
 	{
 		com.cannontech.database.SqlStatement stmt =
 			new com.cannontech.database.SqlStatement(
@@ -91,7 +104,8 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#add()
 	 */
-	public void add() throws SQLException 
+	@Override
+    public void add() throws SQLException 
 	{
 		if( getYukonUser().getUserID() == null )
 			setUserID(
@@ -105,7 +119,7 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 			Object[] addValues = 
 			{
 				getYukonUser().getUserID(), 
-				((com.cannontech.database.db.user.YukonGroup) getYukonGroups().get(i)).getGroupID()
+				getYukonGroups().get(i).getGroupID()
 			};
 
 			add( YukonGroup.TBL_YUKON_USER_GROUP, addValues );
@@ -127,12 +141,14 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#delete()
 	 */
-	public void delete() throws SQLException 
+	@Override
+    public void delete() throws SQLException 
 	{
 		delete( YukonUserRole.TABLE_NAME, "UserID", getYukonUser().getUserID() );
 		delete( YukonGroup.TBL_YUKON_USER_GROUP, "UserID", getYukonUser().getUserID() );
         delete( EnergyCompanyOperatorLoginList.tableName, "OperatorLoginID", getYukonUser().getUserID() );
-        PaoPermissionDao<LiteYukonUser> paoPermissionDao = (PaoPermissionDao) YukonSpringHook.getBean("userPaoPermissionDao");
+        @SuppressWarnings("unchecked") PaoPermissionDao<LiteYukonUser> paoPermissionDao =
+            YukonSpringHook.getBean("userPaoPermissionDao", PaoPermissionDao.class);
         paoPermissionDao.removeAllPermissions(getUserID());
         
 		getYukonUser().delete();
@@ -141,7 +157,8 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#retrieve()
 	 */
-	public void retrieve() throws SQLException 
+	@Override
+    public void retrieve() throws SQLException 
 	{
 		getYukonUser().retrieve();
 		
@@ -165,7 +182,8 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#update()
 	 */
-	public void update() throws SQLException {
+	@Override
+    public void update() throws SQLException {
 
 		setUserID( getYukonUser().getUserID() );
 
@@ -178,7 +196,7 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 			Object[] addValues = 
 			{
 				getYukonUser().getUserID(), 
-				((com.cannontech.database.db.user.YukonGroup) getYukonGroups().get(i)).getGroupID()
+				getYukonGroups().get(i).getGroupID()
 			};
 			add( YukonGroup.TBL_YUKON_USER_GROUP, addValues );
 		}
@@ -201,7 +219,9 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 	}
 	
 	public static void deleteOperatorLogin(Integer userID) {
-		java.sql.Connection conn = null;
+	    checkForValidUserId(userID);
+	    
+		Connection conn = null;
 		
 		try {
 			conn = com.cannontech.database.PoolManager.getInstance().getConnection(
@@ -214,16 +234,18 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 			user.delete( "EnergyCompanyOperatorLoginList", "OperatorLoginID", userID );
 			user.delete( "OperatorLoginGraphList", "OperatorLoginID", userID );
 			user.delete();
+		} catch (java.sql.SQLException e) {
+		    log.error(e);
+		} finally {
+			SqlUtils.close(conn);
 		}
-		catch (java.sql.SQLException e) {
-			e.printStackTrace();
-		}
-		finally {
-			try {
-				if (conn != null) conn.close();
-			}
-			catch (java.sql.SQLException e) {}
-		}
+	}
+	
+	private static void checkForValidUserId(Integer userId) {
+	    for (final Integer immutableUserId : immutableUserIds) {
+	        if (userId.equals(immutableUserId)) 
+	            throw new UnsupportedOperationException("Deletion of userid: " + userId + " not supported.");
+	    }
 	}
 
 	/**
@@ -250,7 +272,7 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 	 * Sets the yukonGroups.
 	 * @param yukonGroups The yukonGroups to set
 	 */
-	public void setYukonGroups(Vector yukonGroups) {
+	public void setYukonGroups(Vector<YukonGroup> yukonGroups) {
 		this.yukonGroups = yukonGroups;
 	}
 	
@@ -285,12 +307,13 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 
 		for (int i = 0; i < getYukonUserRoles().size(); i++) 
 		{
-			((YukonUserRole)getYukonUserRoles().get(i)).setUserID( userID_ );
+			getYukonUserRoles().get(i).setUserID( userID_ );
 		}
 	}
 
 	
-	public String toString()
+	@Override
+    public String toString()
 	{
 		return getYukonUser().getUsername();
 	}
@@ -317,9 +340,9 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 	 * Returns the yukonUserRoles.
 	 * @return Vector
 	 */
-	public Vector getYukonUserRoles() {
+	public Vector<YukonUserRole> getYukonUserRoles() {
 		if( yukonUserRoles == null )
-			yukonUserRoles = new Vector(10);
+			yukonUserRoles = new Vector<YukonUserRole>(10);
 
 		return yukonUserRoles;
 	}
