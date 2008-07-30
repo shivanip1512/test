@@ -275,14 +275,16 @@
    		   <link>/spring/macsscheduler/schedules/view</link>	
    		</option>
 		<option id="devicegroups">
-          <requireRoleProperty value="DeviceActionsRole.ROLEID,DeviceActionsRole.DEVICE_GROUP_EDIT,DeviceActionsRole.DEVICE_GROUP_MODIFY"/>
+          <requireRoleProperty value="DeviceActionsRole.ROLEID"/>
+          <requireRoleProperty value="DeviceActionsRole.DEVICE_GROUP_EDIT,DeviceActionsRole.DEVICE_GROUP_MODIFY,DeviceActionsRole.GROUP_COMMANDER"/>
 		  <links>
 		    <option id="home">
               <link>/spring/group/editor/home</link>
+              <requireRoleProperty value="DeviceActionsRole.DEVICE_GROUP_EDIT,DeviceActionsRole.DEVICE_GROUP_MODIFY"/>
             </option>
 		    <option id="commander">
               <link>/spring/group/commander/groupProcessing</link>
-              <requireRoleProperty value="DeviceActionsRole.ROLEID,DeviceActionsRole.GROUP_COMMANDER"/>
+              <requireRoleProperty value="DeviceActionsRole.GROUP_COMMANDER"/>
             </option>
           </links>
 	    </option>
