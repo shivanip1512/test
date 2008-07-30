@@ -1498,24 +1498,24 @@ string CtiCCCapBank::getIgnoreReasonText() const
 
     switch (_ignoreReason)
     {
-        case 0:  retVal = "-Local"; break;
-        case 1:  retVal = "-FaultCurrent"; break;
-        case 2:  retVal = "-EmVolt"; break;
-        case 3:  retVal = "-Time"; break;
-        case 4:  retVal = "-Voltage"; break;
-        case 5:  retVal = "-Digital1"; break;
-        case 6:  retVal = "-Analog1"; break;
-        case 7:  retVal = "-Digital2"; break;
-        case 8:  retVal = "-Analog2"; break;
-        case 9:  retVal = "-Digital3"; break;
-        case 10: retVal = "-Analog3"; break;
-        case 11: retVal = "-Digital4"; break;
-        case 12: retVal = "-Temp"; break;
-        case 13: retVal = "-Remote"; break;
-        case 14: retVal = "-NtrlLockOut"; break;
-        case 15: retVal = "-BrownOut"; break;    
-        case 16: retVal = "-BadActRelay"; break;  
-        default: retVal = "-unknown"; break;
+        case 0:  retVal = "Local"; break;
+        case 1:  retVal = "FaultCurrent"; break;
+        case 2:  retVal = "EmVolt"; break;
+        case 3:  retVal = "Time"; break;
+        case 4:  retVal = "Voltage"; break;
+        case 5:  retVal = "Digital1"; break;
+        case 6:  retVal = "Analog1"; break;
+        case 7:  retVal = "Digital2"; break;
+        case 8:  retVal = "Analog2"; break;
+        case 9:  retVal = "Digital3"; break;
+        case 10: retVal = "Analog3"; break;
+        case 11: retVal = "Digital4"; break;
+        case 12: retVal = "Temp"; break;
+        case 13: retVal = "Remote"; break;
+        case 14: retVal = "NtrlLockOut"; break;
+        case 15: retVal = "BrownOut"; break;    
+        case 16: retVal = "BadActRelay"; break;  
+        default: retVal = "unknown"; break;
     }
     
     return retVal;

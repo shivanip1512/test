@@ -63,6 +63,9 @@ public:
     void refreshCParmGlobals(bool force);
     void handleUnsolicitedMessaging(CtiCCCapBank* currentCapBank, CtiCCFeeder* currentFeeder, 
                                     CtiCCSubstationBus* currentSubstationBus, CtiCCTwoWayPoints* twoWayPts);
+    void handleRejectionMessaging(CtiCCCapBank* currentCapBank, CtiCCFeeder* currentFeeder, 
+                                    CtiCCSubstationBus* currentSubstationBus, CtiCCTwoWayPoints* twoWayPts);
+
 private:
     
     CtiCapController();
@@ -89,9 +92,7 @@ private:
     void pointDataMsgBySubstation( long pointID, double value, unsigned quality, unsigned tags, CtiTime& timestamp, ULONG secondsFrom1901 );
     void porterReturnMsg(long deviceId, const string& commandString, int status, const string& resultString, ULONG secondsFrom1901);
     void signalMsg(long pointID, unsigned tags, const string& text, const string& additional, ULONG secondsFrom1901);
-    void handleRejectionMessaging(CtiCCCapBank* currentCapBank, CtiCCFeeder* currentFeeder, 
-                                    CtiCCSubstationBus* currentSubstationBus, CtiCCTwoWayPoints* twoWayPts);
-
+    
     static CtiCapController* _instance;                    
     RWThread _substationBusThread;
     //RWThread _ccEventMsgThread;

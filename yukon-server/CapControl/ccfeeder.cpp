@@ -3679,7 +3679,7 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                 << " DeviceID: " << currentCapBank->getPAOId() << " doesn't have a status point!" << endl;
             }
             found = TRUE;
-            
+            currentCapBank->setControlRecentlySentFlag(FALSE);
             currentCapBank->setIgnoreFlag(FALSE);
             break;
             
@@ -3996,6 +3996,7 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
             found = TRUE;
 
             currentCapBank->setIgnoreFlag(FALSE);
+            currentCapBank->setControlRecentlySentFlag(FALSE);
             break;
         }
     }
@@ -4364,6 +4365,7 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                }
         
                currentCapBank->setIgnoreFlag(FALSE);
+               currentCapBank->setControlRecentlySentFlag(FALSE);
                foundCap = TRUE;
                break;
            }
@@ -4779,6 +4781,7 @@ BOOL CtiCCFeeder::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& point
            }
 
            currentCapBank->setIgnoreFlag(FALSE);
+           currentCapBank->setControlRecentlySentFlag(FALSE);
            foundCap = TRUE;
            break;
        }

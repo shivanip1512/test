@@ -276,6 +276,8 @@ public:
 
     list <CC_DBRELOAD_INFO> getDBReloadList() { return _reloadList; };
     list <CtiCCCapBankPtr> getUnsolicitedCapBankList() {return _unsolicitedCapBanks;};
+    list <CtiCCCapBankPtr> getRejectedControlCapBankList() {return _rejectedCapBanks;};
+
     void insertDBReloadList(CC_DBRELOAD_INFO x);
     void checkDBReloadList();
     void addSubstationObjectsToList(list <LONG> *subBusIds, CtiMultiMsg_vec &modifiedSubsList);
@@ -286,6 +288,11 @@ public:
     void removeCapbankFromUnsolicitedCapBankList(CtiCCCapBankPtr x);
     void clearUnsolicitedCapBankList();
     void checkUnsolicitedList();
+    void insertRejectedCapBankList(CtiCCCapBankPtr x);
+    void removeCapbankFromRejectedCapBankList(CtiCCCapBankPtr x);
+    void clearRejectedCapBankList();
+    void checkRejectedList();
+
     void setRegMask(LONG mask);
     LONG getRegMask(void);
 
@@ -444,6 +451,7 @@ private:
     multimap< long, long > _altsub_sub_idmap;
 
     list <CtiCCCapBankPtr> _unsolicitedCapBanks;
+    list <CtiCCCapBankPtr> _rejectedCapBanks;
 
     list <CC_DBRELOAD_INFO> _reloadList;
     list <long> _orphanedCapBanks;

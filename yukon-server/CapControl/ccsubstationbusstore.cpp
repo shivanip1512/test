@@ -99,6 +99,7 @@ CtiCCSubstationBusStore::CtiCCSubstationBusStore() : _isvalid(FALSE), _reregiste
     _orphanedCapBanks.clear();
     _orphanedFeeders.clear();
     _unsolicitedCapBanks.clear();
+    _rejectedCapBanks.clear();
 
     _linkStatusPointId = 0;
     _linkStatusFlag = OPENED;
@@ -766,6 +767,7 @@ BOOL CtiCCSubstationBusStore::deleteCapControlMaps()
         _strategyid_strategy_map.clear();
 
         _unsolicitedCapBanks.clear();
+        _rejectedCapBanks.clear();
         while (!_orphanedFeeders.empty())
         {
             long feederId = _orphanedFeeders.front();
@@ -2612,6 +2614,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                                     dout << CtiTime() << " - Setting status to close questionable, Cap Bank: " << currentCapBank->getPAOName() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
                                 }
                                 currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
+                                currentCapBank->setControlRecentlySentFlag(FALSE);
                                 currentFeeder->setRetryIndex(0);
                                 currentCapBank->setControlStatusQuality(CC_AbnormalQuality);
 
@@ -2633,6 +2636,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                                     dout << CtiTime() << " - Setting status to open questionable, Cap Bank: " << currentCapBank->getPAOName() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
                                 }
                                 currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
+                                currentCapBank->setControlRecentlySentFlag(FALSE);
                                 currentFeeder->setRetryIndex(0);
                                 currentCapBank->setControlStatusQuality(CC_AbnormalQuality);
 
@@ -2675,6 +2679,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                                 dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPAOName() << " questionable because feeder is not recently controlled in: " << __FILE__ << " at: " << __LINE__ << endl;
                             }
                             currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
+                            currentCapBank->setControlRecentlySentFlag(FALSE);
                             currentFeeder->setRetryIndex(0);
                             currentCapBank->setControlStatusQuality(CC_AbnormalQuality);
 
@@ -2695,6 +2700,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                                 dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPAOName() << " questionable because feeder is not recently controlled in: " << __FILE__ << " at: " << __LINE__ << endl;
                             }
                             currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
+                            currentCapBank->setControlRecentlySentFlag(FALSE);
                             currentFeeder->setRetryIndex(0);
                             currentCapBank->setControlStatusQuality(CC_AbnormalQuality);
 
@@ -2762,6 +2768,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                                 dout << CtiTime() << " - Setting status to close questionable, Cap Bank: " << currentCapBank->getPAOName() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
                             }
                             currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
+                            currentCapBank->setControlRecentlySentFlag(FALSE);
                             currentFeeder->setRetryIndex(0);
                             currentCapBank->setControlStatusQuality(CC_AbnormalQuality);
 
@@ -2784,6 +2791,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                                 dout << CtiTime() << " - Setting status to open questionable, Cap Bank: " << currentCapBank->getPAOName() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
                             }
                             currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
+                            currentCapBank->setControlRecentlySentFlag(FALSE);
                             currentFeeder->setRetryIndex(0);
                             currentCapBank->setControlStatusQuality(CC_AbnormalQuality);
 
@@ -7496,7 +7504,7 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
                                 subbusid = feeder_subbus_map->find(feederid)->second;
                                 capbank_subbus_map->insert(make_pair(deviceid, subbusid));
                             }
-                        }
+						}
 
 
                     }
@@ -10312,6 +10320,46 @@ void CtiCCSubstationBusStore::checkUnsolicitedList()
     }
 }
 
+void CtiCCSubstationBusStore::insertRejectedCapBankList(CtiCCCapBankPtr x)
+{
+    if (!list_contains(_rejectedCapBanks, x))
+    {
+        _rejectedCapBanks.push_back(x);
+    }
+} 
+
+void CtiCCSubstationBusStore::removeCapbankFromRejectedCapBankList(CtiCCCapBankPtr x)
+{
+    _rejectedCapBanks.remove(x);
+}
+
+void CtiCCSubstationBusStore::clearRejectedCapBankList()
+{
+    if (!_unsolicitedCapBanks.empty())
+    { 
+        _rejectedCapBanks.clear();
+    }
+}
+void CtiCCSubstationBusStore::checkRejectedList()
+{
+    list <CtiCCCapBankPtr> tempList = getRejectedControlCapBankList();
+    list <CtiCCCapBankPtr>::iterator listIter; 
+    for (listIter = tempList.begin(); listIter != tempList.end(); listIter++)
+    {
+        CtiCCCapBankPtr currentCapBank = *listIter;
+
+          
+        CtiCCFeederPtr currentFeeder = findFeederByPAObjectID(currentCapBank->getParentId());
+        if (currentFeeder == NULL)
+            continue;
+        CtiCCSubstationBusPtr currentSubstationBus = findSubBusByPAObjectID(currentFeeder->getParentId());
+        if (currentSubstationBus == NULL)
+            continue;
+        
+        CtiCapController::getInstance()->handleRejectionMessaging(currentCapBank, currentFeeder, currentSubstationBus, currentCapBank->getTwoWayPoints());
+        
+    }
+}
 
 void CtiCCSubstationBusStore::insertItemsIntoMap(int mapType, long* first, long* second)
 {
@@ -11483,6 +11531,7 @@ void CtiCCSubstationBusStore::setControlStatusAndIncrementFailCount(CtiMultiMsg_
         return;
 
     cap->setControlStatus(status);
+    cap->setControlRecentlySentFlag(FALSE);
 
     CtiCCFeederPtr feeder = findFeederByPAObjectID(cap->getParentId());
     if (feeder == NULL)

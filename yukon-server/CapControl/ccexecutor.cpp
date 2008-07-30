@@ -5709,9 +5709,9 @@ void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubst
                                       << " PAOID: " << currentCapBank->getPAOId() << " doesn't have a status point!" << endl;
                     }
                 }
-
                 currentCapBank->setRetryOpenFailedFlag(FALSE);
                 currentCapBank->setRetryCloseFailedFlag(FALSE);
+                currentCapBank->setControlRecentlySentFlag(FALSE);
 
             }
         }
@@ -5852,6 +5852,7 @@ void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubst
                         }
                         currentCapBank->setRetryOpenFailedFlag(FALSE);
                         currentCapBank->setRetryCloseFailedFlag(FALSE);
+                        currentCapBank->setControlRecentlySentFlag(FALSE);
                     }
                 }
                 currentSubstationBus->setRecentlyControlledFlag(FALSE);

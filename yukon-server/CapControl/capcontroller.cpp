@@ -364,6 +364,7 @@ void CtiCapController::controlLoop()
                     checkDispatch(secondsFrom1901);
                     checkPIL(secondsFrom1901);
                     store->checkUnsolicitedList();
+                    store->checkRejectedList();
                 }
                 catch(...)
                 {
@@ -3012,15 +3013,13 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                     else if (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 702") ) 
                     {   
                         CtiCCTwoWayPoints* twoWayPts = (CtiCCTwoWayPoints*)currentCapBank->getTwoWayPoints();
+                        //NEED to check this value for a toggle, before setting status points.
                         if (twoWayPts->getIgnoredIndicatorId() == pointID) 
                         {
                             if (twoWayPts->getIgnoredIndicator() != value) 
                             { 
                                 currentCapBank->setIgnoreIndicatorTimeUpdated(timestamp);
-
-                                if ( currentCapBank->getIgnoreReasonTimeUpdated().seconds() >= CtiTime().seconds() - 2 )
-                                    handleRejectionMessaging(currentCapBank, currentFeeder, currentSubstationBus, twoWayPts);
-                                
+                                store->insertRejectedCapBankList(currentCapBank);                               
                             }
                         }
                         if (twoWayPts->setTwoWayStatusPointValue(pointID, value))
@@ -3164,9 +3163,6 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                                 currentCapBank->setIgnoredReason(value);
                                 currentSubstationBus->setBusUpdatedFlag(TRUE);
                                 currentCapBank->setIgnoreReasonTimeUpdated(timestamp);
-
-                                if ( currentCapBank->getIgnoreIndicatorTimeUpdated().seconds() >= CtiTime().seconds() - 2 )
-                                    handleRejectionMessaging(currentCapBank, currentFeeder, currentSubstationBus, twoWayPts);
                              }
                             
                             if( _CC_DEBUG & CC_DEBUG_OPTIONALPOINT )
@@ -3425,9 +3421,9 @@ void CtiCapController::handleRejectionMessaging(CtiCCCapBank* currentCapBank, Ct
     afterVarsString += currentCapBank->getControlStatusText();                                   
     text1 += afterVarsString;
     currentCapBank->setAfterVarsString(afterVarsString);
-    currentCapBank->setPercentChangeString(" --- ");
+    currentCapBank->setPercentChangeString(" Rejection by " +currentCapBank->getIgnoreReasonText());
     
-    text1 += " command";
+    text1 += " command-";
     text1 += currentCapBank->getIgnoreReasonText();
     if (twoWayPts->getIgnoredReason() == 4) //voltage
     {
@@ -3489,6 +3485,8 @@ void CtiCapController::handleRejectionMessaging(CtiCCCapBank* currentCapBank, Ct
 
     //SYNC with what CBC is reporting.
     currentCapBank->setControlStatus(twoWayPts->getCapacitorBankState());
+
+    store->removeCapbankFromRejectedCapBankList(currentCapBank);
 
 }
 void CtiCapController::handleUnsolicitedMessaging(CtiCCCapBank* currentCapBank, CtiCCFeeder* currentFeeder, 

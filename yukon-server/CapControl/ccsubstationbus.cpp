@@ -5109,7 +5109,7 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                                dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPAOName()
                                << " DeviceID: " << currentCapBank->getPAOId() << " doesn't have a status point!" << endl;
                            }
-
+                           currentCapBank->setControlRecentlySentFlag(FALSE);
                            if (currentCapBank->updateVerificationState())
                            {
                                returnBoolean = TRUE;
@@ -5666,7 +5666,7 @@ BOOL CtiCCSubstationBus::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec
                            dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPAOName()
                            << " DeviceID: " << currentCapBank->getPAOId() << " doesn't have a status point!" << endl;
                        }
-
+                       currentCapBank->setControlRecentlySentFlag(FALSE);
                        if (currentCapBank->updateVerificationState())
                        {
                            returnBoolean = TRUE;
