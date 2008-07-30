@@ -353,6 +353,17 @@ void CtiLoadManager::controlLoop()
                                         dout << CtiTime() << " - All load reducing programs are currently running for control area: " << currentControlArea->getPAOName() << " can not reduce any more load." << endl;
                                     }
                                 }
+                                else
+                                {
+                                    if (currentControlArea->getControlInterval() == 0 &&
+                                        currentControlArea->getControlAreaState() == CtiLMControlArea::InactiveState && 
+                                        currentControlArea->hasStatusTrigger() &&
+                                        !currentControlArea->isStatusTriggerTripped() )                                  
+                                    {
+                                        currentControlArea->manuallyStopAllProgramsNow(secondsFromBeginningOfDay,secondsFrom1901,multiPilMsg,multiDispatchMsg, multiNotifMsg);
+                                        currentControlArea->clearManualControlReceivedFlags();
+                                    }   
+                                }
 
                                 // See if we can restore some load
                                 // The idea here is to stop some control

@@ -99,6 +99,7 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     BOOL isControlStillNeeded();
     BOOL isPastMinResponseTime(ULONG secondsFrom1901);
     BOOL isManualControlReceived();
+    void clearManualControlReceivedFlags();
     BOOL isThresholdTriggerTripped(CtiLMProgramBaseSPtr program = CtiLMProgramBaseSPtr());
     BOOL hasThresholdTrigger();
     BOOL hasStatusTrigger();

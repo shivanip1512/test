@@ -851,6 +851,23 @@ BOOL CtiLMControlArea::isManualControlReceived()
 }
 
 /*---------------------------------------------------------------------------
+    clearManualControlReceivedFlags
+
+    clears manual control received flags for all of the programs in the control area
+    have received a manual control.
+---------------------------------------------------------------------------*/
+void CtiLMControlArea::clearManualControlReceivedFlags()
+{
+    for( LONG i=0;i<_lmprograms.size();i++ )
+    {
+        CtiLMProgramBaseSPtr currentLMProgram = _lmprograms[i];
+        currentLMProgram->setManualControlReceivedFlag(FALSE);
+    }
+    return;
+}
+
+
+/*---------------------------------------------------------------------------
     isThresholdTriggerTripped
 
     Returns a BOOLean if any threshold trigger is tripped for the control area
