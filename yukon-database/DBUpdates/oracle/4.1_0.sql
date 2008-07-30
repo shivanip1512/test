@@ -157,13 +157,13 @@ INSERT INTO BillingFileFormats VALUES(-32, 'NISC TOU (kVarH) Rates Only', 1);
 /* End YUK-5579 */
 
 /* Start YUK-5663 */ 
-ALTER TABLE JOBSCHEDULEDREPEATING MODIFY CronString VARCHAR2(100) not null; 
+ALTER TABLE JOBSCHEDULEDREPEATING MODIFY CronString VARCHAR2(100); 
 
-ALTER TABLE JOBPROPERTY MODIFY name VARCHAR2(100) not null; 
+ALTER TABLE JOBPROPERTY MODIFY name VARCHAR2(100); 
 
-ALTER TABLE JOBPROPERTY MODIFY value VARCHAR2(1000) not null; 
+ALTER TABLE JOBPROPERTY MODIFY value VARCHAR2(1000); 
 
-ALTER TABLE JOBSTATUS MODIFY Message VARCHAR2(1000) not null; 
+ALTER TABLE JOBSTATUS MODIFY Message VARCHAR2(1000); 
 /* End Oracle YUK-5663 */ 
 
 /* Start YUK-5673 */
@@ -538,16 +538,20 @@ INSERT INTO YukonRoleProperty VALUES(-10819, -108, 'Default TimeZone',' ','Defau
 INSERT INTO YukonRoleProperty VALUES(-1703, -8, 'System Default TimeZone', ' ', 'System Default TimeZone (e.g. America/Denver, America/Chicago, America/Los_Angeles, or America/New_York)'); 
 /* End YUK-5923 */
 
-/* Start YUK-5904 */ 
+/* Start YUK-5904 */
+/* @start-block */
 INSERT INTO DeviceGroup (DeviceGroupId,GroupName,ParentDeviceGroupId,Permission,Type) 
-SELECT MAX(DeviceGroupID)+1,'Disabled', 
-(SELECT DeviceGroupId 
- FROM DeviceGroup 
- WHERE GroupName = 'Meters' 
- AND ParentDeviceGroupId = 12), 
-'NOEDIT_NOMOD','METERS_DISABLED' 
-FROM DeviceGroup 
-WHERE DeviceGroupId < 100; 
+VALUES ((Select Max(DeviceGroupID)
+         FROM DeviceGroup 
+         WHERE DeviceGroupId < 100)+1,
+        'Disabled', 
+        (SELECT DeviceGroupId 
+         FROM DeviceGroup 
+         WHERE GroupName = 'Meters' 
+         AND ParentDeviceGroupId = 12), 
+        'NOEDIT_NOMOD',
+        'METERS_DISABLED');
+/* @end-block */
 /* End YUK-5904 */
 
 /* Start YUK-5269 */
@@ -788,6 +792,12 @@ INSERT INTO DeviceTypeCommand VALUES (-725, -144, 'MCT-430A', 30, 'N', -1);
 INSERT INTO DeviceTypeCommand VALUES (-726, -144, 'MCT-430S4', 30, 'N', -1); 
 INSERT INTO DeviceTypeCommand VALUES (-727, -144, 'MCT-430SL', 30, 'N', -1); 
 /* End YUK-5870 */
+
+/* Start YUK-6093 */
+ALTER TABLE DynamicCCCapBank MODIFY beforeVar VARCHAR(48); 
+ALTER TABLE DynamicCCCapBank MODIFY afterVar VARCHAR(48); 
+ALTER TABLE DynamicCCCapBank MODIFY changeVar VARCHAR(48); 
+/* End YUK-6093 */
 
 /**************************************************************/
 /* VERSION INFO                                               */

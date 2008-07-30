@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     7/29/2008 11:39:52 AM                        */
+/* Created on:     7/29/2008 3:40:47 PM                         */
 /*==============================================================*/
 
 
@@ -6796,9 +6796,9 @@ create table DynamicCCCapBank (
    CurrentDailyOperations numeric              not null,
    TwoWayCBCState       numeric              not null,
    TwoWayCBCStateTime   datetime             not null,
-   beforeVar            varchar(32)          not null,
-   afterVar             varchar(32)          not null,
-   changeVar            varchar(32)          not null,
+   beforeVar            varchar(48)          not null,
+   afterVar             varchar(48)          not null,
+   changeVar            varchar(48)          not null,
    twoWayCBCLastControl numeric              not null,
    constraint PK_DYNAMICCCCAPBANK primary key (CapBankID)
 )

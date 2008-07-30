@@ -932,6 +932,12 @@ INSERT INTO DeviceTypeCommand VALUES (-726, -144, 'MCT-430S4', 30, 'N', -1);
 INSERT INTO DeviceTypeCommand VALUES (-727, -144, 'MCT-430SL', 30, 'N', -1); 
 /* End YUK-5870 */
 
+/* Start YUK-6093 */
+ALTER TABLE DynamicCCCapBank ALTER COLUMN beforeVar VARCHAR(48) NOT NULL; 
+ALTER TABLE DynamicCCCapBank ALTER COLUMN afterVar VARCHAR(48) NOT NULL; 
+ALTER TABLE DynamicCCCapBank ALTER COLUMN changeVar VARCHAR(48) NOT NULL; 
+/* End YUK-6093 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /**************************************************************/

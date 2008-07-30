@@ -2324,6 +2324,36 @@ ALTER TABLE CCurtProgram ALTER COLUMN identifierPrefix VARCHAR(32) NOT NULL;
 go
 /* End YUK-5963 */
 
+/* Start YUK-5960 */ 
+ALTER TABLE State DROP CONSTRAINT SYS_C0013342; 
+
+ALTER TABLE Point DROP CONSTRAINT Ref_STATGRP_PT;
+go
+
+UPDATE StateGroup 
+SET stateGroupId = -9 
+WHERE stateGroupId = 2;
+go
+
+UPDATE Point 
+SET stateGroupId = -9 
+WHERE stateGroupId = 2; 
+
+UPDATE State 
+SET stateGroupId = -9 
+WHERE stateGroupId = 2; 
+go
+
+ALTER TABLE Point 
+    ADD CONSTRAINT Ref_STATGRP_PT FOREIGN KEY (stateGroupId) 
+        REFERENCES StateGroup (stateGroupId); 
+
+ALTER TABLE State 
+    ADD CONSTRAINT SYS_C0013342 FOREIGN KEY (stateGroupId) 
+        REFERENCES StateGroup (stateGroupId); 
+go
+/* End YUK-5960 */
+
 /* Start YUK-6004 */
 /* @start-block */
 IF NOT EXISTS(SELECT * 
@@ -2421,6 +2451,11 @@ go
 /* @end-block */
 /* End YUK-6107 */
 
+/* Start YUK-6093 */
+ALTER TABLE DynamicCCCapBank ALTER COLUMN beforeVar VARCHAR(48) NOT NULL; 
+ALTER TABLE DynamicCCCapBank ALTER COLUMN afterVar VARCHAR(48) NOT NULL; 
+ALTER TABLE DynamicCCCapBank ALTER COLUMN changeVar VARCHAR(48) NOT NULL; 
+/* End YUK-6093 */
 
 /******************************************************************************/
 /* Run the Stars Update if needed here */

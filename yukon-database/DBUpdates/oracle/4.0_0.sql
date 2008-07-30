@@ -1922,6 +1922,31 @@ INSERT INTO YukonRoleProperty VALUES(-40200,-400,'Create Login For Account','fal
 /* @error ignore-end */
 /* End Yuk-5900 */
 
+/* Start YUK-5960 */ 
+ALTER TABLE State DROP CONSTRAINT SYS_C0013342; 
+ALTER TABLE Point DROP CONSTRAINT Ref_STATGRP_PT;
+
+UPDATE StateGroup 
+SET stateGroupId = -9 
+WHERE stateGroupId = 2;
+
+UPDATE Point 
+SET stateGroupId = -9 
+WHERE stateGroupId = 2; 
+
+UPDATE State 
+SET stateGroupId = -9 
+WHERE stateGroupId = 2; 
+
+ALTER TABLE Point 
+    ADD CONSTRAINT Ref_STATGRP_PT FOREIGN KEY (stateGroupId) 
+        REFERENCES StateGroup (stateGroupId); 
+
+ALTER TABLE State 
+    ADD CONSTRAINT SYS_C0013342 FOREIGN KEY (stateGroupId) 
+        REFERENCES StateGroup (stateGroupId); 
+/* End YUK-5960 */
+
 /* Start YUK-6004 */
 /* @start-block */
 DECLARE
@@ -1974,6 +1999,13 @@ END;
 INSERT INTO YukonRoleProperty VALUES(-100013, -1000, 'Three Phase', 'false', 'display 3-phase data for sub bus');
 /* End YUK-5999 */
 
+/* Start YUK-5365 */
+/* @error ignore-begin */
+INSERT INTO YukonGroupRole VALUES (-779,-301,-900,-90004,'(none)'); 
+INSERT INTO YukonRoleProperty VALUES (-1112,-2,'applicable_point_type_key',' ','The name of the set of CICustomerPointData TYPES that should be set for customers.'); 
+/* @error ignore-end */
+/* End YUK-5365 */
+
 /* Start YUK-6107 */
 create or replace view CCOperations_View as 
 SELECT YP3.PAOName AS CBCName, YP.PAOName AS CapBankName, YP.PAObjectId AS CapBankId, 
@@ -2022,6 +2054,12 @@ LEFT OUTER JOIN YukonPAObject YP5 ON YP5.PAObjectId = SSL.SubstationBusId
 LEFT OUTER JOIN CCSubAreaAssignment CSA ON CSA.SubstationBusId = SSL.SubstationId 
 LEFT OUTER JOIN YukonPAObject YP4 ON YP4.PAObjectId = CSA.AreaId; 
 /* End YUK-6107 */
+
+/* Start YUK-6093 */
+ALTER TABLE DynamicCCCapBank MODIFY beforeVar VARCHAR(48); 
+ALTER TABLE DynamicCCCapBank MODIFY afterVar VARCHAR(48); 
+ALTER TABLE DynamicCCCapBank MODIFY changeVar VARCHAR(48); 
+/* End YUK-6093 */
 
 /******************************************************************************/
 /* Run the Stars Update if needed here */
