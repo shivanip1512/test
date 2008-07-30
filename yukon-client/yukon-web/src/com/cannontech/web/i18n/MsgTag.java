@@ -19,7 +19,7 @@ public class MsgTag extends ThemeTag {
     protected MessageSource getMessageSource() {
         try {
             YukonUserContextMessageSourceResolver messageSourceResolver = getMessageSourceResolver();
-            YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(super.pageContext);
+            YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(this.pageContext);
             MessageSource messageSource = messageSourceResolver.getMessageSource(yukonUserContext);
             return messageSource;
         } catch (RuntimeException e) {
@@ -48,7 +48,7 @@ public class MsgTag extends ThemeTag {
     }
     
     private YukonUserContextMessageSourceResolver getMessageSourceResolver() {
-        ApplicationContext context = super.getRequestContext().getWebApplicationContext();
+        ApplicationContext context = this.getRequestContext().getWebApplicationContext();
         
         YukonUserContextMessageSourceResolver messageSourceResolver = 
             (YukonUserContextMessageSourceResolver) context.getBean("yukonUserContextMessageSourceResolver");
