@@ -148,7 +148,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	private Map<Integer, LiteSettlementConfig> allSettlementConfigsMap = null;
 	
 	private ArrayList<LiteSeasonSchedule> allSeasonSchedules = null;
-	private ArrayList<LiteGear> allGears = null;
 	private ArrayList <LiteTOUSchedule> allTOUSchedules = null;
 	private ArrayList<LiteTOUDay> allTOUDays = null;
 	
@@ -535,8 +534,8 @@ public synchronized List<LiteTOUDay> getAllTOUDays()
 	}
 }
 
-public synchronized List<LiteGear> getAllGears(){
-	allGears = new ArrayList<LiteGear>();
+public List<LiteGear> getAllGears(){
+	List<LiteGear> allGears = new ArrayList<LiteGear>();
 	GearLoader gearLoader = new GearLoader(allGears, databaseAlias);
 	gearLoader.run();
 	return allGears;
@@ -2813,7 +2812,6 @@ public synchronized void releaseAllCache()
 	allSettlementConfigs = null;
 	allSettlementConfigsMap = null;
 	allSeasonSchedules = null;
-	allGears = null;
 	allDeviceTypeCommands = null;
 	allTOUSchedules = null;
 	allTOUDays = null;
