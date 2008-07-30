@@ -439,7 +439,15 @@ function showProgramConfig(element) {
     $('descFile').value = descFile;
 
     var ctrlOdds = program.getCtrlOdds();
-    $('ctrlOdds').value = ctrlOdds;
+    var ctrlOddsSelect = $('ctrlOdds'); 
+    
+    ctrlOddsSelect.selectedIndex = 0;
+    for(i=0;i<ctrlOddsSelect.options.length;i++) {
+        if(ctrlOdds == ctrlOddsSelect.options[i].value) {
+            ctrlOddsSelect.selectedIndex = i;
+            break;
+        } 
+    }
 
     var iconNameSavings = program.getIconNameSavings();
     $('iconNameSavings').value = iconNameSavings;
