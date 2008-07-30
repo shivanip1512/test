@@ -80,7 +80,8 @@ public class TemporaryDeviceGroupServiceImpl implements TemporaryDeviceGroupServ
     
     @Transactional
     public void afterPropertiesSet() throws Exception {
-        clearTemporaryGroups();
+        // commenting out for now, we can readdress this post 4.1 (see YUK-6249 and YUK-6250)
+        //clearTemporaryGroups();
     }
     
     @Required
