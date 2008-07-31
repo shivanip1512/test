@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     7/29/2008 3:40:47 PM                         */
+/* Created on:     7/31/2008 3:09:57 PM                         */
 /*==============================================================*/
 
 
@@ -10208,16 +10208,16 @@ insert into YukonGroupRole values(-175,-100,-103,-10305,'(none)');
 
 insert into YukonGroupRole values(-180,-100,-106,-10600,'(none)');
 
-/* Calc Historical for Yukon Gorup */
+/* Calc Historical for Yukon Group */
 insert into YukonGroupRole values(-190,-1,-104,-10400,'(none)');
 insert into YukonGroupRole values(-191,-1,-104,-10401,'(none)');
 insert into YukonGroupRole values(-192,-1,-104,-10402,'(none)');
 
-/* Web Graph for Yukon Gorup */
+/* Web Graph for Yukon Group */
 insert into YukonGroupRole values(-210,-1,-105,-10500,'(none)');
 insert into YukonGroupRole values(-211,-1,-105,-10501,'(none)');
 
-/* Billing for Yukon Gorup */
+/* Billing for Yukon Group */
 insert into YukonGroupRole values(-230,-1,-6,-1500,'(none)');
 insert into YukonGroupRole values(-231,-1,-6,-1501,'(none)');
 
@@ -10227,7 +10227,7 @@ insert into YukonGroupRole values(-235,-1,-6,-1505,'(none)');
 insert into YukonGroupRole values(-236,-1,-6,-1506,'(none)');
 insert into YukonGroupRole values(-237,-1,-6,-1507,'(none)');
 
-/* Multispeak */
+/* MultiSpeak */
 insert into YukonGroupRole values(-270,-1,-7,-1600,'0');
 
 /* Configuration (Device) */
