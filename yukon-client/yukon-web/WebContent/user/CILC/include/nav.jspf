@@ -57,7 +57,7 @@ function dispStatusMsg(msgStr)
 			<%
 			for( int i = 0; i < gData.length; i++ )                                                          
 			{
-				if( Integer.parseInt(gData[i][0].toString()) == graphBean.getGdefid() && linkPairs[6][FILE].equalsIgnoreCase(pageName))
+				if( Integer.parseInt(gData[i][0].toString()) == graphBean.getGdefid() && linkPairs[4][FILE].equalsIgnoreCase(pageName))
 				{%>
           <tr> 
             <td width="10"><%= bulletImg %></td>
@@ -68,7 +68,7 @@ function dispStatusMsg(msgStr)
 				{%>
           <tr> 
             <td width="10">&nbsp;</td>
-            <td style="padding:1"><a href="<%=request.getContextPath()+linkPairs[6][DIR] + linkPairs[6][FILE]+'?'%><%= "gdefid=" + gData[i][0]%>" class = "link2"><span class="NavText"><%=gData[i][1] %></span></a></td>
+            <td style="padding:1"><a href="<%=request.getContextPath()+linkPairs[4][DIR] + linkPairs[4][FILE]+'?'%><%= "gdefid=" + gData[i][0]%>" class = "link2"><span class="NavText"><%=gData[i][1] %></span></a></td>
           </tr>
 				<%}
 			}%>
