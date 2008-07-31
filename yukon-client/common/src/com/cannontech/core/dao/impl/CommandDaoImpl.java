@@ -83,31 +83,25 @@ public final class CommandDaoImpl implements CommandDao {
      */
 	public Vector<LiteCommand> getAllCommandsByCategory(String category)
 	{
-		return getAllCommandsByCategory(category, true);
+		//Contains LiteCommands
+		Vector<LiteCommand> commands = new Vector<LiteCommand>();
+
+		synchronized (databaseCache)
+		{
+			List<LiteCommand> cmds = databaseCache.getAllCommands();
+			LiteCommand liteCmd = null;
+
+			for (int i = 0; i < cmds.size(); i++)
+			{
+				liteCmd = (LiteCommand)cmds.get(i);
+				if( category.equalsIgnoreCase(liteCmd.getCategory()))
+					commands.add(liteCmd);	
+			}
+		}
+		java.util.Collections.sort(commands, LiteComparators.liteCommandComparator);
+		return commands;
 	}
 
-	public Vector<LiteCommand> getAllCommandsByCategory(String category, boolean sorted)
-    {
-        //Contains LiteCommands
-        Vector<LiteCommand> commands = new Vector<LiteCommand>();
-
-        synchronized (databaseCache)
-        {
-            List<LiteCommand> cmds = databaseCache.getAllCommands();
-            LiteCommand liteCmd = null;
-
-            for (int i = 0; i < cmds.size(); i++)
-            {
-                liteCmd = (LiteCommand)cmds.get(i);
-                if( category.equalsIgnoreCase(liteCmd.getCategory()))
-                    commands.add(liteCmd);  
-            }
-        }
-        if (sorted) {
-            java.util.Collections.sort(commands, LiteComparators.liteCommandComparator);
-        }
-        return commands;
-    }
 	
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.CommandDao#getCommand(int)

@@ -6,6 +6,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Vector;
 
 import javax.annotation.Resource;
 import javax.mail.MessagingException;
@@ -42,6 +43,7 @@ import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
 import com.cannontech.core.dao.CommandDao;
 import com.cannontech.database.data.lite.LiteCommand;
+import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -79,7 +81,15 @@ public class GroupCommanderController implements InitializingBean {
     private List<LiteCommand> meterCommands;
 
     public void afterPropertiesSet() {
-        this.meterCommands = commandDao.getAllCommandsByCategory(DeviceTypes.STRING_MCT_410IL[0], false);
+            
+        this.meterCommands = new ArrayList<LiteCommand>();
+        
+        Vector<LiteDeviceTypeCommand> devTypeCmds = commandDao.getAllDevTypeCommands(DeviceTypes.STRING_MCT_410IL[0]);
+        for (LiteDeviceTypeCommand devTypeCmd : devTypeCmds) {
+            int cmdId = devTypeCmd.getCommandID();
+            LiteCommand liteCmd = commandDao.getCommand(cmdId);
+            this.meterCommands.add(liteCmd);
+        }
     }
     
     @Autowired
