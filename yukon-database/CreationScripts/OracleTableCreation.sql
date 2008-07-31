@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     7/31/2008 3:36:32 PM                         */
+/* Created on:     7/31/2008 3:52:25 PM                         */
 /*==============================================================*/
 
 
@@ -8432,7 +8432,7 @@ insert into YukonListEntry values (1561,1046,0,'Pivot',0);
 insert into YukonListEntry values (1562,1046,0,'Gated Pipe',0);
 insert into YukonListEntry values (1563,1046,0,'Pivot/Power Only',0);
 insert into YukonListEntry values (1564,1046,0,'Reuse Pit Only',0);
-insert into YukonListEntry values (1565,1046,0,'Ditch W/Syphon Tube',0);
+insert into YukonListEntry values (1565,1046,0,'Ditch W/Siphon Tube',0);
 insert into YukonListEntry values (1566,1046,0,'Flood',0);
 insert into YukonListEntry values (1570,1047,0,' ',0);
 insert into YukonListEntry values (1571,1047,0,'Heavy Loam',0);
