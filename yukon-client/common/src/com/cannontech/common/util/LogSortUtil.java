@@ -54,7 +54,7 @@ public final class LogSortUtil {
                 
                     // Sets up the values for the map
                     String original = StringUtils.capitalize(logFile);
-                    String stringSnippet = StringUtils.capitalize((patternMatches.group(1)).toLowerCase());
+                    String stringSnippet = StringUtils.capitalize(patternMatches.group(1));
                     mapResults.put(original, stringSnippet);
                 }
             }
