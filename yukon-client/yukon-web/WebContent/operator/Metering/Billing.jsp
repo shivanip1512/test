@@ -26,9 +26,7 @@
 
 	<form name = "MForm" action="<c:url value="/servlet/BillingServlet" />" method="post">
 	
-		<div style="width: 700px">
 			<tags:nameValueContainer>
-					
 				<tags:nameValue name="File Format">
 		            <select name="fileFormat">
 		            	<c:forEach var="format" items="${formatMap}">
@@ -68,7 +66,6 @@
 				
 			</tags:nameValueContainer>
 			<input type="submit" name="generate" value="Generate">
-		</div>
 
 	</form>
 </cti:standardPage>
