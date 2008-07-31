@@ -141,10 +141,7 @@ private javax.swing.JLabel getArchiveIntervalLabel() {
             archiveIntervalLabel = new javax.swing.JLabel();
             archiveIntervalLabel.setName("ArchiveIntervalLabel");
             archiveIntervalLabel.setText("Interval:");
-            archiveIntervalLabel.setMaximumSize(new java.awt.Dimension(78, 16));
-            archiveIntervalLabel.setPreferredSize(new java.awt.Dimension(78, 16));
             archiveIntervalLabel.setFont(new java.awt.Font("dialog", 0, 14));
-            archiveIntervalLabel.setMinimumSize(new java.awt.Dimension(78, 16));
         } catch (java.lang.Throwable ivjExc) {
             handleException(ivjExc);
         }
@@ -178,10 +175,7 @@ private javax.swing.JLabel getArchiveTypeLabel() {
             archiveTypeLabel = new javax.swing.JLabel();
             archiveTypeLabel.setName("ArchiveTypeLabel");
             archiveTypeLabel.setText("Data Type:");
-            archiveTypeLabel.setMaximumSize(new java.awt.Dimension(78, 16));
-            archiveTypeLabel.setPreferredSize(new java.awt.Dimension(78, 16));
             archiveTypeLabel.setFont(new java.awt.Font("dialog", 0, 14));
-            archiveTypeLabel.setMinimumSize(new java.awt.Dimension(78, 16));
         } catch (java.lang.Throwable ivjExc) {
             handleException(ivjExc);
         }
@@ -194,9 +188,7 @@ private com.klg.jclass.field.JCSpinField getDecimalPlacesSpinner() {
         try {
             decimalPlacesSpinner = new com.klg.jclass.field.JCSpinField();
             decimalPlacesSpinner.setName("DecimalPlacesSpinner");
-            decimalPlacesSpinner.setPreferredSize(new java.awt.Dimension(50, 22));
             decimalPlacesSpinner.setBackground(java.awt.Color.white);
-            decimalPlacesSpinner.setMinimumSize(new java.awt.Dimension(50, 22));
             decimalPlacesSpinner.setDataProperties(new com.klg.jclass.field.DataProperties(new com.klg.jclass.field.validate.JCIntegerValidator(null, new Integer(0), new Integer(10), null, true, null, new Integer(1), "#,##0.###;-#,##0.###", false, false, false, null, new Integer(0)), new com.klg.jclass.util.value.MutableValueModel(java.lang.Integer.class, new Integer(0)), new com.klg.jclass.field.JCInvalidInfo(true, 2, new java.awt.Color(0, 0, 0, 255), new java.awt.Color(255, 255, 255, 255))));
         } catch (java.lang.Throwable ivjExc) {
             handleException(ivjExc);
@@ -210,9 +202,7 @@ private com.klg.jclass.field.JCSpinField getMeterDialsSpinner() {
         try {
             meterDialsSpinner = new com.klg.jclass.field.JCSpinField();
             meterDialsSpinner.setName("MeterDialsSpinner");
-            meterDialsSpinner.setPreferredSize(new java.awt.Dimension(50, 20));
             meterDialsSpinner.setBackground(java.awt.Color.white);
-            meterDialsSpinner.setMinimumSize(new java.awt.Dimension(50, 20));
             meterDialsSpinner.setDataProperties(new com.klg.jclass.field.DataProperties(new com.klg.jclass.field.validate.JCIntegerValidator(null, new Integer(0), new Integer(10), null, true, null, new Integer(1), "#,##0.###;-#,##0.###", false, false, false, null, new Integer(0)), new com.klg.jclass.util.value.MutableValueModel(java.lang.Integer.class, new Integer(0)), new com.klg.jclass.field.JCInvalidInfo(true, 2, new java.awt.Color(0, 0, 0, 255), new java.awt.Color(255, 255, 255, 255))));
         } catch (java.lang.Throwable ivjExc) {
             handleException(ivjExc);
@@ -262,35 +252,30 @@ private javax.swing.JPanel getJPanelArchive() {
             archivePanel.setLayout(new java.awt.GridBagLayout());
 
             java.awt.GridBagConstraints constraintsArchiveTypeLabel = new java.awt.GridBagConstraints();
-            constraintsArchiveTypeLabel.gridx = 1; constraintsArchiveTypeLabel.gridy = 1;
+            constraintsArchiveTypeLabel.gridx = 0; constraintsArchiveTypeLabel.gridy = 0;
             constraintsArchiveTypeLabel.anchor = java.awt.GridBagConstraints.WEST;
-            constraintsArchiveTypeLabel.ipadx = -5;
-            constraintsArchiveTypeLabel.insets = new java.awt.Insets(3, 14, 6, 1);
+            constraintsArchiveTypeLabel.insets = new java.awt.Insets(2,2,2,2);
             getJPanelArchive().add(getArchiveTypeLabel(), constraintsArchiveTypeLabel);
 
             java.awt.GridBagConstraints constraintsArchiveIntervalLabel = new java.awt.GridBagConstraints();
-            constraintsArchiveIntervalLabel.gridx = 1; constraintsArchiveIntervalLabel.gridy = 2;
+            constraintsArchiveIntervalLabel.gridx = 0; constraintsArchiveIntervalLabel.gridy = 1;
             constraintsArchiveIntervalLabel.anchor = java.awt.GridBagConstraints.WEST;
-            constraintsArchiveIntervalLabel.ipadx = -5;
-            constraintsArchiveIntervalLabel.insets = new java.awt.Insets(5, 14, 10, 1);
+            constraintsArchiveIntervalLabel.insets = new java.awt.Insets(2,2,2,2);
             getJPanelArchive().add(getArchiveIntervalLabel(), constraintsArchiveIntervalLabel);
 
             java.awt.GridBagConstraints constraintsArchiveIntervalComboBox = new java.awt.GridBagConstraints();
-            constraintsArchiveIntervalComboBox.gridx = 2; constraintsArchiveIntervalComboBox.gridy = 2;
+            constraintsArchiveIntervalComboBox.gridx = 1; constraintsArchiveIntervalComboBox.gridy = 1;
             constraintsArchiveIntervalComboBox.fill = java.awt.GridBagConstraints.HORIZONTAL;
             constraintsArchiveIntervalComboBox.anchor = java.awt.GridBagConstraints.WEST;
-            constraintsArchiveIntervalComboBox.weightx = 1.0;
-            constraintsArchiveIntervalComboBox.ipadx = 10;
-            constraintsArchiveIntervalComboBox.insets = new java.awt.Insets(2, 2, 6, 8);
+            constraintsArchiveIntervalComboBox.insets = new java.awt.Insets(2,2,2,2);
             getJPanelArchive().add(getArchiveIntervalComboBox(), constraintsArchiveIntervalComboBox);
 
             java.awt.GridBagConstraints constraintsArchiveTypeComboBox = new java.awt.GridBagConstraints();
-            constraintsArchiveTypeComboBox.gridx = 2; constraintsArchiveTypeComboBox.gridy = 1;
+            constraintsArchiveTypeComboBox.gridx = 1; constraintsArchiveTypeComboBox.gridy = 0;
             constraintsArchiveTypeComboBox.fill = java.awt.GridBagConstraints.HORIZONTAL;
-            constraintsArchiveTypeComboBox.anchor = java.awt.GridBagConstraints.WEST;
             constraintsArchiveTypeComboBox.weightx = 1.0;
-            constraintsArchiveTypeComboBox.ipadx = 10;
-            constraintsArchiveTypeComboBox.insets = new java.awt.Insets(0, 2, 2, 8);
+            constraintsArchiveTypeComboBox.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsArchiveTypeComboBox.insets = new java.awt.Insets(2,2,2,2);
             getJPanelArchive().add(getArchiveTypeComboBox(), constraintsArchiveTypeComboBox);
         } catch (java.lang.Throwable ivjExc) {
             handleException(ivjExc);
@@ -313,7 +298,7 @@ private javax.swing.JPanel getJPanelHolder() {
             java.awt.GridBagConstraints constraintsUnitOfMeasureLabel = new java.awt.GridBagConstraints();
             constraintsUnitOfMeasureLabel.gridx = 0; constraintsUnitOfMeasureLabel.gridy = 0;
             constraintsUnitOfMeasureLabel.anchor = java.awt.GridBagConstraints.WEST;
-            constraintsUnitOfMeasureLabel.insets = new java.awt.Insets(5, 5, 5, 5);
+            constraintsUnitOfMeasureLabel.insets = new java.awt.Insets(2,2,2,2);
             getJPanelHolder().add(getUnitOfMeasureLabel(), constraintsUnitOfMeasureLabel);
 
             java.awt.GridBagConstraints constraintsUnitOfMeasureComboBox = new java.awt.GridBagConstraints();
@@ -322,43 +307,43 @@ private javax.swing.JPanel getJPanelHolder() {
             constraintsUnitOfMeasureComboBox.anchor = java.awt.GridBagConstraints.WEST;
             constraintsUnitOfMeasureComboBox.weightx = 1.0;
             constraintsUnitOfMeasureComboBox.gridwidth = 3;
-            constraintsUnitOfMeasureComboBox.insets = new java.awt.Insets(5,5,5,5);
+            constraintsUnitOfMeasureComboBox.insets = new java.awt.Insets(2,2,2,2);
             getJPanelHolder().add(getUnitOfMeasureComboBox(), constraintsUnitOfMeasureComboBox);
 
             java.awt.GridBagConstraints constraintsJLabelDecimalPositons = new java.awt.GridBagConstraints();
             constraintsJLabelDecimalPositons.gridx = 0; constraintsJLabelDecimalPositons.gridy = 1;
             constraintsJLabelDecimalPositons.anchor = java.awt.GridBagConstraints.WEST;
-            constraintsJLabelDecimalPositons.insets = new java.awt.Insets(5,5,5,5);
+            constraintsJLabelDecimalPositons.insets = new java.awt.Insets(2,2,2,2);
             getJPanelHolder().add(getJLabelDecimalPositions(), constraintsJLabelDecimalPositons);
 
             java.awt.GridBagConstraints constraintsDecimalPlacesSpinner = new java.awt.GridBagConstraints();
             constraintsDecimalPlacesSpinner.gridx = 1; constraintsDecimalPlacesSpinner.gridy = 1;
             constraintsDecimalPlacesSpinner.anchor = java.awt.GridBagConstraints.WEST;
-            constraintsDecimalPlacesSpinner.insets = new java.awt.Insets(5,5,5,5);
+            constraintsDecimalPlacesSpinner.insets = new java.awt.Insets(2,2,2,2);
             getJPanelHolder().add(getDecimalPlacesSpinner(), constraintsDecimalPlacesSpinner);
             
             java.awt.GridBagConstraints constraintsStateGroupLabel = new java.awt.GridBagConstraints();
             constraintsStateGroupLabel.gridx = 2; constraintsStateGroupLabel.gridy = 1;
             constraintsStateGroupLabel.anchor = java.awt.GridBagConstraints.WEST;
-            constraintsStateGroupLabel.insets = new java.awt.Insets( 5, 5, 5, 5);
+            constraintsStateGroupLabel.insets = new java.awt.Insets(2,2,2,2);
             getJPanelHolder().add(getStateGroupLabel(), constraintsStateGroupLabel);
             
             java.awt.GridBagConstraints constraintsStateGroupComboBox = new java.awt.GridBagConstraints();
             constraintsStateGroupComboBox.gridx = 3; constraintsStateGroupComboBox.gridy = 1;
             constraintsStateGroupComboBox.anchor = java.awt.GridBagConstraints.WEST;
-            constraintsStateGroupComboBox.insets = new java.awt.Insets(5,5,5,5);
+            constraintsStateGroupComboBox.insets = new java.awt.Insets(2,2,2,2);
             getJPanelHolder().add(getStateGroupComboBox(), constraintsStateGroupComboBox);
             
             java.awt.GridBagConstraints constraintJLabelMeterDials = new java.awt.GridBagConstraints();
             constraintJLabelMeterDials.gridx = 0; constraintJLabelMeterDials.gridy = 2;
             constraintJLabelMeterDials.anchor = java.awt.GridBagConstraints.WEST;
-            constraintJLabelMeterDials.insets = new java.awt.Insets(5,5,5,5);
+            constraintJLabelMeterDials.insets = new java.awt.Insets(2,2,2,2);
             getJPanelHolder().add(getJLabelMeterDials(), constraintJLabelMeterDials);
 
             java.awt.GridBagConstraints constraintsMeterDialsSpinner = new java.awt.GridBagConstraints();
             constraintsMeterDialsSpinner.gridx = 1; constraintsMeterDialsSpinner.gridy = 2;
             constraintsMeterDialsSpinner.anchor = java.awt.GridBagConstraints.WEST;
-            constraintsMeterDialsSpinner.insets = new java.awt.Insets(5,5,5,5);
+            constraintsMeterDialsSpinner.insets = new java.awt.Insets(2,2,2,2);
             getJPanelHolder().add(getMeterDialsSpinner(), constraintsMeterDialsSpinner);
             
         } catch (java.lang.Throwable ivjExc) {
@@ -377,9 +362,7 @@ private javax.swing.JComboBox getUnitOfMeasureComboBox() {
         try {
             unitOfMeasureComboBox = new javax.swing.JComboBox();
             unitOfMeasureComboBox.setName("UnitOfMeasureComboBox");
-            unitOfMeasureComboBox.setPreferredSize(new java.awt.Dimension(126, 24));
             unitOfMeasureComboBox.setFont(new java.awt.Font("dialog", 0, 14));
-            unitOfMeasureComboBox.setMinimumSize(new java.awt.Dimension(90, 24));
         } catch (java.lang.Throwable ivjExc) {
             handleException(ivjExc);
         }
@@ -397,10 +380,7 @@ private javax.swing.JLabel getUnitOfMeasureLabel() {
             unitOfMeasureLabel = new javax.swing.JLabel();
             unitOfMeasureLabel.setName("UnitOfMeasureLabel");
             unitOfMeasureLabel.setText("Unit of Measure:");
-            unitOfMeasureLabel.setMaximumSize(new java.awt.Dimension(103, 16));
-            unitOfMeasureLabel.setPreferredSize(new java.awt.Dimension(103, 16));
             unitOfMeasureLabel.setFont(new java.awt.Font("dialog", 0, 14));
-            unitOfMeasureLabel.setMinimumSize(new java.awt.Dimension(103, 16));
         } catch (java.lang.Throwable ivjExc) {
             handleException(ivjExc);
         }
@@ -418,8 +398,6 @@ private javax.swing.JLabel getStateGroupLabel() {
             stateGroupLabel = new javax.swing.JLabel();
             stateGroupLabel.setName("StateGroupLabel");
             stateGroupLabel.setText("State Group:");
-            stateGroupLabel.setMinimumSize(new Dimension(85, 22));
-            stateGroupLabel.setPreferredSize(new Dimension(85, 22));
             stateGroupLabel.setFont(new java.awt.Font("dialog", 0, 14));
          } catch (java.lang.Throwable ivjExc) {
             handleException(ivjExc);
@@ -437,8 +415,6 @@ private javax.swing.JComboBox getStateGroupComboBox() {
         try {
             stateGroupComboBox = new javax.swing.JComboBox();
             stateGroupComboBox.setName("StateGroupComboBox");
-            stateGroupComboBox.setPreferredSize(new Dimension( 120, 20));
-            stateGroupComboBox.setMinimumSize(new Dimension( 120, 20));
         } catch (java.lang.Throwable ivjExc) {
             handleException(ivjExc);
         }
@@ -501,29 +477,22 @@ private void initConnections() throws java.lang.Exception {
 private void initialize() {
     try {
         setName("AnalogBasePanel");
-        setPreferredSize(new java.awt.Dimension(300, 102));
         setLayout(new java.awt.GridBagLayout());
-        setSize(386, 177);
-        setMinimumSize(new java.awt.Dimension(0, 0));
 
         java.awt.GridBagConstraints constraintsJPanelArchive = new java.awt.GridBagConstraints();
-        constraintsJPanelArchive.gridx = 1; constraintsJPanelArchive.gridy = 2;
+        constraintsJPanelArchive.gridx = 0; constraintsJPanelArchive.gridy = 1;
         constraintsJPanelArchive.fill = java.awt.GridBagConstraints.BOTH;
         constraintsJPanelArchive.anchor = java.awt.GridBagConstraints.WEST;
-        constraintsJPanelArchive.weightx = 1.0;
-        constraintsJPanelArchive.weighty = 1.0;
-        constraintsJPanelArchive.ipadx = 136;
-        constraintsJPanelArchive.ipady = 8;
-        constraintsJPanelArchive.insets = new java.awt.Insets(6, 4, 18, 2);
+        constraintsJPanelArchive.insets = new java.awt.Insets(2,2,2,2);
         add(getJPanelArchive(), constraintsJPanelArchive);
 
         java.awt.GridBagConstraints constraintsJPanelHolder = new java.awt.GridBagConstraints();
-        constraintsJPanelHolder.gridx = 1; constraintsJPanelHolder.gridy = 1;
+        constraintsJPanelHolder.gridx = 0; constraintsJPanelHolder.gridy = 0;
         constraintsJPanelHolder.fill = java.awt.GridBagConstraints.BOTH;
         constraintsJPanelHolder.anchor = java.awt.GridBagConstraints.WEST;
-        constraintsJPanelHolder.weightx = 1.0;
         constraintsJPanelHolder.weighty = 1.0;
-        constraintsJPanelHolder.insets = new java.awt.Insets(2, 4, 6, 2);
+        constraintsJPanelHolder.weightx = 1.0;
+        constraintsJPanelHolder.insets = new java.awt.Insets(2,2,2,2);
         add(getJPanelHolder(), constraintsJPanelHolder);
         initConnections();
     } catch (java.lang.Throwable ivjExc) {

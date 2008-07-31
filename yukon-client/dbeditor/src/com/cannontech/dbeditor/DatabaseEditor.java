@@ -13,6 +13,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +37,7 @@ import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeSelectionModel;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.configuration.model.Category;
@@ -2010,11 +2012,8 @@ private com.cannontech.common.gui.util.TreeViewPanel getTreeViewPanel() {
 	if( this.treeViewPanel == null )
 	{
 		treeViewPanel = new com.cannontech.common.gui.util.TreeViewPanel();
-		
-		//treeViewPanel.addItemListener( this );
-
-		getTree().getSelectionModel().setSelectionMode(
-			javax.swing.tree.TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION );
+		getTree().getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION );
+		getTree().setLargeModel(true);
 	}
 
 	return this.treeViewPanel;
@@ -2050,12 +2049,17 @@ public void handleDBChangeMsg( DBChangeMsg msg, LiteBase liteBase ) {
 		    (msg.getTypeOfChange() == DBChangeMsg.CHANGE_TYPE_DELETE ? "DELETE" :
 		    (msg.getTypeOfChange() == DBChangeMsg.CHANGE_TYPE_UPDATE ? "UPDATE" : ""))) 
 		    + " Database Change Message received from: " + msg.getUserName() + " at " + msg.getSource());
+		
+		if (!SwingUtilities.isEventDispatchThread()) {
+		    CTILogger.error("oops");
+		}
 
 		synchronized( getInternalEditorFrames() ) {
 			for( int i = 0; i < getInternalEditorFrames().length; i++ ) {
 				//Be sure we have an owner tree node for each editor frame.
-				if( getInternalEditorFrames()[i].getOwnerNode() != null ) {						
-					PropertyPanel current = (PropertyPanel)getEditorFrame(getInternalEditorFrames()[i].getOwnerNode()).getContentPane();
+			    JTreeEditorFrame frame = getInternalEditorFrames()[i];
+			    if(frame != null && frame.getOwnerNode() != null) {
+					PropertyPanel current = (PropertyPanel)getEditorFrame(frame.getOwnerNode()).getContentPane();
 					//handle the GUI change in a seperate location
 					DBChangeGUIHandler changeGUIHandler = new DBChangeGUIHandler( current, txtMsg );
 					changeGUIHandler.handleGUIChange( msg );
@@ -3168,8 +3172,7 @@ private boolean updateDBPersistent(com.cannontech.database.db.DBPersistent objec
      */
     private void updateTreePanel(com.cannontech.database.data.lite.LiteBase lBase, int changeType) {
         getTreeViewPanel().processDBChange(changeType, lBase);
-        getTreeViewPanel().getTree().invalidate();
-        getTreeViewPanel().getTree().validate();
+        getTreeViewPanel().revalidate();
     }
 
 /**
