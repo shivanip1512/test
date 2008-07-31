@@ -23,13 +23,13 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 /**
  * Controller for Thermostat operations
  */
+@CheckRole(ResidentialCustomerRole.ROLEID)
+@CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_THERMOSTATS_ALL)
 @Controller
 public class ThermostatController extends AbstractThermostatController {
 
     private InventoryDao inventoryDao;
 
-    @CheckRole(ResidentialCustomerRole.ROLEID)
-    @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_THERMOSTATS_ALL)
     @RequestMapping(value = "/consumer/thermostat/view/all", method = RequestMethod.GET)
     public String viewAll(@ModelAttribute("customerAccount") CustomerAccount account, 
             ModelMap map) {
@@ -40,8 +40,6 @@ public class ThermostatController extends AbstractThermostatController {
         return "consumer/allThermostats.jsp";
     }
 
-    @CheckRole(ResidentialCustomerRole.ROLEID)
-    @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_THERMOSTATS_ALL)
     @RequestMapping(value = "/consumer/thermostat/view/allSelected", method = RequestMethod.POST)
     public String allSelected(@ModelAttribute("thermostatIds") List<Integer> thermostatIds, 
             @ModelAttribute("customerAccount") CustomerAccount account,

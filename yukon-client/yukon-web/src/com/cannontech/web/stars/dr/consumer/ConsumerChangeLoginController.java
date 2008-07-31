@@ -15,12 +15,12 @@ import com.cannontech.web.login.ChangeLoginError;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
+@CheckRole(ResidentialCustomerRole.ROLEID)
+@CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN)
 @Controller
 @RequestMapping("/consumer/changelogin")
 public class ConsumerChangeLoginController extends AbstractConsumerController {
 
-    @CheckRole(ResidentialCustomerRole.ROLEID)
-    @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN)
     @RequestMapping(method = RequestMethod.GET)
     public String view(HttpServletRequest request, HttpServletResponse response, ModelMap map) throws Exception {
         

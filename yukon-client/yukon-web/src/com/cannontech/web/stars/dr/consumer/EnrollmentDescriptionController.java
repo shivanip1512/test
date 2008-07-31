@@ -19,12 +19,12 @@ import com.cannontech.web.stars.dr.consumer.displayable.dao.DisplayableEnrollmen
 import com.cannontech.web.stars.dr.consumer.displayable.model.DisplayableEnrollment;
 import com.cannontech.web.stars.dr.consumer.displayable.model.DisplayableEnrollment.DisplayableEnrollmentProgram;
 
+@CheckRole(ResidentialCustomerRole.ROLEID)
+@CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_ENROLLMENT)
 @Controller
 public class EnrollmentDescriptionController extends AbstractConsumerController {
 	private DisplayableEnrollmentDao displayableEnrollmentDao;
 
-	@CheckRole(ResidentialCustomerRole.ROLEID)
-	@CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_ENROLLMENT)
 	@RequestMapping(value = "/consumer/enrollment/details", method = RequestMethod.GET)
 	public String view(@ModelAttribute("customerAccount") CustomerAccount customerAccount, 
 			Integer programId, Integer categoryId, YukonUserContext yukonUserContext, ModelMap map) {

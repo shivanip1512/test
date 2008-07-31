@@ -1,17 +1,21 @@
-package com.cannontech.servlet;
+package com.cannontech.web.spring;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.BeansException;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
+import org.springframework.web.servlet.HandlerExecutionChain;
+import org.springframework.web.servlet.HandlerInterceptor;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.servlet.filter.ErrorHelperFilter;
 import com.cannontech.spring.CannonXmlWebApplicationContext;
 
 public class CannonDispatcherServlet extends DispatcherServlet {
+    private HandlerInterceptor securityInterceptor;
     
     @Override
     public void init(ServletConfig servletConfig) throws ServletException {
@@ -21,6 +25,7 @@ public class CannonDispatcherServlet extends DispatcherServlet {
         }
         try {
             super.init(servletConfig);
+            setSecurityInterceptor();
         } catch (ServletException e) {
             handleException(servletConfig, e);
             throw e;
@@ -31,12 +36,28 @@ public class CannonDispatcherServlet extends DispatcherServlet {
             handleException(servletConfig, t);
             throw new ServletException("Wrapping an unknown error", t);
         }
+        
+    }
+    
+    @Override
+    protected HandlerExecutionChain getHandler(HttpServletRequest request,
+            boolean cache) throws Exception {
+        
+        HandlerExecutionChain handler = super.getHandler(request, cache);
+        if (handler == null) return null;
+        
+        handler.addInterceptor(securityInterceptor);
+        return handler;
     }
     
     @Override
     protected WebApplicationContext initWebApplicationContext() throws BeansException {
         setContextClass(CannonXmlWebApplicationContext.class);
         return super.initWebApplicationContext();
+    }
+    
+    private void setSecurityInterceptor() {
+        securityInterceptor = (HandlerInterceptor) this.getWebApplicationContext().getBean("webSecurityInterceptor");
     }
     
     private void handleException(ServletConfig servletConfig, Throwable e) {

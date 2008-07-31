@@ -31,14 +31,14 @@ import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.consumer.displayable.model.DisplayableInventory;
 
+@CheckRole(ResidentialCustomerRole.ROLEID)
+@CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_OPT_OUT)
 @Controller
 public class OptOutController extends AbstractConsumerController {
     private AuthDao authDao;
     private DateFormattingService dateFormattingService;
     private OptOutService optOutService;
     
-    @CheckRole(ResidentialCustomerRole.ROLEID)
-    @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_OPT_OUT)
     @RequestMapping(value = "/consumer/optout", method = RequestMethod.GET)
     public String view(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
             YukonUserContext yukonUserContext, ModelMap map) {
@@ -49,8 +49,6 @@ public class OptOutController extends AbstractConsumerController {
     	return "consumer/optout/optOut.jsp";
     }
 
-    @CheckRole(ResidentialCustomerRole.ROLEID)
-    @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_OPT_OUT)
     @RequestMapping(value = "/consumer/optout/view2", method = RequestMethod.POST)
     public String view2(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
             YukonUserContext yukonUserContext, String startDate, 
@@ -84,8 +82,6 @@ public class OptOutController extends AbstractConsumerController {
         return "consumer/optout/optOutList.jsp";
     }
     
-    @CheckRole(ResidentialCustomerRole.ROLEID)
-    @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_OPT_OUT)
     @RequestMapping("/consumer/optout/confirm")
     public String confirm(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
             YukonUserContext yukonUserContext, String startDate, int durationInDays,
@@ -104,8 +100,6 @@ public class OptOutController extends AbstractConsumerController {
         return "consumer/optout/optOutConfirm.jsp";
     }
     
-    @CheckRole(ResidentialCustomerRole.ROLEID)
-    @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_OPT_OUT)
     @RequestMapping("/consumer/optout/update")
     public String update(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
             YukonUserContext yukonUserContext, String startDate, int durationInDays,

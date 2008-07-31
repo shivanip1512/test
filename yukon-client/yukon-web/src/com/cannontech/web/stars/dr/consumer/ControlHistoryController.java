@@ -26,14 +26,14 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.consumer.displayable.model.DisplayableScheduledOptOut;
 import com.cannontech.web.stars.dr.consumer.displayable.model.DisplayableProgram;
 
+@CheckRole(ResidentialCustomerRole.ROLEID)
+@CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY)
 @Controller
 public class ControlHistoryController extends AbstractConsumerController {
     private static final String viewName = "consumer/controlhistory/controlHistory.jsp";
     private ControlHistoryService controlHistoryService;
     private ControlHistoryEventDao controlHistoryEventDao;
     
-    @CheckRole(ResidentialCustomerRole.ROLEID)
-    @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY)
     @RequestMapping(value = "/consumer/controlhistory", method = RequestMethod.GET)
     public String view(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
             YukonUserContext yukonUserContext, ModelMap map) {
@@ -67,8 +67,6 @@ public class ControlHistoryController extends AbstractConsumerController {
         return viewName;
     }
     
-    @CheckRole(ResidentialCustomerRole.ROLEID)
-    @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY)
     @RequestMapping(value = "/consumer/controlhistory/completeHistoryView", method = RequestMethod.GET)
     public String completeHistoryView(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
             int programId, YukonUserContext yukonUserContext, ModelMap map) {
@@ -92,8 +90,6 @@ public class ControlHistoryController extends AbstractConsumerController {
         return "consumer/controlhistory/completeControlHistory.jsp";
     }
     
-    @CheckRole(ResidentialCustomerRole.ROLEID)
-    @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY)
     @RequestMapping(value = "/consumer/controlhistory/innerCompleteHistoryView")
     public String innerCompleteHistoryView(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
             int programId, String controlPeriod, YukonUserContext yukonUserContext,

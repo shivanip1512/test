@@ -15,6 +15,8 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
+@CheckRole(ResidentialCustomerRole.ROLEID)
+@CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_QUESTIONS_FAQ)
 @Controller
 @RequestMapping("/consumer/faq")
 public class ConsumerFAQController extends AbstractConsumerController {
@@ -23,8 +25,6 @@ public class ConsumerFAQController extends AbstractConsumerController {
     private static final String answer = ".answer";
     private static final String subject = ".subject";
 
-    @CheckRole(ResidentialCustomerRole.ROLEID)
-    @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_QUESTIONS_FAQ)
     @RequestMapping(method = RequestMethod.GET)
     public String view(YukonUserContext yukonUserContext, ModelMap map) {
 

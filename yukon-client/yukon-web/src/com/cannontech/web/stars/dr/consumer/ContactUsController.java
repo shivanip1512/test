@@ -10,12 +10,12 @@ import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
+@CheckRole(ResidentialCustomerRole.ROLEID)
+@CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_QUESTIONS_UTIL)
 @Controller
 @RequestMapping("/consumer/contactus")
 public class ContactUsController extends AbstractConsumerController {
     
-    @CheckRole(ResidentialCustomerRole.ROLEID)
-    @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_QUESTIONS_UTIL)
     @RequestMapping(method = RequestMethod.GET)
     public String view(@ModelAttribute("customerAccount") CustomerAccount customerAccount) {
         return "consumer/contactUs.jsp";

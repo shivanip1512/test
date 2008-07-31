@@ -47,6 +47,8 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 /**
  * Controller for Thermostat schedule operations
  */
+@CheckRole(ResidentialCustomerRole.ROLEID)
+@CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_HARDWARES_THERMOSTAT)
 @Controller
 public class ThermostatScheduleController extends AbstractThermostatController {
 
@@ -55,8 +57,6 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     private CustomerDao customerDao;
     private ThermostatService thermostatService;
 
-    @CheckRole(ResidentialCustomerRole.ROLEID)
-    @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_HARDWARES_THERMOSTAT)
     @RequestMapping(value = "/consumer/thermostat/schedule/view", method = RequestMethod.GET)
     public String view(@ModelAttribute("customerAccount") CustomerAccount account, 
             @ModelAttribute("thermostatIds") List<Integer> thermostatIds,
@@ -142,8 +142,6 @@ public class ThermostatScheduleController extends AbstractThermostatController {
         return "consumer/thermostatSchedule.jsp";
     }
 
-    @CheckRole(ResidentialCustomerRole.ROLEID)
-    @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_HARDWARES_THERMOSTAT)
     @RequestMapping(value = "/consumer/thermostat/schedule/save", method = RequestMethod.POST)
     public String save(@ModelAttribute("customerAccount") CustomerAccount account,
             @ModelAttribute("thermostatIds") List<Integer> thermostatIds,
@@ -253,8 +251,6 @@ public class ThermostatScheduleController extends AbstractThermostatController {
         return "redirect:/spring/stars/consumer/thermostat/schedule/complete";
     }
 
-    @CheckRole(ResidentialCustomerRole.ROLEID)
-    @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_HARDWARES_THERMOSTAT)
     @RequestMapping(value = "/consumer/thermostat/schedule/complete", method = RequestMethod.GET)
     public String updateComplete(@ModelAttribute("thermostatIds") List<Integer> thermostatIds,
             String message, LiteYukonUser user, ModelMap map) throws Exception {
@@ -288,15 +284,11 @@ public class ThermostatScheduleController extends AbstractThermostatController {
         return "consumer/actionComplete.jsp";
     }
 
-    @CheckRole(ResidentialCustomerRole.ROLEID)
-    @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_HARDWARES_THERMOSTAT)
     @RequestMapping(value = "/consumer/thermostat/schedule/hints", method = RequestMethod.GET)
     public String hints(ModelMap map) {
         return "consumer/scheduleHints.jsp";
     }
 
-    @CheckRole(ResidentialCustomerRole.ROLEID)
-    @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_HARDWARES_THERMOSTAT)
     @RequestMapping(value = "/consumer/thermostat/schedule/view/saved", method = RequestMethod.GET)
     public String viewSaved(@ModelAttribute("customerAccount") CustomerAccount account,
             @ModelAttribute("thermostatIds") List<Integer> thermostatIds,
@@ -315,8 +307,6 @@ public class ThermostatScheduleController extends AbstractThermostatController {
         return "consumer/savedSchedules.jsp";
     }
     
-    @CheckRole(ResidentialCustomerRole.ROLEID)
-    @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_HARDWARES_THERMOSTAT)
     @RequestMapping(value = "/consumer/thermostat/schedule/saved", method = RequestMethod.POST, params = "delete")
     public String delete(HttpServletRequest request, @ModelAttribute("customerAccount") CustomerAccount account,
     		String thermostatIds, Integer scheduleId, LiteYukonUser user, ModelMap map) throws Exception {
@@ -332,8 +322,6 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     	return "redirect:/spring/stars/consumer/thermostat/schedule/view/saved";
     }
     
-    @CheckRole(ResidentialCustomerRole.ROLEID)
-    @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_HARDWARES_THERMOSTAT)
     @RequestMapping(value = "/consumer/thermostat/schedule/saved", method = RequestMethod.POST, params = "view")
     public String viewSchedule(String thermostatIds, Integer scheduleId, ModelMap map) throws Exception {
     	map.addAttribute("scheduleId", scheduleId);

@@ -22,7 +22,11 @@
     <bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter"/>
     <bean class="org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter"/>
 
-    <bean id="webSecurityAdvice" class="com.cannontech.web.security.WebSecurityAdvice"/>
+    <bean id="webSecurityInterceptor" class="com.cannontech.web.security.WebSecurityInterceptor"/>
+
+    <bean id="webSecurityAnnotationProcessor" class="com.cannontech.web.security.WebSecurityAnnotationProcessor"/>
+    
+    <bean id="webSecurityChecker" class="com.cannontech.web.security.WebSecurityChecker"/>
     
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
         <property name="maxUploadSize" value="-1"/> <!-- no limit -->

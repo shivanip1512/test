@@ -17,6 +17,7 @@ import com.cannontech.util.ServletUtil;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.stars.dr.consumer.model.GraphViewType;
 
+@CheckRole(TrendingRole.ROLEID)
 @Controller
 public class TrendingController extends AbstractConsumerController {
 
@@ -27,7 +28,6 @@ public class TrendingController extends AbstractConsumerController {
 		this.graphDao = graphDao;
 	}
 
-	@CheckRole(TrendingRole.ROLEID)
 	@RequestMapping(value = "/consumer/trending/view", method = RequestMethod.GET)
 	public String view(LiteYukonUser user, HttpSession session, ModelMap map, Integer gdefid) {
 

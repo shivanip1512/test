@@ -247,20 +247,20 @@
 
     <servlet>
         <servlet-name>common</servlet-name>
-        <servlet-class>com.cannontech.servlet.CannonDispatcherServlet</servlet-class>
+        <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
     <servlet>
         <servlet-name>login</servlet-name>
-        <servlet-class>com.cannontech.servlet.CannonDispatcherServlet</servlet-class>
+        <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
    </servlet> 
    
 	<servlet>
 		<servlet-name>deviceConfiguration</servlet-name>
 		<servlet-class>
-			com.cannontech.servlet.CannonDispatcherServlet
+			com.cannontech.web.spring.CannonDispatcherServlet
 		</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
@@ -268,7 +268,7 @@
 	<servlet>
 		<servlet-name>bulk</servlet-name>
 		<servlet-class>
-			com.cannontech.servlet.CannonDispatcherServlet
+			com.cannontech.web.spring.CannonDispatcherServlet
 		</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
@@ -276,7 +276,7 @@
 	<servlet>
 		<servlet-name>picker</servlet-name>
 		<servlet-class>
-			com.cannontech.servlet.CannonDispatcherServlet
+			com.cannontech.web.spring.CannonDispatcherServlet
 		</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
@@ -284,7 +284,7 @@
 	<servlet>
 		<servlet-name>jws</servlet-name>
 		<servlet-class>
-			com.cannontech.servlet.CannonDispatcherServlet
+			com.cannontech.web.spring.CannonDispatcherServlet
 		</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
@@ -292,14 +292,14 @@
 	<servlet>
 		<servlet-name>dynamicBilling</servlet-name>
 		<servlet-class>
-			com.cannontech.servlet.CannonDispatcherServlet
+			com.cannontech.web.spring.CannonDispatcherServlet
 		</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	<servlet>
 		<servlet-name>logging</servlet-name>
 		<servlet-class>
-			com.cannontech.servlet.CannonDispatcherServlet
+			com.cannontech.web.spring.CannonDispatcherServlet
 		</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
@@ -307,7 +307,7 @@
 	<servlet>
 		<servlet-name>lucene-index</servlet-name>
 		<servlet-class>
-			com.cannontech.servlet.CannonDispatcherServlet
+			com.cannontech.web.spring.CannonDispatcherServlet
 		</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
@@ -315,7 +315,7 @@
 	<servlet>
 		<servlet-name>editor</servlet-name>
 		<servlet-class>
-			com.cannontech.servlet.CannonDispatcherServlet
+			com.cannontech.web.spring.CannonDispatcherServlet
 		</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
@@ -323,7 +323,7 @@
 	<servlet>
 		<servlet-name>amr</servlet-name>
 		<servlet-class>
-			com.cannontech.servlet.CannonDispatcherServlet
+			com.cannontech.web.spring.CannonDispatcherServlet
 		</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
@@ -331,7 +331,7 @@
 	<servlet>
 		<servlet-name>csr</servlet-name>
 		<servlet-class>
-			com.cannontech.servlet.CannonDispatcherServlet
+			com.cannontech.web.spring.CannonDispatcherServlet
 		</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
@@ -339,7 +339,7 @@
 	<servlet>
 		<servlet-name>chart</servlet-name>
 		<servlet-class>
-			com.cannontech.servlet.CannonDispatcherServlet
+			com.cannontech.web.spring.CannonDispatcherServlet
 		</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
@@ -347,7 +347,7 @@
 	<servlet>
 		<servlet-name>group</servlet-name>
 		<servlet-class>
-			com.cannontech.servlet.CannonDispatcherServlet
+			com.cannontech.web.spring.CannonDispatcherServlet
 		</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
@@ -355,7 +355,7 @@
 	<servlet>
 		<servlet-name>httpRemote</servlet-name>
 		<servlet-class>
-			com.cannontech.servlet.CannonDispatcherServlet
+			com.cannontech.web.spring.CannonDispatcherServlet
 		</servlet-class>
 		<load-on-startup>2</load-on-startup>
 	</servlet>
@@ -363,7 +363,7 @@
 	<servlet>
 		<servlet-name>loadProfile</servlet-name>
 		<servlet-class>
-			com.cannontech.servlet.CannonDispatcherServlet
+			com.cannontech.web.spring.CannonDispatcherServlet
 		</servlet-class>
 		<load-on-startup>2</load-on-startup>
 	</servlet>
@@ -371,7 +371,7 @@
 	<servlet>
 		<servlet-name>capcontrol</servlet-name>
 		<servlet-class>
-			com.cannontech.servlet.CannonDispatcherServlet
+			com.cannontech.web.spring.CannonDispatcherServlet
 		</servlet-class>
 		<load-on-startup>2</load-on-startup>
 	</servlet>
@@ -379,7 +379,7 @@
 	<servlet>
 		<servlet-name>multispeak</servlet-name>
 		<servlet-class>
-			com.cannontech.servlet.CannonDispatcherServlet
+			com.cannontech.web.spring.CannonDispatcherServlet
 		</servlet-class>
 		<load-on-startup>2</load-on-startup>
 	</servlet>
@@ -387,7 +387,7 @@
 	<servlet>
 		<servlet-name>macsscheduler</servlet-name>
 		<servlet-class>
-			com.cannontech.servlet.CannonDispatcherServlet
+			com.cannontech.web.spring.CannonDispatcherServlet
 		</servlet-class>
 		<load-on-startup>2</load-on-startup>
 	</servlet>	
@@ -395,7 +395,7 @@
 	<servlet>
 		<servlet-name>stars</servlet-name>
 		<servlet-class>
-			com.cannontech.servlet.CannonDispatcherServlet
+			com.cannontech.web.spring.CannonDispatcherServlet
 		</servlet-class>
 		<init-param>
 			<param-name>contextConfigLocation</param-name>
@@ -412,7 +412,7 @@
 	<servlet>
 		<servlet-name>widgetDispatcher</servlet-name>
 		<servlet-class>
-			com.cannontech.servlet.CannonDispatcherServlet
+			com.cannontech.web.spring.CannonDispatcherServlet
 		</servlet-class>
 		<load-on-startup>2</load-on-startup>
 	</servlet>
@@ -420,7 +420,7 @@
 	<servlet>
 		<servlet-name>componentDispatcher</servlet-name>
 		<servlet-class>
-			com.cannontech.servlet.CannonDispatcherServlet
+			com.cannontech.web.spring.CannonDispatcherServlet
 		</servlet-class>
 		<load-on-startup>2</load-on-startup>
 	</servlet>
@@ -428,7 +428,7 @@
 	<servlet>
 		<servlet-name>dataUpdater</servlet-name>
 		<servlet-class>
-			com.cannontech.servlet.CannonDispatcherServlet
+			com.cannontech.web.spring.CannonDispatcherServlet
 		</servlet-class>
 		<load-on-startup>3</load-on-startup>
 	</servlet>
@@ -436,7 +436,7 @@
 	<servlet>
 		<servlet-name>static</servlet-name>
 		<servlet-class>
-			com.cannontech.servlet.CannonDispatcherServlet
+			com.cannontech.web.spring.CannonDispatcherServlet
 		</servlet-class>
 		<load-on-startup>2</load-on-startup>
 	</servlet>
@@ -444,7 +444,7 @@
 	<servlet>
 		<servlet-name>debug</servlet-name>
 		<servlet-class>
-			com.cannontech.servlet.CannonDispatcherServlet
+			com.cannontech.web.spring.CannonDispatcherServlet
 		</servlet-class>
 		<load-on-startup>2</load-on-startup>
 	</servlet>
@@ -452,7 +452,7 @@
 	<servlet>
 		<servlet-name>reports</servlet-name>
 		<servlet-class>
-			com.cannontech.servlet.CannonDispatcherServlet
+			com.cannontech.web.spring.CannonDispatcherServlet
 		</servlet-class>
 		<load-on-startup>2</load-on-startup>
 	</servlet>
@@ -460,7 +460,7 @@
 	<servlet>
 		<servlet-name>layout</servlet-name>
 		<servlet-class>
-			com.cannontech.servlet.CannonDispatcherServlet
+			com.cannontech.web.spring.CannonDispatcherServlet
 		</servlet-class>
 		<load-on-startup>3</load-on-startup>
 	</servlet>

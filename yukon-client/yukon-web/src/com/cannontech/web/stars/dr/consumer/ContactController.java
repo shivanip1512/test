@@ -34,14 +34,14 @@ import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.consumer.model.ContactNotificationOption;
 
+@CheckRole(ResidentialCustomerRole.ROLEID)
+@CheckRoleProperty(ResidentialCustomerRole.CONTACTS_ACCESS)
 @Controller
 public class ContactController extends AbstractConsumerController {
     private ContactDao contactDao;
     private CustomerDao customerDao;
     private YukonListDao yukonListDao;
 
-    @CheckRole(ResidentialCustomerRole.ROLEID)
-    @CheckRoleProperty(ResidentialCustomerRole.CONTACTS_ACCESS)
     @RequestMapping(value = "/consumer/contacts", method = RequestMethod.GET)
     public String view(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
             ModelMap map) {
@@ -84,8 +84,6 @@ public class ContactController extends AbstractConsumerController {
         return "consumer/contacts.jsp";
     }
 
-    @CheckRole(ResidentialCustomerRole.ROLEID)
-    @CheckRoleProperty(ResidentialCustomerRole.CONTACTS_ACCESS)
     @RequestMapping(value = "/consumer/contacts/newContact", method = RequestMethod.POST)
     public String newContact(LiteYukonUser user) {
 
@@ -102,8 +100,6 @@ public class ContactController extends AbstractConsumerController {
         return "redirect:/spring/stars/consumer/contacts";
     }
 
-    @CheckRole(ResidentialCustomerRole.ROLEID)
-    @CheckRoleProperty(ResidentialCustomerRole.CONTACTS_ACCESS)
     @RequestMapping(value = "/consumer/contacts/updateContact", method = RequestMethod.POST)
     public String updateContact(int contactId, String firstName,
             String lastName, LiteYukonUser user, HttpServletRequest request) {

@@ -24,11 +24,12 @@ import com.cannontech.stars.dr.program.model.ProgramEnrollmentResult;
 import com.cannontech.stars.dr.program.service.ProgramEnrollmentRequest;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.security.WebSecurityChecker;
 import com.cannontech.web.security.annotation.CheckRole;
-import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.consumer.displayable.dao.DisplayableEnrollmentDao;
 import com.cannontech.web.stars.dr.consumer.displayable.model.DisplayableEnrollment;
 
+@CheckRole(ResidentialCustomerRole.ROLEID)
 @Controller
 public class EnrollmentController extends AbstractConsumerController {
     private static final String KEY_PROGRAMID = "programId";
@@ -37,12 +38,12 @@ public class EnrollmentController extends AbstractConsumerController {
     private static final String KEY_ENROLL = "enroll";
     private DisplayableEnrollmentDao displayableEnrollmentDao;
     private AuthDao authDao;
+    private WebSecurityChecker webSecurityChecker;
     
-    @CheckRole(ResidentialCustomerRole.ROLEID)
-    @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_ENROLLMENT)
     @RequestMapping(value = "/consumer/enrollment", method = RequestMethod.GET)
     public String view(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
             YukonUserContext yukonUserContext, ModelMap map) {
+        webSecurityChecker.checkRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_ENROLLMENT);
         
         List<DisplayableEnrollment> enrollments = 
             displayableEnrollmentDao.getDisplayableEnrollments(customerAccount, yukonUserContext);
@@ -54,12 +55,11 @@ public class EnrollmentController extends AbstractConsumerController {
         return "consumer/enrollment/enrollment.jsp";
     }
     
-    @CheckRole(ResidentialCustomerRole.ROLEID)
-    @CheckRoleProperty(ResidentialCustomerRole.ENROLLMENT_PER_DEVICE)
     @RequestMapping(value = "/consumer/enrollmentDetail", method = RequestMethod.GET)
     public String viewDetail(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
     		YukonUserContext yukonUserContext, ModelMap map) {
-    	
+    	webSecurityChecker.checkRoleProperty(ResidentialCustomerRole.ENROLLMENT_PER_DEVICE);
+        
     	List<DisplayableEnrollment> enrollments = 
     		displayableEnrollmentDao.getDisplayableEnrollments(customerAccount, yukonUserContext);
     	map.addAttribute("enrollments", enrollments);
@@ -70,25 +70,24 @@ public class EnrollmentController extends AbstractConsumerController {
     	return "consumer/enrollment/enrollmentDetail.jsp";
     }
     
-    @CheckRole(ResidentialCustomerRole.ROLEID)
-    @CheckRoleProperty({ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_ENROLLMENT, ResidentialCustomerRole.ENROLLMENT_PER_DEVICE})
-    @SuppressWarnings("unchecked")
     @RequestMapping(value = "/consumer/enrollmentUpdate", method = RequestMethod.POST)
     public String update(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
             String json, String enrollPage, YukonUserContext yukonUserContext, HttpSession session, 
             ModelMap map) {
+        webSecurityChecker.checkRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_ENROLLMENT,
+                                             ResidentialCustomerRole.ENROLLMENT_PER_DEVICE);
         
         final LiteYukonUser user = yukonUserContext.getYukonUser();
         
         JSONObject jsonObj = new JSONObject(json);
         List<ProgramEnrollmentRequest> requestList = new ArrayList<ProgramEnrollmentRequest>();
         
-        Iterator<String> iterator = jsonObj.keys();
+        @SuppressWarnings("unchecked") Iterator<String> iterator = jsonObj.keys();
         while (iterator.hasNext()) {
             String key = iterator.next();
             JSONObject innerJSONObject = jsonObj.getJSONObject(key);
 
-            Iterator<String> iterator2 = innerJSONObject.keys();
+            @SuppressWarnings("unchecked") Iterator<String> iterator2 = innerJSONObject.keys();
             while (iterator2.hasNext()) {
                 String key2 = iterator2.next();
                 JSONObject value = innerJSONObject.getJSONObject(key2);
@@ -140,6 +139,11 @@ public class EnrollmentController extends AbstractConsumerController {
     @Autowired
     public void setAuthDao(AuthDao authDao) {
         this.authDao = authDao;
+    }
+    
+    @Autowired
+    public void setWebSecurityChecker(WebSecurityChecker webSecurityChecker) {
+        this.webSecurityChecker = webSecurityChecker;
     }
     
 }
