@@ -126,11 +126,13 @@
                 Click SUBMIT.
             </li>
         </ol>
-        <b>or</b><br><br>
-        Click <b>RUN PROGRAM</b> to revert to your thermostat program.
-        
     ]]></entry>
     
+    <entry key="yukon.dr.consumer.thermostat.runProgramText"><![CDATA[
+        <b>or</b><br><br>
+        Click <b>RUN PROGRAM</b> to revert to your thermostat program.
+    ]]></entry>
+   
     <!--  scheduleHints.jsp -->
     <entry key="yukon.dr.consumer.scheduleHints.header">Thermostat Schedule - Hints and Details</entry>
     <entry key="yukon.dr.consumer.scheduleHints.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>

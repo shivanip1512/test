@@ -238,12 +238,18 @@
             </td>
             <td style="font-size: 11px; padding-left: 2em; vertical-align: top;">
                 <cti:msg key="yukon.dr.consumer.thermostat.stepText" />
-                <br><br>
-                <form action="/spring/stars/consumer/thermostat/manual" method="post" >
-                    <input name="thermostatIds" type="hidden" value="${thermostatIds}" />
-                    <cti:msg var="runProgramText" key="yukon.dr.consumer.thermostat.runProgram" />
-                    <input name="runProgram" type="submit" value="${runProgramText}" />
-                </form>
+                <!-- Utility Pro has an extra mode setting -->
+                <c:choose>
+                    <c:when test="${thermostat.type != 'EXPRESSSTAT_UTILITY_PRO'}">
+                        <cti:msg key="yukon.dr.consumer.thermostat.runProgramText" />
+                        <br><br>
+                        <form action="/spring/stars/consumer/thermostat/manual" method="post" >
+                            <input name="thermostatIds" type="hidden" value="${thermostatIds}" />
+                            <cti:msg var="runProgramText" key="yukon.dr.consumer.thermostat.runProgram" />
+                            <input name="runProgram" type="submit" value="${runProgramText}" />
+                        </form>
+                    </c:when>
+                </c:choose>
             </td>
         </tr>
     </table>     

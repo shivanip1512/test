@@ -332,7 +332,7 @@ function prepareSubmit() {
                         <table width="91%" border="0" height="100">
                           <tr> 
                             <td width="25"></td>
-                            <td width="128" valign="bottom"><img class="Clickable" src="<%=request.getContextPath()%>/WebConfig/yukon/ThermImages/Run.gif" onClick="document.MForm.RunProgram.value='true';submitIt()"></td>
+                            <td width="128"></td>
                             <td width="135"> 
                               <table width="100%" border="0" height="56" cellspacing = "0" cellpadding = "0">
                                 <tr> 
@@ -407,10 +407,6 @@ function prepareSubmit() {
                           <b>2)</b> Adjust <b>MODE</b> and <b>FAN</b> settings. 
                           <br>
                           <b>3)</b> Click <b>SUBMIT</b>.</p>
-                        <p><b><i>or</i></b><br>
-                          Click <b>RUN PROGRAM</b> to revert to your thermostat 
-                          program. </p>
-                        <p>&nbsp;</p>
                       </td>
                     </tr>
                     <tr>
