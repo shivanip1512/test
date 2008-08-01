@@ -111,11 +111,11 @@ public class LayoutController {
         ModuleBase moduleBase = getModuleBase(info.getModuleName());
         map.addAttribute("module", moduleBase);
         
-        List<String> moduleConfigCssList = moduleBase.getCssFiles();
+        List<String> moduleConfigCssList = new ArrayList<String>(moduleBase.getCssFiles());
         removeDuplicates(moduleConfigCssList);
         map.addAttribute("moduleConfigCss", moduleConfigCssList);
         
-        List<String> innerContentCssList = info.getCssFiles();
+        List<String> innerContentCssList = new ArrayList<String>(info.getCssFiles());
         removeDuplicates(innerContentCssList);
         map.addAttribute("innerContentCss", innerContentCssList);
         
