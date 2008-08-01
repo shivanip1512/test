@@ -109,59 +109,29 @@ public class MeterUsageReport extends YukonReportBase
     }       
 
     /**
-     * Create a Group for Group  
-     * @return Group
-     */
-    private Group createGroupGroup()
-    {
-        final Group groupGroup = new Group();
-        groupGroup.setName( ((MeterUsageModel)getModel()).getColumnName(MeterUsageModel.GROUP_NAME_COLUMN) + ReportFactory.NAME_GROUP);
-        groupGroup.addField( ((MeterUsageModel)getModel()).getColumnName(MeterUsageModel.GROUP_NAME_COLUMN));
-
-        GroupHeader header = ReportFactory.createGroupHeaderDefault();
-
-        LabelElementFactory factory = ReportFactory.createGroupLabelElementDefault(getModel(), MeterUsageModel.GROUP_NAME_COLUMN);
-        factory.setText(factory.getText() + ":");
-        header.addElement(factory.createElement());
-
-        TextFieldElementFactory tfactory = ReportFactory.createGroupTextFieldElementDefault(getModel(), MeterUsageModel.GROUP_NAME_COLUMN);
-        tfactory.setAbsolutePosition(new Point2D.Float(110, 1));    //override the posX location
-        header.addElement(tfactory.createElement());
-
-        header.addElement(StaticShapeElementFactory.createHorizontalLine("line1", null, new BasicStroke(0.5f), 20));
-
-        for (int i = MeterUsageModel.DEVICE_NAME_COLUMN; i < getModel().getColumnCount(); i++)
-        {
-            factory = ReportFactory.createGroupLabelElementDefault(getModel(), i);
-            factory.setAbsolutePosition(new Point2D.Float(getModel().getColumnProperties(i).getPositionX(), getModel().getColumnProperties(i).getPositionY() + 18));
-            if( i >= MeterUsageModel.VALUE_COLUMN)
-                factory.setHorizontalAlignment(ElementAlignment.RIGHT);
-            header.addElement(factory.createElement());
-        }
-
-        groupGroup.setHeader(header);
-
-
-        GroupFooter footer = ReportFactory.createGroupFooterDefault();
-        groupGroup.setFooter(footer);
-        return groupGroup;
-    }   
-
-    /**
-     * Create a Group for DeviceName, (by scheduleName, collGorup).  
+     * Create a Group for DeviceName.  
      * @return Group
      */
     private Group createDeviceGroup()
     {
         final Group devGroup = new Group();
         devGroup.setName(MeterUsageModel.DEVICE_NAME_STRING + ReportFactory.NAME_GROUP);
-        devGroup.addField( ((MeterUsageModel)getModel()).getColumnName(MeterUsageModel.GROUP_NAME_COLUMN));
         devGroup.addField(MeterUsageModel.DEVICE_NAME_STRING);
           
         GroupHeader header = ReportFactory.createGroupHeaderDefault();
         header.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 2));
 
-        header.addElement(StaticShapeElementFactory.createHorizontalLine("line2", Color.LIGHT_GRAY, new BasicStroke(0.5f), 0));
+        header.addElement(StaticShapeElementFactory.createHorizontalLine("line2", Color.LIGHT_GRAY, new BasicStroke(0.5f), 20));
+
+        for (int i = MeterUsageModel.DEVICE_NAME_COLUMN; i < getModel().getColumnCount(); i++)
+        {
+            LabelElementFactory factory = ReportFactory.createGroupLabelElementDefault(getModel(), i);
+            factory.setAbsolutePosition(new Point2D.Float(getModel().getColumnProperties(i).getPositionX(), getModel().getColumnProperties(i).getPositionY()));
+            if( i >= MeterUsageModel.VALUE_COLUMN)
+                factory.setHorizontalAlignment(ElementAlignment.RIGHT);
+            header.addElement(factory.createElement());
+        }
+
         devGroup.setHeader(header);     
         
         GroupFooter footer = ReportFactory.createGroupFooterDefault();
@@ -224,7 +194,6 @@ public class MeterUsageReport extends YukonReportBase
     protected GroupList createGroups()
     {
         final GroupList list = new GroupList();
-        list.add(createGroupGroup());
         list.add(createDeviceGroup());
         return list;
     }

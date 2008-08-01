@@ -2,16 +2,11 @@ package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
 import java.sql.Timestamp;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
-import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
@@ -20,20 +15,18 @@ import com.cannontech.spring.YukonSpringHook;
 public class MeterUsageModel extends ReportModelBase
 {
 	/** Number of columns */
-	protected final int NUMBER_COLUMNS = 8;
+	protected final int NUMBER_COLUMNS = 7;
 
 	/** Enum values for column representation */
-	public final static int GROUP_NAME_COLUMN = 0;
-	public final static int DEVICE_NAME_COLUMN = 1;
-	public final static int METER_NUMBER_COLUMN = 2;
-	public final static int DATE_COLUMN = 3;
-	public final static int TIME_COLUMN = 4;
-	public final static int VALUE_COLUMN = 5;
-    public final static int PREV_VALUE_COLUMN = 6;
-    public final static int TOTAL_USAGE_COLUMN = 7;
+	public final static int DEVICE_NAME_COLUMN = 0;
+	public final static int METER_NUMBER_COLUMN = 1;
+	public final static int DATE_COLUMN = 2;
+	public final static int TIME_COLUMN = 3;
+	public final static int VALUE_COLUMN = 4;
+    public final static int PREV_VALUE_COLUMN = 5;
+    public final static int TOTAL_USAGE_COLUMN = 6;
 
 	/** String values for column representation */
-	public final static String GROUP_NAME_STRING = "Group";
 	public final static String DEVICE_NAME_STRING = "Device Name";
 	public final static String METER_NUMBER_STRING = "Meter Number";
 	public final static String DATE_STRING = "Date";
@@ -48,10 +41,8 @@ public class MeterUsageModel extends ReportModelBase
     /** Temporary counters */
     private Double previousReading = null;
     private String previousDevice = null;
-    private String previousGroup = null;
     
     static public class MeterUsageRow {
-        public String groupName;
         public String deviceName;
         public String meterNumber;
         public Timestamp timestamp;
@@ -60,7 +51,6 @@ public class MeterUsageModel extends ReportModelBase
         public Double totalUsage;
     }
     
-    private Map<Integer,DeviceGroup> deviceGroupsMap = new HashMap<Integer,DeviceGroup>();
 	/**
 	 * 
 	 */
@@ -90,34 +80,14 @@ public class MeterUsageModel extends ReportModelBase
 	{
 		try
 		{
-            final DeviceGroupEditorDao deviceGroupEditorDao = YukonSpringHook.getBean("deviceGroupEditorDao", DeviceGroupEditorDao.class);
+            MeterUsageRow meterUsage = new MeterUsageRow();
+            meterUsage.deviceName = rset.getString(1);
+            meterUsage.meterNumber = rset.getString(2);
+            meterUsage.timestamp = rset.getTimestamp(3);
+            meterUsage.reading = new Double(rset.getInt(4));
             
-            MeterUsageRow meterUsage;
-            Integer groupId = rset.getInt(1);
-            DeviceGroup deviceGroup = deviceGroupsMap.get(groupId);
-            if( deviceGroup == null){
-                deviceGroup = deviceGroupEditorDao.getGroupById(groupId);
-                deviceGroupsMap.put(groupId, deviceGroup);
-            }
-            String groupName = deviceGroup.getFullName();
-            
-            final String[] groups = getBillingGroups();
-            if (groups != null && groups.length > 0) {  //Device Groups were specified, only include groups that were selected 
-                List<String> deviceGroupNames = Arrays.asList(groups);
-                if( !deviceGroupNames.contains(groupName) )
-                    return;
-            }
-            
-            meterUsage = new MeterUsageRow();
-            meterUsage.groupName = deviceGroup.getFullName();
-            meterUsage.deviceName = rset.getString(2);
-            meterUsage.meterNumber = rset.getString(3);
-            meterUsage.timestamp = rset.getTimestamp(4);
-            meterUsage.reading = new Double(rset.getInt(5));
-            
-            if(previousGroup != null && previousDevice != null) {
-                if(!groupName.equalsIgnoreCase(previousGroup) || 
-                		!meterUsage.deviceName.equals(previousDevice)) {
+            if(previousDevice != null) {
+                if( !meterUsage.deviceName.equals(previousDevice)) {
                     previousReading = null;
                 }
             }
@@ -133,7 +103,6 @@ public class MeterUsageModel extends ReportModelBase
             getData().add(meterUsage);
             previousReading = meterUsage.reading;
             previousDevice = meterUsage.deviceName;
-            previousGroup = groupName;
         }
 		catch(java.sql.SQLException e)
 		{
@@ -147,12 +116,11 @@ public class MeterUsageModel extends ReportModelBase
 	 */
 	public StringBuffer buildSQLStatement()
 	{
-		StringBuffer sql = new StringBuffer	("SELECT DISTINCT DGM.DEVICEGROUPID, PAO.PAONAME,  DMG.METERNUMBER, RPH.TIMESTAMP, RPH.VALUE" + 
-			" FROM YUKONPAOBJECT PAO, DEVICEMETERGROUP DMG, DEVICEGROUPMEMBER DGM, " +
+		StringBuffer sql = new StringBuffer	("SELECT DISTINCT PAO.PAONAME,  DMG.METERNUMBER, RPH.TIMESTAMP, RPH.VALUE" + 
+			" FROM YUKONPAOBJECT PAO, DEVICEMETERGROUP DMG, " +
 			" POINT P join RAWPOINTHISTORY RPH "+
 			" ON P.POINTID = RPH.POINTID AND RPH.TIMESTAMP > ? AND TIMESTAMP <= ? " + //this is the join clause
 			" WHERE PAO.PAOBJECTID = DMG.DEVICEID "+
-            " AND P.PAOBJECTID = DGM.YUKONPAOID " +
 			" AND P.PAOBJECTID = PAO.PAOBJECTID " + 
 			" AND P.POINTOFFSET = 1 " + 
 			" AND P.POINTTYPE = 'PulseAccumulator' ");
@@ -173,7 +141,7 @@ public class MeterUsageModel extends ReportModelBase
             sql.append(" AND " + deviceGroupSqlWhereClause);
 		}
 
-		sql.append("ORDER BY DGM.DEVICEGROUPID, PAO.PAONAME, TIMESTAMP");
+		sql.append("ORDER BY PAO.PAONAME, TIMESTAMP");
 		return sql;
 	
 	}
@@ -238,9 +206,6 @@ public class MeterUsageModel extends ReportModelBase
 			MeterUsageRow meterUsage = ((MeterUsageRow)o); 
 			switch( columnIndex)
 			{
-				case GROUP_NAME_COLUMN:
-					return meterUsage.groupName;
-		
 				case DEVICE_NAME_COLUMN:
 					return meterUsage.deviceName;
 	
@@ -275,7 +240,6 @@ public class MeterUsageModel extends ReportModelBase
 		if( columnNames == null)
 		{
 			columnNames = new String[]{
-				GROUP_NAME_STRING,
 				DEVICE_NAME_STRING,
 				METER_NUMBER_STRING,
 				DATE_STRING,
@@ -298,7 +262,6 @@ public class MeterUsageModel extends ReportModelBase
 			columnTypes = new Class[]{
 				String.class,
 				String.class,
-				String.class,
 				Date.class,
 				Date.class,
 				Double.class,
@@ -318,7 +281,6 @@ public class MeterUsageModel extends ReportModelBase
 		{
 			columnProperties = new ColumnProperties[]{
 				//posX, posY, width, height, numberFormatString
-                new ColumnProperties(0, 1, 300, null),
                 new ColumnProperties(0, 1, 180, null),
                 new ColumnProperties(180, 1, 70, null),
                 new ColumnProperties(250, 1, 60, "MM/dd/yyyy"),

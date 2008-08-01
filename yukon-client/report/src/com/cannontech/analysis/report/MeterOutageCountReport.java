@@ -4,7 +4,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.awt.print.PageFormat;
-import java.util.Date;
+import java.util.Calendar;
 
 import org.jfree.report.ElementAlignment;
 import org.jfree.report.Group;
@@ -15,7 +15,6 @@ import org.jfree.report.ItemBand;
 import org.jfree.report.JFreeReport;
 import org.jfree.report.JFreeReportBoot;
 import org.jfree.report.ReportFooter;
-import org.jfree.report.ReportHeader;
 import org.jfree.report.elementfactory.LabelElementFactory;
 import org.jfree.report.elementfactory.StaticShapeElementFactory;
 import org.jfree.report.elementfactory.TextFieldElementFactory;
@@ -34,7 +33,7 @@ import com.cannontech.analysis.tablemodel.MeterOutageCountModel;
 /**
  * Created on Feb 17, 2004
  * Creates a MissedMeterReport using the com.cannontech.analysis.data.PowerFailData tableModel
- * Groups data by Collection Group and then by Device.  
+ * Groups data by Device.  
  * @author bjonasson
  */
 public class MeterOutageCountReport extends YukonReportBase
@@ -72,23 +71,20 @@ public class MeterOutageCountReport extends YukonReportBase
         JFreeReportBoot.getInstance().start();
         javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 
+        MeterOutageCountModel model = new MeterOutageCountModel();
+//        model.setMinimumOutageCount(1);
+        model.setPaoIDs(new int[]{3023});
+        model.setIncompleteDataReport(true);
+        
         //Get a default start date of 90 days previous.
         java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
-        cal.set(java.util.Calendar.HOUR_OF_DAY, 0);
-        cal.set(java.util.Calendar.MINUTE, 0);
-        cal.set(java.util.Calendar.SECOND, 0);
-        cal.set(java.util.Calendar.MILLISECOND, 0);
-        cal.add(java.util.Calendar.DATE, 1);
-        cal.set(java.util.Calendar.MONTH, 6);
-      
-        Date stop = cal.getTime();
-        cal.add(java.util.Calendar.DATE, -65);
-        Date start = cal.getTime();
+        model.setStopDate(cal.getTime());
 
-        MeterOutageCountModel model = new MeterOutageCountModel(start, stop);
-//        model.setMinimumOutageCount(1);
-        model.setBillingGroups(new String[]{"/Meters/Collection/coll"});
-        model.setIncompleteDataReport(true);
+        cal.set(Calendar.MONTH,4);
+        cal.set(Calendar.DAY_OF_MONTH,1);
+        model.setStartDate(cal.getTime());
+
+        
         YukonReportBase powerFailReport = new MeterOutageCountReport(model);
         powerFailReport.getModel().collectData();
         //Create the report
@@ -113,59 +109,30 @@ public class MeterOutageCountReport extends YukonReportBase
     }       
 
     /**
-     * Create a Group for Group  
-     * @return Group
-     */
-    private Group createGroupGroup()
-    {
-        final Group groupGroup = new Group();
-        groupGroup.setName( ((MeterOutageCountModel)getModel()).getColumnName(MeterOutageCountModel.GROUP_NAME_COLUMN) + ReportFactory.NAME_GROUP);
-        groupGroup.addField( ((MeterOutageCountModel)getModel()).getColumnName(MeterOutageCountModel.GROUP_NAME_COLUMN));
-
-        GroupHeader header = ReportFactory.createGroupHeaderDefault();
-
-        LabelElementFactory factory = ReportFactory.createGroupLabelElementDefault(getModel(), MeterOutageCountModel.GROUP_NAME_COLUMN);
-        factory.setText(factory.getText() + ":");
-        header.addElement(factory.createElement());
-
-        TextFieldElementFactory tfactory = ReportFactory.createGroupTextFieldElementDefault(getModel(), MeterOutageCountModel.GROUP_NAME_COLUMN);
-        tfactory.setAbsolutePosition(new Point2D.Float(110, 1));    //override the posX location
-        header.addElement(tfactory.createElement());
-
-        header.addElement(StaticShapeElementFactory.createHorizontalLine("line1", null, new BasicStroke(0.5f), 20));
-
-        for (int i = MeterOutageCountModel.DEVICE_NAME_COLUMN; i < getModel().getColumnCount(); i++)
-        {
-            factory = ReportFactory.createGroupLabelElementDefault(getModel(), i);
-            factory.setAbsolutePosition(new Point2D.Float(getModel().getColumnProperties(i).getPositionX(), getModel().getColumnProperties(i).getPositionY() + 18));
-            if( i >= MeterOutageCountModel.VALUE_COLUMN)
-                factory.setHorizontalAlignment(ElementAlignment.RIGHT);
-            header.addElement(factory.createElement());
-        }
-
-        groupGroup.setHeader(header);
-
-
-        GroupFooter footer = ReportFactory.createGroupFooterDefault();
-        groupGroup.setFooter(footer);
-        return groupGroup;
-    }   
-
-    /**
-     * Create a Group for DeviceName, (by scheduleName, collGorup).  
+     * Create a Group for DeviceName  
      * @return Group
      */
     private Group createDeviceGroup()
     {
         final Group devGroup = new Group();
         devGroup.setName(MeterOutageCountModel.DEVICE_NAME_STRING + ReportFactory.NAME_GROUP);
-        devGroup.addField( ((MeterOutageCountModel)getModel()).getColumnName(MeterOutageCountModel.GROUP_NAME_COLUMN));
-        devGroup.addField(MeterOutageCountModel.DEVICE_NAME_STRING);
+        if (! ((MeterOutageCountModel)getModel()).isIncompleteDataReport()) {
+            devGroup.addField(MeterOutageCountModel.DEVICE_NAME_STRING);
+        }
           
         GroupHeader header = ReportFactory.createGroupHeaderDefault();
         header.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 2));
 
-        header.addElement(StaticShapeElementFactory.createHorizontalLine("line2", Color.LIGHT_GRAY, new BasicStroke(0.5f), 0));
+        header.addElement(StaticShapeElementFactory.createHorizontalLine("line1", null, new BasicStroke(0.5f), 20)); 
+		for (int i = MeterOutageCountModel.DEVICE_NAME_COLUMN; i < getModel().getColumnCount(); i++)
+        {
+		    LabelElementFactory factory = ReportFactory.createGroupLabelElementDefault(getModel(), i);
+            factory.setAbsolutePosition(new Point2D.Float(getModel().getColumnProperties(i).getPositionX(), getModel().getColumnProperties(i).getPositionY()));
+            if( i >= MeterOutageCountModel.VALUE_COLUMN)
+                factory.setHorizontalAlignment(ElementAlignment.RIGHT);
+            header.addElement(factory.createElement());
+        }
+        
         devGroup.setHeader(header);     
         
         if (! ((MeterOutageCountModel)getModel()).isIncompleteDataReport()) {
@@ -232,7 +199,6 @@ public class MeterOutageCountReport extends YukonReportBase
     protected GroupList createGroups()
     {
         final GroupList list = new GroupList();
-        list.add(createGroupGroup());
         list.add(createDeviceGroup());
         return list;
     }
@@ -272,15 +238,17 @@ public class MeterOutageCountReport extends YukonReportBase
     protected ReportFooter createReportFooter() {
     	ReportFooter reportFooter = super.createReportFooter();
 
-    	LabelElementFactory lfactory = ReportFactory.createLabelElementDefault(getModel(), MeterOutageCountModel.VALUE_COLUMN);
-		lfactory.setText("TOTAL:");
-		lfactory.setHorizontalAlignment(ElementAlignment.RIGHT);		
-		reportFooter.addElement(lfactory.createElement());
-		
-    	TextFieldElementFactory tfactory = ReportFactory.createTextFieldElementDefault(getModel(), MeterOutageCountModel.OUTAGE_COUNT_CALC_COLUMN);
-		tfactory.setFieldname("groupOutageCountTotal");
-		tfactory.setHorizontalAlignment(ElementAlignment.RIGHT);		
-		reportFooter.addElement(tfactory.createElement());
+    	if (! ((MeterOutageCountModel)getModel()).isIncompleteDataReport()) {
+        	LabelElementFactory lfactory = ReportFactory.createLabelElementDefault(getModel(), MeterOutageCountModel.VALUE_COLUMN);
+    		lfactory.setText("TOTAL:");
+    		lfactory.setHorizontalAlignment(ElementAlignment.RIGHT);		
+    		reportFooter.addElement(lfactory.createElement());
+    		
+        	TextFieldElementFactory tfactory = ReportFactory.createTextFieldElementDefault(getModel(), MeterOutageCountModel.OUTAGE_COUNT_CALC_COLUMN);
+    		tfactory.setFieldname("groupOutageCountTotal");
+    		tfactory.setHorizontalAlignment(ElementAlignment.RIGHT);		
+    		reportFooter.addElement(tfactory.createElement());
+    	}
 		
     	return reportFooter;
     }

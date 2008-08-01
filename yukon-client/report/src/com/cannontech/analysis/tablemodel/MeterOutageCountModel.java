@@ -2,10 +2,8 @@ package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
 import java.sql.Timestamp;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
@@ -15,29 +13,24 @@ import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
-import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
-import com.cannontech.spring.YukonSpringHook;
 
 public class MeterOutageCountModel extends ReportModelBase
 {
 	/** Number of columns */
-	protected final int NUMBER_COLUMNS = 7;
+	protected final int NUMBER_COLUMNS = 6;
 
 	/** Enum values for column representation */
-	public final static int GROUP_NAME_COLUMN = 0;
-	public final static int DEVICE_NAME_COLUMN = 1;
-	public final static int POINT_NAME_COLUMN = 2;
-	public final static int DATE_COLUMN = 3;
-	public final static int TIME_COLUMN = 4;
-	public final static int VALUE_COLUMN = 5;
-    public final static int OUTAGE_COUNT_CALC_COLUMN = 6;
+	public final static int DEVICE_NAME_COLUMN = 0;
+	public final static int POINT_NAME_COLUMN = 1;
+	public final static int DATE_COLUMN = 2;
+	public final static int TIME_COLUMN = 3;
+	public final static int VALUE_COLUMN = 4;
+    public final static int OUTAGE_COUNT_CALC_COLUMN = 5;
 
 	/** String values for column representation */
-	public final static String GROUP_NAME_STRING = "Group";
 	public final static String DEVICE_NAME_STRING = "Device Name";
 	public final static String POINT_NAME_STRING = "Point Name";
 	public final static String DATE_STRING = "Date";
@@ -53,48 +46,37 @@ public class MeterOutageCountModel extends ReportModelBase
     public final static String ATT_INCOMPLETE_DATA_REPORT= "incompleteDataReport";
     
     /** Temporary counters */
-    private Integer previousCount = null;
-    private String previousDevice = null;
-    private String previousGroup = null;
+    private Integer previousReading = null;
+    private Integer previousPaobjectId = null;
     private Integer totalOutageCount = 0;
     private Integer minimumOutageCount = 0;
     private boolean incompleteDataReport = false;
+    /** Map of PaObjectId to GrandTotalOutageCount for each pao **/
+    private Map<Integer, Integer> paoIdToGrandOutageTotalMap = new HashMap<Integer, Integer>();
     private Vector allData = new Vector();
-    
-    private Map<Integer,DeviceGroup> deviceGroupsMap = new HashMap<Integer,DeviceGroup>();
     
     static public class OutageCountRow
     {	
     	/** Number of columns */
-    	private String groupName  = null;
+        private Integer paobjectId = null;
     	private String deviceName = null;
     	private String pointName = null;
     	private Date timestamp = null;
     	private Integer reading = null;
         private Integer outageCountCalc = null;
-        private Integer outageCountTotal = null;
 
-    	public OutageCountRow(String groupName, String deviceName, String pointName, Date timestamp, Integer reading, Integer outageCountCalc, Integer outageCountTotal) {
-    		super();
-    		this.groupName = groupName;
-    		this.deviceName = deviceName;
-    		this.pointName = pointName;
-    		this.timestamp = timestamp;
-    		this.reading = reading;
+    	public OutageCountRow(Integer paobjectId, String deviceName, String pointName, Date timestamp, Integer reading, Integer outageCountCalc) {
+    		this(paobjectId, deviceName, pointName, timestamp, reading);
     		this.outageCountCalc = outageCountCalc;
-    		this.outageCountTotal = outageCountTotal;
     	}
-    	public OutageCountRow(String groupName, String deviceName, String pointName, Date timestamp, Integer reading) {
-    		super();
-    		this.groupName = groupName;
-    		this.deviceName = deviceName;
-    		this.pointName = pointName;
+    	public OutageCountRow(Integer paobjectId, String deviceName, String pointName, Date timestamp, Integer reading) {
+    	    this(paobjectId, deviceName, pointName);
     		this.timestamp = timestamp;
     		this.reading = reading;
     	}
-    	public OutageCountRow(String groupName, String deviceName, String pointName) {
+    	public OutageCountRow(Integer paobjectId, String deviceName, String pointName) {
     		super();
-    		this.groupName = groupName;
+    		this.paobjectId = paobjectId;
     		this.deviceName = deviceName;
     		this.pointName = pointName;
     	}
@@ -134,166 +116,84 @@ public class MeterOutageCountModel extends ReportModelBase
 	{
 		try
 		{
-            final DeviceGroupEditorDao deviceGroupEditorDao = YukonSpringHook.getBean("deviceGroupEditorDao", DeviceGroupEditorDao.class);
-            
             OutageCountRow outageCountRow;
-            Integer groupId = rset.getInt(1);
-            DeviceGroup deviceGroup = deviceGroupsMap.get(groupId);
-            if( deviceGroup == null){
-                deviceGroup = deviceGroupEditorDao.getGroupById(groupId);
-                deviceGroupsMap.put(groupId, deviceGroup);
-            }
-            String groupName = deviceGroup.getFullName();
+			String paoName = rset.getString(1);
+            String pointName = rset.getString(2);
+            Timestamp timestamp = rset.getTimestamp(3);
+            Integer reading = new Integer(rset.getInt(4));
+            Integer paobjectId = new Integer(rset.getInt(5));
             
-//            // RESTRICT BY GROUPS (if any)
-//            if (getBillingGroups() != null && getBillingGroups().length > 0) {
-//                if (!isDeviceInSelectedGroups(rset.getInt(6))) {
-//                    return;
-//                }
-//            }
-            
-            final String[] groups = getBillingGroups();
-            if (groups != null && groups.length > 0) {  //Device Groups were specified, only include groups that were selected 
-                List<String> deviceGroupNames = Arrays.asList(groups);
-                if( !deviceGroupNames.contains(groupName) )
-                    return;
-            }
-            
-			String paoName = rset.getString(2);
-            String pointName = rset.getString(3);
-            Timestamp timestamp = rset.getTimestamp(4);
-            Integer reading = new Integer(rset.getInt(5));
-            
-            if( previousGroup != null && previousDevice != null) {
+            if( previousPaobjectId != null) {
                 
-                if( !previousGroup.equals(groupName) || !previousDevice.equals(paoName)) {
-                    // new device or new collection grp or both
+                if( previousPaobjectId.intValue() != paobjectId.intValue()) {
+                    // new device
                 	if( timestamp == null )	//data from the outer join was returned
-                		outageCountRow = new OutageCountRow(groupName, paoName, pointName);
+                		outageCountRow = new OutageCountRow(paobjectId, paoName, pointName);
                 	else 
-                		outageCountRow = new OutageCountRow(groupName, paoName, pointName, new Date(timestamp.getTime()), reading);
+                		outageCountRow = new OutageCountRow(paobjectId, paoName, pointName, new Date(timestamp.getTime()), reading);
 
-                	updatePreviousValues(reading, groupName, paoName);
-                    resetTotalOutageCount();
-                    
+                	previousReading = reading;
+                    previousPaobjectId = paobjectId;
+                    totalOutageCount = 0; //reset the total                    
                 }else {
-                    //same device and collection grp
-                    int intervalDif = reading - previousCount;
-                    setTotalOutageCount(getTotalOutageCount() + intervalDif);
+                    //same device
+                    int intervalDif = reading - previousReading;
+                    totalOutageCount += intervalDif;
                     
-                    outageCountRow = new OutageCountRow(groupName, paoName, 
-                                              pointName, 
+                    outageCountRow = new OutageCountRow( paobjectId, paoName, pointName, 
                                               new Date(timestamp.getTime()),
-                                              reading, 
-                                              new Integer(reading - previousCount), 
-                                              totalOutageCount);
-                    updatePreviousValues(reading, groupName, paoName);
+                                              reading, intervalDif);
+                    
+                    //put the "new" grand total in the map every time we have more than one entry.
+                    paoIdToGrandOutageTotalMap.put(paobjectId, totalOutageCount);
+                    previousReading = reading;
+                    previousPaobjectId = paobjectId;
                 }
             }else {
                 // first result
             	if( timestamp == null )	//data from the outer join was returned
-            		outageCountRow = new OutageCountRow(groupName, paoName, pointName);
+            		outageCountRow = new OutageCountRow(paobjectId, paoName, pointName);
             	else 
-            		outageCountRow = new OutageCountRow(groupName, paoName, pointName, new Date(timestamp.getTime()), reading);
+            		outageCountRow = new OutageCountRow(paobjectId, paoName, pointName, new Date(timestamp.getTime()), reading);
             	
-            	updatePreviousValues(reading, groupName, paoName);
-                resetTotalOutageCount();
+            	previousReading = reading;
+                previousPaobjectId = paobjectId;
+            	//Don't have an intervalDif to calculate...can't add it to lookup map
             }
 			
 			allData.add(outageCountRow);
 		}
-		catch(java.sql.SQLException e)
-		{
-			e.printStackTrace();
+		catch(java.sql.SQLException e) {
+		    CTILogger.error(e);
 		}
-	}
-	
-	private void updatePreviousValues(Integer reading, String groupName, String paoName) {
-        previousCount = reading;
-        previousGroup = groupName;
-        previousDevice = paoName;
-	}
-    private void resetTotalOutageCount() {
-    	setTotalOutageCount(0);
-    }
-    
-    public void setTotalOutageCount(Integer totalOutageCount) {
-		this.totalOutageCount = totalOutageCount;
-	}
-    
-    public Integer getTotalOutageCount() {
-		return totalOutageCount;
 	}
     
     /**
      * This method will load data based on the minimumDifference selected by the user.
-     * The First AND Last entry for each Group/Device pair will be added to the list.
+     * The First AND Last entry for each Device pair will be added to the list.
      * Any intermediate entries will be added to the list IF their IntervalDifference is >= minimumDifferenc. 
      */
     @SuppressWarnings("unchecked")
     public void loadOutageCountData() {
         
-    	Vector<OutageCountRow> deviceData = new Vector<OutageCountRow>();
-        for (int i = 0; i < allData.size(); i ++) {
+        for (OutageCountRow outageCountRow : (Vector<OutageCountRow>)allData) {
             
-        	OutageCountRow outageCountRow = (OutageCountRow)allData.get(i);
-            deviceData.add(outageCountRow);
-            boolean validate = false;
-            
-            if(i+1 < allData.size()) {                
-                OutageCountRow nextOutageCountRow = (OutageCountRow)allData.get(i + 1);
-                //New Group/Device unique entry
-                if (!nextOutageCountRow.groupName.equalsIgnoreCase(outageCountRow.groupName) || 
-                	!nextOutageCountRow.deviceName.equalsIgnoreCase(outageCountRow.deviceName) )
-                		validate = true;
-            } else	{// last one
-            	validate = true;
-            }
-            
-            if (validate) {
-
-            	if(outageCountRow.outageCountTotal != null && 
-                		outageCountRow.outageCountTotal >= getMinimumOutageCount()) {
-            		//We have more than one entry so we can calculate outage counts
-            		getData().addAll(deviceData);
-            	}
-        		deviceData.clear();
+            Integer total = paoIdToGrandOutageTotalMap.get(outageCountRow.paobjectId);
+            if(total != null && 
+                    total.intValue() >= getMinimumOutageCount().intValue()) {
+                getData().add(outageCountRow);
             }
         }
-        
-        //Always add the last entry.
-//        if (currentPF != null)
-//            getData().add(currentPF);
-    
     }
     
     @SuppressWarnings("unchecked")
     public void loadIncompleteData() {
-        
-    	Vector<OutageCountRow> deviceData = new Vector<OutageCountRow>();
-        for (int i = 0; i < allData.size(); i ++) {
-            
-        	OutageCountRow outageCountRow = (OutageCountRow)allData.get(i);
-            deviceData.add(outageCountRow);
-            boolean validate = false;
-            
-            if(i+1 < allData.size()) {                
-                OutageCountRow nextOutageCountRow = (OutageCountRow)allData.get(i + 1);
-                //New Group/Device unique entry
-                if (!nextOutageCountRow.groupName.equalsIgnoreCase(outageCountRow.groupName) || 
-                	!nextOutageCountRow.deviceName.equalsIgnoreCase(outageCountRow.deviceName) )
-                		validate = true;
-            } else	{// last one
-            	validate = true;
-            }
-            
-            if (validate) {
 
-            	if(outageCountRow.outageCountTotal == null ) {
-            		//We have more than one entry so we can calculate outage counts
-            		getData().addAll(deviceData);
-            	}
-        		deviceData.clear();
+        for (OutageCountRow outageCountRow : (Vector<OutageCountRow>)allData) {
+            
+            Integer total = paoIdToGrandOutageTotalMap.get(outageCountRow.paobjectId);
+            if(total == null ) {
+                getData().add(outageCountRow);
             }
         }
     }
@@ -351,12 +251,11 @@ public class MeterOutageCountModel extends ReportModelBase
 	 */
 	public StringBuffer buildSQLStatement()
 	{
-		StringBuffer sql = new StringBuffer	("SELECT DISTINCT DGM.DEVICEGROUPID, PAO.PAONAME, P.POINTNAME, RPH.TIMESTAMP, RPH.VALUE, PAO.PAOBJECTID " + 
-			" FROM YUKONPAOBJECT PAO, DEVICEMETERGROUP DMG, DEVICEGROUPMEMBER DGM, " +
+		StringBuffer sql = new StringBuffer	("SELECT DISTINCT PAO.PAONAME, P.POINTNAME, RPH.TIMESTAMP, RPH.VALUE, PAO.PAOBJECTID " + 
+			" FROM YUKONPAOBJECT PAO, DEVICEMETERGROUP DMG, " +
 			" POINT P "  + (isIncompleteDataReport() ? " left outer " : "") + " join RAWPOINTHISTORY RPH "+
 			" ON P.POINTID = RPH.POINTID AND RPH.TIMESTAMP > ? AND TIMESTAMP <= ? " + //this is the join clause
 			" WHERE PAO.PAOBJECTID = DMG.DEVICEID "+
-            " AND P.PAOBJECTID = DGM.YUKONPAOID " +
 			" AND P.PAOBJECTID = PAO.PAOBJECTID " + 
 			" AND P.POINTOFFSET = 20 " + 
 			" AND P.POINTTYPE = 'PulseAccumulator' ");
@@ -368,13 +267,13 @@ public class MeterOutageCountModel extends ReportModelBase
 		}
 		
 		// RESTRICT BY GROUPS (if any)
-		final String[] groups = getBillingGroups();
+        final String[] groups = getBillingGroups();
         if (groups != null && groups.length > 0) {
             String deviceGroupSqlWhereClause = getGroupSqlWhereClause("PAO.PAOBJECTID");
             sql.append(" AND " + deviceGroupSqlWhereClause);
         }
 					
-		sql.append("ORDER BY DGM.DEVICEGROUPID, PAO.PAONAME, P.POINTNAME, TIMESTAMP");
+		sql.append("ORDER BY PAO.PAONAME, P.POINTNAME, TIMESTAMP");
 		return sql;
 	
 	}
@@ -384,7 +283,7 @@ public class MeterOutageCountModel extends ReportModelBase
 	{
 		//Reset all objects, new data being collected!
 		setData(null);
-				
+
 		StringBuffer sql = buildSQLStatement();
 		CTILogger.info(sql.toString());
 		
@@ -416,12 +315,10 @@ public class MeterOutageCountModel extends ReportModelBase
 			}
 		}
 			
-		catch( java.sql.SQLException e )
-		{
-			e.printStackTrace();
+		catch( java.sql.SQLException e ) {
+			CTILogger.error(e);
 		}
-		finally
-		{
+		finally {
 			SqlUtils.close(rset, pstmt, conn );
 		}
 		
@@ -444,9 +341,6 @@ public class MeterOutageCountModel extends ReportModelBase
 			OutageCountRow outageCountRow = ((OutageCountRow)o); 
 			switch( columnIndex)
 			{
-				case GROUP_NAME_COLUMN:
-					return outageCountRow.groupName;
-		
 				case DEVICE_NAME_COLUMN:
 					return outageCountRow.deviceName;
 	
@@ -478,7 +372,6 @@ public class MeterOutageCountModel extends ReportModelBase
 		if( columnNames == null)
 		{
 			columnNames = new String[]{
-				GROUP_NAME_STRING,
 				DEVICE_NAME_STRING,
 				POINT_NAME_STRING,
 				DATE_STRING,
@@ -500,7 +393,6 @@ public class MeterOutageCountModel extends ReportModelBase
 			columnTypes = new Class[]{
 				String.class,
 				String.class,
-				String.class,
 				Date.class,
 				Date.class,
 				Integer.class,
@@ -519,7 +411,6 @@ public class MeterOutageCountModel extends ReportModelBase
 		{
 			columnProperties = new ColumnProperties[]{
 				//posX, posY, width, height, numberFormatString
-                new ColumnProperties(0, 1, 200, null),
                 new ColumnProperties(0, 1, 150, null),
                 new ColumnProperties(150, 1, 120, null),
                 new ColumnProperties(270, 1, 75, "MM/dd/yyyy"),

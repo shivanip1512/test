@@ -63,10 +63,10 @@ public class MeterOutageReport extends YukonReportBase
 		GregorianCalendar cal = new GregorianCalendar();
 		model.setStopDate(cal.getTime());
 
-		cal.set(Calendar.MONTH,0);
+		cal.set(Calendar.MONTH,4);
 		cal.set(Calendar.DAY_OF_MONTH,1);
 		model.setStartDate(cal.getTime());
-
+		model.setPaoIDs(new int[]{3023});
 		YukonReportBase disconnectReport = new MeterOutageReport(model);
 		disconnectReport.getModel().collectData();		
 		//Create the report
@@ -98,6 +98,7 @@ public class MeterOutageReport extends YukonReportBase
 	{
 		final Group collHdgGroup = new Group();
 		collHdgGroup.setName("Column Heading");
+		collHdgGroup.addField(MeterOutageModel.DEVICE_NAME_STRING);
 	
 		GroupHeader header = ReportFactory.createGroupHeaderDefault();
 
@@ -111,9 +112,6 @@ public class MeterOutageReport extends YukonReportBase
 		header.addElement(StaticShapeElementFactory.createHorizontalLine("line1", null, new BasicStroke(0.5f), 22));
 		collHdgGroup.setHeader(header);
 	
-		GroupFooter footer = ReportFactory.createGroupFooterDefault();
-		collHdgGroup.setFooter(footer);
-
 		return collHdgGroup;
 	}
 

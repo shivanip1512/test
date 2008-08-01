@@ -674,27 +674,6 @@ public abstract class ReportModelBase<E> extends javax.swing.table.AbstractTable
         return deviceGroupService.getDeviceGroupSqlWhereClause(deviceGroups, identifier);
     }
     
-    protected boolean isDeviceInSelectedGroups(int paoId) {
-        
-        DeviceGroupService deviceGroupService = YukonSpringHook.getBean("deviceGroupService", DeviceGroupService.class);
-        DeviceDao deviceDao = YukonSpringHook.getBean("deviceDao", DeviceDao.class);
-        DeviceGroupProviderDao deviceGroupDao = YukonSpringHook.getBean("deviceGroupDao", DeviceGroupProviderDao.class);
-        
-        YukonDevice device = deviceDao.getYukonDevice(paoId);
-        Set<? extends DeviceGroup> deviceGroups = deviceGroupService.resolveGroupNames(Arrays.asList(getBillingGroups()));
-        Iterator<? extends DeviceGroup> it = deviceGroups.iterator();
-        while (it.hasNext()) {
-            
-            DeviceGroup group = it.next();
-            if (deviceGroupDao.isDeviceInGroup(group, device)) {
-                return true;
-            }
-        }
-        
-        // not found to be in any of the selected group, don't add result
-        return false;
-    }
-    
     protected String getPaoIdWhereClause(String fieldIdentifer) {
         
         String sql = "";
@@ -710,6 +689,4 @@ public abstract class ReportModelBase<E> extends javax.swing.table.AbstractTable
         
         return sql;
     }
-    
-
 }
