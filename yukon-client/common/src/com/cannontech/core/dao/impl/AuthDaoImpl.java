@@ -279,14 +279,18 @@ public class AuthDaoImpl implements AuthDao {
 	    }
 	}
 
-	public void verifyTrueProperty(LiteYukonUser user, int rolePropertyId)
+	public void verifyTrueProperty(LiteYukonUser user, int ... rolePropertyIds)
 	throws NotAuthorizedException {
-	    boolean b = checkRoleProperty(user, rolePropertyId);
-	    if (!b) {
-	        throw NotAuthorizedException.trueProperty(user, rolePropertyId);
-	    }
-	}
-    
+	    
+	    for (int rolePropertyId : rolePropertyIds) {
+            boolean b = checkRoleProperty(user, rolePropertyId);
+            if (b) {
+                return;
+            }
+        }
+        throw NotAuthorizedException.trueProperty(user, rolePropertyIds);
+	}  
+	
     public void verifyAdmin(LiteYukonUser user) throws NotAuthorizedException {
         boolean b = isAdminUser(user);
         if (!b) {

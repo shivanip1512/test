@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -40,9 +41,13 @@ import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.predicate.AggregateAndPredicate;
 import com.cannontech.common.util.predicate.Predicate;
 import com.cannontech.core.dao.DuplicateException;
+import com.cannontech.roles.operator.DeviceActionsRole;
 import com.cannontech.web.bulk.model.DeviceCollectionFactory;
+import com.cannontech.web.security.WebSecurityChecker;
+import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.util.ExtTreeNode;
 
+@CheckRole(DeviceActionsRole.ROLEID)
 public class GroupEditorController extends MultiActionController {
 
     private DeviceGroupService deviceGroupService = null;
@@ -51,6 +56,7 @@ public class GroupEditorController extends MultiActionController {
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao = null;
     private CopyDeviceGroupService copyDeviceGroupService = null;
     private DeviceCollectionDeviceGroupHelper deviceCollectionDeviceGroupHelper;
+    private WebSecurityChecker webSecurityChecker = null;
     
     private DeviceCollectionFactory deviceCollectionFactory = null;
 
@@ -104,10 +110,17 @@ public class GroupEditorController extends MultiActionController {
             DeviceCollectionDeviceGroupHelper deviceCollectionDeviceGroupHelper) {
         this.deviceCollectionDeviceGroupHelper = deviceCollectionDeviceGroupHelper;
     }
+    
+    @Autowired
+    public void setWebSecurityChecker(WebSecurityChecker webSecurityChecker) {
+        this.webSecurityChecker = webSecurityChecker;
+    }
 
     public ModelAndView home(HttpServletRequest request, HttpServletResponse response)
             throws Exception, ServletException {
 
+        webSecurityChecker.checkRoleProperty(DeviceActionsRole.DEVICE_GROUP_EDIT, DeviceActionsRole.DEVICE_GROUP_MODIFY);
+        
         ModelAndView mav = new ModelAndView("home.jsp");
 
         String groupName = ServletRequestUtils.getStringParameter(request, "groupName");
@@ -300,6 +313,8 @@ public class GroupEditorController extends MultiActionController {
 
     public ModelAndView updateGroupName(HttpServletRequest request, HttpServletResponse response)
             throws ServletException {
+        
+        webSecurityChecker.checkRoleProperty(DeviceActionsRole.DEVICE_GROUP_EDIT);
 
         ModelAndView mav = new ModelAndView("redirect:/spring/group/editor/home");
 
@@ -332,7 +347,9 @@ public class GroupEditorController extends MultiActionController {
 
     public ModelAndView addChild(HttpServletRequest request, HttpServletResponse response)
             throws ServletException {
-
+        
+        webSecurityChecker.checkRoleProperty(DeviceActionsRole.DEVICE_GROUP_MODIFY);
+        
         ModelAndView mav = new ModelAndView("redirect:/spring/group/editor/home");
 
         String groupName = ServletRequestUtils.getStringParameter(request, "groupName");
@@ -376,6 +393,8 @@ public class GroupEditorController extends MultiActionController {
     public ModelAndView addDevice(HttpServletRequest request, HttpServletResponse response)
             throws ServletException {
 
+        webSecurityChecker.checkRoleProperty(DeviceActionsRole.DEVICE_GROUP_MODIFY);
+        
         ModelAndView mav = new ModelAndView("redirect:/spring/group/editor/home");
 
         String groupName = ServletRequestUtils.getStringParameter(request, "groupName");
@@ -452,6 +471,8 @@ public class GroupEditorController extends MultiActionController {
     public ModelAndView addDevicesByCollection(HttpServletRequest request,
                                                  HttpServletResponse response) throws ServletException {
         
+        webSecurityChecker.checkRoleProperty(DeviceActionsRole.DEVICE_GROUP_MODIFY);
+        
         ModelAndView mav = new ModelAndView("redirect:/spring/group/editor/home");
         
         String groupName = ServletRequestUtils.getStringParameter(request, "groupName");
@@ -466,7 +487,9 @@ public class GroupEditorController extends MultiActionController {
 
     public ModelAndView removeDevice(HttpServletRequest request, HttpServletResponse response)
             throws ServletException {
-
+        
+        webSecurityChecker.checkRoleProperty(DeviceActionsRole.DEVICE_GROUP_MODIFY);
+        
         ModelAndView mav = new ModelAndView("redirect:/spring/group/editor/home");
 
         String groupName = ServletRequestUtils.getStringParameter(request, "groupName");
@@ -493,6 +516,8 @@ public class GroupEditorController extends MultiActionController {
     public ModelAndView moveGroup(HttpServletRequest request, HttpServletResponse response)
             throws ServletException {
 
+        webSecurityChecker.checkRoleProperty(DeviceActionsRole.DEVICE_GROUP_EDIT);
+        
         ModelAndView mav = new ModelAndView("redirect:/spring/group/editor/home");
 
         String groupName = ServletRequestUtils.getStringParameter(request, "groupName");
@@ -526,6 +551,8 @@ public class GroupEditorController extends MultiActionController {
     }
     
     public ModelAndView copyContentsToGroup(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+        
+        webSecurityChecker.checkRoleProperty(DeviceActionsRole.DEVICE_GROUP_MODIFY);
         
         ModelAndView mav = new ModelAndView("redirect:/spring/group/editor/home");
         
@@ -580,6 +607,8 @@ public class GroupEditorController extends MultiActionController {
     public ModelAndView removeGroup(HttpServletRequest request, HttpServletResponse response)
             throws ServletException {
 
+        webSecurityChecker.checkRoleProperty(DeviceActionsRole.DEVICE_GROUP_EDIT);
+        
         ModelAndView mav = new ModelAndView("redirect:/spring/group/editor/home");
 
         String groupName = ServletRequestUtils.getStringParameter(request, "groupName");
@@ -601,6 +630,8 @@ public class GroupEditorController extends MultiActionController {
     public ModelAndView removeAllDevicesFromGroup(HttpServletRequest request, HttpServletResponse response)
         throws ServletException {
     
+        webSecurityChecker.checkRoleProperty(DeviceActionsRole.DEVICE_GROUP_MODIFY);
+        
         ModelAndView mav = new ModelAndView("redirect:/spring/group/editor/home");
         
         String groupName = ServletRequestUtils.getStringParameter(request, "groupName");

@@ -71,10 +71,14 @@
             </select>
             
             <%-- LOCATE BUTTON --%>
-            <br><br>
-            <cti:msg var="locateButtonLabel" key="yukon.web.modules.amr.routeLocateHome.locateButton"/>
-            <tags:slowInput myFormId="executeLocateForm" labelBusy="${locateButtonLabel}" label="${locateButtonLabel}" />
-    
+            <cti:checkRole role="DeviceActionsRole.ROLEID">
+            <cti:checkProperty property="DeviceActionsRole.LOCATE_ROUTE">
+                <br><br>
+                <cti:msg var="locateButtonLabel" key="yukon.web.modules.amr.routeLocateHome.locateButton"/>
+                <tags:slowInput myFormId="executeLocateForm" labelBusy="${locateButtonLabel}" label="${locateButtonLabel}" />
+            </cti:checkProperty>
+            </cti:checkRole>
+            
         </form>
     
     </tags:bulkActionContainer>

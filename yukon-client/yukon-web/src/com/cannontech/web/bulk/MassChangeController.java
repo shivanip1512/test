@@ -6,6 +6,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -18,13 +19,17 @@ import com.cannontech.common.bulk.service.MassChangeFileInfo;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.roles.operator.DeviceActionsRole;
+import com.cannontech.web.security.WebSecurityChecker;
+import com.cannontech.web.security.annotation.CheckRole;
 
-
+@CheckRole(DeviceActionsRole.ROLEID)
 public class MassChangeController extends BulkControllerBase {
 
     private BulkFieldService bulkFieldService = null;
     private DeviceDao deviceDao = null;
     private RecentResultsCache<BulkOperationCallbackResults<?>> recentBulkOperationResultsCache = null;
+    private WebSecurityChecker webSecurityChecker = null;
     
     /**
      * SELECT MASS CHANGE TYPE
@@ -35,6 +40,8 @@ public class MassChangeController extends BulkControllerBase {
      */
     public ModelAndView massChangeSelect(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 
+        webSecurityChecker.checkRoleProperty(DeviceActionsRole.MASS_CHANGE);
+        
         ModelAndView mav = new ModelAndView("massChange/massChangeSelect.jsp");
         
         // pass along deviceCollection
@@ -54,6 +61,8 @@ public class MassChangeController extends BulkControllerBase {
     // VIEW RESULTS
     public ModelAndView massChangeResults(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 
+        webSecurityChecker.checkRoleProperty(DeviceActionsRole.MASS_CHANGE);
+        
         ModelAndView mav = new ModelAndView("massChange/massChangeResults.jsp");
 
         // result info
@@ -82,6 +91,8 @@ public class MassChangeController extends BulkControllerBase {
      */
     public ModelAndView massDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 
+        webSecurityChecker.checkRoleProperty(DeviceActionsRole.MASS_DELETE);
+        
         ModelAndView mav = new ModelAndView("massChange/massDeleteConfirm.jsp");
         
         // pass along deviceCollection
@@ -104,6 +115,8 @@ public class MassChangeController extends BulkControllerBase {
      */
     public ModelAndView doMassDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 
+        webSecurityChecker.checkRoleProperty(DeviceActionsRole.MASS_DELETE);
+        
         ModelAndView mav = null;
         
         String cancelButton = ServletRequestUtils.getStringParameter(request, "cancelButton", null);
@@ -163,6 +176,11 @@ public class MassChangeController extends BulkControllerBase {
     public void setRecentBulkOperationResultsCache(
             RecentResultsCache<BulkOperationCallbackResults<?>> recentBulkOperationResultsCache) {
         this.recentBulkOperationResultsCache = recentBulkOperationResultsCache;
+    }
+    
+    @Autowired
+    public void setWebSecurityChecker(WebSecurityChecker webSecurityChecker) {
+        this.webSecurityChecker = webSecurityChecker;
     }
     
 }

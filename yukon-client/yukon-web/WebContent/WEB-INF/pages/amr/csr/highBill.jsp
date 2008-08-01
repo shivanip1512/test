@@ -59,7 +59,18 @@
                     $('getReportButton').value = 'Get Report';
                     $('getReportButton').enable();
                 }
+            },
+            
+            'onFailure': function(transport) {
+                
+                $('meterReadErrors').show();
+                $('meterReadErrors').update(transport.responseText);
+                
+                $('getReportProcessImg').hide();
+                $('getReportButton').value = 'Get Report';
+                $('getReportButton').enable();
             }
+            
           }
         );
     }

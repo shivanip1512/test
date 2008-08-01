@@ -61,21 +61,25 @@
             <cti:deviceCollection deviceCollection="${deviceCollection}" /> 
     
             <%-- CHANGES BUTTONS --%>
-            <input type="hidden" id="massChangeBulkFieldName" name="massChangeBulkFieldName" value="">
-            <table cellspacing="10">
-        
-                <c:forEach var="bulkField" items="${massChangableBulkFields}">
-                
-                    <tr>
-                        <td>
-                        	<input type="button" id="massChangeTypeButton" value="<cti:msg key="${bulkField.displayKey}"/>" onclick="submitForm('${bulkField.inputSource.field}');" style="width:140px;"/>
-                        </td>
-                        <td><cti:msg key="${bulkField.displayKey}.description"/></td>
-                    </tr>
-                
-                </c:forEach>
-                
-            </table>
+            <cti:checkRole role="DeviceActionsRole.ROLEID">
+            <cti:checkProperty property="DeviceActionsRole.MASS_CHANGE">
+                <input type="hidden" id="massChangeBulkFieldName" name="massChangeBulkFieldName" value="">
+                <table cellspacing="10">
+            
+                    <c:forEach var="bulkField" items="${massChangableBulkFields}">
+                    
+                        <tr>
+                            <td>
+                            	<input type="button" id="massChangeTypeButton" value="<cti:msg key="${bulkField.displayKey}"/>" onclick="submitForm('${bulkField.inputSource.field}');" style="width:140px;"/>
+                            </td>
+                            <td><cti:msg key="${bulkField.displayKey}.description"/></td>
+                        </tr>
+                    
+                    </c:forEach>
+                    
+                </table>
+            </cti:checkProperty>
+            </cti:checkRole>
     
         </form>
         

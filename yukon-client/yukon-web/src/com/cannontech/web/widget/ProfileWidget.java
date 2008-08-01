@@ -40,16 +40,22 @@ import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.device.DeviceLoadProfile;
+import com.cannontech.roles.operator.MeteringRole;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.simplereport.SimpleReportService;
 import com.cannontech.tools.email.EmailService;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.security.WebSecurityChecker;
+import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 
 /**
  * Widget used to display point data in a trend
  */
+@CheckRole(MeteringRole.ROLEID)
+@CheckRoleProperty({MeteringRole.PROFILE_COLLECTION, MeteringRole.PROFILE_COLLECTION_SCANNING})
 public class ProfileWidget extends WidgetControllerBase {
 
 //    private LoadProfileService.EmailCompletionCallback emailCompletionCallback = null;
@@ -67,6 +73,7 @@ public class ProfileWidget extends WidgetControllerBase {
     private ToggleProfilingService toggleProfilingService = null;
     private MeterReadService meterReadService = null;
     private TemplateProcessorFactory templateProcessorFactory = null;
+    private WebSecurityChecker webSecurityChecker = null;
     
     /*
      * Long load profile email message format NOTE: Outlook will sometimes strip
@@ -240,6 +247,8 @@ public class ProfileWidget extends WidgetControllerBase {
     
     public ModelAndView initiateLoadProfile(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
+        webSecurityChecker.checkRoleProperty(MeteringRole.PROFILE_COLLECTION);
+        
         // init to basic refresh of render
         // after command runs, pending list will be re-got, and dates will be set to requested
         // and error requesting will be added to mav also
@@ -387,6 +396,8 @@ public class ProfileWidget extends WidgetControllerBase {
     public ModelAndView toggleProfiling(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
+        webSecurityChecker.checkRoleProperty(MeteringRole.PROFILE_COLLECTION_SCANNING);
+        
         String toggleErrorMsg = null;
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         
@@ -660,5 +671,10 @@ public class ProfileWidget extends WidgetControllerBase {
     public void setTemplateProcessorFactory(TemplateProcessorFactory templateProcessorFactory) {
         this.templateProcessorFactory = templateProcessorFactory;
     }
-
+    
+    @Autowired
+    public void setWebSecurityChecker(WebSecurityChecker webSecurityChecker) {
+        this.webSecurityChecker = webSecurityChecker;
+    }
+    
 }

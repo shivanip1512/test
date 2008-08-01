@@ -30,15 +30,17 @@
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.moveGroup.title">Click to move this group</entry>
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.moveGroupCancelText">cancel</entry>
 
-<entry key="yukon.web.deviceGroups.editor.operationsContainer.copyContents.linkText">Copy contents to another group</entry>
+<entry key="yukon.web.deviceGroups.editor.operationsContainer.copyContents.linkText">Copy Contents</entry>
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.copyContents.linkTitle">Click to copy this groups's contents to another group</entry>
 
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.copyContents.popupTree.title">Select Group To Copy Contents To</entry>
-<entry key="yukon.web.deviceGroups.editor.operationsContainer.copyContents.popupTree.submitButtonText">Select Group To Selected Group</entry>
+<entry key="yukon.web.deviceGroups.editor.operationsContainer.copyContents.popupTree.submitButtonText">Select Group</entry>
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.copyContents.popupTree.cancelButtonText">Cancel</entry>
 
-<entry key="yukon.web.deviceGroups.editor.operationsContainer.addGroupsLabel">Add Groups</entry>
+<entry key="yukon.web.deviceGroups.editor.operationsContainer.modifyGroupsLabel">Modify Group</entry>
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.addSubgroupText">Add Sub Group</entry>
+<entry key="yukon.web.deviceGroups.editor.operationsContainer.addDevicesText">Add Devices</entry>
+<entry key="yukon.web.deviceGroups.editor.operationsContainer.cannotAddDevicesText">Cannot add devices to this group</entry>
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.addSubgroupLinkTitle">Click to add a sub group</entry>
 
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.moveGroupPopup.title">Select Group To Move To</entry>

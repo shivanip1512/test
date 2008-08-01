@@ -40,11 +40,14 @@
 <script type="text/javascript"> 
     scanningUpdater = new Ajax.PeriodicalUpdater('${widgetParameters.widgetId}_channelScanning', '/spring/widget/profileWidget/refreshChannelScanningInfo?deviceId=${deviceId}', {method: 'post', frequency: 90});
 </script>
-<br/>
+
 
 <%--PAST PROFILES, don't display if the device does not support --%>
+<cti:checkRole role="operator.MeteringRole.ROLEID">
+<cti:checkProperty property="operator.MeteringRole.PROFILE_COLLECTION">
 <c:if test="${isReadable}">
 
+    <br/>
 	<table class="compactResultsTable">
 		<tr>
 			<th colspan="3" align="left">Request Past Profile:</th>
@@ -81,18 +84,14 @@
 				<input id="email" name="email" type="text" value="${email}" size="25" style="height:16px;">
 			</td>
 	  	    <td class="last" align="right">
-                <cti:checkRole role="operator.MeteringRole.ROLEID">
-                <cti:checkProperty property="operator.MeteringRole.PROFILE_COLLECTION_SCANNING">
-				    <tags:widgetActionRefresh hide="${!isReadable}" method="initiateLoadProfile" label="Start" labelBusy="Start"/>
-			    </cti:checkProperty>
-                </cti:checkRole>
+	           <tags:widgetActionRefresh hide="${!isReadable}" method="initiateLoadProfile" label="Start" labelBusy="Start"/>
             </td>
 		</tr>
 		
         </tr>
 	</table>
 	<br/>
-	
-	
 
 </c:if>
+</cti:checkProperty>
+</cti:checkRole>

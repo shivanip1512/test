@@ -154,7 +154,16 @@ public interface AuthDao {
     public boolean hasPAOAccess(LiteYukonUser user);
     
     public void verifyRole(LiteYukonUser user, int roleId) throws NotAuthorizedException;
-    public void verifyTrueProperty(LiteYukonUser user, int rolePropertyId) throws NotAuthorizedException;
+    
+    /**
+     * Check that user has at least one of the role properties.
+     * Works using OR semantics the same as the cti:checkMultiProperty
+     * <requireRoleProperty> tags.
+     * @param user
+     * @param rolePropertyIds
+     * @throws NotAuthorizedException
+     */
+    public void verifyTrueProperty(LiteYukonUser user, int ... rolePropertyIds) throws NotAuthorizedException;
     public void verifyFalseProperty(LiteYukonUser user, int rolePropertyId) throws NotAuthorizedException;
     public void verifyAdmin(LiteYukonUser user) throws NotAuthorizedException;
 

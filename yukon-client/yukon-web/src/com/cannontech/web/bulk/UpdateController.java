@@ -25,11 +25,15 @@ import com.cannontech.common.bulk.service.BulkUpdateFileInfo;
 import com.cannontech.common.bulk.service.BulkUpdateService;
 import com.cannontech.common.bulk.service.ParsedBulkUpdateFileInfo;
 import com.cannontech.common.util.RecentResultsCache;
+import com.cannontech.roles.operator.DeviceActionsRole;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.bulk.util.BulkFileUpload;
 import com.cannontech.web.bulk.util.BulkFileUploadUtils;
+import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 
-
+@CheckRole(DeviceActionsRole.ROLEID)
+@CheckRoleProperty(DeviceActionsRole.BULK_UPDATE_OPERATION)
 public class UpdateController extends MultiActionController {
 
     private BulkFieldService bulkFieldService = null;

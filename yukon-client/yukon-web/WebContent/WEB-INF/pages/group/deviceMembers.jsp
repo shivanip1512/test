@@ -4,9 +4,10 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
+    <%-- User must have DEVICE_GROUP_MODIFY to remove devices from group. Set once for use in loop. --%>
     <cti:checkRole role="operator.DeviceActionsRole.ROLEID">
     <cti:checkProperty property="operator.DeviceActionsRole.DEVICE_GROUP_MODIFY">
-        <c:set var="modifyRole" value="true"/>
+        <c:set var="hasModifyRoleProperty" value="true"/>
     </cti:checkProperty>
     </cti:checkRole>
                 
@@ -15,21 +16,22 @@
 			<c:when test="${fn:length(deviceList) > 0}">
             
                 <%-- REMOVE ALL DEVICES LINK --%>
-                <c:if test="${modifyRole && group.modifiable}">
-                <tr>
-                    <td colspan="2" align="right">
-                        <cti:msg var="removeAllDevicesFromGroupLabel" key="yukon.web.deviceGroups.editor.membersContainer.removeAllDevicesFromGroupLabel"/>
-                        <cti:msg var="removeAllDevicesFromGroupDescription" key="yukon.web.deviceGroups.editor.membersContainer.removeAllDevicesFromGroupDescription"/>
-                        <cti:msg var="confirmRemoveText" key="yukon.web.deviceGroups.editor.membersContainer.confirmRemoveText" javaScriptEscape="true"/>
-                        
-                        <form id="removeAllDevicesFromGroupForm" method="post" action="/spring/group/editor/removeAllDevicesFromGroup">
-                            <input type="hidden" name="groupName" value="${group.fullName}">
-                        </form>
-                        
-                        <%-- <a onclick="confirmRemoveAllDevices('${confirmRemoveText}');" href="javascript:void(0);" title="${removeAllDevicesFromGroupDescription}" style="font-size:11px;">${removeAllDevicesFromGroupLabel}</a><br><br> --%>
-                        <a href="javascript:confirmRemoveAllDevices('${confirmRemoveText}');" title="${removeAllDevicesFromGroupDescription}" style="font-size:11px;">${removeAllDevicesFromGroupLabel}</a><br><br>
-                    </td>
-                </tr>
+                <%-- the group being having devices removed must itself be modifiable --%>
+                <c:if test="${hasModifyRoleProperty && group.modifiable}">
+                    <tr>
+                        <td colspan="2" align="right">
+                            <cti:msg var="removeAllDevicesFromGroupLabel" key="yukon.web.deviceGroups.editor.membersContainer.removeAllDevicesFromGroupLabel"/>
+                            <cti:msg var="removeAllDevicesFromGroupDescription" key="yukon.web.deviceGroups.editor.membersContainer.removeAllDevicesFromGroupDescription"/>
+                            <cti:msg var="confirmRemoveText" key="yukon.web.deviceGroups.editor.membersContainer.confirmRemoveText" javaScriptEscape="true"/>
+                            
+                            <form id="removeAllDevicesFromGroupForm" method="post" action="/spring/group/editor/removeAllDevicesFromGroup">
+                                <input type="hidden" name="groupName" value="${group.fullName}">
+                            </form>
+                            
+                            <%-- <a onclick="confirmRemoveAllDevices('${confirmRemoveText}');" href="javascript:void(0);" title="${removeAllDevicesFromGroupDescription}" style="font-size:11px;">${removeAllDevicesFromGroupLabel}</a><br><br> --%>
+                            <a href="javascript:confirmRemoveAllDevices('${confirmRemoveText}');" title="${removeAllDevicesFromGroupDescription}" style="font-size:11px;">${removeAllDevicesFromGroupLabel}</a><br><br>
+                        </td>
+                    </tr>
                 </c:if>
                 
             
@@ -43,7 +45,7 @@
 							<a href="${csrHomeUrl}"><cti:deviceName device="${device}" /></a>
 						</td>
                         
-                        <c:if test="${modifyRole}">
+                        <c:if test="${hasModifyRoleProperty}">
 						<td style="border: none; width: 15px;text-align: center;">
 							
 							<c:choose>

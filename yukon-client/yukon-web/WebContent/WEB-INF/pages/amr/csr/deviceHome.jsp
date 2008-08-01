@@ -89,17 +89,20 @@
                         
                         <!-- Actions: Profile -->
                         <c:choose>
-                            <c:when test="${lpSupported && lpEnabled}">
+                            <c:when test="${lpSupported && (profileCollection || profileCollectionScanning)}">
         						<c:url var="profileUrl" value="/spring/amr/profile/home">
         							<c:param name="deviceId" value="${deviceId}" />
         						</c:url>
-                                <a href="${profileUrl}">Profile</a>
+                                <a href="${profileUrl}">Profile</a><br/>
+                            </c:when>
+                            <c:when test="${not (profileCollection || profileCollectionScanning)}">
+                                <%-- user has no access, hide --%>
                             </c:when>
 						    <c:otherwise>
-                            Profile (not supported)
+                            Profile (not supported)<br/>
                             </c:otherwise>
                         </c:choose>
-                        <br/>
+                        
                         
 						<!-- Actions: Voltage & TOU -->
                         <c:choose>

@@ -3,6 +3,11 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <%-- ERROR MSG --%>
+<cti:checkRole role="operator.MeteringRole.ROLEID">
+<cti:checkProperty property="operator.MeteringRole.PROFILE_COLLECTION_SCANNING">
+    <c:set var="hasScanningRoleProperty" value="true"/>
+</cti:checkProperty>
+</cti:checkRole>
 
 
 <%--CHANNElS PROFILING--%>
@@ -13,7 +18,9 @@
       <th align="left">Channel</th>
       <th>Interval</th>
       <th>Collection State</th>
-      <th>Action</th>
+      <c:if test="${hasScanningRoleProperty}">
+        <th>Action</th>
+      </c:if>
     </tr>
     
     <c:forEach var="c" items="${availableChannels}">
@@ -68,7 +75,9 @@
                 </table>
             </td>
             
-            <td><tags:toggleProfilingPopup channelNum="${c.channelNumber}" newToggleVal="${not c.channelProfilingOn}"/></td>
+            <c:if test="${hasScanningRoleProperty}">
+                <td><tags:toggleProfilingPopup channelNum="${c.channelNumber}" newToggleVal="${not c.channelProfilingOn}"/></td>
+            </c:if>
         </tr>
     </c:forEach>
 </table>

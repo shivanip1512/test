@@ -41,12 +41,16 @@ import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.RecentResultsCache;
+import com.cannontech.roles.operator.DeviceActionsRole;
 import com.cannontech.web.bulk.model.DeviceCollectionFactory;
 import com.cannontech.web.input.Input;
 import com.cannontech.web.input.InputFormController;
 import com.cannontech.web.input.InputRoot;
+import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 
-
+@CheckRole(DeviceActionsRole.ROLEID)
+@CheckRoleProperty(DeviceActionsRole.MASS_CHANGE)
 public class MassChangeOptionsController extends InputFormController {
 
     private BulkYukonDeviceFieldFactory bulkYukonDeviceFieldFactory = null;

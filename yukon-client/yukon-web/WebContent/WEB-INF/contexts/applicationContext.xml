@@ -748,6 +748,10 @@
                     <property name="exceptionClass" value="com.cannontech.common.exception.MeterReadRequestException" />
                     <property name="friendlyExceptionPropertyKey" value="MeterReadException" />
                 </bean>
+                <bean class="com.cannontech.common.util.KnownExceptionType">
+                    <property name="exceptionClass" value="com.cannontech.common.exception.NotAuthorizedException" />
+                    <property name="friendlyExceptionPropertyKey" value="NotAuthorizedException" />
+                </bean>
             </list>
         </property>
     

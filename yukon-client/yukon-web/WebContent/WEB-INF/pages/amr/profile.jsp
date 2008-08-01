@@ -32,7 +32,7 @@
         <tr>
             <td class="widgetColumnCell" valign="top">
             
-                <c:if test="${lpSupported && lpEnabled}">
+                <c:if test="${lpSupported && (profileCollection || profileCollectionScanning)}">
                     <ct:widget bean="profileWidget" />
                 </c:if>
                 
@@ -46,7 +46,7 @@
             
                 <ct:widget bean="meterInformationWidget" />
                 
-                <c:if test="${lpSupported && lpEnabled}">
+                <c:if test="${lpSupported && profileCollection}">
                     <ct:widget bean="pendingProfilesWidget" />
                 </c:if>
             

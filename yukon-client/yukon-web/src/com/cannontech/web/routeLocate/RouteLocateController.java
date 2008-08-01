@@ -28,10 +28,15 @@ import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.roles.operator.DeviceActionsRole;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.bulk.BulkControllerBase;
+import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 
+@CheckRole(DeviceActionsRole.ROLEID)
+@CheckRoleProperty(DeviceActionsRole.LOCATE_ROUTE)
 public class RouteLocateController extends BulkControllerBase {
 
     private PaoDao paoDao = null;

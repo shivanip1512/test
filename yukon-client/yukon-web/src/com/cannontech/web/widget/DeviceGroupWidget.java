@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONObject;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -23,8 +24,10 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroupHierarchy;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.service.ModifiableDeviceGroupPredicate;
+import com.cannontech.roles.operator.DeviceActionsRole;
 import com.cannontech.web.group.DeviceGroupTreeUtils;
 import com.cannontech.web.group.NodeAttributeSettingCallback;
+import com.cannontech.web.security.WebSecurityChecker;
 import com.cannontech.web.util.ExtTreeNode;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
@@ -39,6 +42,7 @@ public class DeviceGroupWidget extends WidgetControllerBase {
     private DeviceGroupEditorDao deviceGroupEditorDao;
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     private MeterDao meterDao;
+    private WebSecurityChecker webSecurityChecker = null;
 
     /**
      * This method renders the default deviceGroupWidget
@@ -87,15 +91,6 @@ public class DeviceGroupWidget extends WidgetControllerBase {
         mav.addObject("meter", meter);
         mav.addObject("deviceId", deviceId);
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
         // Ext tree JSON
         DeviceGroup rootGroup = deviceGroupService.getRootGroup();
         DeviceGroupHierarchy groupHierarchy = deviceGroupService.getDeviceGroupHierarchy(rootGroup, new ModifiableDeviceGroupPredicate());
@@ -119,11 +114,6 @@ public class DeviceGroupWidget extends WidgetControllerBase {
         String dataJson = jsonObj.toString();
         mav.addObject("groupDataJson", dataJson);
         
-        
-        
-        
-        
-        
         return mav;
     }
     
@@ -140,6 +130,9 @@ public class DeviceGroupWidget extends WidgetControllerBase {
     public ModelAndView remove(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
+        webSecurityChecker.checkRole(DeviceActionsRole.ROLEID);
+        webSecurityChecker.checkRoleProperty(DeviceActionsRole.DEVICE_GROUP_MODIFY);
+        
         // Gets the parameters from the request
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request,
                                                                      "deviceId");
@@ -168,6 +161,9 @@ public class DeviceGroupWidget extends WidgetControllerBase {
     public ModelAndView add(HttpServletRequest request, HttpServletResponse response)
             throws Exception {
 
+        webSecurityChecker.checkRole(DeviceActionsRole.ROLEID);
+        webSecurityChecker.checkRoleProperty(DeviceActionsRole.DEVICE_GROUP_MODIFY);
+        
         // Gets the parameters from the request
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
         Meter meter = meterDao.getForId(deviceId);
@@ -203,12 +199,18 @@ public class DeviceGroupWidget extends WidgetControllerBase {
         this.deviceGroupMemberEditorDao = deviceGroupMemberEditorDao;
     }
 
+    @Required
     public void setDeviceGroupEditorDao(DeviceGroupEditorDao deviceGroupEditorDao) {
         this.deviceGroupEditorDao = deviceGroupEditorDao;
     }
 
+    @Required
     public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
         this.deviceGroupService = deviceGroupService;
     }
 
+    @Autowired
+    public void setWebSecurityChecker(WebSecurityChecker webSecurityChecker) {
+        this.webSecurityChecker = webSecurityChecker;
+    }
 }

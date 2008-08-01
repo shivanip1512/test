@@ -52,12 +52,17 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.roles.operator.MeteringRole;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.simplereport.SimpleReportService;
 import com.cannontech.tools.email.EmailService;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.JsonView;
 
+@CheckRole(MeteringRole.ROLEID)
+@CheckRoleProperty(MeteringRole.HIGH_BILL_COMPLAINT)
 public class HighBillController extends MultiActionController {
 
     private DeviceDao deviceDao = null;

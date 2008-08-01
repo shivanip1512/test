@@ -26,10 +26,14 @@ import com.cannontech.common.bulk.service.BulkImportService;
 import com.cannontech.common.bulk.service.BulkOperationCallbackResults;
 import com.cannontech.common.bulk.service.ParsedBulkImportFileInfo;
 import com.cannontech.common.util.RecentResultsCache;
+import com.cannontech.roles.operator.DeviceActionsRole;
 import com.cannontech.web.bulk.util.BulkFileUpload;
 import com.cannontech.web.bulk.util.BulkFileUploadUtils;
+import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 
-
+@CheckRole(DeviceActionsRole.ROLEID)
+@CheckRoleProperty(DeviceActionsRole.BULK_IMPORT_OPERATION)
 public class ImportController extends MultiActionController {
 
     private BulkFieldService bulkFieldService = null;
