@@ -961,6 +961,127 @@ WHERE RolePropertyId IN (-10913, -10914, -10915, -10916, -10917,
                          -10918, -10919, -10920, -10921, -10922);
 /* End YUK-6197 */
 
+/* Start YUK-4968 */
+DELETE CalcComponent 
+WHERE ComponentPointId IN (SELECT DISTINCT pointId 
+                           FROM Point P, YukonPAObject PAO 
+                           WHERE PAO.paobjectId = P.paobjectId 
+                           and (pao.type = 'MCT-470' or PAO.type like 'MCT-430%') 
+                           and pointOffset = 100 and pointType = 'Analog');
+
+DELETE CalcPointBaseline 
+WHERE pointId IN (SELECT DISTINCT pointId 
+                  FROM Point P, YukonPAObject PAO 
+                  WHERE PAO.paobjectId = P.paobjectId 
+                  and (pao.type = 'MCT-470' or PAO.type like 'MCT-430%') 
+                  and pointOffset = 100 and pointType = 'Analog'); 
+
+DELETE CustomerBaselinePoint 
+WHERE pointId IN (SELECT DISTINCT pointId 
+                  FROM Point P, YukonPAObject PAO 
+                  WHERE PAO.paobjectId = P.paobjectId 
+                  and (pao.type = 'MCT-470' or PAO.type like 'MCT-430%') 
+                  and pointOffset = 100 and pointType = 'Analog');
+ 
+DELETE CalcBase 
+WHERE pointId IN (SELECT DISTINCT pointId 
+                  FROM Point P, YukonPAObject PAO 
+                  WHERE PAO.paobjectId = P.paobjectId 
+                  and (pao.type = 'MCT-470' or PAO.type like 'MCT-430%') 
+                  and pointOffset = 100 and pointType = 'Analog');
+
+DELETE CICustomerPointData 
+WHERE pointId IN (SELECT DISTINCT pointId 
+                  FROM Point P, YukonPAObject PAO 
+                  WHERE PAO.paobjectId = P.paobjectId 
+                  and (pao.type = 'MCT-470' or PAO.type like 'MCT-430%') 
+                  and pointOffset = 100 and pointType = 'Analog');
+
+DELETE Display2WayData 
+WHERE pointId IN (SELECT DISTINCT pointId 
+                  FROM Point P, YukonPAObject PAO 
+                  WHERE PAO.paobjectId = P.paobjectId 
+                  and (pao.type = 'MCT-470' or PAO.type like 'MCT-430%') 
+                  and pointOffset = 100 and pointType = 'Analog');
+ 
+DELETE DynamicPointDispatch 
+WHERE pointId IN (SELECT DISTINCT pointId 
+                  FROM Point P, YukonPAObject PAO 
+                  WHERE PAO.paobjectId = P.paobjectId 
+                  and (pao.type = 'MCT-470' or PAO.type like 'MCT-430%') 
+                  and pointOffset = 100 and pointType = 'Analog'); 
+
+DELETE DynamicPointAlarming 
+WHERE pointId IN (SELECT DISTINCT pointId 
+                  FROM Point P, YukonPAObject PAO 
+                  WHERE PAO.paobjectId = P.paobjectId 
+                  and (pao.type = 'MCT-470' or PAO.type like 'MCT-430%') 
+                  and pointOffset = 100 and pointType = 'Analog'); 
+
+DELETE DynamicTags 
+WHERE pointId IN (SELECT DISTINCT pointId 
+                  FROM Point P, YukonPAObject PAO 
+                  WHERE PAO.paobjectId = P.paobjectId 
+                  and (pao.type = 'MCT-470' or PAO.type like 'MCT-430%') 
+                  and pointOffset = 100 and pointType = 'Analog'); 
+
+DELETE FDRTranslation 
+WHERE pointId IN (SELECT DISTINCT pointId 
+                  FROM Point P, YukonPAObject PAO 
+                  WHERE PAO.paobjectId = P.paobjectId 
+                  and (pao.type = 'MCT-470' or PAO.type like 'MCT-430%') 
+                  and pointOffset = 100 and pointType = 'Analog'); 
+
+DELETE GraphDataSeries 
+WHERE pointId IN (SELECT DISTINCT pointId 
+                  FROM Point P, YukonPAObject PAO 
+                  WHERE PAO.paobjectId = P.paobjectId 
+                  and (pao.type = 'MCT-470' or PAO.type like 'MCT-430%') 
+                  and pointOffset = 100 and pointType = 'Analog'); 
+
+DELETE PointUnit 
+WHERE pointId IN (SELECT DISTINCT pointId 
+                  FROM Point P, YukonPAObject PAO 
+                  WHERE PAO.paobjectId = P.paobjectId 
+                  and (pao.type = 'MCT-470' or PAO.type like 'MCT-430%') 
+                  and pointOffset = 100 and pointType = 'Analog'); 
+
+DELETE PointAlarming 
+WHERE pointId IN (SELECT DISTINCT pointId 
+                  FROM Point P, YukonPAObject PAO 
+                  WHERE PAO.paobjectId = P.paobjectId 
+                  and (pao.type = 'MCT-470' or PAO.type like 'MCT-430%') 
+                  and pointOffset = 100 and pointType = 'Analog'); 
+
+DELETE TagLog 
+WHERE pointId IN (SELECT DISTINCT pointId 
+                  FROM Point P, YukonPAObject PAO 
+                  WHERE PAO.paobjectId = P.paobjectId 
+                  and (pao.type = 'MCT-470' or PAO.type like 'MCT-430%') 
+                  and pointOffset = 100 and pointType = 'Analog'); 
+
+DELETE PointAnalog 
+WHERE pointId IN (SELECT DISTINCT pointId 
+                  FROM Point P, YukonPAObject PAO 
+                  WHERE PAO.paobjectId = P.paobjectId 
+                  and (pao.type = 'MCT-470' or PAO.type like 'MCT-430%') 
+                  and pointOffset = 100 and pointType = 'Analog'); 
+
+DELETE RawPointHistory 
+WHERE pointId IN (SELECT DISTINCT pointId 
+                  FROM Point P, YukonPAObject PAO 
+                  WHERE PAO.paobjectId = P.paobjectId 
+                  and (pao.type = 'MCT-470' or PAO.type like 'MCT-430%') 
+                  and pointOffset = 100 and pointType = 'Analog'); 
+
+DELETE Point 
+WHERE pointId IN (SELECT DISTINCT pointId 
+                  FROM Point P, YukonPAObject PAO 
+                  WHERE PAO.paobjectId = P.paobjectId 
+                  and (pao.type = 'MCT-470' or PAO.type like 'MCT-430%') 
+                  and pointOffset = 100 and pointType = 'Analog');
+/* End YUK-4968 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /**************************************************************/
