@@ -8,6 +8,7 @@
 <%@ page import="com.cannontech.spring.YukonSpringHook" %>
 <%@ page import="com.cannontech.cbc.cache.CapControlCache" %>
 
+<%@page import="com.cannontech.clientutils.CTILogger"%>
 <cti:standardPage title="Substation Bus Areas" module="capcontrol">
 
 <%@include file="cbc_inc.jspf"%>
@@ -133,8 +134,15 @@ if (allowCtlVal!=null) {
 if (areaStations.size() > 0) {		
 	for( int j = 0; j < areaStations.size(); j++ ) {
 		SubStation substation = areaStations.get(j);
-		List<Feeder> subFeeders = filterCapControlCache.getFeedersBySubStation(substation);
-		List<CapBankDevice> subCapBanks = filterCapControlCache.getCapBanksBySubStation(substation);
+		
+		List<Feeder> subFeeders = new ArrayList<Feeder>();
+		List<CapBankDevice> subCapBanks = new ArrayList<CapBankDevice>();
+		try {
+		    subFeeders = filterCapControlCache.getFeedersBySubStation(substation);
+		    subCapBanks = filterCapControlCache.getCapBanksBySubStation(substation);
+		} catch(NotFoundException nfe){
+		    CTILogger.error("NotFoundException: could have been caused by the cc server not updating the cache in time after a recent db change before this page was loaded.",nfe);
+		}
 %>
 				        <tr class="<%=css%>" style="display: none;">
 							<td><font class="lIndent"><%=cbcDisplay.getSubstationValueAt(substation, CBCDisplay.SUB_NAME_COLUMN)%></font></td>
