@@ -41,7 +41,6 @@ public class CollectableMappings
 		new com.cannontech.loadcontrol.data.DefColl_LMProgramEnergyExchange(),
 		
 		new com.cannontech.loadcontrol.data.DefColl_LMProgramControlWindow(),
-      	new com.cannontech.loadcontrol.data.DefColl_LMProgramThermostatGear(),
       
 	 	new com.cannontech.loadcontrol.data.DefColl_LMGroupEmetcon(),
 	  	new com.cannontech.loadcontrol.data.DefColl_LMGroupExpresscom(),
