@@ -135,6 +135,23 @@ function updateProgramIcon(valueElementId, imageElementId) {
     }     
 }
 
+function sameAsCategoryName(isChecked, init) {
+    var inputElement = $("DispName");
+    var sameAsNameElement = $("SameAsName");
+
+    sameAsNameElement.checked = isChecked;
+    
+    if (isChecked) {
+    	inputElement.value = '';
+    	inputElement.disabled = true;
+        sameAsNameElement.value = true;
+    } else {
+    	inputElement.disabled = false;
+        if (!init) inputElement.value = $("applianceCategoryNameInput").value;
+        sameAsNameElement.value = false;    
+    }        
+}
+
 function sameAsProgramName(isChecked) {
     <% if (category.getInherited()) { %>
         return;
@@ -532,7 +549,7 @@ function prepareSubmit(form) {
 }
 
 function init() {
-	//sameAsName(document.form1, <%= category.getStarsWebConfig().getAlternateDisplayName().equals(category.getDescription()) %>);
+	sameAsCategoryName(<%= category.getStarsWebConfig().getAlternateDisplayName().equals(category.getDescription()) %>, true);
 	changeIcon(document.form1);
 	removeWarned = false;
 }
@@ -587,21 +604,19 @@ function updateMessageCode(input) {
                 <tr> 
                   <td height="252"> 
                     <table width="100%" border="0" cellspacing="0" cellpadding="3">
-                      <input type="hidden" name="action" value="UpdateApplianceCategory">
-                      <input type="hidden" name="AppCatID" value="<%= category.getApplianceCategoryID() %>">
+                      <input type="hidden" name="action" value="UpdateApplianceCategory"></input>
+                      <input type="hidden" name="AppCatID" value="<%= category.getApplianceCategoryID() %>"></input>
                       <tr> 
-                        <td width="15%" align="right" class="TableCell">Category 
-                          Name:</td>
+                        <td width="15%" align="right" class="TableCell">Category Name:</td>
                         <td width="85%" class="TableCell"> 
-                          <input type="text" name="Name" value="<%= category.getDescription() %>" onchange="setContentChanged(true)">
+                          <input type="text" id="applianceCategoryNameInput" name="Name" value="<%= category.getDescription() %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
-                        <td width="15%" align="right" class="TableCell">Display 
-                          Name:</td>
+                        <td width="15%" align="right" class="TableCell">Display Name:</td>
                         <td width="85%" class="TableCell"> 
-                          <input type="text" name="DispName" value="<%= category.getStarsWebConfig().getAlternateDisplayName() %>" onchange="setContentChanged(true);">
-                          <input type="checkbox" name="SameAsName" value="true" onclick="sameAsName(this.form, this.checked);setContentChanged(true);" <%= viewOnly %>>
+                          <input type="text" id="DispName" name="DispName" value="<%= category.getStarsWebConfig().getAlternateDisplayName() %>" onchange="setContentChanged(true);">
+                          <input type="checkbox" id="SameAsName" name="SameAsName" value="true" onclick="sameAsCategoryName(this.checked, false);setContentChanged(true);" <%= viewOnly %>>
                           Same as category name </td>
                       </tr>
                       <tr> 
@@ -609,7 +624,7 @@ function updateMessageCode(input) {
                         <td width="85%" class="TableCell" valign="middle" height="7"> 
                           <select name="Category" onchange="setContentChanged(true)">
                             <%
-	StarsCustSelectionList categoryList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY );
+	StarsCustSelectionList categoryList = selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY );
 	for (int i = 0; i < categoryList.getStarsSelectionListEntryCount(); i++) {
 		StarsSelectionListEntry entry = categoryList.getStarsSelectionListEntry(i);
 		String selectedStr = (entry.getEntryID() == category.getCategoryID()) ? "selected" : "";
