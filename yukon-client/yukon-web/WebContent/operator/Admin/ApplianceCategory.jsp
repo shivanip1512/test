@@ -395,6 +395,8 @@ function resetConfig() {
         $('displayName').disabled = false; 
         $('shortName').disabled = false;        
     <% } %>
+
+    changeProgramIcons();
 }
 
 function checkForUnsavedChanges() {
