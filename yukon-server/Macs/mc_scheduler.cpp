@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_scheduler.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2007/03/05 19:15:34 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2008/08/01 17:58:38 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -639,48 +639,43 @@ bool CtiMCScheduler::calcStopEvent(const CtiTime& start, const CtiMCSchedule& sc
     return result;
 }
 
-
 void CtiMCScheduler::calcDateTimeStart(const CtiTime& now, const CtiMCSchedule& sched,
                            CtiTime& start_time ) const
 {
-    struct tm start_tm;
-    unsigned hour, minute, second;
-    CtiTime temp;
+    unsigned hour, minute, second, year, day, month;
 
     parseTimeString( sched.getStartTime(), hour, minute, second );
-
-    now.extract(&start_tm);
-    start_tm.tm_hour = hour;
-    start_tm.tm_min  = minute;
-    start_tm.tm_sec  = second;
-    start_tm.tm_mon  = sched.getStartMonth() - 1; //struct tm [0-11] RW [1-12]
-    start_tm.tm_mday = sched.getStartDay();
 
     // A specific year
     if( sched.getStartYear() != 0 )
     {
-        start_tm.tm_year = sched.getStartYear() - 1900;
-        temp = CtiTime(&start_tm);
-
-        if( temp > now )
-            start_time = temp;
-        else
-            start_time = _invalid_time;
-
-        return;
-    }
-
-    // Every year, add a year on if it is in the past
-    temp = CtiTime(&start_tm);
-
-    if( temp < now )
-    {
-        start_tm.tm_year++;
-        start_time = CtiTime(&start_tm);
+        year = sched.getStartYear();
     }
     else
     {
-        start_time = temp;
+        year = CtiDate(now).year();
+    }
+
+    day   = sched.getStartDay();
+    month = sched.getStartMonth();
+
+    CtiDate tempDate(day, month, year);
+
+    CtiTime tempTime(tempDate, hour, minute, second);
+
+    if( tempTime < now && sched.getStartYear() == 0 )
+    {
+        year++;
+        tempDate   = CtiDate(day, month, year);
+        start_time = CtiTime(tempDate, hour, minute, second);
+    }
+    else if( tempTime < now )
+    {
+        start_time = CtiTime(CtiTime::specialvalues::not_a_time);
+    }
+    else
+    {
+        start_time = tempTime;
     }
 
     return;

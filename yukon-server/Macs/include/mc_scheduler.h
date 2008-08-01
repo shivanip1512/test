@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/mc_scheduler.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2007/08/07 21:04:32 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2008/08/01 17:58:38 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -89,6 +89,8 @@ struct ScheduledEvent
 class CtiMCScheduler
 {
 public:
+
+    friend class Test_CtiMCScheduler;
 
     CtiMCScheduler(CtiMCScheduleManager& mgr) : _schedule_manager(mgr) { }
     ~CtiMCScheduler() { }
@@ -182,6 +184,18 @@ private:
     bool inInterval(const CtiTime& t, const std::pair< CtiTime, CtiTime >& interval) const
     {
         return ( interval.first <= t && interval.second > t );
+    }
+};
+
+class Test_CtiMCScheduler : public CtiMCScheduler
+{
+public:
+    Test_CtiMCScheduler(CtiMCScheduleManager& mgr) : Inherited(mgr){ }
+    typedef CtiMCScheduler Inherited;
+    void testCalcDateTimeStart(const CtiTime& now, const CtiMCSchedule& sched,
+                           CtiTime& start_time ) const
+    {
+        Inherited::calcDateTimeStart(now, sched, start_time);
     }
 };
 
