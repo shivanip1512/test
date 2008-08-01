@@ -6,16 +6,15 @@ import org.springframework.core.annotation.AnnotationUtils;
 
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.widget.support.WidgetMultiActionController;
 
 
 public class WebSecurityAnnotationProcessor {
     private WebSecurityChecker webSecurityChecker;
 
-    public void process(Object bean) throws Exception {
-        boolean isProxy = isProxy(bean);
-        Class<?> clazz = (isProxy) ?
-                AopUtils.getTargetClass(bean) : bean.getClass();
-                
+    public void process(final Object bean) throws Exception {
+        final Class<?> clazz = getClass(bean);
+        
         boolean hasCheckRole = hasCheckRole(clazz);
         if (hasCheckRole) {
             doHasCheckRole(getCheckRole(clazz));
@@ -25,6 +24,20 @@ public class WebSecurityAnnotationProcessor {
         if (hasCheckRoleProperty) {
             doHasCheckRoleProperty(getCheckRoleProperty(clazz));
         }
+    }
+    
+    private Class<?> getClass(Object bean) {
+        if (isProxy(bean)) {
+            return AopUtils.getTargetClass(bean);
+        }
+        
+        if (bean instanceof WidgetMultiActionController) {
+            WidgetMultiActionController controller = (WidgetMultiActionController) bean;
+            Object widgetController = controller.getWidgetController();
+            return widgetController.getClass();
+        }
+        
+        return bean.getClass();
     }
     
     private void doHasCheckRole(CheckRole checkRole) throws Exception {
