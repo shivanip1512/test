@@ -947,6 +947,20 @@ if exists (SELECT *
 go
 /* End YUK-4777 */
 
+/* Start YUK-6197 */
+DELETE FROM YukonUserRole
+WHERE RolePropertyId IN (-10913, -10914, -10915, -10916, -10917, 
+                         -10918, -10919, -10920, -10921, -10922);
+
+DELETE FROM YukonGroupRole
+WHERE RolePropertyId IN (-10913, -10914, -10915, -10916, -10917, 
+                         -10918, -10919, -10920, -10921, -10922);
+
+DELETE FROM YukonRoleProperty
+WHERE RolePropertyId IN (-10913, -10914, -10915, -10916, -10917, 
+                         -10918, -10919, -10920, -10921, -10922);
+/* End YUK-6197 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /**************************************************************/

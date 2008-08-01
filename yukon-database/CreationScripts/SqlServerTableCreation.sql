@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     8/1/2008 1:57:15 PM                          */
+/* Created on:     8/1/2008 2:50:57 PM                          */
 /*==============================================================*/
 
 
@@ -10548,10 +10548,6 @@ insert into YukonGroupRole values (-10991,-2, -108, -10811, '(none)');
 /* Give yukon login access to View Logs, */
 insert into YukonGroupRole values (-4000, -2, -200, -20009, '(none)');
 
-/* Give yukon login access to view Reporting on main page */
-insert into YukonGroupRole values (-5000, -2, -109, -10920, '(none)');
-
-
 insert into yukongrouprole values (-2000,-303,-108,-10800,'/operator/Operations.jsp');
 insert into yukongrouprole values (-2002,-303,-108,-10802,'(none)');
 insert into yukongrouprole values (-2003,-303,-108,-10803,'(none)');
@@ -11568,17 +11564,7 @@ insert into YukonRoleProperty values(-10908,-109,'Database Reports Group','true'
 insert into YukonRoleProperty values(-10909,-109,'Stars Reports Group','true','Access to Stars group reports.');
 insert into YukonRoleProperty values(-10910,-109,'Other Reports Group','true','Access to Other group reports.');
 
-insert into YukonRoleProperty values(-10913,-109,'Admin Reports Group Label','Administrator','Label (header) for administrative group reports.');
-insert into YukonRoleProperty values(-10914,-109,'AMR Reports Group Label','Metering','Label (header) for AMR group reports.');
-insert into YukonRoleProperty values(-10915,-109,'Statistical Reports Group Label','Statistical','Label (header) for statistical group reports.');
-insert into YukonRoleProperty values(-10916,-109,'Load Management Reports Group Label','Load Management','Label (header) for Load Management group reports.');
-insert into YukonRoleProperty values(-10917,-109,'Cap Control Reports Group Label','Cap Control','Label (header) for Cap Control group reports.');
-insert into YukonRoleProperty values(-10918,-109,'Database Reports Group Label','Database','Label (header) for Database group reports.');
-insert into YukonRoleProperty values(-10919,-109,'Stars Reports Group Label','Stars','Label (header) for Stars group reports.');
-insert into YukonRoleProperty values(-10920,-109,'Other Reports Group Label','Other','Label (header) for Other group reports.');
-insert into YukonRoleProperty values(-10922,-109,'C&I Curtailment Reports Group Label','Curtailment','Label (header) for C&I Curtailment group reports.');
 insert into YukonRoleProperty values(-10923,-109,'C&I Curtailment Reports Group','false','Access to C&I Curtailment group reports');
-
 
 /* Operator Consumer Info Role Properties */
 insert into YukonRoleProperty values(-20101,-201,'Account General','true','Controls whether to show the general account information');
@@ -12143,9 +12129,6 @@ insert into YukonUserRole values (-41001,-1, -108, -10811, '(none)');
 
 /* Give admin login access to View Logs, */
 insert into YukonUserRole values (-2000, -1, -200, -20009, '(none)');
-
-/* Give admin login access to view Reporting on main page */
-insert into YukonUserRole values (-3000, -1, -109, -10920, '(none)');
 
 insert into YukonUserRole values (-1000, -100, -108, -10800, '/operator/Operations.jsp');
 insert into YukonUserRole values (-1002, -100, -108, -10802, '(none)');
