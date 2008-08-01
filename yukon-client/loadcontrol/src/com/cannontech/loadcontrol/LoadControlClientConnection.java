@@ -179,7 +179,12 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
     		boolean newInsert = getControlAreas().get(controlArea.getYukonID()) == null;
             
             getControlAreas().put( controlArea.getYukonID(), controlArea );
-    		/*Build up hashMaps of references for all these different objects, so we don't have
+    		
+            getPrograms().clear();
+            getGroups().clear();
+            getTriggers().clear();
+            
+            /*Build up hashMaps of references for all these different objects, so we don't have
              *to iterate so much later when the new dynamic update messages come through. 
     		 */
             for(int i = 0; i < controlArea.getLmProgramVector().size(); i++) {
