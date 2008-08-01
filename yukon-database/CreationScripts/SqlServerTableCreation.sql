@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     7/31/2008 3:56:17 PM                         */
+/* Created on:     8/1/2008 1:57:15 PM                          */
 /*==============================================================*/
 
 
@@ -3890,7 +3890,6 @@ create table CCurtCurtailmentEvent (
    Message              varchar(255)         not null,
    State                varchar(10)          not null,
    StartTime            datetime             not null,
-   CCurtProgramTypeID   numeric              not null,
    Identifier           numeric              not null,
    constraint PK_CCURTCURTAILMENTEVENT primary key (CCurtCurtailmentEventID)
 )

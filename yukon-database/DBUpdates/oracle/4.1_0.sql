@@ -797,6 +797,26 @@ ALTER TABLE DynamicCCCapBank MODIFY afterVar VARCHAR(48);
 ALTER TABLE DynamicCCCapBank MODIFY changeVar VARCHAR(48); 
 /* End YUK-6093 */
 
+/* Start YUK-4777 */
+/* @start-block */
+DECLARE
+    tbl_exist int;
+BEGIN
+    SELECT COUNT(*) INTO tbl_exist 
+    FROM USER_TAB_COLUMNS
+    WHERE table_name = 'CCurtCurtailmentEvent'
+    AND column_name = 'CCurtProgramTypeId';
+    
+    IF tbl_exist > 0 THEN
+        execute immediate 'ALTER TABLE CCurtCurtailmentEvent 
+                           DROP COLUMN CCurtProgramTypeId;';
+    END IF;
+END;
+/
+/* @end-block */
+/* End YUK-4777 */
+
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

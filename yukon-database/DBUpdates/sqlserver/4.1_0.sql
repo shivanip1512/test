@@ -938,6 +938,15 @@ ALTER TABLE DynamicCCCapBank ALTER COLUMN afterVar VARCHAR(48) NOT NULL;
 ALTER TABLE DynamicCCCapBank ALTER COLUMN changeVar VARCHAR(48) NOT NULL; 
 /* End YUK-6093 */
 
+/* Start YUK-4777 */
+if exists (SELECT *
+           FROM syscolumns
+           WHERE id=object_id('CCurtCurtailmentEvent')
+           AND name='CCurtProgramTypeId')
+	ALTER TABLE CCurtCurtailmentEvent DROP COLUMN CCurtProgramTypeId;
+go
+/* End YUK-4777 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /**************************************************************/

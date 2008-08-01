@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     7/31/2008 3:52:25 PM                         */
+/* Created on:     8/1/2008 2:26:50 PM                          */
 /*==============================================================*/
 
 
@@ -1575,7 +1575,6 @@ create table CCurtCurtailmentEvent  (
    Message              VARCHAR2(255)                   not null,
    State                VARCHAR2(10)                    not null,
    StartTime            DATE                            not null,
-   CCurtProgramTypeID   NUMBER                          not null,
    Identifier           NUMBER                          not null,
    constraint PK_CCURTCURTAILMENTEVENT primary key (CCurtCurtailmentEventID)
 );
