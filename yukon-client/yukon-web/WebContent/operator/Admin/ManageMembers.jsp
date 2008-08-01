@@ -41,6 +41,7 @@ function memberLogin(userID) {
             <div align="center"> <br>
               <span class="TitleHeader">ADMINISTRATION - MEMBER MANAGEMENT</span><br>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+              <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
               <br>
               <table width="80%" border="0" cellspacing="0" cellpadding="0">
                 <tr>

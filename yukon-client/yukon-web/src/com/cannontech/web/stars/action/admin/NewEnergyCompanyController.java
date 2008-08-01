@@ -26,6 +26,7 @@ import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.util.StarsAdminUtil;
 import com.cannontech.user.UserUtils;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.stars.action.StarsAdminActionController;
 
 public class NewEnergyCompanyController extends StarsAdminActionController {
@@ -38,6 +39,8 @@ public class NewEnergyCompanyController extends StarsAdminActionController {
         
         ServletUtils.saveRequest( request, session, new String[] {
                 "CompanyName", "AddMember", "Email", "OperatorGroup", "CustomerGroup", "Username", "Username2", "Route"} );
+
+        final boolean isAddMember = request.getParameter("AddMember") != null;
 
         try {
             LiteYukonGroup operGroup = null;
@@ -89,7 +92,7 @@ public class NewEnergyCompanyController extends StarsAdminActionController {
             Hashtable rolePropMap = new Hashtable();
             rolePropMap.put( new Integer(EnergyCompanyRole.OPERATOR_GROUP_IDS), operGroupIDs );
             rolePropMap.put( new Integer(EnergyCompanyRole.CUSTOMER_GROUP_IDS), custGroupIDs );
-            if (request.getParameter("AddMember") == null)
+            if (!isAddMember)
                 rolePropMap.put( new Integer(AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY), StarsAdminUtil.FIRST_TIME );
             else
                 rolePropMap.put( new Integer(AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY), CtiUtilities.TRUE_STRING );
@@ -124,8 +127,7 @@ public class NewEnergyCompanyController extends StarsAdminActionController {
                     address.setStateCode( "" );
                     contact.setAddress( address );
 
-                    contact = (com.cannontech.database.data.customer.Contact)
-                    Transaction.createTransaction( Transaction.INSERT, contact ).execute();
+                    contact = Transaction.createTransaction( Transaction.INSERT, contact ).execute();
 
                     LiteContact liteContact = new LiteContact( contact.getContact().getContactID().intValue() );
                     StarsLiteFactory.setLiteContact( liteContact, contact );
@@ -137,8 +139,7 @@ public class NewEnergyCompanyController extends StarsAdminActionController {
                     company.setName( request.getParameter("CompanyName") );
                     company.setPrimaryContactID( contact.getContact().getContactID() );
                     company.setUserID( new Integer(liteUser.getUserID()) );
-                    company = (com.cannontech.database.db.company.EnergyCompany)
-                    Transaction.createTransaction(Transaction.INSERT, company).execute();
+                    company = Transaction.createTransaction(Transaction.INSERT, company).execute();
 
                     SqlStatement stmt = new SqlStatement(
                                                          "INSERT INTO EnergyCompanyOperatorLoginList VALUES(" +
@@ -166,7 +167,7 @@ public class NewEnergyCompanyController extends StarsAdminActionController {
                     StarsAdminUtil.updateDefaultRoute( newCompany, routeID );
 
                     // Add the new energy company as a member of the current company
-                    if (request.getParameter("AddMember") != null)
+                    if (isAddMember)
                         StarsAdminUtil.addMember( energyCompany, newCompany, liteUser.getUserID() );
 
                     session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Energy company created successfully");
@@ -179,8 +180,12 @@ public class NewEnergyCompanyController extends StarsAdminActionController {
             session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to create the energy company");
         }
         
-        String redirect = this.getRedirect(request);
-        response.sendRedirect(redirect);
+        boolean hasMemberManagementAccess = authDao.checkRoleProperty(user.getUserID(), AdministratorRole.ADMIN_MANAGE_MEMBERS);
+        boolean memberManagementRedirect = isAddMember && hasMemberManagementAccess;
+
+        String redirect = (memberManagementRedirect) ? "/operator/Admin/ManageMembers.jsp" : this.getRedirect(request);
+        String location = ServletUtil.createSafeRedirectUrl(request, redirect);
+        response.sendRedirect(location);
     }
     
 }
