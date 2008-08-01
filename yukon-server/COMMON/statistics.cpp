@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2008/02/29 21:13:50 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2008/08/01 15:40:30 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -627,6 +627,17 @@ RWDBStatus::ErrorCode  CtiStatistics::Update(RWDBConnection &conn)
     RWDBTable table = getDatabase().table( string2RWCString(getTableName()) );
     RWDBUpdater updater = table.updater();
 
+    RWDBColumn col_paobjectid     = table["paobjectid"],
+               col_statistictype  = table["statistictype"],
+               col_requests       = table["requests"],
+               col_completions    = table["completions"],
+               col_attempts       = table["attempts"],
+               col_commerrors     = table["commerrors"],
+               col_protocolerrors = table["protocolerrors"],
+               col_systemerrors   = table["systemerrors"],
+               col_startdatetime  = table["startdatetime"],
+               col_stopdatetime   = table["stopdatetime"];
+
     _startStopTimePairs[Lifetime].second.resetToNow();
 
     for(int i = 0; i < FinalCounterBin && ec == RWDBStatus::ok; i++)
@@ -636,16 +647,16 @@ RWDBStatus::ErrorCode  CtiStatistics::Update(RWDBConnection &conn)
             _dirtyCounter[i] = false;
 
             updater <<
-            table["requests"].assign(getCounter( Requests, i )) <<
-            table["completions"].assign(getCounter( Completions, i )) <<
-            table["attempts"].assign(getCounter( Attempts, i )) <<
-            table["commerrors"].assign(getCounter( CommErrors, i )) <<
-            table["protocolerrors"].assign(getCounter( ProtocolErrors, i )) <<
-            table["systemerrors"].assign(getCounter( SystemErrors, i )) <<
-            table["startdatetime"].assign( toRWDBDT(_startStopTimePairs[i].first) ) <<
-            table["stopdatetime"].assign( toRWDBDT(_startStopTimePairs[i].second) );
+                col_requests   .assign(getCounter(Requests,    i)) <<
+                col_completions.assign(getCounter(Completions, i)) <<
+                col_attempts   .assign(getCounter(Attempts,    i)) <<
+                col_commerrors    .assign(getCounter(CommErrors,     i)) <<
+                col_protocolerrors.assign(getCounter(ProtocolErrors, i)) <<
+                col_systemerrors  .assign(getCounter(SystemErrors,   i)) <<
+                col_startdatetime .assign(toRWDBDT(_startStopTimePairs[i].first)) <<
+                col_stopdatetime  .assign(toRWDBDT(_startStopTimePairs[i].second));
 
-            updater.where( table["paobjectid"] == getID() && table["statistictype"] == string2RWCString(getCounterName( i )));
+            updater.where(col_paobjectid == getID() && col_statistictype == string2RWCString(getCounterName(i)));
 
             ec = ExecuteUpdater(conn,updater,__FILE__,__LINE__);
         }
