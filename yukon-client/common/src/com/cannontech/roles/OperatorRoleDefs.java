@@ -7,9 +7,6 @@ public interface OperatorRoleDefs extends RoleDefs {
 	public static final int ADMINISTRATOR_ROLEID = OPERATOR_ROLEID_BASE;
 	public static final int CONSUMER_INFO_ROLEID = OPERATOR_ROLEID_BASE - 1;
 	public static final int METERING_ROLEID = OPERATOR_ROLEID_BASE - 2;
-	// removed direct loadcontrol roleid = -3
-	public static final int DIRECT_CURTAILMENT_ROLEID = OPERATOR_ROLEID_BASE - 4;
-	public static final int ENERGY_BUYBACK_ROLEID = OPERATOR_ROLEID_BASE - 5;
 	public static final int ESUBSTATION_DRAWINGS_ROLEID = OPERATOR_ROLEID_BASE - 6;
 	public static final int ODDS_FOR_CONTROL_ROLEID = OPERATOR_ROLEID_BASE - 7;
 	public static final int INVENTORY_ROLEID = OPERATOR_ROLEID_BASE - 9;
@@ -21,9 +18,6 @@ public interface OperatorRoleDefs extends RoleDefs {
 	static final int ADMINISTRATOR_PROPERTYID_BASE = OPERATOR_PROPERTYID_BASE;
 	static final int CONSUMER_INFO_PROPERTYID_BASE = OPERATOR_PROPERTYID_BASE - 100;
 	static final int METERING_PROPERTYID_BASE = OPERATOR_PROPERTYID_BASE - 200;
-	// removed removed direct loadcontrol rolepropertyid = -300
-	static final int DIRECT_CURTAILMENT_PROPERTYID_BASE = OPERATOR_PROPERTYID_BASE - 400;
-	static final int ENERGY_BUYBACK_PROPERTYID_BASE = OPERATOR_PROPERTYID_BASE - 500;
 	static final int ESUBSTATION_DRAWINGS_PROPERTYID_BASE = OPERATOR_PROPERTYID_BASE - 600;
 	static final int ODDS_FOR_CONTROL_PROPERTYID_BASE = OPERATOR_PROPERTYID_BASE - 700;
 	static final int CONSUMER_INFO_PROPERTYID_BASE2 = OPERATOR_PROPERTYID_BASE - 800;
