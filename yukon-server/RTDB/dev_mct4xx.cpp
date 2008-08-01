@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.81 $
-* DATE         :  $Date: 2008/07/25 15:14:59 $
+* REVISION     :  $Revision: 1.82 $
+* DATE         :  $Date: 2008/08/01 15:42:05 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -755,6 +755,8 @@ INT CtiDeviceMCT4xx::executeGetValue( CtiRequestMsg        *pReq,
                             ReturnMsg->setResultString(time_error_string);
 
                             retMsgHandler( OutMessage->Request.CommandStr, NoMethod, ReturnMsg, vgList, retList, true );
+
+                            InterlockedExchange(&_llpInterest.in_progress, false);
                         }
                         else
                         {
