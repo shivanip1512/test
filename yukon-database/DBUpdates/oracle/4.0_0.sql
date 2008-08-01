@@ -2056,9 +2056,9 @@ LEFT OUTER JOIN YukonPAObject YP4 ON YP4.PAObjectId = CSA.AreaId;
 /* End YUK-6107 */
 
 /* Start YUK-6093 */
-ALTER TABLE DynamicCCCapBank MODIFY beforeVar VARCHAR(48); 
-ALTER TABLE DynamicCCCapBank MODIFY afterVar VARCHAR(48); 
-ALTER TABLE DynamicCCCapBank MODIFY changeVar VARCHAR(48); 
+ALTER TABLE DynamicCCCapBank MODIFY beforeVar VARCHAR2(48); 
+ALTER TABLE DynamicCCCapBank MODIFY afterVar VARCHAR2(48); 
+ALTER TABLE DynamicCCCapBank MODIFY changeVar VARCHAR2(48); 
 /* End YUK-6093 */
 
 /******************************************************************************/
