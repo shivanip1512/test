@@ -1180,12 +1180,14 @@ public class DatabaseEditor implements
     private int getFrameLocationByPanel(PropertyPanel panel) {
     	//Loop through all the frames on the desktopPane
     	//and find out which one contains the PropertyPanel
-    	for( int i = 0; i < getInternalEditorFrames().length; i++ ) {
-    		if( getInternalEditorFrames()[i].getContentPane() == panel )
-    			return i;
-    	}
-    	//should never get here
-    	throw new RuntimeException("PropertyPanel '" + panel.toString() + "' found that does not have a parent JInternalFrame");
+        synchronized (getInternalEditorFrames()) {
+            for( int i = 0; i < getInternalEditorFrames().length; i++ ) {
+                if( getInternalEditorFrames()[i].getContentPane() == panel )
+                    return i;
+            }
+            //should never get here
+            throw new RuntimeException("PropertyPanel '" + panel.toString() + "' found that does not have a parent JInternalFrame");
+        }
     }
 
     /**
@@ -1371,7 +1373,7 @@ public class DatabaseEditor implements
     /*
      * Handles incoming database change messages.
      */
-    public void handleDBChangeMsg( DBChangeMsg msg, LiteBase liteBase ) {
+    public void handleDBChangeMsg( final DBChangeMsg msg, final LiteBase liteBase ) {
     	//see if the message originated from us
     	if( !(msg.getSource().equals(CtiUtilities.DEFAULT_MSG_SOURCE) ) ) {
     		StringBuffer txtMsg = new StringBuffer(
@@ -1380,10 +1382,6 @@ public class DatabaseEditor implements
     		    (msg.getTypeOfChange() == DBChangeMsg.CHANGE_TYPE_UPDATE ? "UPDATE" : ""))) 
     		    + " Database Change Message received from: " + msg.getUserName() + " at " + msg.getSource());
     		
-    		if (!SwingUtilities.isEventDispatchThread()) {
-    		    CTILogger.error("oops");
-    		}
-    
     		synchronized( getInternalEditorFrames() ) {
     			for( int i = 0; i < getInternalEditorFrames().length; i++ ) {
     				//Be sure we have an owner tree node for each editor frame.
@@ -1396,17 +1394,20 @@ public class DatabaseEditor implements
     				}
     			}
     		}
-    
-    		//If we get an id of zero, then refresh the whole thing including cache.
-    		if(msg.getId() == DBChangeMsg.RELOAD_ALL) {
-    			//refresh the cache and the connections state
-    			DefaultDatabaseCache.getInstance().releaseAllCache();
-    			//do the actual refresh of the tree
-    			getTreeViewPanel().refresh();	
-    		} else {
-    			//tell our tree we may need to change the display
-    			updateTreePanel( liteBase, msg.getTypeOfChange() );
-    		}
+    		SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                  //If we get an id of zero, then refresh the whole thing including cache.
+                    if(msg.getId() == DBChangeMsg.RELOAD_ALL) {
+                        //refresh the cache and the connections state
+                        DefaultDatabaseCache.getInstance().releaseAllCache();
+                        //do the actual refresh of the tree
+                        getTreeViewPanel().refresh();   
+                    } else {
+                        //tell our tree we may need to change the display
+                        updateTreePanel( liteBase, msg.getTypeOfChange() );
+                    }
+                }
+            });
     
     		//display a messge on the message panel telling us about this event...Only if its a Device Change...other wise don't bother printing out.
     		if(msg.getDatabase() == DBChangeMsg.CHANGE_PAO_DB) {
@@ -1799,7 +1800,9 @@ public class DatabaseEditor implements
                     panel.postSave(object);
     				if( event.getID() == PropertyPanelEvent.APPLY_SELECTION ) {
     					/* APPLY ONLY EVENTS GO HERE */
-    					getInternalEditorFrames()[frameLocation].setTitle( object.toString() + " : " + panel.toString() );
+    				    synchronized (getInternalEditorFrames()) {
+    				        getInternalEditorFrames()[frameLocation].setTitle( object.toString() + " : " + panel.toString() );
+                        }
     				}
     			} else {
     				//try and restore the original values to the Editor Panels
@@ -1816,7 +1819,9 @@ public class DatabaseEditor implements
     		}
     		
     		panel.setChanged(false);
-    		getInternalEditorFrames()[frameLocation].setVisible(false);
+    		synchronized (getInternalEditorFrames()) {
+    		    getInternalEditorFrames()[frameLocation].setVisible(false);
+    		}
     		if( frameLocation >= INITIAL_EDITOR_COUNT ) {
     			removeUnneededEditorFrames();
     		}
