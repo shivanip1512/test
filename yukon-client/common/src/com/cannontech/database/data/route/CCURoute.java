@@ -12,7 +12,7 @@ public class CCURoute extends RouteBase
 	private CarrierRoute carrierRoute = null;
 
    //contains com.cannontech.database.db.route.RepeaterRoute instances
-	private java.util.Vector repeaterVector = null;
+	private java.util.Vector<RepeaterRoute> repeaterVector = null;
 /**
  * CCURoute constructor comment.
  */
@@ -60,14 +60,14 @@ public CarrierRoute getCarrierRoute() {
  * This method was created in VisualAge.
  * @return java.util.Vector
  */
-public java.util.Vector getRepeaterVector() {
+public java.util.Vector<RepeaterRoute> getRepeaterVector() {
 	
 	//Make sure to instantiate all the repeaters we'll need
 	//otherwise on a delete they will be skipped
 	//and probably cause constraint violations
 	
 	if( repeaterVector == null )
-		repeaterVector = new java.util.Vector();
+		repeaterVector = new java.util.Vector<RepeaterRoute>();
 	
 	return repeaterVector;
 	
@@ -81,7 +81,7 @@ public void retrieve() throws java.sql.SQLException
 	getCarrierRoute().retrieve();
 
 	//Need to get all of the  rows.....
-	repeaterVector = new java.util.Vector();
+	repeaterVector = new java.util.Vector<RepeaterRoute>();
 
 	try
 	{		
@@ -123,7 +123,7 @@ public void setDbConnection(java.sql.Connection conn)
 
 	getCarrierRoute().setDbConnection(conn);
 
-	java.util.Vector v = getRepeaterVector();
+	java.util.Vector<RepeaterRoute> v = getRepeaterVector();
 
 	if( v != null )
 	{
@@ -135,7 +135,7 @@ public void setDbConnection(java.sql.Connection conn)
  * This method was created in VisualAge.
  * @param newValue java.util.Vector
  */
-public void setRepeaterVector(java.util.Vector newValue) {
+public void setRepeaterVector(java.util.Vector<RepeaterRoute> newValue) {
 	this.repeaterVector = newValue;
 }
 /**
@@ -147,7 +147,7 @@ public void setRouteID(Integer routeID) {
 	getCarrierRoute().setRouteID(routeID);
 
 	for( int i = 0; i < getRepeaterVector().size(); i++ )
-		((RepeaterRoute) getRepeaterVector().elementAt(i)).setRouteID(routeID);	
+		getRepeaterVector().elementAt(i).setRouteID(routeID);	
 }
 /**
  * This method was created in VisualAge.
