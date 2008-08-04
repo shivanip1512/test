@@ -208,10 +208,10 @@
         <property name="paoDao" ref="paoDao"/>
         <property name="pointDao" ref="pointDao"/>
         <property name="paoGroupsWrapper" ref="paoGroupsWrapper"/>
-        <property name="deviceDefinitionService" ref="deviceService" />
         <property name="dbPersistantDao" ref="dbPersistentDao" />
         <property name="deviceGroupEditorDao" ref="deviceGroupEditorDao" />
         <property name="deviceGroupMemberEditorDao" ref="deviceGroupMemberEditorDao" />
+        <property name="simpleDeviceDefinitionService" ref="simpleDeviceService" />
     </bean>
     
     <bean id="groupCommandExecutor" class="com.cannontech.common.device.commands.impl.GroupCommandExecutorImpl" lazy-init="true">

@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.creation.DeviceCreationService;
-import com.cannontech.common.device.definition.service.DeviceDefinitionService;
+import com.cannontech.common.device.definition.service.SimpleDeviceDefinitionService;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
@@ -43,10 +43,10 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
     private PaoDao paoDao = null;
     private PointDao pointDao = null;
     private PaoGroupsWrapper paoGroupsWrapper = null;
-    private DeviceDefinitionService deviceDefinitionService = null;
     private DBPersistentDao dbPersistantDao = null;
     private DeviceGroupEditorDao deviceGroupEditorDao = null;
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
+    private SimpleDeviceDefinitionService simpleDeviceDefinitionService = null;
     
     @Transactional
     public YukonDevice createDeviceByTemplate(String templateName, String newDeviceName, boolean copyPoints) {
@@ -123,15 +123,15 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
             // db change msg
             processDeviceDbChange(newDevice);
             
-            if (createPoints) {
-                
-                List<PointBase> points = deviceDefinitionService.createAllPointsForDevice(newDevice);
-                this.applyPoints(newDevice, points);
-            }
-            
             // MAKE YukonDevice
             yukonDevice.setDeviceId(newDeviceId);
             yukonDevice.setType(deviceType);
+            
+            // CREATE POINTS
+            if (createPoints) {
+                List<PointBase> points = simpleDeviceDefinitionService.createDefaultPointsForDevice(yukonDevice);
+                this.applyPoints(newDevice, points);
+            }
             
         }
         catch (TransactionException e) {
@@ -272,11 +272,6 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
     }
     
     @Required
-    public void setDeviceDefinitionService(DeviceDefinitionService deviceDefinitionService) {
-        this.deviceDefinitionService = deviceDefinitionService;
-    }
-    
-    @Required
     public void setDbPersistantDao(DBPersistentDao dbPersistantDao) {
         this.dbPersistantDao = dbPersistantDao;
     }
@@ -289,5 +284,11 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
     @Required
     public void setDeviceGroupMemberEditorDao(DeviceGroupMemberEditorDao deviceGroupMemberEditorDao) {
         this.deviceGroupMemberEditorDao = deviceGroupMemberEditorDao;
+    }
+    
+    @Required
+    public void setSimpleDeviceDefinitionService(
+            SimpleDeviceDefinitionService simpleDeviceDefinitionService) {
+        this.simpleDeviceDefinitionService = simpleDeviceDefinitionService;
     }
 }
