@@ -1128,6 +1128,12 @@ public class Multispeak implements MessageListener {
                    return null;
                return mspMeter.getUtilityInfo().getEaLoc().getName();
 			}
+            case MultispeakVendor.GRID_LOCATION_PAONAME:
+            {
+                if(StringUtils.isBlank(mspMeter.getFacilityID()) )
+                   return null;
+               return mspMeter.getFacilityID();
+            }
             case MultispeakVendor.DEFAULT_PAONAME:
             { // lookup by meter number
 				return mspMeter.getMeterNo();
@@ -1164,7 +1170,13 @@ public class Multispeak implements MessageListener {
                         StringUtils.isBlank(mspServiceLocation.getNetwork().getEaLoc().getName()))
                    return null;
                return mspServiceLocation.getNetwork().getEaLoc().getName();
-            }               
+            }
+            case MultispeakVendor.GRID_LOCATION_PAONAME:
+            {
+                if(StringUtils.isBlank(mspServiceLocation.getGridLocation()))
+                   return null;
+               return mspServiceLocation.getGridLocation();
+            }   
             case MultispeakVendor.DEFAULT_PAONAME:
             { // lookup by meter number
                 //lookup meter by servicelocation
