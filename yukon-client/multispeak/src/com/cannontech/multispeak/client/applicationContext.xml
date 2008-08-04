@@ -79,6 +79,9 @@
     <property name="deviceDefinitionService" ref="deviceService"/>
     <property name="deviceCreationService" ref="deviceCreationService"/>
     <property name="deviceUpdateService" ref="deviceUpdateService" />
+    <property name="substationDao" ref="substationDao" />
+    <property name="substationToRouteMappingDao" ref="substationToRouteMappingDao" />
+    
   </bean>   
   
   <bean id="multispeakDao" class="com.cannontech.multispeak.dao.impl.MultispeakDaoImpl">

@@ -102,6 +102,15 @@ public class SubstationToRouteMappingDaoImpl implements SubstationToRouteMapping
             };
         }, substationId);
     }
+    
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public List<Integer> getRouteIdsBySubstationId(final int substationId) {
+        return template.query(selectBySubIdSql.toString(), new ParameterizedRowMapper<Integer>() {
+            public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
+                return rs.getInt("PAObjectID");
+            };
+        }, substationId);
+    }
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<Route> getAvailableRoutesBySubstationId(final int substationId) {

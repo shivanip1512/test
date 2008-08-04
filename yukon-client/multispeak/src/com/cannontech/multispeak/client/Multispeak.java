@@ -19,6 +19,7 @@ import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
@@ -62,6 +63,9 @@ import com.cannontech.multispeak.block.impl.LoadFormattedBlockImpl;
 import com.cannontech.multispeak.block.impl.OutageFormattedBlockImpl;
 import com.cannontech.multispeak.dao.MspMeterDao;
 import com.cannontech.multispeak.dao.MspObjectDao;
+import com.cannontech.multispeak.dao.SubstationDao;
+import com.cannontech.multispeak.dao.SubstationToRouteMappingDao;
+import com.cannontech.multispeak.db.Substation;
 import com.cannontech.multispeak.deploy.service.CB_MRSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.ConnectDisconnectEvent;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
@@ -78,7 +82,6 @@ import com.cannontech.multispeak.event.MeterReadEvent;
 import com.cannontech.multispeak.event.MultispeakEvent;
 import com.cannontech.multispeak.event.ODEvent;
 import com.cannontech.user.SystemUserContext;
-import com.cannontech.yimp.util.DBFuncs;
 import com.cannontech.yukon.BasicServerConnection;
 
 /**
@@ -104,6 +107,8 @@ public class Multispeak implements MessageListener {
     private DeviceDefinitionService deviceDefinitionService  = null;
     private DeviceCreationService deviceCreationService = null;
     private DeviceUpdateService deviceUpdateService = null;
+    private SubstationDao substationDao = null;
+    private SubstationToRouteMappingDao substationToRouteMappingDao = null;
 
 	/** Singleton incrementor for messageIDs to send to porter connection */
 	private static long messageID = 1;
@@ -169,6 +174,15 @@ public class Multispeak implements MessageListener {
     @Required
     public void setDeviceUpdateService(DeviceUpdateService deviceUpdateService) {
         this.deviceUpdateService = deviceUpdateService;
+    }
+    @Required
+    public void setSubstationDao(SubstationDao substationDao) {
+        this.substationDao = substationDao;
+    }
+    @Required
+    public void setSubstationToRouteMappingDao(
+            SubstationToRouteMappingDao substationToRouteMappingDao) {
+        this.substationToRouteMappingDao = substationToRouteMappingDao;
     }
     
     /**
@@ -938,28 +952,58 @@ public class Multispeak implements MessageListener {
         // ADDRESS
         String address = mspMeter.getNameplate().getTransponderID().trim();
         
-        // ROUTES
-        List<Integer> routeIds = DBFuncs.getRouteIDsFromSubstationName(substationName);
-        
         // CREATE DEVICE - new device is automatically added to template's device groups
         YukonDevice newDevice = deviceCreationService.createDeviceByTemplate(templatePaoName, paoName, true);
+        logMSPActivity("MeterAddNotification", "MeterNumber(" + meterNumber + ") - Meter created.", mspVendor.getCompanyName());
         
-        // UPDATE DEVICE
+        // UPDATE DEVICE METERNUMBER, ADDRESS
         deviceUpdateService.changeAddress(newDevice, Integer.valueOf(address));
         deviceUpdateService.changeMeterNumber(newDevice, meterNumber);
-        if (routeIds.size() > 0) {
-            deviceUpdateService.changeRoute(newDevice, routeIds.get(0));
-        }
+        logMSPActivity("MeterAddNotification", "MeterNumber(" + meterNumber + ") - Set Meter number (" + meterNumber + ") and Address (" + meterNumber + ").", mspVendor.getCompanyName());
         
-        // ADD TO GROUP
+        // UPDATE BILLING GROUP
         ServiceLocation mspServiceLocation = mspObjectDao.getMspServiceLocation(meterNumber, mspVendor);
         String cycleGroupName = mspServiceLocation.getBillingCycle();
-        
         updateBillingCyle(cycleGroupName, meterNumber, newDevice, "MeterAddNotification", mspVendor);
         
-        // SEND FIRST ROUTE DISCOVERY REQUEST
-        SystemUserContext systemUserConext = new SystemUserContext();
-        deviceUpdateService.routeDiscovery(newDevice, routeIds, systemUserConext);
+        // ROUTES
+        try {
+            
+            // get routes
+            Substation substation = substationDao.getByName(substationName);
+            List<Integer> routeIds = substationToRouteMappingDao.getRouteIdsBySubstationId(substation.getId());
+            
+            // set route
+            if (routeIds.size() > 0) {
+                
+                // initally set route to first sub mapping
+                deviceUpdateService.changeRoute(newDevice, routeIds.get(0));
+                logMSPActivity("MeterAddNotification", "MeterNumber(" + meterNumber + ") - Route initially set to that of template device, will run route discovery.", mspVendor.getCompanyName());
+            
+                // run route discovery
+                SystemUserContext systemUserConext = new SystemUserContext();
+                deviceUpdateService.routeDiscovery(newDevice, routeIds, systemUserConext);
+                
+                List<String> routeNames = new ArrayList<String>(routeIds.size());
+                for (int routeId : routeIds) {
+                    routeNames.add(paoDao.getRouteNameForRouteId(routeId));
+                }
+                logMSPActivity("MeterAddNotification", "MeterNumber(" + meterNumber + ") - Route discovery started on: " + StringUtils.join(routeNames, ",") + ".", mspVendor.getCompanyName());
+            
+            // no routes for sub
+            } else {
+                logMSPActivity("MeterAddNotification", "MeterNumber(" + meterNumber + ") - No Routes for substation (" + substationName + "), using route from template device.", mspVendor.getCompanyName());
+            }
+            
+        // bad sub name
+        } catch(DataAccessException e) {
+            
+            String noSubReason = "No SubstationName found";
+            if (!StringUtils.isBlank(substationName)) {
+                noSubReason = "Invalid SubstationName (" + substationName + ")";
+            }
+            logMSPActivity("MeterAddNotification", "MeterNumber(" + meterNumber + ") - " + noSubReason + ", using route from template device.", mspVendor.getCompanyName());
+        }
     }
     
     private void logMSPActivity(String method, String description, String userName) {
@@ -1238,7 +1282,8 @@ public class Multispeak implements MessageListener {
 	}
 	
 	/**
-     * Returns ErrorObject when substation name does not return any valid SubstationToRouteMappings.
+     * Returns ErrorObject when substation name is invalid or 
+     * the substation does not return any valid SubstationToRouteMappings.
      * Returns null when a substation name has routes mapped to it.
      * @param templateName
      * @param meterNumber
@@ -1246,15 +1291,29 @@ public class Multispeak implements MessageListener {
      * @return
      */
     private ErrorObject isValidSubstation(String substationName, String meterNumber, MultispeakVendor mspVendor) {
-        List<String> routeNames = DBFuncs.getRouteNamesFromSubstationName(substationName);
-        if( routeNames.isEmpty()){
-            ErrorObject err = mspObjectDao.getErrorObject(meterNumber, 
-                                                             "Error: MeterNumber(" + meterNumber + ") - SubstationName(" + 
-                                                             substationName + ") - no RouteMappings found in Yukon.  Meter was NOT added",
-                                                             "Meter");
-            logMSPActivity("MeterAddNotification", err.getErrorString(), mspVendor.getCompanyName());
-            return err;
+        
+        String errorReason = null;
+        try {
+            Substation substation = substationDao.getByName(substationName);
+            List<Integer> routeIds = substationToRouteMappingDao.getRouteIdsBySubstationId(substation.getId());
+            
+            if(routeIds.size() < 1){
+                errorReason = "No RouteMappings found in Yukon";
+            }
+            
+        } catch (DataAccessException e) {
+            errorReason = "Invalid SubstationName";
         }
+        
+        if (errorReason != null) {
+            ErrorObject err = mspObjectDao.getErrorObject(meterNumber, 
+                                                          "Error: MeterNumber(" + meterNumber + ") - SubstationName(" + 
+                                                          substationName + ") - " + errorReason + ".  Meter was NOT added",
+                                                          "Meter");
+             logMSPActivity("MeterAddNotification", err.getErrorString(), mspVendor.getCompanyName());
+             return err;
+        }
+        
         return null;
     }
 	

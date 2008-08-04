@@ -17,6 +17,8 @@ public interface SubstationToRouteMappingDao {
     public boolean update(int substationId, List<Route> routeList);
 
     public List<Route> getRoutesBySubstationId(int substationId);
+    
+    public List<Integer> getRouteIdsBySubstationId(int substationId);
 
     public List<Route> getAvailableRoutesBySubstationId(int substationId);
 

@@ -6,8 +6,6 @@ import java.util.List;
 
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.incrementer.NextValueHelper;
@@ -65,7 +63,6 @@ public class SubstationDaoImpl implements SubstationDao {
         
     }
     
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public boolean add(final Substation substation) {
         final int id = nextValueHelper.getNextValue("Substation");
         substation.setId(id);
@@ -77,13 +74,11 @@ public class SubstationDaoImpl implements SubstationDao {
         return (result == 1);
     }
 
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public boolean remove(final Substation substation) {
         int result = template.update(deleteSql.toString(), substation.getId());
         return (result == 1);
     }
 
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public boolean update(final Substation substation) {
         int result = template.update(updateSql.toString(), 
                                      substation.getName(),
@@ -92,17 +87,14 @@ public class SubstationDaoImpl implements SubstationDao {
         return (result == 1);
     }
     
-    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public Substation getByName(final String name) {
         return template.queryForObject(selectByNameSql.toString(), rowMapper, name);
     }
     
-    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public Substation getById(final int id) {
         return template.queryForObject(selectByIdSql.toString(), rowMapper, id);
     }
 
-    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<Substation> getAll() {
         return template.query(selectAllSql.toString(), rowMapper);
     }
