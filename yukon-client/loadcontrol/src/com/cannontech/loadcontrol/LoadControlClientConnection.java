@@ -179,10 +179,10 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
     		boolean newInsert = getControlAreas().get(controlArea.getYukonID()) == null;
             
             getControlAreas().put( controlArea.getYukonID(), controlArea );
-    		
+    		/*
             getPrograms().clear();
             getGroups().clear();
-            getTriggers().clear();
+            getTriggers().clear();*/
             
             /*Build up hashMaps of references for all these different objects, so we don't have
              *to iterate so much later when the new dynamic update messages come through. 
@@ -357,18 +357,20 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
         synchronized ( getTriggers() ) {
             LMControlAreaTrigger currentTrigger = getTriggers().get( changedTrigger.getPaoID());
             
-            currentTrigger.setTriggerNumber(changedTrigger.getTriggerNumber());
-            currentTrigger.setPointValue(changedTrigger.getPointValue());
-            currentTrigger.setLastPointValueTimeStamp(changedTrigger.getLastPointValueTimestamp().getTime());
-            currentTrigger.setNormalState(changedTrigger.getNormalState());
-            currentTrigger.setThreshold(changedTrigger.getThreshold());
-            currentTrigger.setPeakPointValue(changedTrigger.getPeakPointValue());
-            currentTrigger.setLastPeakPointValueTimeStamp(changedTrigger.getLastPeakPointValueTimestamp().getTime());
-            currentTrigger.setProjectedPointValue(changedTrigger.getProjectedPointValue());
-            // tell all listeners that we received an update
-            setChanged();
-            //TODO: should this be the trigger passed in or the control area on the update event?
-            notifyObservers( new LCChangeEvent( this, LCChangeEvent.UPDATE, currentTrigger) );                
+            if(currentTrigger != null) {
+                currentTrigger.setTriggerNumber(changedTrigger.getTriggerNumber());
+                currentTrigger.setPointValue(changedTrigger.getPointValue());
+                currentTrigger.setLastPointValueTimeStamp(changedTrigger.getLastPointValueTimestamp().getTime());
+                currentTrigger.setNormalState(changedTrigger.getNormalState());
+                currentTrigger.setThreshold(changedTrigger.getThreshold());
+                currentTrigger.setPeakPointValue(changedTrigger.getPeakPointValue());
+                currentTrigger.setLastPeakPointValueTimeStamp(changedTrigger.getLastPeakPointValueTimestamp().getTime());
+                currentTrigger.setProjectedPointValue(changedTrigger.getProjectedPointValue());
+                // tell all listeners that we received an update
+                setChanged();
+                //TODO: should this be the trigger passed in or the control area on the update event?
+                notifyObservers( new LCChangeEvent( this, LCChangeEvent.UPDATE, currentTrigger) );   
+            }
             return;
         }
     }
