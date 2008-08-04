@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_macro.cpp-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2006/08/24 18:28:24 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2008/08/04 21:43:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -135,11 +135,16 @@ INT CtiRouteMacro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, 
                                 dout << CtiTime() << " Execute Macro Route Target \"" << pRoute->getName() << "\" " << pRoute->getRouteID()<< endl;
                             }
 
-                            pRoute->ExecuteRequest(pReq, parse, NewOMess, vgList, retList, outList);
+                            int status = pRoute->ExecuteRequest(pReq, parse, NewOMess, vgList, retList, outList);
+
+                            if(status == DEVICEINHIBITED && NewOMess && NewOMess->Request.MacroOffset != 0)
+                            {
+                                ExecuteRequest(pReq, parse, NewOMess, vgList, retList, outList);
+                            }
 
                             if(NewOMess)
                             {
-                                if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
+                                if(status != DEVICEINHIBITED && getDebugLevel() & DEBUGLEVEL_LUDICROUS)
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                     dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
