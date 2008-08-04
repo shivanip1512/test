@@ -8,6 +8,7 @@ import com.cannontech.common.device.commands.CommandRequestRoute;
 import com.cannontech.common.device.commands.CommandRequestRouteExecutor;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
+import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.porter.message.Request;
 
@@ -21,9 +22,9 @@ public class CommandRequestRouteExecutorImpl extends
     private Logger log = YukonLogManager.getLogger(CommandRequestRouteExecutorImpl.class);
 
     protected void verifyRequest(CommandRequestRoute commandRequest,
-            LiteYukonUser user) throws PaoAuthorizationException {
+            LiteYukonUser user, Permission permission) throws PaoAuthorizationException {
         // Do nothing, currently no way to see if a user is authorized to send a
-        // command
+        // command on a certain route
     }
 
     protected Request buildRequest(CommandRequestRoute commandRequest) {

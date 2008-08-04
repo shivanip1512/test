@@ -9,20 +9,25 @@
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
 	
-	<bean id="commandRequestDeviceExecutor" class="com.cannontech.common.device.commands.impl.CommandRequestDeviceExecutorImpl">
+    <bean id="commandRequestExecutorBase" abstract="true">
         <property name="porterConnection" ref="porterConnection" />
         <property name="deviceErrorTranslatorDao" ref="deviceErrorTranslator" />
+        <property name="loggableCommandPermissions">
+            <set>
+                <value>CONTROL_COMMAND</value>
+                <value>WRITE_COMMAND</value>
+            </set>
+        </property>
+    </bean>
+    
+	<bean id="commandRequestDeviceExecutor" parent="commandRequestExecutorBase" class="com.cannontech.common.device.commands.impl.CommandRequestDeviceExecutorImpl">
         <property name="commandAuthorizationService" ref="paoCommandAuthorizationService" />
     </bean>
     
-    <bean id="commandRequestRouteExecutor" class="com.cannontech.common.device.commands.impl.CommandRequestRouteExecutorImpl">
-        <property name="porterConnection" ref="porterConnection" />
-        <property name="deviceErrorTranslatorDao" ref="deviceErrorTranslator" />
+    <bean id="commandRequestRouteExecutor" parent="commandRequestExecutorBase" class="com.cannontech.common.device.commands.impl.CommandRequestRouteExecutorImpl">
     </bean>
 
-    <bean id="commandRequestRouteAndDeviceExecutor" class="com.cannontech.common.device.commands.impl.CommandRequestRouteAndDeviceExecutorImpl">
-        <property name="porterConnection" ref="porterConnection" />
-        <property name="deviceErrorTranslatorDao" ref="deviceErrorTranslator" />
+    <bean id="commandRequestRouteAndDeviceExecutor" parent="commandRequestExecutorBase" class="com.cannontech.common.device.commands.impl.CommandRequestRouteAndDeviceExecutorImpl">
     </bean>
     
     <bean id="attributeService" class="com.cannontech.common.device.attribute.service.AttributeServiceImpl" scope="singleton">

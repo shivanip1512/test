@@ -7,6 +7,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.CommandRequestRouteAndDevice;
 import com.cannontech.common.device.commands.CommandRequestRouteAndDeviceExecutor;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
+import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.porter.message.Request;
 
@@ -15,7 +16,8 @@ public class CommandRequestRouteAndDeviceExecutorImpl extends CommandRequestExec
     private Logger log = YukonLogManager.getLogger(CommandRequestRouteAndDeviceExecutorImpl.class);
     
     @Override
-    protected void verifyRequest(CommandRequestRouteAndDevice commandRequest, LiteYukonUser user) throws PaoAuthorizationException {
+    protected void verifyRequest(CommandRequestRouteAndDevice commandRequest, 
+            LiteYukonUser user, Permission permission) throws PaoAuthorizationException {
     }
     
     @Override
