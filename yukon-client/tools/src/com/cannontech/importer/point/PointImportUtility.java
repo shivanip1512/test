@@ -23,7 +23,6 @@ import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
 
-import com.cannontech.common.login.ClientStartupHelper;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
@@ -2096,8 +2095,9 @@ public class PointImportUtility
      * @param args java.lang.String[]
      */
     public static void main(java.lang.String[] args) {
-        ClientStartupHelper clientStartupHelper = new ClientStartupHelper();
-        clientStartupHelper.setAppName("PointImportUtility");
+        String appName = "PointImportUtility";
+        System.setProperty("cti.app.name", appName);
+        CTILogger.info(appName + " starting...");
         if( args.length < 2 ){
             System.out.println("Input Format: number filename ");
             System.out.println("1: Analog ");
