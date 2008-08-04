@@ -227,9 +227,21 @@ bool CtiConfigParameters::isOpt(const string& key, const string& isEqualThisValu
         return false;
 }
 
-bool CtiConfigParameters::isTrue(string key)
+// If there is no entry in master.cfg this returns defaultval which defaults to false;
+bool CtiConfigParameters::isTrue(const string &key, bool defaultval)
 {
-    return !stringCompareIgnoreCase( getValueAsString(key, "false"), "true" );
+    bool retVal;
+    static string truestr = "true";
+    static string falsestr = "false";
+    if( defaultval == true )
+    {
+        retVal = !stringCompareIgnoreCase( getValueAsString(key, truestr), truestr );
+    }
+    else if( defaultval == false )
+    {
+        retVal = !stringCompareIgnoreCase( getValueAsString(key, falsestr), truestr );
+    }
+    return retVal;
 }
 
 string

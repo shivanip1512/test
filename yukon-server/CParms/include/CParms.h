@@ -137,7 +137,7 @@ public:
 
    BOOL isOpt(const string& key);
    bool isOpt(const string& key, const string& isEqualThisValue);
-   bool isTrue(string key);
+   bool isTrue(const string& key, bool defaultval = false);
 
    /*
     * returns bool true i.f.f. the cparms were refreshed on this call.  Uses the built in timer to

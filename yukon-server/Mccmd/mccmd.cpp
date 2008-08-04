@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.74 $
-* DATE         :  $Date: 2008/06/25 17:08:42 $
+* REVISION     :  $Revision: 1.75 $
+* DATE         :  $Date: 2008/08/04 18:19:39 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -559,7 +559,7 @@ int Mccmd_Init(Tcl_Interp* interp)
 
     gMccmdDebugLevel = gConfigParms.getValueAsULong(MCCMD_DEBUG_LEVEL, 0x00000000);
     gDoNotSendCancel = gConfigParms.isTrue(MACS_DISABLE_CANCEL);
-    gIgnoreQueueCount = gConfigParms.isTrue(MACS_IGNORE_QUEUES);
+    gIgnoreQueueCount = gConfigParms.isTrue(MACS_IGNORE_QUEUES, true);
 
     if( gMccmdDebugLevel > 0 )
     {
