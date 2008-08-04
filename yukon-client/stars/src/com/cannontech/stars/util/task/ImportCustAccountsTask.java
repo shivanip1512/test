@@ -1133,7 +1133,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 			importLog.close();
 
 			try {
-				if (!StringUtils.isBlank(email)) {
+				if (!StringUtils.isBlank(email) && ((preScan && status == STATUS_ERROR) || !preScan)) {
 					sendImportLog( logFile, email, energyCompany );
 				}
 			} catch (Exception e) {
