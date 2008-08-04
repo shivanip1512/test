@@ -951,6 +951,12 @@ WHERE pointId IN (SELECT DISTINCT pointId
                   and pointOffset = 100 and pointType = 'Analog');
 /* End YUK-4968 */
 
+/* Start YUK-6259 */
+UPDATE YukonRoleProperty 
+SET description = 'Defines a Yukon Pao (Device) Name field alias. Valid values(0-5): [0=Device Name, 1=Account Number, 2=Service Location, 3=Customer, 4=EA Location, 5=Grid Location]' 
+WHERE rolePropertyId = -1600;
+/* End YUK-6259 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
