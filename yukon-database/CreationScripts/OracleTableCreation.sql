@@ -1,8 +1,12 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/1/2008 2:48:55 PM                          */
+/* Created on:     8/4/2008 10:16:53 AM                         */
 /*==============================================================*/
+
+
+set define off;
+
 
 
 drop view TempMovedCapBanks_View;
