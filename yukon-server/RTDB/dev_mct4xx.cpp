@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.82 $
-* DATE         :  $Date: 2008/08/01 15:42:05 $
+* REVISION     :  $Revision: 1.83 $
+* DATE         :  $Date: 2008/08/04 19:02:17 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3035,7 +3035,7 @@ INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
                                      InMessage->Return.UserID,
                                      0,
                                      InMessage->Return.RouteID,
-                                     InMessage->Return.MacroOffset,
+                                     selectInitialMacroRouteOffset(InMessage->Return.RouteID),
                                      0,
                                      0,
                                      InMessage->Priority);
@@ -3080,7 +3080,7 @@ INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
                                      InMessage->Return.UserID,
                                      0,
                                      InMessage->Return.RouteID,
-                                     InMessage->Return.MacroOffset);
+                                     selectInitialMacroRouteOffset(InMessage->Return.RouteID));
 
                 newReq.setConnectionHandle((void *)InMessage->Return.Connection);
 
@@ -3141,7 +3141,7 @@ INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
                                  InMessage->Return.UserID,
                                  0,
                                  InMessage->Return.RouteID,
-                                 InMessage->Return.MacroOffset,
+                                 selectInitialMacroRouteOffset(InMessage->Return.RouteID),
                                  0,
                                  0,
                                  InMessage->Priority);
@@ -3813,7 +3813,7 @@ INT CtiDeviceMCT4xx::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
                                      InMessage->Return.UserID,
                                      0,
                                      InMessage->Return.RouteID,
-                                     InMessage->Return.MacroOffset,
+                                     selectInitialMacroRouteOffset(InMessage->Return.RouteID),
                                      0,
                                      0,
                                      InMessage->Priority);
@@ -3848,7 +3848,7 @@ INT CtiDeviceMCT4xx::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
         }
         case Emetcon::GetValue_LoadProfilePeakReport:
         {
-            _llpPeakInterest.time = 0;//force a resubmit next time
+            _llpPeakInterest.time = 0;  //  force a resubmit next time
             InterlockedExchange(&_llpPeakInterest.in_progress, false);
             break;
         }
