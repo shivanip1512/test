@@ -82,11 +82,16 @@ public class ProgramSignUpAction implements ActionBase {
 			
 			String notEnrolled = req.getParameter( "NotEnrolled" );
 			if (notEnrolled == null) {
-				StarsSULMPrograms programs = new StarsSULMPrograms();
+                LiteYukonUser liteUser = (LiteYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
+                boolean multiProgramSelect = StarsUtils.isResidentialCustomer(liteUser) && DaoFactory.getAuthDao().checkRoleProperty(liteUser, ResidentialCustomerRole.ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY) 
+                            || StarsUtils.isOperator(liteUser) && true; //TODO DaoFactory.getAuthDao().checkRoleProperty( liteUser, ConsumerInfoRole.ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY )
+                
+                StarsSULMPrograms programs = new StarsSULMPrograms();
 				progSignUp.setStarsSULMPrograms( programs );
 				
 				String[] catIDs = req.getParameterValues( "CatID" );
 				String[] progIDs = req.getParameterValues( "ProgID" );
+                String[] allProgIDs = req.getParameterValues( "AllProgID" );
 				if (progIDs != null) {
 					for (int i = 0; i < progIDs.length; i++) 
                     {
@@ -94,7 +99,16 @@ public class ProgramSignUpAction implements ActionBase {
 						
 						SULMProgram program = new SULMProgram();
 						program.setProgramID( Integer.parseInt(progIDs[i]) );
-						program.setApplianceCategoryID( Integer.parseInt(catIDs[i]) );
+                        if(multiProgramSelect && allProgIDs != null && catIDs.length != progIDs.length) {
+                            for (int j = 0; j < allProgIDs.length; j++) {
+                                if(allProgIDs[j].compareTo(progIDs[i]) == 0) {
+                                    program.setApplianceCategoryID( Integer.parseInt(catIDs[j]) );
+                                    break;
+                                }
+                            }
+                        }
+                        else
+                            program.setApplianceCategoryID( Integer.parseInt(catIDs[i]) );
                         String notOperator = req.getParameter("notOperator");
                         if(notOperator != null && notOperator.compareTo("true") == 0)
                         {
@@ -662,9 +676,7 @@ public class ProgramSignUpAction implements ActionBase {
                             currentEnrollmentInformation[RELAY] = relay;
                             hwInfoToEnroll.add(currentEnrollmentInformation);
                             /*
-                             * This is a special case since we don't allow enrollment in multiple programs under the
-                             * same appliance category for the same switch.  
-                             * TODO: What about different relays?
+                             * TODO: What about different relays?  Are we handling this correctly?
                              */
                             if(program.getApplianceCategoryID() == liteApp.getApplianceCategoryID() && 
                                     program.getLoadNumber() == oldApplianceRelay &&
