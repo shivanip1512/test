@@ -571,10 +571,8 @@ public void runImport(List<ImportData> imps) {
                     }*/
 				if( updateTransaction) {
                     dbPersistentDao.performDBChange(yukonPaobject, Transaction.UPDATE); //update transaction and DBChange write
-                    log.info("Updated " + yukonPaobject.getPAOType() + " with name " + name + " with address " + address + ".");
-				} else {
-				    log.info("No updates found to make for device with name " + name + " with address " + address + ".");
 				}
+                log.info("Updated " + yukonPaobject.getPAOType() + " with name " + name + " with address " + address + ".");
                 successCounter++;
             } catch (PersistenceException e) {
                 log.error(e);
