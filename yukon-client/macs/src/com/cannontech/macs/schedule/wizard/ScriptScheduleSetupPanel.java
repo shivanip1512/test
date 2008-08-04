@@ -2030,7 +2030,7 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     		constraintsScriptNamePanel.weightx = 1.0;
     		constraintsScriptNamePanel.insets = new java.awt.Insets(15, 4, 15, 4);
     		add(getScriptNamePanel(), constraintsScriptNamePanel);
-            initSwingCompValues();
+    		initSwingCompValuesWithoutGroupsSelected();
     	} catch (java.lang.Throwable ivjExc) {
     		handleException(ivjExc);
     	}
@@ -2075,6 +2075,69 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
         getDescriptionTextField().addKeyListener(this);
         getMeterReadGroupTree().addTreeSelectionListener(this);
         getBillingGroupTree().addTreeSelectionListener(this);
+    }
+    
+    
+    /**
+     * This method was created in VisualAge.
+     */
+    @SuppressWarnings({ "unchecked", "cast" })
+    private void initSwingCompValuesWithoutGroupsSelected() {
+        getScriptTemplate().setParameterValue(IED_FLAG_PARAM, String.valueOf(ScriptTemplateTypes.isIEDTemplate(getTemplateType())));
+    
+        //The read_with..._param is for showing options to retry during a multiple read schedule, 
+        //so we NOT the result which is from a retry script, one that is a read once type script 
+        getScriptTemplate().setParameterValue(READ_WITH_RETRY_FLAG_PARAM, String.valueOf(!ScriptTemplateTypes.isRetryTemplate(getTemplateType())));
+        
+        getScriptNameTextField().setText(getScriptTemplate().getParameterValue(SCRIPT_FILE_NAME_PARAM));
+        getDescriptionTextField().setText(getScriptTemplate().getParameterValue(SCRIPT_DESC_PARAM));
+        getFilePathTextField().setText(getScriptTemplate().getParameterValue(FILE_PATH_PARAM));
+        getMissedFileNameTextField().setText(getScriptTemplate().getParameterValue(MISSED_FILE_NAME_PARAM));
+        getSuccessFileNameTextField().setText(getScriptTemplate().getParameterValue(SUCCESS_FILE_NAME_PARAM));
+        getPorterTimeoutTextField().setText(getScriptTemplate().getParameterValue(PORTER_TIMEOUT_PARAM));
+        
+        getRetryCountTextField().setText(getScriptTemplate().getParameterValue(RETRY_COUNT_PARAM));
+        getMaxRetryHoursTextField().setText(getScriptTemplate().getParameterValue(MAX_RETRY_HOURS_PARAM));
+        getQueueOffCountTextField().setText(getScriptTemplate().getParameterValue(QUEUE_OFF_COUNT_PARAM));
+    
+        //Billing setup
+        enableContainer(getBillingPanel(), Boolean.valueOf(getScriptTemplate().getParameterValue(BILLING_FLAG_PARAM)).booleanValue());
+        getGenerateBillingCheckBox().setSelected(Boolean.valueOf(getScriptTemplate().getParameterValue(BILLING_FLAG_PARAM)).booleanValue());
+        getBillingFileNameTextField().setText(getScriptTemplate().getParameterValue(BILLING_FILE_NAME_PARAM));
+        getBillingFilePathTextBox().setText(getScriptTemplate().getParameterValue(BILLING_FILE_PATH_PARAM));
+        getBillingFormatComboBox().setSelectedItem(getScriptTemplate().getParameterValue(BILLING_FORMAT_PARAM));
+        getDemandDaysTextField().setText(getScriptTemplate().getParameterValue(BILLING_DEMAND_DAYS_PARAM));
+        getEnergyDaysTextField().setText(getScriptTemplate().getParameterValue(BILLING_ENERGY_DAYS_PARAM));
+        
+        //Notification setup
+        enableContainer(getNotificationPanel(), Boolean.valueOf(getScriptTemplate().getParameterValue(NOTIFICATION_FLAG_PARAM)).booleanValue());
+        getSendEmailCheckBox().setSelected(Boolean.valueOf(getScriptTemplate().getParameterValue(NOTIFICATION_FLAG_PARAM)).booleanValue());
+        getMessageSubjectTextField().setText(getScriptTemplate().getParameterValue(EMAIL_SUBJECT_PARAM));
+        getNotifyGroupComboBox().setSelectedItem(getScriptTemplate().getParameterValue(NOTIFY_GROUP_PARAM));
+        
+        //IED panel setup
+        String frozen = (getScriptTemplate().getParameterValue(READ_FROZEN_PARAM));
+        if(frozen.length() > 0)
+        {
+            if( frozen.indexOf("72") > 0)   //we have an alpha command (this way we don't have to have the register be exact (0 vs 00)
+                getAlphaFrozenRegisterCheckBox().setSelected(true);
+            else    //default rest to this one?
+                getS4FrozenRegisterCheckBox().setSelected(true);
+        }
+        Integer resetCountParamValue = Integer.valueOf(getScriptTemplate().getParameterValue(RESET_COUNT_PARAM));
+        if(resetCountParamValue > 0) {
+            getResetDemandEnabledCheckBox().setSelected(true);
+            setResetDemandFieldsEnabled(true);
+        }
+        else {
+            getResetDemandEnabledCheckBox().setSelected(false);
+            setResetDemandFieldsEnabled(false);
+        }
+        getDemandResetSpinBox().setValue(resetCountParamValue);
+        getTOURateComboBox().setSelectedItem(getScriptTemplate().getParameterValue(TOU_RATE_PARAM));
+        getIED400TypeComboBox().setSelectedItem(getScriptTemplate().getParameterValue(IED_TYPE_PARAM));
+        
+        CTILogger.info("Set swing component values");
     }
     
     /**
