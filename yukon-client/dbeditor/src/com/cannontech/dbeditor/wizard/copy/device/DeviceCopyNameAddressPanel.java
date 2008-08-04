@@ -29,6 +29,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
 import com.cannontech.database.db.device.DeviceMeterGroup;
+import com.cannontech.dbeditor.DatabaseEditorOptionPane;
 import com.cannontech.yukon.IDatabaseCache;
  
 public class DeviceCopyNameAddressPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ItemListener, javax.swing.event.CaretListener {
@@ -1005,16 +1006,15 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
                 devStr += "          " + devices[i] + "\n";
             }
 
-            int res = JOptionPane.showConfirmDialog(this,
-                                                    "The address '"
-                                                            + address
-                                                            + "' is already used by the following devices,\n"
-                                                            + "are you sure you want to use it again?\n"
-                                                            + devStr,
-                                                    "Address Already Used",
-                                                    JOptionPane.YES_NO_OPTION,
-                                                    JOptionPane.WARNING_MESSAGE);
-
+            String message = "The address '"
+                + address
+                + "' is already used by the following devices,\n"
+                + "are you sure you want to use it again?\n";
+            
+            int res = DatabaseEditorOptionPane.showAlreadyUsedConfirmDialog(this,
+                                                                            message,
+                                                                            "Address Already Used",
+                                                                            devices);
             if (res == JOptionPane.NO_OPTION) {
                 throw new CancelInsertException("Device was not inserted");
             }
@@ -1029,21 +1029,16 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
         List<String> devices = DeviceMeterGroup.checkMeterNumber(meterNumber, null);
 
         if (devices.size() > 0) {
-            StringBuffer deviceNames = new StringBuffer();
-            for (String deviceName : devices) {
-                deviceNames.append("          " + deviceName + "\n");
-            }
 
-            int response = JOptionPane.showConfirmDialog(this,
-                                                         "The meternumber '"
-                                                                 + meterNumber
-                                                                 + "' is already used by the following devices,\n"
-                                                                 + "are you sure you want to use it again?\n"
-                                                                 + deviceNames.toString(),
-                                                         "Meternumber Already Used",
-                                                         JOptionPane.YES_NO_OPTION,
-                                                         JOptionPane.WARNING_MESSAGE);
+            String message = "The meternumber '"
+                + meterNumber
+                + "' is already used by the following devices,\n"
+                + "are you sure you want to use it again?\n";
 
+            int response = DatabaseEditorOptionPane.showAlreadyUsedConfirmDialog(this,
+                                                                                 message,
+                                                                                 "Meternumber Already Used",
+                                                                                 devices);
             if (response == javax.swing.JOptionPane.NO_OPTION) {
                 throw new com.cannontech.common.wizard.CancelInsertException("Device was not inserted");
             }

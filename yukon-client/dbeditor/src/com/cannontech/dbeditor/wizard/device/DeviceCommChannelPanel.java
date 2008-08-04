@@ -49,6 +49,7 @@ import com.cannontech.database.db.device.DeviceVerification;
 import com.cannontech.database.db.point.PointStatus;
 import com.cannontech.database.db.route.CarrierRoute;
 import com.cannontech.database.db.state.StateGroupUtils;
+import com.cannontech.dbeditor.DatabaseEditorOptionPane;
 import com.cannontech.yukon.IDatabaseCache;
  
 public class DeviceCommChannelPanel extends com.cannontech.common.gui.util.DataInputPanel implements ActionListener, MouseListener, ListSelectionListener {
@@ -192,20 +193,16 @@ private void checkAddress()
         String[] devices = DeviceIDLCRemote.isAddressUnique(address, null, portID);
 
         if (devices.length > 0) {
-            String devStr = new String();
-            for (int i = 0; i < devices.length; i++) {
-                devStr += "          " + devices[i] + "\n";
-            }
-            int res = JOptionPane.showConfirmDialog(this,
-                                                    "The address '"
-                                                            + address
-                                                            + "' is already used by the following devices,\n"
-                                                            + "are you sure you want to use it again?\n"
-                                                            + devStr,
-                                                    "Address Already Used",
-                                                    JOptionPane.YES_NO_OPTION,
-                                                    JOptionPane.WARNING_MESSAGE);
-
+            
+            String message = "The address '"
+                + address
+                + "' is already used by the following devices,\n"
+                + "are you sure you want to use it again?\n";
+            
+            int res = DatabaseEditorOptionPane.showAlreadyUsedConfirmDialog(this,
+                                                                            message,
+                                                                            "Address Already Used",
+                                                                            devices);
             if (res == JOptionPane.NO_OPTION) {
                 throw new CancelInsertException("Device was not inserted");
             }

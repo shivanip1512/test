@@ -10,6 +10,7 @@ import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.IDeviceMeterGroup;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.db.device.DeviceMeterGroup;
+import com.cannontech.dbeditor.DatabaseEditorOptionPane;
  
 /**
  * This type was created in VisualAge.
@@ -301,21 +302,16 @@ private void checkMeterNumber(String meterNumber) {
      List<String> devices = DeviceMeterGroup.checkMeterNumber(meterNumber, null);
 
      if (devices.size() > 0) {
-         StringBuffer deviceNames = new StringBuffer();
-         for (String deviceName : devices) {
-             deviceNames.append("          " + deviceName + "\n");
-         }
 
-         int response = JOptionPane.showConfirmDialog(this,
-                                                      "The meternumber '"
-                                                              + meterNumber
-                                                              + "' is already used by the following devices,\n"
-                                                              + "are you sure you want to use it again?\n"
-                                                              + deviceNames.toString(),
-                                                      "Meternumber Already Used",
-                                                      JOptionPane.YES_NO_OPTION,
-                                                      JOptionPane.WARNING_MESSAGE);
-
+         String message = "The meternumber '"
+             + meterNumber
+             + "' is already used by the following devices,\n"
+             + "are you sure you want to use it again?\n";
+         
+         int response = DatabaseEditorOptionPane.showAlreadyUsedConfirmDialog(this,
+                                                                              message,
+                                                                              "Meternumber Already Used",
+                                                                              devices);
          if (response == javax.swing.JOptionPane.NO_OPTION) {
              throw new CancelInsertException("Device was not inserted");
          }

@@ -29,6 +29,7 @@ import com.cannontech.database.data.device.Series5Base;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
+import com.cannontech.dbeditor.DatabaseEditorOptionPane;
 import com.cannontech.spring.YukonSpringHook;
 
 /**
@@ -78,20 +79,16 @@ public void caretUpdate(javax.swing.event.CaretEvent e) {
         String[] devices = DeviceCarrierSettings.isAddressUnique(address, null);
 
         if (devices.length > 0) {
-            String devStr = new String();
-            for (int i = 0; i < devices.length; i++) {
-                devStr += "          " + devices[i] + "\n";
-            }
-            int res = JOptionPane.showConfirmDialog(this,
-                                                    "The address '"
-                                                            + address
-                                                            + "' is already used by the following devices,\n"
-                                                            + "are you sure you want to use it again?\n"
-                                                            + devStr,
-                                                    "Address Already Used",
-                                                    JOptionPane.YES_NO_OPTION,
-                                                    JOptionPane.WARNING_MESSAGE);
-
+            
+            String message = "The address '"
+                + address
+                + "' is already used by the following devices,\n"
+                + "are you sure you want to use it again?\n";
+            
+            int res = DatabaseEditorOptionPane.showAlreadyUsedConfirmDialog(this,
+                                                                            message,
+                                                                            "Address Already Used",
+                                                                            devices);
             if (res == JOptionPane.NO_OPTION) {
                 throw new CancelInsertException("Device was not inserted");
             }

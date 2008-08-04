@@ -42,6 +42,7 @@ import com.cannontech.database.db.device.DeviceCarrierSettings;
 import com.cannontech.database.db.device.DeviceDialupSettings;
 import com.cannontech.database.db.device.DeviceDirectCommSettings;
 import com.cannontech.database.db.device.DeviceIDLCRemote;
+import com.cannontech.dbeditor.DatabaseEditorOptionPane;
 import com.cannontech.device.range.DeviceAddressRange;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -221,21 +222,15 @@ public void caretUpdate(javax.swing.event.CaretEvent e) {
 
         if (devices.length > 0) {
 
-            String devStr = new String();
-            for (int i = 0; i < devices.length; i++) {
-                devStr += "          " + devices[i] + "\n";
-            }
-
-            int res = JOptionPane.showConfirmDialog(this,
-                                                    "The address '"
-                                                            + address
-                                                            + "' is already used by the following devices,\n"
-                                                            + "are you sure you want to use it again?\n"
-                                                            + devStr,
-                                                    "Address Already Used",
-                                                    JOptionPane.YES_NO_OPTION,
-                                                    JOptionPane.WARNING_MESSAGE);
-
+            String message = "The address '"
+                + address
+                + "' is already used by the following devices,\n"
+                + "are you sure you want to use it again?\n";
+            
+            int res = DatabaseEditorOptionPane.showAlreadyUsedConfirmDialog(this,
+                                                                            message,
+                                                                            "Address Already Used",
+                                                                            devices);
             if (res == JOptionPane.NO_OPTION) {
                 setErrorString(null);
                 return false;
