@@ -179,7 +179,7 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
     		boolean newInsert = getControlAreas().get(controlArea.getYukonID()) == null;
             
             getControlAreas().put( controlArea.getYukonID(), controlArea );
-    		/*
+    		/*TODO: YUK-4697, find better solution as the following 3 lines were breaking 3-tier and TDC
             getPrograms().clear();
             getGroups().clear();
             getTriggers().clear();*/
