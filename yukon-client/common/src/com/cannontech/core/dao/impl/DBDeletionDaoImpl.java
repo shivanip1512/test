@@ -9,10 +9,12 @@ import com.cannontech.core.dao.DBDeleteResult;
 import com.cannontech.core.dao.DBDeletionDao;
 import com.cannontech.database.data.config.ConfigTwoWay;
 import com.cannontech.database.data.holiday.HolidaySchedule;
+import com.cannontech.database.data.route.RouteBase;
 import com.cannontech.database.data.season.SeasonSchedule;
 import com.cannontech.database.data.tou.TOUSchedule;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.device.lm.LMGroup;
 import com.cannontech.database.db.device.lm.LMProgramConstraint;
 
 
@@ -83,6 +85,12 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 	      dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "because it is utilized by the route named '"+ str + "'") );
 	      return DBDeletionDao.STATUS_DISALLOW;
 	   }
+	   
+	   if( (str = LMGroup.isGroupUsed(theID)) != null )
+	   {
+		   dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "because it is utilized by the LM program named '"+ str + "'") );
+		   return DBDeletionDao.STATUS_DISALLOW;
+	   }
 	
 		//this device is deleteable
 		return STATUS_ALLOW;
@@ -96,17 +104,29 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 		* statement. Do this when performance becomes an issue and put it into the
 		* DeviceBase class 
 		*/
-		if( (str = com.cannontech.database.data.route.RouteBase.hasDevice(theID)) != null )
+		if( (str = RouteBase.hasDevice(theID)) != null )
 		{
-			dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "because it is utilized by the device named '"+ str + "'") );
+			dbRes.getDescriptionMsg().append(CR_LF + "because it is utilized by the device named '"+ str + "'");
 			return DBDeletionDao.STATUS_DISALLOW;
 		}
 		
-		if( (str = com.cannontech.database.data.route.RouteBase.inMacroRoute(theID)) != null )
+		if( (str = RouteBase.inMacroRoute(theID)) != null )
 	   	{
-			dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "If you continue, this route will be removed from \n the macro route '" + str + "'." +
-				"  Delete anyway?") );
+			dbRes.getDescriptionMsg().append(CR_LF + "If you continue, this route will be removed from \n the macro route '" + str + "'." +
+				"  Delete anyway?");
 			return STATUS_CONFIRM;
+		}
+
+		if( (str = RouteBase.hasLoadGroup(theID)) != null )
+		{
+			dbRes.getDescriptionMsg().append(CR_LF + "because it is utilized by the load group named '"+ str + "'");
+			return DBDeletionDao.STATUS_DISALLOW;
+		}
+		
+		if( (str = RouteBase.hasRepeater(theID)) != null )
+		{
+			dbRes.getDescriptionMsg().append(CR_LF + "because it is utilized by the repeater named '"+ str + "'");
+			return DBDeletionDao.STATUS_DISALLOW;
 		}
 		
 		//this route is deleteable
@@ -204,9 +224,9 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 	
 	private static byte createDeleteStringForTOU(final DBDeleteResult dbRes) throws java.sql.SQLException
 	{
-		Integer theID = new Integer( dbRes.getItemID() );
+		/*Integer theID = new Integer( dbRes.getItemID() );
 	
-		/*if( TOUSchedule.inUseByDevice(
+		if( TOUSchedule.inUseByDevice(
 				theID, CtiUtilities.getDatabaseAlias() ) )
 		{
 			dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "because it is in use by a device.");

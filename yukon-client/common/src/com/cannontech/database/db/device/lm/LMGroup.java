@@ -1,5 +1,11 @@
 package com.cannontech.database.db.device.lm;
 
+import java.sql.SQLException;
+
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.SqlStatement;
+import com.cannontech.database.db.pao.YukonPAObject;
+
 /**
  * This type was created in VisualAge.
  */
@@ -98,4 +104,27 @@ public void update() throws java.sql.SQLException
 
 	update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 }
+
+public final static String isGroupUsed( Integer groupID ) throws SQLException {
+   SqlStatement stmt = new SqlStatement(
+            "SELECT PAOName FROM " + 
+            YukonPAObject.TABLE_NAME + " y, " +
+            LMProgramDirectGroup.TABLE_NAME + " l" +
+            " WHERE l.LMGroupDeviceID=" + groupID +
+            " AND l.DeviceID=y.PAObjectID",
+            CtiUtilities.getDatabaseAlias() );
+
+   try {
+      stmt.execute();
+      if(stmt.getRowCount() > 0 ) {
+         return stmt.getRow(0)[0].toString();
+      } else {
+         return null;
+      }
+   } catch( Exception e ) {
+      return null;
+   }
+
+}
+
 }

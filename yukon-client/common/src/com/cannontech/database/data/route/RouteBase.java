@@ -1,7 +1,16 @@
 package com.cannontech.database.data.route;
 
+import java.sql.SQLException;
+
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.database.SqlStatement;
+import com.cannontech.database.db.device.lm.LMGroupExpressCom;
+import com.cannontech.database.db.device.lm.LMGroupMCT;
+import com.cannontech.database.db.device.lm.LMGroupVersacom;
+import com.cannontech.database.db.pao.YukonPAObject;
+import com.cannontech.database.db.route.RepeaterRoute;
 import com.cannontech.database.db.route.Route;
 
 /**
@@ -126,6 +135,84 @@ public final static String hasDevice( Integer routeID ) throws java.sql.SQLExcep
 		return null;
 	}
 
+}
+
+public final static String hasLoadGroup( Integer routeID ) throws SQLException 
+{
+	SqlStatement expresscomStmt =
+		new SqlStatement(
+				"SELECT PAOName FROM " + 
+				YukonPAObject.TABLE_NAME + " y, " +
+				LMGroupExpressCom.TABLE_NAME + " lmg" +             
+				" WHERE lmg.RouteID = " + routeID +
+				" AND lmg.LMGroupId = y.PAObjectID",
+				CtiUtilities.getDatabaseAlias() );
+
+	SqlStatement versacomStmt =
+		new SqlStatement(
+				"SELECT PAOName FROM " + 
+				YukonPAObject.TABLE_NAME + " y, " +
+				LMGroupVersacom.TABLE_NAME + " lmg" +             
+				" WHERE lmg.RouteID = " + routeID +
+				" AND lmg.DeviceID = y.PAObjectID",
+				CtiUtilities.getDatabaseAlias() );
+
+	SqlStatement mctStmt =
+		new SqlStatement(
+				"SELECT PAOName FROM " + 
+				YukonPAObject.TABLE_NAME + " y, " +
+				LMGroupMCT.TABLE_NAME + " lmg" +             
+				" WHERE lmg.RouteID = " + routeID +
+				" AND lmg.DeviceID = y.PAObjectID",
+				CtiUtilities.getDatabaseAlias() );
+	
+	try {
+		expresscomStmt.execute();
+		if(expresscomStmt.getRowCount() > 0 ) {
+			return expresscomStmt.getRow(0)[0].toString();
+		}
+
+		versacomStmt.execute();
+		if(versacomStmt.getRowCount() > 0 ) {
+			return versacomStmt.getRow(0)[0].toString();
+		}
+		
+		mctStmt.execute();
+		if(mctStmt.getRowCount() > 0 ) {
+			return mctStmt.getRow(0)[0].toString();
+		}
+		
+		return null;
+		
+	} catch( Exception e ) {
+		return null;
+	}
+	
+}
+
+public final static String hasRepeater( Integer routeID ) throws SQLException 
+{
+	SqlStatement stmt =
+		new SqlStatement(
+				"SELECT PAOName FROM " + 
+				YukonPAObject.TABLE_NAME + " y, " +
+				RepeaterRoute.TABLE_NAME + " rr" +             
+				" WHERE rr.RouteID = " + routeID +
+				" AND rr.DeviceID = y.PAObjectID",
+				CtiUtilities.getDatabaseAlias() );
+	
+	try {
+		stmt.execute();
+		if(stmt.getRowCount() > 0 ) {
+			return stmt.getRow(0)[0].toString();
+		} else {
+			return null;
+		}
+		
+	} catch( Exception e ) {
+		return null;
+	}
+	
 }
 
 public final static String inMacroRoute( Integer routeID ) throws java.sql.SQLException 

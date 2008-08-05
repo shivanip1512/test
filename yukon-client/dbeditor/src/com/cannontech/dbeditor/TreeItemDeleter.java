@@ -6,6 +6,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 import com.cannontech.common.gui.util.TreeViewPanel;
 import com.cannontech.core.dao.DBDeleteResult;
+import com.cannontech.core.dao.DBDeletionDao;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
@@ -49,7 +50,7 @@ public class TreeItemDeleter
 	{
 		int confirm = JOptionPane.NO_OPTION;
 		boolean canDelete = false, isMultiDelete = nodes.length > 1;
-		byte deleteVal = DaoFactory.getDbDeletionDao().STATUS_DISALLOW;
+		byte deleteVal = DBDeletionDao.STATUS_DISALLOW;
 		DBDeleteResult delRes = null;
 		
 		if( nodes.length <= 0 )
@@ -112,7 +113,7 @@ public class TreeItemDeleter
 		         //dbDeletionWarning = DaoFactory.getDbDeletionDao().getTheWarning().toString();
 		         
 		         //as soon as we can NOT delete, preserve that false value
-		         canDelete = (deleteVal == DaoFactory.getDbDeletionDao().STATUS_ALLOW || deleteVal == DaoFactory.getDbDeletionDao().STATUS_CONFIRM);
+		         canDelete = (deleteVal == DBDeletionDao.STATUS_ALLOW || deleteVal == DBDeletionDao.STATUS_CONFIRM);
 		         
 		         if( !canDelete )
 		         	break;
