@@ -1,14 +1,20 @@
 package com.cannontech.database.db.stars.report;
 
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlStatement;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.spring.YukonSpringHook;
 
 public class ServiceCompanyDesignationCode extends DBPersistent {
-
+    private static final Logger log = YukonLogManager.getLogger(ServiceCompanyDesignationCode.class);
     private Integer designationCodeID;
     private String designationCodeValue;
     private Integer serviceCompanyID;
@@ -25,30 +31,13 @@ public ServiceCompanyDesignationCode() {
 }
 
 public ServiceCompanyDesignationCode(String codeValue, Integer companyID) {
-    super();
-    
-    int nextID = 1;
-    SqlStatement stmt = new SqlStatement("SELECT MAX(DESIGNATIONCODEID) + 1 FROM " + TABLE_NAME, CtiUtilities.getDatabaseAlias());
-    
-    try
-    {
-        stmt.execute();
-        
-        if( stmt.getRowCount() > 0 )
-        {
-            nextID = (new Integer(stmt.getRow(0)[0].toString())).intValue();
-        }
-    }
-    catch( Exception e )
-    {
-        e.printStackTrace();
-    }
-    
-    designationCodeID = new Integer(nextID);
+    super();    
+    designationCodeID = YukonSpringHook.getNextValueHelper().getNextValue(TABLE_NAME);
     designationCodeValue = codeValue;
     serviceCompanyID = companyID;
 }
 
+@Override
 public void add() throws java.sql.SQLException 
 {
     Object setValues[] = { getDesignationCodeID(), getDesignationCodeValue(), 
@@ -57,6 +46,7 @@ public void add() throws java.sql.SQLException
     add( TABLE_NAME, setValues );
 }
 
+@Override
 public void delete() throws java.sql.SQLException 
 {
     Object constraintValues[] = { getDesignationCodeID() };
@@ -79,6 +69,7 @@ public Integer getServiceCompanyID()
     return serviceCompanyID;
 }
 
+@Override
 public void retrieve() throws java.sql.SQLException 
 {
     Object constraintValues[] = { getDesignationCodeID() };
@@ -109,6 +100,7 @@ public void setServiceCompanyID(Integer newServiceCoID)
     serviceCompanyID = newServiceCoID;
 }
 
+@Override
 public void update() throws java.sql.SQLException 
 {
     Object setValues[] = { getDesignationCodeValue(), 
@@ -144,15 +136,15 @@ public static List<ServiceCompanyDesignationCode> getServiceCompanyDesignationCo
     }
     catch( Exception e )
     {
-        e.printStackTrace();
+        log.error(e);
     }
     
     return codes;
 }
 
-public static ArrayList retrieveAllServiceCompanyCodes()
+public static List<ServiceCompanyDesignationCode> retrieveAllServiceCompanyCodes()
 {
-    ArrayList codes = new ArrayList();
+    List<ServiceCompanyDesignationCode> codes = new ArrayList<ServiceCompanyDesignationCode>();
     
     SqlStatement stmt = new SqlStatement("SELECT * FROM " + TABLE_NAME + " ORDER BY DESIGNATIONCODEVALUE", CtiUtilities.getDatabaseAlias());
     
@@ -175,7 +167,7 @@ public static ArrayList retrieveAllServiceCompanyCodes()
     }
     catch( Exception e )
     {
-        e.printStackTrace();
+        log.error(e);
     }
     
     return codes;
@@ -186,26 +178,26 @@ public static ArrayList retrieveAllServiceCompanyCodes()
  * @param conn
  * @return
  */
-public static synchronized boolean deleteDesignationCode(Integer companyID, java.sql.Connection conn )
-{
-	try
-	{
+public static synchronized boolean deleteDesignationCode(Integer companyID, java.sql.Connection conn ) {
+	
+    Statement stat = null;
+    
+    try {
 		if( conn == null )
 			throw new IllegalStateException("Database connection should not be null.");
 
-		java.sql.Statement stat = conn.createStatement();
-		
+		stat = conn.createStatement();
+
 		stat.execute( "DELETE FROM " + TABLE_NAME + 
 				" WHERE SERVICECOMPANYID =" + companyID);
 
-		if( stat != null )
-			stat.close();
-	}
-	catch(Exception e)
-	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+	} catch(Exception e) {
+		log.error(e);
 		return false;
-	}
+	} finally {
+        SqlUtils.close(stat);
+        
+    }
 	return true;
 }
 }

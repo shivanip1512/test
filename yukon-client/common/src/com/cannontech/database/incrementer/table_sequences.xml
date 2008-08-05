@@ -5,12 +5,12 @@
     -->
   <sequencetable name="SequenceNumber" valuecolumn="lastValue" keycolumn="sequenceName">
       <sequence name="general">
+        <table name="ApplianceCategory" identitycolumn="ApplianceCategoryID" initsequence="true"/>
       	<table name="CapControlComment" identitycolumn="commentid" initsequence="true"/>
         <table name="LMCustomerEventBase" identitycolumn="EventID" initsequence="true"/>
+        <table name="LMConfigurationBase" identitycolumn="ConfigurationID" initsequence="true"/>
         <table name="Warehouse" identitycolumn="WarehouseID"/>
-      	<table name="InventoryBase" identitycolumn="InventoryID"/>
       	<table name="LMHardwareBase" identitycolumn="InventoryID"/>
-      	<table name="CustomerAccount" identitycolumn="AccountID"/>
       	<table name="Substation" identitycolumn="SubstationID" initsequence="true"/>
         <table name="CCurtProgram" identitycolumn="CCurtProgramId"/>
         <table name="CCurtProgramType" identitycolumn="CCurtProgramTypeId"/>
@@ -31,6 +31,17 @@
         <table name="CCurtEEPricingWindow" identitycolumn="CCurtEEPricingWindowId"/>
         <table name="CCurtAcctEvent" identitycolumn="CCurtAcctEventId"/>
         <table name="CCurtAcctEventParticipant" identitycolumn="CCurtAcctEventParticipantId"/>
+        <table name="DeliverySchedule" identitycolumn="ScheduleID" initsequence="true"/>
+        <table name="Invoice" identitycolumn="InvoiceID" initsequence="true"/>
+        <table name="PurchasePlan" identitycolumn="PurchaseID" initsequence="true"/>
+        <table name="ScheduleTimePeriod" identitycolumn="TimePeriodID" initsequence="true"/>
+        <table name="Shipment" identitycolumn="ShipmentID" initsequence="true"/>
+        <table name="CallReportBase" identitycolumn="CallID" initsequence="true"/>
+        <table name="ServiceCompany" identitycolumn="CompanyID" initsequence="true"/>
+        <table name="ServiceCompanyDesignationCode" identitycolumn="DesignationCodeID" initsequence="true"/>
+        <table name="CustomerFAQ" identitycolumn="QuestionID" initsequence="true"/>
+        <table name="InterviewQuestion" identitycolumn="QuestionID" initsequence="true"/>
+        <table name="LMProgramWebPublishing" identitycolumn="ProgramID" initsequence="true"/>
       </sequence>
       <sequence name="paobjectid">
       	<table name="YukonPaObject" identitycolumn="PaObjectId" initsequence="true"/>
@@ -38,8 +49,8 @@
       <sequence name="pointid">
         <table name="Point" identitycolumn="POINTID" initsequence="true"/>
       </sequence>
-      <sequence name="inventoryid">
-        <table name="InventoryBase" identitycolumn="INVENTORYID" initsequence="true"/>
+      <sequence name="InventoryBase">
+        <table name="InventoryBase" identitycolumn="InventoryID" initsequence="true"/>
       </sequence>
       <sequence name="eventid">
         <table name="EventBase" identitycolumn="EVENTID" initsequence="true"/>
@@ -126,6 +137,21 @@
       </sequence>
       <sequence name="LMStatSeasonEntry">
         <table name="LMThermostatSeasonEntry" identitycolumn="EntryID" initsequence="true"/>
+      </sequence>
+      <sequence name="ApplianceBase">
+        <table name="ApplianceBase" identitycolumn="ApplianceID" initsequence="true"/>
+      </sequence>
+      <sequence name="AccountSite">
+        <table name="AccountSite" identitycolumn="AccountSiteID" initsequence="true"/>
+      </sequence>
+      <sequence name="CustomerAccount">
+        <table name="CustomerAccount" identitycolumn="AccountID" initsequence="true"/>
+      </sequence>
+      <sequence>
+        <table name="SiteInformation" identitycolumn="SiteID" initsequence="true"/>
+      </sequence>
+      <sequence name="WorkOrderBase">
+        <table name="WorkOrderBase" identitycolumn="OrderID" initsequence="true"/>
       </sequence>
   </sequencetable>
 </sequencetables>

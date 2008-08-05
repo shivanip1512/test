@@ -4,6 +4,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.spring.YukonSpringHook;
 
 
 /**
@@ -34,19 +35,18 @@ public class SiteInformation extends DBPersistent {
 
     public static final String TABLE_NAME = "SiteInformation";
 
-    public static final String GET_NEXT_SITE_ID_SQL =
-        "SELECT MAX(SiteID) FROM " + TABLE_NAME;
-
     public SiteInformation() {
         super();
     }
 
+    @Override
     public void delete() throws java.sql.SQLException {
         Object[] constraintValues = { getSiteID() };
 
         delete( TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
     }
 
+    @Override
     public void add() throws java.sql.SQLException {
     	if (getSiteID() == null)
     		setSiteID( getNextSiteID() );
@@ -59,6 +59,7 @@ public class SiteInformation extends DBPersistent {
         add( TABLE_NAME, addValues );
     }
 
+    @Override
     public void update() throws java.sql.SQLException {
         Object[] setValues = {
             getFeeder(), getPole(), getTransformerSize(),
@@ -70,6 +71,7 @@ public class SiteInformation extends DBPersistent {
         update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
     }
 
+    @Override
     public void retrieve() throws java.sql.SQLException {
         Object[] constraintValues = { getSiteID() };
 
@@ -86,31 +88,9 @@ public class SiteInformation extends DBPersistent {
             throw new Error(getClass() + " - Incorrect number of results retrieved");
     }
 
-    public final Integer getNextSiteID() {
-        java.sql.PreparedStatement pstmt = null;
-        java.sql.ResultSet rset = null;
-
-        int nextSiteID = 1;
-
-        try {
-            pstmt = getDbConnection().prepareStatement( GET_NEXT_SITE_ID_SQL );
-            rset = pstmt.executeQuery();
-
-            if (rset.next())
-                nextSiteID = rset.getInt(1) + 1;
-        }
-        catch (java.sql.SQLException e) {
-            CTILogger.error( e.getMessage(), e );
-        }
-        finally {
-            try {
-                if (rset != null) rset.close();
-                if (pstmt != null) pstmt.close();
-            }
-            catch (java.sql.SQLException e2) {}
-        }
-
-        return new Integer( nextSiteID );
+    private Integer getNextSiteID() {
+        Integer nextValueId = YukonSpringHook.getNextValueHelper().getNextValue(TABLE_NAME);
+        return nextValueId;
     }
     
     public static void resetSubstation(int substationID) {

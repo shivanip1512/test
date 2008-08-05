@@ -31,10 +31,6 @@ public class LMThermostatManualEvent extends DBPersistent {
 	public static final String[] CONSTRAINT_COLUMNS = { "EventID" };
 	
 	public static final String TABLE_NAME = "LMThermostatManualEvent";
-
-    public static final String GET_NEXT_EVENT_ID_SQL =
-        "SELECT MAX(EventID) FROM " + TABLE_NAME;
-
 	
 	public LMThermostatManualEvent() {
 		super();
@@ -43,7 +39,8 @@ public class LMThermostatManualEvent extends DBPersistent {
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#add()
 	 */
-	public void add() throws SQLException {
+	@Override
+    public void add() throws SQLException {
 		Object[] addValues = {
 			getEventID(), getInventoryID(), getPreviousTemperature(),
 			getHoldTemperature(), getOperationStateID(), getFanOperationID()
@@ -54,7 +51,8 @@ public class LMThermostatManualEvent extends DBPersistent {
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#delete()
 	 */
-	public void delete() throws SQLException {
+	@Override
+    public void delete() throws SQLException {
 		Object[] constraintValues = { getEventID() };
 		delete( TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 	}
@@ -62,7 +60,8 @@ public class LMThermostatManualEvent extends DBPersistent {
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#retrieve()
 	 */
-	public void retrieve() throws SQLException {
+	@Override
+    public void retrieve() throws SQLException {
 		Object[] constraintValues = { getEventID() };
 		Object[] results = retrieve( SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 		
@@ -80,7 +79,8 @@ public class LMThermostatManualEvent extends DBPersistent {
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#update()
 	 */
-	public void update() throws SQLException {
+	@Override
+    public void update() throws SQLException {
 		Object[] setValues = {
 			getInventoryID(), getPreviousTemperature(), getHoldTemperature(),
 			getOperationStateID(), getFanOperationID()

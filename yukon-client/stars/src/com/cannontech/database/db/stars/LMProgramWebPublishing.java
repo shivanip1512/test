@@ -7,6 +7,7 @@ import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * <p>Title: LMProgramWebPublishing.java</p>
@@ -32,14 +33,12 @@ public class LMProgramWebPublishing extends DBPersistent {
 	public static final String[] CONSTRAINT_COLUMNS = { "ProgramID" };
 
 	public static final String TABLE_NAME = "LMProgramWebPublishing";
-	
-	public static final String GET_NEXT_PROGRAM_ID_SQL =
-		"SELECT MAX(ProgramID) FROM " + TABLE_NAME;
 
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#add()
 	 */
-	public void add() throws SQLException {
+	@Override
+    public void add() throws SQLException {
 		if (getProgramID() == null)
 			setProgramID( getNextProgramID() );
 		
@@ -54,7 +53,8 @@ public class LMProgramWebPublishing extends DBPersistent {
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#delete()
 	 */
-	public void delete() throws SQLException {
+	@Override
+    public void delete() throws SQLException {
 		Object[] constraintValues = { getProgramID() };
 		
 		delete(TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues);
@@ -63,7 +63,8 @@ public class LMProgramWebPublishing extends DBPersistent {
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#retrieve()
 	 */
-	public void retrieve() throws SQLException {
+	@Override
+    public void retrieve() throws SQLException {
 		Object[] constraintValues = { getProgramID() };
 		
 		Object[] results = retrieve(SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues);
@@ -82,7 +83,8 @@ public class LMProgramWebPublishing extends DBPersistent {
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#update()
 	 */
-	public void update() throws SQLException {
+	@Override
+    public void update() throws SQLException {
 		Object[] setValues = {
 			getApplianceCategoryID(), getDeviceID(), getWebSettingsID(),
 			getChanceOfControlID(), getProgramOrder()
@@ -93,30 +95,8 @@ public class LMProgramWebPublishing extends DBPersistent {
 	}
 
 	public final Integer getNextProgramID() {
-		java.sql.PreparedStatement pstmt = null;
-		java.sql.ResultSet rset = null;
-
-		int nextProgramID = 1;
-
-		try {
-			pstmt = getDbConnection().prepareStatement( GET_NEXT_PROGRAM_ID_SQL );
-			rset = pstmt.executeQuery();
-
-			if (rset.next())
-				nextProgramID = rset.getInt(1) + 1;
-		}
-		catch (java.sql.SQLException e) {
-			CTILogger.error( e.getMessage(), e );
-		}
-		finally {
-			try {
-				if( rset != null ) rset.close();
-				if (pstmt != null) pstmt.close();
-			}
-			catch (java.sql.SQLException e2) {}
-		}
-
-		return new Integer( nextProgramID );
+	    Integer nextValueId = YukonSpringHook.getNextValueHelper().getNextValue(TABLE_NAME);
+        return nextValueId;
 	}
 	
 	public static LMProgramWebPublishing getLMProgramWebPublishing(int programID) {

@@ -4,6 +4,7 @@ import java.sql.SQLException;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * @author yao
@@ -31,45 +32,21 @@ public class InterviewQuestion extends DBPersistent {
 	public static final String[] CONSTRAINT_COLUMNS = { "QuestionID" };
 	
 	public static final String TABLE_NAME = "InterviewQuestion";
-	
-	private static final String GET_NEXT_QUESTION_ID_SQL =
-			"SELECT MAX(QuestionID) FROM " + TABLE_NAME;
 
 	public InterviewQuestion() {
 		super();
 	}
 	
 	public final Integer getNextQuestionID() {
-        java.sql.PreparedStatement pstmt = null;
-        java.sql.ResultSet rset = null;
-
-        int nextQuestionID = 1;
-
-        try {
-            pstmt = getDbConnection().prepareStatement( GET_NEXT_QUESTION_ID_SQL );
-            rset = pstmt.executeQuery();
-
-            if (rset.next())
-                nextQuestionID = rset.getInt(1) + 1;
-        }
-        catch (java.sql.SQLException e) {
-            CTILogger.error( e.getMessage(), e );
-        }
-        finally {
-            try {
-                if (rset != null) rset.close();
-                if (pstmt != null) pstmt.close();
-            }
-            catch (java.sql.SQLException e2) {}
-        }
-
-        return new Integer( nextQuestionID );
+        Integer nextValueId = YukonSpringHook.getNextValueHelper().getNextValue(TABLE_NAME);
+        return nextValueId;
 	}
 	
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#add()
 	 */
-	public void add() throws SQLException {
+	@Override
+    public void add() throws SQLException {
 		if (getQuestionID() == null)
 			setQuestionID( getNextQuestionID() );
 			
@@ -83,7 +60,8 @@ public class InterviewQuestion extends DBPersistent {
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#delete()
 	 */
-	public void delete() throws SQLException {
+	@Override
+    public void delete() throws SQLException {
 		Object[] constraintValues = { getQuestionID() };
 		
 		delete( TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
@@ -92,7 +70,8 @@ public class InterviewQuestion extends DBPersistent {
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#retrieve()
 	 */
-	public void retrieve() throws SQLException {
+	@Override
+    public void retrieve() throws SQLException {
 		Object[] constraintValues = { getQuestionID() };
 		
 		Object[] results = retrieve( SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
@@ -112,7 +91,8 @@ public class InterviewQuestion extends DBPersistent {
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#update()
 	 */
-	public void update() throws SQLException {
+	@Override
+    public void update() throws SQLException {
 		Object[] setValues = {
 			getQuestionType(), getQuestion(), getMandatory(),
 			getDisplayOrder(), getAnswerType(), getExpectedAnswer()

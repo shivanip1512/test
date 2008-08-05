@@ -36,9 +36,6 @@ public class LMThermostatSeason extends DBPersistent {
 	
 	public static final String TABLE_NAME = "LMThermostatSeason";
 	
-	public static final String GET_NEXT_SEASON_ID_SQL =
-			"SELECT MAX(SeasonID) FROM " + TABLE_NAME;
-	
 	private static NextValueHelper nextValueHelper = YukonSpringHook.getNextValueHelper();
 			
 	public LMThermostatSeason() {
@@ -48,7 +45,8 @@ public class LMThermostatSeason extends DBPersistent {
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#add()
 	 */
-	public void add() throws SQLException {
+	@Override
+    public void add() throws SQLException {
 		if (getSeasonID() == null)
 			setSeasonID( nextValueHelper.getNextValue(TABLE_NAME) );
 			
@@ -62,7 +60,8 @@ public class LMThermostatSeason extends DBPersistent {
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#delete()
 	 */
-	public void delete() throws SQLException {
+	@Override
+    public void delete() throws SQLException {
 		Object[] constraintValues = { getSeasonID() };
 		delete( TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 	}
@@ -70,7 +69,8 @@ public class LMThermostatSeason extends DBPersistent {
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#retrieve()
 	 */
-	public void retrieve() throws SQLException {
+	@Override
+    public void retrieve() throws SQLException {
 		Object[] constraintValues = { getSeasonID() };
 		Object[] results = retrieve( SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 		
@@ -87,7 +87,8 @@ public class LMThermostatSeason extends DBPersistent {
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#update()
 	 */
-	public void update() throws SQLException {
+	@Override
+    public void update() throws SQLException {
 		Object[] setValues = {
 			getScheduleID(), getWebConfigurationID(), getStartDate(), getDisplayOrder()
 		};

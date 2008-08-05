@@ -3,6 +3,7 @@ package com.cannontech.database.db.stars.appliance;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.spring.YukonSpringHook;
 
 
 /**
@@ -31,19 +32,18 @@ public class ApplianceCategory extends DBPersistent {
 
     public static final String TABLE_NAME = "ApplianceCategory";
 
-    public static final String GET_NEXT_CATEGORY_ID_SQL =
-        "SELECT MAX(ApplianceCategoryID) FROM " + TABLE_NAME;
-
     public ApplianceCategory() {
         super();
     }
 
+    @Override
     public void delete() throws java.sql.SQLException {
         Object[] constraintValues = { getApplianceCategoryID() };
 
         delete( TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
     }
 
+    @Override
     public void add() throws java.sql.SQLException {
     	if (getApplianceCategoryID() == null)
     		setApplianceCategoryID( getNextCategoryID() );
@@ -55,6 +55,7 @@ public class ApplianceCategory extends DBPersistent {
         add( TABLE_NAME, addValues );
     }
 
+    @Override
     public void update() throws java.sql.SQLException {
         Object[] setValues = {
             getDescription(), getCategoryID(), getWebConfigurationID()
@@ -65,6 +66,7 @@ public class ApplianceCategory extends DBPersistent {
         update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
     }
 
+    @Override
     public void retrieve() throws java.sql.SQLException {
         Object[] constraintValues = { getApplianceCategoryID() };
 
@@ -79,31 +81,9 @@ public class ApplianceCategory extends DBPersistent {
             throw new Error(getClass() + " - Incorrect number of results retrieved");
     }
 
-    public final Integer getNextCategoryID() {
-        java.sql.PreparedStatement pstmt = null;
-        java.sql.ResultSet rset = null;
-
-        int nextCategoryID = 1;
-
-        try {
-            pstmt = getDbConnection().prepareStatement( GET_NEXT_CATEGORY_ID_SQL );
-            rset = pstmt.executeQuery();
-
-            if (rset.next())
-                nextCategoryID = rset.getInt(1) + 1;
-        }
-        catch (java.sql.SQLException e) {
-            CTILogger.error( e.getMessage(), e );
-        }
-        finally {
-            try {
-				if( rset != null ) rset.close();
-                if (pstmt != null) pstmt.close();
-            }
-            catch (java.sql.SQLException e2) {}
-        }
-
-        return new Integer( nextCategoryID );
+    private Integer getNextCategoryID() {
+        Integer nextValueId = YukonSpringHook.getNextValueHelper().getNextValue(TABLE_NAME);
+        return nextValueId;
     }
     
     public static ApplianceCategory[] getAllApplianceCategories(Integer energyCompanyID) {

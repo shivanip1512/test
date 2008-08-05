@@ -2,6 +2,7 @@ package com.cannontech.database.db.stars;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.spring.YukonSpringHook;
 
 
 /**
@@ -29,19 +30,18 @@ public class Substation extends DBPersistent {
 
     public static final String TABLE_NAME = "Substation";
 
-    public static final String GET_NEXT_SUBSTATION_ID_SQL =
-        "SELECT MAX(SubstationID) FROM " + TABLE_NAME;
-
     public Substation() {
         super();
     }
 
+    @Override
     public void delete() throws java.sql.SQLException {
         Object[] constraintValues = { getSubstationID() };
 
         delete( TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
     }
 
+    @Override
     public void add() throws java.sql.SQLException {
     	if (getSubstationID() == null)
     		setSubstationID( getNextSubstationID() );
@@ -53,6 +53,7 @@ public class Substation extends DBPersistent {
         add( TABLE_NAME, addValues );
     }
 
+    @Override
     public void update() throws java.sql.SQLException {
         Object[] setValues = {
             getSubstationName(), getRouteID()
@@ -63,6 +64,7 @@ public class Substation extends DBPersistent {
         update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
     }
 
+    @Override
     public void retrieve() throws java.sql.SQLException {
         Object[] constraintValues = { getSubstationID() };
 
@@ -77,30 +79,8 @@ public class Substation extends DBPersistent {
     }
 
     public final Integer getNextSubstationID() {
-        java.sql.PreparedStatement pstmt = null;
-        java.sql.ResultSet rset = null;
-
-        int nextSubstationID = 1;
-
-        try {
-            pstmt = getDbConnection().prepareStatement( GET_NEXT_SUBSTATION_ID_SQL );
-            rset = pstmt.executeQuery();
-
-            if (rset.next())
-                nextSubstationID = rset.getInt(1) + 1;
-        }
-        catch (java.sql.SQLException e) {
-            CTILogger.error( e.getMessage(), e );
-        }
-        finally {
-            try {
-				if (rset != null) rset.close();
-                if (pstmt != null) pstmt.close();
-            }
-            catch (java.sql.SQLException e2) {}
-        }
-
-        return new Integer( nextSubstationID );
+        Integer nextValueId = YukonSpringHook.getNextValueHelper().getNextValue(TABLE_NAME);
+        return nextValueId;
     }
     
     public static Substation[] getAllSubstations(Integer energyCompanyID) {

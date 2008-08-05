@@ -37,9 +37,6 @@ public class LMThermostatSchedule extends DBPersistent {
 	
 	public static final String TABLE_NAME = "LMThermostatSchedule";
 	
-	public static final String GET_NEXT_SCHEDULE_ID_SQL =
-			"SELECT MAX(ScheduleID) FROM " + TABLE_NAME;
-	
 	private static NextValueHelper nextValueHelper = YukonSpringHook.getNextValueHelper();
 	
 	public LMThermostatSchedule() {
@@ -49,7 +46,8 @@ public class LMThermostatSchedule extends DBPersistent {
 	/* (non-Javadoc)
 	 * @see com.cannontech.database.db.DBPersistent#add()
 	 */
-	public void add() throws SQLException {
+	@Override
+    public void add() throws SQLException {
 		if (getScheduleID() == null)
 			setScheduleID( nextValueHelper.getNextValue(TABLE_NAME) );
 		
@@ -63,7 +61,8 @@ public class LMThermostatSchedule extends DBPersistent {
 	/* (non-Javadoc)
 	 * @see com.cannontech.database.db.DBPersistent#delete()
 	 */
-	public void delete() throws SQLException {
+	@Override
+    public void delete() throws SQLException {
 		Object[] constraintValues = { getScheduleID() };
 		delete( TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 	}
@@ -71,7 +70,8 @@ public class LMThermostatSchedule extends DBPersistent {
 	/* (non-Javadoc)
 	 * @see com.cannontech.database.db.DBPersistent#retrieve()
 	 */
-	public void retrieve() throws SQLException {
+	@Override
+    public void retrieve() throws SQLException {
 		Object[] constraintValues = { getScheduleID() };
 		Object[] results = retrieve( SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 		
@@ -88,7 +88,8 @@ public class LMThermostatSchedule extends DBPersistent {
 	/* (non-Javadoc)
 	 * @see com.cannontech.database.db.DBPersistent#update()
 	 */
-	public void update() throws SQLException {
+	@Override
+    public void update() throws SQLException {
 		Object[] setValues = {
 			getScheduleName(), getThermostatTypeID(), getAccountID(), getInventoryID()
 		};

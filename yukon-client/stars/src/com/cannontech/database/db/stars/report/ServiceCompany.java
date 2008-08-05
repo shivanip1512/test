@@ -1,7 +1,7 @@
 package com.cannontech.database.db.stars.report;
 
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.spring.YukonSpringHook;
 
 
 /**
@@ -35,19 +35,18 @@ public class ServiceCompany extends DBPersistent {
 
     public static final String TABLE_NAME = "ServiceCompany";
 
-    public static final String GET_NEXT_COMPANY_ID_SQL =
-        "SELECT MAX(CompanyID) FROM " + TABLE_NAME;
-
     public ServiceCompany() {
         super();
     }
 
+    @Override
     public void delete() throws java.sql.SQLException {
         Object[] constraintValues = { getCompanyID() };
 
         delete( TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
     }
 
+    @Override
     public void add() throws java.sql.SQLException {
     	if (getCompanyID() == null)
     		setCompanyID( getNextCompanyID() );
@@ -60,6 +59,7 @@ public class ServiceCompany extends DBPersistent {
         add( TABLE_NAME, addValues );
     }
 
+    @Override
     public void update() throws java.sql.SQLException {
         Object[] setValues = {
             getCompanyName(), getAddressID(), getMainPhoneNumber(),
@@ -71,6 +71,7 @@ public class ServiceCompany extends DBPersistent {
         update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
     }
 
+    @Override
     public void retrieve() throws java.sql.SQLException {
         Object[] constraintValues = { getCompanyID() };
 
@@ -89,30 +90,8 @@ public class ServiceCompany extends DBPersistent {
     }
 
     public final Integer getNextCompanyID() {
-        java.sql.PreparedStatement pstmt = null;
-        java.sql.ResultSet rset = null;
-
-        int nextCompanyID = 1;
-
-        try {
-            pstmt = getDbConnection().prepareStatement( GET_NEXT_COMPANY_ID_SQL );
-            rset = pstmt.executeQuery();
-
-            if (rset.next())
-                nextCompanyID = rset.getInt(1) + 1;
-        }
-        catch (java.sql.SQLException e) {
-            CTILogger.error( e.getMessage(), e );
-        }
-        finally {
-            try {
-                if (rset != null) rset.close();
-                if (pstmt != null) pstmt.close();
-            }
-            catch (java.sql.SQLException e2) {}
-        }
-
-        return new Integer( nextCompanyID );
+        Integer nextValueId = YukonSpringHook.getNextValueHelper().getNextValue(TABLE_NAME);
+        return nextValueId;
     }
 
     public Integer getCompanyID() {

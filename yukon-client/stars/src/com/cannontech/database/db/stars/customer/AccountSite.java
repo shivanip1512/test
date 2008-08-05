@@ -1,7 +1,7 @@
 package com.cannontech.database.db.stars.customer;
 
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.spring.YukonSpringHook;
 
 
 /**
@@ -34,19 +34,18 @@ public class AccountSite extends DBPersistent {
 
     public static final String TABLE_NAME = "AccountSite";
 
-    public static final String GET_NEXT_ACCOUNTSITE_ID_SQL =
-        "SELECT MAX(AccountSiteID) FROM " + TABLE_NAME;
-
     public AccountSite() {
         super();
     }
 
+    @Override
     public void delete() throws java.sql.SQLException {
         Object[] constraintValues = { getAccountSiteID() };
 
         delete( TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
     }
 
+    @Override
     public void add() throws java.sql.SQLException {
     	if (getAccountSiteID() == null)
     		setAccountSiteID( getNextAccountSiteID() );
@@ -60,6 +59,7 @@ public class AccountSite extends DBPersistent {
         add( TABLE_NAME, addValues );
     }
 
+    @Override
     public void update() throws java.sql.SQLException {
         Object[] setValues = {
             getSiteInformationID(), getSiteNumber(), getStreetAddressID(), getPropertyNotes(),
@@ -71,6 +71,7 @@ public class AccountSite extends DBPersistent {
         update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
     }
 
+    @Override
     public void retrieve() throws java.sql.SQLException {
         Object[] constraintValues = { getAccountSiteID() };
 
@@ -88,31 +89,9 @@ public class AccountSite extends DBPersistent {
             throw new Error(getClass() + " - Incorrect number of results retrieved");
     }
 
-    public final Integer getNextAccountSiteID() {
-        java.sql.PreparedStatement pstmt = null;
-        java.sql.ResultSet rset = null;
-
-        int nextAccountSiteID = 1;
-
-        try {
-            pstmt = getDbConnection().prepareStatement( GET_NEXT_ACCOUNTSITE_ID_SQL );
-            rset = pstmt.executeQuery();
-
-            if (rset.next())
-                nextAccountSiteID = rset.getInt(1) + 1;
-        }
-        catch (java.sql.SQLException e) {
-            CTILogger.error( e.getMessage(), e );
-        }
-        finally {
-            try {
-				if( rset != null ) rset.close();
-                if (pstmt != null) pstmt.close();
-            }
-            catch (java.sql.SQLException e2) {}
-        }
-
-        return new Integer( nextAccountSiteID );
+    private Integer getNextAccountSiteID() {
+        Integer nextValueId = YukonSpringHook.getNextValueHelper().getNextValue(TABLE_NAME);
+        return nextValueId;
     }
 
     public Integer getAccountSiteID() {

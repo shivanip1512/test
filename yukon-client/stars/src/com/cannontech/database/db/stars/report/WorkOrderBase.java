@@ -1,10 +1,14 @@
 package com.cannontech.database.db.stars.report;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.spring.YukonSpringHook;
 
 
 /**
@@ -44,19 +48,18 @@ public class WorkOrderBase extends DBPersistent {
 
     public static final String TABLE_NAME = "WorkOrderBase";
 
-    public static final String GET_NEXT_ORDER_ID_SQL =
-        "SELECT MAX(OrderID) FROM " + TABLE_NAME;
-
     public WorkOrderBase() {
         super();
     }
 
+    @Override
     public void delete() throws java.sql.SQLException {
         Object[] constraintValues = { getOrderID() };
 
         delete( TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
     }
 
+    @Override
     public void add() throws java.sql.SQLException {
     	if (getOrderID() == null)
     		setOrderID( getNextOrderID() );
@@ -71,6 +74,7 @@ public class WorkOrderBase extends DBPersistent {
         add( TABLE_NAME, addValues );
     }
 
+    @Override
     public void update() throws java.sql.SQLException {
         Object[] setValues = {
             getOrderNumber(), getWorkTypeID(), getCurrentStateID(),
@@ -84,6 +88,7 @@ public class WorkOrderBase extends DBPersistent {
         update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
     }
 
+    @Override
     public void retrieve() throws java.sql.SQLException {
         Object[] constraintValues = { getOrderID() };
 
@@ -108,24 +113,8 @@ public class WorkOrderBase extends DBPersistent {
     }
 
     public static final Integer getNextOrderID() {
-    	
-        int nextID = 1;
-        SqlStatement stmt = new SqlStatement(GET_NEXT_ORDER_ID_SQL, CtiUtilities.getDatabaseAlias());
-        
-        try
-        {
-            stmt.execute();
-            
-            if( stmt.getRowCount() > 0 )
-            {
-                nextID = Integer.valueOf(stmt.getRow(0)[0].toString()).intValue() + 1;
-            }
-        }
-        catch( Exception e )
-        {
-            e.printStackTrace();
-        }
-        return new Integer( nextID );
+    	Integer nextValueId = YukonSpringHook.getNextValueHelper().getNextValue(TABLE_NAME);
+    	return nextValueId;
     }
     
 	public static int[] searchByOrderNumber(String orderNo, int energyCompanyID) {
@@ -145,13 +134,13 @@ public class WorkOrderBase extends DBPersistent {
 			
 			rset = stmt.executeQuery();
 	    	
-			java.util.ArrayList orderIDList = new java.util.ArrayList();
+			List<Integer> orderIDList = new ArrayList<Integer>();
 			while (rset.next())
-				orderIDList.add( new Integer(rset.getInt(1)) );
+				orderIDList.add(rset.getInt(1));
 	    	
 			int[] orderIDs = new int[orderIDList.size()];
 			for (int i = 0; i < orderIDList.size(); i++)
-				orderIDs[i] = ((Integer) orderIDList.get(i)).intValue();
+				orderIDs[i] = orderIDList.get(i).intValue();
 	    	
 			return orderIDs;
 		}

@@ -2,6 +2,7 @@ package com.cannontech.database.db.stars.report;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.spring.YukonSpringHook;
 
 
 /**
@@ -33,19 +34,18 @@ public class CallReportBase extends DBPersistent {
 
     public static final String TABLE_NAME = "CallReportBase";
 
-    public static final String GET_NEXT_CALL_ID_SQL =
-        "SELECT MAX(CallID) FROM " + TABLE_NAME;
-
     public CallReportBase() {
         super();
     }
 
+    @Override
     public void delete() throws java.sql.SQLException {
         Object[] constraintValues = { getCallID() };
 
         delete( TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
     }
 
+    @Override
     public void add() throws java.sql.SQLException {
     	if (getCallID() == null)
     		setCallID( getNextCallID() );
@@ -58,6 +58,7 @@ public class CallReportBase extends DBPersistent {
         add( TABLE_NAME, addValues );
     }
 
+    @Override
     public void update() throws java.sql.SQLException {
         Object[] setValues = {
             getCallNumber(), getCallTypeID(), getDateTaken(),
@@ -69,6 +70,7 @@ public class CallReportBase extends DBPersistent {
         update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
     }
 
+    @Override
     public void retrieve() throws java.sql.SQLException {
         Object[] constraintValues = { getCallID() };
 
@@ -87,30 +89,8 @@ public class CallReportBase extends DBPersistent {
     }
 
     public final Integer getNextCallID() {
-        java.sql.PreparedStatement pstmt = null;
-        java.sql.ResultSet rset = null;
-
-        int nextCallID = 1;
-
-        try {
-            pstmt = getDbConnection().prepareStatement( GET_NEXT_CALL_ID_SQL );
-            rset = pstmt.executeQuery();
-
-            if (rset.next())
-                nextCallID = rset.getInt(1) + 1;
-        }
-        catch (java.sql.SQLException e) {
-            CTILogger.error( e.getMessage(), e );
-        }
-        finally {
-            try {
-				if( rset != null ) rset.close();
-                if (pstmt != null) pstmt.close();
-            }
-            catch (java.sql.SQLException e2) {}
-        }
-
-        return new Integer( nextCallID );
+        Integer nextValueId = YukonSpringHook.getNextValueHelper().getNextValue(TABLE_NAME);
+        return nextValueId;
     }
 
     public static CallReportBase[] getAllCallReports(Integer accountID) {

@@ -6,6 +6,8 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
@@ -21,6 +23,7 @@ import com.cannontech.database.db.customer.CICustomerBase;
 import com.cannontech.database.db.customer.Customer;
 import com.cannontech.database.db.stars.hardware.InventoryBase;
 import com.cannontech.database.db.stars.hardware.LMHardwareBase;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * <p>Title: </p>
@@ -50,9 +53,6 @@ public class CustomerAccount extends DBPersistent {
 
     public static final String TABLE_NAME = "CustomerAccount";
 
-    public static final String GET_NEXT_ACCOUNT_ID_SQL =
-        "SELECT MAX(AccountID) FROM " + TABLE_NAME;
-
     public CustomerAccount() {
         super();
     }
@@ -73,7 +73,7 @@ public class CustomerAccount extends DBPersistent {
 			for (int i = 0; i < stmt.getRowCount(); i++) {
 				res[i] = new Object[2];
 				res[i][0] = new Integer( ((java.math.BigDecimal)stmt.getRow(i)[0]).intValue() );
-				res[i][1] = (String) stmt.getRow(i)[1];
+				res[i][1] = stmt.getRow(i)[1];
 			}
 			
 			return res;
@@ -129,7 +129,7 @@ public class CustomerAccount extends DBPersistent {
     
     public static int[] searchByPrimaryContactIDs(int[] contactIDs, int energyCompanyID) {
     	if (contactIDs == null || contactIDs.length == 0) return null;
-        int [] accountIDs = null;
+        int [] accountIDs = new int[0];
     	Date timerStart = new Date();
         String sql = "SELECT DISTINCT acct.AccountID FROM ECToAccountMapping map, " + TABLE_NAME + " acct, " + com.cannontech.database.db.customer.Customer.TABLE_NAME + " cust "
     			   + "WHERE map.EnergyCompanyID = " + energyCompanyID + " AND map.AccountID = acct.AccountID "
@@ -159,7 +159,7 @@ public class CustomerAccount extends DBPersistent {
     
     public static int[] searchByPrimaryContactLastName(String lastName_, int energyCompanyID, boolean partialMatch) {
         if (lastName_ == null || lastName_.length() == 0) return null;
-        int [] accountIDs = null;
+        int [] accountIDs = new int[0];
         Date timerStart = new Date();
         String lastName = lastName_.trim();
         String firstName = null;
@@ -222,12 +222,12 @@ public class CustomerAccount extends DBPersistent {
     }
     
     
-    public static HashMap searchByPrimaryContactLastName(String lastName_, boolean partialMatch, ArrayList<Integer> energyCompanyIDList) {
+    public static Map<Integer, List<Integer>> searchByPrimaryContactLastName(String lastName_, boolean partialMatch, ArrayList<Integer> energyCompanyIDList) {
         if (lastName_ == null || lastName_.length() == 0) return null;
         if (energyCompanyIDList == null || energyCompanyIDList.size() == 0) return null;
         
         //Contains EnergyCompanyID<Integer> to accountID array <int[]> objects.
-        HashMap ecToAccountIDMap = new HashMap();
+        Map<Integer, List<Integer>> ecToAccountIDMap = new HashMap<Integer, List<Integer>>();
 
         Date timerStart = new Date();
         String lastName = lastName_.trim();
@@ -651,12 +651,14 @@ public class CustomerAccount extends DBPersistent {
         return account;
     }
 
+    @Override
     public void delete() throws java.sql.SQLException {
         Object[] constraintValues = { getAccountID() };
 
         delete( TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
     }
 
+    @Override
     public void add() throws java.sql.SQLException {
     	if (getAccountID() == null)
     		setAccountID( getNextAccountID() );
@@ -669,6 +671,7 @@ public class CustomerAccount extends DBPersistent {
         add( TABLE_NAME, addValues );
     }
 
+    @Override
     public void update() throws java.sql.SQLException {
         Object[] setValues = {
             getAccountSiteID(), getAccountNumber(), getCustomerID(),
@@ -680,6 +683,7 @@ public class CustomerAccount extends DBPersistent {
         update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
     }
 
+    @Override
     public void retrieve() throws java.sql.SQLException {
         Object[] constraintValues = { getAccountID() };
 
@@ -696,31 +700,9 @@ public class CustomerAccount extends DBPersistent {
             throw new Error(getClass() + " - Incorrect number of results retrieved");
     }
 
-    public final Integer getNextAccountID() {
-        java.sql.PreparedStatement pstmt = null;
-        java.sql.ResultSet rset = null;
-
-        int nextAccountID = 1;
-
-        try {
-            pstmt = getDbConnection().prepareStatement( GET_NEXT_ACCOUNT_ID_SQL );
-            rset = pstmt.executeQuery();
-
-            if (rset.next())
-                nextAccountID = rset.getInt(1) + 1;
-        }
-        catch (java.sql.SQLException e) {
-            CTILogger.error( e.getMessage(), e );
-        }
-        finally {
-            try {
-                if (rset != null) rset.close();
-                if (pstmt != null) pstmt.close();
-            }
-            catch (java.sql.SQLException e2) {}
-        }
-
-        return new Integer( nextAccountID );
+    private Integer getNextAccountID() {
+        Integer nextValueId = YukonSpringHook.getNextValueHelper().getNextValue(TABLE_NAME);
+        return nextValueId;
     }
 
     public Integer getAccountID() {

@@ -1,6 +1,5 @@
 package com.cannontech.database.db.stars.appliance;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
@@ -14,6 +13,7 @@ import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.spring.YukonSpringHook;
 
 
 /**
@@ -50,9 +50,6 @@ public class ApplianceBase extends DBPersistent {
 
 	public static final String TABLE_NAME = "ApplianceBase";
 
-	public static final String GET_NEXT_APPLIANCE_ID_SQL =
-		"SELECT MAX(ApplianceID) FROM " + TABLE_NAME;
-	
 	public static final String[] DEPENDENT_TABLES = {
 		ApplianceAirConditioner.TABLE_NAME,
 		ApplianceDualFuel.TABLE_NAME,
@@ -89,13 +86,15 @@ public class ApplianceBase extends DBPersistent {
 		}
 	}
 
-	public void delete() throws java.sql.SQLException {
+	@Override
+    public void delete() throws java.sql.SQLException {
 		Object[] constraintValues = { getApplianceID() };
 
 		delete( TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 	}
 
-	public void add() throws java.sql.SQLException {
+	@Override
+    public void add() throws java.sql.SQLException {
 		if (getApplianceID() == null)
 			setApplianceID( getNextApplianceID() );
     		
@@ -107,7 +106,8 @@ public class ApplianceBase extends DBPersistent {
 		add( TABLE_NAME, addValues );
 	}
 
-	public void update() throws java.sql.SQLException {
+	@Override
+    public void update() throws java.sql.SQLException {
 		Object[] setValues = {
 			getAccountID(), getApplianceCategoryID(), getProgramID(), getYearManufactured(),
 			getManufacturerID(), getLocationID(), getKWCapacity(), getEfficiencyRating(), getNotes(), getModelNumber()
@@ -118,7 +118,8 @@ public class ApplianceBase extends DBPersistent {
 		update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 	}
 
-	public void retrieve() throws java.sql.SQLException {
+	@Override
+    public void retrieve() throws java.sql.SQLException {
 		Object[] constraintValues = { getApplianceID() };
 
 		Object[] results = retrieve( SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
@@ -139,24 +140,9 @@ public class ApplianceBase extends DBPersistent {
 			throw new Error(getClass() + " - Incorrect number of results retrieved");
 	}
 
-	public static final Integer getNextApplianceID() {
-        int nextID = 1;
-        SqlStatement stmt = new SqlStatement(GET_NEXT_APPLIANCE_ID_SQL, CtiUtilities.getDatabaseAlias());
-        
-        try
-        {
-            stmt.execute();
-            
-            if( stmt.getRowCount() > 0 )
-            {
-                nextID = Integer.valueOf(stmt.getRow(0)[0].toString()).intValue() + 1;
-            }
-        }
-        catch( Exception e )
-        {
-            e.printStackTrace();
-        }
-        return new Integer( nextID );
+	private Integer getNextApplianceID() {
+        Integer nextValueId = YukonSpringHook.getNextValueHelper().getNextValue(TABLE_NAME);
+        return nextValueId;
     }
 	
 	public static void deleteAppliancesByCategory(int appCatID) {
@@ -208,7 +194,7 @@ public class ApplianceBase extends DBPersistent {
         
         try {
             JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
-            List<Integer> ids = jdbcOps.queryForList(stmt, Integer.class);
+            @SuppressWarnings("unchecked") List<Integer> ids = jdbcOps.queryForList(stmt, Integer.class);
             for(Integer hardwareID : ids) {
                 inventoryIDs.put(hardwareID, hardwareID);
             }

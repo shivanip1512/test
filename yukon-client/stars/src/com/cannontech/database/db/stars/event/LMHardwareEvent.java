@@ -26,19 +26,18 @@ public class LMHardwareEvent extends DBPersistent {
 
     public static final String TABLE_NAME = "LMHardwareEvent";
 
-    public static final String GET_NEXT_EVENT_ID_SQL =
-        "SELECT MAX(EventID) FROM " + TABLE_NAME;
-
     public LMHardwareEvent() {
         super();
     }
 
+    @Override
     public void delete() throws java.sql.SQLException {
         Object[] constraintValues = { getEventID() };
 
         delete( TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
     }
 
+    @Override
     public void add() throws java.sql.SQLException {
         Object[] addValues = {
             getEventID(), getInventoryID()
@@ -47,6 +46,7 @@ public class LMHardwareEvent extends DBPersistent {
         add( TABLE_NAME, addValues );
     }
 
+    @Override
     public void update() throws java.sql.SQLException {
         Object[] setValues = { getInventoryID() };
 
@@ -55,6 +55,7 @@ public class LMHardwareEvent extends DBPersistent {
         update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
     }
 
+    @Override
     public void retrieve() throws java.sql.SQLException {
         Object[] constraintValues = { getEventID() };
 

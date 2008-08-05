@@ -34,15 +34,14 @@ public class LMCustomerEventBase extends DBPersistent {
 
     public static final String TABLE_NAME = "LMCustomerEventBase";
 
-    public static final String GET_NEXT_EVENT_ID_SQL =
-        "SELECT MAX(EventID) FROM " + TABLE_NAME;
-
+    @Override
     public void delete() throws java.sql.SQLException {
         Object[] constraintValues = { getEventID() };
 
         delete( TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
     }
 
+    @Override
     public void add() throws java.sql.SQLException {
     	if (getEventID() == null) {
             int nextEventId = nextValueHelper.getNextValue(TABLE_NAME);
@@ -57,6 +56,7 @@ public class LMCustomerEventBase extends DBPersistent {
         add( TABLE_NAME, addValues );
     }
 
+    @Override
     public void update() throws java.sql.SQLException {
         Object[] setValues = {
             getEventTypeID(), getActionID(), getEventDateTime(), getNotes(), getAuthorizedBy()
@@ -67,6 +67,7 @@ public class LMCustomerEventBase extends DBPersistent {
         update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
     }
 
+    @Override
     public void retrieve() throws java.sql.SQLException {
         Object[] constraintValues = { getEventID() };
 

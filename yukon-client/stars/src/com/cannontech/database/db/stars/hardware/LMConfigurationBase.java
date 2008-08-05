@@ -8,9 +8,9 @@ package com.cannontech.database.db.stars.hardware;
 
 import java.sql.SQLException;
 
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * @author yao
@@ -32,44 +32,20 @@ public class LMConfigurationBase extends DBPersistent {
 	
 	public static final String TABLE_NAME = "LMConfigurationBase";
 	
-	public static final String GET_NEXT_CONFIG_ID_SQL =
-			"SELECT MAX(ConfigurationID) FROM " + TABLE_NAME;
-	
 	public LMConfigurationBase() {
 		super();
 	}
 	
-	public final Integer getNextConfigurationID() {
-		java.sql.PreparedStatement pstmt = null;
-		java.sql.ResultSet rset = null;
-
-		int nextConfigID = 1;
-
-		try {
-			pstmt = getDbConnection().prepareStatement( GET_NEXT_CONFIG_ID_SQL );
-			rset = pstmt.executeQuery();
-
-			if (rset.next())
-			nextConfigID = rset.getInt(1) + 1;
-		}
-		catch (java.sql.SQLException e) {
-			CTILogger.error( e.getMessage(), e );
-		}
-		finally {
-			try {
-				if (rset != null) rset.close();
-				if (pstmt != null) pstmt.close();
-			}
-			catch (java.sql.SQLException e2) {}
-		}
-
-		return new Integer( nextConfigID );
+	private Integer getNextConfigurationID() {
+		Integer nextValueId = YukonSpringHook.getNextValueHelper().getNextValue(TABLE_NAME);
+		return nextValueId;
 	}
 	
 	/* (non-Javadoc)
 	 * @see com.cannontech.database.db.DBPersistent#add()
 	 */
-	public void add() throws SQLException {
+	@Override
+    public void add() throws SQLException {
 		if (getConfigurationID() == null)
 			setConfigurationID( getNextConfigurationID() );
 		
@@ -82,7 +58,8 @@ public class LMConfigurationBase extends DBPersistent {
 	/* (non-Javadoc)
 	 * @see com.cannontech.database.db.DBPersistent#delete()
 	 */
-	public void delete() throws SQLException {
+	@Override
+    public void delete() throws SQLException {
 		Object[] constraintValues = { getConfigurationID() };
 		delete( TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 	}
@@ -90,7 +67,8 @@ public class LMConfigurationBase extends DBPersistent {
 	/* (non-Javadoc)
 	 * @see com.cannontech.database.db.DBPersistent#retrieve()
 	 */
-	public void retrieve() throws SQLException {
+	@Override
+    public void retrieve() throws SQLException {
 		Object[] constraintValues = { getConfigurationID() };
 		Object[] results = retrieve( SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 		
@@ -105,7 +83,8 @@ public class LMConfigurationBase extends DBPersistent {
 	/* (non-Javadoc)
 	 * @see com.cannontech.database.db.DBPersistent#update()
 	 */
-	public void update() throws SQLException {
+	@Override
+    public void update() throws SQLException {
 		Object[] setValues = {
 			getColdLoadPickup(), getTamperDetect()
 		};

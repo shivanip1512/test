@@ -1,6 +1,8 @@
 package com.cannontech.database.db.stars.hardware;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
@@ -46,9 +48,6 @@ public class InventoryBase extends DBPersistent {
 
 	public static final String TABLE_NAME = "InventoryBase";
 
-	public static final String GET_NEXT_INVENTORY_ID_SQL =
-		"SELECT MAX(InventoryID) FROM " + TABLE_NAME;
-
 	public InventoryBase() {
 		super();
 	}
@@ -75,13 +74,15 @@ public class InventoryBase extends DBPersistent {
 		}
 	}
 
-	public void delete() throws java.sql.SQLException {
+	@Override
+    public void delete() throws java.sql.SQLException {
 		Object[] constraintValues = { getInventoryID() };
 
 		delete( TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 	}
 
-	public void add() throws java.sql.SQLException {
+	@Override
+    public void add() throws java.sql.SQLException {
 		if (getInventoryID() == null)
 			setInventoryID( getNextInventoryID() );
     		
@@ -94,7 +95,8 @@ public class InventoryBase extends DBPersistent {
 		add( TABLE_NAME, addValues );
 	}
 
-	public void update() throws java.sql.SQLException {
+	@Override
+    public void update() throws java.sql.SQLException {
 		Object[] setValues = {
 			getAccountID(), getInstallationCompanyID(), getCategoryID(),
 			getReceiveDate(), getInstallDate(), getRemoveDate(), getAlternateTrackingNumber(),
@@ -106,7 +108,8 @@ public class InventoryBase extends DBPersistent {
 		update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 	}
 
-	public void retrieve() throws java.sql.SQLException {
+	@Override
+    public void retrieve() throws java.sql.SQLException {
 		Object[] constraintValues = { getInventoryID() };
 
 		Object[] results = retrieve( SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
@@ -218,7 +221,7 @@ public class InventoryBase extends DBPersistent {
 			stmt.setInt( 2, energyCompanyID );
 			rset = stmt.executeQuery();
 			
-			java.util.ArrayList resList = new java.util.ArrayList();
+			List<InventoryBase> resList = new ArrayList<InventoryBase>();
 			while (rset.next()) {
 				InventoryBase inv = new InventoryBase();
 				inv.setInventoryID( new Integer(rset.getInt(1)) );
@@ -301,13 +304,13 @@ public class InventoryBase extends DBPersistent {
 			
 			rset = stmt.executeQuery();
     		
-			java.util.ArrayList rstList = new java.util.ArrayList();
+			List<Integer> rstList = new ArrayList<Integer>();
 			while (rset.next())
-				rstList.add( new Integer(rset.getInt(1)) );
+				rstList.add(rset.getInt(1));
     		
 			int[] invIDs = new int[ rstList.size() ];
 			for (int i = 0; i < rstList.size(); i++)
-				invIDs[i] = ((Integer)rstList.get(i)).intValue();
+				invIDs[i] = rstList.get(i).intValue();
 			
 			return invIDs;
 		}
