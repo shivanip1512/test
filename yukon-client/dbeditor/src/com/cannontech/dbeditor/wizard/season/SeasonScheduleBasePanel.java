@@ -1,5 +1,8 @@
 package com.cannontech.dbeditor.wizard.season;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.cannontech.database.db.season.DateOfSeason;
 
 /**
@@ -637,7 +640,25 @@ public boolean isInputValid()
 	if( getJTextFieldSeasonScName().getText() == null
 		 || ! (getJTextFieldSeasonScName().getText().length() > 0) )
 	{
-		return false;
+	    setErrorString("Schedule Name cannot be blank.");
+        return false;
+	}
+	
+	// check for duplicate season names
+	// important because DateOfSeason table has key index on SeasonScheduleID,SeasonName
+	Map<String, Integer> seasonNames = new HashMap<String, Integer>(); 
+	for( int i = 0; i < getJTableModel().getRowCount(); i++ ) {
+	    
+	    String thisSeasonName = getJTableModel().getRowAt(i).getSeasonName();
+	    if (seasonNames.keySet().contains(thisSeasonName)) {
+	        
+	        Integer conflictRow = seasonNames.get(thisSeasonName);
+	        setErrorString("Season name '" + thisSeasonName + "' for row " + (i + 1) + " conflicts with the season name for row " + (conflictRow + 1) + ".");
+	        return false;
+	        
+	    } else {
+	        seasonNames.put(thisSeasonName, i);
+	    }
 	}
 
 	for( int i = 0; i < getJTableModel().getRowCount(); i++ )
