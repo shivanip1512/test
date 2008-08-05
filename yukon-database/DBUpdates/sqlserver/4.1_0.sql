@@ -1092,4 +1092,4 @@ WHERE rolePropertyId = -1600;
 /* VERSION INFO                                               */
 /**************************************************************/
 
-/* __YUKON_VERSION__ */
+insert into CTIDatabase values('4.1', 'Matt K', '04-Aug-2008', 'Latest Update', 0 );

@@ -962,4 +962,4 @@ WHERE rolePropertyId = -1600;
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
 
-/* __YUKON_VERSION__ */
+insert into CTIDatabase values('4.1', 'Matt K', '04-Aug-2008', 'Latest Update', 0 );
