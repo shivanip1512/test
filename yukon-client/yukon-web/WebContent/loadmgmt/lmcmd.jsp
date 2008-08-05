@@ -128,13 +128,11 @@ function setStopAble( radioChk )
 		document.cmdForm.useStopGear.disabled = !val;
 	<% }
     if( ILCCmds.PROG_START.equals(cmd) ) {   %>
-	    if (radioChk.value == "stopmanual" && radioChk.checked)
-	    {
+	    if (radioChk.value == "stopmanual" && radioChk.checked) {
 	        document.getElementById('tgconfig').style.display = 'none';
 	    }
-	    if (val)
-	    {
-	        document.getElementById('tgconfig').style.display = 'inline';
+	    if (val) {
+            showtgconfig ($('gearnum').options[$('gearnum').selectedIndex].value);
 	    }
 	<%}%>
 }
@@ -227,7 +225,7 @@ pageContext.setAttribute("nowDate", nowStartOrStop);%>
               <td width="25">&nbsp;</td>
               <td width="36">&nbsp;</td>
               <td width="179">
-                  <select name="gearnum" onchange="showtgconfig (this.options[this.selectedIndex].value);" >
+                  <select id="gearnum" name="gearnum" onchange="showtgconfig (this.options[this.selectedIndex].value);" >
 				<%
 					if( gearList.size() <= 0 )
 						gearList = java.util.Arrays.asList(
