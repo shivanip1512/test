@@ -16,10 +16,10 @@ public class LMProgramEnergyExchange extends LMProgramBase
 	private String stoppedEarlyMsg = null;
 
 	//stores com.cannontech.loadcontrol.data.LMEnergyExchangeOffer objects	
-	private Vector energyExchangeOffers = null;
+	private Vector<LMEnergyExchangeOffer> energyExchangeOffers = null;
 
 	//stores com.cannontech.loadcontrol.data.LMEnergyExchangeCustomer objects
-	private Vector energyExchangeCustomers = null;	
+	private Vector<LMEnergyExchangeCustomer> energyExchangeCustomers = null;	
 /**
  * LMProgramEnergyExchange constructor comment.
  */
@@ -63,14 +63,14 @@ public java.lang.String getCanceledMsg() {
  * Creation date: (5/28/2001 2:31:46 PM)
  * @return java.util.Vector
  */
-public java.util.Vector getEnergyExchangeCustomers() {
+public Vector<LMEnergyExchangeCustomer> getEnergyExchangeCustomers() {
 	return energyExchangeCustomers;
 }
 /**
  * Creation date: (5/28/2001 2:31:46 PM)
  * @return java.util.Vector
  */
-public java.util.Vector getEnergyExchangeOffers() {
+public Vector<LMEnergyExchangeOffer> getEnergyExchangeOffers() {
 	return energyExchangeOffers;
 }
 /**
@@ -140,14 +140,14 @@ public void setCanceledMsg(java.lang.String newCanceledMsg) {
  * Creation date: (5/28/2001 2:31:46 PM)
  * @param newEnergyExchangeCustomers java.util.Vector
  */
-public void setEnergyExchangeCustomers(java.util.Vector newEnergyExchangeCustomers) {
+public void setEnergyExchangeCustomers(Vector<LMEnergyExchangeCustomer> newEnergyExchangeCustomers) {
 	energyExchangeCustomers = newEnergyExchangeCustomers;
 }
 /**
  * Creation date: (5/28/2001 2:31:46 PM)
  * @param newEnergyExchangeOffers java.util.Vector
  */
-public void setEnergyExchangeOffers(java.util.Vector newEnergyExchangeOffers) {
+public void setEnergyExchangeOffers(Vector<LMEnergyExchangeOffer> newEnergyExchangeOffers) {
 	energyExchangeOffers = newEnergyExchangeOffers;
 }
 /**

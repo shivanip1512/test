@@ -10,12 +10,12 @@ import com.cannontech.loadcontrol.data.ILMData;
  */
 public final class LMComparators 
 {
-	public static Comparator lmDataYukonID = new Comparator()
+	public static Comparator<ILMData> lmDataYukonID = new Comparator<ILMData>()
 	{
-		public int compare(Object o1, Object o2)
+		public int compare(ILMData o1, ILMData o2)
 		{
-			int thisVal = ((ILMData)o1).getYukonID().intValue();
-			int anotherVal = ((ILMData)o2).getYukonID().intValue();
+			int thisVal = o1.getYukonID().intValue();
+			int anotherVal = o2.getYukonID().intValue();
 			return (thisVal<anotherVal ? -1 : (thisVal==anotherVal ? 0 : 1));
 		}
 		public boolean equals(Object obj)
@@ -25,16 +25,16 @@ public final class LMComparators
 	};
 	
 	/* Used to compare names for ILMData */
-    public static Comparator lmDataNameComp = new Comparator()
+    public static Comparator<ILMData> lmDataNameComp = new Comparator<ILMData>()
 	{
-		public int compare(Object o1, Object o2)
+		public int compare(ILMData o1, ILMData o2)
 		{
 			String thisVal = null, anotherVal = null;
 			
 			if(o1 instanceof ILMData && o2 instanceof ILMData)
 			{
-				thisVal = ((ILMData)o1).getYukonName();
-				anotherVal = ((ILMData)o2).getYukonName();
+				thisVal = o1.getYukonName();
+				anotherVal = o2.getYukonName();
 			}
 			else
 			{	// unknown type

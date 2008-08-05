@@ -16,6 +16,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.TimeUnit;
@@ -57,19 +59,18 @@ public class LoadcontrolCache implements java.util.Observer {
 	private String dbAlias = "yukon";
 
 	// key = (Integer) energy company id, value = (long[]) customer id
-	private HashMap energyCompanyCustomer = new HashMap();
+	private Map<Integer, long[]> energyCompanyCustomer = new HashMap<Integer, long[]>();
 	
 	// key = (Integer) customer, value = long energy company id
-	private HashMap customerEnergyCompany = new HashMap();
+	private Map<Integer, Integer> customerEnergyCompany = new HashMap<Integer, Integer>();
 
 	// key = (Integer) customer, value = Integer baseline pointid
-	private HashMap customerBaseLine = new HashMap();
+	private Map<Integer, Integer> customerBaseLine = new HashMap<Integer, Integer>();
 	
 	
 	//programs
-	private ArrayList curtailmentPrograms = new ArrayList();
-	private ArrayList energyExchangePrograms = new ArrayList();
-	private HashSet directPrograms = new HashSet();
+	private List<LMProgramCurtailment> curtailmentPrograms = new ArrayList<LMProgramCurtailment>();
+	private List<LMProgramEnergyExchange> energyExchangePrograms = new ArrayList<LMProgramEnergyExchange>();
 	
 /**
  * LoadcontrolCache constructor comment.
@@ -86,27 +87,6 @@ public LoadcontrolCache(final LoadControlClientConnection lcConn) {
     refreshTimer.scheduleWithFixedDelay(timerTask, startupRefreshRate, normalRefreshRate, TimeUnit.MILLISECONDS);
 }
 
-/**
- * Creation date: (6/25/2001 9:16:12 AM)
- * @return java.lang.Integer
- * @param customerID java.lang.Integer
- */
-private Integer findEnergyCompany(Integer customerID) {
-
-	java.util.Iterator iter = energyCompanyCustomer.keySet().iterator();
-	while(iter.hasNext())
-	{
-		Integer id = (Integer) iter.next();
-		long[] custID = (long[]) energyCompanyCustomer.get(id);
-
-		if( java.util.Arrays.binarySearch(custID, customerID.longValue()) >= 0 )
-		{
-			return id;
-		}
-	}
-
-	return null;	
-}
 /**
  * Creation date: (6/12/2001 9:36:25 AM)
  * @return com.cannontech.loadcontrol.data.LMProgramEnergyExchange[]
@@ -169,17 +149,17 @@ public synchronized LMCurtailCustomer[] getCurtailmentCustomers(long progID) {
 
 	LMCurtailCustomer[] retVal = null;
 
-	Iterator i = curtailmentPrograms.iterator();
+	Iterator<LMProgramCurtailment> i = curtailmentPrograms.iterator();
 	while( i.hasNext() )
 	{
-		LMProgramCurtailment p = (LMProgramCurtailment) i.next();
+		LMProgramCurtailment p = i.next();
 
 		if (p.getYukonID().longValue() != progID)
 			continue;
 
 		// are these for sure all customers???
 		// only god or wally knows
-		Vector customers = p.getLoadControlGroupVector();
+		Vector<?> customers = p.getLoadControlGroupVector();
 
 		if( customers != null )
 		{
@@ -212,10 +192,10 @@ public long getCurtailmentID(long progID)
  */
 public LMProgramCurtailment getCurtailmentProgram(long progID) {
 	
-	Iterator i = curtailmentPrograms.iterator();
+	Iterator<LMProgramCurtailment> i = curtailmentPrograms.iterator();
 	while( i.hasNext() )
 	{
-		LMProgramCurtailment p = (LMProgramCurtailment) i.next();
+		LMProgramCurtailment p = i.next();
 
 		if( p.getYukonID().longValue() == progID )
 		{
@@ -247,7 +227,7 @@ public double[] getCustomerBaseLine(long customerID) {
  */
 public double[] getCustomerBaseLine(long customerID, Date start, Date end) {
 	//get point id of baseline point
-	Integer baseLineID = (Integer) customerBaseLine.get( new Integer((int)customerID));
+	Integer baseLineID = customerBaseLine.get( new Integer((int)customerID));
 	
 	if(baseLineID == null) {
 		CTILogger.info("No customer baseline ID found for customer id: " + customerID);
@@ -271,18 +251,18 @@ public double[] getCustomerBaseLine(long customerID, Date start, Date end) {
 	
 		// Take the first 24 values, if there are more then
 		// the baseline calcuation is screwed up.
-		ArrayList values = new ArrayList(24);
+		List<Double> values = new ArrayList<Double>(24);
 		for( int i = 0; i < 24; i++ )
 		{
 			if( !rset.next() )
 				return null;
 
-			values.add( new Double(rset.getDouble(1)));	
+			values.add( rset.getDouble(1));	
 		}
 		
 		double[] retVal = new double[values.size()];
 		for( int i = 0; i < retVal.length; i++ )
-				retVal[i] = ((Double) values.get(i)).doubleValue();
+				retVal[i] = values.get(i);
 
 		return retVal;
 	}
@@ -308,21 +288,21 @@ public double[] getCustomerBaseLine(long customerID, Date start, Date end) {
 	}
 public LMProgramEnergyExchange[] getCustomerEnergyExchangePrograms(long custID)
 {
-	ArrayList tempProgs = new ArrayList();	
+	List<LMProgramEnergyExchange> tempProgs = new ArrayList<LMProgramEnergyExchange>();	
 	LMProgramEnergyExchange[] retVal= null;
 
-	Iterator i = energyExchangePrograms.iterator();
+	Iterator<LMProgramEnergyExchange> i = energyExchangePrograms.iterator();
 	while( i.hasNext() )
 	{
-		LMProgramEnergyExchange p = (LMProgramEnergyExchange) i.next();
+		LMProgramEnergyExchange p = i.next();
 		
-		Vector customers = p.getEnergyExchangeCustomers();
+		Vector<LMEnergyExchangeCustomer> customers = p.getEnergyExchangeCustomers();
 		if( customers != null )
 		{
-			Iterator cIter = customers.iterator();
+			Iterator<LMEnergyExchangeCustomer> cIter = customers.iterator();
 			while( cIter.hasNext())
 			{
-				LMEnergyExchangeCustomer c = (LMEnergyExchangeCustomer) cIter.next();
+				LMEnergyExchangeCustomer c = cIter.next();
 				if( c.getCustomerID().longValue() == custID )
 				{
 					tempProgs.add(p);
@@ -364,16 +344,16 @@ public LMProgramBase[] getDirectPrograms() {
  * 
  * @return Iterator
  */
-public Iterator getAllControlAreas( LiteYukonUser yukUser, boolean overridePaoRestrictions )
+public Iterator<LMControlArea> getAllControlAreas( LiteYukonUser yukUser, boolean overridePaoRestrictions )
 {
     if( yukUser == null )
         return lcConn.getControlAreas().values().iterator(); //return all areas
 
-    Iterator iter = lcConn.getControlAreas().values().iterator();
-    ArrayList paoList = new ArrayList(32);
+    Iterator<LMControlArea> iter = lcConn.getControlAreas().values().iterator();
+    List<LMControlArea> paoList = new ArrayList<LMControlArea>(32);
     while( iter.hasNext() )
     {
-        LMControlArea area = (LMControlArea)iter.next();
+        LMControlArea area = iter.next();
         if( DaoFactory.getAuthDao().userHasAccessPAO(yukUser, area.getYukonID().intValue()) || overridePaoRestrictions )
             paoList.add( area );
     }
@@ -432,20 +412,20 @@ public LMScenarioWrapper getScenario( Integer scenarioID )
 public synchronized LMProgramCurtailment[] getEnergyCompanyCurtailmentPrograms(long energyCompanyID)
 {
 	LMProgramCurtailment[] retVal = null;
-	ArrayList tempProgs = new ArrayList();
-	long[] ecCustomers = (long[]) energyCompanyCustomer.get( new Integer( (int) energyCompanyID) );
+	List<LMProgramCurtailment> tempProgs = new ArrayList<LMProgramCurtailment>();
+	long[] ecCustomers = energyCompanyCustomer.get( new Integer( (int) energyCompanyID) );
 
 	if( ecCustomers != null )
 	{
-		Iterator pIter = curtailmentPrograms.iterator();
+		Iterator<LMProgramCurtailment> pIter = curtailmentPrograms.iterator();
 		while( pIter.hasNext() )
 		{
-			LMProgramCurtailment p = (LMProgramCurtailment) pIter.next();
+			LMProgramCurtailment p = pIter.next();
 
-			Vector customers = p.getLoadControlGroupVector();
+			Vector<?> customers = p.getLoadControlGroupVector();
 			if( customers != null )
 			{
-				Iterator cIter = customers.iterator();
+				Iterator<?> cIter = customers.iterator();
 				while( cIter.hasNext() )
 				{
 					Object o = cIter.next();
@@ -470,26 +450,26 @@ public synchronized LMProgramCurtailment[] getEnergyCompanyCurtailmentPrograms(l
 }
 public synchronized LMProgramEnergyExchange[] getEnergyCompanyEnergyExchangePrograms(long energyCompanyID)
 {
-	ArrayList tempProgs = new ArrayList();
+	List<LMProgramEnergyExchange> tempProgs = new ArrayList<LMProgramEnergyExchange>();
 	
 	LMProgramEnergyExchange[] retVal= null;
 
-	long[] ecCustomers = (long[]) energyCompanyCustomer.get( new Integer( (int) energyCompanyID) );
+	long[] ecCustomers = energyCompanyCustomer.get( new Integer( (int) energyCompanyID) );
 
 	if( ecCustomers != null )
 	{	
-		Iterator i = energyExchangePrograms.iterator();
+		Iterator<LMProgramEnergyExchange> i = energyExchangePrograms.iterator();
 		while( i.hasNext() )
 		{
-			LMProgramEnergyExchange p = (LMProgramEnergyExchange) i.next();
+			LMProgramEnergyExchange p = i.next();
 			
-			Vector customers = p.getEnergyExchangeCustomers();
+			Vector<LMEnergyExchangeCustomer> customers = p.getEnergyExchangeCustomers();
 			if( customers != null )
 			{
-				Iterator cIter = customers.iterator();
+				Iterator<LMEnergyExchangeCustomer> cIter = customers.iterator();
 				while( cIter.hasNext())
 				{
-					LMEnergyExchangeCustomer c = (LMEnergyExchangeCustomer) cIter.next();
+					LMEnergyExchangeCustomer c = cIter.next();
 
 					if( java.util.Arrays.binarySearch( ecCustomers, c.getCustomerID().longValue() ) >= 0 )
 					{
@@ -516,14 +496,14 @@ public synchronized LMEnergyExchangeCustomer[] getEnergyExchangeCustomers(long p
 
 	LMEnergyExchangeCustomer[] retVal= null;
 	
-	Iterator i = energyExchangePrograms.iterator();
+	Iterator<LMProgramEnergyExchange> i = energyExchangePrograms.iterator();
 	while( i.hasNext() )
 	{
-		LMProgramEnergyExchange p = (LMProgramEnergyExchange) i.next();
+		LMProgramEnergyExchange p = i.next();
 
 		if( p.getYukonID().longValue() == progID )
 		{
-			Vector customers = p.getEnergyExchangeCustomers();
+			Vector<LMEnergyExchangeCustomer> customers = p.getEnergyExchangeCustomers();
 			if( customers != null )
 			{
 				retVal = new LMEnergyExchangeCustomer[customers.size()];
@@ -580,7 +560,7 @@ public synchronized void refresh()
 		{
 			int customerID = rset.getInt(1);
 			int pointID = rset.getInt(2);
-			customerBaseLine.put(new Integer(customerID), new Integer(pointID));			
+			customerBaseLine.put(customerID, pointID);			
 		}
 	}
 	catch(java.sql.SQLException e)

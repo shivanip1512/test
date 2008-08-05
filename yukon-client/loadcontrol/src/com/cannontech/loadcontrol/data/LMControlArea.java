@@ -1,5 +1,7 @@
 package com.cannontech.loadcontrol.data;
 
+import java.util.Vector;
+
 /**
  * Insert the type's description here.
  * Creation date: (8/17/00 3:06:09 PM)
@@ -40,10 +42,10 @@ public class LMControlArea implements ILMData
 	private Integer currentDailyStopTime = null;
 	
 	//LMControlAreaTrigger Objects
-	private java.util.Vector triggerVector = null;
+	private Vector<LMControlAreaTrigger> triggerVector = null;
 
 	//LMProgramBase Objects
-	private java.util.Vector lmProgramVector = null;
+	private Vector<LMProgramBase> lmProgramVector = null;
 
 /**
  * Insert the method's description here.
@@ -204,10 +206,10 @@ public java.lang.Boolean getDisableFlag() {
  * Creation date: (4/3/2001 10:56:59 AM)
  * @return java.util.Vector
  */
-public java.util.Vector getLmProgramVector() 
+public Vector<LMProgramBase> getLmProgramVector() 
 {
 	if( lmProgramVector == null )
-		lmProgramVector = new java.util.Vector(10);
+		lmProgramVector = new Vector<LMProgramBase>(10);
 
 	return lmProgramVector;
 }
@@ -248,10 +250,10 @@ public java.lang.Boolean getRequireAllTriggersActiveFlag() {
  * Creation date: (4/3/2001 10:56:59 AM)
  * @return java.util.Vector
  */
-public java.util.Vector getTriggerVector() 
+public Vector<LMControlAreaTrigger> getTriggerVector() 
 {
 	if( triggerVector == null )
-		triggerVector = new java.util.Vector(2);
+		triggerVector = new Vector<LMControlAreaTrigger>(2);
 
 	return triggerVector;
 }
@@ -396,7 +398,7 @@ public void setDisableFlag(java.lang.Boolean newDisableFlag) {
  * Creation date: (4/3/2001 10:56:59 AM)
  * @param newLmProgramVector java.util.Vector
  */
-public void setLmProgramVector(java.util.Vector newLmProgramVector) {
+public void setLmProgramVector(Vector<LMProgramBase> newLmProgramVector) {
 	lmProgramVector = newLmProgramVector;
 }
 /**
@@ -436,7 +438,7 @@ public void setRequireAllTriggersActiveFlag(java.lang.Boolean newRequireAllTrigg
  * Creation date: (4/3/2001 10:56:59 AM)
  * @param newTriggerVector java.util.Vector
  */
-public void setTriggerVector(java.util.Vector newTriggerVector) {
+public void setTriggerVector(Vector<LMControlAreaTrigger> newTriggerVector) {
 	triggerVector = newTriggerVector;
 }
 /**
