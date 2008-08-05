@@ -15,8 +15,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.TimeUnit;
 
@@ -34,7 +34,6 @@ import com.cannontech.loadcontrol.data.LMEnergyExchangeCustomer;
 import com.cannontech.loadcontrol.data.LMGroupBase;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.data.LMProgramCurtailment;
-import com.cannontech.loadcontrol.data.LMProgramDirect;
 import com.cannontech.loadcontrol.data.LMProgramEnergyExchange;
 import com.cannontech.loadcontrol.data.LMScenarioWrapper;
 import com.cannontech.spring.YukonSpringHook;
@@ -346,16 +345,18 @@ public LMProgramEnergyExchange[] getCustomerEnergyExchangePrograms(long custID)
 public java.lang.String getDbAlias() {
 	return dbAlias;
 }
-/**
- * Creation date: (7/24/2001 11:23:41 AM)
- * @return com.cannontech.loadcontrol.data.LMProgramDirect[]
- */
+
 public LMProgramBase[] getDirectPrograms() {
-	//LMProgramDirect[] p = new LMProgramDirect[directPrograms.size()];
-    //directPrograms.toArray(p);
-    LMProgramBase[] p = new LMProgramBase[lcConn.getPrograms().size()];
-    lcConn.getPrograms().values().toArray( p );
-    return p;
+	
+	Set<LMProgramBase> programSet = new HashSet<LMProgramBase>();
+	LMControlArea[] areas = lcConn.getAllLMControlAreas();
+	// Get the programs from the control areas to make sure they are up to date
+	for(LMControlArea area : areas) {
+		Vector<LMProgramBase> programVector = area.getLmProgramVector();
+		programSet.addAll(programVector);
+	}
+	
+	return programSet.toArray(new LMProgramBase[]{});
 }
 
 /**

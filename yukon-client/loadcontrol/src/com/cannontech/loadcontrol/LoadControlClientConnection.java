@@ -125,6 +125,11 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
     	return controlAreas;
     }
     
+    /**
+	 * @deprecated - The returned map may be out of date because it cannot be
+	 *             properly updated when a LM program is deleted. See the note in
+	 *             the handleLMControlArea() method on this class.
+	 */
     public HashMap<Integer, LMProgramBase> getPrograms() {
         if( programs == null )
             programs = new HashMap<Integer, LMProgramBase>();
@@ -132,6 +137,11 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
         return programs;
     }
     
+    /**
+     * @deprecated - The returned map may be out of date because it cannot be
+     *             properly updated when a LM program or group is deleted. See the 
+     *             note in the handleLMControlArea() method on this class.
+     */
     public HashMap<Integer, LMGroupBase> getGroups() {
         if( groups == null )
             groups = new HashMap<Integer, LMGroupBase>();
@@ -139,6 +149,11 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
         return groups;
     }
     
+    /**
+     * @deprecated - The returned map may be out of date because it cannot be
+     *             properly updated when a trigger is deleted. See the note in
+	 *             the handleLMControlArea() method on this class.
+     */
     public HashMap<Integer, LMControlAreaTrigger> getTriggers() {
         if( triggers == null )
             triggers = new HashMap<Integer, LMControlAreaTrigger>();
@@ -179,13 +194,15 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
     		boolean newInsert = getControlAreas().get(controlArea.getYukonID()) == null;
             
             getControlAreas().put( controlArea.getYukonID(), controlArea );
-    		/*TODO: YUK-4697, find better solution as the following 3 lines were breaking 3-tier and TDC
-            getPrograms().clear();
-            getGroups().clear();
-            getTriggers().clear();*/
-            
+    		
             /*Build up hashMaps of references for all these different objects, so we don't have
-             *to iterate so much later when the new dynamic update messages come through. 
+             *to iterate so much later when the new dynamic update messages come through.
+             *
+             * NOTE: The for loops below do NOT remove deleted items which causes the 
+             * group, program and trigger maps to be potentially out of date. Updates are handled
+             * correctly but deletes are not.  There is no easy fix since we only get the already 
+             * updated controlArea as input to this method so we cannot determine what (if anything) 
+             * has been deleted.  This is why the methods to get those maps have been deprecated.
     		 */
             for(int i = 0; i < controlArea.getLmProgramVector().size(); i++) {
                 LMProgramBase currentProgram = (LMProgramBase)controlArea.getLmProgramVector().get(i);
