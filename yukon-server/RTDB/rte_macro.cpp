@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_macro.cpp-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2008/08/04 21:43:23 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2008/08/05 14:52:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,6 +24,7 @@
 #include "guard.h"
 #include "porter.h"
 #include "utility.h"
+#include "msg_pcreturn.h"
 
 CtiRouteMacro::CtiRouteMacro()
 {
@@ -139,6 +140,14 @@ INT CtiRouteMacro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, 
 
                             if(status == DEVICEINHIBITED && NewOMess && NewOMess->Request.MacroOffset != 0)
                             {
+                                std::list< CtiMessage* >::iterator iter;
+                                for(iter = retList.begin(); iter != retList.end(); iter++)
+                                {
+                                    if((*iter)->isA() == MSG_PCRETURN)
+                                    {
+                                        ((CtiReturnMsg*)(*iter))->setExpectMore();
+                                    }
+                                }
                                 ExecuteRequest(pReq, parse, NewOMess, vgList, retList, outList);
                             }
 
