@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.107 $
-* DATE         :  $Date: 2008/08/06 18:59:06 $
+* REVISION     :  $Revision: 1.108 $
+* DATE         :  $Date: 2008/08/06 21:08:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -992,7 +992,10 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
         }
 
         //This message is a system request for porter, send it to the porter system thread, not a device.
-        PorterSystemMessageQueue.putQueue(pReq->replicateMessage());
+        CtiMessage* tempReqMsg = pReq->replicateMessage();
+        tempReqMsg->setConnectionHandle(pReq->getConnectionHandle());
+        PorterSystemMessageQueue.putQueue(tempReqMsg);
+        tempReqMsg = NULL;
         pReq = NULL;
         return status;
     }

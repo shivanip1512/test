@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.75 $
-* DATE         :  $Date: 2008/08/04 18:19:39 $
+* REVISION     :  $Revision: 1.76 $
+* DATE         :  $Date: 2008/08/06 21:08:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,6 +29,7 @@
 #include "netports.h"
 #include "msg_pcrequest.h"
 #include "msg_pcreturn.h"
+#include "msg_requestcancel.h"
 #include "msg_pdata.h"
 #include "msg_queuedata.h"
 #include "msg_signal.h"
@@ -109,6 +110,10 @@ void _MessageThrFunc()
                 else if( in->isA() == MSG_QUEUEDATA )
                 {
                     msgid =((CtiQueueDataMsg *)in)->UserMessageId();
+                }
+                else if( in->isA() == MSG_REQUESTCANCEL )
+                {
+                    msgid =((CtiRequestCancelMsg *)in)->UserMessageId();
                 }
 
                 {
@@ -1785,11 +1790,6 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
             info += "\r\n nothing was received from porter in the last ";
             info += CtiNumStr(now.seconds() - lastReturnMessageReceived.seconds());
             info += " seconds.";
-            if( gDoNotSendCancel == false )
-            {
-                info += " Sending cancel message to porter";
-                PILConnection->WriteConnQue(CTIDBG_new CtiRequestMsg(0, "system message request cancel", msgid, 0, 0, 0, 0, msgid));
-            }
 
             WriteOutput(info.c_str());
 
@@ -1808,11 +1808,12 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
     //and deleted below
     //delete msg;
 
-    // If we were interrupted (cancelled generally) we want to cancel all remaining messages.
-    if( interrupted == true && timeout > 0 && gDoNotSendCancel == false )
+    // We now always send the cancel message.
+    if( two_way && timeout > 0 && !gDoNotSendCancel)
     {
         PILConnection->WriteConnQue(CTIDBG_new CtiRequestMsg(0, "system message request cancel", msgid, 0, 0, 0, 0, msgid));
     }
+
     // set up good and bad tcl lists
     Tcl_Obj* good_list = Tcl_NewListObj(0,NULL);
     Tcl_Obj* bad_list = Tcl_NewListObj(0,NULL);
@@ -1877,6 +1878,21 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
         RWRecursiveLock<RWMutexLock>::LockGuard guard(_queue_mux);
         InQueueStore.remove(msgid);
     }
+
+    while( queue_ptr->read(msg,10) )
+    {
+        if( msg->isA() == MSG_PCRETURN )
+        {
+            CtiReturnMsg* ret_msg = (CtiReturnMsg*) msg;
+            DumpReturnMessage(*ret_msg);
+        }
+        else if( msg->isA() == MSG_QUEUEDATA || msg->isA() == MSG_REQUESTCANCEL )
+        {
+            ((CtiMessage *)msg)->dump();
+        }
+        delete msg;
+    }
+    
 
     return (interrupted ?
                 TCL_ERROR : TCL_OK);
