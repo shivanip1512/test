@@ -10301,8 +10301,8 @@ void CtiCCSubstationBusStore::clearUnsolicitedCapBankList()
 void CtiCCSubstationBusStore::checkUnsolicitedList()
 {
     list <CtiCCCapBankPtr> tempList = getUnsolicitedCapBankList();
-    list <CtiCCCapBankPtr>::iterator listIter; 
-    for (listIter = tempList.begin(); listIter != tempList.end(); listIter++)
+    list <CtiCCCapBankPtr>::iterator listIter = tempList.begin();
+    while (listIter != tempList.end())
     {
         CtiCCCapBankPtr currentCapBank = *listIter;
 
@@ -10310,14 +10310,23 @@ void CtiCCSubstationBusStore::checkUnsolicitedList()
         {  
             CtiCCFeederPtr currentFeeder = findFeederByPAObjectID(currentCapBank->getParentId());
             if (currentFeeder == NULL)
+            {    
+                listIter++;
                 continue;
+            }
             CtiCCSubstationBusPtr currentSubstationBus = findSubBusByPAObjectID(currentFeeder->getParentId());
             if (currentSubstationBus == NULL)
+            {    
+                listIter++;
                 continue;
+            }
             
             CtiCapController::getInstance()->handleUnsolicitedMessaging(currentCapBank, currentFeeder, currentSubstationBus, currentCapBank->getTwoWayPoints());
         }
+        listIter++;
     }
+
+    clearUnsolicitedCapBankList();
 }
 
 void CtiCCSubstationBusStore::insertRejectedCapBankList(CtiCCCapBankPtr x)
@@ -10343,22 +10352,30 @@ void CtiCCSubstationBusStore::clearRejectedCapBankList()
 void CtiCCSubstationBusStore::checkRejectedList()
 {
     list <CtiCCCapBankPtr> tempList = getRejectedControlCapBankList();
-    list <CtiCCCapBankPtr>::iterator listIter; 
-    for (listIter = tempList.begin(); listIter != tempList.end(); listIter++)
+    list <CtiCCCapBankPtr>::iterator listIter = tempList.begin();
+    while (listIter != tempList.end())
     {
         CtiCCCapBankPtr currentCapBank = *listIter;
 
           
         CtiCCFeederPtr currentFeeder = findFeederByPAObjectID(currentCapBank->getParentId());
         if (currentFeeder == NULL)
+        {    
+            listIter++;
             continue;
+        }
         CtiCCSubstationBusPtr currentSubstationBus = findSubBusByPAObjectID(currentFeeder->getParentId());
         if (currentSubstationBus == NULL)
+        {   
+            listIter++;
             continue;
+        }
         
         CtiCapController::getInstance()->handleRejectionMessaging(currentCapBank, currentFeeder, currentSubstationBus, currentCapBank->getTwoWayPoints());
+        listIter++;
         
     }
+    clearRejectedCapBankList();
 }
 
 void CtiCCSubstationBusStore::insertItemsIntoMap(int mapType, long* first, long* second)

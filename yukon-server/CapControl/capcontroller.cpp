@@ -3034,7 +3034,10 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                             {
                                 currentCapBank->setUnsolicitedChangeTimeUpdated(timestamp);
                                 if ( currentCapBank->getUnsolicitedPendingFlag() )
+                                {    
                                     handleUnsolicitedMessaging(currentCapBank, currentFeeder, currentSubstationBus, twoWayPts);
+                                    store->removeCapbankFromUnsolicitedCapBankList(currentCapBank);
+                                }
                                 
                                 currentCapBank->setReportedCBCLastControlReason(twoWayPts->getLastControl());
                             }
@@ -3059,7 +3062,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                                         currentCapBank->setUnsolicitedChangeTimeUpdated(timestamp);
                                         store->insertUnsolicitedCapBankList(currentCapBank);
                                         currentCapBank->setUnsolicitedPendingFlag(TRUE);
-                                    }
+                                    } 
                                     
                                 }
                                 else if (stringContainsIgnoreCase(currentCapBank->getAfterVarsString(), "Manual") && 
@@ -3486,7 +3489,7 @@ void CtiCapController::handleRejectionMessaging(CtiCCCapBank* currentCapBank, Ct
     //SYNC with what CBC is reporting.
     currentCapBank->setControlStatus(twoWayPts->getCapacitorBankState());
 
-    store->removeCapbankFromRejectedCapBankList(currentCapBank);
+    //store->removeCapbankFromRejectedCapBankList(currentCapBank);
 
 }
 void CtiCapController::handleUnsolicitedMessaging(CtiCCCapBank* currentCapBank, CtiCCFeeder* currentFeeder, 
@@ -3533,7 +3536,7 @@ void CtiCapController::handleUnsolicitedMessaging(CtiCCCapBank* currentCapBank, 
         multiCCEventMsg = NULL;
     
     currentCapBank->setUnsolicitedPendingFlag(FALSE);
-    store->removeCapbankFromUnsolicitedCapBankList(currentCapBank);
+    //store->removeCapbankFromUnsolicitedCapBankList(currentCapBank);
 
 }
 
