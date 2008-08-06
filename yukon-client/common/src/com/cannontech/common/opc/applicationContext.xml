@@ -16,10 +16,10 @@
     <bean id="opcService" class="com.cannontech.common.opc.service.OpcService" 
 			scope="singleton" init-method="initialize"  destroy-method="shutdownAll">
 	    <property name="fdrTranslationDao" ref="fdrTranslationDao" />
-	    <property name="dispatchConnection" ref="dispatchConnection" />
 	    <property name="globalScheduledExecutor" ref = "globalScheduledExecutor" />
 	    <property name="config" ref = "configurationSource" />
 	    <property name="dataSource" ref="asyncDynamicDataSource"/>
+	    <property name="dynamicDataSource" ref="dynamicDataSource"/>
 	    <property name="pointDao" ref="pointDao"/>
 	</bean> 
 </beans>
