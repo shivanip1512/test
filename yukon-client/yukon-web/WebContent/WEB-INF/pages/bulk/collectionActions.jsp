@@ -97,7 +97,7 @@
             <cti:checkProperty property="operator.DeviceActionsRole.MASS_CHANGE">
             <tr>
                 <td>
-                    <form id="massChangeForm" method="post" action="/spring/bulk/massChange/massChangeSelect">
+                    <form id="massChangeForm" method="get" action="/spring/bulk/massChange/massChangeSelect">
                         <cti:deviceCollection deviceCollection="${deviceCollection}" />
                         <input type="submit" id="massChangeButton" value="${massChangeLabel}" style="width:140px;"/>
                     </form>

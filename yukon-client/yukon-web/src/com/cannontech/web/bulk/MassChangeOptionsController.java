@@ -142,11 +142,6 @@ public class MassChangeOptionsController extends InputFormController {
         // init callcback, use a TranslatingBulkProcessorCallback to get from UpdateableDevice to YukonDevice
         MassChangeCallbackResults bulkOperationCallbackResults = new MassChangeCallbackResults(successGroup, processingExceptionGroup, deviceGroupMemberEditorDao, deviceGroupCollectionHelper, Collections.singletonList(bulkFieldColumnHeader), BulkOperationTypeEnum.MASS_CHANGE);
         
-        ModelAndView mav = new ModelAndView("massChange/massChangeResults.jsp");
-        mav.addObject("deviceCollection", deviceCollection);
-        mav.addObject("massChangeBulkFieldName", massChangeBulkFieldName);
-        
-        
         // STORE RESULTS INFO TO CACHE
         String id = StringUtils.replace(UUID.randomUUID().toString(), "-", "");
         bulkOperationCallbackResults.setResultsId(id);
@@ -154,11 +149,12 @@ public class MassChangeOptionsController extends InputFormController {
         bulkOperationCallbackResults.setBulkFileInfo(massChangeFileInfo);
         recentResultsCache.addResult(id, bulkOperationCallbackResults);
         
-        mav.addObject("bulkUpdateOperationResults", bulkOperationCallbackResults);
         
         // PROCESS
         bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, bulkUpdater, bulkOperationCallbackResults);
         
+        ModelAndView mav = new ModelAndView("redirect:massChange/massChangeResults");
+        mav.addObject("resultsId", id);
         return mav;
     }
     
