@@ -43,6 +43,7 @@ import com.cannontech.database.data.lite.stars.LiteLMProgramWebPublishing;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompanyFactory;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.LiteSubstation;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
@@ -888,7 +889,7 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 						CtiUtilities.getDatabaseAlias() );
 				stmt.execute();
 				
-				LiteStarsEnergyCompany member = new LiteStarsEnergyCompany( company );
+				LiteStarsEnergyCompany member = LiteStarsEnergyCompanyFactory.createEnergyCompany(company );
 				StarsDatabaseCache.getInstance().addEnergyCompany( member );
 				ServerUtils.handleDBChange( member, DBChangeMsg.CHANGE_TYPE_ADD );
 				

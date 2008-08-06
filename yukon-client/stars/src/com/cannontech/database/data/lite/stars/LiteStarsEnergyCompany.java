@@ -208,27 +208,24 @@ public class LiteStarsEnergyCompany extends LiteBase {
     private List<LiteStarsEnergyCompany> children = null;
     private List<Integer> memberLoginIDs = null;
 
-    private final AddressDao addressDao = YukonSpringHook.getBean("addressDao", AddressDao.class);
-    private final StarsRowCountDao starsRowCountDao = YukonSpringHook.getBean("starsRowCountDao", StarsRowCountDao.class);
-    private final StarsInventoryBaseDao starsInventoryBaseDao = 
-        YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
-    private final StarsCustAccountInformationDao starsCustAccountInformationDao =
-        YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
-    private final SimpleJdbcTemplate simpleJdbcTemplate =
-        YukonSpringHook.getBean("simpleJdbcTemplate", SimpleJdbcTemplate.class);
+    private AddressDao addressDao;
+    private StarsRowCountDao starsRowCountDao;
+    private StarsInventoryBaseDao starsInventoryBaseDao;
+    private StarsCustAccountInformationDao starsCustAccountInformationDao;
+    private SimpleJdbcTemplate simpleJdbcTemplate;
     
-    public LiteStarsEnergyCompany() {
+    protected LiteStarsEnergyCompany() {
         super();
         setLiteType( LiteTypes.ENERGY_COMPANY );
     }
     
-    public LiteStarsEnergyCompany(int companyID) {
+    protected LiteStarsEnergyCompany(int companyID) {
         super();
         setLiteID( companyID );
         setLiteType( LiteTypes.ENERGY_COMPANY );
     }
     
-    public LiteStarsEnergyCompany(com.cannontech.database.db.company.EnergyCompany energyCompany) {
+    protected LiteStarsEnergyCompany(com.cannontech.database.db.company.EnergyCompany energyCompany) {
         super();
         setLiteType( LiteTypes.ENERGY_COMPANY );
         setLiteID( energyCompany.getEnergyCompanyID().intValue() );
@@ -3064,6 +3061,28 @@ public class LiteStarsEnergyCompany extends LiteBase {
 
         CTILogger.debug((new Date().getTime() - timerStart.getTime())*.001 + " Secs for '" + accountNumber_  + "' Search (" + count + " AccountIDS loaded; EC=" + (energyCompanyIDList.size() == StarsDatabaseCache.getInstance().getAllEnergyCompanies().size()? "ALL" : energyCompanyIDList.toString()) + ")" );
         return accountList;
+    }
+    
+    void setAddressDao(AddressDao addressDao) {
+        this.addressDao = addressDao;
+    }
+    
+    void setStarsRowCountDao(StarsRowCountDao starsRowCountDao) {
+        this.starsRowCountDao = starsRowCountDao;
+    }
+    
+    void setStarsInventoryBaseDao(
+            StarsInventoryBaseDao starsInventoryBaseDao) {
+        this.starsInventoryBaseDao = starsInventoryBaseDao;
+    }
+    
+    void setStarsCustAccountInformationDao(
+            StarsCustAccountInformationDao starsCustAccountInformationDao) {
+        this.starsCustAccountInformationDao = starsCustAccountInformationDao;
+    }
+    
+    void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
+        this.simpleJdbcTemplate = simpleJdbcTemplate;
     }
     
 }

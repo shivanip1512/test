@@ -28,6 +28,7 @@ import com.cannontech.database.data.lite.stars.LiteLMProgramWebPublishing;
 import com.cannontech.database.data.lite.stars.LiteServiceCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompanyFactory;
 import com.cannontech.database.data.lite.stars.LiteStarsLMControlHistory;
 import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
@@ -234,7 +235,7 @@ public class StarsDatabaseCache implements DBChangeListener {
 	    	
             synchronized (energyCompanies) {
                 for (int i = 0; i < companies.length; i++)
-                    energyCompanies.add( new LiteStarsEnergyCompany(companies[i]) );
+                    energyCompanies.add(LiteStarsEnergyCompanyFactory.createEnergyCompany(companies[i]));
             }
 	    	
 	    	CTILogger.info( "All energy companies loaded" );

@@ -32,6 +32,7 @@ import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteRawPointHistory;
 import com.cannontech.database.data.lite.LiteSettlementConfig;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompanyFactory;
 import com.cannontech.database.db.customer.CICustomerPointData;
 import com.cannontech.database.db.pao.LMControlHistory;
 import com.cannontech.database.db.point.RawPointHistory;
@@ -649,7 +650,7 @@ public class HECO_SettlementModelBase extends ReportModelBase
 		if( liteStarsEC == null)
 		{
 			if (getEnergyCompanyID() != null)
-				liteStarsEC = new LiteStarsEnergyCompany(getEnergyCompanyID().intValue());
+				liteStarsEC = LiteStarsEnergyCompanyFactory.createEnergyCompany(getEnergyCompanyID().intValue());
 		}
 		return liteStarsEC;
 	}

@@ -17,6 +17,7 @@ import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteSettlementConfig;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompanyFactory;
 import com.cannontech.database.db.company.SettlementConfig;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.yukon.IDatabaseCache;
@@ -332,7 +333,7 @@ public final class SettlementConfigFuncs {
 	
 	public static LiteSettlementConfig getLiteSettlementConfig( int energyCompanyID, int yukonDefID, String fieldName)
 	{
-		LiteStarsEnergyCompany lsec = new LiteStarsEnergyCompany(energyCompanyID);
+		LiteStarsEnergyCompany lsec = LiteStarsEnergyCompanyFactory.createEnergyCompany(energyCompanyID);
 //		int entryID = lsec.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SETTLEMENT_HECO).getEntryID();	//2260
 		int entryID = lsec.getYukonListEntry(yukonDefID).getEntryID();	//2260
 		Vector settlementConfigs = SettlementConfigFuncs.getAllLiteConfigsByEntryID(entryID);
@@ -351,7 +352,7 @@ public final class SettlementConfigFuncs {
 	{
 		Vector settleConfigs = new Vector();
 		
-		LiteStarsEnergyCompany lsec = new LiteStarsEnergyCompany(energyCompanyID);
+		LiteStarsEnergyCompany lsec = LiteStarsEnergyCompanyFactory.createEnergyCompany(energyCompanyID);
 //			int entryID = lsec.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SETTLEMENT_HECO).getEntryID();	//2260
 		int entryID = lsec.getYukonListEntry(yukonDefID).getEntryID();	//2260
 		Vector settlementConfigs = SettlementConfigFuncs.getAllLiteConfigsByEntryID(entryID);

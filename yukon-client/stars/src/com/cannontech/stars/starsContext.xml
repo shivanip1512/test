@@ -10,6 +10,8 @@
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
+    <bean id="liteStarsEnergyCompanyFactory" class="com.cannontech.database.data.lite.stars.LiteStarsEnergyCompanyFactory"/>
+
     <bean id="starsDatabaseCache"
         class="com.cannontech.database.cache.StarsDatabaseCache"
         init-method="init">

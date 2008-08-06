@@ -16,6 +16,7 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompanyFactory;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.operator.AdministratorRole;
@@ -148,7 +149,7 @@ public class NewEnergyCompanyController extends StarsAdminActionController {
                     );
                     stmt.execute();
 
-                    LiteStarsEnergyCompany newCompany = new LiteStarsEnergyCompany( company );
+                    LiteStarsEnergyCompany newCompany = LiteStarsEnergyCompanyFactory.createEnergyCompany(company);
                     newCompany.setInventoryLoaded( true );
                     newCompany.setWorkOrdersLoaded( true );
 
