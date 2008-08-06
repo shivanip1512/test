@@ -11,7 +11,6 @@ import java.util.Vector;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.style.ToStringCreator;
 
@@ -19,13 +18,11 @@ import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
-import com.cannontech.common.device.commands.CommandRequestBase;
 import com.cannontech.common.device.commands.CommandRequestExecutor;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.core.authorization.support.CommandPermissionConverter;
 import com.cannontech.core.authorization.support.Permission;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.dispatch.message.PointData;
@@ -46,9 +43,7 @@ public abstract class CommandRequestExecutorBase<T> implements
     private BasicServerConnection porterConnection;
     private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
     private CommandPermissionConverter commandPermissionConverter;
-    private PaoDao paoDao;
     private Set<Permission> loggableCommandPermissions = new HashSet<Permission>();
-    private SystemLogHelper systemLogHelper = null;
     
     private int defaultForegroundPriority = 14;
     private int defaultBackgroundPriority = 6;
@@ -63,12 +58,6 @@ public abstract class CommandRequestExecutorBase<T> implements
         return defaultBackgroundPriority;
     }
 
-    protected void logDeviceCommand(Permission permission, int deviceId, String commandDesc, String userName) {
-        if (this.loggableCommandPermissions.contains(permission)) {
-            getSystemLogHelper().log(deviceId, "Manual: " + commandDesc, "CARRIER: " + paoDao.getYukonPAOName(deviceId) + " (ID: " + deviceId + ")", userName);
-        }
-    }
-    
     private final class CommandResultMessageListener implements MessageListener {
         private final CommandCompletionCallback<? super T> callback;
         private Map<Long, T> pendingUserMessageIds;
@@ -217,10 +206,6 @@ public abstract class CommandRequestExecutorBase<T> implements
         // build up a list of command requests
         final List<RequestHolder> commandRequests = new ArrayList<RequestHolder>(commands.size());
         for (T command : commands) {
-            
-            Permission permission = commandPermissionConverter.getPermission(((CommandRequestBase)command).getCommand());
-            
-            verifyRequest(command, user, permission);
             Request request = buildRequest(command);
             RequestHolder requestHolder = new RequestHolder();
             requestHolder.command = command;
@@ -239,8 +224,11 @@ public abstract class CommandRequestExecutorBase<T> implements
             // write requests
             for (RequestHolder requestHolder : commandRequests) {
                 porterConnection.write(requestHolder.request);
+                if (commandRequiresLogging(requestHolder.request)) {
+                    logCommand(requestHolder.request, user);
+                }
                 if (log.isDebugEnabled()) {
-                    log.debug("Send request to porter: " + requestHolder.request);
+                    log.debug("Sent request to porter: " + requestHolder.request);
                 }
                 nothingWritten = false;
             }
@@ -253,8 +241,16 @@ public abstract class CommandRequestExecutorBase<T> implements
 
     }
 
-    protected abstract void verifyRequest(T commandRequest, LiteYukonUser user, Permission permission)
-            throws PaoAuthorizationException;
+    private void logCommand(Request request, LiteYukonUser user) {
+        new SystemLogHelper(PointTypes.SYS_PID_SYSTEM).log(request.getDeviceID(), "Manual: " + request.getCommandString(), "ID: " + request.getDeviceID() + ", Route: " + request.getRouteID(), user.getUsername());
+    }
+
+    private boolean commandRequiresLogging(Request request) {
+        String commandString = request.getCommandString();
+        Permission permission = commandPermissionConverter.getPermission(commandString);
+        boolean result = loggableCommandPermissions.contains(permission);
+        return result;
+    }
 
     protected abstract Request buildRequest(T commandRequest);
 
@@ -267,17 +263,6 @@ public abstract class CommandRequestExecutorBase<T> implements
     public void setDeviceErrorTranslatorDao(
             DeviceErrorTranslatorDao deviceErrorTranslatorDao) {
         this.deviceErrorTranslatorDao = deviceErrorTranslatorDao;
-    }
-    
-    @Autowired
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
-    }
-    
-    @Autowired
-    public void setCommandPermissionConverter(
-            CommandPermissionConverter commandPermissionConverter) {
-        this.commandPermissionConverter = commandPermissionConverter;
     }
 
     public void setDefaultBackgroundPriority(int defaultBackgroundPriority) {
@@ -301,12 +286,10 @@ public abstract class CommandRequestExecutorBase<T> implements
             Set<Permission> loggableCommandPermissions) {
         this.loggableCommandPermissions = loggableCommandPermissions;
     }
-
-    public SystemLogHelper getSystemLogHelper() {
-        if(systemLogHelper == null) {
-            systemLogHelper = new SystemLogHelper(PointTypes.SYS_PID_SYSTEM);
-        }
-        return systemLogHelper;
+    
+    public void setCommandPermissionConverter(
+            CommandPermissionConverter commandPermissionConverter) {
+        this.commandPermissionConverter = commandPermissionConverter;
     }
 
 }
