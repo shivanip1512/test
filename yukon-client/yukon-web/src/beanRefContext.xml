@@ -10,7 +10,6 @@
        <list>
             <value>com/cannontech/web/serverContext.xml</value>
             <value>com/cannontech/amr/amrContext.xml</value>
-            <value>com/cannontech/amr/amrContext-client.xml</value>
             <value>com/cannontech/cc/applicationContext.xml</value>
             <value>com/cannontech/common/alert/alertContext.xml</value>
 			<value>com/cannontech/common/chart/chartContext.xml</value>
