@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/PORTGLOB.H-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2008/07/18 19:43:23 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2008/08/06 18:24:20 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -77,7 +77,6 @@ extern IM_EX_PORTGLOB USHORT        PackActins;
 extern IM_EX_PORTGLOB USHORT        VCUWait;
 extern IM_EX_PORTGLOB USHORT        ExtraTimeOut;
 extern IM_EX_PORTGLOB USHORT        LAndGLCUs;
-extern IM_EX_PORTGLOB USHORT        StartTCPIP;
 extern IM_EX_PORTGLOB USHORT        PortPerfUpdateCount;
 extern IM_EX_PORTGLOB USHORT        RemotePerfUpdateCount;
 extern IM_EX_PORTGLOB USHORT        DLCFreq1;

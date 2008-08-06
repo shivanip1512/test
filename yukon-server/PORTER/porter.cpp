@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.123 $
-* DATE         :  $Date: 2008/07/21 20:38:26 $
+* REVISION     :  $Revision: 1.124 $
+* DATE         :  $Date: 2008/08/06 18:24:20 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1482,17 +1482,13 @@ INT RefreshPorterRTDB(void *ptr)
 
     if(!PorterQuit && (pChg == NULL || (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_PORT)) )
     {
-        //if(pChg != NULL)
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Reloading all ports based upon db change" << endl;
-            }
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Reloading all ports based upon db change" << endl;
         }
 
         CtiPortManager::coll_type::writer_lock_guard_t guard(PortManager.getLock());
         PortManager.RefreshList();
-        // PortManager.DumpList();
     }
 
     if(!PorterQuit && (pChg == NULL || (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_DEVICE) ) )
@@ -1584,7 +1580,6 @@ INT RefreshPorterRTDB(void *ptr)
             }
 
             RouteManager.RefreshList();
-            // RouteManager.DumpList();
 
             /* Make routes associate with devices */
             attachTransmitterDeviceToRoutes(&DeviceManager, &RouteManager);
@@ -1677,9 +1672,6 @@ INT RefreshPorterRTDB(void *ptr)
 
     /* see if we need to start process's for queuing */
     {
-        //  since find() is protected, I don't think we need this
-        //CtiDeviceManager::coll_type::reader guard(DeviceManager.getLock());
-
         if(!(_queueCCU711Thread.isValid()) && DeviceManager.contains(findCCU711, NULL))
         {
             _queueCCU711Thread = rwMakeThreadFunction( QueueThread, (void*)NULL );
@@ -1762,27 +1754,6 @@ void LoadPorterGlobals(void)
     else
     {
         MaxOcts = 261;
-    }
-
-    /* Check if we need to start the TCP/IP Interface */
-    if(!(Temp = gConfigParms.getValueAsString("PORTER_TCPIP")).empty())
-    {
-        if(!(stricmp ("YES", Temp.c_str())) || (!(stricmp ("SES92", Temp.c_str()))))
-        {
-            StartTCPIP = TCP_SES92;
-        }
-        else if(!(stricmp ("CCU710", Temp.c_str())))
-        {
-            StartTCPIP = TCP_CCU710;
-        }
-        else if(!(stricmp ("WELCO", Temp.c_str())))
-        {
-            StartTCPIP = TCP_WELCO;
-        }
-        else
-        {
-            fprintf(stdout, "Unknown TCP/IP Interface Type\n");
-        }
     }
 
     /* Resolve the stuff that we need for DIO24 Output */
@@ -1967,7 +1938,6 @@ void LoadPorterGlobals(void)
         dout << "PIL_QUEUE_SIZE          " << PILMaxQueueSize << endl;
         dout << "PORTER_EXTRATIMEOUT     " << ExtraTimeOut << endl;
         dout << "PORTER_MAXOCTS          " << MaxOcts << endl;
-        dout << "PORTER_PORTER_TCPIP     " << StartTCPIP << endl;
         dout << "PORTER_MCT400SERIESSPID " << (int)gMCT400SeriesSPID << endl;
     }
 }

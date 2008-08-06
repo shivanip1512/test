@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTERSU.cpp-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2006/04/25 20:45:54 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2008/08/06 18:24:20 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -247,48 +247,6 @@ ReportRemoteError (CtiDeviceSPtr RemoteRecord, ERRSTRUCT *ErrorRecord)
             dout << CtiTime() << " Could not find portid = " << RemoteRecord->getPortID() << " in the database.  " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
-
-    return(NORMAL);
-}
-
-
-
-/* Add Device error to the comm error log */
-ReportDeviceError (CtiDeviceSPtr DeviceRecord, CtiPortSPtr PortRecord, ERRSTRUCT *ErrorRecord)
-{
-    COMM_ERROR_LOG_STRUCT ComErrorRecord;
-
-    if(!(ErrorRecord->Error))
-    {
-        return(NORMAL);
-    }
-
-    /* Now load up the Comm error record */
-    ComErrorRecord.TimeStamp   = LongTime ();
-    ComErrorRecord.StatusFlag  = DSTFlag();
-
-    ::memcpy (ComErrorRecord.DeviceName, DeviceRecord->getName().c_str(), STANDNAMLEN);
-
-    /* Figure out what to use for a port name */
-
-    if(PortRecord->isTCPIPPort())
-    {
-        ::memcpy (ComErrorRecord.RouteName + 2, PortRecord->getIPAddress().c_str(), STANDNAMLEN - 2);
-    }
-    else
-    {
-        ::strcpy (ComErrorRecord.RouteName, "$_");
-        if((PortRecord->getName())[0] != ' ')
-        {
-            ::memcpy (ComErrorRecord.RouteName + 2, PortRecord->getName().c_str(), STANDNAMLEN - 2);
-        }
-        else
-        {
-            ::memcpy (ComErrorRecord.RouteName + 2, PortRecord->getPhysicalPort().c_str(), STANDNAMLEN - 2);
-        }
-    }
-
-    ComErrorLogAdd (&ComErrorRecord, ErrorRecord, FALSE);
 
     return(NORMAL);
 }

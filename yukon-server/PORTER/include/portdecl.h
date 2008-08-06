@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/portdecl.h-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2007/03/07 17:27:35 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2008/08/06 18:24:20 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -46,7 +46,6 @@ VOID APIENTRY PorterCleanUp (ULONG);
 /* Prototypes from PORTERSU.C */
 INT SendError(OUTMESS *&, USHORT, INMESS *InMessage = NULL);
 INT ReportRemoteError(CtiDeviceSPtr , ERRSTRUCT *);
-INT ReportDeviceError(CtiDeviceSPtr , CtiPortSPtr , ERRSTRUCT *);
 
 /* Prototypes from PORTFILL.C */
 VOID FillerThread (PVOID);
