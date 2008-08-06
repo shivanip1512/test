@@ -232,13 +232,13 @@ public void setTypeOfChange(int newTypeOfChange) {
  */
 public String toString() 
 {
-	String retString = getClass().getName() + ":  \n";
-	retString += "Database:  " + getDatabase() + "\n";
-	retString += "Type:  " + getTypeOfChange() + "\n";
-	retString += "ID:  " + getId() + "\n";
-	retString += "Category:  " + getCategory() + "\n";
-	retString += "ObjectType:  " + getObjectType() + "\n";
+	StringBuilder retString = new StringBuilder(150);
+	retString .append("DbChange: Database=" + getDatabase());
+	retString .append("; Type=" + getTypeOfChange());
+	retString .append("; ID=" + getId());
+	retString .append("; Category=" + getCategory());
+	retString .append("; ObjectType=" + getObjectType());
 
-	return retString;
+	return retString.toString();
 }
 }
