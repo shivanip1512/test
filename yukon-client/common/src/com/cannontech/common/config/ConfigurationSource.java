@@ -16,8 +16,18 @@ public interface ConfigurationSource {
      * Returns value of key from the configuration file. Returns a blank string if
      * the key did not exist in the file.
      * @param key
-     * @return the value of the key, or "" if the key didn't exist
+     * @return the value of the key, or null if the key didn't exist
      */
     public String getString(String key);
 
+    /**
+     * Returns value of key from the configuration file. Returns a blank string if
+     * the key did not exist in the file.
+     * @param key
+     * @return the value of the key, or defaultValue if the key didn't exist
+     */
+    public String getString(String key, String defaultValue);
+    
+    public int getInteger(String key, int defaultValue);
+    
 }

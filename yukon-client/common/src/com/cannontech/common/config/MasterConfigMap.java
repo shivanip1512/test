@@ -66,12 +66,25 @@ public class MasterConfigMap implements ConfigurationSource {
     }
 
     public String getString(String key) {
+        return getString(key, null);
+    }
+    
+    public String getString(String key, String defaultValue) {
         if (!configMap.containsKey(key)) {
-            return "";
+            return defaultValue;
         }
         String string = configMap.get(key);
         log.debug("Returning '" + string + "' for '" + key + "'");
         return string;
+    }
+    
+    @Override
+    public int getInteger(String key, int defaultValue) {
+        String string = getString(key);
+        if (string == null) {
+            return defaultValue;
+        }
+        return Integer.parseInt(string);
     }
     
 }
