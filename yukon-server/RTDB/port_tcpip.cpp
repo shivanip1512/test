@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/port_tcpip.cpp-arc  $
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2008/06/13 13:39:49 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2008/08/06 18:26:48 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -76,48 +76,15 @@ CtiPortTCPIPDirect& CtiPortTCPIPDirect::operator=(const CtiPortTCPIPDirect& aRef
     {
         Inherited::operator=(aRef);
 
-        _tcpIpInfo = aRef.getTcpIpInfo();
+        _tcpIpInfo = aRef._tcpIpInfo;
     }
     return *this;
 }
 
 
-CtiTablePortTCPIP CtiPortTCPIPDirect::getTcpIpInfo() const
-{
-    return _tcpIpInfo;
-}
+const string &CtiPortTCPIPDirect::getIPAddress() const  {  return _tcpIpInfo.getIPAddress();  }
+INT           CtiPortTCPIPDirect::getIPPort()    const  {  return _tcpIpInfo.getIPPort();     }
 
-CtiTablePortTCPIP& CtiPortTCPIPDirect::getTcpIpInfo()
-{
-    return _tcpIpInfo;
-}
-
-CtiPortTCPIPDirect& CtiPortTCPIPDirect::setTcpIpInfo(const CtiTablePortTCPIP& tcpipinfo)
-{
-    _tcpIpInfo = tcpipinfo;
-    return *this;
-}
-
-
-INT CtiPortTCPIPDirect::getIPPort() const
-{
-    return _tcpIpInfo.getIPPort();
-}
-
-INT& CtiPortTCPIPDirect::getIPPort()
-{
-    return _tcpIpInfo.getIPPort();
-}
-
-string CtiPortTCPIPDirect::getIPAddress() const
-{
-    return _tcpIpInfo.getIPAddress();
-}
-
-string& CtiPortTCPIPDirect::getIPAddress()
-{
-    return _tcpIpInfo.getIPAddress();
-}
 
 INT CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
 {

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.45 $
-* DATE         :  $Date: 2007/05/30 14:36:23 $
+* REVISION     :  $Revision: 1.46 $
+* DATE         :  $Date: 2008/08/06 18:26:48 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -95,25 +95,23 @@ public:
     CtiLogger& getPortLog() { return _portLog; }
 
     /* virtuals to make the world all fat and happy */
-    virtual bool      isViable() const;
+    virtual bool   isViable() const;
 
-    virtual INT       ctsTest() const;
-    virtual INT       dcdTest() const;
-    virtual INT       dsrTest() const;
+    virtual INT    ctsTest() const;
+    virtual INT    dcdTest() const;
+    virtual INT    dsrTest() const;
 
-    virtual INT       lowerRTS();
-    virtual INT       raiseRTS();
-    virtual INT       lowerDTR();
-    virtual INT       raiseDTR();
+    virtual INT    lowerRTS();
+    virtual INT    raiseRTS();
+    virtual INT    lowerDTR();
+    virtual INT    raiseDTR();
 
-    virtual INT       inClear();
-    virtual INT       outClear();
+    virtual INT    inClear();
+    virtual INT    outClear();
 
-    virtual INT       byteTime(ULONG bytes) const;
+    virtual INT    byteTime(ULONG bytes) const;
 
-    virtual HANDLE    getHandle() const;
-    virtual INT       getIPPort() const;
-    virtual string getIPAddress() const;
+    virtual HANDLE getHandle() const;
     virtual string getPhysicalPort() const;
     virtual string getModemInit() const;
 
@@ -140,7 +138,7 @@ public:
     INT readQueue( PREQUESTDATA RequestData, PULONG  DataSize, PPVOID Data, BOOL32 WaitFlag, PBYTE Priority, ULONG *pElementCount );
     INT searchQueue( void *ptr, BOOL (*myFunc)(void*, void*), bool useFirstElement = true );
 
-    INT queueInit(HANDLE hQuit);                 // Sets up the PortQueue
+    INT queueInit(HANDLE hQuit);     // Sets up the PortQueue
     INT queueDeInit();               // Blasts the PortQueue
     INT verifyPortIsRunnable(HANDLE hQuit = NULL);
 

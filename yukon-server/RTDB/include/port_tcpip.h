@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_tcpip.h-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2006/02/27 23:58:33 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2008/08/06 18:26:49 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -56,17 +56,8 @@ public:
 
    CtiPortTCPIPDirect& operator=(const CtiPortTCPIPDirect& aRef);
 
-   INT&                       getIPPort();
-   string&                 getIPAddress();
-
-   virtual INT                getIPPort() const;
-   virtual string          getIPAddress() const;
-
-
-   CtiTablePortTCPIP          getTcpIpInfo() const;
-   CtiTablePortTCPIP&         getTcpIpInfo();
-   CtiPortTCPIPDirect&        setTcpIpInfo(const CtiTablePortTCPIP& tcpipinfo);
-
+   INT           getIPPort()    const;
+   const string &getIPAddress() const;
 
    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
    virtual void DecodeDatabaseReader(RWDBReader &rdr);
@@ -99,7 +90,8 @@ public:
    INT receiveData(PBYTE Message, LONG Length, ULONG TimeOut, PLONG ReceiveLength);
    INT sendData(PBYTE Message, ULONG Length, PULONG Written);
    string& traceASCII(string &str, BYTE *Message, ULONG Length);
-
-
 };
+
+typedef shared_ptr< CtiPortTCPIPDirect > CtiPortTCPIPDirectSPtr;
+
 #endif // #ifndef __PORT_TCPIP_H__

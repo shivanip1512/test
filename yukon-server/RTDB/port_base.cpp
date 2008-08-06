@@ -7,11 +7,15 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.74 $
-* DATE         :  $Date: 2008/07/28 15:41:16 $
+* REVISION     :  $Revision: 1.75 $
+* DATE         :  $Date: 2008/08/06 18:26:48 $
 *
 * HISTORY      :
 * $Log: port_base.cpp,v $
+* Revision 1.75  2008/08/06 18:26:48  mfisher
+* YUK-5288 Comm channel IP address change does not take effect until Porter is restarted
+* Removed getIpAddress()/getIpPort() from CtiPortBase
+*
 * Revision 1.74  2008/07/28 15:41:16  jrichter
 * YUK-5583
 * TAP Terminal baud rate is hard-coded to 1200 bps
@@ -894,14 +898,6 @@ INT       CtiPort::byteTime(ULONG bytes) const
 HANDLE    CtiPort::getHandle() const
 {
     return NULL;
-}
-INT       CtiPort::getIPPort() const
-{
-    return -1;
-}
-string CtiPort::getIPAddress() const
-{
-    return string("");
 }
 string CtiPort::getPhysicalPort() const
 {

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_port_tcpip.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/12/20 17:16:07 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2008/08/06 18:26:49 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,7 +21,7 @@
 #include "rwutil.h"
 
 CtiTablePortTCPIP::CtiTablePortTCPIP() :
-_ipPort(TSDEFAULTPORT)
+_ipPort(1000)
 {
 }
 
@@ -38,43 +38,19 @@ CtiTablePortTCPIP& CtiTablePortTCPIP::operator=(const CtiTablePortTCPIP& aRef)
 {
     if(this != &aRef)
     {
-        _ipPort           = aRef.getIPPort();
-        _ipAddress        = aRef.getIPAddress();
+        _ipPort    = aRef.getIPPort();
+        _ipAddress = aRef.getIPAddress();
     }
     return *this;
 }
 
-INT                  CtiTablePortTCPIP::getIPPort() const
-{
-    return _ipPort;
-}
 
-INT&                 CtiTablePortTCPIP::getIPPort()
-{
-    return _ipPort;
-}
+CtiTablePortTCPIP&   CtiTablePortTCPIP::setIPAddress(const string &str)  {  _ipAddress = str;  return *this;  }
+CtiTablePortTCPIP&   CtiTablePortTCPIP::setIPPort   (const INT i)        {  _ipPort    = i;    return *this;  }
 
-CtiTablePortTCPIP&   CtiTablePortTCPIP::setIPPort(const INT i)
-{
-    _ipPort = i;
-    return *this;
-}
+const string &CtiTablePortTCPIP::getIPAddress() const  {  return _ipAddress;  }
+INT           CtiTablePortTCPIP::getIPPort()    const  {  return _ipPort;     }
 
-string CtiTablePortTCPIP::getIPAddress() const
-{
-    return _ipAddress;
-}
-
-string& CtiTablePortTCPIP::getIPAddress()
-{
-    return _ipAddress;
-}
-
-CtiTablePortTCPIP&   CtiTablePortTCPIP::setIPAddress(const string &str)
-{
-    _ipAddress = str;
-    return *this;
-}
 
 void CtiTablePortTCPIP::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
@@ -115,3 +91,4 @@ string CtiTablePortTCPIP::getTableName()
 {
     return "PortTerminalServer";
 }
+

@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2008/06/25 17:08:42 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2008/08/06 18:26:49 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -65,7 +65,7 @@ void UDPInterface::delete_dr_id_map_value( dr_id_map::value_type map_entry )
 }
 
 
-UDPInterface::UDPInterface( CtiPortSPtr &port ) :
+UDPInterface::UDPInterface( CtiPortTCPIPDirectSPtr &port ) :
     _port(port)
 {
     UDPInterfaceQueue.addClient(this);
@@ -2659,8 +2659,8 @@ void UDPMessenger::push_back(CtiMessage *msg)
     {
         if( *itr )
         {
-            //  push the message, then increment the iterator
-            (*itr++)->push_back(msg);
+            (*itr)->push_back(msg);
+            ++itr;
         }
         else
         {

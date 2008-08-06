@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_port_tcpip.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/12/20 17:16:08 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2008/08/06 18:26:49 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -15,8 +15,6 @@
 #pragma warning( disable : 4786)
 #ifndef __TBL_PORT_TCPIP_H__
 #define __TBL_PORT_TCPIP_H__
-
-#define TSDEFAULTPORT 1000
 
 #include <limits.h>
 #include <rw/db/reader.h>
@@ -59,12 +57,10 @@ public:
    CtiTablePortTCPIP& operator=(const CtiTablePortTCPIP& aRef);
 
    INT getIPPort() const;
-   INT& getIPPort();
 
    CtiTablePortTCPIP& setIPPort(const INT i);
 
-   string getIPAddress() const;
-   string& getIPAddress();
+   const string &getIPAddress() const;
 
    CtiTablePortTCPIP&   setIPAddress(const string &str);
 

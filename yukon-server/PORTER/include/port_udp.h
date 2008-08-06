@@ -9,24 +9,19 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2008/01/02 21:10:05 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2008/08/06 18:26:49 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-//#include <windows.h>
-//#include <iostream>
 #include <map>
 #include <queue>
 
 #include "queue.h"
 #include "dev_single.h"
-#include "port_base.h"
-
-//#include "portglob.h"
-//#include "msg_trace.h"
+#include "port_tcpip.h"
 
 
 namespace Cti
@@ -39,7 +34,7 @@ class UDPInterface
 {
 private:
 
-    CtiPortSPtr _port;
+    CtiPortTCPIPDirectSPtr _port;
 
 protected:
 
@@ -180,7 +175,7 @@ protected:
 
 public:
 
-    UDPInterface( CtiPortSPtr &port );
+    UDPInterface( CtiPortTCPIPDirectSPtr &port );
 
     void run();
 
