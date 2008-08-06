@@ -29,14 +29,18 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.store.FSDirectory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jmx.export.annotation.ManagedAttribute;
+import org.springframework.jmx.export.annotation.ManagedResource;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.search.HitsCallbackHandler;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
@@ -45,18 +49,21 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
 /**
  * Abstract class which manages index building and updating.
  */
+@ManagedResource
 public abstract class AbstractIndexManager implements IndexManager {
 
     public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
     private static final String VERSION_PROPERTY = "version";
     private static final String DATABASE_PROPERTY = "database";
     private static final String DATE_CREATED_PROPERTY = "created";
+    
+    private ConfigurationSource configurationSource = null;
 
     // This number can have a large affect on memory usage and index
     // building speed. 1000 was initially determined to be a 'sweet'
     // spot for speed. This number can and may have to be changed in the
     // future because of memory restrictions and/or speed requirements.
-    private static final int MAX_BUFFERED_DOCS = 200;
+    private int maxBufferedDocs = 200;
 
     protected JdbcOperations jdbcTemplate = null;
 
@@ -71,7 +78,7 @@ public abstract class AbstractIndexManager implements IndexManager {
 
     private boolean isBuilding = false;
     private boolean buildIndex = false;
-    private LinkedBlockingQueue<IndexUpdateInfo> updateQueue = new LinkedBlockingQueue<IndexUpdateInfo>();
+    private LinkedBlockingQueue<IndexUpdateInfo> updateQueue = null;
     private RuntimeException currentException = null;
     private Thread managerThread;
     private boolean shutdownNow = false;
@@ -222,6 +229,9 @@ public abstract class AbstractIndexManager implements IndexManager {
      * Helper method to initialize the index manager
      */
     public void initialize() {
+        maxBufferedDocs = configurationSource.getInteger("WEB_INDEX_MANAGER_MAX_BUFFERED_DOCS", maxBufferedDocs);
+        int queueSize = configurationSource.getInteger("WEB_INDEX_MANAGER_QUEUE_SIZE", 1000);
+        updateQueue = new LinkedBlockingQueue<IndexUpdateInfo>(queueSize);
 
         this.indexLocation = new File(CtiUtilities.getYukonBase() + "/cache/" + this.getIndexName()
                 + "/index");
@@ -402,7 +412,7 @@ public abstract class AbstractIndexManager implements IndexManager {
     
                 // Get a new index writer
                 indexWriter = new IndexWriter(indexLocation.getAbsolutePath(), getAnalyzer(), true);
-                indexWriter.setMaxBufferedDocs(MAX_BUFFERED_DOCS);
+                indexWriter.setMaxBufferedDocs(maxBufferedDocs);
     
                 // Get the total # of records to be written into the index
                 String sql = getDocumentCountQuery();
@@ -586,6 +596,16 @@ public abstract class AbstractIndexManager implements IndexManager {
             this.docList = docList;
         }
 
+    }
+    
+    @ManagedAttribute
+    public int getUpdateQueueSize() {
+        return updateQueue.size();
+    }
+    
+    @Autowired
+    public void setConfigurationSource(ConfigurationSource configurationSource) {
+        this.configurationSource = configurationSource;
     }
 
 }
