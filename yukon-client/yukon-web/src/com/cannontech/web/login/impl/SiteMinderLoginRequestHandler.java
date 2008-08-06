@@ -22,7 +22,7 @@ public class SiteMinderLoginRequestHandler extends AbstractLoginRequestHandler {
     public boolean handleLoginRequest(HttpServletRequest request, HttpServletResponse response)
         throws IOException, ServletException {
         
-        String headerName = config.getString(HEADER_PROPERTY_KEY);
+        String headerName = config.getString(HEADER_PROPERTY_KEY, "");
         if (headerName.equals("")) return false;
         
         String loginToken = request.getHeader(headerName);
@@ -33,7 +33,7 @@ public class SiteMinderLoginRequestHandler extends AbstractLoginRequestHandler {
 
         if (premiseNumber == null || accountIdentifier == null) return false;
         
-        String secret = config.getString(SECRET_PROPERTY_KEY);
+        String secret = config.getString(SECRET_PROPERTY_KEY, "");
         if (secret.equals("")) return false;
 
         String input = premiseNumber + loginToken + secret;
