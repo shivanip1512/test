@@ -1,5 +1,8 @@
 package com.cannontech.database.db.stars.hardware;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
@@ -95,9 +98,9 @@ public class LMHardwareBase extends DBPersistent {
     		
     		rset = stmt.executeQuery();
     		
-			java.util.ArrayList invIDList = new java.util.ArrayList();
+			List<Integer> invIDList = new ArrayList<Integer>();
 			while (rset.next())
-				invIDList.add( new Integer(rset.getInt(1)) );
+				invIDList.add(rset.getInt(1));
     		
 			int[] invIDs = new int[ invIDList.size() ];
 			for (int i = 0; i < invIDList.size(); i++)
@@ -139,7 +142,7 @@ public class LMHardwareBase extends DBPersistent {
 			
 			rset = stmt.executeQuery();
     		
-			java.util.ArrayList hwList = new java.util.ArrayList();
+			List<LMHardwareBase> hwList = new ArrayList<LMHardwareBase>();
 			while (rset.next()) {
 				LMHardwareBase hw = new LMHardwareBase();
 				hw.setInventoryID( new Integer(rset.getInt(1)) );

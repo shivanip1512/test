@@ -32,7 +32,7 @@ public class ConfigLMHardwareController extends StarsInventoryActionController {
         
         try {
             int invID = ServletRequestUtils.getIntParameter(request, "InvID");
-            LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventoryBrief( invID, true );
+            LiteStarsLMHardware liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getById(invID);
             
             if (request.getParameter("UseHardwareAddressing") != null) {
                 StarsLMConfiguration starsCfg = new StarsLMConfiguration();

@@ -42,7 +42,7 @@ public class DeleteInventoryController extends StarsInventoryActionController {
         session.setAttribute( ServletUtils.ATT_REDIRECT, redir );
         
         int invID = ServletRequestUtils.getIntParameter(request, "InvID");
-        LiteInventoryBase liteInv = energyCompany.getInventoryBrief( invID, true );
+        LiteInventoryBase liteInv = starsInventoryBaseDao.getById(invID);
         
         if (liteInv.getAccountID() == 0) {
             boolean deleteFromYukon = request.getParameter("DeleteAction") != null

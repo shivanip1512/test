@@ -13,6 +13,7 @@
         <property name="yukonListDao" ref="yukonListDao"/>
         <property name="yukonUserDao" ref="yukonUserDao"/>
         <property name="starsCustAccountInformationDao" ref="starsCustAccountInformationDao"/>
+        <property name="starsInventoryBaseDao" ref="starsInventoryBaseDao" />
     </bean>
 
 	<bean id="inventoryDefault" class="com.cannontech.web.stars.action.inventory.DefaultController"

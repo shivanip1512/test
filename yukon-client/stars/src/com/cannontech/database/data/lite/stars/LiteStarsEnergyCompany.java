@@ -1412,9 +1412,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
         if (liteInv != null) return liteInv;
         
         if (autoLoad) {
-            liteInv = starsInventoryBaseDao.getById(inventoryID,
-                                                    getEnergyCompanyID(),
-                                                    true);
+            liteInv = starsInventoryBaseDao.getById(inventoryID);
             
             if (liteInv != null) addInventory( liteInv );
             return liteInv;

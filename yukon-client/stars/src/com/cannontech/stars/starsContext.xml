@@ -59,7 +59,8 @@
     <bean id="lmProgramWebPublishingDao" class="com.cannontech.stars.core.dao.impl.LMProgramWebPublishingDaoImpl"/>
 
     <bean id="starsInventoryBaseDao" class="com.cannontech.stars.core.dao.impl.StarsInventoryBaseDaoImpl">
-        <property name="starsDatabaseCache" ref="starsDatabaseCache"/>
+        <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
+        <property name="ecMappingDao" ref="ecMappingDao"/>
     </bean>
 
     <bean id="accountSiteDao" class="com.cannontech.stars.dr.account.dao.impl.AccountSiteDaoImpl"/>

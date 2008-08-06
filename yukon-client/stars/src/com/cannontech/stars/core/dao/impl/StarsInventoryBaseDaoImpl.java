@@ -1,119 +1,139 @@
 package com.cannontech.stars.core.dao.impl;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.database.Transaction;
-import com.cannontech.database.TransactionException;
-import com.cannontech.database.cache.StarsDatabaseCache;
+import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteMeterHardwareBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
-import com.cannontech.database.data.lite.stars.StarsLiteFactory;
-import com.cannontech.database.db.stars.hardware.MeterHardwareBase;
+import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
-import com.cannontech.stars.util.InventoryUtils;
+import com.cannontech.stars.dr.util.YukonListEntryHelper;
 
 public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao {
-    private final Logger log = YukonLogManager.getLogger(getClass());
-    private StarsDatabaseCache starsDatabaseCache;
+    
+    private SimpleJdbcTemplate jdbcTemplate = null;
+    private ECMappingDao ecMappingDao = null;
+    
+    
+    public void setJdbcTemplate(SimpleJdbcTemplate jdbcTemplate) {
+		this.jdbcTemplate = jdbcTemplate;
+	}
+    
+    public void setEcMappingDao(ECMappingDao ecMappingDao) {
+		this.ecMappingDao = ecMappingDao;
+	}
     
     @Override
-    @Transactional(readOnly = true)
-    public LiteInventoryBase getById(int inventoryId, int energyCompanyId) {
-        return getById(inventoryId, energyCompanyId, false);
-    }
-    
-    @Override
-    @Transactional(readOnly = true)
-    public LiteInventoryBase getById(final int inventoryId, final int energyCompanyId,
-            final boolean brief) {
-        LiteInventoryBase liteInv = null;
-        
-        try {
-            com.cannontech.database.db.stars.hardware.InventoryBase invDB =
-                    new com.cannontech.database.db.stars.hardware.InventoryBase();
-            invDB.setInventoryID(inventoryId);
-            invDB = Transaction.createTransaction( Transaction.RETRIEVE, invDB ).execute();
-            
-            if (InventoryUtils.isLMHardware( invDB.getCategoryID().intValue() )) {
-                com.cannontech.database.db.stars.hardware.LMHardwareBase hwDB =
-                        new com.cannontech.database.db.stars.hardware.LMHardwareBase();
-                hwDB.setInventoryID( invDB.getInventoryID() );
-                
-                hwDB = Transaction.createTransaction( Transaction.RETRIEVE, hwDB ).execute();
-                
-                com.cannontech.database.data.stars.hardware.LMHardwareBase hardware =
-                        new com.cannontech.database.data.stars.hardware.LMHardwareBase();
-                hardware.setInventoryBase( invDB );
-                hardware.setLMHardwareBase( hwDB );
-                
-                liteInv = new LiteStarsLMHardware();
-                StarsLiteFactory.setLiteStarsLMHardware( (LiteStarsLMHardware)liteInv, hardware );
-            }
-            /*
-             * Should always get here for a non yukon meter.  They are not loaded into cache
-             * with other inventory.
-             */
-            else if (InventoryUtils.isNonYukonMeter( invDB.getCategoryID().intValue()))
-            {
-                MeterHardwareBase mhbDB = new MeterHardwareBase();
-                mhbDB.setInventoryID( invDB.getInventoryID() );
-                
-                mhbDB = Transaction.createTransaction( Transaction.RETRIEVE, mhbDB ).execute();
-                
-                com.cannontech.database.data.stars.hardware.MeterHardwareBase hardware =
-                        new com.cannontech.database.data.stars.hardware.MeterHardwareBase();
-                hardware.setInventoryBase( invDB );
-                hardware.setMeterHardwareBase( mhbDB );
-                
-                liteInv = new LiteMeterHardwareBase();
-                StarsLiteFactory.setLiteMeterHardwareBase( (LiteMeterHardwareBase)liteInv, hardware );
-            }
-            else {
-                liteInv = new LiteInventoryBase();
-                StarsLiteFactory.setLiteInventoryBase( liteInv, invDB );
-            }
-        } catch (TransactionException e) {
-            log.error(e.getMessage(), e);
-        }
-        
-        if (liteInv == null) return null;
-        
-        if (!brief && !liteInv.isExtended()) {
-            LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
-            StarsLiteFactory.extendLiteInventoryBase( liteInv, energyCompany);
-        }
-        
-        return liteInv;
-    }
+	@Transactional(readOnly = true)
+	public LiteInventoryBase getById(final int inventoryId) {
+
+		LiteStarsEnergyCompany energyCompany = ecMappingDao.getInventoryEC(inventoryId);
+
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		sql.append("SELECT ib.*, lhb.*, mhb.*");
+		sql.append("FROM InventoryBase ib");
+		sql.append("LEFT OUTER JOIN LMHardwareBase lhb ON lhb.InventoryId = ib.InventoryId");
+		sql.append("LEFT OUTER JOIN MeterHardwareBase mhb ON mhb.InventoryId = ib.InventoryId");
+		sql.append("WHERE ib.InventoryId = ?");
+
+		LiteInventoryBase liteInventory = jdbcTemplate.queryForObject(
+				sql.toString(), 
+				new LiteInventoryBaseMapper(energyCompany),
+				inventoryId);
+
+		return liteInventory;
+	}
 
     @Override
-    public List<LiteInventoryBase> getByIds(Set<Integer> inventoryIds,
-            int energyCompanyId) {
-        return getByIds(inventoryIds, energyCompanyId, false);
-    }
-    
-    @Override
-    public List<LiteInventoryBase> getByIds(final Set<Integer> inventoryIds, final int energyCompanyId,
-            final boolean brief) {
+    public List<LiteInventoryBase> getByIds(final Set<Integer> inventoryIds) {
         final List<LiteInventoryBase> resultList = new ArrayList<LiteInventoryBase>(inventoryIds.size());
 
         for (final Integer inventoryId : inventoryIds) {
-            resultList.add(getById(inventoryId, energyCompanyId, brief));
+            resultList.add(getById(inventoryId));
         }
         
         return resultList;
     }
     
-    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
-        this.starsDatabaseCache = starsDatabaseCache;
+    /**
+     * Helper class which maps a result set row into a LiteInvenotryBase object
+     */
+    private class LiteInventoryBaseMapper implements ParameterizedRowMapper<LiteInventoryBase> {
+
+    	private final LiteStarsEnergyCompany energyCompany;
+
+		public LiteInventoryBaseMapper(LiteStarsEnergyCompany energyCompany) {
+			this.energyCompany = energyCompany;
+    	}
+    	
+		@Override
+		public LiteInventoryBase mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+			LiteInventoryBase liteInventory = null;
+			
+			// Get category definition id for this row
+			int categoryId = rs.getInt("CategoryId");
+			int categoryDefId = YukonListEntryHelper.getYukonDefinitionId(
+					energyCompany,
+					YukonSelectionListDefs.YUK_LIST_NAME_INVENTORY_CATEGORY,
+					categoryId);
+			
+			// Create the correct type of LiteInventoryBase based on category
+			if (categoryDefId == YukonListEntryTypes.YUK_DEF_ID_INV_CAT_ONEWAYREC
+					|| categoryDefId == YukonListEntryTypes.YUK_DEF_ID_INV_CAT_TWOWAYREC) {
+				// Set LMHardware attributes
+				LiteStarsLMHardware liteHardware = new LiteStarsLMHardware();
+				liteHardware.setManufacturerSerialNumber(rs.getString("ManufacturerSerialNumber"));
+				liteHardware.setLmHardwareTypeID(rs.getInt("LMHardwareTypeId"));
+				liteHardware.setRouteID(rs.getInt("RouteId"));
+				liteHardware.setConfigurationID(rs.getInt("ConfigurationId"));
+				
+				liteInventory = liteHardware;
+				
+			} else if (categoryDefId == YukonListEntryTypes.YUK_DEF_ID_INV_CAT_NON_YUKON_METER) {
+				// Set MeterHardware attributes
+				LiteMeterHardwareBase liteMeter = new LiteMeterHardwareBase();
+				liteMeter.setMeterNumber(rs.getString("MeterNumber"));
+				liteMeter.setMeterTypeID(rs.getInt("MeterTypeId"));
+				
+				liteInventory = liteMeter;
+				
+			} else {
+				// LiteInventory
+				liteInventory = new LiteInventoryBase();
+			}
+			
+			// Set generic LiteInventory attributes
+			liteInventory.setInventoryID(rs.getInt("InventoryId"));
+			liteInventory.setAccountID(rs.getInt("AccountId"));
+			liteInventory.setCategoryID(rs.getInt("CategoryId"));
+			liteInventory.setInstallationCompanyID(rs.getInt("InstallationCompanyId"));
+			liteInventory.setReceiveDate(rs.getTimestamp("ReceiveDate").getTime());
+			liteInventory.setInstallDate(rs.getTimestamp("InstallDate").getTime());
+			liteInventory.setRemoveDate(rs.getTimestamp("RemoveDate").getTime());
+			liteInventory.setAlternateTrackingNumber(rs.getString("AlternateTrackingNumber"));
+			liteInventory.setVoltageID(rs.getInt("VoltageId"));
+			liteInventory.setNotes(rs.getString("Notes"));
+			liteInventory.setDeviceID(rs.getInt("DeviceId"));
+			liteInventory.setDeviceLabel(rs.getString("DeviceLabel"));
+			liteInventory.setCurrentStateID(rs.getInt("CurrentStateId"));
+			
+
+			return liteInventory;
+		}
+    	
     }
 
 }
