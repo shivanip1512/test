@@ -20,6 +20,15 @@
         <property name="executor" ref="longRunningExecutor" />
     </bean>
     
+    <bean id="singleTransactionBulkProcessor" class="com.cannontech.common.bulk.impl.SingleTransactionBulkProcessor">
+        <property name="executor" ref="globalScheduledExecutor" />
+    </bean>
+    
+    <bean id="resubmittingBulkProcessor" class="com.cannontech.common.bulk.impl.ResubmittingBulkProcessor">
+        <property name="executor" ref="globalScheduledExecutor" />
+    </bean>
+    
+    <!-- For the time being, resubmittingBulkProcessor should be preferred over the transactionPerItemProcessor. -->
     <bean id="transactionPerItemProcessor" class="com.cannontech.common.bulk.impl.TransactionPerItemProcessor">
         <property name="executor" ref="longRunningExecutor" />
     </bean>
@@ -405,7 +414,7 @@
     
     <bean id="baseBulkService" class="com.cannontech.common.bulk.service.impl.BaseBulkService" abstract="true">
     
-        <property name="bulkProcessor" ref="transactionPerItemProcessor" />
+        <property name="bulkProcessor" ref="resubmittingBulkProcessor" />
         <property name="bulkYukonDeviceFieldFactory" ref="bulkYukonDeviceFieldFactory" />
         <property name="bulkFieldService" ref="bulkFieldService" />
         <property name="temporaryDeviceGroupService" ref="temporaryDeviceGroupService" />
@@ -427,5 +436,9 @@
         </property>
     </bean>
     
+    <bean class="com.cannontech.common.bulk.DelayThrottleCalculator">
+        <qualifier value="bulkImport"/>
+        <property name="configurationPropertyName" value="WEB_RESUBMITTING_PROCESSOR_DELAY_MS"/>
+    </bean>
     
 </beans>

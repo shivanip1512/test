@@ -104,7 +104,7 @@
         <property name="bulkFieldService" ref="bulkFieldService" />
         
         <property name="bulkYukonDeviceFieldFactory" ref="bulkYukonDeviceFieldFactory" />
-        <property name="bulkProcessor" ref="oneAtATimeProcessor" />
+        <property name="bulkProcessor" ref="singleTransactionBulkProcessor" />
         <property name="deviceCollectionFactory" ref="deviceCollectionFactory" />
         
         <property name="deviceGroupMemberEditorDao" ref="deviceGroupMemberEditorDao" />
