@@ -2,15 +2,12 @@ package com.cannontech.web.jws;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.collections.IteratorUtils;
-import org.apache.commons.collections.Predicate;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.servlet.ModelAndView;
@@ -39,13 +36,18 @@ public class JwsMenuController extends AbstractController implements Initializin
     protected ModelAndView handleRequestInternal(HttpServletRequest request,
                                                  HttpServletResponse response) throws Exception {
         ModelAndView mav = new ModelAndView(view);
-        
-        CheckUserPredicate predicate = new CheckUserPredicate(ServletUtil.getYukonUser(request));
-        Iterator filteredList = IteratorUtils.filteredIterator(jnlpList.iterator(), predicate);
+        List<JnlpController> filteredList = new ArrayList<JnlpController>();
+        LiteYukonUser user = ServletUtil.getYukonUser(request);
+        for(JnlpController controller: jnlpList) {
+            UserChecker checker = controller.getUserChecker();
+            if(checker.check(user)) {
+                filteredList.add(controller);
+            }
+        }
         
         String jreInstaller = CtiUtilities.getJREInstaller();
         mav.addObject("jreInstaller", jreInstaller);
-        
+        mav.addObject("jnlpListSize", filteredList.size());
         mav.addObject("jnlpList", filteredList);
         return mav;
     }
@@ -58,21 +60,6 @@ public class JwsMenuController extends AbstractController implements Initializin
         for (Object object : jnlpBeans) {
             JnlpController jnlpController = (JnlpController) object;
             jnlpList.add(jnlpController);
-        }
-    }
-    
-    private class CheckUserPredicate implements Predicate {
-        private final LiteYukonUser user;
-        public CheckUserPredicate(LiteYukonUser user) {
-            this.user = user;
-        }
-        public boolean evaluate(Object o) {
-            if (!(o instanceof JnlpController)) {
-                return false;
-            }
-            JnlpController jnlpController = (JnlpController) o;
-            UserChecker checker = jnlpController.getUserChecker();
-            return checker.check(user);
         }
     }
 }
