@@ -46,7 +46,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.Transaction;
-import com.cannontech.database.cache.DBChangeLiteListener;
+import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.data.graph.GraphDefinition;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
@@ -76,7 +76,7 @@ import com.cannontech.roles.application.TrendingRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ServletUtil;
 
-public class GraphClient extends JPanel implements DBChangeLiteListener, GraphDefines, java.awt.event.ActionListener, java.awt.event.WindowListener, javax.swing.event.ChangeListener, javax.swing.event.TreeSelectionListener
+public class GraphClient extends JPanel implements DBChangeListener, GraphDefines, java.awt.event.ActionListener, java.awt.event.WindowListener, javax.swing.event.ChangeListener, javax.swing.event.TreeSelectionListener
 {
     public static final URL GRAPH_IMG_16 = GraphClient.class.getResource("/GraphTrending16.gif");
     public static final URL GRAPH_IMG_24 = GraphClient.class.getResource("/GraphTrending24.gif");
@@ -1940,9 +1940,9 @@ public AdvancedOptionsPanel getAdvOptsPanel()
  * Creation date: (12/20/2001 5:12:47 PM)
  * @param msg com.cannontech.message.dispatch.message.DBChangeMsg
  */
-public void handleDBChangeMsg(DBChangeMsg msg, LiteBase treeObject)
+public void dbChangeReceived(DBChangeMsg msg)
 {
-	if (!((DBChangeMsg)msg).getSource().equals(CtiUtilities.DEFAULT_MSG_SOURCE))
+	if (!msg.getSource().equals(CtiUtilities.DEFAULT_MSG_SOURCE))
 	{
 		CTILogger.info(" ## DBChangeMsg ##\n" + msg);
 
@@ -1960,6 +1960,7 @@ public void handleDBChangeMsg(DBChangeMsg msg, LiteBase treeObject)
 			getTreeViewPanel().selectByString(sel.toString());
 	}
 }
+
 /**
  * Called whenever the part throws an exception.
  * @param exception java.lang.Throwable
@@ -2077,7 +2078,7 @@ private void initializeSwingComponents()
 	trendDataAutoUpdater.start();
 
     AsyncDynamicDataSource dataSource =  (AsyncDynamicDataSource) YukonSpringHook.getBean("asyncDynamicDataSource");
-    dataSource.addDBChangeLiteListener(this);
+    dataSource.addDBChangeListener(this);
 
 	if( getTrendProperties().getViewType() != GraphRenderers.TABULAR &&
 		getTrendProperties().getViewType() != GraphRenderers.SUMMARY )	//not tabular or summary

@@ -61,7 +61,7 @@ import com.cannontech.stars.xml.serialize.StarsServiceRequestHistory;
  * @author yao
  *
  */
-public class StarsDatabaseCache implements DBChangeLiteListener {
+public class StarsDatabaseCache implements DBChangeListener {
 
     public static final int DEFAULT_ENERGY_COMPANY_ID = EnergyCompany.DEFAULT_ENERGY_COMPANY_ID;
 	
@@ -96,7 +96,7 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
     }
     
 	public void init() {		
-        dataSource.addDBChangeLiteListener(this);
+        dataSource.addDBChangeListener(this);
 	}
 	
 	private void releaseAllCache() {
@@ -380,8 +380,8 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
         Map<Integer,StarsYukonUser> starsUsers = getAllStarsYukonUsers();
 		synchronized (starsUsers) { starsUsers.remove( new Integer(userID) ); }
 	}
-    
-	public void handleDBChangeMsg(DBChangeMsg msg, LiteBase lBase)
+	
+	public void dbChangeReceived(DBChangeMsg msg)
 	{
 		CTILogger.debug(" ## DBChangeMsg ##\n" + msg);
 		

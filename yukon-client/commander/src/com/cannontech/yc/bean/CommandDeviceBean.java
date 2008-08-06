@@ -17,10 +17,9 @@ import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.SqlUtils;
-import com.cannontech.database.cache.DBChangeLiteListener;
+import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
-import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -46,7 +45,7 @@ import com.cannontech.yukon.IDatabaseCache;
  * Window>Preferences>Java>Templates. To enable and disable the creation of type
  * comments go to Window>Preferences>Java>Code Generation.
  */
-public class CommandDeviceBean implements DBChangeLiteListener
+public class CommandDeviceBean implements DBChangeListener
 {
 	private HashMap<Integer, YCLiteLoadGroup> loadGroupIDToLiteLoadGroupsMap = null;
     private HashMap<Integer, YCLiteCBC> cbcIDToLiteCBCMap = null;
@@ -439,7 +438,7 @@ public class CommandDeviceBean implements DBChangeLiteListener
 	
 	public CommandDeviceBean() {
 		AsyncDynamicDataSource dataSource =  (AsyncDynamicDataSource) YukonSpringHook.getBean("asyncDynamicDataSource");
-        dataSource.addDBChangeLiteListener(this);
+        dataSource.addDBChangeListener(this);
 	}
 
 	public ArrayList<LiteYukonPAObject> getDeviceList()
@@ -1353,8 +1352,9 @@ public class CommandDeviceBean implements DBChangeLiteListener
         return cbcIDToLiteCBCMap;
     }
 
-	public void handleDBChangeMsg(DBChangeMsg msg, LiteBase lBase) {
-		if( msg.getDatabase() == DBChangeMsg.CHANGE_PAO_DB )
-			setChanged(true);
-	}    
+	@Override
+	public void dbChangeReceived(DBChangeMsg msg) {
+	    if( msg.getDatabase() == DBChangeMsg.CHANGE_PAO_DB )
+	        setChanged(true);
+	}
 }
