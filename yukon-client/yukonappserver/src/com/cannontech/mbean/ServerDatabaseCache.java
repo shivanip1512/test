@@ -13,9 +13,6 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.SqlUtils;
-import com.cannontech.database.cache.CacheDBChangeListener;
-import com.cannontech.database.cache.DBChangeListener;
-import com.cannontech.database.cache.DBChangeLiteListener;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
@@ -115,7 +112,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	//private static java.lang.ref.SoftReference cacheReference = null;	
 	private static ServerDatabaseCache cache = null;
 
-	private CacheDBChangeListener dbChangeListener = null;
 	private String databaseAlias = CtiUtilities.getDatabaseAlias();
 
 	private ArrayList<LiteYukonPAObject> allYukonPAObjects = null;
@@ -217,19 +213,6 @@ public ServerDatabaseCache()
 protected ServerDatabaseCache(String databaseAlias) {
 	super();
 	setDatabaseAlias(databaseAlias);
-}
-/**
- * Insert the method's description here.
- * Creation date: (12/20/2001 1:09:04 PM)
- * @param DBChangeLiteListener
- */
-public synchronized void addDBChangeLiteListener(DBChangeLiteListener listener) 
-{
-	getDbChangeListener().addDBChangeLiteListener( listener );
-}
-
-public synchronized void addDBChangeListener(DBChangeListener listener) {
-    getDbChangeListener().addDBChangeListener(listener);
 }
 
 /**
@@ -1233,14 +1216,6 @@ public synchronized List<LiteYukonPAObject> getAllYukonPAObjects()
 		}
 	}
 
-/**
- * Insert the method's description here.
- * Creation date: (12/20/2001 2:01:01 PM)
- * @return com.cannontech.database.cache.CacheDBChangeListener
- */
-private CacheDBChangeListener getDbChangeListener() {
-	return dbChangeListener;
-}
 /**
  * Insert the method's description here.
  * Creation date: (3/14/00 3:19:19 PM)
@@ -3024,36 +2999,11 @@ public synchronized void releaseAllDeviceTypeCommands()
 
 /**
  * Insert the method's description here.
- * Creation date: (12/20/2001 1:09:04 PM)
- * @param DBChangeLiteListener
- */
-public synchronized void removeDBChangeLiteListener(DBChangeLiteListener listener) 
-{
-	if( getDbChangeListener() != null )
-		getDbChangeListener().removeDBChangeLiteListener( listener );
-
-}
-
-public synchronized void removeDBChangeListener(DBChangeListener listener) {
-    if( getDbChangeListener() != null )
-        getDbChangeListener().removeDBChangeListener( listener );        
-}
-
-/**
- * Insert the method's description here.
  * Creation date: (3/14/00 3:22:47 PM)
  * @param newAlias java.lang.String
  */
 public synchronized void setDatabaseAlias(String newAlias){
 	databaseAlias = newAlias;
-}
-/**
- * Insert the method's description here.
- * Creation date: (12/20/2001 2:01:01 PM)
- * @param newDbChangeListener com.cannontech.database.cache.CacheDBChangeListener
- */
-public void setDbChangeListener(CacheDBChangeListener newDbChangeListener) {
-	dbChangeListener = newDbChangeListener;
 }
 	
 /* (non-Javadoc)

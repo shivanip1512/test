@@ -12,7 +12,6 @@ import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
-import com.cannontech.database.cache.CacheDBChangeListener;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.multi.MultiDBPersistent;
@@ -29,7 +28,6 @@ import com.cannontech.yukon.BasicServerConnection;
  */
 public class DBPersistentDaoImpl implements DBPersistentDao
 {
-    private CacheDBChangeListener cacheDBChangeListener;
     private BasicServerConnection dispatchConnection;
     
     @Override
@@ -87,7 +85,6 @@ public class DBPersistentDaoImpl implements DBPersistentDao
     
     @Override
     public void processDBChange(DBChangeMsg dbChange) {
-        cacheDBChangeListener.handleDBChangeMessage(dbChange);
         dispatchConnection.queue(dbChange);
     }
     
@@ -110,10 +107,6 @@ public class DBPersistentDaoImpl implements DBPersistentDao
         }
     }
 
-    public void setCacheDBChangeListener(CacheDBChangeListener cacheDBChangeListener) {
-        this.cacheDBChangeListener = cacheDBChangeListener;
-    }
-    
     public void setDispatchConnection(BasicServerConnection dispatchConnection) {
         this.dispatchConnection = dispatchConnection;
     }

@@ -3,8 +3,6 @@ package com.cannontech.yukon;
 import java.util.List;
 import java.util.Map;
 
-import com.cannontech.database.cache.DBChangeListener;
-import com.cannontech.database.cache.DBChangeLiteListener;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteBaseline;
@@ -231,10 +229,6 @@ public interface IDatabaseCache {
     public void releaseAllYukonPAObjects();
 
     public void releaseAllDeviceTypeCommands();
-
-    public void removeDBChangeLiteListener(DBChangeLiteListener listener);
-
-    public void removeDBChangeListener(DBChangeListener listener);
 
     public void setDatabaseAlias(String newAlias);
 

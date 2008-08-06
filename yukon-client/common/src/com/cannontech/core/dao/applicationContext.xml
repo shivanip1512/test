@@ -63,7 +63,6 @@
   <bean id="dbDeletionDao" class="com.cannontech.core.dao.impl.DBDeletionDaoImpl" />
   <bean id="dbPersistentDao" class="com.cannontech.core.dao.impl.DBPersistentDaoImpl" >
     <property name="dispatchConnection" ref="dispatchConnection"/>
-    <property name="cacheDBChangeListener" ref="cacheDbChangeListener"/>
   </bean>	
   <bean id="deviceDao" class="com.cannontech.core.dao.impl.DeviceDaoImpl" >
     <property name="paoDao" ref="paoDao"/>

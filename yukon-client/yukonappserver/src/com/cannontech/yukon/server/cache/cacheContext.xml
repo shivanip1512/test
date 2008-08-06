@@ -4,7 +4,6 @@
 <beans>
 
     <bean id="databaseCache" class="com.cannontech.mbean.ServerDatabaseCache">
-        <property name="dbChangeListener" ref="cacheDbChangeListener" />
         <property name="yukonUserLoader" ref="yukonUserLoader" />
     </bean>
 
