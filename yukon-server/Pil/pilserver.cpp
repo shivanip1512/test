@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.106 $
-* DATE         :  $Date: 2008/07/18 21:07:33 $
+* REVISION     :  $Revision: 1.107 $
+* DATE         :  $Date: 2008/08/06 18:59:06 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -137,7 +137,6 @@ int CtiPILServer::execute()
 
 void CtiPILServer::mainThread()
 {
-
     BOOL          bQuit = FALSE;
     int           status;
 
@@ -145,6 +144,7 @@ void CtiPILServer::mainThread()
 
     CtiExecutor  *pExec;
     CtiMessage   *MsgPtr;
+    int groupBypass = 0;
 
     CtiTime  starttime, finishtime;
 
@@ -197,7 +197,8 @@ void CtiPILServer::mainThread()
     {
         try
         {
-            if( MainQueue_.isEmpty() && !_groupQueue.empty() )
+            if( (MainQueue_.isEmpty() || !(++groupBypass % 10))
+                && !_groupQueue.empty() )
             {
                 MsgPtr = *(_groupQueue.begin());
                 _groupQueue.erase(_groupQueue.begin());
