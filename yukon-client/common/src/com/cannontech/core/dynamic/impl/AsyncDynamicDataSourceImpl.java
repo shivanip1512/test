@@ -12,7 +12,6 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.clientutils.tags.AlarmUtils;
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.DynamicDataSource;
@@ -259,16 +258,29 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
         }
     }
     
+    
     public void handleDBChange(DBChangeMsg dbChange) {
+        // the following would be a nice check some day
+        
+//        if (!dbChange.getSource().equals(CtiUtilities.DEFAULT_MSG_SOURCE)) {
+//            handleInternalDBChange(dbChange);
+//        }
+        
+        // the databaseCache call usually happened after the dbChangeListeners were processed
+        // but, because several dbChangeLiteListeners have been converted to dbChangeListeners
+        // it seems like a good idea to ensure things still happen in the expected order
+        
+        boolean noObjectNeeded = dbChangeLiteListeners.isEmpty();
+        LiteBase lite = databaseCache.handleDBChangeMessage(dbChange, noObjectNeeded);
+        
         for (DBChangeListener listener : dbChangeListeners) {
             listener.dbChangeReceived(dbChange);
         }
-        
-        LiteBase lite = databaseCache.handleDBChangeMessage(dbChange);
         for (DBChangeLiteListener listener : dbChangeLiteListeners) {
             listener.handleDBChangeMsg(dbChange, lite);
         }
     }
+
     /**
      * Reregister with dispatch for every point id
      * a listener is listening for.

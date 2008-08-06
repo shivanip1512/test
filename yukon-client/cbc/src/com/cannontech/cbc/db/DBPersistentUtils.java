@@ -53,7 +53,7 @@ public class DBPersistentUtils {
 
                 dbChange[i].setUserName("unknown");
                 DefaultDatabaseCache.getInstance()
-                                    .handleDBChangeMessage(dbChange[i]);
+                                    .handleDBChangeMessage(dbChange[i], true);
                 ConnPool.getInstance().getDefDispatchConn().write(dbChange[i]);
             }
         } else {

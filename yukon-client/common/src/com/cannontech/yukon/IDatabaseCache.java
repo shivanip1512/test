@@ -179,7 +179,9 @@ public interface IDatabaseCache {
     /**
      *  Returns the LiteBase object that was added, deleted or updated, 
      *    else null is returned.
+     * @param noObjectNeeded 
      */
+    public LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg, boolean noObjectNeeded);
     public LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg);
 
     public void releaseAllAlarmCategories();

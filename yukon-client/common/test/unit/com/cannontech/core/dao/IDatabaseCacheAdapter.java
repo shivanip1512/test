@@ -415,6 +415,11 @@ public class IDatabaseCacheAdapter implements IDatabaseCache {
         throw new UnsupportedOperationException();
     }
 
+    public LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg, boolean noObjectNeeded) {
+        
+        throw new UnsupportedOperationException();
+    }
+    
     public void releaseAllAlarmCategories() {
 
         

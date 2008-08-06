@@ -1421,13 +1421,21 @@ private synchronized LiteBase handleContactChange( int changeType, int id )
     
     return lBase;
 }
+
+@Override
+public LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg) {
+    return handleDBChangeMessage(dbChangeMsg, false);
+}
+
 /**
- * Insert the method's description here.
- * Creation date: (3/14/00 3:22:47 PM)
- *  Returns the LiteBase object that was added,deleted or updated, 
- *		else null is returned.
+ * Returns the LiteBase object that was added, deleted or updated.
+ * However, the noObjectNeeded serves as a hint that the caller
+ * does not need the LiteBase object to be returned and that any
+ * available optimizations can be made to ignore it.
+ *
  */
-public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
+public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg,
+        boolean noObjectNeeded)
 {
 	String objectType = dbChangeMsg.getObjectType();
 	String dbCategory = dbChangeMsg.getCategory();
@@ -1438,12 +1446,8 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
 
 	if( database == DBChangeMsg.CHANGE_POINT_DB )
 	{
-		//allGraphTaggedPoints = null;
-		//allPointsUnits = null;
-		//allPointidMultiplierHashMap = null;
-		//allPointIDOffsetHashMap = null;
 		allPointLimits = null;
-		retLBase = handlePointChange( dbType, id );
+		retLBase = handlePointChange( dbType, id, noObjectNeeded );
 	}
 	else if( database == DBChangeMsg.CHANGE_PAO_DB )
 	{
@@ -2426,9 +2430,12 @@ private synchronized LiteBase handleNotificationGroupChange( int changeType, int
 /**
  * Insert the method's description here.
  * Creation date: (12/7/00 12:34:05 PM)
+ * @param noObjectNeeded 
  */
-private synchronized LiteBase handlePointChange( int changeType, int id )
+private synchronized LiteBase handlePointChange( int changeType, int id, boolean noObjectNeeded )
 {
+    // this method is really simply now that we don't cache points
+    if (noObjectNeeded) return null;
 	LiteBase lBase = null;
 	
 	switch(changeType)
