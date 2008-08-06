@@ -186,7 +186,6 @@
         <property name="defaultDomain" value="com.cannontech.yukon"/>
     </bean>
 
-
+    <bean id="configurationSource" class="com.cannontech.common.config.MasterConfigHelper" factory-method="getConfiguration"/>
     
-
 </beans>
