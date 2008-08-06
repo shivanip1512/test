@@ -142,11 +142,10 @@
                       		  	</select>
 	          			</td>
 	          			<td>
-	          				Start Date: 
-                      		  	<input id="PRcal" type="text" name="PRlpDate" value="<%= datePart.format(YC_BEAN.getLPDate()) %>" size="8">
-							<a href="javascript:openCalendar(document.getElementById('PRcal'))"
-							onMouseOver="window.status='Date Calendar';return true;"
-							onMouseOut="window.status='';return true;"> <img src="<%=request.getContextPath()%>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"></a>
+	          				Start Date: <tags:dateInputCalendar fieldId="PRcal"
+                                                        fieldName="PRlpDate"
+                                                        fieldValue="<%= datePart.format(YC_BEAN.getLPDate()) %>" />
+                            
                     			</td>
                     			<td>
                     				Days:
@@ -224,11 +223,10 @@
 				<table width="100%" class="titleTable">
 					<tr>
 						<td style="padding-left: 20px">
-							Date: 
-							<input id="DCcal" type="text" name="DClpDate" value="<%= datePart.format(YC_BEAN.getLPDate()) %>" size="8">
-							<a href="javascript:openCalendar(document.getElementById('DCcal'))"
-							  onMouseOver="window.status='Date Calendar';return true;"
-							  onMouseOut="window.status='';return true;"> <img src="<%=request.getContextPath()%>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="middle" border="0"></a>
+							Date: <tags:dateInputCalendar fieldId="DCcal"
+                                                            fieldName="DClpDate"
+                                                            fieldValue="<%= datePart.format(YC_BEAN.getLPDate()) %>" />
+							
 						</td>
 						<td align="center">
 							Hour
@@ -358,11 +356,10 @@ for (int i = 0; i < 60; i=i+5) {
 				<table width="100%" class="titleTable">
 					<tr>
 						<td style="padding-left: 20px">
-							Date 
-		      				<input id="RPHcal" type="text" name="RPHlpDate" value="<%= datePart.format(YC_BEAN.getLPDate()) %>" size="8">
-							<a href="javascript:openCalendar(document.getElementById('RPHcal'))"
-							  onMouseOver="window.status='Date Calendar';return true;"
-							  onMouseOut="window.status='';return true;"> <img src="<%=request.getContextPath()%>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"></a>
+							Date: <tags:dateInputCalendar fieldId="RPHcal"
+                                                            fieldName="RPHlpDate"
+                                                            fieldValue="<%= datePart.format(YC_BEAN.getLPDate()) %>" />
+                                                            
 						</td>
 						<td valign="bottom" align="right"> 
 							<a href="javascript:submitCommand('LoadRPHData', <%= channel_1ID%>, -1);" style="font-weight:bold;height:20px" class="link" id="LoadRPH1ID"

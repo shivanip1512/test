@@ -6,6 +6,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib tagdir="/WEB-INF/tags/dr" prefix="dr"%>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 
 <cti:standardPage module="consumer" page="trending">
 <cti:standardMenu/>
@@ -69,11 +70,10 @@
                                     <table width="375" border="0" cellspacing="2" cellpadding="0">
                                       <tr>
                                           <td width="163" valign="top" class="SubText">Start Date:
-                                            <input id="cal" type="text" name="start" value="<%=startDate%>" size="8">
-                                            <a href="javascript:showCalendarControl($('cal'))"> 
-                                                <img src="<c:url value="/WebConfig/yukon/Icons/StartCalendar.gif"/>" width="20" height="15" align="ABSMIDDLE" border="0">
-                                            </a>  
-                                              
+                                            
+                                            <tags:dateInputCalendar fieldId="cal"
+                                                                    fieldName="start"
+                                                                    fieldValue="<%=startDate%>" />
                             
                                           </td>
                                           <td width="154" valign="top" class="SubText">Time Period:

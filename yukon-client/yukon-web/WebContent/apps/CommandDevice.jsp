@@ -86,7 +86,7 @@
 <cti:standardPage title="Energy Services Operations Center" module="commanderSelect">
 	<cti:standardMenu menuSelection="<%= menuSelection %>" />
 	
-	<script  language="JavaScript" src="../JavaScript/calendar.js"></script>
+	<script  language="JavaScript" src="../JavaScript/calendarControl.js"></script>
 	<script language="JavaScript">
 		function setMspCommand(cmd)
 		{

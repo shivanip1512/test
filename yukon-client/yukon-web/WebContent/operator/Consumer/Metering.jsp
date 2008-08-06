@@ -1,13 +1,14 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 
-<SCRIPT  LANGUAGE="JavaScript" SRC="../../JavaScript/calendar.js"></SCRIPT>
+<SCRIPT type="text/javascript" src="../../JavaScript/calendarControl.js"></SCRIPT>
 <%@ include file="../../include/trending_functions.jspf" %>
 
 <html>
 <head>
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
+<link rel="stylesheet" href="../../WebConfig/yukon/styles/calendarControl.css" type="text/css">
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 </head>

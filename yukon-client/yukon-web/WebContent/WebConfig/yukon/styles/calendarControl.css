@@ -18,8 +18,8 @@
 }
 
 #CalendarControl table {
-  font-family: arial, verdana, helvetica, sans-serif;
-  font-size: 8pt;
+  font-family: arial, verdana, helvetica, sans-serif !important;
+  font-size: 8pt !important;
   border-left: 1px solid #336;
   border-right: 1px solid #336;
 }

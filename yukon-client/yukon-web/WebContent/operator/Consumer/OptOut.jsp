@@ -1,3 +1,4 @@
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ include file="include/StarsHeader.jsp" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
@@ -16,8 +17,9 @@
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
+<link rel="stylesheet" href="../../WebConfig/yukon/styles/calendarControl.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
-<script language="JavaScript">
+<script type="text/javascript">
 function initialize() {
 	document.getElementById("Reenable").value = "<cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_REENABLE %>" format="all_capital"/>";
 }
@@ -38,7 +40,7 @@ function validate(form) {
 	return true;
 }
 </script>
-<script language="JavaScript" src="<%= request.getContextPath() %>/JavaScript/calendar.js">
+<script type="text/javascript" src="<%= request.getContextPath() %>/JavaScript/calendarControl.js">
 </script>
 </head>
 
@@ -98,11 +100,11 @@ function validate(form) {
                             	<%optOutTodayOnly = true; %>
                            	</cti:checkProperty>
                           	<%if(! optOutTodayOnly) {%>
-	                            <input type="text" name="StartDate" id="StartDate" size="14" value="<%= datePart.format(new Date()) %>" >
-		                            <a href="javascript:openCalendar(document.getElementById('StartDate'))"
-									  onMouseOver="window.status='Start Date Calendar';return true;"
-									  onMouseOut="window.status='';return true;"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="absmiddle" border="0"> 
-		                            </a>
+                            
+                                <tags:dateInputCalendar fieldId="StartDate"
+                                                        fieldName="StartDate" 
+                                                        fieldValue="<%= datePart.format(new Date()) %>" />
+                            
 	                        <%} else { %>
 	                        	<%= datePart.format(new Date()) %>
 	                        	<input type="hidden" name="StartDate" id="StartDate" size="14" value="<%= datePart.format(new Date()) %>" >	

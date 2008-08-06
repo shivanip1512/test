@@ -1,7 +1,8 @@
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <html>
 <!-- Java script needed for the Calender Function--->
 <%@ include file="../include/user_header.jsp" %>
-<SCRIPT  LANGUAGE="JavaScript" SRC="../../JavaScript/calendar.js"></SCRIPT>
 <head>
 <title>Consumer Energy Services</title>
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
@@ -141,20 +142,20 @@ function loadTarget(form)
                                     </tr>
                                     <tr height="100"> 
                                       <td width="47%" valign="top" align="right"><font face="Arial, Helvetica, sans-serif" size="1">Start Date:</font> 
-                                        <input id="startCal" type="text" name="start" value="<%= datePart.format(ServletUtil.getToday()) %>" size="8">
-                                        <a href="javascript:openCalendar(document.getElementById('MForm').startCal)"
-						                      onMouseOver="window.status='Start Date Calendar';return true;"
-            						          onMouseOut="window.status='';return true;"> 
-                                        <img src="<%=request.getContextPath()%>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"> 
-                                        </a></td>
+                                        
+                                        <tags:dateInputCalendar fieldId="startCal"
+                                                                fieldName="start"
+                                                                fieldValue="<%= datePart.format(ServletUtil.getToday()) %>" />
+                                        
+                                      </td>
                                       <td>&nbsp;&nbsp;</td>
                                       <td width="47%" valign="top"><font face="Arial, Helvetica, sans-serif" size="1">Stop Date:</font> 
-                                        <input id="stopCal" type="text" name="stop" value="<%= datePart.format(ServletUtil.getTomorrow()) %>" size="8">
-                                        <a href="javascript:openCalendar(document.getElementById('MForm').stopCal)"
-						                      onMouseOver="window.status='Stop Date Calendar';return true;"
-            						          onMouseOut="window.status='';return true;"> 
-                                        <img src="<%=request.getContextPath()%>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"> 
-                                        </a> </td>
+                                        
+                                        <tags:dateInputCalendar fieldId="stopCal"
+                                                                fieldName="stop"
+                                                                fieldValue="<%= datePart.format(ServletUtil.getTomorrow()) %>" />
+                                        
+                                      </td>
                                     </tr>
                                   </table>
                                 </td>

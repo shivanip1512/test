@@ -1,10 +1,16 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <jsp:useBean id="filterBean" class="com.cannontech.stars.web.bean.FilterBean" scope="page"/>
 <jsp:useBean id="workOrderBean" class="com.cannontech.stars.web.bean.WorkOrderBean" scope="session"/>
 
 <cti:standardPage title="Energy Services Operations Center" module="stars" htmlLevel="quirks">
 	
+    <cti:msg key="yukon.common.calendarcontrol.months" var="months"/>
+    <cti:msg key="yukon.common.calendarcontrol.days" var="days"/>
+    <cti:msg key="yukon.common.calendarcontrol.clear" var="clear"/>
+    <cti:msg key="yukon.common.calendarcontrol.close" var="close"/>
+    
 	<!-- FILTER TYPES (will be accessible with JSTL tags after they are declared) -->
  	<%
  	    pageContext.setAttribute("filterServiceCompany",
@@ -27,6 +33,8 @@
  	                             new Integer(YukonListEntryTypes.YUK_DEF_ID_SO_FILTER_BY_CUST_TYPE).toString());
  	%>
 
+    <cti:includeScript link="/JavaScript/calendarControl.js"/>
+    <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
 	<cti:includeCss link="/include/PurpleStyles.css"/>
 	<div class="headerbar">
 		<%@ include file="include/HeaderBar.jspf" %>
@@ -71,8 +79,6 @@
     		%>
     		<br clear="all">
     	</div>
-<!-- Java script needed for the Calender Function--->
-<SCRIPT  LANGUAGE="JavaScript" SRC="../../JavaScript/calendar.js"></SCRIPT>
     	
 		<form name="MForm" method="post" action="<%=request.getContextPath()%>/servlet/WorkOrderManager" onsubmit="prepareSubmit(this)">
 	    	<input type="hidden" name="action" value=UpdateFilters>
@@ -440,7 +446,7 @@
 
             if (isChecked) {
                 cursor = 'hand';
-                href = 'javascript:openCalendar(document.MForm.startCal);';
+                href = "javascript:showCalendarControl(document.MForm.startCal, '${months}', '${days}', '${clear}', '${close}');"
             }
             
             $("startDateDiv").disabled = !isChecked;
@@ -457,7 +463,7 @@
 
             if (isChecked) {
                 cursor = 'hand';
-                href = 'javascript:openCalendar(document.MForm.stopCal);';
+                href = "javascript:showCalendarControl(document.MForm.stopCal, '${months}', '${days}', '${clear}', '${close}');"
             }
             
             $("stopDateDiv").disabled = !isChecked;

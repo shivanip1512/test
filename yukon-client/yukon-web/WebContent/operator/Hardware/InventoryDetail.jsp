@@ -1,4 +1,5 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.database.data.lite.LiteContact" %>
 <%@ page import="com.cannontech.database.data.lite.LiteAddress" %>
@@ -72,10 +73,11 @@
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
+<link rel="stylesheet" href="../../WebConfig/yukon/styles/calendarControl.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 
-<script language="JavaScript" src="../../JavaScript/calendar.js"></script>
-<script language="JavaScript">
+<script type="text/javascript" src="../../JavaScript/calendarControl.js"></script>
+<script type="text/javascript">
 function deleteHardware(form) {
 <% if (liteInv.getAccountID() > 0) { %>
 	if (!confirm("The hardware is currently assigned to a customer account. Are you sure you want to delete it from inventory?"))
@@ -133,6 +135,12 @@ function revealLog() {
 </head>
 
 <body class="Background" leftmargin="0" topmargin="0">
+
+<cti:msg key="yukon.common.calendarcontrol.months" var="months"/>
+<cti:msg key="yukon.common.calendarcontrol.days" var="days"/>
+<cti:msg key="yukon.common.calendarcontrol.clear" var="clear"/>
+<cti:msg key="yukon.common.calendarcontrol.close" var="close"/>
+
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
@@ -287,7 +295,7 @@ function revealLog() {
 				                </td>
 				                <td width="210"> 
 				                  <input id="fieldInstallDate" type="text" name="fieldInstallDate" maxlength="30" size="24" value='<cti:formatMillis value="${detailBean.currentInventory.installDate}" type="DATE"/>' onchange="setContentChanged(true)">
-				   				  	<a href="javascript:openCalendar(document.getElementById('fieldInstallDate'))"
+				   				  	<a href="javascript:void(0);" onclick="javascript:showCalendarControl($('fieldInstallDate'), '${months}', '${days}', '${clear}', '${close}');"
 										onMouseOver="window.status='Field Install Calendar';return true;"
 										onMouseOut="window.status='';return true;"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="absmiddle" border="0"> 
 			                        </a>
@@ -299,7 +307,7 @@ function revealLog() {
 				                </td>
 				                <td width="210"> 
 				                  <input id="fieldReceiveDate" type="text" name="fieldReceiveDate" maxlength="30" size="24" value='<cti:formatMillis value="${detailBean.currentInventory.receiveDate}" type="DATE"/>' onchange="setContentChanged(true)">
-				   				  	<a href="javascript:openCalendar(document.getElementById('fieldReceiveDate'))"
+				   				  	<a href="javascript:void(0);" onclick="javascript:showCalendarControl($('fieldReceiveDate'), '${months}', '${days}', '${clear}', '${close}');"
 										onMouseOver="window.status='Field Receive Calendar';return true;"
 										onMouseOut="window.status='';return true;"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="absmiddle" border="0"> 
 			                        </a>
@@ -311,7 +319,7 @@ function revealLog() {
 				                </td>
 				                <td width="210"> 
 				                  <input id="fieldRemoveDate" type="text" name="fieldRemoveDate" maxlength="30" size="24" value='<cti:formatMillis value="${detailBean.currentInventory.removeDate}" type="DATE"/>' onchange="setContentChanged(true)">
-				   				  	<a href="javascript:openCalendar(document.getElementById('fieldRemoveDate'))"
+				   				  	<a href="javascript:void(0);" onclick="javascript:showCalendarControl($('fieldRemoveDate'), '${months}', '${days}', '${clear}', '${close}');"
 										onMouseOver="window.status='Field Remove Calendar';return true;"
 										onMouseOut="window.status='';return true;"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="absmiddle" border="0"> 
 			                        </a>

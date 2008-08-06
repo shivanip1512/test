@@ -1,3 +1,4 @@
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ page import="com.cannontech.loadcontrol.data.LMProgramDirectGear" %>
 <%@ page import="com.cannontech.database.db.device.lm.IlmDefines" %>
 <%@ page import="java.util.Date" %>
@@ -43,8 +44,9 @@ if( cmdMsg.getLMData() == null )
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../WebConfig/yukon/CannonStyle.css" type="text/css">
 <link rel="stylesheet" type="text/css" href="css/lm.css">
-<script langauge="Javascript" src="../JavaScript/calendar.js"></script>
-<script language="JavaScript" src="../JavaScript/drag.js"></script>
+<link rel="stylesheet" type="text/css" href="../WebConfig/yukon/styles/calendarControl.css">
+<script type="text/javascript" src="../JavaScript/calendarControl.js"></script>
+<script type="text/javascript" src="../JavaScript/drag.js"></script>
 
 <script language="JavaScript">
 
@@ -277,14 +279,11 @@ pageContext.setAttribute("nowDate", nowStartOrStop);%>
                 <div align="right">Date: </div>
               </td>
               <td width="179"> 
-                <input type="text" name="startdate" value="${startAtThisMoment}" size="8" 
-                onchange="dateChanged('start');"
-                disabled>
-                <a href="javascript:openCalendar(cmdForm.startdate)"
-						onMouseOver="window.status='Start Date Calendar';return true;"
-						onMouseOut="window.status='';return true;"> 
-						<img src="<%=request.getContextPath()%>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"></a>
-				</td>
+                
+                <tags:dateInputCalendar fieldName="startdate" 
+                                        fieldValue="${startAtThisMoment}" />
+				
+                </td>
             </tr>
             <tr> 
               <td width="85" height="85">&nbsp; </td>
@@ -458,13 +457,11 @@ pageContext.setAttribute("nowDate", nowStartOrStop);%>
 <cti:formatDate value="${stopNowDate}" type="DATE" var="stopAtThisMoment" />
 <cti:formatDate value="${stopNowDate}" type="TIME" var="stopAtThisMomentHHMM" />
  
-                <input type="text" name="stopdate" value="${stopAtThisMoment}" size="8"
-				<%= (ILCCmds.PROG_STOP.equals(cmd) || ILCCmds.AREA_STOP_PROGS.equals(cmd) || ILCCmds.SC_STOP.equals(cmd) ? "disabled" : "") %> 
-                onchange="dateChanged('stop');">
-                <a href="javascript:openCalendar(cmdForm.stopdate)"
-						onMouseOver="window.status='Pop Calendar';return true;"
-						onMouseOut="window.status='';return true;">
-						<img src="<%=request.getContextPath()%>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"></a></td>
+                <tags:dateInputCalendar fieldName="stopdate" 
+                                        fieldValue="${stopAtThisMoment}"
+                                        disabled="<%= (ILCCmds.PROG_STOP.equals(cmd) || ILCCmds.AREA_STOP_PROGS.equals(cmd) || ILCCmds.SC_STOP.equals(cmd) ? true : false) %>" />
+ 
+              </td>
             </tr>
             <tr> 
               <td width="81" height="85">&nbsp; </td>

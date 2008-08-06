@@ -7,11 +7,12 @@
 <title>Trending</title>
 <link id="StyleSheet" rel="stylesheet" href="../WebConfig/yukon/CannonStyle.css" type="text/css">
 <link id="StyleSheet" rel="stylesheet" href="../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
+<link rel="stylesheet" href="../WebConfig/yukon/styles/calendarControl.css" type="text/css">
 <META NAME="robots" CONTENT="noindex, nofollow">
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
 <!-- Java script needed for the Calender Function--->
-<SCRIPT  LANGUAGE="JavaScript1.2" SRC="../JavaScript/Calendar1-82.js"></SCRIPT>
+<SCRIPT type="text/javascript" SRC="../JavaScript/calendarControl.js"></SCRIPT>
 
 </head>
 <%

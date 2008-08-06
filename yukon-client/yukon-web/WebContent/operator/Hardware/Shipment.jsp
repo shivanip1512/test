@@ -1,9 +1,17 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <jsp:useBean id="purchaseBean" class="com.cannontech.stars.web.bean.PurchaseBean" scope="session"/>
 
 <cti:standardPage title="Energy Services Operations Center" module="stars" htmlLevel="quirks">
 	
+    <cti:msg key="yukon.common.calendarcontrol.months" var="months"/>
+    <cti:msg key="yukon.common.calendarcontrol.days" var="days"/>
+    <cti:msg key="yukon.common.calendarcontrol.clear" var="clear"/>
+    <cti:msg key="yukon.common.calendarcontrol.close" var="close"/>
+
+    <cti:includeScript link="/JavaScript/calendarControl.js"/>
+    <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
 	<cti:includeCss link="/include/PurpleStyles.css"/>
 	<div class="headerbar">
 		<%@ include file="include/PurchaseHeaderBar.jspf" %>
@@ -14,8 +22,6 @@
 	<c:set target="${purchaseBean}" property="energyCompany" value="${liteEC}" />
 	<%pageContext.setAttribute("currentUser", lYukonUser);%>
 	<c:set target="${purchaseBean}" property="currentUser" value="${currentUser}" />
- 	
- 	<script language="JavaScript" src="../../JavaScript/calendar.js"></script>
  	
 	<div class="standardpurplesidebox"> 
 	</div>
@@ -98,7 +104,7 @@
 	                </td>
 	                <td width="80%"> 
 	                  <input id="orderingDate" type="text" name="orderingDate" maxlength="40" size="24" value='<cti:formatDate value="${purchaseBean.currentShipment.orderedDate}" type="DATE"/>' onchange="setContentChanged(true)">
-	   				  	<a href="javascript:openCalendar(document.getElementById('orderingDate'))"
+	   				  	<a href="javascript:void(0);" onclick="javascript:showCalendarControl($('orderingDate'), '${months}', '${days}', '${clear}', '${close}');"
 							onMouseOver="window.status='Date Ordered Calendar';return true;"
 							onMouseOut="window.status='';return true;"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="absmiddle" border="0"> 
                         </a>
@@ -110,7 +116,7 @@
 	                </td>
 	                <td width="80%"> 
 	                  <input id="shipDate" type="text" name="shipDate" maxlength="40" size="24" value='<cti:formatDate value="${purchaseBean.currentShipment.shipDate}" type="DATE"/>' onchange="setContentChanged(true)">
-	   				  	<a href="javascript:openCalendar(document.getElementById('shipDate'))"
+	   				  	<a href="javascript:void(0);" onclick="javascript:showCalendarControl($('shipDate'), '${months}', '${days}', '${clear}', '${close}');"
 							onMouseOver="window.status='Ship Date Calendar';return true;"
 							onMouseOut="window.status='';return true;"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="absmiddle" border="0"> 
                         </a>
@@ -122,7 +128,7 @@
 	                </td>
 	                <td width="80%"> 
 	                  <input id="receivingDate" type="text" name="receivingDate" maxlength="40" size="24" value='<cti:formatDate value="${purchaseBean.currentShipment.receivedDate}" type="DATE"/>' onchange="setContentChanged(true)">
-	   				  	<a href="javascript:openCalendar(document.getElementById('receivingDate'))"
+	   				  	<a href="javascript:void(0);" onclick="javascript:showCalendarControl($('receivingDate'), '${months}', '${days}', '${clear}', '${close}');"
 							onMouseOver="window.status='Date Received Calendar';return true;"
 							onMouseOut="window.status='';return true;"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="absmiddle" border="0"> 
                         </a>

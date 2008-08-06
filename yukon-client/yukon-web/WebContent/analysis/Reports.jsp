@@ -21,6 +21,7 @@
 
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:verifyRolesAndProperties value="application.ReportingRole"/>
 
@@ -122,28 +123,6 @@ function loadTarget(form)
 	}
 }
 
-function enableDates(value)
-{
-	if( value)
-	{
-		document.getElementById("StartCalHref").style.cursor = 'pointer';
-		document.getElementById("StopCalHref").style.cursor = 'pointer';
-		document.getElementById("StartCalHref").href = 'javascript:openCalendar(document.reportForm.startCal)'
-		document.getElementById("StopCalHref").href = 'javascript:openCalendar(document.reportForm.stopCal)'
-	}
-	else
-	{
-		document.getElementById("StartCalHref").style.cursor = 'default';
-		document.getElementById("StopCalHref").style.cursor = 'default';
-		document.getElementById("StartCalHref").href = 'javascript:;'
-		document.getElementById("StopCalHref").href = 'javascript:;'
-	}
-
-	document.getElementById("startCal").disabled = !value;
-	document.getElementById("stopCal").disabled = !value;
-
-}
-
 function checkDates(){
 	var good = false;
 	var startDate = $F('startCal');
@@ -233,9 +212,12 @@ function checkDates(){
 				  <table width="100%" border="0" cellspacing="0" cellpadding="0">				
 				    <tr>
 				      <td>
-				   		<input id="startCal" type="text" name="startDate"  <%=(model != null && model.useStartDate() ? "" : "DISABLED")%> value="<%= datePart.format(REPORT_BEAN.getStartDate()) %>" size="8">
-				  		  <%=(model != null && model.useStartDate() ? 
-						  "<a id='startCalHref' href='javascript:openCalendar(document.reportForm.startCal)'><img src='"+ request.getContextPath() + "/WebConfig/yukon/Icons/StartCalendar.gif' width='20' height='15' align='ABSMIDDLE' border='0'></a>" : "<img src='"+ request.getContextPath() + "/WebConfig/yukon/Icons/StartCalendar.gif' width='20' height='15' align='ABSMIDDLE' border='0'>")%> 
+                      
+                        <tags:dateInputCalendar fieldId="startCal" 
+                                                fieldName="startDate" 
+                                                disabled="<%=(model != null && model.useStartDate() ? false : true)%>" 
+                                                fieldValue="<%= datePart.format(REPORT_BEAN.getStartDate()) %>"/>
+				   		
 					  </td>
 			   		  <% if( (model != null && model instanceof com.cannontech.analysis.tablemodel.PointDataIntervalModel || 
 			   		  		  model instanceof com.cannontech.analysis.tablemodel.LoadControlVerificationModel) ){%>
@@ -265,10 +247,13 @@ function checkDates(){
 				<td valign="top" style="padding-left:5; padding-top:5">
 				  <table width="100%" border="0" cellspacing="0" cellpadding="0">				
 				    <tr>
-					  <td>				
-                        <input id="stopCal" type="text" name="stopDate"  <%=(model != null && model.useStopDate() ? "" : "DISABLED")%> value="<%= datePart.format(REPORT_BEAN.getStopDate()) %>" size="8">
-						  <%=(model != null && model.useStopDate() ? 
-        		          "<a id='stopCalHref' href='javascript:openCalendar(document.reportForm.stopCal)'><img src='"+ request.getContextPath() + "/WebConfig/yukon/Icons/StartCalendar.gif' width='20' height='15' align='ABSMIDDLE' border='0'></a>" : "<img src='"+ request.getContextPath() + "/WebConfig/yukon/Icons/StartCalendar.gif' width='20' height='15' align='ABSMIDDLE' border='0'>")%> 
+					  <td>			
+                      
+                        <tags:dateInputCalendar fieldId="stopCal" 
+                                                fieldName="stopDate" 
+                                                disabled="<%=(model != null && model.useStopDate() ? false : true)%>" 
+                                                fieldValue="<%= datePart.format(REPORT_BEAN.getStopDate()) %>"/>
+                                                	
                 	  </td>
 					  <% if( (model != null && model instanceof com.cannontech.analysis.tablemodel.PointDataIntervalModel || 
 			   		  		  model instanceof com.cannontech.analysis.tablemodel.LoadControlVerificationModel) ){%>

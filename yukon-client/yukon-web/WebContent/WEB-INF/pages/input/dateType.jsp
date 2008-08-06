@@ -11,7 +11,7 @@
 		
 	<input type="text" id="${status.expression}" name="${status.expression}" value="${status.value}" />
 
-	<a href="javascript:showCalendarControl($('${status.expression}'))"> 
-		<img src="<c:url value="/WebConfig/yukon/Icons/StartCalendar.gif"/>" width="20" height="15" align="ABSMIDDLE" border="0" />
-	</a>
+    <tags:dateInputCalendar fieldId="${status.expression}"
+                            fieldName="${status.expression}"
+                            fieldValue="${status.value}" />
 </spring:bind>

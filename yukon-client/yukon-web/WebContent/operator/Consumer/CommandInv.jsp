@@ -82,7 +82,8 @@
 <link rel="stylesheet" href="../../WebConfig/yukon/Base.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/yukon/styles/commanderStyles.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/yukon/styles/YukonGeneralStyles.css" type="text/css">
-<SCRIPT  LANGUAGE="JavaScript" SRC="../../JavaScript/calendar.js"></SCRIPT>
+<link rel="stylesheet" href="../../WebConfig/yukon/styles/calendarControl.css" type="text/css">
+<SCRIPT type="text/javascript" SRC="../../JavaScript/calendarControl.js"></SCRIPT>
 </head>
 <body class="Background" leftmargin="0" topmargin="0">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
