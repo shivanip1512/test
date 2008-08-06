@@ -6,8 +6,16 @@
  */
 package com.cannontech.core.dao.impl;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.log4j.Logger;
+import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
+
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.database.Transaction;
@@ -17,6 +25,11 @@ import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.multi.MultiDBPersistent;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.dbchange.ChangeSequenceDecoder;
+import com.cannontech.database.dbchange.ChangeSequenceStrategyEnum;
+import com.cannontech.database.dbchange.ChangeTypeEnum;
+import com.cannontech.database.dbchange.DbChangeIdentifier;
+import com.cannontech.database.dbchange.DbChangeMessageHolder;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.yukon.BasicServerConnection;
 
@@ -28,6 +41,8 @@ import com.cannontech.yukon.BasicServerConnection;
  */
 public class DBPersistentDaoImpl implements DBPersistentDao
 {
+    private Logger log = YukonLogManager.getLogger(DBPersistentDaoImpl.class);
+    
     private BasicServerConnection dispatchConnection;
     
     @Override
@@ -69,7 +84,7 @@ public class DBPersistentDaoImpl implements DBPersistentDao
             Transaction<DBPersistent> t = Transaction.createTransaction( transactionType, item);
             item = t.execute();
             
-            //write the DBChangeMessage out to Dispatch since it was a Successfull UPDATE
+            //write the DBChangeMessage out to Dispatch since it was a Successful UPDATE
             if (dbChangeType != DBChangeMsg.CHANGE_TYPE_NONE) {
                 
                 DBChangeMsg[] dbChangeMsgs = ((CTIDbChange)item).getDBChangeMsgs(dbChangeType);
@@ -85,9 +100,94 @@ public class DBPersistentDaoImpl implements DBPersistentDao
     
     @Override
     public void processDBChange(DBChangeMsg dbChange) {
-        dispatchConnection.queue(dbChange);
+        if (TransactionSynchronizationManager.isSynchronizationActive()) {
+            final DbChangeMessageHolder messageHolder;
+            if (TransactionSynchronizationManager.hasResource(this)) {
+                messageHolder = (DbChangeMessageHolder) TransactionSynchronizationManager.getResource(this);
+            } else {
+                messageHolder = createNewMessageHolder();
+            }
+            messageHolder.addDbChange(dbChange);
+            
+        } else {
+            log.debug("sending out an un synchronized DB change messages");
+            dispatchConnection.queue(dbChange);
+        }
+    }
+
+    private DbChangeMessageHolder createNewMessageHolder() {
+        final DbChangeMessageHolder messageHolder;
+        messageHolder = new DbChangeMessageHolder();
+        TransactionSynchronizationManager.bindResource(this, messageHolder);
+        final DBPersistentDaoImpl that = this;
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+            @Override
+            public void afterCommit() {
+                sendCollectedDbChanges(messageHolder);
+            }
+            
+            @Override
+            public void afterCompletion(int status) {
+                TransactionSynchronizationManager.unbindResource(that);
+            }
+        });
+        return messageHolder;
     }
     
+    private void sendCollectedDbChanges(
+            final DbChangeMessageHolder messageHolder) {
+        
+        List<DBChangeMsg> dbChanges = messageHolder.getDbChanges();
+        int initialSize = dbChanges.size();
+        dbChanges = reduceDbChangeList(dbChanges);
+        if (log.isDebugEnabled()) {
+            log.debug("sending out " + dbChanges.size() + " held DB change messages (was " + initialSize + ")");
+        }
+        for (DBChangeMsg changeMsg : dbChanges) {
+            dispatchConnection.queue(changeMsg);
+        }
+    }
+    
+    private static List<DBChangeMsg> reduceDbChangeList(List<DBChangeMsg> dbChanges) {
+        Map<DbChangeIdentifier, DBChangeMsg> previous = new HashMap<DbChangeIdentifier, DBChangeMsg>();
+        List<DBChangeMsg> output = new ArrayList<DBChangeMsg>();
+        
+        for (DBChangeMsg changeMsg : dbChanges) {
+            DbChangeIdentifier id = DbChangeIdentifier.createIdentifier(changeMsg);
+            // check for previous
+            DBChangeMsg previousMessage = previous.get(id);
+            if (previousMessage == null) {
+                // add to output
+                output.add(changeMsg);
+                // add to previous
+                previous.put(id, changeMsg);
+            } else {
+                // get strategy for this pairing
+                ChangeTypeEnum previousType = ChangeTypeEnum.createFromDbChange(previousMessage);
+                ChangeTypeEnum currentType = ChangeTypeEnum.createFromDbChange(changeMsg);
+                ChangeSequenceStrategyEnum strategy = ChangeSequenceDecoder.getStrategy(previousType, currentType);
+                switch (strategy) {
+                case KEEP_BOTH:
+                    output.add(changeMsg);
+                    // keeping both for output, but will use the latter for additional comparisons
+                    previous.put(id, changeMsg);
+                    break;
+                case KEEP_FIRST: 
+                    break;
+                case KEEP_LAST:
+                    // remove the previous message from the output
+                    output.remove(previousMessage);
+                    output.add(changeMsg);
+                    previous.put(id, changeMsg);
+                    break;
+                case ERROR:
+                    throw new IllegalStateException("Collected a " + previousType + " -> " + currentType + " for the same object: " + id);
+                }
+            }
+        }
+        return output;
+    }
+
     @Override
     public void performDBChangeWithNoMsg(List<DBPersistent> items, int transactionType) {
         
