@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.221 $
-* DATE         :  $Date: 2008/07/30 20:34:11 $
+* REVISION     :  $Revision: 1.222 $
+* DATE         :  $Date: 2008/08/06 18:25:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -238,13 +238,13 @@ VOID PortThread(void *pid)
             dout << CtiTime() << " **** Checkpoint - Port == 0 in PortThread() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
-    else if( !stringCompareIgnoreCase(Port->getIPAddress(), "udp") )
+    else if( Port->isTCPIPPort() &&
+             boost::static_pointer_cast<CtiPortTCPIPDirect>(Port)->getIPAddress() == "udp" )
     {
         //  perhaps this should be created by a PortFactory... ?
+        UDPInterface udp_interface(boost::static_pointer_cast<CtiPortTCPIPDirect>(Port));
 
-        UDPInterface udp_port(Port);
-
-        udp_port.run();
+        udp_interface.run();
     }
     else
     {
@@ -739,21 +739,6 @@ INT ResetCommsChannel(CtiPortSPtr Port, CtiDeviceSPtr &Device)
             {
                 /* Report which devices are available and set queues for those using IDLC*/
                 DeviceManager.apply(applyPrimeTRXInfo,NULL);
-
-                /* If neccessary start the TCPIP Interface */
-                if( (StartTCPIP == TCP_SES92) || (StartTCPIP == TCP_CCU710 &&  Port->isTCPIPPort()) || (StartTCPIP == TCP_WELCO  &&  Port->isTCPIPPort()))
-                {
-
-#if 0 // 040300 CGP FIX FIX FIX This was pulled for brevity!
-                    if(PortTCPIPStart(ThreadPortNumber))
-                    {
-                        printf ("Error Starting TCP/IP Interface\n");
-                        // _endthread ();
-                    }
-#else
-                    printf ("TCP/IP Interface disabled by #ifdef. CGP 040300\n");
-#endif
-                }
             }
 
             if(status == NORMAL)
