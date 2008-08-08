@@ -105,17 +105,14 @@ public class CsrController extends MultiActionController {
 
         // Build up filter by list
         List<FilterBy> filterByList = FilterByGenerator.getFilterByList();
-        List<FilterBy> queryFilter = new ArrayList<FilterBy>();
-        List<String> filterByString = new ArrayList<String>();
-
-        for (FilterBy filterBy : filterByList) {
-            String filterValue = ServletRequestUtils.getStringParameter(request, filterBy.getName());
-            if (!StringUtils.isBlank(filterValue)) {
-                filterBy.setFilterValue(filterValue);
-                queryFilter.add(filterBy);
-                filterByString.add(filterBy.toCsrString());
-            }
+        List<FilterBy> queryFilter = CsrUtils.getQueryFilter(request, filterByList);
+        
+        // Make friendly csr filter string
+        List<String> filterByStringList = new ArrayList<String>();
+        for (FilterBy filterBy : queryFilter) {
+            filterByStringList.add(filterBy.toCsrString());
         }
+        String filterByString = StringUtils.join(filterByStringList, " and ");
 
         // Perform the search
         SearchResult<ExtendedMeter> results = csrService.search(queryFilter,
@@ -139,7 +136,7 @@ public class CsrController extends MultiActionController {
             
             mav.addObject("deviceGroupCollection", deviceGroupCollection);
             
-            mav.addObject("filterByString", StringUtils.join(filterByString, " and "));
+            mav.addObject("filterByString", filterByString);
             mav.addObject("orderBy", orderBy);
             mav.addObject("results", results);
             mav.addObject("orderByFields", CsrSearchField.values());
