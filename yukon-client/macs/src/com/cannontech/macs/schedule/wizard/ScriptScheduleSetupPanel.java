@@ -301,7 +301,7 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
             setScriptText(getScriptTextArea().getText());
             if( ! ScriptTemplateTypes.isNoTemplate(getTemplateType())) {
                 getScriptTemplate().loadParamsFromScript(ScriptTemplate.getScriptSection(getScriptText(), ScriptTemplate.PARAMETER_LIST));
-                initSwingCompValues();
+                initSwingCompValues(true);
             }
         }
     }
@@ -1298,9 +1298,9 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     			ivjNotifyGroupComboBox.setName("NotifyGroupComboBox");
     			
     			IDatabaseCache cache = DefaultDatabaseCache.getInstance();
-    			List notGroups = cache.getAllContactNotificationGroups();
+    			List<LiteNotificationGroup> notGroups = cache.getAllContactNotificationGroups();
     			for (int i = 0; i < notGroups.size(); i++) {
-    				LiteNotificationGroup lng = (LiteNotificationGroup) notGroups.get(i);
+    				LiteNotificationGroup lng = notGroups.get(i);
     				ivjNotifyGroupComboBox.addItem(lng.getNotificationGroupName());
     			}
                 ivjNotifyGroupComboBox.setToolTipText(getScriptTemplate().getParamaterDescription(NOTIFY_GROUP_PARAM));
@@ -2030,7 +2030,7 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     		constraintsScriptNamePanel.weightx = 1.0;
     		constraintsScriptNamePanel.insets = new java.awt.Insets(15, 4, 15, 4);
     		add(getScriptNamePanel(), constraintsScriptNamePanel);
-    		initSwingCompValuesWithoutGroupsSelected();
+    		initSwingCompValues(false);
     	} catch (java.lang.Throwable ivjExc) {
     		handleException(ivjExc);
     	}
@@ -2077,74 +2077,11 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
         getBillingGroupTree().addTreeSelectionListener(this);
     }
     
-    
     /**
      * This method was created in VisualAge.
      */
     @SuppressWarnings({ "unchecked", "cast" })
-    private void initSwingCompValuesWithoutGroupsSelected() {
-        getScriptTemplate().setParameterValue(IED_FLAG_PARAM, String.valueOf(ScriptTemplateTypes.isIEDTemplate(getTemplateType())));
-    
-        //The read_with..._param is for showing options to retry during a multiple read schedule, 
-        //so we NOT the result which is from a retry script, one that is a read once type script 
-        getScriptTemplate().setParameterValue(READ_WITH_RETRY_FLAG_PARAM, String.valueOf(!ScriptTemplateTypes.isRetryTemplate(getTemplateType())));
-        
-        getScriptNameTextField().setText(getScriptTemplate().getParameterValue(SCRIPT_FILE_NAME_PARAM));
-        getDescriptionTextField().setText(getScriptTemplate().getParameterValue(SCRIPT_DESC_PARAM));
-        getFilePathTextField().setText(getScriptTemplate().getParameterValue(FILE_PATH_PARAM));
-        getMissedFileNameTextField().setText(getScriptTemplate().getParameterValue(MISSED_FILE_NAME_PARAM));
-        getSuccessFileNameTextField().setText(getScriptTemplate().getParameterValue(SUCCESS_FILE_NAME_PARAM));
-        getPorterTimeoutTextField().setText(getScriptTemplate().getParameterValue(PORTER_TIMEOUT_PARAM));
-        
-        getRetryCountTextField().setText(getScriptTemplate().getParameterValue(RETRY_COUNT_PARAM));
-        getMaxRetryHoursTextField().setText(getScriptTemplate().getParameterValue(MAX_RETRY_HOURS_PARAM));
-        getQueueOffCountTextField().setText(getScriptTemplate().getParameterValue(QUEUE_OFF_COUNT_PARAM));
-    
-        //Billing setup
-        enableContainer(getBillingPanel(), Boolean.valueOf(getScriptTemplate().getParameterValue(BILLING_FLAG_PARAM)).booleanValue());
-        getGenerateBillingCheckBox().setSelected(Boolean.valueOf(getScriptTemplate().getParameterValue(BILLING_FLAG_PARAM)).booleanValue());
-        getBillingFileNameTextField().setText(getScriptTemplate().getParameterValue(BILLING_FILE_NAME_PARAM));
-        getBillingFilePathTextBox().setText(getScriptTemplate().getParameterValue(BILLING_FILE_PATH_PARAM));
-        getBillingFormatComboBox().setSelectedItem(getScriptTemplate().getParameterValue(BILLING_FORMAT_PARAM));
-        getDemandDaysTextField().setText(getScriptTemplate().getParameterValue(BILLING_DEMAND_DAYS_PARAM));
-        getEnergyDaysTextField().setText(getScriptTemplate().getParameterValue(BILLING_ENERGY_DAYS_PARAM));
-        
-        //Notification setup
-        enableContainer(getNotificationPanel(), Boolean.valueOf(getScriptTemplate().getParameterValue(NOTIFICATION_FLAG_PARAM)).booleanValue());
-        getSendEmailCheckBox().setSelected(Boolean.valueOf(getScriptTemplate().getParameterValue(NOTIFICATION_FLAG_PARAM)).booleanValue());
-        getMessageSubjectTextField().setText(getScriptTemplate().getParameterValue(EMAIL_SUBJECT_PARAM));
-        getNotifyGroupComboBox().setSelectedItem(getScriptTemplate().getParameterValue(NOTIFY_GROUP_PARAM));
-        
-        //IED panel setup
-        String frozen = (getScriptTemplate().getParameterValue(READ_FROZEN_PARAM));
-        if(frozen.length() > 0)
-        {
-            if( frozen.indexOf("72") > 0)   //we have an alpha command (this way we don't have to have the register be exact (0 vs 00)
-                getAlphaFrozenRegisterCheckBox().setSelected(true);
-            else    //default rest to this one?
-                getS4FrozenRegisterCheckBox().setSelected(true);
-        }
-        Integer resetCountParamValue = Integer.valueOf(getScriptTemplate().getParameterValue(RESET_COUNT_PARAM));
-        if(resetCountParamValue > 0) {
-            getResetDemandEnabledCheckBox().setSelected(true);
-            setResetDemandFieldsEnabled(true);
-        }
-        else {
-            getResetDemandEnabledCheckBox().setSelected(false);
-            setResetDemandFieldsEnabled(false);
-        }
-        getDemandResetSpinBox().setValue(resetCountParamValue);
-        getTOURateComboBox().setSelectedItem(getScriptTemplate().getParameterValue(TOU_RATE_PARAM));
-        getIED400TypeComboBox().setSelectedItem(getScriptTemplate().getParameterValue(IED_TYPE_PARAM));
-        
-        CTILogger.info("Set swing component values");
-    }
-    
-    /**
-     * This method was created in VisualAge.
-     */
-    @SuppressWarnings({ "unchecked", "cast" })
-    private void initSwingCompValues() {
+    private void initSwingCompValues(boolean treeSelect) {
         getScriptTemplate().setParameterValue(IED_FLAG_PARAM, String.valueOf(ScriptTemplateTypes.isIEDTemplate(getTemplateType())));
     
         //The read_with..._param is for showing options to retry during a multiple read schedule, 
@@ -2165,15 +2102,17 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
         DeviceGroupTreeFactory modelFactory = YukonSpringHook.getBean("deviceGroupTreeFactory", DeviceGroupTreeFactory.class);
         DeviceGroupService deviceGroupService = YukonSpringHook.getBean("deviceGroupService", DeviceGroupService.class);
         String groupName = getScriptTemplate().getParameterValue(GROUP_NAME_PARAM);
-        if(StringUtils.isNotEmpty(groupName)) {
-            DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
-            TreePath pathForGroup = modelFactory.getPathForGroup((TreeNode) getMeterReadGroupTree().getModel().getRoot(), group);
-            getMeterReadGroupTree().getSelectionModel().addSelectionPath(pathForGroup);
-            getMeterReadGroupTree().makeVisible(pathForGroup);
-        }else {
-            TreePath pathForGroup = getMeterReadGroupTree().getPathForRow(0);
-            getMeterReadGroupTree().getSelectionModel().setSelectionPath(pathForGroup);
-            getMeterReadGroupTree().makeVisible(pathForGroup);
+        if(treeSelect) {
+            if(StringUtils.isNotEmpty(groupName)) {
+                DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
+                TreePath pathForGroup = modelFactory.getPathForGroup((TreeNode) getMeterReadGroupTree().getModel().getRoot(), group);
+                getMeterReadGroupTree().getSelectionModel().addSelectionPath(pathForGroup);
+                getMeterReadGroupTree().makeVisible(pathForGroup);
+            }else {
+                TreePath pathForGroup = getMeterReadGroupTree().getPathForRow(0);
+                getMeterReadGroupTree().getSelectionModel().setSelectionPath(pathForGroup);
+                getMeterReadGroupTree().makeVisible(pathForGroup);
+            }
         }
         
         //Billing setup
@@ -2185,15 +2124,17 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
         getDemandDaysTextField().setText(getScriptTemplate().getParameterValue(BILLING_DEMAND_DAYS_PARAM));
         getEnergyDaysTextField().setText(getScriptTemplate().getParameterValue(BILLING_ENERGY_DAYS_PARAM));
         String billGroupName = getScriptTemplate().getParameterValue(BILLING_GROUP_NAME_PARAM);
-        if(StringUtils.isNotEmpty(billGroupName)) {
-            DeviceGroup group = deviceGroupService.resolveGroupName(billGroupName);
-            TreePath pathForGroup = modelFactory.getPathForGroup((TreeNode) getBillingGroupTree().getModel().getRoot(), group);
-            getBillingGroupTree().getSelectionModel().addSelectionPath(pathForGroup);
-            getBillingGroupTree().makeVisible(pathForGroup);
-        }else {
-            TreePath pathForGroup = getBillingGroupTree().getPathForRow(0);
-            getBillingGroupTree().getSelectionModel().setSelectionPath(pathForGroup);
-            getBillingGroupTree().makeVisible(pathForGroup);
+        if(treeSelect) {
+            if(StringUtils.isNotEmpty(billGroupName)) {
+                DeviceGroup group = deviceGroupService.resolveGroupName(billGroupName);
+                TreePath pathForGroup = modelFactory.getPathForGroup((TreeNode) getBillingGroupTree().getModel().getRoot(), group);
+                getBillingGroupTree().getSelectionModel().addSelectionPath(pathForGroup);
+                getBillingGroupTree().makeVisible(pathForGroup);
+            }else {
+                TreePath pathForGroup = getBillingGroupTree().getPathForRow(0);
+                getBillingGroupTree().getSelectionModel().setSelectionPath(pathForGroup);
+                getBillingGroupTree().makeVisible(pathForGroup);
+            }
         }
         
         //Notification setup
@@ -2473,7 +2414,7 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     			//Load parameters from the script.
     			getScriptTemplate().loadParamsFromScript(ScriptTemplate.getScriptSection(file.getFileContents(), ScriptTemplate.PARAMETER_LIST));
     			//load up the swing components with the parameter values from the script file.
-    			initSwingCompValues();
+    			initSwingCompValues(true);
                 // turn on listeners after we are actually done with setting up components
     			initializeConnections();
     			CTILogger.info("		** Done setting script contents");
