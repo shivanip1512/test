@@ -27,6 +27,7 @@ import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.web.amr.csr.CsrUtils;
 
 public class DeviceFilterCollectionProducer extends DeviceCollectionProducerBase implements DeviceFilterCollectionHelper {
     private CsrSearchDao csrSearchDao;
@@ -54,15 +55,8 @@ public class DeviceFilterCollectionProducer extends DeviceCollectionProducerBase
                                       orderByDescending);
         
         List<FilterBy> filterByList = FilterByGenerator.getFilterByList();
-        List<FilterBy> queryFilter = new ArrayList<FilterBy>();
-
-        for (FilterBy filterBy : filterByList) {
-            String filterValue = ServletRequestUtils.getStringParameter(request, getParameterName(filterBy.getName()));
-            if (!StringUtils.isBlank(filterValue)) {
-                filterBy.setFilterValue(filterValue);
-                queryFilter.add(filterBy);
-            }
-        }
+        List<FilterBy> queryFilter = CsrUtils.getQueryFilter(request, filterByList);
+        
         return createDeviceGroupCollection(queryFilter, orderBy);
     }
 
