@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.71 $
-* DATE         :  $Date: 2008/07/17 20:53:14 $
+* REVISION     :  $Revision: 1.72 $
+* DATE         :  $Date: 2008/08/08 13:48:39 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -845,6 +845,7 @@ VOID ResultThread (VOID *Arg)
                     // Write any results generated back to VanGogh
                     while(retList.size())
                     {
+                        //  add protection here for CtiRequestMsgs going to Dispatch
                         VanGoghConnection.WriteConnQue(retList.front());   // I no longer manage this, the queue cleans up!
                         retList.pop_front();
                     }

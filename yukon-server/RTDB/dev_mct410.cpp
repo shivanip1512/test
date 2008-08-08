@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.164 $
-* DATE         :  $Date: 2008/07/25 15:14:59 $
+* REVISION     :  $Revision: 1.165 $
+* DATE         :  $Date: 2008/08/08 13:48:39 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2941,6 +2941,7 @@ INT CtiDeviceMCT410::decodeGetValueLoadProfilePeakReport(INMESS *InMessage, CtiT
             _llpPeakInterest.time = 0;
             _llpPeakInterest.period = 0;
             status = NOTNORMAL;
+            InMessage->Return.MacroOffset = 0;  //  stop the retries!
         }
         else
         {

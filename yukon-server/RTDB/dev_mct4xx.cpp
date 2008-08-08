@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.83 $
-* DATE         :  $Date: 2008/08/04 19:02:17 $
+* REVISION     :  $Revision: 1.84 $
+* DATE         :  $Date: 2008/08/08 13:48:39 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1975,45 +1975,23 @@ INT CtiDeviceMCT4xx::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< 
                     fixed_delay -= 2000;
                 }
 
-                CTISleep(fixed_delay + variable_delay);
-/*
-                string command_str;
+                CtiRequestMsg *newReq = new CtiRequestMsg(getID(),
+                                                          InMessage->Return.CommandStr,
+                                                          InMessage->Return.UserID,
+                                                          0,
+                                                          InMessage->Return.RouteID,
+                                                          0,  //  PIL will recalculate this;  if we include it, we will potentially be bypassing the initial macro routes
+                                                          0,
+                                                          0,
+                                                          InMessage->Priority);
 
-                command_str  = "getvalue lp peak ";
+                newReq->setConnectionHandle((void *)InMessage->Return.Connection);
+                newReq->setCommandString(newReq->CommandString() + " read");
 
-                switch( _llpPeakInterest.command )
-                {
-                    case FuncRead_LLPPeakDayPos:        command_str += "day ";      break;
-                    case FuncRead_LLPPeakHourPos:       command_str += "hour ";     break;
-                    case FuncRead_LLPPeakIntervalPos:   command_str += "interval "; break;
-                }
+                //  set it to execute in the future
+                newReq->setMessageTime(CtiTime::now().seconds() + ((fixed_delay + variable_delay) / 1000));
 
-                command_str += "channel " + CtiNumStr(_llpPeakInterest.channel + 1) + " ";
-
-                CtiDate lp_date(CtiTime(_llpPeakInterest.time - 86400));
-
-                command_str += CtiNumStr(lp_date.month()) + "/" +
-                               CtiNumStr(lp_date.dayOfMonth()) + "/" +
-                               CtiNumStr(lp_date.year()) + " ";
-
-                command_str += CtiNumStr(_llpPeakInterest.period);
-
-                noqueue
-*/
-                CtiRequestMsg newReq(getID(),
-                                     InMessage->Return.CommandStr,
-                                     InMessage->Return.UserID,
-                                     0,
-                                     InMessage->Return.RouteID,
-                                     InMessage->Return.MacroOffset,
-                                     0,
-                                     0,
-                                     InMessage->Priority);
-
-                newReq.setConnectionHandle((void *)InMessage->Return.Connection);
-                newReq.setCommandString(newReq.CommandString() + " read");
-
-                CtiDeviceBase::ExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList);
+                retList.push_back(newReq);
 
                 break;
             }

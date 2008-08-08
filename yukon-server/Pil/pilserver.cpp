@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.108 $
-* DATE         :  $Date: 2008/08/06 21:08:40 $
+* REVISION     :  $Revision: 1.109 $
+* DATE         :  $Date: 2008/08/08 13:48:39 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -94,16 +94,8 @@ int CtiPILServer::execute()
 
     try
     {
-        /*----------------------------------------------------------*
-         * This is a key operation here.. This is the "old-style"
-         * connection to porter's standard portpipe connectionthread.
-         *
-         * The machinery is in ctibase, which means it is available
-         * even to the internals of porter.. an added benefit right
-         * now, since we really are doing a protocol conversion here.
-         *----------------------------------------------------------*/
+        //  all references to this need to be moved to Scanner - we now use PilToPorter and PorterToPil
         PortPipeInit (NOWAIT);
-
 
         if(!bServerClosing)
         {
@@ -124,6 +116,9 @@ int CtiPILServer::execute()
 
             _vgConnThread = rwMakeThreadFunction(*this, &CtiPILServer::vgConnThread);
             _vgConnThread.start();
+
+            _schedulerThread = rwMakeThreadFunction(*this, &CtiPILServer::schedulerThread);
+            _schedulerThread.start();
         }
     }
     catch(const RWxmsg& x)
@@ -197,9 +192,11 @@ void CtiPILServer::mainThread()
     {
         try
         {
-            if( (MainQueue_.isEmpty() || !(++groupBypass % 10))
+            if( (MainQueue_.isEmpty() || (++groupBypass > 10))
                 && !_groupQueue.empty() )
             {
+                groupBypass = 0;
+
                 MsgPtr = *(_groupQueue.begin());
                 _groupQueue.erase(_groupQueue.begin());
 
@@ -663,7 +660,11 @@ void CtiPILServer::resultThread()
                     {
                         CtiMessage *pRet = retList.front();retList.pop_front();
 
-                        if((Conn = ((CtiConnection*)InMessage->Return.Connection)) != NULL)
+                        if( pRet->isA() == MSG_PCREQUEST )
+                        {
+                            _schedulerQueue.putQueue(pRet);
+                        }
+                        else if((Conn = ((CtiConnection*)InMessage->Return.Connection)) != NULL)
                         {
                             if(DebugLevel & DEBUGLEVEL_PIL_RESULTTHREAD)
                             {
@@ -1358,6 +1359,61 @@ void CtiPILServer::vgConnThread()
         dout << CtiTime() << " PIL vgConnThrd : " << rwThreadId() << " terminating " << endl;
     }
 
+}
+
+struct message_time_less : public binary_function< CtiMessage *, CtiMessage *, bool>
+{
+    bool operator()(CtiMessage *lhs, CtiMessage *rhs)
+    {
+        return (lhs && rhs)?(lhs->getMessageTime() < rhs->getMessageTime()):(lhs < rhs);
+    }
+};
+
+
+void CtiPILServer::schedulerThread()
+{
+    fifo_multiset<CtiMessage *, message_time_less> message_queue;
+
+    CtiMessage *pMsg;
+
+    unsigned last_iteration;
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " PIL schedulerThread : Started as TID " << rwThreadId() << endl;
+    }
+
+    SetThreadName(-1, "schdlrThd");
+
+    /* perform the wait loop forever */
+    for( ; !bServerClosing ; )
+    {
+        pMsg = _schedulerQueue.getQueue(1000);
+
+        if(pMsg != NULL)
+        {
+            message_queue.insert(pMsg);
+        }
+
+        if( !message_queue.empty() )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " message_queue.size() =  " << message_queue.size() << "; begin = " << (*(message_queue.begin()))->getMessageTime() << endl;
+        }
+
+        while( !message_queue.empty() && (*(message_queue.begin()))->getMessageTime() <= CtiTime::now() )
+        {
+            //  write it to PIL
+            putQueue(*(message_queue.begin()));
+
+            message_queue.erase(message_queue.begin());
+        }
+    }
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " PIL schedulerThread : " << rwThreadId() << " terminating " << endl;
+    }
 }
 
 int CtiPILServer::getDeviceGroupMembers( string groupname, vector<long> &paoids )

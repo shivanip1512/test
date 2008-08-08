@@ -38,6 +38,7 @@ private:
 
    RWThreadFunction     ResultThread_;     // Thread which translates INMESS to CtiReturnMsg
    RWThreadFunction     _vgConnThread;     // Thread which manages VanGogh requests!
+   RWThreadFunction     _schedulerThread;
    RWThreadFunction     _nexusThread;
    RWThreadFunction     _nexusWriteThread;
 
@@ -48,8 +49,9 @@ private:
 
    group_queue_t _groupQueue;
 
-   CtiMutex             _inMux;            // Protects the _inList.
-   CtiQueue< INMESS, std::greater<INMESS> > _inQueue;           // Nexus dumps out into this list!
+   CtiQueue<CtiMessage, std::greater<CtiMessage> > _schedulerQueue;
+
+   CtiQueue<INMESS, std::greater<INMESS> > _inQueue;  // Nexus dumps out into this list!
 
    CtiFIFOQueue< CtiOutMessage > _porterOMQueue;    // Queue for items to be sent to Porter!
    bool                          _broken;           // When the PILServer knows he's sick.
@@ -92,6 +94,7 @@ public:
    void  nexusThread();
    void  nexusWriteThread();
    void  vgConnThread();
+   void  schedulerThread();
 
    INT analyzeWhiteRabbits(CtiRequestMsg& pReq, CtiCommandParser &parse, list< CtiRequestMsg* > & execList, list< CtiMessage* > & retList);
    INT analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, list< CtiRequestMsg* > & execList, list< CtiMessage* > & retList);
