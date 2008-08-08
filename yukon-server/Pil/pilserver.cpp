@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.109 $
-* DATE         :  $Date: 2008/08/08 13:48:39 $
+* REVISION     :  $Revision: 1.110 $
+* DATE         :  $Date: 2008/08/08 15:27:38 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1393,12 +1393,6 @@ void CtiPILServer::schedulerThread()
         if(pMsg != NULL)
         {
             message_queue.insert(pMsg);
-        }
-
-        if( !message_queue.empty() )
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " message_queue.size() =  " << message_queue.size() << "; begin = " << (*(message_queue.begin()))->getMessageTime() << endl;
         }
 
         while( !message_queue.empty() && (*(message_queue.begin()))->getMessageTime() <= CtiTime::now() )
