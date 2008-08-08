@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.50 $
-* DATE         :  $Date: 2008/07/17 19:30:04 $
+* REVISION     :  $Revision: 1.51 $
+* DATE         :  $Date: 2008/08/08 21:06:50 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1435,6 +1435,18 @@ INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse, CtiOutMess
     {
         status = configureColdLoad(parse);
     }
+    else if(parse.isKeyValid("lcrmode"))
+    {
+        status = configureLCRMode(parse);
+    }
+    else if(parse.isKeyValid("gold"))
+    {
+        status = configureEmetconGoldAddress(parse);
+    }
+    else if(parse.isKeyValid("silver"))
+    {
+        status = configureEmetconSilverAddress(parse);
+    }
 
     if(parse.isKeyValid("ovuv"))
     {
@@ -1988,6 +2000,78 @@ INT CtiProtocolExpresscom::configureColdLoad(CtiCommandParser &parse)
     return status;
 }
 
+INT CtiProtocolExpresscom::configureLCRMode(CtiCommandParser &parse)
+{
+    INT status = SYNTAX;
+    BYTE config = 0;
+
+    /*  Length: 1 byte
+        Data Byte 1: 8 bit field
+        Bit 0 - Versacom
+        Bit 1 - ExpressCom
+        Bit 2 - Emetcon A words
+        Bit 3 - Golay
+    */
+    if(parse.isKeyValid("modevcom"))
+    {
+        config |= 1;
+    }
+    if(parse.isKeyValid("modexcom"))
+    {
+        config |= (1<<1);
+    }
+    if(parse.isKeyValid("modeemetcon"))
+    {
+        config |= (1<<2);
+    }
+    if(parse.isKeyValid("modegolay"))
+    {
+        config |= (1<<3);
+    }
+
+    if(config != 0)
+    {
+        status = configuration( cfgProtocolMode, 
+                                1,  //length of data
+                                &config );
+    }
+    return status;
+}
+
+INT CtiProtocolExpresscom::configureEmetconGoldAddress(CtiCommandParser &parse)
+{
+    INT status = SYNTAX;
+    BYTE config = 0;
+
+    config = parse.getiValue("gold");
+
+    config = config - 1; //We have the user input this as 1-4
+
+    if(config < 4) //Gold address is configured as 0-3
+    {
+        status = configuration( cfgEmetconGoldAddress, 
+                                1,  //length of data
+                                &config );
+    }
+    return status;
+}
+
+INT CtiProtocolExpresscom::configureEmetconSilverAddress(CtiCommandParser &parse)
+{
+    INT status = SYNTAX;
+    BYTE config = 0;
+
+    config = parse.getiValue("silver");
+    config = config - 1; //We have the user input this as 1-60
+
+    if(config < 60) //Silver address is configured as 0-59
+    {
+        status = configuration( cfgEmetconSilverAddress, 
+                                1,  //length of data
+                                &config );
+    }
+    return status;
+}
 
 INT CtiProtocolExpresscom::priority(BYTE priority)
 {

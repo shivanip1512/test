@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2008/07/17 19:30:04 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2008/08/08 21:06:50 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -89,7 +89,10 @@ public:
     } CtiExpresscomMessageType_t;
 
     typedef enum
-    {                                          
+    {   
+        cfgProtocolMode                   = 0x0C,
+        cfgEmetconGoldAddress             = 0x0D,
+        cfgEmetconSilverAddress           = 0x0E,
         cfgThermostatConfig               = 0x24,
         cfgColdLoad                       = 0x30,
         cfgDisplayMessages                = 0x5D,
@@ -225,6 +228,9 @@ private:
     INT configureGeoAddressing(CtiCommandParser &parse);
     INT configureLoadAddressing(CtiCommandParser &parse);
     INT configureColdLoad(CtiCommandParser &parse);
+    INT configureLCRMode(CtiCommandParser &parse);
+    INT configureEmetconGoldAddress(CtiCommandParser &parse);
+    INT configureEmetconSilverAddress(CtiCommandParser &parse);
     INT priority(BYTE priority);
     unsigned short addCRC(unsigned short crc, unsigned char data);
     void calcCRC(std::vector< BYTE >::iterator data, unsigned char len);

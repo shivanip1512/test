@@ -129,7 +129,19 @@ std::string inputString[TEST_SIZE] = {
 "putconfig xcom data 'Julie rocks!' port 2 deletable priority 7 timeout 30 hour clear",
 "putconfig xcom coldl r=10",
 "putconfig xcom coldl r1=10",
-"putconfig xcom coldl r1=10 r2=2h r14=10m"
+"putconfig xcom coldl r1=10 r2=2h r14=10m",
+"putconfig xcom lcrmode ExEmVG",
+"putconfig xcom lcrmode ExVG",
+"putconfig xcom gold 1",
+"putconfig xcom silver 1",
+"putconfig xcom gold 4",
+"putconfig xcom silver 60",
+"putconfig vcom lcrmode e",
+"putconfig vcom lcrmode v",
+"putconfig vcom gold 1",
+"putconfig vcom silver 1",
+"putconfig vcom gold 4",
+"putconfig vcom silver 60",
 };
 
 

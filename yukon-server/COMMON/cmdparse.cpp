@@ -3417,7 +3417,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
 
         if(CmdStr.contains(" silver"))
         {
-            if(!(token = CmdStr.match("silver [0-9][0-9]")).empty())
+            if(!(token = CmdStr.match("silver [0-9]*")).empty())
             {
                 CtiTokenizer tok( token );
 
@@ -5092,6 +5092,58 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
 
                 }
             }
+        }
+    }
+    else if(CmdStr.contains(" lcrmode"))
+    {
+        if(!(token = CmdStr.match("lcrmode *[a-zA-Z]*")).empty())
+        {
+            CtiTokenizer tok( token );
+
+            tok();   // Get us past "lcrmode"
+
+            temp = tok();
+            temp.toLower();
+
+            _cmd["lcrmode"] = CtiParseValue(true);
+            if(temp.contains("ex"))
+            {
+                _cmd["modexcom"] = CtiParseValue(true);
+            }
+            if(temp.contains("em"))
+            {
+                _cmd["modeemetcon"] = CtiParseValue(true);
+            }
+            if(temp.contains("v"))
+            {
+                _cmd["modevcom"] = CtiParseValue(true);
+            }
+            if(temp.contains("g"))
+            {
+                _cmd["modegolay"] = CtiParseValue(true);
+            }
+        }
+    }
+    else if(CmdStr.contains(" gold"))
+    {
+        if(!(token = CmdStr.match("gold [0-9]")).empty())
+        {
+            CtiTokenizer tok( token );
+
+            tok();   // Get us past "gold"
+
+            _cmd["gold"] = CtiParseValue(atoi(tok().c_str()));
+        }
+    }
+    else if(CmdStr.contains(" silver"))
+    {
+        if(!(token = CmdStr.match("silver [0-9]*")).empty())
+        {
+            CtiTokenizer tok( token );
+
+            tok();   // Get us past "silver"
+
+            _cmd["silver"] = CtiParseValue(atoi(tok().c_str()));
         }
     }
 }
