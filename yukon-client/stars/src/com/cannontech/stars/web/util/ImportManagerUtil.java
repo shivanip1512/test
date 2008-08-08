@@ -842,6 +842,7 @@ public class ImportManagerUtil {
 		setStarsInventory( createHw, fields, energyCompany, problem );
 	    
 		liteInv = CreateLMHardwareAction.addInventory( createHw, liteAcctInfo, energyCompany );
+	    
 		return liteInv;
 	}
 	
@@ -863,7 +864,8 @@ public class ImportManagerUtil {
 		setStarsInventory( updateHw, fields, energyCompany, problem );
 		
 		UpdateLMHardwareAction.updateInventory( updateHw, liteInv, energyCompany );
-		return energyCompany.getInventory( liteInv.getInventoryID(), true );
+		
+		return liteInv;
 	}
 	
 	public static void removeLMHardware(String[] fields, LiteStarsCustAccountInformation liteAcctInfo,
