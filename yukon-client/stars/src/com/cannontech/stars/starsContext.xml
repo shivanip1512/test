@@ -100,9 +100,7 @@
         <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
     </bean>
 
-    <bean id="hardwareBaseDao"
-        class="com.cannontech.stars.dr.hardware.dao.impl.LMHardwareBaseDaoImpl">
-        <property name="nextValueHelper" ref="nextValueHelper" />
+    <bean id="hardwareBaseDao" class="com.cannontech.stars.dr.hardware.dao.impl.LMHardwareBaseDaoImpl">
         <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
     </bean>
 

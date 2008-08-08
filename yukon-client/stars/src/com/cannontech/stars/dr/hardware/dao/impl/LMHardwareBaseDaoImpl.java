@@ -16,8 +16,6 @@ import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 
 public class LMHardwareBaseDaoImpl implements LMHardwareBaseDao {
-    private static final String insertSql;
-    private static final String removeSql;
     private static final String updateSql;
     private static final String selectAllSql;
     private static final String selectById;
@@ -27,14 +25,8 @@ public class LMHardwareBaseDaoImpl implements LMHardwareBaseDao {
     private static final String selectByConfigurationId;
     private static final ParameterizedRowMapper<LMHardwareBase> rowMapper;
     private SimpleJdbcTemplate simpleJdbcTemplate;
-    private NextValueHelper nextValueHelper;
     
     static {
-        
-        insertSql = "INSERT INTO LMHardwareBase (InventoryID,ManufacturerSerialNumber,LMHardwareTypeID,RouteID,ConfigurationID) VALUES (?,?,?,?,?)";
-        
-        removeSql = "DELETE FROM LMHardwareBase WHERE InventoryID = ?";
-         
         updateSql = "UPDATE LMHardwareBase SET ManufacturerSerialNumber = ?, LMHardwareTypeID = ?, RouteID = ?, ConfigurationID = ? WHERE InventoryID = ?";
         
         selectAllSql = "SELECT InventoryID,ManufacturerSerialNumber,LMHardwareTypeID,RouteID,ConfigurationID from LMHardwareBase";
@@ -50,27 +42,6 @@ public class LMHardwareBaseDaoImpl implements LMHardwareBaseDao {
         selectByConfigurationId = selectAllSql + " WHERE ConfigurationID = ?";
         
         rowMapper = LMHardwareBaseDaoImpl.createRowMapper();
-    }
-    
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-    public boolean add(final LMHardwareBase hardwareBase) {
-        int nextId = nextValueHelper.getNextValue("LMHardwareBase");
-        hardwareBase.setInventoryId(nextId);
-        
-        int rowsAffected = simpleJdbcTemplate.update(insertSql, hardwareBase.getInventoryId(),
-                                                                hardwareBase.getManufacturerSerialNumber(),
-                                                                hardwareBase.getLMHarewareTypeId(),
-                                                                hardwareBase.getRouteId(),
-                                                                hardwareBase.getConfigurationId());
-        boolean result = (rowsAffected == 1);
-        return result;
-    }
-    
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-    public boolean remove(final LMHardwareBase hardwareBase) {
-        int rowsAffected = simpleJdbcTemplate.update(removeSql, hardwareBase.getInventoryId());
-        boolean result = (rowsAffected == 1);
-        return result;
     }
     
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
@@ -149,10 +120,6 @@ public class LMHardwareBaseDaoImpl implements LMHardwareBaseDao {
             }
         };
         return rowMapper;
-    }
-
-    public void setNextValueHelper(final NextValueHelper nextValueHelper) {
-        this.nextValueHelper = nextValueHelper;
     }
 
     public void setSimpleJdbcTemplate(final SimpleJdbcTemplate simpleJdbcTemplate) {

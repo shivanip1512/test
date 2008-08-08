@@ -7,10 +7,6 @@ import org.springframework.dao.DataAccessException;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 
 public interface LMHardwareBaseDao {
-
-    public boolean add(LMHardwareBase hardwareBase);
-    
-    public boolean remove(LMHardwareBase hardwareBase);
     
     public boolean update(LMHardwareBase hardwareBase);
     

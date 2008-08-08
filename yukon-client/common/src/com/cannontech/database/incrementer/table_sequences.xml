@@ -10,7 +10,6 @@
         <table name="LMCustomerEventBase" identitycolumn="EventID" initsequence="true"/>
         <table name="LMConfigurationBase" identitycolumn="ConfigurationID" initsequence="true"/>
         <table name="Warehouse" identitycolumn="WarehouseID"/>
-      	<table name="LMHardwareBase" identitycolumn="InventoryID"/>
       	<table name="Substation" identitycolumn="SubstationID" initsequence="true"/>
         <table name="CCurtProgram" identitycolumn="CCurtProgramId"/>
         <table name="CCurtProgramType" identitycolumn="CCurtProgramTypeId"/>
