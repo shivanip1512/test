@@ -17,6 +17,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.deviceread.dao.MeterReadService;
@@ -24,6 +25,7 @@ import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.amr.toggleProfiling.service.ToggleProfilingService;
+import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
@@ -45,6 +47,7 @@ import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.simplereport.SimpleReportService;
 import com.cannontech.tools.email.EmailService;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.security.WebSecurityChecker;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -573,6 +576,39 @@ public class ProfileWidget extends WidgetControllerBase {
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         addFutureScheduleDateToMav(mav, userContext);
         
+        return mav;
+    }
+    
+    public ModelAndView viewDailyUsageReport(HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+        // get pointId
+        int deviceId = ServletRequestUtils.getRequiredIntParameter(request, "deviceId");
+        YukonDevice device = deviceDao.getYukonDeviceObjectById(deviceId);
+        
+        LitePoint point = attributeService.getPointForAttribute(device, BuiltInAttribute.USAGE);
+        Integer pointId = point.getLiteID();
+        
+        // get date range
+        String reportStartDateStr = ServletRequestUtils.getRequiredStringParameter(request, "reportStartDateStr");
+        String reportStopDateStr = ServletRequestUtils.getRequiredStringParameter(request, "reportStopDateStr");
+        
+        // build query
+        Map<String, String> propertiesMap = new HashMap<String, String>();
+        propertiesMap.put("def", "dailyUsageDefinition");
+        propertiesMap.put("viewJsp", "MENU");
+        propertiesMap.put("module", "amr");
+        propertiesMap.put("menuSelection", "deviceselection");
+        propertiesMap.put("showMenu", "true");
+        propertiesMap.put("pointId", pointId.toString());
+        propertiesMap.put("startDate", reportStartDateStr);
+        propertiesMap.put("stopDate", reportStopDateStr);
+        String queryString = ServletUtil.buildSafeQueryStringFromMap(propertiesMap, true);
+        
+        String url = "/spring/reports/simple/htmlView?" + queryString;
+        url = ServletUtil.createSafeUrl(request, url);
+        
+        // redirect
+        ModelAndView mav = new ModelAndView("redirect:" + url);
         return mav;
     }
     

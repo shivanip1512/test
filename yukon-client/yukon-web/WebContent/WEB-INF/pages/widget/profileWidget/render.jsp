@@ -95,3 +95,30 @@
 </c:if>
 </cti:checkProperty>
 </cti:checkRole>
+
+<%-- DAILY USAGE REPORT --%>
+<form id="reportForm" action="/spring/widget/profileWidget/viewDailyUsageReport">
+
+<input type="hidden" name="deviceId" value="${deviceId}">
+
+<table class="compactResultsTable">
+	<tr>
+		<th colspan="5" align="left">Daily Usage Report:</th>
+	</tr>
+
+    <tr>
+        <td class="label">Start Date:</td>
+        <td>
+            <tags:dateInputCalendar fieldName="reportStartDateStr" fieldValue="${startDateStr}"></tags:dateInputCalendar>
+        </td>
+        <td class="label">Stop Date:</td>
+        <td>
+            <tags:dateInputCalendar fieldName="reportStopDateStr" fieldValue="${stopDateStr}"></tags:dateInputCalendar>
+        </td>
+        <td class="last" align="right">
+           <tags:slowInput myFormId="reportForm" labelBusy="Report" label="Get Report" />
+        </td>
+    </tr>
+	
+</table>
+</form>
