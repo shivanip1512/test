@@ -65,7 +65,7 @@ public class DefineCollectableCapControlServerResponse extends DefineCollectable
 
 		CapControlServerResponse cmd = (CapControlServerResponse) obj;
 
-		vstr.insertUnsignedInt( (long) cmd.getResponseType().getTypeId() );
+		vstr.insertUnsignedInt( cmd.getResponseType().getTypeId() );
 		vstr.saveObject( cmd.getResponse(), SimpleMappings.CString );
 	}
 }

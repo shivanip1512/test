@@ -1,8 +1,5 @@
 package com.cannontech.message.capcontrol;
 
-import javax.activation.UnsupportedDataTypeException;
-
-
 public enum CapControlResponseType {
 	
 	CommandRefused(CapControlServerResponse.COMMANDREFUSED_ID);
@@ -17,7 +14,7 @@ public enum CapControlResponseType {
 		return typeId;
 	}
 	
-	public static CapControlResponseType getResponseTypeById(int id) throws UnsupportedDataTypeException{
+	public static CapControlResponseType getResponseTypeById(int id) throws IllegalArgumentException{
 	    
 	    for(CapControlResponseType type : CapControlResponseType.values()) {
 	        if(type.getTypeId() == id) {
