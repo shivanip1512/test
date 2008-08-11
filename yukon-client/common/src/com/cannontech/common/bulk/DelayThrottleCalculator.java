@@ -32,7 +32,7 @@ public class DelayThrottleCalculator implements InitializingBean {
     
     @Override
     public void afterPropertiesSet() throws Exception {
-        setMaximumDelay(configurationSource.getInteger(configurationPropertyName, 100));
+        setMaximumDelay(configurationSource.getInteger(configurationPropertyName, 500));
     }
     
     @Required
