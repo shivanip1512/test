@@ -9,7 +9,7 @@
 	<c:when test="${readable}">
 		
 		<%--REQUEST--%>
-		<table width="100%">
+		<table width="95%">
 			<tr>
 				<td>Channel:</td>
 				<td>
