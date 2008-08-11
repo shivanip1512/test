@@ -1,7 +1,6 @@
 package com.cannontech.message.capcontrol;
 
 import com.cannontech.yukon.cbc.DefineCollectableCBCMessage;
-import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.VirtualInputStream;
@@ -17,17 +16,6 @@ public class DefineCollectableCapControlServerResponse extends DefineCollectable
 	
 	public Object create(VirtualInputStream strm) {
 		return new CapControlServerResponse();
-	}
-	
-	public Comparator getComparator() {
-		return new Comparator() {
-		  public int compare(Object x, Object y) {
-				if( x == y )
-					return 0;
-				else
-					return -1;
-		  }
-		};
 	}
 	
 	public int getCxxClassId() {
