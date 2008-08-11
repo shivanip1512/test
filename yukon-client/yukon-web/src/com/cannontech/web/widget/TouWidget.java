@@ -59,7 +59,6 @@ public class TouWidget extends WidgetControllerBase {
         mav.addObject("rateTypes", touRates);
         
         LiteYukonUser user = ServletUtil.getYukonUser(request);
-        //IS THERE A PROBLEM HERE?  DOES existingAttributes need to be touAttributes?
         boolean readable = meterReadService.isReadable(meter, touAttributes, user);
         mav.addObject("readable", readable);
         
