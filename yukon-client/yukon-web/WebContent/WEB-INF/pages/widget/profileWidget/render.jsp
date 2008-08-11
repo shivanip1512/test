@@ -116,7 +116,7 @@
             <tags:dateInputCalendar fieldName="reportStopDateStr" fieldValue="${stopDateStr}"></tags:dateInputCalendar>
         </td>
         <td class="last" align="right">
-           <tags:slowInput myFormId="reportForm" labelBusy="Report" label="Get Report" />
+           <tags:slowInput myFormId="reportForm" labelBusy="View Report" label="View Report" />
         </td>
     </tr>
 	
