@@ -4,7 +4,9 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:checkRole role="operator.DeviceActionsRole.ROLEID">
+<cti:checkProperty property="operator.DeviceActionsRole.DEVICE_GROUP_MODIFY">
     <c:set var="hasModifyRoleProperty" value="true"/>
+</cti:checkProperty>
 </cti:checkRole>
     
 <div class="widgetInternalSectionHeader">Current Groups</div>
