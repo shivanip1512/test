@@ -97,17 +97,17 @@ public class RouteDBModel extends CarrierDBModel
                 case ROUTEDB_COLL_GROUP_NAME_COLUMN: {
                     SystemGroupEnum systemGroupEnum = SystemGroupEnum.COLLECTION;
                     SimpleReportGroup group = reportGroupService.getSimpleGroupMembership(systemGroupEnum, meter);
-                    return reportGroupService.getPartialGroupName(systemGroupEnum, group);
+                    return group.getDisplayName();
                 }
                 case ROUTEDB_TEST_COLL_GROUP_NAME_COLUMN: {
                     SystemGroupEnum systemGroupEnum = SystemGroupEnum.ALTERNATE;
                     SimpleReportGroup group = reportGroupService.getSimpleGroupMembership(systemGroupEnum, meter);
-                    return reportGroupService.getPartialGroupName(systemGroupEnum, group);
+                    return group.getDisplayName();
                 }
                 case ROUTEDB_BILL_GROUP_NAME_COLUMN: {
                     SystemGroupEnum systemGroupEnum = SystemGroupEnum.BILLING;
                     SimpleReportGroup group = reportGroupService.getSimpleGroupMembership(systemGroupEnum, meter);
-                    return reportGroupService.getPartialGroupName(systemGroupEnum, group);
+                    return group.getDisplayName();
                 }
             }
         }

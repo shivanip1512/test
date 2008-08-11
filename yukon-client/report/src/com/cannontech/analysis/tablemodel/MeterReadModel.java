@@ -311,13 +311,13 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
                     } else {
                         SystemGroupEnum systemGroupEnum = SystemGroupEnum.COLLECTION;
                         SimpleReportGroup group = reportGroupService.getSimpleGroupMembership(systemGroupEnum, mpData.getMeter());
-                        return reportGroupService.getPartialGroupName(systemGroupEnum, group);
+                        return group.getDisplayName();
                     }
                 }
                 case TEST_COLL_GROUP_NAME_COLUMN: {
                     SystemGroupEnum systemGroupEnum = SystemGroupEnum.ALTERNATE;
                     SimpleReportGroup group = reportGroupService.getSimpleGroupMembership(systemGroupEnum, mpData.getMeter());
-                    return reportGroupService.getPartialGroupName(systemGroupEnum, group);
+                    return group.getDisplayName();
                 }
 			}
 		}

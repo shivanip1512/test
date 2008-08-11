@@ -20,12 +20,12 @@ public class ReportGroupServiceImpl implements ReportGroupService {
     @Override
     public SimpleReportGroup getSimpleGroupMembership(DeviceGroup base, YukonDevice device) {
 
-        SimpleReportGroup simpleReportGroup = new SimpleReportGroup();
+        SimpleReportGroup simpleReportGroup;
         Set<DeviceGroup> membership = deviceGroupDao.getGroupMembership(base, device);
         if (!membership.isEmpty()) {
-            simpleReportGroup = new SimpleReportGroup();
-            simpleReportGroup.setDeviceGroup(membership.iterator().next());
-            simpleReportGroup.setUnique(membership.size() == 1); //unique if only one element in set
+            simpleReportGroup = new SimpleReportGroup(base, membership.iterator().next(), membership.size() == 1);
+        } else {
+            simpleReportGroup = new SimpleReportGroup(base);
         }
         return simpleReportGroup;
     }
@@ -34,16 +34,6 @@ public class ReportGroupServiceImpl implements ReportGroupService {
     public SimpleReportGroup getSimpleGroupMembership(SystemGroupEnum systemGroupEnum, YukonDevice device) {
         DeviceGroup storedDeviceGroup = deviceGroupService.resolveGroupName(systemGroupEnum.getFullPath());
         return getSimpleGroupMembership(storedDeviceGroup, device);
-    }
-    
-    @Override
-    public String getPartialGroupName(SystemGroupEnum systemGroupEnum, SimpleReportGroup simpleReportGroup) {
-        String parentName = systemGroupEnum.getFullPath();
-        if (simpleReportGroup.getDeviceGroup() != null) {
-            String partialName = simpleReportGroup.getDeviceGroup().getFullName().replaceFirst(parentName, "");
-            return partialName + (simpleReportGroup.getUnique() ? "": SimpleReportGroup.NON_UNIQUE_IDENTIFIER);
-        }
-        return null;
     }
     
     @Autowired

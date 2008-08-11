@@ -199,12 +199,12 @@ public class CarrierDBModel extends ReportModelBase<Meter>
 				case COLL_GROUP_NAME_COLUMN: {
 				    SystemGroupEnum systemGroupEnum = SystemGroupEnum.COLLECTION;
 				    SimpleReportGroup group = reportGroupService.getSimpleGroupMembership(systemGroupEnum, meter);
-				    return reportGroupService.getPartialGroupName(systemGroupEnum, group);
+				    return group.getDisplayName();
 				}
 				case TEST_COLL_GROUP_NAME_COLUMN: {
 				    SystemGroupEnum systemGroupEnum = SystemGroupEnum.ALTERNATE;
                     SimpleReportGroup group = reportGroupService.getSimpleGroupMembership(systemGroupEnum, meter);
-                    return reportGroupService.getPartialGroupName(systemGroupEnum, group);
+                    return group.getDisplayName();
 				}
 			}
 		}

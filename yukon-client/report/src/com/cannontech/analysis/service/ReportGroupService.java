@@ -23,9 +23,4 @@ public interface ReportGroupService {
      */
     public SimpleReportGroup getSimpleGroupMembership(SystemGroupEnum systemGroupEnum, YukonDevice device);
     
-    /**
-     * This method returns a String for the GroupName with the parent group name removed.
-     * @return
-     */
-    public String getPartialGroupName(SystemGroupEnum systemGroupEnum, SimpleReportGroup simpleReportGroup);
 }
