@@ -54,6 +54,7 @@ import com.cannontech.roles.yukon.ConfigurationRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.util.ImportProblem;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.StarsUtils;
@@ -202,6 +203,8 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 	    YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
 	private final StarsInventoryBaseDao starsInventoryBaseDao = 
 	    YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
+	private final StarsSearchDao starsSearchDao = 
+		YukonSpringHook.getBean("starsSearchDao", StarsSearchDao.class);
 	
 	public ImportCustAccountsTask() {
 		
@@ -745,7 +748,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 						else {
 							String acctNo = hwFieldsMap.get( hwFields[ImportManagerUtil.IDX_SERIAL_NO] );
 							if (acctNo == null) {
-								LiteStarsLMHardware liteHw = energyCompany.searchForLMHardware( deviceType.getEntryID(), hwFields[ImportManagerUtil.IDX_SERIAL_NO] );
+								LiteStarsLMHardware liteHw = starsSearchDao.getLMHardwareBySerialNumber(hwFields[ImportManagerUtil.IDX_SERIAL_NO], energyCompany);
 								if (liteHw != null && liteHw.getAccountID() > 0)
     								acctNo = starsCustAccountInformationDao.getById(liteHw.getAccountID(), energyCompany.getEnergyCompanyID()).getCustomerAccount().getAccountNumber();
 							}
@@ -1034,7 +1037,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 					else {
 						String acctNo = hwFieldsMap.get( hwFields[ImportManagerUtil.IDX_SERIAL_NO] );
 						if (acctNo == null) {
-							LiteStarsLMHardware liteHw = energyCompany.searchForLMHardware( deviceType.getEntryID(), hwFields[ImportManagerUtil.IDX_SERIAL_NO] );
+							LiteStarsLMHardware liteHw = starsSearchDao.getLMHardwareBySerialNumber(hwFields[ImportManagerUtil.IDX_SERIAL_NO], energyCompany);
 							if (liteHw != null && liteHw.getAccountID() > 0)
     							acctNo = starsCustAccountInformationDao.getById(liteHw.getAccountID(), energyCompany.getEnergyCompanyID()).getCustomerAccount().getAccountNumber();
 						}

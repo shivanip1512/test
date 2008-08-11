@@ -30,6 +30,8 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.LiteSubstation;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.roles.yukon.ConfigurationRole;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.util.ImportProblem;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServletUtils;
@@ -454,6 +456,8 @@ public class ImportManagerUtil {
 	public static final String HARDWARE_ACTION_INSERT = "INSERT";
 	public static final String HARDWARE_ACTION_UPDATE = "UPDATE";
 	public static final String HARDWARE_ACTION_REMOVE = "REMOVE";
+	
+	private static final StarsSearchDao starsSearchDao =  YukonSpringHook.getBean("starsSearchDao", StarsSearchDao.class);
 
 	public static String[] prepareFields(int numFields) {
 		String[] fields = new String[ numFields ];
@@ -813,15 +817,18 @@ public class ImportManagerUtil {
 		
 		int categoryID = InventoryUtils.getInventoryCategoryID( devTypeID, energyCompany );
 		if (InventoryUtils.isLMHardware( categoryID )) {
-			if (checkConstraint)
-				liteInv = energyCompany.searchForLMHardware( devTypeID, fields[IDX_SERIAL_NO] );
+			if (checkConstraint) {
+				liteInv = starsSearchDao.getLMHardwareBySerialNumber(fields[IDX_SERIAL_NO], energyCompany);
+			}
 		}
 		else {
-			if (fields[IDX_DEVICE_NAME].equals(""))
+			if (fields[IDX_DEVICE_NAME].equals("")) {
 				throw new WebClientException( ImportProblem.NO_DEVICE_NAME );
-			liteInv = energyCompany.searchForDevice( categoryID, fields[IDX_DEVICE_NAME] );
-			if (liteInv == null)
+			}
+			liteInv = starsSearchDao.searchForDevice(categoryID, fields[IDX_DEVICE_NAME], energyCompany);
+			if (liteInv == null) {
 				throw new WebClientException( ImportProblem.DEVICE_NAME_NOT_FOUND );
+			}
 		}
 		
 		if (liteInv != null) {

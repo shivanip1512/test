@@ -17,7 +17,7 @@ public class Pair<K,V> {
 	 * Returns the first.
 	 * @return Object
 	 */
-	public Object getFirst() {
+	public K getFirst() {
 		return first;
 	}
 
@@ -25,7 +25,7 @@ public class Pair<K,V> {
 	 * Returns the second.
 	 * @return Object
 	 */
-	public Object getSecond() {
+	public V getSecond() {
 		return second;
 	}
 
@@ -45,10 +45,10 @@ public class Pair<K,V> {
 		this.second = second;
 	}
     
-    @Override
+	@Override
     public boolean equals(Object obj) {
         if(obj instanceof Pair) {
-            Pair p = (Pair) obj;
+        	@SuppressWarnings("unchecked") Pair p = (Pair) obj;
             return (first.equals(p.first) && second.equals(p.second));
         }
         else {

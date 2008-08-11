@@ -47,8 +47,7 @@ public class CreateHardwareController extends StarsInventoryActionController {
             InventoryManagerUtil.setStarsInv( createHw, request, member );
             
             try {
-                LiteInventoryBase existingHw = member.searchForLMHardware(
-                        createHw.getDeviceType().getEntryID(), createHw.getLMHardware().getManufacturerSerialNumber() );
+                LiteInventoryBase existingHw = starsSearchDao.getLMHardwareBySerialNumber(createHw.getLMHardware().getManufacturerSerialNumber(), energyCompany);
                 if (existingHw != null)
                     throw new WebClientException("Cannot create hardware: serial # already exists.");
             }

@@ -23,6 +23,7 @@ import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.dr.event.dao.LMHardwareEventDao;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.ServletUtils;
@@ -55,6 +56,8 @@ import com.cannontech.stars.xml.util.StarsConstants;
  */
 public class UpdateLMHardwareAction implements ActionBase {
     private static final LMHardwareEventDao hardwareEventDao = YukonSpringHook.getBean("hardwareEventDao", LMHardwareEventDao.class);
+    
+    private static final StarsSearchDao starsSearchDao =  YukonSpringHook.getBean("starsSearchDao", StarsSearchDao.class);
 	/**
 	 * @see com.cannontech.stars.web.action.ActionBase#build(HttpServletRequest, HttpSession)
 	 */
@@ -188,7 +191,6 @@ public class UpdateLMHardwareAction implements ActionBase {
 	 */
 	public int parse(SOAPMessage reqMsg, SOAPMessage respMsg, HttpSession session) {
 		try {
-			StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
 			StarsOperation respOper = SOAPUtil.parseSOAPMsgForOperation( respMsg );
 
 			StarsFailure failure = respOper.getStarsFailure();
@@ -246,7 +248,7 @@ public class UpdateLMHardwareAction implements ActionBase {
 				
 				try {
 					if (!liteHw.getManufacturerSerialNumber().equals(serialNo) &&
-						energyCompany.searchForLMHardware(updateHw.getDeviceType().getEntryID(), serialNo) != null)
+							starsSearchDao.getLMHardwareBySerialNumber(serialNo, energyCompany) != null)
 						throw new WebClientException( "Failed to update the hardware, serial # already exists" );
 				}
 				catch (ObjectInOtherEnergyCompanyException e) {

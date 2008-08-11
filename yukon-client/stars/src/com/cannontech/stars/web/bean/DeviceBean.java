@@ -16,6 +16,8 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.web.util.InventoryManagerUtil;
 
@@ -45,7 +47,7 @@ public class DeviceBean {
 	private String action = null;
 	
 	private LiteStarsEnergyCompany energyCompany = null;
-	private ArrayList deviceList = null;
+	private List<LiteYukonPAObject> deviceList = null;
 
 	public DeviceBean() {
 	}
@@ -56,20 +58,22 @@ public class DeviceBean {
 		return energyCompany;
 	}
 	
-	private ArrayList getDeviceList() {
+	private List<LiteYukonPAObject> getDeviceList() {
 		if (deviceList != null) return deviceList;
-		deviceList = new ArrayList();
+		deviceList = new ArrayList<LiteYukonPAObject>();
 		
 		String deviceName = getDeviceName();
-		List devices = InventoryManagerUtil.searchDevice( getCategoryID(), deviceName );
+		List<LiteYukonPAObject> devices = InventoryManagerUtil.searchDevice( getCategoryID(), deviceName );
+		
+		StarsSearchDao starsSearchDao = (StarsSearchDao) YukonSpringHook.getBean("starsSearchDao");
 		
 		if (getFilter() == DEV_FILTER_NOT_ASSIGNED
 			|| getFilter() == DEV_FILTER_NOT_IN_INVENTORY)
 		{
 			for (int i = 0; i < devices.size(); i++) {
-				LiteYukonPAObject litePao =  (LiteYukonPAObject) devices.get(i);
+				LiteYukonPAObject litePao =  devices.get(i);
 				try {
-					LiteInventoryBase liteInv = getEnergyCompany().getDevice( litePao.getYukonID() );
+					LiteInventoryBase liteInv = starsSearchDao.getDevice(litePao.getYukonID(), getEnergyCompany());
 					if (liteInv == null)
 						deviceList.add( litePao );
 					else if (liteInv.getAccountID() == 0 && getFilter() == DEV_FILTER_NOT_ASSIGNED)
@@ -86,7 +90,7 @@ public class DeviceBean {
 	}
 	
 	public String getHTML(HttpServletRequest req) {
-		ArrayList devList = getDeviceList();
+		List<LiteYukonPAObject> devList = getDeviceList();
 		
 		if (devList == null || devList.size() == 0) {
 			StringBuffer htmlBuf = new StringBuffer();
@@ -175,7 +179,7 @@ public class DeviceBean {
 		htmlBuf.append("        </tr>").append(LINE_SEPARATOR);
         
 		for (int i = minInvNo; i <= maxInvNo; i++) {
-			LiteYukonPAObject litePao = (LiteYukonPAObject) devList.get(i-1);
+			LiteYukonPAObject litePao = devList.get(i-1);
         	
 			htmlBuf.append("        <tr>").append(LINE_SEPARATOR);
 			htmlBuf.append("          <td class='TableCell' width='10%'>");

@@ -21,6 +21,8 @@ import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.ServletUtils;
@@ -120,7 +122,8 @@ public class UpdateSNRangeTask extends TimeConsumingTask {
 			if (devTypeChanged) {
 				boolean hwExist = false;
 				try {
-					hwExist = energyCompany.searchForLMHardware( newDevTypeID.intValue(), liteHw.getManufacturerSerialNumber() ) != null;
+					StarsSearchDao starsSearchDao = YukonSpringHook.getBean("starsSearchDao", StarsSearchDao.class);
+					hwExist = starsSearchDao.getLMHardwareBySerialNumber(liteHw.getManufacturerSerialNumber(), energyCompany) != null;
 				}
 				catch (ObjectInOtherEnergyCompanyException e) {
 					hwExist = true;

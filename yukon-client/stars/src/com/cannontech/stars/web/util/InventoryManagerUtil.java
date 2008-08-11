@@ -24,6 +24,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.DBDeleteResult;
+import com.cannontech.core.dao.DBDeletionDao;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.PoolManager;
@@ -494,10 +495,10 @@ public class InventoryManagerUtil {
 		
 		if (liteInv.getDeviceID() > 0 && deleteFromYukon) {
 			
-			DBDeleteResult delRes = new DBDeleteResult( liteInv.getDeviceID(), DaoFactory.getDbDeletionDao().DEVICE_TYPE );
+			DBDeleteResult delRes = new DBDeleteResult( liteInv.getDeviceID(), DBDeletionDao.DEVICE_TYPE );
 			byte status = DaoFactory.getDbDeletionDao().deletionAttempted( delRes );
 
-			if (status == DaoFactory.getDbDeletionDao().STATUS_DISALLOW)
+			if (status == DBDeletionDao.STATUS_DISALLOW)
 				throw new WebClientException( delRes.getDescriptionMsg().toString() );
 			
 			LiteYukonPAObject litePao = DaoFactory.getPaoDao().getLiteYukonPAO( liteInv.getDeviceID() );
@@ -516,18 +517,18 @@ public class InventoryManagerUtil {
 	 * @param accounts List of LiteStarsCustAccountInformation, or Pair(LiteStarsCustAccountInformation, LiteStarsEnergyCompany)
 	 * @return List of LiteInventoryBase or Pair(LiteInventoryBase, LiteStarsEnergyCompany), based on the element type of accounts
 	 */
-	private static ArrayList getInventoryByAccounts(List<Object> accounts, LiteStarsEnergyCompany energyCompany) {
-		ArrayList invList = new ArrayList();
+	private static List<Object> getInventoryByAccounts(List<Object> accounts, LiteStarsEnergyCompany energyCompany) {
+		List<Object> invList = new ArrayList<Object>();
 		
 		for (int i = 0; i < accounts.size(); i++) {
 			if (accounts.get(i) instanceof Pair) {
-				LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) ((Pair)accounts.get(i)).getFirst();
-				LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) ((Pair)accounts.get(i)).getSecond();
+				@SuppressWarnings("unchecked") LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) ((Pair)accounts.get(i)).getFirst();
+				@SuppressWarnings("unchecked") LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) ((Pair)accounts.get(i)).getSecond();
 				
 				for (int j = 0; j < liteAcctInfo.getInventories().size(); j++) {
 					int invID = ((Integer)liteAcctInfo.getInventories().get(j)).intValue();
 					LiteInventoryBase liteInv = company.getInventoryBrief( invID, true );
-					invList.add( new Pair(liteInv, company) );
+					invList.add( new Pair<LiteInventoryBase, LiteStarsEnergyCompany>(liteInv, company) );
 				}
 			}
 			else {

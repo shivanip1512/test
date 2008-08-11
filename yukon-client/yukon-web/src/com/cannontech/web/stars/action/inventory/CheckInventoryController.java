@@ -110,11 +110,11 @@ public class CheckInventoryController extends StarsInventoryActionController {
     
             try {
                 if (categoryID > 0 && InventoryUtils.isLMHardware( categoryID )) {
-                    liteInv = energyCompany.searchForLMHardware( devTypeID, serialNo );
+                	liteInv = starsSearchDao.getLMHardwareBySerialNumber(serialNo, energyCompany);
                     session.setAttribute( InventoryManagerUtil.INVENTORY_TO_CHECK, liteInv );
                 }
                 else if (categoryID > 0) {
-                    liteInv = energyCompany.searchForDevice( categoryID, deviceName );
+                    liteInv = starsSearchDao.searchForDevice(categoryID, deviceName, energyCompany);
                     session.setAttribute( InventoryManagerUtil.INVENTORY_TO_CHECK, liteInv );
                 }
             }
