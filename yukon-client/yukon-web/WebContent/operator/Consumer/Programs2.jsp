@@ -243,7 +243,7 @@ function prepareSubmit(form) {
                             <input type="checkbox" name="InvID<%= i %>" value="<%= hardware.getInventoryID() %>"
 							  onClick="selectHardware(<%= i %>, <%= j %>)" <%= (checked)?"checked":"" %>>
                           </td>
-                          <td width="50%"><%= label %></td>
+                          <td width="50%"><%= StringEscapeUtils.escapeHtml(label) %></td>
                           <td width="45%">Relay
                             <select name="LoadNo<%= i %>" <%= (checked)?"":"disabled" %>>
                               <option value="0">(none)</option>
