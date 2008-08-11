@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/port_tcpip.cpp-arc  $
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2008/08/06 18:26:48 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2008/08/11 15:27:19 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -171,6 +171,14 @@ INT CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
                 }
 
                 _open = true;
+
+                /* Make sure we time out on our writes after 5 seconds */
+                OptVal = gConfigParms.getValueAsInt("PORTER_SOCKET_WRITE_TIMEOUT", 5);
+                if(setsockopt (_socket, SOL_SOCKET, SO_SNDTIMEO, (char *) &OptVal, sizeof (OptVal)))
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " Error setting KeepAlive Mode for Terminal Server Socket:  " << WSAGetLastError() << " " << getName() << endl;
+                }
 
                 /* Turn on the keepalive timer */
                 OptVal = 1;
