@@ -13,7 +13,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -71,7 +70,6 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.database.data.route.RouteBase;
 import com.cannontech.database.data.tou.TOUSchedule;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.model.DBTreeModel;
@@ -147,13 +145,11 @@ public class DatabaseEditor
 	private com.cannontech.common.gui.util.TreeViewPanel treeViewPanel;
 	private JPanel contentPane;
 	private JSplitPane splitPane;
-	private JScrollPane scrollPane;
 	private FileMenu fileMenu;
 	private EditMenu editMenu;
 	private CoreCreateMenu coreCreateMenu;
 	private LMCreateMenu lmCreateMenu;
 	private SystemCreateMenu systemCreateMenu;
-//	private CapControlCreateMenu capControlCreateMenu;
 	private ViewMenu viewMenu;
 	private HelpMenu helpMenu;
 	private ToolsMenu toolsMenu;
@@ -255,7 +251,6 @@ public class DatabaseEditor
 	private static int decimalPlaces;
 	private IServerConnection connToDispatch;
 	private boolean connToVanGoghErrorMessageSent = true;
-	private boolean copyingObject = false;
 	private boolean changingObjectType = false;
 
 	//Flag whether billing option should be present in create (core) menu
@@ -335,32 +330,6 @@ public void actionPerformed(ActionEvent event)
 		f.repaint();
 	}
 	else
-/*
-	if( item == viewMenu.capControlRadioButtonMenuItem &&
-		currentDatabase != DatabaseTypes.CAP_CONTROL_DB )
-	{
-		java.awt.Frame f = CtiUtilities.getParentFrame(getContentPane());
-		java.awt.Cursor savedCursor = f.getCursor();
-		try
-		{
-			f.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );
-			
-			currentDatabase = DatabaseTypes.CAP_CONTROL_DB;
-			setDatabase(currentDatabase);
-		}
-		catch(Exception e)
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		}
-		finally
-		{
-			f.setCursor(savedCursor);
-		}
-
-		f.repaint();
-	}
-	else
-*/
 	if( item == viewMenu.systemRadioButtonMenuItem &&
 		currentDatabase != DatabaseTypes.SYSTEM_DB )
 	{
@@ -433,9 +402,6 @@ public void actionPerformed(ActionEvent event)
 	if( item == helpMenu.aboutMenuItem )
 	{
 		executeAboutButton_ActionPerformed( event );
-		//JOptionPane.showInternalMessageDialog(getDesktopPane(),
-			//"This is version " + CommonDefines.VERSION + "\nCopyright (C) 1999-2000 Cannon Technologies.",
-			//"About Yukon Database Editor",JOptionPane.INFORMATION_MESSAGE);
 	}
 	else
 	if( item == helpMenu.helpTopicMenuItem )
@@ -704,42 +670,6 @@ private void displayAWizardPanel(JMenuItem item)
 	{
 		showWizardPanel(new com.cannontech.dbeditor.wizard.device.lmscenario.LMScenarioWizardPanel());
 	}
-/*
-	else if (item == capControlCreateMenu.capBankMenuItem)
-	{
-		showWizardPanel(new com.cannontech.dbeditor.wizard.device.capcontrol.CapBankWizardPanel());
-	}
-	else if (item == capControlCreateMenu.capBankControllerMenuItem)
-	{
-		showWizardPanel(new com.cannontech.dbeditor.wizard.device.capcontrol.CapBankControllerWizardPanel());
-	}
-	else if (item == capControlCreateMenu.capControlFeederMenuItem)
-	{
-		showWizardPanel(new com.cannontech.dbeditor.wizard.capfeeder.CCFeederWizardPanel());
-	}
-	else if (item == capControlCreateMenu.capControlSubBusMenuItem)
-	{
-		showWizardPanel(new com.cannontech.dbeditor.wizard.capsubbus.CCSubstationBusWizardPanel());
-	}
-	else if (item == capControlCreateMenu.pointMenuItem )
-	{
-		//showWizardPanel(new com.cannontech.dbeditor.wizard.point.capcontrol.CapControlPointWizardPanel());
-		if (selectedItem instanceof com.cannontech.database.data.lite.LiteYukonPAObject )
-		{
-			showWizardPanel(
-				new com.cannontech.dbeditor.wizard.point.capcontrol.CapControlPointWizardPanel(
-					new Integer( ((com.cannontech.database.data.lite.LiteYukonPAObject) selectedItem).getYukonID()) ) );
-		}
-		else if (selectedItem instanceof com.cannontech.database.data.lite.LitePoint )
-		{
-			showWizardPanel(
-				new com.cannontech.dbeditor.wizard.point.capcontrol.CapControlPointWizardPanel(
-					new Integer( ((com.cannontech.database.data.lite.LitePoint) selectedItem).getPaobjectID()) ) );
-		}
-		else //selectedItem == null  will go here
-			showWizardPanel( new com.cannontech.dbeditor.wizard.point.capcontrol.CapControlPointWizardPanel() );
-	}
-*/
 	else if (item == systemCreateMenu.notificationGroupMenuItem)
 	{
 		showWizardPanel(new com.cannontech.dbeditor.wizard.notification.group.NotificationGroupWizardPanel());
@@ -1487,8 +1417,6 @@ private boolean exitConfirm()
 					}
 					else
 						retVal = false;
-						
-					//updateObject((com.cannontech.database.db.DBPersistent) current.getValue(null));
 				}
 				else    // act as though the cancel button has been pressed
 					current.fireCancelButtonPressed();
@@ -1540,15 +1468,6 @@ private void generateDBChangeMsg( com.cannontech.database.db.DBPersistent object
 
 			//tell our tree we may need to change the display
 			updateTreePanel( lBase, dbChange[i].getTypeOfChange() );
-         
-         //select the newly added device if it is the first in our list
-/*         
-         if( dbChange[i].getTypeOfChange() == DBChangeMsg.CHANGE_TYPE_ADD
-             && i == 0 )
-         {
-            getTreeViewPanel().selectLiteObject( lBase );			
-         }
-*/         
          
 			getConnToDispatch().queue(dbChange[i]);
 		}
@@ -1640,8 +1559,6 @@ private javax.swing.JScrollPane getDeskTopFrameScrollPane()
 		deskTopFrameScrollPane.setName("EditorFrameScrollPane");
 		deskTopFrameScrollPane.setVerticalScrollBarPolicy(javax.swing.JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		deskTopFrameScrollPane.setHorizontalScrollBarPolicy(javax.swing.JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		//deskTopFrameScrollPane.setBackground(java.awt.Color.white);
-		//deskTopFrameScrollPane.setForeground(java.awt.Color.lightGray);
 		getDeskTopFrameScrollPane().setViewportView( getDesktopPane() );
 	}
 	
@@ -1656,8 +1573,6 @@ private JDesktopPane getDesktopPane()
 	if( this.desktopPane == null )
 	{
 		this.desktopPane = new JDesktopPane();
-
-		//this.desktopPane.add( getEditorFrame() );
 	}
 		
 	return this.desktopPane;
@@ -1747,7 +1662,6 @@ private JMenuBar getMenuBar(int whichDatabase) {
 		editMenu = new EditMenu();
 		coreCreateMenu = new CoreCreateMenu();
 		lmCreateMenu = new LMCreateMenu();
-		//capControlCreateMenu = new CapControlCreateMenu();
 		systemCreateMenu = new SystemCreateMenu();
 		viewMenu = new ViewMenu();
 		helpMenu = new HelpMenu();
@@ -1786,15 +1700,6 @@ private JMenuBar getMenuBar(int whichDatabase) {
 			if( item != null )
 				lmCreateMenu.getItem(i).addActionListener(this);
 		}
-/*
-		for( int i = 0; i < capControlCreateMenu.getItemCount(); i++ )
-		{
-			item = capControlCreateMenu.getItem(i);
-
-			if( item != null )
-				capControlCreateMenu.getItem(i).addActionListener(this);
-		}
-*/		
 		for( int i = 0; i < systemCreateMenu.getItemCount(); i++ )
 		{
 			item = systemCreateMenu.getItem(i);
@@ -1835,7 +1740,6 @@ private JMenuBar getMenuBar(int whichDatabase) {
 
 	this.menuBar.remove( coreCreateMenu );
 	this.menuBar.remove( lmCreateMenu );
-	//this.menuBar.remove( capControlCreateMenu );
 	this.menuBar.remove( systemCreateMenu );
 	this.menuBar.remove( helpMenu );				
 
@@ -1849,12 +1753,6 @@ private JMenuBar getMenuBar(int whichDatabase) {
 	{
 		item = lmCreateMenu;
 	}
-/*
-	else if( whichDatabase == DatabaseTypes.CAP_CONTROL_DB )
-	{
-		item = capControlCreateMenu;
-	}
-*/
 	else if( whichDatabase == DatabaseTypes.SYSTEM_DB )
 	{
 		item = systemCreateMenu;
@@ -1888,16 +1786,6 @@ private JFrame getParentFrame()
 {
 	return (JFrame)CtiUtilities.getParentFrame(
 				DatabaseEditor.this.getContentPane() );
-}
-/**
- * This method was created in VisualAge.
- * @return javax.swing.JScrollPane
- */
-private JScrollPane getScrollPane() {
-	if( this.scrollPane == null )
-		this.scrollPane = new JScrollPane( getTree());
-
-	return this.scrollPane;
 }
 /**
  * This method was created in VisualAge.
@@ -2071,13 +1959,6 @@ public void handlePopUpEvent(com.cannontech.clientutils.commonutils.GenericEvent
 			case DBEditorTreePopUpMenu.SORT_BY_OFFSET:
 			executeSortByOffsetButton_ActionPerformed(new ActionEvent(this,DBEditorTreePopUpMenu.SORT_BY_OFFSET, "sort by offset"));
 			break;
-			/*case DBEditorTreePopUpMenu.ENABLEDISABLE_SCHEDULE:
-			executeEnableDisableButton_ActionPerformed( new ActionEvent(this, DBEditorTreePopUpMenu.ENABLEDISABLE_SCHEDULE, "enableDisable") );
-			break;
-
-			case DBEditorTreePopUpMenu.UPDATE_SCHEDULE:
-			getConnection().sendRetrieveOneSchedule( getSelectedSchedule().getId() );
-			break;*/
 
 			default:
 			throw new RuntimeException("Unknown eventId received from " + event.getSource().getClass().getName() + ", id = " + event.getEventId() );
@@ -2117,11 +1998,7 @@ private void initConnections()
 					getTree().setSelectionRow( selRow );
 				}
 
-				if(e.getClickCount() == 1) 
-				{
-					//com.cannontech.clientutils.CTILogger.info( "---Tree single ---");					
-				}
-				else if(e.getClickCount() == 2) 
+				if(e.getClickCount() == 2) 
 				{
 					executeEditButton_ActionPerformed( new ActionEvent(e.getSource(), e.getID(), "MouseDBLClicked") );
 				}
@@ -2229,9 +2106,6 @@ public void mouseClicked(MouseEvent event)
 	//If there was a double click open a new edit window
 	if( event.getSource() == DatabaseEditor.this.getTree() && event.getClickCount() == 2 )
 	{
-		/*if( event.isShiftDown() )
-			showDebugInfo();
-		else*/
 		executeEditButton_ActionPerformed( new ActionEvent(event.getSource(), event.getID(), "MouseDBLClicked") );
 	}
 }
@@ -2368,7 +2242,6 @@ private void readConfigParameters()
 	//Decide which items to put into the view menu
 	boolean showCore = false;
 	boolean showLm = false;
-	boolean showCapControl = false;
 	boolean showSystem = false;
 	
 	try
@@ -2385,16 +2258,6 @@ private void readConfigParameters()
 	{
 		showLm = ClientSession.getInstance().getRolePropertyValue(
 			DBEditorRole.DBEDITOR_LM, "FALSE").trim().equalsIgnoreCase("TRUE");
-	}
-	catch( Exception e )
-	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	}
-	
-	try
-	{
-		showCapControl = ClientSession.getInstance().getRolePropertyValue(
-			DBEditorRole.DBEDITOR_CAP_CONTROL, "FALSE").trim().equalsIgnoreCase("TRUE");
 	}
 	catch( Exception e )
 	{
@@ -2434,11 +2297,6 @@ private void readConfigParameters()
 
 	if( !showLm )
 		viewMenu.remove( viewMenu.lmRadioButtonMenuItem );
-
-/*	
-	if( !showCapControl )
-		viewMenu.remove( viewMenu.capControlRadioButtonMenuItem );
-*/
 
 	if( !showSystem )
 		viewMenu.remove( viewMenu.systemRadioButtonMenuItem );
@@ -2500,9 +2358,6 @@ private void removeUnneededEditorFrames()
  */
 public void selectionPerformed( PropertyPanelEvent event)
 {
-	try 
-	{
-		
 		
 	//these events tells us the user modified a DB object before clicking the OK/APPLY button
 	if( event.getID() == PropertyPanelEvent.EVENT_DB_INSERT )
@@ -2570,8 +2425,6 @@ public void selectionPerformed( PropertyPanelEvent event)
 			if( updateResult )
 			{			
                 panel.postSave(object);
-				//getTreeViewPanel().refresh();
-				//getTreeViewPanel().selectObject(object);
 
 				if( event.getID() == PropertyPanelEvent.APPLY_SELECTION )
 				{
@@ -2609,16 +2462,10 @@ public void selectionPerformed( PropertyPanelEvent event)
 		desktopPane.repaint();
 	}
 
-}
-finally{
-	//just in case someone is waiting on this event
-	//this.notifyAll();
-	}
 
 }
 
 public boolean insertDBPersistent( DBPersistent newItem )
-// throws TransactionException
 {
 	boolean success = false;
 	
@@ -2700,8 +2547,6 @@ public void selectionPerformed(WizardPanelEvent event)
 		{		
 			WizardPanel p = (WizardPanel) event.getSource();
 
-			copyingObject = false;
-
 			//p.getValue(null) may throw a CancelInsertException
 			newItem = (DBPersistent) p.getValue(null);
 
@@ -2736,7 +2581,6 @@ public void selectionPerformed(WizardPanelEvent event)
 		 && objTypeChange )
 	{
 		changingObjectType = false;
-		copyingObject = false;
 
 		//Loop through all the frames on the desktopPane
 		//and find out which one contains the WizardPanel
@@ -2784,8 +2628,6 @@ public void setDatabase(int whichDatabase)
 	//Get a ref to the rootpane
 	JRootPane rPane = ((JFrame) CtiUtilities.getParentFrame( getContentPane() )).getRootPane();
 	
-	//this.menuBar = null;
-	
 	switch( whichDatabase )
 	{
 		case DatabaseTypes.CORE_DB:
@@ -2805,13 +2647,6 @@ public void setDatabase(int whichDatabase)
 				else
 					models = LM_MODELS;
 				break;
-/*
-		case DatabaseTypes.CAP_CONTROL_DB:
-				this.menuBar = getMenuBar(whichDatabase);
-				viewMenu.capControlRadioButtonMenuItem.setSelected(true);
-				models = CAP_CONTROL_MODELS;
-				break;
-*/
 		case DatabaseTypes.SYSTEM_DB:
 				this.menuBar = getMenuBar(whichDatabase);
 				viewMenu.systemRadioButtonMenuItem.setSelected(true);
@@ -2945,7 +2780,6 @@ private void showCopyWizardPanel(WizardPanel wizard) {
 
 	
 	wizard.setValue(userObject);
-	copyingObject = true;
 	ImageIcon wizardIcon = new ImageIcon(Toolkit.getDefaultToolkit().getImage(CtiUtilities.CTISMALL_GIF));
 	f.setFrameIcon(wizardIcon);
 	f.show();
