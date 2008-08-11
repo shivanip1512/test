@@ -342,7 +342,7 @@
     <entry key="yukon.common.device.bulk.columnHeader.import.instruction.ROUTE">Invalid route names will not be set.</entry>
     
     <!-- importUpload.jsp: errors -->
-    <entry key="yukon.common.device.bulk.columnHeader.import.error.requiredFields">File must contains all of the required fields.</entry>
+    <entry key="yukon.common.device.bulk.columnHeader.import.error.requiredFields">File must contain all of the required fields.</entry>
     
     <entry key="yukon.common.device.bulk.columnHeader.import.error.firstColumnTemplate">The first </entry>
     <entry key="yukon.common.device.bulk.columnHeader.import.error.duplicateColumn">Duplicate column found: {0}</entry>
