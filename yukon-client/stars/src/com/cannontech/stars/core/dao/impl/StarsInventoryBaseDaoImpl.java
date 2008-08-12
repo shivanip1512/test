@@ -9,41 +9,33 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
-import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.LiteInventoryBaseMapper;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 
 public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao {
     
     private SimpleJdbcTemplate jdbcTemplate = null;
-    private ECMappingDao ecMappingDao = null;
-    
     
     public void setJdbcTemplate(SimpleJdbcTemplate jdbcTemplate) {
 		this.jdbcTemplate = jdbcTemplate;
-	}
-    
-    public void setEcMappingDao(ECMappingDao ecMappingDao) {
-		this.ecMappingDao = ecMappingDao;
 	}
     
     @Override
 	@Transactional(readOnly = true)
 	public LiteInventoryBase getById(final int inventoryId) {
 
-		LiteStarsEnergyCompany energyCompany = ecMappingDao.getInventoryEC(inventoryId);
-
 		SqlStatementBuilder sql = new SqlStatementBuilder();
-		sql.append("SELECT ib.*, lhb.*, mhb.*");
+		sql.append("SELECT ib.*, lhb.*, mhb.*, etim.energyCompanyId, yle.YukonDefinitionId AS CategoryDefId");
 		sql.append("FROM InventoryBase ib");
 		sql.append("LEFT OUTER JOIN LMHardwareBase lhb ON lhb.InventoryId = ib.InventoryId");
 		sql.append("LEFT OUTER JOIN MeterHardwareBase mhb ON mhb.InventoryId = ib.InventoryId");
+		sql.append("JOIN ECToInventoryMapping etim ON etim.InventoryId = ib.InventoryId");
+		sql.append("JOIN YukonListEntry yle ON yle.EntryId = ib.CategoryId");
 		sql.append("WHERE ib.InventoryId = ?");
 
 		LiteInventoryBase liteInventory = jdbcTemplate.queryForObject(
 				sql.toString(), 
-				new LiteInventoryBaseMapper(energyCompany),
+				new LiteInventoryBaseMapper(),
 				inventoryId);
 
 		return liteInventory;

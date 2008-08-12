@@ -2373,8 +2373,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
     
     private void loadEnergyCompanyHierarchy() {
         parent = null;
-        children = new ArrayList<LiteStarsEnergyCompany>();
         memberLoginIDs = new ArrayList<Integer>();
+        children = new ArrayList<LiteStarsEnergyCompany>();
         
         String sql = "SELECT EnergyCompanyID, ItemID FROM ECToGenericMapping " +
                 "WHERE MappingCategory='" + ECToGenericMapping.MAPPING_CATEGORY_MEMBER + "' " +

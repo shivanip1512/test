@@ -6,24 +6,15 @@ import java.sql.SQLException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
-import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteMeterHardwareBase;
-import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
-import com.cannontech.stars.dr.util.YukonListEntryHelper;
 
 /**
  * Mapper class which maps a result set row into a LiteInvenotryBase object
  */
 public class LiteInventoryBaseMapper implements
 		ParameterizedRowMapper<LiteInventoryBase> {
-
-	private final LiteStarsEnergyCompany energyCompany;
-
-	public LiteInventoryBaseMapper(LiteStarsEnergyCompany energyCompany) {
-		this.energyCompany = energyCompany;
-	}
 
 	@Override
 	public LiteInventoryBase mapRow(ResultSet rs, int rowNum)
@@ -32,11 +23,7 @@ public class LiteInventoryBaseMapper implements
 		LiteInventoryBase liteInventory = null;
 
 		// Get category definition id for this row
-		int categoryId = rs.getInt("CategoryId");
-		int categoryDefId = YukonListEntryHelper.getYukonDefinitionId(
-				energyCompany,
-				YukonSelectionListDefs.YUK_LIST_NAME_INVENTORY_CATEGORY,
-				categoryId);
+		int categoryDefId = rs.getInt("CategoryDefId");
 
 		// Create the correct type of LiteInventoryBase based on category
 		if (categoryDefId == YukonListEntryTypes.YUK_DEF_ID_INV_CAT_ONEWAYREC
@@ -81,7 +68,7 @@ public class LiteInventoryBaseMapper implements
 		liteInventory.setDeviceLabel(rs.getString("DeviceLabel"));
 		liteInventory.setCurrentStateID(rs.getInt("CurrentStateId"));
 
-		liteInventory.setEnergyCompanyId(energyCompany.getEnergyCompanyID());
+		liteInventory.setEnergyCompanyId(rs.getInt("EnergyCompanyId"));
 
 		return liteInventory;
 	}
