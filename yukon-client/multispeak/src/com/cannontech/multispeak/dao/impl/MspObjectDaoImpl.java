@@ -76,9 +76,9 @@ public class MspObjectDaoImpl implements MspObjectDao {
             }
         } catch (RemoteException e) {
             String endpointURL = mspVendor.getEndpointURL(MultispeakDefines.CB_MR_STR);
-            CTILogger.error("TargetService: " + endpointURL + " - getServiceLocationByMeterNo (" + mspVendor.getCompanyName() + ") for MeterNo: " + meterNumber);
+            CTILogger.error("TargetService: " + endpointURL + " - getMeterByMeterNo (" + mspVendor.getCompanyName() + ") for MeterNo: " + meterNumber);
             CTILogger.error("RemoteExceptionDetail: "+e.getMessage());
-            CTILogger.info("A default(empty) is being used for ServiceLocation");
+            CTILogger.info("A default(empty) is being used for Meter");
        }
        return mspMeter;
     }
