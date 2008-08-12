@@ -81,11 +81,6 @@
             selectElement.appendChild(newOpt);
        });
     }
-    
-    function alertProfileCollectionStarted() {
-    
-        alert('Profile Data Collection has been requested and will begin shortly.\n\nSee the Pending Profile Collections area for status updates.\n ');
-    }
 
 </script>
 
@@ -136,7 +131,7 @@
         </td>
         
         <td>
-            <input type="button" id="${id}_startButton" value="Start" onclick="peakDayProfile_start('${id}', '${profileRequestOrigin}');alertProfileCollectionStarted();">
+            <input type="button" id="${id}_startButton" value="Start" onclick="peakDayProfile_start('${id}', '${profileRequestOrigin}');">
         </td>
         
     </tr>

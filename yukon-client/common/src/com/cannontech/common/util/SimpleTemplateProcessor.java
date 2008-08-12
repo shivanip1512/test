@@ -84,7 +84,7 @@ public class SimpleTemplateProcessor {
                 if (StringUtils.isNotBlank(extra)) {
                     result = formatValue(value, extra);
                     if (result == null) {
-                        result = "???Unkown data type???";
+                        result = "???Unknown data type???";
                         if (value != null) {
                             CTILogger.debug("Unknown data type: " + value.getClass());
                         }

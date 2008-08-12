@@ -431,7 +431,7 @@ public class HighBillController extends MultiActionController {
 
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         
-        String errorMsg = "";
+        String returnMsg = "";
         
         int deviceId = ServletRequestUtils.getRequiredIntParameter(request, "deviceId");
         LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
@@ -485,8 +485,8 @@ public class HighBillController extends MultiActionController {
             msgData.put("deviceName", device.getPaoName());
             msgData.put("meterNumber", meterNum.getMeterNumber());
             msgData.put("physAddress", device.getAddress());
-            msgData.put("startDate", dateFormattingService.formatDate(startDate, DateFormattingService.DateFormatEnum.DATE, userContext));
-            msgData.put("stopDate", dateFormattingService.formatDate(stopDate, DateFormattingService.DateFormatEnum.DATE, userContext));
+            msgData.put("startDate", startDate);
+            msgData.put("stopDate", stopDate);
             long numDays = (stopDate.getTime() - startDate.getTime()) / MS_IN_A_DAY;
             msgData.put("totalDays", Long.toString(numDays));
             
@@ -526,17 +526,18 @@ public class HighBillController extends MultiActionController {
                                                        callback,
                                                        userContext);
                 
+            returnMsg = "Profile Data Collection has been requested and will begin shortly.\n\nSee the Pending Profile Collections area for status updates.";
 
         } catch (ParseException e) {
-            errorMsg = "Invalid Date: " + e.getMessage();
+            returnMsg = "Invalid Date: " + e.getMessage();
             
         } catch (InitiateLoadProfileRequestException e) {
-            errorMsg = friendlyExceptionResolver.getFriendlyExceptionMessage(e);
+            returnMsg = friendlyExceptionResolver.getFriendlyExceptionMessage(e);
         } catch (ServletRequestBindingException e) {
-            errorMsg = e.getMessage();
+            returnMsg = e.getMessage();
         }
 
-        mav.addObject("errorMsg", errorMsg);
+        mav.addObject("returnMsg", returnMsg);
         
         return mav;
     }

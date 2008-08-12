@@ -3,12 +3,8 @@ function peakDayProfile_start(divId, profileRequestOrigin) {
     
     $(divId + '_startButton').disable();
         
-    var onStartFailure = function(transport, json) {
-        $(divId + '_startButton').enable();
-        alert(json['errorMsg']);
-    };
-
-    var onStartComplete = function(transport, json) {
+    var initiateComplete = function(transport, json) {
+        alert(json['returnMsg']);
         $(divId + '_startButton').enable();
     };
 
@@ -23,7 +19,7 @@ function peakDayProfile_start(divId, profileRequestOrigin) {
     args.profileRequestOrigin = profileRequestOrigin;
     
     var url = '/spring/csr/highBill/initiateLoadProfile';
-    new Ajax.Request(url, {'method': 'post', 'evalScripts': true, 'onComplete': onStartComplete, 'onFailure': onStartFailure, 'parameters': args});
+    new Ajax.Request(url, {'method': 'post', 'evalScripts': true, 'onComplete': initiateComplete, 'onFailure': initiateComplete, 'parameters': args});
   
 }
 
