@@ -111,11 +111,14 @@ ItemPicker.prototype = {
 	selectThisItem: function(hit, link) {
 	    
 	    $('itemPickerContainer').parentNode.removeChild($('itemPickerContainer'));
+	    alert("one");
 	    for (i=0; i < this.extraInfo.length; i+=1) {
 	        info = this.extraInfo[i];
 	        $(info.fieldid).innerHTML = hit[info.property];
 	    }
+	    alert("two");
 		this.triggerEndAction(hit);
+		alert("three");
 	},
 	
 	renderTableResults: function(json, selectCurrent) {
