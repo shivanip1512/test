@@ -27,7 +27,7 @@ go
 INSERT INTO TempDeviceGroupIdMap (deviceGroupId, newDeviceGroupId) 
 (SELECT deviceGroupid, deviceGroupid 
  FROM DeviceGroup 
- WHERE deviceGroupId > 11 and deviceGroupId < 101); 
+ WHERE deviceGroupId > 14 and deviceGroupId < 101); 
 go 
 
 UPDATE tempDeviceGroupIdMap 
@@ -46,7 +46,7 @@ SET parentDeviceGroupId = (SELECT newDeviceGroupId
                            WHERE deviceGroup.parentDeviceGroupId = DGMAP.deviceGroupId) 
 WHERE deviceGroupId IN (SELECT DISTINCT deviceGroupId 
                         FROM TempDeviceGroupIdMap
-                        WHERE parentDeviceGroupId > 11);
+                        WHERE parentDeviceGroupId > 14);
 go
 
 UPDATE DeviceGroup 
