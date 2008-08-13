@@ -405,8 +405,13 @@ INT CtiDeviceSentinel::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< 
                 unsigned long *lastLpTime;
                 lastLpTime =  (unsigned long *)InMessage->Buffer.InMessage;
 
+                try
+                {
+
                 if (lastLpTime != NULL && *lastLpTime != 0)
                 {
+                        if (CtiTime(*lastLpTime).isValid())
+                        {
                     setLastLPTime(CtiTime(*lastLpTime));
                     if( getSentinelProtocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
                     {
@@ -414,6 +419,7 @@ INT CtiDeviceSentinel::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< 
                          dout << CtiTime() << " ResultDecode for " << getName() <<" lastLPTime: "<<getLastLPTime()<< endl;
                      }
                 }
+                    }
                 else
                 {
                     if( getSentinelProtocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
@@ -421,6 +427,12 @@ INT CtiDeviceSentinel::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< 
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " ResultDecode for " << getName() <<" lastLPTime: 0 ERROR"<< endl;
                     }
+                }
+            }
+                catch(...)
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                 }
             }
             resetScanFlag(ScanRateGeneral);
@@ -577,12 +589,21 @@ int CtiDeviceSentinel::buildScannerTableRequest (BYTE *aMsg, UINT flags)
     if (useScanFlags())
     {
         header.lastLoadProfileTime = getLastLPTime().seconds();
+        if (  getLastLPTime().seconds() > CtiTime().seconds() + (3600 * 12)  || // 12 hours ahead
+              getLastLPTime().seconds() < CtiTime().seconds() - (86400 * 90)  ) // 3 months old
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " ** INVALID LAST LP TIME ** Adjusting" << getName() <<"'s lastLPTime from: "<<getLastLPTime()<< endl;
+            }
+            setLastLPTime( CtiTime(CtiTime().seconds() - (86400 * 30)) );
+        }
     }
     else
     {
         header.lastLoadProfileTime = 0;
     }
-    //_lastLPTime = header.lastLoadProfileTime;
+    
 
     if (useScanFlags())
     {

@@ -11,10 +11,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/prot_ansi.cpp-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2008/04/25 21:45:14 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2008/08/13 22:40:57 $
 *    History:
       $Log: prot_ansi.cpp,v $
+      Revision 1.25  2008/08/13 22:40:57  jrichter
+      YUK-6310
+      Sentinel dial up meter reads causing exceptions when scanner reads in future or year(S) old lastLpTime dates.
+
       Revision 1.24  2008/04/25 21:45:14  mfisher
       YUK-5743 isTransactionComplete() changes not propagated to all protocols
       changed isTransactionComplete() to const
@@ -422,7 +426,7 @@ void CtiProtocolANSI::reinitialize( void )
            _stdTblsAvailable.clear();
            _stdTblsAvailable.push_back(0);
        }
-       if (_mfgTblsAvailable.empty())
+       if (!_mfgTblsAvailable.empty())
        {
            _mfgTblsAvailable.clear();
        }
@@ -916,20 +920,20 @@ void CtiProtocolANSI::convertToTable(  )
                       else
                       {
                           _lpStartBlockIndex = _tableZeroEight->getLPOffset();
-                          _lpOffset = _lpStartBlockIndex * _lpBlockSize;
                           _lpNbrFullBlocks = _lpLastBlockIndex - _lpStartBlockIndex;
-
-                          //Limiting Max number of Load Profile Blocks requested at one time to 10.
-                          /*if (_lpNbrFullBlocks >= 10)
+                          if( _tableSixThree != NULL && 
+                              _lpStartBlockIndex >= 255)
                           {
-                              _lpNbrFullBlocks = 10;
-                          }
-                          if (_lpNbrFullBlocks < 0 || _lpNbrFullBlocks == _lpLastBlockIndex) //invalid, set offset to beginning of LP data, offset = 0
-                          {
-                              _invalidLastLoadProfileTime = true;
+                              _lpStartBlockIndex = 0;
                               _lpOffset = 0;
-                              _lpNbrFullBlocks = 10;
-                          } */
+                              if( _tableSixThree->getNbrValidIntvls(1) < _tableSixThree->getNbrValidBlocks(1) )
+                                  _lpNbrFullBlocks = _tableSixThree->getNbrValidBlocks(1) -1;
+                              else
+                                  _lpNbrFullBlocks = _tableSixThree->getNbrValidBlocks(1);
+                          }
+                          else
+                              _lpOffset = _lpStartBlockIndex * _lpBlockSize;
+                          
                       }
 
                    }
@@ -2824,7 +2828,8 @@ bool CtiProtocolANSI::retreiveLPDemand( int offset, int dataSet )
                                 _tableOneTwo->getRawIDCode(lpDemandSelect[x]) == ansiOffset)
                             {
 
-                                if (_tableSixFour != NULL && _lpNbrFullBlocks > 0)
+                                if (_tableSixFour != NULL && 
+                                    (_lpNbrFullBlocks > 0 || _lpNbrIntvlsLastBlock > 0))
                                 {
                                     success = true;
                                     /*if (!_tableOneSix->getConstantsFlag(lpDemandSelect[x]) &&

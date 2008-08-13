@@ -14,10 +14,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_ansi.h-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2008/04/25 21:45:14 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2008/08/13 22:40:57 $
 *    History:
       $Log: prot_ansi.h,v $
+      Revision 1.18  2008/08/13 22:40:57  jrichter
+      YUK-6310
+      Sentinel dial up meter reads causing exceptions when scanner reads in future or year(S) old lastLpTime dates.
+
       Revision 1.17  2008/04/25 21:45:14  mfisher
       YUK-5743 isTransactionComplete() changes not propagated to all protocols
       changed isTransactionComplete() to const
@@ -269,7 +273,7 @@ struct TABLE_27_PRESENT_REGISTER_SELECTION
 struct ANSI_TABLE_WANTS
 {
    short   tableID;
-   int   tableOffset;
+   unsigned int   tableOffset;
    unsigned int   bytesExpected;
    BYTE  type;
    BYTE  operation;
@@ -495,7 +499,7 @@ class IM_EX_PROT CtiProtocolANSI
      int _lpStartBlockIndex;
      int _lpMaxIntervalTime;
      int _lpBlockSize;
-     int _lpOffset;
+     unsigned int _lpOffset;
      int _lpNbrFullBlocks;
      int _lpLastBlockSize;
 
