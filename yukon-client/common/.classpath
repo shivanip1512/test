@@ -30,7 +30,7 @@
 	<classpathentry kind="lib" path="/third-party/hibernate3.jar" sourcepath="Z:/java/Third-Party Sources/hibernate-3.2.1.ga.zip"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/spring.jar" sourcepath="Z:/java/Third-Party Sources/spring-framework-2.5.4-with-dependencies.zip"/>
 	<classpathentry kind="lib" path="/third-party/commons-collections-3.2.jar"/>
-	<classpathentry kind="lib" path="/third-party/lucene-core-2.0.0.jar"/>
+	<classpathentry kind="lib" path="/third-party/lucene-core-2.3.2.jar" sourcepath="Z:/java/Third-Party Sources/lucene-2.3.2-src.zip"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/commons-dbcp-1.2.1.jar" sourcepath="Z:/java/Third-Party Sources/commons-dbcp-1.2.1-src.zip"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/commons-pool-1.3.jar" sourcepath="Z:/java/Third-Party Sources/commons-pool-1.3-src.zip"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/log4j-1.2.14.jar" sourcepath="Z:/java/Third-Party Sources/logging-log4j-1.2.14.zip"/>

@@ -18,7 +18,7 @@ Class-Path: ./
  asm-attrs.jar 
  antlr-2.7.6rc1.jar 
  ejb3-persistence.jar 
- lucene-core-2.0.0.jar 
+ lucene-core-2.3.2.jar 
  log4j-1.2.14.jar 
  castor-xml.jar 
  rwav.jar 
