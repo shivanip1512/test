@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.12 $
-*    DATE         :  $Date: 2007/07/17 16:53:39 $
+*    REVISION     :  $Revision: 1.13 $
+*    DATE         :  $Date: 2008/08/13 22:42:52 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -20,6 +20,10 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrlodestarimport.h,v $
+      Revision 1.13  2008/08/13 22:42:52  jrichter
+      YUK-3163
+      FDR doesn't log reason for failure to import LSE data
+
       Revision 1.12  2007/07/17 16:53:39  jrichter
       YUK-3163
       FDR doesn't log reason for failure to import LSE data
@@ -127,7 +131,7 @@ public:
     USHORT ForeignToYukonQuality (string aQuality);
     CtiTime ForeignToYukonTime (string aTime, CHAR aDstFlag);
 
-    bool fillUpMissingTimeStamps(CtiMultiMsg* multiDispatchMsg, list< CtiMultiMsg* > &dispatchList, const CtiTime& savedStartTime,const CtiTime& savedStopTime,long stdLsSecondsPerInterval, string savedCustomerIdentifier);
+    bool fillUpMissingTimeStamps(CtiMultiMsg* multiDispatchMsg, list< CtiMultiMsg* > &dispatchList, const CtiTime& savedStartTime,const CtiTime& savedStopTime,long stdLsSecondsPerInterval, string savedCustomerIdentifier, string FileName);
 
     bool shouldDeleteFileAfterImport() const;
     CtiFDR_LodeStarImportBase &setDeleteFileAfterImport (bool aFlag);

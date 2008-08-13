@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.32 $
-*    DATE         :  $Date: 2008/06/25 17:08:41 $
+*    REVISION     :  $Revision: 1.33 $
+*    DATE         :  $Date: 2008/08/13 22:42:52 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -19,6 +19,10 @@
 *    ---------------------------------------------------
 *    History:
       $Log: fdrlodestarimport.cpp,v $
+      Revision 1.33  2008/08/13 22:42:52  jrichter
+      YUK-3163
+      FDR doesn't log reason for failure to import LSE data
+
       Revision 1.32  2008/06/25 17:08:41  mfisher
       YUK-6109 utility.h contains excessive delete_<type> functions
       Consolidated duplicate functions
@@ -246,7 +250,9 @@ USHORT CtiFDR_LodeStarImportBase::ForeignToYukonQuality (string aQuality)
     return(Quality);
 }
 
-bool CtiFDR_LodeStarImportBase::fillUpMissingTimeStamps(CtiMultiMsg* multiDispatchMsg, list< CtiMultiMsg* > &dispatchList, const CtiTime& savedStartTime,const CtiTime& savedStopTime,long stdLsSecondsPerInterval, string savedCustomerIdentifier)
+bool CtiFDR_LodeStarImportBase::fillUpMissingTimeStamps(CtiMultiMsg* multiDispatchMsg, list< CtiMultiMsg* > &dispatchList, 
+                                                        const CtiTime& savedStartTime,const CtiTime& savedStopTime,
+                                                        long stdLsSecondsPerInterval, string savedCustomerIdentifier, string FileName)
 {
     bool returnBool = true;
     int msgCnt = 0;
@@ -310,8 +316,9 @@ bool CtiFDR_LodeStarImportBase::fillUpMissingTimeStamps(CtiMultiMsg* multiDispat
     if( savedStopTime.seconds() != savedStartTime.seconds()+(nbrPoints*stdLsSecondsPerInterval)-getSubtractValue() )
     {
         string text = "NbrPoints * SecondsPerInterval != StopTime - StartTime";
-        string additional = savedCustomerIdentifier;
-        additional += " Possible File Corruption!";
+        string additional = FileName + " : " +savedCustomerIdentifier;
+        additional += " - Possible File Corruption!";
+
         if (getDebugLevel() & MAJOR_DETAIL_FDR_DEBUGLEVEL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -795,7 +802,10 @@ void CtiFDR_LodeStarImportBase::threadFunctionReadFromFile( void )
                                              list< CtiMultiMsg* > dispatchList;
                                              delete_container(dispatchList);
                                              dispatchList.clear();
-                                             if( fillUpMissingTimeStamps(multiDispatchMsg, dispatchList, savedStartTime,savedStopTime,secondsPerInterval, savedCustomerIdentifier) )
+                                             if( fillUpMissingTimeStamps(multiDispatchMsg, dispatchList, 
+                                                                         savedStartTime,savedStopTime,
+                                                                         secondsPerInterval, savedCustomerIdentifier, 
+                                                                         fileNameAndPath) )
                                              {
                                                  CtiMultiMsg *dispatchMsg = NULL;
 
@@ -860,7 +870,10 @@ void CtiFDR_LodeStarImportBase::threadFunctionReadFromFile( void )
                                      list< CtiMultiMsg* > dispatchList;
                                      delete_container(dispatchList);
                                      dispatchList.clear();
-                                     if( fillUpMissingTimeStamps(multiDispatchMsg, dispatchList, savedStartTime,savedStopTime,secondsPerInterval, savedCustomerIdentifier) )
+                                     if( fillUpMissingTimeStamps(multiDispatchMsg, dispatchList, 
+                                                                 savedStartTime,savedStopTime,
+                                                                 secondsPerInterval, savedCustomerIdentifier,
+                                                                 fileNameAndPath) )
                                      {
                                          while( !dispatchList.empty())
                                          {
