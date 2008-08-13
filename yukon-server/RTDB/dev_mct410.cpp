@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.166 $
-* DATE         :  $Date: 2008/08/13 16:46:39 $
+* REVISION     :  $Revision: 1.167 $
+* DATE         :  $Date: 2008/08/13 21:23:35 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -469,6 +469,8 @@ CtiDeviceMCT410::CommandSet CtiDeviceMCT410::initCommandStore()
     cs.insert(CommandStore(Emetcon::Scan_Accum,                     Emetcon::IO_Function_Read, FuncRead_MReadPos,             FuncRead_MReadLen));
     cs.insert(CommandStore(Emetcon::GetValue_KWH,                   Emetcon::IO_Function_Read, FuncRead_MReadPos,             FuncRead_MReadLen));
     cs.insert(CommandStore(Emetcon::GetValue_FrozenKWH,             Emetcon::IO_Function_Read, FuncRead_FrozenMReadPos,       FuncRead_FrozenMReadLen));
+    cs.insert(CommandStore(Emetcon::GetValue_TOUkWh,                Emetcon::IO_Function_Read, FuncRead_TOUkWhPos,            FuncRead_TOUkWhLen));
+    cs.insert(CommandStore(Emetcon::GetValue_FrozenTOUkWh,          Emetcon::IO_Function_Read, FuncRead_TOUkWhFrozenPos,      FuncRead_TOUkWhFrozenLen));
     cs.insert(CommandStore(Emetcon::Scan_Integrity,                 Emetcon::IO_Function_Read, FuncRead_DemandPos,            FuncRead_DemandLen));
     cs.insert(CommandStore(Emetcon::Scan_LoadProfile,               Emetcon::IO_Function_Read, 0,                             0));
     cs.insert(CommandStore(Emetcon::GetValue_LoadProfile,           Emetcon::IO_Function_Read, 0,                             0));
@@ -952,6 +954,9 @@ INT CtiDeviceMCT410::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
         case Emetcon::Scan_Accum:
         case Emetcon::GetValue_KWH:
         case Emetcon::GetValue_FrozenKWH:           status = decodeGetValueKWH(InMessage, TimeNow, vgList, retList, outList);           break;
+
+        case Emetcon::GetValue_TOUkWh:
+        case Emetcon::GetValue_FrozenTOUkWh:        status = decodeGetValueTOUkWh(InMessage, TimeNow, vgList, retList, outList);        break;
 
         case Emetcon::Scan_Integrity:
         case Emetcon::GetValue_Demand:              status = decodeGetValueDemand(InMessage, TimeNow, vgList, retList, outList);        break;
@@ -1437,7 +1442,7 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
     {
         //  if it's a KWH request for rate ABCD - rate T should fall through to a normal KWH request
 
-        function = Emetcon::GetValue_TOU;
+        function = Emetcon::GetValue_TOUPeak;
         found = getOperation(function, OutMessage->Buffer.BSt);
 
         if( parse.getFlags() & CMD_FLAG_FROZEN )    OutMessage->Buffer.BSt.Function += FuncRead_TOUFrozenOffset;
@@ -1446,6 +1451,21 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
         if( parse.getFlags() & CMD_FLAG_GV_RATEB )  OutMessage->Buffer.BSt.Function += 1;
         if( parse.getFlags() & CMD_FLAG_GV_RATEC )  OutMessage->Buffer.BSt.Function += 2;
         if( parse.getFlags() & CMD_FLAG_GV_RATED )  OutMessage->Buffer.BSt.Function += 3;
+    }
+    else if( (parse.getFlags() & CMD_FLAG_GV_KWH) &&
+             (parse.getFlags() & CMD_FLAG_GV_TOU) )
+    {
+        //  if it's a KWH request for all TOU rates - again, rate T should fall through to a normal KWH request
+        if( parse.getFlags() & CMD_FLAG_FROZEN )
+        {
+            function = Emetcon::GetValue_FrozenTOUkWh;
+            found = getOperation(function, OutMessage->Buffer.BSt);
+        }
+        else
+        {
+            function = Emetcon::GetValue_TOUkWh;
+            found = getOperation(function, OutMessage->Buffer.BSt);
+        }
     }
     else if( parse.getFlags() & CMD_FLAG_GV_PEAK )
     {
@@ -2517,6 +2537,112 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
                         ReturnMsg->setResultString("Invalid data returned for channel " + CtiNumStr(i + 1) + "\n" + ReturnMsg->ResultString());
                         status = ErrorInvalidData;
                     }
+                }
+            }
+        }
+
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    }
+
+    return status;
+}
+
+
+INT CtiDeviceMCT410::decodeGetValueTOUkWh(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+{
+    INT status = NORMAL;
+    INT tags = 0;
+    CtiTime pointTime;
+
+    INT ErrReturn  = InMessage->EventCode & 0x3fff;
+    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+
+    point_info pi, pi_freezecount;
+
+    CtiPointSPtr   pPoint;
+    CtiReturnMsg  *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    {
+        // No error occured, we must do a real decode!
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+            return MEMORY;
+        }
+
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+        if( InMessage->Sequence == Cti::Protocol::Emetcon::GetValue_FrozenTOUkWh )
+        {
+            string freeze_error;
+
+            pi_freezecount = CtiDeviceMCT4xx::getData(DSt->Message + 12, 1, ValueType_Raw);
+
+            if( status = checkFreezeLogic(pi_freezecount.value, freeze_error) )
+            {
+                ReturnMsg->setResultString(freeze_error);
+            }
+        }
+
+        if( !status )
+        {
+            for( int i = 0; i < 4; i++ )
+            {
+                int offset = (i * 3);
+
+                if( InMessage->Sequence == Cti::Protocol::Emetcon::GetValue_TOUkWh )
+                {
+                    //  normal KWH read, nothing too special
+                    tags = TAG_POINT_MUST_ARCHIVE;
+
+                    pi = CtiDeviceMCT4xx::getData(DSt->Message + offset, 3, ValueType_Accumulator);
+
+                    pointTime -= pointTime.seconds() % 60;
+                }
+                else if( InMessage->Sequence == Cti::Protocol::Emetcon::GetValue_FrozenTOUkWh )
+                {
+                    //  but this is where the action is - frozen decode
+                    tags = 0;
+
+                    pi = CtiDeviceMCT4xx::getData(DSt->Message + offset, 3, ValueType_FrozenAccumulator);
+
+                    if( pi.freeze_bit != getExpectedFreezeParity() )
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " **** Checkpoint - incoming freeze parity bit (" << pi.freeze_bit <<
+                                                ") does not match expected freeze bit (" << getExpectedFreezeParity() <<
+                                                "/" << getExpectedFreeze() << ") on device \"" << getName() << "\", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+
+                        pi.description  = "Freeze parity does not match (";
+                        pi.description += CtiNumStr(pi.freeze_bit) + " != " + CtiNumStr(getExpectedFreezeParity());
+                        pi.description += "/" + CtiNumStr(getExpectedFreeze()) + ")";
+                        pi.quality = InvalidQuality;
+                        pi.value = 0;
+
+                        ReturnMsg->setResultString("Invalid freeze parity; last recorded freeze sent at " + getLastFreezeTimestamp().asString());
+                        status = ErrorInvalidFrozenReadingParity;
+                    }
+                    else
+                    {
+                        pointTime  = getLastFreezeTimestamp();
+                        pointTime -= pointTime.seconds() % 60;
+                    }
+                }
+
+                //  if kWh was returned as units, we could get rid of the default multiplier - it's messy
+                insertPointDataReport(PulseAccumulatorPointType, 1 + PointOffset_TOUBase + i * PointOffset_RateOffset,
+                                      ReturnMsg, pi, string("TOU rate ") + (char)('A' + i) + " kWh", pointTime, 0.1, tags);
+
+                //  if the quality's invalid, throw the status to abnormal if there's a point defined
+                if( pi.quality == InvalidQuality && !status && getDevicePointOffsetTypeEqual(1 + PointOffset_TOUBase + i * PointOffset_RateOffset, PulseAccumulatorPointType) )
+                {
+                    ReturnMsg->setResultString("Invalid data returned\n" + ReturnMsg->ResultString());
+                    status = ErrorInvalidData;
                 }
             }
         }

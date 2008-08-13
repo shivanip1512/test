@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.86 $
-* DATE         :  $Date: 2008/08/13 17:32:42 $
+* REVISION     :  $Revision: 1.87 $
+* DATE         :  $Date: 2008/08/13 21:23:35 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -159,7 +159,7 @@ CtiDeviceMCT4xx::CommandSet CtiDeviceMCT4xx::initCommandStore()
 {
     CommandSet cs;
 
-    cs.insert(CommandStore(Emetcon::GetValue_TOU,           Emetcon::IO_Function_Read,  FuncRead_TOUBasePos,        FuncRead_TOULen));
+    cs.insert(CommandStore(Emetcon::GetValue_TOUPeak,       Emetcon::IO_Function_Read,  FuncRead_TOUBasePos,        FuncRead_TOULen));
 
     //  This is the default TOU reset command - the command that zeroes the rates (Command_TOUResetZero) is assigned
     //    in executePutValue() if needed
@@ -3724,7 +3724,7 @@ INT CtiDeviceMCT4xx::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
             break;
         }
 
-        case Emetcon::GetValue_TOU:
+        case Emetcon::GetValue_TOUPeak:
         {
             status = decodeGetValuePeakDemand(InMessage, TimeNow, vgList, retList, outList);
             break;

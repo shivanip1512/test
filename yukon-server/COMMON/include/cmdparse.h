@@ -166,6 +166,7 @@ public:
 
 #define CMD_FLAG_GV_PFCOUNT      0x00002000
 #define CMD_FLAG_GV_USAGE        0x00004000     // This is for all channels on a residential meter
+#define CMD_FLAG_GV_TOU          0x00008000
 /* Defined below.... be careful
 #define CMD_FLAG_OFFSET          0x10000000     // A specific offset is defined in the next cmd field
 */

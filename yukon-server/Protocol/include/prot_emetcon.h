@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_emetcon.h-arc  $
-* REVISION     :  $Revision: 1.49 $
-* DATE         :  $Date: 2008/04/09 19:49:53 $
+* REVISION     :  $Revision: 1.50 $
+* DATE         :  $Date: 2008/08/13 21:23:35 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -92,7 +92,9 @@ public:
         GetValue_LoadProfile,
         GetValue_LoadProfilePeakReport,
         GetValue_Outage,
-        GetValue_TOU,
+        GetValue_TOUPeak,
+        GetValue_TOUkWh,
+        GetValue_FrozenTOUkWh,
         GetValue_FreezeCounter,
         GetValue_DailyRead,
 

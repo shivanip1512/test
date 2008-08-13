@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT410.h-arc  $
-* REVISION     :  $Revision: 1.68 $
-* DATE         :  $Date: 2008/06/10 20:49:47 $
+* REVISION     :  $Revision: 1.69 $
+* DATE         :  $Date: 2008/08/13 21:23:35 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -243,6 +243,12 @@ protected:
         FuncRead_LPStatusPos      = 0x97,
         FuncRead_LPStatusLen      =   12,
 
+        FuncRead_TOUkWhPos        = 0xe0,
+        FuncRead_TOUkWhLen        =   13,
+
+        FuncRead_TOUkWhFrozenPos  = 0xe1,
+        FuncRead_TOUkWhFrozenLen  =   13,
+
         FuncRead_DisconnectConfigPos = 0xfe,
         FuncRead_DisconnectConfigLen =   11,
 
@@ -325,6 +331,7 @@ protected:
     virtual INT ErrorDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList, bool &overrideExpectMore );
 
     INT decodeGetValueKWH          ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
+    INT decodeGetValueTOUkWh       ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetValueDemand       ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetValueVoltage      ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetValueOutage       ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );

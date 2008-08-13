@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.119 $
-* DATE         :  $Date: 2008/08/13 16:46:39 $
+* REVISION     :  $Revision: 1.120 $
+* DATE         :  $Date: 2008/08/13 21:23:35 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1697,7 +1697,7 @@ INT CtiDeviceMCT470::executeGetValue( CtiRequestMsg        *pReq,
 
         //  note that this is below the IED requests - we do IED KWH rate requests, so those need to be
         //    handled first...
-        function = Emetcon::GetValue_TOU;
+        function = Emetcon::GetValue_TOUPeak;
         found = getOperation(function, OutMessage->Buffer.BSt);
 
         if( parse.getFlags() & CMD_FLAG_FROZEN )    OutMessage->Buffer.BSt.Function += FuncRead_TOUFrozenOffset;

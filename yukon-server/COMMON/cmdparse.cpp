@@ -674,6 +674,31 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
                 _cmd["dnp_crc"] = CtiParseValue(TRUE);
             }
         }
+        else if(CmdStr.contains(" daily"))
+        {
+            if( !(temp = CmdStr.match(re_dailyread)).empty() )
+            {
+                //  getvalue daily read 12/12/2007 12/27/2007
+                //  getvalue daily read 12/12/2007
+                //  getvalue daily read channel n 12/12/2007
+                //
+                //  "daily read (channel " + str_num + " )?" + str_date + " (" + str_date + ")?"
+
+                _cmd["daily_read"] = true;
+
+                if( !(temp = temp.match(re_daterange)).empty() )
+                {
+                    CtiTokenizer cmdtok(temp);
+
+                    _cmd["daily_read_date_begin"] = cmdtok();
+
+                    if( !(temp = cmdtok()).empty() )
+                    {
+                        _cmd["daily_read_date_end"] = temp;
+                    }
+                }
+            }
+        }
         else
         {
             // Default Get Value request has been specified....
@@ -706,30 +731,9 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
         {
             flag |= CMD_FLAG_FROZEN;
         }
-        if(CmdStr.contains(" daily"))
+        if(CmdStr.contains(" tou"))
         {
-            if( !(temp = CmdStr.match(re_dailyread)).empty() )
-            {
-                //  getvalue daily read 12/12/2007 12/27/2007
-                //  getvalue daily read 12/12/2007
-                //  getvalue daily read channel n 12/12/2007
-                //
-                //  "daily read (channel " + str_num + " )?" + str_date + " (" + str_date + ")?"
-
-                _cmd["daily_read"] = true;
-
-                if( !(temp = temp.match(re_daterange)).empty() )
-                {
-                    CtiTokenizer cmdtok(temp);
-
-                    _cmd["daily_read_date_begin"] = cmdtok();
-
-                    if( !(temp = cmdtok()).empty() )
-                    {
-                        _cmd["daily_read_date_end"] = temp;
-                    }
-                }
-            }
+            flag |= CMD_FLAG_GV_TOU;
         }
 
         if(CmdStr.contains(" power"))
@@ -5887,12 +5891,12 @@ void CtiCommandParser::doParsePutConfigUtilityUsage(const string &_CmdStr)
     float val;
     int chanIndex = 0;
 
-    
+
     CtiTokenizer   tok(CmdStr);
     {
-        //putconfig utility usage chanNum:past usage:Val, chanNum:present usage:Val, chanNum:past cost:Val, 
+        //putconfig utility usage chanNum:past usage:Val, chanNum:present usage:Val, chanNum:past cost:Val,
         // chanNum:present cost:Val,
-        
+
         token = tok(",");
         while(!token.empty())
         {
