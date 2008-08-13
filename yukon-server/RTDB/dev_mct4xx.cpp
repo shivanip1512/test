@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.85 $
-* DATE         :  $Date: 2008/08/13 16:46:39 $
+* REVISION     :  $Revision: 1.86 $
+* DATE         :  $Date: 2008/08/13 17:32:42 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -338,7 +338,7 @@ CtiDeviceMCT4xx::point_info CtiDeviceMCT4xx::getData( unsigned char *buf, int le
         }
         case ValueType_Accumulator:
         {
-            min_error = 0xff989680;
+            min_error = 0xff989680;  //  32-bit version of the 24-bit maximum value for kWh values - see section 10.1 in the MCT-410 SSPEC
             break;
         }
     }
