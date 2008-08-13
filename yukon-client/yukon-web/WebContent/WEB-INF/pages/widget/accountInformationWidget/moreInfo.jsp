@@ -31,6 +31,10 @@
     </tr>
 </table>
 
+<c:if test="${not empty custContactInfo}">
+    <amr:moreInfoTable title="Contact Info" infoList="${custContactInfo}" indent="30" titleSize="11" />
+</c:if>
+
 <%-- SERVICE LOCATION INFORMATION --%>
 <br>
 <table class="compactResultsTable">

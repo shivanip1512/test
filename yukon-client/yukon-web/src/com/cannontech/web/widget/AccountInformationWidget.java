@@ -17,8 +17,12 @@ import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MspObjectDao;
 import com.cannontech.multispeak.dao.MultispeakDao;
+import com.cannontech.multispeak.deploy.service.ContactInfo;
+import com.cannontech.multispeak.deploy.service.CoordType;
+import com.cannontech.multispeak.deploy.service.EMailAddress;
 import com.cannontech.multispeak.deploy.service.Nameplate;
 import com.cannontech.multispeak.deploy.service.Network;
+import com.cannontech.multispeak.deploy.service.PhoneNumber;
 import com.cannontech.multispeak.deploy.service.UtilityInfo;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
@@ -53,6 +57,12 @@ public class AccountInformationWidget extends WidgetControllerBase{
         Map<String, String> custAddressInfo = getCustomerAddressInfo(mspCustomer);
         mav.addObject("custBasicsInfo", custBasicsInfo);
         mav.addObject("custAddressInfo", custAddressInfo);
+        if (mspCustomer.getContactInfo() != null) {
+            List<Info> custContactInfo = getCustomerContactInfo(mspCustomer);
+            if (custContactInfo != null) {
+                mav.addObject("custContactInfo", custContactInfo);
+            }
+        }
         
         // serv loc info detail
         List<Info> servLocBasicsInfo = getServLocBasicsInfo(mspServLoc);
@@ -89,9 +99,60 @@ public class AccountInformationWidget extends WidgetControllerBase{
         List<Info> infoList = new ArrayList<Info>();
         add("Last Name", mspCustomer.getLastName(), false, infoList);
         add("First Name", mspCustomer.getFirstName(), false, infoList);
-        add("Middle Name", mspCustomer.getMName(), false, infoList);
-        add("Home Phone", formatPhone(mspCustomer.getHomeAc(), mspCustomer.getHomePhone()), false, infoList);
-        add("Day Phone", formatPhone(mspCustomer.getDayAc(), mspCustomer.getDayPhone()), false, infoList);
+        add("Middle Name", mspCustomer.getMName(), true, infoList);
+        add("DBA", mspCustomer.getDBAName(), false, infoList);
+        add("Home Phone", formatPhone(mspCustomer.getHomeAc(), mspCustomer.getHomePhone()), true, infoList);
+        add("Day Phone", formatPhone(mspCustomer.getDayAc(), mspCustomer.getDayPhone()), true, infoList);
+        add("Utility", mspCustomer.getUtility(), true, infoList);
+        add("Comments", mspCustomer.getComments(), true, infoList);
+        add("Error String", mspCustomer.getErrorString(), true, infoList);
+        return infoList;
+    }
+    
+    private List<Info> getCustomerContactInfo(com.cannontech.multispeak.deploy.service.Customer mspCustomer) {
+        
+        List<Info> infoList = new ArrayList<Info>();
+        ContactInfo contactInfo = mspCustomer.getContactInfo();
+        
+        boolean hasPhones = false;
+        List<String> phones = new ArrayList<String>();
+        if (contactInfo.getPhoneList() != null) {
+            for (PhoneNumber p : contactInfo.getPhoneList()) {
+                String fullPhone = "";
+                if (p.getPhone() != null) {
+                    fullPhone += p.getPhone();
+                }
+                if (p.getPhoneType() != null && p.getPhoneType().getValue() != null) {
+                    fullPhone += " " + p.getPhoneType().getValue();
+                }
+                if (!StringUtils.isBlank(fullPhone)) {
+                    phones.add(fullPhone);
+                    hasPhones = true;
+                }
+            }
+        }
+        
+        boolean hasEmails = false;
+        List<String> emails = new ArrayList<String>();
+        if (contactInfo.getEMailList() != null) {
+            for (EMailAddress e : contactInfo.getEMailList()) {
+                String fullEmail = "";
+                if (e.getEMail() != null) {
+                    fullEmail += e.getEMail();
+                }
+                if (!StringUtils.isBlank(fullEmail)) {
+                    emails.add(fullEmail);
+                    hasEmails = true;
+                }
+            }
+        }
+        
+        if (!hasPhones && !hasEmails) {
+            return null;
+        }
+        
+        add("Phone Number", StringUtils.join(phones, ", "), true, infoList);
+        add("Email Address", StringUtils.join(emails, ", "), true, infoList);
         return infoList;
     }
     
@@ -112,33 +173,68 @@ public class AccountInformationWidget extends WidgetControllerBase{
         List<Info> infoList = new ArrayList<Info>();
         add("Customer ID", mspServLoc.getCustID(), false, infoList);
         add("Account Number", mspServLoc.getAccountNumber(), false, infoList);
+        add("Facility ID", mspServLoc.getFacilityID(), false, infoList);
         add("Facility Name", mspServLoc.getFacilityName(), false, infoList);
         add("Site ID", mspServLoc.getSiteID(), false, infoList);
+        add("Utility", mspServLoc.getUtility(), true, infoList);
         add("Type", mspServLoc.getServType(), false, infoList);
-        add("Revenue Class", mspServLoc.getRevenueClass(), false, infoList);
-        add("Status", mspServLoc.getServStatus(), false, infoList);
-        add("Outage Status", mspServLoc.getOutageStatus(), false, infoList);
-        add("Billing Cycle", mspServLoc.getBillingCycle(), false, infoList);
-        add("Route", mspServLoc.getRoute(), false, infoList);
-        add("Special Needs", mspServLoc.getSpecialNeeds(), false, infoList);
-        add("Load Mgmt", mspServLoc.getLoadMgmt(), false, infoList);
-        add("Budget Bill Code", mspServLoc.getBudgBill(), false, infoList);
-        add("Total accounts receivable balance.", mspServLoc.getAcRecvBal(), false, infoList);
-        add("Current accounts receivable balance", mspServLoc.getAcRecvCur(), false, infoList);
-        add("30-day accounts receivable balance", mspServLoc.getAcRecv30(), false, infoList);
-        add("60-day accounts receivable balance", mspServLoc.getAcRecv60(), false, infoList);
-        add("90-day accounts receivable balance", mspServLoc.getAcRecv90(), false, infoList);
-        add("Payment Due Date", mspServLoc.getPaymentDueDate(), false, infoList);
-        add("Last Payment Date", mspServLoc.getLastPaymentDate(), false, infoList);
-        add("Last Payment Amount", mspServLoc.getLastPaymentAmount(), false, infoList);
-        add("Bill Date", mspServLoc.getBillDate(), false, infoList);
-        add("Shut Off Date", mspServLoc.getShutOffDate(), false, infoList);
-        add("Connection", mspServLoc.getConnection(), false, infoList);
-        add("Connect Date", mspServLoc.getConnectDate(), false, infoList);
-        add("Disconnect Date", mspServLoc.getDisconnectDate(), false, infoList);
-        add("SIC", mspServLoc.getSIC(), false, infoList);
-        add("Work order number", mspServLoc.getWoNumber(), false, infoList);
-        add("Service order number", mspServLoc.getSoNumber(), false, infoList);
+        add("Revenue Class", mspServLoc.getRevenueClass(), true, infoList);
+        add("Status", mspServLoc.getServStatus(), true, infoList);
+        add("Outage Status", mspServLoc.getOutageStatus(), true, infoList);
+        add("Billing Cycle", mspServLoc.getBillingCycle(), true, infoList);
+        add("Route", mspServLoc.getRoute(), true, infoList);
+        add("Special Needs", mspServLoc.getSpecialNeeds(), true, infoList);
+        add("Load Mgmt", mspServLoc.getLoadMgmt(), true, infoList);
+        add("Budget Bill Code", mspServLoc.getBudgBill(), true, infoList);
+        add("Total accounts receivable balance.", mspServLoc.getAcRecvBal(), true, infoList);
+        add("Current accounts receivable balance", mspServLoc.getAcRecvCur(), true, infoList);
+        add("30-day accounts receivable balance", mspServLoc.getAcRecv30(), true, infoList);
+        add("60-day accounts receivable balance", mspServLoc.getAcRecv60(), true, infoList);
+        add("90-day accounts receivable balance", mspServLoc.getAcRecv90(), true, infoList);
+        add("Payment Due Date", mspServLoc.getPaymentDueDate(), true, infoList);
+        add("Last Payment Date", mspServLoc.getLastPaymentDate(), true, infoList);
+        add("Last Payment Amount", mspServLoc.getLastPaymentAmount(), true, infoList);
+        add("Bill Date", mspServLoc.getBillDate(), true, infoList);
+        add("Shut Off Date", mspServLoc.getShutOffDate(), true, infoList);
+        add("Connection", mspServLoc.getConnection(), true, infoList);
+        add("Connect Date", mspServLoc.getConnectDate(), true, infoList);
+        add("Disconnect Date", mspServLoc.getDisconnectDate(), true, infoList);
+        add("SIC", mspServLoc.getSIC(), true, infoList);
+        add("Is Cogeneration Site", mspServLoc.getIsCogenerationSite(), true, infoList);
+        add("Work order number", mspServLoc.getWoNumber(), true, infoList);
+        add("Service order number", mspServLoc.getSoNumber(), true, infoList);
+        if (mspServLoc.getPhaseCode() != null) {
+            add("Phasing code", mspServLoc.getPhaseCode().getValue(), true, infoList);
+        } else {
+            add("Phasing code", null, true, infoList);
+        }
+        if (mspServLoc.getMapLocation() != null && mspServLoc.getMapLocation().getCoord() != null) {
+            String xyz = makeMapLocation(mspServLoc.getMapLocation().getCoord());
+            add("Map Location", xyz, false, infoList);
+        } else {
+            add("Map Location", null, false, infoList);
+        }
+        add("Grid Location", mspServLoc.getGridLocation(), false, infoList);
+        add("Rotation", mspServLoc.getRotation(), true, infoList);
+        if (mspServLoc.getFromNodeID() != null) {
+            add("From Node ID", mspServLoc.getFromNodeID().getName(), true, infoList);
+        } else {
+            add("From Node ID", null, true, infoList);
+        }
+        if (mspServLoc.getToNodeID() != null) {
+            add("To Node ID", mspServLoc.getToNodeID().getName(), true, infoList);
+        } else {
+            add("To Node ID", null, true, infoList);
+        }
+        add("Section ID", mspServLoc.getSectionID(), true, infoList);
+        if (mspServLoc.getParentSectionID() != null) {
+            add("Parent Section ID", mspServLoc.getParentSectionID().getName(), true, infoList);
+        } else {
+            add("Parent Section ID", null, true, infoList);
+        }
+        add("Comments", mspServLoc.getComments(), true, infoList);
+        add("Error String", mspServLoc.getErrorString(), true, infoList);
+        
         return infoList;
     }
     
@@ -158,33 +254,30 @@ public class AccountInformationWidget extends WidgetControllerBase{
         List<Info> infoList = new ArrayList<Info>();
         Network n = mspServLoc.getNetwork();
         if (n != null) {
-            add("District", n.getDistrict(), false, infoList);
-            add("Board District", n.getBoardDist(), false, infoList);
-            add("Tax District", n.getTaxDist(), false, infoList);
-            add("Francise District", n.getFranchiseDist(), false, infoList);
-            add("School District", n.getSchoolDist(), false, infoList);
-            add("County", n.getCounty(), false, infoList);
-            add("City Code", n.getCityCode(), false, infoList);
-            add("Substation Code", n.getSubstationCode(), false, infoList);
-            add("Feeder", n.getFeeder(), false, infoList);
-            add("Phasing code", n.getPhaseCd(), false, infoList);
+            add("Board District", n.getBoardDist(), true, infoList);
+            add("Tax District", n.getTaxDist(), true, infoList);
+            add("Francise District", n.getFranchiseDist(), true, infoList);
+            add("School District", n.getSchoolDist(), true, infoList);
+            add("District", n.getDistrict(), true, infoList);
+            add("County", n.getCounty(), true, infoList);
+            add("City Code", n.getCityCode(), true, infoList);
+            add("Substation Code", n.getSubstationCode(), true, infoList);
+            add("Feeder", n.getFeeder(), true, infoList);
+            add("Phasing code", n.getPhaseCd(), true, infoList);
             add("Engineering analysis location", n.getEaLoc(), false, infoList);
-            add("Pole Number", n.getPoleNo(), false, infoList);
-            add("Section", n.getSection(), false, infoList);
-            add("Township", n.getTownship(), false, infoList);
-            add("Range", n.getRange(), false, infoList);
-            add("Subdivision", n.getSubdivision(), false, infoList);
-            add("Block", n.getBlock(), false, infoList);
-            add("Lot", n.getLot(), false, infoList);
-            if (n.getLinkedTransformer() != null) {
-                String bankId = n.getLinkedTransformer().getBankID() == null ? "" : n.getLinkedTransformer().getBankID();
-                String unitList = n.getLinkedTransformer().getUnitList() == null ? "" : StringUtils.join(n.getLinkedTransformer().getUnitList(), ", ");
-                add("Linked Transformer", "Bank ID: " + bankId + " Unit List: " + unitList, false, infoList);
-                
+            add("Pole Number", n.getPoleNo(), true, infoList);
+            add("Section", n.getSection(), true, infoList);
+            add("Township", n.getTownship(), true, infoList);
+            add("Range", n.getRange(), true, infoList);
+            add("Subdivision", n.getSubdivision(), true, infoList);
+            add("Block", n.getBlock(), true, infoList);
+            add("Lot", n.getLot(), true, infoList);
+            if (n.getLinkedTransformer() != null && n.getLinkedTransformer().getBankID() != null) {
+                add("Linked Transformer", "Bank ID: " + n.getLinkedTransformer().getBankID(), true, infoList);
             } else {
-                add("Linked Transformer", null, false, infoList);
+                add("Linked Transformer", null, true, infoList);
             }
-            add("Lineman Service Area", n.getLinemanServiceArea(), false, infoList);
+            add("Lineman Service Area", n.getLinemanServiceArea(), true, infoList);
         }
         return infoList;
     }   
@@ -196,13 +289,23 @@ public class AccountInformationWidget extends WidgetControllerBase{
         add("Meter Number", mspMeter.getMeterNo(), false, infoList);
         add("Meter Type", mspMeter.getMeterType(), false, infoList);
         if (mspMeter.getSealNumberList() != null) {
-            add("Seal Numbers", StringUtils.join(mspMeter.getSealNumberList(), ", "), false, infoList);
+            add("Seal Numbers", StringUtils.join(mspMeter.getSealNumberList(), ", "), true, infoList);
         } else {
-            add("Seal Numbers", null, false, infoList);
+            add("Seal Numbers", null, true, infoList);
         }
         add("AMR Type", mspMeter.getAMRType(), false, infoList);
         add("AMR Device Type", mspMeter.getAMRDeviceType(), false, infoList);
         add("AMR Vendor", mspMeter.getAMRVendor(), false, infoList);
+        
+        add("In Service Date", mspMeter.getInServiceDate(), false, infoList);
+        add("Out Service Date", mspMeter.getOutServiceDate(), false, infoList);
+        add("Serial Number", mspMeter.getSerialNumber(), true, infoList);
+        add("Device Class", mspMeter.getDeviceClass(), true, infoList);
+        add("Manufacturer", mspMeter.getManufacturer(), true, infoList);
+        add("Facility ID", mspMeter.getFacilityID(), true, infoList);
+        add("Utility", mspMeter.getUtility(), true, infoList);
+        add("Comments", mspMeter.getComments(), true, infoList);
+        add("Error String", mspMeter.getErrorString(), true, infoList);
         return infoList;
     }
     
@@ -212,21 +315,21 @@ public class AccountInformationWidget extends WidgetControllerBase{
         Nameplate np = mspMeter.getNameplate();
         if (np != null) {
             
-            add("Meter kh (watthour) constant", np.getKh(), false, infoList);
-            add("Watthour meter register constant", np.getKr(), false, infoList);
-            add("Frequency", np.getFrequency(), false, infoList);
-            add("Number Of Element", np.getNumberOfElements(), false, infoList);
-            add("Base Type", np.getBaseType(), false, infoList);
-            add("Accuracy Class", np.getAccuracyClass(), false, infoList);
-            add("Element Voltage", np.getElementsVoltage(), false, infoList);
-            add("Supply Voltage", np.getSupplyVoltage(), false, infoList);
-            add("Max Amperage", np.getMaxAmperage(), false, infoList);
-            add("Test Amperage", np.getTestAmperage(), false, infoList);
-            add("Reg Ratio", np.getRegRatio(), false, infoList);
-            add("Phases", np.getPhases(), false, infoList);
-            add("Wires", np.getWires(), false, infoList);
-            add("Dials", np.getDials(), false, infoList);
-            add("Form", np.getForm(), false, infoList);
+            add("Meter kh (watthour) constant", np.getKh(), true, infoList);
+            add("Watthour meter register constant", np.getKr(), true, infoList);
+            add("Frequency", np.getFrequency(), true, infoList);
+            add("Number Of Element", np.getNumberOfElements(), true, infoList);
+            add("Base Type", np.getBaseType(), true, infoList);
+            add("Accuracy Class", np.getAccuracyClass(), true, infoList);
+            add("Element Voltage", np.getElementsVoltage(), true, infoList);
+            add("Supply Voltage", np.getSupplyVoltage(), true, infoList);
+            add("Max Amperage", np.getMaxAmperage(), true, infoList);
+            add("Test Amperage", np.getTestAmperage(), true, infoList);
+            add("Reg Ratio", np.getRegRatio(), true, infoList);
+            add("Phases", np.getPhases(), true, infoList);
+            add("Wires", np.getWires(), true, infoList);
+            add("Dials", np.getDials(), true, infoList);
+            add("Form", np.getForm(), true, infoList);
             add("Multiplier", np.getMultiplier(), false, infoList);
             add("Demand Multiplier", np.getDemandMult(), false, infoList);
             add("Transponder ID", np.getTransponderID(), false, infoList);
@@ -240,41 +343,47 @@ public class AccountInformationWidget extends WidgetControllerBase{
         UtilityInfo u = mspMeter.getUtilityInfo();
         if (u != null) {
             
-            add("Owner", u.getOwner(), false, infoList);
-            add("District", u.getDistrict(), false, infoList);
+            add("Owner", u.getOwner(), true, infoList);
+            add("District", u.getDistrict(), true, infoList);
             add("Service Location", u.getServLoc(), false, infoList);
             add("Account Number", u.getAccountNumber(), false, infoList);
             add("Customer ID", u.getCustID(), false, infoList);
             add("Substation Code", u.getSubstationCode(), false, infoList);
             add("Substation Name", u.getSubstationName(), false, infoList);
-            add("Feeder", u.getFeeder(), false, infoList);
-            add("Bus", u.getBus(), false, infoList);
+            add("Feeder", u.getFeeder(), true, infoList);
+            add("Bus", u.getBus(), true, infoList);
             if (u.getPhaseCd() != null) {
-                add("Phasing code", u.getPhaseCd().getValue(), false, infoList);
+                add("Phasing code", u.getPhaseCd().getValue(), true, infoList);
             } else {
-                add("Phasing code", null, false, infoList);
+                add("Phasing code", null, true, infoList);
             }
             if (u.getEaLoc() != null) {
-                add("Engineering analysis location", u.getEaLoc().getName(), false, infoList);
+                add("Engineering analysis location", u.getEaLoc().getName(), true, infoList);
             } else {
-                add("Engineering analysis location", null, false, infoList);
+                add("Engineering analysis location", null, true, infoList);
             }
-            add("Transformer Bank ID", u.getTransformerBankID(), false, infoList);
-            add("Meter Base ID", u.getMeterBaseID(), false, infoList);
+            add("Transformer Bank ID", u.getTransformerBankID(), true, infoList);
+            add("Meter Base ID", u.getMeterBaseID(), true, infoList);
             if (u.getMapLocation() != null && u.getMapLocation().getCoord() != null) {
-                String xyz = "";
-                xyz += "X=" + u.getMapLocation().getCoord().getX();
-                xyz += " Y=" + u.getMapLocation().getCoord().getY();
-                xyz += " Z=" + u.getMapLocation().getCoord().getZ();
-                xyz += " Bulge=" + u.getMapLocation().getCoord().getBulge();
-                add("Map Location", xyz, false, infoList);
+                String xyz = makeMapLocation(u.getMapLocation().getCoord());
+                add("Map Location", xyz, true, infoList);
             } else {
-                add("Map Location", null, false, infoList);
+                add("Map Location", null, true, infoList);
             }
             
         }
         
         return infoList;
+    }
+    
+    private String makeMapLocation(CoordType coordType) {
+        
+        String xyz = "";
+        xyz += "X=" + coordType.getX();
+        xyz += " Y=" + coordType.getY();
+        xyz += " Z=" + coordType.getZ();
+        xyz += " Bulge=" + coordType.getBulge();
+        return xyz;
     }
     
     private String formatPhone(String areaCode, String phone) {
