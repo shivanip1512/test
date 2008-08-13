@@ -94,7 +94,6 @@ public class ResubmittingBulkProcessor extends BulkProcessorBase {
                     } catch (ProcessingException e) {
                         callback.receivedProcessingException(thisRow, in, e);
                     }
-                    callback.processingSucceeded();
 
                     // handle next
                     if (iterator.hasNext()) {
@@ -105,6 +104,7 @@ public class ResubmittingBulkProcessor extends BulkProcessorBase {
                         executor.schedule(nextRunnable, nextDelay, TimeUnit.MILLISECONDS);
                     } else {
                         log.debug("Iterator is exhausted");
+                        callback.processingSucceeded();
                         if (iterator instanceof Closeable) {
                             try {
                                 ((Closeable)iterator).close();
