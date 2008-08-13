@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct4xx.h-arc  $
-* REVISION     :  $Revision: 1.39 $
-* DATE         :  $Date: 2008/07/25 15:14:59 $
+* REVISION     :  $Revision: 1.40 $
+* DATE         :  $Date: 2008/08/13 16:46:39 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -190,7 +190,7 @@ protected:
 
     struct lp_info_t
     {
-        unsigned long archived_reading;
+        unsigned long collection_point;
         unsigned long current_request;
         unsigned long current_schedule;
     } _lp_info[LPChannels];

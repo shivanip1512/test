@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.165 $
-* DATE         :  $Date: 2008/08/08 13:48:39 $
+* REVISION     :  $Revision: 1.166 $
+* DATE         :  $Date: 2008/08/13 16:46:39 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -628,23 +628,30 @@ ULONG CtiDeviceMCT410::calcNextLPScanTime( void )
             }
 
             //  uninitialized - get the readings from the DB
-            if( !_lp_info[i].archived_reading )
+            if( !_lp_info[i].collection_point )
             {
                 //  so we haven't talked to it yet
-                _lp_info[i].archived_reading = 86400;
+                _lp_info[i].collection_point = 86400;
                 _lp_info[i].current_request  = 86400;
 
                 CtiTablePointDispatch pd(pPoint->getPointID());
 
                 if(pd.Restore().errorCode() == RWDBStatus::ok)
                 {
-                    _lp_info[i].archived_reading = pd.getTimeStamp().seconds();
+                    _lp_info[i].collection_point = pd.getTimeStamp().seconds();
+                }
+
+                if( _lp_info[i].collection_point < (CtiTime::now().seconds() - block_len * 16) )
+                {
+                    //  start collecting the most recent block
+                    _lp_info[i].collection_point  = CtiTime::now().seconds();
+                    _lp_info[i].collection_point -= _lp_info[i].collection_point % block_len;
                 }
             }
 
             //  basically, we plan to request again after a whole block has been recorded...
             //    then we add on a little bit to make sure the MCT is out of the memory
-            planned_time  = _lp_info[i].archived_reading + block_len;
+            planned_time  = _lp_info[i].collection_point + block_len;
             planned_time -= planned_time % block_len;  //  make double sure we're block-aligned
             planned_time += LPBlockEvacuationTime;      //  add on the safeguard time
 
@@ -653,7 +660,7 @@ ULONG CtiDeviceMCT410::calcNextLPScanTime( void )
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << "**** Checkpoint - lp calctime check... **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "planned_time = " << planned_time << endl;
-                dout << "_lp_info[" << i << "].archived_reading = " << _lp_info[i].archived_reading << endl;
+                dout << "_lp_info[" << i << "].collection_point = " << _lp_info[i].collection_point << endl;
                 dout << "_lp_info[" << i << "].current_schedule = " << _lp_info[i].current_schedule << endl;
                 dout << "_lp_info[" << i << "].current_request  = " << _lp_info[i].current_request << endl;
             }
@@ -661,7 +668,7 @@ ULONG CtiDeviceMCT410::calcNextLPScanTime( void )
             _lp_info[i].current_schedule = planned_time;
 
             //  if we've already made the request for a block, or we're overdue...  almost the same thing
-            if( (_lp_info[i].current_request >= _lp_info[i].archived_reading) ||
+            if( (_lp_info[i].current_request >= _lp_info[i].collection_point) ||
                 (planned_time <= (Now.seconds() - LoadProfileCollectionWindow)) )
             {
                 unsigned int overdue_rate = getLPRetryRate(interval_len);
@@ -682,7 +689,7 @@ ULONG CtiDeviceMCT410::calcNextLPScanTime( void )
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << "**** Checkpoint - lp calctime check... **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "planned_time = " << planned_time << endl;
-                dout << "_lp_info[" << i << "].archived_reading = " << _lp_info[i].archived_reading << endl;
+                dout << "_lp_info[" << i << "].collection_point = " << _lp_info[i].collection_point << endl;
                 dout << "_lp_info[" << i << "].current_schedule = " << _lp_info[i].current_schedule << endl;
                 dout << "_lp_info[" << i << "].current_request  = " << _lp_info[i].current_request << endl;
                 dout << "next_time = " << next_time << endl;
@@ -758,7 +765,7 @@ INT CtiDeviceMCT410::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
                 {
                     tmpOutMess = CTIDBG_new OUTMESS(*OutMessage);
 
-                    _lp_info[i].current_request  = _lp_info[i].archived_reading;
+                    _lp_info[i].current_request  = _lp_info[i].collection_point;
 
                     //  make sure we only ask for what the function reads can access
                     if( (Now.seconds() - _lp_info[i].current_request) >= (unsigned long)(LPRecentBlocks * block_len) )
@@ -773,7 +780,7 @@ INT CtiDeviceMCT410::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " **** Checkpoint - LP variable check for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         dout << "Now.seconds() = " << Now.seconds() << endl;
-                        dout << "_lp_info[" << i << "].archived_reading = " << _lp_info[i].archived_reading << endl;
+                        dout << "_lp_info[" << i << "].collection_point = " << _lp_info[i].collection_point << endl;
                         dout << "MCT4XX_LPRecentBlocks * block_len = " << LPRecentBlocks * block_len << endl;
                         dout << "_lp_info[" << i << "].current_request = " << _lp_info[i].current_request << endl;
                     }

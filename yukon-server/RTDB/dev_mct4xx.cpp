@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.84 $
-* DATE         :  $Date: 2008/08/08 13:48:39 $
+* REVISION     :  $Revision: 1.85 $
+* DATE         :  $Date: 2008/08/13 16:46:39 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -78,7 +78,7 @@ CtiDeviceMCT4xx::CtiDeviceMCT4xx()
     for( int i = 0; i < LPChannels; i++ )
     {
         //  initialize them to 0
-        _lp_info[i].archived_reading = 0;
+        _lp_info[i].collection_point = 0;
         _lp_info[i].current_request  = 0;
         _lp_info[i].current_schedule = 0;
     }
@@ -332,8 +332,15 @@ CtiDeviceMCT4xx::point_info CtiDeviceMCT4xx::getData( unsigned char *buf, int le
 
     switch( vt )
     {
+        case ValueType_FrozenAccumulator:
+        {
+            value ^= value & 0x01;  //  clear the low bit, and fall through to the Accumulator case below
+        }
         case ValueType_Accumulator:
-        case ValueType_FrozenAccumulator:           min_error = 0xff989680; break;
+        {
+            min_error = 0xff989680;
+            break;
+        }
     }
 
     if( min_error && error_code >= min_error )
@@ -3415,7 +3422,7 @@ INT CtiDeviceMCT4xx::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, 
                 //  unnecessary?
                 setLastLPTime (timestamp + interval_len * 6);
 
-                _lp_info[channel].archived_reading = timestamp + interval_len * 6;
+                _lp_info[channel].collection_point = timestamp + interval_len * 6;
             }
             else
             {
