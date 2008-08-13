@@ -212,6 +212,7 @@ ERRSTRUCT CTIErrors[] = {
     { ErrorWctp600Series,   "Protocol Error 600 Series",                        ERRTYPESYSTEM, " N/A"},
 
     { ErrorQueuePurged,     "Queue purged to limit memory usage",               ERRTYPESYSTEM, " N/A"},
+    { ErrorRequestCancelled,"Request was cancelled",                            ERRTYPESYSTEM, " N/A"},
     { ErrorDeviceIPUnknown, "Device has not reported in, outbound IP unknown",  ERRTYPESYSTEM, " N/A"},
 
     { ErrorMACSTimeout,     "MACS timed out on this message",                   ERRTYPESYSTEM, " N/A"},

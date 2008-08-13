@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2008/07/18 19:43:23 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2008/08/13 19:08:34 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -198,6 +198,7 @@ private:
         _dirtyCounter[ statBinIndex ] = true;
     }
 
+    //Set Counter does not mark the row as dirty. This is only used on copy and on load.
     inline void setCounter( int statTypeIndex, int statBinIndex, int value )
     {
         #ifdef CTISTATUSECOUNTERS
@@ -208,7 +209,6 @@ private:
             _counter[statTypeIndex][statBinIndex] = value;
         }
         #endif
-        _dirtyCounter[ statBinIndex ] = true;
     }
 
     inline int getCounter( int statTypeIndex, int statBinIndex ) const

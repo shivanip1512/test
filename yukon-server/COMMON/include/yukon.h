@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/yukon.h-arc  $
-* REVISION     :  $Revision: 1.63 $
-* DATE         :  $Date: 2008/03/14 19:53:07 $
+* REVISION     :  $Revision: 1.64 $
+* DATE         :  $Date: 2008/08/13 19:08:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -298,6 +298,7 @@ enum YukonError_t
     ErrorInvalidData,           //  If any MCT reading (that will be stored to a point) is invalid, we fail the read
 
     ErrorFreezeNotRecorded,
+    ErrorRequestCancelled,      // Cancel message received
 
     FinalError
 };

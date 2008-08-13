@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.222 $
-* DATE         :  $Date: 2008/08/06 18:25:59 $
+* REVISION     :  $Revision: 1.223 $
+* DATE         :  $Date: 2008/08/13 19:08:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -4617,8 +4617,7 @@ UINT purgeExpiredQueueEntries(CtiPortSPtr port)
                     for(; iter!= omList.end(); )
                     {
                         OUTMESS *tempOM = (OUTMESS *)*iter;
-                        tempOM->Request.MacroOffset = 0;//No resubmitting this request, it is dead!
-                        SendError( tempOM, ErrorQueuePurged );
+                        cleanupOrphanOutMessages(0, tempOM);
                         iter = omList.erase(omList.begin());
                     }
                 }

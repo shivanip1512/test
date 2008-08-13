@@ -7,11 +7,17 @@
 * Author: Jess Otteson
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2008/07/21 20:38:27 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2008/08/13 19:08:34 $
 *
 * HISTORY      :
 * $Log: systemmsgthread.cpp,v $
+* Revision 1.8  2008/08/13 19:08:34  jotteson
+* YUK-6306 Change porter to not send a error for canceled messages
+* Changed canceled messages to update statistics but not send an error back to the client
+* Added a new error message for cancelled messages seperate from queue purged
+* Fixed minor statistics startup bug.
+*
 * Revision 1.7  2008/07/21 20:38:27  jotteson
 * YUK-4556 CCU queue backs up and returns no error when uninitialized
 * Added expiration functionality regardless of port's state.
@@ -353,7 +359,7 @@ void SystemMsgThread::executeRequestCount(CtiRequestMsg *msg, CtiCommandParser &
 
 void SystemMsgThread::executeCancelRequest(CtiRequestMsg *msg, CtiCommandParser &parse)
 {
-    extern void cleanupOrphanOutMessages(void *unusedptr, void* d);
+    extern void cancelOutMessages(void *unusedptr, void* d);
 
     unsigned int entries = 0;
     string resultString;
@@ -388,7 +394,7 @@ void SystemMsgThread::executeCancelRequest(CtiRequestMsg *msg, CtiCommandParser 
                     if( port->getWorkCount(requestID) > 0 )
                     {
                         // Here we are trying to save the horrors of CleanQueue from being called without cause.
-                        entries += CleanQueue(port->getPortQueueHandle(), (void *)requestID, findRequestIDMatch, cleanupOrphanOutMessages);
+                        entries += CleanQueue(port->getPortQueueHandle(), (void *)requestID, findRequestIDMatch, cancelOutMessages);
                     }
 
                     queuedDevices = port->getQueuedWorkDevices();
@@ -412,7 +418,7 @@ void SystemMsgThread::executeCancelRequest(CtiRequestMsg *msg, CtiCommandParser 
                                 {
                                     OUTMESS *tempOM = (OUTMESS *)*iter;
                                     tempOM->Request.MacroOffset = 0;//No resubmitting this request, it is dead!
-                                    SendError( tempOM, ErrorQueuePurged );
+                                    cancelOutMessages(0,tempOM);
                                     iter = omList.erase(omList.begin());
                                 }
                             }
