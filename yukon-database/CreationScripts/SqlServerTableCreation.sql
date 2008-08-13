@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     8/13/2008 10:25:57 AM                        */
+/* Created on:     8/13/2008 3:12:28 PM                         */
 /*==============================================================*/
 
 
@@ -10797,7 +10797,7 @@ create table YukonImage (
    ImageCategory        varchar(20)          not null,
    ImageName            varchar(80)          not null,
    ImageValue           image                null,
-   constraint PK_YUKONIMAGE primary key nonclustered (ImageID)
+   constraint PK_YUKONIMAGE primary key (ImageID)
 )
 go
 
@@ -12403,7 +12403,7 @@ go
 /*==============================================================*/
 go
 create view CCOperationsASent_View as
-SELECT logid, pointid, datetime, text, feederid, subid, additionalinfo
+SELECT logId, pointId, dateTime, text, feederId, subId, additionalInfo
 FROM CCEventLog
 WHERE text LIKE '%Close sent,%' OR text LIKE '%Open sent,%'
 go
@@ -12413,7 +12413,7 @@ go
 /*==============================================================*/
 go
 create view CCOperationsBConfirmed_View as
-SELECT logid, pointid, datetime, text, kvarbefore, kvarafter, kvarchange
+SELECT logId, pointId, dateTime, text, kvarBefore, kvarAfter, kvarChange
 FROM CCEventLog
 WHERE text LIKE 'Var: %'
 go

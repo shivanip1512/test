@@ -1,8 +1,12 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/13/2008 10:37:33 AM                        */
+/* Created on:     8/13/2008 3:17:57 PM                         */
 /*==============================================================*/
+
+
+set define off;
+
 
 
 drop view TempMovedCapBanks_View;
@@ -9682,36 +9686,17 @@ LEFT OUTER JOIN DynamicCCTwoWayCBC DTWC ON CB.ControlDeviceId = DTWC.DeviceId;
 /* View: CCOperationsASent_View                                 */
 /*==============================================================*/
 create or replace view CCOperationsASent_View as
-select
-   LogID,
-   PointID,
-   DateTime,
-   Text,
-   FeederID,
-   SubID,
-   AdditionalInfo
-from
-   CCEventLog
-where
-   Text LIKE '%Close sent,%'
-   OR Text LIKE '%Open sent,%';
+SELECT logId, pointId, dateTime, text, feederId, subId, additionalInfo
+FROM CCEventLog
+WHERE text LIKE '%Close sent,%' OR text LIKE '%Open sent,%';
 
 /*==============================================================*/
 /* View: CCOperationsBConfirmed_View                            */
 /*==============================================================*/
 create or replace view CCOperationsBConfirmed_View as
-select
-   LogID,
-   PointID,
-   DateTime,
-   Text,
-   KVARBefore,
-   KVARAfter,
-   KVARChange
-from
-   CCEventLog
-where
-   Text LIKE 'Var: %';
+SELECT logId, pointId, dateTime, text, kvarBefore, kvarAfter, kvarChange
+FROM CCEventLog
+WHERE text LIKE 'Var: %';
 
 /*==============================================================*/
 /* View: CCOperationsCOrphanedConf_View                         */
