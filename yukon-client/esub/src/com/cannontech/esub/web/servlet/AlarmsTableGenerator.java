@@ -49,6 +49,9 @@ public class AlarmsTableGenerator extends HttpServlet {
         private static final String PARAM_Y = "y";
         private static final String PARAM_WIDTH = "width";
         private static final String PARAM_HEIGHT = "height";
+        private static final String PARAM_ACKED = "acked";
+        private static final String PARAM_EVENT = "events";
+        private static final String PARAM_INACTIVE = "inactive";
 
         /**
          * @see javax.servlet.http.HttpServlet#service(HttpServletRequest, HttpServletResponse)
@@ -62,12 +65,19 @@ public class AlarmsTableGenerator extends HttpServlet {
                 String xStr = req.getParameter(PARAM_X);
                 String yStr = req.getParameter(PARAM_Y);
                 String widthStr = req.getParameter(PARAM_WIDTH);
-                String heightStr = req.getParameter(PARAM_HEIGHT);                
+                String heightStr = req.getParameter(PARAM_HEIGHT);  
+                String ackStr = req.getParameter(PARAM_ACKED);                
+                String eventStr = req.getParameter(PARAM_EVENT);                
+                String inactStr = req.getParameter(PARAM_INACTIVE);
                 
                 try {
                         int[] deviceIds = StringUtils.parseIntString(deviceIdStr);
                         int[] pointIds = StringUtils.parseIntString(pointIdStr);
                         int[] alarmCategoryIds = StringUtils.parseIntString(alarmCategoryIdStr);
+                                        
+                        Boolean ack = new Boolean(ackStr);
+                        Boolean evnt= new Boolean(eventStr);
+                        Boolean inact = new Boolean(inactStr);
                         
                         int x = Integer.parseInt(xStr);
                         int y = Integer.parseInt(yStr);
@@ -83,8 +93,14 @@ public class AlarmsTableGenerator extends HttpServlet {
                         cat.setX(x);
                         cat.setY(y);
                         cat.setWidth(width);
-                        cat.setHeight(height);   
+                        cat.setHeight(height);
+                        cat.setHideAcknowledged(ack);
+                        cat.setHideEvents(evnt);
+                        cat.setHideInactive(inact);
                         PointAlarmTableModel tableModel = (PointAlarmTableModel) cat.getTable().getModel();
+                        tableModel.setHideInactive(cat.isHideInactive());
+                        tableModel.setHideEvents(cat.isHideEvents());
+                        tableModel.setHideAcknowledged(cat.isHideAcknowledged());
                         // Fill it up with signals/alarms
                         tableModel.refresh();
 

@@ -1,14 +1,19 @@
 package com.cannontech.esub.editor.element;
 
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Enumeration;
 
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.event.TreeExpansionEvent;
@@ -44,12 +49,16 @@ public class CurrentAlarmsTableEditorPanel extends com.cannontech.common.gui.uti
 	private JLabel ivjDeviceListLabel = null;
     private JLabel ivjAlarmCategoryListLabel = null;
 	private JPanel ivjJPanel1 = null;
+	private JPanel checkboxJPanel = null;	
     private JTree selectionJTreeDevices = null;
     private JTree selectionJTreeAlarms = null;
     private JScrollPane ivjJScrollPaneDevices = null;
     private JScrollPane ivjJScrollPaneAlarms = null;
     private CheckNodeSelectionListener deviceNodeListener = null;
     private CheckNodeSelectionListener alarmNodeListener = null;
+    private JCheckBox hideInactiveCheckBox = null;
+    private JCheckBox hideEventsCheckBox = null;
+    private JCheckBox hideAcknowledgedCheckBox = null;
     
 /**
  * CurrentAlarmsTableEditorPanel constructor comment.
@@ -102,6 +111,42 @@ private javax.swing.JLabel getAlarmCategoryListLabel() {
         }
     }
     return ivjAlarmCategoryListLabel;
+}
+
+private javax.swing.JCheckBox getHideActiveCheckbox() {
+    if (hideInactiveCheckBox == null) {
+        try {
+        	hideInactiveCheckBox= new javax.swing.JCheckBox();
+        	hideInactiveCheckBox.setText("Hide Inactive Alarms");
+        } catch (java.lang.Throwable ivjExc) {
+            handleException(ivjExc);
+        }
+    }
+    return hideInactiveCheckBox;
+}
+
+private javax.swing.JCheckBox getHideEventsCheckbox() {
+    if (hideEventsCheckBox == null) {
+        try {
+        	hideEventsCheckBox = new javax.swing.JCheckBox();
+        	hideEventsCheckBox.setText("Hide Event Conditions");
+        } catch (java.lang.Throwable ivjExc) {
+            handleException(ivjExc);
+        }
+    }
+    return hideEventsCheckBox;
+}
+
+private javax.swing.JCheckBox getHideAcknowledgedCheckbox() {
+    if (hideAcknowledgedCheckBox == null) {
+        try {
+        	hideAcknowledgedCheckBox= new javax.swing.JCheckBox();
+        	hideAcknowledgedCheckBox.setText("Hide Acknowledged Alarms");
+        } catch (java.lang.Throwable ivjExc) {
+            handleException(ivjExc);
+        }
+    }
+    return hideAcknowledgedCheckBox;
 }
 
 /**
@@ -400,6 +445,42 @@ public void alarmValueChanged(TreeSelectionEvent e)
  * @return javax.swing.JPanel
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JPanel getCheckboxJPanel() {
+	if (checkboxJPanel == null) {
+		try {
+			checkboxJPanel = new javax.swing.JPanel();
+			checkboxJPanel.setLayout(new java.awt.GridBagLayout());
+            
+            java.awt.GridBagConstraints constraintHideActiveCheckbox = new java.awt.GridBagConstraints();
+            constraintHideActiveCheckbox.gridx = 0; constraintHideActiveCheckbox.gridy = 0;
+            constraintHideActiveCheckbox.gridwidth = 1;
+            constraintHideActiveCheckbox.anchor = GridBagConstraints.WEST;           
+            checkboxJPanel.add(getHideActiveCheckbox(), constraintHideActiveCheckbox);
+            
+            java.awt.GridBagConstraints constraintHideEventsCheckbox = new java.awt.GridBagConstraints();
+            constraintHideEventsCheckbox.gridx = 1; constraintHideEventsCheckbox.gridy = 0;
+            constraintHideEventsCheckbox.gridwidth = 1;
+            constraintHideEventsCheckbox.anchor = GridBagConstraints.CENTER;
+            constraintHideEventsCheckbox.weightx = 1.0;
+            checkboxJPanel.add(getHideEventsCheckbox(), constraintHideEventsCheckbox);
+            
+            java.awt.GridBagConstraints constraintHideAckCheckbox = new java.awt.GridBagConstraints();
+            constraintHideAckCheckbox.gridx = 2; constraintHideAckCheckbox .gridy = 0;
+            constraintHideAckCheckbox.gridwidth = 1;
+            constraintHideAckCheckbox.anchor = GridBagConstraints.WEST;           
+            checkboxJPanel.add(getHideAcknowledgedCheckbox(), constraintHideAckCheckbox );
+            
+		} catch (java.lang.Throwable ivjExc) {
+			handleException(ivjExc);
+		}
+	}
+	return checkboxJPanel;
+}
+/**
+ * Return the JPanel1 property value.
+ * @return javax.swing.JPanel
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JPanel getJPanel1() {
 	if (ivjJPanel1 == null) {
 		try {
@@ -411,21 +492,17 @@ private javax.swing.JPanel getJPanel1() {
 			ivjJPanel1.setBorder(ivjLocalBorder);
 			ivjJPanel1.setLayout(new java.awt.GridBagLayout());
             
-            java.awt.GridBagConstraints constraintsDeviceListLabel = new java.awt.GridBagConstraints();
+            GridBagConstraints constraintsDeviceListLabel = new java.awt.GridBagConstraints();
             constraintsDeviceListLabel.gridx = 0; constraintsDeviceListLabel.gridy = 0;
             constraintsDeviceListLabel.gridwidth = 1;
-            constraintsDeviceListLabel.fill = java.awt.GridBagConstraints.BOTH;
-            constraintsDeviceListLabel.weightx = 1.0;
-            constraintsDeviceListLabel.weighty = 1.0;
+            constraintsDeviceListLabel.anchor = GridBagConstraints.WEST;
             constraintsDeviceListLabel.insets = new java.awt.Insets(5, 5, 0, 5);
             ivjJPanel1.add(getDeviceListLabel(), constraintsDeviceListLabel);
             
             java.awt.GridBagConstraints constraintsAlarmCategoryListLabel = new java.awt.GridBagConstraints();
             constraintsAlarmCategoryListLabel.gridx = 1; constraintsAlarmCategoryListLabel.gridy = 0;
             constraintsAlarmCategoryListLabel.gridwidth = 1;
-            constraintsAlarmCategoryListLabel.fill = java.awt.GridBagConstraints.BOTH;
-            constraintsAlarmCategoryListLabel.weightx = 1.0;
-            constraintsAlarmCategoryListLabel.weighty = 1.0;
+            constraintsAlarmCategoryListLabel.anchor = GridBagConstraints.WEST;
             constraintsAlarmCategoryListLabel.insets = new java.awt.Insets(5, 5, 0, 5);
             ivjJPanel1.add(getAlarmCategoryListLabel(), constraintsAlarmCategoryListLabel);
 
@@ -433,7 +510,7 @@ private javax.swing.JPanel getJPanel1() {
             constraintsJScrollPaneDevices.gridx = 0; constraintsJScrollPaneDevices.gridy = 1;
             constraintsJScrollPaneDevices.gridwidth = 1;
             constraintsJScrollPaneDevices.fill = java.awt.GridBagConstraints.BOTH;
-            constraintsJScrollPaneDevices.weightx = 1.0;
+            constraintsJScrollPaneDevices.weightx = 1.0; 
             constraintsJScrollPaneDevices.weighty = 1.0;
             constraintsJScrollPaneDevices.insets = new java.awt.Insets(0, 5, 5, 5);
             ivjJPanel1.add(getJScrollPaneDevices(), constraintsJScrollPaneDevices);
@@ -446,7 +523,15 @@ private javax.swing.JPanel getJPanel1() {
             constraintsJScrollPaneAlarms.weighty = 1.0;
             constraintsJScrollPaneAlarms.insets = new java.awt.Insets(0, 5, 5, 5);
             ivjJPanel1.add(getJScrollPaneAlarms(), constraintsJScrollPaneAlarms);
-            
+
+            java.awt.GridBagConstraints constraintsBox = new java.awt.GridBagConstraints();
+            constraintsBox.gridx = 0; constraintsBox.gridy = 2;
+            constraintsBox.gridwidth = 2;
+            constraintsBox.fill = java.awt.GridBagConstraints.BOTH;
+            constraintsBox.insets = new java.awt.Insets(0, 5, 5, 5);
+            constraintsBox.anchor = GridBagConstraints.WEST;           
+            ivjJPanel1.add(getCheckboxJPanel(), constraintsBox);
+
 			//getJPanel1().add(getJComboBox1(), getJComboBox1().getName());
             ivjJPanel1.setPreferredSize(new Dimension ( 300, 400 ));
             
@@ -541,6 +626,9 @@ public Object getValue(Object o) {
     alarmsTable.setAlarmCategoryIds(alarmarray);
     alarmsTable.setPointIds(pointarray);
     alarmsTable.setDeviceIds(devicearray);
+    alarmsTable.setHideInactive(getHideActiveCheckbox().isSelected());
+    alarmsTable.setHideEvents(getHideEventsCheckbox().isSelected());
+    alarmsTable.setHideAcknowledged(getHideAcknowledgedCheckbox().isSelected());
     
 	return alarmsTable;
 }
@@ -616,6 +704,14 @@ public void setValue(Object o) {
 	int[] deviceids = alarmsTable.getDeviceIds();
     int[] pointids = alarmsTable.getPointIds();
     int[] alarmcatids = alarmsTable.getAlarmCategoryIds();
+    
+    boolean use_active = alarmsTable.isHideInactive();
+    boolean use_alarmsOnly = alarmsTable.isHideEvents();
+    boolean use_unack = alarmsTable.isHideAcknowledged();
+    
+    getHideActiveCheckbox().setSelected(use_active);
+    getHideEventsCheckbox().setSelected(use_alarmsOnly);
+    getHideAcknowledgedCheckbox().setSelected(use_unack);
     
     for( int i = 0; i < alarmcatids.length; i++ )
     {

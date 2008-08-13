@@ -619,6 +619,9 @@ public abstract class BaseSVGGenerator implements ISVGGenerator {
         retElement.setAttributeNS(null, "deviceid", deviceIdList);
         retElement.setAttributeNS(null, "pointid", pointIdList);
         retElement.setAttributeNS(null, "alarmcategoryid", alarmCategoryIdList);
+        retElement.setAttributeNS(null, "acked", Boolean.toString(table.isHideAcknowledged()));
+        retElement.setAttributeNS(null, "events", Boolean.toString(table.isHideEvents()));
+        retElement.setAttributeNS(null, "inactive", Boolean.toString(table.isHideInactive()));
         
         if(genOptions.isEditEnabled()) {
             int ackX = x + 5;

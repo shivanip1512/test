@@ -339,7 +339,11 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
     public boolean updateCurrentAlarmsTable(LxComponent lxComponent) {
         boolean change;
         CurrentAlarmsTable cat = (CurrentAlarmsTable) lxComponent;
-        ((PointAlarmTableModel) cat.getTable().getModel()).refresh();
+        PointAlarmTableModel tableModel = (PointAlarmTableModel) cat.getTable().getModel();
+        tableModel.setHideInactive(cat.isHideInactive());
+        tableModel.setHideEvents(cat.isHideEvents());
+        tableModel.setHideAcknowledged(cat.isHideAcknowledged());
+        tableModel.refresh();
         change = true;
         return change;
     }

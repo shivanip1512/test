@@ -46,6 +46,16 @@ public class PersistCurrentAlarmsTable extends BasePersistElement {
 	 				elem.setAlarmCategoryIds(LxSaveUtils.readIntArray(in,0));
 	 			}
 	 			break;
+
+	 			case 3: {
+	 				elem.setDeviceIds(LxSaveUtils.readIntArray(in,0));
+	 				elem.setPointIds(LxSaveUtils.readIntArray(in,0));
+	 				elem.setAlarmCategoryIds(LxSaveUtils.readIntArray(in,0));
+	 				elem.setHideInactive(LxSaveUtils.readBoolean(in));
+	 				elem.setHideEvents(LxSaveUtils.readBoolean(in));
+	 				elem.setHideAcknowledged(LxSaveUtils.readBoolean(in));
+	 			}
+	 			break;
 	 			
 	 			default: {
 	 				throw new IOException("Unknown version: " + version + " in " + elem.getClass().getName());
@@ -59,5 +69,8 @@ public class PersistCurrentAlarmsTable extends BasePersistElement {
 	 		LxSaveUtils.writeIntArray(out, elem.getDeviceIds());
 	 		LxSaveUtils.writeIntArray(out, elem.getPointIds());
 	 		LxSaveUtils.writeIntArray(out, elem.getAlarmCategoryIds());
+	 		LxSaveUtils.writeBoolean(out, elem.isHideInactive());
+	 		LxSaveUtils.writeBoolean(out, elem.isHideEvents());
+	 		LxSaveUtils.writeBoolean(out, elem.isHideAcknowledged());
 	 }
 }

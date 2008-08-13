@@ -22,9 +22,9 @@ import com.loox.jloox.LxAbstractRectangle;
 public class CurrentAlarmsTable extends LxAbstractRectangle implements DrawingElement {	
 	
 	private static final String ELEMENT_ID = "alarmsTable";
-	private static final int CURRENT_VERSION = 2;
+	private static final int CURRENT_VERSION = 3;
 	
-	private static final String TABLE_TITLE = "Unacknowledged Alarms";
+	private static final String TABLE_TITLE = "Alarms";
 	private static final int DEFAULT_WIDTH = 1000;
 	private static final int DEFAULT_HEIGHT = 300;
 
@@ -33,6 +33,10 @@ public class CurrentAlarmsTable extends LxAbstractRectangle implements DrawingEl
 
 	private Table table;
 	private int version = CURRENT_VERSION;
+	
+	private boolean hideInactive = false;
+	private boolean hideEvents = true;
+	private boolean hideAcknowledged = true;
 
 	public CurrentAlarmsTable() {
 		getTable().setTitle(TABLE_TITLE);
@@ -177,5 +181,35 @@ public class CurrentAlarmsTable extends LxAbstractRectangle implements DrawingEl
 
 	public void setPointIds(int[] pointIds) {
 		((PointAlarmTableModel) table.getModel()).setPointIds(pointIds);				
+	}
+
+
+	public boolean isHideInactive() {
+		return hideInactive;
+	}
+
+
+	public void setHideInactive(boolean active) {
+		this.hideInactive = active;
+	}
+
+
+	public boolean isHideAcknowledged() {
+		return hideAcknowledged;
+	}
+
+
+	public void setHideAcknowledged(boolean unacknowledged) {
+		this.hideAcknowledged = unacknowledged;
+	}
+
+
+	public boolean isHideEvents() {
+		return hideEvents;
+	}
+
+
+	public void setHideEvents(boolean alarmsOnly) {
+		this.hideEvents = alarmsOnly;
 	}	
 }

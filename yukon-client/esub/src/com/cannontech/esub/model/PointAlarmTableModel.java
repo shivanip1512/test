@@ -7,7 +7,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import javax.swing.table.AbstractTableModel;
 
@@ -27,10 +26,17 @@ public class PointAlarmTableModel extends AbstractTableModel {
 	private static final String TIMESTAMP_COL = "Timestamp";
 	private static final String DEVICENAME_COL = "Device Name";
 	private static final String POINTNAME_COL = "Point Name";
-	private static final String TEXTMESSAGE_COL = "Text Message";
+	private static final String TEXTMESSAGE_COL = "Condition + Message";
+	private static final String ACTIVE_COL = "Active / Ack";
+	
+	private static final int TIMESTAMP = 0;
+	private static final int DEVICENAME = 1;
+	private static final int POINTNAME = 2;
+	private static final int TEXTMESSAGE = 3;
+	private static final int ACTIVE_ACK = 4;
 		
 	private static final String[] columnNames = {
-		TIMESTAMP_COL, DEVICENAME_COL, POINTNAME_COL, TEXTMESSAGE_COL
+		TIMESTAMP_COL, DEVICENAME_COL, POINTNAME_COL, TEXTMESSAGE_COL, ACTIVE_COL
 	};
 	
 	private static final int NUM_COLUMNS = columnNames.length;
@@ -39,15 +45,30 @@ public class PointAlarmTableModel extends AbstractTableModel {
 	private int[] _deviceIds = new int[0];
 	private int[] _pointIds = new int[0];
 	private int[] _alarmCategoryIds = new int[0];
-	
+	private boolean hideInactive;
+	private boolean hideEvents;
+	private boolean hideAcknowledged;
+
 	//internal representation - _rows contains ArrayLists
-	private List _rows = new ArrayList();
+	private List<AlarmRow> rows = new ArrayList<AlarmRow>();
+	
+	static public class AlarmRow {
+        public Date timeStamp;
+        public String paoName;
+        public String pointName;
+        public String description;
+        public String activeAcknowledgedFlags;
+        
+        public boolean equals(Object o) {
+            return true;
+        }
+    }
 	
 	/**
 	 * @see javax.swing.table.TableModel#getRowCount()
 	 */
 	public int getRowCount() {
-		return _rows.size();
+		return rows.size();
 	}
 
 	/**
@@ -68,7 +89,29 @@ public class PointAlarmTableModel extends AbstractTableModel {
 	 * @see javax.swing.table.TableModel#getValueAt(int, int)
 	 */
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		return ((ArrayList) _rows.get(rowIndex)).get(columnIndex);
+	    
+	    AlarmRow row = rows.get(rowIndex);
+	    
+	    switch (columnIndex) {
+	    
+            case TIMESTAMP:
+                return row.timeStamp;
+                
+            case DEVICENAME:
+                return row.paoName;
+                
+            case POINTNAME:
+                return row.pointName;
+                
+            case TEXTMESSAGE:
+                return row.description;
+                
+            case ACTIVE_ACK:
+                return row.activeAcknowledgedFlags;
+    
+            default:
+                return null;
+        }
 	}
 	
 	/**
@@ -78,29 +121,29 @@ public class PointAlarmTableModel extends AbstractTableModel {
         // Since a given signal can be for a device, point, and alarm category
         // we need to only accept each signal once.
         // Use a hashset that only accepts unique objects
-        Set allSignals = new HashSet();
-		_rows = new ArrayList();
+        HashSet<Signal> allSignals = new HashSet<Signal>();
+		rows = new ArrayList<AlarmRow>();
 		
 		for (int i = 0; i < _deviceIds.length; i++) {
 			int deviceId = _deviceIds[i];
-			List deviceSignals = DaoFactory.getAlarmDao().getSignalsForPao(deviceId);
+			List<Signal> deviceSignals = DaoFactory.getAlarmDao().getSignalsForPao(deviceId);
             allSignals.addAll(deviceSignals);
 		}
 		
 		for (int i = 0; i < _pointIds.length; i++) {
 			int pointId = _pointIds[i];
-			List pointSignals = DaoFactory.getAlarmDao().getSignalsForPoint(pointId);
+			List<Signal> pointSignals = DaoFactory.getAlarmDao().getSignalsForPoint(pointId);
 			allSignals.addAll(pointSignals);
 		}
 		
 		for (int i = 0; i < _alarmCategoryIds.length; i++) {
 			int alarmCategoryId = _alarmCategoryIds[i];
-			List alarmCategorySignals = DaoFactory.getAlarmDao().getSignalsForAlarmCategory(alarmCategoryId);
+			List<Signal> alarmCategorySignals = DaoFactory.getAlarmDao().getSignalsForAlarmCategory(alarmCategoryId);
 			allSignals.addAll(alarmCategorySignals);
 		}
-		
-        for (Iterator iter = allSignals.iterator(); iter.hasNext();) {
-            Signal signal = (Signal) iter.next();
+		Iterator<Signal> iter = allSignals.iterator();
+        while(iter.hasNext()) {
+            Signal signal = iter.next();
             addSignal(signal);
         }
         
@@ -113,42 +156,64 @@ public class PointAlarmTableModel extends AbstractTableModel {
 	 */
 	private void addSignal(Signal s) {
 	    // find out why there is a null in the list!
-	    if(s != null) {
-    	    if(!TagUtils.isAlarmUnacked(s.getTags())) {
-    	        return;
+	    if(s != null) {	   
+	        int pointID = s.getPointID();
+            LitePoint point = null;
+            AlarmRow row = new AlarmRow();
+            try {
+                point = DaoFactory.getPointDao().getLitePoint(pointID);
+            }catch(NotFoundException nfe) {
+                // this point may have been deleted.
+                CTILogger.error("The point (pointId:"+ pointID + ") for this AlarmTable might have been deleted!", nfe);
             }
-    		int pointID = s.getPointID();
-    		LitePoint point = null;
-    		try {
-    		    point = DaoFactory.getPointDao().getLitePoint(pointID);
-    		}catch(NotFoundException nfe) {
-    		    // this point may have been deleted.
-    		    CTILogger.error("The point (pointId:"+ pointID + ") for this AlarmTable might have been deleted!", nfe);
+            if(point != null) {
+                int devID = point.getPaobjectID();
+                LiteYukonPAObject device = DaoFactory.getPaoDao().getLiteYukonPAO(devID);
+                String activeAcknowledgedFlags = (TagUtils.isConditionActive(s.getTags()) ? "True / " : "False / ") + (!TagUtils.isAlarmUnacked(s.getTags()) ? "True" : "False");
+                row = new AlarmRow();
+                row.timeStamp = s.getTimeStamp();
+                row.paoName = device.getPaoName();
+                row.pointName = point.getPointName();
+                row.description = s.getDescription();
+                row.activeAcknowledgedFlags = activeAcknowledgedFlags;
+            }
+	        
+	    	if(isHideEvents() && s.getCategoryID() <= Signal.EVENT_SIGNAL) {
+	    	    if(rows.contains(s))
+	    		return;
+	    	}
+
+    		if(isHideAcknowledged() && (s.getCategoryID() > Signal.EVENT_SIGNAL) ) {
+		    	if( !TagUtils.isAlarmUnacked(s.getTags())) {	
+		    	    if(rows.contains(row)) {
+                        rows.remove(row);
+                    }
+	    	        return;
+	            }	    			
     		}
+    		
+    		if(isHideInactive()) {
+    			if( !TagUtils.isConditionActive(s.getTags()) ) {
+    			    if(rows.contains(row)) {
+    			        rows.remove(row);
+    			    }
+    				return;
+    			}	    			
+    		}  		
+	    	
     		if(point != null) {
-        		int devID = point.getPaobjectID();
-        		LiteYukonPAObject device = DaoFactory.getPaoDao().getLiteYukonPAO(devID);
-        		
-        		ArrayList row = new ArrayList(NUM_COLUMNS);
-        		row.add(s.getTimeStamp());
-        		row.add(device.getPaoName());
-        		row.add(point.getPointName());
-        		row.add(s.getDescription());	
-        		_rows.add(row);
+        		rows.add(row);
     		}
 	    }
 	}
 	
 	private void sortRows() {
-		Collections.sort(_rows, new Comparator() {
-			public int compare(Object a, Object b) {
-				ArrayList rowA = (ArrayList) a;
-				ArrayList rowB = (ArrayList) b;
-				int timeDiff = ((Date) rowA.get(0)).compareTo((Date) rowB.get(0)) * -1;
-				return (timeDiff != 0 ? timeDiff : ((String) rowA.get(2)).compareTo((String) rowB.get(2))*-1);
-			}
-		}
-		);
+	    Collections.sort(rows, new Comparator<AlarmRow>() {
+	        public int compare(AlarmRow a, AlarmRow b) {
+	            int timeDiff = a.timeStamp.compareTo(b.timeStamp) * -1;
+	            return (timeDiff != 0 ? timeDiff : a.pointName.compareTo(b.pointName)*-1);
+	        }
+	    });
 	}
 	
 	public int[] getAlarmCategoryIds() {
@@ -177,6 +242,30 @@ public class PointAlarmTableModel extends AbstractTableModel {
             pointIds = new int[0];
         }
 		_pointIds = pointIds;
+	}
+
+	public boolean isHideInactive() {
+		return hideInactive;
+	}
+
+	public void setHideInactive(boolean _use_active) {
+		this.hideInactive = _use_active;
+	}
+
+	public boolean isHideAcknowledged() {
+		return hideAcknowledged;
+	}
+
+	public void setHideAcknowledged(boolean _use_unacknowledged) {
+		this.hideAcknowledged = _use_unacknowledged;
+	}
+
+	public boolean isHideEvents() {
+		return hideEvents;
+	}
+
+	public void setHideEvents(boolean alarmsOnly) {
+		hideEvents = alarmsOnly;
 	}
 	
 }

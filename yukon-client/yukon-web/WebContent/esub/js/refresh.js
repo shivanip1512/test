@@ -209,6 +209,9 @@ function updateAlarmsTable(node,url) {
 				'&y=' + node.getAttribute('y') +
 				'&width=' + node.getAttribute('width') +
 				'&height=' + node.getAttribute('height') +
+				'&acked=' + node.getAttribute('acked') +
+				'&events=' + node.getAttribute('events') +
+				'&inactive=' + node.getAttribute('inactive') +
 				'&rand=' + Math.random();		
 				
 				
