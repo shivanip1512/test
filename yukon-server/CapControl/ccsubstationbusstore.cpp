@@ -10344,7 +10344,7 @@ void CtiCCSubstationBusStore::removeCapbankFromRejectedCapBankList(CtiCCCapBankP
 
 void CtiCCSubstationBusStore::clearRejectedCapBankList()
 {
-    if (!_unsolicitedCapBanks.empty())
+    if (!_rejectedCapBanks.empty())
     { 
         _rejectedCapBanks.clear();
     }

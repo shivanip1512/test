@@ -4795,7 +4795,7 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                                    {
                                        {
                                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                                           dout << CtiTime() << " - Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
+                                           dout << CtiTime() << " - "<< currentCapBank->getPAOName() <<":Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
                                        }
                                        if (findStringIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG == TRUE &&
                                            currentCapBank->getVCtrlIndex() == 1)
@@ -4931,7 +4931,7 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                                    {
                                        {
                                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                                           dout << CtiTime() << " - Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
+                                           dout << CtiTime() << " - "<< currentCapBank->getPAOName() <<":Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
                                        }
                                        if (findStringIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG == TRUE &&
                                            currentCapBank->getVCtrlIndex() == 1)
@@ -5291,7 +5291,7 @@ BOOL CtiCCSubstationBus::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec
                                {
                                    {
                                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                                       dout << CtiTime() << " - Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
+                                       dout << CtiTime() << " - "<< currentCapBank->getPAOName() <<":Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
                                    }
                                    if (findStringIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG == TRUE &&
                                        currentCapBank->getVCtrlIndex() == 1)
@@ -5472,7 +5472,7 @@ BOOL CtiCCSubstationBus::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec
                                {
                                    {
                                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                                       dout << CtiTime() << " - Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
+                                       dout << CtiTime() << " - "<< currentCapBank->getPAOName() <<":Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
                                    }
                                    if (findStringIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG == TRUE &&
                                        currentCapBank->getVCtrlIndex() == 1)

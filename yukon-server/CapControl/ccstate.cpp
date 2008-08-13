@@ -26,10 +26,12 @@ RWDEFINE_COLLECTABLE( CtiCCState, CTICCSTATE_ID )
 ---------------------------------------------------------------------------*/
 CtiCCState::CtiCCState()
 {   
+    _text = "";
 }
 
 CtiCCState::CtiCCState(RWDBReader& rdr)
 {
+    _text = "";
     restore(rdr);   
 }
 

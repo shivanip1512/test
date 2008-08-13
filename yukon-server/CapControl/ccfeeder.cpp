@@ -3464,7 +3464,7 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                     if( change < 0 )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
+                        dout << CtiTime() << " - "<< currentCapBank->getPAOName() <<": Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
                     }
                 
                     ratio = change/currentCapBank->getBankSize();
@@ -3565,7 +3565,7 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                     if( change < 0 )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
+                        dout << CtiTime() << " - "<< currentCapBank->getPAOName() <<":Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
                     }
                 
                     ratio = change/currentCapBank->getBankSize();
@@ -3645,7 +3645,7 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
             else
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Last Cap Bank controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
+                dout << CtiTime() << " - Last Cap Bank ("<< currentCapBank->getPAOName() <<") controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
                 returnBoolean = FALSE;
             }
     
@@ -3783,7 +3783,7 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
                     if( changeA < 0 ||  changeB < 0 ||  changeC < 0)
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Var change in wrong direction? changeA:"<<changeA<<" changeB:"<<changeB<<" changeC:"
+                        dout << CtiTime() << " - "<< currentCapBank->getPAOName() <<":Var change in wrong direction? changeA:"<<changeA<<" changeB:"<<changeB<<" changeC:"
                             <<changeC<<" in: " << __FILE__ << " at: " << __LINE__ << endl;
                     }
                     ratioA = changeA/(currentCapBank->getBankSize() /3);
@@ -3886,7 +3886,7 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
                     if( changeA < 0 ||  changeB < 0 ||  changeC < 0)
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
+                        dout << CtiTime() << " - "<< currentCapBank->getPAOName() <<":Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
                     }
                     ratioA = changeA/(currentCapBank->getBankSize() /3);
                     ratioB = changeB/(currentCapBank->getBankSize() /3);
@@ -3953,7 +3953,7 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
             else
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Last Cap Bank controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
+                dout << CtiTime() << " - Last Cap Bank ("<< currentCapBank->getPAOName() <<") controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
                 returnBoolean = FALSE;
             }
 
@@ -4073,7 +4073,7 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                         {
                             {
                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                               dout << CtiTime() << " - Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
+                               dout << CtiTime() << " - "<< currentCapBank->getPAOName() <<":Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
                             }
                             if (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG == TRUE &&
                                currentCapBank->getVCtrlIndex() == 1)            
@@ -4194,7 +4194,7 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                         {
                             {
                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                               dout << CtiTime() << " - Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
+                               dout << CtiTime() << " - "<< currentCapBank->getPAOName() <<":Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
                             }
                             if (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG == TRUE &&
                                currentCapBank->getVCtrlIndex() == 1)            
@@ -4287,7 +4287,7 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                {
                    {
                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                       dout << CtiTime() << " - Last Cap Bank controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
+                       dout << CtiTime() << " - Last Cap Bank ("<< currentCapBank->getPAOName() <<") controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
                    }
                    if (currentCapBank->getControlStatus() == CtiCCCapBank::OpenFail) 
                    {
@@ -4450,7 +4450,7 @@ BOOL CtiCCFeeder::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& point
                     {
                         {
                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                           dout << CtiTime() << " - Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
+                           dout << CtiTime() << " - "<< currentCapBank->getPAOName() <<":Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
                         }
                         if (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG == TRUE &&
                            currentCapBank->getVCtrlIndex() == 1)            
@@ -4588,7 +4588,7 @@ BOOL CtiCCFeeder::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& point
                     {
                         {
                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                           dout << CtiTime() << " - Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
+                           dout << CtiTime() << " - "<< currentCapBank->getPAOName() <<":Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
                         }
                         if (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG == TRUE &&
                            currentCapBank->getVCtrlIndex() == 1)            
@@ -4700,7 +4700,7 @@ BOOL CtiCCFeeder::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& point
            {
                {
                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                   dout << CtiTime() << " - Last Cap Bank controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
+                   dout << CtiTime() << " - Last Cap Bank ("<< currentCapBank->getPAOName() <<") controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
                }
                if (currentCapBank->getControlStatus() == CtiCCCapBank::OpenFail) 
                {
@@ -7269,7 +7269,7 @@ void CtiCCFeeder::saveGuts(RWvostream& ostrm ) const
     << _powerfactorpointid
     << _estimatedpowerfactorpointid
     << _currentdailyoperations
-    << _recentlycontrolledflag
+    << (_recentlycontrolledflag || _performingVerificationFlag)
     << _lastoperationtime
     << _varvaluebeforecontrol
     << temppowerfactorvalue
@@ -7379,6 +7379,13 @@ CtiCCFeeder& CtiCCFeeder::operator=(const CtiCCFeeder& right)
         _peakTimeFlag = right._peakTimeFlag;
         _eventSeq = right._eventSeq;
         _multiMonitorFlag = right._multiMonitorFlag;
+
+        _verificationFlag = right._verificationFlag;
+        _performingVerificationFlag = right._performingVerificationFlag;
+        _verificationDoneFlag = right._verificationDoneFlag;
+        _porterRetFailFlag = right._porterRetFailFlag;
+        _currentVerificationCapBankId = right._currentVerificationCapBankId;
+        _currentCapBankToVerifyAssumedOrigState = right._currentCapBankToVerifyAssumedOrigState;       
 
         _preOperationMonitorPointScanFlag = right._preOperationMonitorPointScanFlag;  
         _operationSentWaitFlag = right._operationSentWaitFlag;

@@ -2972,7 +2972,13 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                         //JULIE: TXU fix for status change time setting to old date on disabled banks.
                         if (!currentCapBank->getDisableFlag()) 
                         {    
+                            if (currentCapBank->getControlStatus() != (LONG)value)
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - CapBank: "<<currentCapBank->getPAOName()<<" State adjusted from "<<currentCapBank->getControlStatus() <<" to "<<value<< endl;
+                            }
                             currentCapBank->setControlStatus((LONG)value);
+                            
                             currentCapBank->setTagsControlStatus((LONG)tags);
                             currentCapBank->setLastStatusChangeTime(timestamp);
                         }
@@ -3521,6 +3527,7 @@ void CtiCapController::handleUnsolicitedMessaging(CtiCCCapBank* currentCapBank, 
     opText += " sent, CBC Local Change";
     currentCapBank->setControlStatusQuality(CC_UnSolicited);
     
+    sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType, "Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
     
     //send the cceventmsg.
     LONG stationId, areaId, spAreaId;
