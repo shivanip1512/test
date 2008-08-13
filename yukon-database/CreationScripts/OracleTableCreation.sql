@@ -1,11 +1,8 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/4/2008 1:37:39 PM                          */
+/* Created on:     8/13/2008 10:37:33 AM                        */
 /*==============================================================*/
-
-
-set define off;
 
 
 drop view TempMovedCapBanks_View;
@@ -39,6 +36,16 @@ drop view ExpressComAddress_View;
 drop view DISPLAY2WAYDATA_VIEW;
 
 drop view CCOperations_View;
+
+drop view CCOperationsESentAndAll_View;
+
+drop view CCOperationsDSentAndValid_View;
+
+drop view CCOperationsCOrphanedConf_View;
+
+drop view CCOperationsBConfirmed_View;
+
+drop view CCOperationsASent_View;
 
 drop view CCInventory_View;
 
@@ -257,6 +264,8 @@ drop table CCFeederSubAssignment cascade constraints;
 drop table CCHOLIDAYSTRATEGYASSIGNMENT cascade constraints;
 
 drop table CCMONITORBANKLIST cascade constraints;
+
+drop table CCOperationLogCache cascade constraints;
 
 drop table CCSEASONSTRATEGYASSIGNMENT cascade constraints;
 
@@ -1459,6 +1468,15 @@ create table CCMONITORBANKLIST  (
    UpperBandwidth       FLOAT                           not null,
    LowerBandwidth       FLOAT                           not null,
    constraint PK_CCMONITORBANKLIST primary key (BankID, PointID)
+);
+
+/*==============================================================*/
+/* Table: CCOperationLogCache                                   */
+/*==============================================================*/
+create table CCOperationLogCache  (
+   OperationLogId       NUMBER                          not null,
+   ConfirmationLogId    NUMBER,
+   constraint PK_CCOPERATIONLOGCACHE primary key (OperationLogId)
 );
 
 /*==============================================================*/
@@ -9661,54 +9679,116 @@ LEFT OUTER JOIN CapBankAdditional CAPA ON CAPA.DeviceId = CB.DeviceId
 LEFT OUTER JOIN DynamicCCTwoWayCBC DTWC ON CB.ControlDeviceId = DTWC.DeviceId;
 
 /*==============================================================*/
+/* View: CCOperationsASent_View                                 */
+/*==============================================================*/
+create or replace view CCOperationsASent_View as
+select
+   LogID,
+   PointID,
+   DateTime,
+   Text,
+   FeederID,
+   SubID,
+   AdditionalInfo
+from
+   CCEventLog
+where
+   Text LIKE '%Close sent,%'
+   OR Text LIKE '%Open sent,%';
+
+/*==============================================================*/
+/* View: CCOperationsBConfirmed_View                            */
+/*==============================================================*/
+create or replace view CCOperationsBConfirmed_View as
+select
+   LogID,
+   PointID,
+   DateTime,
+   Text,
+   KVARBefore,
+   KVARAfter,
+   KVARChange
+from
+   CCEventLog
+where
+   Text LIKE 'Var: %';
+
+/*==============================================================*/
+/* View: CCOperationsCOrphanedConf_View                         */
+/*==============================================================*/
+create or replace view CCOperationsCOrphanedConf_View as
+SELECT EL.LogId AS OpId, MIN(el2.LogID) AS ConfId 
+FROM CCOperationsASent_View EL 
+JOIN CCOperationsBConfirmed_view EL2 ON EL2.PointId = EL.PointId AND EL.LogId < EL2.LogId 
+LEFT JOIN (SELECT A.LogId AS AId, MIN(b.LogID) AS NextAId 
+           FROM CCOperationsASent_View A 
+           JOIN CCOperationsASent_View B ON A.PointId = B.PointId AND A.LogId < B.LogId 
+           GROUP BY A.LogId) EL3 ON EL3.AId = EL.LogId 
+WHERE EL3.NextAId IS NULL
+GROUP BY EL.LogId;
+
+/*==============================================================*/
+/* View: CCOperationsDSentAndValid_View                         */
+/*==============================================================*/
+create or replace view CCOperationsDSentAndValid_View as
+SELECT EL.LogId AS OpId, MIN(el2.LogID) AS ConfId 
+FROM CCOperationsASent_View EL 
+JOIN CCOperationsBConfirmed_view EL2 ON EL2.PointId = EL.PointId AND EL.LogId < EL2.LogId 
+LEFT JOIN (SELECT A.LogId AS AId, MIN(b.LogID) AS NextAId 
+           FROM CCOperationsASent_View A 
+           JOIN CCOperationsASent_View B ON A.PointId = B.PointId AND A.LogId < B.LogId 
+           GROUP BY A.LogId) EL3 ON EL3.AId = EL.LogId 
+WHERE EL2.LogId < EL3.NextAId OR EL3.NextAId IS NULL
+GROUP BY EL.LogId;
+
+/*==============================================================*/
+/* View: CCOperationsESentAndAll_View                           */
+/*==============================================================*/
+create or replace view CCOperationsESentAndAll_View as
+SELECT OP.LogId AS OId, MIN(aaa.confid) AS CId 
+FROM CCOperationsASent_View OP
+LEFT JOIN CCOperationsDSentAndValid_view AAA ON OP.LogId = AAA.OpId
+GROUP BY OP.LogId;
+
+INSERT INTO CCOperationLogCache
+SELECT OpId, ConfId 
+FROM CCOperationsDSentAndValid_view
+WHERE OpId NOT IN (SELECT OperationLogId 
+                   FROM CCOperationLogCache);
+
+/*==============================================================*/
 /* View: CCOperations_View                                      */
 /*==============================================================*/
 create or replace view CCOperations_View as
-SELECT YP3.PAOName AS CBCName, YP.PAOName AS CapBankName, YP.PAObjectId AS CapBankId, 
-       EL.DateTime AS OpTime, EL.Text AS Operation, EL2.DateTime AS ConfTime, EL2.Text AS ConfStatus, 
-       YP1.PAOName AS FeederName, YP1.PAObjectId AS FeederId, YP2.PAOName AS SubBusName, 
-       YP2.PAObjectId AS SubBusId, YP5.PAOName AS SubstationName, YP5.PAObjectId AS SubstationId, 
+SELECT YP3.PAObjectid AS CBCId, YP3.PAOName AS CBCName, YP.PAObjectid AS CapBankId, 
+       YP.PAOName AS CapBankName, EL.DateTime AS OpTime, EL.Text AS Operation, 
+       EL2.DateTime AS ConfTime, EL2.Text AS ConfStatus, YP1.PAOName AS FeederName, 
+       YP1.PAObjectId AS FeederId, YP2.PAOName AS SubBusName, YP2.PAObjectId AS SubBusId, 
+       YP5.PAOName AS SubstationName, YP5.PAObjectId AS SubstationId, 
        YP4.PAOName AS Region, YP4.PAObjectId AS AreaId, CB.BankSize, CB.ControllerType, 
        EL.AdditionalInfo AS IPAddress, CBC.SerialNumber AS SerialNum, DA.SlaveAddress, 
-       EL2.KvarAfter, EL2.KvarChange, EL2.KvarBefore
-FROM (SELECT OP.LogId AS OId, MIN(aaa.confid) AS CId 
-      FROM (SELECT LogId, PointId 
-            FROM CCEventLog 
-            WHERE Text LIKE '%Close sent%' OR Text LIKE '%Open sent%') OP
-      LEFT OUTER JOIN (SELECT EL.LogId AS OpId, MIN(el2.LogID) AS ConfId 
-                       FROM CCEventLog EL 
-                       INNER JOIN CCEventLog EL2 ON EL2.PointId = EL.PointId AND EL.LogId < EL2.LogId 
-                       LEFT OUTER JOIN (SELECT A.LogId AS AId, MIN(b.LogID) AS NextAId 
-                                        FROM CCEventLog A 
-                                        INNER JOIN CCEventLog B ON A.PointId = B.PointId AND A.LogId < B.LogId 
-                                        WHERE (A.Text LIKE '%Close sent,%' OR A.Text LIKE '%Open sent,%') 
-                                        AND (B.Text LIKE '%Close sent,%' OR B.Text LIKE '%Open sent,%')
-                                        GROUP BY A.LogId) EL3 ON EL3.AId = EL.LogId 
-                       WHERE (EL.Text LIKE '%Close sent,%' OR EL.Text LIKE '%Open sent,%') 
-                       AND (EL2.Text LIKE 'Var: %') AND (EL2.LogId < EL3.NextAId) 
-                       OR (EL.Text LIKE '%Close sent,%' OR EL.Text LIKE '%Open sent,%') 
-                       AND (EL2.Text LIKE 'Var: %') AND (EL3.NextAId IS NULL)
-                       GROUP BY EL.LogId) AAA ON OP.LogId = AAA.OpId
-      GROUP BY OP.LogId) OpConf 
-INNER JOIN CCEventLog EL ON EL.LogId = OpConf.OId 
-LEFT OUTER JOIN CCEventLog EL2 ON EL2.LogId = OpConf.CId 
-INNER JOIN Point ON Point.PointId = EL.PointId 
-INNER JOIN DynamicCCCapBank ON DynamicCCCapBank.CapBankId = Point.PAObjectId 
-INNER JOIN YukonPAObject YP ON YP.PAObjectId = DynamicCCCapBank.CapBankId 
-INNER JOIN YukonPAObject YP1 ON YP1.PAObjectId = EL.FeederId 
-INNER JOIN YukonPAObject YP2 ON YP2.PAObjectId = EL.SubId 
-INNER JOIN CapBank CB ON CB.DeviceId = DynamicCCCapBank.CapBankId 
-LEFT OUTER JOIN DeviceDirectCommSettings DDCS ON DDCS.DeviceId = CB.ControlDeviceId 
-LEFT OUTER JOIN DeviceAddress DA ON DA.DeviceId = CB.ControlDeviceId 
-INNER JOIN YukonPAObject YP3 ON YP3.PAObjectId = CB.ControlDeviceId 
-LEFT OUTER JOIN DeviceCBC CBC ON CBC.DeviceId = CB.ControlDeviceId 
-LEFT OUTER JOIN (SELECT EntryId, PAObjectId, Owner, InfoKey, Value, UpdateTime
-                 FROM DynamicPAOInfo 
-                 WHERE (InfoKey LIKE '%udp ip%')) P ON P.PAObjectId = CB.ControlDeviceId 
-LEFT OUTER JOIN CCSubstationSubbusList SSL ON SSL.SubstationBusId = EL.SubId  
-LEFT OUTER JOIN YukonPAObject YP5 ON YP5.PAObjectId =  SSL.SubstationBusId 
-LEFT OUTER JOIN CCSubAreaAssignment CSA ON CSA.SubstationBusId = SSL.SubstationId 
-LEFT OUTER JOIN YukonPAObject YP4 ON YP4.PAObjectId = CSA.AreaId;
+       EL2.KvarAfter, EL2.KvarChange, EL2.KvarBefore 
+FROM CCOperationsSent_view EL
+JOIN CCOperationLogCache OpConf ON EL.LogId = OpConf.OperationLogId        
+LEFT JOIN CCOperationsConfirmed_view EL2 ON EL2.LogId = OpConf.ConfirmationLogId 
+LEFT JOIN CCOrphanedConfirmations_view Orphs ON EL.logid = Orphs.opid       
+JOIN Point ON Point.PointId = EL.PointId        
+JOIN DynamicCCCapBank ON DynamicCCCapBank.CapBankId = Point.PAObjectId        
+JOIN YukonPAObject YP ON YP.PAObjectId = DynamicCCCapBank.CapBankId        
+JOIN YukonPAObject YP1 ON YP1.PAObjectId = EL.FeederId        
+JOIN YukonPAObject YP2 ON YP2.PAObjectId = EL.SubId        
+JOIN CapBank CB ON CB.DeviceId = DynamicCCCapBank.CapBankId        
+LEFT JOIN DeviceDirectCommSettings DDCS ON DDCS.DeviceId = CB.ControlDeviceId        
+LEFT JOIN DeviceAddress DA ON DA.DeviceId = CB.ControlDeviceId        
+JOIN YukonPAObject YP3 ON YP3.PAObjectId = CB.ControlDeviceId        
+LEFT JOIN DeviceCBC CBC ON CBC.DeviceId = CB.ControlDeviceId        
+LEFT JOIN (SELECT EntryId, PAObjectId, Owner, InfoKey, Value, UpdateTime                        
+           FROM DynamicPAOInfo                         
+           WHERE (InfoKey LIKE '%udp ip%')) P ON P.PAObjectId = CB.ControlDeviceId        
+LEFT JOIN CCSubstationSubbusList SSL ON SSL.SubstationBusId = EL.SubId         
+LEFT JOIN YukonPAObject YP5 ON YP5.PAObjectId =  SSL.SubstationBusId        
+LEFT JOIN CCSubAreaAssignment CSA ON CSA.SubstationBusId = SSL.SubstationId        
+LEFT JOIN YukonPAObject YP4 ON YP4.PAObjectId = CSA.AreaId;
 
 /*==============================================================*/
 /* View: DISPLAY2WAYDATA_VIEW                                   */
