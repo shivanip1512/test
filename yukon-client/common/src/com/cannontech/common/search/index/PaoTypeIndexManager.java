@@ -12,6 +12,7 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.index.Term;
 
 import com.cannontech.common.search.YukonObjectAnalyzer;
+import com.cannontech.database.dbchange.ChangeTypeEnum;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 
 /**
@@ -77,7 +78,7 @@ public class PaoTypeIndexManager extends AbstractIndexManager {
         return doc;
     }
 
-    protected IndexUpdateInfo processDBChange(int id, int database, String category, String type) {
+    protected IndexUpdateInfo processDBChange(ChangeTypeEnum changeType, int id, int database, String category, String type) {
         if (database == DBChangeMsg.CHANGE_PAO_DB) {
             // Device change msg
             
@@ -87,7 +88,7 @@ public class PaoTypeIndexManager extends AbstractIndexManager {
                 return null;
             }
             
-            return this.processPaoChange(id);
+            return this.processPaoChange(changeType, id);
         }
 
         // Return null if no update is to be done
@@ -100,9 +101,12 @@ public class PaoTypeIndexManager extends AbstractIndexManager {
      * @return Index update info for the pao change
      */
     @SuppressWarnings("unchecked")
-    private IndexUpdateInfo processPaoChange(int paoId) {
+    private IndexUpdateInfo processPaoChange(ChangeTypeEnum changeType, int paoId) {
 
         Term term = new Term("paoid", Integer.toString(paoId));
+        if (changeType == ChangeTypeEnum.DELETE) {
+            return new IndexUpdateInfo(null, term);
+        }
         List<Document> docList = new ArrayList<Document>();
 
         StringBuffer sql = new StringBuffer(this.getDocumentQuery());

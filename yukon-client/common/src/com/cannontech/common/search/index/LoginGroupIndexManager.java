@@ -11,6 +11,7 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.index.Term;
 
 import com.cannontech.common.search.YukonObjectAnalyzer;
+import com.cannontech.database.dbchange.ChangeTypeEnum;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.user.UserUtils;
 
@@ -66,7 +67,7 @@ public class LoginGroupIndexManager extends AbstractIndexManager {
         return doc;
     }
 
-    protected IndexUpdateInfo processDBChange(int id, int database, String category, String type) {
+    protected IndexUpdateInfo processDBChange(ChangeTypeEnum changeType, int id, int database, String category, String type) {
         if (database == DBChangeMsg.CHANGE_YUKON_USER_DB 
                && DBChangeMsg.CAT_YUKON_USER_GROUP.equalsIgnoreCase(category) ) {
             // yukon user change msg
