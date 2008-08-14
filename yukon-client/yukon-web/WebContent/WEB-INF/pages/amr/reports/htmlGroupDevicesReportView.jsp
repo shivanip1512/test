@@ -10,8 +10,8 @@
 
     <cti:breadCrumbs>
         <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-        <cti:crumbLink url="/spring/group/home" title="Groups Home" />
-        <cti:crumbLink url="/spring/group/home?groupName=${fn:escapeXml(groupName)}" title="${fn:escapeXml(groupName)}" />
+        <cti:crumbLink url="/spring/group/editor/home" title="Groups Home" />
+        <cti:crumbLink url="/spring/group/editor/home?groupName=${fn:escapeXml(groupName)}" title="${fn:escapeXml(groupName)}" />
         <cti:crumbLink>${reportTitle}</cti:crumbLink>
     </cti:breadCrumbs>
 
