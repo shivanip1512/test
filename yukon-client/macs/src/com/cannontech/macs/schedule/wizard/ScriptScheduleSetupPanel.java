@@ -2012,6 +2012,19 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
      */
     private void initialize() {
     	try {
+    	    
+    	    // hardcode filepaths to c:\yukon\server\export if we end up with a path
+    	    // pointing to somewhere in "Documents and Settings" by overwrititng 
+    	    // FILE_PATH_PARAM/BILLING_FILE_PATH_PARAM parameter values
+    	    final String[] fallbackFilePathParts = {"C:", "yukon", "server", "export"};
+            final String fallbackFilePath = StringUtils.join(fallbackFilePathParts, System.getProperty("file.separator"));
+            if (StringUtils.contains(getScriptTemplate().getParameterValue(FILE_PATH_PARAM), "Documents and Settings")) {
+                getScriptTemplate().setParameterValue(FILE_PATH_PARAM, fallbackFilePath);
+            }
+            if (StringUtils.contains(getScriptTemplate().getParameterValue(BILLING_FILE_PATH_PARAM), "Documents and Settings")) {
+                getScriptTemplate().setParameterValue(BILLING_FILE_PATH_PARAM, fallbackFilePath);
+            }
+            
     		setName("ScriptSchedulePanel");
     		setLayout(new java.awt.GridBagLayout());
     
