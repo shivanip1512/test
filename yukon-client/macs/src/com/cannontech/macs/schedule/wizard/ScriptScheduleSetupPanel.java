@@ -2017,7 +2017,7 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     	    // pointing to somewhere in "Documents and Settings" by overwrititng 
     	    // FILE_PATH_PARAM/BILLING_FILE_PATH_PARAM parameter values
     	    final String[] fallbackFilePathParts = {"C:", "yukon", "server", "export"};
-            final String fallbackFilePath = StringUtils.join(fallbackFilePathParts, System.getProperty("file.separator"));
+            final String fallbackFilePath = StringUtils.join(fallbackFilePathParts, "/");
             if (StringUtils.contains(getScriptTemplate().getParameterValue(FILE_PATH_PARAM), "Documents and Settings")) {
                 getScriptTemplate().setParameterValue(FILE_PATH_PARAM, fallbackFilePath);
             }
