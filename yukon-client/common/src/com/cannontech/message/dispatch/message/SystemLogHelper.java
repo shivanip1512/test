@@ -3,6 +3,7 @@ package com.cannontech.message.dispatch.message;
 import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.point.SystemLog;
 import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.conns.ConnPool;
@@ -49,6 +50,15 @@ public class SystemLogHelper {
      */
     public void log(int signalPointID, String action, String description, String username) {
     	log(signalPointID, action, description, username, SystemLog.TYPE_GENERAL);
+    } 
+    
+    /**
+     * Send a log message to dispatch.
+     * @param action
+     * @param description
+     */
+    public void log(String action, String description, LiteYukonUser user) {
+        log(_signalPointType, action, description, user.getUsername(), SystemLog.TYPE_GENERAL);
     }   
     
     /**

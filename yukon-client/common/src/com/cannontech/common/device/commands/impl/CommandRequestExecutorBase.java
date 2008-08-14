@@ -242,7 +242,7 @@ public abstract class CommandRequestExecutorBase<T> implements
     }
 
     private void logCommand(Request request, LiteYukonUser user) {
-        new SystemLogHelper(PointTypes.SYS_PID_SYSTEM).log(request.getDeviceID(), "Manual: " + request.getCommandString(), "ID: " + request.getDeviceID() + ", Route: " + request.getRouteID(), user.getUsername());
+        new SystemLogHelper(PointTypes.SYS_PID_SYSTEM).log("Manual: " + request.getCommandString(), "ID: " + request.getDeviceID() + ", Route: " + request.getRouteID(), user);
     }
 
     private boolean commandRequiresLogging(Request request) {
