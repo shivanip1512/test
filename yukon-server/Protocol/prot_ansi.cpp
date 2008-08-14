@@ -11,10 +11,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/prot_ansi.cpp-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2008/08/13 22:40:57 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2008/08/14 18:17:20 $
 *    History:
       $Log: prot_ansi.cpp,v $
+      Revision 1.26  2008/08/14 18:17:20  jrichter
+      YUK-6310
+      Sentinel dial up meter reads causing exceptions when scanner reads in future or year(S) old lastLpTime dates.
+      -don't check to see if map is empty before  clear.  who cares.
+
       Revision 1.25  2008/08/13 22:40:57  jrichter
       YUK-6310
       Sentinel dial up meter reads causing exceptions when scanner reads in future or year(S) old lastLpTime dates.
@@ -421,15 +426,9 @@ void CtiProtocolANSI::reinitialize( void )
        _lpNbrFullBlocks = 0;
        _lpLastBlockSize = 0;
 
-       if (!_stdTblsAvailable.empty())
-       {
-           _stdTblsAvailable.clear();
-           _stdTblsAvailable.push_back(0);
-       }
-       if (!_mfgTblsAvailable.empty())
-       {
-           _mfgTblsAvailable.clear();
-       }
+       _stdTblsAvailable.clear();
+       _stdTblsAvailable.push_back(0);
+       _mfgTblsAvailable.clear();
 
     }
     catch(...)
