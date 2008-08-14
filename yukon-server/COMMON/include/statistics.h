@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2008/08/13 19:08:34 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2008/08/14 18:26:11 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -199,7 +199,7 @@ private:
     }
 
     //Set Counter does not mark the row as dirty. This is only used on copy and on load.
-    inline void setCounter( int statTypeIndex, int statBinIndex, int value )
+    inline void setInitialCounterVal( int statTypeIndex, int statBinIndex, int value )
     {
         #ifdef CTISTATUSECOUNTERS
         _counter[statBinIndex].set( value );

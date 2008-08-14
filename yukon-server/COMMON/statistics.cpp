@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2008/08/01 15:40:30 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2008/08/14 18:26:11 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -324,7 +324,7 @@ CtiStatistics& CtiStatistics::operator=(const CtiStatistics& aRef)
         {
             for(statType = 0; statType < FinalStatType; statType++)
             {
-                setCounter(statType, i, aRef.getCounter(statType, i));
+                setInitialCounterVal(statType, i, aRef.getCounter(statType, i));
             }
             _threshold[i] = aRef._threshold[i];
             _thresholdAlarm[i] = aRef._thresholdAlarm[i];
@@ -531,17 +531,17 @@ RWDBStatus::ErrorCode CtiStatistics::Restore()
             if(counter >= 0)
             {
                 rdr["requests"]         >> val;
-                setCounter( Requests, counter, val);
+                setInitialCounterVal( Requests, counter, val);
                 rdr["completions"]      >> val;
-                setCounter( Completions, counter, val);
+                setInitialCounterVal( Completions, counter, val);
                 rdr["attempts"]         >> val;
-                setCounter( Attempts, counter, val);
+                setInitialCounterVal( Attempts, counter, val);
                 rdr["commerrors"]       >> val;
-                setCounter( CommErrors, counter, val);
+                setInitialCounterVal( CommErrors, counter, val);
                 rdr["protocolerrors"]   >> val;
-                setCounter( ProtocolErrors, counter, val);
+                setInitialCounterVal( ProtocolErrors, counter, val);
                 rdr["systemerrors"]     >> val;
-                setCounter( SystemErrors, counter, val);
+                setInitialCounterVal( SystemErrors, counter, val);
 
                 rdr["startdatetime"]    >> startdt;
                 rdr["stopdatetime"]     >> stopdt;

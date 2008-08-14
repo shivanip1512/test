@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.67 $
-* DATE         :  $Date: 2008/08/14 15:57:41 $
+* REVISION     :  $Revision: 1.68 $
+* DATE         :  $Date: 2008/08/14 18:26:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -94,7 +94,7 @@ static CHAR tempstr[100];
 bool findAllQueueEntries(void *unused, PQUEUEENT d);
 bool findReturnNexusMatch(void *nid, PQUEUEENT d);
 void cleanupOrphanOutMessages(void *unusedptr, void* d);
-void cancelOutMessages(void *unusedptr, void* d);
+void cancelOutMessages(void *doSendError, void* om);
 int  ReturnQueuedResult(CtiDeviceSPtr Dev, CtiTransmitter711Info *pInfo, USHORT QueTabEnt);
 
 void blitzNexusFromQueue(HCTIQUEUE q, CtiConnect *&Nexus)
@@ -2012,9 +2012,9 @@ void cleanupOrphanOutMessages(void *unusedptr, void* d)
     return;
 }
 
-void cancelOutMessages(void *unusedptr, void* d)
+void cancelOutMessages(void *doSendError, void* om)
 {
-    OUTMESS *OutMessage = (OUTMESS *)d;
+    OUTMESS *OutMessage = (OUTMESS *)om;
 
     if(PorterDebugLevel & PORTER_DEBUG_VERBOSE)
     {
@@ -2024,7 +2024,7 @@ void cancelOutMessages(void *unusedptr, void* d)
 
     OutMessage->Request.MacroOffset = 0; //Do not resend this on macro route!
 
-    if( unusedptr != 0 )
+    if( doSendError != 0 )
     {
         SendError( OutMessage, ErrorRequestCancelled );
     }
@@ -2034,7 +2034,6 @@ void cancelOutMessages(void *unusedptr, void* d)
         delete OutMessage;
         OutMessage = 0;
     }
-    // delete OutMessage;
 
     return;
 }

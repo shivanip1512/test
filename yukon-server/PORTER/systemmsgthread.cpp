@@ -7,11 +7,15 @@
 * Author: Jess Otteson
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2008/08/14 15:57:41 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2008/08/14 18:26:11 $
 *
 * HISTORY      :
 * $Log: systemmsgthread.cpp,v $
+* Revision 1.10  2008/08/14 18:26:11  jotteson
+* YUKRV-163 YUK-6306 Change porter to not send a error for canceled messages
+* Updated some naming conventions based on code review
+*
 * Revision 1.9  2008/08/14 15:57:41  jotteson
 * YUK-6333  Change naming in request message and change cancellation to use this new named field instead of user ID
 * Cancellation now uses the new group message ID.
@@ -347,7 +351,7 @@ void SystemMsgThread::executeRequestCount(CtiRequestMsg *msg, CtiCommandParser &
 
 void SystemMsgThread::executeCancelRequest(CtiRequestMsg *msg, CtiCommandParser &parse)
 {
-    extern void cancelOutMessages(void *unusedptr, void* d);
+    extern void cancelOutMessages(void *doSendError, void* om);
 
     unsigned int entries = 0;
     string resultString;
