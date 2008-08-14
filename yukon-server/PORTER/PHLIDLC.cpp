@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PHLIDLC.cpp-arc  $
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2008/08/14 15:57:41 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2008/08/14 20:12:20 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -160,7 +160,7 @@ IDLCFunction (CtiDeviceSPtr &Dev,
     OutMessage->Buffer.OutMessage[PREIDL] = (UCHAR)Function;
 
     CtiTransmitter711Info *p711Info = (CtiTransmitter711Info *)Dev->getTrxInfo();
-    statisticsNewRequest(OutMessage->Port, OutMessage->TrxID, OutMessage->DeviceID, OutMessage->MessageFlags);
+    statisticsNewRequest(OutMessage->Port, OutMessage->DeviceID, 0, OutMessage->MessageFlags);
 
     /* Now output message to appropriate port queue */
     if(PortManager.writeQueue(Dev->getPortID(), OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (CHAR *) OutMessage, OutMessage->Priority))
@@ -239,7 +239,7 @@ IDLCRCont (CtiDeviceSPtr &Dev)
     OutMessage->Destination = DEST_QUEUE;
     OutMessage->Command = CMND_RCONT;
     OutMessage->ReturnNexus = NULL;
-    statisticsNewRequest(OutMessage->Port, OutMessage->TrxID, OutMessage->DeviceID, OutMessage->MessageFlags);
+    statisticsNewRequest(OutMessage->Port, OutMessage->DeviceID, 0, OutMessage->MessageFlags);
 
     /* Now output message to appropriate port queue */
     if(PortManager.writeQueue(Dev->getPortID(), OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (CHAR *) OutMessage, OutMessage->Priority))
@@ -343,7 +343,7 @@ IDLCRColQ (CtiDeviceSPtr &Dev, INT priority)
         OutMessage->Destination = DEST_QUEUE;
         OutMessage->Command = CMND_RCOLQ;
         OutMessage->ReturnNexus = NULL;
-        statisticsNewRequest(OutMessage->Port, OutMessage->TrxID, OutMessage->DeviceID, OutMessage->MessageFlags);
+        statisticsNewRequest(OutMessage->Port, OutMessage->DeviceID, 0, OutMessage->MessageFlags);
 
         OutMessage->Buffer.OutMessage[PREIDL] = (UCHAR)p711Info->RContInLength;
 
@@ -431,7 +431,7 @@ IDLCSetTSStores (CtiDeviceSPtr &Dev, USHORT Priority, USHORT Trigger, USHORT Per
     /* Thats it so send the message */
     OutMessage->OutLength = Index - PREIDL + 2;
 
-    statisticsNewRequest(OutMessage->Port, OutMessage->TrxID, OutMessage->DeviceID, OutMessage->MessageFlags);
+    statisticsNewRequest(OutMessage->Port, OutMessage->DeviceID, 0, OutMessage->MessageFlags);
     if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
     {
         printf ("Error Writing to Queue for Port %2hd\n", OutMessage->Port);
@@ -503,7 +503,7 @@ IDLCSetBaseSList (CtiDeviceSPtr &Dev)
     /* Thats it so send the message */
     OutMessage->OutLength = Index - PREIDL + 2;
 
-    statisticsNewRequest(OutMessage->Port, OutMessage->TrxID, OutMessage->DeviceID, OutMessage->MessageFlags);
+    statisticsNewRequest(OutMessage->Port, OutMessage->DeviceID, 0, OutMessage->MessageFlags);
     if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
     {
         printf ("Error Writing to Queue for Port %2hd\n", OutMessage->Port);
@@ -775,7 +775,7 @@ IDLCSetDelaySets (CtiDeviceSPtr &Dev)
         /* Thats it so send the message */
         OutMessage->OutLength = Index - PREIDL + 2;
 
-        statisticsNewRequest(OutMessage->Port, OutMessage->TrxID, OutMessage->DeviceID, OutMessage->MessageFlags);
+        statisticsNewRequest(OutMessage->Port, OutMessage->DeviceID, 0, OutMessage->MessageFlags);
         if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
         {
             printf ("Error Writing to Queue for Port %2hd\n", OutMessage->Port);
