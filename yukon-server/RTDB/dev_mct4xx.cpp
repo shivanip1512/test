@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.88 $
-* DATE         :  $Date: 2008/08/14 15:57:40 $
+* REVISION     :  $Revision: 1.89 $
+* DATE         :  $Date: 2008/08/14 17:42:06 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -79,7 +79,6 @@ CtiDeviceMCT4xx::CtiDeviceMCT4xx()
     {
         //  initialize them to 0
         _lp_info[i].collection_point = 0;
-        _lp_info[i].current_request  = 0;
         _lp_info[i].current_schedule = 0;
     }
 }
@@ -3397,7 +3396,7 @@ INT CtiDeviceMCT4xx::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, 
             timestamp -= interval_len * 6 * block;
             timestamp -= timestamp % (interval_len * 6);
 
-            if( timestamp == _lp_info[channel].current_request )
+            if( timestamp == _lp_info[channel].collection_point )
             {
                 if( !getDevicePointOffsetTypeEqual(PointOffset_LoadProfileOffset + channel + 1, DemandAccumulatorPointType) )
                 {
@@ -3428,7 +3427,7 @@ INT CtiDeviceMCT4xx::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, 
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - possible LP logic error for device \"" << getName() << "\";  calculated timestamp=" << CtiTime(timestamp) << "; current_request=" << CtiTime(_lp_info[channel].current_request) << endl;
+                    dout << CtiTime() << " **** Checkpoint - possible LP logic error for device \"" << getName() << "\";  calculated timestamp=" << CtiTime(timestamp) << "; collection_point=" << CtiTime(_lp_info[channel].collection_point) << endl;
                     dout << "commandstr = " << InMessage->Return.CommandStr << endl;
                 }
             }

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT410.h-arc  $
-* REVISION     :  $Revision: 1.69 $
-* DATE         :  $Date: 2008/08/13 21:23:35 $
+* REVISION     :  $Revision: 1.70 $
+* DATE         :  $Date: 2008/08/14 17:42:06 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -55,7 +55,7 @@ private:
         bool retry;
         bool failed;
 
-        enum current_request_t
+        enum request_type_t
         {
             Request_None,
             Request_SingleDayCh1,
@@ -64,7 +64,7 @@ private:
             Request_MultiDay,
             Request_RecentCh1,
 
-        } current_request;
+        } request_type;
 
     } _daily_read_info;
 

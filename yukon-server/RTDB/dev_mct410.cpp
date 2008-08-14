@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.168 $
-* DATE         :  $Date: 2008/08/14 15:57:40 $
+* REVISION     :  $Revision: 1.169 $
+* DATE         :  $Date: 2008/08/14 17:42:06 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -634,7 +634,6 @@ ULONG CtiDeviceMCT410::calcNextLPScanTime( void )
             {
                 //  so we haven't talked to it yet
                 _lp_info[i].collection_point = 86400;
-                _lp_info[i].current_request  = 86400;
 
                 CtiTablePointDispatch pd(pPoint->getPointID());
 
@@ -643,7 +642,9 @@ ULONG CtiDeviceMCT410::calcNextLPScanTime( void )
                     _lp_info[i].collection_point = pd.getTimeStamp().seconds();
                 }
 
-                if( _lp_info[i].collection_point < (CtiTime::now().seconds() - block_len * 16) )
+                //  allow us to have missed up to 4 days before giving up and starting at the current time again
+                //    this should only affect us on startup or when someone (re-)enables LP on a device
+                if( _lp_info[i].collection_point < (CtiTime::now().seconds() - 86400 * 4) )
                 {
                     //  start collecting the most recent block
                     _lp_info[i].collection_point  = CtiTime::now().seconds();
@@ -664,14 +665,12 @@ ULONG CtiDeviceMCT410::calcNextLPScanTime( void )
                 dout << "planned_time = " << planned_time << endl;
                 dout << "_lp_info[" << i << "].collection_point = " << _lp_info[i].collection_point << endl;
                 dout << "_lp_info[" << i << "].current_schedule = " << _lp_info[i].current_schedule << endl;
-                dout << "_lp_info[" << i << "].current_request  = " << _lp_info[i].current_request << endl;
             }
 
             _lp_info[i].current_schedule = planned_time;
 
-            //  if we've already made the request for a block, or we're overdue...  almost the same thing
-            if( (_lp_info[i].current_request >= _lp_info[i].collection_point) ||
-                (planned_time <= (Now.seconds() - LoadProfileCollectionWindow)) )
+            //  if we're overdue, request at the overdue_rate
+            if( _lp_info[i].collection_point <= (Now.seconds() - block_len - LPBlockEvacuationTime) )
             {
                 unsigned int overdue_rate = getLPRetryRate(interval_len);
 
@@ -693,7 +692,6 @@ ULONG CtiDeviceMCT410::calcNextLPScanTime( void )
                 dout << "planned_time = " << planned_time << endl;
                 dout << "_lp_info[" << i << "].collection_point = " << _lp_info[i].collection_point << endl;
                 dout << "_lp_info[" << i << "].current_schedule = " << _lp_info[i].current_schedule << endl;
-                dout << "_lp_info[" << i << "].current_request  = " << _lp_info[i].current_request << endl;
                 dout << "next_time = " << next_time << endl;
             }
         }
@@ -751,7 +749,7 @@ INT CtiDeviceMCT410::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
         if( getMCTDebugLevel(DebugLevel_LoadProfile) )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - calcAndInsetLPRequests() called from outside Scanner for device \"" << getName() << "\", ignoring **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint - calcAndInsertLPRequests() called from outside Scanner for device \"" << getName() << "\", ignoring **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
     else
@@ -763,18 +761,17 @@ INT CtiDeviceMCT410::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
 
             if( getLoadProfile().isChannelValid(i) )
             {
-                if( _lp_info[i].current_schedule <= Now )
+                if( _lp_info[i].collection_point <= (Now - block_len - LPBlockEvacuationTime) &&
+                    _lp_info[i].current_schedule <= Now )
                 {
                     tmpOutMess = CTIDBG_new OUTMESS(*OutMessage);
 
-                    _lp_info[i].current_request  = _lp_info[i].collection_point;
-
                     //  make sure we only ask for what the function reads can access
-                    if( (Now.seconds() - _lp_info[i].current_request) >= (unsigned long)(LPRecentBlocks * block_len) )
+                    if( (Now.seconds() - _lp_info[i].collection_point) >= (unsigned long)(LPRecentBlocks * block_len) )
                     {
                         //  go back as far as we can
-                        _lp_info[i].current_request  = Now.seconds();
-                        _lp_info[i].current_request -= LPRecentBlocks * block_len;
+                        _lp_info[i].collection_point  = Now.seconds();
+                        _lp_info[i].collection_point -= LPRecentBlocks * block_len;
                     }
 
                     if( getMCTDebugLevel(DebugLevel_LoadProfile) )
@@ -784,15 +781,14 @@ INT CtiDeviceMCT410::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
                         dout << "Now.seconds() = " << Now.seconds() << endl;
                         dout << "_lp_info[" << i << "].collection_point = " << _lp_info[i].collection_point << endl;
                         dout << "MCT4XX_LPRecentBlocks * block_len = " << LPRecentBlocks * block_len << endl;
-                        dout << "_lp_info[" << i << "].current_request = " << _lp_info[i].current_request << endl;
                     }
 
                     //  make sure we're aligned
-                    _lp_info[i].current_request -= _lp_info[i].current_request % block_len;
+                    _lp_info[i].collection_point -= _lp_info[i].collection_point % block_len;
 
                     //  which block to grab?
                     channel = i + 1;
-                    block   = (Now.seconds() - _lp_info[i].current_request) / block_len;
+                    block   = (Now.seconds() - _lp_info[i].collection_point) / block_len;
 
                     descriptor = " channel " + CtiNumStr(channel) + string(" block ") + CtiNumStr(block);
 
@@ -817,7 +813,7 @@ INT CtiDeviceMCT410::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
             if( getMCTDebugLevel(DebugLevel_LoadProfile) )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - LP scan too early for device \"" << getName() << "\", no OutMessages created **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - LP collection up to date for device \"" << getName() << "\", no scans generated **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
     }
@@ -1046,7 +1042,7 @@ INT CtiDeviceMCT410::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
     {
         case Emetcon::GetValue_DailyRead:
         {
-            if( !_daily_read_info.retry && _daily_read_info.current_request == daily_read_info_t::Request_MultiDay )
+            if( !_daily_read_info.retry && _daily_read_info.request_type == daily_read_info_t::Request_MultiDay )
             {
                 _daily_read_info.retry = true;
 
@@ -1070,7 +1066,7 @@ INT CtiDeviceMCT410::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
                 newReq.setConnectionHandle((void *)InMessage->Return.Connection);
 
                 //  reset the "in progress" flag
-                _daily_read_info.current_request = daily_read_info_t::Request_None;
+                _daily_read_info.request_type = daily_read_info_t::Request_None;
                 InterlockedExchange(&_daily_read_info.in_progress, false);
 
                 CtiDeviceBase::ExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList);
@@ -1081,7 +1077,7 @@ INT CtiDeviceMCT410::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
                 _daily_read_info.retry  = false;
 
                 //  reset the "in progress" flag
-                _daily_read_info.current_request = daily_read_info_t::Request_None;
+                _daily_read_info.request_type = daily_read_info_t::Request_None;
                 InterlockedExchange(&_daily_read_info.in_progress, false);
             }
 
@@ -1503,7 +1499,7 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
 
             string temp = getName() + " / Daily read request already in progress\n";
 
-            switch( _daily_read_info.current_request )
+            switch( _daily_read_info.request_type )
             {
                 case daily_read_info_t::Request_MultiDay:       channel = _daily_read_info.channel;  break;
                 case daily_read_info_t::Request_SingleDayCh1:   channel = 1;  break;
@@ -1614,7 +1610,7 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
                     OutMessage->Buffer.BSt.Function = FuncRead_Channel1SingleDayBasePos + day_offset;
                     OutMessage->Buffer.BSt.Length   = FuncRead_Channel1SingleDayLen;
 
-                    _daily_read_info.current_request = daily_read_info_t::Request_RecentCh1;
+                    _daily_read_info.request_type = daily_read_info_t::Request_RecentCh1;
 
                     found = true;
                 }
@@ -1718,7 +1714,7 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
                         OutMessage->Buffer.BSt.Function = FuncRead_MultiDayDailyReportingBasePos + ((day_offset - 1) / 6);
                         OutMessage->Buffer.BSt.Length   = FuncRead_MultiDayDailyReportingLen;
 
-                        _daily_read_info.current_request = daily_read_info_t::Request_MultiDay;
+                        _daily_read_info.request_type = daily_read_info_t::Request_MultiDay;
 
                         found = true;
                     }
@@ -1731,7 +1727,7 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
                             OutMessage->Buffer.BSt.Function = FuncRead_SingleDayDailyReportCh1Pos;
                             OutMessage->Buffer.BSt.Length   = FuncRead_SingleDayDailyReportCh1Len;
 
-                            _daily_read_info.current_request = daily_read_info_t::Request_SingleDayCh1;
+                            _daily_read_info.request_type = daily_read_info_t::Request_SingleDayCh1;
 
                             found = true;
                         }
@@ -1740,7 +1736,7 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
                             OutMessage->Buffer.BSt.Function = FuncRead_SingleDayDailyReportCh2Pos;
                             OutMessage->Buffer.BSt.Length   = FuncRead_SingleDayDailyReportCh2Len;
 
-                            _daily_read_info.current_request = daily_read_info_t::Request_SingleDayCh2;
+                            _daily_read_info.request_type = daily_read_info_t::Request_SingleDayCh2;
 
                             found = true;
                         }
@@ -1749,7 +1745,7 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
                             OutMessage->Buffer.BSt.Function = FuncRead_SingleDayDailyReportCh3Pos;
                             OutMessage->Buffer.BSt.Length   = FuncRead_SingleDayDailyReportCh3Len;
 
-                            _daily_read_info.current_request = daily_read_info_t::Request_SingleDayCh3;
+                            _daily_read_info.request_type = daily_read_info_t::Request_SingleDayCh3;
 
                             found = true;
                         }
@@ -3165,7 +3161,7 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
         int expected_channel;
 
         //  assign the channel first...
-        switch( _daily_read_info.current_request )
+        switch( _daily_read_info.request_type )
         {
             case daily_read_info_t::Request_MultiDay:       expected_channel = _daily_read_info.channel;  break;
 
@@ -3177,7 +3173,7 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
         }
 
         //  then figure out the time this read started...
-        switch( _daily_read_info.current_request )
+        switch( _daily_read_info.request_type )
         {
             case daily_read_info_t::Request_MultiDay:       start_time = _daily_read_info.multi_day_start;  break;
 
@@ -3213,7 +3209,7 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
         }
 
         //  then group them by their decode type
-        switch( _daily_read_info.current_request )
+        switch( _daily_read_info.request_type )
         {
             case daily_read_info_t::Request_MultiDay:
             {
@@ -3274,7 +3270,7 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
                     resultString += "(" + CtiNumStr(channel) + ", expecting " + CtiNumStr(expected_channel) + ")";
 
                     //  reset the "in progress" flag
-                    _daily_read_info.current_request = daily_read_info_t::Request_None;
+                    _daily_read_info.request_type = daily_read_info_t::Request_None;
                     InterlockedExchange(&_daily_read_info.in_progress, false);
                 }
                 else
@@ -3310,7 +3306,7 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
                         newReq.setConnectionHandle((void *)InMessage->Return.Connection);
 
                         //  reset the "in progress" flag
-                        _daily_read_info.current_request = daily_read_info_t::Request_None;
+                        _daily_read_info.request_type = daily_read_info_t::Request_None;
                         InterlockedExchange(&_daily_read_info.in_progress, false);
 
                         CtiDeviceBase::ExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList);
@@ -3323,7 +3319,7 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
                         _daily_read_info.multi_day_end   = 0;
 
                         //  reset the "in progress" flag
-                        _daily_read_info.current_request = daily_read_info_t::Request_None;
+                        _daily_read_info.request_type = daily_read_info_t::Request_None;
                         InterlockedExchange(&_daily_read_info.in_progress, false);
                     }
                 }
@@ -3407,7 +3403,7 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
                 }
 
                 //  reset the "in progress" flag
-                _daily_read_info.current_request = daily_read_info_t::Request_None;
+                _daily_read_info.request_type = daily_read_info_t::Request_None;
                 InterlockedExchange(&_daily_read_info.in_progress, false);
 
                 break;
@@ -3435,8 +3431,8 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
                     resultString  = getName() + " / Invalid day/month returned by daily read ";
                     resultString += "(" + CtiNumStr(day) + "/" + CtiNumStr(month + 1) + ", expecting " + CtiNumStr(d.dayOfMonth()) + "/" + CtiNumStr(((d.month() - 1) % 4) + 1) + ")";
 
-                    if( _daily_read_info.current_request == daily_read_info_t::Request_SingleDayCh2 ||
-                        _daily_read_info.current_request == daily_read_info_t::Request_SingleDayCh3 )
+                    if( _daily_read_info.request_type == daily_read_info_t::Request_SingleDayCh2 ||
+                        _daily_read_info.request_type == daily_read_info_t::Request_SingleDayCh3 )
                     {
                         _daily_read_info.single_day = 86400;  //  reset it - it doesn't match what the MCT has
                     }
@@ -3477,7 +3473,7 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
                 }
 
                 //  reset the "in progress" flag
-                _daily_read_info.current_request = daily_read_info_t::Request_None;
+                _daily_read_info.request_type = daily_read_info_t::Request_None;
                 InterlockedExchange(&_daily_read_info.in_progress, false);
 
                 break;
@@ -3491,7 +3487,7 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
                 }
 
                 //  reset the "in progress" flag
-                _daily_read_info.current_request = daily_read_info_t::Request_None;
+                _daily_read_info.request_type = daily_read_info_t::Request_None;
                 InterlockedExchange(&_daily_read_info.in_progress, false);
 
                 break;
@@ -3511,7 +3507,7 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
     else
     {
         //  this code is replicated in ErrorDecode
-        if( !_daily_read_info.retry && _daily_read_info.current_request == daily_read_info_t::Request_MultiDay )
+        if( !_daily_read_info.retry && _daily_read_info.request_type == daily_read_info_t::Request_MultiDay )
         {
             _daily_read_info.retry = true;
 
@@ -3536,7 +3532,7 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
             newReq.setConnectionHandle((void *)InMessage->Return.Connection);
 
             //  reset the "in progress" flag
-            _daily_read_info.current_request = daily_read_info_t::Request_None;
+            _daily_read_info.request_type = daily_read_info_t::Request_None;
             InterlockedExchange(&_daily_read_info.in_progress, false);
 
             CtiDeviceBase::ExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList);
@@ -3547,7 +3543,7 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
             _daily_read_info.retry  = false;
 
             //  reset the "in progress" flag
-            _daily_read_info.current_request = daily_read_info_t::Request_None;
+            _daily_read_info.request_type = daily_read_info_t::Request_None;
             InterlockedExchange(&_daily_read_info.in_progress, false);
         }
     }
