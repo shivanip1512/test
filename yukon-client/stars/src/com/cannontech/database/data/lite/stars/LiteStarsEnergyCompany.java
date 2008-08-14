@@ -62,6 +62,7 @@ import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsRowCountDao;
+import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.OptOutEventQueue;
@@ -1455,150 +1456,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
         }
     }
     
-    /**
-     * Search the inventory by serial number. If searchMembers is true,
-     * it returns a list of Pair(LiteInventoryBase, LiteStarsEnergyCompany);
-     * otherwise it returns a list of LiteInventoryBase.
-     */
-    public List<Object> searchInventoryBySerialNo(String serialNo, boolean searchMembers) {
-        List<Object> hwList = new ArrayList<Object>();
-        
-        if (isInventoryLoaded()) {
-            List<LiteInventoryBase> inventory = getAllInventory();
-            for (final LiteInventoryBase liteInv : inventory) {
-                if (liteInv instanceof LiteStarsLMHardware) {
-                    LiteStarsLMHardware liteHw = (LiteStarsLMHardware) liteInv;
-                    if (liteHw.getManufacturerSerialNumber().equalsIgnoreCase( serialNo )) {
-                        if (searchMembers)
-                            hwList.add( new Pair<LiteStarsLMHardware,LiteStarsEnergyCompany>(liteHw, this) );
-                        else
-                            hwList.add( liteHw );
-                    }
-                }
-            }
-        }
-        else {
-            com.cannontech.database.db.stars.hardware.LMHardwareBase[] hardwares =
-                    com.cannontech.database.db.stars.hardware.LMHardwareBase.searchBySerialNumber( serialNo, getLiteID() );
-            if (hardwares == null) return null;
-            
-            for (int i = 0; i < hardwares.length; i++) {
-                LiteStarsLMHardware liteHw = (LiteStarsLMHardware) getInventoryBrief( hardwares[i].getInventoryID().intValue(), true );
-                if (searchMembers)
-                    hwList.add( new Pair<LiteStarsLMHardware,LiteStarsEnergyCompany>(liteHw, this) );
-                else
-                    hwList.add( liteHw );
-            }
-        }
-        
-        if (searchMembers) {
-            List<LiteStarsEnergyCompany> children = getChildren();
-            synchronized (children) {
-                for (final LiteStarsEnergyCompany company : children) {
-                    List<Object> memberList = company.searchInventoryBySerialNo( serialNo, searchMembers );
-                    hwList.addAll( memberList );
-                }
-            }
-        }
-        
-        return hwList;
-    }
-    
-    /**
-     * Search the inventory by alternate tracking #. If searchMembers is true,
-     * it returns a list of Pair(LiteInventoryBase, LiteStarsEnergyCompany);
-     * otherwise it returns a list of LiteInventoryBase.
-     */
-    public List<Object> searchInventoryByAltTrackNo(String altTrackNo, boolean searchMembers) {
-        List<Object> invList = new ArrayList<Object>();
-        
-        if (isInventoryLoaded()) {
-            List<LiteInventoryBase> inventory = getAllInventory();
-            for (final LiteInventoryBase liteInv : inventory) {
-                if (liteInv.getAlternateTrackingNumber() != null &&
-                        liteInv.getAlternateTrackingNumber().equalsIgnoreCase( altTrackNo ))
-                {
-                    if (searchMembers)
-                        invList.add( new Pair<LiteInventoryBase,LiteStarsEnergyCompany>(liteInv, this) );
-                    else
-                        invList.add( liteInv );
-                }
-            }
-        }
-        else {
-            int[] invIDs = com.cannontech.database.db.stars.hardware.InventoryBase.searchByAltTrackingNo( altTrackNo, getLiteID() );
-            if (invIDs == null) return null;
-            
-            for (int i = 0; i < invIDs.length; i++) {
-                LiteInventoryBase liteInv = getInventoryBrief( invIDs[i], true );
-                if (searchMembers)
-                    invList.add( new Pair<LiteInventoryBase,LiteStarsEnergyCompany>(liteInv, this) );
-                else
-                    invList.add( liteInv );
-            }
-        }
-        
-        if (searchMembers) {
-            List<LiteStarsEnergyCompany> children = getChildren();
-            synchronized (children) {
-                for (final LiteStarsEnergyCompany company : children) {
-                    List<Object> memberList = company.searchInventoryByAltTrackNo( altTrackNo, searchMembers );
-                    invList.addAll( memberList );
-                }
-            }
-        }
-        
-        return invList;
-    }
-    
-    /**
-     * Search the inventory by device name (based on partial match). The return value is
-     * a list of Pair(LiteInventoryBase, LiteStarsEnergyCompany) if searchMembers is true,
-     * a list of LiteInventoryBase otherwise.
-     */
-    public List<Object> searchInventoryByDeviceName(String deviceName, boolean searchMembers) {
-        List<Object> devList = new ArrayList<Object>();
-        
-        if (isInventoryLoaded()) {
-            List<LiteInventoryBase> inventory = getAllInventory();
-            for (final LiteInventoryBase liteInv : inventory) {
-                if (liteInv.getDeviceID() > 0
-                        && DaoFactory.getPaoDao().getYukonPAOName(liteInv.getDeviceID()).toUpperCase().startsWith( deviceName.toUpperCase() ))
-                    {
-                        if (searchMembers)
-                            devList.add( new Pair<LiteInventoryBase,LiteStarsEnergyCompany>(liteInv, this) );
-                        else
-                            devList.add( liteInv );
-                    }
-            }
-        }
-        else {
-            com.cannontech.database.db.stars.hardware.InventoryBase[] invList =
-                com.cannontech.database.db.stars.hardware.InventoryBase.searchForDevice( deviceName + "%", getLiteID() );
-            if (invList == null) return null;
-            
-            for (int i = 0; i < invList.length; i++) {
-                LiteInventoryBase liteInv = getInventoryBrief( invList[i].getInventoryID().intValue(), true );
-                if (searchMembers)
-                    devList.add( new Pair<LiteInventoryBase,LiteStarsEnergyCompany>(liteInv, this) );
-                else
-                    devList.add( liteInv );
-            }
-        }
-        
-        if (searchMembers) {
-            List<LiteStarsEnergyCompany> children = getChildren();
-            synchronized (children) {
-                for (final LiteStarsEnergyCompany company : children) {
-                    List<Object> memberList = company.searchInventoryByDeviceName( deviceName, searchMembers );
-                    devList.addAll( memberList );
-                }
-            }
-        }
-        
-        return devList;
-    }
-    
     public LiteStarsThermostatSettings getThermostatSettings(LiteStarsLMHardware liteHw) {
         try {
             LiteStarsThermostatSettings settings = new LiteStarsThermostatSettings();
@@ -1867,12 +1724,16 @@ public class LiteStarsEnergyCompany extends LiteBase {
      * otherwise it returns a list of LiteStarsCustAccountInformation.
      */
     public List<Object> searchAccountBySerialNo(String serialNo, boolean searchMembers) {
-        List<Object> invList = searchInventoryBySerialNo( serialNo, false );
+        
+    	StarsSearchDao starsSearchDao = YukonSpringHook.getBean("starsSearchDao", StarsSearchDao.class);
+    	
+    	List<LiteInventoryBase> invList = 
+    		starsSearchDao.searchLMHardwareBySerialNumber(serialNo, Collections.singletonList(this));
         List<Object> accountList = new ArrayList<Object>();
        
         final Set<Integer> accountIds = new HashSet<Integer>();
         for (int i = 0; i < invList.size(); i++) {
-            LiteInventoryBase inv = (LiteInventoryBase) invList.get(i);
+            LiteInventoryBase inv = invList.get(i);
             int accountId = inv.getAccountID();
             if (accountId > 0) accountIds.add(accountId);
         }
@@ -2048,7 +1909,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
             }
             if (obj instanceof Pair) {
                 Pair<LiteWorkOrderBase,LiteStarsEnergyCompany> pair = (Pair<LiteWorkOrderBase,LiteStarsEnergyCompany>) obj;
-                liteOrder = (LiteWorkOrderBase) pair.getFirst();
+                liteOrder = pair.getFirst();
             }
             
             if (liteOrder != null) {
@@ -2465,7 +2326,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
                         sql += " AND UPPER(CONTFIRSTNAME) LIKE ? ";
 
                     // Hey, if we have all the ECIDs available, don't bother adding this criteria!
-                    if( energyCompanyIDList.size() != StarsDatabaseCache.getInstance().getAllEnergyCompanies().size());
+                    if( energyCompanyIDList.size() != StarsDatabaseCache.getInstance().getAllEnergyCompanies().size())
                     {
                         sql += " AND (map.EnergyCompanyID = " + energyCompanyIDList.get(0).toString(); 
                         for (int i = 1; i < energyCompanyIDList.size(); i++)
@@ -2595,7 +2456,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
                     " AND acct.CustomerID = cust.CustomerID " + 
                     " AND UPPER(adr.LocationAddress1) LIKE ? ";
                     // Hey, if we have all the ECIDs available, don't bother adding this criteria!
-                    if( energyCompanyIDList.size() != StarsDatabaseCache.getInstance().getAllEnergyCompanies().size());
+                    if( energyCompanyIDList.size() != StarsDatabaseCache.getInstance().getAllEnergyCompanies().size())
                     {
                         sql += " AND (map.EnergyCompanyID = " + energyCompanyIDList.get(0).toString(); 
                         for (int i = 1; i < energyCompanyIDList.size(); i++)
@@ -2730,7 +2591,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
                     " AND acct.CustomerID = cust.CustomerID " + 
                     " AND UPPER(acct.AccountNumber) LIKE ? ";
                     // Hey, if we have all the ECIDs available, don't bother adding this criteria!
-                    if( energyCompanyIDList.size() != StarsDatabaseCache.getInstance().getAllEnergyCompanies().size());
+                    if( energyCompanyIDList.size() != StarsDatabaseCache.getInstance().getAllEnergyCompanies().size())
                     {
                         sql += " AND (map.EnergyCompanyID = " + energyCompanyIDList.get(0).toString(); 
                         for (int i = 1; i < energyCompanyIDList.size(); i++)

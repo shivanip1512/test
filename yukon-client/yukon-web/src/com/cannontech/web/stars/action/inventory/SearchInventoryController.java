@@ -8,7 +8,6 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.web.bind.ServletRequestUtils;
 
-import com.cannontech.common.util.Pair;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.roles.operator.AdministratorRole;
@@ -44,7 +43,7 @@ public class SearchInventoryController extends StarsInventoryActionController {
         boolean searchMembers = this.authDao.checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS )
                 && (energyCompany.getChildren().size() > 0);
         
-        List<Object> invList = null;
+        List<LiteInventoryBase> invList = null;
         try {
             invList = InventoryManagerUtil.searchInventory( energyCompany, searchBy, searchValue, searchMembers ); 
         }
@@ -61,16 +60,9 @@ public class SearchInventoryController extends StarsInventoryActionController {
         else {
             LiteInventoryBase liteInv = null;
             if (invList.size() == 1) {
-                if (searchMembers) {
-                    if (((Pair)invList.get(0)).getSecond() == energyCompany)
-                        liteInv = (LiteInventoryBase) ((Pair)invList.get(0)).getFirst();
-                }
-                else
-                    liteInv = (LiteInventoryBase) invList.get(0);
-            }
+            	liteInv = invList.get(0);
             
-            if (liteInv != null) {
-                String redirect = request.getContextPath() + "/operator/Hardware/InventoryDetail.jsp?InvId=" + liteInv.getInventoryID() + "&src=Search";
+            	String redirect = request.getContextPath() + "/operator/Hardware/InventoryDetail.jsp?InvId=" + liteInv.getInventoryID() + "&src=Search";
                 response.sendRedirect(redirect);
                 return;
             }

@@ -6,6 +6,7 @@ package com.cannontech.database.cache;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -269,6 +270,18 @@ public class StarsDatabaseCache implements DBChangeListener {
 		StarsYukonUser starsYukonUser = getStarsYukonUser(user);
 		LiteStarsEnergyCompany energyCompany = getEnergyCompany(starsYukonUser.getEnergyCompanyID());
 		return energyCompany;
+	}
+	
+	public Map<Integer, LiteStarsEnergyCompany> getAllEnergyCompanyMap() {
+	    List<LiteStarsEnergyCompany> companies = getAllEnergyCompanies();
+	    synchronized (companies) {
+            final Map<Integer, LiteStarsEnergyCompany> map = new HashMap<Integer, LiteStarsEnergyCompany>(companies.size());
+            for (LiteStarsEnergyCompany value : companies) {
+                Integer key = value.getEnergyCompanyID();
+                map.put(key, value);
+            }
+            return map;
+        }
 	}
 	
 	public LiteStarsEnergyCompany getEnergyCompany(int energyCompanyID) {

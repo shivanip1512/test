@@ -19,7 +19,6 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteLMThermostatSchedule;
-import com.cannontech.database.data.lite.stars.LiteLMThermostatSeason;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 
@@ -135,7 +134,7 @@ public class InventoryUtils {
 		
 		int thermTypeDefID = DaoFactory.getYukonListDao().getYukonListEntry( liteSched.getThermostatTypeID() ).getYukonDefID();
 		for (int i = 0; i < liteSched.getThermostatSeasons().size(); i++) {
-			int numSeasonEntries = ((LiteLMThermostatSeason) liteSched.getThermostatSeasons().get(i)).getSeasonEntries().size();
+			int numSeasonEntries = liteSched.getThermostatSeasons().get(i).getSeasonEntries().size();
 			if ((thermTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT
 					|| thermTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_COMM_EXPRESSSTAT
                     || thermTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT_HEATPUMP)

@@ -1,12 +1,12 @@
 package com.cannontech.web.stars.action.inventory;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.cannontech.common.util.Pair;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.util.ServletUtils;
@@ -39,15 +39,10 @@ public class ManipulateSelectedResultsController extends StarsInventoryActionCon
             selectionIDs[i] = Integer.valueOf(selections[i]).intValue();
         
         InventoryBean iBean = (InventoryBean) session.getAttribute("inventoryBean");
-        ArrayList<Object> inventoryList = new ArrayList<Object>(); 
+        List<LiteInventoryBase> inventoryList = new ArrayList<LiteInventoryBase>(); 
         for ( int i = 0; i < iBean.getInventoryList().size(); i ++)
         {
-            LiteInventoryBase liteInvBase = null;
-            if (iBean.getInventoryList().get(i) instanceof Pair)
-                liteInvBase = (LiteInventoryBase)((Pair)iBean.getInventoryList().get(i)).getFirst();
-            else if( iBean.getInventoryList().get(i) instanceof LiteInventoryBase)
-                liteInvBase = (LiteInventoryBase)iBean.getInventoryList().get(i);
-
+            LiteInventoryBase liteInvBase = iBean.getInventoryList().get(i);
 
             if (liteInvBase != null) {
                 for (int j = 0; j < selectionIDs.length; j++)

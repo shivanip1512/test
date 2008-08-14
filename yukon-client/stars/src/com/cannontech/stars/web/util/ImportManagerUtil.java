@@ -647,7 +647,7 @@ public class ImportManagerUtil {
          */
         for(int j = 0; j < existingContact.getLiteContactNotifications().size(); j++)
         {
-            LiteContactNotification existingNotif = (LiteContactNotification) existingContact.getLiteContactNotifications().get(j);
+            LiteContactNotification existingNotif = existingContact.getLiteContactNotifications().get(j);
             boolean found = false;
             for(int i = 0; i < updateAccount.getPrimaryContact().getContactNotificationCount(); i++)
             {
@@ -683,7 +683,7 @@ public class ImportManagerUtil {
 		catch (NumberFormatException e) {
 			YukonSelectionList devTypeList = energyCompany.getYukonSelectionList( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
 			for (int i = 0; i < devTypeList.getYukonListEntries().size(); i++) {
-				YukonListEntry entry = (YukonListEntry) devTypeList.getYukonListEntries().get(i);
+				YukonListEntry entry = devTypeList.getYukonListEntries().get(i);
 				if (entry.getEntryText().equalsIgnoreCase( deviceType ))
 					return entry.getEntryID();
 			}
@@ -818,7 +818,7 @@ public class ImportManagerUtil {
 		int categoryID = InventoryUtils.getInventoryCategoryID( devTypeID, energyCompany );
 		if (InventoryUtils.isLMHardware( categoryID )) {
 			if (checkConstraint) {
-				liteInv = starsSearchDao.getLMHardwareBySerialNumber(fields[IDX_SERIAL_NO], energyCompany);
+				liteInv = starsSearchDao.searchLMHardwareBySerialNumber(fields[IDX_SERIAL_NO], energyCompany);
 			}
 		}
 		else {
@@ -881,7 +881,7 @@ public class ImportManagerUtil {
 		// Check if the hardware to be deleted exists
 		LiteStarsLMHardware liteHw = null;
 		for (int i = 0; i < liteAcctInfo.getInventories().size(); i++) {
-			int invID = ((Integer) liteAcctInfo.getInventories().get(i)).intValue();
+			int invID = liteAcctInfo.getInventories().get(i).intValue();
 			LiteStarsLMHardware hardware = (LiteStarsLMHardware) energyCompany.getInventory(invID, true);
 			
 			if (hardware.getManufacturerSerialNumber().equals( fields[IDX_SERIAL_NO] )) {
@@ -1201,7 +1201,7 @@ public class ImportManagerUtil {
 	{
 		LiteStarsAppliance liteApp = null;
 		for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) {
-			LiteStarsAppliance lApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(i);
+			LiteStarsAppliance lApp = liteAcctInfo.getAppliances().get(i);
 			if (lApp.getApplianceID() == appID) {
 				liteApp = lApp;
 				break;

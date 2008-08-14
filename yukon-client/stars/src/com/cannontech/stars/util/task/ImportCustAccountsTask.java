@@ -748,7 +748,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 						else {
 							String acctNo = hwFieldsMap.get( hwFields[ImportManagerUtil.IDX_SERIAL_NO] );
 							if (acctNo == null) {
-								LiteStarsLMHardware liteHw = starsSearchDao.getLMHardwareBySerialNumber(hwFields[ImportManagerUtil.IDX_SERIAL_NO], energyCompany);
+								LiteStarsLMHardware liteHw = (LiteStarsLMHardware) starsSearchDao.searchLMHardwareBySerialNumber(hwFields[ImportManagerUtil.IDX_SERIAL_NO], energyCompany);
 								if (liteHw != null && liteHw.getAccountID() > 0)
     								acctNo = starsCustAccountInformationDao.getById(liteHw.getAccountID(), energyCompany.getEnergyCompanyID()).getCustomerAccount().getAccountNumber();
 							}
@@ -885,7 +885,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
                         }
 					}
 					
-					String[] columns = StarsUtils.splitString( line, "," );;
+					String[] columns = StarsUtils.splitString( line, "," );
 					if (columns.length > numHwCol) {
 						hwFileErrors++;
 						String[] value = hwLines.get(lineNoKey);
@@ -1037,7 +1037,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 					else {
 						String acctNo = hwFieldsMap.get( hwFields[ImportManagerUtil.IDX_SERIAL_NO] );
 						if (acctNo == null) {
-							LiteStarsLMHardware liteHw = starsSearchDao.getLMHardwareBySerialNumber(hwFields[ImportManagerUtil.IDX_SERIAL_NO], energyCompany);
+							LiteStarsLMHardware liteHw = (LiteStarsLMHardware) starsSearchDao.searchLMHardwareBySerialNumber(hwFields[ImportManagerUtil.IDX_SERIAL_NO], energyCompany);
 							if (liteHw != null && liteHw.getAccountID() > 0)
     							acctNo = starsCustAccountInformationDao.getById(liteHw.getAccountID(), energyCompany.getEnergyCompanyID()).getCustomerAccount().getAccountNumber();
 						}

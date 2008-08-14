@@ -1,7 +1,9 @@
 package com.cannontech.stars.core.dao.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -35,7 +37,7 @@ public class StarsSearchDaoImpl implements StarsSearchDao {
 	}
 
 	@Override
-	public LiteStarsLMHardware getLMHardwareBySerialNumber(
+	public LiteInventoryBase searchLMHardwareBySerialNumber(
 			String serialNumber,
 			LiteStarsEnergyCompany energyCompany)
 			throws ObjectInOtherEnergyCompanyException {
@@ -46,13 +48,18 @@ public class StarsSearchDaoImpl implements StarsSearchDao {
 		sql.append("WHERE lhb.InventoryId = ib.InventoryId");
 		sql.append("AND etim.InventoryId = ib.InventoryId");
 		sql.append("AND yle.EntryId = ib.CategoryId");
-		sql.append("AND lhb.ManufacturerSerialNumber = ?");
+		sql.append("AND UPPER(lhb.ManufacturerSerialNumber) = UPPER(?)");
 
-		LiteStarsLMHardware liteHardware = jdbcTemplate.queryForObject(
+		List<LiteStarsLMHardware> liteHardwareList = jdbcTemplate.query(
 				sql.toString(), 
 				new LiteStarsLMHardwareMapper(),
 				serialNumber);
 		
+		if(liteHardwareList.size() == 0) {
+			return null;
+		}
+		
+		LiteStarsLMHardware liteHardware = liteHardwareList.get(0);
 		if(!energyCompany.getEnergyCompanyID().equals(liteHardware.getEnergyCompanyId())) {
 			LiteStarsEnergyCompany inventoryEC = ecMappingDao.getInventoryEC(liteHardware.getInventoryID());
 			throw new ObjectInOtherEnergyCompanyException( liteHardware, inventoryEC);
@@ -63,21 +70,28 @@ public class StarsSearchDaoImpl implements StarsSearchDao {
 	
 
 	@Override
-	public List<LiteStarsLMHardware> getLMHardwareBySerialNumber(String serialNumber,
-			List<LiteStarsEnergyCompany> energyCompany) {
+	public List<LiteInventoryBase> searchLMHardwareBySerialNumber(String serialNumber,
+			List<LiteStarsEnergyCompany> energyCompanyList) {
 
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		
-		sql.append("SELECT ib.*, lhb.*, etim.energyCompanyId");
-		sql.append("FROM InventoryBase ib, LMHardwareBase lhb, ECToInventoryMapping etim");
+		List<Integer> ecIdList = new ArrayList<Integer>();
+		for(LiteStarsEnergyCompany energyCompany : energyCompanyList) {
+			ecIdList.add(energyCompany.getEnergyCompanyID());
+		}
+
+		sql.append("SELECT ib.*, lhb.*, etim.energyCompanyId, yle.YukonDefinitionId AS CategoryDefId");
+		sql.append("FROM InventoryBase ib, LMHardwareBase lhb, ECToInventoryMapping etim, YukonListEntry yle");
 		sql.append("WHERE lhb.InventoryId = ib.InventoryId");
 		sql.append("AND etim.inventoryId = lhb.InventoryId");
-		sql.append("AND lhb.ManufacturerSerialNumber = ?");
-		sql.append("AND etim.energyCompanyId IN (?)");
+		sql.append("AND yle.EntryId = ib.CategoryId");
+		sql.append("AND UPPER(lhb.ManufacturerSerialNumber) = UPPER(?)");
+		sql.append("AND etim.energyCompanyId IN (" + StringUtils.join(ecIdList, ",") + ")");
 		
-		List<LiteStarsLMHardware> hardwareList = jdbcTemplate.query(
+		
+		List<LiteInventoryBase> hardwareList = jdbcTemplate.query(
 				sql.toString(), 
-				new LiteStarsLMHardwareMapper(),
+				new LiteInventoryBaseMapper(),
 				serialNumber);
 		
 		return hardwareList;
@@ -89,21 +103,77 @@ public class StarsSearchDaoImpl implements StarsSearchDao {
 			throws ObjectInOtherEnergyCompanyException {
 		
 		SqlStatementBuilder sql = new SqlStatementBuilder();
-		sql.append("SELECT ib.*, lhb.*, ypo.paoname, etim.energyCompanyId, yle.YukonDefinitionId AS CategoryDefId");
-		sql.append("FROM InventoryBase ib, LMHardwareBase lhb, YukonPAObject ypo, ECToInventoryMapping etim, YukonListEntry yle");
-		sql.append("WHERE lhb.InventoryId = ib.InventoryId");
-		sql.append("AND ypo.PaobjectId = ib.DeviceId");
-		sql.append("AND etim.InventoryId = ib.InventoryId");
-		sql.append("AND yle.EntryId = ib.CategoryId");
-		sql.append("AND ib.DeviceID > 0");
+		sql.append("SELECT ib.*, lhb.*, mhb.*, ypo.paoname, etim.energyCompanyId, yle.YukonDefinitionId AS CategoryDefId");
+		sql.append("FROM InventoryBase ib");
+		sql.append("LEFT OUTER JOIN LMHardwareBase lhb ON lhb.InventoryId = ib.InventoryId");
+		sql.append("LEFT OUTER JOIN MeterHardwareBase mhb ON mhb.InventoryId = ib.InventoryId");
+		sql.append("JOIN ECToInventoryMapping etim ON etim.InventoryId = ib.InventoryId");
+		sql.append("JOIN YukonListEntry yle ON yle.EntryId = ib.CategoryId");
+		sql.append("JOIN YukonPAObject ypo ON ypo.PAObjectId = ib.DeviceId");
+		sql.append("WHERE ib.DeviceID > 0");
 		sql.append("AND ib.CategoryID = ?");
-		sql.append("AND ypo.paoname LIKE ?");
+		sql.append("AND UPPER(ypo.paoname) LIKE UPPER(?)");
 		
-		LiteInventoryBase inventoryBase = jdbcTemplate.queryForObject(
+		List<LiteInventoryBase> inventoryBaseList = jdbcTemplate.query(
 				sql.toString(), 
 				new LiteInventoryBaseMapper(),
 				categoryID,
 				deviceName + "%");
+		
+		
+		
+		if(inventoryBaseList.size() == 0) {
+			return null;
+		}
+		
+		LiteInventoryBase inventoryBase = inventoryBaseList.get(0);
+		if(energyCompany.getEnergyCompanyID() != inventoryBase.getEnergyCompanyId()) {
+			LiteStarsEnergyCompany inventoryEC = ecMappingDao.getInventoryEC(inventoryBase.getInventoryID());
+			throw new ObjectInOtherEnergyCompanyException( inventoryBase, inventoryEC);
+		}
+		
+		return inventoryBase;
+	}
+	
+
+	@Override
+	public List<LiteInventoryBase> searchInventoryByDeviceName(String deviceName,
+			List<LiteStarsEnergyCompany> energyCompanyList) {
+
+		List<Integer> ecIdList = new ArrayList<Integer>();
+		for(LiteStarsEnergyCompany energyCompany : energyCompanyList) {
+			ecIdList.add(energyCompany.getEnergyCompanyID());
+		}
+		
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		sql.append("SELECT ib.*, lhb.*, mhb.*, ypo.paoname, etim.energyCompanyId, yle.YukonDefinitionId AS CategoryDefId");
+		sql.append("FROM InventoryBase ib");
+		sql.append("LEFT OUTER JOIN LMHardwareBase lhb ON lhb.InventoryId = ib.InventoryId");
+		sql.append("LEFT OUTER JOIN MeterHardwareBase mhb ON mhb.InventoryId = ib.InventoryId");
+		sql.append("JOIN ECToInventoryMapping etim ON etim.InventoryId = ib.InventoryId");
+		sql.append("JOIN YukonListEntry yle ON yle.EntryId = ib.CategoryId");
+		sql.append("JOIN YukonPAObject ypo ON ypo.PAObjectId = ib.DeviceId");
+		sql.append("WHERE ib.DeviceID > 0");
+		sql.append("AND etim.energyCompanyId IN (" + StringUtils.join(ecIdList, ",") + ")");
+		sql.append("AND UPPER(ypo.paoname) LIKE UPPER(?)");
+		
+		List<LiteInventoryBase> inventoryList = jdbcTemplate.query(
+				sql.toString(), 
+				new LiteInventoryBaseMapper(),
+				deviceName + "%");
+		
+		return inventoryList;
+	}
+
+	@Override
+	public LiteInventoryBase getDevice(int deviceID, LiteStarsEnergyCompany energyCompany)
+			throws ObjectInOtherEnergyCompanyException {
+
+		LiteInventoryBase inventoryBase = starsInventoryBaseDao.getById(deviceID);
+		
+		if(inventoryBase == null) {
+			return inventoryBase;
+		}
 		
 		if(energyCompany.getEnergyCompanyID() != inventoryBase.getEnergyCompanyId()) {
 			LiteStarsEnergyCompany inventoryEC = ecMappingDao.getInventoryEC(inventoryBase.getInventoryID());
@@ -114,17 +184,32 @@ public class StarsSearchDaoImpl implements StarsSearchDao {
 	}
 
 	@Override
-	public LiteInventoryBase getDevice(int deviceID, LiteStarsEnergyCompany energyCompany)
-			throws ObjectInOtherEnergyCompanyException {
+	public List<LiteInventoryBase> searchInventoryByAltTrackNumber(
+			String altTrackNumber,
+			List<LiteStarsEnergyCompany> energyCompanyList) {
 
-		LiteInventoryBase inventoryBase = starsInventoryBaseDao.getById(deviceID);
-		
-		if(energyCompany.getEnergyCompanyID() != inventoryBase.getEnergyCompanyId()) {
-			LiteStarsEnergyCompany inventoryEC = ecMappingDao.getInventoryEC(inventoryBase.getInventoryID());
-			throw new ObjectInOtherEnergyCompanyException( inventoryBase, inventoryEC);
+		List<Integer> ecIdList = new ArrayList<Integer>();
+		for(LiteStarsEnergyCompany energyCompany : energyCompanyList) {
+			ecIdList.add(energyCompany.getEnergyCompanyID());
 		}
 		
-		return inventoryBase;
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		sql.append("SELECT ib.*, lhb.*, mhb.*, etim.energyCompanyId, yle.YukonDefinitionId AS CategoryDefId");
+		sql.append("FROM InventoryBase ib");
+		sql.append("LEFT OUTER JOIN LMHardwareBase lhb ON lhb.InventoryId = ib.InventoryId");
+		sql.append("LEFT OUTER JOIN MeterHardwareBase mhb ON mhb.InventoryId = ib.InventoryId");
+		sql.append("JOIN ECToInventoryMapping etim ON etim.InventoryId = ib.InventoryId");
+		sql.append("JOIN YukonListEntry yle ON yle.EntryId = ib.CategoryId");
+		sql.append("WHERE ib.InventoryId >= 0");
+		sql.append("AND UPPER(ib.AlternateTrackingNumber) = UPPER(?)");
+		sql.append("AND etim.energyCompanyId IN (" + StringUtils.join(ecIdList, ",") + ")");
+		
+		List<LiteInventoryBase> inventoryBaseList = jdbcTemplate.query(
+				sql.toString(), 
+				new LiteInventoryBaseMapper(),
+				altTrackNumber);
+		
+		return inventoryBaseList;
 	}
 
 }

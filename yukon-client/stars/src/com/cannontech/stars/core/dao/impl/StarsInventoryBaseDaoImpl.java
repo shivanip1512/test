@@ -33,12 +33,18 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao {
 		sql.append("JOIN YukonListEntry yle ON yle.EntryId = ib.CategoryId");
 		sql.append("WHERE ib.InventoryId = ?");
 
-		LiteInventoryBase liteInventory = jdbcTemplate.queryForObject(
+		List<LiteInventoryBase> liteInventoryList = jdbcTemplate.query(
 				sql.toString(), 
 				new LiteInventoryBaseMapper(),
 				inventoryId);
 
-		return liteInventory;
+		if(liteInventoryList.size() == 0) {
+			return null;
+		}
+		
+		LiteInventoryBase inventoryBase = liteInventoryList.get(0);
+		
+		return inventoryBase;
 	}
 
     @Override

@@ -53,6 +53,9 @@ import com.cannontech.database.db.stars.hardware.Warehouse;
 import com.cannontech.device.range.DeviceAddressRange;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.yukon.SystemRole;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.StarsSearchDao;
+import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServerUtils;
@@ -426,7 +429,7 @@ public class InventoryManagerUtil {
 			sa305.setSubstation( ServletUtils.parseNumber(req.getParameter("SA305_Substation"), 0, 1023, 0, "Substation") );
 			
 			int rateFam = new Integer(req.getParameter("SA305_RateRate")).intValue() / 16;
-			int rateMem = new Integer(req.getParameter("SA305_RateRate")).intValue() % 16;;
+			int rateMem = new Integer(req.getParameter("SA305_RateRate")).intValue() % 16;
 			sa305.setRateFamily( ServletUtils.parseNumber(new Integer(rateFam).toString(), 0, 7, "Rate Family") );
 			sa305.setRateMember( ServletUtils.parseNumber(new Integer(rateMem).toString(), 0, 15, "Rate Member") );
 			//Rate Hierarchy should not be on the config page; it is part of the control command only
@@ -473,9 +476,9 @@ public class InventoryManagerUtil {
 		
 		// Automatically generate points for some MCTs
 		DBPersistent val = PointUtil.generatePointsForMCT( device );
-		if (val == null) val = (DBPersistent) device;
+		if (val == null) val = device;
 		
-		val = (DBPersistent) Transaction.createTransaction( Transaction.INSERT, val ).execute();
+		val = Transaction.createTransaction( Transaction.INSERT, val ).execute();
 		
 		DBChangeMsg[] dbChange = DefaultDatabaseCache.getInstance().createDBChangeMessages(
 				(CTIDbChange)val, DBChangeMsg.CHANGE_TYPE_ADD );
@@ -517,8 +520,8 @@ public class InventoryManagerUtil {
 	 * @param accounts List of LiteStarsCustAccountInformation, or Pair(LiteStarsCustAccountInformation, LiteStarsEnergyCompany)
 	 * @return List of LiteInventoryBase or Pair(LiteInventoryBase, LiteStarsEnergyCompany), based on the element type of accounts
 	 */
-	private static List<Object> getInventoryByAccounts(List<Object> accounts, LiteStarsEnergyCompany energyCompany) {
-		List<Object> invList = new ArrayList<Object>();
+	private static List<LiteInventoryBase> getInventoryByAccounts(List<Object> accounts, LiteStarsEnergyCompany energyCompany) {
+		List<LiteInventoryBase> invList = new ArrayList<LiteInventoryBase>();
 		
 		for (int i = 0; i < accounts.size(); i++) {
 			if (accounts.get(i) instanceof Pair) {
@@ -526,15 +529,15 @@ public class InventoryManagerUtil {
 				@SuppressWarnings("unchecked") LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) ((Pair)accounts.get(i)).getSecond();
 				
 				for (int j = 0; j < liteAcctInfo.getInventories().size(); j++) {
-					int invID = ((Integer)liteAcctInfo.getInventories().get(j)).intValue();
+					int invID = liteAcctInfo.getInventories().get(j).intValue();
 					LiteInventoryBase liteInv = company.getInventoryBrief( invID, true );
-					invList.add( new Pair<LiteInventoryBase, LiteStarsEnergyCompany>(liteInv, company) );
+					invList.add(liteInv);
 				}
 			}
 			else {
 				LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) accounts.get(i);
 				for (int j = 0; j < liteAcctInfo.getInventories().size(); j++) {
-					int invID = ((Integer)liteAcctInfo.getInventories().get(j)).intValue();
+					int invID = liteAcctInfo.getInventories().get(j).intValue();
 					invList.add( energyCompany.getInventoryBrief(invID, true) );
 				}
 			}
@@ -548,17 +551,32 @@ public class InventoryManagerUtil {
 	 * If searchMembers is true, returns a list of Pair(LiteInventoryBase, LiteStarsEnergyCompany);
 	 * otherwise, returns a list of LiteInventoryBase
 	 */
-	public static List<Object> searchInventory(LiteStarsEnergyCompany energyCompany, int searchBy, String searchValue, boolean searchMembers)
+	public static List<LiteInventoryBase> searchInventory(LiteStarsEnergyCompany energyCompany, int searchBy, String searchValue, boolean searchMembers)
 		throws WebClientException
 	{
+		
+		StarsSearchDao starsSearchDao = YukonSpringHook.getBean("starsSearchDao", StarsSearchDao.class);
+		List<LiteStarsEnergyCompany> ecList = new ArrayList<LiteStarsEnergyCompany>();
+		ecList.add(energyCompany);
+		if(searchMembers) {
+			List<LiteStarsEnergyCompany> allChildren = ECUtils.getAllDescendants(energyCompany);
+			ecList.addAll(allChildren);
+		}
+		
 		if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_SERIAL_NO) {
-			return energyCompany.searchInventoryBySerialNo( searchValue, searchMembers );
+			List<LiteInventoryBase> hardwareList = 
+				starsSearchDao.searchLMHardwareBySerialNumber(searchValue, ecList);
+			return hardwareList;
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_DEVICE_NAME) {
-			return energyCompany.searchInventoryByDeviceName( searchValue, searchMembers );
+			List<LiteInventoryBase> inventoryList = 
+				starsSearchDao.searchInventoryByDeviceName(searchValue, ecList);
+			return inventoryList;
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_ALT_TRACK_NO) {
-			return energyCompany.searchInventoryByAltTrackNo( searchValue, searchMembers );
+			List<LiteInventoryBase> inventoryList = 
+				starsSearchDao.searchInventoryByAltTrackNumber(searchValue, ecList);
+			return inventoryList;
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_ACCT_NO) {
 			List<Object> accounts = energyCompany.searchAccountByAccountNumber( searchValue, searchMembers, true);

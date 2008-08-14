@@ -2,15 +2,17 @@ package com.cannontech.stars.util.task;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.Pair;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.activity.ActivityLogActions;
+import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
@@ -35,7 +37,7 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
 	LiteStarsEnergyCompany currentCompany = null;
     Integer newEnergyCompanyID = null;
 	Integer newDevTypeID = null;
-    List<Object> selectedInventory = new ArrayList<Object>();
+    List<LiteInventoryBase> selectedInventory = new ArrayList<LiteInventoryBase>();
     String invenStatus = null;
 	Integer newDevStateID = null;
 	Integer newServiceCompanyID = null;
@@ -48,13 +50,13 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
     boolean stateChanged = false;
     boolean warehouseChanged = false;
 	
-	ArrayList hardwareSet = new ArrayList();
+	List<LiteStarsLMHardware> hardwareSet = new ArrayList<LiteStarsLMHardware>();
 	int numSuccess = 0, numFailure = 0;
 	int numToBeUpdated = 0;
     
-    ArrayList failedSerialNumbers = new ArrayList();
+    List<String> failedSerialNumbers = new ArrayList<String>();
 	
-    public ManipulateInventoryTask(LiteStarsEnergyCompany currentCompany, Integer newEnergyCompanyID, List<Object> selectedInventory, Integer newDevTypeID,
+    public ManipulateInventoryTask(LiteStarsEnergyCompany currentCompany, Integer newEnergyCompanyID, List<LiteInventoryBase> selectedInventory, Integer newDevTypeID,
         Integer newDevStateID, Integer newServiceCompanyID, Integer newWarehouseID, HttpServletRequest request)
     {
         this.currentCompany = currentCompany;
@@ -67,7 +69,7 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
         this.request = request;
     }
     
-    public ManipulateInventoryTask(LiteStarsEnergyCompany currentCompany, Integer newEnergyCompanyID, ArrayList selectedInventory, Integer newDevTypeID,
+    public ManipulateInventoryTask(LiteStarsEnergyCompany currentCompany, Integer newEnergyCompanyID, List<LiteInventoryBase> selectedInventory, Integer newDevTypeID,
 		Integer newDevStateID, Integer newServiceCompanyID, Integer newWarehouseID, String serialTo, String serialFrom, HttpServletRequest request)
 	{
         this.currentCompany = currentCompany;
@@ -85,6 +87,7 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
 	/* (non-Javadoc)
 	 * @see com.cannontech.stars.util.task.TimeConsumingTask#getProgressMsg()
 	 */
+    @Override
 	public String getProgressMsg() {
 		if (numToBeUpdated > 0) {
             if (status == STATUS_FINISHED && numFailure == 0) {
@@ -113,7 +116,7 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
         ManipulationBean mBean = (ManipulationBean) session.getAttribute("manipBean"); 
         
         List<LiteStarsEnergyCompany> descendants = ECUtils.getAllDescendants( currentCompany );
-        List<Object> hwList = selectedInventory;
+        List<LiteInventoryBase> hwList = selectedInventory;
         /*boolean devTypeChanged = newDevTypeID != null && newDevTypeID.intValue() != devTypeID.intValue();
 		int devTypeDefID = DaoFactory.getYukonListDao().getYukonListEntry(devTypeID.intValue()).getYukonDefID();*/
 		
@@ -129,16 +132,13 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
         {
             LiteStarsLMHardware liteHw = null;
             LiteStarsEnergyCompany oldMember = null;
-            if( hwList.get(i) instanceof Pair )
-            {
-                  liteHw = (LiteStarsLMHardware)((Pair)hwList.get(i)).getFirst();
-                  oldMember = (LiteStarsEnergyCompany)((Pair)hwList.get(i)).getSecond();
-            }
-            else if (hwList.get(i) instanceof LiteStarsLMHardware)
-            {
-                  liteHw = (LiteStarsLMHardware)hwList.get(i);
-                  oldMember = currentCompany;
-            }
+            
+            Map<Integer, LiteStarsEnergyCompany> ecMap = 
+            	StarsDatabaseCache.getInstance().getAllEnergyCompanyMap();
+            
+            LiteInventoryBase liteInventoryBase = hwList.get(i);
+            liteHw = (LiteStarsLMHardware) liteInventoryBase;
+            oldMember = ecMap.get(liteHw.getEnergyCompanyId());
             
             LiteStarsEnergyCompany newMember = null;
             if(newEnergyCompanyID == null || newEnergyCompanyID.intValue() == oldMember.getLiteID())
@@ -147,9 +147,9 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
             {
                 for(int j = 0; j < descendants.size(); j++)
                 {
-                    if(((LiteStarsEnergyCompany)descendants.get(j)).getEnergyCompanyID().intValue() == newEnergyCompanyID)
+                    if(descendants.get(j).getEnergyCompanyID().intValue() == newEnergyCompanyID)
                     {
-                        newMember = ((LiteStarsEnergyCompany)descendants.get(j));
+                        newMember = descendants.get(j);
                     }
                     break;
                 }
@@ -199,8 +199,7 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
 
                 if( hasChanged )
                 {
-                    hardware = (com.cannontech.database.data.stars.hardware.LMHardwareBase)
-                    Transaction.createTransaction( Transaction.UPDATE, hardware ).execute();
+                    hardware = Transaction.createTransaction( Transaction.UPDATE, hardware ).execute();
                     StarsLiteFactory.setLiteStarsLMHardware( liteHw, hardware );
                     
                     if (liteHw.isExtended()) {
@@ -239,7 +238,6 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
                 
                 if(warehouseChanged)
                 {
-                    Warehouse house = new Warehouse();
                     Warehouse.moveInventoryToAnotherWarehouse(invDB.getInventoryID(), newWarehouseID);
                 }
                 

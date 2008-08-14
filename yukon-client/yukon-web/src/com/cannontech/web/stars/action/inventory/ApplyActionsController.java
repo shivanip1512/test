@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.util.ProgressChecker;
 import com.cannontech.stars.util.ServletUtils;
@@ -54,7 +55,7 @@ public class ApplyActionsController extends StarsInventoryActionController {
             InventoryBean iBean = (InventoryBean) session.getAttribute("inventoryBean");
             ManipulationBean mBean = (ManipulationBean) session.getAttribute("manipBean");
             mBean.setActionsApplied(appliedActions);
-            List<Object> theWares = iBean.getInventoryList();
+            List<LiteInventoryBase> theWares = iBean.getInventoryList();
             if(theWares.size() < 1)
             {
                 session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "There is no selected inventory on which to apply actions.");

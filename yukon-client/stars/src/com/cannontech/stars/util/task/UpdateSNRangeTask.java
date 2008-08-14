@@ -72,6 +72,7 @@ public class UpdateSNRangeTask extends TimeConsumingTask {
 	/* (non-Javadoc)
 	 * @see com.cannontech.stars.util.task.TimeConsumingTask#getProgressMsg()
 	 */
+	@Override
 	public String getProgressMsg() {
 		if (numToBeUpdated > 0) {
 			if (status == STATUS_FINISHED && numFailure == 0) {
@@ -123,7 +124,7 @@ public class UpdateSNRangeTask extends TimeConsumingTask {
 				boolean hwExist = false;
 				try {
 					StarsSearchDao starsSearchDao = YukonSpringHook.getBean("starsSearchDao", StarsSearchDao.class);
-					hwExist = starsSearchDao.getLMHardwareBySerialNumber(liteHw.getManufacturerSerialNumber(), energyCompany) != null;
+					hwExist = starsSearchDao.searchLMHardwareBySerialNumber(liteHw.getManufacturerSerialNumber(), energyCompany) != null;
 				}
 				catch (ObjectInOtherEnergyCompanyException e) {
 					hwExist = true;
@@ -156,9 +157,8 @@ public class UpdateSNRangeTask extends TimeConsumingTask {
 				if (routeID != null)
 					hwDB.setRouteID( routeID );
 				
-				hardware = (com.cannontech.database.data.stars.hardware.LMHardwareBase)
-						Transaction.createTransaction( Transaction.UPDATE, hardware ).execute();
-				StarsLiteFactory.setLiteStarsLMHardware( liteHw, hardware );
+				hardware = Transaction.createTransaction( Transaction.UPDATE, hardware ).execute();
+					StarsLiteFactory.setLiteStarsLMHardware( liteHw, hardware );
 				
 				if (devTypeChanged && liteHw.isExtended()) {
 					liteHw.updateThermostatType();

@@ -153,8 +153,7 @@ public class UpdateLMHardwareAction implements ActionBase {
 					StarsLiteFactory.setInventoryBase( invDB, liteInv );
 					invDB.setDeviceLabel( updateHw.getDeviceLabel() );
 					
-					invDB = (com.cannontech.database.db.stars.hardware.InventoryBase)
-							Transaction.createTransaction( Transaction.UPDATE, invDB ).execute();
+					invDB = Transaction.createTransaction( Transaction.UPDATE, invDB ).execute();
 					
 					liteInv.setDeviceLabel( invDB.getDeviceLabel() );
 				}
@@ -248,7 +247,7 @@ public class UpdateLMHardwareAction implements ActionBase {
 				
 				try {
 					if (!liteHw.getManufacturerSerialNumber().equals(serialNo) &&
-							starsSearchDao.getLMHardwareBySerialNumber(serialNo, energyCompany) != null)
+							starsSearchDao.searchLMHardwareBySerialNumber(serialNo, energyCompany) != null)
 						throw new WebClientException( "Failed to update the hardware, serial # already exists" );
 				}
 				catch (ObjectInOtherEnergyCompanyException e) {
@@ -263,8 +262,7 @@ public class UpdateLMHardwareAction implements ActionBase {
 				hw.getLMHardwareBase().setRouteID( new Integer(updateHw.getLMHardware().getRouteID()) );
 				StarsFactory.setInventoryBase( hw.getInventoryBase(), updateHw );
 				
-				hw = (com.cannontech.database.data.stars.hardware.LMHardwareBase)
-						Transaction.createTransaction( Transaction.UPDATE, hw ).execute();
+				hw = Transaction.createTransaction( Transaction.UPDATE, hw ).execute();
 				
 				StarsLiteFactory.setLiteStarsLMHardware( liteHw, hw );
 			}
@@ -274,8 +272,7 @@ public class UpdateLMHardwareAction implements ActionBase {
 				StarsLiteFactory.setInventoryBase( invDB, liteInv );
 				StarsFactory.setInventoryBase( invDB, updateHw );
 				
-				invDB = (com.cannontech.database.db.stars.hardware.InventoryBase)
-						Transaction.createTransaction( Transaction.UPDATE, invDB ).execute();
+				invDB = Transaction.createTransaction( Transaction.UPDATE, invDB ).execute();
 				
 				StarsLiteFactory.setLiteInventoryBase( liteInv, invDB );
 			}
@@ -298,8 +295,7 @@ public class UpdateLMHardwareAction implements ActionBase {
 							eventDB.setEventDateTime( updateHw.getInstallDate() );
 						eventDB.setNotes( updateHw.getInstallationNotes() );
 						
-						eventDB = (com.cannontech.database.db.stars.event.LMCustomerEventBase)
-								Transaction.createTransaction( Transaction.UPDATE, eventDB ).execute();
+						eventDB = Transaction.createTransaction( Transaction.UPDATE, eventDB ).execute();
 	            		
 						StarsLiteFactory.setLiteLMCustomerEvent( liteEvent, eventDB );
 					}
@@ -325,7 +321,7 @@ public class UpdateLMHardwareAction implements ActionBase {
         
 		if (createHw.getLMHardware() != null) {
 			for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) {
-				LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(i);
+				LiteStarsAppliance liteApp = liteAcctInfo.getAppliances().get(i);
 				if (liteApp.getInventoryID() == deleteHw.getInventoryID()) {
 					StarsLMHardwareConfig starsConfig = new StarsLMHardwareConfig();
 					starsConfig.setApplianceID( liteApp.getApplianceID() );

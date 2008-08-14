@@ -12,6 +12,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
+import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.db.stars.purchasing.Shipment;
 import com.cannontech.stars.util.FilterWrapper;
@@ -127,7 +128,7 @@ public class ShipmentChangeController extends StarsInventoryActionController {
                 iBean.setFilterByList(tempList);
                 
                 iBean.setShipmentCheck(true);
-                List<Object> found = iBean.getLimitedHardwareList();
+                List<LiteInventoryBase> found = iBean.getLimitedHardwareList();
                 iBean.setShipmentCheck(false);
                 //failure
                 

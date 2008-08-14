@@ -1,6 +1,5 @@
 package com.cannontech.stars.web.bean;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.cannontech.common.constants.YukonListEntry;
@@ -31,8 +30,7 @@ public class ManipulationBean
     
     private String actionFilterListName = YukonSelectionListDefs.YUK_LIST_NAME_INV_FILTER_BY;
     private int failures = 0;
-//    private ArrayList<LiteWorkOrderBase> failedWorkOrders = null;
-    private ArrayList<String> failedManipulateResults = null;
+    private List<String> failedManipulateResults = null;
     private int successes = 0;
     private List<String> actionsApplied = null;
     
@@ -114,11 +112,11 @@ public class ManipulationBean
     	if( defaultActionSelection == null)
     	{
 	    	if( getActionFilterListName() == YukonSelectionListDefs.YUK_LIST_NAME_SO_FILTER_BY)
-	    		defaultActionSelection = (YukonListEntry)getAvailableServiceStatuses().getYukonListEntries().get(0);
+	    		defaultActionSelection = getAvailableServiceStatuses().getYukonListEntries().get(0);
 	    	else if( getActionFilterListName() == YukonSelectionListDefs.YUK_LIST_NAME_INV_FILTER_BY)
-	    		defaultActionSelection = (YukonListEntry)getAvailableDeviceTypes().getYukonListEntries().get(0);
+	    		defaultActionSelection = getAvailableDeviceTypes().getYukonListEntries().get(0);
 	    	else
-	    		defaultActionSelection = (YukonListEntry)getAvailableDeviceTypes().getYukonListEntries().get(0);
+	    		defaultActionSelection = getAvailableDeviceTypes().getYukonListEntries().get(0);
     	}
         return defaultActionSelection;
     }
@@ -143,7 +141,7 @@ public class ManipulationBean
         return failedManipulateResults;
     }
 
-    public void setFailedManipulateResults(ArrayList<String> failedResults) {
+    public void setFailedManipulateResults(List<String> failedResults) {
         this.failedManipulateResults = failedResults;
     }
 

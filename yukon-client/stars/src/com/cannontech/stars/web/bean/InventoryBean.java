@@ -3,15 +3,17 @@ package com.cannontech.stars.web.bean;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.Pair;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.cache.StarsDatabaseCache;
@@ -69,13 +71,9 @@ public class InventoryBean {
 	
 	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 	
-	private static final Comparator<Object> INV_ID_CMPTOR = new Comparator<Object>() {
-		public int compare(Object o1, Object o2) {
-			LiteInventoryBase inv1 = (LiteInventoryBase)
-					((o1 instanceof Pair)? ((Pair)o1).getFirst() :  o1);
-			LiteInventoryBase inv2 = (LiteInventoryBase)
-					((o2 instanceof Pair)? ((Pair)o2).getFirst() :  o2);
-			return inv1.getInventoryID() - inv2.getInventoryID();
+	private static final Comparator<LiteInventoryBase> INV_ID_CMPTOR = new Comparator<LiteInventoryBase>() {
+		public int compare(LiteInventoryBase o1, LiteInventoryBase o2) {
+			return o1.getInventoryID() - o2.getInventoryID();
 		}
 	};
     
@@ -95,17 +93,13 @@ public class InventoryBean {
 	 * device name. To compare two serial #s, try to convert them into decimal
 	 * values first, compare the decimal values if conversion is successful.
 	 */
-	private static final Comparator<Object> SERIAL_NO_CMPTOR = new Comparator<Object>() {
-		public int compare(Object o1, Object o2) {
-			LiteInventoryBase inv1 = (LiteInventoryBase)
-					((o1 instanceof Pair)? ((Pair)o1).getFirst() :  o1);
-			LiteInventoryBase inv2 = (LiteInventoryBase)
-					((o2 instanceof Pair)? ((Pair)o2).getFirst() :  o2);
+	private static final Comparator<LiteInventoryBase> SERIAL_NO_CMPTOR = new Comparator<LiteInventoryBase>() {
+		public int compare(LiteInventoryBase o1, LiteInventoryBase o2) {
 			int result = 0;
 			
-			if ((inv1 instanceof LiteStarsLMHardware) && (inv2 instanceof LiteStarsLMHardware)) {
-				LiteStarsLMHardware hw1 = (LiteStarsLMHardware) inv1;
-				LiteStarsLMHardware hw2 = (LiteStarsLMHardware) inv2;
+			if ((o1 instanceof LiteStarsLMHardware) && (o2 instanceof LiteStarsLMHardware)) {
+				LiteStarsLMHardware hw1 = (LiteStarsLMHardware) o1;
+				LiteStarsLMHardware hw2 = (LiteStarsLMHardware) o2;
 				
 				Long sn1 = null;
 				try {
@@ -130,28 +124,28 @@ public class InventoryBean {
 				else
 					result = hw1.getManufacturerSerialNumber().compareTo( hw2.getManufacturerSerialNumber() );
 			}
-			else if ((inv1 instanceof LiteStarsLMHardware) && !(inv2 instanceof LiteStarsLMHardware))
+			else if ((o1 instanceof LiteStarsLMHardware) && !(o2 instanceof LiteStarsLMHardware))
 				return -1;
-			else if (!(inv1 instanceof LiteStarsLMHardware) && (inv2 instanceof LiteStarsLMHardware))
+			else if (!(o1 instanceof LiteStarsLMHardware) && (o2 instanceof LiteStarsLMHardware))
 				return 1;
 			else {
 				String devName1 = null;
-				if (inv1.getDeviceID() > 0)
+				if (o1.getDeviceID() > 0)
 				{
                     try
                     {
-                        devName1 = DaoFactory.getPaoDao().getYukonPAOName( inv1.getDeviceID() );
+                        devName1 = DaoFactory.getPaoDao().getYukonPAOName( o1.getDeviceID() );
                     }
                     catch(NotFoundException e) {}
                 }
-				else if (inv1.getDeviceLabel() != null && inv1.getDeviceLabel().length() > 0)
-					devName1 = inv1.getDeviceLabel();
+				else if (o1.getDeviceLabel() != null && o1.getDeviceLabel().length() > 0)
+					devName1 = o1.getDeviceLabel();
 				
 				String devName2 = null;
-				if (inv2.getDeviceID() > 0)
-					devName2 = DaoFactory.getPaoDao().getYukonPAOName( inv2.getDeviceID() );
-				else if (inv2.getDeviceLabel() != null && inv2.getDeviceLabel().length() > 0)
-					devName2 = inv2.getDeviceLabel();
+				if (o2.getDeviceID() > 0)
+					devName2 = DaoFactory.getPaoDao().getYukonPAOName( o2.getDeviceID() );
+				else if (o2.getDeviceLabel() != null && o2.getDeviceLabel().length() > 0)
+					devName2 = o2.getDeviceLabel();
 				
 				if (devName1 != null && devName2 != null)
 					result = devName1.compareTo( devName2 );
@@ -163,21 +157,17 @@ public class InventoryBean {
 					return -1;
 			}
 			
-			if (result == 0) result = inv1.getInventoryID() - inv2.getInventoryID();
+			if (result == 0) result = o1.getInventoryID() - o2.getInventoryID();
 			return result;
 		}
 	};
 	
-	private static final Comparator<Object> INST_DATE_CMPTOR = new Comparator<Object>() {
-		public int compare(Object o1, Object o2) {
-			LiteInventoryBase inv1 = (LiteInventoryBase)
-					((o1 instanceof Pair)? ((Pair)o1).getFirst() :  o1);
-			LiteInventoryBase inv2 = (LiteInventoryBase)
-					((o2 instanceof Pair)? ((Pair)o2).getFirst() :  o2);
+	private static final Comparator<LiteInventoryBase> INST_DATE_CMPTOR = new Comparator<LiteInventoryBase>() {
+		public int compare(LiteInventoryBase o1, LiteInventoryBase o2) {
 			
-			int result = new java.util.Date(inv1.getInstallDate()).compareTo( new java.util.Date(inv2.getInstallDate()) );
+			int result = new Date(o1.getInstallDate()).compareTo( new Date(o2.getInstallDate()) );
 			if (result == 0)
-				result = inv1.getInventoryID() - inv2.getInventoryID();
+				result = o1.getInventoryID() - o2.getInventoryID();
 			
 			return result;
 		}
@@ -190,13 +180,13 @@ public class InventoryBean {
 	private int energyCompanyID = 0;
 	private int htmlStyle = HTML_STYLE_LIST_INVENTORY;
 	private String referer = null;
-	private List<Object> inventorySet = null;
+	private List<LiteInventoryBase> inventorySet = null;
 	private int searchBy = CtiUtilities.NONE_ZERO_ID;
 	private String searchValue = null;
 	private String action = null;
 	
 	private LiteStarsEnergyCompany energyCompany = null;
-	private List<Object> inventoryList = null;
+	private List<LiteInventoryBase> inventoryList = null;
     private List<FilterWrapper> filterByList = null;
 	
 	public InventoryBean() {
@@ -208,7 +198,7 @@ public class InventoryBean {
 		return energyCompany;
 	}
 	
-    public List<Object> getInventoryList()
+    public List<LiteInventoryBase> getInventoryList()
     {
         return inventoryList;
     }
@@ -228,10 +218,10 @@ public class InventoryBean {
     }
     
 	@SuppressWarnings("unchecked")
-    private List<Object> getHardwareList(boolean showEnergyCompany) throws WebClientException {
+    private List<LiteInventoryBase> getHardwareList(boolean showEnergyCompany) throws WebClientException {
 		if (inventoryList != null && !shipmentCheck) return inventoryList;
 		
-		List<Object> hardwares = new ArrayList<Object>();
+		List<LiteInventoryBase> hardwares = new ArrayList<LiteInventoryBase>();
 		if ((getHtmlStyle() & HTML_STYLE_INVENTORY_SET) != 0 && inventorySet != null) {
 			hardwares = inventorySet;
 		}
@@ -241,18 +231,17 @@ public class InventoryBean {
 		        for (final LiteStarsEnergyCompany company : memberList) {
 		            List<LiteInventoryBase> invList = company.loadAllInventory(true);
 		            for (LiteInventoryBase inv : invList) {
-		                hardwares.add(new Pair(inv, company));
+		                hardwares.add(inv);
 		            }
 		        }
 			} else if (getSearchBy() == 0) {
                 List<LiteStarsEnergyCompany> members = ECUtils.getAllDescendants( getEnergyCompany() );
-				hardwares = new ArrayList<Object>();
+				hardwares = new ArrayList<LiteInventoryBase>();
 				
 				for (int i = 0; i < members.size(); i++) {
 					LiteStarsEnergyCompany member = members.get(i);
                     List<LiteInventoryBase> inventory = member.loadAllInventory( true );
-					for (int j = 0; j < inventory.size(); j++)
-						hardwares.add( new Pair<Object,LiteStarsEnergyCompany>(inventory.get(j), member) );
+                    hardwares.addAll(inventory);
 				}
 			}
 			else {
@@ -261,19 +250,18 @@ public class InventoryBean {
 		}
 		else {
 			if (getSearchBy() == 0)
-				hardwares = (List) getEnergyCompany().loadAllInventory( true );
+				hardwares = getEnergyCompany().loadAllInventory( true );
 			else
 				hardwares = InventoryManagerUtil.searchInventory( getEnergyCompany(), getSearchBy(), getSearchValue(), false );
 		}
 		
 		if ((getHtmlStyle() & HTML_STYLE_SELECT_LM_HARDWARE) != 0) {
-			Iterator<Object> it = hardwares.iterator();
+			Iterator<LiteInventoryBase> it = hardwares.iterator();
 			while (it.hasNext()) {
-				Object invObj = it.next();
-				if (invObj instanceof Pair)
-					invObj = ((Pair)invObj).getFirst();
-				if (!(invObj instanceof LiteStarsLMHardware))
+				LiteInventoryBase invObj = it.next();
+				if (!(invObj instanceof LiteStarsLMHardware)) {
 					it.remove();
+				}
 			}
 		}
 		
@@ -283,22 +271,22 @@ public class InventoryBean {
         if(getHtmlStyle() != HTML_STYLE_INVENTORY_SET) {
             final AbstractFilter<LiteInventoryBase> inventoryFilter = new InventoryFilter();
             inventoryFilter.setEnergyCompany(energyCompany);
-            final List<Object> filteredHardwareList = inventoryFilter.filter(hardwares, getFilterByList());
+            final List filteredHardwareList = inventoryFilter.filter(hardwares, getFilterByList());
             hardwares = filteredHardwareList;    
         }
             
-        Set<Object> sortedInvs = null;
+        Set<LiteInventoryBase> sortedInvs = null;
         if (getSortBy() == YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_SERIAL_NO)
-            sortedInvs = new java.util.TreeSet<Object>( SERIAL_NO_CMPTOR );
+            sortedInvs = new TreeSet<LiteInventoryBase>( SERIAL_NO_CMPTOR );
         else if (getSortBy() == YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_INST_DATE)
-            sortedInvs = new java.util.TreeSet<Object>( INST_DATE_CMPTOR );
+            sortedInvs = new TreeSet<LiteInventoryBase>( INST_DATE_CMPTOR );
         else
-            sortedInvs = new java.util.TreeSet<Object>( INV_ID_CMPTOR );
+            sortedInvs = new TreeSet<LiteInventoryBase>( INV_ID_CMPTOR );
 
         sortedInvs.addAll(hardwares);
         
-		inventoryList = new ArrayList<Object>();
-		Iterator<Object> it = sortedInvs.iterator();
+		inventoryList = new ArrayList<LiteInventoryBase>();
+		Iterator<LiteInventoryBase> it = sortedInvs.iterator();
 		while (it.hasNext()) {
 			if (getSortOrder() == SORT_ORDER_ASCENDING)
 				inventoryList.add( it.next() );
@@ -320,25 +308,23 @@ public class InventoryBean {
         setDifferentOrigin(previousPage.lastIndexOf("Inventory.jsp") < 0);
         
 		boolean showEnergyCompany = false;
-        if((getHtmlStyle() == HTML_STYLE_FILTERED_INVENTORY_SUMMARY) && DaoFactory.getAuthDao().checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS )
-                && (getEnergyCompany().getChildren().size() > 0))
-                showEnergyCompany = true;
-        else if ((getHtmlStyle() & HTML_STYLE_INVENTORY_SET) != 0) 
-        {
-			if (inventorySet != null && inventorySet.size() > 0 && inventorySet.get(0) instanceof Pair)
-				showEnergyCompany = true;
-		}
-		else if ((getHtmlStyle() & HTML_STYLE_LIST_INVENTORY) != 0 || 
-                (getHtmlStyle() & HTML_STYLE_SELECT_LM_HARDWARE) != 0 ||
-                (getHtmlStyle() & HTML_STYLE_FILTERED_INVENTORY_SUMMARY) != 0 ||
-                (getHtmlStyle() & HTML_STYLE_SELECT_INVENTORY) != 0) 
-        {
-			if (DaoFactory.getAuthDao().checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS )
-				&& (getEnergyCompany().getChildren().size() > 0))
-				showEnergyCompany = true;
+		boolean manageMembers = DaoFactory.getAuthDao().checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS);
+		boolean hasChildren = getEnergyCompany().getChildren().size() > 0;
+		
+		int style = getHtmlStyle();
+		if ((style == HTML_STYLE_FILTERED_INVENTORY_SUMMARY
+				|| (style & HTML_STYLE_LIST_INVENTORY) != 0
+				|| (style & HTML_STYLE_SELECT_LM_HARDWARE) != 0
+				|| (style & HTML_STYLE_FILTERED_INVENTORY_SUMMARY) != 0 
+				|| (style & HTML_STYLE_SELECT_INVENTORY) != 0)
+				&& manageMembers && hasChildren) {
+
+			showEnergyCompany = true;
+		} else if ((style & HTML_STYLE_INVENTORY_SET) != 0) {
+				showEnergyCompany = manageMembers;
 		}
 		
-		List<Object> hwList = null;
+		List<LiteInventoryBase> hwList = null;
 		String errorMsg = null;
         int numberOfHardware = 0;
 		try {
@@ -355,14 +341,14 @@ public class InventoryBean {
         StringBuffer htmlBuf = new StringBuffer();
         
         numberOfHardware = hwList.size();
-        if(getHtmlStyle() == HTML_STYLE_FILTERED_INVENTORY_SUMMARY)
+        if(style == HTML_STYLE_FILTERED_INVENTORY_SUMMARY)
         {
             return htmlBuf.append(numberOfHardware).toString();
         }
         		
 		if (errorMsg != null) {
 			htmlBuf.append("<p class='ErrorMsg'>").append(errorMsg).append("</p>").append(LINE_SEPARATOR);
-			if ((getHtmlStyle() & HTML_STYLE_LIST_INVENTORY) == 0) {
+			if ((style & HTML_STYLE_LIST_INVENTORY) == 0) {
 				htmlBuf.append("<table width='200' border='0' cellspacing='0' cellpadding='0'>").append(LINE_SEPARATOR);
 				htmlBuf.append("  <tr>").append(LINE_SEPARATOR);
 				htmlBuf.append("    <td align='center'>");
@@ -381,15 +367,15 @@ public class InventoryBean {
 		String pageName = uri.substring( uri.lastIndexOf('/') + 1 );
 		
 		String srcStr = "";
-		if ((getHtmlStyle() & HTML_STYLE_SELECT_INVENTORY) != 0
-			|| (getHtmlStyle() & HTML_STYLE_SELECT_LM_HARDWARE) != 0)
+		if ((style & HTML_STYLE_SELECT_INVENTORY) != 0
+			|| (style & HTML_STYLE_SELECT_LM_HARDWARE) != 0)
 		{
 			srcStr = "&src=SelectInv";
 		}
-		else if ((getHtmlStyle() & HTML_STYLE_LIST_INVENTORY) != 0) {
+		else if ((style & HTML_STYLE_LIST_INVENTORY) != 0) {
 			srcStr = "&src=Inventory";
 		}
-		else if (getHtmlStyle() == HTML_STYLE_INVENTORY_SET) {
+		else if (style == HTML_STYLE_INVENTORY_SET) {
 			srcStr = "&src=ResultSet";
 		}
 		
@@ -447,9 +433,9 @@ public class InventoryBean {
 		htmlBuf.append("    <td>").append(LINE_SEPARATOR);
 		htmlBuf.append("      <table width='100%' border='1' cellspacing='0' cellpadding='3'>").append(LINE_SEPARATOR);
 		htmlBuf.append("        <tr>").append(LINE_SEPARATOR);
-		if ((getHtmlStyle() & HTML_STYLE_SELECT_INVENTORY) != 0
-			|| (getHtmlStyle() & HTML_STYLE_SELECT_LM_HARDWARE) != 0
-            || (getHtmlStyle() & HTML_STYLE_LIST_INVENTORY) != 0)
+		if ((style & HTML_STYLE_SELECT_INVENTORY) != 0
+			|| (style & HTML_STYLE_SELECT_LM_HARDWARE) != 0
+            || (style & HTML_STYLE_LIST_INVENTORY) != 0)
 		{
 			htmlBuf.append("          <td class='HeaderCell' width='1%'>&nbsp;</td>").append(LINE_SEPARATOR);
 		}
@@ -463,19 +449,22 @@ public class InventoryBean {
         
         htmlBuf.append("<form name='chooseForm' method='post' action='").append(req.getContextPath()).append("/servlet/InventoryManager'>").append(LINE_SEPARATOR);
 		htmlBuf.append("<input type='hidden' name='action' value='ManipulateInventoryResults'>").append(LINE_SEPARATOR);
-        for (int i = minInvNo; i <= maxInvNo; i++) {
+        
+		Map<Integer, LiteStarsEnergyCompany> ecMap = 
+			StarsDatabaseCache.getInstance().getAllEnergyCompanyMap();
+		
+		for (int i = minInvNo; i <= maxInvNo; i++) {
 			LiteInventoryBase liteInv = null;
 			LiteStarsEnergyCompany member = null;
 			boolean isManagable = false;
 			
 			if (showEnergyCompany) {
-				liteInv = (LiteInventoryBase) ((Pair)hwList.get(i-1)).getFirst();
-				member = (LiteStarsEnergyCompany) ((Pair)hwList.get(i-1)).getSecond();
-				isManagable = DaoFactory.getAuthDao().checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS )
-						&& ECUtils.isDescendantOf( member, getEnergyCompany() );
+				liteInv = hwList.get(i-1);
+				member = ecMap.get(liteInv.getEnergyCompanyId());
+				isManagable = manageMembers && ECUtils.isDescendantOf( member, getEnergyCompany() );
 			}
 			else {
-				liteInv = (LiteInventoryBase) hwList.get(i-1);
+				liteInv = hwList.get(i-1);
 				member = getEnergyCompany();
 			}
         	
@@ -504,14 +493,14 @@ public class InventoryBean {
 			*/
 			htmlBuf.append("        <tr>").append(LINE_SEPARATOR);
             
-			if ((getHtmlStyle() & HTML_STYLE_SELECT_INVENTORY) != 0
-				|| (getHtmlStyle() & HTML_STYLE_SELECT_LM_HARDWARE) != 0)
+			if ((style & HTML_STYLE_SELECT_INVENTORY) != 0
+				|| (style & HTML_STYLE_SELECT_LM_HARDWARE) != 0)
 			{
 				htmlBuf.append("          <td class='TableCell' width='1%'>");
 				htmlBuf.append("<input type='radio' name='InvID' onclick='selectInventory(").append(liteInv.getInventoryID()).append(",").append(member.getLiteID()).append(")'>");
 				htmlBuf.append("</td>").append(LINE_SEPARATOR);
 			}
-            else if ((getHtmlStyle() & HTML_STYLE_LIST_INVENTORY) != 0)
+            else if ((style & HTML_STYLE_LIST_INVENTORY) != 0)
             {
                 htmlBuf.append("          <td class='TableCell' width='1%'>");
                 htmlBuf.append("<input type='checkbox' name='checkMultiInven' value='").append(liteInv.getInventoryID()).append("'>");
@@ -586,8 +575,8 @@ public class InventoryBean {
 		htmlBuf.append("</table>").append(LINE_SEPARATOR);
         
         
-        if ((getHtmlStyle() & HTML_STYLE_SELECT_INVENTORY) != 0
-			|| (getHtmlStyle() & HTML_STYLE_SELECT_LM_HARDWARE) != 0)
+        if ((style & HTML_STYLE_SELECT_INVENTORY) != 0
+			|| (style & HTML_STYLE_SELECT_LM_HARDWARE) != 0)
 		{
 			htmlBuf.append("<br>").append(LINE_SEPARATOR);
 			htmlBuf.append("<table width='200' border='0' cellspacing='0' cellpadding='3'>").append(LINE_SEPARATOR);
@@ -604,7 +593,7 @@ public class InventoryBean {
 			htmlBuf.append("  </tr>").append(LINE_SEPARATOR);
 			htmlBuf.append("</table>").append(LINE_SEPARATOR);
 		}
-        else if((getHtmlStyle() & HTML_STYLE_LIST_INVENTORY) != 0)
+        else if((style & HTML_STYLE_LIST_INVENTORY) != 0)
         {
             htmlBuf.append("<br>").append(LINE_SEPARATOR);
             htmlBuf.append("<table width='200' border='0' cellspacing='0' cellpadding='3'>").append(LINE_SEPARATOR);
@@ -622,7 +611,7 @@ public class InventoryBean {
             htmlBuf.append("</table>").append(LINE_SEPARATOR);
         }
         
-		if (getHtmlStyle() == HTML_STYLE_INVENTORY_SET) {
+		if (style == HTML_STYLE_INVENTORY_SET) {
 			htmlBuf.append("<br>").append(LINE_SEPARATOR);
 			htmlBuf.append("<table width='200' border='0' cellspacing='0' cellpadding='3'>").append(LINE_SEPARATOR);
 			htmlBuf.append("  <tr>").append(LINE_SEPARATOR);
@@ -687,13 +676,8 @@ public class InventoryBean {
 		htmlBuf.append("  form.SwitchContext.value = memberID;").append(LINE_SEPARATOR);
 		htmlBuf.append("  form.submit();").append(LINE_SEPARATOR);
 		htmlBuf.append("}").append(LINE_SEPARATOR);
-        
-        //htmlBuf.append("function changeSelected() {").append(LINE_SEPARATOR);
-        //htmlBuf.append("  form.action.value = 'ManipulateInventoryResults';").append(LINE_SEPARATOR);
-        //htmlBuf.append("  form.submit();").append(LINE_SEPARATOR);
-        //htmlBuf.append("}").append(LINE_SEPARATOR);
 
-        if((getHtmlStyle() & HTML_STYLE_LIST_INVENTORY) != 0)
+        if((style & HTML_STYLE_LIST_INVENTORY) != 0)
         {
             htmlBuf.append("function checkAll() {").append(LINE_SEPARATOR);
             htmlBuf.append("var checkBoxArray = new Array();").append(LINE_SEPARATOR);
@@ -785,8 +769,8 @@ public class InventoryBean {
                 boolean found = false;
                 for(int x = 0; x < oldFilters.size(); x++)
                 {
-                    if(filterType == new Integer(((FilterWrapper)oldFilters.get(x)).getFilterTypeID())
-                            && specificFilterID.intValue() == new Integer(((FilterWrapper)oldFilters.get(x)).getFilterID()).intValue())
+                    if(filterType == new Integer(oldFilters.get(x).getFilterTypeID())
+                            && specificFilterID.intValue() == new Integer(oldFilters.get(x).getFilterID()).intValue())
                     {
                         found = true;
                     }    
@@ -877,7 +861,7 @@ public class InventoryBean {
 	/**
 	 * @param list
 	 */
-	public void setInventorySet(final List<Object> list) {
+	public void setInventorySet(final List<LiteInventoryBase> list) {
 		inventorySet = list;
 		inventoryList = null;
 	}
@@ -978,11 +962,11 @@ public class InventoryBean {
         this.numberOfRecords = numberOfRecords;
     }
 
-    public void setInventoryList(final List<Object> inventoryList) {
+    public void setInventoryList(final List<LiteInventoryBase> inventoryList) {
         this.inventoryList = inventoryList;
     }
     
-    public List<Object> getLimitedHardwareList()
+    public List<LiteInventoryBase> getLimitedHardwareList()
     {
         try
         {

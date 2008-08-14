@@ -110,7 +110,7 @@ public class CheckInventoryController extends StarsInventoryActionController {
     
             try {
                 if (categoryID > 0 && InventoryUtils.isLMHardware( categoryID )) {
-                	liteInv = starsSearchDao.getLMHardwareBySerialNumber(serialNo, energyCompany);
+                	liteInv = starsSearchDao.searchLMHardwareBySerialNumber(serialNo, energyCompany);
                     session.setAttribute( InventoryManagerUtil.INVENTORY_TO_CHECK, liteInv );
                 }
                 else if (categoryID > 0) {

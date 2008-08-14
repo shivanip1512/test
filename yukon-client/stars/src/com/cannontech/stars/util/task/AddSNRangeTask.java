@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -17,7 +18,6 @@ import javax.servlet.http.HttpSession;
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
-import com.cannontech.common.util.Pair;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.activity.ActivityLogActions;
@@ -51,8 +51,8 @@ public class AddSNRangeTask extends TimeConsumingTask {
 	Integer routeID = null;
 	HttpServletRequest request = null;
 	
-	ArrayList hardwareSet = new ArrayList();
-	ArrayList serialNoSet = new ArrayList();
+	List<LiteStarsLMHardware> hardwareSet = new ArrayList<LiteStarsLMHardware>();
+	List<String> serialNoSet = new ArrayList<String>();
 	int numSuccess = 0, numFailure = 0;
 	
 	public AddSNRangeTask(LiteStarsEnergyCompany energyCompany, int snFrom, int snTo, Integer devTypeID, Integer devStateID,
@@ -73,6 +73,7 @@ public class AddSNRangeTask extends TimeConsumingTask {
 	/* (non-Javadoc)
 	 * @see com.cannontech.stars.util.task.TimeConsumingTask#getProgressMsg()
 	 */
+	@Override
 	public String getProgressMsg() {
 		int numTotal = snTo - snFrom + 1;
 		if (status == STATUS_FINISHED && numFailure == 0)
@@ -108,7 +109,7 @@ public class AddSNRangeTask extends TimeConsumingTask {
             iBean = (InventoryBean) session.getAttribute("inventoryBean");
         }
         
-        ArrayList tempList = new ArrayList();
+        List<FilterWrapper> tempList = new ArrayList<FilterWrapper>();
         String serialStart = Integer.toString(snFrom);
         String serialEnd = Integer.toString(snTo);
         String devType = Integer.toString(devTypeID);
@@ -118,15 +119,12 @@ public class AddSNRangeTask extends TimeConsumingTask {
         iBean.setFilterByList(tempList);
         
         iBean.setShipmentCheck(true);
-        List<Object> found = iBean.getLimitedHardwareList();
+        List<LiteInventoryBase> found = iBean.getLimitedHardwareList();
         LiteInventoryBase liteInv = null;
-        HashMap foundMap = new HashMap(found.size());
+        Map<String, LiteStarsLMHardware> foundMap = new HashMap<String, LiteStarsLMHardware>(found.size());
         for(int j = 0; j < found.size(); j++)
         {
-            if (found.get(j) instanceof Pair)
-                liteInv = (LiteInventoryBase)((Pair)iBean.getInventoryList().get(j)).getFirst();
-            else if( iBean.getInventoryList().get(j) instanceof LiteInventoryBase)
-                liteInv = (LiteInventoryBase)iBean.getInventoryList().get(j);
+        	liteInv = iBean.getInventoryList().get(j);
             
             /*
              * if this needs to do meters, will have to add a clause
@@ -138,7 +136,7 @@ public class AddSNRangeTask extends TimeConsumingTask {
 		for (int sn = snFrom; sn <= snTo; sn++) {
 			String serialNo = String.valueOf(sn);
 			
-			LiteStarsLMHardware existingHw = (LiteStarsLMHardware)foundMap.get(serialNo);
+			LiteStarsLMHardware existingHw = foundMap.get(serialNo);
 			if (existingHw != null) 
             {
 				hardwareSet.add( existingHw );
@@ -163,8 +161,7 @@ public class AddSNRangeTask extends TimeConsumingTask {
 				hwDB.setRouteID( routeID );
 				hardware.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
 				
-				hardware = (com.cannontech.database.data.stars.hardware.LMHardwareBase)
-						Transaction.createTransaction( Transaction.INSERT, hardware ).execute();
+				hardware = Transaction.createTransaction( Transaction.INSERT, hardware ).execute();
 				
 				LiteStarsLMHardware liteHw = new LiteStarsLMHardware();
 				StarsLiteFactory.setLiteStarsLMHardware( liteHw, hardware );
@@ -199,7 +196,7 @@ public class AddSNRangeTask extends TimeConsumingTask {
 			if (serialNoSet.size() > 0) {
 				resultDesc += "<br><table width='100' cellspacing='0' cellpadding='0' border='0' align='center' class='TableCell'>";
 				for (int i = 0; i < serialNoSet.size(); i++) {
-					String serialNo = (String) serialNoSet.get(i);
+					String serialNo = serialNoSet.get(i);
 					resultDesc += "<tr><td align='center'>" + serialNo + "</td></tr>";
 				}
 				resultDesc += "</table><br>";
