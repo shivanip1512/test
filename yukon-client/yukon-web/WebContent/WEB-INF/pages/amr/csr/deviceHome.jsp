@@ -126,12 +126,14 @@
 						<br>
                         
                         <!-- Actions: Locate Route -->
+                        <cti:checkProperty property="operator.DeviceActionsRole.LOCATE_ROUTE">
                         <c:url var="routeLocateUrl" value="/spring/csr/routeLocate/home">
                             <c:param name="collectionType" value="idList" />
                             <c:param name="idList.ids" value="${deviceId}" />
                         </c:url>
                         <a href="${routeLocateUrl}">Locate Route</a>
                         <br>
+                        </cti:checkProperty>
                         
                         <!-- Actions: Other Collection actions -->
                         <c:url var="collectionActionsUrl" value="/spring/bulk/collectionActions">
