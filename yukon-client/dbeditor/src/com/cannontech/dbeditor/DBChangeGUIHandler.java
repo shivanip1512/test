@@ -63,13 +63,7 @@ public class DBChangeGUIHandler {
                         + " and the lite object type is = " + liteObject.getLiteType() );
     				return;
     			}
-    			if( msg.getDatabase() == DBChangeMsg.CHANGE_PAO_DB ) {
-    				txtMsg.append(". Editing of '" + DaoFactory.getPaoDao().getYukonPAOName(liteObject.getLiteID()) + "/" + liteObject.toString() + "' was canceled." );
-    			} else if( msg.getDatabase() == DBChangeMsg.CHANGE_POINT_DB ) {
-                    txtMsg.append(". Editing of '" + DaoFactory.getPointDao().getPointName(liteObject.getLiteID()) + "/" + liteObject.toString() + "' was canceled." );
-                }else {
-    				txtMsg.append(". Editing of '" + liteObject.toString() + "' was canceled.");
-    			}
+    			txtMsg.append(". Editing of '" + liteObject.toString() + "' was canceled.");
     			thePanel.fireCancelButtonPressed();			
     		}
         }

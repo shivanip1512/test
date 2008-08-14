@@ -1902,9 +1902,11 @@ public void handleDBChangeMsg( final DBChangeMsg msg, final LiteBase liteBase ) 
         			//tell our tree we may need to change the display
         			updateTreePanel( liteBase, msg.getTypeOfChange() );
         		}
-        
-        		//display a messge on the message panel telling us about this event...Only if its a Device Change...other wise don't bother printing out.
-        		if(msg.getDatabase() == DBChangeMsg.CHANGE_PAO_DB) {
+
+        		//display a message on the message panel telling us about this event...Only if its a Device Change OR INSERT/UPDATE...other wise don't bother printing out Point Add messages.
+                if(msg.getDatabase() == DBChangeMsg.CHANGE_PAO_DB  || 
+                        msg.getTypeOfChange() == DBChangeMsg.CHANGE_TYPE_DELETE ||
+                        msg.getTypeOfChange() == DBChangeMsg.CHANGE_TYPE_UPDATE ) {
         		    fireMessage( new MessageEvent( DatabaseEditor.this, txtMsg.toString(), MessageEvent.INFORMATION_MESSAGE) );
         		}
 	        }
