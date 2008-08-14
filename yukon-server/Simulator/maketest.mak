@@ -39,23 +39,30 @@ TESTOBJS=\
 test_ccusim.obj \
 
 
-CCU_SIMULATOR_OBJS=\
-EmetconWord.obj \
-ccu710.obj \
-ccu711.obj \
-SimulatedCCU.obj \
+CCU_SIMULATOR_BASE_OBJS=\
+$(OBJ)\ccu711.obj \
+$(OBJ)\SharedFunctions.obj \
+$(OBJ)\EmetconWord.obj \
+$(OBJ)\SimulatedCCU.obj \
+$(OBJ)\CCU711Manager.obj \
+$(OBJ)\CCU710Manager.obj \
+$(OBJ)\ccu710.obj \
+$(OBJ)\EmetconWordBase.obj \
+$(OBJ)\EmetconWordD1.obj \
+$(OBJ)\EmetconWordB.obj \
+$(OBJ)\EmetconWordC.obj \
+$(OBJ)\EmetconWordDn.obj \
+$(OBJ)\EmetconWordFactory.obj \
+$(OBJ)\Mct410Sim.obj \
 
 LIBS=\
-kernel32.lib user32.lib advapi32.lib wsock32.lib
-
-
-CMTEST=\
-cmdparsetestgenerator.exe
-
+kernel32.lib user32.lib advapi32.lib wsock32.lib \
+$(COMPILEBASE)\lib\ctidevdb.lib \
+$(COMPILEBASE)\lib\ctidbsrc.lib 
 
 ALL:            ctibasetest
 
-ctibasetest:    $(TESTOBJS) $(CCU_SIMULATOR_OBJS) Makefile
+ctibasetest:    $(TESTOBJS) Makefile
 
 deps:
                 scandeps -Output maketest.mak *.cpp
@@ -79,7 +86,6 @@ copy:
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 -copy bin\*.exe $(YUKONOUTPUT)
 
-
 ########################### Conversions ##############################
 
 .SUFFIXES:      .cpp .obj
@@ -89,21 +95,21 @@ copy:
         @echo Compiling $< to
         @echo           $(OBJ)\$(@B).obj
         @echo:
-        $(RWCPPINVOKE) $(RWCPPFLAGS) $(CFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $<
+	$(RWCPPINVOKE) $(RWCPPFLAGS) $(CFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $<
 
+	@echo:
+	@echo Creating Executable $(OBJ)\$(@B).exe
         @echo:
-        @echo Creating Executable $(@B).exe
-        @echo:
-        @%cd $(OBJ)
-        $(CC) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS)  /Fe..\$(BIN)\$(@B).exe \
-        $(@B).obj $(CCU_SIMULATOR_OBJS) -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\clrdump.lib $(BOOSTLIBS) $(BOOSTTESTLIBS) $(RWLIBS) $(LINKFLAGS)
+	$(CC) $(CFLAGS) $(INCLPATHS) $(PCHFLAGS) $(RWCPPFLAGS) $(RWLINKFLAGS)  /Fe$(BIN)\$(@B).exe \
+	.\obj\$(@B).obj -link /subsystem:console $(COMPILEBASE)\lib\clrdump.lib $(COMPILEBASE)\lib\ctibase.lib $(BOOSTLIBS) $(CCU_SIMULATOR_BASE_OBJS) $(BOOSTTESTLIBS) $(RWLIBS) $(LIBS) $(LINKFLAGS)
 
-        -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-        -copy ..\$(BIN)\$(@B).exe $(YUKONOUTPUT)
-        -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
-        -if exist ..\$(BIN)\$(@B).lib copy ..\$(BIN)\$(@B).lib $(COMPILEBASE)\lib
-        @%cd $(CWD)
-        @echo.
+	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+	-copy $(BIN)\$(@B).exe $(YUKONOUTPUT)
+	-@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
+	-if exist $(BIN)\$(@B).lib copy $(BIN)\$(@B).lib $(COMPILEBASE)\lib
+	@%cd $(CWD)
+	@echo.
+
 
 ######################################################################################
 ctidate.obj:    yukon.h ctidate.h
@@ -118,36 +124,60 @@ test_ctitime.obj:  ctitime.h
 
 #UPDATE#
 ccu710.obj:	yukon.h precompiled.h ctidbgmem.h CCU710.h EmetconWord.h \
-		SimulatedCCU.h ctinexus.h dlldefs.h netports.h cticonnect.h \
-		ctiTime.h numstr.h cticalls.h os2_2w32.h types.h color.h
+		ctitime.h dlldefs.h ctinexus.h netports.h cticonnect.h \
+		numstr.h cticalls.h os2_2w32.h types.h color.h logger.h \
+		thread.h mutex.h guard.h clrdump.h CtiPCPtrQueue.h utility.h \
+		queues.h sorted_vector.h SharedFunctions.h
 ccu710manager.obj:	yukon.h precompiled.h ctidbgmem.h CCU710Manager.h \
 		ctinexus.h dlldefs.h netports.h cticonnect.h CCU710.h \
-		EmetconWord.h SimulatedCCU.h ctiTime.h
+		EmetconWord.h ctitime.h SimulatedCCU.h logger.h thread.h \
+		mutex.h guard.h numstr.h clrdump.h CtiPCPtrQueue.h utility.h \
+		queues.h cticalls.h os2_2w32.h types.h sorted_vector.h
 ccu711.obj:	yukon.h precompiled.h ctidbgmem.h CCU711.h CCU710.h \
-		EmetconWord.h SimulatedCCU.h ctinexus.h dlldefs.h netports.h \
-		cticonnect.h ctiTime.h mctStruct.h numstr.h cticalls.h \
-		os2_2w32.h types.h cti_asmc.h color.h
+		EmetconWord.h ctitime.h dlldefs.h mctStruct.h \
+		EmetconWordBase.h ctinexus.h netports.h cticonnect.h numstr.h \
+		cticalls.h os2_2w32.h types.h cti_asmc.h color.h logger.h \
+		thread.h mutex.h guard.h clrdump.h CtiPCPtrQueue.h utility.h \
+		queues.h sorted_vector.h SharedFunctions.h \
+		EmetconWordFactory.h
 ccu711manager.obj:	yukon.h precompiled.h ctidbgmem.h CCU711Manager.h \
 		ctinexus.h dlldefs.h netports.h cticonnect.h SimulatedCCU.h \
-		ctiTime.h CCU711.h CCU710.h EmetconWord.h mctStruct.h
+		ctiTime.h CCU711.h CCU710.h EmetconWord.h mctStruct.h \
+		EmetconWordBase.h logger.h thread.h mutex.h guard.h numstr.h \
+		clrdump.h CtiPCPtrQueue.h utility.h queues.h cticalls.h \
+		os2_2w32.h types.h sorted_vector.h
 ccusimulator.obj:	yukon.h precompiled.h ctidbgmem.h cticalls.h \
 		os2_2w32.h dlldefs.h types.h ctinexus.h netports.h \
 		cticonnect.h dsm2.h mutex.h guard.h numstr.h clrdump.h \
 		color.h ctiTime.h dbaccess.h dllbase.h sema.h mctStruct.h \
 		SimulatedCCU.h CCU711Manager.h CCU711.h CCU710.h \
-		EmetconWord.h CCU710Manager.h
+		EmetconWord.h EmetconWordBase.h CCU710Manager.h logger.h \
+		thread.h CtiPCPtrQueue.h utility.h queues.h sorted_vector.h
 clientnexus.obj:	yukon.h precompiled.h ctidbgmem.h clientNexus.h \
 		ctinexus.h dlldefs.h netports.h cticonnect.h numstr.h \
 		cticalls.h os2_2w32.h types.h
 emetconword.obj:	yukon.h precompiled.h ctidbgmem.h EmetconWord.h \
-		cticalls.h os2_2w32.h dlldefs.h types.h cti_asmc.h numstr.h
+		ctitime.h dlldefs.h cticalls.h os2_2w32.h types.h cti_asmc.h \
+		numstr.h SharedFunctions.h
+emetconwordb.obj:	yukon.h precompiled.h ctidbgmem.h EmetconWordB.h \
+		EmetconWordBase.h SharedFunctions.h ctitime.h dlldefs.h
+emetconwordbase.obj:	yukon.h precompiled.h ctidbgmem.h \
+		EmetconWordBase.h
+emetconwordd1.obj:	yukon.h precompiled.h ctidbgmem.h EmetconWordD1.h \
+		EmetconWordBase.h
+emetconwordfactory.obj:	yukon.h precompiled.h ctidbgmem.h \
+		EmetconWordFactory.h EmetconWordBase.h EmetconWordD1.h \
+		EmetconWordB.h
 precompiled.obj:	yukon.h precompiled.h ctidbgmem.h
+sharedfunctions.obj:	yukon.h precompiled.h ctidbgmem.h \
+		SharedFunctions.h ctitime.h dlldefs.h logger.h thread.h \
+		mutex.h guard.h numstr.h clrdump.h CtiPCPtrQueue.h utility.h \
+		queues.h cticalls.h os2_2w32.h types.h sorted_vector.h
 simulatedccu.obj:	yukon.h precompiled.h ctidbgmem.h SimulatedCCU.h \
 		ctinexus.h dlldefs.h netports.h cticonnect.h ctiTime.h
-test_ccusim.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h dlldefs.h \
-		ctidate.h logger.h thread.h mutex.h guard.h numstr.h \
-		clrdump.h CtiPCPtrQueue.h utility.h queues.h types.h \
-		sorted_vector.h ctistring.h rwutil.h boost_time.h CCU711.h \
-		CCU710.h EmetconWord.h SimulatedCCU.h ctinexus.h netports.h \
-		cticonnect.h mctStruct.h
+test_ccusim.obj:	ctitime.h dlldefs.h ctidate.h logger.h thread.h \
+		mutex.h guard.h numstr.h clrdump.h CtiPCPtrQueue.h utility.h \
+		queues.h cticalls.h os2_2w32.h types.h sorted_vector.h \
+		CCU711.h CCU710.h EmetconWord.h mctStruct.h EmetconWordBase.h \
+		yukon.h precompiled.h ctidbgmem.h rwutil.h boost_time.h
 #ENDUPDATE#

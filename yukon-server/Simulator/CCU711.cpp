@@ -23,6 +23,12 @@
 #include "logger.h"
 #include "SharedFunctions.h"
 #include <queue>
+#include <Winsock2.h>
+
+#include "EmetconWordBase.h"
+#include "EmetconWordC.h"
+#include "EmetconWordB.h"
+#include "EmetconWordFactory.h"
 
 #include <boost/thread/mutex.hpp>
 
@@ -33,7 +39,6 @@ DLLIMPORT extern CtiLogger   dout;
 /**************************************************
 /*  CCU711 functions
 ***************************************************/
-
 CCU711::CCU711(unsigned char addressFound) :
       _indexOfEnd(0),
       _indexOfWords(0),
@@ -50,33 +55,154 @@ CCU711::CCU711(unsigned char addressFound) :
       _qmessagesReady(0),
       _strategy(0)
 {
-    _address = addressFound;
+    magicWord = NULL;
 
     memset(_data, 0, 300);
     memset(_messageData, 0, 300);
     memset(_outmessageData, 0, 300);
 }
 
+int CCU711::determingMessageLength(unsigned char controlByte, unsigned char lenByte)
+{
+    if((controlByte & 0x1f)== 0x1f){
+        //Reset Request
+        return 1;
+    }
+    else if((controlByte & 0x01) == 0x00){
+        //General Request
+        return (lenByte + 0x02);
+    }
+    //Unhandled warning here?
+    return 0;
+}
+
+void CCU711::processRequest(unsigned char ReadBuffer[], int bufferSize) 
+{
+    ////////////////
+    //RequestHandlerFactory* factory = RequestHandlerFactory::getInstance();
+
+    //RequestHandler* handler = factory->getHandler(ReadBuffer[0],ReadBuffer[2]);
+    ///////////////////
+    if( false/*handler != NULL /*We found one.  do stuff*/ ) {
+
+/* Commenting out the request handler stuff.  Phase 2 work.
+        unsigned char sendBuffer[300];//size ok?
+        int retSize = handler->processRequest(ReadBuffer,bytesRead,sendBuffer);
+
+        if (retSize < 0) {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << endl << endl << retSize << endl << endl;
+        }
+        else
+        {
+            int napTime = (((retSize)*8.0)/1200.0)*2*1000.0;  //  Delay at 1200 baud in both directions
+            CTISleep(napTime);
+
+            //Why
+            unsigned char SendData[300];
+            unsigned char *WriteBuffer = sendBuffer;
+            memcpy(SendData, WriteBuffer, 300);
+
+            unsigned long bytesWritten = 0;
+            socket->CTINexusWrite(&SendData, retSize, &bytesWritten, 15);
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << endl << endl << bytesWritten << endl << endl;
+            }
+        }
+*/
+    }
+    else //////////LEGACY CASE.  Not handled in new handlers. Try this. Last resort.
+    {
+        if( ReadBuffer[1] != 0x7e )  //Make sure it didn't try to send two messages at once and overlap the two HDLC flags
+        {
+
+            int BytesToFollow = ReceiveMsg(ReadBuffer);
+
+            if( BytesToFollow>0 )
+            {
+                int bytesRead=0;
+                ///////////////////////////////
+                //Commenting since we are reading it all in at once now. Left as a marker to roll back if needed.
+                //while( bytesRead < BytesToFollow )
+                //{
+                //    socket->CTINexusRead(ReadBuffer + counter, 1, &bytesRead, 15);
+                //    //TS: Bug, if we timeout on any reads we will have holes in the buffer.
+                //    counter++;
+                //}
+
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    for( int byteitr = 0; byteitr < BytesToFollow; byteitr++ )
+                    {
+                        if( byteitr == 1 )
+                        {
+                            //SET_FOREGROUND_BRIGHT_RED;
+                            dout << string(CtiNumStr(ReadBuffer[byteitr+4]).hex().zpad(2)) << ' ';
+                            //SET_FOREGROUND_BRIGHT_GREEN;
+                        }
+                        else {
+                            dout << string(CtiNumStr(ReadBuffer[byteitr+4]).hex().zpad(2))<<' ';
+                        }
+                    }
+                    dout << endl;
+                }
+
+                int mctAddressArray[50];
+                memset(mctAddressArray, 0, 50);
+                getNeededAddresses(mctAddressArray);  // ask the CCU711 which mct addresses it needs values from the db for
+
+                int i = 0;
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    while( (mctAddressArray[i] != 0) )
+                    {
+                        dout << "\nMct: " << mctAddressArray[i] << endl;
+                        i++;
+                    }
+                }
+                mctStruct testStruct;
+                mctStruct structArray[100];
+                structArray[0]=testStruct;
+                ReceiveMore(ReadBuffer);
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    PrintInput();
+                }
+            }
+            CreateMsg();
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            //SET_FOREGROUND_BRIGHT_RED;
+            dout << "Error: Two IDLC messages overlapped since bytes 0 and 1 are both 0x7e" << endl;
+            //SET_FOREGROUND_WHITE;
+        }
+    }
+
+}
+
+
 void CCU711::handleRequest(CTINEXUS* socket) 
 {
     //  It's a 711 IDLC message
     CtiTime AboutToRead;
     unsigned char ReadBuffer[300];
-    int totalBytesRead = 0;
     int BytesToFollow;
     int counter = 0;
-    int ccuNumber = 0;
-    int mctNumber = 0;
     unsigned long bytesRead = 0;
     BytesToFollow = 4;
     //  Read first few bytes
     while( bytesRead < BytesToFollow )
     {
         socket->CTINexusRead(ReadBuffer + counter  ,1, &bytesRead, 15);
+        //TS: Bug. If we time out, we will miss bytes.
         counter++;
     }
 
-    totalBytesRead = bytesRead;
+    ///////////////////////////////////
+    //Legacy Printing.  Remove?
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);    
         if( ReadBuffer[0]==0x7e )
@@ -91,123 +217,81 @@ void CCU711::handleRequest(CTINEXUS* socket)
         {
             dout << string(CtiNumStr(ReadBuffer[byteitr]).hex().zpad(2)) << ' ';
         }
+        dout << endl;
     }
-    if( ReadBuffer[1] != 0x7e )  //  Make sure it didn't try to send two messages at once and overlap the two HDLC flags
+    //End Legacy Printing
+    /////////////////////////////////////////////////////
+    int remainingLength = determingMessageLength(ReadBuffer[2],ReadBuffer[3]);
+
+    bytesRead=0;
+    while( bytesRead < remainingLength )
     {
+        socket->CTINexusRead(ReadBuffer + counter, 1, &bytesRead, 15);
+        //TS: Bug. If we time out, we will miss bytes.
+        counter++;
+    }
 
-        BytesToFollow = ReceiveMsg(ReadBuffer, ccuNumber);
+    processRequest(ReadBuffer,bytesRead);
 
-        if( BytesToFollow>0 )
+    unsigned char SendData[300];
+
+    int MsgSize = SendMsg(SendData);
+
+    if( MsgSize>0 )
+    {
+        int napTime = (((MsgSize)*8.0)/1200.0)*2*1000.0;  //  Delay at 1200 baud in both directions
+        CTISleep(napTime);
+        unsigned long bytesWritten = 0;
+        socket->CTINexusWrite(&SendData, MsgSize, &bytesWritten, 15);
+
+        CtiTime DateSent;
         {
-            bytesRead=0;
-            //  Read any additional bytes
-            while( bytesRead < BytesToFollow )
-            {
-                socket->CTINexusRead(ReadBuffer + counter, 1, &bytesRead, 15);
-                counter++;
-            }
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            //SET_FOREGROUND_BRIGHT_YELLOW;
+            dout << DateSent.asString();
+            //SET_FOREGROUND_BRIGHT_CYAN;
+            dout << " OUT:" << endl;
 
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                for( int byteitr = 0; byteitr < BytesToFollow; byteitr++ )
-                {
-                    if( byteitr == 1 )
-                    {
-                        //SET_FOREGROUND_BRIGHT_RED;
-                        dout << string(CtiNumStr(ReadBuffer[byteitr+4]).hex().zpad(2)) << ' ';
-                        //SET_FOREGROUND_BRIGHT_GREEN;
-                    }
-                    else {
-                        dout<<string(CtiNumStr(ReadBuffer[byteitr+4]).hex().zpad(2))<<' ';
-                    }
-                }
-            }
+            //SET_FOREGROUND_BRIGHT_MAGNETA;
 
-            int mctAddressArray[50];
-            memset(mctAddressArray, 0, 50);
-            getNeededAddresses(mctAddressArray);  // ask the CCU711 which mct addresses it needs values from the db for
-
-            int i = 0;
+            for( int byteitr = 0; byteitr < bytesWritten; byteitr++ )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                while( (mctAddressArray[i] != 0) )
-                {
-                    dout << "\nMct: " << mctAddressArray[i] << endl;
-                    i++;
-                }
+                dout << string(CtiNumStr(SendData[byteitr]).hex().zpad(2))<<' ';
             }
-            mctStruct testStruct;
-            mctStruct structArray[100];
-            structArray[0]=testStruct;
-            ReceiveMore(ReadBuffer, counter, structArray);
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                PrintInput();
-            }
+            PrintMessage();
+            dout << endl;
         }
 
-        CreateMsg(ccuNumber);
-
-        unsigned char SendData[300];
-
-        int MsgSize = SendMsg(SendData);
-
-        if( MsgSize>0 )
-        {
-            int napTime = (((MsgSize)*8.0)/1200.0)*2*1000.0;  //  Delay at 1200 baud in both directions
-            CTISleep(napTime);
-            unsigned long bytesWritten = 0;
-            socket->CTINexusWrite(&SendData, MsgSize, &bytesWritten, 15);
-
-            CtiTime DateSent;
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                //SET_FOREGROUND_BRIGHT_YELLOW;
-                dout << DateSent.asString();
-                //SET_FOREGROUND_BRIGHT_CYAN;
-                dout << " OUT:" << endl;
-
-                //SET_FOREGROUND_BRIGHT_MAGNETA;
-    
-                for( int byteitr = 0; byteitr < bytesWritten; byteitr++ )
-                {
-                    dout << string(CtiNumStr(SendData[byteitr]).hex().zpad(2))<<' ';
-                }
-                PrintMessage();
-            }
-            
-        }
-        else
-        {
-            //SET_FOREGROUND_BRIGHT_RED;
-            //cout<<"Error: Outgoing message is null"<<endl;
-            //SET_FOREGROUND_WHITE;
-        }
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
         //SET_FOREGROUND_BRIGHT_RED;
-        dout<<"Error: Two IDLC messages overlapped since bytes 0 and 1 are both 0x7e"<<endl;
+
         //SET_FOREGROUND_WHITE;
     }
-
 }
 
 
 //Listen for and store an incoming message
-int CCU711::ReceiveMsg(unsigned char ReadBuffer[], int &setccuNumber)
+int CCU711::ReceiveMsg(unsigned char ReadBuffer[])
 {
-    //determine the type of message
-    CreateMessage(INPUT, DEFAULT, ReadBuffer, 0, setccuNumber);
+    //Grab first four bytes for identification
+    _messageData[0] = ReadBuffer[0];
+    _messageData[1] = ReadBuffer[1];
+    _messageData[2] = ReadBuffer[2];
+    _messageData[3] = ReadBuffer[3];
+    _indexOfEnd = 4;           //   this may cause a PROBLEM  SINCE 710 should be 3 bytes !!!
+
+    _bytesToFollow = DecodeIDLC();
+
     return _bytesToFollow;
 }
 
 //Listen for and store an incoming message
-void CCU711::ReceiveMore(unsigned char ReadBuffer[], int counter, mctStruct structArray[])
+void CCU711::ReceiveMore(unsigned char ReadBuffer[])
 {
     int setccuNumber = 0;
-    //SET_FOREGROUND_WHITE;
+
     DecodeCommand(ReadBuffer);
 
     for(int i=10; i<300; i++)
@@ -217,22 +301,13 @@ void CCU711::ReceiveMore(unsigned char ReadBuffer[], int counter, mctStruct stru
 
     int Ctr = 3;
     int dummyNum = 0;
-    if(_commandType==DTRAN)
+    if (_commandType == DTRAN)
     {
-        
-        subCCU710.ReceiveMsg((_messageData + 7), dummyNum);
-        _mctNumber = subCCU710.ReceiveMore((_messageData + 7), dummyNum, Ctr);
-        float words = subCCU710.getWordsInbound();
-        float repeaters = subCCU710.getRepeaters();
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Repeaters " << repeaters << endl;
-            dout << "Waiting inbound  " << (((repeaters +1 ) * (words+1) * 52.0)/72.0)*1000.0 << " miliseconds " << endl;
-        }
+        processMsgDTRAN();
     }
-    else if(_commandType==LGRPQ)
+    else if (_commandType == LGRPQ)
     {
-        CreateQueuedMsg(0);////   <--- Use struct kwhvalue HERE !!!!!!
+        processMsgLGRPQ();////   <--- Use struct kwhvalue HERE !!!!!!
     }
 }
 
@@ -255,32 +330,32 @@ void CCU711::PrintInput()
         {
             dout << "Wrd: " << _messageQueue.front().getWord() << endl;
         }
+        dout << endl;
     }
 }
 
 //Build a new message
-void CCU711::CreateMsg(int ccuNumber)
+void CCU711::CreateMsg()
 {
     unsigned char someData[10];
     int setccuNumber = 0;
     if(_messageType== RESETREQ)
     {
-        //  Reset request
         unsigned char Address = _messageData[1];
-        CreateMessage(RESETACK, DEFAULT, someData, ccuNumber, setccuNumber, Address);
+        CreateMessage(RESETACK, DEFAULT, someData, Address);
     }
     else if(_messageType==GENREQ)
     {
         //  General Request
         unsigned char Frame = getFrame();
         unsigned char Address = _messageData[1];
-        if(_commandType==DTRAN)
+        if (_commandType == DTRAN)
         {
-            if(subCCU710.getWordFunction(0)==FUNCREAD) {
-                CreateMessage(GENREP, FUNCREAD, someData, ccuNumber, setccuNumber, Address, Frame);
+            if (getEmetconBWord()->getIO() == FUNC_READ || getEmetconBWord()->getIO() == READ) {
+                CreateMessage(GENREP, FUNC_READ, someData, Address, Frame);
             }
-            if(subCCU710.getWordFunction(0)==WRITE) {
-                CreateMessage(GENREP, FUNCREAD, someData, ccuNumber, setccuNumber, Address, Frame);
+            if (getEmetconBWord()->getIO() == WRITE || getEmetconBWord()->getIO() == FUNC_WRITE) {
+                CreateMessage(GENREP, FUNC_READ, someData, Address, Frame);
             }
         }
         else if(_commandType==LGRPQ) {
@@ -299,7 +374,7 @@ void CCU711::CreateMsg(int ccuNumber)
             LoadQueuedMsg();
         }
         else{
-            CreateMessage(GENREP, DEFAULT, someData, ccuNumber, setccuNumber, Address, Frame);
+            CreateMessage(GENREP, DEFAULT, someData, Address, Frame);
         }
     }
 }
@@ -319,7 +394,7 @@ void CCU711::PrintMessage(){
     //SET_FOREGROUND_WHITE;
     string printType;
     switch(_outmessageType){
-    case INPUT:
+    case INPUTTYPE:
         printType.append("INPUT");
         break;
     case RESETREQ:
@@ -356,7 +431,7 @@ void CCU711::TranslateInfo(bool direction, string & printMsg, string & printCmd,
 {
     if(direction == INCOMING){
         switch(_messageType){
-            case INPUT:     printMsg.append("INPUT");       break;
+            case INPUTTYPE:     printMsg.append("INPUT");       break;
             case RESETREQ:  printMsg.append("RESETREQ");    break;
             case RESETACK:  printMsg.append("RESETACK");    break;
             case GENREQ:    printMsg.append("GENREQ");      break;
@@ -392,7 +467,7 @@ void CCU711::TranslateInfo(bool direction, string & printMsg, string & printCmd,
     }
     else if(direction == OUTGOING){
         switch(_outmessageType){
-            case INPUT:     printMsg.append("INPUT");       break;
+            case INPUTTYPE:     printMsg.append("INPUT");       break;
             case RESETREQ:  printMsg.append("RESETREQ");    break;
             case RESETACK:  printMsg.append("RESETACK");    break;
             case GENREQ:    printMsg.append("GENREQ");      break;
@@ -420,22 +495,14 @@ void CCU711::TranslateInfo(bool direction, string & printMsg, string & printCmd,
     }
 }
 
-void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int ccuNumber, int &setccuNumber, unsigned char Address, unsigned char Frame)
+void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], unsigned char Address, unsigned char Frame)
 {
     _messageType = MsgType;
-    if(_messageType == INPUT)
-    {
-        _messageData[0] = Data[0];
-        _messageData[1] = Data[1];
-        _messageData[2] = Data[2];
-        _messageData[3] = Data[3];
-        _indexOfEnd = 4;           //   this may cause a PROBLEM  SINCE 710 should be 3 bytes !!!
-        _bytesToFollow = DecodeIDLC(setccuNumber);
-    }
-    else if(_messageType == RESETACK)
+
+    if(_messageType == RESETACK)
     {
         _outmessageData[0] = 0x7e;
-        _outmessageData[1] = _address;   //  slave address
+        _outmessageData[1] = Address;   //  slave address
         _outmessageData[2] = 0x73;
         unsigned short CRC = NCrcCalc_C ((_outmessageData + 1), 2);
         _outmessageData[3] = HIBYTE(CRC);   //  insert CRC code
@@ -454,9 +521,12 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int cc
         }
         _outmessageType = GENREP;
         int Ctr = 0;
-        if(WrdFnc==ACKACK) {
+
+        //Does not ever get here...
+        if(WrdFnc==ACKACK)
+        {
             _outmessageData[Ctr++] = 0x7e;
-            _outmessageData[Ctr++] = _address;  //  slave address
+            _outmessageData[Ctr++] = Address;  //  slave address
             _outmessageData[Ctr++] = Frame;     //  control
             Ctr++;          // # of bytes to follow minus two filled in at bottom of section
             _outmessageData[Ctr++] = 0x02;      // SRC/DES
@@ -475,7 +545,7 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int cc
             _outmessageData[Ctr++] = 0x00;      //    "   "
 
             //Thain: Generate ACK here: For now they will both be the same
-            unsigned char ack = makeAck(_address);
+            unsigned char ack = makeAck(Address);
             //Compute even parity add 1 if needed
             
 
@@ -487,124 +557,123 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int cc
             _outmessageData[Ctr++] = HIBYTE (CRC);
             _outmessageData[Ctr++] = LOBYTE (CRC);
         }
-        else if(_commandType==DTRAN)
+        else if(_commandType==DTRAN)//why is our else if testing a new variable?
         {
-                _outmessageData[Ctr++] = 0x7e;
-                _outmessageData[Ctr++] = _address;   //  slave address
-                _outmessageData[Ctr++] = Frame;     //  control
-                Ctr++;          // # of bytes to follow minus two filled in at bottom of section
-                _outmessageData[Ctr++] = 0x02;      // SRC/DES
-                _outmessageData[Ctr++] = 0xa6;      // Echo of command received
-                _outmessageData[Ctr++] = 0x00;      // system status items
-                _outmessageData[Ctr++] = 0x00;      //    "   "
-                _outmessageData[Ctr++] = 0x00;      //    "   "
-                _outmessageData[Ctr++] = 0x00;      //    "   "
-                _outmessageData[Ctr++] = 0x00;      // device status items
-                _outmessageData[Ctr++] = 0x00;      //    "   "
-                _outmessageData[Ctr++] = 0x20-_messageQueue.size(); // "  "
-                _outmessageData[Ctr++] = _qmessagesReady;     // NCSETS
-                _outmessageData[Ctr++] = 0x00;                       // NCOCTS
-                _outmessageData[Ctr++] = ncocts;    // "    "
-                _outmessageData[Ctr++] = 0x00;     // process status items
-                _outmessageData[Ctr++] = 0x00;     //    "   "
-
-                if(subCCU710.getWordFunction(0) == FUNCREAD)
+            Mct410Sim* mctPtr = NULL;
+            std::map<int,Mct410Sim*>::iterator mctItr = mctMap.find(getEmetconBWord()->getAddress());
+            if(mctItr == mctMap.end())
+            {
                 {
-                    // Use a 710 to form the content in the message
-                    subCCU710.CreateMessage(FEEDEROP, FUNCREAD, _mctNumber, _address);
-                    unsigned char SendData[300];
-                    subCCU710.SendMsg(SendData);
-                    int smallCtr = 0;
-                    _outmessageData[Ctr++] = SendData[smallCtr++];
-                    _outmessageData[Ctr++] = SendData[smallCtr++];
-                    _outmessageData[Ctr++] = SendData[smallCtr++];
-                    _outmessageData[Ctr++] = SendData[smallCtr++];
-                    _outmessageData[Ctr++] = SendData[smallCtr++];
-                    _outmessageData[Ctr++] = SendData[smallCtr++];
-                    _outmessageData[Ctr++] = SendData[smallCtr++];
-                    _outmessageData[Ctr++] = SendData[smallCtr++];
-                    _outmessageData[Ctr++] = SendData[smallCtr++];
-                    _outmessageData[Ctr++] = SendData[smallCtr++];
-                    _outmessageData[Ctr++] = SendData[smallCtr++];
-
-                    float words = subCCU710.getWordsRequested();
-                    float repeaters = subCCU710.getRepeaters();
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << "Repeaters " << repeaters << endl;
-                        dout << "Waiting " << (((repeaters +1 ) * words * 52.0)/72.0)*1000.0<<" miliseconds " << endl;
-                    }
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << " ERROR. Missing mct in Map, it should be there! \n";
                 }
-                else if(subCCU710.getWordFunction(0) == READ)
+                return;
+            }
+            mctPtr = (*mctItr).second;
+
+            _outmessageData[Ctr++] = 0x7e;
+            _outmessageData[Ctr++] = Address;   //  slave address
+            _outmessageData[Ctr++] = Frame;     //  control
+            Ctr++;          // # of bytes to follow minus two filled in at bottom of section
+            _outmessageData[Ctr++] = 0x02;      // SRC/DES
+            _outmessageData[Ctr++] = 0xa6;      // Echo of command received
+            _outmessageData[Ctr++] = 0x00;      // system status items
+            _outmessageData[Ctr++] = 0x00;      //    "   "
+            _outmessageData[Ctr++] = 0x00;      //    "   "
+            _outmessageData[Ctr++] = 0x00;      //    "   "
+            _outmessageData[Ctr++] = 0x00;      // device status items
+            _outmessageData[Ctr++] = 0x00;      //    "   "
+            _outmessageData[Ctr++] = 0x20-_messageQueue.size(); // "  "
+            _outmessageData[Ctr++] = _qmessagesReady;     // NCSETS
+            _outmessageData[Ctr++] = 0x00;                       // NCOCTS
+            _outmessageData[Ctr++] = ncocts;    // "    "
+            _outmessageData[Ctr++] = 0x00;     // process status items
+            _outmessageData[Ctr++] = 0x00;     //    "   "
+
+            if(getEmetconBWord()->getIO() == FUNC_READ || getEmetconBWord()->getIO() == READ)
+            {
+                unsigned char ack = makeAck(Address>>1);
+                _outmessageData[Ctr++] = ack;
+                _outmessageData[Ctr++] = ack;
+                _outmessageData[Ctr++] = 0x82;
+
+                EmetconWord newWord;
+                newWord.setStrategy(_strategy);
+
+                //Look into getRepeaters InsertWord does not use this value anywhere. Should it?
+                //Ctr = newWord.InsertWord(D_WORD, CtiTime(), _outmessageData, 0, _mctNumber, Ctr, getNumberOfRepeaters());
+
+                //Generate response word(s).
+                int size = 0;
+                unsigned char *ptr = mctPtr->generateEmetconWordResponse(size,getEmetconBWord()->getFunction(),CtiTime());
+                
+                for (int i = 0; i < size; i++)
                 {
-                    unsigned char SendData[300];
-                    int smallCtr = 0;
-
-                    // Use a 710 to form the content in the message
-                    switch(subCCU710.getWordsRequested())
-                    {
-                        case 1:
-                            subCCU710.CreateMessage(FEEDEROP, READREP1, _mctNumber, _address);
-                            break;
-                        case 2:
-                            subCCU710.CreateMessage(FEEDEROP, READREP2, _mctNumber, _address);
-                            break;
-                        case 3:
-                            subCCU710.CreateMessage(FEEDEROP, READREP3, _mctNumber, _address);
-                            break;
-                    }
-                    subCCU710.SendMsg(SendData);
-                    smallCtr = 0;
-                    for(int i = 0; i < subCCU710.getWordsRequested(); i++)
-                    {
-                        _outmessageData[Ctr++] = SendData[smallCtr++];
-                        _outmessageData[Ctr++] = SendData[smallCtr++];
-                        _outmessageData[Ctr++] = SendData[smallCtr++];
-                        _outmessageData[Ctr++] = SendData[smallCtr++];
-                        _outmessageData[Ctr++] = SendData[smallCtr++];
-                        _outmessageData[Ctr++] = SendData[smallCtr++];
-                        _outmessageData[Ctr++] = SendData[smallCtr++];
-                        _outmessageData[Ctr++] = SendData[smallCtr++];
-                        _outmessageData[Ctr++] = SendData[smallCtr++];
-                        _outmessageData[Ctr++] = SendData[smallCtr++];
-                        _outmessageData[Ctr++] = SendData[smallCtr++];
-                    }
-
-                    float words = subCCU710.getWordsRequested();
-                    float repeaters = subCCU710.getRepeaters();
-                }
-                else if(subCCU710.getWordFunction(0) == WRITE)
-                {
-                                        // Use a 710 to form the content in the message
-                    subCCU710.CreateMessage(FEEDEROP, FUNCREAD, _mctNumber, _address);
-                    unsigned char SendData[300];
-                    subCCU710.SendMsg(SendData);
-                    int smallCtr = 0;
-                    _outmessageData[Ctr++] = SendData[smallCtr++];
-                    _outmessageData[Ctr++] = SendData[smallCtr++];
-                    _outmessageData[Ctr++] = SendData[smallCtr++];
-                    _outmessageData[Ctr++] = SendData[smallCtr++];
-                    _outmessageData[Ctr++] = SendData[smallCtr++];
-                    _outmessageData[Ctr++] = SendData[smallCtr++];
-                    _outmessageData[Ctr++] = SendData[smallCtr++];
-                    _outmessageData[Ctr++] = SendData[smallCtr++];
-                    _outmessageData[Ctr++] = SendData[smallCtr++];
-                    _outmessageData[Ctr++] = SendData[smallCtr++];
-                    _outmessageData[Ctr++] = SendData[smallCtr++];
-
-                    float words = subCCU710.getWordsRequested();
-                    float repeaters = subCCU710.getRepeaters();
+                    _outmessageData[Ctr++] = ptr[i]; 
                 }
 
-                _outmessageData[3] = Ctr-4;      // # of bytes to follow minus two (see note above)
+                _outmessageData[Ctr++] = ack;
+            }
+            else if(getEmetconBWord()->getIO() == WRITE || getEmetconBWord()->getIO() == FUNC_WRITE)
+            {
+                int func = getEmetconBWord()->getFunction();
+            
+                if (func == 5)
+                {
+                    //Assumed 2.  This can be verified
+                    EmetconWordC cWord  (_messageData+17,7);
+                    EmetconWordC cWord2 (_messageData+24,7);
+            
+                    unsigned char ptr[5];
+                    cWord.getData(ptr);
+            
+                    int poi = 0; //first two bytes are not the Data
+                    poi = ptr[2];  poi = poi << 8;
+                    poi += ptr[3]; poi = poi << 8;
+                    poi += ptr[4]; poi = poi << 8;
+            
+                    cWord2.getData(ptr);
+                    poi += ptr[0];
+            
+            
+                    mctPtr->setPeroidOfInterest((long)poi);
+            
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << "Debug: UTC Time in seconds: " << poi << ", Time: " << CtiTime((unsigned long)poi) <<  endl;
+                }
 
-                unsigned short CRC = NCrcCalc_C ((_outmessageData + 1), Ctr-1);
-                _outmessageData[Ctr++] = HIBYTE (CRC);
-                _outmessageData[Ctr++] = LOBYTE (CRC);
+                unsigned char ack = makeAck(Address>>1);
+                _outmessageData[Ctr++] = ack;
+                _outmessageData[Ctr++] = ack;
+                _outmessageData[Ctr++] = 0x82;
+    
+                EmetconWord newWord;
+                newWord.setStrategy(_strategy);
+
+                //Ctr = newWord.InsertWord(D_WORD, CtiTime(), _outmessageData, Function, mctNumber, Ctr, (getRepeaters()));
+                int size = 0;
+                unsigned char *ptr = mctPtr->generateEmetconWordResponse(size,getEmetconBWord()->getFunction(),CtiTime());
+                
+                for (int i = 0; i < size; i++)
+                {
+                    _outmessageData[Ctr++] = ptr[i]; 
+                }
+                _outmessageData[Ctr++] = ack;
+
+                delete [] ptr;
+
+            }
+
+            _outmessageData[3] = Ctr-4;      // # of bytes to follow minus two
+
+            unsigned short CRC = NCrcCalc_C ((_outmessageData + 1), Ctr-1);
+            _outmessageData[Ctr++] = HIBYTE (CRC);
+            _outmessageData[Ctr++] = LOBYTE (CRC);
         }
         _outindexOfEnd = Ctr;
     }
-    else if(_messageType == PING) {
+    else if(_messageType == PING) //why is our else if testing a new variable?
+    {
         int Ctr = 0;
         _outmessageData[Ctr++] = 0xc3;
         _outmessageData[Ctr++] = 0xc3;
@@ -612,9 +681,10 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int cc
         _outmessageData[Ctr++] = 0x55;
         _outindexOfEnd = Ctr;
     }
-    else {
+    else
+    {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout<<"Error: Could not form a suitable reply"<<endl;
+        dout << "Error: Could not form a suitable reply" << endl;
     }
 }
 
@@ -646,7 +716,7 @@ void CCU711::DecodeCommand(unsigned char Data[]){
     }
 }
 
-
+/*
 int CCU711::DecodePreamble(int &setccuNumber)
 {
     char _bytesToFollow = 0;
@@ -704,8 +774,8 @@ int CCU711::DecodePreamble(int &setccuNumber)
     }
     return _bytesToFollow;
 }
-
-
+*/
+/* Not called.
 //  This is used to insert _words into incoming messages
 void CCU711::InsertWord(int WordType, unsigned char Data[], int counter)
 {
@@ -732,7 +802,7 @@ void CCU711::InsertWord(int WordType, unsigned char Data[], int counter)
     }
 
     EmetconWord oneWord;
-    oneWord.InsertWord(WordType, Data, WordFunction, 0, 0, (subCCU710.getRepeaters()));
+    oneWord.InsertWord(WordType, CtiTime(), Data, WordFunction, 0, 0, (subCCU710.getRepeaters()));
     oneWord.setWTF(WTF);
     _indexOfEnd += oneWord.getWordSize();
     //_words[_indexOfWords]= oneWord;    //  This line was here to count if there were multiple words: needs to be redone
@@ -743,14 +813,14 @@ void CCU711::InsertWord(int WordType, unsigned char Data[], int counter)
     if(_words[0].getWordType() == 2) {
         for(int i=0; i<InsertMore; i++) {
             EmetconWord anotherWord;
-            anotherWord.InsertWord(3, Data, WordFunction, 0, 0, (subCCU710.getRepeaters()));
+            anotherWord.InsertWord(3, CtiTime(), Data, WordFunction, 0, 0, (subCCU710.getRepeaters()));
             _indexOfEnd += anotherWord.getWordSize();
             _words[_indexOfWords]= anotherWord;
             _indexOfWords++;
         }
     }
 }
-
+*/
 
 unsigned char CCU711::getFrame(){
     unsigned char Frame = 0x00;
@@ -761,38 +831,20 @@ unsigned char CCU711::getFrame(){
 }
 
 
-int CCU711::DecodeIDLC(int & setccuNumber){
+int CCU711::DecodeIDLC(){
     int _bytesToFollow = 0;
     if((_messageData[0] & 0x7e) == 0x7e){
         //  IDLC LAYER 2 Asynchronous Link Control
-            if((_messageData[2] & 0x1f)== 0x1f){
-            //  Reset Request
-                _messageType = RESETREQ;
-                _bytesToFollow = 1;
-            }
-            else if((_messageData[2] & 0x01) == 0x00){
-            //  General Request
-                _messageType = GENREQ;
-                _bytesToFollow = (_messageData[3] + 0x02);
-            }
-            //if(!(_messageData[1] & 0x06))
-            //{
-            //    setccuNumber = 0;
-            //}
-            if((_messageData[1] & 0x02) ==0x02)
-            {
-                setccuNumber = 1;
-            }
-            else if((_messageData[1] & 0x04) == 0x04)
-            {
-                setccuNumber = 2;
-            }
-            else if((_messageData[1] & 0x06) == 0x06)
-            {
-                setccuNumber = 3;
-            }
-            else
-                setccuNumber = 0;
+        if((_messageData[2] & 0x1f)== 0x1f){
+        //  Reset Request
+            _messageType = RESETREQ;
+            _bytesToFollow = 1;
+        }
+        else if((_messageData[2] & 0x01) == 0x00){
+        //  General Request
+            _messageType = GENREQ;
+            _bytesToFollow = (_messageData[3] + 0x02);
+        }
     }
     else{  //  The message is not an IDLC message.  Probably 710 protocol instead
         return -1;
@@ -800,204 +852,284 @@ int CCU711::DecodeIDLC(int & setccuNumber){
     return _bytesToFollow;
 }
 
+void CCU711::processMsgLGRPQ()
+{    
+    int counter = 0;
+    //These are linked.  
+    int length[20];
+    int ptr[20];
+    ptr[0] = 6;//seed the array with the first command
 
-int CCU711::DecodeDefinition(){
-    int WordType = 0;
-    if(_messageData[11] == 0xaf)    {   WordType = B_WORD;   }    //  IDLC CCU711
-    else if(_messageData[3] == 0xaf){   WordType = B_WORD;   }    //CCU710
-    else
+    bool more = true;
+    while(more)
     {
-            WordType = 999;
+        length[counter] = _messageData[ptr[counter]];
+        if (length[counter] > 0)
+        {
+            counter++;
+            ptr[counter] = length[counter-1] + ptr[counter-1];
+        }
+        else
+        {
+            more = false;
+        }
+
+        if (counter >= 19)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << "Error: OMG THE world is Ending! more than 20 commands in one message. " << endl;
+            more = false;            
+        }
     }
-    return WordType;
-}
 
-
-int CCU711::DecodeWTF(int WordType, unsigned char Data[]){
-    if((Data[4] & 0x10) == 0x10) {  return 1;   }
-    else if((Data[4] & 0x20) == 0x20) {  return 2;   }
-    else if((Data[4] & 0x30) == 0x30) {  return 3;   }
-    else return 0;
-}
-
-
-int CCU711::DecodeFunction(int WordType, unsigned char Data[]){
-    char FunctionType = 0;
-    if(WordType== B_WORD)
+    for(int i = 0; i < counter; i++)
     {
-        //   check to see what function is specified
-        if((_messageData[15] & 0xc) == 0x0c)       {  FunctionType = FUNCREAD;     }     //  Function with acknowledge
-        else if((_messageData[15] & 0x04) == 0x04) {  FunctionType = READ;        }     //  Read
-        else if((_messageData[15] & 0x00) == 0x00) {  FunctionType = WRITE;       }     //  Write
-    }
-    return FunctionType;
-}
-
-
-void CCU711::CreateQueuedMsg(int DBValue)
-{
-    int Offset = _messageData[6];
-    int Length = _messageData[3];
-    int counter = Length / Offset;
-
-    for(int i = 0; i<(counter); i++)
-    {
-        //cout<<"Offset : "<<Offset<<" !"<<endl;
+        Mct410Sim* mctHolder = NULL;
         _queueMessage newMessage;
         newMessage.initializeMessage();
 
+        //VERIFY THIS STILL WORKS FOR LEGACY
         unsigned char one, two, three, four;
-        one   = _messageData[7+(i*Offset)];
-        two   = _messageData[8+(i*Offset)];
-        three = _messageData[9+(i*Offset)];
-        four  = _messageData[10+(i*Offset)];
+        one   = _messageData[ptr[i]+1];
+        two   = _messageData[ptr[i]+2];
+        three = _messageData[ptr[i]+3];
+        four  = _messageData[ptr[i]+4];
         newMessage.setQENID(one, two, three, four);
-
+        
+        newMessage.copyInOriginal(_messageData+ptr[i], length[i]);
+        //Legacy below 
         int type = 0;
         int iotype = 0;
         int function = 0;
         unsigned char address;
-        long int mctaddress;
+        int mctaddress;
         int bytesToReturn = 0;
-        decodeForQueueMessage(type, iotype, function, address, mctaddress, bytesToReturn, Offset);
+        int repeaters = 0;
+        //Determing CMND Type.
+        if ((one & 0x80) == 0)
+        {
+            //Long Format!
+            decodeLGRPQLong(type, iotype, function, address, mctaddress, bytesToReturn,repeaters, ptr[i]);
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << "Error: LGRPQ Short format not supported. Not returning any values. " << endl;
+            continue;
+        }
+
         newMessage.setWord(type);
         newMessage.setiotype(iotype);
         newMessage.setFunction(function);
         newMessage.setAddress(address);
         newMessage.setbytesToReturn(bytesToReturn);
         newMessage.setmctAddress(mctaddress);
+
+        std::map<int,Mct410Sim*>::iterator mctItr = mctMap.find((int)mctaddress);
+        if(mctItr == mctMap.end())
+        {
+            mctHolder = new Mct410Sim();
+            mctHolder->setMctAddress(mctaddress);
+            mctHolder->setNumberOfRepeaters(repeaters);
+            mctMap[mctHolder->getMctAddress()] = mctHolder;
+        }
+        else
+        {
+            mctHolder = (*mctItr).second;
+        }
+
+        CtiTime currentTime;
+
+        //Base Delay off number of repeaters
+        int delay = repeaters*3;
+
         if(_messageQueue.empty())
         {
-            CtiTime currentTime;
-            int delay = 0;
-            if(bytesToReturn<4)
-            {
-                delay = 3;
-            }
-            else if(bytesToReturn<9)
-            {
-                delay=4;
-            }
-            else
-            {
-                delay = 6;
-            }
             newMessage.setTime(currentTime, delay);
         }
         else
         {
-            int delay = 0;
-            if(bytesToReturn<4)
-            {
-                delay = 3;
-            }
-            else if(bytesToReturn<9)
-            {
-                delay=4;
-            }
-            else
-            {
-                delay = 6;
-            }
             newMessage.setTime(_messageQueue.back().getTime(), delay);   //Should be words !!!!!
         }
 
         _messageQueue.push_back(newMessage);
-        CreateQueuedResponse(DBValue);
-        Offset = _messageData[6 + Offset];
+        createLGRPQResponse(mctHolder);
     }
 }
 
 
 
-void CCU711::CreateQueuedResponse(int DBValue)
+void CCU711::createLGRPQResponse(Mct410Sim* mct)
 {
-    if(!_messageQueue.empty())
+    if (_messageQueue.back().getWord() != B_WORD)
     {
-        unsigned char Data[300];
-        int ctr=0;
-        if(_messageQueue.back().getWord()==B_WORD)
-            {
-            if(_messageQueue.back().getioType()==FUNC_READ)
-            {
-                Data[ctr++] = (0x10 + _messageQueue.back().getbytesToReturn());
-                Data[ctr++] = _messageQueue.back().getQENID(0);
-                Data[ctr++] = _messageQueue.back().getQENID(1);
-                Data[ctr++] = _messageQueue.back().getQENID(2);
-                Data[ctr++] = _messageQueue.back().getQENID(3);
-                Data[ctr++] = 0xf0; // ENSTA
-                Data[ctr++] = 0x00;
-                Data[ctr++] = 0x00;
-                Data[ctr++] = 0x00;
-                Data[ctr++] = 0x00; // ROUTE
-                Data[ctr++] = 0x01; //      THIS SHOULD ALWAYS BE 0x01 !!!!        // NFUNC
-                Data[ctr++] = 0x40; // S1
-                Data[ctr++] = 0x01; // "  "
-                Data[ctr++] = 0x03;//_messageQueue.back().getbytesToReturn(); // L1
-                Data[ctr++] = 0x00; // TS
-                Data[ctr++] = 0x00; // "  "
-                long int mctAddress = _messageQueue.back().getmctAddress();
+        _messageQueue.pop_back();
+        return;
+    }
 
-                getData(DBValue, _messageQueue.back().getFunction(), _messageQueue.back().getioType(), _messageQueue.back().getbytesToReturn());
-                for(int i = 0; i<_messageQueue.back().getbytesToReturn(); i++)
-                {
-                    Data[ctr++] = _data[i]; //Data
-                }
-            }
-            else if(_messageQueue.back().getioType()==READ)
-            {
-                Data[ctr++] = (0x10 + _messageQueue.back().getbytesToReturn());
-                Data[ctr++] = _messageQueue.back().getQENID(0);
-                Data[ctr++] = _messageQueue.back().getQENID(1);
-                Data[ctr++] = _messageQueue.back().getQENID(2);
-                Data[ctr++] = _messageQueue.back().getQENID(3);
-                Data[ctr++] = 0xf0; // ENSTA
-                Data[ctr++] = 0x00;
-                Data[ctr++] = 0x00;
-                Data[ctr++] = 0x00;
-                Data[ctr++] = 0x00; // ROUTE
-                Data[ctr++] = 0x01; //      THIS SHOULD ALWAYS BE 0x01 !!!!        // NFUNC
-                Data[ctr++] = 0x40; // S1
-                Data[ctr++] = 0x01; // "  "
-                Data[ctr++] = _messageQueue.back().getbytesToReturn(); // L1
-                Data[ctr++] = 0x00; // TS
-                Data[ctr++] = 0x00; // "  "
-                long int mctAddress = _messageQueue.back().getmctAddress();
-                getData(DBValue, _messageQueue.back().getFunction(), _messageQueue.back().getioType(), _messageQueue.back().getbytesToReturn());
-                for(int i = 0; i<_messageQueue.back().getbytesToReturn(); i++)
-                {
-                    Data[ctr++] = _data[i]; //Data
-                }
-            }
-            else if(_messageQueue.back().getioType()==XTIME)
-            {
-                Data[ctr++] = (0x10 + _messageQueue.back().getbytesToReturn());
-                Data[ctr++] = _messageQueue.back().getQENID(0);
-                Data[ctr++] = _messageQueue.back().getQENID(1);
-                Data[ctr++] = _messageQueue.back().getQENID(2);
-                Data[ctr++] = _messageQueue.back().getQENID(3);
-                Data[ctr++] = 0xf0; // ENSTA
-                Data[ctr++] = 0x00;
-                Data[ctr++] = 0x00;
-                Data[ctr++] = 0x00;
-                Data[ctr++] = 0x00; // ROUTE
-                Data[ctr++] = 0x01; //      THIS SHOULD ALWAYS BE 0x01 !!!!        // NFUNC
-                Data[ctr++] = 0x40; // S1
-                Data[ctr++] = 0x01; // "  "
-                Data[ctr++] = _messageQueue.back().getbytesToReturn(); // L1
-                Data[ctr++] = 0x00; // TS
-                Data[ctr++] = 0x00; // "  "
-                long int mctAddress = _messageQueue.back().getmctAddress();
-                getData(DBValue, _messageQueue.back().getFunction(), _messageQueue.back().getioType(), _messageQueue.back().getbytesToReturn());
-                for(int i = 0; i<_messageQueue.back().getbytesToReturn(); i++)
-                {
-                    Data[ctr++] = _data[i]; //Data
-                }
-            }
+    unsigned char Data[300];
+    int ctr=0;
 
+    if (_messageQueue.back().getioType() == FUNC_READ)
+    {
+        _queueMessage msg = _messageQueue.back();
+        _messageQueue.pop_back();
+        Data[ctr++] = (0x10 + msg.getbytesToReturn());
+        Data[ctr++] = msg.getQENID(0);
+        Data[ctr++] = msg.getQENID(1);
+        Data[ctr++] = msg.getQENID(2);
+        Data[ctr++] = msg.getQENID(3);
+        Data[ctr++] = 0xf0; // ENSTA
+        Data[ctr++] = 0x00;//7
+        Data[ctr++] = 0x00;
+        Data[ctr++] = 0x00;
+        Data[ctr++] = 0x00; // ROUTE
+        Data[ctr++] = 0x01; // NFUNC //always 1.
+        Data[ctr++] = 0x40; // S1
+        Data[ctr++] = 0x01; // "  " 13
+        Data[ctr++] = msg.getbytesToReturn();
+        //15-16 Missing since nfunc is 1
+        //17 missing cause nfunc == 1
+        //18-19 missing cause nfunc != 3
+        //20 Missing cause nfunc != 3
+        Data[ctr++] = 0x00; // TS
+        Data[ctr++] = 0x00; // "  "
+        unsigned char * ptr = NULL;
+
+        int mctAddress = msg.getmctAddress();
+        int function = msg.getFunction();
+        int ioType = msg.getioType();
+        int bytesToReturn = msg.getbytesToReturn();
+
+        if (msg.getFunction() == 144)
+        {
+            ptr = mct->getKWHData(bytesToReturn);
         }
+        else if (msg.getFunction() >= 64 && msg.getFunction() <= 79)
+        {
+
+            ptr = mct->getLongLoadProfileData(function,bytesToReturn);
+        }
+        else if (msg.getFunction() >= 80 && msg.getFunction() <= 143)
+        {
+
+            ptr = mct->getLoadProfileData(function,bytesToReturn);
+        }
+
+        if (ptr != NULL)
+        {
+            for(int i = 0; i < bytesToReturn; i++)
+            {
+                Data[ctr++] = ptr[i]; //Data
+            }
+            delete [] ptr;
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << "Error: Unsupported Function, " << function << ", Sending back zero's " << endl;
+            for(int i = 0; i < bytesToReturn; i++)
+            {
+                Data[ctr++] = 0x00; //Data
+            }
+        }
+
+        msg.setmessageLength(ctr);
+        msg.copyInto(Data, ctr);
+        _messageQueue.push_back(msg);
+
+        return;
+    }
+    else if (_messageQueue.back().getioType() == READ)
+    {        
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << " Warning: This call was thought to be unreachable." << endl;
+        }
+        Data[ctr++] = (0x10 + _messageQueue.back().getbytesToReturn());
+        Data[ctr++] = _messageQueue.back().getQENID(0);
+        Data[ctr++] = _messageQueue.back().getQENID(1);
+        Data[ctr++] = _messageQueue.back().getQENID(2);
+        Data[ctr++] = _messageQueue.back().getQENID(3);
+        Data[ctr++] = 0xf0; // ENSTA
+        Data[ctr++] = 0x00;
+        Data[ctr++] = 0x00;
+        Data[ctr++] = 0x00;
+        Data[ctr++] = 0x00; // ROUTE
+        Data[ctr++] = 0x01; //      THIS SHOULD ALWAYS BE 0x01 !!!!        // NFUNC
+        Data[ctr++] = 0x40; // S1
+        Data[ctr++] = 0x01; // "  "
+        Data[ctr++] = _messageQueue.back().getbytesToReturn(); // L1
+        Data[ctr++] = 0x00; // TS
+        Data[ctr++] = 0x00; // "  "
+        int mctAddress = _messageQueue.back().getmctAddress();
+        int bytesToReturn = _messageQueue.back().getbytesToReturn();
+        unsigned char * ptr = mct->getKWHData(bytesToReturn);
+
+        if (ptr != NULL)
+        {
+            for(int i = 0; i<bytesToReturn; i++)
+            {
+                Data[ctr++] = ptr[i]; //Data
+            }
+            delete [] ptr;
+        } else {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << "Error: Unsupported Function, " << _messageQueue.back().getFunction() 
+                 << ", No data generated. Unpredictable behavior from this point. " << endl;
+        }
+
         _messageQueue.back().setmessageLength(ctr);
         _messageQueue.back().copyInto(Data, ctr);
+        return;
+    }
+    else if (_messageQueue.back().getioType() == FUNC_WRITE)
+    {
+        int len = _messageQueue.back().getOrigLength();
+        unsigned char* buf = new unsigned char [len];
+
+        _messageQueue.back().copyOutOriginal(buf);
+        int function = buf[15];
+
+        switch (function)
+        {
+            case 5:
+                if (buf[16] != 6)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << "Error: Data Size unexpected, " << buf[16] << ", expected 6. Unpredictable behavior from this point. " << endl;
+                    return;
+                }
+                // byte 0(17) is SPID
+                if (buf[17] != 255)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << "Warning: SPID not supported. Need 0xFF. Received: " << buf[17] 
+                         << " ." << endl;
+                    return;
+                }
+                // byte 1(18) is the Channel.  Dont know what to do with this.
+
+                // Byte 2-5 is the UTC Start Time
+                {
+                    int poi = 0;
+                    poi = buf[19];  poi = poi << 8;
+                    poi += buf[20]; poi = poi << 8;
+                    poi += buf[21]; poi = poi << 8;
+                    poi += buf[22];
+                    
+                    mct->setPeroidOfInterest((long)poi);
+
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << "Debug: UTC Time in seconds: " << poi << ", Time: " << CtiTime((unsigned long)poi) <<  endl;
+                }
+                break;
+            default:
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << "Error: Unsupported Function in Write Command, " << function << "." << endl;
+                break;
+        }
+        return;
     }
 }
 
@@ -1016,7 +1148,7 @@ void CCU711::CreateResponse(int command)
     unsigned char Frame = getFrame();
     unsigned char Address = _messageData[1];
     _outmessageData[Ctr++] = 0x7e;
-    _outmessageData[Ctr++] = _address;   //  slave address
+    _outmessageData[Ctr++] = Address;   //  slave address
     _outmessageData[Ctr++] = Frame;     //  control
     Ctr++;          // # of bytes to follow minus two filled in at bottom of section
     _outmessageData[Ctr++] = 0x02;      // SRC/DES
@@ -1036,8 +1168,8 @@ void CCU711::CreateResponse(int command)
 
     if((command!=WSETS) && (command!=XTIME))
     {
-        _outmessageData[Ctr++] = 0x42;
-        _outmessageData[Ctr++] = 0x42;
+        _outmessageData[Ctr++] = makeAck(Address);
+        _outmessageData[Ctr++] = makeAck(Address);
     }
     _outmessageData[3] = Ctr-4;      // # of bytes to follow minus two (see note above)
 
@@ -1068,7 +1200,7 @@ void CCU711::LoadQueuedMsg()
         if(_qmessagesReady==0)
         {
             _outmessageData[ctr++] = 0x7e;
-            _outmessageData[ctr++] = _address; //  Stored in 711 on startup
+            _outmessageData[ctr++] = _messageData[1]; //  Stored in 711 on startup
             _outmessageData[ctr++] = getFrame(1);
             ctr++;                 //length set below
             _outmessageData[ctr++] = 0x00;
@@ -1089,7 +1221,7 @@ void CCU711::LoadQueuedMsg()
         else
         {
             _outmessageData[ctr++] = 0x7e;
-            _outmessageData[ctr++] = _address; //  Stored in 711 on startup
+            _outmessageData[ctr++] = _messageData[1]; //  Stored in 711 on startup
             _outmessageData[ctr++] = getFrame(1);
             ctr++;                 //length set below
             _outmessageData[ctr++] = 0x00;
@@ -1110,7 +1242,8 @@ void CCU711::LoadQueuedMsg()
             {
                 unsigned char Data[300];
                 _messageQueue.front().copyOut(Data);
-                for(int i=0; i<_messageQueue.front().getmessageLength(); i++)
+				int x = _messageQueue.front().getmessageLength();
+                for(int i=0; i<x; i++)
                 {
                     _outmessageData[ctr++]=Data[i];
                 }
@@ -1146,7 +1279,7 @@ void CCU711::LoadQueuedMsg()
         unsigned char preData[300];
 
         _outmessageData[ctr++] = 0x7e;
-        _outmessageData[ctr++] = _address; //  Stored in 711 on startup
+        _outmessageData[ctr++] = _messageData[1]; //  Stored in 711 on startup
         _outmessageData[ctr++] = getFrame(1);
         ctr++;                 //length set below
         _outmessageData[ctr++] = 0x00;
@@ -1184,9 +1317,9 @@ unsigned char CCU711::getRLEN()
      return RLEN14;
 }
 
-void CCU711::decodeForQueueMessage(int & type, int & iotype, int & function, unsigned char & address, long int & mctaddress, int  & bytesToReturn, int offset)
+void CCU711::decodeLGRPQLong(int &type, int &iotype, int &function, unsigned char &address, int &mctaddress, int &bytesToReturn, int &repeaters, int offset)
 {
-    switch(_messageData[19] & 0xc0)
+    switch(_messageData[offset+13] & 0xc0)
     {
         case 0x40:
             type = A_WORD;
@@ -1199,7 +1332,7 @@ void CCU711::decodeForQueueMessage(int & type, int & iotype, int & function, uns
             break;
     }
 
-    switch(_messageData[19] & 0x18)
+    switch(_messageData[offset+13] & 0x18)
     {
         case 0x00:
             iotype = WRITE;
@@ -1215,18 +1348,18 @@ void CCU711::decodeForQueueMessage(int & type, int & iotype, int & function, uns
             break;
     }
 
-    //switch(_messageData[21] & 0x18)
-    //{   INSERT CODE HERE TO DETERMINE FUNCTION
-    //}
-
-    bytesToReturn = _messageData[offset+5];
+    bytesToReturn = _messageData[offset+16];
 
     address = _messageData[1];
-    mctaddress = _messageData[12] << 16 |
-                 _messageData[13] <<  8 |
-                 _messageData[14];
-}
+    mctaddress = _messageData[offset+6] << 16 |
+                 _messageData[offset+7] <<  8 |
+                 _messageData[offset+8];
 
+    repeaters = _messageData[offset+11];
+
+    //function
+    function = _messageData[offset+15];
+}
 
 unsigned char CCU711::getFrame(int frameCount)
 {
@@ -1235,7 +1368,7 @@ unsigned char CCU711::getFrame(int frameCount)
     unsigned char sss = 0x00;
     sss = _messageData[2];
     sss = (sss >> 4) & 0x0e;
-    //cout <<"sss = "<<string(CtiNumStr(sss).hex().zpad(2))<<endl;
+
     rrr = 0x20;
     frame = frame | rrr;
     frame = frame | sss;
@@ -1257,15 +1390,6 @@ void CCU711::getNeededAddresses(int addressArray[])
         }
     }
 
-}
-
-void CCU711::getData(long int DBValue, int function, int ioType, int bytesToReturn)
-{
-    DBValue = rand();
-    for(int i = 0; i< bytesToReturn; i++)
-    {
-        _data[i] = (DBValue+i) * i;
-    }
 }
 
 /***************************************************************************************
@@ -1292,14 +1416,24 @@ void CCU711::_queueMessage::initializeMessage()
 
 int CCU711::_queueMessage::getmessageLength()           {   return _messageLength;  }
 void CCU711::_queueMessage::setmessageLength(int bytes) {   _messageLength = bytes; }
-
+void CCU711::_queueMessage::setOrigLength(int bytes) {   origLength = bytes; }
+int CCU711::_queueMessage::getOrigLength() {   return origLength; }
 
 void CCU711::_queueMessage::copyInto(unsigned char Data[], int bytes)
 {
     setmessageLength(bytes);
-    for(int i = 0; i<300; i++)
+    for(int i = 0; i < 300; i++)
     {
         _data[i]=Data[i];
+    }
+}
+
+void CCU711::_queueMessage::copyInOriginal(unsigned char buf[], int bytes)
+{
+    setOrigLength(bytes);
+    for(int i = 0; i < bytes; i++)
+    {
+        origData[i]=buf[i];
     }
 }
 
@@ -1311,6 +1445,14 @@ void CCU711::_queueMessage::copyOut(unsigned char Data[])
     }
 }
 
+void CCU711::_queueMessage::copyOutOriginal(unsigned char buf[])
+{
+    int x = getOrigLength();
+    for(int i = 0; i < x; i++)
+    {
+        buf[i]=origData[i];
+    }
+}
 
 void CCU711::_queueMessage::setQENID(unsigned char one,unsigned char two, unsigned char three, unsigned char four)
 {
@@ -1344,8 +1486,8 @@ int CCU711::_queueMessage::getbytesToReturn()                      {   return _b
 CtiTime CCU711::_queueMessage::getTime()                           {   return _timeWhenReady;                }
 void CCU711::_queueMessage::setTime(CtiTime currentTime, int delay){   _timeWhenReady = currentTime + delay; }
 int CCU711::_queueMessage::getFunction()                           {   return _function;                     }
-void CCU711::_queueMessage::setmctAddress(long int address)        {   _mctAddress = address;                }
-long int CCU711::_queueMessage::getmctAddress()                    {   return _mctAddress;                   }
+void CCU711::_queueMessage::setmctAddress(int address)             {   _mctAddress = address;                }
+int CCU711::_queueMessage::getmctAddress()                         {   return _mctAddress;                   }
 
 void CCU711::setStrategy(int strategy)
 {
@@ -1355,4 +1497,39 @@ void CCU711::setStrategy(int strategy)
 int CCU711::getStrategy()
 {
     return _strategy;
+}
+
+EmetconWordB* CCU711::getEmetconBWord()
+{
+    return (EmetconWordB*)magicWord;
+}
+
+void CCU711::setEmetconBWord(EmetconWordBase *word)
+{
+    if(magicWord != NULL){
+        delete magicWord;
+    }
+    magicWord = word;
+}
+
+int CCU711::getNumberOfRepeaters()
+{
+    return _messageData[8] & 0x07;
+}
+
+void CCU711::processMsgDTRAN()
+{
+    Mct410Sim* mctPtr = NULL;
+
+    setEmetconBWord(EmetconWordFactory().getEmetconWord(_messageData+10,7));
+    _mctNumber = getEmetconBWord()->getAddress();
+
+    std::map<int,Mct410Sim*>::iterator mctItr = mctMap.find(_mctNumber);
+    if(mctItr == mctMap.end())
+    {
+        mctPtr = new Mct410Sim();
+        mctPtr->setMctAddress(_mctNumber);
+        //set repeaters here if we can get the info.
+        mctMap[mctPtr->getMctAddress()] = mctPtr;
+    }
 }

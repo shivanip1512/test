@@ -16,6 +16,8 @@
 #ifndef  __MCTSTRUCT_H__
 #define  __MCTSTRUCT_H__
 
+#include <rw/db/datetime.h>
+
 //struct to be sent to CCU711 containing: mct address, timestamp, and kwhvalue
 struct mctStruct
 {

@@ -22,7 +22,8 @@
 #include "stdlib.h"
 #include "time.h"
 #include "numstr.h"
-
+#include "SharedFunctions.h"
+#include "CtiTime.h"
 #include <iostream>
 
 using namespace std;
@@ -43,28 +44,38 @@ EmetconWord::EmetconWord()
 }
 
 // build a new word
-int EmetconWord::InsertWord(int Type, unsigned char * pMessageData, int WordFunc, int mctNumber, int Ctr, int Repeaters)
+int EmetconWord::InsertWord(int Type, CtiTime time, unsigned char* pMessageData, int WordFunc, int mctNumber, int Ctr, int Repeaters)
 {
-    //printf("\n REPEATERS VAR: %d \n", Repeaters);
     _wordType = Type;
     _wordFunction = WordFunc;
 
-    //  Temporary code to randomly send back e words instead of d words
-    /*if(_wordType == D_WORD) {
-        if(rand() % 2){
-            _wordType = E_WORD;
-        }
-    }*/
     if( _wordType == D_WORD )
     {
         _wordSize = 7;
 
+        //pMessageData[Ctr++]
         pMessageData[Ctr++] = ((mctNumber >> 12) & 0x01) | (Repeaters << 1) | 0xd0;   //beginning of d word
         pMessageData[Ctr++] = (mctNumber >> 4) & 0xff;
-        pMessageData[Ctr++] = (mctNumber << 4) & 0xf0;   //data begins in second half of this byte
-        pMessageData[Ctr++] = 0x0f;   // data
-        pMessageData[Ctr++] = rand();   // data
-        pMessageData[Ctr++] = rand() & 0xf0;   // data ends first half of this byte
+        //pMessageData[Ctr] = (mctNumber << 4) & 0xf0;   //data begins in second half of this byte
+
+
+        //Function 0x90
+        /* Data Portion */
+        /* For getValue */
+        unsigned int value = mctGetValue(mctNumber,time);
+        unsigned char * ptr = (unsigned char*)&value;
+        //3 bytes
+        //Missing 1 byte......
+        
+        // First part of byte [2]
+        pMessageData[Ctr++] = ((mctNumber << 4) & 0xf0) | (0x0f & (ptr[2] >> 4));   // data
+        pMessageData[Ctr++] = ((ptr[2] << 4) & 0xf0) | ((ptr[1] >> 4) & 0x0f);// Data
+        pMessageData[Ctr++] = ((ptr[1] << 4) & 0xf0) | ((ptr[0] >> 4) & 0x0f);// Data
+        // data ends first half of this byte
+        pMessageData[Ctr++] = (ptr[0] << 4) & 0xf0;   
+        
+        /* End getValueKwh */
+        
         pMessageData[Ctr++] = 0x00;
 
         unsigned char BCH = BCHCalc_C (pMessageData+Ctr-7, 46);
@@ -76,7 +87,7 @@ int EmetconWord::InsertWord(int Type, unsigned char * pMessageData, int WordFunc
         pMessageData[Ctr-1] = BCH << 2;
 
         return Ctr;
-    }
+    } // Other Dword?
     else if( _wordType == X_WORD )
     {
         _wordSize = 7;
@@ -95,7 +106,7 @@ int EmetconWord::InsertWord(int Type, unsigned char * pMessageData, int WordFunc
 
         return Ctr;
     }
-    else if(_wordType == 3) {
+    else if(_wordType == 3) { // c word
         _wordSize = 7;
         // calculate bch code
         unsigned short BCH;
@@ -117,7 +128,7 @@ int EmetconWord::InsertWord(int Type, unsigned char * pMessageData, int WordFunc
         cWord[6] = BCH << 2;
         return Ctr;
     }
-    else if(_wordType == 2) {
+    else if(_wordType == 2) { // b word
         _wordSize = 7;
         // calculate bch code
         unsigned short BCH;
@@ -136,7 +147,7 @@ int EmetconWord::InsertWord(int Type, unsigned char * pMessageData, int WordFunc
         cWord[6] = BCH << 2;
         return Ctr;
     }
-    else if(_wordType == 5) {
+    else if(_wordType == 5) { //e word
         _wordSize = 7;
         // calculate bch code
         unsigned short BCH;
@@ -241,11 +252,13 @@ unsigned short EmetconWord::BCHCalc(unsigned char* pStr, unsigned long bits)
    return(axreg);
 }
 
-int EmetconWord::getWordType()      {   return _wordType;       }
+int  EmetconWord::getWordType()         {return _wordType; }
+void EmetconWord::setWordType(int type) {_wordType = type; }
 
 int EmetconWord::getWTF()           {   return _wtf;            }
 
 int EmetconWord::getWordFunction()  {   return _wordFunction;   }
+void EmetconWord::setWordFunction(int func)  { _wordFunction = func;   }
 
 int EmetconWord::getWordSize()      {   return _wordSize;       }
 
@@ -264,20 +277,12 @@ void EmetconWord::ReadWord(){
         Data[2] = ((_wordData[ 9] & 0x0f) << 4) |
                   ((_wordData[10] & 0xf0) >> 4);
 
- //     std::cout <<"Received 3 bytes of data after a b word"<<std::endl;
-    //  std::cout <<"Byte 1: "<< string(CtiNumStr(Data[0]).xhex())<<std::endl;
-//      std::cout <<"Byte 2: "<< string(CtiNumStr(Data[1]).xhex())<<std::endl;
-    //  std::cout <<"Byte 3: "<< string(CtiNumStr(Data[2]).xhex())<<std::endl;
     }
     else if(_wordType == 'd') {
         unsigned char Data[3];
         Data[0] = ((_wordData[2] & 0x7) << 5) | ((_wordData[3] & 0xf8) >> 3);
         Data[1] = ((_wordData[3] & 0x7) << 5) | ((_wordData[4] & 0xf8) >> 3);
         Data[2] = ((_wordData[4] & 0x7) << 5) | ((_wordData[5] & 0xf8) >> 3);
-    //  std::cout <<"Sent 3 bytes of data in a d word"<<std::endl;
-    //  std::cout <<"Byte 1: "<< string(CtiNumStr(Data[0]).xhex())<<std::endl;
-    //  std::cout <<"Byte 2: "<< string(CtiNumStr(Data[1]).xhex())<<std::endl;
-    //  std::cout <<"Byte 3: "<< string(CtiNumStr(Data[2]).xhex())<<std::endl;
     }
 }
 

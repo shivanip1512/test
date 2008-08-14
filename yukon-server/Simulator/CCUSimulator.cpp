@@ -34,6 +34,9 @@
 #include "CCU710Manager.h"
 #include "logger.h"
 
+#include "dllbase.h"
+
+#include "math.h"
 
 bool globalCtrlCFlag = false;
 
@@ -96,7 +99,7 @@ int main(int argc, char *argv[])
 
     dout.start();     // fire up the logger thread
     //dout.setOwnerInfo(CompileInfo);
-    dout.setOutputPath("c:\\yukon\\server\\log");
+    dout.setOutputPath(gLogDirectory);
     dout.setOutputFile("Simulator");
     dout.setToStdOut(true);
     dout.setWriteInterval(0);
@@ -152,136 +155,126 @@ int main(int argc, char *argv[])
         dout << "Main function closing..." << endl;
         exit(0);
     }
+
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << "Returning from main function..." << endl;
     }
 
+    Sleep(1000);
     return 0;
 }
 
 void CCUThread(const int portNumber, const int strategy)
 {
+    try
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Port: " << portNumber << endl;
-    }
-
-    //InitYukonBaseGlobals();                            // Load up the config file.
-
-    // Set default database connection params
-    //setDatabaseParams(0, "msq15d.dll", "mn1db02\\server2005", "erooney", "erooney");   // *** THIS NEEDS TO BE CHANGED FOR ALL USERS !!!!!!!!
-
-    WSADATA wsaData;
-
-    std::map <int, CCU711 *> ccuList;
-
-    WSAStartup(MAKEWORD (1,1), &wsaData);
-
-    CTINEXUS * listenSocket;
-    listenSocket = new CTINEXUS();
-    listenSocket->CTINexusCreate(portNumber);   //12345 or 11234 for example
-
-    CTINEXUS * newSocket;
-    newSocket = new CTINEXUS();
-
-    while( !(newSocket->CTINexusValid()) )
-    {
-        if( globalCtrlCFlag )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Listening thread closing..." << endl;
-            exit(0);
+            dout << "Port: " << portNumber << endl;
         }
-
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() <<" Listening on " << portNumber << endl;
-        }
-
-        listenSocket->CTINexusConnect(newSocket, NULL, 10000, CTINEXUS_FLAG_READEXACTLY);
-        Sleep(1000);
-    }
-
-    // Grab address to determine type.
-    // Create the CCU Manager.
-    // From now on we can all the processRequest() and it will find the right CCU type.
-
-    unsigned char type = 0x00;
-    unsigned char tsbuf[2];
-    tsbuf[0] = 0x00;
-    tsbuf[1] = 0x00;
-    unsigned long br=0;
-    unsigned long addr = 0x00;
-
-    SimulatedCCU* ccu; 
-    //  Peek at first bytes to determine which CCU this is supposed to be.
-    do {
-        Sleep(500);
-        newSocket->CTINexusPeek(tsbuf,2, &br);
-    } while (br != 2 && !globalCtrlCFlag);
-
-    addr = tsbuf[1];
-    type = tsbuf[0];
-    if (tsbuf[0] == 0x7e)
-    {
-        ccu = new CCU711Manager(newSocket);
-    }
-    else if (tsbuf[0] != 0x00)
-    {
-        ccu = new CCU710Manager(newSocket);
-    }
-
-    ccu->setStrategy(strategy);
     
-    while( !globalCtrlCFlag )
-    {
-        //Add request validator. instead of this condition
-        if (ccu->validateRequest(type)) {
-            ccu->processRequest(addr);
-        }// else is now unhandled. we are set up for a ccu type.
-        CTISleep(250);
-
+        //InitYukonBaseGlobals();                            // Load up the config file.
+    
+        // Set default database connection params
+        //setDatabaseParams(0, "msq15d.dll", "mn1db02\\server2005", "erooney", "erooney");   // *** THIS NEEDS TO BE CHANGED FOR ALL USERS !!!!!!!!
+    
+        WSADATA wsaData;
+    
+        std::map <int, CCU711 *> ccuList;
+    
+        WSAStartup(MAKEWORD (1,1), &wsaData);
+    
+        CTINEXUS * listenSocket;
+        listenSocket = new CTINEXUS();
+        listenSocket->CTINexusCreate(portNumber);   //12345 or 11234 for example
+    
+        CTINEXUS * newSocket;
+        newSocket = new CTINEXUS();
+    
+        while( !(newSocket->CTINexusValid()) )
+        {
+            if( globalCtrlCFlag )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << "Listening thread closing..." << endl;
+                exit(0);
+            }
+    
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() <<" Listening on " << portNumber << endl;
+            }
+    
+            listenSocket->CTINexusConnect(newSocket, NULL, 10000, CTINEXUS_FLAG_READEXACTLY);
+            Sleep(1000);
+        }
+    
+        // Grab address to determine type.
+        // Create the CCU Manager.
+        // From now on we can all the processRequest() and it will find the right CCU type.
+    
+        unsigned char type = 0x00;
+        unsigned char tsbuf[2];
         tsbuf[0] = 0x00;
         tsbuf[1] = 0x00;
-        addr = 0x00;
-
+        unsigned long br=0;
+        unsigned long addr = 0x00;
+    
+        SimulatedCCU* ccu; 
+        //  Peek at first bytes to determine which CCU this is supposed to be.
         do {
             Sleep(500);
-            br = 0;
             newSocket->CTINexusPeek(tsbuf,2, &br);
         } while (br != 2 && !globalCtrlCFlag);
-
+    
         addr = tsbuf[1];
         type = tsbuf[0];
+        if (tsbuf[0] == 0x7e)
+        {
+            ccu = new CCU711Manager(newSocket);
+        }
+        else if (tsbuf[0] != 0x00)
+        {
+            ccu = new CCU710Manager(newSocket);
+        }
+    
+        ccu->setStrategy(strategy);
+        
+        while( !globalCtrlCFlag )
+        {
+            //Add request validator. instead of this condition
+            if (ccu->validateRequest(type)) {
+                ccu->processRequest(addr);
+            }// else is now unhandled. we are set up for a ccu type.
+            CTISleep(250);
+    
+            tsbuf[0] = 0x00;
+            tsbuf[1] = 0x00;
+            addr = 0x00;
+    
+            do {
+                Sleep(500);
+                br = 0;
+                newSocket->CTINexusPeek(tsbuf,2, &br);
+            } while (br != 2 && !globalCtrlCFlag);
+    
+            addr = tsbuf[1];
+            type = tsbuf[0];
+        }
+    
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << "Active thread closing..." << endl;
+        }
+    
+        listenSocket->CTINexusClose();
+        newSocket->CTINexusClose();
+        return;
     }
-
+    catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Active thread closing..." << endl;
+        dout << "FATAL ERROR: Simulator for port " << portNumber << " died." << endl;
     }
-
-    listenSocket->CTINexusClose();
-    newSocket->CTINexusClose();
-    return;
 }
-
-int uchar_parity( unsigned char x ) {
-  x = x ^ (x >> 4);
-  x = x ^ (x >> 2);
-  x = x ^ (x >> 1);
-
-  return x & 1;
-} 
-
-unsigned char makeAck(int ccuAddress)
-{
-    unsigned char ack = 0x40;
-    unsigned char adr = 0x03 & ccuAddress;
-    ack = adr | ack;
-    if (uchar_parity(ack)) {
-        ack = 0x80 | ack;
-    }
-    return ack;
-}
-

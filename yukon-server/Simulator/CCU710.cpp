@@ -183,11 +183,12 @@ int CCU710::ReceiveMsg(unsigned char Data[], int &setccuNumber)
     //determine the type of message
     //CreateMessage
     int MsgType = INPUT;
-     int WrdFnc = DEFAULT;
-     int mctNumber = 0;
-     int Address = 0;
+    int WrdFnc = DEFAULT;
+    int mctNumber = 0;
+    int Address = 0;
 
     _messageType = MsgType;
+    //We can never get to the else if's since we set _messageType to INPUT at the top
     if(_messageType == INPUT) {
         _messageData[0] = Data[0];
         _messageData[1] = Data[1];
@@ -213,21 +214,11 @@ int CCU710::ReceiveMsg(unsigned char Data[], int &setccuNumber)
             EmetconWord newWord;
             newWord.setStrategy(_strategy);
             int Function = 0;
-            Ctr = newWord.InsertWord(D_WORD,  _messageData, Function, mctNumber, Ctr, (getRepeaters()));
+            Ctr = newWord.InsertWord(D_WORD, CtiTime(), _messageData, Function, mctNumber, Ctr, (getRepeaters()));
             _words[0]=newWord;
             _messageData[Ctr++] = 0xc3;
-
-
-            //  Output for debugging only
-            /*for(int i=0; i<Ctr; i++) {
-                std::cout<<"_messageData "<<string(CtiNumStr(_messageData[i]).hex().zpad(2))<<std::endl;
-            }*/
         }
         else if(WrdFnc==FUNCWRITE) {
-            //_messageData[Ctr++] = Address;   //  slave address
-            //Ctr++;        // btf -2 filled in @ bottom
-
-            // ///////////////////////////////////////////////////////////////////////////
             // /////////////////////////////////////////// ////////////////////////////
             // ///  MAKE THE ADDRESS IN PREAMBLE GENERAL FOR ALL CUU ADDfRESSES !!!
             _messageData[Ctr++] = 0xc3;
@@ -237,20 +228,15 @@ int CCU710::ReceiveMsg(unsigned char Data[], int &setccuNumber)
             EmetconWord newWord;
             newWord.setStrategy(_strategy);
             int Function = 0;
-            Ctr = newWord.InsertWord(D_WORD,  _messageData, Function, mctNumber, Ctr, (getRepeaters()));
+            Ctr = newWord.InsertWord(D_WORD, CtiTime(), _messageData, Function, mctNumber, Ctr, (getRepeaters()));
             _words[0]=newWord;
             _messageData[Ctr++] = 0xc3;
 
-
-            //  Output for debugging only
-            /*for(int i=0; i<Ctr; i++) {
-                std::cout<<"_messageData "<<string(CtiNumStr(_messageData[i]).hex().zpad(2))<<std::endl;
-            }*/
         }
 
         _indexOfEnd = Ctr;
     }
-    else if(_bytesToFollow == 0);  //_messageType == PING
+    else if(_bytesToFollow == 0)  //_messageType == PING
     {
             int Ctr = 0;
             _outmessageData[Ctr++] = 0xc3;
@@ -292,7 +278,7 @@ int CCU710::ReceiveMore(unsigned char Data[], int &setmctNumber, int counter)
 
     EmetconWord oneWord;
     oneWord.setStrategy(_strategy);
-    oneWord.InsertWord(WordType, Data, WordFunction, 0, 0, (getRepeaters()));
+    oneWord.InsertWord(WordType, CtiTime(), Data, WordFunction, 0, 0, (getRepeaters()));
     oneWord.setWTF(WTF);
     _indexOfEnd += oneWord.getWordSize();
     _words[0]= oneWord;
@@ -303,7 +289,7 @@ int CCU710::ReceiveMore(unsigned char Data[], int &setmctNumber, int counter)
         for(int i=0; i<InsertMore; i++) {
             EmetconWord anotherWord;
             anotherWord.setStrategy(_strategy);
-            anotherWord.InsertWord(3, Data, WordFunction, 0, 0, (getRepeaters()));
+            anotherWord.InsertWord(3, CtiTime(), Data, WordFunction, 0, 0, (getRepeaters()));
             _indexOfEnd += anotherWord.getWordSize();
             _words[_indexOfWords]= anotherWord;
             _indexOfWords++;
@@ -588,24 +574,18 @@ void CCU710::CreateMessage(int MsgType, int WrdFnc, int mctNumber, int ccuAddres
             newWord.setStrategy(_strategy);
             int Function = 0;
             if((getStrategy()==DEFAULT)||(_strategy==2)) {
-                Ctr = newWord.InsertWord(D_WORD,  _outmessageData, Function, mctNumber, Ctr, (getRepeaters()));
+                Ctr = newWord.InsertWord(D_WORD, CtiTime(), _outmessageData, Function, mctNumber, Ctr, (getRepeaters()));
             }
             else if(getStrategy()==BAD_D_WORD) {
-                Ctr = newWord.InsertWord(X_WORD,  _outmessageData, Function, mctNumber, Ctr, (getRepeaters()));
+                Ctr = newWord.InsertWord(X_WORD, CtiTime(), _outmessageData, Function, mctNumber, Ctr, (getRepeaters()));
             }
             else
             {
-                Ctr = newWord.InsertWord(D_WORD,  _outmessageData, Function, mctNumber, Ctr, (getRepeaters()));
+                Ctr = newWord.InsertWord(D_WORD, CtiTime(), _outmessageData, Function, mctNumber, Ctr, (getRepeaters()));
             }
 
             _words[0]=newWord;
             _outmessageData[Ctr++] = ack;
-
-
-            //  Output for debugging only
-            /*for(int i=0; i<Ctr; i++) {
-                std::cout<<"_messageData "<<string(CtiNumStr(_messageData[i]).hex().zpad(2))<<std::endl;
-            }*/
         }
         else if(WrdFnc==FUNCWRITE) {
             //_messageData[Ctr++] = Address;   //  slave address
@@ -619,26 +599,8 @@ void CCU710::CreateMessage(int MsgType, int WrdFnc, int mctNumber, int ccuAddres
             EmetconWord newWord;
             newWord.setStrategy(_strategy);
             int Function = 0;
-            Ctr = newWord.InsertWord(D_WORD,  _outmessageData, Function, mctNumber, Ctr, (getRepeaters()));
-            _words[0]=newWord;
-            _outmessageData[Ctr++] = ack;
-
-
-            //  Output for debugging only
-            /*for(int i=0; i<Ctr; i++) {
-                std::cout<<"_messageData "<<string(CtiNumStr(_messageData[i]).hex().zpad(2))<<std::endl;
-            }*/
-        }
-        else if(WrdFnc==READREP1) {
-            unsigned char ack = makeAck(ccuAddress);
-            _outmessageData[Ctr++] = ack;
-            _outmessageData[Ctr++] = ack;
-            _outmessageData[Ctr++] = 0x82;
-
-            EmetconWord newWord;
-            newWord.setStrategy(_strategy);
-            int Function = 0;
-            Ctr = newWord.InsertWord(D_WORD,  _outmessageData, Function, mctNumber, Ctr, (getRepeaters()));
+            //WARNING I DONT THINK CTR = is good.
+            Ctr = newWord.InsertWord(D_WORD, CtiTime(), _outmessageData, Function, mctNumber, Ctr, (getRepeaters()));
             _words[0]=newWord;
             _outmessageData[Ctr++] = ack;
         }
@@ -651,20 +613,7 @@ void CCU710::CreateMessage(int MsgType, int WrdFnc, int mctNumber, int ccuAddres
             EmetconWord newWord;
             newWord.setStrategy(_strategy);
             int Function = 0;
-            Ctr = newWord.InsertWord(D_WORD,  _outmessageData, Function, mctNumber, Ctr, (getRepeaters()));
-            _words[0]=newWord;
-            _outmessageData[Ctr++] = ack;
-        }
-        else if(WrdFnc==READREP1) {
-            unsigned char ack = makeAck(ccuAddress);
-            _outmessageData[Ctr++] = ack;
-            _outmessageData[Ctr++] = ack;
-            _outmessageData[Ctr++] = 0x82;
-
-            EmetconWord newWord;
-            newWord.setStrategy(_strategy);
-            int Function = 0;
-            Ctr = newWord.InsertWord(D_WORD,  _outmessageData, Function, mctNumber, Ctr, (getRepeaters()));
+            Ctr = newWord.InsertWord(D_WORD, CtiTime(), _outmessageData, Function, mctNumber, Ctr, (getRepeaters()));
             _words[0]=newWord;
             _outmessageData[Ctr++] = ack;
         }
@@ -677,14 +626,14 @@ void CCU710::CreateMessage(int MsgType, int WrdFnc, int mctNumber, int ccuAddres
             EmetconWord newWord;
             newWord.setStrategy(_strategy);
             int Function = 0;
-            Ctr = newWord.InsertWord(D_WORD,  _outmessageData, Function, mctNumber, Ctr, (getRepeaters()));
+            Ctr = newWord.InsertWord(D_WORD, CtiTime(), _outmessageData, Function, mctNumber, Ctr, (getRepeaters()));
             _words[0]=newWord;
             _outmessageData[Ctr++] = ack;
 
             EmetconWord newWord2;
             newWord2.setStrategy(_strategy);
             Function = 0;
-            Ctr = newWord.InsertWord(D_WORD,  _outmessageData, Function, mctNumber, Ctr, (getRepeaters()));
+            Ctr = newWord.InsertWord(D_WORD, CtiTime(), _outmessageData, Function, mctNumber, Ctr, (getRepeaters()));
             _words[1]=newWord;
             _outmessageData[Ctr++] = ack;
         }
@@ -697,21 +646,21 @@ void CCU710::CreateMessage(int MsgType, int WrdFnc, int mctNumber, int ccuAddres
             EmetconWord newWord;
             newWord.setStrategy(_strategy);
             int Function = 0;
-            Ctr = newWord.InsertWord(D_WORD,  _outmessageData, Function, mctNumber, Ctr, (getRepeaters()));
+            Ctr = newWord.InsertWord(D_WORD, CtiTime(), _outmessageData, Function, mctNumber, Ctr, (getRepeaters()));
             _words[0]=newWord;
             _outmessageData[Ctr++] = ack;
 
             EmetconWord newWord2;
             newWord2.setStrategy(_strategy);
             Function = 0;
-            Ctr = newWord.InsertWord(D_WORD,  _outmessageData, Function, mctNumber, Ctr, (getRepeaters()));
+            Ctr = newWord.InsertWord(D_WORD, CtiTime(), _outmessageData, Function, mctNumber, Ctr, (getRepeaters()));
             _words[1]=newWord;
             _outmessageData[Ctr++] = ack;
 
             EmetconWord newWord3;
             newWord3.setStrategy(_strategy);
             Function = 0;
-            Ctr = newWord.InsertWord(D_WORD,  _outmessageData, Function, mctNumber, Ctr, (getRepeaters()));
+            Ctr = newWord.InsertWord(D_WORD, CtiTime(), _outmessageData, Function, mctNumber, Ctr, (getRepeaters()));
             _words[2]=newWord;
             _outmessageData[Ctr++] = ack;
         }

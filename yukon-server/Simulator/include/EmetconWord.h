@@ -16,6 +16,7 @@
 #define  __EMETCONWORD_H__
 class CTINEXUS;
 
+#include "ctitime.h"
 
 //  The EmetconWord class can be used to build/store words
 class EmetconWord
@@ -23,8 +24,10 @@ class EmetconWord
     public:
         // Default constructor
         EmetconWord();
-        // Initialize a word
-        int InsertWord(int _wordType, unsigned char * MessageData, int WordFunc, int mctNumber, int Ctr, int Repeaters);
+
+        //Adds word to the buffer.
+        int InsertWord(int _wordType, CtiTime time, unsigned char * MessageData, int WordFunc, int mctNumber, int Ctr, int Repeaters);
+
         // Constructor to copy and decode an existing word
         void DecodeWord(unsigned char ReadBuffer[], CTINEXUS *newSocket);
         // Calculate the BCH code
@@ -51,8 +54,11 @@ class EmetconWord
         void ReadWord();
         // Return the word's definition
         int getWordType();
+        void setWordType(int type);
+
         // Return the word's function
         int getWordFunction();
+        void setWordFunction(int func);
         // Return the word's size
         int  getWordSize();
         //  Returns the number of words following the first b word
@@ -66,7 +72,7 @@ class EmetconWord
         //  helper function to tell which strategy or strategies to exexute at the current time
         int activeStrategy();
     private:
-        unsigned char _wordData[20];
+        unsigned char  _wordData[20];
         int _wordType;
         int _wordFunction;
         int _wordSize;

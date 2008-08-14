@@ -18,7 +18,10 @@
 #include <iostream>
 #include "CCU710.h"
 #include "ctiTime.h"
+#include "ctiDate.h"
 #include "mctStruct.h"
+#include "EmetconWordB.h"
+#include "Mct410Sim.h"
 #include <queue>
 
 
@@ -26,56 +29,25 @@ class CCU711
 {
     public:
         void handleRequest(CTINEXUS* socket);
+        void processRequest(unsigned char ReadBuffer[], int bufferSize);
 
     public:
         //Default constructor
         CCU711(unsigned char addressFound);
         //Destructor
     
-        enum WordTypes
-        {   
-            DEFAULT    = 0,
-            INPUT      = 0,
-            RESETREQ   = 1,
-            RESETACK   = 2,
-            GENREQ     = 3,
-            GENREP     = 4,
-            A_WORD     = 31,
-            B_WORD     = 32,
-            C_WORD     = 33,
-            D_WORD     = 34,
-            E_WORD     = 35,
-            G_WORD     = 36,
-            DTRAN      = 11,
-            LGRPQ      = 12,
-            RCOLQ      = 13,
-            ACTIN      = 14,
-            WSETS      = 15,
-            XTIME      = 16,
-            FEEDEROP   = 21,
-            PING       = 22,
-            ONEACK     = 23,
-            FUNCREAD   = 41,
-            READ       = 42,
-            WRITE      = 43,
-            READREP1   = 44,
-            READREP2   = 45,
-            READREP3   = 46,
-            FUNC_WRITE = 47,
-            FUNC_READ  = 48,
-            ACKACK     = 51,
-            INCOMING   = 0,
-            OUTGOING   = 1
-        };
-    
         struct _queueMessage {
             public:
                 int getmessageLength();
                 void copyInto(unsigned char Data[], int bytes);
+                void copyInOriginal(unsigned char buffer[], int bytes);
                 void setmessageLength(int bytes);
+                void setOrigLength(int bytes);
+                int  getOrigLength();
                 void setQENID(unsigned char one,unsigned char two, unsigned char three, unsigned char four);
                 unsigned char getQENID(int index);
                 void copyOut(unsigned char Data[]);
+                void copyOutOriginal(unsigned char buf[]);
                 void initializeMessage();
                 int  getWord();
                 void setWord(int type);
@@ -90,13 +62,15 @@ class CCU711
                 void setTime(CtiTime currentTime, int delay);
                 CtiTime getTime();
                 bool isReady();
-                long int getmctAddress();
-                void setmctAddress(long int address);
+                int getmctAddress();
+                void setmctAddress(int address);
     
             private:
                 int _bytesToReturn;  // Store L1
                 int _messageLength;
+                int origLength;
                 unsigned char _data [300];
+                unsigned char origData [300];
                 CtiTime _timeWhenReady;
                 unsigned char _address;
                 //route infot (3 elements)
@@ -106,20 +80,20 @@ class CCU711
                 int _wordType;      //a,b,g words
                 int _ioType;       // i/o
                 int _function;
-                long int _mctAddress;
+                int _mctAddress;
                 unsigned char _QENID[4];
         };
     
         // Constructor to build a new Message
-        void CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int ccuNumber, int &setccuNumber, unsigned char Address = 0x00, unsigned char Frame = 0x00);
+        void CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], unsigned char Address = 0x00, unsigned char Frame = 0x00);
         //Send the message back to porter
         int SendMsg(unsigned char SendData[]);
         //Build a new message
-        void CreateMsg(int ccuNumber);
+        void CreateMsg();
         //Listen for and store an incoming message
-        int ReceiveMsg(unsigned char ReadBuffer[], int &setccuNumber);
+        int ReceiveMsg(unsigned char ReadBuffer[]);
         //Listen for and store the rest of the message
-        void ReceiveMore(unsigned char ReadBuffer[], int counter, mctStruct structArray[]);
+        void ReceiveMore(unsigned char ReadBuffer[]);
         //Print the incoming message information to the screen
         void PrintInput();
         //Output the outgoing message information to the screen
@@ -128,41 +102,41 @@ class CCU711
         void TranslateInfo(bool direction, string & printMsg, string & printCmd, string & printPre, string & printWrd, string & printFnc);
         //  Figure out what the preamble says
         void DecodeCommand(unsigned char Data[]);
+
+        /* Not called
         //  Figure out what the preamble says
         int DecodePreamble(int &setccuNumber);
         // This is used to insert words into incoming messages 
         void InsertWord(int WordType, unsigned char Data[], int counter);
+        */
+
         //  Returns the frame of message
         unsigned char getFrame();
         //  Returns the frame when in queued mode
         unsigned char getFrame(int frameCount);
         //  Figure out the IDLC protocol
-        int DecodeIDLC(int & setccuNumber);
-        //  Determine what kind of word it is
-        int DecodeDefinition();
-        //  Determine the number of words to follow
-        int DecodeWTF(int WordType, unsigned char Data[]);
-        //  Determine what function the word specifies
-        int DecodeFunction(int WordType, unsigned char Data[]);
-        //  Build a message to store in the queue
-        void CreateQueuedMsg(int DBValue);
+        int DecodeIDLC();
+
         //  Create a response for immediate use (not to put into the queue)
         void CreateResponse(int command);
         //  Copy the message from the queue into the 711 outgoing message storage
         void LoadQueuedMsg();
         //  Return the correct RLEN plus 14
         unsigned char getRLEN();
-        //  Create a response to a message that has been received and store it in the array of a queue message struct
-        void CreateQueuedResponse(int DBValue);
-        //  Decode the information contained in an incoming message 
-        void decodeForQueueMessage(int & type, int & iotype, int & function, unsigned char & address, long int & mctaddress,int & bytesToReturn, int offset);
-        //  Returns number of data bytes to be sent to poerter at an index and fills the data array
-        void getData(long int mctAddress, int function, int ioType, int bytesToReturn);
+
+        /* LGRPQ Functions */
+        void createLGRPQResponse(Mct410Sim *mct);
+        void decodeLGRPQLong(int &type, int &iotype, int &function, unsigned char &address, int &mctaddress,int &bytesToReturn, int &repeaters, int offset);
+        void processMsgLGRPQ();
+
+        void processMsgDTRAN();
+
         //  Return the mct addresses from the current message group
         void getNeededAddresses(int addressArray[]);
         void setStrategy(int strategy);
         int getStrategy();
-    
+        int determingMessageLength(unsigned char controlByte, unsigned char lenByte);
+        int getNumberOfRepeaters();
     
     private:
         //Storage for sockets
@@ -170,9 +144,8 @@ class CCU711
     
         CCU710 subCCU710;
     
-        unsigned char _address;
         unsigned char _data[300];
-    
+
         int _messageType;
         int _commandType;
         int _preamble;
@@ -193,7 +166,14 @@ class CCU711
         std::deque <_queueMessage> _messageQueue;
         int _qmessagesReady;
         int _strategy;
-        std::map <int, CCU711 *> ccuList;
+
+        EmetconWordB* getEmetconBWord();
+        void setEmetconBWord(EmetconWordBase* word); // For memory protection
+        EmetconWordBase* magicWord;//Incoming B Word  ?!? .sdflkjasdfl;kjas;lkjasg;lkwetg;lkfb
+
+        std::map<int,Mct410Sim*> mctMap;
+
+
 };
 
 #endif
