@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.62 $
-* DATE         :  $Date: 2008/06/06 20:28:01 $
+* REVISION     :  $Revision: 1.63 $
+* DATE         :  $Date: 2008/08/14 15:57:39 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -522,7 +522,7 @@ INT DNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&
                                                 OutMessage->Request.RouteID,
                                                 OutMessage->Request.MacroOffset,
                                                 OutMessage->Request.Attempt,
-                                                OutMessage->Request.TrxID,
+                                                OutMessage->Request.GrpMsgID,
                                                 OutMessage->Request.UserID,
                                                 OutMessage->Request.SOE,
                                                 CtiMultiMsg_vec( )) );
@@ -999,7 +999,7 @@ INT DNP::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &
                                          InMessage->Return.RouteID,
                                          InMessage->Return.MacroOffset,
                                          InMessage->Return.Attempt,
-                                         InMessage->Return.TrxID,
+                                         InMessage->Return.GrpMsgID,
                                          InMessage->Return.UserID);
 
         retList.push_back(retMsg);
@@ -1020,7 +1020,7 @@ INT DNP::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &
                                          InMessage->Return.RouteID,
                                          InMessage->Return.MacroOffset,
                                          InMessage->Return.Attempt,
-                                         InMessage->Return.TrxID,
+                                         InMessage->Return.GrpMsgID,
                                          InMessage->Return.UserID);
 
         retList.push_back(retMsg);

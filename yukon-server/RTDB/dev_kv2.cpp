@@ -81,7 +81,7 @@ INT CtiDeviceKV2::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
                                           pReq->RouteId(),
                                           pReq->MacroOffset(),
                                           1, //pReq->Attempt(),
-                                          pReq->TransmissionId(),
+                                          pReq->GroupMessageId(),
                                           pReq->UserMessageId());
           retMsg->setExpectMore(1);
           retList.push_back(retMsg);
@@ -343,7 +343,7 @@ INT CtiDeviceKV2::ExecuteRequest( CtiRequestMsg         *pReq,
                                                 OutMessage->Request.RouteID,
                                                 OutMessage->Request.MacroOffset,
                                                 OutMessage->Request.Attempt,
-                                                OutMessage->Request.TrxID,
+                                                OutMessage->Request.GrpMsgID,
                                                 OutMessage->Request.UserID,
                                                 OutMessage->Request.SOE,
                                                 CtiMultiMsg_vec( )) );
@@ -387,7 +387,7 @@ INT CtiDeviceKV2::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
                                             InMessage->Return.RouteID,
                                             InMessage->Return.MacroOffset,
                                             InMessage->Return.Attempt,
-                                            InMessage->Return.TrxID,
+                                            InMessage->Return.GrpMsgID,
                                             InMessage->Return.UserID);
         }
         else
@@ -399,7 +399,7 @@ INT CtiDeviceKV2::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
                                             InMessage->Return.RouteID,
                                             InMessage->Return.MacroOffset,
                                             InMessage->Return.Attempt,
-                                            InMessage->Return.TrxID,
+                                            InMessage->Return.GrpMsgID,
                                             InMessage->Return.UserID);
         }
     }
@@ -416,7 +416,7 @@ INT CtiDeviceKV2::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
                                                 InMessage->Return.RouteID,
                                                 InMessage->Return.MacroOffset,
                                                 InMessage->Return.Attempt,
-                                                InMessage->Return.TrxID,
+                                                InMessage->Return.GrpMsgID,
                                                 InMessage->Return.UserID);
             }
             else
@@ -428,7 +428,7 @@ INT CtiDeviceKV2::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
                                                 InMessage->Return.RouteID,
                                                 InMessage->Return.MacroOffset,
                                                 InMessage->Return.Attempt,
-                                                InMessage->Return.TrxID,
+                                                InMessage->Return.GrpMsgID,
                                                 InMessage->Return.UserID);
             }
 

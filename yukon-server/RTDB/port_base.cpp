@@ -7,11 +7,16 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.75 $
-* DATE         :  $Date: 2008/08/06 18:26:48 $
+* REVISION     :  $Revision: 1.76 $
+* DATE         :  $Date: 2008/08/14 15:57:40 $
 *
 * HISTORY      :
 * $Log: port_base.cpp,v $
+* Revision 1.76  2008/08/14 15:57:40  jotteson
+* YUK-6333  Change naming in request message and change cancellation to use this new named field instead of user ID
+* Cancellation now uses the new group message ID.
+* Group Message ID name added to Request, Result, Out, and In messages.
+*
 * Revision 1.75  2008/08/06 18:26:48  mfisher
 * YUK-5288 Comm channel IP address change does not take effect until Porter is restarted
 * Removed getIpAddress()/getIpPort() from CtiPortBase
@@ -1593,7 +1598,7 @@ INT CtiPort::requeueToParent(OUTMESS *&OutMessage)
             NewOutMessage = CTIDBG_new CtiOutMessage(*OutMessage);
 
             NewOutMessage->Retry = 2;
-            _parentPort->writeQueue( NewOutMessage->Request.UserID, sizeof(*NewOutMessage), (char *)NewOutMessage, NewOutMessage->Priority );
+            _parentPort->writeQueue( NewOutMessage->Request.GrpMsgID, sizeof(*NewOutMessage), (char *)NewOutMessage, NewOutMessage->Priority );
         }
 
         REQUESTDATA    ReadResult;
@@ -1608,7 +1613,7 @@ INT CtiPort::requeueToParent(OUTMESS *&OutMessage)
             // Move the OM from the pool queue to the child queue.
             if( readQueue( &ReadResult, &ReadLength, (PPVOID) &NewOutMessage, DCWW_WAIT, &ReadPriority, &QueEntries ) == NORMAL )
             {
-                _parentPort->writeQueue( NewOutMessage->Request.UserID, sizeof(*NewOutMessage), (char *) NewOutMessage, NewOutMessage->Priority );
+                _parentPort->writeQueue( NewOutMessage->Request.GrpMsgID, sizeof(*NewOutMessage), (char *) NewOutMessage, NewOutMessage->Priority );
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " Port " << getName() << " Moving OutMessage back to parent port " << _parentPort->getName() << endl;

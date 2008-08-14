@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_welco.cpp-arc  $
-* REVISION     :  $Revision: 1.39 $
-* DATE         :  $Date: 2008/06/06 20:28:01 $
+* REVISION     :  $Revision: 1.40 $
+* DATE         :  $Date: 2008/08/14 15:57:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1794,7 +1794,7 @@ INT CtiDeviceWelco::ExecuteRequest(CtiRequestMsg                  *pReq,
                                              OutMessage->Request.RouteID,
                                              OutMessage->Request.MacroOffset,
                                              OutMessage->Request.Attempt,
-                                             OutMessage->Request.TrxID,
+                                             OutMessage->Request.GrpMsgID,
                                              OutMessage->Request.UserID,
                                              OutMessage->Request.SOE,
                                              CtiMultiMsg_vec()));

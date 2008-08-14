@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.66 $
-* DATE         :  $Date: 2008/08/13 19:08:34 $
+* REVISION     :  $Revision: 1.67 $
+* DATE         :  $Date: 2008/08/14 15:57:41 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -172,7 +172,7 @@ static void applyBuildLGrpQ(const long unusedid, CtiDeviceSPtr Dev, void *usprti
                 if( ccu->hasWaitingWork()
                     && ccu->buildCommand(OutMessage, CCU721::Command_LoadQueue) )
                 {
-                    PortManager.writeQueue(OutMessage->Port, OutMessage->Request.UserID, sizeof(*OutMessage), reinterpret_cast<char *>(OutMessage), OutMessage->Priority);
+                    PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof(*OutMessage), reinterpret_cast<char *>(OutMessage), OutMessage->Priority);
                 }
                 else
                 {
@@ -442,7 +442,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
 
                     if(QueueHandle(InMessage->Port) != NULL)
                     {
-                        if(PortManager.writeQueue (TimeSyncMessage->Port, TimeSyncMessage->Request.UserID, sizeof (*TimeSyncMessage), (char *)TimeSyncMessage, TimeSyncMessage->Priority))
+                        if(PortManager.writeQueue (TimeSyncMessage->Port, TimeSyncMessage->Request.GrpMsgID, sizeof (*TimeSyncMessage), (char *)TimeSyncMessage, TimeSyncMessage->Priority))
                         {
                             _snprintf(tempstr, 99,"Error Writing to Queue for Port %2hd\n", InMessage->Port);
                             {
@@ -809,7 +809,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
             OutMessage->Retry--;
 
             /* Put it back on the queue for this port */
-            if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.UserID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
+            if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << "Error Requeing Command on device \"" << Dev->getName() << "\"" << endl;
@@ -1215,7 +1215,7 @@ static void applyKick(const long unusedid, CtiDeviceSPtr Dev, void *usprtid)
             if( ccu->hasRemoteWork()
                 && ccu->buildCommand(OutMessage, CCU721::Command_ReadQueue) )
             {
-                PortManager.writeQueue(OutMessage->Port, OutMessage->Request.UserID, sizeof(*OutMessage), reinterpret_cast<char *>(OutMessage), OutMessage->Priority);
+                PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof(*OutMessage), reinterpret_cast<char *>(OutMessage), OutMessage->Priority);
             }
             else
             {
@@ -1580,7 +1580,7 @@ BuildLGrpQ (CtiDeviceSPtr Dev)
                 }
 
                 // Replace the MyOutMessage at the rear of its priority on the CCU Queue.
-                if(WriteQueue(pInfo->QueueHandle, MyOutMessage->Request.UserID, sizeof (*MyOutMessage), (char *) MyOutMessage, MyOutMessage->Priority))
+                if(WriteQueue(pInfo->QueueHandle, MyOutMessage->Request.GrpMsgID, sizeof (*MyOutMessage), (char *) MyOutMessage, MyOutMessage->Priority))
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1725,7 +1725,7 @@ BuildLGrpQ (CtiDeviceSPtr Dev)
                     OutMessage->Priority = gConfigParms.getValueAsInt("PORTER_MINIMUM_CCUQUEUE_PRIORITY",11);
 
                 statisticsNewRequest(OutMessage->Port, OutMessage->TrxID, OutMessage->DeviceID, OutMessage->MessageFlags);
-                if(PortManager.writeQueue (OutMessage->Port, OutMessage->Request.UserID, sizeof (*OutMessage), (VOID *) OutMessage, OutMessage->Priority))
+                if(PortManager.writeQueue (OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (VOID *) OutMessage, OutMessage->Priority))
                 {
                     _snprintf(tempstr, 99,"Error Writing to Queue for Port %2hd\n", OutMessage->Port);
                     {
@@ -1854,7 +1854,7 @@ BuildActinShed (CtiDeviceSPtr Dev)
         /* we are done with the request message */
         delete (MyOutMessage);
 
-        if(PortManager.writeQueue (Dev->getPortID(), OutMessage->Request.UserID, sizeof (*OutMessage), (VOID *) OutMessage, OutMessage->Priority))
+        if(PortManager.writeQueue (Dev->getPortID(), OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (VOID *) OutMessage, OutMessage->Priority))
         {
             _snprintf(tempstr, 99,"Error Writing to Queue for Port %2hd\n", Dev->getPortID());
             {

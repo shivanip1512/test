@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_pcreturn.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2008/06/25 17:08:42 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2008/08/14 15:57:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -35,7 +35,7 @@ void CtiReturnMsg::saveGuts(RWvostream &aStream) const
     Inherited::saveGuts(aStream);
 
     aStream << DeviceId() << CommandString() << ResultString() << Status() << RouteID() << MacroOffset() <<
-       AttemptNum() << TranmissionId() << UserMessageId() << ExpectMore();
+       AttemptNum() << GroupMessageId() << UserMessageId() << ExpectMore();
 }
 
 void CtiReturnMsg::restoreGuts(RWvistream& aStream)
@@ -43,7 +43,7 @@ void CtiReturnMsg::restoreGuts(RWvistream& aStream)
     Inherited::restoreGuts(aStream);
 
     aStream >> _device_id >> _command_string >> _result_string >> _status >> _routeid >> _macro_offset
-    >> _attempt_num >> _transmission_id >> _user_message_id >> _expectMore;
+    >> _attempt_num >> _group_message_id >> _user_message_id >> _expectMore;
 }
 
 long CtiReturnMsg::DeviceId() const
@@ -123,14 +123,14 @@ CtiReturnMsg& CtiReturnMsg::setAttemptNum(int attempt_num)
     return *this;
 }
 
-long CtiReturnMsg::TranmissionId() const
+long CtiReturnMsg::GroupMessageId() const
 {
-    return _transmission_id;
+    return _group_message_id;
 }
 
-CtiReturnMsg& CtiReturnMsg::setTransmissionId(long transmission_id)
+CtiReturnMsg& CtiReturnMsg::setGroupMessageId(long group_message_id)
 {
-    _transmission_id = transmission_id;
+    _group_message_id = group_message_id;
     return *this;
 }
 
@@ -196,8 +196,8 @@ void CtiReturnMsg::dump() const
    dout << " Route ID                      " << _routeid << endl;
    dout << " Macro Offset                  " << _macro_offset << endl;
    dout << " Attempt Number                " << _attempt_num << endl;
-   dout << " Expect More                   " << _expectMore << endl;           // Another message shall be coming listen for more!    long       _transmission_id << endl;
-   dout << " Transmission ID               " << _transmission_id << endl;
+   dout << " Expect More                   " << _expectMore << endl;           // Another message shall be coming listen for more!
+   dout << " Group Message ID              " << _group_message_id << endl;
    dout << " User Message ID               " << _user_message_id << endl;
 
 }
@@ -209,7 +209,7 @@ CtiReturnMsg::CtiReturnMsg() :
     _routeid(0),
     _macro_offset(0),
     _attempt_num(0),
-    _transmission_id(0),
+    _group_message_id(0),
     _user_message_id(0)
  {};
 
@@ -220,7 +220,7 @@ CtiReturnMsg::CtiReturnMsg(long device_id,
                  int routeid,
                  int macro_offset,
                  int attempt_num,
-                 long transmission_id,
+                 long group_message_id,
                  long user_message_id,
                  int soe,
                  CtiMultiMsg_vec &data) :
@@ -232,7 +232,7 @@ CtiReturnMsg::CtiReturnMsg(long device_id,
      _routeid(routeid),
      _macro_offset(macro_offset),
      _attempt_num(attempt_num),
-     _transmission_id(transmission_id),
+     _group_message_id(group_message_id),
      _user_message_id(user_message_id),
      Inherited(data)
  {
@@ -259,7 +259,7 @@ CtiReturnMsg& CtiReturnMsg::operator=(const CtiReturnMsg& aRef)
        _routeid            = aRef.RouteID();
        _macro_offset       = aRef.MacroOffset();
        _attempt_num        = aRef.AttemptNum();
-       _transmission_id    = aRef.TranmissionId();
+       _group_message_id    = aRef.GroupMessageId();
        _user_message_id    = aRef.UserMessageId();
        _expectMore         = aRef.ExpectMore();
 

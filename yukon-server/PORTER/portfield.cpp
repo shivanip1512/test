@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.223 $
-* DATE         :  $Date: 2008/08/13 19:08:34 $
+* REVISION     :  $Revision: 1.224 $
+* DATE         :  $Date: 2008/08/14 15:57:41 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -889,7 +889,7 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
         {
             // Put it back & slow it down!
 
-            if(Port->writeQueue(OutMessage->Request.UserID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority, PortThread))
+            if(Port->writeQueue(OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority, PortThread))
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -915,7 +915,7 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
         {
             // Put it back & slow it down!
 
-            if(Port->writeQueue(OutMessage->Request.UserID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority, PortThread))
+            if(Port->writeQueue(OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority, PortThread))
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1157,7 +1157,7 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
                                 /* Write him back out to the queue */
                                 if(OutMessage->Priority) OutMessage->Priority--;
 
-                                if(Port->writeQueue(OutMessage->Request.UserID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority, PortThread))
+                                if(Port->writeQueue(OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority, PortThread))
                                 {
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -2864,7 +2864,7 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
                     ShuffleVTUMessage( Port, Device, OutMessage );
 
                     /* Put it on the queue for this port */
-                    if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.UserID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
+                    if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
                     {
                         // VioWrtTTY("Error Writing Retry into Queue\n\r", 31, 0);
                         {
@@ -2993,7 +2993,7 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
                 NewOM->MessageFlags &= ~MessageFlag_RequeueCommandOnceOnFail;
 
                 CtiPort *prt = Port.get();
-                prt->writeQueue(NewOM->Request.UserID, sizeof (*NewOM), (char *) NewOM, NewOM->Priority, PortThread);
+                prt->writeQueue(NewOM->Request.GrpMsgID, sizeof (*NewOM), (char *) NewOM, NewOM->Priority, PortThread);
                 prt->setShouldDisconnect( TRUE );  //  The REQUEUE_CMD flag means hang up and try again, so hang up
             }
         }
@@ -3275,7 +3275,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                         status = RETRY_SUBMITTED;
 
                         /* Put it on the queue for this port */
-                        if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.UserID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
+                        if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << "Error Requeing Command" << endl;
@@ -3305,7 +3305,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                         status = RETRY_SUBMITTED;
 
                         /* Put it on the queue for this port */
-                        if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.UserID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
+                        if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << "Error Requeing Command" << endl;
@@ -3531,7 +3531,7 @@ INT ValidateDevice(CtiPortSPtr Port, CtiDeviceSPtr &Device, OUTMESS *&OutMessage
                     // This device probably sourced some OMs.  We should requeue the OM which got us here!
                     OutMessage->Priority = MAXPRIORITY - 1;     // Get this message out next (after the reset messages).
 
-                    if(Port->writeQueue(OutMessage->Request.UserID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority, PortThread))
+                    if(Port->writeQueue(OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority, PortThread))
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -3954,7 +3954,7 @@ bool ShuffleQueue( CtiPortSPtr shPort, OUTMESS *&OutMessage, CtiDeviceSPtr &devi
                 }
                 else
                 {
-                    if(PortManager.writeQueue(pOutMessage->Port, pOutMessage->Request.UserID, sizeof (*pOutMessage), (char *)pOutMessage, MAXPRIORITY - 2))
+                    if(PortManager.writeQueue(pOutMessage->Port, pOutMessage->Request.GrpMsgID, sizeof (*pOutMessage), (char *)pOutMessage, MAXPRIORITY - 2))
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -3965,7 +3965,7 @@ bool ShuffleQueue( CtiPortSPtr shPort, OUTMESS *&OutMessage, CtiDeviceSPtr &devi
                     }
 
                     /* The OUTMESS that got us here is always examined next again! */
-                    if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.UserID, sizeof (*OutMessage), (char *)OutMessage, MAXPRIORITY - 2))
+                    if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *)OutMessage, MAXPRIORITY - 2))
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -4407,7 +4407,7 @@ INT OutMessageRequeueOnExclusionFail(CtiPortSPtr &Port, OUTMESS *&OutMessage, Ct
                     dout << CtiTime() << " " << Port->getName() << " queue unable to be shuffled.  No non-excluded outmessages exist. " << endl;
                 }
 
-                if(Port->writeQueue(OutMessage->Request.UserID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority, PortThread))
+                if(Port->writeQueue(OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority, PortThread))
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -4439,7 +4439,7 @@ INT OutMessageRequeueOnExclusionFail(CtiPortSPtr &Port, OUTMESS *&OutMessage, Ct
     case (CtiTablePaoExclusion::RequeueQueuePriority):
     default:
         {
-            if(Port->writeQueue(OutMessage->Request.UserID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority, PortThread))
+            if(Port->writeQueue(OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority, PortThread))
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);

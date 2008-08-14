@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_grp_versacom.cpp-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2008/04/28 15:53:19 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2008/08/14 15:57:39 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -117,7 +117,7 @@ INT CtiDeviceGroupVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
                                               OutMessage->Request.RouteID,
                                               OutMessage->Request.MacroOffset,
                                               OutMessage->Request.Attempt,
-                                              OutMessage->Request.TrxID,
+                                              OutMessage->Request.GrpMsgID,
                                               OutMessage->Request.UserID,
                                               OutMessage->Request.SOE,
                                               CtiMultiMsg_vec());
@@ -156,7 +156,7 @@ INT CtiDeviceGroupVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
                                               OutMessage->Request.RouteID,
                                               OutMessage->Request.MacroOffset,
                                               OutMessage->Request.Attempt,
-                                              OutMessage->Request.TrxID,
+                                              OutMessage->Request.GrpMsgID,
                                               OutMessage->Request.UserID,
                                               OutMessage->Request.SOE,
                                               CtiMultiMsg_vec());

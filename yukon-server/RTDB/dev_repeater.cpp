@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.41 $
-* DATE         :  $Date: 2007/11/12 17:04:59 $
+* REVISION     :  $Revision: 1.42 $
+* DATE         :  $Date: 2008/08/14 15:57:40 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -155,7 +155,7 @@ INT CtiDeviceRepeater900::ExecuteRequest(CtiRequestMsg                  *pReq,
                                                OutMessage->Request.RouteID,
                                                OutMessage->Request.MacroOffset,
                                                OutMessage->Request.Attempt,
-                                               OutMessage->Request.TrxID,
+                                               OutMessage->Request.GrpMsgID,
                                                OutMessage->Request.UserID,
                                                OutMessage->Request.SOE,
                                                CtiMultiMsg_vec()));

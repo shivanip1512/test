@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.64 $
-* DATE         :  $Date: 2007/11/12 17:07:26 $
+* REVISION     :  $Revision: 1.65 $
+* DATE         :  $Date: 2008/08/14 15:57:40 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -663,7 +663,7 @@ INT CtiDeviceMCT310::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
             CtiRequestMsg newReq(getID(),
                                  "getstatus disconnect noqueue",
                                  InMessage->Return.UserID,
-                                 InMessage->Return.TrxID,
+                                 InMessage->Return.GrpMsgID,
                                  InMessage->Return.RouteID,
                                  InMessage->Return.MacroOffset,
                                  InMessage->Return.Attempt);

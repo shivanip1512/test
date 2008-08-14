@@ -5,8 +5,8 @@
 * Date:   6/17/2002
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2008/06/06 20:28:01 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2008/08/14 15:57:39 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -140,7 +140,7 @@ INT CtiDeviceDavis::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse,
                                              OutMessage->Request.RouteID,
                                              OutMessage->Request.MacroOffset,
                                              OutMessage->Request.Attempt,
-                                             OutMessage->Request.TrxID,
+                                             OutMessage->Request.GrpMsgID,
                                              OutMessage->Request.UserID,
                                              OutMessage->Request.SOE,
                                              CtiMultiMsg_vec()));

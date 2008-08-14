@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2008/07/17 20:52:15 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2008/08/14 15:57:41 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -233,12 +233,12 @@ VOID PortPoolDialoutThread(void *pid)
 
         if(childport)
         {
-            childport->writeQueue(OutMessage->Request.UserID, sizeof(*OutMessage), (char *) OutMessage, OutMessage->Priority);
+            childport->writeQueue(OutMessage->Request.GrpMsgID, sizeof(*OutMessage), (char *) OutMessage, OutMessage->Priority);
         }
         else if(OutMessage != NULL)
         {
             // Plop it back onto the main pool queue.
-            ParentPort->writeQueue( OutMessage->Request.UserID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority );
+            ParentPort->writeQueue(OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority );
         }
 
         OutMessage = 0; // It is not ours anymore to touch!

@@ -1910,7 +1910,7 @@ INT CtiDeviceLandisGyrS4::ErrorDecode (INMESS *InMessage,
                                             InMessage->Return.RouteID,
                                             InMessage->Return.MacroOffset,
                                             InMessage->Return.Attempt,
-                                            InMessage->Return.TrxID,
+                                            InMessage->Return.GrpMsgID,
                                             InMessage->Return.UserID);
 
 
@@ -1979,7 +1979,7 @@ INT CtiDeviceLandisGyrS4::decodeResultScan (INMESS *InMessage,
                                             InMessage->Return.RouteID,
                                             InMessage->Return.MacroOffset,
                                             InMessage->Return.Attempt,
-                                            InMessage->Return.TrxID,
+                                            InMessage->Return.GrpMsgID,
                                             InMessage->Return.UserID);
 
     LGS4ScanData_t  *scanData = (LGS4ScanData_t*) DUPRep->Message;
@@ -2093,7 +2093,7 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
                                             InMessage->Return.RouteID,
                                             InMessage->Return.MacroOffset,
                                             InMessage->Return.Attempt,
-                                            InMessage->Return.TrxID,
+                                            InMessage->Return.GrpMsgID,
                                             InMessage->Return.UserID);
 
     // our array of valid points

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.167 $
-* DATE         :  $Date: 2008/08/13 21:23:35 $
+* REVISION     :  $Revision: 1.168 $
+* DATE         :  $Date: 2008/08/14 15:57:40 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1111,7 +1111,7 @@ void CtiDeviceMCT410::returnErrorMessage( int retval, const CtiOutMessage *om, l
                                      om->Request.RouteID,
                                      om->Request.MacroOffset,
                                      om->Request.Attempt,
-                                     om->Request.TrxID,
+                                     om->Request.GrpMsgID,
                                      om->Request.UserID,
                                      om->Request.SOE,
                                      CtiMultiMsg_vec());
@@ -1801,7 +1801,7 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
                                                            OutMessage->Request.RouteID,
                                                            OutMessage->Request.MacroOffset,
                                                            OutMessage->Request.Attempt,
-                                                           OutMessage->Request.TrxID,
+                                                           OutMessage->Request.GrpMsgID,
                                                            OutMessage->Request.UserID,
                                                            OutMessage->Request.SOE,
                                                            CtiMultiMsg_vec( ));
@@ -1869,7 +1869,7 @@ INT CtiDeviceMCT410::executeGetConfig( CtiRequestMsg              *pReq,
                                                    OutMessage->Request.RouteID,
                                                    OutMessage->Request.MacroOffset,
                                                    OutMessage->Request.Attempt,
-                                                   OutMessage->Request.TrxID,
+                                                   OutMessage->Request.GrpMsgID,
                                                    OutMessage->Request.UserID,
                                                    OutMessage->Request.SOE,
                                                    CtiMultiMsg_vec( ));

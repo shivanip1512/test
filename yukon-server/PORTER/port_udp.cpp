@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2008/08/06 18:26:49 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2008/08/14 15:57:41 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -394,7 +394,7 @@ bool UDPInterface::getOutMessages( unsigned wait )
                                                                            om->Request.RouteID,
                                                                            om->Request.MacroOffset,
                                                                            om->Request.Attempt,
-                                                                           om->Request.TrxID,
+                                                                           om->Request.GrpMsgID,
                                                                            om->Request.UserID,
                                                                            om->Request.SOE,
                                                                            CtiMultiMsg_vec()));

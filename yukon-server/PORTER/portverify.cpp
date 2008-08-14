@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2007/06/25 18:59:27 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2008/08/14 15:57:41 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -334,7 +334,7 @@ void CtiPorterVerification::processWorkQueue(bool purge)
             {
                 CtiOutMessage *om = work->getRetryOM();
 
-                PortManager.writeQueue(om->Port, om->Request.UserID, sizeof(*om), static_cast<void *>(om), om->Priority);
+                PortManager.writeQueue(om->Port, om->Request.GrpMsgID, sizeof(*om), static_cast<void *>(om), om->Priority);
 
                 //  possible addition to enhance retry logic  ----
                 //_retry_queue.push_back(work);  //  this is where we keep track of the receivers on which we've already heard this code

@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2008/02/29 17:05:14 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2008/08/14 15:57:39 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -178,7 +178,7 @@ INT CtiDeviceGroupMCT::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &pa
                                          OutMessage->Request.RouteID,
                                          OutMessage->Request.MacroOffset,
                                          OutMessage->Request.Attempt,
-                                         OutMessage->Request.TrxID,
+                                         OutMessage->Request.GrpMsgID,
                                          OutMessage->Request.UserID,
                                          OutMessage->Request.SOE,
                                          CtiMultiMsg_vec( )) );
@@ -245,7 +245,7 @@ INT CtiDeviceGroupMCT::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &pa
                  *  Form up the reply here since the ExecuteRequest funciton will consume the
                  *  OutMessage.
                  */
-                pRet = CTIDBG_new CtiReturnMsg(getID(), string(pOut->Request.CommandStr), Route->getName(), nRet, pOut->Request.RouteID, pOut->Request.MacroOffset, pOut->Request.Attempt, pOut->Request.TrxID, pOut->Request.UserID, pOut->Request.SOE, CtiMultiMsg_vec());
+                pRet = CTIDBG_new CtiReturnMsg(getID(), string(pOut->Request.CommandStr), Route->getName(), nRet, pOut->Request.RouteID, pOut->Request.MacroOffset, pOut->Request.Attempt, pOut->Request.GrpMsgID, pOut->Request.UserID, pOut->Request.SOE, CtiMultiMsg_vec());
                 // Start the control request on its route(s)
                 if( (nRet = Route->ExecuteRequest(pReq, parse, pOut, vgList, retList, outList)) )
                 {
@@ -283,7 +283,7 @@ INT CtiDeviceGroupMCT::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &pa
                                                       pOut->Request.RouteID,
                                                       pOut->Request.MacroOffset,
                                                       pOut->Request.Attempt,
-                                                      pOut->Request.TrxID,
+                                                      pOut->Request.GrpMsgID,
                                                       pOut->Request.UserID,
                                                       pOut->Request.SOE,
                                                       CtiMultiMsg_vec());

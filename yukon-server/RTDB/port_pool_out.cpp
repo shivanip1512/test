@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2007/02/22 17:46:41 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2008/08/14 15:57:40 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -302,7 +302,7 @@ INT CtiPortPoolDialout::allocateQueueEntsToChildPort()
                                 // Move the OM from the pool queue to the child queue.
                                 if( readQueue( &ReadResult, &ReadLength, (PPVOID) &OutMessage, DCWW_WAIT, &ReadPriority, &QueEntries ) == NORMAL )
                                 {
-                                    childport->writeQueue( OutMessage->Request.UserID, sizeof(*OutMessage), (char *) OutMessage, OutMessage->Priority );
+                                    childport->writeQueue( OutMessage->Request.GrpMsgID, sizeof(*OutMessage), (char *) OutMessage, OutMessage->Priority );
 
                                     if(CtiPortPoolDialout::_poolDebugLevel & PORTPOOL_DEBUGLEVL_CHILDALLOCATION)
                                     {

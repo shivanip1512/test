@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_lcu.cpp-arc  $
-* REVISION     :  $Revision: 1.43 $
-* DATE         :  $Date: 2008/06/06 20:28:01 $
+* REVISION     :  $Revision: 1.44 $
+* DATE         :  $Date: 2008/08/14 15:57:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -475,7 +475,7 @@ INT CtiDeviceLCU::lcuDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessag
             }
         case MASTERLOOPBACK:
             {
-                CtiReturnMsg   *pLoop = CTIDBG_new CtiReturnMsg(getID(), string(InMessage->Return.CommandStr), string(getName() + " / successful ping"), InMessage->EventCode & 0x7fff, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID);
+                CtiReturnMsg   *pLoop = CTIDBG_new CtiReturnMsg(getID(), string(InMessage->Return.CommandStr), string(getName() + " / successful ping"), InMessage->EventCode & 0x7fff, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.GrpMsgID, InMessage->Return.UserID);
 
                 if(pLoop != NULL)
                 {
@@ -604,7 +604,7 @@ INT CtiDeviceLCU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
                 if((pOM = lcuControl(OutMessage)) == 0)
                 {
                     vgList.push_back(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT, pReq->getSOE(), getDescription(parse), string("Control Request for LCU failed"), LoadMgmtLogType, SignalEvent, pReq->getUser()));
-                    retList.push_back( CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), string("Control Request for LCU failed"), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE,  CtiMultiMsg_vec()) );
+                    retList.push_back( CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), string("Control Request for LCU failed"), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE,  CtiMultiMsg_vec()) );
                 }
                 else
                 {
@@ -626,7 +626,7 @@ INT CtiDeviceLCU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
                 }
 
                 vgList.push_back(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT, pReq->getSOE(), getDescription(parse), string("Scan All Request for LCU failed"), GeneralLogType, SignalEvent, pReq->getUser()));
-                retList.push_back( CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), string("Scan All Request for LCU failed"), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec()));
+                retList.push_back( CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), string("Scan All Request for LCU failed"), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec()));
             }
             else
             {
@@ -645,7 +645,7 @@ INT CtiDeviceLCU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " error looping " << getName()<< endl;
                 }
-                retList.push_back( CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr),  string(getName() + " / unsuccessful ping to LCU"), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec()));
+                retList.push_back( CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr),  string(getName() + " / unsuccessful ping to LCU"), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec()));
             }
             else
             {
@@ -666,7 +666,7 @@ INT CtiDeviceLCU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
             nRet = NoExecuteRequestMethod;
             /* Set the error value in the base class. */
             // FIX FIX FIX 092999
-            retList.push_back( CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), string("LCU Devices do not support this command (yet?)"), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID,  OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec()));
+            retList.push_back( CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), string("LCU Devices do not support this command (yet?)"), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID,  OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec()));
             break;
         }
     }
@@ -826,7 +826,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeDigitalInputs(INMESS *InMessage)
     {
         if(InMessage->Buffer.InMessage[3] >= 4)
         {
-            pPIL = CTIDBG_new CtiReturnMsg(getID(), string(InMessage->Return.CommandStr), string("LCU status request complete"), InMessage->EventCode & 0x7fff, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID);
+            pPIL = CTIDBG_new CtiReturnMsg(getID(), string(InMessage->Return.CommandStr), string("LCU status request complete"), InMessage->EventCode & 0x7fff, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.GrpMsgID, InMessage->Return.UserID);
 
             /*
              *  Due to the T3026's unique nature of connector order determines data order, and a lack of any way to tell
@@ -903,7 +903,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeDigitalInputs(INMESS *InMessage)
     }
     else
     {
-        pPIL = CTIDBG_new CtiReturnMsg(getID(), string(InMessage->Return.CommandStr), string("LCU status request complete"), InMessage->EventCode & 0x7fff, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID);
+        pPIL = CTIDBG_new CtiReturnMsg(getID(), string(InMessage->Return.CommandStr), string("LCU status request complete"), InMessage->EventCode & 0x7fff, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.GrpMsgID, InMessage->Return.UserID);
 
         /* Rebuild the status word */
         USHORT lcuDigital = MAKEUSHORT (InMessage->Buffer.InMessage[6], InMessage->Buffer.InMessage[17]);
@@ -978,7 +978,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeStatus(INMESS *InMessage)
                                                     InMessage->Return.RouteID,
                                                     InMessage->Return.MacroOffset,
                                                     InMessage->Return.Attempt,
-                                                    InMessage->Return.TrxID,
+                                                    InMessage->Return.GrpMsgID,
                                                     InMessage->Return.UserID);
 
     switch(getLCUType())
@@ -1105,7 +1105,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAccumulators(INMESS *InMessage, list< OUTME
                                         InMessage->Return.RouteID,
                                         InMessage->Return.MacroOffset,
                                         InMessage->Return.Attempt,
-                                        InMessage->Return.TrxID,
+                                        InMessage->Return.GrpMsgID,
                                         InMessage->Return.UserID);
 
         USHORT Value = MAKEUSHORT(InMessage->Buffer.InMessage[7], InMessage->Buffer.InMessage[8]);
@@ -1197,7 +1197,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAnalogs(INMESS *InMessage)
     DOUBLE     PValue;
 
     CtiPointDataMsg *pData = NULL;
-    CtiReturnMsg     *pPIL = CTIDBG_new CtiReturnMsg(getID(), string(InMessage->Return.CommandStr), string("LCU analog request complete"), InMessage->EventCode & 0x7fff, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID);
+    CtiReturnMsg     *pPIL = CTIDBG_new CtiReturnMsg(getID(), string(InMessage->Return.CommandStr), string("LCU analog request complete"), InMessage->EventCode & 0x7fff, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.GrpMsgID, InMessage->Return.UserID);
 
 
     switch(_lcuType)

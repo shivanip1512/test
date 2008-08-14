@@ -6,12 +6,17 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_alpha.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2008/06/06 20:28:01 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2008/08/14 15:57:39 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *    History:
       $Log: dev_alpha.cpp,v $
+      Revision 1.18  2008/08/14 15:57:39  jotteson
+      YUK-6333  Change naming in request message and change cancellation to use this new named field instead of user ID
+      Cancellation now uses the new group message ID.
+      Group Message ID name added to Request, Result, Out, and In messages.
+
       Revision 1.17  2008/06/06 20:28:01  jotteson
       YUK-6005 Porter LLP expect more set incorrectly
       Added an option to override expect more in the error decode call.
@@ -610,7 +615,7 @@ INT CtiDeviceAlpha::ErrorDecode (INMESS *InMessage,
                                             InMessage->Return.RouteID,
                                             InMessage->Return.MacroOffset,
                                             InMessage->Return.Attempt,
-                                            InMessage->Return.TrxID,
+                                            InMessage->Return.GrpMsgID,
                                             InMessage->Return.UserID);
 
 

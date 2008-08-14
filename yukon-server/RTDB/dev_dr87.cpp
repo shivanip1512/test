@@ -1580,7 +1580,7 @@ INT CtiDeviceDR87::ErrorDecode (INMESS *InMessage,
                                             InMessage->Return.RouteID,
                                             InMessage->Return.MacroOffset,
                                             InMessage->Return.Attempt,
-                                            InMessage->Return.TrxID,
+                                            InMessage->Return.GrpMsgID,
                                             InMessage->Return.UserID);
 
 
@@ -1649,7 +1649,7 @@ INT CtiDeviceDR87::decodeResultScan (INMESS *InMessage,
                                             InMessage->Return.RouteID,
                                             InMessage->Return.MacroOffset,
                                             InMessage->Return.Attempt,
-                                            InMessage->Return.TrxID,
+                                            InMessage->Return.GrpMsgID,
                                             InMessage->Return.UserID);
 
     DR87ScanData_t  *scanData = (DR87ScanData_t*) DUPRep->Message;
@@ -1765,7 +1765,7 @@ INT CtiDeviceDR87::decodeResultLoadProfile (INMESS *InMessage,
                                             InMessage->Return.RouteID,
                                             InMessage->Return.MacroOffset,
                                             InMessage->Return.Attempt,
-                                            InMessage->Return.TrxID,
+                                            InMessage->Return.GrpMsgID,
                                             InMessage->Return.UserID);
 
     // alpha only supports 4 channels

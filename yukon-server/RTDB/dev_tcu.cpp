@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tcu.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2006/03/23 15:29:18 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2008/08/14 15:57:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -239,7 +239,7 @@ INT CtiDeviceTCU::TCUDecode (INMESS *InMessage, CtiTime &ScanTime, list< CtiMess
                                                   InMessage->Return.RouteID,
                                                   InMessage->Return.MacroOffset,
                                                   InMessage->Return.Attempt,
-                                                  InMessage->Return.TrxID,
+                                                  InMessage->Return.GrpMsgID,
                                                   InMessage->Return.UserID);
 
 
@@ -307,7 +307,7 @@ INT CtiDeviceTCU::ExecuteRequest(CtiRequestMsg                  *pReq,
                                                   OutMessage->Request.RouteID,
                                                   OutMessage->Request.MacroOffset,
                                                   OutMessage->Request.Attempt,
-                                                  OutMessage->Request.TrxID,
+                                                  OutMessage->Request.GrpMsgID,
                                                   OutMessage->Request.UserID,
                                                   OutMessage->Request.SOE,
                                                   CtiMultiMsg_vec());
@@ -353,7 +353,7 @@ INT CtiDeviceTCU::ExecuteRequest(CtiRequestMsg                  *pReq,
                                              OutMessage->Request.RouteID,
                                              OutMessage->Request.MacroOffset,
                                              OutMessage->Request.Attempt,
-                                             OutMessage->Request.TrxID,
+                                             OutMessage->Request.GrpMsgID,
                                              OutMessage->Request.UserID,
                                              OutMessage->Request.SOE,
                                              CtiMultiMsg_vec()));
@@ -396,7 +396,7 @@ INT CtiDeviceTCU::ExecuteRequest(CtiRequestMsg                  *pReq,
                                                    OutMTemp->Request.RouteID,
                                                    OutMTemp->Request.MacroOffset,
                                                    OutMTemp->Request.Attempt,
-                                                   OutMTemp->Request.TrxID,
+                                                   OutMTemp->Request.GrpMsgID,
                                                    OutMTemp->Request.UserID,
                                                    OutMTemp->Request.SOE,
                                                    CtiMultiMsg_vec()));
@@ -427,7 +427,7 @@ INT CtiDeviceTCU::ExecuteRequest(CtiRequestMsg                  *pReq,
                                           OutMessage->Request.RouteID,
                                           OutMessage->Request.MacroOffset,
                                           OutMessage->Request.Attempt,
-                                          OutMessage->Request.TrxID,
+                                          OutMessage->Request.GrpMsgID,
                                           OutMessage->Request.UserID,
                                           OutMessage->Request.SOE,
                                           CtiMultiMsg_vec()));
@@ -504,7 +504,7 @@ CtiReturnMsg* CtiDeviceTCU::TCUDecodeStatus(INMESS *InMessage)
                                            InMessage->Return.RouteID,
                                            InMessage->Return.MacroOffset,
                                            InMessage->Return.Attempt,
-                                           InMessage->Return.TrxID,
+                                           InMessage->Return.GrpMsgID,
                                            InMessage->Return.UserID);
 
    /* update the scan time */

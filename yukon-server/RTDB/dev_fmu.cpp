@@ -7,11 +7,16 @@
 * Author: Julie Richter
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2008/06/06 20:28:01 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2008/08/14 15:57:39 $
 *
 * HISTORY      :
 * $Log: dev_fmu.cpp,v $
+* Revision 1.8  2008/08/14 15:57:39  jotteson
+* YUK-6333  Change naming in request message and change cancellation to use this new named field instead of user ID
+* Cancellation now uses the new group message ID.
+* Group Message ID name added to Request, Result, Out, and In messages.
+*
 * Revision 1.7  2008/06/06 20:28:01  jotteson
 * YUK-6005 Porter LLP expect more set incorrectly
 * Added an option to override expect more in the error decode call.
@@ -146,7 +151,7 @@ INT CtiDeviceFMU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
                                                             OutMessage->Request.RouteID,
                                                             OutMessage->Request.MacroOffset,
                                                             OutMessage->Request.Attempt,
-                                                            OutMessage->Request.TrxID,
+                                                            OutMessage->Request.GrpMsgID,
                                                             OutMessage->Request.UserID,
                                                             OutMessage->Request.SOE,
                                                             CtiMultiMsg_vec()));
@@ -228,7 +233,7 @@ INT CtiDeviceFMU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
                                                         OutMessage->Request.RouteID,
                                                         OutMessage->Request.MacroOffset,
                                                         OutMessage->Request.Attempt,
-                                                        OutMessage->Request.TrxID,
+                                                        OutMessage->Request.GrpMsgID,
                                                         OutMessage->Request.UserID,
                                                         OutMessage->Request.SOE,
                                                         CtiMultiMsg_vec()));
@@ -257,7 +262,7 @@ INT CtiDeviceFMU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
                                                     OutMessage->Request.RouteID,
                                                     OutMessage->Request.MacroOffset,
                                                     OutMessage->Request.Attempt,
-                                                    OutMessage->Request.TrxID,
+                                                    OutMessage->Request.GrpMsgID,
                                                     OutMessage->Request.UserID,
                                                     OutMessage->Request.SOE,
                                                     CtiMultiMsg_vec()));
@@ -290,7 +295,7 @@ INT CtiDeviceFMU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
     CtiReturnMsg *retReturn = NULL;
     if( OutMessage )
     {
-        retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.TrxID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
+        retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
     }
 
     if( retReturn != NULL )
@@ -338,7 +343,7 @@ INT CtiDeviceFMU::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMes
                                          InMessage->Return.RouteID,
                                          InMessage->Return.MacroOffset,
                                          InMessage->Return.Attempt,
-                                         InMessage->Return.TrxID,
+                                         InMessage->Return.GrpMsgID,
                                          InMessage->Return.UserID);
 
         retList.push_back(retMsg);
@@ -359,7 +364,7 @@ INT CtiDeviceFMU::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMes
                                          InMessage->Return.RouteID,
                                          InMessage->Return.MacroOffset,
                                          InMessage->Return.Attempt,
-                                         InMessage->Return.TrxID,
+                                         InMessage->Return.GrpMsgID,
                                          InMessage->Return.UserID);
 
         retList.push_back(retMsg);
@@ -380,7 +385,7 @@ INT CtiDeviceFMU::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
                                                      InMessage->Return.RouteID,
                                                      InMessage->Return.MacroOffset,
                                                      InMessage->Return.Attempt,
-                                                     InMessage->Return.TrxID,
+                                                     InMessage->Return.GrpMsgID,
                                                      InMessage->Return.UserID);
     CtiPointDataMsg  *commFailed;
     CtiPointSPtr     commPoint;

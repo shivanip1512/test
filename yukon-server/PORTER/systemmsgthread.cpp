@@ -7,11 +7,16 @@
 * Author: Jess Otteson
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2008/08/13 19:08:34 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2008/08/14 15:57:41 $
 *
 * HISTORY      :
 * $Log: systemmsgthread.cpp,v $
+* Revision 1.9  2008/08/14 15:57:41  jotteson
+* YUK-6333  Change naming in request message and change cancellation to use this new named field instead of user ID
+* Cancellation now uses the new group message ID.
+* Group Message ID name added to Request, Result, Out, and In messages.
+*
 * Revision 1.8  2008/08/13 19:08:34  jotteson
 * YUK-6306 Change porter to not send a error for canceled messages
 * Changed canceled messages to update statistics but not send an error back to the client
@@ -223,14 +228,14 @@ void SystemMsgThread::executePortEntryRequest(CtiRequestMsg *msg, CtiCommandPars
     CtiConnection  *Conn = NULL;
     CtiPortSPtr port;
     vector <CtiPortManager::ptr_type> portList;
-    ULONG requestID = msg->OptionsField();
+    ULONG portID = msg->GroupMessageId();
     CtiQueueDataMsg *response = NULL;
 
     if( _pPortManager != NULL )
     {
-        if( requestID != 0 )
+        if( portID != 0 )
         {
-            CtiPortSPtr port = _pPortManager->PortGetEqual(msg->OptionsField());
+            CtiPortSPtr port = _pPortManager->PortGetEqual(portID);
             if( port )
             {
                 entries = port->getWorkCount();
@@ -242,23 +247,6 @@ void SystemMsgThread::executePortEntryRequest(CtiRequestMsg *msg, CtiCommandPars
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " Received port entry request for unknown port " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
-        }
-        else
-        {
-            getPorts(portList);
-
-            vector<CtiPortManager::ptr_type>::iterator portIter;
-            for( portIter = portList.begin(); portIter != portList.end(); portIter ++ )
-            {
-                port = *portIter;
-
-                if( port )
-                {
-                    entries += port->getWorkCount(requestID);
-                }
-            }
-
-            response = CTIDBG_new CtiQueueDataMsg(0, entries, 0, 0, 0, msg->UserMessageId() );
         }
     }
 
@@ -284,7 +272,7 @@ void SystemMsgThread::executeRequestCount(CtiRequestMsg *msg, CtiCommandParser &
 {
     unsigned int entries = 0;
     string resultString;
-    ULONG requestID = msg->OptionsField();;
+    ULONG requestID = msg->GroupMessageId();
     ULONG count, priority;
     CtiDeviceSPtr tempDev;
     CtiPortSPtr port;
@@ -363,7 +351,7 @@ void SystemMsgThread::executeCancelRequest(CtiRequestMsg *msg, CtiCommandParser 
 
     unsigned int entries = 0;
     string resultString;
-    ULONG requestID = msg->OptionsField();
+    ULONG requestID = msg->GroupMessageId();
     ULONG count, priority;
     CtiDeviceSPtr tempDev;
     CtiPortSPtr port;

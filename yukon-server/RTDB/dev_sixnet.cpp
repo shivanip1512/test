@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_sixnet.cpp-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2008/06/06 20:28:01 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2008/08/14 15:57:40 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1787,7 +1787,7 @@ INT CtiDeviceSixnet::ErrorDecode (INMESS *InMessage, CtiTime &TimeNow, list< Cti
                                             InMessage->Return.RouteID,
                                             InMessage->Return.MacroOffset,
                                             InMessage->Return.Attempt,
-                                            InMessage->Return.TrxID,
+                                            InMessage->Return.GrpMsgID,
                                             InMessage->Return.UserID);
 
 
@@ -1858,7 +1858,7 @@ INT CtiDeviceSixnet::decodeResultLoadProfile (INMESS *InMessage, CtiTime &TimeNo
                                             InMessage->Return.RouteID,
                                             InMessage->Return.MacroOffset,
                                             InMessage->Return.Attempt,
-                                            InMessage->Return.TrxID,
+                                            InMessage->Return.GrpMsgID,
                                             InMessage->Return.UserID);
 
     CtiReturnMsg *pRetMsg = NULL;
@@ -1898,7 +1898,7 @@ INT CtiDeviceSixnet::decodeResultLoadProfile (INMESS *InMessage, CtiTime &TimeNo
                     val = pSxnt->val;
                 }
 
-                pRetMsg = CTIDBG_new CtiReturnMsg(getID(), string(InMessage->Return.CommandStr), resString, InMessage->EventCode & 0x7fff, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt,InMessage->Return.TrxID,InMessage->Return.UserID);
+                pRetMsg = CTIDBG_new CtiReturnMsg(getID(), string(InMessage->Return.CommandStr), resString, InMessage->EventCode & 0x7fff, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt,InMessage->Return.GrpMsgID,InMessage->Return.UserID);
 
                 //create a new data message
                 pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, pPoint->getType(), resString, TAG_POINT_LOAD_PROFILE_DATA);

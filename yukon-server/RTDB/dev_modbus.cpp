@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2008/06/06 20:28:01 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2008/08/14 15:57:40 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -602,7 +602,7 @@ INT Modbus::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* 
                                          InMessage->Return.RouteID,
                                          InMessage->Return.MacroOffset,
                                          InMessage->Return.Attempt,
-                                         InMessage->Return.TrxID,
+                                         InMessage->Return.GrpMsgID,
                                          InMessage->Return.UserID);
 
         retList.push_back(retMsg);
@@ -623,7 +623,7 @@ INT Modbus::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* 
                                          InMessage->Return.RouteID,
                                          InMessage->Return.MacroOffset,
                                          InMessage->Return.Attempt,
-                                         InMessage->Return.TrxID,
+                                         InMessage->Return.GrpMsgID,
                                          InMessage->Return.UserID);
 
         retList.push_back(retMsg);
@@ -645,7 +645,7 @@ INT Modbus::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* >
                                               InMessage->Return.RouteID,
                                               InMessage->Return.MacroOffset,
                                               InMessage->Return.Attempt,
-                                              InMessage->Return.TrxID,
+                                              InMessage->Return.GrpMsgID,
                                               InMessage->Return.UserID);
     CtiPointDataMsg  *commFailed;
     CtiPointSPtr     commPoint;

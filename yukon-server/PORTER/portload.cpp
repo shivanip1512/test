@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/portload.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2008/06/13 13:39:49 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2008/08/14 15:57:41 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -132,7 +132,7 @@ LoadRemoteRoutes(CtiDeviceSPtr Dev)
             OutMessage->ReturnNexus  = NULL;
             OutMessage->SaveNexus    = NULL;
 
-            if( PortManager.writeQueue(OutMessage->Port, OutMessage->Request.UserID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority) )
+            if( PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority) )
             {
                 printf ("Error Writing to Queue for Port %2ld\n", Dev->getPortID());
                 delete (OutMessage);
@@ -281,7 +281,7 @@ LoadRemoteRoutes(CtiDeviceSPtr Dev)
                             dout << "OutLength " << OutMessage->OutLength << endl;
                         }
 
-                        if( PortManager.writeQueue(OutMessage->Port, OutMessage->Request.UserID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority) )
+                        if( PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority) )
                         {
                             printf ("Error Writing to Queue for Port %2hd\n", Dev->getPortID());
                             delete (OutMessage);
@@ -466,7 +466,7 @@ LoadRemoteRoutes(CtiDeviceSPtr Dev)
                     dout << "OutLength " << OutMessage->OutLength << endl;
                 }
 
-                if( PortManager.writeQueue(OutMessage->Port, OutMessage->Request.UserID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority) )
+                if( PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority) )
                 {
                     printf ("Error Writing to Queue for Port %2ld\n", Dev->getPortID());
                     delete (OutMessage);

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_route.cpp-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2008/07/17 20:26:39 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2008/08/14 15:57:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -545,7 +545,7 @@ bool CtiRouteManager::buildRoleVector( long id, CtiRequestMsg& Req, list< CtiMes
                                                       Req.RouteId(),
                                                       Req.MacroOffset(),
                                                       Req.AttemptNum(),
-                                                      Req.TransmissionId(),
+                                                      Req.GroupMessageId(),
                                                       Req.UserMessageId()) );
 
                     continue;

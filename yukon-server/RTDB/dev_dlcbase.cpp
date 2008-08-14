@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dlcbase.cpp-arc  $
-* REVISION     :  $Revision: 1.48 $
-* DATE         :  $Date: 2008/07/08 22:56:58 $
+* REVISION     :  $Revision: 1.49 $
+* DATE         :  $Date: 2008/08/14 15:57:39 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -269,7 +269,7 @@ INT CtiDeviceDLCBase::decodeCheckErrorReturn(INMESS *InMessage, list< CtiMessage
                                          InMessage->Return.RouteID,
                                          InMessage->Return.MacroOffset,
                                          InMessage->Return.Attempt,
-                                         InMessage->Return.TrxID,
+                                         InMessage->Return.GrpMsgID,
                                          InMessage->Return.UserID);
 
         if( retMsg != NULL )
@@ -508,7 +508,7 @@ int CtiDeviceDLCBase::executeOnDLCRoute( CtiRequestMsg              *pReq,
              *  Form up the reply here since the ExecuteRequest funciton will consume the
              *  OutMessage.
              */
-            pRet = CTIDBG_new CtiReturnMsg(getID(), string(pOut->Request.CommandStr), Route->getName(), nRet, pOut->Request.RouteID, pOut->Request.MacroOffset, pOut->Request.Attempt, pOut->Request.TrxID, pOut->Request.UserID, pOut->Request.SOE, CtiMultiMsg_vec());
+            pRet = CTIDBG_new CtiReturnMsg(getID(), string(pOut->Request.CommandStr), Route->getName(), nRet, pOut->Request.RouteID, pOut->Request.MacroOffset, pOut->Request.Attempt, pOut->Request.GrpMsgID, pOut->Request.UserID, pOut->Request.SOE, CtiMultiMsg_vec());
             // Start the control request on its route(s)
             if( (nRet = Route->ExecuteRequest(pReq, parse, pOut, vgList, retList, outList)) )
             {
@@ -544,7 +544,7 @@ int CtiDeviceDLCBase::executeOnDLCRoute( CtiRequestMsg              *pReq,
                                            pOut->Request.RouteID,
                                            pOut->Request.MacroOffset,
                                            pOut->Request.Attempt,
-                                           pOut->Request.TrxID,
+                                           pOut->Request.GrpMsgID,
                                            pOut->Request.UserID,
                                            pOut->Request.SOE,
                                            CtiMultiMsg_vec());

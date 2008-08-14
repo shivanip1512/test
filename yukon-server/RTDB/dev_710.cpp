@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_710.cpp-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2006/02/27 23:58:29 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2008/08/14 15:57:39 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -94,7 +94,7 @@ INT CtiDeviceCCU710::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< Cti
                                                     InMessage->Return.RouteID,
                                                     InMessage->Return.MacroOffset,
                                                     InMessage->Return.Attempt,
-                                                    InMessage->Return.TrxID,
+                                                    InMessage->Return.GrpMsgID,
                                                     InMessage->Return.UserID);
 
             resetScanFlag();
@@ -218,7 +218,7 @@ INT CtiDeviceCCU710::ExecuteRequest(CtiRequestMsg                  *pReq,
                                           OutMessage->Request.RouteID,
                                           OutMessage->Request.MacroOffset,
                                           OutMessage->Request.Attempt,
-                                          OutMessage->Request.TrxID,
+                                          OutMessage->Request.GrpMsgID,
                                           OutMessage->Request.UserID,
                                           OutMessage->Request.SOE,
                                           CtiMultiMsg_vec()));

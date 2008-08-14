@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_pcrequest.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/12/20 17:18:53 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2008/08/14 15:57:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -37,7 +37,7 @@ void CtiRequestMsg::saveGuts(RWvostream &aStream) const
        RouteId() <<
        MacroOffset() <<
        AttemptNum() <<
-       TransmissionId()  <<
+       GroupMessageId()  <<
        UserMessageId() <<
        OptionsField();
 }
@@ -52,7 +52,7 @@ void CtiRequestMsg::restoreGuts(RWvistream& aStream)
        _route_id >>
        _macro_offset >>
        _attempt_num >>
-       _transmission_id >>
+       _group_message_id >>
        _user_message_id >>
        _options_field;
 }
@@ -111,14 +111,14 @@ CtiRequestMsg& CtiRequestMsg::setAttemptNum(long attempt_num )
     return *this;
 }
 
-long CtiRequestMsg::TransmissionId() const
+long CtiRequestMsg::GroupMessageId() const
 {
-    return _transmission_id;
+    return _group_message_id;
 }
 
-CtiRequestMsg& CtiRequestMsg::setTransmissionId(long transmission_id )
+CtiRequestMsg& CtiRequestMsg::setGroupMessageId(long group_message_id )
 {
-    _transmission_id = transmission_id;
+    _group_message_id = group_message_id;
     return *this;
 }
 
@@ -162,7 +162,7 @@ void CtiRequestMsg::dump() const
    dout << " Route ID                      " << _route_id << endl;
    dout << " Macro Offset                  " << _macro_offset << endl;
    dout << " Attempt Number                " << _attempt_num << endl;
-   dout << " Transmission ID               " << _transmission_id << endl;
+   dout << " Message Group ID              " << _group_message_id << endl;
    dout << " User Message ID               " << _user_message_id << endl;
    dout << " Options Field                 " << _options_field << endl;
 }
@@ -171,7 +171,7 @@ CtiRequestMsg::CtiRequestMsg() :
  _device_id(0),
  _command_string(""),
  _user_message_id(0),
- _transmission_id(0),
+ _group_message_id(0),
  _route_id(0),
  _macro_offset(0),
  _attempt_num(0),
@@ -182,7 +182,7 @@ CtiRequestMsg::CtiRequestMsg() :
 CtiRequestMsg::CtiRequestMsg(long device_id,
                const string& command_string,
                long user_message_id,
-               long transmission_id,
+               long group_message_id,
                long route_id,
                int macro_offset,
                int attempt_num,
@@ -191,7 +191,7 @@ CtiRequestMsg::CtiRequestMsg(long device_id,
  _device_id(device_id),
  _command_string(command_string),
  _user_message_id(user_message_id),
- _transmission_id(transmission_id),
+ _group_message_id(group_message_id),
  _route_id(route_id),
  _macro_offset(macro_offset),
  _attempt_num(attempt_num),
@@ -217,7 +217,7 @@ CtiRequestMsg& CtiRequestMsg::operator=(const CtiRequestMsg& aRef)
     _route_id           = aRef.RouteId();
     _macro_offset       = aRef.MacroOffset();
     _attempt_num        = aRef.AttemptNum();
-    _transmission_id    = aRef.TransmissionId();
+    _group_message_id    = aRef.GroupMessageId();
     _user_message_id    = aRef.UserMessageId();
     _options_field      = aRef.OptionsField();
  }

@@ -6,12 +6,17 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_aplus.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2007/05/31 21:38:44 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2008/08/14 15:57:39 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *    History:
       $Log: dev_aplus.cpp,v $
+      Revision 1.19  2008/08/14 15:57:39  jotteson
+      YUK-6333  Change naming in request message and change cancellation to use this new named field instead of user ID
+      Cancellation now uses the new group message ID.
+      Group Message ID name added to Request, Result, Out, and In messages.
+
       Revision 1.18  2007/05/31 21:38:44  mfisher
       Reverted text in comments from "CTIDBG_new" back to "new"
 
@@ -1829,7 +1834,7 @@ INT CtiDeviceAlphaPPlus::decodeResultScan   (INMESS *InMessage,
                                             InMessage->Return.RouteID,
                                             InMessage->Return.MacroOffset,
                                             InMessage->Return.Attempt,
-                                            InMessage->Return.TrxID,
+                                            InMessage->Return.GrpMsgID,
                                             InMessage->Return.UserID);
     AlphaPPlusScanData_t  *ptr = (AlphaPPlusScanData_t *)DUPRep->Message;
     CtiTime peakTime;
@@ -2008,7 +2013,7 @@ INT CtiDeviceAlphaPPlus::decodeResultLoadProfile (INMESS *InMessage,
                                                     InMessage->Return.RouteID,
                                                     InMessage->Return.MacroOffset,
                                                     InMessage->Return.Attempt,
-                                                    InMessage->Return.TrxID,
+                                                    InMessage->Return.GrpMsgID,
                                                     InMessage->Return.UserID);
 
     // alpha only supports 4 channels

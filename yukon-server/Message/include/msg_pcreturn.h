@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/msg_pcreturn.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2006/02/17 17:04:33 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2008/08/14 15:57:41 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -36,7 +36,7 @@ private:
     int        _macro_offset;          // Offset into a macro which should/could be tried next, Zero if there are no more.
     int        _attempt_num;           // Number of attempts before we succeeded or failed.. Therefore, should always be at least one.
     int        _expectMore;            // Another message shall be coming related to the request which caused this message. listen for more!
-    long       _transmission_id;       // A replica of the request's _transmission_id
+    long       _group_message_id;      // A replica of the request's _group_message_id
     long       _user_message_id;       // A replica of the request's _user_message_id
 
 public:
@@ -52,7 +52,7 @@ public:
                     int routeid = 0,
                     int macro_offset = 0,
                     int attempt_num  = 0,
-                    long transmission_id = -1L,
+                    long group_message_id = -1L,
                     long user_message_id = -1L,
                     int soe = 0,
                     CtiMultiMsg_vec &data = CtiMultiMsg_vec());
@@ -90,8 +90,8 @@ public:
     int AttemptNum() const;
     CtiReturnMsg& setAttemptNum(int attempt_num);
 
-    long TranmissionId() const;
-    CtiReturnMsg& setTransmissionId(long transmission_id);
+    long GroupMessageId() const;
+    CtiReturnMsg& setGroupMessageId(long group_message_id);
 
     long UserMessageId() const;
     CtiReturnMsg& setUserMessageId(long user_message_id);

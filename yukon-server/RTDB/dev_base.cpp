@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.72 $
-* DATE         :  $Date: 2008/06/06 20:28:01 $
+* REVISION     :  $Revision: 1.73 $
+* DATE         :  $Date: 2008/08/14 15:57:39 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -111,7 +111,7 @@ INT CtiDeviceBase::ExecuteRequest(CtiRequestMsg                *pReq,
                                                              OutMessageTemplate->Request.RouteID,
                                                              OutMessageTemplate->Request.MacroOffset,
                                                              OutMessageTemplate->Request.Attempt,
-                                                             OutMessageTemplate->Request.TrxID,
+                                                             OutMessageTemplate->Request.GrpMsgID,
                                                              OutMessageTemplate->Request.UserID,
                                                              OutMessageTemplate->Request.SOE,
                                                              CtiMultiMsg_vec());
@@ -155,7 +155,7 @@ void CtiDeviceBase::propagateRequest(OUTMESS *pOM, CtiRequestMsg *pReq )
         pOM->Request.RouteID       = pReq->RouteId();               // This is the current route being done.
         pOM->Request.MacroOffset   = pReq->MacroOffset();
         pOM->Request.Attempt       = pReq->AttemptNum();
-        pOM->Request.TrxID         = pReq->TransmissionId();
+        pOM->Request.GrpMsgID         = pReq->GroupMessageId();
         pOM->Request.UserID        = pReq->UserMessageId();
         pOM->Request.SOE           = pReq->getSOE();
 
@@ -255,7 +255,7 @@ INT CtiDeviceBase::ExecuteRequest(CtiRequestMsg                  *pReq,
                                                  tempOut->Request.RouteID,
                                                  tempOut->Request.MacroOffset,
                                                  tempOut->Request.Attempt,
-                                                 tempOut->Request.TrxID,
+                                                 tempOut->Request.GrpMsgID,
                                                  tempOut->Request.UserID,
                                                  tempOut->Request.SOE,
                                                  CtiMultiMsg_vec());
@@ -700,7 +700,7 @@ INT CtiDeviceBase::checkForInhibitedDevice(list< CtiMessage* > &retList, const O
                                                      OutMessage->Request.RouteID,
                                                      OutMessage->Request.MacroOffset,
                                                      OutMessage->Request.Attempt,
-                                                     OutMessage->Request.TrxID,
+                                                     OutMessage->Request.GrpMsgID,
                                                      OutMessage->Request.UserID,
                                                      OutMessage->Request.SOE,
                                                      CtiMultiMsg_vec());

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.59 $
-* DATE         :  $Date: 2008/07/21 20:38:26 $
+* REVISION     :  $Revision: 1.60 $
+* DATE         :  $Date: 2008/08/14 15:57:41 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -807,7 +807,7 @@ INT ValidateOutMessage(OUTMESS *&OutMessage)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
 
-            dout << CtiTime() << " Bad OUTMESS received TrxID = " << OutMessage->Request.TrxID << endl;
+            dout << CtiTime() << " Bad OUTMESS received TrxID = " << OutMessage->Request.GrpMsgID << endl;
             dout << CtiTime() << "   Command " << OutMessage->Request.CommandStr << endl;
 
             delete(OutMessage);
@@ -831,7 +831,7 @@ INT ValidateOutMessage(OUTMESS *&OutMessage)
 INT RemotePort(OUTMESS *&OutMessage)
 {
     /* No Local processing */
-    if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.UserID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
+    if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
     {
         printf("Error Writing to Queue for Port %2hd\n", OutMessage->Port);
         SendError (OutMessage, QUEUE_WRITE);
@@ -976,7 +976,7 @@ INT CCU711Message(OUTMESS *&OutMessage, CtiDeviceSPtr Dev)
         }
 
         /* Go ahead and send block to the appropriate queing queue */
-        if(WriteQueue(p711Info->QueueHandle, OutMessage->Request.UserID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
+        if(WriteQueue(p711Info->QueueHandle, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
         {
             printf("Error Writing to Queue for Port: %2hd Remote: %3hd\n", OutMessage->Port, OutMessage->Remote);
             SendError (OutMessage, QUEUE_WRITE);
@@ -1025,7 +1025,7 @@ INT CCU711Message(OUTMESS *&OutMessage, CtiDeviceSPtr Dev)
         }
 
         /* Go ahead and send block to the appropriate ACTIN queue */
-        if(WriteQueue (p711Info->ActinQueueHandle, OutMessage->Request.UserID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
+        if(WriteQueue (p711Info->ActinQueueHandle, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
         {
             printf("Error Writing to Queue for Port: %2hd  Remote: %3hd\n", OutMessage->Port, OutMessage->Remote);
             SendError (OutMessage, QUEUE_WRITE);
@@ -1121,7 +1121,7 @@ INT ExecuteGoodRemote(OUTMESS *&OutMessage, CtiDeviceSPtr pDev)
             QueueBookkeeping(OutMessage);
 
             /* transfer the message to the appropriate port queue */
-            if(PortManager.writeQueue (OutMessage->Port, OutMessage->Request.UserID, sizeof (*OutMessage), (char *)OutMessage, OutMessage->Priority))
+            if(PortManager.writeQueue (OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *)OutMessage, OutMessage->Priority))
             {
                 printf("Error Writing to Queue for Port %2hd\n", OutMessage->Port);
                 SendError(OutMessage, QUEUE_WRITE);
@@ -1154,7 +1154,7 @@ INT RemoteComm(OUTMESS *&OutMessage)
     }
     else
     {
-        if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.UserID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
+        if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
         {
             printf("Error Writing to Queue for Port %2hd\n", OutMessage->Port);
             SendError (OutMessage, QUEUE_WRITE);

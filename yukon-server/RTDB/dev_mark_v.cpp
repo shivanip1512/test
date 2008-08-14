@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.39 $
-* DATE         :  $Date: 2008/06/06 20:28:01 $
+* REVISION     :  $Revision: 1.40 $
+* DATE         :  $Date: 2008/08/14 15:57:40 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -289,7 +289,7 @@ int CtiDeviceMarkV::decodeResultScan( INMESS                    *InMessage,
                                                        InMessage->Return.RouteID,
                                                        InMessage->Return.MacroOffset,
                                                        InMessage->Return.Attempt,
-                                                       InMessage->Return.TrxID,
+                                                       InMessage->Return.GrpMsgID,
                                                        InMessage->Return.UserID);
 
    if( getDebugLevel() & DEBUGLEVEL_FACTORY )

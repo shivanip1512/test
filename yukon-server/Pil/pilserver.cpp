@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.110 $
-* DATE         :  $Date: 2008/08/08 15:27:38 $
+* REVISION     :  $Revision: 1.111 $
+* DATE         :  $Date: 2008/08/14 15:57:41 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -598,7 +598,7 @@ void CtiPILServer::resultThread()
                                                             InMessage->Return.RouteID,
                                                             InMessage->Return.MacroOffset,
                                                             InMessage->Return.Attempt,
-                                                            InMessage->Return.TrxID,
+                                                            InMessage->Return.GrpMsgID,
                                                             InMessage->Return.UserID,
                                                             InMessage->Return.SOE,
                                                             CtiMultiMsg_vec()));
@@ -974,11 +974,11 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
         {
             group_queue_t::iterator itr     = _groupQueue.begin(),
                                     itr_end = _groupQueue.end();
-            int user_message_id = pReq->OptionsField();
+            int group_message_id = pReq->GroupMessageId();
 
             while( itr != itr_end )
             {
-                if( reinterpret_cast<const CtiRequestMsg *>(*itr)->UserMessageId() == user_message_id )
+                if( reinterpret_cast<const CtiRequestMsg *>(*itr)->GroupMessageId() == group_message_id )
                 {
                     delete *itr;
                     itr = _groupQueue.erase(itr);
@@ -989,7 +989,7 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
                 }
             }
 
-            _inQueue.erase_if(boost::bind(user_message_id_equal, _1, user_message_id));
+            _inQueue.erase_if(boost::bind(user_message_id_equal, _1, group_message_id));
         }
 
         //This message is a system request for porter, send it to the porter system thread, not a device.
@@ -1120,7 +1120,7 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
                                                                   pExecReq->RouteId(),
                                                                   pExecReq->MacroOffset(),
                                                                   pExecReq->AttemptNum(),
-                                                                  pExecReq->TransmissionId(),
+                                                                  pExecReq->GroupMessageId(),
                                                                   pExecReq->UserMessageId(),
                                                                   pExecReq->getSOE());
 

@@ -194,7 +194,7 @@ INT CtiDeviceWctpTerminal::ExecuteRequest(CtiRequestMsg                  *pReq,
                                                     OutMessage->Request.RouteID,
                                                     OutMessage->Request.MacroOffset,
                                                     OutMessage->Request.Attempt,
-                                                    OutMessage->Request.TrxID,
+                                                    OutMessage->Request.GrpMsgID,
                                                     OutMessage->Request.UserID,
                                                     OutMessage->Request.SOE,
                                                     CtiMultiMsg_vec()));

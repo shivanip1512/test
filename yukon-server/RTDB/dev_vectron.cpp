@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_vectron.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2006/03/23 15:29:18 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2008/08/14 15:57:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1725,7 +1725,7 @@ INT CtiDeviceVectron::decodeResultScan (INMESS *InMessage,
                                             InMessage->Return.RouteID,
                                             InMessage->Return.MacroOffset,
                                             InMessage->Return.Attempt,
-                                            InMessage->Return.TrxID,
+                                            InMessage->Return.GrpMsgID,
                                             InMessage->Return.UserID);
 
     VectronScanData_t  *vsd = (VectronScanData_t*) DUPRep->Message;
@@ -1867,7 +1867,7 @@ INT CtiDeviceVectron::decodeResultLoadProfile (INMESS *InMessage,
                                             InMessage->Return.RouteID,
                                             InMessage->Return.MacroOffset,
                                             InMessage->Return.Attempt,
-                                            InMessage->Return.TrxID,
+                                            InMessage->Return.GrpMsgID,
                                             InMessage->Return.UserID);
     // initialize
     currentInterval   = (INT)vectronMMConfig->Real.currentInterval;

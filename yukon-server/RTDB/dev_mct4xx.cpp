@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.87 $
-* DATE         :  $Date: 2008/08/13 21:23:35 $
+* REVISION     :  $Revision: 1.88 $
+* DATE         :  $Date: 2008/08/14 15:57:40 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -543,7 +543,7 @@ INT CtiDeviceMCT4xx::executeGetValue( CtiRequestMsg        *pReq,
                                                        OutMessage->Request.RouteID,
                                                        OutMessage->Request.MacroOffset,
                                                        OutMessage->Request.Attempt,
-                                                       OutMessage->Request.TrxID,
+                                                       OutMessage->Request.GrpMsgID,
                                                        OutMessage->Request.UserID,
                                                        OutMessage->Request.SOE,
                                                        CtiMultiMsg_vec( ));
@@ -1052,7 +1052,7 @@ INT CtiDeviceMCT4xx::executeGetConfig( CtiRequestMsg              *pReq,
                                                    OutMessage->Request.RouteID,
                                                    OutMessage->Request.MacroOffset,
                                                    OutMessage->Request.Attempt,
-                                                   OutMessage->Request.TrxID,
+                                                   OutMessage->Request.GrpMsgID,
                                                    OutMessage->Request.UserID,
                                                    OutMessage->Request.SOE,
                                                    CtiMultiMsg_vec( ));
@@ -1148,7 +1148,7 @@ INT CtiDeviceMCT4xx::executeGetStatus( CtiRequestMsg              *pReq,
                                                    OutMessage->Request.RouteID,
                                                    OutMessage->Request.MacroOffset,
                                                    OutMessage->Request.Attempt,
-                                                   OutMessage->Request.TrxID,
+                                                   OutMessage->Request.GrpMsgID,
                                                    OutMessage->Request.UserID,
                                                    OutMessage->Request.SOE,
                                                    CtiMultiMsg_vec( ));
@@ -1229,7 +1229,7 @@ INT CtiDeviceMCT4xx::executePutConfig(CtiRequestMsg         *pReq,
                                                    OutMessage->Request.RouteID,
                                                    OutMessage->Request.MacroOffset,
                                                    OutMessage->Request.Attempt,
-                                                   OutMessage->Request.TrxID,
+                                                   OutMessage->Request.GrpMsgID,
                                                    OutMessage->Request.UserID,
                                                    OutMessage->Request.SOE,
                                                    CtiMultiMsg_vec( ));
@@ -1905,7 +1905,7 @@ int CtiDeviceMCT4xx::executePutConfigSingle(CtiRequestMsg         *pReq,
                                                 OutMessage->Request.RouteID,
                                                 OutMessage->Request.MacroOffset,
                                                 OutMessage->Request.Attempt,
-                                                OutMessage->Request.TrxID,
+                                                OutMessage->Request.GrpMsgID,
                                                 OutMessage->Request.UserID,
                                                 OutMessage->Request.SOE,
                                                 CtiMultiMsg_vec( )) );

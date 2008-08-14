@@ -289,7 +289,7 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
                                                        OutMessage->Request.RouteID,
                                                        OutMessage->Request.MacroOffset,
                                                        OutMessage->Request.Attempt,
-                                                       OutMessage->Request.TrxID,
+                                                       OutMessage->Request.GrpMsgID,
                                                        OutMessage->Request.UserID,
                                                        OutMessage->Request.SOE,
                                                        CtiMultiMsg_vec());
@@ -320,7 +320,7 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
                                         OutMessage->Request.RouteID,
                                         OutMessage->Request.MacroOffset,
                                         OutMessage->Request.Attempt,
-                                        OutMessage->Request.TrxID,
+                                        OutMessage->Request.GrpMsgID,
                                         OutMessage->Request.UserID,
                                         OutMessage->Request.SOE,
                                         CtiMultiMsg_vec()));
@@ -469,7 +469,7 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
                 CtiRequestMsg *newReq = CTIDBG_new CtiRequestMsg(getID(),
                                                                  "scan general post_control",
                                                                  InMessage->Return.UserID,
-                                                                 InMessage->Return.TrxID,
+                                                                 InMessage->Return.GrpMsgID,
                                                                  InMessage->Return.RouteID,
                                                                  InMessage->Return.MacroOffset,
                                                                  InMessage->Return.Attempt);
@@ -510,7 +510,7 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
                             CtiRequestMsg *newReq = CTIDBG_new CtiRequestMsg(getID(),
                                                                              "scan general post_control duke_issg_start",
                                                                              InMessage->Return.UserID,
-                                                                             InMessage->Return.TrxID,
+                                                                             InMessage->Return.GrpMsgID,
                                                                              InMessage->Return.RouteID,
                                                                              InMessage->Return.MacroOffset,
                                                                              InMessage->Return.Attempt);
@@ -538,7 +538,7 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
                             CtiRequestMsg *newReq = CTIDBG_new CtiRequestMsg(getID(),
                                                                              "scan general post_control duke_issg_stop",
                                                                              InMessage->Return.UserID,
-                                                                             InMessage->Return.TrxID,
+                                                                             InMessage->Return.GrpMsgID,
                                                                              InMessage->Return.RouteID,
                                                                              InMessage->Return.MacroOffset,
                                                                              InMessage->Return.Attempt);
@@ -576,7 +576,7 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
                     CtiRequestMsg *newReq = CTIDBG_new CtiRequestMsg(getID(),
                                                                      "getstatus eventlog",
                                                                      InMessage->Return.UserID,
-                                                                     InMessage->Return.TrxID,
+                                                                     InMessage->Return.GrpMsgID,
                                                                      InMessage->Return.RouteID,
                                                                      InMessage->Return.MacroOffset,
                                                                      InMessage->Return.Attempt);
@@ -600,7 +600,7 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
                         newReq = CTIDBG_new CtiRequestMsg(getID(),
                                                           "putconfig timesync",
                                                           InMessage->Return.UserID,
-                                                          InMessage->Return.TrxID,
+                                                          InMessage->Return.GrpMsgID,
                                                           InMessage->Return.RouteID,
                                                           InMessage->Return.MacroOffset,
                                                           InMessage->Return.Attempt);
@@ -619,7 +619,7 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
                     newReq = CTIDBG_new CtiRequestMsg(getID(),
                                                       "scan general",
                                                       InMessage->Return.UserID,
-                                                      InMessage->Return.TrxID,
+                                                      InMessage->Return.GrpMsgID,
                                                       InMessage->Return.RouteID,
                                                       InMessage->Return.MacroOffset,
                                                       InMessage->Return.Attempt);
@@ -645,7 +645,7 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
                 newReq = CTIDBG_new CtiRequestMsg(getID(),
                                                   "scan general",
                                                   InMessage->Return.UserID,
-                                                  InMessage->Return.TrxID,
+                                                  InMessage->Return.GrpMsgID,
                                                   InMessage->Return.RouteID,
                                                   InMessage->Return.MacroOffset,
                                                   InMessage->Return.Attempt);
@@ -690,7 +690,7 @@ int CtiDeviceION::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
                                                        InMessage->Return.RouteID,
                                                        InMessage->Return.MacroOffset,
                                                        InMessage->Return.Attempt,
-                                                       InMessage->Return.TrxID,
+                                                       InMessage->Return.GrpMsgID,
                                                        InMessage->Return.UserID);
 
         retList.push_back(retMsg);
@@ -826,7 +826,7 @@ INT CtiDeviceION::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
                                      InMessage->Return.RouteID,
                                      InMessage->Return.MacroOffset,
                                      InMessage->Return.Attempt,
-                                     InMessage->Return.TrxID,
+                                     InMessage->Return.GrpMsgID,
                                      InMessage->Return.UserID);
 
     if( retMsg != NULL )

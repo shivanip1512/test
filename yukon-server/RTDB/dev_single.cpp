@@ -5,8 +5,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.64 $
-* DATE         :  $Date: 2008/06/25 17:08:41 $
+* REVISION     :  $Revision: 1.65 $
+* DATE         :  $Date: 2008/08/14 15:57:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -760,13 +760,13 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
 
             InEchoToOut( InMessage, OutTemplate );
 
-            CtiRequestMsg *pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, string(InMessage->Return.CommandStr), InMessage->Return.UserID, InMessage->Return.TrxID, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, 0, InMessage->Priority);
+            CtiRequestMsg *pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, string(InMessage->Return.CommandStr), InMessage->Return.UserID, InMessage->Return.GrpMsgID, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, 0, InMessage->Priority);
 
             pReq->setConnectionHandle( InMessage->Return.Connection );
 
             {
                 string msg;
-                CtiReturnMsg *Ret = CTIDBG_new CtiReturnMsg( getID(), CmdStr, string("Macro offset ") + CtiNumStr(InMessage->Return.MacroOffset - 1) + string(" failed. Attempting next offset."), nRet, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID, InMessage->Return.SOE, CtiMultiMsg_vec());
+                CtiReturnMsg *Ret = CTIDBG_new CtiReturnMsg( getID(), CmdStr, string("Macro offset ") + CtiNumStr(InMessage->Return.MacroOffset - 1) + string(" failed. Attempting next offset."), nRet, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.GrpMsgID, InMessage->Return.UserID, InMessage->Return.SOE, CtiMultiMsg_vec());
 
                 msg = Ret->ResultString() + "\nError " + CtiNumStr(nRet) + ": " + FormatError(nRet);
                 Ret->setResultString( msg );
@@ -826,7 +826,7 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
                 dout << TimeNow << " Error (" << (InMessage->EventCode & ~DECODED)  << ") to Remote: " << getName() <<": " << GetError(nRet) << endl;
             }
 
-            CtiReturnMsg *Ret = CTIDBG_new CtiReturnMsg(  getID(), CmdStr, FormatError(nRet), nRet, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.TrxID, InMessage->Return.UserID, InMessage->Return.SOE, CtiMultiMsg_vec());
+            CtiReturnMsg *Ret = CTIDBG_new CtiReturnMsg(  getID(), CmdStr, FormatError(nRet), nRet, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.GrpMsgID, InMessage->Return.UserID, InMessage->Return.SOE, CtiMultiMsg_vec());
 
             decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
             if(getGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection)>0)

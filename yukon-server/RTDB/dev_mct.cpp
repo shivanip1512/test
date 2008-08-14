@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.130 $
-* DATE         :  $Date: 2008/06/25 21:14:38 $
+* REVISION     :  $Revision: 1.131 $
+* DATE         :  $Date: 2008/08/14 15:57:40 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -500,7 +500,7 @@ INT CtiDeviceMCT::ExecuteRequest( CtiRequestMsg              *pReq,
                                                 OutMessage->Request.RouteID,
                                                 OutMessage->Request.MacroOffset,
                                                 OutMessage->Request.Attempt,
-                                                OutMessage->Request.TrxID,
+                                                OutMessage->Request.GrpMsgID,
                                                 OutMessage->Request.UserID,
                                                 OutMessage->Request.SOE,
                                                 CtiMultiMsg_vec( )) );
@@ -1078,7 +1078,7 @@ INT CtiDeviceMCT::ErrorDecode(INMESS *InMessage, CtiTime& Now, list< CtiMessage*
                                                 InMessage->Return.RouteID,
                                                 InMessage->Return.MacroOffset,
                                                 InMessage->Return.Attempt,
-                                                InMessage->Return.TrxID,
+                                                InMessage->Return.GrpMsgID,
                                                 InMessage->Return.UserID);
     int i;
 
@@ -2277,7 +2277,7 @@ INT CtiDeviceMCT::executePutConfig(CtiRequestMsg                  *pReq,
                                                    OutMessage->Request.RouteID,
                                                    OutMessage->Request.MacroOffset,
                                                    OutMessage->Request.Attempt,
-                                                   OutMessage->Request.TrxID,
+                                                   OutMessage->Request.GrpMsgID,
                                                    OutMessage->Request.UserID,
                                                    OutMessage->Request.SOE,
                                                    CtiMultiMsg_vec( ));
@@ -3675,7 +3675,7 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< Cti
                     InEchoToOut( InMessage, OutTemplate );
 
                     //  reset the meter
-                    pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putstatus reset", InMessage->Return.UserID, InMessage->Return.TrxID, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt);
+                    pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putstatus reset", InMessage->Return.UserID, InMessage->Return.GrpMsgID, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt);
 
                     if( pReq != NULL )
                     {
@@ -3691,7 +3691,7 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< Cti
                     }
 
                     //  enable group addressing
-                    pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon group enable", InMessage->Return.UserID, InMessage->Return.TrxID, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt);
+                    pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon group enable", InMessage->Return.UserID, InMessage->Return.GrpMsgID, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt);
 
                     if( pReq != NULL )
                     {
@@ -3709,7 +3709,7 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< Cti
                     //  put the load profile interval if it's a lp device
                     if( isLoadProfile(getType()) )
                     {
-                        pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon interval lp", InMessage->Return.UserID, InMessage->Return.TrxID, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt);
+                        pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon interval lp", InMessage->Return.UserID, InMessage->Return.GrpMsgID, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt);
 
                         if( pReq != NULL )
                         {
@@ -3728,7 +3728,7 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< Cti
                     //  put the demand interval
                     if( hasVariableDemandRate(getType(), sspec) )
                     {
-                        pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon interval li", InMessage->Return.UserID, InMessage->Return.TrxID, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt);
+                        pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon interval li", InMessage->Return.UserID, InMessage->Return.GrpMsgID, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt);
 
                         if( pReq != NULL )
                         {
@@ -3748,7 +3748,7 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< Cti
                     {
                         if( _mpkh[0] > 0 )
                         {
-                            pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon mult kyz 1 " + CtiNumStr(_mpkh[0]), InMessage->Return.UserID, InMessage->Return.TrxID, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt);
+                            pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon mult kyz 1 " + CtiNumStr(_mpkh[0]), InMessage->Return.UserID, InMessage->Return.GrpMsgID, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt);
 
                             if( pReq != NULL )
                             {
@@ -3792,7 +3792,7 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< Cti
                         if( _wireConfig[1] != WireConfigTwoWire )   config_byte |= 0x10;
                         if( _wireConfig[2] != WireConfigTwoWire )   config_byte |= 0x20;
 
-                        pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon raw start=0x03 " + CtiNumStr(config_byte).xhex().zpad(2), InMessage->Return.UserID, InMessage->Return.TrxID, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt);
+                        pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon raw start=0x03 " + CtiNumStr(config_byte).xhex().zpad(2), InMessage->Return.UserID, InMessage->Return.GrpMsgID, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt);
 
                         if( pReq != NULL )
                         {
@@ -3810,7 +3810,7 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< Cti
                         {
                             if( _mpkh[i] > 0 )
                             {
-                                pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon mult kyz " + CtiNumStr(i+1) + string(" ") + CtiNumStr(_mpkh[i]), InMessage->Return.UserID, InMessage->Return.TrxID, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt);
+                                pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon mult kyz " + CtiNumStr(i+1) + string(" ") + CtiNumStr(_mpkh[i]), InMessage->Return.UserID, InMessage->Return.GrpMsgID, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt);
 
                                 if( pReq != NULL )
                                 {

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTTIME.cpp-arc  $
-* REVISION     :  $Revision: 1.51 $
-* DATE         :  $Date: 2008/07/17 20:51:52 $
+* REVISION     :  $Revision: 1.52 $
+* DATE         :  $Date: 2008/08/14 15:57:41 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -168,7 +168,7 @@ static void apply711TimeSync(const long unusedid, CtiDeviceSPtr RemoteRecord, vo
         OutMessage->MessageFlags = MessageFlag_ApplyExclusionLogic;
         OutMessage->ExpirationTime = getNextTimeSync();
 
-        if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.UserID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
+        if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
         {
             printf ("Error Writing to Queue for Port %2hd\n", RemoteRecord->getPortID());
             delete (OutMessage);
@@ -259,7 +259,7 @@ static void apply710TimeSync(const long unusedid, CtiDeviceSPtr RemoteRecord, vo
                         //  ... but because we're not executing on the route, we have to do this manually
                         Cti::Protocol::Emetcon::buildBWordMessage(OutMessage);
 
-                        if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.UserID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
+                        if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
                         {
                             printf ("Error Writing to Queue for Port %2hd\n", portid);
                             delete (OutMessage);
@@ -379,7 +379,7 @@ static void applyDeviceTimeSync(const long unusedid, CtiDeviceSPtr RemoteRecord,
                 OutMessage->MessageFlags = MessageFlag_ApplyExclusionLogic;
                 OutMessage->ExpirationTime = getNextTimeSync();
 
-                if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.UserID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
+                if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
                 {
                     printf ("Error Writing to Queue for Port %2hd\n", RemoteRecord->getPortID());
                     delete (OutMessage);
@@ -437,7 +437,7 @@ static void applyDeviceTimeSync(const long unusedid, CtiDeviceSPtr RemoteRecord,
             }
 #endif
 
-            if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.UserID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
+            if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
             {
                 printf ("Error Writing to Queue for Port %2hd\n", RemoteRecord->getPortID());
                 delete (OutMessage);
@@ -477,7 +477,7 @@ static void applyDeviceTimeSync(const long unusedid, CtiDeviceSPtr RemoteRecord,
                     OutMessage->MessageFlags = MessageFlag_ApplyExclusionLogic;
                     OutMessage->ExpirationTime = getNextTimeSync();
 
-                    if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.UserID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
+                    if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
                     {
                         printf ("Error Writing to Queue for Port %2hd\n", RemoteRecord->getPortID());
                         delete (OutMessage);
@@ -508,7 +508,7 @@ static void applyDeviceTimeSync(const long unusedid, CtiDeviceSPtr RemoteRecord,
                 OutMessage->MessageFlags = MessageFlag_ApplyExclusionLogic;
                 OutMessage->ExpirationTime = getNextTimeSync();
 
-                if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.UserID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
+                if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
                 {
                     printf ("Error Writing to Queue for Port %2hd\n", RemoteRecord->getPortID());
                     delete (OutMessage);
@@ -580,7 +580,7 @@ static void applyMCT400TimeSync(const long key, CtiRouteSPtr pRoute, void* d)
                 //  ... but because we're not executing on the route, we have to do this manually
                 Cti::Protocol::Emetcon::buildBWordMessage(OutMessage);
 
-                if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.UserID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
+                if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
                 {
                     printf ("Error Writing to Queue for Port %2hd\n", portid);
                     delete (OutMessage);
@@ -655,7 +655,7 @@ static void applyPortSendTime(const long unusedid, CtiPortSPtr PortRecord, void 
                 OutMessage->MessageFlags = MessageFlag_ApplyExclusionLogic;
                 OutMessage->ExpirationTime = getNextTimeSync();
 
-                if(PortRecord->writeQueue(OutMessage->Request.UserID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority, PortThread))
+                if(PortRecord->writeQueue(OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority, PortThread))
                 {
                     printf ("Error Writing to Queue for Port %2hd\n", PortRecord->getPortID());
                     delete (OutMessage);

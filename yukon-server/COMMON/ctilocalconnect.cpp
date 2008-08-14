@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_710.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2008/07/08 22:54:57 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2008/08/14 15:57:39 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -242,7 +242,7 @@ void CtiLocalConnect<OUTMESS, INMESS>::purgeRequest(int request)
 
     while( itr != _outQueue.end() )
     {
-        if( (*itr)->Request.UserID == request )
+        if( (*itr)->Request.GrpMsgID == request )
         {
             delete(*itr);
             itr = _outQueue.erase(itr);

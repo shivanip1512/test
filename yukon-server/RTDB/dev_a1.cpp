@@ -6,12 +6,17 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_a1.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2007/05/31 21:38:44 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2008/08/14 15:57:39 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *    History:
       $Log: dev_a1.cpp,v $
+      Revision 1.20  2008/08/14 15:57:39  jotteson
+      YUK-6333  Change naming in request message and change cancellation to use this new named field instead of user ID
+      Cancellation now uses the new group message ID.
+      Group Message ID name added to Request, Result, Out, and In messages.
+
       Revision 1.19  2007/05/31 21:38:44  mfisher
       Reverted text in comments from "CTIDBG_new" back to "new"
 
@@ -1809,7 +1814,7 @@ INT CtiDeviceAlphaA1::decodeResultScan   (INMESS *InMessage,
                                             InMessage->Return.RouteID,
                                             InMessage->Return.MacroOffset,
                                             InMessage->Return.Attempt,
-                                            InMessage->Return.TrxID,
+                                            InMessage->Return.GrpMsgID,
                                             InMessage->Return.UserID);
     AlphaA1ScanData_t  *ptr = (AlphaA1ScanData_t *)DUPRep->Message;
     CtiTime peakTime;
@@ -1982,7 +1987,7 @@ INT CtiDeviceAlphaA1::decodeResultLoadProfile (INMESS *InMessage,
                                             InMessage->Return.RouteID,
                                             InMessage->Return.MacroOffset,
                                             InMessage->Return.Attempt,
-                                            InMessage->Return.TrxID,
+                                            InMessage->Return.GrpMsgID,
                                             InMessage->Return.UserID);
 
     // alpha only supports 4 channels

@@ -1874,7 +1874,7 @@ INT CtiDeviceQuantum::decodeResultScan( INMESS *InMessage,
                                                        InMessage->Return.RouteID,
                                                        InMessage->Return.MacroOffset,
                                                        InMessage->Return.Attempt,
-                                                       InMessage->Return.TrxID,
+                                                       InMessage->Return.GrpMsgID,
                                                        InMessage->Return.UserID );
 
     QuantumRawScanData_t *rawScanData = (QuantumRawScanData_t *)DUPRep->Message;
@@ -2039,7 +2039,7 @@ INT CtiDeviceQuantum::decodeResultLoadProfile (INMESS *InMessage,
                                                           InMessage->Return.RouteID,
                                                           InMessage->Return.MacroOffset,
                                                           InMessage->Return.Attempt,
-                                                          InMessage->Return.TrxID,
+                                                          InMessage->Return.GrpMsgID,
                                                           InMessage->Return.UserID );
     int                         i, j;
 

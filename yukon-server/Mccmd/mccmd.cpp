@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.76 $
-* DATE         :  $Date: 2008/08/06 21:08:40 $
+* REVISION     :  $Revision: 1.77 $
+* DATE         :  $Date: 2008/08/14 15:57:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1679,6 +1679,7 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
     {
         CtiRequestMsg* req = (CtiRequestMsg*) iter.key();
         req->setUserMessageId(msgid);
+        req->setGroupMessageId(msgid);
 
         if( gMccmdDebugLevel & MCCMD_DEBUG_PILREQUEST )
             DumpRequestMessage(*req);
@@ -1799,7 +1800,7 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
         if( now > lastPorterCountTime + PORT_COUNT_REQUEST_SECONDS )
         {
             lastPorterCountTime = now;
-            PILConnection->WriteConnQue(CTIDBG_new CtiRequestMsg(0, "system message request count", msgid, 0, 0, 0, 0, msgid));
+            PILConnection->WriteConnQue(CTIDBG_new CtiRequestMsg(0, "system message request count", 0, msgid));
         }
     } while(true);
 
@@ -1811,7 +1812,7 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
     // We now always send the cancel message.
     if( two_way && timeout > 0 && !gDoNotSendCancel)
     {
-        PILConnection->WriteConnQue(CTIDBG_new CtiRequestMsg(0, "system message request cancel", msgid, 0, 0, 0, 0, msgid));
+        PILConnection->WriteConnQue(CTIDBG_new CtiRequestMsg(0, "system message request cancel", 0, msgid));
     }
 
     // set up good and bad tcl lists

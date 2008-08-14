@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_grp_emetcon.cpp-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2008/02/29 17:05:14 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2008/08/14 15:57:39 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -140,7 +140,7 @@ INT CtiDeviceGroupEmetcon::ExecuteRequest(CtiRequestMsg                  *pReq,
                                                       OutMessage->Request.RouteID,
                                                       OutMessage->Request.MacroOffset,
                                                       OutMessage->Request.Attempt,
-                                                      OutMessage->Request.TrxID,
+                                                      OutMessage->Request.GrpMsgID,
                                                       OutMessage->Request.UserID,
                                                       OutMessage->Request.SOE,
                                                       CtiMultiMsg_vec());
@@ -192,7 +192,7 @@ INT CtiDeviceGroupEmetcon::ExecuteRequest(CtiRequestMsg                  *pReq,
                                                       OutMessage->Request.RouteID,
                                                       OutMessage->Request.MacroOffset,
                                                       OutMessage->Request.Attempt,
-                                                      OutMessage->Request.TrxID,
+                                                      OutMessage->Request.GrpMsgID,
                                                       OutMessage->Request.UserID,
                                                       OutMessage->Request.SOE,
                                                       CtiMultiMsg_vec());
@@ -230,7 +230,7 @@ INT CtiDeviceGroupEmetcon::ExecuteRequest(CtiRequestMsg                  *pReq,
                                               OutMessage->Request.RouteID,
                                               OutMessage->Request.MacroOffset,
                                               OutMessage->Request.Attempt,
-                                              OutMessage->Request.TrxID,
+                                              OutMessage->Request.GrpMsgID,
                                               OutMessage->Request.UserID,
                                               OutMessage->Request.SOE,
                                               CtiMultiMsg_vec());

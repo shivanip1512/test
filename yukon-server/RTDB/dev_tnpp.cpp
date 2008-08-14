@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tnpp.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2006/02/27 23:58:31 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2008/08/14 15:57:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -505,7 +505,7 @@ INT CtiDeviceTnppPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandP
                                                         OutMessage->Request.RouteID,
                                                         OutMessage->Request.MacroOffset,
                                                         OutMessage->Request.Attempt,
-                                                        OutMessage->Request.TrxID,
+                                                        OutMessage->Request.GrpMsgID,
                                                         OutMessage->Request.UserID,
                                                         OutMessage->Request.SOE,
                                                         CtiMultiMsg_vec()));

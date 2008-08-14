@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_ccu.cpp-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2007/11/12 16:48:29 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2008/08/14 15:57:39 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -176,7 +176,7 @@ INT CtiDeviceCCU::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMes
                                                             InMessage->Return.RouteID,
                                                             InMessage->Return.MacroOffset,
                                                             InMessage->Return.Attempt,
-                                                            InMessage->Return.TrxID,
+                                                            InMessage->Return.GrpMsgID,
                                                             InMessage->Return.UserID);
 
 
@@ -196,7 +196,7 @@ INT CtiDeviceCCU::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMes
                                                             InMessage->Return.RouteID,
                                                             InMessage->Return.MacroOffset,
                                                             InMessage->Return.Attempt,
-                                                            InMessage->Return.TrxID,
+                                                            InMessage->Return.GrpMsgID,
                                                             InMessage->Return.UserID);
 
 
@@ -324,7 +324,7 @@ INT CtiDeviceCCU::ExecuteRequest(CtiRequestMsg                  *pReq,
                                                             OutMessage->Request.RouteID,
                                                             OutMessage->Request.MacroOffset,
                                                             OutMessage->Request.Attempt,
-                                                            OutMessage->Request.TrxID,
+                                                            OutMessage->Request.GrpMsgID,
                                                             OutMessage->Request.UserID,
                                                             OutMessage->Request.SOE,
                                                             CtiMultiMsg_vec()));
@@ -352,7 +352,7 @@ INT CtiDeviceCCU::ExecuteRequest(CtiRequestMsg                  *pReq,
                                                     OutMessage->Request.RouteID,
                                                     OutMessage->Request.MacroOffset,
                                                     OutMessage->Request.Attempt,
-                                                    OutMessage->Request.TrxID,
+                                                    OutMessage->Request.GrpMsgID,
                                                     OutMessage->Request.UserID,
                                                     OutMessage->Request.SOE,
                                                     CtiMultiMsg_vec()));
