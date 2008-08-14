@@ -122,6 +122,6 @@ public interface DeviceDefinitionService {
      * @param currentDevice - Device to change
      * @param newDefinition - Definition of type to change to
      */
-    public void changeDeviceType(YukonDevice currentDevice,
+    public YukonDevice changeDeviceType(YukonDevice currentDevice,
             DeviceDefinition newDefinition);
 }

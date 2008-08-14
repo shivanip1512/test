@@ -14,7 +14,7 @@ public class DisconnectAddressBulkFieldProcessor extends BulkYukonDeviceFieldPro
     private MeterService meterService = null;
     
     @Override
-    public void updateField(YukonDevice device, YukonDeviceDto value) throws ProcessingException  {
+    public YukonDevice updateField(YukonDevice device, YukonDeviceDto value) throws ProcessingException  {
 
         try {
             
@@ -40,6 +40,7 @@ public class DisconnectAddressBulkFieldProcessor extends BulkYukonDeviceFieldPro
             throw new ProcessingException("Unable to update disconnect address.");
         }
             
+        return device;
     }
     
     @Required

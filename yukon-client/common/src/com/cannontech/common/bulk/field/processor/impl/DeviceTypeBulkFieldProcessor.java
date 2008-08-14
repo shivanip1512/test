@@ -24,14 +24,14 @@ public class DeviceTypeBulkFieldProcessor extends BulkYukonDeviceFieldProcessor 
     private DeviceDefinitionDao deviceDefinitionDao = null;
     
     @Override
-    public void updateField(YukonDevice device, YukonDeviceDto value) {
+    public YukonDevice updateField(YukonDevice device, YukonDeviceDto value) {
         
         try {
             
             // get the definition for the type selected
             int deviceType = paoGroupsWrapper.getDeviceType(value.getDeviceType());
             if (deviceType == device.getType()) {
-                return;
+                return device;
             }
             
             DeviceDefinition selectedDeviceDefinition = deviceDefinitionDao.getDeviceDefinition(deviceType);
@@ -47,7 +47,7 @@ public class DeviceTypeBulkFieldProcessor extends BulkYukonDeviceFieldProcessor 
                 throw new ProcessingException(errorMsg);
             }
             else {
-                deviceDefinitionService.changeDeviceType(device, selectedDeviceDefinition);
+                return deviceDefinitionService.changeDeviceType(device, selectedDeviceDefinition);
             }
         
         }

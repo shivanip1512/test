@@ -119,7 +119,7 @@ public class DeviceDefinitionServiceImpl implements DeviceDefinitionService {
     }
     
     @Transactional
-    public void changeDeviceType(YukonDevice currentDevice,
+    public YukonDevice changeDeviceType(YukonDevice currentDevice,
             DeviceDefinition newDefinition) {
         
         DeviceBase yukonPAObject = (DeviceBase) PAOFactory.createPAObject(currentDevice.getDeviceId());
@@ -151,6 +151,7 @@ public class DeviceDefinitionServiceImpl implements DeviceDefinitionService {
             dbPersistentDao.processDBChange(msg);
         }
         
+        return new YukonDevice(changedDevice.getDevice().getDeviceID(), paoGroupsWrapper.getDeviceType(changedDevice.getPAOType()));
     }
 
     @SuppressWarnings("unchecked")

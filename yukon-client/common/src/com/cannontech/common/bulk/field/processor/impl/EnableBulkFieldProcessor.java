@@ -13,14 +13,14 @@ public class EnableBulkFieldProcessor extends BulkYukonDeviceFieldProcessor {
     private DeviceDao deviceDao;
     
     @Override
-    public void updateField(YukonDevice device, YukonDeviceDto value) {
+    public YukonDevice updateField(YukonDevice device, YukonDeviceDto value) {
 
         Boolean enable = value.getEnable();
         
         try {
             
             if (enable == null) {
-                return;
+                return device;
             }
             
             if (enable) {
@@ -33,7 +33,8 @@ public class EnableBulkFieldProcessor extends BulkYukonDeviceFieldProcessor {
         catch (DataAccessException e) {
             throw new ProcessingException("Could not " + ((enable) ? "enable" : "disable") + " device with id: " + device.getDeviceId(), e);
         }
-            
+        
+        return device;
     }
     
     @Required

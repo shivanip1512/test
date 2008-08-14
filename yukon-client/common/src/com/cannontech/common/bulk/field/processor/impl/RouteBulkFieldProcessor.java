@@ -13,7 +13,7 @@ public class RouteBulkFieldProcessor extends BulkYukonDeviceFieldProcessor {
     private DeviceUpdateService deviceUpdateService;
     
     @Override
-    public void updateField(YukonDevice device, YukonDeviceDto value) {
+    public YukonDevice updateField(YukonDevice device, YukonDeviceDto value) {
         
         try {
             this.deviceUpdateService.changeRoute(device, value.getRoute());
@@ -24,6 +24,8 @@ public class RouteBulkFieldProcessor extends BulkYukonDeviceFieldProcessor {
         catch (DataAccessException e) {
             throw new ProcessingException("Could not change route of device with id: " + device.getDeviceId() + ", and value: " + value.getRoute(), e);
         }
+        
+        return device;
     }
     
     @Required

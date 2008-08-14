@@ -224,7 +224,7 @@ public abstract class BaseBulkService {
                 
                 // run processors
                 for (BulkYukonDeviceFieldProcessor bulkFieldProcessor : bulkFieldProcessors) {
-                    bulkFieldProcessor.updateField(device, deviceDto);
+                    device = bulkFieldProcessor.updateField(device, deviceDto);
                 }
             }
         };

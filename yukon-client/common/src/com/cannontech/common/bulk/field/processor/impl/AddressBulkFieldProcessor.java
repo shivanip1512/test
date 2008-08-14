@@ -14,7 +14,7 @@ public class AddressBulkFieldProcessor extends BulkYukonDeviceFieldProcessor {
     private DeviceUpdateService deviceUpdateService;
     
     @Override
-    public void updateField(YukonDevice device, YukonDeviceDto value) throws ProcessingException  {
+    public YukonDevice updateField(YukonDevice device, YukonDeviceDto value) throws ProcessingException  {
 
         try {
             deviceUpdateService.changeAddress(device, value.getAddress());
@@ -25,6 +25,8 @@ public class AddressBulkFieldProcessor extends BulkYukonDeviceFieldProcessor {
         catch (IllegalArgumentException e) {
             throw new ProcessingException(e.getMessage());
         }
+        
+        return device;
     }
     
     @Required
