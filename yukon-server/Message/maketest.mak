@@ -28,101 +28,63 @@ INCLPATHS+= \
 ;$(BOOST) \
 ;$(RW)
 
+LIBS=\
+kernel32.lib user32.lib advapi32.lib \
+$(COMPILEBASE)\lib\ctibase.lib \
+$(COMPILEBASE)\lib\ctimsg.lib \
+$(COMPILEBASE)\lib\cticparms.lib \
+$(COMPILEBASE)\lib\clrdump.lib \
 
+ALL:            ctimsgtest
 
-OBJS=\
-connection.obj \
-dll_msg.obj \
-message.obj \
-msg_cmd.obj \
-msg_commerrorhistory.obj \
-msg_dbchg.obj \
-msg_lmcontrolhistory.obj \
-msg_multi.obj \
-msg_multiwrap.obj \
-msg_notif_alarm.obj \
-msg_notif_email.obj \
-msg_notif_email_attachment.obj \
-msg_notif_lmcontrol.obj \
-msg_pcrequest.obj \
-msg_pcreturn.obj \
-msg_signal.obj \
-msg_pdata.obj \
-msg_queuedata.obj \
-msg_requestcancel.obj \
-msg_reg.obj \
-msg_ptreg.obj \
-msg_server_req.obj \
-msg_server_resp.obj \
-msg_tag.obj \
-msg_trace.obj \
-
-
-
-
-CTIPROGS=\
-ctimsg.dll
-
-
-ALL:           $(CTIPROGS)
-
-ctimsg.dll:    $(OBJS) Makefile
-                @$(MAKE) -nologo -f $(_InputFile) id
-                @echo:
-                @echo Compiling $@
-                @%cd $(OBJ)
-                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(OBJS) id_ctimsg.obj -link $(RWLIBS) $(BOOSTLIBS) $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\cticparms.lib $(COMPILEBASE)\lib\clrdump.lib $(LINKFLAGS)
-               -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-               -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
-               -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
-               -if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
-                @echo:
-                @echo Done building Target $@
-                @echo:
-                @%cd $(CWD)
-
-copy:
-               -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-               -if exist bin\*.dll copy bin\*.dll $(YUKONOUTPUT)
-               -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
-               -if exist bin\*.lib copy bin\*.lib $(COMPILEBASE)\lib
-
+ctimsgtest:    test_message.obj Makefile
 
 deps:
-                scandeps -Output makedll.mak *.cpp
-
-
+                scandeps -Output maketest.mak *.cpp
 
 clean:
         -del \
-*.pdb \
-$(OBJ)\*.obj \
-$(BIN)\*.pdb \
-$(BIN)\*.pch \
-$(BIN)\*.ilk \
-$(BIN)\*.exp \
-$(BIN)\*.lib \
-$(BIN)\*.dll \
-$(BIN)\*.exe
-
-# The lines below accomplish the ID'ing of the project!
-id:
-            @$(MAKE) -nologo -f $(_InputFile) id_ctimsg.obj
-
-id_ctimsg.obj:    id_ctimsg.cpp include\id_ctimsg.h id_vinfo.h
+test*.pdb \
+$(OBJ)\test*.obj \
+$(BIN)\test*.pdb \
+$(BIN)\test*.pch \
+$(BIN)\test*.ilk \
+$(BIN)\test*.exp \
+$(BIN)\test*.lib \
+$(BIN)\test*.dll \
+$(BIN)\test*.exe
 
 
+allclean:   clean test
+
+copy:
+                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+                -copy bin\*.exe $(YUKONOUTPUT)
 
 
 ########################### Conversions ##############################
 
 .SUFFIXES:      .cpp .obj
 
-.cpp.obj:
+.cpp.obj :
         @echo:
-        @echo Compiling cpp to obj
-        $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) $(INCLPATHS) /D_DLL_MESSAGE -Fo$(OBJ)\ -c $<
+        @echo Compiling $< to
+        @echo           $(OBJ)\$(@B).obj
+        @echo:
+        $(RWCPPINVOKE) $(RWCPPFLAGS) $(CFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $<
 
+        @echo:
+        @echo Creating Executable $(OBJ)\$(@B).exe
+        @echo:
+        $(CC) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS)  /Fe$(BIN)\$(@B).exe \
+        .\obj\$(@B).obj -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOSTLIBS) $(BOOSTTESTLIBS) $(RWLIBS) $(LIBS) $(LINKFLAGS)
+
+        -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+        -copy $(BIN)\$(@B).exe $(YUKONOUTPUT)
+        -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
+        -if exist $(BIN)\$(@B).lib copy $(BIN)\$(@B).lib $(COMPILEBASE)\lib
+        @%cd $(CWD)
+        @echo.
 
 ######################################################################################
 

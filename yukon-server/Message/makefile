@@ -4,6 +4,7 @@ include ..\common\rwglobal.inc
 all:
          @$(MAKE) -nologo -f makepch.mak
          @$(MAKE) -nologo -f makedll.mak
+         @$(MAKE) -nologo -f maketest.mak
 
 clean:
         -del \
@@ -22,8 +23,10 @@ allclean:   clean all
 copy:
         @$(MAKE) -nologo -f makepch.mak $@
         @$(MAKE) -nologo -f makedll.mak $@
+        @$(MAKE) -nologo -f maketest.mak $@
 
 
 deps:
         @$(MAKE) -nologo -f makedll.mak $@
+        @$(MAKE) -nologo -f maketest.mak $@
 
