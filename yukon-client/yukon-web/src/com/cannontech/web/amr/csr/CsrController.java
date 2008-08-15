@@ -1,6 +1,5 @@
 package com.cannontech.web.amr.csr;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -8,7 +7,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
@@ -106,13 +104,7 @@ public class CsrController extends MultiActionController {
         // Build up filter by list
         List<FilterBy> filterByList = FilterByGenerator.getFilterByList();
         List<FilterBy> queryFilter = CsrUtils.getQueryFilter(request, filterByList);
-        
-        // Make friendly csr filter string
-        List<String> filterByStringList = new ArrayList<String>();
-        for (FilterBy filterBy : queryFilter) {
-            filterByStringList.add(filterBy.toCsrString());
-        }
-        String filterByString = StringUtils.join(filterByStringList, " and ");
+        String filterByString = CsrUtils.getFilterByString(queryFilter);
 
         // Perform the search
         SearchResult<ExtendedMeter> results = csrService.search(queryFilter,
