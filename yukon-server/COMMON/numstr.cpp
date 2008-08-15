@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2008/01/25 22:29:23 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2008/08/15 19:01:04 $
 *
 * Copyright (c) 2007 Cannon Technologies. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -60,7 +60,7 @@ void CtiNumStr::init( unsigned int width )
     {
         case DataType_FloatingPoint:
         {
-            _precision = (width <= MaxPrecision)?(width):(MaxPrecision);
+            _precision = min(width, (unsigned int)MaxPrecision);
             _bits = 0;
 
             break;
@@ -70,7 +70,7 @@ void CtiNumStr::init( unsigned int width )
         default:
         {
             _precision = 0;
-            _bits = (width <= MaxBits)?(width):(MaxBits);
+            _bits = min(width, (unsigned int)MaxBits);
 
             break;
         }
@@ -178,14 +178,32 @@ CtiNumStr::operator string() const
 
         case DataType_FloatingPoint:
         {
-            if( precision > 0 )  stream.precision(precision);
+            if( precision > 0 )
+            {
+                stream.precision(precision);
 
-            if( _fmt == Format_Exponential )  stream.setf(ios::scientific);
-            else                              stream.setf(ios::fixed);
+                if( _fmt == Format_Exponential )  stream.setf(ios::scientific);
+                else                              stream.setf(ios::fixed);
 
-            stream.setf(ios::showpoint);
+                stream.setf(ios::showpoint);
 
-            stream << _float;
+                stream << _float;
+            }
+            else
+            {
+                if( _fmt == Format_Exponential )
+                {
+                    int exp = floor(log10(_float));
+
+                    stream << setw(padding - 5) << (int)((_float / pow(10, exp)) + ((_float < 0)?(-0.5):(0.5)));
+
+                    stream << setw(0) << "e" << showpos << internal <<  setw(4) << setfill('0') << exp;
+                }
+                else
+                {
+                    stream << (int)_float;
+                }
+            }
 
             break;
         }
