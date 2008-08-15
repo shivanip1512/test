@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.131 $
-* DATE         :  $Date: 2008/08/14 15:57:40 $
+* REVISION     :  $Revision: 1.132 $
+* DATE         :  $Date: 2008/08/15 13:08:04 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -216,18 +216,71 @@ string CtiDeviceMCT::getDescription(const CtiCommandParser &parse) const
     return getName();
 }
 
-void CtiDeviceMCT::getDynamicPaoAddressing(int address, int &foundAddress, int &foundLength, Keys &foundKey)
+const CtiDeviceMCT::read_key_store_t &CtiDeviceMCT::getReadKeyStore(void) const
 {
-    foundAddress = 0;
-    foundLength = 0;
-    foundKey = Keys::Key_Invalid;
+    return _emptyReadKeyStore;
 }
 
-void CtiDeviceMCT::getDynamicPaoFunctionAddressing(int function, int address, int &foundAddress, int &foundLength, Keys &foundKey)
+void CtiDeviceMCT::extractDynamicPaoInfo(const INMESS &InMessage)
 {
-    foundAddress = 0;
-    foundLength = 0;
-    foundKey = Keys::Key_Invalid;
+    //  getReadKeyInfo is overridden separately by the 410 and 470
+    const read_key_store_t &readKeyStore = getReadKeyStore();
+
+    read_key_store_t::const_iterator itr, itr_hi;
+
+    unsigned long value;
+
+    const char          &io      = InMessage.Return.ProtocolInfo.Emetcon.IO;
+    const unsigned long &length  = InMessage.InLength;
+
+    if( io == Emetcon::IO_Read )
+    {
+        const int &address = InMessage.Return.ProtocolInfo.Emetcon.Function;
+
+        //  find the first key matching our read location
+        itr    = readKeyStore.lower_bound(read_key_info_t(address,          0));
+        itr_hi = readKeyStore.upper_bound(read_key_info_t(address + length, 0));
+
+        for( ; itr != itr_hi; ++itr )
+        {
+            const read_key_info_t &read_key = *itr;
+
+            if( (read_key.address + read_key.length) <= (address + length) )
+            {
+                for( int i = 0, value = 0; i < read_key.length; i++ )
+                {
+                    value <<= 8;
+                    value |= InMessage.Buffer.DSt.Message[read_key.address - address + i];
+                }
+
+                setDynamicInfo(read_key.key, value);
+            }
+        }
+    }
+    else if( io == Emetcon::IO_Function_Read )
+    {
+        const int &function = InMessage.Return.ProtocolInfo.Emetcon.Function;
+
+        //  find the first key matching our function
+        itr    = readKeyStore.lower_bound(read_key_info_t(function,      0, 0));
+        itr_hi = readKeyStore.upper_bound(read_key_info_t(function, length, 0));
+
+        while( itr != itr_hi )
+        {
+            const read_key_info_t &read_key = *(itr++);
+
+            if( (read_key.offset + read_key.length) <= length )
+            {
+                for( int i = 0, value = 0; i < read_key.length; i++ )
+                {
+                    value <<= 8;
+                    value |= InMessage.Buffer.DSt.Message[read_key.offset + i];
+                }
+
+                setDynamicInfo(read_key.key, value);
+            }
+        }
+    }
 }
 
 LONG CtiDeviceMCT::getDemandInterval() const
@@ -773,6 +826,12 @@ INT CtiDeviceMCT::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMes
 {
     INT status = NORMAL;
 
+    if( InMessage->Return.ProtocolInfo.Emetcon.IO == Emetcon::IO_Read ||
+        InMessage->Return.ProtocolInfo.Emetcon.IO == Emetcon::IO_Function_Read )
+    {
+        extractDynamicPaoInfo(*InMessage);
+    }
+
     status = ModelDecode(InMessage, TimeNow, vgList, retList, outList);
 
     if( !status && InMessage->Buffer.DSt.Length )
@@ -947,125 +1006,6 @@ INT CtiDeviceMCT::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
     return status;
 }
 
-//Note that the outmessage may/will be modified on exit!
-bool CtiDeviceMCT::recordMessageRead(OUTMESS *OutMessage)
-{
-    bool message_inserted = false;
-
-    if( (_lastReadDataPurgeTime.now().seconds() - _lastReadDataPurgeTime.seconds()) >= (2 * 60 * 60) )  //  2 hour span
-    {
-        //  Clears out every data member that is over 1 hour old, operates at most every 2 hours.
-        _lastReadDataPurgeTime = _lastReadDataPurgeTime.now();
-
-        MessageReadDataSet_t::iterator itr = _expectedReadData.begin();
-        while( itr != _expectedReadData.end() )
-        {
-            if( (_lastReadDataPurgeTime.seconds() - itr->insertTime.seconds()) >= (1 * 60 * 60) )
-            {
-                itr = _expectedReadData.erase(itr);
-            }
-            else
-            {
-                itr++;
-            }
-        }
-    }
-
-    //  we only record reads
-    if( OutMessage->Buffer.BSt.IO == Emetcon::IO_Function_Read ||
-        OutMessage->Buffer.BSt.IO == Emetcon::IO_Read )
-    {
-        MessageReadData newData;
-        newData.oldSequence = OutMessage->Sequence;
-
-        if( _expectedReadData.empty() )
-        {
-            newData.newSequence = SequenceCountBegin;
-        }
-        else
-        {
-            newData.newSequence = _lastSequenceNumber+1;
-        }
-
-        _lastSequenceNumber = newData.newSequence;
-
-        if( _lastSequenceNumber >= SequenceCountEnd )
-        {
-            //  sloppy, but it has a range of 10k, no one cares
-            _lastSequenceNumber = SequenceCountBegin;
-        }
-
-        newData.insertTime = CtiTime::now();
-        newData.ioType     = OutMessage->Buffer.BSt.IO;
-        newData.location   = OutMessage->Buffer.BSt.Function;
-        newData.length     = OutMessage->Buffer.BSt.Length;
-
-        if( _expectedReadData.insert(newData).second )
-        {
-            //  the insert was successful
-            OutMessage->Sequence = newData.newSequence;
-
-            message_inserted = true;
-        }
-    }
-
-    return message_inserted;
-}
-
-bool CtiDeviceMCT::recordMultiMessageRead(list< OUTMESS* > &outList)
-{
-    bool retVal = false;
-    OUTMESS *outMessage;
-
-    std::list< OUTMESS* >::iterator itr = outList.begin();
-    while (itr != outList.end() )
-    {
-        outMessage = *itr;
-        if(outMessage->Buffer.BSt.IO == Emetcon::IO_Function_Read || outMessage->Buffer.BSt.IO == Emetcon::IO_Read)
-        {
-            recordMessageRead(outMessage);
-            retVal = true;
-        }
-        ++itr;
-    }
-    return retVal;
-}
-
-bool CtiDeviceMCT::restoreMessageRead(INMESS *InMessage, int &ioType, int &location)
-{
-    bool retVal = false;
-    if(InMessage->Sequence < SequenceCountBegin || InMessage->Sequence > SequenceCountEnd)
-    {
-        //retVal = false;
-    }
-    else
-    {
-        //This thing should be in my list!
-        MessageReadData temp;
-        temp.newSequence = InMessage->Sequence;
-        MessageReadDataSet_t::const_iterator iter = _expectedReadData.find(temp);
-        if(iter == _expectedReadData.end())
-        {
-            //retVal = false
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** Sequence is in proper range but is not in the set" << __FILE__ << " (" << __LINE__ << ")" << endl;
-            //If your getting this, either the range needs to be adjusted, or out messages are lasting longer then 2 hours before
-            //being sent and returned.
-        }
-        else
-        {
-            //yay, it works
-            ioType = iter->ioType;
-            location = iter->location;
-            InMessage->Sequence = iter->oldSequence;
-            InMessage->Buffer.DSt.Length = iter->length;
-            _expectedReadData.erase(temp);
-            retVal = true;
-        }
-    }
-    return retVal;
-}
-
 INT CtiDeviceMCT::ErrorDecode(INMESS *InMessage, CtiTime& Now, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, bool &overrideExpectMore)
 {
     INT retCode = NORMAL;
@@ -1086,9 +1026,6 @@ INT CtiDeviceMCT::ErrorDecode(INMESS *InMessage, CtiTime& Now, list< CtiMessage*
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Error decode for device " << getName() << " in progress " << endl;
     }
-
-    int ioType, location;
-    restoreMessageRead(InMessage, ioType, location);//used to remove this message from the list.
 
     if( retMsg != NULL )
     {

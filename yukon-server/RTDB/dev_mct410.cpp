@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.169 $
-* DATE         :  $Date: 2008/08/14 17:42:06 $
+* REVISION     :  $Revision: 1.170 $
+* DATE         :  $Date: 2008/08/15 13:08:04 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -43,12 +43,10 @@ using namespace Config;
 using Protocol::Emetcon;
 
 
-const CtiDeviceMCT410::CommandSet      CtiDeviceMCT410::_commandStore   = CtiDeviceMCT410::initCommandStore();
+const CtiDeviceMCT410::CommandSet       CtiDeviceMCT410::_commandStore = CtiDeviceMCT410::initCommandStore();
+const CtiDeviceMCT410::read_key_store_t CtiDeviceMCT410::_readKeyStore = CtiDeviceMCT410::initReadKeyStore();
+const CtiDeviceMCT410::ConfigPartsList  CtiDeviceMCT410::_config_parts = CtiDeviceMCT410::initConfigParts();
 
-const CtiDeviceMCT410::ConfigPartsList CtiDeviceMCT410::_config_parts   = CtiDeviceMCT410::initConfigParts();
-
-const CtiDeviceMCT410::DynamicPaoAddressing_t         CtiDeviceMCT410::_dynPaoAddressing     = CtiDeviceMCT410::initDynPaoAddressing();
-const CtiDeviceMCT410::DynamicPaoFunctionAddressing_t CtiDeviceMCT410::_dynPaoFuncAddressing = CtiDeviceMCT410::initDynPaoFuncAddressing();
 
 CtiDeviceMCT410::CtiDeviceMCT410( ) :
     _intervalsSent(false)  //  whee!  you're going to be gone soon, sucker!
@@ -86,141 +84,73 @@ void CtiDeviceMCT410::setDisconnectAddress( unsigned long address )
     _disconnectAddress = address;
 }
 
-CtiDeviceMCT410::DynamicPaoAddressing_t CtiDeviceMCT410::initDynPaoAddressing()
+CtiDeviceMCT410::read_key_store_t CtiDeviceMCT410::initReadKeyStore()
 {
-    DynamicPaoAddressing_t addressSet;
+    read_key_store_t readKeyStore;
 
 //  these cannot be properly decoded by the dynamicPaoAddressing code
-//    addressSet.insert(DynamicPaoAddressing(Memory_SSpecPos,                 Memory_SSpecLen,                Keys::Key_MCT_SSpec));
-//    addressSet.insert(DynamicPaoAddressing(Memory_RevisionPos,              Memory_RevisionLen,             Keys::Key_MCT_SSpecRevision));
 //
-//    addressSet.insert(DynamicPaoAddressing(Memory_DayOfScheduledFreezePos,  Memory_DayOfScheduledFreezeLen, Keys::Key_MCT_ScheduledFreezeDay));
+//    readKeyStore.insert(read_key_info_t(Memory_SSpecPos,                 Memory_SSpecLen,                Keys::Key_MCT_SSpec));
+//    readKeyStore.insert(read_key_info_t(Memory_RevisionPos,              Memory_RevisionLen,             Keys::Key_MCT_SSpecRevision));
+//
+//    readKeyStore.insert(read_key_info_t(Memory_DayOfScheduledFreezePos,  Memory_DayOfScheduledFreezeLen, Keys::Key_MCT_ScheduledFreezeDay));
 
-    addressSet.insert(DynamicPaoAddressing(Memory_OptionsPos,               Memory_OptionsLen,              Keys::Key_MCT_Options));
-    addressSet.insert(DynamicPaoAddressing(Memory_ConfigurationPos,         Memory_ConfigurationLen,        Keys::Key_MCT_Configuration));
+    readKeyStore.insert(read_key_info_t(Memory_OptionsPos,               Memory_OptionsLen,              Keys::Key_MCT_Options));
+    readKeyStore.insert(read_key_info_t(Memory_ConfigurationPos,         Memory_ConfigurationLen,        Keys::Key_MCT_Configuration));
 
-    addressSet.insert(DynamicPaoAddressing(Memory_EventFlagsMask1Pos,       Memory_EventFlagsMask1Len,      Keys::Key_MCT_EventFlagsMask1));
-    addressSet.insert(DynamicPaoAddressing(Memory_EventFlagsMask2Pos,       Memory_EventFlagsMask2Len,      Keys::Key_MCT_EventFlagsMask2));
-    addressSet.insert(DynamicPaoAddressing(Memory_MeterAlarmMaskPos,        Memory_MeterAlarmMaskLen,       Keys::Key_MCT_MeterAlarmMask));
+    readKeyStore.insert(read_key_info_t(Memory_EventFlagsMask1Pos,       Memory_EventFlagsMask1Len,      Keys::Key_MCT_EventFlagsMask1));
+    readKeyStore.insert(read_key_info_t(Memory_EventFlagsMask2Pos,       Memory_EventFlagsMask2Len,      Keys::Key_MCT_EventFlagsMask2));
+    readKeyStore.insert(read_key_info_t(Memory_MeterAlarmMaskPos,        Memory_MeterAlarmMaskLen,       Keys::Key_MCT_MeterAlarmMask));
 
-    addressSet.insert(DynamicPaoAddressing(Memory_BronzeAddressPos,         Memory_BronzeAddressLen,        Keys::Key_MCT_AddressBronze));
-    addressSet.insert(DynamicPaoAddressing(Memory_LeadAddressPos,           Memory_LeadAddressLen,          Keys::Key_MCT_AddressLead));
-    addressSet.insert(DynamicPaoAddressing(Memory_CollectionAddressPos,     Memory_CollectionAddressLen,    Keys::Key_MCT_AddressCollection));
-    addressSet.insert(DynamicPaoAddressing(Memory_SPIDAddressPos,           Memory_SPIDAddressLen,          Keys::Key_MCT_AddressServiceProviderID));
+    readKeyStore.insert(read_key_info_t(Memory_BronzeAddressPos,         Memory_BronzeAddressLen,        Keys::Key_MCT_AddressBronze));
+    readKeyStore.insert(read_key_info_t(Memory_LeadAddressPos,           Memory_LeadAddressLen,          Keys::Key_MCT_AddressLead));
+    readKeyStore.insert(read_key_info_t(Memory_CollectionAddressPos,     Memory_CollectionAddressLen,    Keys::Key_MCT_AddressCollection));
+    readKeyStore.insert(read_key_info_t(Memory_SPIDAddressPos,           Memory_SPIDAddressLen,          Keys::Key_MCT_AddressServiceProviderID));
 
-    addressSet.insert(DynamicPaoAddressing(Memory_DemandIntervalPos,        Memory_DemandIntervalLen,       Keys::Key_MCT_DemandInterval));
-    addressSet.insert(DynamicPaoAddressing(Memory_LoadProfileIntervalPos,   Memory_LoadProfileIntervalLen,  Keys::Key_MCT_LoadProfileInterval));
-    addressSet.insert(DynamicPaoAddressing(Memory_VoltageDemandIntervalPos, Memory_VoltageDemandIntervalLen, Keys::Key_MCT_VoltageDemandInterval));
-    addressSet.insert(DynamicPaoAddressing(Memory_VoltageLPIntervalPos,     Memory_VoltageLPIntervalLen,    Keys::Key_MCT_VoltageLPInterval));
+    readKeyStore.insert(read_key_info_t(Memory_DemandIntervalPos,        Memory_DemandIntervalLen,       Keys::Key_MCT_DemandInterval));
+    readKeyStore.insert(read_key_info_t(Memory_LoadProfileIntervalPos,   Memory_LoadProfileIntervalLen,  Keys::Key_MCT_LoadProfileInterval));
+    readKeyStore.insert(read_key_info_t(Memory_VoltageDemandIntervalPos, Memory_VoltageDemandIntervalLen, Keys::Key_MCT_VoltageDemandInterval));
+    readKeyStore.insert(read_key_info_t(Memory_VoltageLPIntervalPos,     Memory_VoltageLPIntervalLen,    Keys::Key_MCT_VoltageLPInterval));
 
-    addressSet.insert(DynamicPaoAddressing(Memory_OverVThresholdPos,        Memory_OverVThresholdLen,       Keys::Key_MCT_OverVoltageThreshold));
-    addressSet.insert(DynamicPaoAddressing(Memory_UnderVThresholdPos,       Memory_UnderVThresholdLen,      Keys::Key_MCT_UnderVoltageThreshold));
+    readKeyStore.insert(read_key_info_t(Memory_OverVThresholdPos,        Memory_OverVThresholdLen,       Keys::Key_MCT_OverVoltageThreshold));
+    readKeyStore.insert(read_key_info_t(Memory_UnderVThresholdPos,       Memory_UnderVThresholdLen,      Keys::Key_MCT_UnderVoltageThreshold));
 
-    addressSet.insert(DynamicPaoAddressing(Memory_OutageCyclesPos,          Memory_OutageCyclesLen,         Keys::Key_MCT_OutageCycles));
+    readKeyStore.insert(read_key_info_t(Memory_OutageCyclesPos,          Memory_OutageCyclesLen,         Keys::Key_MCT_OutageCycles));
 
-    addressSet.insert(DynamicPaoAddressing(Memory_TimeAdjustTolPos,         Memory_TimeAdjustTolLen,        Keys::Key_MCT_TimeAdjustTolerance));
+    readKeyStore.insert(read_key_info_t(Memory_TimeAdjustTolPos,         Memory_TimeAdjustTolLen,        Keys::Key_MCT_TimeAdjustTolerance));
 
-    addressSet.insert(DynamicPaoAddressing(Memory_DSTBeginPos,              Memory_DSTBeginLen,             Keys::Key_MCT_DSTStartTime));
-    addressSet.insert(DynamicPaoAddressing(Memory_DSTEndPos,                Memory_DSTEndLen,               Keys::Key_MCT_DSTEndTime));
-    addressSet.insert(DynamicPaoAddressing(Memory_TimeZoneOffsetPos,        Memory_TimeZoneOffsetLen,       Keys::Key_MCT_TimeZoneOffset));
+    readKeyStore.insert(read_key_info_t(Memory_DSTBeginPos,              Memory_DSTBeginLen,             Keys::Key_MCT_DSTStartTime));
+    readKeyStore.insert(read_key_info_t(Memory_DSTEndPos,                Memory_DSTEndLen,               Keys::Key_MCT_DSTEndTime));
+    readKeyStore.insert(read_key_info_t(Memory_TimeZoneOffsetPos,        Memory_TimeZoneOffsetLen,       Keys::Key_MCT_TimeZoneOffset));
 
-    addressSet.insert(DynamicPaoAddressing(Memory_TOUDayTablePos,           Memory_TOUDayTableLen,          Keys::Key_MCT_DayTable));
+    readKeyStore.insert(read_key_info_t(Memory_TOUDayTablePos,           Memory_TOUDayTableLen,          Keys::Key_MCT_DayTable));
 
-    addressSet.insert(DynamicPaoAddressing(Memory_Holiday1Pos,              Memory_Holiday1Len,             Keys::Key_MCT_Holiday1));
-    addressSet.insert(DynamicPaoAddressing(Memory_Holiday2Pos,              Memory_Holiday2Len,             Keys::Key_MCT_Holiday2));
-    addressSet.insert(DynamicPaoAddressing(Memory_Holiday3Pos,              Memory_Holiday3Len,             Keys::Key_MCT_Holiday3));
+    readKeyStore.insert(read_key_info_t(Memory_Holiday1Pos,              Memory_Holiday1Len,             Keys::Key_MCT_Holiday1));
+    readKeyStore.insert(read_key_info_t(Memory_Holiday2Pos,              Memory_Holiday2Len,             Keys::Key_MCT_Holiday2));
+    readKeyStore.insert(read_key_info_t(Memory_Holiday3Pos,              Memory_Holiday3Len,             Keys::Key_MCT_Holiday3));
 
-    addressSet.insert(DynamicPaoAddressing(Memory_CentronParametersPos,     Memory_CentronParametersLen,    Keys::Key_MCT_CentronParameters));
-    addressSet.insert(DynamicPaoAddressing(Memory_CentronMultiplierPos,     Memory_CentronMultiplierLen,    Keys::Key_MCT_CentronRatio));
+    readKeyStore.insert(read_key_info_t(Memory_CentronParametersPos,     Memory_CentronParametersLen,    Keys::Key_MCT_CentronParameters));
+    readKeyStore.insert(read_key_info_t(Memory_CentronMultiplierPos,     Memory_CentronMultiplierLen,    Keys::Key_MCT_CentronRatio));
 
-    return addressSet;
+//  function reads
+
+    readKeyStore.insert(read_key_info_t(FuncRead_TOUDaySchedulePos,    0, 2, Keys::Key_MCT_DayTable));
+    readKeyStore.insert(read_key_info_t(FuncRead_TOUDaySchedulePos,    2, 1, Keys::Key_MCT_DefaultTOURate));
+    readKeyStore.insert(read_key_info_t(FuncRead_TOUDaySchedulePos,   10, 1, Keys::Key_MCT_TimeZoneOffset));
+
+    readKeyStore.insert(read_key_info_t(FuncRead_LLPStatusPos,         4, 1, Keys::Key_MCT_LLPChannel1Len));
+    readKeyStore.insert(read_key_info_t(FuncRead_LLPStatusPos,         5, 1, Keys::Key_MCT_LLPChannel2Len));
+    readKeyStore.insert(read_key_info_t(FuncRead_LLPStatusPos,         6, 1, Keys::Key_MCT_LLPChannel3Len));
+    readKeyStore.insert(read_key_info_t(FuncRead_LLPStatusPos,         7, 1, Keys::Key_MCT_LLPChannel4Len));
+
+    readKeyStore.insert(read_key_info_t(FuncRead_DisconnectConfigPos,  5, 2, Keys::Key_MCT_DemandThreshold));
+    readKeyStore.insert(read_key_info_t(FuncRead_DisconnectConfigPos,  7, 1, Keys::Key_MCT_ConnectDelay));
+    readKeyStore.insert(read_key_info_t(FuncRead_DisconnectConfigPos,  9, 1, Keys::Key_MCT_DisconnectMinutes));
+    readKeyStore.insert(read_key_info_t(FuncRead_DisconnectConfigPos, 10, 1, Keys::Key_MCT_ConnectMinutes));
+
+    return readKeyStore;
 }
 
-CtiDeviceMCT410::DynamicPaoFunctionAddressing_t CtiDeviceMCT410::initDynPaoFuncAddressing()
-{
-    DynamicPaoAddressing_t addressSet;
-    DynamicPaoFunctionAddressing_t functionSet;
-
-    // FuncRead_TOUDaySchedulePos
-    addressSet.insert(DynamicPaoAddressing( 0, 2, Keys::Key_MCT_DayTable));
-    addressSet.insert(DynamicPaoAddressing( 2, 1, Keys::Key_MCT_DefaultTOURate));
-    addressSet.insert(DynamicPaoAddressing(10, 1, Keys::Key_MCT_TimeZoneOffset));
-
-    functionSet.insert(DynamicPaoFunctionAddressing_t::value_type(FuncRead_TOUDaySchedulePos,addressSet));
-
-    addressSet.clear();
-
-    // FuncRead_LLPStatusPos
-    addressSet.insert(DynamicPaoAddressing( 4, 1, Keys::Key_MCT_LLPChannel1Len));
-    addressSet.insert(DynamicPaoAddressing( 5, 1, Keys::Key_MCT_LLPChannel2Len));
-    addressSet.insert(DynamicPaoAddressing( 6, 1, Keys::Key_MCT_LLPChannel3Len));
-    addressSet.insert(DynamicPaoAddressing( 7, 1, Keys::Key_MCT_LLPChannel4Len));
-
-    functionSet.insert(DynamicPaoFunctionAddressing_t::value_type(FuncRead_LLPStatusPos,addressSet));
-
-    addressSet.clear();
-
-    // FuncRead_DisconnectConfigPos
-    addressSet.insert(DynamicPaoAddressing( 5, 2, Keys::Key_MCT_DemandThreshold));
-    addressSet.insert(DynamicPaoAddressing( 7, 1, Keys::Key_MCT_ConnectDelay));
-    addressSet.insert(DynamicPaoAddressing( 9, 1, Keys::Key_MCT_DisconnectMinutes));
-    addressSet.insert(DynamicPaoAddressing(10, 1, Keys::Key_MCT_ConnectMinutes));
-
-    functionSet.insert(DynamicPaoFunctionAddressing_t::value_type(FuncRead_DisconnectConfigPos,addressSet));
-
-    return functionSet;
-}
-
-//Function returns first address after the given address and the data associated with that address
-void CtiDeviceMCT410::getDynamicPaoAddressing(int address, int &foundAddress, int &foundLength, CtiTableDynamicPaoInfo::Keys &foundKey)
-{
-    foundAddress = 0;
-    foundLength = 0;
-    foundKey = Keys::Key_Invalid;//If nothing happens, this is what we want.
-
-    DynamicPaoAddressing tempDynAddr(address, 0, Keys::Key_Invalid);
-
-    DynamicPaoAddressing_t::const_iterator iter;
-    if((iter = _dynPaoAddressing.find(tempDynAddr)) != _dynPaoAddressing.end())
-    {
-        foundAddress = iter->address;
-        foundLength  = iter->length;
-        foundKey     = iter->key;
-    }
-    else if((iter = _dynPaoAddressing.upper_bound(tempDynAddr)) != _dynPaoAddressing.end())
-    {
-        foundAddress = iter->address;
-        foundLength  = iter->length;
-        foundKey     = iter->key;
-    }
-}
-
-void CtiDeviceMCT410::getDynamicPaoFunctionAddressing(int function, int address, int &foundAddress, int &foundLength, CtiTableDynamicPaoInfo::Keys &foundKey)
-{
-    foundAddress = 0;
-    foundLength  = 0;
-    foundKey     = Keys::Key_Invalid;//If nothing happens, this is what we want.
-
-    DynamicPaoAddressing tempDynAddr(address, 0, Keys::Key_Invalid);
-
-    DynamicPaoFunctionAddressing_t::const_iterator funcIter;
-    if((funcIter = _dynPaoFuncAddressing.find(function)) != _dynPaoFuncAddressing.end())
-    {
-        DynamicPaoAddressing_t::const_iterator addressIter;
-        if((addressIter = funcIter->second.find(tempDynAddr)) != funcIter->second.end())
-        {
-            foundAddress = addressIter->address;
-            foundLength  = addressIter->length;
-            foundKey     = addressIter->key;
-        }
-        else if((addressIter = funcIter->second.upper_bound(tempDynAddr)) != funcIter->second.end())
-        {
-            foundAddress = addressIter->address;
-            foundLength  = addressIter->length;
-            foundKey     = addressIter->key;
-        }
-    }
-}
 
 CtiDeviceMCT410::ConfigPartsList CtiDeviceMCT410::initConfigParts()
 {
@@ -873,6 +803,12 @@ bool CtiDeviceMCT410::calcLPRequestLocation( const CtiCommandParser &parse, OUTM
 }
 
 
+const CtiDeviceMCT410::read_key_store_t &CtiDeviceMCT410::getReadKeyStore(void) const
+{
+    return _readKeyStore;
+}
+
+
 /*
  *  ModelDecode MUST decode all CtiDLCCommand_t which are defined in the initCommandStore object.  The only exception to this
  *  would be a child whose decode was identical to the parent, but whose request was done differently..
@@ -881,69 +817,6 @@ bool CtiDeviceMCT410::calcLPRequestLocation( const CtiCommandParser &parse, OUTM
 INT CtiDeviceMCT410::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
-
-    int ioType, location;
-    if( restoreMessageRead(InMessage, ioType, location) )
-    {
-        int foundAddress, foundLength = 0;
-        Keys foundKey = Keys::Key_Invalid;
-
-         //ioType and location were set by the function.
-        if(ioType == Emetcon::IO_Read)
-        {
-            int searchLocation = location;
-
-            do
-            {
-                getDynamicPaoAddressing(searchLocation, foundAddress, foundLength, foundKey);
-
-                if( foundAddress >= 0 && foundLength > 0 && foundKey != Keys::Key_Invalid
-                   && (foundAddress - location + foundLength) <= InMessage->Buffer.DSt.Length && foundLength <=8)
-                {
-                    unsigned long value = 0;
-                    for( int i=0; i < foundLength; i++ )
-                    {
-                        value += (((unsigned int)InMessage->Buffer.DSt.Message[(foundAddress-location+foundLength-1)-i]) << (i*8));
-                    }
-                    setDynamicInfo(foundKey, value);
-                    searchLocation = foundAddress+1;
-                }
-                else
-                {
-                    foundKey = Keys::Key_Invalid;
-                }
-
-            }while( foundKey != Keys::Key_Invalid );
-        }
-        else if( ioType == Emetcon::IO_Function_Read )
-        {
-            int searchLocation = 0;
-
-            do
-            {
-                //Note that this does not currently take into account SSpec based reads which can have varying length.
-                //It is assumed that SSPec changes do NOT change the order of recieved bytes.
-                getDynamicPaoFunctionAddressing(location, searchLocation, foundAddress, foundLength, foundKey);
-
-                if( foundAddress >= 0 && foundLength > 0 && foundKey != Keys::Key_Invalid &&
-                    (searchLocation + foundLength) <= InMessage->Buffer.DSt.Length && foundLength <=8 )
-                {
-                    unsigned long value = 0;
-                    for( int i=0; i<foundLength; i++)
-                    {
-                        value += (((unsigned int)InMessage->Buffer.DSt.Message[(foundAddress + foundLength-1)-i]) << (i*8));
-                    }
-                    CtiDeviceBase::setDynamicInfo(foundKey, value);
-                    searchLocation = foundAddress+1;
-                }
-                else
-                {
-                    foundKey = Keys::Key_Invalid;
-                }
-
-            }while( foundKey != Keys::Key_Invalid );
-        }
-    }
 
     switch(InMessage->Sequence)
     {

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT470.h-arc  $
-* REVISION     :  $Revision: 1.47 $
-* DATE         :  $Date: 2008/06/06 20:28:44 $
+* REVISION     :  $Revision: 1.48 $
+* DATE         :  $Date: 2008/08/15 13:08:05 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,14 +28,15 @@ private:
 
     typedef CtiDeviceMCT4xx Inherited;
 
-    static const CommandSet _commandStore;
-    static CommandSet initCommandStore();
+    static const CommandSet       _commandStore;
+    static       CommandSet       initCommandStore();
 
-    static const DynamicPaoAddressing_t         _dynPaoAddressing;
-    static const DynamicPaoFunctionAddressing_t _dynPaoFuncAddressing;
+    static const read_key_store_t _readKeyStore;
+    static       read_key_store_t initReadKeyStore();
 
-    static CtiDeviceMCT4xx::ConfigPartsList initConfigParts();
-    static const CtiDeviceMCT4xx::ConfigPartsList _config_parts;
+    static const ConfigPartsList  _config_parts;
+    static       ConfigPartsList  initConfigParts();
+
 
     CtiTableDeviceMCTIEDPort _iedPort;
     CtiTime                  _iedTime;
@@ -377,10 +378,7 @@ protected:
 
     void sendIntervals(OUTMESS *&OutMessage, list< OUTMESS* > &outList);
 
-    static DynamicPaoAddressing_t         initDynPaoAddressing();
-    static DynamicPaoFunctionAddressing_t initDynPaoFuncAddressing();
-    void getDynamicPaoAddressing(int address, int &foundAddress, int &foundLength, CtiTableDynamicPaoInfo::Keys &foundKey);
-    void getDynamicPaoFunctionAddressing(int function, int address, int &foundAddress, int &foundLength, CtiTableDynamicPaoInfo::Keys &foundKey);
+    virtual const read_key_store_t &getReadKeyStore(void) const;
 
     virtual INT ModelDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     virtual INT ErrorDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, bool &overrideExpectMore );

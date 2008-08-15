@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT410.h-arc  $
-* REVISION     :  $Revision: 1.70 $
-* DATE         :  $Date: 2008/08/14 17:42:06 $
+* REVISION     :  $Revision: 1.71 $
+* DATE         :  $Date: 2008/08/15 13:08:05 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,19 +28,16 @@ private:
 
     typedef CtiDeviceMCT4xx Inherited;
 
-    static const CommandSet _commandStore;
-    static CommandSet initCommandStore();
+    static const CommandSet       _commandStore;
+    static       CommandSet       initCommandStore();
 
-    static const DynamicPaoAddressing_t         _dynPaoAddressing;
-    static const DynamicPaoFunctionAddressing_t _dynPaoFuncAddressing;
+    static const read_key_store_t _readKeyStore;
+    static       read_key_store_t initReadKeyStore();
 
-    static const ConfigPartsList _config_parts;
-    static ConfigPartsList initConfigParts();
+    static const ConfigPartsList  _config_parts;
+    static       ConfigPartsList  initConfigParts();
 
     static string describeStatusAndEvents(unsigned char *buf);
-
-    static DynamicPaoAddressing_t         initDynPaoAddressing();
-    static DynamicPaoFunctionAddressing_t initDynPaoFuncAddressing();
 
     struct daily_read_info_t
     {
@@ -311,9 +308,6 @@ protected:
 
     bool _intervalsSent;
 
-    void getDynamicPaoAddressing(int address, int &foundAddress, int &foundLength, CtiTableDynamicPaoInfo::Keys &foundKey);
-    void getDynamicPaoFunctionAddressing(int function, int address, int &foundAddress, int &foundLength, CtiTableDynamicPaoInfo::Keys &foundKey);
-
     void returnErrorMessage( int retval, const CtiOutMessage *om, list< CtiMessage* > &retList, const string &error ) const;
 
     virtual INT executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList );
@@ -327,6 +321,8 @@ protected:
     int executePutConfigOptions   ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * >&vgList, list< CtiMessage * >&retList, list< OUTMESS * > &outList );
     int executePutConfigCentron   ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * >&vgList, list< CtiMessage * >&retList, list< OUTMESS * > &outList );
 */
+    virtual const read_key_store_t &getReadKeyStore(void) const;
+
     virtual INT ModelDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList );
     virtual INT ErrorDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList, bool &overrideExpectMore );
 

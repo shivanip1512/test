@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct4xx.h-arc  $
-* REVISION     :  $Revision: 1.41 $
-* DATE         :  $Date: 2008/08/14 17:42:06 $
+* REVISION     :  $Revision: 1.42 $
+* DATE         :  $Date: 2008/08/15 13:08:05 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -227,6 +227,9 @@ protected:
     };
 
     unsigned char crc8(const unsigned char *buf, unsigned int len) const;
+
+    //  force it pure virtual so it must be overridden by the 410 and 470
+    virtual const read_key_store_t &getReadKeyStore(void) const = 0;
 
     //  overridden by the 410 and 470 so they can use the same peak/TOU decode function
     virtual point_info getDemandData(unsigned char *buf, int len) const = 0;

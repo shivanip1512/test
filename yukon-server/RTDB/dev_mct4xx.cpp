@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.89 $
-* DATE         :  $Date: 2008/08/14 17:42:06 $
+* REVISION     :  $Revision: 1.90 $
+* DATE         :  $Date: 2008/08/15 13:08:05 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1275,7 +1275,6 @@ INT CtiDeviceMCT4xx::executePutConfig(CtiRequestMsg         *pReq,
             strncpy(OutMessage->Request.CommandStr, (pReq->CommandString()).c_str(), COMMAND_STR_SIZE);
             sRet = executePutConfigSingle(pReq, parse, OutMessage, vgList, retList, outList);
         }
-        recordMultiMessageRead(outList);
         incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle(), outList.size());
 
         if( !outList.empty() && !retList.empty() )

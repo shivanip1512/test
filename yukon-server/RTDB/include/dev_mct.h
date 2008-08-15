@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct.h-arc  $
-* REVISION     :  $Revision: 1.64 $
-* DATE         :  $Date: 2008/06/06 20:28:44 $
+* REVISION     :  $Revision: 1.65 $
+* DATE         :  $Date: 2008/08/15 13:08:05 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -86,67 +86,50 @@ protected:
 
     static bool getMCTDebugLevel(int mask);
 
-    struct MessageReadData  //  Stores message data so we know what is coming back at us for our generic decode
+    struct read_key_info_t
     {
-        USHORT newSequence;
-        USHORT oldSequence;
-        USHORT ioType;
-        int location, length;
-        CtiTime insertTime;
-
-        bool MessageReadData::operator<(const MessageReadData &rhs) const
-        {
-            bool retval = false;
-
-            if( newSequence < rhs.newSequence )
-            {
-                retval = true;
-            }
-            return retval;
-        }
-    };
-
-    typedef set<MessageReadData> MessageReadDataSet_t;
-
-    class DynamicPaoAddressing
-    {
-    public:
-        DynamicPaoAddressing(int addr, int len, CtiTableDynamicPaoInfo::Keys k ) :
+        read_key_info_t(int addr, int len, CtiTableDynamicPaoInfo::Keys k=CtiTableDynamicPaoInfo::Key_Invalid) :
+            function(-1),
             address(addr),
+            offset(-1),
             length(len),
             key(k)
-        {
-        }
+        {  };
 
-        int address, length;
+        //  specifying an offset means that it's a function read
+        read_key_info_t(int func, int off, int len, CtiTableDynamicPaoInfo::Keys k=CtiTableDynamicPaoInfo::Key_Invalid) :
+            function(func),
+            address(-1),
+            offset(off),
+            length(len),
+            key(k)
+        {  };
+
+        int function, address, length, offset;
+
         CtiTableDynamicPaoInfo::Keys key;
 
-        bool DynamicPaoAddressing::operator<(const DynamicPaoAddressing &rhs) const
+        bool read_key_info_t::operator<(const read_key_info_t &rhs) const
         {
-            bool retval = false;
+            if( function < rhs.function )  return true;
+            if( function > rhs.function )  return false;
 
-            if( address < rhs.address )
-            {
-                retval = true;
-            }
-            return retval;
+            if( address  < rhs.address  )  return true;
+            if( address  > rhs.address  )  return false;
+
+            if( offset   < rhs.offset   )  return true;
+            if( offset   > rhs.offset   )  return false;
+
+            return length < rhs.length;
         }
     };
 
-    typedef set< DynamicPaoAddressing > DynamicPaoAddressing_t;
-    typedef map< int, DynamicPaoAddressing_t > DynamicPaoFunctionAddressing_t;
+    typedef set<read_key_info_t> read_key_store_t;
 
-    int _lastSequenceNumber;
-    MessageReadDataSet_t _expectedReadData;
-    bool recordMessageRead(OUTMESS *OutMessage);
-    bool restoreMessageRead(INMESS *InMessage, int &ioType, int &location);
-    bool recordMultiMessageRead(list< OUTMESS* > &outList);
+    const read_key_store_t _emptyReadKeyStore;
+    virtual const read_key_store_t &getReadKeyStore(void) const;
 
-    enum SequenceDataNumbers
-    {
-        SequenceCountBegin = 20000,
-        SequenceCountEnd   = 30000
-    };
+    void extractDynamicPaoInfo(const INMESS &InMessage);
 
     enum DebugLevels
     {
@@ -244,9 +227,6 @@ public:
     string getDescription( const CtiCommandParser &parse ) const;
 
     virtual LONG getDemandInterval() const;
-
-    virtual void getDynamicPaoAddressing(int address, int &foundAddress, int &foundLength, CtiTableDynamicPaoInfo::Keys &foundKey);
-    virtual void getDynamicPaoFunctionAddressing(int function, int address, int &foundAddress, int &foundLength, CtiTableDynamicPaoInfo::Keys &foundKey);
 
     void resetMCTScansPending( void );
 

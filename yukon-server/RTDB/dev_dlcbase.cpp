@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dlcbase.cpp-arc  $
-* REVISION     :  $Revision: 1.49 $
-* DATE         :  $Date: 2008/08/14 15:57:39 $
+* REVISION     :  $Revision: 1.50 $
+* DATE         :  $Date: 2008/08/15 13:08:04 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -431,6 +431,7 @@ int CtiDeviceDLCBase::executeOnDLCRoute( CtiRequestMsg              *pReq,
 
             pOut->Buffer.BSt.Address      = getAddress();            // The DLC address of the device
 
+            //  store the request info for later use
             pOut->Request.ProtocolInfo.Emetcon.Function = pOut->Buffer.BSt.Function;
             pOut->Request.ProtocolInfo.Emetcon.IO       = pOut->Buffer.BSt.IO;
 

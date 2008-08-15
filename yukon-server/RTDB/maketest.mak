@@ -55,6 +55,7 @@ TEST_OBJS=\
 test_dev_grp.obj \
 test_mgr_point.obj \
 test_dev_mct4xx.obj \
+test_dev_mct410.obj \
 
 ALL:            $(TEST_OBJS) Makefile
 
