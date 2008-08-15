@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.Validate;
-import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
@@ -149,16 +149,23 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<CustomerAccount> getAll() {
-        List<CustomerAccount> list = simpleJdbcTemplate.query(selectSql, rowMapper, new Object[]{});
-        return list;
+        try{
+            List<CustomerAccount> list = simpleJdbcTemplate.query(selectSql, rowMapper, new Object[]{});
+            return list;
+        } catch (EmptyResultDataAccessException erdae){
+            return Collections.emptyList();
+        }
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<CustomerAccountWithNames> getAllAccountsWithNamesByEC(final int ecId) {
-        List<CustomerAccountWithNames> list = simpleJdbcTemplate.query(selectAllUsefulAccountInfoFromECSql, specialAccountInfoRowMapper, ecId);
-        return list;
+        try{
+            List<CustomerAccountWithNames> list = simpleJdbcTemplate.query(selectAllUsefulAccountInfoFromECSql, specialAccountInfoRowMapper, ecId);
+            return list;
+        } catch (EmptyResultDataAccessException erdae){
+            return Collections.emptyList();
+        }
     }
-    
 
     @Override
     public CustomerAccount getAccountByInventoryId(int inventoryId) {
@@ -195,8 +202,7 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
             
             List<CustomerAccountWithNames> list = simpleJdbcTemplate.query(sql.toString(), specialAccountInfoRowMapper, ecId, stopDate, startDate);
             return list;        
-        } catch (DataAccessException e) {
-            e.printStackTrace();
+        } catch (EmptyResultDataAccessException erdae){
             return Collections.emptyList();
         } 
     }
