@@ -75,7 +75,7 @@ BOOST_AUTO_UNIT_TEST(test_dev_mct410_extractDynamicPaoInfo)
     readKeyStore.insert(read_key_info_t(FuncRead_TOUDaySchedulePos,   10, 1, Keys::Key_MCT_TimeZoneOffset));
     */
 
-    im.InLength = 5;
+    im.InLength = 3;
     im.Return.ProtocolInfo.Emetcon.Function = 0xad; //  FuncRead_TOUDaySchedulePos;  it's protected, so instead of inheriting it, it's a magic number
     im.Return.ProtocolInfo.Emetcon.IO = Cti::Protocol::Emetcon::IO_Function_Read;
 
