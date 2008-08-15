@@ -7,9 +7,30 @@
 /*
     Move all MCT functions into here eventually. Phase 2 Make a MctBaseSim class containing shared functions.
 */
+
 class Mct410Sim
 {
     public:
+
+        enum MctCommands
+        {
+            Ping = 0,
+            WritePointOfInterest = 5,
+            LongLoadProfileTableMin = 64,
+            LongLoadProfileTableMax = 79,
+            LoadProfileTableMinCh1 = 80,
+            LoadProfileTableMaxCh1 = 95,
+            LoadProfileTableMinCh2 = 96,
+            LoadProfileTableMaxCh2 = 111,
+            LoadProfileTableMinCh3 = 112,
+            LoadProfileTableMaxCh3 = 127,
+            LoadProfileTableMinCh4 = 128,
+            LoadProfileTableMaxCh4 = 143,
+            GetCurrentMeterReading = 144,
+            GetRecentDemandReading = 146,
+            GetCurrentPeakDemandReading = 147
+        };
+
         Mct410Sim();
 
         long getPeroidOfInterest();
@@ -25,6 +46,7 @@ class Mct410Sim
         unsigned char * getLongLoadProfileData(int function, int bytesToReturn);
         unsigned char * getLoadProfileData(int function, int bytesToReturn);
         unsigned char * getKWHData(int bytesToReturn);
+
     private:
         int mctAddress;
         //Time in seconds UTC Start time

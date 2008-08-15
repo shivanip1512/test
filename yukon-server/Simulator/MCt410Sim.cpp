@@ -61,7 +61,7 @@ unsigned char* Mct410Sim::generateEmetconWordResponse(int& responseSize, int fun
     unsigned char* resp = NULL;
     responseSize = 0;
 
-    if (function == 0)//ping?
+    if (function == Ping)//ping?
     {//For function 0  there is a chance I need to know how many Dwords I need to send back blank. Pass in the Bword?
         EmetconWordD1 word1;
         unsigned char buf[defaultWordSize];
@@ -82,7 +82,7 @@ unsigned char* Mct410Sim::generateEmetconWordResponse(int& responseSize, int fun
         }
 
     }
-    else if (function == 5)
+    else if (function == WritePointOfInterest)
     {
         //Function 0x05
         EmetconWordD1 word1;
@@ -101,7 +101,7 @@ unsigned char* Mct410Sim::generateEmetconWordResponse(int& responseSize, int fun
             resp[ctr++] = buf[i];
         }
     }
-    else if (function == 144)
+    else if (function == GetCurrentMeterReading)
     {
         //Function 0x90
         EmetconWordD1 word1;
@@ -124,7 +124,7 @@ unsigned char* Mct410Sim::generateEmetconWordResponse(int& responseSize, int fun
         }
         delete [] ptr;
     }
-    else if (function >= 64 && function <= 73)
+    else if (function >= LongLoadProfileTableMin && function <= LongLoadProfileTableMax)
     {
         EmetconWordD1 word1;
         EmetconWordDn word2,word3;
@@ -165,7 +165,7 @@ unsigned char* Mct410Sim::generateEmetconWordResponse(int& responseSize, int fun
             resp[ctr++] = buf[i];
         }
     } 
-    else if (function == 147)
+    else if (function == GetCurrentPeakDemandReading)
     {
         EmetconWordD1 word1;
         EmetconWordDn word2,word3;
@@ -219,7 +219,7 @@ unsigned char* Mct410Sim::generateEmetconWordResponse(int& responseSize, int fun
             resp[ctr++] = buf[i];
         }
     }
-    else if (function == 146)
+    else if (function == GetRecentDemandReading)
     {//Response is an empty Dword
         EmetconWordD1 word1;
         EmetconWordDn word2;
@@ -353,19 +353,19 @@ unsigned char * Mct410Sim::getLoadProfileData(int function, int bytesToReturn)
     Function Reads 80h-8Fh return values for channel 4 (voltage)
     */
     int channel = -1;
-    if(function >= 80 && function <= 95)
+    if(function >= LoadProfileTableMinCh1 && function <= LoadProfileTableMaxCh1)
     {
         channel = 0;
     }
-    else if (function >= 96 && function <= 111)
+    else if (function >= LoadProfileTableMinCh2 && function <= LoadProfileTableMaxCh2)
     {
         channel = 1;//channel 2
     }
-    else if (function >= 112 && function <= 127)
+    else if (function >= LoadProfileTableMinCh3 && function <= LoadProfileTableMaxCh3)
     {
         channel = 2;//channel 3
     }
-    else if (function >= 128 && function <= 143)
+    else if (function >= LoadProfileTableMinCh4 && function <= LoadProfileTableMaxCh4)
     {
         channel = 3;//channel 4
     }

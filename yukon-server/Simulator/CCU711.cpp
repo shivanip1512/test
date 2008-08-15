@@ -613,6 +613,7 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], unsign
                 }
 
                 _outmessageData[Ctr++] = ack;
+                delete [] ptr;
             }
             else if(getEmetconBWord()->getIO() == WRITE || getEmetconBWord()->getIO() == FUNC_WRITE)
             {
@@ -658,10 +659,9 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], unsign
                 {
                     _outmessageData[Ctr++] = ptr[i]; 
                 }
+
                 _outmessageData[Ctr++] = ack;
-
                 delete [] ptr;
-
             }
 
             _outmessageData[3] = Ctr-4;      // # of bytes to follow minus two
@@ -1001,16 +1001,16 @@ void CCU711::createLGRPQResponse(Mct410Sim* mct)
         int ioType = msg.getioType();
         int bytesToReturn = msg.getbytesToReturn();
 
-        if (msg.getFunction() == 144)
+        if (msg.getFunction() == Mct410Sim::GetCurrentMeterReading)
         {
             ptr = mct->getKWHData(bytesToReturn);
         }
-        else if (msg.getFunction() >= 64 && msg.getFunction() <= 79)
+        else if (msg.getFunction() >= Mct410Sim::LongLoadProfileTableMin && msg.getFunction() <= Mct410Sim::LongLoadProfileTableMax)
         {
 
             ptr = mct->getLongLoadProfileData(function,bytesToReturn);
         }
-        else if (msg.getFunction() >= 80 && msg.getFunction() <= 143)
+        else if (msg.getFunction() >= Mct410Sim::LoadProfileTableMinCh1 && msg.getFunction() <= Mct410Sim::LoadProfileTableMaxCh4)
         {
 
             ptr = mct->getLoadProfileData(function,bytesToReturn);
@@ -1093,7 +1093,7 @@ void CCU711::createLGRPQResponse(Mct410Sim* mct)
 
         switch (function)
         {
-            case 5:
+            case Mct410Sim::Ping:
                 if (buf[16] != 6)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
