@@ -5,6 +5,8 @@
 
     <bean id="databaseCache" class="com.cannontech.mbean.ServerDatabaseCache">
         <property name="yukonUserLoader" ref="yukonUserLoader" />
+        <property name="pointDao" ref="pointDao" />
+        <property name="paoDao" ref="paoDao" />
     </bean>
 
     <bean id="yukonUserLoader" class="com.cannontech.yukon.server.cache.YukonUserLoader">

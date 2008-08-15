@@ -11,7 +11,8 @@ import org.springframework.beans.factory.annotation.Required;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
@@ -112,6 +113,8 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	//private static java.lang.ref.SoftReference cacheReference = null;	
 	private static ServerDatabaseCache cache = null;
 
+	private PointDao pointDao = null;
+	private PaoDao paoDao = null;
 	private String databaseAlias = CtiUtilities.getDatabaseAlias();
 
 	private ArrayList<LiteYukonPAObject> allYukonPAObjects = null;
@@ -967,7 +970,7 @@ public synchronized List<LiteYukonPAObject> getAllUnusedCCDevices()
 			while (rset.next()) {
 				
 				int paoID = rset.getInt(1);				
-				LiteYukonPAObject pao = DaoFactory.getPaoDao().getLiteYukonPAO( paoID );
+				LiteYukonPAObject pao = paoDao.getLiteYukonPAO( paoID );
 				
 				if( pao != null ) {
 					allUnusedCCDevices.add( pao );
@@ -2442,11 +2445,11 @@ private synchronized LiteBase handlePointChange( int changeType, int id, boolean
 	{
 		case DBChangeMsg.CHANGE_TYPE_ADD:
 		    // Return this so clients like the editor get a db change :(
-            lBase = DaoFactory.getPointDao().getLitePoint(id);
+            lBase = pointDao.getLitePoint(id);
             break;
 
 		case DBChangeMsg.CHANGE_TYPE_UPDATE:
-            lBase = DaoFactory.getPointDao().getLitePoint(id);
+            lBase = pointDao.getLitePoint(id);
             break;
 
 		case DBChangeMsg.CHANGE_TYPE_DELETE:
@@ -3273,5 +3276,15 @@ public List getDevicesByDeviceAddress(Integer masterAddress, Integer slaveAddres
 @Required
 public void setYukonUserLoader(YukonUserLoader yukonUserLoader) {
     this.yukonUserLoader = yukonUserLoader;
+}
+
+@Required
+public void setPointDao(PointDao pointDao) {
+    this.pointDao = pointDao;
+}
+
+@Required
+public void setPaoDao(PaoDao paoDao) {
+    this.paoDao = paoDao;
 }
 }
