@@ -149,22 +149,14 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<CustomerAccount> getAll() {
-        try{
-            List<CustomerAccount> list = simpleJdbcTemplate.query(selectSql, rowMapper, new Object[]{});
-            return list;
-        } catch (EmptyResultDataAccessException erdae){
-            return Collections.emptyList();
-        }
+        List<CustomerAccount> list = simpleJdbcTemplate.query(selectSql, rowMapper, new Object[]{});
+        return list;
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<CustomerAccountWithNames> getAllAccountsWithNamesByEC(final int ecId) {
-        try{
-            List<CustomerAccountWithNames> list = simpleJdbcTemplate.query(selectAllUsefulAccountInfoFromECSql, specialAccountInfoRowMapper, ecId);
-            return list;
-        } catch (EmptyResultDataAccessException erdae){
-            return Collections.emptyList();
-        }
+        List<CustomerAccountWithNames> list = simpleJdbcTemplate.query(selectAllUsefulAccountInfoFromECSql, specialAccountInfoRowMapper, ecId);
+        return list;
     }
 
     @Override
@@ -184,27 +176,23 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
     public List<CustomerAccountWithNames> getAllAccountsWithNamesByGroupIds(final int ecId, List<Integer> groupIds,
                                                                              Date startDate, Date stopDate){
 
-        try {
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append(" SELECT ca.AccountId, ca.AccountNumber, cont.ContLastName, cont.ContFirstName ");
-            sql.append(" FROM CustomerAccount ca, Contact cont, Customer cust ");
-            sql.append(" WHERE AccountId IN (SELECT AccountId ");
-            sql.append("                     FROM ECToAccountMapping ");
-            sql.append("                     WHERE EnergyCompanyId = ?) ");
-            sql.append(" AND cust.CustomerId = ca.CustomerId ");
-            sql.append(" AND cont.ContactId = cust.PrimaryContactId ");
-            sql.append(" AND ca.AccountId in (SELECT LMHCG.AccountId ");
-            sql.append("                         FROM LMHardwareControlGroup LMHCG ");
-            sql.append("                         WHERE LMHCG.LMGroupId in (", groupIds, ") ");
-            sql.append("                         AND (LMHCG.GroupEnrollStart < ?) ");
-            sql.append("                         AND ((LMHCG.GroupEnrollStop IS NULL) ");
-            sql.append("                               OR (LMHCG.GroupEnrollStop > ?))) ");
-            
-            List<CustomerAccountWithNames> list = simpleJdbcTemplate.query(sql.toString(), specialAccountInfoRowMapper, ecId, stopDate, startDate);
-            return list;        
-        } catch (EmptyResultDataAccessException erdae){
-            return Collections.emptyList();
-        } 
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append(" SELECT ca.AccountId, ca.AccountNumber, cont.ContLastName, cont.ContFirstName ");
+        sql.append(" FROM CustomerAccount ca, Contact cont, Customer cust ");
+        sql.append(" WHERE AccountId IN (SELECT AccountId ");
+        sql.append("                     FROM ECToAccountMapping ");
+        sql.append("                     WHERE EnergyCompanyId = ?) ");
+        sql.append(" AND cust.CustomerId = ca.CustomerId ");
+        sql.append(" AND cont.ContactId = cust.PrimaryContactId ");
+        sql.append(" AND ca.AccountId in (SELECT LMHCG.AccountId ");
+        sql.append("                         FROM LMHardwareControlGroup LMHCG ");
+        sql.append("                         WHERE LMHCG.LMGroupId in (", groupIds, ") ");
+        sql.append("                         AND (LMHCG.GroupEnrollStart < ?) ");
+        sql.append("                         AND ((LMHCG.GroupEnrollStop IS NULL) ");
+        sql.append("                               OR (LMHCG.GroupEnrollStop > ?))) ");
+    
+        List<CustomerAccountWithNames> list = simpleJdbcTemplate.query(sql.toString(), specialAccountInfoRowMapper, ecId, stopDate, startDate);
+        return list;
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
