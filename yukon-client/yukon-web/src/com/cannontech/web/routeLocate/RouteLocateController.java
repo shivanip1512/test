@@ -108,7 +108,7 @@ public class RouteLocateController extends BulkControllerBase {
             }
             
             MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-            String errorMsg = messageSourceAccessor.getMessage("yukon.common.device.routeLocate.home.noRoutesSelectedError");
+            String errorMsg = messageSourceAccessor.getMessage("yukon.web.modules.amr.routeLocateHome.noRoutesSelectedError");
             mav.addObject("errorMsg", errorMsg);
             
             mav.addObject("autoUpdateRoute", autoUpdateRoute);
