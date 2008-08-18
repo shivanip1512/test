@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.124 $
-* DATE         :  $Date: 2008/08/06 18:24:20 $
+* REVISION     :  $Revision: 1.125 $
+* DATE         :  $Date: 2008/08/18 22:13:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -540,11 +540,12 @@ void applyDeviceQueueReport(const long unusedid, CtiDeviceSPtr RemoteDevice, voi
             {
                 QueryQueue (pInfo->QueueHandle, &QueEntCnt);
                 QueryQueue (pInfo->ActinQueueHandle, &AQueEntCnt);
+                int ccuStatus = (int)pInfo->getStatus();
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << " " << RemoteDevice->getName() << ": the time is now " << CtiTime( ) << endl;
                     if(QueWorkCnt) dout << "       " << setw(8) << QueWorkCnt  << " queued work elements. Evaluate next at " << ent << "." << endl;
-                    dout << "       Queue Entries:  Queue: " << setw(8) << QueEntCnt << " Actin:  " << setw(8) << AQueEntCnt << " Status Byte: " << hex << setw(4) << (int)pInfo->getStatus() << dec << " FreeSlots: " << pInfo->FreeSlots << endl;
+                    dout << "       Queue Entries:  Queue: " << setw(8) << QueEntCnt << " Actin:  " << setw(8) << AQueEntCnt << " Status Byte: " << hex << setw(4) << ccuStatus << dec << " FreeSlots: " << pInfo->FreeSlots << endl;
                     for(int i = 0; i < 32; i++)
                     {
                         if(pInfo->QueTable[i].InUse)
