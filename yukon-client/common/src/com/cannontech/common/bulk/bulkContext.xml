@@ -143,7 +143,7 @@
 
                 <property name="type">
                     <bean
-                        class="com.cannontech.web.input.type.RadioEnumeratedType">
+                        class="com.cannontech.web.input.type.DelegatingEnumeratedType">
                         <property name="enumeratedType"
                             ref="inputStringType" />
                         <property name="optionList">
