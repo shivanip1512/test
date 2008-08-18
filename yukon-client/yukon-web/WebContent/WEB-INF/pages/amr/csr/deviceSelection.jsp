@@ -101,48 +101,47 @@
 		</amr:searchNavigation>
 		
 		<table id="deviceTable" class="resultsTable activeResultsTable">
-		  <tr>
-		  	<th>
-				Name
-		  	</th>
-	
-			<!-- Output column headers -->
-			<c:forEach var="field" items="${orderByFields}">
-			    <th nowrap>
-			    	<amr:sortByLink 
-			    		field="${field}" 
-			    		results="${results}" 
-			    		orderBy="${orderBy}" 
-			    		filterByList="${filterByList}">
-			    			${field.csrString}
-			    	</amr:sortByLink>
-			    </th>
-			</c:forEach>
+		    
+            <%-- COLUMN HEADERS --%>
+            <tr>
+          
+                <c:forEach var="dispEnum" items="${orderedDispEnums}">
+                
+                    <c:choose>
+                    
+                        <c:when test="${not empty dispEnum.searchField}">
+                            <th nowrap>
+                                <amr:sortByLink 
+                                    field="${dispEnum.searchField}" 
+                                    results="${results}" 
+                                    orderBy="${orderBy}" 
+                                    filterByList="${filterByList}">
+                                        ${dispEnum.searchField.csrString}
+                                </amr:sortByLink>
+                            </th>
+                        </c:when>
+                        
+                        <c:otherwise>
+                            <th>${dispEnum.label}</th>
+                        </c:otherwise>
+                        
+                    </c:choose>
+                    
+                </c:forEach>
 	
 			</tr>
-		    
-		    <c:forEach var="device" items="${results.resultList}">
-			  <tr class="<tags:alternateRow odd="" even="altRow"/>" onclick="javascript:forwardToCsrHome(this, ${device.deviceId})" onmouseover="highLightRow(this)" onmouseout="unHighLightRow(this)">
-			    <td>
-			    	<cti:deviceName device="${device}"/>&nbsp;
-			    </td>
-			    <td>
-					${device.meterNumber}&nbsp;
-			    </td>
-			    <td>
-					${device.name}&nbsp;
-			    </td>
-			    <td>
-					${device.typeStr}&nbsp;
-			    </td>
-			    <td>
-					${device.address}&nbsp;
-			    </td>
-			    <td>
-					${device.route}&nbsp;
-			    </td>
-			  </tr>
-		    </c:forEach>
+            
+            <%-- DATA ROWS --%>
+            <c:forEach var="row" items="${resultColumnsList}">
+                <tr class="<tags:alternateRow odd="" even="altRow"/>" onclick="javascript:forwardToCsrHome(this, ${row[idEnum]})" onmouseover="highLightRow(this)" onmouseout="unHighLightRow(this)">
+                <c:forEach var="dispEnum" items="${orderedDispEnums}">
+                    <td>
+                        ${row[dispEnum]}
+                    </td>
+                </c:forEach>
+                </tr>
+            </c:forEach>
+            
 		</table>
 	
 		<amr:searchNavigation 

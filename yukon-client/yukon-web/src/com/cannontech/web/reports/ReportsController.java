@@ -86,7 +86,7 @@ public class ReportsController extends MultiActionController  {
         //-----------------------------------------------------------------------------------------
         int columnCount = reportModel.getColumnCount();
         int rowCount = reportModel.getRowCount();
-        List<List<String>> data = simpleReportService.getFormattedData(reportModel, columnInfo, userContext);
+        List<List<String>> data = simpleReportService.getFormattedData(reportDefinition, reportModel, userContext);
         
         mav.addObject("columnCount", columnCount);
         mav.addObject("rowCount", rowCount);

@@ -40,8 +40,7 @@ public class SimpleReportOutputterImpl implements SimpleReportOutputter {
         
         // data grid
         //-----------------------------------------------------------------------------------------
-        List<ColumnInfo> columnInfo = simpleReportService.buildColumnInfoListFromColumnLayoutData(bodyColumns);
-        List<List<String>> data = simpleReportService.getFormattedData(reportModel, columnInfo, userContext);
+        List<List<String>> data = simpleReportService.getFormattedData(reportDefinition, reportModel, userContext);
         
         // convert from List<List<String>> to List<String[]> that csvWriter likes to eat
         List<String[]> dataAsArray = new ArrayList<String[]>();

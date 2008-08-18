@@ -2,9 +2,7 @@ package com.cannontech.amr.meter.dao.impl;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Required;
@@ -20,7 +18,6 @@ import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.model.DeviceGroup;
-import com.cannontech.common.util.SimpleTemplateProcessor;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
@@ -172,21 +169,16 @@ public class MeterDaoImpl implements MeterDao {
     }
 
     private String computeDeviceName(Meter device) {
-        SimpleTemplateProcessor templateProcessor = new SimpleTemplateProcessor();
+        
         String formattingStr = roleDao.getGlobalPropertyValue(ConfigurationRole.DEVICE_DISPLAY_TEMPLATE);
-        Validate.notNull(formattingStr,
-                         "Device display template role property does not exist.");
-        Map<String, String> values = new HashMap<String, String>(6);
-        String meterNumber = device.getMeterNumber();
-        if (meterNumber == null) {
-            meterNumber = "n/a";
+        Validate.notNull(formattingStr, "Device display template role property does not exist.");
+        
+        try {
+            MeterDisplayFieldEnum meterDisplayFieldEnumVal = MeterDisplayFieldEnum.valueOf(formattingStr);
+            return meterDisplayFieldEnumVal.getField(device);
+        } catch (IllegalArgumentException e) {
+            return formattingStr;
         }
-        values.put("meterNumber", meterNumber);
-        values.put("name", device.getName());
-        values.put("id", Integer.toString(device.getDeviceId()));
-        values.put("address", device.getAddress());
-        String result = templateProcessor.process(formattingStr, values);
-        return result;
     }
 
     /**

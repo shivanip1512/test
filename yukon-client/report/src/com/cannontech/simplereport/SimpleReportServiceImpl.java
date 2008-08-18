@@ -168,7 +168,7 @@ public class SimpleReportServiceImpl implements SimpleReportService {
             }
 
             public int getColumnCount() {
-                return reportModel.getColumnCount();
+                return reportDefinition.getReportLayoutData().getBodyColumns().length;
             }
 
             public String getColumnName(int columnIndex) {
@@ -198,27 +198,20 @@ public class SimpleReportServiceImpl implements SimpleReportService {
     
 
     
-    public List<List<String>> getFormattedData(BareReportModel reportModel, List<ColumnInfo> ColumnInfos, YukonUserContext userContext) {
+    public List<List<String>> getFormattedData(YukonReportDefinition<? extends BareReportModel> reportDefinition, BareReportModel reportModel, YukonUserContext userContext) {
+        
+        BareReportModel stringModel = getStringReportModel(reportDefinition, reportModel, userContext);
         
         List<List<String>> data = new ArrayList<List<String>>();
-        int columnCount = reportModel.getColumnCount();
-        int rowCount = reportModel.getRowCount();
-        
-        PointFormattingService cachedInstance = pointFormattingService.getCachedInstance();
-
-        for(int rowIdx = 0; rowIdx < rowCount; rowIdx++) {
-
+        for(int rowIdx = 0; rowIdx < stringModel.getRowCount(); rowIdx++) {
+            
             List<String> colData = new ArrayList<String>();
-
-            for(int colIdx = 0; colIdx < columnCount; colIdx++) {
-
-                String format = ColumnInfos.get(colIdx).getColumnFormat();
-                Object dataItem = reportModel.getValueAt(rowIdx, colIdx);
-                String formattedData = formatData(format, dataItem, userContext, cachedInstance);
-                colData.add(formattedData);
+            for(int colIdx = 0; colIdx < stringModel.getColumnCount(); colIdx++) {
+                colData.add((String)stringModel.getValueAt(rowIdx, colIdx));
             }
             data.add(colData);
         }
+        
         return data;
     }
     
@@ -238,9 +231,6 @@ public class SimpleReportServiceImpl implements SimpleReportService {
             int width = bodyColumns[i].getWidth();
             totalWidth += width;
             ci.setColumnWidth(width);
-
-            // column format
-            ci.setColumnFormat(bodyColumns[i].getFormat());
 
             // column alignment
             String align = "left";
@@ -306,6 +296,7 @@ public class SimpleReportServiceImpl implements SimpleReportService {
      * @param inputRoot
      * @return
      */
+    @SuppressWarnings("unchecked")
     public Map<String, String> extractPropertiesFromAttributesMap(InputRoot inputRoot, Map<String, Object> attributes){
         
     	// look at the attributes the report input root want, and find them in the dynamic attributes

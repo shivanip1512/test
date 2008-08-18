@@ -1,12 +1,16 @@
 package com.cannontech.web.amr.csr;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.Validate;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
@@ -17,6 +21,7 @@ import com.cannontech.amr.csr.model.FilterBy;
 import com.cannontech.amr.csr.model.FilterByGenerator;
 import com.cannontech.amr.csr.model.OrderBy;
 import com.cannontech.amr.csr.service.CsrService;
+import com.cannontech.amr.meter.dao.impl.MeterDisplayFieldEnum;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.attribute.model.Attribute;
@@ -29,6 +34,7 @@ import com.cannontech.core.dao.RoleDao;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.operator.MeteringRole;
+import com.cannontech.roles.yukon.ConfigurationRole;
 import com.cannontech.roles.yukon.MultispeakRole;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.bulk.model.collection.DeviceFilterCollectionHelper;
@@ -133,9 +139,77 @@ public class CsrController extends MultiActionController {
             mav.addObject("results", results);
             mav.addObject("orderByFields", CsrSearchField.values());
             mav.addObject("filterByList", filterByList);
+            
+            List<MeterDisplayFieldEnum> defaultDispEnumsOrder = new ArrayList<MeterDisplayFieldEnum>();
+            defaultDispEnumsOrder.add(MeterDisplayFieldEnum.METER_NUMBER);
+            defaultDispEnumsOrder.add(MeterDisplayFieldEnum.NAME);
+            defaultDispEnumsOrder.add(MeterDisplayFieldEnum.DEVICE_TYPE);
+            defaultDispEnumsOrder.add(MeterDisplayFieldEnum.ADDRESS);
+            defaultDispEnumsOrder.add(MeterDisplayFieldEnum.ROUTE);
+            List<MeterDisplayFieldEnum> orderedDispEnums = orderColumnsByDisplayTemplate(defaultDispEnumsOrder);
+            mav.addObject("orderedDispEnums", orderedDispEnums);
+            
+            
+            List<Map<MeterDisplayFieldEnum, String>> resultColumnsList = new ArrayList<Map<MeterDisplayFieldEnum, String>>();
+            List<ExtendedMeter> resultMeterList = new ArrayList<ExtendedMeter>();
+            
+            for (ExtendedMeter meter : results.getResultList()) {
+                
+                Map<MeterDisplayFieldEnum, String> rowMap = new HashMap<MeterDisplayFieldEnum, String>();
+                for (MeterDisplayFieldEnum meterDisplayFieldEnum : MeterDisplayFieldEnum.values()) {
+                    rowMap.put(meterDisplayFieldEnum, meterDisplayFieldEnum.getField(meter));
+                }
+                resultColumnsList.add(rowMap);
+                resultMeterList.add(meter);
+            }
+            mav.addObject("idEnum", MeterDisplayFieldEnum.ID);
+            mav.addObject("resultColumnsList", resultColumnsList);
+            mav.addObject("resultMeterList", resultMeterList);
+            
+            
+            
         }
 
         return mav;
+    }
+    
+    private List<MeterDisplayFieldEnum> orderColumnsByDisplayTemplate(List<MeterDisplayFieldEnum> defaultColumnOrder) {
+        
+        String formattingStr = roleDao.getGlobalPropertyValue(ConfigurationRole.DEVICE_DISPLAY_TEMPLATE);
+        Validate.notNull(formattingStr, "Device display template role property does not exist.");
+        
+        List<MeterDisplayFieldEnum> newOrder = new ArrayList<MeterDisplayFieldEnum>();
+        
+        try {
+            MeterDisplayFieldEnum roleDispFieldEnumVal = MeterDisplayFieldEnum.valueOf(formattingStr);
+            
+            // add first
+            boolean added = false;
+            for (MeterDisplayFieldEnum displayTemplate : defaultColumnOrder) {
+                if (displayTemplate.equals(roleDispFieldEnumVal)) {
+                    newOrder.add(displayTemplate);
+                    added = true;
+                }
+            }
+            
+            // if the DEVICE_DISPLAY_TEMPLATE that is set is not one of the default columns for this
+            // report, add it as first column
+            if (!added) {
+                newOrder.add(roleDispFieldEnumVal);
+            }
+            
+            // add the rest of the default columns
+            for (MeterDisplayFieldEnum displayTemplate : defaultColumnOrder) {
+                if (!newOrder.contains(displayTemplate)) {
+                    newOrder.add(displayTemplate);
+                }
+            }
+            
+        } catch (IllegalArgumentException e) {
+            return defaultColumnOrder;
+        }
+        
+        return newOrder;
     }
 
     public ModelAndView home(HttpServletRequest request, HttpServletResponse response)

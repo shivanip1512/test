@@ -4,7 +4,6 @@ public class ColumnInfo {
 
     private String columnName;
     private Integer columnWidth;
-    private String columnFormat;
     private String columnAlignment;
     private Integer columnWidthPercentage;
     
@@ -53,12 +52,4 @@ public class ColumnInfo {
     public void setColumnWidthPercentage(Integer columnWidthPercentage) {
         this.columnWidthPercentage = columnWidthPercentage;
     }
-    public String getColumnFormat() {
-        return columnFormat;
-    }
-    public void setColumnFormat(String columnFormat) {
-        this.columnFormat = columnFormat;
-    }
-    
-    
 }

@@ -32,7 +32,6 @@ public class GroupDevicesModel extends BareReportModelBase<GroupDevicesModel.Mod
     static public class ModelRow {
         public String name;
         public String meterNumber;
-        public String deviceName;
         public String deviceType;
         public String address;
         public String route;
@@ -54,7 +53,6 @@ public class GroupDevicesModel extends BareReportModelBase<GroupDevicesModel.Mod
             GroupDevicesModel.ModelRow row = new GroupDevicesModel.ModelRow();
             row.name = meterDao.getFormattedDeviceName(meter);
             row.meterNumber = meter.getMeterNumber();
-            row.deviceName = meter.getName();
             row.deviceType = meter.getTypeStr();
             row.address = meter.getAddress();
             row.route = meter.getRoute();

@@ -53,8 +53,8 @@ public interface SimpleReportService {
      * @param user
      * @return
      */
-    public abstract List<List<String>> getFormattedData(
-            BareReportModel reportModel, List<ColumnInfo> ColumnInfos,
+    public abstract List<List<String>> getFormattedData(YukonReportDefinition<? extends BareReportModel> reportDefinition,                                            
+            BareReportModel reportModel,
             YukonUserContext userContext);
 
     public abstract List<ColumnInfo> buildColumnInfoListFromColumnLayoutData(
