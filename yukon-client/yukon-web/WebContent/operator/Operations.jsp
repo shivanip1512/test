@@ -15,7 +15,7 @@
     application.BillingRole,
     TrendingRole,
     WebClientRole.JAVA_WEB_START_LAUNCHER_ENABLED,
-    DirectLoadcontrolRole,
+    loadcontrol.DirectLoadcontrolRole,
     OddsForControlRole,
     CICurtailmentRole,
     CBCSettingsRole,
