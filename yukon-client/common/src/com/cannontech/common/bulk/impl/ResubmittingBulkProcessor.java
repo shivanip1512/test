@@ -22,6 +22,24 @@ import com.cannontech.common.bulk.processor.Processor;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.ScheduledExecutor;
 
+/**
+ * This BulkProcessor makes use of the "globalScheduledExecutor" to do its processing. 
+ * Each row will be processed in its own transaction. This is called a resubmitting
+ * processor because after each item has been processed, a new Runnable is submitted
+ * to the executor to process the next item. This allows multiple concurrently running 
+ * bulk processes to complete on an equal footing for processing time, doesn't require
+ * a large amount of memory, and prevents a couple large/slow processes from preventing 
+ * a smaller/faster process from sneaking in and finishing first.
+ * 
+ * In addition, this processor makes use of the delayThrottleCalculator to determine
+ * when the resubmitted task should be scheduled to run. Because the same instance of
+ * the delayThrottleCaclulator is shared between all processes using this class, it
+ * effects the aggregate rate that items will be processed. 
+ * 
+ * (For example, when doing a bulk import, no matter how many bulk imports are running
+ * in parallel, a device will only be added (by default) every 500ms.)
+ * 
+ */
 public class ResubmittingBulkProcessor extends BulkProcessorBase {
     private Logger log = YukonLogManager.getLogger(ResubmittingBulkProcessor.class);
     
