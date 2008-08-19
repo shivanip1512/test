@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     8/13/2008 3:12:28 PM                         */
+/* Created on:     8/19/2008 1:04:13 AM                         */
 /*==============================================================*/
 
 
@@ -12480,10 +12480,10 @@ SELECT YP3.PAObjectid AS CBCId, YP3.PAOName AS CBCName, YP.PAObjectid AS CapBank
        YP4.PAOName AS Region, YP4.PAObjectId AS AreaId, CB.BankSize, CB.ControllerType, 
        EL.AdditionalInfo AS IPAddress, CBC.SerialNumber AS SerialNum, DA.SlaveAddress, 
        EL2.KvarAfter, EL2.KvarChange, EL2.KvarBefore 
-FROM CCOperationsSent_view EL
+FROM CCOperationsASent_View EL
 JOIN CCOperationLogCache OpConf ON EL.LogId = OpConf.OperationLogId        
-LEFT JOIN CCOperationsConfirmed_view EL2 ON EL2.LogId = OpConf.ConfirmationLogId 
-LEFT JOIN CCOrphanedConfirmations_view Orphs ON EL.logid = Orphs.opid       
+LEFT JOIN CCOperationsBConfirmed_view EL2 ON EL2.LogId = OpConf.ConfirmationLogId 
+LEFT JOIN CCOperationsCOrphanedConf_view Orphs ON EL.logid = Orphs.opid       
 JOIN Point ON Point.PointId = EL.PointId        
 JOIN DynamicCCCapBank ON DynamicCCCapBank.CapBankId = Point.PAObjectId        
 JOIN YukonPAObject YP ON YP.PAObjectId = DynamicCCCapBank.CapBankId        
@@ -12500,7 +12500,7 @@ LEFT JOIN (SELECT EntryId, PAObjectId, Owner, InfoKey, Value, UpdateTime
 LEFT JOIN CCSubstationSubbusList SSL ON SSL.SubstationBusId = EL.SubId         
 LEFT JOIN YukonPAObject YP5 ON YP5.PAObjectId =  SSL.SubstationBusId        
 LEFT JOIN CCSubAreaAssignment CSA ON CSA.SubstationBusId = SSL.SubstationId        
-LEFT JOIN YukonPAObject YP4 ON YP4.PAObjectId = CSA.AreaId
+LEFT JOIN YukonPAObject YP4 ON YP4.PAObjectId = CSA.AreaId;
 go
 
 /*==============================================================*/
