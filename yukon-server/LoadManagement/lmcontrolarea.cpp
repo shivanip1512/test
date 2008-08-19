@@ -1625,6 +1625,12 @@ void CtiLMControlArea::manuallyStartAllProgramsNow(LONG secondsFromBeginningOfDa
                         }
                     }
 
+                    if( currentLMProgram->getProgramState() == CtiLMProgramBase::InactiveState &&
+                        hasStatusTrigger() && isStatusTriggerTripped() && 
+                        currentLMProgram->getPAOType() == TYPE_LMPROGRAM_DIRECT)
+                    {
+                        boost::static_pointer_cast< CtiLMProgramDirect >(currentLMProgram)->setControlActivatedByStatusTrigger(TRUE);
+                    }
                     if( (currentLMProgram->getProgramState() != CtiLMProgramBase::FullyActiveState &&
                          currentLMProgram->getProgramState() != CtiLMProgramBase::ManualActiveState &&
                          currentLMProgram->getProgramState() != CtiLMProgramBase::ScheduledState) ||
@@ -1695,7 +1701,7 @@ void CtiLMControlArea::manuallyStartAllProgramsNow(LONG secondsFromBeginningOfDa
     }
 }
 
-void CtiLMControlArea::manuallyStopAllProgramsNow(LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg)
+void CtiLMControlArea::manuallyStopAllProgramsNow(LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, bool forceAll)
 {
     LONG fullyActivePrograms = 0;
     LONG activePrograms = 0;
@@ -1723,9 +1729,10 @@ void CtiLMControlArea::manuallyStopAllProgramsNow(LONG secondsFromBeginningOfDay
                 dout << CtiTime() << " - " << text << ", " << additional << endl;
             }
 
-            if( currentLMProgram->getProgramState() != CtiLMProgramBase::InactiveState ||
+            if( forceAll &&           
+                (currentLMProgram->getProgramState() != CtiLMProgramBase::InactiveState ||
                 (currentLMProgram->getProgramState() == CtiLMProgramBase::ActiveState &&
-                 boost::static_pointer_cast< CtiLMProgramDirect >(currentLMProgram)->getIsRampingIn()) )
+                 boost::static_pointer_cast< CtiLMProgramDirect >(currentLMProgram)->getIsRampingIn())) )
             {
                 if( currentLMProgram->getPAOType() == TYPE_LMPROGRAM_DIRECT )
                 {
@@ -1750,6 +1757,31 @@ void CtiLMControlArea::manuallyStopAllProgramsNow(LONG secondsFromBeginningOfDay
                       {
                       setControlAreaState(CtiLMControlArea::ActiveState);
                       }*/
+            }
+            else
+            {
+                if( currentLMProgram->getProgramState() == CtiLMProgramBase::ScheduledState &&
+                     boost::static_pointer_cast< CtiLMProgramDirect >(currentLMProgram)->wasControlActivatedByStatusTrigger())
+                {
+                    if( currentLMProgram->getPAOType() == TYPE_LMPROGRAM_DIRECT )
+                    {
+                        CtiLMProgramDirectSPtr lmProgramDirect = boost::static_pointer_cast< CtiLMProgramDirect >(currentLMProgram);
+                        CtiLMManualControlRequest* manual_req = CTIDBG_new CtiLMManualControlRequest(
+                                                                                                    CtiLMManualControlRequest::STOP_NOW,
+                                                                                                    lmProgramDirect->getPAOId(),
+                                                                                                    gEndOfCtiTime,
+                                                                                                    CtiTime(),
+                                                                                                    gEndOfCtiTime,
+                                                                                                    1, //gear
+                                                                                                    CtiLMProgramDirect::defaultLMStartPriority,
+                                                                                                    "Server Manual Stop",
+                                                                                                    CtiLMManualControlRequest::USE_CONSTRAINTS);
+                        CtiLMExecutorFactory factory;
+                        CtiLMExecutor* executor = factory.createExecutor(manual_req);
+                        executor->Execute();
+                    }
+                }
+
             }
         }
     }

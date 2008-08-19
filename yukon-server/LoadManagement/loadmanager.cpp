@@ -360,7 +360,7 @@ void CtiLoadManager::controlLoop()
                                         currentControlArea->hasStatusTrigger() &&
                                         !currentControlArea->isStatusTriggerTripped() )                                  
                                     {
-                                        currentControlArea->manuallyStopAllProgramsNow(secondsFromBeginningOfDay,secondsFrom1901,multiPilMsg,multiDispatchMsg, multiNotifMsg);
+                                        currentControlArea->manuallyStopAllProgramsNow(secondsFromBeginningOfDay,secondsFrom1901,multiPilMsg,multiDispatchMsg, multiNotifMsg, false);
                                         currentControlArea->clearManualControlReceivedFlags();
                                     }   
                                 }
@@ -378,10 +378,11 @@ void CtiLoadManager::controlLoop()
                                     }
                                     else if( currentControlArea->hasStatusTrigger() &&
                                              !currentControlArea->isStatusTriggerTripped() &&
-                                             (!currentControlArea->hasThresholdTrigger() || (!currentControlArea->getRequireAllTriggersActiveFlag() && !currentControlArea->isThresholdTriggerTripped())) &&
+                                             (!currentControlArea->hasThresholdTrigger() || 
+                                              (!currentControlArea->getRequireAllTriggersActiveFlag() && !currentControlArea->isThresholdTriggerTripped())) &&
                                              currentControlArea->getControlInterval() == 0 )   // Only stop them manually if there is no control interval!
                                     {
-                                        currentControlArea->manuallyStopAllProgramsNow(secondsFromBeginningOfDay, secondsFrom1901, multiPilMsg, multiDispatchMsg, multiNotifMsg); 
+                                        currentControlArea->manuallyStopAllProgramsNow(secondsFromBeginningOfDay, secondsFrom1901, multiPilMsg, multiDispatchMsg, multiNotifMsg, true); 
                                         // Potentially this control area is ready for manual control
                                         // If so lets do it now otherwise we have to wait for the top
                                         // of the main loop which could be a while

@@ -1626,11 +1626,13 @@ void CtiLMManualControlRequestExecutor::StopDirectProgram(CtiLMProgramDirectSPtr
         lmProgramDirect->setDirectStartTime(gInvalidCtiTime);
         lmProgramDirect->setDirectStopTime(gInvalidCtiTime);    
         lmProgramDirect->setProgramState(CtiLMProgramBase::InactiveState);
+        lmProgramDirect->setControlActivatedByStatusTrigger(FALSE);
         controlArea->setUpdatedFlag(TRUE);
     }
     else
     {
         lmProgramDirect->setManualControlReceivedFlag(FALSE);
+        lmProgramDirect->setControlActivatedByStatusTrigger(FALSE);
         lmProgramDirect->setDirectStopTime(stopTime);
 
         lmProgramDirect->scheduleStopNotification(stopTime);

@@ -102,6 +102,8 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     CtiLMProgramDirect& setNotifyInactiveTime(const CtiTime& notify);
     CtiLMProgramDirect& setStartedRampingOutTime(const CtiTime& started);
     CtiLMProgramDirect& setConstraintOverride(BOOL override);
+    CtiLMProgramDirect& setControlActivatedByStatusTrigger(BOOL flag);
+
     
     void dumpDynamicData();
     void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
@@ -125,6 +127,7 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
 
     BOOL notifyGroupsOfStart(CtiMultiMsg* multiNotifMsg);
     BOOL notifyGroupsOfStop(CtiMultiMsg* multiNotifMsg);    
+    BOOL wasControlActivatedByStatusTrigger();   
 
     virtual CtiLMProgramBaseSPtr replicate() const;
     virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, vector<CtiLMControlAreaTrigger*> controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isTriggerCheckNeeded);
@@ -189,6 +192,8 @@ private:
 
     CtiTime _startedrampingout;
     BOOL _constraint_override;
+    
+    BOOL _controlActivatedByStatusTrigger;
     
     //When the dynamic data was last saved
     CtiTime  _dynamictimestamp;

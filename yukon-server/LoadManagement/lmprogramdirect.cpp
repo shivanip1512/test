@@ -549,6 +549,13 @@ CtiLMProgramDirect& CtiLMProgramDirect::setConstraintOverride(BOOL override)
     return *this;
 }
 
+
+CtiLMProgramDirect& CtiLMProgramDirect::setControlActivatedByStatusTrigger(BOOL flag)
+{
+    _controlActivatedByStatusTrigger = flag;
+    return *this;
+}
+
 /*---------------------------------------------------------------------------
     reduceProgramLoad
 
@@ -3427,7 +3434,10 @@ BOOL CtiLMProgramDirect::notifyGroupsOfStop(CtiMultiMsg* multiNotifMsg)
     return notifyGroups(CtiNotifLMControlMsg::FINISHING, multiNotifMsg);
 }
 
-
+BOOL  CtiLMProgramDirect::wasControlActivatedByStatusTrigger()
+{
+    return _controlActivatedByStatusTrigger;
+}
 
 /*---------------------------------------------------------------------------
     refreshStandardProgramControl
@@ -5170,6 +5180,7 @@ CtiLMProgramDirect& CtiLMProgramDirect::operator=(const CtiLMProgramDirect& righ
         _lmprogramdirectgroups = right._lmprogramdirectgroups;
         _master_programs = right._master_programs;
         _subordinate_programs = right._subordinate_programs;
+        _controlActivatedByStatusTrigger = right._controlActivatedByStatusTrigger;
     }
     return *this;
 }
@@ -5238,7 +5249,7 @@ void CtiLMProgramDirect::restore(RWDBReader& rdr)
         rdr["constraintoverride"] >> tempBoolString;
         CtiToLower(tempBoolString);
         setConstraintOverride(tempBoolString=="y"?TRUE:FALSE);
-
+        setControlActivatedByStatusTrigger(FALSE);
         _insertDynamicDataFlag = FALSE;
         setDirty(false);
     }
@@ -5253,6 +5264,7 @@ void CtiLMProgramDirect::restore(RWDBReader& rdr)
         _notify_inactive_time = gInvalidCtiTime;
         _startedrampingout = gInvalidCtiTime;
         _constraint_override = false;
+        setControlActivatedByStatusTrigger(FALSE);
         _insertDynamicDataFlag = TRUE;
         setDirty(true);
     }
