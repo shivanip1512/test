@@ -91,7 +91,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	ret.setRouteOffset( vstr.extractInt() );
 	ret.setMacroOffset( vstr.extractInt() );
 	ret.setAttemptNum( vstr.extractInt() );
-	ret.setTransmissionID( vstr.extractLong() );
+	ret.setGroupMessageID(vstr.extractLong() );
 	ret.setUserMessageID( vstr.extractLong() );
 	ret.setExpectMore( vstr.extractInt() );
 }

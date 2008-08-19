@@ -98,7 +98,7 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 	vstr.insertLong( req.getRouteID() );
 	vstr.insertInt( req.getMacroOffset() );
 	vstr.insertInt( req.getAttemptNum() );
-	vstr.insertLong( req.getTransmissionID() );
+	vstr.insertLong( req.getGroupMessageID() );
 	vstr.insertLong( req.getUserMessageID() );
 	vstr.insertInt( req.getOptionsField() );
 }
