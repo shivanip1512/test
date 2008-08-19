@@ -9,8 +9,6 @@
 <spring:bind path="${input.field}">
 	<ct:inputName input="${input}" error="${status.error}" />
 		
-	<input type="text" id="${status.expression}" name="${status.expression}" value="${status.value}" />
-
     <tags:dateInputCalendar fieldId="${status.expression}"
                             fieldName="${status.expression}"
                             fieldValue="${status.value}" />
