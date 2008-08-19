@@ -28,12 +28,20 @@ public enum MeterDisplayFieldEnum {
         }
     }),
     
+    /**
+     * Not an explictly supported "Device Display Template" role property value.
+     * Used for CSR device selection page only
+     */
     ROUTE("Route", "route", CsrSearchField.ROUTE, new MeterDisplayFieldAccessor() {
         public String getField(Meter meter) {
             return meter.getRoute();
         }
     }),
     
+    /**
+     * Not an explictly supported "Device Display Template" role property value.
+     * Used for CSR device selection page only
+     */
     DEVICE_TYPE("Device Type", "deviceType",CsrSearchField.TYPE, new MeterDisplayFieldAccessor() {
         public String getField(Meter meter) {
             return meter.getTypeStr();
