@@ -119,9 +119,6 @@
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td bgcolor="#FFFFFF">
 				<c:choose>
-					<c:when test="${lp}">
-						<%@ include file="../../apps/AdvancedCommander410.jspf"%>
-					</c:when>
 					<c:when test="${isMCT4XX && !manual}">
 						<%@ include file="../../apps/Commander410.jspf"%>
 					</c:when>
