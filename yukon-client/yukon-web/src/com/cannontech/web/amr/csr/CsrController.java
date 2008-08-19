@@ -142,7 +142,7 @@ public class CsrController extends MultiActionController {
             
             List<MeterDisplayFieldEnum> defaultDispEnumsOrder = new ArrayList<MeterDisplayFieldEnum>();
             defaultDispEnumsOrder.add(MeterDisplayFieldEnum.METER_NUMBER);
-            defaultDispEnumsOrder.add(MeterDisplayFieldEnum.NAME);
+            defaultDispEnumsOrder.add(MeterDisplayFieldEnum.DEVICE_NAME);
             defaultDispEnumsOrder.add(MeterDisplayFieldEnum.DEVICE_TYPE);
             defaultDispEnumsOrder.add(MeterDisplayFieldEnum.ADDRESS);
             defaultDispEnumsOrder.add(MeterDisplayFieldEnum.ROUTE);
@@ -183,27 +183,9 @@ public class CsrController extends MultiActionController {
         try {
             MeterDisplayFieldEnum roleDispFieldEnumVal = MeterDisplayFieldEnum.valueOf(formattingStr);
             
-            // add first
-            boolean added = false;
-            for (MeterDisplayFieldEnum displayTemplate : defaultColumnOrder) {
-                if (displayTemplate.equals(roleDispFieldEnumVal)) {
-                    newOrder.add(displayTemplate);
-                    added = true;
-                }
-            }
-            
-            // if the DEVICE_DISPLAY_TEMPLATE that is set is not one of the default columns for this
-            // report, add it as first column
-            if (!added) {
-                newOrder.add(roleDispFieldEnumVal);
-            }
-            
-            // add the rest of the default columns
-            for (MeterDisplayFieldEnum displayTemplate : defaultColumnOrder) {
-                if (!newOrder.contains(displayTemplate)) {
-                    newOrder.add(displayTemplate);
-                }
-            }
+            newOrder.addAll(defaultColumnOrder);
+            newOrder.remove(roleDispFieldEnumVal); // remove if present
+            newOrder.add(0,roleDispFieldEnumVal); // force to the front of the list 
             
         } catch (IllegalArgumentException e) {
             return defaultColumnOrder;

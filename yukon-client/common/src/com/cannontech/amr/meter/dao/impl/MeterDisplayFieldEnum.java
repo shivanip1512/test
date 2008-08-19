@@ -6,7 +6,7 @@ import com.cannontech.amr.meter.model.Meter;
 
 public enum MeterDisplayFieldEnum {
 
-    NAME("Name", "name", CsrSearchField.PAONAME, new MeterDisplayFieldAccessor() {
+    DEVICE_NAME("Device Name", "deviceName", CsrSearchField.PAONAME, new MeterDisplayFieldAccessor() {
         public String getField(Meter meter) {
             return meter.getName();
         }
