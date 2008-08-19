@@ -225,9 +225,7 @@ public String getHost() {
  */
 @ManagedAttribute
 public int getNumOutMessages() {
-	synchronized (outQueue) {
-		return outQueue.size();		
-	}
+    return outQueue.size();		
 }
 /**
  * This method was created in VisualAge.
