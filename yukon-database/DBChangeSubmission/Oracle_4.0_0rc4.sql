@@ -2,9 +2,9 @@
 /* This script must be run manually using the SQL tool and not the DBToolsFrame tool. */
 /* START SPECIAL BLOCK */
 /* Start YUK-6093 */
-ALTER TABLE DynamicCCCapBank ALTER COLUMN beforeVar VARCHAR(48); 
-ALTER TABLE DynamicCCCapBank ALTER COLUMN afterVar VARCHAR(48); 
-ALTER TABLE DynamicCCCapBank ALTER COLUMN changeVar VARCHAR(48); 
+ALTER TABLE DynamicCCCapBank MODIFY beforeVar VARCHAR2(48); 
+ALTER TABLE DynamicCCCapBank MODIFY afterVar VARCHAR2(48); 
+ALTER TABLE DynamicCCCapBank MODIFY changeVar VARCHAR2(48); 
 /* End YUK-6093 */
 
 /* Start YUK-6139 */
@@ -69,8 +69,8 @@ GROUP BY OP.LogId;
 
 
 CREATE TABLE CCOperationLogCache 
-(OperationLogId numeric(18,0) not null,
- ConfirmationLogId numeric(18,0) null,
+(OperationLogId NUMBER not null,
+ ConfirmationLogId NUMBER null,
  constraint PK_CCOperationLogCache primary key (OperationLogId));
 
 INSERT INTO CCOperationLogCache

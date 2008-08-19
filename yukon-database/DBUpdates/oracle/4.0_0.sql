@@ -2074,8 +2074,8 @@ GROUP BY OP.LogId;
 
 
 CREATE TABLE CCOperationLogCache 
-(OperationLogId numeric(18,0) not null,
- ConfirmationLogId numeric(18,0) null,
+(OperationLogId NUMBER not null,
+ ConfirmationLogId NUMBER null,
  constraint PK_CCOperationLogCache primary key (OperationLogId));
 
 INSERT INTO CCOperationLogCache
