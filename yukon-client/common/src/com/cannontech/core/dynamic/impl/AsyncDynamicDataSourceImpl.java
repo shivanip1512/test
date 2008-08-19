@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.CTILogger;
@@ -63,6 +65,11 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     
     private Set<DBChangeLiteListener> dbChangeLiteListeners = 
         new HashSet<DBChangeLiteListener>();
+    
+    @PostConstruct
+    public void initialize() {
+        this.dispatchConnection.addMessageListener(this);
+    }
 
     public void registerForPointData(PointDataListener l, Set<Integer> pointIds) {
 
@@ -300,12 +307,7 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     }
     
     public void setDispatchConnection(IServerConnection dispatchConnection) {
-        // Should we unregister with the old connection?? might leak otherwise?
-        if(this.dispatchConnection != null) {
-            this.dispatchConnection.removeMessageListener(this);
-        }
         this.dispatchConnection = dispatchConnection;
-        this.dispatchConnection.addMessageListener(this);
     }
 
     public void setDatabaseCache(IDatabaseCache databaseCache) {
