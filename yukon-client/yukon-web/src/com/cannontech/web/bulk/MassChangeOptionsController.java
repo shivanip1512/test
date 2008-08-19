@@ -192,7 +192,12 @@ public class MassChangeOptionsController extends InputFormController {
     @Override
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         
-        return new YukonDeviceDto();
+        YukonDeviceDto yukonDeviceDto = new YukonDeviceDto();
+
+        // for mass change options page, we'd like 'enable' to be the default selected value
+        yukonDeviceDto.setEnable(true);
+        
+        return yukonDeviceDto;
     }
     
     @Required
