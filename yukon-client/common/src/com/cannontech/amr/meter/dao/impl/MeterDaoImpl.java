@@ -153,22 +153,6 @@ public class MeterDaoImpl implements MeterDao {
     }
 
     public String getFormattedDeviceName(Meter device) {
-        String result;
-        if (device instanceof DisplayNameCachingMeter) {
-            DisplayNameCachingMeter cachingMeter = (DisplayNameCachingMeter) device;
-            if (cachingMeter.getDisplayNameCache() == null) {
-                result = computeDeviceName(device);
-                cachingMeter.setDisplayNameCache(result);
-            } else {
-                result = cachingMeter.getDisplayNameCache();
-            }
-        } else {
-            result = computeDeviceName(device);
-        }
-        return result;
-    }
-
-    private String computeDeviceName(Meter device) {
         
         String formattingStr = roleDao.getGlobalPropertyValue(ConfigurationRole.DEVICE_DISPLAY_TEMPLATE);
         Validate.notNull(formattingStr, "Device display template role property does not exist.");

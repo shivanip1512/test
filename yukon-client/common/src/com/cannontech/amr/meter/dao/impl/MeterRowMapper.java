@@ -15,7 +15,7 @@ public class MeterRowMapper extends BaseMeterRowMapper implements ParameterizedR
     }
 
     public Meter mapRow(ResultSet rs, int rowNum) throws SQLException {
-        Meter meter = new DisplayNameCachingMeter();
+        Meter meter = new Meter();
         fillInMeter(rs, meter);
         return meter;
     }
