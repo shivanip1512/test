@@ -16,14 +16,14 @@ import com.cannontech.yukon.conns.ConnPool;
 public class SystemLogHelper {
 
     private final IServerConnection _dispatchConnection;
-    private final int _signalPointType;
+    private final int _signalPointId;
 
     /**
      * Create a SystemLogHelper with an existing dispatch connection.
      * @param dispatchConnection
      */
-    public SystemLogHelper(int signalPointType, IServerConnection dispatchConnection) {
-        _signalPointType = signalPointType;
+    public SystemLogHelper(int signalPointId, IServerConnection dispatchConnection) {
+        _signalPointId = signalPointId;
         _dispatchConnection = dispatchConnection;
     }
     
@@ -40,7 +40,7 @@ public class SystemLogHelper {
      * @param description
      */
     public void log(String action, String description) {
-        log(_signalPointType, action, description, CtiUtilities.getUserName());
+        log(_signalPointId, action, description, CtiUtilities.getUserName());
     }
 
     /**
@@ -58,7 +58,7 @@ public class SystemLogHelper {
      * @param description
      */
     public void log(String action, String description, LiteYukonUser user) {
-        log(_signalPointType, action, description, user.getUsername(), SystemLog.TYPE_GENERAL);
+        log(_signalPointId, action, description, user.getUsername(), SystemLog.TYPE_GENERAL);
     }   
     
     /**
