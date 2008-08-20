@@ -7161,13 +7161,13 @@
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
             </point>
-            <point type="Analog">
+            <point init="true" type="Analog">
                 <name>Total Pulses for Channel 1</name>
                 <offset value="90"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
             </point>
-            <point type="Analog">
+            <point init="true" type="Analog">
                 <name>Load Profile for Channel 1</name>
                 <offset value="91"/>
                 <multiplier value="1.0"/>
@@ -7215,11 +7215,13 @@
         		<cmd text="scan general"/>
         		<pointRef name="Total kWh"/>
         		<pointRef name="Total kVArh"/>
+        		<pointRef name="Total Pulses for Channel 1"/>
+        		<pointRef name="Load Profile for Channel 1"/>
         	</command>
         </commands>
         <attributes>
 	        <attribute name="USAGE">
-        		<basicLookup point="Total kWh" />
+        		<basicLookup point="Total Pulses for Channel 1" />
         	</attribute>
         	<attribute name="PEAK_DEMAND">
         		<basicLookup point="Peak kW (Rate A kW)" />
@@ -7228,7 +7230,7 @@
         		<basicLookup point="Last Interval kW" />
         	</attribute>
         	<attribute name="LOAD_PROFILE">
-        		<basicLookup point="Load Profile kW" />
+        		<basicLookup point="Load Profile for Channel 1" />
         	</attribute>
        	</attributes>
     </device>
