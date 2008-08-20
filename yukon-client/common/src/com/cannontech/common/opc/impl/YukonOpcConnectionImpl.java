@@ -23,7 +23,6 @@ import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointDataListener;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
-import com.cannontech.database.data.lite.LitePoint;
 import com.netmodule.jpc.driver.opc.OpcGroup;
 import com.netmodule.jpc.driver.opc.OpcItem;
 import com.netmodule.jpc.driver.opc.OpcServer;
@@ -38,7 +37,7 @@ public class YukonOpcConnectionImpl implements YukonOpcConnection, Runnable, Poi
 	private Logger log = YukonLogManager.getLogger(OpcService.class);
 	
 	public String statusGroupName = "YukonStatusGroup";
-	public String statusItemName = "YukonStatus";
+	public String statusItemName = "YukonStatusGroup.YukonStatus";
 	
 	public static int    yukonOpcStatusItemId = 1;
 	public static int    yukonOpcStatusGroupId = 1;
@@ -87,12 +86,12 @@ public class YukonOpcConnectionImpl implements YukonOpcConnection, Runnable, Poi
 			boolean ret = opcServer.connect(hostIp,serverName);
 			
 			if (ret) {
-				log.info("Opc Connection: " + serverName + ", is connected." );
+				log.info( serverName + ", is connected." );
 				
 				boolean status = registerStatusItem();
 				
 				if (!status) {
-					log.error("Opc Connection: Error while registering status item. Connection Terminated.");
+					log.error(" Error while registering status item. Connection Terminated.");
 					opcServer.disconnect();
 					return false;
 				}
@@ -102,13 +101,13 @@ public class YukonOpcConnectionImpl implements YukonOpcConnection, Runnable, Poi
 				}
 				
 			} else {
-				log.info("Opc Connection: " + serverName + ", is NOT connected." );
+				log.info( serverName + ", is NOT connected." );
 			}
 			scheduledExecutor.schedule(this, refreshRate, TimeUnit.SECONDS );
 			
 			return ret;
 		} else {
-			log.info("Opc Connection: Shutdown has been called. Connect canceled.");
+			log.info(" Shutdown has been called. Connect canceled.");
 			return false;
 		}
 	}
@@ -116,21 +115,21 @@ public class YukonOpcConnectionImpl implements YukonOpcConnection, Runnable, Poi
 	public boolean reconnect() {
 		running = true;
 		reConnecting = true;
-		log.info("Opc Connection: Reconnecting to Opc Server " + serverName + ". ");
+		log.info(" Reconnecting to Opc Server " + serverName + ". ");
 		return connect();
 	}
 	
 	public void run() {
 		if (running) {
 			if (reConnecting) {
-				log.info("Opc Connection: Attempting to connect to " + serverName + ".");
+				log.info(" Attempting to connect to " + serverName + ".");
 				
 				boolean ret = connect();
 								
 				if (!ret) {
-					log.info("Opc Connection: Attempt to connect to " + serverName + " failed. Retrying in " + refreshRate + " seconds.");
+					log.info(" Attempt to connect to " + serverName + " failed. Retrying in " + refreshRate + " seconds.");
 				} else {
-					log.info("Opc Connection: Connected to " + serverName);
+					log.info(" Connected to " + serverName);
 				}
 			} else {
 				/*Check Conn status*/
@@ -153,10 +152,10 @@ public class YukonOpcConnectionImpl implements YukonOpcConnection, Runnable, Poi
 		boolean ret = statusItemId > 0;
 		
 		if (ret) {
-			log.info("Opc Connection: " + serverName + "'s, Status Item is registered." );
+			log.info( serverName + "'s, Status Item is registered." );
 			sendConnectionStatus(true);
 		} else {
-			log.error("Opc Connection: " + serverName + "'s, Status Item could not be registered." );
+			log.error( serverName + "'s, Status Item could not be registered." );
 		}
 		
 		return ret;
@@ -164,7 +163,7 @@ public class YukonOpcConnectionImpl implements YukonOpcConnection, Runnable, Poi
 	
 	public void shutdown() {
 		running = false;
-		log.info("Opc Connection: Closing Opc Connection to " + serverName + ". ");
+		log.info(" Closing Opc Connection to " + serverName + ". ");
 		disconnect();
 	}
 	
@@ -311,13 +310,13 @@ public class YukonOpcConnectionImpl implements YukonOpcConnection, Runnable, Poi
 			group = opcServer.addGroup(groupName, nextClientGroupHandle, refreshRate);
 			nextClientGroupHandle++;
 			if (group == null){
-				log.error("Opc Connection: Error adding Group " + groupName);
+				log.error(" Error adding Group " + groupName);
 				return null;
 			}
 			groupMap.put(groupName,group);
 			
 		}
-		log.debug("OPC: addItem: Group Name: " + groupName + " Item Name: " + itemName + " Point Id: " + pointId);
+		log.debug(" Group Name: " + groupName + " Item Name: " + itemName + " Point Id: " + pointId);
 		int[] ret = group.addItems(new String[]{itemName}, new int[]{pointId});
 		YukonOpcItem item = null;
 		
@@ -376,7 +375,7 @@ public class YukonOpcConnectionImpl implements YukonOpcConnection, Runnable, Poi
 			//Find the item in the send list. If not there, it is not a send point and we are likely registered for this by mistake.
 			YukonOpcItem item = getOpcSendItem(id);
 			
-			log.debug("OPC SERVICE: POINT DATA RECEIVED, Point Id: " + id + " Value: " + pointData.getValue());
+			log.debug(" POINT DATA RECEIVED, Point Id: " + id + " Value: " + pointData.getValue());
 			
 			if (item != null) {
 				PointQuality quality = PointQuality.getPointQuality((int)pointData.getQuality());
@@ -387,13 +386,13 @@ public class YukonOpcConnectionImpl implements YukonOpcConnection, Runnable, Poi
 						Runnable run = new SendMessageToOpcRunnable(pointData,group,item);
 						scheduledExecutor.execute(run);
 					} else {
-						log.error("Opc Connection: Group not found for Opc Item " + item.getItemName() + ". Could not send Point Update.");
+						log.error(" Group not found for Opc Item " + item.getItemName() + ". Could not send Point Update.");
 					}
 				} else {
-					log.info("Opc Connection: Bad quality point, not sending update to Opc.");
+					log.info(" Bad quality point, not sending update to Opc.");
 				}
 			} else {
-				log.error("Opc Connection: Attempted to send to an opc point not configured for sending. Point Id:" + id);
+				log.error(" Attempted to send to an opc point not configured for sending. Point Id:" + id);
 				return;
 			}
 		}
@@ -471,7 +470,7 @@ public class YukonOpcConnectionImpl implements YukonOpcConnection, Runnable, Poi
     	OpcItem [] items = statusGroup.read(OpcGroup.OPC_DS_DEVICE, new int [] {statusItemId});
     	
     	if (items[0] == null) {
-    		log.warn("Opc Connection: Unable to read status item. Opc connection is down.");
+    		log.warn(" Unable to read status item. Opc connection is down.");
     		shutdown();
     		return false;
     	}

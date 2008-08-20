@@ -12,6 +12,7 @@ import java.util.StringTokenizer;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.dao.DataRetrievalFailureException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
@@ -76,13 +77,13 @@ public class OpcService implements OpcConnectionListener, DBChangeListener{
 	    try{
             serviceEnabled = Boolean.parseBoolean(config.getRequiredString("OPC_ENABLED"));
         }catch( UnknownKeyException e) {
-            log.debug("OPC: Enabled flag is not setup, defaulting to disabled. ");
+            log.debug(" Enabled flag is not setup, defaulting to disabled. ");
         }
         if (serviceEnabled) {	        
         	
         	try{
         		cparmOpcItemName = config.getRequiredString("OPC_STATUSITEM");
-        		log.info("OPC: Status Item name set to " + cparmOpcItemName);
+        		log.info(" Status Item name set to " + cparmOpcItemName);
         	} catch (UnknownKeyException e) {
 	            cparmOpcItemName = "";
         	}
@@ -90,7 +91,7 @@ public class OpcService implements OpcConnectionListener, DBChangeListener{
         	try{
 	            refreshSeconds = Integer.parseInt(config.getRequiredString("OPC_REFRESH"));
 	        }catch( UnknownKeyException e) {
-	            log.warn("OPC: Refresh rate is not in the Master.cfg file. Defaulting to 60 seconds ");
+	            log.warn(" Refresh rate is not in the Master.cfg file. Defaulting to 60 seconds ");
 	            refreshSeconds = 60;
 	        }
 		    
@@ -108,7 +109,7 @@ public class OpcService implements OpcConnectionListener, DBChangeListener{
 
 	            setupService();
 	        } catch ( UnknownKeyException e) {
-	            log.error("OPC: Opc Server address's are not in the Master.cfg file. OPC Shutting down.");
+	            log.error(" Opc Server address's are not in the Master.cfg file. OPC Shutting down.");
 	            serviceEnabled = false;
 	        }
 	        
@@ -159,7 +160,7 @@ public class OpcService implements OpcConnectionListener, DBChangeListener{
 		FdrDirection direction = fdr.getDirection();
 
 		if( direction == FdrDirection.Receive || direction == FdrDirection.Send) {
-			log.debug("OPCSERVICE: Add Item call");
+			log.debug(" Add Item call");
 			processOpcTranslation(fdr);
 		} else {
 			log.warn(" Unhandled Fdr Direction: " + direction + " Translation Id: " + fdr.getId());
@@ -176,12 +177,12 @@ public class OpcService implements OpcConnectionListener, DBChangeListener{
 		String groupName = fdr.getParameter("OPC Group");
 		String itemName = fdr.getParameter("OPC Item");
 		
-		log.debug("OPC Service: Parameters from fdrtranslation: ServerName: " + server + " groupName: " + groupName + " itemName: " + itemName);			
+		log.debug(" Parameters from fdrtranslation: ServerName: " + server + " groupName: " + groupName + " itemName: " + itemName);			
 
 		//Validating input. Didn't think this would be needed, but
 		if ((server == null) || (groupName == null) && (itemName == null))
 		{
-			log.error("OpcService: A Parameter is null, aborting Add item.");
+			log.error(" A Parameter is null, aborting Add item.");
 			return;
 		}
 		
@@ -190,10 +191,10 @@ public class OpcService implements OpcConnectionListener, DBChangeListener{
 		try {
 			point = pointDao.getLitePoint(pointId);
 		} catch( NotFoundException e) {
-			log.error("Opc Service: Point for " + itemName + " was not found in the database.");
+			log.error(" Point for " + itemName + " was not found in the database.");
 			return;
 		} catch(DataRetrievalFailureException e) {
-			log.error("Opc Service: Point for " + itemName + " was not found in the database.");
+			log.error(" Point for " + itemName + " was not found in the database.");
 			return;
 		}
 		
@@ -201,10 +202,10 @@ public class OpcService implements OpcConnectionListener, DBChangeListener{
 			try {
 				offset = pointDao.getPointDataOffset(pointId);
 			} catch( NotFoundException e) {
-				log.error("Opc Service: Data Offset for " + itemName + " was not found in the database.");
+				log.error(" Data Offset for " + itemName + " was not found in the database.");
 				return;
 			} catch(DataRetrievalFailureException e) {
-				log.error("Opc Service: Data Offset for " + itemName + " was not found in the database.");
+				log.error(" Data Offset for " + itemName + " was not found in the database.");
 				return;
 			}
 			
@@ -236,7 +237,7 @@ public class OpcService implements OpcConnectionListener, DBChangeListener{
 		}
 		
 		if (item == null) {
-			log.error("Opc Service: Error adding item, "+ itemName + ". to connection");
+			log.error(" Error adding item, "+ itemName + ". to connection");
 			return;
 		}
 	}
@@ -296,7 +297,7 @@ public class OpcService implements OpcConnectionListener, DBChangeListener{
         try {
             dynamicDataSource.putValue(pointData);
         } catch (DispatchNotConnectedException e) {
-            log.info("OPC: Dispatch not connected. OPC Connection status point cannot be updated.");
+            log.info(" Dispatch not connected. OPC Connection status point cannot be updated.");
         }
     }
 	
@@ -308,46 +309,44 @@ public class OpcService implements OpcConnectionListener, DBChangeListener{
      * All other messages from dispatch are ignored.
      */
     @Override
-    public void dbChangeReceived(DBChangeMsg dbChange) {
-    	
-    	//if( dbChange.getTypeOfChange() != DBChangeMsg.CHANGE_POINT_DB)
-    	//{
-    	//	return;
-    	//}
-    	
-    	final int pid = dbChange.getId();
-        log.debug("OPC DEBUG: OPC dispatch event with ID: " + pid);
+    public void dbChangeReceived(final DBChangeMsg dbChange) {
         
-        globalScheduledExecutor.execute(new Runnable(){
-        	public void run() {
-                
-        		YukonOpcItem item = getItemFromConnections(pid);
-        		if (item != null) {
-                    log.debug("OPC DEBUG: Change to Point, " + pid +", involved with OPC");
-                    //If here, we are already monitoring this point; lets remove it so it can be updated.
-                    String connName = item.getServerName();
-                    YukonOpcConnection conn = opcConnectionMap.get(connName);
-                    if (conn == null) {
-                    	log.error("Opc Service: Expected connection not found. DB Change not Processed.");
-                    	return;
-                    }
-                    conn.removeItem(item);
-                }
-                
-                try {
-                    FdrTranslation translation = fdrTranslationDao.getByPointIdAndType(pid, FdrInterfaceType.OPC);
-                    //If found its a new one to add to the list.
-                    //if not an exception will have thrown. Point could have been removed or its missing...
-                    processOpcTranslation(translation);
+        if (dbChange.getDatabase() == DBChangeMsg.CHANGE_POINT_DB) {
+            final int pid = dbChange.getId();
+            log.debug(" OPC dispatch event with ID: " + pid);
+            
+            globalScheduledExecutor.execute(new Runnable() {
+                public void run() {
                     
-                    log.debug("OPC DEBUG: translation found, new FDR translation");
-                } catch (DataRetrievalFailureException exception) {
-                    log.debug("OPC DEBUG: translation not found, not a new FDR translation");
+                    YukonOpcItem item = getItemFromConnections(pid);
+                    if (item != null) {
+                        log.debug(" Change to Point, " + pid +", involved with OPC");
+                        //If here, we are already monitoring this point; lets remove it so it can be updated.
+                        String connName = item.getServerName();
+                        YukonOpcConnection conn = opcConnectionMap.get(connName);
+                        if (conn == null) {
+                            log.error(" Expected connection not found. DB Change not Processed.");
+                            return;
+                        }
+                        conn.removeItem(item);
+                    }
+                    
+                    //If its a delete, do not attempt to re-add it.
+                    if (dbChange.getTypeOfChange() != DBChangeMsg.CHANGE_TYPE_DELETE) {
+                        try {
+                            FdrTranslation translation = fdrTranslationDao.getByPointIdAndType(pid, FdrInterfaceType.OPC);
+                            //If found its a new one to add to the list.
+                            //if not an exception will have thrown. Point could have been removed or its missing...
+                            processOpcTranslation(translation);                            
+                            log.debug(" translation found, new FDR translation");
+                        } catch (IncorrectResultSizeDataAccessException exception) {
+                            log.error(" translation not found for ID: " + pid);
+                        }
+                    }
+                    cleanUpConnections();
                 }
-                
-                cleanUpConnections();
-        	}
-        });
+            });
+        }
     }
 	
     /* This will have to change with a different implementation of Connection. */

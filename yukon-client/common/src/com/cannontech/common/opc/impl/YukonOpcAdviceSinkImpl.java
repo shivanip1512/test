@@ -38,7 +38,7 @@ public class YukonOpcAdviceSinkImpl extends OpcAdviseSink {
 			return;
 		}
 		
-		log.debug("OPC DEBUG: OPC Asynch event for Item: " + yOpcItem.getItemName());
+		log.debug(" OPC Asynch event for Item: " + yOpcItem.getItemName());
         
     	Date timeStamp = opcItem.getTimestamp();
         int type = opcItem.getType();
@@ -99,13 +99,13 @@ public class YukonOpcAdviceSinkImpl extends OpcAdviseSink {
         pointData.setValue(newValue);
         pointData.setTime(timeStamp);
         pointData.setTimeStamp(new Date());
-        log.debug("OPC DEBUG: Sending update for " + yOpcItem.getItemName() + ". Value: " + newValue + " to PointID: " + yOpcItem.getPointId() );
+        log.debug(" Sending update for " + yOpcItem.getItemName() + ". Value: " + newValue + " to PointID: " + yOpcItem.getPointId() );
 
     
 		try{
 		    dispatchConnection.putValue(pointData);
 		}catch( DispatchNotConnectedException e) {
-		    log.info("OPC: Dispatch not connected. Point updates cannot go out.");
+		    log.info(" Dispatch not connected. Point updates cannot go out.");
 		}
 	}
 	

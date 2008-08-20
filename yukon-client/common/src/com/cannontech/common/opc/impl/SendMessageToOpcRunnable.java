@@ -32,7 +32,7 @@ public class SendMessageToOpcRunnable implements Runnable {
 	
 		// Make sure we found one
 		if (serverHandle == 0) {
-			log.error("Opc Connection: Invalid Item, cannot send update for " + opcItem.getItemName());
+			log.error(" Invalid Item, cannot send update for " + opcItem.getItemName());
 			return;
 		}
 

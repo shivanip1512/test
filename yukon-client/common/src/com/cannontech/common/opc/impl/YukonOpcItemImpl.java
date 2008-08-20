@@ -1,7 +1,6 @@
 package com.cannontech.common.opc.impl;
 
 import com.cannontech.common.opc.model.YukonOpcItem;
-import com.cannontech.database.data.lite.LitePoint;
 
 /**
  * Written to hold the yukon point id that matches with the OPC object.
