@@ -23,6 +23,7 @@
                 <prop key="/massChange/*">MassChangeController</prop>
                 <prop key="/massChangeOptions">MassChangeOptionsController</prop>
                 <prop key="/changeDeviceType/*">ChangeDeviceTypeController</prop>
+                <prop key="/massDelete/*">MassDeleteController</prop>
                 <prop key="/update/*">UpdateController</prop>
                 <prop key="/group/*">AddRemoveCollectionToGroupController</prop>
                 <prop key="/import/*">ImportController</prop>
@@ -91,7 +92,6 @@
         
         <property name="deviceCollectionFactory" ref="deviceCollectionFactory" />
         <property name="bulkFieldService" ref="bulkFieldService" />
-        <property name="deviceDao" ref="deviceDao" />
         <property name="recentBulkOperationResultsCache" ref="recentBulkOperationResultsCache" />
         
     </bean>
@@ -135,6 +135,32 @@
         </property>
         
         <property name="deviceCollectionFactory" ref="deviceCollectionFactory" />
+        <property name="recentBulkOperationResultsCache" ref="recentBulkOperationResultsCache" />
+        <property name="bulkProcessor" ref="resubmittingBulkProcessor" />
+        
+    </bean>
+    
+    <!-- MASS DELETE CONTROLLER -->
+    <bean id="MassDeleteController" class="com.cannontech.web.bulk.MassDeleteController" >
+        
+        <property name="cacheSeconds">
+            <value type="int">0</value>
+        </property>
+        <property name="validators">
+            <null />
+        </property>
+        <property name="methodNameResolver" >
+            <bean class="org.springframework.web.servlet.mvc.multiaction.InternalPathMethodNameResolver" />
+        </property>
+        <property name="requireSession">
+            <value type="boolean">true</value>
+        </property>
+        <property name="synchronizeOnSession">
+            <value type="boolean">true</value>
+        </property>
+        
+        <property name="deviceCollectionFactory" ref="deviceCollectionFactory" />
+        <property name="deviceDao" ref="deviceDao" />
         <property name="recentBulkOperationResultsCache" ref="recentBulkOperationResultsCache" />
         <property name="bulkProcessor" ref="resubmittingBulkProcessor" />
         

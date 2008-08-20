@@ -65,20 +65,23 @@
 </tags:bulkResultProgress>
 
       
-<%-- SUCCESS --%>
+<%-- SUCCESS (mass delete has no success group containing devices) --%>
 <br>
 <div class="normalBoldLabel"><cti:msg key="yukon.common.device.bulk.${resultsTypeMsgKey}Results.successLabel" />: <span style="color:#006633;"><cti:dataUpdaterValue type="BULKRESULT" identifier="${resultsId}/SUCCESS_COUNT"/></span></div>
 
-<div id="successActionsDiv" style="padding:10px;display:none;">
+<c:if test="${bulkUpdateOperationResults.bulkOperationType != 'MASS_DELETE'}">
 
-    <%-- device collection action --%>
-    <cti:link href="/spring/bulk/collectionActions" key="yukon.common.device.bulk.${resultsTypeMsgKey}Results.collectionActionOnDevicesLabel" class="small">
-        <cti:mapParam value="${bulkUpdateOperationResults.successDeviceCollection.collectionParameters}"/>
-    </cti:link>
-    <tags:selectedDevicesPopup deviceCollection="${bulkUpdateOperationResults.successDeviceCollection}" />
+    <div id="successActionsDiv" style="padding:10px;display:none;">
+    
+        <%-- device collection action --%>
+        <cti:link href="/spring/bulk/collectionActions" key="yukon.common.device.bulk.${resultsTypeMsgKey}Results.collectionActionOnDevicesLabel" class="small">
+            <cti:mapParam value="${bulkUpdateOperationResults.successDeviceCollection.collectionParameters}"/>
+        </cti:link>
+        <tags:selectedDevicesPopup deviceCollection="${bulkUpdateOperationResults.successDeviceCollection}" />
+    
+    </div>
 
-</div>
-
+</c:if>
 
 
 
@@ -90,8 +93,8 @@
     
     <c:choose>
                                 
-        <%-- MASS CHANGE --%>
-        <c:when test="${bulkUpdateOperationResults.bulkOperationType == 'MASS_CHANGE'}">
+        <%-- MASS CHANGE/DELETE --%>
+        <c:when test="${bulkUpdateOperationResults.bulkOperationType == 'MASS_CHANGE' || bulkUpdateOperationResults.bulkOperationType == 'MASS_DELETE'}">
             
             <cti:link href="/spring/bulk/collectionActions" key="yukon.common.device.bulk.${resultsTypeMsgKey}Results.collectionActionOnDevicesLabel" class="small">
                 <cti:mapParam value="${bulkUpdateOperationResults.processingExceptionDeviceCollection.collectionParameters}"/>

@@ -48,7 +48,7 @@
                             deviceCollection="${deviceCollection}">
     
     
-        <form id="massDeleteForm" method="post" action="/spring/bulk/massChange/doMassDelete">
+        <form id="massDeleteForm" method="post" action="/spring/bulk/massDelete/doMassDelete">
         
             <%-- DEVICE COLLECTION --%>
             <cti:deviceCollection deviceCollection="${deviceCollection}" />

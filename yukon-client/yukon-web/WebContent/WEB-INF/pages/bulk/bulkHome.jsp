@@ -138,14 +138,31 @@
                         
                         <%-- SUCCESS --%>
                         <td align="right">
-                            <c:set var="successFormName" value="processingExceptionForm${b.resultsId}"/>
+                        
+                            <c:choose>
+                                
+                                <%-- MASS DELETE HAS NO SUCCESS GRUP --%>
+                                <c:when test="${b.bulkOperationType == 'MASS_DELETE'}">
+                                    <cti:msg key="yukon.common.device.bulk.bulkHome.recentBulkOperations.deletedCountLabel" /> 
+                                    <cti:dataUpdaterValue type="BULKRESULT" identifier="${b.resultsId}/SUCCESS_COUNT"/>                          
+                                </c:when>
+                                
+                                <%-- BULK IMPORT/UPDATE, MASS CHANGE DO HAVE SUCCESS GROUP --%>
+                                <c:otherwise>
+                                
+                                    <c:set var="successFormName" value="processingExceptionForm${b.resultsId}"/>
+                                    
+                                    <a href="javascript:submitForm('${successFormName}');" class="small" title="${performNewActionLinkTitle}"><cti:dataUpdaterValue type="BULKRESULT" identifier="${b.resultsId}/SUCCESS_COUNT"/></a> 
+                                    <tags:selectedDevicesPopup deviceCollection="${b.successDeviceCollection}" />
+                                    
+                                    <form id="${successFormName}" method="post" action="/spring/bulk/collectionActions">
+                                        <cti:deviceCollection deviceCollection="${b.successDeviceCollection}" />
+                                    </form>
+                                    
+                                </c:otherwise>
+                                
+                            </c:choose>
                             
-                            <a href="javascript:submitForm('${successFormName}');" class="small" title="${performNewActionLinkTitle}"><cti:dataUpdaterValue type="BULKRESULT" identifier="${b.resultsId}/SUCCESS_COUNT"/></a> 
-                            <tags:selectedDevicesPopup deviceCollection="${b.successDeviceCollection}" />
-                            
-                            <form id="${successFormName}" method="post" action="/spring/bulk/collectionActions">
-                                <cti:deviceCollection deviceCollection="${b.successDeviceCollection}" />
-                            </form>
                         </td>
                         
                         
@@ -155,8 +172,8 @@
                         
                             <c:choose>
                                 
-                                <%-- MASS CHANGE ACTUALLY ADDS ERRORS TO GROUP --%>
-                                <c:when test="${b.bulkOperationType == 'MASS_CHANGE'}">
+                                <%-- MASS CHANGE/DELETE ACTUALLY ADDS ERRORS TO GROUP --%>
+                                <c:when test="${b.bulkOperationType == 'MASS_CHANGE' || b.bulkOperationType == 'MASS_DELETE'}">
                                 
                                     <c:set var="processingExceptionCollectionActionFormName" value="processingExceptionCollectionActionForm${b.resultsId}"/>
                                 
@@ -196,7 +213,7 @@
                         
                         <%-- DEATIL LINK --%>
                         <c:choose>
-                            <c:when test="${(hasBulkImportRP && b.bulkOperationType == 'IMPORT') || (hasBulkUpdateRP && b.bulkOperationType == 'UPDATE') || (hasMassChangeRP && b.bulkOperationType == 'MASS_CHANGE')}">
+                            <c:when test="${(hasBulkImportRP && b.bulkOperationType == 'IMPORT') || (hasBulkUpdateRP && b.bulkOperationType == 'UPDATE') || (hasMassChangeRP && (b.bulkOperationType == 'MASS_CHANGE' || b.bulkOperationType == 'MASS_DELETE'))}">
                                 <c:url var="resultDetailUrl" value="/spring/bulk/${b.bulkOperationType.name}/${b.bulkOperationType.name}Results">
                                     <c:param name="resultsId" value="${b.resultsId}" />
                                 </c:url>

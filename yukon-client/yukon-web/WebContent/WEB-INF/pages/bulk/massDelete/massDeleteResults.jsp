@@ -21,15 +21,6 @@
         <cti:msg var="deviceSelectionPageTitle" key="yukon.common.device.bulk.deviceSelection.pageTitle"/>
         <cti:crumbLink url="/spring/bulk/deviceSelection" title="${deviceSelectionPageTitle}"/>
         
-        <%-- collection actions --%>
-        <c:url var="collectionActionsUrl" value="/spring/bulk/collectionActions">
-            <c:forEach var="deviceCollectionParam" items="${deviceCollection.collectionParameters}">
-                <c:param name="${deviceCollectionParam.key}" value="${deviceCollectionParam.value}"/>
-            </c:forEach>
-        </c:url>
-        <cti:msg var="collectionActionsPageTitle" key="yukon.common.device.bulk.collectionActions.pageTitle"/>
-        <cti:crumbLink url="${collectionActionsUrl}" title="${collectionActionsPageTitle}" />
-        
         <%-- mass delete --%>
         <cti:crumbLink>${pageTitle}</cti:crumbLink>
         
@@ -43,14 +34,10 @@
     <cti:msg var="headerTitle" key="yukon.common.device.bulk.massDeleteResults.header"/>
     <tags:boxContainer title="${headerTitle}" id="massDeleteResultsContainer" hideEnabled="false">
     
-        <form id="massDeleteForm" method="post" action="/spring/bulk/massChange/doMassDelete">
-            
-            <cti:msg key="yukon.common.device.bulk.massDeleteResults.deleteComplete" arguments="${deletedItemsCount}" />
-            <br><br>
-            <cti:msg var="return" key="yukon.common.device.bulk.massDeleteResults.return" />
-            <input type="submit" name="returnButton" value="${return}">
-                
-        </form>
+        <%-- RESULTS --%>
+        <tags:bulkUpdateResultsTable resultsTypeMsgKey="massDelete"
+                                     totalCount="${bulkUpdateOperationResults.initialDeviceCount}"
+                                     bulkUpdateOperationResults="${bulkUpdateOperationResults}" />
     
     </tags:boxContainer>
     

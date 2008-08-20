@@ -17,6 +17,7 @@
     <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.detailLink">View</entry>
     <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.detail">Detail</entry>
     <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.status">Status</entry>
+    <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.deletedCountLabel">Deleted</entry>
     
     <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.STOP_TIME">{finished|{stopTime|BOTH}|In Progress...}</entry>
     <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.IS_COMPLETE">{isComplete|Complete|In Progress}</entry>
@@ -191,8 +192,19 @@
     <entry key="yukon.common.device.bulk.massDeleteResults.pageTitle">Mass Delete Results</entry>
     <entry key="yukon.common.device.bulk.massDeleteResults.header">Mass Delete Results:</entry>
     
-    <entry key="yukon.common.device.bulk.massDeleteResults.deleteComplete">Successfully deleted {0} devices.</entry>
-    <entry key="yukon.common.device.bulk.massDeleteResults.return">Return To Device Selection</entry>
+    <entry key="yukon.common.device.bulk.massDeleteResults.noteLabel">Note: </entry>
+    <entry key="yukon.common.device.bulk.massDeleteResults.noteText"><![CDATA[
+        Progress is updated every 10 seconds. Processing will continue if you wish to navigate away from this page at any time.<br>You can return to this results page by following a link within the "Recent Bulk Operations" section of the main Bulk Operations page.
+    ]]></entry>
+    <entry key="yukon.common.device.bulk.massDeleteResults.progressLabel">Progress</entry>
+    <entry key="yukon.common.device.bulk.massDeleteResults.inProgress">In Progress...</entry>
+    <entry key="yukon.common.device.bulk.massDeleteResults.complete">Complete.</entry>
+    
+    <entry key="yukon.common.device.bulk.massDeleteResults.successLabel">Successfully Deleted</entry>
+    <entry key="yukon.common.device.bulk.massDeleteResults.processingExceptionLabel">Failed To Delete</entry>
+    
+    <entry key="yukon.common.device.bulk.massDeleteResults.collectionActionOnDevicesLabel">Choose New Operation For These Devices</entry>
+    <entry key="yukon.common.device.bulk.massDeleteResults.processingExceptionErrorListLabel">View Failure Reasons</entry>
     
     <!-- CHANGE DEVICE TYPE -->
     <!-- ******************************************************************************************************************** -->

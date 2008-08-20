@@ -16,9 +16,7 @@ import com.cannontech.common.bulk.field.BulkField;
 import com.cannontech.common.bulk.field.BulkFieldService;
 import com.cannontech.common.bulk.service.BulkOperationCallbackResults;
 import com.cannontech.common.bulk.service.MassChangeFileInfo;
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.util.RecentResultsCache;
-import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.roles.operator.DeviceActionsRole;
 import com.cannontech.web.security.WebSecurityChecker;
 import com.cannontech.web.security.annotation.CheckRole;
@@ -27,7 +25,6 @@ import com.cannontech.web.security.annotation.CheckRole;
 public class MassChangeController extends BulkControllerBase {
 
     private BulkFieldService bulkFieldService = null;
-    private DeviceDao deviceDao = null;
     private RecentResultsCache<BulkOperationCallbackResults<?>> recentBulkOperationResultsCache = null;
     private WebSecurityChecker webSecurityChecker = null;
     
@@ -78,100 +75,12 @@ public class MassChangeController extends BulkControllerBase {
 
         return mav;
     }
-    
-    
-    
-    
-    /**
-     * MASS DELETE
-     * @param request
-     * @param response
-     * @return
-     * @throws ServletException
-     */
-    public ModelAndView massDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 
-        webSecurityChecker.checkRoleProperty(DeviceActionsRole.MASS_DELETE);
-        
-        ModelAndView mav = new ModelAndView("massChange/massDeleteConfirm.jsp");
-        
-        // pass along deviceCollection
-        DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
-        mav.addObject("deviceCollection", deviceCollection);
-        
-        long deviceCount = deviceCollection.getDeviceCount();
-        mav.addObject("deviceCount", deviceCount);
-        
-        
-        return mav;
-    }
-    
-    /**
-     * DO MASS DELETE
-     * @param request
-     * @param response
-     * @return
-     * @throws ServletException
-     */
-    public ModelAndView doMassDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-
-        webSecurityChecker.checkRoleProperty(DeviceActionsRole.MASS_DELETE);
-        
-        ModelAndView mav = null;
-        
-        String cancelButton = ServletRequestUtils.getStringParameter(request, "cancelButton", null);
-        String deleteButton = ServletRequestUtils.getStringParameter(request, "deleteButton", null);
-        String returnButton = ServletRequestUtils.getStringParameter(request, "returnButton", null);
-        
-        // CANCEL
-        if (cancelButton != null) {
-            
-            mav = new ModelAndView("collectionActions.jsp");
-            
-            // pass along deviceCollection
-            DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
-            mav.addObject("deviceCollection", deviceCollection);
-        }
-        
-        // DO DELETE
-        else if (deleteButton != null) {
-            
-            mav = new ModelAndView("massChange/massDeleteResults.jsp");
-            
-            DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
-            long deletedItemsCount = 0;
-            
-            List<YukonDevice> devices = deviceCollection.getDeviceList();
-            for (YukonDevice device : devices) {
-                deviceDao.removeDevice(device);
-                deletedItemsCount++;
-            }
-            
-            mav.addObject("deletedItemsCount", deletedItemsCount);
-        }
-        
-        // RETURN TO DEVICE SELECTION
-        else if (returnButton != null) {
-            
-            mav = new ModelAndView("redirect:/spring/bulk/deviceSelection");
-        }
-        
-        return mav;
-    }
-    
-    
-    
-    
     @Required
     public void setBulkFieldService(BulkFieldService bulkFieldService) {
         this.bulkFieldService = bulkFieldService;
     }
 
-    @Required
-    public void setDeviceDao(DeviceDao deviceDao) {
-        this.deviceDao = deviceDao;
-    }
-    
     @Required
     public void setRecentBulkOperationResultsCache(
             RecentResultsCache<BulkOperationCallbackResults<?>> recentBulkOperationResultsCache) {

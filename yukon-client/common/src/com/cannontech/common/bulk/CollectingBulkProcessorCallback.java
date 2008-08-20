@@ -17,13 +17,13 @@ public class CollectingBulkProcessorCallback<I,O> implements BulkProcessorCallba
     private Exception failedException = null;
 
     // map of row number to success object
-    private Map<Integer, O> successObjectRowNumberMap = new LinkedHashMap<Integer, O>();
+    protected Map<Integer, O> successObjectRowNumberMap = new LinkedHashMap<Integer, O>();
     
     // maps of row number to exception
-    private Map<Integer, ProcessorCallbackException> processingExceptionRowNumberMap = new LinkedHashMap<Integer, ProcessorCallbackException>();
+    protected Map<Integer, ProcessorCallbackException> processingExceptionRowNumberMap = new LinkedHashMap<Integer, ProcessorCallbackException>();
     
     // map of row number to the object that failed to process
-    private Map<Integer, I> processingExceptionObjectRowNumberMap = new HashMap<Integer, I>();
+    protected Map<Integer, I> processingExceptionObjectRowNumberMap = new HashMap<Integer, I>();
     
     
     // CALL BACK METHODS

@@ -138,7 +138,7 @@
             <cti:checkProperty property="operator.DeviceActionsRole.MASS_DELETE">
             <tr>
                 <td>
-                    <form id="massDeleteForm" method="get" action="/spring/bulk/massChange/massDelete">
+                    <form id="massDeleteForm" method="get" action="/spring/bulk/massDelete/massDelete">
                         <cti:deviceCollection deviceCollection="${deviceCollection}" />
                         <input type="submit" id="massDeleteButton" value="${massDeleteLabel}" style="width:140px;"/>
                     </form>
