@@ -69,6 +69,8 @@ public class ChangeDeviceTypeController extends BulkControllerBase {
      */
     public ModelAndView chooseDeviceType(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 
+        webSecurityChecker.checkRoleProperty(DeviceActionsRole.MASS_CHANGE);
+        
         ModelAndView mav = new ModelAndView("changeDeviceType/chooseDeviceType.jsp");
         
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
@@ -95,6 +97,8 @@ public class ChangeDeviceTypeController extends BulkControllerBase {
      */
     public ModelAndView changeDeviceType(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 
+        webSecurityChecker.checkRoleProperty(DeviceActionsRole.MASS_CHANGE);
+        
         ModelAndView mav = null;
         String cancelButton = ServletRequestUtils.getStringParameter(request, "cancelButton", null);
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
