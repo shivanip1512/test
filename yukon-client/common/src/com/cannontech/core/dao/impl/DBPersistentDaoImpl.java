@@ -191,19 +191,25 @@ public class DBPersistentDaoImpl implements DBPersistentDao
     @Override
     public void performDBChangeWithNoMsg(List<DBPersistent> items, int transactionType) {
         
-        try {
-            MultiDBPersistent multiDBPersistent = new MultiDBPersistent();
-            
-            for (DBPersistent dbPersistentObj : items) {
-                multiDBPersistent.getDBPersistentVector().add(dbPersistentObj);
-            }
+        MultiDBPersistent multiDBPersistent = new MultiDBPersistent();
+        
+        for (DBPersistent dbPersistentObj : items) {
+            multiDBPersistent.getDBPersistentVector().add(dbPersistentObj);
+        }
+        performDBChangeWithNoMsg(multiDBPersistent, transactionType);
+    }
 
+
+    @Override
+    public void performDBChangeWithNoMsg(MultiDBPersistent multiDBPersistent, int transactionType) {
+        
+        try {
             Transaction<?> t = Transaction.createTransaction( transactionType, multiDBPersistent);
             t.execute();
             
         } catch( TransactionException e ) {
-            throw new PersistenceException("Unable to save DBPersistent (items=" + 
-                                           items + ", transactionType=" + transactionType + ")", e);
+            throw new PersistenceException("Unable to save DBPersistent (multi=" + 
+                                           multiDBPersistent + ", transactionType=" + transactionType + ")", e);
         }
     }
 

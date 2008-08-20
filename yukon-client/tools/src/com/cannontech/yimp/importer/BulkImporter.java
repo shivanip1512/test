@@ -621,23 +621,24 @@ public void runImport(List<ImportData> imps) {
             else
                 current400Series.getDeviceRoutes().setRouteID(routeID);
             
-			MultiDBPersistent objectsToAdd = new MultiDBPersistent();
-			//Add device to objectsToAdd
-			objectsToAdd.getDBPersistentVector().add(current400Series);
-			log.debug("Added object to Add: Device(" + current400Series.getPAObjectID() + ").");
-			
+			MultiDBPersistent pointsToAdd = new MultiDBPersistent();
+
 			//grab the points we need off the template
 			Vector<PointBase> points = DBFuncs.getPointsForPAO(templateID);
 			for (int i = 0; i < points.size(); i++) {
-				((PointBase) points.get(i)).setPointID(DaoFactory.getPointDao().getNextPointId());
-				((PointBase) points.get(i)).getPoint().setPaoID(deviceID);
-				objectsToAdd.getDBPersistentVector().add((DBPersistent) points.get(i));
-				log.debug("Added object to Add: Device(" + current400Series.getPAObjectID() + ") Point(" + ((PointBase)points.get(i)).getPoint().getPointID()+").");
+				points.get(i).setPointID(DaoFactory.getPointDao().getNextPointId());
+				points.get(i).getPoint().setPaoID(deviceID);
+				pointsToAdd.getDBPersistentVector().add(points.get(i));
+				log.debug("Added object to Add: Device(" + current400Series.getPAObjectID() + ") Point(" + points.get(i).getPoint().getPointID()+").");
 			}
 			
 			try {
-			    
-			    dbPersistentDao.performDBChange(objectsToAdd, Transaction.INSERT); //update transaction and DBChange write
+			    //Add Points (Database insert but NO dbChange Message
+			    dbPersistentDao.performDBChangeWithNoMsg(pointsToAdd, Transaction.INSERT);
+			    log.debug("Insert into DB with NO DBChangeMessage: " + points.size() + " Points for Device(" + current400Series.getPAObjectID() + ").");
+			    //Add Pao (Database insert AND DbChange Message
+			    dbPersistentDao.performDBChange(current400Series, Transaction.INSERT);
+			    log.debug("Insert into DB with DBChangeMessage: Device(" + current400Series.getPAObjectID() + ").");
 			
                 YukonDevice yukonDevice = new YukonDevice(current400Series.getPAObjectID(), PAOGroups.getDeviceType(current400Series.getPAOType()));
                 deviceGroupMemberEditorDao.addDevices(alternateGroup, yukonDevice);

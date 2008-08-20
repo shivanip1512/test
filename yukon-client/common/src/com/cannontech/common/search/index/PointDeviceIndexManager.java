@@ -11,6 +11,7 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.index.Term;
 
 import com.cannontech.common.search.YukonObjectAnalyzer;
+import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.dbchange.ChangeTypeEnum;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -101,7 +102,7 @@ public class PointDeviceIndexManager extends AbstractIndexManager {
     }
 
     protected IndexUpdateInfo processDBChange(ChangeTypeEnum changeType, int id, int database, String category, String type) {
-        if (database == DBChangeMsg.CHANGE_PAO_DB && "DEVICE".equalsIgnoreCase(category)) {
+        if (database == DBChangeMsg.CHANGE_PAO_DB && PAOGroups.STRING_CAT_DEVICE.equalsIgnoreCase(category)) {
             // Device change msg
             
             if(id == 0) {
@@ -136,11 +137,9 @@ public class PointDeviceIndexManager extends AbstractIndexManager {
             // note: deleting a device will NOT currently generate point delete messages
             return new IndexUpdateInfo(null, term);
         }
-        if (changeType == ChangeTypeEnum.ADD) {
-            // if the device was just added,
-            // we might as well wait for the point add messages
-            return null;
-        }
+        //Device ADD messages may be the only message we get that there were points added.  
+        // Must processes the ADD Device message as if it were and ADD for all Points on the Device. 
+
         List<Document> docList = new ArrayList<Document>();
 
         StringBuffer sql = new StringBuffer(this.getDocumentQuery());

@@ -43,7 +43,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
     private PaoDao paoDao = null;
     private PointDao pointDao = null;
     private PaoGroupsWrapper paoGroupsWrapper = null;
-    private DBPersistentDao dbPersistantDao = null;
+    private DBPersistentDao dbPersistentDao = null;
     private DeviceGroupEditorDao deviceGroupEditorDao = null;
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     private SimpleDeviceDefinitionService simpleDeviceDefinitionService = null;
@@ -67,17 +67,16 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
             
             Transaction.createTransaction(Transaction.INSERT, newDevice).execute();
             
-            // db change msg
-            processDeviceDbChange(newDevice);
-
             // COPY POINTS
             if (copyPoints) {
                 
                 List<PointBase> points = this.getPointsForPao(templateDeviceId);
                 this.applyPoints(newDevice, points);
             }
+            // db change msg.  Process Device dbChange AFTER device AND points have been inserted into DB.
+            processDeviceDbChange(newDevice);
             
-            // MAKE new, teamplate YukonDevice
+            // MAKE new, template YukonDevice
             newYukonDevice.setDeviceId(newDeviceId);
             newYukonDevice.setType(paoGroupsWrapper.getDeviceType(newDevice.getPAOType()));
             
@@ -182,13 +181,10 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
             
             MultiDBPersistent pointsToAdd = new MultiDBPersistent();
             Vector<DBPersistent> newPoints = new Vector<DBPersistent>(points.size());
-            List<Integer> newPointIds = new ArrayList<Integer>();
-            
+
             for (PointBase point : points) {
             
                 int nextPointId = pointDao.getNextPointId();
-                newPointIds.add(nextPointId);
-                
                 point.setPointID(nextPointId);
                 point.getPoint().setPaoID(deviceId);
                 
@@ -199,11 +195,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
             pointsToAdd.setDBPersistentVector(newPoints);
             Transaction.createTransaction(Transaction.INSERT, pointsToAdd).execute();
             
-            // db change msgs
-            for (PointBase point : points) {
-                processPointDbChange(point.getPoint());
-            }
-            
+            //Do not sent a DBChange for points, the device dbChange should handle it on the server side.
         }
         catch (TransactionException e) {
             throw new DeviceCreationException("Could not apply points to new device.", e);
@@ -238,17 +230,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
                                           PAOGroups.STRING_CAT_DEVICE,
                                           newDevice.getPAOType(),
                                           DBChangeMsg.CHANGE_TYPE_ADD );
-        dbPersistantDao.processDBChange(msg);
-    }
-
-    private void processPointDbChange(Point point) {
-
-        DBChangeMsg msg = new DBChangeMsg(point.getPointID(),
-                                          DBChangeMsg.CHANGE_POINT_DB,
-                                          DBChangeMsg.CAT_POINT,
-                                          point.getPointType(),
-                                          DBChangeMsg.CHANGE_TYPE_ADD );
-        dbPersistantDao.processDBChange(msg);
+        dbPersistentDao.processDBChange(msg);
     }
 
     @Required
@@ -273,7 +255,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
     
     @Required
     public void setDbPersistantDao(DBPersistentDao dbPersistantDao) {
-        this.dbPersistantDao = dbPersistantDao;
+        this.dbPersistentDao = dbPersistantDao;
     }
     
     @Required
