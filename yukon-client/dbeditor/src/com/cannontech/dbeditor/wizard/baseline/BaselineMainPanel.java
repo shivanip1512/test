@@ -3,8 +3,12 @@ package com.cannontech.dbeditor.wizard.baseline;
 /**
  * This type was created in VisualAge.
  */
+import java.util.List;
+
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.database.data.baseline.Baseline;
+import com.cannontech.database.data.holiday.HolidaySchedule;
+import com.cannontech.database.data.lite.LiteHolidaySchedule;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class BaselineMainPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
@@ -242,7 +246,6 @@ private com.cannontech.common.gui.unchanging.JCheckBoxDayChooser getJCheckBoxDay
  * Return the JComboBoxPoint property value.
  * @return javax.swing.JComboBox
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JComboBox getJComboBoxHoliday() {
 	if (ivjJComboBoxHoliday == null) {
 		try {
@@ -250,20 +253,20 @@ private javax.swing.JComboBox getJComboBoxHoliday() {
 			ivjJComboBoxHoliday.setName("JComboBoxHoliday");
 			ivjJComboBoxHoliday.setToolTipText("Holiday schedule used to exclude control");
 			ivjJComboBoxHoliday.setEnabled(true);
-			// user code begin {1}
 
 			IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 			synchronized( cache )
 			{
-				java.util.List holidaySch = cache.getAllHolidaySchedules();
-				for( int i = 0; i < holidaySch.size(); i++ )
-					ivjJComboBoxHoliday.addItem( holidaySch.get(i) );
+				List<LiteHolidaySchedule> holidaySch = cache.getAllHolidaySchedules();
+				for( int i = 0; i < holidaySch.size(); i++ ) {
+				    LiteHolidaySchedule schedule = holidaySch.get(i);
+					ivjJComboBoxHoliday.addItem( schedule );
+					if(schedule.getHolidayScheduleID() == HolidaySchedule.EMPTY_HOLIDAY_SCHEDULE_ID) {
+					    ivjJComboBoxHoliday.setSelectedItem(schedule);
+					}
+				}
 			}
-			
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}

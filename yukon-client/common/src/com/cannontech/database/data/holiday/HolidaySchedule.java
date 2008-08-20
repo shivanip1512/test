@@ -8,7 +8,7 @@ package com.cannontech.database.data.holiday;
 public class HolidaySchedule extends com.cannontech.database.db.DBPersistent implements com.cannontech.database.db.CTIDbChange, com.cannontech.common.editor.EditorPanel
 {
 	private com.cannontech.database.db.holiday.HolidaySchedule holidaySchedule = null;
-
+	public final static int EMPTY_HOLIDAY_SCHEDULE_ID = 0;
 	//objects of type com.cannontech.database.db.holiday.DateOfHoliday will only go in here
 	private java.util.Vector dateOfHolidayVector = null;
 /**
