@@ -9,7 +9,6 @@ import java.util.Set;
 
 import org.apache.commons.lang.Validate;
 
-import com.cannontech.cc.dao.ProgramDao;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.dr.account.dao.ApplianceAndProgramDao;
@@ -18,6 +17,7 @@ import com.cannontech.stars.dr.account.model.CustomerAccountWithNames;
 import com.cannontech.stars.dr.account.model.ProgramLoadGroup;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
+import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.util.LMControlHistoryUtil;
 import com.cannontech.stars.xml.serialize.StarsLMControlHistory;
 
@@ -35,7 +35,7 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
     private LMHardwareControlGroupDao lmHardwareControlGroupDao = (LMHardwareControlGroupDao) YukonSpringHook.getBean("lmHardwareControlGroupDao");
     private ApplianceAndProgramDao applianceAndProgramDao = (ApplianceAndProgramDao) YukonSpringHook.getBean("applianceAndProgramDao");
     private static DecimalFormat decFormat = new java.text.DecimalFormat("0.#");
-    private ProgramDao programDao = (ProgramDao)YukonSpringHook.getBean("programDao");
+    private ProgramDao programDao = (ProgramDao)YukonSpringHook.getBean("starsProgramDao");
     
     private List<ModelRow> data = Collections.emptyList();
     

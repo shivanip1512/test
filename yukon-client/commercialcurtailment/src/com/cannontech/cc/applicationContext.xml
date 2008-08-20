@@ -206,7 +206,6 @@
     <property name="programGroupDao" ref="availableProgramGroupDao"/>
     <property name="programParameterDao" ref="programParameterDao"/>
     <property name="programNotificationGroupDao" ref="programNotificationGroupDao"/>
-    <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
   </bean>
   <bean id="programTypeDao" class="com.cannontech.cc.daohibe.ProgramTypeDaoImpl" parent="yukonHibeDao"/>
   <bean id="groupDao" class="com.cannontech.cc.daohibe.GroupDaoImpl" parent="yukonHibeDao">

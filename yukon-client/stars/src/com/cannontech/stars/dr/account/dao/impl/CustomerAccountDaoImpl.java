@@ -2,12 +2,10 @@ package com.cannontech.stars.dr.account.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.Validate;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
@@ -187,9 +185,9 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         sql.append(" AND ca.AccountId in (SELECT LMHCG.AccountId ");
         sql.append("                         FROM LMHardwareControlGroup LMHCG ");
         sql.append("                         WHERE LMHCG.LMGroupId in (", groupIds, ") ");
-        sql.append("                         AND (LMHCG.GroupEnrollStart < ?) ");
+        sql.append("                         AND (LMHCG.GroupEnrollStart <= ?) ");
         sql.append("                         AND ((LMHCG.GroupEnrollStop IS NULL) ");
-        sql.append("                               OR (LMHCG.GroupEnrollStop > ?))) ");
+        sql.append("                               OR (LMHCG.GroupEnrollStop >= ?))) ");
     
         List<CustomerAccountWithNames> list = simpleJdbcTemplate.query(sql.toString(), specialAccountInfoRowMapper, ecId, stopDate, startDate);
         return list;

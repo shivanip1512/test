@@ -2,6 +2,7 @@ package com.cannontech.stars.dr.program.dao;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.cannontech.stars.dr.appliance.model.Appliance;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
@@ -16,6 +17,8 @@ public interface ProgramDao {
     public List<Program> getByAppliances(List<Appliance> applianceList); 
     
     public List<Program> getByProgramIds(List<Integer> programIdList);
+    
+    public List<Integer> getDistinctGroupIdsByYukonProgramIds(final Set<Integer> programIds);
     
     public List<Integer> getGroupIdsByProgramId(int programId);
     

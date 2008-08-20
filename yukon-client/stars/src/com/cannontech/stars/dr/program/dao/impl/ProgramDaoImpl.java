@@ -3,12 +3,15 @@ package com.cannontech.stars.dr.program.dao.impl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
@@ -122,6 +125,22 @@ public class ProgramDaoImpl implements ProgramDao {
         String sql = sqlBuilder.toString();
         List<Program> programList = simpleJdbcTemplate.query(sql, rowMapper);
         return programList;
+    }
+
+    @Override
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public List<Integer> getDistinctGroupIdsByYukonProgramIds(final Set<Integer> programIds) {
+        try {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append(" SELECT Distinct LMPDG.LMGroupDeviceId"); 
+            sql.append(" FROM LMProgramDirectGroup LMPDG ");
+            sql.append(" WHERE LMPDG.DeviceId in (", programIds, ") ");
+            
+            List<Integer> list = simpleJdbcTemplate.query(sql.toString(), groupIdRowMapper);
+            return list;
+        } catch (DataAccessException e) {
+            return Collections.emptyList();
+        } 
     }
     
     @Override
