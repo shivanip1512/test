@@ -78,8 +78,8 @@ public class ScriptTemplate {
     public static final String READ_FROZEN_S4_COMMAND_STRING = "putconfig emetcon ied class 0 1";
     
     // build safe filepath to yukon dir to use as default location for script/billing file
-    private final String[] exportBaseFilePathParts = {CtiUtilities.getYukonBase(), "server", "export"};
-    private final String exportBaseFilePath = StringUtils.join(exportBaseFilePathParts, System.getProperty("file.separator"));
+    private final String[] exportBaseFilePathParts = {StringUtils.replace(CtiUtilities.getYukonBase(), "\\", "/"), "server", "export"};
+    private final String exportBaseFilePath = StringUtils.join(exportBaseFilePathParts, "/");
 
     //Map of Param<String> to VALUE<String>, param Strings are listed below
     private Map<ScriptParameters, String> paramToValueMap = null;
