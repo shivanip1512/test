@@ -186,39 +186,30 @@ public class OpcService implements OpcConnectionListener, DBChangeListener{
 			return;
 		}
 		
-		int pointId = fdr.getId();
-		
-		try {
-			point = pointDao.getLitePoint(pointId);
-		} catch( NotFoundException e) {
-			log.error(" Point for " + itemName + " was not found in the database.");
-			return;
-		} catch(DataRetrievalFailureException e) {
-			log.error(" Point for " + itemName + " was not found in the database.");
-			return;
-		}
-		
-		if (point.getPointType() == PointTypes.ANALOG_POINT) {
-			try {
-				offset = pointDao.getPointDataOffset(pointId);
-			} catch( NotFoundException e) {
-				log.error(" Data Offset for " + itemName + " was not found in the database.");
-				return;
-			} catch(DataRetrievalFailureException e) {
-				log.error(" Data Offset for " + itemName + " was not found in the database.");
-				return;
-			}
-			
-			try {
-				multiplier = pointDao.getPointMultiplier(pointId);	
-			} catch( NotFoundException e) {
-				log.error("Opc Service: Multiplier for " + itemName + " was not found in the database.");
-				return;
-			} catch(DataRetrievalFailureException e) {
-				log.error("Opc Service: Multiplier for " + itemName + " was not found in the database.");
-				return;
-			}
-		}
+        int pointId = fdr.getId();
+        
+        try {
+            point = pointDao.getLitePoint(pointId);
+        } catch( NotFoundException e) {
+            log.error(" Point for " + itemName + " was not found in the database.");
+            return;
+        }
+        
+        if (point.getPointType() == PointTypes.ANALOG_POINT) {
+            try {
+                offset = pointDao.getPointDataOffset(pointId);
+            } catch(IncorrectResultSizeDataAccessException e) {
+                log.error(" Data Offset for " + itemName + " was not found in the database.");
+                return;
+            }
+            
+            try {
+                multiplier = pointDao.getPointMultiplier(pointId);  
+            } catch(IncorrectResultSizeDataAccessException e) {
+                log.error(" Multiplier for " + itemName + " was not found in the database.");
+                return;
+            }
+        }
 			
 		serverAddress = serverAddressMap.get(server);
 		
