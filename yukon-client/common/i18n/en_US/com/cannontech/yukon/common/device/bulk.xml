@@ -81,6 +81,8 @@
     <entry key="yukon.common.device.bulk.collectionActions.sendCommandDescription">Issue a command to multiple devices.</entry>
     <entry key="yukon.common.device.bulk.collectionActions.massChangeLabel">Mass Change</entry>
     <entry key="yukon.common.device.bulk.collectionActions.massChangeDescription">Change same value on multiple devices.</entry>
+    <entry key="yukon.common.device.bulk.collectionActions.changeDeviceTypeLabel">Change Type</entry>
+    <entry key="yukon.common.device.bulk.collectionActions.changeDeviceTypeDescription">Change the device type of devices.</entry>
     <entry key="yukon.common.device.bulk.collectionActions.routeLocateLabel">Locate Route</entry>
     <entry key="yukon.common.device.bulk.collectionActions.routeLocateDescription">Find route that devices respond on.</entry>
     <entry key="yukon.common.device.bulk.collectionActions.massDeleteLabel">Mass Delete</entry>
@@ -192,6 +194,38 @@
     <entry key="yukon.common.device.bulk.massDeleteResults.deleteComplete">Successfully deleted {0} devices.</entry>
     <entry key="yukon.common.device.bulk.massDeleteResults.return">Return To Device Selection</entry>
     
+    <!-- CHANGE DEVICE TYPE -->
+    <!-- ******************************************************************************************************************** -->
+    <!-- ******************************************************************************************************************** -->
+    
+    <!-- chooseDeviceType.jsp -->
+    <entry key="yukon.common.device.bulk.changeDeviceTypeChoose.pageTitle">Choose Device Type</entry>
+    <entry key="yukon.common.device.bulk.changeDeviceTypeChoose.header">Choose Device Type:</entry>
+    <entry key="yukon.common.device.bulk.changeDeviceTypeChoose.noteLabel">Note:</entry>
+    <entry key="yukon.common.device.bulk.changeDeviceTypeChoose.noteText">Select the Device Type you wish to change selected devices to.</entry>
+    
+    <entry key="yukon.common.device.bulk.changeDeviceTypeChoose.change">Change Device Type</entry>
+    <entry key="yukon.common.device.bulk.changeDeviceTypeChoose.cancel">Cancel</entry>
+    
+    <!-- changeDeviceTypeResults.jsp -->
+    <entry key="yukon.common.device.bulk.changeDeviceTypeResults.pageTitle">Change Device Type Results</entry>
+    <entry key="yukon.common.device.bulk.changeDeviceTypeResults.header">Results Of Change Device Type Operation</entry>
+    
+    <entry key="yukon.common.device.bulk.changeDeviceTypeResults.noteLabel">Note: </entry>
+    <entry key="yukon.common.device.bulk.changeDeviceTypeResults.noteText"><![CDATA[
+        Progress is updated every 10 seconds. Processing will continue if you wish to navigate away from this page at any time.<br>You can return to this results page by following a link within the "Recent Bulk Operations" section of the main Bulk Operations page.
+    ]]></entry>
+    <entry key="yukon.common.device.bulk.changeDeviceTypeResults.progressLabel">Progress</entry>
+    <entry key="yukon.common.device.bulk.changeDeviceTypeResults.inProgress">In Progress...</entry>
+    <entry key="yukon.common.device.bulk.changeDeviceTypeResults.complete">Complete.</entry>
+    
+    <entry key="yukon.common.device.bulk.changeDeviceTypeResults.successLabel">Successfully Changed Device Type</entry>
+    <entry key="yukon.common.device.bulk.changeDeviceTypeResults.processingExceptionLabel">Failed To Change Device Type</entry>
+    
+    <entry key="yukon.common.device.bulk.changeDeviceTypeResults.collectionActionOnDevicesLabel">Choose New Operation For These Devices</entry>
+    <entry key="yukon.common.device.bulk.changeDeviceTypeResults.processingExceptionErrorListLabel">View Failure Reasons</entry>
+    
+    <entry key="yukon.common.device.bulk.changeDeviceTypeResults.noProcessingExceptionErrorListLabel">No processing errors.</entry>
     
     <!-- UPDATE -->
     <!-- ******************************************************************************************************************** -->
@@ -388,6 +422,7 @@
     <!-- ******************************************************************************************************************** -->
     <!-- ******************************************************************************************************************** -->
     <entry key="yukon.common.device.bulk.columnHeader.error.invalidColumnName">Invalid column header: {0}</entry>
+    <entry key="yukon.common.device.bulk.columnHeader.error.notUpdateableColumnName">Column cannot be used to update device: {0}</entry>
     
     <entry key="yukon.common.device.bulk.fileUpload.error.noFile">No file provided.</entry>
     <entry key="yukon.common.device.bulk.fileUpload.error.emptyFile">Empty file.</entry>

@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -111,6 +112,14 @@ public abstract class BaseBulkService {
         return headerColumnList;
     }
 
+    protected void checkUpdateBulkFieldColumnHeaders(ParsedBulkFileInfo result, Collection<BulkFieldColumnHeader> updateBulkFieldColumnHeaders) {
+        
+        for (BulkFieldColumnHeader bulkFieldColumnHeader : updateBulkFieldColumnHeaders) {
+            if (!bulkFieldColumnHeader.isUpdateableColumn()) {
+                result.addError(new YukonMessageSourceResolvable("yukon.common.device.bulk.columnHeader.error.notUpdateableColumnName", bulkFieldColumnHeader.toString()));
+            }
+        }
+    }
 
     protected String doStartBulkImport(final ParsedBulkFileInfo parsedBulkImportFileInfo, final BulkOperationTypeEnum bulkOperationType, final YukonDeviceResolver resolver) throws IOException {
         String resultsId = null;
@@ -224,7 +233,7 @@ public abstract class BaseBulkService {
                 
                 // run processors
                 for (BulkYukonDeviceFieldProcessor bulkFieldProcessor : bulkFieldProcessors) {
-                    device = bulkFieldProcessor.updateField(device, deviceDto);
+                    bulkFieldProcessor.updateField(device, deviceDto);
                 }
             }
         };

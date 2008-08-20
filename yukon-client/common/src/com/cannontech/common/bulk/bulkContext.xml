@@ -299,40 +299,6 @@
         </property>
         </bean> -->
 
-    <!-- TYPE BULK FIELD -->
-    <bean id="deviceTypeBulkField" parent="bulkFieldBase"
-        class="com.cannontech.common.bulk.field.impl.DeviceTypeBulkField">
-        <property name="massChangable" value="true" />
-        <property name="blankHandlingEnum" value="IGNORE_BLANK" />
-
-        <property name="inputSource">
-            <bean class="com.cannontech.web.input.InputBase">
-                <property name="displayName" value="Type" />
-                <property name="field" value="deviceType" />
-                <property name="description">
-                    <value>The type of device</value>
-                </property>
-                <property name="type"
-                    ref="inputDeviceTypeEnumeratedType" />
-            </bean>
-        </property>
-
-    </bean>
-
-    <bean id="deviceTypeBulkFieldProcessor"
-        parent="bulkFieldProcessorBase"
-        class="com.cannontech.common.bulk.field.processor.impl.DeviceTypeBulkFieldProcessor">
-        <property name="paoDao" ref="paoDao" />
-        <property name="paoGroupsWrapper" ref="paoGroupsWrapper" />
-        <property name="deviceDefinitionService" ref="deviceService" />
-        <property name="deviceDefinitionDao" ref="deviceDefinitionDao" />
-        <property name="updateableFields">
-            <set>
-                <ref bean="deviceTypeBulkField" />
-            </set>
-        </property>
-    </bean>
-
     <!-- DEVICE ID BULK FIELD -->
     <bean id="deviceIdBulkField" parent="bulkFieldBase"
         class="com.cannontech.common.bulk.field.impl.DeviceIdBulkField">
@@ -389,7 +355,6 @@
                 <ref bean="meterNumberBulkField" />
                 <ref bean="nameBulkField" />
                 <ref bean="routeBulkField" />
-                <ref bean="deviceTypeBulkField" />
                 <ref bean="deviceIdBulkField" />
                 <ref bean="templateBulkField" />
             </list>

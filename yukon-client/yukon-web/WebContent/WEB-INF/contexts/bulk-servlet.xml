@@ -22,6 +22,7 @@
             <props>
                 <prop key="/massChange/*">MassChangeController</prop>
                 <prop key="/massChangeOptions">MassChangeOptionsController</prop>
+                <prop key="/changeDeviceType/*">ChangeDeviceTypeController</prop>
                 <prop key="/update/*">UpdateController</prop>
                 <prop key="/group/*">AddRemoveCollectionToGroupController</prop>
                 <prop key="/import/*">ImportController</prop>
@@ -104,7 +105,7 @@
         <property name="bulkFieldService" ref="bulkFieldService" />
         
         <property name="bulkYukonDeviceFieldFactory" ref="bulkYukonDeviceFieldFactory" />
-        <property name="bulkProcessor" ref="singleTransactionBulkProcessor" />
+        <property name="bulkProcessor" ref="resubmittingBulkProcessor" />
         <property name="deviceCollectionFactory" ref="deviceCollectionFactory" />
         
         <property name="deviceGroupMemberEditorDao" ref="deviceGroupMemberEditorDao" />
@@ -114,6 +115,30 @@
         
     </bean>
     
+    <!-- CHANGE DEVICE TYPE CONTROLLER -->
+    <bean id="ChangeDeviceTypeController" class="com.cannontech.web.bulk.ChangeDeviceTypeController" >
+        
+        <property name="cacheSeconds">
+            <value type="int">0</value>
+        </property>
+        <property name="validators">
+            <null />
+        </property>
+        <property name="methodNameResolver" >
+            <bean class="org.springframework.web.servlet.mvc.multiaction.InternalPathMethodNameResolver" />
+        </property>
+        <property name="requireSession">
+            <value type="boolean">true</value>
+        </property>
+        <property name="synchronizeOnSession">
+            <value type="boolean">true</value>
+        </property>
+        
+        <property name="deviceCollectionFactory" ref="deviceCollectionFactory" />
+        <property name="recentBulkOperationResultsCache" ref="recentBulkOperationResultsCache" />
+        <property name="bulkProcessor" ref="resubmittingBulkProcessor" />
+        
+    </bean>
     
     <!-- UPDATE CONTROLLER (UPDATE BY FILE) -->
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"/>

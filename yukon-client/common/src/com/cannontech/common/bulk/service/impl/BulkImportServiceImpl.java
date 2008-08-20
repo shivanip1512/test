@@ -69,6 +69,12 @@ public class BulkImportServiceImpl extends BaseBulkService implements BulkImport
             Set<BulkFieldColumnHeader> updateBulkFieldColumnHeaders = new HashSet<BulkFieldColumnHeader>(headerColumnSet);
             updateBulkFieldColumnHeaders.removeAll(chosenMethod.getRequiredColumns());
             
+            // check that remaining update columns are ok (updateable)
+            checkUpdateBulkFieldColumnHeaders(result, updateBulkFieldColumnHeaders);
+            if (result.hasErrors()) {
+                return result;
+            }
+            
             // set the update bulk fields
             result.addUpdateBulkFieldColumnHeaders(updateBulkFieldColumnHeaders);
             

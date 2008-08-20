@@ -59,6 +59,12 @@ public class BulkUpdateServiceImpl extends BaseBulkService implements BulkUpdate
             updateBulkFieldColumnHeaders.remove(identifierColunHeader);
             result.setIdentifierBulkFieldColumnHeader(identifierColunHeader);
             
+            // check that remaining update columns are ok (updateable)
+            checkUpdateBulkFieldColumnHeaders(result, updateBulkFieldColumnHeaders);
+            if (result.hasErrors()) {
+                return result;
+            }
+            
             // look for duplicates (after identifier has been found and removed)
             boolean foundDuplicate = checkForDuplicates(updateBulkFieldColumnHeaders, result);
             if (foundDuplicate) {

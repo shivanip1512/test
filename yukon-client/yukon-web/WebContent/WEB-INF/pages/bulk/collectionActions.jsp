@@ -44,6 +44,8 @@
         <cti:msg var="sendCommandDescription" key="yukon.common.device.bulk.collectionActions.sendCommandDescription"/>
         <cti:msg var="massChangeLabel" key="yukon.common.device.bulk.collectionActions.massChangeLabel"/>
         <cti:msg var="massChangeDescription" key="yukon.common.device.bulk.collectionActions.massChangeDescription"/>
+        <cti:msg var="changeDeviceTypeLabel" key="yukon.common.device.bulk.collectionActions.changeDeviceTypeLabel"/>
+        <cti:msg var="changeDeviceTypeDescription" key="yukon.common.device.bulk.collectionActions.changeDeviceTypeDescription"/>
         <cti:msg var="routeLocateLabel" key="yukon.common.device.bulk.collectionActions.routeLocateLabel"/>
         <cti:msg var="routeLocateDescription" key="yukon.common.device.bulk.collectionActions.routeLocateDescription"/>
         <cti:msg var="massDeleteLabel" key="yukon.common.device.bulk.collectionActions.massDeleteLabel"/>
@@ -103,6 +105,19 @@
                     </form>
                 </td>
                 <td>${massChangeDescription}</td>
+            </tr>
+            </cti:checkProperty>
+            
+            <%-- CHANGE TYPE --%>
+            <cti:checkProperty property="operator.DeviceActionsRole.MASS_CHANGE">
+            <tr>
+                <td>
+                    <form id="changeDeviceTypeForm" method="get" action="/spring/bulk/changeDeviceType/chooseDeviceType">
+                        <cti:deviceCollection deviceCollection="${deviceCollection}" />
+                        <input type="submit" id="changeDeviceTypeButton" value="${changeDeviceTypeLabel}" style="width:140px;"/>
+                    </form>
+                </td>
+                <td>${changeDeviceTypeDescription}</td>
             </tr>
             </cti:checkProperty>
             
