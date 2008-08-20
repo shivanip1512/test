@@ -948,7 +948,7 @@ public class PointDataSummaryModel extends ReportModelBase
 				new ColumnProperties(50, 42, 100, "MM-dd-yyyy HH:mm:ss"),
 				new ColumnProperties(150, 42, 100, "#,###,##0.00####"),
 				new ColumnProperties(325, 42, 100, "MM-dd-yyyy HH:mm:ss"),
-				new ColumnProperties(425, 42, 100, "#,###,##0.00#"),
+				new ColumnProperties(425, 42, 100, "#,###,##0.00####"),
 				
 				new ColumnProperties(50, 54, 100, "MM-dd-yyyy HH:mm:ss"),
 				new ColumnProperties(150, 54, 100, "#,###,##0.00####"),
