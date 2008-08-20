@@ -49,10 +49,13 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
         String sql = "SELECT DISTINCT P.POINTID, TIMESTAMP, VALUE, P.POINTOFFSET, P.POINTTYPE, UOM.UOMID, " + 
                      " PAO.TYPE, PAO.CATEGORY, PAO.PAOBJECTID, DMG.METERNUMBER " + 
                      " FROM " + RawPointHistory.TABLE_NAME + " rph, " + Point.TABLE_NAME + " p, " +
+                     PointUnit.TABLE_NAME + " pu, " + UnitMeasure.TABLE_NAME + " uom, " + 
                      YukonPAObject.TABLE_NAME + " pao, " + DeviceMeterGroup.TABLE_NAME + " dmg " +
                      " WHERE RPH.POINTID = P.POINTID " +
                      " AND P.PAOBJECTID = PAO.PAOBJECTID " +
                      " AND PAO.PAOBJECTID = DMG.DEVICEID " +
+                     " AND P.POINTID = PU.POINTID " +
+                     " AND PU.UOMID = UOM.UOMID " +
                      " AND (POINTOFFSET < 101 or POINTOFFSET > 104)";   //exclude Profile data for now.
                      if( readBy == ReadBy.METER_NUMBER)
                          sql += " AND DMG.METERNUMBER = ? ";
@@ -135,7 +138,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
                 meterReadList.toArray(meterReadArray);
                 
                 CTILogger.info( (new Date().getTime() - timerStart.getTime())*.001 + 
-                                                          " Secs for RPH Data for Group \"" + readByValue + "\" to be loaded" );                
+                                                          " Secs for RPH Data for MeterNumber \"" + readByValue + "\" to be loaded" );                
             }
         }
         
