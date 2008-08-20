@@ -1,9 +1,9 @@
 package com.cannontech.integration.crs;
 
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
@@ -27,19 +27,16 @@ import com.cannontech.database.data.stars.report.ServiceCompany;
 import com.cannontech.database.data.stars.report.WorkOrderBase;
 import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.database.db.contact.Contact;
-import com.cannontech.database.db.contact.ContactNotification;
 import com.cannontech.database.db.customer.Customer;
 import com.cannontech.database.db.stars.hardware.LMHardwareBase;
 import com.cannontech.database.db.stars.integration.CRSToSAM_PTJ;
 import com.cannontech.database.db.stars.integration.CRSToSAM_PTJAdditionalMeters;
 import com.cannontech.database.db.stars.integration.CRSToSAM_PremiseMeterChange;
-import com.cannontech.database.db.stars.integration.FailureCRSToSAM_PremMeterChg;
 import com.cannontech.database.db.stars.integration.SAMToCRS_PTJ;
 import com.cannontech.database.db.stars.integration.SwitchReplacement;
-import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.Registration;
-import com.cannontech.roles.yukon.SystemRole;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.SwitchCommandQueue;
@@ -51,10 +48,7 @@ public final class YukonCRSIntegrator
 	
 	private Thread worker = null;
 	
-	private com.cannontech.message.dispatch.ClientConnection dispatchConn = null;
-
 	private GregorianCalendar nextImportTime = null;
-	private static GregorianCalendar lastImportTime = null;
 
 	public static boolean isService = true;
 	private static LogWriter logger = null;
@@ -127,9 +121,9 @@ public final class YukonCRSIntegrator
     					CTILogger.info("Starting import process.");
     					logger = YukonToCRSFuncs.writeToImportLog(logger, 'N', "Starting import process.", "", "");
     					
-    					ArrayList premMeterChanges = YukonToCRSFuncs.readCRSToSAM_PremiseMeterChange();
-    					ArrayList incomingPTJs = YukonToCRSFuncs.readCRSToSAM_PTJ();
-    					ArrayList switchReplacements = YukonToCRSFuncs.readSwitchReplacement();
+    					List<CRSToSAM_PremiseMeterChange> premMeterChanges = YukonToCRSFuncs.readCRSToSAM_PremiseMeterChange();
+    					List<CRSToSAM_PTJ> incomingPTJs = YukonToCRSFuncs.readCRSToSAM_PTJ();
+    					List<SwitchReplacement> switchReplacements = YukonToCRSFuncs.readSwitchReplacement();
                                             
     					/**
                          * if no crs integration entries of any kind, report this and go back to waiting
@@ -199,7 +193,7 @@ public final class YukonCRSIntegrator
     
     }
 
-    public void runCRSToSAM_PremiseMeterChanger(ArrayList<CRSToSAM_PremiseMeterChange> entries)
+    public void runCRSToSAM_PremiseMeterChanger(List<CRSToSAM_PremiseMeterChange> entries)
     {
     	int successCounter = 0;
 
@@ -233,7 +227,7 @@ public final class YukonCRSIntegrator
                         Contact contactDB = new Contact();
                         Customer customerDB = customerAccount.getCustomer().getCustomer();
                         contactDB.setContactID(customerDB.getPrimaryContactID());
-                        contactDB = (Contact)Transaction.createTransaction(Transaction.RETRIEVE, contactDB).execute();
+                        contactDB = Transaction.createTransaction(Transaction.RETRIEVE, contactDB).execute();
                     
                         YukonToCRSFuncs.updateAllContactInfo(contactDB, firstName, lastName, homePhone, workPhone, null);
                         YukonToCRSFuncs.updateAccountSite(customerAccount, streetAddress1, streetAddress2, cityName, state, zipCode, null, siteNumber);
@@ -301,7 +295,7 @@ public final class YukonCRSIntegrator
      * Process the PTJ, create Yukon objects, etc.
      * @param entries
      */
-    public void runCRSToSAM_PTJ(ArrayList<CRSToSAM_PTJ> entries)
+    public void runCRSToSAM_PTJ(List<CRSToSAM_PTJ> entries)
     {
         int newWorkOrderCount = 0;
         for (CRSToSAM_PTJ currentEntry : entries) {
@@ -314,7 +308,6 @@ public final class YukonCRSIntegrator
         	Integer ptjID = currentEntry.getPTJID( );
             String debtorNumber = currentEntry.getDebtorNumber( );
             String ptjType = currentEntry.getPTJType( );
-            Date timestamp = currentEntry.getTimestamp();
             String consumType = currentEntry.getConsumptionType();
             Character servUtilType = currentEntry.getServUtilityType();
             String notes = currentEntry.getNotes( );
@@ -426,7 +419,7 @@ public final class YukonCRSIntegrator
 	                    Customer customerDB = customerAccount.getCustomer().getCustomer();
 	                    Contact contactDB = new Contact();
 	                    contactDB.setContactID(customerDB.getPrimaryContactID());
-	    				contactDB = (Contact)Transaction.createTransaction(Transaction.RETRIEVE, contactDB).execute();
+	    				contactDB = Transaction.createTransaction(Transaction.RETRIEVE, contactDB).execute();
 	
 	    				if(ptjType.equalsIgnoreCase(YukonToCRSFuncs.PTJ_TYPE_XCEL_REPAIR_STRING) ||
 	    	        			ptjType.equalsIgnoreCase(YukonToCRSFuncs.PTJ_TYPE_XCEL_OTHER_STRING))	//Per Sharon, INSTL doesn't care if meter number exists.
@@ -436,7 +429,7 @@ public final class YukonCRSIntegrator
 		            			errorMsg.append("MeterNumber (" + meterNumber + ") Not found for account " + accountNumber + "; ");
 		                	for (int i = 0; i < currentEntry.getAdditionalMeters().size(); i++)
 		                	{
-		                		CRSToSAM_PTJAdditionalMeters additionalMeter = (CRSToSAM_PTJAdditionalMeters)currentEntry.getAdditionalMeters().get(i);
+		                		CRSToSAM_PTJAdditionalMeters additionalMeter = currentEntry.getAdditionalMeters().get(i);
 		                		MeterHardwareBase addtlMeterHardwareBase = MeterHardwareBase.retrieveMeterHardwareBase(customerAccount.getCustomerAccount().getAccountID().intValue(), additionalMeter.getMeterNumber(), customerAccount.getEnergyCompanyID().intValue());
 			            		if( addtlMeterHardwareBase == null)
                		       			errorMsg.append("Additional MeterNumber (" + additionalMeter.getMeterNumber() + ") Not found for account " + accountNumber + "; ");
@@ -498,7 +491,7 @@ public final class YukonCRSIntegrator
         		}
             	for (int i = 0; i < currentEntry.getAdditionalMeters().size(); i++)
             	{
-            		CRSToSAM_PTJAdditionalMeters additionalMeter = (CRSToSAM_PTJAdditionalMeters)currentEntry.getAdditionalMeters().get(i);
+            		CRSToSAM_PTJAdditionalMeters additionalMeter = currentEntry.getAdditionalMeters().get(i);
             		MeterHardwareBase addtlMeterHardwareBase = MeterHardwareBase.retrieveMeterHardwareBase(customerAccount.getCustomerAccount().getAccountID().intValue(), additionalMeter.getMeterNumber(), customerAccount.getEnergyCompanyID().intValue());
             		if( addtlMeterHardwareBase == null)
             			errorMsg.append("Additional MeterNumber (" + additionalMeter.getMeterNumber() + ") Not found for account " + accountNumber + "; ");
@@ -571,14 +564,17 @@ public final class YukonCRSIntegrator
 	               		YukonSelectionList invDevStateList = liteStarsEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS);
 		               	for (int i = 0; i < invDevStateList.getYukonListEntries().size(); i++)
 		        		{
-		        			if( ((YukonListEntry)invDevStateList.getYukonListEntries().get(i)).getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL )
+		        			if( invDevStateList.getYukonListEntries().get(i).getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL )
 		        			{
-		        				devStateEntry = (YukonListEntry)invDevStateList.getYukonListEntries().get(i);
+		        				devStateEntry = invDevStateList.getYukonListEntries().get(i);
 		        			}
-		        			if( ((YukonListEntry)invDevStateList.getYukonListEntries().get(i)).getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL) {
-                                availableEntryID = ((YukonListEntry)invDevStateList.getYukonListEntries().get(i)).getEntryID();
+		        			if( invDevStateList.getYukonListEntries().get(i).getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL) {
+                                availableEntryID = invDevStateList.getYukonListEntries().get(i).getEntryID();
                             }
 		        		}
+		               	
+		               	StarsInventoryBaseDao starsInventoryBaseDao = 
+		        			YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
 		               	for (int i = 0; i < lmHardwares.size(); i++)
 		               	{
 		               		try{
@@ -587,15 +583,15 @@ public final class YukonCRSIntegrator
 		               			com.cannontech.database.data.stars.hardware.LMHardwareBase lmHardwareBase = new com.cannontech.database.data.stars.hardware.LMHardwareBase();
 		               			lmHardwareBase.setInventoryID(hardware.getInventoryID());
 		               			lmHardwareBase.setLMHardwareBase(hardware);
-		               			lmHardwareBase = (com.cannontech.database.data.stars.hardware.LMHardwareBase)Transaction.createTransaction(Transaction.RETRIEVE, lmHardwareBase).execute();
+		               			lmHardwareBase = Transaction.createTransaction(Transaction.RETRIEVE, lmHardwareBase).execute();
 		               			 
 				       			//Update the lmHardwareBase data object
                                 int currentState = lmHardwareBase.getInventoryBase().getCurrentStateID();
                                 if(currentState == availableEntryID) {
                                     lmHardwareBase.getInventoryBase().setCurrentStateID(new Integer(devStateEntry.getEntryID()));
                                 }
-				       			lmHardwareBase = (com.cannontech.database.data.stars.hardware.LMHardwareBase)Transaction.createTransaction(Transaction.UPDATE, lmHardwareBase).execute();
-                                LiteInventoryBase liteHardInvBase = liteStarsEnergyCompany.getInventory(lmHardwares.get(i).getInventoryID().intValue(), true);
+				       			lmHardwareBase = Transaction.createTransaction(Transaction.UPDATE, lmHardwareBase).execute();
+                                LiteInventoryBase liteHardInvBase = starsInventoryBaseDao.getById(lmHardwares.get(i).getInventoryID().intValue());
                                 liteHardInvBase.setCurrentStateID(lmHardwareBase.getInventoryBase().getCurrentStateID().intValue());
 				       			
 				       			//Log the inventory (lmHardwarebase) state change.
@@ -622,7 +618,7 @@ public final class YukonCRSIntegrator
         	try
         	{
         		workOrder.getWorkOrderBase().setDateReported(eventWorkOrder.getEventBase().getEventTimestamp());	//set the work order DateReported with the most recent event date.
-            	workOrder = (com.cannontech.database.data.stars.report.WorkOrderBase)Transaction.createTransaction(Transaction.INSERT, workOrder).execute();
+            	workOrder = Transaction.createTransaction(Transaction.INSERT, workOrder).execute();
             	newWorkOrderCount++;
 	            DBChangeMsg dbChangeMessage = new DBChangeMsg(
     				workOrder.getWorkOrderBase().getOrderID(),
@@ -638,7 +634,7 @@ public final class YukonCRSIntegrator
                 {	//All Processed status must have an entry in SAMToCRS_PTJ             	
                 	SAMToCRS_PTJ samToCrs_ptj = new SAMToCRS_PTJ(ptjID, Integer.valueOf(accountNumber), debtorNumber, 
                 												workOrder.getWorkOrderBase().getOrderNumber(), "P", new Date(), liteYukonUser.getUsername());
-                	samToCrs_ptj = (SAMToCRS_PTJ)Transaction.createTransaction(Transaction.INSERT, samToCrs_ptj).execute();
+                	samToCrs_ptj = Transaction.createTransaction(Transaction.INSERT, samToCrs_ptj).execute();
                 }
                 
     			//We made it...remove currentEntry from CRSToSAM_PTJ table
@@ -652,14 +648,14 @@ public final class YukonCRSIntegrator
         CTILogger.info("CRSTOYUKON PTJ Integration complete:  Imported " + newWorkOrderCount + " new Work Orders.");
     }
     		
-    public void runSwitchReplacement(ArrayList entries)
+    public void runSwitchReplacement(List<SwitchReplacement> entries)
     {
         SwitchReplacement currentEntry = null;
 
         for(int j = 0; j < entries.size(); j++)
     	{
         	StringBuffer errorMsg = new StringBuffer("");
-            currentEntry = (SwitchReplacement)entries.get(j);
+            currentEntry = entries.get(j);
             String serialNumber = currentEntry.getSerialNumber();
             String woType = currentEntry.getWOType();
             String username = currentEntry.getUserName();
@@ -763,7 +759,7 @@ public final class YukonCRSIntegrator
         	try
         	{
         		workOrder.getWorkOrderBase().setDateReported(eventWorkOrder.getEventBase().getEventTimestamp());	//set the work order DateReported with the most recent event date.
-            	workOrder = (com.cannontech.database.data.stars.report.WorkOrderBase)Transaction.createTransaction(Transaction.INSERT, workOrder).execute();
+            	workOrder = Transaction.createTransaction(Transaction.INSERT, workOrder).execute();
 
 	            DBChangeMsg dbChangeMessage = new DBChangeMsg(
     				workOrder.getWorkOrderBase().getOrderID(),
@@ -833,46 +829,4 @@ public final class YukonCRSIntegrator
     	//System.exit(0);
     }
     
-    private synchronized ClientConnection getDispatchConnection()
-    {
-    	if( dispatchConn == null || !dispatchConn.isValid() )
-    	{
-    		String host = DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE );
-    		String portStr = DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.DISPATCH_PORT );
-    		int port = 1510;
-    		
-    		try 
-    		{
-    			port = Integer.parseInt(portStr);
-    		} 
-    		catch(NumberFormatException nfe) 
-    		{
-    			CTILogger.warn("Bad value for DISPATCH-PORT");		
-    		}
-    		
-    		CTILogger.debug("attempting to connect to dispatch @" + host + ":" + port);	
-    		dispatchConn = new ClientConnection();
-    
-    		Registration reg = new Registration();
-    		reg.setAppName("Yukon CRS Integrator");
-    		reg.setAppIsUnique(0);
-    		reg.setAppKnownPort(0);
-    		reg.setAppExpirationDelay( 3600 );  // 1 hour should be OK
-    
-    		dispatchConn.setHost(host);
-    		dispatchConn.setPort(port);
-    		dispatchConn.setAutoReconnect(true);
-    		dispatchConn.setRegistrationMsg(reg);
-    		
-    		try
-    		{
-    			dispatchConn.connectWithoutWait();
-    		}
-    		catch( Exception e )
-    		{
-    			e.printStackTrace();
-    		}
-    	}
-    	return dispatchConn;
-    }
 }

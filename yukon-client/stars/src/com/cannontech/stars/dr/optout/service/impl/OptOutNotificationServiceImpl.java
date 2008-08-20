@@ -26,6 +26,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
+import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.optout.service.OptOutNotificationService;
 import com.cannontech.stars.dr.optout.service.OptOutNotificationUtil;
@@ -45,6 +46,7 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
     private YukonUserContextMessageSourceResolver messageSourceResolver;
     private DateFormattingService dateFormattingService;
     private StarsCustAccountInformationDao starsCustAccountInformationDao;
+    private StarsInventoryBaseDao starsInventoryBaseDao;
     
     @Override
     public void sendNotification(final CustomerAccount customerAccount,  
@@ -125,7 +127,7 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
         if (inventoryIdList.size() > 0) {
             hardwares = new ArrayList<LiteStarsLMHardware>();
             for (final Integer inventoryId : inventoryIdList) {
-                hardwares.add((LiteStarsLMHardware) holder.energyCompany.getInventory(inventoryId, true));
+                hardwares.add((LiteStarsLMHardware) starsInventoryBaseDao.getById(inventoryId));
             }    
         }
         else {
@@ -175,5 +177,11 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
             StarsCustAccountInformationDao starsCustAccountInformationDao) {
         this.starsCustAccountInformationDao = starsCustAccountInformationDao;
     }
+    
+    @Autowired
+    public void setStarsInventoryBaseDao(
+			StarsInventoryBaseDao starsInventoryBaseDao) {
+		this.starsInventoryBaseDao = starsInventoryBaseDao;
+	}
     
 }

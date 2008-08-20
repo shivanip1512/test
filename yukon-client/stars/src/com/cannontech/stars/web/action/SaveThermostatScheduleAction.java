@@ -25,6 +25,8 @@ import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.stars.hardware.LMThermostatSchedule;
 import com.cannontech.database.data.stars.hardware.LMThermostatSeason;
 import com.cannontech.database.db.stars.hardware.LMThermostatSeasonEntry;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
@@ -103,12 +105,15 @@ public class SaveThermostatScheduleAction implements ActionBase {
 			
 			LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 			
-			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( saveSchedule.getInventoryID(), true );
+			StarsInventoryBaseDao starsInventoryBaseDao = 
+				YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
+			
+			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getById(saveSchedule.getInventoryID());
 			LiteLMThermostatSchedule liteNewSched = liteHw.getThermostatSettings().getThermostatSchedule();
 			
 			LiteLMThermostatSchedule liteOldSched = null;
 			for (int i = 0; i < liteAcctInfo.getThermostatSchedules().size(); i++) {
-				LiteLMThermostatSchedule liteSched = (LiteLMThermostatSchedule) liteAcctInfo.getThermostatSchedules().get(i);
+				LiteLMThermostatSchedule liteSched = liteAcctInfo.getThermostatSchedules().get(i);
 				if (liteSched.getScheduleName().equalsIgnoreCase( saveSchedule.getScheduleName() )) {
 					liteOldSched = liteSched;
 					break;
@@ -127,7 +132,7 @@ public class SaveThermostatScheduleAction implements ActionBase {
 			
 			if (liteOldSched != null) {
 				// Save to an existing schedule
-				schedule = (LMThermostatSchedule) Transaction.createTransaction( Transaction.UPDATE, schedule ).execute();
+				schedule = Transaction.createTransaction( Transaction.UPDATE, schedule ).execute();
 				liteAcctInfo.getThermostatSchedules().remove( liteOldSched );
 			}
 			else {
@@ -138,7 +143,7 @@ public class SaveThermostatScheduleAction implements ActionBase {
 				int thermostatTypeId = energyCompany.getYukonListEntry(hwTypeDefID).getEntryID();
 				schedule.getLmThermostatSchedule().setThermostatTypeID(thermostatTypeId);
 				
-				schedule = (LMThermostatSchedule) Transaction.createTransaction( Transaction.INSERT, schedule ).execute();
+				schedule = Transaction.createTransaction( Transaction.INSERT, schedule ).execute();
 			}
 			
 			LiteLMThermostatSchedule liteSched = StarsLiteFactory.createLiteLMThermostatSchedule( schedule );
@@ -229,12 +234,12 @@ public class SaveThermostatScheduleAction implements ActionBase {
 		}
 		
 		for (int i = 0; i < schedule.getThermostatSeasons().size(); i++) {
-			LMThermostatSeason season = (LMThermostatSeason) schedule.getThermostatSeasons().get(i);
+			LMThermostatSeason season = schedule.getThermostatSeasons().get(i);
 			LiteLMThermostatSeason liteOldSeason = null;
 			
 			if (liteOldSched != null) {
 				for (int j = 0; j < liteOldSched.getThermostatSeasons().size(); j++) {
-					LiteLMThermostatSeason liteSeason = (LiteLMThermostatSeason) liteOldSched.getThermostatSeasons().get(j);
+					LiteLMThermostatSeason liteSeason = liteOldSched.getThermostatSeasons().get(j);
 					if (liteSeason.getWebConfigurationID() == season.getLMThermostatSeason().getWebConfigurationID().intValue()) {
 						liteOldSeason = liteSeason;
 						break;
@@ -252,15 +257,15 @@ public class SaveThermostatScheduleAction implements ActionBase {
 			
 			if (liteOldSeason != null && liteOldSeason.getSeasonEntries().size() == season.getLMThermostatSeasonEntries().size()) {
 				for (int j = 0; j < season.getLMThermostatSeasonEntries().size(); j++) {
-					LMThermostatSeasonEntry entry = (LMThermostatSeasonEntry) season.getLMThermostatSeasonEntries().get(j);
-					LiteLMThermostatSeasonEntry liteOldEntry = (LiteLMThermostatSeasonEntry) liteOldSeason.getSeasonEntries().get(j);
+					LMThermostatSeasonEntry entry = season.getLMThermostatSeasonEntries().get(j);
+					LiteLMThermostatSeasonEntry liteOldEntry = liteOldSeason.getSeasonEntries().get(j);
 					entry.setEntryID( new Integer(liteOldEntry.getEntryID()) );
 					entry.setSeasonID( new Integer(liteOldEntry.getSeasonID()) );
 				}
 			}
 			else {
 				for (int j = 0; j < season.getLMThermostatSeasonEntries().size(); j++) {
-					LMThermostatSeasonEntry entry = (LMThermostatSeasonEntry) season.getLMThermostatSeasonEntries().get(j);
+					LMThermostatSeasonEntry entry = season.getLMThermostatSeasonEntries().get(j);
 					entry.setEntryID( null );
 					entry.setSeasonID( season.getLMThermostatSeason().getSeasonID() );
 				}

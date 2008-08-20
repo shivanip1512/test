@@ -3,7 +3,8 @@ package com.cannontech.database.db.stars.integration;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlStatement;
@@ -37,7 +38,7 @@ public class CRSToSAM_PTJ extends DBPersistent {
     private String meterNumber = "";
     private String siteNumber = "";
 
-    private ArrayList<CRSToSAM_PTJAdditionalMeters> additionalMeters;
+    private List<CRSToSAM_PTJAdditionalMeters> additionalMeters;
     public static final String CONSTRAINT_COLUMNS[] = { "PTJID" };
 
     public static final String SETTER_COLUMNS[] = { "PTJID", "PremiseNumber", "DebtorNumber", "PTJType", "Timestamp",
@@ -133,7 +134,7 @@ public void update() throws java.sql.SQLException
     update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 }
 
-public static ArrayList<CRSToSAM_PTJ> getAllCurrentPTJEntries()
+public static List<CRSToSAM_PTJ> getAllCurrentPTJEntries()
 {
     ArrayList<CRSToSAM_PTJ> changes = new ArrayList<CRSToSAM_PTJ>();
     
@@ -146,7 +147,8 @@ public static ArrayList<CRSToSAM_PTJ> getAllCurrentPTJEntries()
         
         if( stmt.getRowCount() > 0 )
         {
-        	HashMap ptjToAddtlMetersMap = CRSToSAM_PTJAdditionalMeters.retrieveAllCurrentPTJAdditionalMeterEntriesMap();
+        	Map<Integer, List<CRSToSAM_PTJAdditionalMeters>> ptjToAddtlMetersMap = 
+        		CRSToSAM_PTJAdditionalMeters.retrieveAllCurrentPTJAdditionalMeterEntriesMap();
             for( int i = 0; i < stmt.getRowCount(); i++ )
             {
             	CRSToSAM_PTJ currentEntry = new CRSToSAM_PTJ();
@@ -201,7 +203,7 @@ public static ArrayList<CRSToSAM_PTJ> getAllCurrentPTJEntries()
             	if (stmt.getRow(i)[24] != null)
             	    currentEntry.setSiteNumber( stmt.getRow(i)[24].toString());
                 
-                ArrayList<CRSToSAM_PTJAdditionalMeters> addtlMeters = (ArrayList<CRSToSAM_PTJAdditionalMeters>)ptjToAddtlMetersMap.get(currentEntry.getPTJID());
+                List<CRSToSAM_PTJAdditionalMeters> addtlMeters = ptjToAddtlMetersMap.get(currentEntry.getPTJID());
                 if( addtlMeters != null)	//found an ArrayList of CRSToSam_PTJAdditionalMeters
                 	currentEntry.setAdditionalMeters(addtlMeters);
                 changes.add(currentEntry);
@@ -416,13 +418,13 @@ public void setZipCode(String zipCode) {
 	this.zipCode = zipCode;
 }
 
-public ArrayList<CRSToSAM_PTJAdditionalMeters> getAdditionalMeters() {
+public List<CRSToSAM_PTJAdditionalMeters> getAdditionalMeters() {
 	if( additionalMeters == null)
 		additionalMeters = new ArrayList<CRSToSAM_PTJAdditionalMeters>();
 	return additionalMeters;
 }
 
-public void setAdditionalMeters(ArrayList<CRSToSAM_PTJAdditionalMeters> additionalMeters) {
+public void setAdditionalMeters(List<CRSToSAM_PTJAdditionalMeters> additionalMeters) {
 	this.additionalMeters = additionalMeters;
 }
 }

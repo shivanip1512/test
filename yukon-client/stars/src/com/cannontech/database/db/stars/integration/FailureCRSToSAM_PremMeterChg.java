@@ -2,6 +2,7 @@ package com.cannontech.database.db.stars.integration;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlStatement;
@@ -297,9 +298,9 @@ public void update() throws java.sql.SQLException
     update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 }
 
-public static ArrayList<FailureCRSToSAM_PremMeterChg> getAllCurrentPremiseMeterChangeEntries()
+public static List<FailureCRSToSAM_PremMeterChg> getAllCurrentPremiseMeterChangeEntries()
 {
-    ArrayList<FailureCRSToSAM_PremMeterChg> changes = new ArrayList<FailureCRSToSAM_PremMeterChg>();
+    List<FailureCRSToSAM_PremMeterChg> changes = new ArrayList<FailureCRSToSAM_PremMeterChg>();
     
     SqlStatement stmt = new SqlStatement("SELECT * FROM " + TABLE_NAME, CtiUtilities.getDatabaseAlias());
     

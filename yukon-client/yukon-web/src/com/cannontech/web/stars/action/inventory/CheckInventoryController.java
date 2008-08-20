@@ -205,7 +205,7 @@ public class CheckInventoryController extends StarsInventoryActionController {
                     }
     
                     // Forward to DeleteInv.jsp to confirm removal of the old hardware
-                    LiteInventoryBase liteInvOld = energyCompany.getInventory( deleteHw.getInventoryID(), true );
+                    LiteInventoryBase liteInvOld = starsInventoryBaseDao.getById(deleteHw.getInventoryID());
                     session.setAttribute( InventoryManagerUtil.INVENTORY_TO_DELETE, liteInvOld );
                     String redirect = request.getContextPath() + "/operator/Consumer/DeleteInv.jsp";
                     response.sendRedirect(redirect);

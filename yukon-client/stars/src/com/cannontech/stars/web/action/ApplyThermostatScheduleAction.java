@@ -19,6 +19,8 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.stars.hardware.LMThermostatSchedule;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -96,13 +98,14 @@ public class ApplyThermostatScheduleAction implements ActionBase {
 			
 			LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 			
-			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( applySchedule.getInventoryID(), true );
+			StarsInventoryBaseDao starsInventoryBaseDao = YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
+			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getById(applySchedule.getInventoryID());
 			LiteLMThermostatSchedule liteOldSched = liteHw.getThermostatSettings().getThermostatSchedule();
 			
 			LiteLMThermostatSchedule liteNewSched = null;
 			for (int i = 0; i < liteAcctInfo.getThermostatSchedules().size(); i++) {
-				if (((LiteLMThermostatSchedule) liteAcctInfo.getThermostatSchedules().get(i)).getScheduleID() == applySchedule.getScheduleID()) {
-					liteNewSched = (LiteLMThermostatSchedule) liteAcctInfo.getThermostatSchedules().get(i);
+				if (liteAcctInfo.getThermostatSchedules().get(i).getScheduleID() == applySchedule.getScheduleID()) {
+					liteNewSched = liteAcctInfo.getThermostatSchedules().get(i);
 					break;
 				}
 			}
@@ -117,7 +120,7 @@ public class ApplyThermostatScheduleAction implements ActionBase {
 				return SOAPUtil.buildSOAPMessage( respOper );
 			}
 			
-			schedule = (LMThermostatSchedule) Transaction.createTransaction( Transaction.UPDATE, schedule ).execute();
+			schedule = Transaction.createTransaction( Transaction.UPDATE, schedule ).execute();
 			
 			LiteLMThermostatSchedule liteSched = StarsLiteFactory.createLiteLMThermostatSchedule( schedule );
 			liteHw.getThermostatSettings().setThermostatSchedule( liteSched );

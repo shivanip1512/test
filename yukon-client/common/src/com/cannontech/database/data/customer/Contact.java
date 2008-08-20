@@ -22,7 +22,7 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 	
 	
 	//contains com.cannontech.database.db.contact.ContactNotification
-	private Vector contactNotifVect = null;
+	private Vector<ContactNotification> contactNotifVect = null;
 
 
 	/**
@@ -69,7 +69,7 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 	 * This method was created in VisualAge.
 	 * @param pointID java.lang.Integer
 	 */
-	public final static boolean isUsedInPointAlarming(Integer contactID, String databaseAlias) throws java.sql.SQLException 
+	public final static boolean isUsedInPointAlarming(Integer contactID, String databaseAlias) 
 	{
 		com.cannontech.database.SqlStatement stmt =
 			new com.cannontech.database.SqlStatement(
@@ -116,10 +116,10 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 	 * Creation date: (2/3/2003 11:16:45 AM)
 	 * @return java.util.Vector
 	 */
-	public java.util.Vector getContactNotifVect() 
+	public Vector<ContactNotification> getContactNotifVect() 
 	{
 		if( contactNotifVect == null )
-			contactNotifVect = new Vector(8);
+			contactNotifVect = new Vector<ContactNotification>(8);
 	
 		return contactNotifVect;
 	}
@@ -202,8 +202,7 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 		
 		for( int i = 0; i < getContactNotifVect().size(); i++ )
 		{
-			((com.cannontech.database.db.contact.ContactNotification)
-					getContactNotifVect().get(i)).setContactID( contactID );
+			getContactNotifVect().get(i).setContactID( contactID );
 		}		
 	}
 
@@ -262,7 +261,7 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 		getContact().update();
 
 		//grab all the previous gear entries for this program
-		java.util.Vector oldContactNotifies = ContactNotification.getContactNotifications(this.getContact().getContactID().intValue(), getDbConnection());
+		Vector<ContactNotification> oldContactNotifies = ContactNotification.getContactNotifications(this.getContact().getContactID().intValue(), getDbConnection());
 	
 		//run all the ContactNotifications through the NestedDBPersistent comparator
 		//to see which ones need to be added, updated, or deleted.
@@ -282,7 +281,7 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 	 * This method was created in VisualAge.
 	 * @param pointID java.lang.Integer
 	 */
-	public final static boolean isPrimaryContact(Integer contactID, String databaseAlias) throws java.sql.SQLException 
+	public final static boolean isPrimaryContact(Integer contactID, String databaseAlias) 
 	{
 		com.cannontech.database.SqlStatement stmt =
 			new com.cannontech.database.SqlStatement(

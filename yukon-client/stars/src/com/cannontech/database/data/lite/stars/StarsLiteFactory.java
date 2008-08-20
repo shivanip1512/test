@@ -31,15 +31,18 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.stars.hardware.InventoryBase;
+import com.cannontech.database.data.stars.hardware.LMThermostatSeason;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.macro.GenericMacro;
 import com.cannontech.database.db.macro.MacroTypes;
 import com.cannontech.database.db.stars.appliance.ApplianceChiller;
 import com.cannontech.database.db.stars.appliance.ApplianceDualStageAirCond;
+import com.cannontech.database.db.stars.hardware.LMThermostatSeasonEntry;
 import com.cannontech.database.db.stars.hardware.MeterHardwareBase;
 import com.cannontech.database.db.stars.report.ServiceCompanyDesignationCode;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
+import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.dr.event.dao.LMHardwareEventDao;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.OptOutEventQueue;
@@ -423,11 +426,10 @@ public class StarsLiteFactory {
 		LiteLMThermostatSeason liteSeason = new LiteLMThermostatSeason();
 		setLiteLMThermostatSeason( liteSeason, season.getLMThermostatSeason() );
 		
-		ArrayList seasonEntries = season.getLMThermostatSeasonEntries();
+		List<LMThermostatSeasonEntry> seasonEntries = season.getLMThermostatSeasonEntries();
 		liteSeason.getSeasonEntries().clear();
 		for (int i = 0; i < seasonEntries.size(); i++) {
-			com.cannontech.database.db.stars.hardware.LMThermostatSeasonEntry seasonEntry =
-					(com.cannontech.database.db.stars.hardware.LMThermostatSeasonEntry) seasonEntries.get(i);
+			LMThermostatSeasonEntry seasonEntry = seasonEntries.get(i);
 			liteSeason.getSeasonEntries().add( (LiteLMThermostatSeasonEntry) createLite(seasonEntry) );
 		}
 		
@@ -447,8 +449,7 @@ public class StarsLiteFactory {
 		setLiteLMThermostatSchedule( liteSchedule, schedule.getLmThermostatSchedule() );
 		
 		for (int i = 0; i < schedule.getThermostatSeasons().size(); i++) {
-			com.cannontech.database.data.stars.hardware.LMThermostatSeason season =
-					(com.cannontech.database.data.stars.hardware.LMThermostatSeason) schedule.getThermostatSeasons().get(i);
+			LMThermostatSeason season = schedule.getThermostatSeasons().get(i);
 			liteSchedule.getThermostatSeasons().add( createLiteLMThermostatSeason(season) );
 		}
 		
@@ -1562,7 +1563,7 @@ public class StarsLiteFactory {
 		
 		starsAccount.removeAllAdditionalContact();
 		for (int i = 0; i < liteCustomer.getAdditionalContacts().size(); i++) {
-			LiteContact lContact = (LiteContact) liteCustomer.getAdditionalContacts().get(i);
+			LiteContact lContact = liteCustomer.getAdditionalContacts().get(i);
 			AdditionalContact contact = new AdditionalContact();
 			setStarsCustomerContact( contact, lContact );
 			starsAccount.addAdditionalContact( contact );
@@ -1581,24 +1582,28 @@ public class StarsLiteFactory {
 		StarsInventories starsInvs = new StarsInventories();
 		starsAcctInfo.setStarsInventories( starsInvs );
 		
-		TreeMap invMap = new TreeMap();
+		StarsInventoryBaseDao starsInventoryBaseDao = 
+			YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
+		
+		Map<String, List<StarsInventory>> invMap = new TreeMap<String, List<StarsInventory>>();
 		for (int i = 0; i < liteInvs.size(); i++) {
-			LiteInventoryBase liteInv = energyCompany.getInventory( ((Integer)liteInvs.get(i)).intValue(), true );
+			
+			LiteInventoryBase liteInv = starsInventoryBaseDao.getById(liteInvs.get(i));
 			StarsInventory starsInv = createStarsInventory( liteInv, energyCompany );
 			
-			ArrayList list = (ArrayList) invMap.get( starsInv.getDeviceLabel() );
+			List<StarsInventory> list = invMap.get( starsInv.getDeviceLabel() );
 			if (list == null) {
-				list = new ArrayList();
+				list = new ArrayList<StarsInventory>();
 				invMap.put( ServletUtils.getInventoryLabel(starsInv), list );
 			}
 			list.add( starsInv );
 		}
 		
-		Iterator it = invMap.values().iterator();
+		Iterator<List<StarsInventory>> it = invMap.values().iterator();
 		while (it.hasNext()) {
-			ArrayList list = (ArrayList) it.next();
+			List<StarsInventory> list = it.next();
 			for (int i = 0; i < list.size(); i++)
-				starsInvs.addStarsInventory( (StarsInventory)list.get(i) );
+				starsInvs.addStarsInventory( list.get(i) );
 		}
 		
 		if (liteContact.getLoginID() != com.cannontech.user.UserUtils.USER_DEFAULT_ID &&
@@ -2219,25 +2224,25 @@ public class StarsLiteFactory {
 		return starsUser;
 	}
 	
-	public static StarsThermostatSchedule createStarsThermostatSchedule(int towID, ArrayList liteEntries) {
+	public static StarsThermostatSchedule createStarsThermostatSchedule(int towID, List<LiteLMThermostatSeasonEntry> liteEntries) {
 		if (liteEntries.size() != 4) return null;
 		
 		StarsThermostatSchedule starsSched = new StarsThermostatSchedule();
 		starsSched.setDay( StarsMsgUtils.getThermDaySetting(towID) );
 		
-		LiteLMThermostatSeasonEntry liteEntry = (LiteLMThermostatSeasonEntry) liteEntries.get(0);
+		LiteLMThermostatSeasonEntry liteEntry = liteEntries.get(0);
 		starsSched.setTime1( new org.exolab.castor.types.Time(liteEntry.getStartTime() * 1000) );
 		starsSched.setTemperature1( liteEntry.getTemperature() );
 		
-		liteEntry = (LiteLMThermostatSeasonEntry) liteEntries.get(1);
+		liteEntry = liteEntries.get(1);
 		starsSched.setTime2( new org.exolab.castor.types.Time(liteEntry.getStartTime() * 1000) );
 		starsSched.setTemperature2( liteEntry.getTemperature() );
 		
-		liteEntry = (LiteLMThermostatSeasonEntry) liteEntries.get(2);
+		liteEntry = liteEntries.get(2);
 		starsSched.setTime3( new org.exolab.castor.types.Time(liteEntry.getStartTime() * 1000) );
 		starsSched.setTemperature3( liteEntry.getTemperature() );
 		
-		liteEntry = (LiteLMThermostatSeasonEntry) liteEntries.get(3);
+		liteEntry = liteEntries.get(3);
 		starsSched.setTime4( new org.exolab.castor.types.Time(liteEntry.getStartTime() * 1000) );
 		starsSched.setTemperature4( liteEntry.getTemperature() );
 		

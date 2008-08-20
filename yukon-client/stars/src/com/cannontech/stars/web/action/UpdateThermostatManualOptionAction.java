@@ -17,6 +17,8 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsMsgUtils;
@@ -137,8 +139,11 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
 					invIDs[i] = Integer.parseInt( invIDStrs[i] );
 			}
 			
+			StarsInventoryBaseDao starsInventoryBaseDao = 
+				YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
+			
 			for (int i = 0; i < invIDs.length; i++) {
-				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( invIDs[i], true );
+				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getById(invIDs[i]);
 				
 				if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL) {
 					String errorMsg = null;
@@ -206,8 +211,7 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
 				event.getLmThermostatManualEvent().setFanOperationID( StarsMsgUtils.getThermOptionFanOpID(starsOption.getFan(), energyCompany) );
 				
 				event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
-				event = (com.cannontech.database.data.stars.event.LMThermostatManualEvent)
-						Transaction.createTransaction(Transaction.INSERT, event).execute();
+				event = Transaction.createTransaction(Transaction.INSERT, event).execute();
 				
 				LiteLMThermostatManualEvent liteEvent = (LiteLMThermostatManualEvent) StarsLiteFactory.createLite( event );
 				liteHw.getThermostatSettings().getThermostatManualEvents().add( liteEvent );

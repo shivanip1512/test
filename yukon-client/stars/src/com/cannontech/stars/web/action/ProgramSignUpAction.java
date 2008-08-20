@@ -2,10 +2,10 @@ package com.cannontech.stars.web.action;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -15,13 +15,11 @@ import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteLMProgramEvent;
 import com.cannontech.database.data.lite.stars.LiteLMProgramWebPublishing;
@@ -31,13 +29,16 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.database.data.stars.appliance.ApplianceBase;
 import com.cannontech.database.db.stars.hardware.LMHardwareConfiguration;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationService;
 import com.cannontech.stars.util.EventUtils;
+import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
@@ -57,7 +58,6 @@ import com.cannontech.stars.xml.serialize.StarsSULMPrograms;
 import com.cannontech.stars.xml.serialize.StarsSuccess;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
-import com.cannontech.stars.util.InventoryUtils;
 
 /**
  * @author yao
@@ -185,7 +185,7 @@ public class ProgramSignUpAction implements ActionBase {
 			String progEnrBefore = null;
 			for (int i = 0; i < liteAcctInfo.getPrograms().size(); i++) 
             {
-				LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteAcctInfo.getPrograms().get(i);
+				LiteStarsLMProgram liteProg = liteAcctInfo.getPrograms().get(i);
 				String progName = StarsUtils.getPublishedProgramName( liteProg.getPublishedProgram() );
 				if (progEnrBefore == null)
 					progEnrBefore = progName;
@@ -262,7 +262,7 @@ public class ProgramSignUpAction implements ActionBase {
 			// Log activity
 			String progEnrNow = null;
 			for (int i = 0; i < liteAcctInfo.getPrograms().size(); i++) {
-				LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteAcctInfo.getPrograms().get(i);
+				LiteStarsLMProgram liteProg = liteAcctInfo.getPrograms().get(i);
 				String progName = StarsUtils.getPublishedProgramName( liteProg.getPublishedProgram() );
 				if (progEnrNow == null)
 					progEnrNow = progName;
@@ -377,7 +377,10 @@ public class ProgramSignUpAction implements ActionBase {
 		LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany, LiteYukonUser currentUser) throws WebClientException
 	{
 		StarsSULMPrograms programs = progSignUp.getStarsSULMPrograms();
-		ArrayList hwsToConfig = new ArrayList();
+		List<LiteStarsLMHardware> hwsToConfig = new ArrayList<LiteStarsLMHardware>();
+		
+		StarsInventoryBaseDao starsInventoryBaseDao = 
+			YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
 		
         /*
          * New enrollment, opt out, and control history tracking
@@ -396,7 +399,6 @@ public class ProgramSignUpAction implements ActionBase {
          * */
         
 		try {
-            List<LiteApplianceCategory> appCats = energyCompany.getAllApplianceCategories();
 			Integer accountID = new Integer( liteAcctInfo.getCustomerAccount().getAccountID() );
 			
 			Integer dftLocationID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_LOC_UNKNOWN).getEntryID() );
@@ -407,17 +409,17 @@ public class ProgramSignUpAction implements ActionBase {
 			Date termDate = new Date( signupDate.getTime() - 1000 );
         	
             List<LiteStarsLMProgram> progList = liteAcctInfo.getPrograms();	// List of old programs
-			ArrayList appList = new ArrayList( liteAcctInfo.getAppliances() );	// List of old appliances
-			ArrayList newAppList = new ArrayList();		// List of new appliances
-			ArrayList newProgList = new ArrayList();	// List of new programs
-			ArrayList progNewEnrollList = new ArrayList();	// List of program IDs newly enrolled in
-			ArrayList progUnenrollList = new ArrayList();	// List of program IDs to be unenrolled
+			List<LiteStarsAppliance> appList = new ArrayList<LiteStarsAppliance>( liteAcctInfo.getAppliances() );	// List of old appliances
+			List<LiteStarsAppliance> newAppList = new ArrayList<LiteStarsAppliance>();		// List of new appliances
+			List<LiteStarsLMProgram> newProgList = new ArrayList<LiteStarsLMProgram>();	// List of new programs
+			List<Integer> progNewEnrollList = new ArrayList<Integer>();	// List of program IDs newly enrolled in
+			List<Integer> progUnenrollList = new ArrayList<Integer>();	// List of program IDs to be unenrolled
 			
 			// The StarsSULMPrograms object after the omitted fields have been filled in
 			StarsSULMPrograms processedPrograms = new StarsSULMPrograms();
 			
 			// Map from Integer(programID) to Hashtable(Map from Integer(inventoryID) to LiteStarsAppliance)
-			Hashtable progHwAppMap = new Hashtable();
+			Map<Integer, Map<Integer, LiteStarsAppliance>> progHwAppMap = new Hashtable<Integer, Map<Integer, LiteStarsAppliance>>();
 			
 			for (int i = 0; i < programs.getSULMProgramCount(); i++) {
 				SULMProgram program = programs.getSULMProgram(i);
@@ -429,9 +431,9 @@ public class ProgramSignUpAction implements ActionBase {
 					program.setApplianceCategoryID( liteProg.getApplianceCategoryID() );
 				}
 				
-				Hashtable hwAppMap = (Hashtable) progHwAppMap.get( new Integer(program.getProgramID()) );
+				Map<Integer, LiteStarsAppliance> hwAppMap = progHwAppMap.get( new Integer(program.getProgramID()) );
 				if (hwAppMap == null) {
-					hwAppMap = new Hashtable();
+					hwAppMap = new Hashtable<Integer, LiteStarsAppliance>();
 					progHwAppMap.put( new Integer(program.getProgramID()), hwAppMap );
 				}
         		
@@ -441,9 +443,9 @@ public class ProgramSignUpAction implements ActionBase {
 				}
 				else if (!program.hasInventoryID()) {
 					// Find hardwares already assigned to this program or another program in the same category
-					Iterator it = appList.iterator();
+					Iterator<LiteStarsAppliance> it = appList.iterator();
 					while (it.hasNext()) {
-						LiteStarsAppliance liteApp = (LiteStarsAppliance) it.next();
+						LiteStarsAppliance liteApp = it.next();
 						
 						if (liteApp.getInventoryID() > 0 &&
 							(liteApp.getProgramID() == program.getProgramID() || liteApp.getApplianceCategoryID() == program.getApplianceCategoryID()))
@@ -474,8 +476,8 @@ public class ProgramSignUpAction implements ActionBase {
 					// If no hardware found above, then assign all hardwares
 					if (!program.hasInventoryID()) {
 						for (int j = 0; j < liteAcctInfo.getInventories().size(); j++) {
-							int invID = ((Integer) liteAcctInfo.getInventories().get(j)).intValue();
-							if (energyCompany.getInventory(invID, true) instanceof LiteStarsLMHardware) {
+							int invID = liteAcctInfo.getInventories().get(j).intValue();
+							if (starsInventoryBaseDao.getById(invID) instanceof LiteStarsLMHardware) {
 								if (!program.hasInventoryID()) {
 									program.setInventoryID( invID );
 								}
@@ -497,7 +499,7 @@ public class ProgramSignUpAction implements ActionBase {
 				
 				// Try to find the appliance controlled by this program and complete the request
 				for (int j = 0; j < appList.size(); j++) {
-					LiteStarsAppliance liteApp = (LiteStarsAppliance) appList.get(j);
+					LiteStarsAppliance liteApp = appList.get(j);
 					if (liteApp.getProgramID() == program.getProgramID() && liteApp.getInventoryID() == program.getInventoryID()) {
 						if (!program.hasAddressingGroupID())
 							program.setAddressingGroupID( liteApp.getAddressingGroupID() );
@@ -516,10 +518,10 @@ public class ProgramSignUpAction implements ActionBase {
 			 * so they can be reused by the new enrolled programs.
 			 * If liteInv is not null, only remove programs assigned to the specified hardware.
 			 */
-			ArrayList appsToUpdate = new ArrayList();
+			List<LiteStarsAppliance> appsToUpdate = new ArrayList<LiteStarsAppliance>();
 			
 			for (int i = 0; i < appList.size(); i++) {
-				LiteStarsAppliance liteApp = (LiteStarsAppliance) appList.get(i);
+				LiteStarsAppliance liteApp = appList.get(i);
 				newAppList.add( liteApp );
     			
 				if (liteApp.getProgramID() == 0) continue;
@@ -530,7 +532,8 @@ public class ProgramSignUpAction implements ActionBase {
 						progUnenrollList.add( progID );
 					
 					if (liteApp.getInventoryID() > 0) {
-						LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( liteApp.getInventoryID(), true );
+						
+						LiteStarsLMHardware liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getById(liteApp.getInventoryID());
 						if (!hwsToConfig.contains( liteHw )) 
 							hwsToConfig.add( liteHw );
                             
@@ -581,7 +584,7 @@ public class ProgramSignUpAction implements ActionBase {
 				LiteStarsLMProgram liteStarsProg = getLMProgram( liteAcctInfo, program.getProgramID() );
 				if (liteStarsProg == null) {
 					for (int j = 0; j < newProgList.size(); j++) {
-						LiteStarsLMProgram prog = (LiteStarsLMProgram) newProgList.get(j);
+						LiteStarsLMProgram prog = newProgList.get(j);
 						if (prog.getProgramID() == program.getProgramID()) {
 							liteStarsProg = prog;
 							break;
@@ -605,16 +608,16 @@ public class ProgramSignUpAction implements ActionBase {
         		
 				LiteStarsLMHardware liteHw = null;
 				if (program.getInventoryID() > 0)
-					liteHw = (LiteStarsLMHardware) energyCompany.getInventory( program.getInventoryID(), true );
+					liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getById(program.getInventoryID());
     			
-    			LiteStarsAppliance liteApp = (LiteStarsAppliance)
-    					(((Hashtable) progHwAppMap.get(new Integer(program.getProgramID()))).get( new Integer(program.getInventoryID()) ));
+    			LiteStarsAppliance liteApp = 
+    					progHwAppMap.get(new Integer(program.getProgramID())).get(program.getInventoryID());
     			
     			if (liteApp == null) {
 					// Find existing appliance that could be attached to this hardware controlling this program
 					// Priority: same hardware & same program > same hardware & same category > no hardware & same program > no hardware & same category
 					for (int j = 0; j < appList.size(); j++) {
-						LiteStarsAppliance lApp = (LiteStarsAppliance) appList.get(j);
+						LiteStarsAppliance lApp = appList.get(j);
 						
 						if ((lApp.getInventoryID() == program.getInventoryID() || lApp.getInventoryID() == 0) && 
 							(lApp.getProgramID() == program.getProgramID() || lApp.getApplianceCategoryID() == program.getApplianceCategoryID()))
@@ -710,9 +713,8 @@ public class ProgramSignUpAction implements ActionBase {
 						
 						liteApp.setProgramID( program.getProgramID() );
 						
-						app = (com.cannontech.database.data.stars.appliance.ApplianceBase) StarsLiteFactory.createDBPersistent( liteApp );
-						app = (com.cannontech.database.data.stars.appliance.ApplianceBase)
-								Transaction.createTransaction( Transaction.UPDATE, app ).execute();
+						app = (ApplianceBase) StarsLiteFactory.createDBPersistent( liteApp );
+						app = Transaction.createTransaction( Transaction.UPDATE, app ).execute();
 					}
 					else {
 						/* The appliance is enrolled in the same program, update the load group if necessary.
@@ -750,23 +752,21 @@ public class ProgramSignUpAction implements ActionBase {
                             }*/
                             /*-------------------------------------------------------------------------------*/
                             
-							app = (com.cannontech.database.data.stars.appliance.ApplianceBase) StarsLiteFactory.createDBPersistent( liteApp );
-							app = (com.cannontech.database.data.stars.appliance.ApplianceBase)
-									Transaction.createTransaction( Transaction.UPDATE, app ).execute();
+							app = (ApplianceBase) StarsLiteFactory.createDBPersistent( liteApp );
+							app = Transaction.createTransaction( Transaction.UPDATE, app ).execute();
 							
 							if (liteInv != null) {
 								for (int j = 0; j < appList.size(); j++) {
-									LiteStarsAppliance lApp = (LiteStarsAppliance) appList.get(j);
+									LiteStarsAppliance lApp = appList.get(j);
 									if (lApp.getProgramID() == program.getProgramID() && lApp.getInventoryID() != program.getInventoryID()) {
 										lApp.setAddressingGroupID( groupID );
 										
-										LiteStarsLMHardware lHw = (LiteStarsLMHardware) energyCompany.getInventory( lApp.getInventoryID(), true );
+										LiteStarsLMHardware lHw = (LiteStarsLMHardware) starsInventoryBaseDao.getById(lApp.getInventoryID());
 										if (!hwsToConfig.contains( lHw ))
 											hwsToConfig.add( lHw );
 										
-										app = (com.cannontech.database.data.stars.appliance.ApplianceBase) StarsLiteFactory.createDBPersistent( lApp );
-										app = (com.cannontech.database.data.stars.appliance.ApplianceBase)
-												Transaction.createTransaction( Transaction.UPDATE, app ).execute();
+										app = (ApplianceBase) StarsLiteFactory.createDBPersistent( lApp );
+										app = Transaction.createTransaction( Transaction.UPDATE, app ).execute();
 									}
 								}
 							}
@@ -779,7 +779,7 @@ public class ProgramSignUpAction implements ActionBase {
 						progNewEnrollList.add( progID );
 	        		
 					// Create a new appliance for the program
-					app = new com.cannontech.database.data.stars.appliance.ApplianceBase();
+					app = new ApplianceBase();
 					com.cannontech.database.db.stars.appliance.ApplianceBase appDB = app.getApplianceBase();
 	        		
 					appDB.setAccountID( accountID );
@@ -824,8 +824,7 @@ public class ProgramSignUpAction implements ActionBase {
                         /*-------------------------------------------------------------------------------*/
 					}
 	        		
-					app = (com.cannontech.database.data.stars.appliance.ApplianceBase)
-							Transaction.createTransaction( Transaction.INSERT, app ).execute();
+					app = Transaction.createTransaction( Transaction.INSERT, app ).execute();
 	        		
 					liteApp = StarsLiteFactory.createLiteStarsAppliance( app, energyCompany );
 					newAppList.add( liteApp );
@@ -834,20 +833,18 @@ public class ProgramSignUpAction implements ActionBase {
             
 			// Update appliances saved earlier
 			for (int i = 0; i < appsToUpdate.size(); i++) {
-				LiteStarsAppliance liteApp = (LiteStarsAppliance) appsToUpdate.get(i);
+				LiteStarsAppliance liteApp = appsToUpdate.get(i);
 				
-				com.cannontech.database.data.stars.appliance.ApplianceBase app =
-						(com.cannontech.database.data.stars.appliance.ApplianceBase) StarsLiteFactory.createDBPersistent( liteApp );
-				app = (com.cannontech.database.data.stars.appliance.ApplianceBase)
-						Transaction.createTransaction( Transaction.UPDATE, app ).execute();
+				ApplianceBase app = (ApplianceBase) StarsLiteFactory.createDBPersistent( liteApp );
+				app = Transaction.createTransaction( Transaction.UPDATE, app ).execute();
 			}
 			
 			// Remove redundant program IDs in the enroll and unenroll list
-			Iterator it = progNewEnrollList.iterator();
+			Iterator<Integer> it = progNewEnrollList.iterator();
 			while (it.hasNext()) {
-				int progID = ((Integer) it.next()).intValue();
+				int progID = it.next();
 				for (int i = 0; i < progList.size(); i++) {
-					if (((LiteStarsLMProgram) progList.get(i)).getProgramID() == progID) {
+					if (progList.get(i).getProgramID() == progID) {
 						it.remove();
 						break;
 					}
@@ -856,9 +853,9 @@ public class ProgramSignUpAction implements ActionBase {
 			
 			it = progUnenrollList.iterator();
 			while (it.hasNext()) {
-				int progID = ((Integer) it.next()).intValue();
+				int progID = it.next();
 				for (int i = 0; i < newProgList.size(); i++) {
-					if (((LiteStarsLMProgram) newProgList.get(i)).getProgramID() == progID) {
+					if (newProgList.get(i).getProgramID() == progID) {
 						it.remove();
 						break;
 					}
@@ -880,13 +877,12 @@ public class ProgramSignUpAction implements ActionBase {
 				event.setEventID( null );
 				event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
 				eventDB.setAccountID( accountID );
-				eventDB.setProgramID( (Integer)progNewEnrollList.get(i) );
+				eventDB.setProgramID( progNewEnrollList.get(i) );
 				eventBase.setEventTypeID( progEventEntryID );
 				eventBase.setActionID( signUpEntryID );
 				eventBase.setEventDateTime( signupDate );
 				
-				event = (com.cannontech.database.data.stars.event.LMProgramEvent)
-						Transaction.createTransaction( Transaction.INSERT, event ).execute();
+				event = Transaction.createTransaction( Transaction.INSERT, event ).execute();
 				
 				LiteLMProgramEvent liteEvent = (LiteLMProgramEvent) StarsLiteFactory.createLite(event);
 				liteAcctInfo.getProgramHistory().add( liteEvent );
@@ -894,7 +890,7 @@ public class ProgramSignUpAction implements ActionBase {
 			
 			// Add "termination" event to the old program
 			for (int i = 0; i < progUnenrollList.size(); i++) {
-				Integer progID = (Integer) progUnenrollList.get(i);
+				Integer progID = progUnenrollList.get(i);
 				
 				ProgramOptOutAction.removeProgramFutureActivationEvents(
 						liteAcctInfo.getProgramHistory(), progID.intValue(), energyCompany );
@@ -907,8 +903,7 @@ public class ProgramSignUpAction implements ActionBase {
 				eventBase.setActionID( termEntryID );
 				eventBase.setEventDateTime( termDate );
 				
-				event = (com.cannontech.database.data.stars.event.LMProgramEvent)
-						Transaction.createTransaction( Transaction.INSERT, event ).execute();
+				event = Transaction.createTransaction( Transaction.INSERT, event ).execute();
 				
 				LiteLMProgramEvent liteEvent = (LiteLMProgramEvent) StarsLiteFactory.createLite(event);
 				liteAcctInfo.getProgramHistory().add( liteEvent );
@@ -916,7 +911,7 @@ public class ProgramSignUpAction implements ActionBase {
 			
 			// Update program status
 			for (int i = 0; i < newProgList.size(); i++) {
-				LiteStarsLMProgram liteStarsProg = (LiteStarsLMProgram) newProgList.get(i);
+				LiteStarsLMProgram liteStarsProg = newProgList.get(i);
 				liteStarsProg.updateProgramStatus( liteAcctInfo.getProgramHistory() );
 			}
     		
@@ -1027,7 +1022,7 @@ public class ProgramSignUpAction implements ActionBase {
 	
 	static LiteStarsLMProgram getLMProgram(LiteStarsCustAccountInformation liteAcctInfo, int programID) {
 		for (int i = 0; i < liteAcctInfo.getPrograms().size(); i++) {
-			LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteAcctInfo.getPrograms().get(i);
+			LiteStarsLMProgram liteProg = liteAcctInfo.getPrograms().get(i);
 			if (liteProg.getProgramID() == programID)
 				return liteProg;
 		}
@@ -1043,11 +1038,14 @@ public class ProgramSignUpAction implements ActionBase {
 		StarsProgramSignUpResponse resp = new StarsProgramSignUpResponse();
 		StarsInventories starsInvs = new StarsInventories();
 		
+		StarsInventoryBaseDao starsInventoryBaseDao = 
+			YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
+		
 		for (int i = 0; i < liteAcctInfo.getInventories().size(); i++) {
-			int invID = ((Integer) liteAcctInfo.getInventories().get(i)).intValue();
+			int invID = liteAcctInfo.getInventories().get(i);
 			
 			try {
-				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( invID, true );
+				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getById(invID);
 				if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL) {
 					YukonSwitchCommandAction.sendDisableCommand( energyCompany, liteHw, null );
 					starsInvs.addStarsInventory( StarsLiteFactory.createStarsInventory(liteHw, energyCompany) );

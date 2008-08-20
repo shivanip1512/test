@@ -1,5 +1,7 @@
 package com.cannontech.database.db.contact;
 
+import java.util.Vector;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
@@ -242,9 +244,9 @@ public class ContactNotification extends NestedDBPersistent
 		return retVal;
 	}
 	
-	public static final java.util.Vector getContactNotifications( int contactID_, java.sql.Connection conn ) throws java.sql.SQLException 
+	public static final Vector<ContactNotification> getContactNotifications( int contactID_, java.sql.Connection conn ) throws java.sql.SQLException 
 	{
-		java.util.Vector tmpList = new java.util.Vector(50);
+		Vector<ContactNotification> tmpList = new Vector<ContactNotification>(50);
 		java.sql.PreparedStatement pstmt = null;
 		java.sql.ResultSet rset = null;
 		

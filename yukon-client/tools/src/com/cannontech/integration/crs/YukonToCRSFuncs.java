@@ -1,6 +1,5 @@
 package com.cannontech.integration.crs;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -73,7 +72,7 @@ public class YukonToCRSFuncs
 	 * This method will bring in the contents of the CRSToSAM_PremiseMeterChange
 	 * table in the form of CRSToSAM_PremiseMeterChange (DBPersistent) objects
 	 */
-	public static ArrayList readCRSToSAM_PremiseMeterChange()
+	public static List<CRSToSAM_PremiseMeterChange> readCRSToSAM_PremiseMeterChange()
 	{
 		return CRSToSAM_PremiseMeterChange.getAllCurrentPremiseMeterChangeEntries();
 	}
@@ -82,7 +81,7 @@ public class YukonToCRSFuncs
      * This method will bring in the contents of the CRSToSAM_PTJ
      * table in the form of CRSToSAM_PTJ (DBPersistent) objects
      */
-    public static ArrayList readCRSToSAM_PTJ()
+    public static List<CRSToSAM_PTJ> readCRSToSAM_PTJ()
     {
         return CRSToSAM_PTJ.getAllCurrentPTJEntries();
     }
@@ -91,7 +90,7 @@ public class YukonToCRSFuncs
      * This method will bring in the contents of the SwitchReplacement
      * table in the form of SwitchReplacement (DBPersistent) objects
      */
-    public static ArrayList readSwitchReplacement()
+    public static List<SwitchReplacement> readSwitchReplacement()
     {
         return SwitchReplacement.getAllSwitchReplacements();
     }
@@ -100,7 +99,7 @@ public class YukonToCRSFuncs
      * This method will bring in the contents of the FailureCRSToSAM_PremMeterChg
      * table in the form of FailureCRSToSAM_PremMeterChg (DBPersistent) objects
      */
-	public static ArrayList readFailureCRSToSAM_PremMeterChg()
+	public static List<FailureCRSToSAM_PremMeterChg> readFailureCRSToSAM_PremMeterChg()
 	{
 		return FailureCRSToSAM_PremMeterChg.getAllCurrentPremiseMeterChangeEntries();
 	}
@@ -109,7 +108,7 @@ public class YukonToCRSFuncs
      * This method will bring in the contents of the FailureCRSToSAM_PTJ
      * table in the form of FailureCRSToSAM_PTJ (DBPersistent) objects
      */
-	public static ArrayList readFailureCRSToSAM_PTJ()
+	public static List<FailureCRSToSAM_PTJ> readFailureCRSToSAM_PTJ()
 	{
 		return FailureCRSToSAM_PTJ.getAllCurrentFailurePTJEntries();
 	}
@@ -160,7 +159,6 @@ public class YukonToCRSFuncs
 			String opName = "import" + day;
 			String filename = dataDir + opName  + ".log";
 			java.io.File file = new java.io.File( dataDir);
-			boolean created = file.mkdirs();
 			file = new java.io.File( filename);
 			//if this log file hasn't been modified today, assume it is a month old and start over.
 			if(file.exists() && file.lastModified() < (now.getTime() - 86400000))
@@ -360,8 +358,8 @@ public class YukonToCRSFuncs
         if( isChanged)
     	{
 	    	try {
-	    		Transaction t = Transaction.createTransaction(Transaction.UPDATE, customer);
-	    		customer = (Customer)t.execute();
+	    		Transaction<Customer> t = Transaction.createTransaction(Transaction.UPDATE, customer);
+	    		customer = t.execute();
 
 	    		DBChangeMsg dbChangeMessage = new DBChangeMsg(
     					customer.getCustomerID().intValue(),
@@ -398,7 +396,7 @@ public class YukonToCRSFuncs
     	if( isChanged)
     	{
 	    	try {
-	    		contact = (Contact)Transaction.createTransaction(Transaction.UPDATE, contact).execute();
+	    		contact = Transaction.createTransaction(Transaction.UPDATE, contact).execute();
 	    		//DBChange message is handled in public parent method: updateAllContactInfo
 	    	} catch (TransactionException e) {
 				e.printStackTrace();
@@ -422,7 +420,7 @@ public class YukonToCRSFuncs
             if( isChanged)
             {
             	try{
-					contNotif = (ContactNotification)Transaction.createTransaction(Transaction.UPDATE, contNotif).execute();
+					contNotif = Transaction.createTransaction(Transaction.UPDATE, contNotif).execute();
 		    		//DBChange message is handled in public parent method: updateAllContactInfo
         		} catch (TransactionException e) {
         			e.printStackTrace();
@@ -437,7 +435,7 @@ public class YukonToCRSFuncs
         return isChanged;
     }
     
-    public static void createMeterHardwares(Integer accountID, LiteStarsEnergyCompany liteStarsEnergyCompany, String meterNumber, ArrayList additionalMeters) throws TransactionException
+    public static void createMeterHardwares(Integer accountID, LiteStarsEnergyCompany liteStarsEnergyCompany, String meterNumber, List<CRSToSAM_PTJAdditionalMeters> additionalMeters) throws TransactionException
     {
     	if( meterNumber != null && meterNumber.length() > 0)
     	{
@@ -446,7 +444,7 @@ public class YukonToCRSFuncs
     	}
     	for (int i = 0; i < additionalMeters.size(); i++)
     	{
-    		CRSToSAM_PTJAdditionalMeters additionalMeter = (CRSToSAM_PTJAdditionalMeters)additionalMeters.get(i);
+    		CRSToSAM_PTJAdditionalMeters additionalMeter = additionalMeters.get(i);
     		MeterHardwareBase meterHardwareBase = MeterHardwareBase.retrieveMeterHardwareBase(accountID.intValue(), additionalMeter.getMeterNumber(), liteStarsEnergyCompany.getEnergyCompanyID().intValue());
     		updateMeterHardware(meterHardwareBase, accountID, liteStarsEnergyCompany, additionalMeter.getMeterNumber());
     	}
@@ -472,7 +470,7 @@ public class YukonToCRSFuncs
 	        	meterHardwareBase.getInventoryBase().setCategoryID(new Integer(categoryEntry.getEntryID()));
 			meterHardwareBase.getInventoryBase().setDeviceLabel(meterNumber);
 			meterHardwareBase.setEnergyCompanyID(liteStarsEnergyCompany.getEnergyCompanyID());
-			meterHardwareBase = (MeterHardwareBase)Transaction.createTransaction(Transaction.INSERT, meterHardwareBase).execute();
+			meterHardwareBase = Transaction.createTransaction(Transaction.INSERT, meterHardwareBase).execute();
 			
 			final StarsCustAccountInformationDao starsCustAccountInformationDao =
 			    YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
@@ -509,7 +507,7 @@ public class YukonToCRSFuncs
 			}*/
 			if( isChanged)
 			{
-				meterHardwareBase = (MeterHardwareBase)Transaction.createTransaction(Transaction.UPDATE, meterHardwareBase).execute();
+				meterHardwareBase = Transaction.createTransaction(Transaction.UPDATE, meterHardwareBase).execute();
 				//TODO No DBChange message yet.  There is no cache of these objects yet.  20060205 
 			}
 		}
@@ -535,14 +533,14 @@ public class YukonToCRSFuncs
 			ApplianceBase applianceBase = new ApplianceBase();
 			applianceBase.getApplianceBase().setAccountID( accountID );
 			applianceBase.getApplianceBase().setApplianceCategoryID(applCatID);
-			applianceBase = (ApplianceBase) Transaction.createTransaction(Transaction.INSERT, applianceBase).execute();
+			applianceBase = Transaction.createTransaction(Transaction.INSERT, applianceBase).execute();
 			LiteStarsAppliance liteApp = new LiteStarsAppliance();
 			StarsLiteFactory.setLiteStarsAppliance( liteApp, applianceBase);
 			liteStarsCustAcctInfo.getAppliances().add( liteApp );
 
 			ApplianceAirConditioner appAC = new ApplianceAirConditioner();
 			appAC.setApplianceID( applianceBase.getApplianceBase().getApplianceID() );
-			appAC = (ApplianceAirConditioner) Transaction.createTransaction(Transaction.INSERT, appAC).execute();
+			appAC = Transaction.createTransaction(Transaction.INSERT, appAC).execute();
 	        
 			liteApp.setAirConditioner( new LiteStarsAppliance.AirConditioner() );
 			StarsLiteFactory.setLiteAppAirConditioner( liteApp.getAirConditioner(), appAC );
@@ -557,14 +555,14 @@ public class YukonToCRSFuncs
 			ApplianceBase applianceBase = new ApplianceBase();
 			applianceBase.getApplianceBase().setAccountID( new Integer(liteStarsCustAcctInfo.getAccountID()) );
 			applianceBase.getApplianceBase().setApplianceCategoryID(applCatID);
-			applianceBase = (ApplianceBase) Transaction.createTransaction(Transaction.INSERT, applianceBase).execute();
+			applianceBase = Transaction.createTransaction(Transaction.INSERT, applianceBase).execute();
 			LiteStarsAppliance liteApp = new LiteStarsAppliance();
 			StarsLiteFactory.setLiteStarsAppliance( liteApp, applianceBase);
 			liteStarsCustAcctInfo.getAppliances().add( liteApp );
 						
 			ApplianceWaterHeater appWH = new ApplianceWaterHeater();
 			appWH.setApplianceID( applianceBase.getApplianceBase().getApplianceID() );
-			appWH = (ApplianceWaterHeater) Transaction.createTransaction(Transaction.INSERT, appWH).execute();
+			appWH = Transaction.createTransaction(Transaction.INSERT, appWH).execute();
 	        
 			liteApp.setWaterHeater( new LiteStarsAppliance.WaterHeater() );
 			StarsLiteFactory.setLiteAppWaterHeater( liteApp.getWaterHeater(), appWH );
@@ -582,7 +580,7 @@ public class YukonToCRSFuncs
 		{
 			for (int i = 0; i < liteStarsEnergyCompany.getAllApplianceCategories().size(); i++)
 			{
-				LiteApplianceCategory liteAppCat = (LiteApplianceCategory)liteStarsEnergyCompany.getAllApplianceCategories().get(i);
+				LiteApplianceCategory liteAppCat = liteStarsEnergyCompany.getAllApplianceCategories().get(i);
 				if(liteAppCat.getCategoryID() == appCatEntry.getEntryID())
 				{
 					applCatID = liteAppCat.getApplianceCategoryID();   //Set this here so if we don't find the correct text, we still get a valid applCatID
@@ -668,7 +666,7 @@ public class YukonToCRSFuncs
 		customerAccount.getAccountSite().getStreetAddress().setStateCode(stateCode);
 		customerAccount.getAccountSite().getStreetAddress().setZipCode(zipCode);
 		customerAccount.setEnergyCompanyID(new Integer(ecID_workOrder));
-		customerAccount = (CustomerAccount)Transaction.createTransaction(Transaction.INSERT, customerAccount).execute();
+		customerAccount = Transaction.createTransaction(Transaction.INSERT, customerAccount).execute();
 		
         DBChangeMsg dbChangeMessage = new DBChangeMsg(
 			customerAccount.getCustomerAccount().getAccountID().intValue(),
@@ -713,7 +711,7 @@ public class YukonToCRSFuncs
 			crsNotif.setNotification(crsContactPhone);
 			contact.getContactNotifVect().add(crsNotif);
 		}
-		contact = (com.cannontech.database.data.customer.Contact)Transaction.createTransaction(Transaction.INSERT, contact).execute();
+		contact = Transaction.createTransaction(Transaction.INSERT, contact).execute();
         DBChangeMsg dbChangeMessage = new DBChangeMsg(
 			contact.getContact().getContactID().intValue(),
 			DBChangeMsg.CHANGE_CONTACT_DB,
@@ -786,14 +784,14 @@ public class YukonToCRSFuncs
     		accountSite.getAccountSite().setCustAtHome(presenceReq.toString());
     		isChanged = true;
     	}
-    	if (StringUtils.isNotBlank(siteNumber) && !siteNumber.equalsIgnoreCase(accountSite.getAccountSite().getSiteNumber())); {
+    	if (StringUtils.isNotBlank(siteNumber) && !siteNumber.equalsIgnoreCase(accountSite.getAccountSite().getSiteNumber())) {
     		accountSite.getAccountSite().setSiteNumber(siteNumber);
     		isChanged = true;
     	}
     	if( isChanged)
     	{
 	    	try {
-	    		accountSite = (AccountSite)Transaction.createTransaction(Transaction.UPDATE, accountSite).execute();
+	    		accountSite = Transaction.createTransaction(Transaction.UPDATE, accountSite).execute();
 	    		DBChangeMsg dbChangeMessage = new DBChangeMsg(
 					customerAccount.getCustomerAccount().getAccountID().intValue(),
 					DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,

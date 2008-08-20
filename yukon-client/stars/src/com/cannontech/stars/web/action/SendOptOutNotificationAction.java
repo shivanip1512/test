@@ -3,6 +3,7 @@ package com.cannontech.stars.web.action;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +18,7 @@ import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.stars.LiteInterviewQuestion;
+import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -25,6 +27,8 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.dr.optout.service.OptOutNotificationUtil;
 import com.cannontech.stars.util.OptOutEventQueue;
 import com.cannontech.stars.util.ServletUtils;
@@ -83,7 +87,6 @@ public class SendOptOutNotificationAction implements ActionBase {
 						answer.setQuestionID( Integer.parseInt(qIDStrs[i]) );
 						answer.setAnswer( answers[i] );
 						sendNotif.addStarsExitInterviewQuestion( answer );
-						int qID = Integer.parseInt( qIDStrs[i] );
 					}
 				}
 			}
@@ -227,7 +230,7 @@ public class SendOptOutNotificationAction implements ActionBase {
 			
 			boolean hasAssignedProg = false;
 			for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
-				LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
+				LiteStarsAppliance liteApp = liteAcctInfo.getAppliances().get(j);
 				if (liteApp.getInventoryID() == liteHw.getInventoryID() && liteApp.getProgramID() > 0) {
 					LiteStarsLMProgram liteProg = ProgramSignUpAction.getLMProgram( liteAcctInfo, liteApp.getProgramID() );
 					
@@ -286,11 +289,14 @@ public class SendOptOutNotificationAction implements ActionBase {
 		text.append(optOutTxt.toUpperCase()).append(LINE_SEPARATOR);
 		text.append(LINE_SEPARATOR);
 		
-		ArrayList hardwares = null;
+		StarsInventoryBaseDao starsInventoryBaseDao = 
+			YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
+		
+		List<LiteStarsLMHardware> hardwares = null;
 		if (optout.getInventoryIDCount() > 0) {
-			hardwares = new ArrayList();
+			hardwares = new ArrayList<LiteStarsLMHardware>();
 			for (int i = 0; i < optout.getInventoryIDCount(); i++)
-				hardwares.add( energyCompany.getInventory(optout.getInventoryID(i), true) );
+				hardwares.add( (LiteStarsLMHardware) starsInventoryBaseDao.getById(optout.getInventoryID(i)));
 		}
 		else
 			hardwares = ProgramOptOutAction.getAffectedHardwares( liteAcctInfo, energyCompany );
@@ -394,10 +400,14 @@ public class SendOptOutNotificationAction implements ActionBase {
 				.append(StarsUtils.formatDate( now, energyCompany.getDefaultTimeZone() )).append(LINE_SEPARATOR);
 		}
 		
-		ArrayList hardwares = null;
+		List<LiteStarsLMHardware> hardwares = null;
 		if (reenable.hasInventoryID()) {
-			hardwares = new ArrayList();
-			hardwares.add( energyCompany.getInventory(reenable.getInventoryID(), true) );
+			
+			StarsInventoryBaseDao starsInventoryBaseDao = 
+				YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
+			
+			hardwares = new ArrayList<LiteStarsLMHardware>();
+			hardwares.add( (LiteStarsLMHardware) starsInventoryBaseDao.getById(reenable.getInventoryID()));
 		}
 		else
 			hardwares = ProgramOptOutAction.getAffectedHardwares( liteAcctInfo, energyCompany );
@@ -416,7 +426,7 @@ public class SendOptOutNotificationAction implements ActionBase {
 			throw new Exception( "Property \"optout_notification_recipients\" is not set" );
 		
 		StringTokenizer st = new StringTokenizer( toStr, "," );
-		ArrayList toList = new ArrayList();
+		List<String> toList = new ArrayList<String>();
 		while (st.hasMoreTokens())
 			toList.add( st.nextToken() );
 		String[] to = new String[ toList.size() ];

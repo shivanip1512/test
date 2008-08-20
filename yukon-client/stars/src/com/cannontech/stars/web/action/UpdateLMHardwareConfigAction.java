@@ -23,6 +23,8 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.SwitchCommandQueue;
 import com.cannontech.stars.util.WebClientException;
@@ -129,8 +131,10 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
         	
 			LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
             
+			StarsInventoryBaseDao starsInventoryBaseDao = 
+				YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
 			StarsUpdateLMHardwareConfig updateHwConfig = reqOper.getStarsUpdateLMHardwareConfig();
-			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( updateHwConfig.getInventoryID(), true );
+			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getById(updateHwConfig.getInventoryID());
             
 			try {
 				StarsUpdateLMHardwareConfigResponse resp = updateLMHardwareConfig(
@@ -273,8 +277,7 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 		
 		try {
 			if (liteHw.getConfigurationID() == 0) {
-				config = (com.cannontech.database.data.stars.hardware.LMConfigurationBase)
-						Transaction.createTransaction( Transaction.INSERT, config ).execute();
+				config = Transaction.createTransaction( Transaction.INSERT, config ).execute();
 				
 				com.cannontech.database.data.stars.hardware.LMHardwareBase hw =
 						new com.cannontech.database.data.stars.hardware.LMHardwareBase();
@@ -282,8 +285,7 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 				StarsLiteFactory.setLMHardwareBase( hw, liteHw );
 				hwDB.setConfigurationID( config.getLMConfigurationBase().getConfigurationID() );
 				
-				hwDB = (com.cannontech.database.db.stars.hardware.LMHardwareBase)
-						Transaction.createTransaction( Transaction.UPDATE, hwDB ).execute();
+				hwDB = Transaction.createTransaction( Transaction.UPDATE, hwDB ).execute();
 				
 				liteHw.setConfigurationID( hwDB.getConfigurationID().intValue() );
 				LiteLMConfiguration liteCfg = new LiteLMConfiguration();
@@ -315,8 +317,7 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 					Transaction.createTransaction( Transaction.UPDATE, configDB ).execute();
 				}
 				else {
-					config = (com.cannontech.database.data.stars.hardware.LMConfigurationBase)
-							Transaction.createTransaction( Transaction.UPDATE, config ).execute();
+					config = Transaction.createTransaction( Transaction.UPDATE, config ).execute();
 				}
 				
 				StarsLiteFactory.setLiteLMConfiguration( liteHw.getLMConfiguration(), config );
@@ -374,7 +375,7 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 		boolean useHardwareAddressing = Boolean.valueOf( trackHwAddr ).booleanValue();
 		
 		for (int i = 0; i < hwsToConfig.size(); i++) {
-			LiteStarsLMHardware lHw = (LiteStarsLMHardware) hwsToConfig.get(i);
+			LiteStarsLMHardware lHw = hwsToConfig.get(i);
 			
 			if (!updateHwConfig.getSaveConfigOnly()) {
 				boolean toConfig = true;
@@ -405,7 +406,7 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 		String logMsg = "Serial #:" + liteHw.getManufacturerSerialNumber();
 		if (!disabled) {
 			for (int i = 0; i < hwsToConfig.size(); i++) {
-				LiteStarsLMHardware lHw = (LiteStarsLMHardware) hwsToConfig.get(i);
+				LiteStarsLMHardware lHw = hwsToConfig.get(i);
 				if (!lHw.equals( liteHw ))
 					logMsg += "," + lHw.getManufacturerSerialNumber();
 			}
@@ -437,7 +438,7 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 	
 	public static boolean isToConfig(LiteStarsLMHardware liteHw, LiteStarsCustAccountInformation liteAcctInfo) {
 		for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
-			LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
+			LiteStarsAppliance liteApp = liteAcctInfo.getAppliances().get(j);
 			if (liteApp.getInventoryID() == liteHw.getInventoryID())
 				return true;
 		}
@@ -446,7 +447,7 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 	}
 	
 	public static void saveSwitchCommand(LiteStarsLMHardware liteHw, String commandType,
-		LiteStarsEnergyCompany energyCompany) throws WebClientException
+		LiteStarsEnergyCompany energyCompany)
 	{
 		SwitchCommandQueue.SwitchCommand cmd = new SwitchCommandQueue.SwitchCommand();
 		cmd.setEnergyCompanyID( energyCompany.getLiteID() );

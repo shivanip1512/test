@@ -1421,10 +1421,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
     }
     
     public synchronized LiteInventoryBase getInventory(int inventoryID, boolean autoLoad) {
-        LiteInventoryBase liteInv = getInventoryBrief(inventoryID, autoLoad);
-        
-        if (liteInv != null && !liteInv.isExtended())
-            StarsLiteFactory.extendLiteInventoryBase( liteInv, this );
+    	LiteInventoryBase liteInv = starsInventoryBaseDao.getById(inventoryID);
         
         return liteInv;
     }
@@ -2218,10 +2215,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
     }
     
     public void updateThermostatSettings(LiteStarsCustAccountInformation liteAcctInfo) {
-        for (int i = 0; i < liteAcctInfo.getInventories().size(); i++) {
+    	for (int i = 0; i < liteAcctInfo.getInventories().size(); i++) {
             int invID = liteAcctInfo.getInventories().get(i).intValue();
-            
-            LiteInventoryBase liteInv = getInventory( invID, true );
+
+            LiteInventoryBase liteInv = starsInventoryBaseDao.getById(invID);
             if (!(liteInv instanceof LiteStarsLMHardware)) continue;
             
             LiteStarsLMHardware liteHw = (LiteStarsLMHardware) liteInv;

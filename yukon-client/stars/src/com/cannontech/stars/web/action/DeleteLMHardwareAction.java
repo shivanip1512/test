@@ -18,6 +18,8 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
@@ -93,7 +95,9 @@ public class DeleteLMHardwareAction implements ActionBase {
 			LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
         	
 			StarsDeleteLMHardware delHw = reqOper.getStarsDeleteLMHardware();
-			LiteInventoryBase liteInv = energyCompany.getInventory( delHw.getInventoryID(), true );
+			StarsInventoryBaseDao starsInventoryBaseDao = 
+				YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
+			LiteInventoryBase liteInv = starsInventoryBaseDao.getById(delHw.getInventoryID());
 			
 			if (liteInv.getAccountID() == 0) {
 				respOper.setStarsFailure( StarsFactory.newStarsFailure(
@@ -177,7 +181,9 @@ public class DeleteLMHardwareAction implements ActionBase {
 		throws WebClientException
 	{
 		try {
-			LiteInventoryBase liteInv = energyCompany.getInventory( deleteHw.getInventoryID(), true );
+			StarsInventoryBaseDao starsInventoryBaseDao = 
+				YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
+			LiteInventoryBase liteInv = starsInventoryBaseDao.getById(deleteHw.getInventoryID());
         	
 			if (deleteHw.getDeleteFromInventory()) {
 				InventoryManagerUtil.deleteInventory( liteInv, energyCompany, deleteHw.getDeleteFromYukon() );
@@ -202,8 +208,7 @@ public class DeleteLMHardwareAction implements ActionBase {
 				eventDB.setInventoryID( new Integer(liteInv.getInventoryID()) );
 				event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
 				
-				event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
-						Transaction.createTransaction( Transaction.INSERT, event ).execute();
+				event = Transaction.createTransaction( Transaction.INSERT, event ).execute();
 				
 				if (liteInv instanceof LiteStarsLMHardware)
 					com.cannontech.database.data.stars.hardware.LMHardwareBase.clearLMHardware( liteInv.getInventoryID() );

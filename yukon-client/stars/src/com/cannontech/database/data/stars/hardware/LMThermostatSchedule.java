@@ -8,6 +8,7 @@ package com.cannontech.database.data.stars.hardware;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
@@ -24,7 +25,7 @@ public class LMThermostatSchedule extends DBPersistent {
 	
 	private com.cannontech.database.db.stars.hardware.LMThermostatSchedule lmThermostatSchedule = null;
 	
-	private ArrayList thermostatSeasons = null;	// List of com.cannontech.database.data.stars.hardware.LMThermostatSeason
+	private List<LMThermostatSeason> thermostatSeasons = null;	// List of com.cannontech.database.data.stars.hardware.LMThermostatSeason
 	
 	public void setScheduleID(Integer scheduleID) {
 		getLmThermostatSchedule().setScheduleID( scheduleID );
@@ -34,7 +35,7 @@ public class LMThermostatSchedule extends DBPersistent {
 		super.setDbConnection( conn );
 		getLmThermostatSchedule().setDbConnection( conn );
 		for (int i = 0; i < getThermostatSeasons().size(); i++)
-			((LMThermostatSeason) getThermostatSeasons().get(i)).setDbConnection( conn );
+			getThermostatSeasons().get(i).setDbConnection( conn );
 	}
 
 	/* (non-Javadoc)
@@ -44,7 +45,7 @@ public class LMThermostatSchedule extends DBPersistent {
 		getLmThermostatSchedule().add();
 		
 		for (int i = 0; i < getThermostatSeasons().size(); i++) {
-			LMThermostatSeason season = (LMThermostatSeason) getThermostatSeasons().get(i);
+			LMThermostatSeason season = getThermostatSeasons().get(i);
 			season.getLMThermostatSeason().setScheduleID( getLmThermostatSchedule().getScheduleID() );
 			season.add();
 		}
@@ -86,12 +87,12 @@ public class LMThermostatSchedule extends DBPersistent {
 		
 		com.cannontech.database.db.stars.hardware.LMThermostatSeason[] seasons =
 				com.cannontech.database.db.stars.hardware.LMThermostatSeason.getAllLMThermostatSeasons( getLmThermostatSchedule().getScheduleID().intValue() );
-		ArrayList newSeasons = new ArrayList( getThermostatSeasons() );
+		List<LMThermostatSeason> newSeasons = new ArrayList<LMThermostatSeason>( getThermostatSeasons() );
 		
 		for (int i = 0; i < seasons.length; i++) {
 			LMThermostatSeason newSeason = null;
 			for (int j = 0; j < newSeasons.size(); j++) {
-				LMThermostatSeason season = (LMThermostatSeason) newSeasons.get(j);
+				LMThermostatSeason season = newSeasons.get(j);
 				if (season.getLMThermostatSeason().getSeasonID().equals( seasons[i].getSeasonID() )) {
 					newSeason = season;
 					newSeasons.remove(j);
@@ -117,7 +118,7 @@ public class LMThermostatSchedule extends DBPersistent {
 		
 		// The remaining new seasons don't have a corresponding existing season, so add them
 		for (int i = 0; i < newSeasons.size(); i++) {
-			LMThermostatSeason season = (LMThermostatSeason) newSeasons.get(i);
+			LMThermostatSeason season = newSeasons.get(i);
 			season.add();
 		}
 	}
@@ -173,16 +174,16 @@ public class LMThermostatSchedule extends DBPersistent {
 	/**
 	 * @return
 	 */
-	public ArrayList getThermostatSeasons() {
+	public List<LMThermostatSeason> getThermostatSeasons() {
 		if (thermostatSeasons == null)
-			thermostatSeasons = new ArrayList();
+			thermostatSeasons = new ArrayList<LMThermostatSeason>();
 		return thermostatSeasons;
 	}
 
 	/**
 	 * @param list
 	 */
-	public void setThermostatSeasons(ArrayList list) {
+	public void setThermostatSeasons(List<LMThermostatSeason> list) {
 		thermostatSeasons = list;
 	}
 

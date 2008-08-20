@@ -879,16 +879,12 @@ public class ImportManagerUtil {
 		LiteStarsEnergyCompany energyCompany, ImportProblem problem) throws Exception
 	{
 		// Check if the hardware to be deleted exists
-		LiteStarsLMHardware liteHw = null;
-		for (int i = 0; i < liteAcctInfo.getInventories().size(); i++) {
-			int invID = liteAcctInfo.getInventories().get(i).intValue();
-			LiteStarsLMHardware hardware = (LiteStarsLMHardware) energyCompany.getInventory(invID, true);
-			
-			if (hardware.getManufacturerSerialNumber().equals( fields[IDX_SERIAL_NO] )) {
-				liteHw = hardware;
-				break;
-			}
-		}
+		
+		StarsSearchDao starsSearchDao = YukonSpringHook.getBean("starsSearchDao", StarsSearchDao.class); 
+		
+		String serialNumber = fields[IDX_SERIAL_NO];
+		LiteInventoryBase liteHw = 
+			starsSearchDao.searchLMHardwareBySerialNumber(serialNumber, energyCompany);
 		
 		if (liteHw == null)
 			throw new WebClientException("Hardware with serial #" + fields[IDX_SERIAL_NO] + " doesn't exist");

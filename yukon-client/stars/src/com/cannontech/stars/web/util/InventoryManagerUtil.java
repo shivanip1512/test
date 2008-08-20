@@ -54,6 +54,7 @@ import com.cannontech.device.range.DeviceAddressRange;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.EventUtils;
@@ -281,8 +282,11 @@ public class InventoryManagerUtil {
 	
 	public static void sendSwitchCommand(SwitchCommandQueue.SwitchCommand cmd) throws WebClientException 
     {
+		StarsInventoryBaseDao starsInventoryBaseDao = 
+			YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class); 
+
 		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( cmd.getEnergyCompanyID() );
-		LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory(cmd.getInventoryID(), true);
+		LiteStarsLMHardware liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getById(cmd.getInventoryID());
         boolean writeToFile = false;
         String batchProcessType = DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.BATCHED_SWITCH_COMMAND_TOGGLE );
         if(batchProcessType != null)

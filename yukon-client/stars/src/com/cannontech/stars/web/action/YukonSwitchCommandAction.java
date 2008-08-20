@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.TimerTask;
 
 import javax.servlet.http.HttpServletRequest;
@@ -33,6 +34,7 @@ import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.db.stars.hardware.LMHardwareConfiguration;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
@@ -148,10 +150,13 @@ public class YukonSwitchCommandAction implements ActionBase {
 				LiteStarsLMHardware liteHw = null;
 				String action = null;
                 SwitchCommandQueue.SwitchCommand cmd = new SwitchCommandQueue.SwitchCommand();
-                				
+                		
+                StarsInventoryBaseDao starsInventoryBaseDao = 
+        			YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
+                
 				if (command.getStarsDisableService() != null) {
 					int invID = command.getStarsDisableService().getInventoryID();
-					liteHw = (LiteStarsLMHardware) energyCompany.getInventory( invID, true );
+					liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getById(invID);
 					if(VersionTools.staticLoadGroupMappingExists()) {
                         cmd.setEnergyCompanyID( energyCompany.getLiteID() );
                         cmd.setAccountID( liteHw.getAccountID() );
@@ -165,7 +170,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 				}
 				else if (command.getStarsEnableService() != null) {
 					int invID = command.getStarsEnableService().getInventoryID();
-					liteHw = (LiteStarsLMHardware) energyCompany.getInventory( invID, true );
+					liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getById(invID);
                     if(VersionTools.staticLoadGroupMappingExists())
                     {
                         cmd.setEnergyCompanyID( energyCompany.getLiteID() );
@@ -181,7 +186,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 				}
 				else if (command.getStarsConfig() != null) {
 					int invID = command.getStarsConfig().getInventoryID();
-					liteHw = (LiteStarsLMHardware) energyCompany.getInventory( invID, true );
+					liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getById(invID);
 					sendConfigCommand( energyCompany, liteHw, true, null );
 					action = ActivityLogActions.HARDWARE_CONFIGURATION_ACTION;
 				}
@@ -267,7 +272,6 @@ public class YukonSwitchCommandAction implements ActionBase {
         
 		Integer hwEventEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID() );
 		Integer termEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION).getEntryID() );
-		java.util.Date now = new java.util.Date();
 		
         YukonUserDao yukonUserDao = DaoFactory.getYukonUserDao();
         LiteYukonUser user = yukonUserDao.getLiteYukonUser(energyCompany.getUserID());
@@ -342,8 +346,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 			eventBase.setEventDateTime( new Date() );
 			event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
 			
-			event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
-					Transaction.createTransaction( Transaction.INSERT, event ).execute();
+			event = Transaction.createTransaction( Transaction.INSERT, event ).execute();
 			
 			liteHw.updateDeviceStatus();
 		}
@@ -418,7 +421,6 @@ public class YukonSwitchCommandAction implements ActionBase {
 		// Add "Activation Completed" to hardware events
 		Integer hwEventEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID() );
 		Integer actCompEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED).getEntryID() );
-		java.util.Date now = new java.util.Date();
 		
 		try {
 			com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
@@ -431,8 +433,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 			eventBase.setEventDateTime( new Date() );
 			event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
 			
-			event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
-					Transaction.createTransaction( Transaction.INSERT, event ).execute();
+			event = Transaction.createTransaction( Transaction.INSERT, event ).execute();
 			
 			liteHw.updateDeviceStatus();
 		}
@@ -452,7 +453,6 @@ public class YukonSwitchCommandAction implements ActionBase {
         
 		Integer invID = new Integer( liteHw.getInventoryID() );
 		Integer hwEventEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID() );
-		Integer actCompEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED).getEntryID() );
 		Integer configEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_CONFIG).getEntryID() );
 		java.util.Date now = new java.util.Date();
         
@@ -538,8 +538,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 			eventBase.setEventDateTime( now );
 			event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
 			
-			event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
-					Transaction.createTransaction( Transaction.INSERT, event ).execute();
+			event = Transaction.createTransaction( Transaction.INSERT, event ).execute();
 			
 			liteHw.updateDeviceStatus();
 		}
@@ -552,7 +551,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 	private static String[] getConfigCommands(LiteStarsLMHardware liteHw, LiteStarsEnergyCompany energyCompany, boolean useHardwareAddressing, Integer groupID)
 		throws WebClientException
 	{
-		ArrayList commands = new ArrayList();
+		List<String> commands = new ArrayList<String>();
 		String[] coldLoads = new String[4];
 		String[] tamperDetects = new String[2];
 		
@@ -741,7 +740,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 				LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation( liteHw.getAccountID(), true );
 				for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) 
                 {
-					LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(i);
+					LiteStarsAppliance liteApp = liteAcctInfo.getAppliances().get(i);
 					if (liteApp.getInventoryID() == liteHw.getInventoryID() && liteApp.getAddressingGroupID() > 0) 
                     {
 						try
@@ -934,12 +933,6 @@ public class YukonSwitchCommandAction implements ActionBase {
     {
         if (liteHw.getManufacturerSerialNumber().length() == 0)
             throw new WebClientException( "The manufacturer serial # of the hardware cannot be empty" );
-        
-        Integer invID = new Integer( liteHw.getInventoryID() );
-        Integer hwEventEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID() );
-        Integer actCompEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED).getEntryID() );
-        Integer configEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_CONFIG).getEntryID() );
-        java.util.Date now = new java.util.Date();
         
         // Parameter options corresponds to the infoString field of the switch command queue.
         // It takes the format of "GroupID:XX;RouteID:XX"

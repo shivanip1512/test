@@ -1,6 +1,8 @@
 package com.cannontech.stars.web.action;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -19,6 +21,8 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -97,12 +101,14 @@ public class DeleteCustAccountAction implements ActionBase {
 			StarsDeleteCustomerAccount delAccount = SOAPUtil.parseSOAPMsgForOperation(reqMsg).getStarsDeleteCustomerAccount();
 			if (delAccount.getDisableReceivers()) {
 				// Disable all attached receivers enrolled in any program
-				ArrayList hwToDisable = new ArrayList();
+				List<LiteStarsLMHardware> hwToDisable = new ArrayList<LiteStarsLMHardware>();
 				
+				StarsInventoryBaseDao starsInventoryBaseDao = 
+					YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
 				for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) {
-					LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(i);
+					LiteStarsAppliance liteApp = liteAcctInfo.getAppliances().get(i);
 					if (liteApp.getProgramID() > 0 && liteApp.getInventoryID() > 0) {
-						LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( liteApp.getInventoryID(), true );
+						LiteStarsLMHardware liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getById(liteApp.getInventoryID());
 						if (!hwToDisable.contains( liteHw )) {
 							hwToDisable.add( liteHw );
 							YukonSwitchCommandAction.sendDisableCommand( energyCompany, liteHw, null );
@@ -116,7 +122,7 @@ public class DeleteCustAccountAction implements ActionBase {
 			{
 				for (int i = 0; i < liteAcctInfo.getServiceRequestHistory().size(); i++)
 				{
-					Integer orderID = (Integer)liteAcctInfo.getServiceRequestHistory().get(i);
+					Integer orderID = liteAcctInfo.getServiceRequestHistory().get(i);
 					LiteWorkOrderBase liteOrder = energyCompany.getWorkOrderBase(orderID.intValue(), true);
 					woBean.getWorkOrderList().remove(liteOrder);
 				}
@@ -187,9 +193,9 @@ public class DeleteCustAccountAction implements ActionBase {
 		Transaction.createTransaction( Transaction.DELETE, contact ).execute();
 		ServerUtils.handleDBChange( primContact, DBChangeMsg.CHANGE_TYPE_DELETE );
 		
-		java.util.Vector contacts = liteAcctInfo.getCustomer().getAdditionalContacts();
+		Vector<LiteContact> contacts = liteAcctInfo.getCustomer().getAdditionalContacts();
 		for (int i = 0; i < contacts.size(); i++) {
-			LiteContact liteContact = (LiteContact) contacts.get(i);
+			LiteContact liteContact = contacts.get(i);
 			contact = (com.cannontech.database.data.customer.Contact) StarsLiteFactory.createDBPersistent( liteContact );
 			Transaction.createTransaction( Transaction.DELETE, contact ).execute();
 			ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_DELETE );

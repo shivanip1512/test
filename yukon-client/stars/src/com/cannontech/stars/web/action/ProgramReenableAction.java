@@ -15,6 +15,7 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteLMHardwareEvent;
 import com.cannontech.database.data.lite.stars.LiteLMProgramEvent;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
@@ -26,6 +27,7 @@ import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.dr.event.dao.LMHardwareEventDao;
 import com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationService;
 import com.cannontech.stars.util.InventoryUtils;
@@ -142,10 +144,13 @@ public class ProgramReenableAction implements ActionBase {
 			}
 			else {
 				// Get all the hardwares to be reenabled
-				ArrayList hardwares = null;
+				List<LiteStarsLMHardware> hardwares = null;
 				if (reenable.hasInventoryID()) {
-					hardwares = new ArrayList();
-					hardwares.add( energyCompany.getInventory(reenable.getInventoryID(), true) );
+					hardwares = new ArrayList<LiteStarsLMHardware>();
+					StarsInventoryBaseDao starsInventoryBaseDao = 
+				    	YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
+					LiteInventoryBase inventoryBase = starsInventoryBaseDao.getById(reenable.getInventoryID());
+					hardwares.add( (LiteStarsLMHardware) inventoryBase );
 				}
 				else {
 					hardwares = ProgramOptOutAction.getAffectedHardwares( liteAcctInfo, energyCompany );
@@ -157,7 +162,7 @@ public class ProgramReenableAction implements ActionBase {
 				}
 				
 				for (int i = 0; i < hardwares.size(); i++) {
-					LiteStarsLMHardware liteHw = (LiteStarsLMHardware) hardwares.get(i);
+					LiteStarsLMHardware liteHw = hardwares.get(i);
 					
 					String cmd = getReenableCommand( liteHw, energyCompany );
 					int routeID = liteHw.getRouteID();
@@ -179,9 +184,9 @@ public class ProgramReenableAction implements ActionBase {
 				resp.setStarsLMProgramHistory( StarsLiteFactory.createStarsLMProgramHistory(liteAcctInfo, energyCompany) );
 				resp.setDescription( ServletUtil.capitalize(energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_REENABLE)) + " command has been sent out successfully." );
 				
-				String logMsg = "Serial #:" + ((LiteStarsLMHardware) hardwares.get(0)).getManufacturerSerialNumber();
+				String logMsg = "Serial #:" + hardwares.get(0).getManufacturerSerialNumber();
 				for (int i = 1; i < hardwares.size(); i++)
-					logMsg += "," + ((LiteStarsLMHardware) hardwares.get(i)).getManufacturerSerialNumber();
+					logMsg += "," + hardwares.get(i).getManufacturerSerialNumber();
 				ActivityLogger.logEvent(user.getUserID(), liteAcctInfo.getAccountID(), energyCompany.getLiteID(), liteAcctInfo.getCustomer().getCustomerID(),
 						ActivityLogActions.PROGRAM_REENABLE_ACTION, logMsg );
 			}
@@ -259,7 +264,6 @@ public class ProgramReenableAction implements ActionBase {
 	{
 		Integer hwEventEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID() );
 		Integer progEventEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMPROGRAM).getEntryID() );
-		Integer futureActEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_FUTURE_ACTIVATION).getEntryID() );
 		Integer actCompEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED).getEntryID() );
         
 		Date now = new Date();	// Current date, all customer events will use exactly the same date
@@ -276,8 +280,7 @@ public class ProgramReenableAction implements ActionBase {
 		hwEvent.getLMCustomerEventBase().setEventDateTime( now );
 		hwEvent.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
 		
-		hwEvent = (com.cannontech.database.data.stars.event.LMHardwareEvent)
-				Transaction.createTransaction( Transaction.INSERT, hwEvent ).execute();
+		hwEvent = Transaction.createTransaction( Transaction.INSERT, hwEvent ).execute();
 		
 		liteHw.updateDeviceStatus();
 		
@@ -320,8 +323,7 @@ public class ProgramReenableAction implements ActionBase {
 				event.getLMCustomerEventBase().setEventDateTime( now );
 				event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
 				
-				event = (com.cannontech.database.data.stars.event.LMProgramEvent)
-						Transaction.createTransaction( Transaction.INSERT, event ).execute();
+				event = Transaction.createTransaction( Transaction.INSERT, event ).execute();
 	    		
 				// Update lite objects and create response
 				LiteLMProgramEvent liteEvent = (LiteLMProgramEvent) StarsLiteFactory.createLite( event );
@@ -404,16 +406,19 @@ public class ProgramReenableAction implements ActionBase {
 	public static void handleReenableEvent(OptOutEventQueue.OptOutEvent event, LiteStarsEnergyCompany energyCompany, LiteYukonUser currentUser) {
 		LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation( event.getAccountID(), true );
 		
-		ArrayList hardwares = new ArrayList();
-		if (event.getInventoryID() != 0)
-			hardwares.add( energyCompany.getInventory(event.getInventoryID(), true) );
-		else
+		List<LiteStarsLMHardware> hardwares = new ArrayList<LiteStarsLMHardware>();
+		if (event.getInventoryID() != 0) {
+			StarsInventoryBaseDao starsInventoryBaseDao = 
+		    	YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
+			LiteInventoryBase inventoryBase = starsInventoryBaseDao.getById(event.getInventoryID());
+			hardwares.add( (LiteStarsLMHardware) inventoryBase );
+		} else
 			hardwares = ProgramOptOutAction.getAffectedHardwares( liteAcctInfo, energyCompany );
 		
 		StarsProgramReenableResponse resp = new StarsProgramReenableResponse();
 		
 		for (int i = 0; i < hardwares.size(); i++) {
-			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) hardwares.get(i);
+			LiteStarsLMHardware liteHw = hardwares.get(i);
 			try {
 				resp.addStarsLMHardwareHistory( processReenable(liteHw, liteAcctInfo, energyCompany, currentUser) );
 			}
@@ -424,8 +429,8 @@ public class ProgramReenableAction implements ActionBase {
 		
 		resp.setStarsLMProgramHistory( StarsLiteFactory.createStarsLMProgramHistory(liteAcctInfo, energyCompany) );
 		
-		StarsCustAccountInformation starsAcctInfo = (StarsCustAccountInformation)
-				energyCompany.getStarsCustAccountInformation( liteAcctInfo.getAccountID() );
+		StarsCustAccountInformation starsAcctInfo = 
+			energyCompany.getStarsCustAccountInformation( liteAcctInfo.getAccountID() );
 		if (starsAcctInfo != null)
 			parseResponse( resp, starsAcctInfo, energyCompany );
 	}

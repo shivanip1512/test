@@ -2,6 +2,7 @@ package com.cannontech.database.db.stars.integration;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlStatement;
@@ -148,9 +149,9 @@ public void update() throws java.sql.SQLException
     update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 }
 
-public static ArrayList getAllCurrentFailurePTJEntries()
+public static List<FailureCRSToSAM_PTJ> getAllCurrentFailurePTJEntries()
 {
-    ArrayList changes = new ArrayList();
+    List<FailureCRSToSAM_PTJ> changes = new ArrayList<FailureCRSToSAM_PTJ>();
     
     SqlStatement stmt = new SqlStatement("SELECT * FROM " + TABLE_NAME, CtiUtilities.getDatabaseAlias());
     

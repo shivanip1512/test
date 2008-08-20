@@ -3,6 +3,7 @@ package com.cannontech.stars.web.action;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,6 +27,8 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.db.stars.hardware.LMThermostatSeason;
 import com.cannontech.database.db.stars.hardware.LMThermostatSeasonEntry;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsMsgUtils;
@@ -135,8 +138,11 @@ public class UpdateThermostatScheduleAction implements ActionBase {
     		
 			boolean hasTwoWay = false;
     		
+			StarsInventoryBaseDao starsInventoryBaseDao = 
+				YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
+			
 			for (int i = 0; i < invIDs.length; i++) {
-				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( invIDs[i], true );
+				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getById(invIDs[i]);
 				
 				if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL) {
 					String errorMsg = null;
@@ -167,11 +173,8 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 				LiteLMThermostatSchedule dftSchedule = energyCompany.getDefaultThermostatSchedule(hwTypeDefID);
 				LiteLMThermostatSchedule liteSchedule = liteHw.getThermostatSettings().getThermostatSchedule();
 				
-				int mondayID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_TOW_MONDAY ).getEntryID();
-				int weekdayID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_TOW_WEEKDAY ).getEntryID();
-				
 				// Send out commands to program the thermostat
-				ArrayList cmdList = new ArrayList();
+				List<String> cmdList = new ArrayList<String>();
 				
 				for (int j = 0; j < updateSched.getStarsThermostatSeasonCount(); j++) {
 					StarsThermostatSeason starsSeason = updateSched.getStarsThermostatSeason(j);
@@ -180,14 +183,14 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 						StarsThermostatSchedule starsSched = starsSeason.getStarsThermostatSchedule(k);
 						int towID = StarsMsgUtils.getThermSeasonEntryTOWID( starsSched.getDay(), energyCompany );
 						
-						ArrayList oldSched = new ArrayList();
+						List<LiteLMThermostatSeasonEntry> oldSched = new ArrayList<LiteLMThermostatSeasonEntry>();
 						for (int l = 0; l < liteSchedule.getThermostatSeasons().size(); l++) {
-							LiteLMThermostatSeason liteSeason = (LiteLMThermostatSeason) liteSchedule.getThermostatSeasons().get(l);
+							LiteLMThermostatSeason liteSeason = liteSchedule.getThermostatSeasons().get(l);
 							if (liteSeason.getWebConfigurationID() == StarsMsgUtils.YUK_WEB_CONFIG_ID_COOL  && starsSeason.getMode().getType() == StarsThermoModeSettings.COOL_TYPE ||
 								liteSeason.getWebConfigurationID() == StarsMsgUtils.YUK_WEB_CONFIG_ID_HEAT  && starsSeason.getMode().getType() == StarsThermoModeSettings.HEAT_TYPE)
 							{
 								for (int m = 0; m < liteSeason.getSeasonEntries().size(); m++) {
-									LiteLMThermostatSeasonEntry liteEntry = (LiteLMThermostatSeasonEntry) liteSeason.getSeasonEntries().get(m);
+									LiteLMThermostatSeasonEntry liteEntry = liteSeason.getSeasonEntries().get(m);
 									if (liteEntry.getTimeOfWeekID() == towID)
 										oldSched.add( liteEntry );
 								}
@@ -195,14 +198,14 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 							}
 						}
 						
-						ArrayList dftOtherSched = new ArrayList();
+						List<LiteLMThermostatSeasonEntry> dftOtherSched = new ArrayList<LiteLMThermostatSeasonEntry>();
 						for (int l = 0; l < dftSchedule.getThermostatSeasons().size(); l++) {
-							LiteLMThermostatSeason liteSeason = (LiteLMThermostatSeason) dftSchedule.getThermostatSeasons().get(l);
+							LiteLMThermostatSeason liteSeason = dftSchedule.getThermostatSeasons().get(l);
 							if (liteSeason.getWebConfigurationID() == StarsMsgUtils.YUK_WEB_CONFIG_ID_COOL  && starsSeason.getMode().getType() == StarsThermoModeSettings.HEAT_TYPE ||
 								liteSeason.getWebConfigurationID() == StarsMsgUtils.YUK_WEB_CONFIG_ID_HEAT  && starsSeason.getMode().getType() == StarsThermoModeSettings.COOL_TYPE)
 							{
 								for (int m = 0; m < liteSeason.getSeasonEntries().size(); m++) {
-									LiteLMThermostatSeasonEntry liteEntry = (LiteLMThermostatSeasonEntry) liteSeason.getSeasonEntries().get(m);
+									LiteLMThermostatSeasonEntry liteEntry = liteSeason.getSeasonEntries().get(m);
 									if (liteEntry.getTimeOfWeekID() == towID)
 										dftOtherSched.add( liteEntry );
 								}
@@ -244,10 +247,10 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 						
 						boolean oldSkip1 = false, oldSkip2 = false, oldSkip3 = false, oldSkip4 = false;
 						if (oldSched.size() == 4) {
-							oldSkip1 = ((LiteLMThermostatSeasonEntry) oldSched.get(0)).getTemperature() == -1;
-							oldSkip2 = ((LiteLMThermostatSeasonEntry) oldSched.get(1)).getTemperature() == -1;
-							oldSkip3 = ((LiteLMThermostatSeasonEntry) oldSched.get(2)).getTemperature() == -1;
-							oldSkip4 = ((LiteLMThermostatSeasonEntry) oldSched.get(3)).getTemperature() == -1;
+							oldSkip1 = oldSched.get(0).getTemperature() == -1;
+							oldSkip2 = oldSched.get(1).getTemperature() == -1;
+							oldSkip3 = oldSched.get(2).getTemperature() == -1;
+							oldSkip4 = oldSched.get(3).getTemperature() == -1;
 						}
 						
 						String time1 = (skip1)? "HH:MM" : starsSched.getTime1().toString().substring(0, 5);
@@ -260,37 +263,37 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 						if (isCool) {
 							if (!skip1) {
 								temp1C = String.valueOf( starsSched.getTemperature1() );
-								if (oldSkip1) temp1H = String.valueOf( ((LiteLMThermostatSeasonEntry) dftOtherSched.get(0)).getTemperature() );
+								if (oldSkip1) temp1H = String.valueOf( dftOtherSched.get(0).getTemperature() );
 							}
 							if (!skip2) {
 								temp2C = String.valueOf( starsSched.getTemperature2() );
-								if (oldSkip2) temp2H = String.valueOf( ((LiteLMThermostatSeasonEntry) dftOtherSched.get(1)).getTemperature() );
+								if (oldSkip2) temp2H = String.valueOf( dftOtherSched.get(1).getTemperature() );
 							}
 							if (!skip3) {
 								temp3C = String.valueOf( starsSched.getTemperature3() );
-								if (oldSkip3) temp3H = String.valueOf( ((LiteLMThermostatSeasonEntry) dftOtherSched.get(2)).getTemperature() );
+								if (oldSkip3) temp3H = String.valueOf( dftOtherSched.get(2).getTemperature() );
 							}
 							if (!skip4) {
 								temp4C = String.valueOf( starsSched.getTemperature4() );
-								if (oldSkip4) temp4H = String.valueOf( ((LiteLMThermostatSeasonEntry) dftOtherSched.get(3)).getTemperature() );
+								if (oldSkip4) temp4H = String.valueOf( dftOtherSched.get(3).getTemperature() );
 							}
 						}
 						else {
 							if (!skip1) {
 								temp1H = String.valueOf( starsSched.getTemperature1() );
-								if (oldSkip1) temp1C = String.valueOf( ((LiteLMThermostatSeasonEntry) dftOtherSched.get(0)).getTemperature() );
+								if (oldSkip1) temp1C = String.valueOf( dftOtherSched.get(0).getTemperature() );
 							}
 							if (!skip2) {
 								temp2H = String.valueOf( starsSched.getTemperature2() );
-								if (oldSkip2) temp2C = String.valueOf( ((LiteLMThermostatSeasonEntry) dftOtherSched.get(1)).getTemperature() );
+								if (oldSkip2) temp2C = String.valueOf( dftOtherSched.get(1).getTemperature() );
 							}
 							if (!skip3) {
 								temp3H = String.valueOf( starsSched.getTemperature3() );
-								if (oldSkip3) temp3C = String.valueOf( ((LiteLMThermostatSeasonEntry) dftOtherSched.get(2)).getTemperature() );
+								if (oldSkip3) temp3C = String.valueOf( dftOtherSched.get(2).getTemperature() );
 							}
 							if (!skip4) {
 								temp4H = String.valueOf( starsSched.getTemperature4() );
-								if (oldSkip4) temp4C = String.valueOf( ((LiteLMThermostatSeasonEntry) dftOtherSched.get(3)).getTemperature() );
+								if (oldSkip4) temp4C = String.valueOf( dftOtherSched.get(3).getTemperature() );
 							}
 						}
 						
@@ -338,7 +341,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 				if (routeID == 0) routeID = energyCompany.getDefaultRouteID();
 				
 				for (int j = 0; j < cmdList.size(); j++)
-					ServerUtils.sendSerialCommand( (String)cmdList.get(j), routeID, user.getYukonUser() );
+					ServerUtils.sendSerialCommand( cmdList.get(j), routeID, user.getYukonUser() );
 				
 				// Add "programming" to the hardware events
 				com.cannontech.database.data.stars.event.LMHardwareEvent event = new com.cannontech.database.data.stars.event.LMHardwareEvent();
@@ -353,8 +356,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 				eventBase.setEventDateTime( new Date() );
     			
 				event.setEnergyCompanyID( new Integer(energyCompanyID) );
-				event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
-						Transaction.createTransaction( Transaction.INSERT, event ).execute();
+				event = Transaction.createTransaction( Transaction.INSERT, event ).execute();
     			
 				// The response message only need to be set once
 				if (resp == null) {
@@ -617,7 +619,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 				LiteLMThermostatSeason liteSeason = null;
 				LiteLMThermostatSeason liteSeason2 = null;
 				for (int j = 0; j < liteSchedule.getThermostatSeasons().size(); j++) {
-					LiteLMThermostatSeason lSeason = (LiteLMThermostatSeason) liteSchedule.getThermostatSeasons().get(j);
+					LiteLMThermostatSeason lSeason = liteSchedule.getThermostatSeasons().get(j);
 					if (lSeason.getWebConfigurationID() == webConfigID)
 						liteSeason = lSeason;
 					else
@@ -627,7 +629,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 				LiteLMThermostatSeason liteDftSeason = null;
 				LiteLMThermostatSeason liteDftSeason2 = null;
 				for (int j = 0; j < liteDftSchedule.getThermostatSeasons().size(); j++) {
-					LiteLMThermostatSeason lSeason = (LiteLMThermostatSeason) liteDftSchedule.getThermostatSeasons().get(j);
+					LiteLMThermostatSeason lSeason = liteDftSchedule.getThermostatSeasons().get(j);
 					if (lSeason.getWebConfigurationID() == webConfigID)
 						liteDftSeason = lSeason;
 					else
@@ -743,28 +745,28 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 					};
 					
 					for (int k = 0; k < towIDs.length; k++) {
-						ArrayList liteEntries = new ArrayList();
+						List<LiteLMThermostatSeasonEntry> liteEntries = new ArrayList<LiteLMThermostatSeasonEntry>();
 						if (liteSeason.getSeasonEntries() != null) {
 							for (int l = 0; l < liteSeason.getSeasonEntries().size(); l++) {
-								LiteLMThermostatSeasonEntry liteEntry = (LiteLMThermostatSeasonEntry) liteSeason.getSeasonEntries().get(l);
+								LiteLMThermostatSeasonEntry liteEntry = liteSeason.getSeasonEntries().get(l);
 								if (liteEntry.getTimeOfWeekID() == towIDs[k])
 									liteEntries.add( liteEntry );
 							}
 						}
 						
-						ArrayList liteEntries2 = new ArrayList();
+						List<LiteLMThermostatSeasonEntry> liteEntries2 = new ArrayList<LiteLMThermostatSeasonEntry>();
 						if (liteSeason2.getSeasonEntries() != null) {
 							for (int l = 0; l < liteSeason2.getSeasonEntries().size(); l++) {
-								LiteLMThermostatSeasonEntry liteEntry = (LiteLMThermostatSeasonEntry) liteSeason2.getSeasonEntries().get(l);
+								LiteLMThermostatSeasonEntry liteEntry = liteSeason2.getSeasonEntries().get(l);
 								if (liteEntry.getTimeOfWeekID() == towIDs[k])
 									liteEntries2.add( liteEntry );
 							}
 						}
 						
-						ArrayList liteDftEntries2 = new ArrayList();
+						List<LiteLMThermostatSeasonEntry> liteDftEntries2 = new ArrayList<LiteLMThermostatSeasonEntry>();
 						if (liteDftSeason2.getSeasonEntries() != null) {
 							for (int l = 0; l < liteDftSeason2.getSeasonEntries().size(); l++) {
-								LiteLMThermostatSeasonEntry liteEntry = (LiteLMThermostatSeasonEntry) liteDftSeason2.getSeasonEntries().get(l);
+								LiteLMThermostatSeasonEntry liteEntry = liteDftSeason2.getSeasonEntries().get(l);
 								if (liteEntry.getTimeOfWeekID() == towIDs[k])
 									liteDftEntries2.add( liteEntry );
 							}
@@ -777,7 +779,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 						else if (liteEntries.size() == 4) {
 							// Update the season entries
 							for (int l = 0; l < 4; l++) {
-								LiteLMThermostatSeasonEntry liteEntry = (LiteLMThermostatSeasonEntry) liteEntries.get(l);
+								LiteLMThermostatSeasonEntry liteEntry = liteEntries.get(l);
 								liteEntry.setStartTime( times[l] );
 								liteEntry.setTemperature( temps[l] );
 								
@@ -809,7 +811,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 						else if (liteEntries2.size() == 4) {
 							// Update the season entries for the other season
 							for (int l = 0; l < 4; l++) {
-								LiteLMThermostatSeasonEntry liteEntry = (LiteLMThermostatSeasonEntry) liteEntries2.get(l);
+								LiteLMThermostatSeasonEntry liteEntry = liteEntries2.get(l);
 								liteEntry.setStartTime( times[l] );
 								if (temps[l] == -1) {
 									liteEntry.setTemperature( temps[l] );
@@ -817,7 +819,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 								else if (liteEntry.getTemperature() == -1) {
 									if (liteDftEntries2.size() != 4)
 										throw new WebClientException( "Invalid number of thermostat season entries: " + liteDftEntries2.size() + ", for season id = " + liteDftSeason2.getSeasonID() );
-									int dftTemp = ((LiteLMThermostatSeasonEntry) liteDftEntries2.get(l)).getTemperature();
+									int dftTemp = liteDftEntries2.get(l).getTemperature();
 									if (dftTemp < 0) dftTemp = 72;
 									liteEntry.setTemperature( dftTemp );
 								}
@@ -837,7 +839,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 								entry.setSeasonID( new Integer(liteSeason2.getSeasonID()) );
 								entry.setTimeOfWeekID( new Integer(towIDs[k]) );
 								entry.setStartTime( new Integer(times[l]) );
-								entry.setTemperature( new Integer(((LiteLMThermostatSeasonEntry) liteDftEntries2.get(l)).getTemperature()) );
+								entry.setTemperature( new Integer(liteDftEntries2.get(l).getTemperature()) );
 								entry.setDbConnection( conn );
 								entry.add();
 								

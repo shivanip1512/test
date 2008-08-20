@@ -23,6 +23,7 @@ import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.dr.event.dao.LMHardwareEventDao;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
@@ -128,7 +129,11 @@ public class UpdateLMHardwareAction implements ActionBase {
 				}
 			}
 			else {
-				liteInv = energyCompany.getInventory( updateHw.getInventoryID(), true );
+				
+				StarsInventoryBaseDao starsInventoryBaseDao = 
+					YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
+				
+				liteInv = starsInventoryBaseDao.getById(updateHw.getInventoryID());
 				origInvID = updateHw.getInventoryID();
 				
 				if (liteInv.getAccountID() == 0) {

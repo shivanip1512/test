@@ -2,6 +2,8 @@ package com.cannontech.database.db.stars.integration;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlStatement;
@@ -62,9 +64,9 @@ public void update() throws java.sql.SQLException
     update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 }
 
-public static ArrayList getAllCurrentPTJAdditionalMeterEntries()
+public static List<CRSToSAM_PTJAdditionalMeters> getAllCurrentPTJAdditionalMeterEntries()
 {
-    ArrayList changes = new ArrayList();
+    List<CRSToSAM_PTJAdditionalMeters> changes = new ArrayList<CRSToSAM_PTJAdditionalMeters>();
     
     SqlStatement stmt = new SqlStatement("SELECT * FROM " + TABLE_NAME, CtiUtilities.getDatabaseAlias());
     
@@ -97,10 +99,10 @@ public static ArrayList getAllCurrentPTJAdditionalMeterEntries()
  * @param ptjID_
  * @return
  */
-public static HashMap retrieveAllCurrentPTJAdditionalMeterEntriesMap()
+public static Map<Integer, List<CRSToSAM_PTJAdditionalMeters>> retrieveAllCurrentPTJAdditionalMeterEntriesMap()
 {
-	HashMap ptjToAdditionMeterMap = new HashMap();
-    ArrayList<CRSToSAM_PTJAdditionalMeters> changes = new ArrayList<CRSToSAM_PTJAdditionalMeters>();
+	Map<Integer, List<CRSToSAM_PTJAdditionalMeters>> ptjToAdditionMeterMap = new HashMap<Integer, List<CRSToSAM_PTJAdditionalMeters>>();
+    List<CRSToSAM_PTJAdditionalMeters> changes = new ArrayList<CRSToSAM_PTJAdditionalMeters>();
     
     SqlStatement stmt = new SqlStatement("SELECT * FROM " + TABLE_NAME , CtiUtilities.getDatabaseAlias());
     

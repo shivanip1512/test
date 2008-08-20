@@ -28,6 +28,8 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.serialize.ContactNotification;
 import com.cannontech.stars.xml.serialize.ControlSummary;
@@ -243,13 +245,15 @@ public class ServletUtils {
 		/*
          * GRE and similar systems
 		 */
+		
+		StarsInventoryBaseDao starsInventoryBaseDao = YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
         if (trackHwAddr != null && Boolean.valueOf(trackHwAddr).booleanValue()) {
-			ArrayList groupIDs = new ArrayList();
+			List<Integer> groupIDs = new ArrayList<Integer>();
 			
 			for (int i = 0; i < appliances.getStarsApplianceCount(); i++) {
 				StarsAppliance app = appliances.getStarsAppliance(i);
 				if (app.getProgramID() == program.getProgramID() && app.getInventoryID() > 0) {
-					LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( app.getInventoryID(), true );
+					LiteStarsLMHardware liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getById(app.getInventoryID());
 					int[] grpIDs = null;
 					if (liteHw.getLMConfiguration() != null)
 						grpIDs = LMControlHistoryUtil.getControllableGroupIDs( liteHw.getLMConfiguration(), app.getLoadNumber() );
@@ -270,7 +274,7 @@ public class ServletUtils {
             
 			for (int i = 0; i < groupIDs.size(); i++) {
 				StarsLMControlHistory ctrlHist = LMControlHistoryUtil.getStarsLMControlHistory(
-						((Integer)groupIDs.get(i)).intValue(), accountId, period, energyCompany.getDefaultTimeZone(), currentUser );
+						groupIDs.get(i).intValue(), accountId, period, energyCompany.getDefaultTimeZone(), currentUser );
 				
 				for (int j = 0, k = 0; j < ctrlHist.getControlHistoryCount(); j++) {
 					while (k < lmCtrlHist.getControlHistoryCount()
@@ -327,7 +331,7 @@ public class ServletUtils {
         return PhoneNumber.extractDigits(phoneNo);
     }
     
-    public static String formatPhoneNumberForDisplay(String phoneNo) throws WebClientException {
+    public static String formatPhoneNumberForDisplay(String phoneNo) {
         phoneNo = phoneNo.trim();
         if (phoneNo.equals("")) return "";
         
@@ -430,17 +434,17 @@ public class ServletUtils {
 	}
     
 	public static void removeTransientAttributes(HttpSession session) {
-		Enumeration attributeEnum = session.getAttributeNames();
-		ArrayList attToBeRemoved = new ArrayList();
+		@SuppressWarnings("unchecked") Enumeration<String> attributeEnum = session.getAttributeNames();
+		List<String> attToBeRemoved = new ArrayList<String>();
 		
 		while (attributeEnum.hasMoreElements()) {
-			String attName = (String) attributeEnum.nextElement();
+			String attName = attributeEnum.nextElement();
 			if (attName.startsWith( ServletUtils.TRANSIENT_ATT_LEADING ))
 				attToBeRemoved.add( attName );
 		}
 		
 		for (int i = 0; i < attToBeRemoved.size(); i++)
-			session.removeAttribute( (String)attToBeRemoved.get(i) );
+			session.removeAttribute( attToBeRemoved.get(i) );
 	}
     
 	// Return image names: large icon, small icon, saving icon, control icon, environment icon
@@ -758,7 +762,7 @@ public class ServletUtils {
     	return null;
     }
 	
-    public static FileItem getUploadFile(final List<FileItem> itemList, final String fieldName) throws WebClientException {
+    public static FileItem getUploadFile(final List<FileItem> itemList, final String fieldName) {
         for (final FileItem item : itemList) {
             if (!item.isFormField() && item.getFieldName().equals(fieldName)) {
                 if (!item.getName().equals("")) return item;

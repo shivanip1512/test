@@ -18,6 +18,7 @@ import com.cannontech.database.db.customer.CICustomerBase;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.LMProgramWebPublishingDao;
 import com.cannontech.stars.core.dao.StarsApplianceDao;
+import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryBaseDao;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsCallReport;
@@ -64,9 +65,12 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	}
 	
 	public boolean hasTwoWayThermostat(LiteStarsEnergyCompany energyCompany) {
+		
+		StarsInventoryBaseDao starsInventoryBaseDao = YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
+		
 		for (int i = 0; i < getInventories().size(); i++) {
 			int invID = getInventories().get(i).intValue();
-			LiteInventoryBase liteInv = energyCompany.getInventory( invID, true );
+			LiteInventoryBase liteInv = starsInventoryBaseDao.getById(invID);
 			
 			if (liteInv instanceof LiteStarsLMHardware &&
 				((LiteStarsLMHardware) liteInv).isTwoWayThermostat())

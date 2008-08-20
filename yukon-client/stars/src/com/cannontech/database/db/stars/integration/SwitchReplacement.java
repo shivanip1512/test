@@ -2,6 +2,7 @@ package com.cannontech.database.db.stars.integration;
 
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlStatement;
@@ -73,9 +74,9 @@ public void update() throws java.sql.SQLException
     update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 }
 
-public static ArrayList getAllSwitchReplacements()
+public static List<SwitchReplacement> getAllSwitchReplacements()
 {
-    ArrayList changes = new ArrayList();
+    List<SwitchReplacement> changes = new ArrayList<SwitchReplacement>();
     
     SqlStatement stmt = new SqlStatement("SELECT * FROM " + TABLE_NAME, CtiUtilities.getDatabaseAlias());
     

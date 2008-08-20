@@ -2,17 +2,24 @@ package com.cannontech.stars.core.service.impl;
 
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.service.StarsCacheService;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.event.model.LMCustomerEventBase;
 import com.cannontech.stars.dr.hardware.model.InventoryBase;
 
 public class StarsCacheServiceImpl implements StarsCacheService {
+	
+	private StarsInventoryBaseDao starsInventoryBaseDao;
+	
+	public void setStarsInventoryBaseDao(
+			StarsInventoryBaseDao starsInventoryBaseDao) {
+		this.starsInventoryBaseDao = starsInventoryBaseDao;
+	}
 
     public void updateInventoryCache(LiteStarsEnergyCompany energyCompany, InventoryBase inventoryBase, 
             CustomerAccount customerAccount, LMCustomerEventBase eventBase) {
-        
-        LiteInventoryBase liteInventoryBase = energyCompany.getInventory(inventoryBase.getInventoryId(), false);
+        LiteInventoryBase liteInventoryBase = starsInventoryBaseDao.getById(inventoryBase.getInventoryId());
         updateInventoryModel(inventoryBase, liteInventoryBase);
     }
     

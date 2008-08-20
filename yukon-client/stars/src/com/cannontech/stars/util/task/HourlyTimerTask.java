@@ -13,6 +13,8 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.OptOutEventQueue;
 import com.cannontech.stars.util.ServerUtils;
@@ -64,6 +66,9 @@ public class HourlyTimerTask extends StarsTimerTask {
         List<LiteStarsEnergyCompany> companies = StarsDatabaseCache.getInstance().getAllEnergyCompanies();
 		if (companies == null) return;
 		
+		StarsInventoryBaseDao starsInventoryBaseDao = 
+			YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
+		
 		Date now = new Date();
 		for (int i = 0; i < companies.size(); i++) {
 			LiteStarsEnergyCompany company = companies.get(i);
@@ -92,14 +97,14 @@ public class HourlyTimerTask extends StarsTimerTask {
                 
 				try {
 					if (dueEvents[j].getPeriod() == OptOutEventQueue.PERIOD_REENABLE) {	// This is a "reenable" event
-						ArrayList hardwares = new ArrayList();
+						List<LiteStarsLMHardware> hardwares = new ArrayList<LiteStarsLMHardware>();
 						if (dueEvents[j].getInventoryID() != 0)
-							hardwares.add( company.getInventory(dueEvents[j].getInventoryID(), true) );
+							hardwares.add( (LiteStarsLMHardware) starsInventoryBaseDao.getById(dueEvents[j].getInventoryID()) );
 						else
 							hardwares = ProgramOptOutAction.getAffectedHardwares( liteAcctInfo, company );
 						
 						for (int k = 0; k < hardwares.size(); k++) {
-							LiteStarsLMHardware liteHw = (LiteStarsLMHardware) hardwares.get(k);
+							LiteStarsLMHardware liteHw = hardwares.get(k);
 							if (liteHw == null) continue;
 							
 							String cmd = ProgramReenableAction.getReenableCommand( liteHw, company );
@@ -111,14 +116,14 @@ public class HourlyTimerTask extends StarsTimerTask {
 						ProgramReenableAction.handleReenableEvent( dueEvents[j], company, user );
 					}
 					else {	// This is a "opt out" event
-						ArrayList hardwares = new ArrayList();
+						List<LiteStarsLMHardware> hardwares = new ArrayList<LiteStarsLMHardware>();
 						if (dueEvents[j].getInventoryID() != 0)
-							hardwares.add( company.getInventory(dueEvents[j].getInventoryID(), true) );
+							hardwares.add( (LiteStarsLMHardware) starsInventoryBaseDao.getById(dueEvents[j].getInventoryID()) );
 						else
 							hardwares = ProgramOptOutAction.getAffectedHardwares( liteAcctInfo, company );
 						
 						for (int k = 0; k < hardwares.size(); k++) {
-							LiteStarsLMHardware liteHw = (LiteStarsLMHardware) hardwares.get(k);
+							LiteStarsLMHardware liteHw = hardwares.get(k);
 							
 							String cmd = ProgramOptOutAction.getOptOutCommand( liteHw, company, dueEvents[j].getPeriod() );
 							int routeID = liteHw.getRouteID();
