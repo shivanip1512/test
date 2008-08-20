@@ -108,7 +108,7 @@ public class MassDeleteController extends BulkControllerBase {
             // STORE RESULTS INFO TO CACHE
             String id = StringUtils.replace(UUID.randomUUID().toString(), "-", "");
             bulkOperationCallbackResults.setResultsId(id);
-            MassChangeFileInfo massChangeFileInfo = new MassChangeFileInfo(deviceCollection, "deviceType");
+            MassChangeFileInfo massChangeFileInfo = new MassChangeFileInfo(deviceCollection, null);
             bulkOperationCallbackResults.setBulkFileInfo(massChangeFileInfo);
             recentBulkOperationResultsCache.addResult(id, bulkOperationCallbackResults);
             
@@ -167,6 +167,7 @@ public class MassDeleteController extends BulkControllerBase {
 
         return mav;
     }
+
     
     @Required
     public void setDeviceDao(DeviceDao deviceDao) {
