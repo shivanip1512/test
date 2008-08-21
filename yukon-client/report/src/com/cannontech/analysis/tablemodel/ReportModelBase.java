@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
@@ -20,12 +19,9 @@ import org.jfree.report.modules.output.csv.CSVQuoter;
 
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.Reportable;
-import com.cannontech.common.device.YukonDevice;
-import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ServletUtil;
@@ -322,7 +318,7 @@ public abstract class ReportModelBase<E> extends javax.swing.table.AbstractTable
 	/**
 	 * @param vector
 	 */
-	public void setData(java.util.Vector vector)
+	public void setData(Vector<E> vector)
 	{
 		data = vector;
 	}
@@ -662,7 +658,7 @@ public abstract class ReportModelBase<E> extends javax.swing.table.AbstractTable
 
     public static int getAdjustedStartOffset(int offset, int width){
         
-        int x = (int)((offset)/ 732);
+        int x = (offset)/ 732;
         if(offset + width > (732 *(x+1)))
             offset = ((x+1) * 732);
         return offset;

@@ -1,6 +1,7 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.database.data.lite.stars.*" %>
 <%@ page import="com.cannontech.core.dao.NotFoundException" %>
+<%@ page import="com.cannontech.stars.core.dao.StarsInventoryBaseDao" %>
 <%
 	if (request.getParameter("Init") != null) {
 		// The "Create Hardware" link in the nav is clicked
@@ -8,8 +9,12 @@
 		session.removeAttribute(InventoryManagerUtil.HARDWARE_ADDRESSING);
 	}
 	else if (request.getParameter("InvID") != null) {
+        
+		StarsInventoryBaseDao starsInventoryBaseDao = 
+	        YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
+        
 		// Request from InventoryDetail.jsp to copy a hardware device
-		LiteStarsLMHardware liteHw = (LiteStarsLMHardware) liteEC.getInventory(Integer.parseInt(request.getParameter("InvID")), true);
+		LiteStarsLMHardware liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getById(Integer.parseInt(request.getParameter("InvID")));
 		Properties savedReq = new Properties();
 		savedReq.setProperty("DeviceType", String.valueOf(liteHw.getLmHardwareTypeID()));
 		savedReq.setProperty("DeviceLabel", liteHw.getDeviceLabel());

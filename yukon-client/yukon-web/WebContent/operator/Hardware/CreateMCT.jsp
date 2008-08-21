@@ -2,6 +2,7 @@
 <%@ page import="com.cannontech.database.data.lite.stars.*" %>
 <%@ page import="com.cannontech.database.data.pao.PAOGroups" %>
 <%@ page import="com.cannontech.database.data.pao.RouteTypes" %>
+<%@ page import="com.cannontech.stars.core.dao.StarsInventoryBaseDao" %>
 <%
 	if (request.getParameter("Init") != null) {
 		// The "Create MCT" link in the nav is clicked
@@ -13,8 +14,12 @@
 		ServletUtils.saveRequest(request, session, new String[] {"Member", "MCTType", "DeviceName", "PhysicalAddr", "MeterNumber", "MCTRoute", "DeviceLabel", "AltTrackNo", "ReceiveDate", "Voltage", "ServiceCompany", "Notes"});
 	}
 	else if (request.getParameter("InvID") != null) {
+        
+		StarsInventoryBaseDao starsInventoryBaseDao = 
+	        YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
+        
 		// Request from InventoryDetail.jsp to copy a hardware device
-		LiteInventoryBase liteInv = liteEC.getInventoryBrief(Integer.parseInt(request.getParameter("InvID")), true);
+		LiteInventoryBase liteInv = starsInventoryBaseDao.getById(Integer.parseInt(request.getParameter("InvID")));
 		LiteYukonPAObject litePao = DaoFactory.getPaoDao().getLiteYukonPAO(liteInv.getDeviceID());
 		Properties savedReq = new Properties();
 		savedReq.setProperty("MCTType", String.valueOf(litePao.getType()));

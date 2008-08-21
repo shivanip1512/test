@@ -2,10 +2,15 @@
 <%@ page import="com.cannontech.database.data.lite.stars.LiteInventoryBase" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsLMHardware" %>
 <%@ page import="com.cannontech.core.dao.NotFoundException" %>
+<%@ page import="com.cannontech.stars.core.dao.StarsInventoryBaseDao" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
+
+    StarsInventoryBaseDao starsInventoryBaseDao = 
+        YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
+
 	int invID = Integer.parseInt(request.getParameter("InvID"));
-	LiteInventoryBase liteInv = liteEC.getInventory(invID, true);
+	LiteInventoryBase liteInv = starsInventoryBaseDao.getById(invID);
 %>
 <html>
 <head>

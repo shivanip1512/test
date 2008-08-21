@@ -527,14 +527,16 @@ public class InventoryManagerUtil {
 	private static List<LiteInventoryBase> getInventoryByAccounts(List<Object> accounts, LiteStarsEnergyCompany energyCompany) {
 		List<LiteInventoryBase> invList = new ArrayList<LiteInventoryBase>();
 		
+		StarsInventoryBaseDao starsInventoryBaseDao = 
+			YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
+		
 		for (int i = 0; i < accounts.size(); i++) {
 			if (accounts.get(i) instanceof Pair) {
 				@SuppressWarnings("unchecked") LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) ((Pair)accounts.get(i)).getFirst();
-				@SuppressWarnings("unchecked") LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) ((Pair)accounts.get(i)).getSecond();
 				
 				for (int j = 0; j < liteAcctInfo.getInventories().size(); j++) {
 					int invID = liteAcctInfo.getInventories().get(j).intValue();
-					LiteInventoryBase liteInv = company.getInventoryBrief( invID, true );
+					LiteInventoryBase liteInv = starsInventoryBaseDao.getById(invID);
 					invList.add(liteInv);
 				}
 			}
@@ -542,7 +544,8 @@ public class InventoryManagerUtil {
 				LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) accounts.get(i);
 				for (int j = 0; j < liteAcctInfo.getInventories().size(); j++) {
 					int invID = liteAcctInfo.getInventories().get(j).intValue();
-					invList.add( energyCompany.getInventoryBrief(invID, true) );
+					LiteInventoryBase liteInv = starsInventoryBaseDao.getById(invID);
+					invList.add(liteInv);
 				}
 			}
 		}

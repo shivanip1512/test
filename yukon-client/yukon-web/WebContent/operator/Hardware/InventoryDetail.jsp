@@ -7,6 +7,7 @@
 <%@ page import="com.cannontech.database.data.pao.PAOGroups" %>
 <%@ page import="com.cannontech.web.navigation.CtiNavObject" %>
 <%@ page import="com.cannontech.core.dao.NotFoundException" %>
+<%@ page import="com.cannontech.stars.core.dao.StarsInventoryBaseDao" %>
 <jsp:useBean id="configBean" class="com.cannontech.stars.web.bean.ConfigBean" scope="page"/>
 <jsp:useBean id="detailBean" class="com.cannontech.stars.web.bean.InventoryDetailBean" scope="page"/>
 
@@ -15,8 +16,13 @@
     <%pageContext.setAttribute("currentUser", lYukonUser);%>
     <c:set target="${detailBean}" property="currentUser" value="${currentUser}" />
 
-<%int invID = Integer.parseInt(request.getParameter("InvId"));
-            LiteInventoryBase liteInv = liteEC.getInventory(invID, true);
+<%
+
+            StarsInventoryBaseDao starsInventoryBaseDao = 
+                YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
+
+            int invID = Integer.parseInt(request.getParameter("InvId"));
+            LiteInventoryBase liteInv = starsInventoryBaseDao.getById(invID);
             pageContext.setAttribute("currentInv", liteInv);
             StarsInventory inventory = StarsLiteFactory.createStarsInventory(liteInv,
                                                                              liteEC);

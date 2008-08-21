@@ -10,6 +10,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
+import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.util.InventoryUtils;
@@ -52,6 +53,9 @@ public class EnrollmentMigrationTask extends TimeConsumingTask {
             //TODO: Should pull the db transactions out of the loops.  Will speed things up and is much cleaner.
             StarsCustAccountInformationDao starsCustAccountInformationDao = 
                 YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
+
+            StarsInventoryBaseDao starsInventoryBaseDao = 
+            	YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
             
             List<LiteStarsCustAccountInformation> custAcctInfoList = starsCustAccountInformationDao.getAll(energyCompany.getEnergyCompanyID());
             for(LiteStarsCustAccountInformation liteAcctInformation : custAcctInfoList) {
@@ -67,7 +71,7 @@ public class EnrollmentMigrationTask extends TimeConsumingTask {
                         controlGroup.setLmGroupId(groupId);
                         controlGroup.setRelay(app.getLoadNumber());
                         controlGroup.setAccountId(app.getAccountID());
-                        LiteInventoryBase inventoryItem = energyCompany.getInventoryBrief(controlGroup.getInventoryId(), true);
+                        LiteInventoryBase inventoryItem = starsInventoryBaseDao.getById(controlGroup.getInventoryId());
                         controlGroup.setGroupEnrollStart(new Date(inventoryItem.getInstallDate()));
                         controlGroup.setType(LMHardwareControlGroup.ENROLLMENT_ENTRY);
                         controlGroup.setUserIdFirstAction(energyCompany.getUserID());

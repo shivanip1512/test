@@ -2,6 +2,7 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsLMHardware" %>
 <%@ page import="com.cannontech.stars.util.SwitchCommandQueue" %>
+<%@ page import="com.cannontech.stars.core.dao.StarsInventoryBaseDao" %>
 <jsp:useBean id="configBean" class="com.cannontech.stars.web.bean.ConfigBean" scope="page"/>
 <%
 	boolean showEnergyCompany = liteEC.getChildren().size() > 0 && DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MANAGE_MEMBERS);
@@ -153,6 +154,10 @@ function validate(form) {
 <% } %>
                 </tr>
 <%
+
+    StarsInventoryBaseDao starsInventoryBaseDao = 
+        YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
+
 	for (int i = 0; i < descendants.size(); i++) {
 		LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
 		if (member != null && !company.equals(member)) continue;
@@ -161,7 +166,7 @@ function validate(form) {
 		
 		TreeMap serialMap = new TreeMap();
 		for (int j = 0; j < commands.length; j++) {
-			String serialNo = ((LiteStarsLMHardware) company.getInventoryBrief(commands[j].getInventoryID(), true)).getManufacturerSerialNumber();
+			String serialNo = ((LiteStarsLMHardware) starsInventoryBaseDao.getById(commands[j].getInventoryID())).getManufacturerSerialNumber();
 			try {
 				Integer num = Integer.valueOf(serialNo);
 				serialMap.put(num, commands[j]);

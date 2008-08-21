@@ -1403,34 +1403,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
         return null;
     }
     
-    public synchronized LiteInventoryBase getInventoryBrief(int inventoryID, boolean autoLoad) {
-        LiteInventoryBase liteInv = getInventoryMap().get(inventoryID);
-        /*
-         * Should never return for non-Yukon meters.  Will always go to the db.
-         */
-        if (liteInv != null) return liteInv;
-        
-        if (autoLoad) {
-            liteInv = starsInventoryBaseDao.getById(inventoryID);
-            
-            if (liteInv != null) addInventory( liteInv );
-            return liteInv;
-        }
-        
-        return null;
-    }
-    
-    public synchronized LiteInventoryBase getInventory(int inventoryID, boolean autoLoad) {
-    	LiteInventoryBase liteInv = starsInventoryBaseDao.getById(inventoryID);
-        
-        return liteInv;
-    }
-    
-    public LiteInventoryBase getInventoryFromMap(int inventoryID)
-    {
-        return getInventoryMap().get( new Integer(inventoryID) );
-    }
-    
     public void addInventory(LiteInventoryBase liteInv) {
         Map<Integer,LiteInventoryBase> invMap = getInventoryMap();
         synchronized (invMap) {
@@ -1442,14 +1414,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
         Map<Integer,LiteInventoryBase> invMap = getInventoryMap();
         synchronized (invMap) {
             return invMap.remove( new Integer(invID) );
-        }
-    }
-    
-    public LiteInventoryBase reloadInventory(int invID) {
-        Map<Integer,LiteInventoryBase> invMap = getInventoryMap();
-        synchronized (invMap) {
-            invMap.remove( new Integer(invID) );
-            return getInventoryBrief( invID, true );
         }
     }
     
@@ -1634,12 +1598,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
             Vector<LiteContact> contacts = liteAcctInfo.getCustomer().getAdditionalContacts();
             for (int i = 0; i < contacts.size(); i++)
                 contAcctIDMap.remove( new Integer(contacts.get(i).getContactID()) );
-        }
-        
-        // Refresh all inventory information
-        for (int i = 0; i < liteAcctInfo.getInventories().size(); i++) {
-            int invID = liteAcctInfo.getInventories().get(i).intValue();
-            reloadInventory( invID );
         }
         
         // Remove all work orders from the cache

@@ -1,8 +1,13 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteInventoryBase" %>
+<%@ page import="com.cannontech.stars.core.dao.StarsInventoryBaseDao" %>
 <%
+
+    StarsInventoryBaseDao starsInventoryBaseDao = 
+        YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
+
 	int invID = Integer.parseInt(request.getParameter("InvID"));
-	LiteInventoryBase liteInv = liteEC.getInventory(invID, true);
+	LiteInventoryBase liteInv = starsInventoryBaseDao.getById(invID);
 %>
 <html>
 <head>

@@ -2,6 +2,7 @@
 <%@ page import="com.cannontech.database.data.lite.stars.LiteCustomerAccount" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsLMHardware" %>
 <%@ page import="com.cannontech.stars.util.OptOutEventQueue" %>
+<%@ page import="com.cannontech.stars.core.dao.StarsInventoryBaseDao" %>
 <%
 	boolean showEnergyCompany = liteEC.getChildren().size() > 0 && DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MANAGE_MEMBERS);
 	
@@ -93,6 +94,10 @@ function selectAccount(accountID, memberID) {
 <% } %>
                 </tr>
 <%
+
+    StarsInventoryBaseDao starsInventoryBaseDao = 
+        YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
+
 	List<LiteStarsEnergyCompany> descendants = ECUtils.getAllDescendants(liteEC);
 	for (int i = 0; i < descendants.size(); i++) {
 		LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
@@ -113,7 +118,7 @@ function selectAccount(accountID, memberID) {
 			LiteCustomerAccount liteAccount = accountMap.get(events[j].getAccountID()).getCustomerAccount();
 			String serialNo = "----";
 			if (events[j].getInventoryID() > 0)
-				serialNo = ((LiteStarsLMHardware) company.getInventoryBrief(events[j].getInventoryID(), true)).getManufacturerSerialNumber();
+				serialNo = ((LiteStarsLMHardware) starsInventoryBaseDao.getById(events[j].getInventoryID())).getManufacturerSerialNumber();
 %>
                 <tr> 
                   <td width="22%" class="TableCell"><cti:formatMillis value="<%=events[j].getStartDateTime()%>" type="DATE"/></td>

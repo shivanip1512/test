@@ -30,6 +30,8 @@ import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteLMHardwareEvent;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.util.WebClientException;
 
 /**
@@ -207,8 +209,12 @@ public class LoadInventoryTask extends TimeConsumingTask {
 	}
 	
     private void loadLMHardwareInventory(ResultSet rs) throws SQLException {
-        final int inventoryId = rs.getInt("InventoryID");
-        LiteInventoryBase liteInv = energyCompany.getInventoryFromMap(inventoryId);
+        
+    	StarsInventoryBaseDao starsInventoryBaseDao = 
+    		YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
+    	
+    	final int inventoryId = rs.getInt("InventoryID");
+        LiteInventoryBase liteInv = starsInventoryBaseDao.getById(inventoryId);
 
         if (liteInv == null) {
             liteInv = new LiteStarsLMHardware();
@@ -226,8 +232,12 @@ public class LoadInventoryTask extends TimeConsumingTask {
     }
     
     private void loadInventoryBase(ResultSet rs) throws SQLException {
-        final int inventoryId = rs.getInt("InventoryID");
-        LiteInventoryBase liteInv = energyCompany.getInventoryFromMap(inventoryId);
+        
+    	StarsInventoryBaseDao starsInventoryBaseDao = 
+    		YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
+    	
+    	final int inventoryId = rs.getInt("InventoryID");
+        LiteInventoryBase liteInv = starsInventoryBaseDao.getById(inventoryId);
         
         if (liteInv == null) {
             liteInv = new LiteInventoryBase();

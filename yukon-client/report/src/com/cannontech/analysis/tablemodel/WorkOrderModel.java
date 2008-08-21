@@ -41,7 +41,6 @@ import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
-import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteMeterHardwareBase;
 import com.cannontech.database.data.lite.stars.LiteServiceCompany;
@@ -50,6 +49,8 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.roles.operator.WorkOrderRole;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
 
@@ -59,7 +60,7 @@ import com.cannontech.stars.util.StarsUtils;
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public class WorkOrderModel extends ReportModelBase {
+public class WorkOrderModel extends ReportModelBase<WorkOrder> {
 	
 	/** A string for the title of the data */
 	private static String title = "Work Order";
@@ -388,6 +389,9 @@ public class WorkOrderModel extends ReportModelBase {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(PoolManager.getYukonDataSource());
         PlatformTransactionManager txManager = new DataSourceTransactionManager(jdbcTemplate.getDataSource());
         
+        final StarsInventoryBaseDao starsInventoryBaseDao = 
+			YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
+        
         TransactionTemplate template = new TransactionTemplate(txManager);
         template.setPropagationBehavior(TransactionDefinition.PROPAGATION_SUPPORTS);
         template.setReadOnly(true);
@@ -400,7 +404,7 @@ public class WorkOrderModel extends ReportModelBase {
                     
                     LiteStarsCustAccountInformation accountInfo = accountMap.get(accountId);
                     for (Integer inventoryId : accountInfo.getInventories()) {
-                        LiteInventoryBase liteInvBase = liteStarsEC.getInventoryBrief(inventoryId, true);
+                        LiteInventoryBase liteInvBase = starsInventoryBaseDao.getById(inventoryId);
                         meterInventoryList.add(liteInvBase);
                     }
                 }
@@ -429,7 +433,7 @@ public class WorkOrderModel extends ReportModelBase {
                     ArrayList<String> ignoreMeterNumbers = new ArrayList<String>();
 					for (int k = 0; k < liteAcctInfo.getInventories().size(); k++) {
 						Integer invID = liteAcctInfo.getInventories().get(k);
-						LiteInventoryBase liteInvBase = liteStarsEC.getInventoryBrief(invID, true);
+						LiteInventoryBase liteInvBase = starsInventoryBaseDao.getById(invID);
 						 
 						if (liteInvBase instanceof LiteStarsLMHardware)
 						{
@@ -437,14 +441,14 @@ public class WorkOrderModel extends ReportModelBase {
 							getData().add(wo);	//add to the begining
 							
                             String meterNumber = getLiteInvToMeterNumber(liteInvBase);
-                            if (!meterNumber.equalsIgnoreCase(CtiUtilities.STRING_NONE));
+                            if (!meterNumber.equalsIgnoreCase(CtiUtilities.STRING_NONE))
                                 ignoreMeterNumbers.add(meterNumber);
 						}
                     }
                     //Second loop through and find anything that is not LiteStarsLMHardware, forcing other types to be last in the list.
                     for (int k = 0; k < liteAcctInfo.getInventories().size(); k++) {
                         int invID = liteAcctInfo.getInventories().get(k).intValue();
-                        LiteInventoryBase liteInvBase = liteStarsEC.getInventoryBrief(invID, true);
+                        LiteInventoryBase liteInvBase = starsInventoryBaseDao.getById(invID);
                         /*
                          * TODO: Now that non yukon meters have been removed from cache, need to make sure
                          * that this section is still properly obtaining meters for this account.
@@ -485,7 +489,7 @@ public class WorkOrderModel extends ReportModelBase {
 		 */
 		for (final Object o : workOrderList) {
 		    if (!(o instanceof WorkOrder)) continue;
-		    LiteWorkOrderBase liteWorkOrder = ((WorkOrder) o).getLiteWorkOrderBase();;
+		    LiteWorkOrderBase liteWorkOrder = ((WorkOrder) o).getLiteWorkOrderBase();
 
 		    LiteStarsEnergyCompany liteStarsEnergyCompany = starsCache.getEnergyCompany(liteWorkOrder.getEnergyCompanyID());
 		    energyContactIdSet.add(liteStarsEnergyCompany.getPrimaryContactID());
@@ -648,8 +652,9 @@ public class WorkOrderModel extends ReportModelBase {
     						YukonListEntry coTypeEntry = DaoFactory.getYukonListDao().getYukonListEntry(((LiteCICustomer)lAcctInfo.getCustomer()).getCICustType());
     						return (coTypeEntry != null ? coTypeEntry.getEntryText() : "");
     					}
-    					else if( lAcctInfo.getCustomer() instanceof LiteCustomer)
+    					else {
     						return "Residential";
+    					}
                     }
 					return null;
 				case NAME_COLUMN:

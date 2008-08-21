@@ -222,7 +222,6 @@ public class DeleteLMHardwareAction implements ActionBase {
 				invDB.setDeviceLabel( "" );
 				Transaction.createTransaction( Transaction.UPDATE, invDB ).execute();
 				
-				energyCompany.reloadInventory( liteInv.getInventoryID() );
 			}
     		
 			if (liteAcctInfo != null) {

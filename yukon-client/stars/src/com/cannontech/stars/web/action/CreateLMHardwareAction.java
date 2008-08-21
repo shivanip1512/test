@@ -31,6 +31,8 @@ import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.stars.hardware.LMThermostatSeason;
 import com.cannontech.database.db.stars.hardware.LMThermostatSeasonEntry;
 import com.cannontech.database.db.stars.hardware.StaticLoadGroupMapping;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServletUtils;
@@ -364,8 +366,12 @@ public class CreateLMHardwareAction implements ActionBase {
 				}
 			}
 			else {
+				
+				StarsInventoryBaseDao starsInventoryBaseDao = 
+					YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
+				
 				// Add hardware in the inventory to customer account
-				liteInv = energyCompany.getInventoryBrief( invID, true );
+				liteInv = starsInventoryBaseDao.getById(invID);
 				
 				if (liteInv.getAccountID() > 0) {
 					// Remove hardware from previous account
@@ -378,7 +384,7 @@ public class CreateLMHardwareAction implements ActionBase {
 					DeleteLMHardwareAction.removeInventory(deleteHw, litePrevAccount, energyCompany);
 					
 					// The liteInv object is changed in the method above, so we need to retrieve it again
-					liteInv = energyCompany.getInventoryBrief( invID, true );
+					liteInv = starsInventoryBaseDao.getById(invID);
 					
 					StarsCustAccountInformation starsPrevAccount = energyCompany.getStarsCustAccountInformation( litePrevAccount.getAccountID() );
 					if (starsPrevAccount != null)
