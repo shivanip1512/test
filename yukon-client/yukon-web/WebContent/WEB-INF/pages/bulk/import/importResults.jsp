@@ -37,7 +37,9 @@
            <%-- RESULTS --%>
            <tags:bulkUpdateResultsTable resultsTypeMsgKey="import"
                                         totalCount="${bulkImportOperationResults.bulkFileInfo.lineCount}"
-                                        bulkUpdateOperationResults="${bulkImportOperationResults}" />
+                                        bulkUpdateOperationResults="${bulkImportOperationResults}"
+                                        isMassChange="false"
+                                        isMassDelete="false" />
             
             
             <%-- BACK BUTTON --%>

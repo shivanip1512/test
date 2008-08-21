@@ -5,6 +5,8 @@
 <%@ attribute name="resultsTypeMsgKey" required="true" type="java.lang.String"%>
 <%@ attribute name="totalCount" required="true" type="java.lang.Integer"%>
 <%@ attribute name="bulkUpdateOperationResults" required="true" type="com.cannontech.common.bulk.service.BulkOperationCallbackResults"%>
+<%@ attribute name="isMassChange" required="true" type="java.lang.Boolean"%>
+<%@ attribute name="isMassDelete" required="true" type="java.lang.Boolean"%>
 
 <c:set var="resultsId" value="${bulkUpdateOperationResults.resultsId}" />
 
@@ -69,7 +71,7 @@
 <br>
 <div class="normalBoldLabel"><cti:msg key="yukon.common.device.bulk.${resultsTypeMsgKey}Results.successLabel" />: <span style="color:#006633;"><cti:dataUpdaterValue type="BULKRESULT" identifier="${resultsId}/SUCCESS_COUNT"/></span></div>
 
-<c:if test="${bulkUpdateOperationResults.bulkOperationType != 'MASS_DELETE'}">
+<c:if test="${not isMassDelete}">
 
     <div id="successActionsDiv" style="padding:10px;display:none;">
     
@@ -94,7 +96,7 @@
     <c:choose>
                                 
         <%-- MASS CHANGE/DELETE --%>
-        <c:when test="${bulkUpdateOperationResults.bulkOperationType == 'MASS_CHANGE' || bulkUpdateOperationResults.bulkOperationType == 'MASS_DELETE'}">
+        <c:when test="${isMassChange || isMassDelete}">
             
             <cti:link href="/spring/bulk/collectionActions" key="yukon.common.device.bulk.${resultsTypeMsgKey}Results.collectionActionOnDevicesLabel" class="small">
                 <cti:mapParam value="${bulkUpdateOperationResults.processingExceptionDeviceCollection.collectionParameters}"/>

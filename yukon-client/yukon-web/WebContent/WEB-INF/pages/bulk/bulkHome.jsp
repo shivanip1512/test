@@ -142,7 +142,7 @@
                             <c:choose>
                                 
                                 <%-- MASS DELETE HAS NO SUCCESS GRUP --%>
-                                <c:when test="${b.bulkOperationType == 'MASS_DELETE'}">
+                                <c:when test="${b.massDelete}">
                                     <cti:msg key="yukon.common.device.bulk.bulkHome.recentBulkOperations.deletedCountLabel" /> 
                                     <cti:dataUpdaterValue type="BULKRESULT" identifier="${b.resultsId}/SUCCESS_COUNT"/>                          
                                 </c:when>
@@ -173,7 +173,7 @@
                             <c:choose>
                                 
                                 <%-- MASS CHANGE/DELETE ACTUALLY ADDS ERRORS TO GROUP --%>
-                                <c:when test="${b.bulkOperationType == 'MASS_CHANGE' || b.bulkOperationType == 'MASS_DELETE'}">
+                                <c:when test="${b.massChange || b.massDelete}">
                                 
                                     <c:set var="processingExceptionCollectionActionFormName" value="processingExceptionCollectionActionForm${b.resultsId}"/>
                                 
@@ -213,7 +213,7 @@
                         
                         <%-- DEATIL LINK --%>
                         <c:choose>
-                            <c:when test="${(hasBulkImportRP && b.bulkOperationType == 'IMPORT') || (hasBulkUpdateRP && b.bulkOperationType == 'UPDATE') || (hasMassChangeRP && (b.bulkOperationType == 'MASS_CHANGE' || b.bulkOperationType == 'MASS_DELETE'))}">
+                            <c:when test="${(hasBulkImportRP && b.import) || (hasBulkUpdateRP && b.update) || (hasMassChangeRP && (b.massChange || b.massDelete))}">
                                 <c:url var="resultDetailUrl" value="/spring/bulk/${b.bulkOperationType.name}/${b.bulkOperationType.name}Results">
                                     <c:param name="resultsId" value="${b.resultsId}" />
                                 </c:url>

@@ -54,7 +54,9 @@
         <%-- RESULTS --%>
         <tags:bulkUpdateResultsTable    resultsTypeMsgKey="massChange"
                                         totalCount="${deviceCollection.deviceCount}"
-                                        bulkUpdateOperationResults="${bulkUpdateOperationResults}" />
+                                        bulkUpdateOperationResults="${bulkUpdateOperationResults}"
+                                        isMassChange="true"
+                                        isMassDelete="false" />
         
     
     </tags:boxContainer>
