@@ -1155,6 +1155,13 @@
                 <cmd text="getvalue ied outage"/>
                 <pointRef name="IED Blink Count"/>
             </command>
+            <!--  getvalue ied demand is repeated here for voltage, but the command name was different. -->
+            <command name="Read IED Volts">
+                <cmd text="getvalue ied demand"/>
+                <pointRef name="Voltage Phase A"/>
+                <pointRef name="Voltage Phase B"/>
+                <pointRef name="Voltage Phase C"/>
+            </command>
         </commands>
 		<attributes>
         	<attribute name="USAGE">
@@ -1202,6 +1209,9 @@
         	<attribute name="TOU_RATE_D_PEAK_DEMAND">
         		<basicLookup point="Peak kW (Rate D kW)" />
         	</attribute>
+        	<attribute name="VOLTAGE">
+                <basicLookup point="Voltage Phase A" />
+            </attribute>
         </attributes>
     </device>
         <device>
@@ -1470,6 +1480,13 @@
                 <cmd text="getvalue ied outage"/>
                 <pointRef name="IED Blink Count"/>
             </command>
+            <!--  getvalue ied demand is repeated here for voltage, but the command name was different. -->
+            <command name="Read IED Volts">
+                <cmd text="getvalue ied demand"/>
+                <pointRef name="Voltage Phase A"/>
+                <pointRef name="Voltage Phase B"/>
+                <pointRef name="Voltage Phase C"/>
+            </command>
         </commands>
 		<attributes>
         	<attribute name="USAGE">
@@ -1517,6 +1534,9 @@
         	<attribute name="TOU_RATE_D_PEAK_DEMAND">
         		<basicLookup point="Peak kW (Rate D kW)" />
         	</attribute>
+            <attribute name="VOLTAGE">
+                <basicLookup point="Voltage Phase A" />
+            </attribute>
         </attributes>
     </device>
     <device>
