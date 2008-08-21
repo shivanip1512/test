@@ -136,7 +136,12 @@
                 <tr class="<tags:alternateRow odd="" even="altRow"/>" onclick="javascript:forwardToCsrHome(this, ${row[idEnum]})" onmouseover="highLightRow(this)" onmouseout="unHighLightRow(this)">
                 <c:forEach var="dispEnum" items="${orderedDispEnums}">
                     <td>
-                        ${row[dispEnum]}
+                        <%-- although the result of ${null} is <BLANK>, explicitly leave --%>
+                        <%-- open place to put a default value if value is null --%>
+                        <c:choose>
+                            <c:when test="${empty row[dispEnum]}"></c:when>
+                            <c:otherwise>${row[dispEnum]}</c:otherwise>
+                        </c:choose>
                     </td>
                 </c:forEach>
                 </tr>

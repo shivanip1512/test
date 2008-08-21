@@ -159,7 +159,13 @@ public class MeterDaoImpl implements MeterDao {
         
         try {
             MeterDisplayFieldEnum meterDisplayFieldEnumVal = MeterDisplayFieldEnum.valueOf(formattingStr);
-            return meterDisplayFieldEnumVal.getField(device);
+            
+            String formattedName = meterDisplayFieldEnumVal.getField(device);
+            if (formattedName == null) {
+                return "n/a (" + device.getName() + ")";
+            }
+            return formattedName;
+            
         } catch (IllegalArgumentException e) {
             return formattingStr;
         }
