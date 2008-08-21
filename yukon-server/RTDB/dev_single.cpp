@@ -5,8 +5,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.65 $
-* DATE         :  $Date: 2008/08/14 15:57:40 $
+* REVISION     :  $Revision: 1.66 $
+* DATE         :  $Date: 2008/08/21 18:40:41 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -787,7 +787,13 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
                 }
             }
 
-            if(cnt == outList.size())
+            // The call to getType here is really asking if this device can have valid executions
+            // with no out messages generated. This is a complete hack and should be re-thought. There
+            // must be a better way to achieve this. The basic problem is that when load profile
+            // is canceled, no message is returned on the final execution and this is NOT an error!
+            // The code below overrides the outlist checking for only 410's and 470's. If this is not
+            // done, canceling a LP request that is on a macro route is impossible.
+            if(cnt == outList.size() && (!(getType() == TYPEMCT410 || getType() == TYPEMCT470) && status != NoError) )
             {
                 bLastFail = true;
             }

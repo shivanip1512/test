@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.90 $
-* DATE         :  $Date: 2008/08/15 13:08:05 $
+* REVISION     :  $Revision: 1.91 $
+* DATE         :  $Date: 2008/08/21 18:40:41 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -647,13 +647,36 @@ INT CtiDeviceMCT4xx::executeGetValue( CtiRequestMsg        *pReq,
                 }
                 else if( !cmd.compare("lp") )
                 {
-                    if( InterlockedCompareExchange((PVOID *)&_llpInterest.in_progress, (PVOID)true, (PVOID)false) )
+                    bool initialVal;
+                    if( (initialVal = InterlockedCompareExchange((PVOID *)&_llpInterest.in_progress, (PVOID)true, (PVOID)false)) && 
+                        _llpInterest.user_id != pReq->UserMessageId() )
                     {
                         if( errRet )
                         {
                             CtiString temp = "Long load profile request already in progress - use \"getvalue lp cancel\" to cancel\n";
                             temp += "Current interval: " + printable_time(_llpInterest.time + _llpInterest.offset + interval_len) + "\n";
                             temp += "Ending interval:  " + printable_time(_llpInterest.time_end) + "\n";
+                            errRet->setResultString(temp);
+                            errRet->setStatus(NOTNORMAL);
+                            retList.push_back(errRet);
+                            errRet = NULL;
+                        }
+                    }
+                    else if( initialVal == true && _llpInterest.time_end == 0 )
+                    {
+                        //This means this is an old command, and a cancel was received for it!
+                        InterlockedExchange(&_llpInterest.in_progress, false);
+                        if( OutMessage != NULL )
+                        {
+                            delete OutMessage;
+                            OutMessage = NULL;
+                        }
+                        found = false;
+                        nRet  = NoError;
+
+                        if( errRet )
+                        {
+                            CtiString temp = "Long load profile request was cancelled, stopping";
                             errRet->setResultString(temp);
                             errRet->setStatus(NOTNORMAL);
                             retList.push_back(errRet);
@@ -773,6 +796,7 @@ INT CtiDeviceMCT4xx::executeGetValue( CtiRequestMsg        *pReq,
 
                             //  align this to the beginning of an interval as well
                             _llpInterest.time_end = time_end.seconds() - (time_end.seconds() % interval_len);
+                            _llpInterest.user_id = pReq->UserMessageId();
 
                             //  this is the number of seconds from the current pointer
                             relative_time = request_time - _llpInterest.time;
@@ -3026,9 +3050,6 @@ INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
                 //  this may be NULL if it's a background request, but assign it anyway
                 newReq.setConnectionHandle((void *)InMessage->Return.Connection);
 
-                //  reset the "in progress" flag
-                InterlockedExchange(&_llpInterest.in_progress, false);
-
                 CtiDeviceBase::ExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList);
             }
             else
@@ -3066,9 +3087,6 @@ INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
                                      selectInitialMacroRouteOffset(InMessage->Return.RouteID));
 
                 newReq.setConnectionHandle((void *)InMessage->Return.Connection);
-
-                //  reset the "in progress" flag
-                InterlockedExchange(&_llpInterest.in_progress, false);
 
                 CtiDeviceBase::ExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList);
             }
@@ -3131,9 +3149,6 @@ INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
 
             //  this may be NULL if it's a background request, but assign it anyway
             newReq.setConnectionHandle((void *)InMessage->Return.Connection);
-
-            //  reset the "in progress" flag
-            InterlockedExchange(&_llpInterest.in_progress, false);
 
             CtiDeviceBase::ExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList);
 
@@ -3803,9 +3818,6 @@ INT CtiDeviceMCT4xx::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 
                 //  this may be NULL if it's a background request, but assign it anyway
                 newReq.setConnectionHandle((void *)InMessage->Return.Connection);
-
-                //  reset the "in progress" flag
-                InterlockedExchange(&_llpInterest.in_progress, false);
 
                 CtiDeviceBase::ExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList);
 

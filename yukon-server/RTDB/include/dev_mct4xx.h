@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct4xx.h-arc  $
-* REVISION     :  $Revision: 1.42 $
-* DATE         :  $Date: 2008/08/15 13:08:05 $
+* REVISION     :  $Revision: 1.43 $
+* DATE         :  $Date: 2008/08/21 18:40:41 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -198,6 +198,7 @@ protected:
     {
         unsigned long time;
         unsigned long time_end;
+        unsigned long user_id;
 
         unsigned offset;
         unsigned channel;
