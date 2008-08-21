@@ -56,6 +56,22 @@ public class BulkOperationCallbackResults<I> extends DeviceGroupAddingBulkProces
         return bulkOperationType;
     }
     
+    public boolean isImport() {
+        return this.bulkOperationType.equals(BulkOperationTypeEnum.IMPORT);
+    }
+    
+    public boolean isUpdate() {
+        return this.bulkOperationType.equals(BulkOperationTypeEnum.UPDATE);
+    }
+    
+    public boolean isMassChange() {
+        return this.bulkOperationType.equals(BulkOperationTypeEnum.MASS_CHANGE);
+    }
+    
+    public boolean isMassDelete() {
+        return this.bulkOperationType.equals(BulkOperationTypeEnum.MASS_DELETE);
+    }
+    
     // TIME
     public Date getStartTime() {
         return startTime;
