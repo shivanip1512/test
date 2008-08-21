@@ -160,7 +160,7 @@ public class RoleDaoImpl implements RoleDao
         throws CommandExecutionException, TransactionException {
         
         String oldVal = getRolePropValueGroup( group, rolePropertyID, null );
-        SqlUtils.convertStringToDbValue(newVal);
+        newVal = SqlUtils.convertStringToDbValue(newVal);
 
         if (oldVal != null) {
             String sql = " UPDATE YukonGroupRole SET Value = ? "+
