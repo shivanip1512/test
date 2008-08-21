@@ -162,7 +162,11 @@ public class MeterDaoImpl implements MeterDao {
             
             String formattedName = meterDisplayFieldEnumVal.getField(device);
             if (formattedName == null) {
-                return "n/a (" + device.getName() + ")";
+                String defaultName = "n/a";
+                if (!meterDisplayFieldEnumVal.equals(MeterDisplayFieldEnum.DEVICE_NAME)) {
+                    return defaultName + " (" + device.getName() + ")";
+                }
+                return defaultName;
             }
             return formattedName;
             
