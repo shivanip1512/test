@@ -81,7 +81,7 @@ public class PointFormattingServiceImpl implements PointFormattingService {
                 String state = "";
                 Color stateColor = null;
                 Integer decimalDigits = 4;
-                Boolean statusPoint = data.getType() == PointTypes.STATUS_POINT;
+                Boolean statusPoint = (data.getType() == PointTypes.STATUS_POINT || data.getType() == PointTypes.CALCULATED_STATUS_POINT);
                 if (statusPoint) {
                     
                     // lite point
