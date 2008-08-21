@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct.h-arc  $
-* REVISION     :  $Revision: 1.65 $
-* DATE         :  $Date: 2008/08/15 13:08:05 $
+* REVISION     :  $Revision: 1.66 $
+* DATE         :  $Date: 2008/08/21 15:58:43 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -88,24 +88,14 @@ protected:
 
     struct read_key_info_t
     {
-        read_key_info_t(int addr, int len, CtiTableDynamicPaoInfo::Keys k=CtiTableDynamicPaoInfo::Key_Invalid) :
-            function(-1),
-            address(addr),
-            offset(-1),
-            length(len),
-            key(k)
-        {  };
-
-        //  specifying an offset means that it's a function read
         read_key_info_t(int func, int off, int len, CtiTableDynamicPaoInfo::Keys k=CtiTableDynamicPaoInfo::Key_Invalid) :
             function(func),
-            address(-1),
             offset(off),
             length(len),
             key(k)
-        {  };
+        { };
 
-        int function, address, length, offset;
+        int function, length, offset;
 
         CtiTableDynamicPaoInfo::Keys key;
 
@@ -113,9 +103,6 @@ protected:
         {
             if( function < rhs.function )  return true;
             if( function > rhs.function )  return false;
-
-            if( address  < rhs.address  )  return true;
-            if( address  > rhs.address  )  return false;
 
             if( offset   < rhs.offset   )  return true;
             if( offset   > rhs.offset   )  return false;

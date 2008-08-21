@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.123 $
-* DATE         :  $Date: 2008/08/15 13:08:04 $
+* REVISION     :  $Revision: 1.124 $
+* DATE         :  $Date: 2008/08/21 15:58:43 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -177,50 +177,50 @@ CtiDeviceMCT470::read_key_store_t CtiDeviceMCT470::initReadKeyStore()
 //  The SSPEC is set in decodeGetConfigModel().
 //    This code assumes that the values are contiguous, which the SSPEC is not.
 /*
-    readKeyStore.insert(DynamicPaoAddressing(Memory_SSpecPos,                  Memory_SSpecLen,                 Keys::Key_MCT_SSpec));
-    readKeyStore.insert(DynamicPaoAddressing(Memory_RevisionPos,               Memory_RevisionLen,              Keys::Key_MCT_SSpecRevision));
+    readKeyStore.insert(read_key_info_t(-1, Memory_SSpecPos,                  Memory_SSpecLen,                 Keys::Key_MCT_SSpec));
+    readKeyStore.insert(read_key_info_t(-1, Memory_RevisionPos,               Memory_RevisionLen,              Keys::Key_MCT_SSpecRevision));
 */
-    readKeyStore.insert(read_key_info_t(Memory_OptionsPos,                Memory_OptionsLen,               Keys::Key_MCT_Options));
-    readKeyStore.insert(read_key_info_t(Memory_ConfigurationPos,          Memory_ConfigurationLen,         Keys::Key_MCT_Configuration));
-    readKeyStore.insert(read_key_info_t(Memory_EventFlagsMask1Pos,        Memory_EventFlagsMask1Len,       Keys::Key_MCT_EventFlagsMask1));
-    readKeyStore.insert(read_key_info_t(Memory_EventFlagsMask2Pos,        Memory_EventFlagsMask2Len,       Keys::Key_MCT_EventFlagsMask2));
-    readKeyStore.insert(read_key_info_t(Memory_AddressBronzePos,          Memory_AddressBronzeLen,         Keys::Key_MCT_AddressBronze));
-    readKeyStore.insert(read_key_info_t(Memory_AddressLeadPos,            Memory_AddressLeadLen,           Keys::Key_MCT_AddressLead));
-    readKeyStore.insert(read_key_info_t(Memory_AddressCollectionPos,      Memory_AddressCollectionLen,     Keys::Key_MCT_AddressCollection));
-    readKeyStore.insert(read_key_info_t(Memory_AddressSPIDPos,            Memory_AddressSPIDLen,           Keys::Key_MCT_AddressServiceProviderID));
-    readKeyStore.insert(read_key_info_t(Memory_DemandIntervalPos,         Memory_DemandIntervalLen,        Keys::Key_MCT_DemandInterval));
-    readKeyStore.insert(read_key_info_t(Memory_LoadProfileInterval1Pos,   Memory_LoadProfileInterval1Len,  Keys::Key_MCT_LoadProfileInterval));
-    readKeyStore.insert(read_key_info_t(Memory_LoadProfileInterval2Pos,   Memory_LoadProfileInterval2Len,  Keys::Key_MCT_LoadProfileInterval2));
-    readKeyStore.insert(read_key_info_t(Memory_TimeAdjustTolerancePos,    Memory_TimeAdjustToleranceLen,   Keys::Key_MCT_TimeAdjustTolerance));
-    readKeyStore.insert(read_key_info_t(Memory_DSTBeginPos,               Memory_DSTBeginLen,              Keys::Key_MCT_DSTStartTime));
-    readKeyStore.insert(read_key_info_t(Memory_DSTEndPos,                 Memory_DSTEndLen,                Keys::Key_MCT_DSTEndTime));
-    readKeyStore.insert(read_key_info_t(Memory_TimeZoneOffsetPos,         Memory_TimeZoneOffsetLen,        Keys::Key_MCT_TimeZoneOffset));
-    readKeyStore.insert(read_key_info_t(Memory_TOUDayTablePos,            Memory_TOUDayTableLen,           Keys::Key_MCT_DayTable));
-    readKeyStore.insert(read_key_info_t(Memory_TOUDailySched1Pos,         Memory_TOUDailySched1Len,        Keys::Key_MCT_DaySchedule1));
-    readKeyStore.insert(read_key_info_t(Memory_TOUDailySched2Pos,         Memory_TOUDailySched2Len,        Keys::Key_MCT_DaySchedule2));
-    readKeyStore.insert(read_key_info_t(Memory_TOUDailySched3Pos,         Memory_TOUDailySched3Len,        Keys::Key_MCT_DaySchedule3));
-    readKeyStore.insert(read_key_info_t(Memory_TOUDailySched4Pos,         Memory_TOUDailySched4Len,        Keys::Key_MCT_DaySchedule4));
-    readKeyStore.insert(read_key_info_t(Memory_TOUDefaultRatePos,         Memory_TOUDefaultRateLen,        Keys::Key_MCT_DefaultTOURate));
-    readKeyStore.insert(read_key_info_t(Memory_Holiday1Pos,               Memory_Holiday1Len,              Keys::Key_MCT_Holiday1));
-    readKeyStore.insert(read_key_info_t(Memory_Holiday2Pos,               Memory_Holiday2Len,              Keys::Key_MCT_Holiday2));
-    readKeyStore.insert(read_key_info_t(Memory_Holiday3Pos,               Memory_Holiday3Len,              Keys::Key_MCT_Holiday3));
-    readKeyStore.insert(read_key_info_t(Memory_KRatio1Pos,                Memory_KRatio1Len,               Keys::Key_MCT_LoadProfileKRatio1));
-    readKeyStore.insert(read_key_info_t(Memory_MeteringRatio1Pos,         Memory_MeteringRatio1Len,        Keys::Key_MCT_LoadProfileMeterRatio1));
-    readKeyStore.insert(read_key_info_t(Memory_ChannelConfig1Pos,         Memory_ChannelConfig1Len,        Keys::Key_MCT_LoadProfileChannelConfig1));
-    readKeyStore.insert(read_key_info_t(Memory_KRatio2Pos,                Memory_KRatio2Len,               Keys::Key_MCT_LoadProfileKRatio2));
-    readKeyStore.insert(read_key_info_t(Memory_MeteringRatio2Pos,         Memory_MeteringRatio2Len,        Keys::Key_MCT_LoadProfileMeterRatio2));
-    readKeyStore.insert(read_key_info_t(Memory_ChannelConfig2Pos,         Memory_ChannelConfig2Len,        Keys::Key_MCT_LoadProfileChannelConfig2));
-    readKeyStore.insert(read_key_info_t(Memory_KRatio3Pos,                Memory_KRatio3Len,               Keys::Key_MCT_LoadProfileKRatio3));
-    readKeyStore.insert(read_key_info_t(Memory_MeteringRatio3Pos,         Memory_MeteringRatio3Len,        Keys::Key_MCT_LoadProfileMeterRatio3));
-    readKeyStore.insert(read_key_info_t(Memory_ChannelConfig3Pos,         Memory_ChannelConfig3Len,        Keys::Key_MCT_LoadProfileChannelConfig3));
-    readKeyStore.insert(read_key_info_t(Memory_KRatio4Pos,                Memory_KRatio4Len,               Keys::Key_MCT_LoadProfileKRatio4));
-    readKeyStore.insert(read_key_info_t(Memory_MeteringRatio4Pos,         Memory_MeteringRatio4Len,        Keys::Key_MCT_LoadProfileMeterRatio4));
-    readKeyStore.insert(read_key_info_t(Memory_ChannelConfig4Pos,         Memory_ChannelConfig4Len,        Keys::Key_MCT_LoadProfileChannelConfig4));
-    readKeyStore.insert(read_key_info_t(Memory_RelayATimerPos,            Memory_RelayATimerLen,           Keys::Key_MCT_RelayATimer));
-    readKeyStore.insert(read_key_info_t(Memory_RelayBTimerPos,            Memory_RelayBTimerLen,           Keys::Key_MCT_RelayBTimer));
-    readKeyStore.insert(read_key_info_t(Memory_TableReadIntervalPos,      Memory_TableReadIntervalLen,     Keys::Key_MCT_PrecannedTableReadInterval));
-    readKeyStore.insert(read_key_info_t(Memory_PrecannedMeterNumPos,      Memory_PrecannedMeterNumLen,     Keys::Key_MCT_PrecannedMeterNumber));
-    readKeyStore.insert(read_key_info_t(Memory_PrecannedTableTypePos,     Memory_PrecannedTableTypeLen,    Keys::Key_MCT_PrecannedTableType));
+    readKeyStore.insert(read_key_info_t(-1, Memory_OptionsPos,                Memory_OptionsLen,               Keys::Key_MCT_Options));
+    readKeyStore.insert(read_key_info_t(-1, Memory_ConfigurationPos,          Memory_ConfigurationLen,         Keys::Key_MCT_Configuration));
+    readKeyStore.insert(read_key_info_t(-1, Memory_EventFlagsMask1Pos,        Memory_EventFlagsMask1Len,       Keys::Key_MCT_EventFlagsMask1));
+    readKeyStore.insert(read_key_info_t(-1, Memory_EventFlagsMask2Pos,        Memory_EventFlagsMask2Len,       Keys::Key_MCT_EventFlagsMask2));
+    readKeyStore.insert(read_key_info_t(-1, Memory_AddressBronzePos,          Memory_AddressBronzeLen,         Keys::Key_MCT_AddressBronze));
+    readKeyStore.insert(read_key_info_t(-1, Memory_AddressLeadPos,            Memory_AddressLeadLen,           Keys::Key_MCT_AddressLead));
+    readKeyStore.insert(read_key_info_t(-1, Memory_AddressCollectionPos,      Memory_AddressCollectionLen,     Keys::Key_MCT_AddressCollection));
+    readKeyStore.insert(read_key_info_t(-1, Memory_AddressSPIDPos,            Memory_AddressSPIDLen,           Keys::Key_MCT_AddressServiceProviderID));
+    readKeyStore.insert(read_key_info_t(-1, Memory_DemandIntervalPos,         Memory_DemandIntervalLen,        Keys::Key_MCT_DemandInterval));
+    readKeyStore.insert(read_key_info_t(-1, Memory_LoadProfileInterval1Pos,   Memory_LoadProfileInterval1Len,  Keys::Key_MCT_LoadProfileInterval));
+    readKeyStore.insert(read_key_info_t(-1, Memory_LoadProfileInterval2Pos,   Memory_LoadProfileInterval2Len,  Keys::Key_MCT_LoadProfileInterval2));
+    readKeyStore.insert(read_key_info_t(-1, Memory_TimeAdjustTolerancePos,    Memory_TimeAdjustToleranceLen,   Keys::Key_MCT_TimeAdjustTolerance));
+    readKeyStore.insert(read_key_info_t(-1, Memory_DSTBeginPos,               Memory_DSTBeginLen,              Keys::Key_MCT_DSTStartTime));
+    readKeyStore.insert(read_key_info_t(-1, Memory_DSTEndPos,                 Memory_DSTEndLen,                Keys::Key_MCT_DSTEndTime));
+    readKeyStore.insert(read_key_info_t(-1, Memory_TimeZoneOffsetPos,         Memory_TimeZoneOffsetLen,        Keys::Key_MCT_TimeZoneOffset));
+    readKeyStore.insert(read_key_info_t(-1, Memory_TOUDayTablePos,            Memory_TOUDayTableLen,           Keys::Key_MCT_DayTable));
+    readKeyStore.insert(read_key_info_t(-1, Memory_TOUDailySched1Pos,         Memory_TOUDailySched1Len,        Keys::Key_MCT_DaySchedule1));
+    readKeyStore.insert(read_key_info_t(-1, Memory_TOUDailySched2Pos,         Memory_TOUDailySched2Len,        Keys::Key_MCT_DaySchedule2));
+    readKeyStore.insert(read_key_info_t(-1, Memory_TOUDailySched3Pos,         Memory_TOUDailySched3Len,        Keys::Key_MCT_DaySchedule3));
+    readKeyStore.insert(read_key_info_t(-1, Memory_TOUDailySched4Pos,         Memory_TOUDailySched4Len,        Keys::Key_MCT_DaySchedule4));
+    readKeyStore.insert(read_key_info_t(-1, Memory_TOUDefaultRatePos,         Memory_TOUDefaultRateLen,        Keys::Key_MCT_DefaultTOURate));
+    readKeyStore.insert(read_key_info_t(-1, Memory_Holiday1Pos,               Memory_Holiday1Len,              Keys::Key_MCT_Holiday1));
+    readKeyStore.insert(read_key_info_t(-1, Memory_Holiday2Pos,               Memory_Holiday2Len,              Keys::Key_MCT_Holiday2));
+    readKeyStore.insert(read_key_info_t(-1, Memory_Holiday3Pos,               Memory_Holiday3Len,              Keys::Key_MCT_Holiday3));
+    readKeyStore.insert(read_key_info_t(-1, Memory_KRatio1Pos,                Memory_KRatio1Len,               Keys::Key_MCT_LoadProfileKRatio1));
+    readKeyStore.insert(read_key_info_t(-1, Memory_MeteringRatio1Pos,         Memory_MeteringRatio1Len,        Keys::Key_MCT_LoadProfileMeterRatio1));
+    readKeyStore.insert(read_key_info_t(-1, Memory_ChannelConfig1Pos,         Memory_ChannelConfig1Len,        Keys::Key_MCT_LoadProfileChannelConfig1));
+    readKeyStore.insert(read_key_info_t(-1, Memory_KRatio2Pos,                Memory_KRatio2Len,               Keys::Key_MCT_LoadProfileKRatio2));
+    readKeyStore.insert(read_key_info_t(-1, Memory_MeteringRatio2Pos,         Memory_MeteringRatio2Len,        Keys::Key_MCT_LoadProfileMeterRatio2));
+    readKeyStore.insert(read_key_info_t(-1, Memory_ChannelConfig2Pos,         Memory_ChannelConfig2Len,        Keys::Key_MCT_LoadProfileChannelConfig2));
+    readKeyStore.insert(read_key_info_t(-1, Memory_KRatio3Pos,                Memory_KRatio3Len,               Keys::Key_MCT_LoadProfileKRatio3));
+    readKeyStore.insert(read_key_info_t(-1, Memory_MeteringRatio3Pos,         Memory_MeteringRatio3Len,        Keys::Key_MCT_LoadProfileMeterRatio3));
+    readKeyStore.insert(read_key_info_t(-1, Memory_ChannelConfig3Pos,         Memory_ChannelConfig3Len,        Keys::Key_MCT_LoadProfileChannelConfig3));
+    readKeyStore.insert(read_key_info_t(-1, Memory_KRatio4Pos,                Memory_KRatio4Len,               Keys::Key_MCT_LoadProfileKRatio4));
+    readKeyStore.insert(read_key_info_t(-1, Memory_MeteringRatio4Pos,         Memory_MeteringRatio4Len,        Keys::Key_MCT_LoadProfileMeterRatio4));
+    readKeyStore.insert(read_key_info_t(-1, Memory_ChannelConfig4Pos,         Memory_ChannelConfig4Len,        Keys::Key_MCT_LoadProfileChannelConfig4));
+    readKeyStore.insert(read_key_info_t(-1, Memory_RelayATimerPos,            Memory_RelayATimerLen,           Keys::Key_MCT_RelayATimer));
+    readKeyStore.insert(read_key_info_t(-1, Memory_RelayBTimerPos,            Memory_RelayBTimerLen,           Keys::Key_MCT_RelayBTimer));
+    readKeyStore.insert(read_key_info_t(-1, Memory_TableReadIntervalPos,      Memory_TableReadIntervalLen,     Keys::Key_MCT_PrecannedTableReadInterval));
+    readKeyStore.insert(read_key_info_t(-1, Memory_PrecannedMeterNumPos,      Memory_PrecannedMeterNumLen,     Keys::Key_MCT_PrecannedMeterNumber));
+    readKeyStore.insert(read_key_info_t(-1, Memory_PrecannedTableTypePos,     Memory_PrecannedTableTypeLen,    Keys::Key_MCT_PrecannedTableType));
 
 //  function reads
 

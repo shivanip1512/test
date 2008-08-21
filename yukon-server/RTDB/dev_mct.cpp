@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.132 $
-* DATE         :  $Date: 2008/08/15 13:08:04 $
+* REVISION     :  $Revision: 1.133 $
+* DATE         :  $Date: 2008/08/21 15:58:42 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -223,58 +223,36 @@ const CtiDeviceMCT::read_key_store_t &CtiDeviceMCT::getReadKeyStore(void) const
 
 void CtiDeviceMCT::extractDynamicPaoInfo(const INMESS &InMessage)
 {
-    //  getReadKeyInfo is overridden separately by the 410 and 470
-    const read_key_store_t &readKeyStore = getReadKeyStore();
+    const char &io = InMessage.Return.ProtocolInfo.Emetcon.IO;
 
-    read_key_store_t::const_iterator itr, itr_hi;
-
-    unsigned long value;
-
-    const char          &io      = InMessage.Return.ProtocolInfo.Emetcon.IO;
-    const unsigned long &length  = InMessage.InLength;
-
-    if( io == Emetcon::IO_Read )
+    if( io == Emetcon::IO_Function_Read ||
+        io == Emetcon::IO_Read )
     {
-        const int &address = InMessage.Return.ProtocolInfo.Emetcon.Function;
+        const unsigned long &length = InMessage.InLength;
+        bool function_read = (io == Emetcon::IO_Function_Read);
+
+        int function = (function_read)?(InMessage.Return.ProtocolInfo.Emetcon.Function):(-1);
+        int offset   = (function_read)?(0):(InMessage.Return.ProtocolInfo.Emetcon.Function);
+
+        //  getReadKeyInfo is overridden separately by the 410 and 470
+        const read_key_store_t &readKeyStore = getReadKeyStore();
+
+        read_key_store_t::const_iterator itr    = readKeyStore.lower_bound(read_key_info_t(function, offset,          0));
+        read_key_store_t::const_iterator itr_hi = readKeyStore.upper_bound(read_key_info_t(function, offset + length, 0));
 
         //  find the first key matching our read location
-        itr    = readKeyStore.lower_bound(read_key_info_t(address,          0));
-        itr_hi = readKeyStore.upper_bound(read_key_info_t(address + length, 0));
-
         for( ; itr != itr_hi; ++itr )
         {
             const read_key_info_t &read_key = *itr;
 
-            if( (read_key.address + read_key.length) <= (address + length) )
+            if( (read_key.offset + read_key.length) <= (offset + length) )
             {
-                for( int i = 0, value = 0; i < read_key.length; i++ )
+                unsigned long value = 0;
+
+                for( int i = 0; i < read_key.length; i++ )
                 {
                     value <<= 8;
-                    value |= InMessage.Buffer.DSt.Message[read_key.address - address + i];
-                }
-
-                setDynamicInfo(read_key.key, value);
-            }
-        }
-    }
-    else if( io == Emetcon::IO_Function_Read )
-    {
-        const int &function = InMessage.Return.ProtocolInfo.Emetcon.Function;
-
-        //  find the first key matching our function
-        itr    = readKeyStore.lower_bound(read_key_info_t(function,      0, 0));
-        itr_hi = readKeyStore.upper_bound(read_key_info_t(function, length, 0));
-
-        while( itr != itr_hi )
-        {
-            const read_key_info_t &read_key = *(itr++);
-
-            if( (read_key.offset + read_key.length) <= length )
-            {
-                for( int i = 0, value = 0; i < read_key.length; i++ )
-                {
-                    value <<= 8;
-                    value |= InMessage.Buffer.DSt.Message[read_key.offset + i];
+                    value |= InMessage.Buffer.DSt.Message[read_key.offset - offset + i];
                 }
 
                 setDynamicInfo(read_key.key, value);
@@ -826,11 +804,7 @@ INT CtiDeviceMCT::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMes
 {
     INT status = NORMAL;
 
-    if( InMessage->Return.ProtocolInfo.Emetcon.IO == Emetcon::IO_Read ||
-        InMessage->Return.ProtocolInfo.Emetcon.IO == Emetcon::IO_Function_Read )
-    {
-        extractDynamicPaoInfo(*InMessage);
-    }
+    extractDynamicPaoInfo(*InMessage);
 
     status = ModelDecode(InMessage, TimeNow, vgList, retList, outList);
 
