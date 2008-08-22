@@ -49,17 +49,23 @@ public class DeviceGroupCollectionHelperImpl implements DeviceGroupCollectionHel
     public String getParameterName(String shortName) {
         return getSupportedType() + "." + shortName;
     }
-
+    
     public DeviceCollection buildDeviceCollection(final DeviceGroup group) {
+        return buildDeviceCollection(group, null);
+    }
+
+    public DeviceCollection buildDeviceCollection(final DeviceGroup group, final String descriptionHint) {
         
         return new ListBasedDeviceCollection() {
-
             public Map<String, String> getCollectionParameters() {
 
                 Map<String, String> paramMap = new HashMap<String, String>();
 
                 paramMap.put("collectionType", getSupportedType());
                 paramMap.put(getParameterName("name"), group.getFullName());
+                if (org.apache.commons.lang.StringUtils.isNotBlank(descriptionHint)) {
+                    paramMap.put(getParameterName("description"), descriptionHint);
+                }
 
                 return paramMap;
             }
@@ -76,7 +82,7 @@ public class DeviceGroupCollectionHelperImpl implements DeviceGroupCollectionHel
             @Override
             public List<YukonDevice> getDevices(int start, int size) {
 
-                // more than we need so we can skip past start devices and retireve size devices
+                // more than we need so we can skip past start devices and retrieve size devices
                 int retrieveCount = start + size;
                 
                 Set<YukonDevice> deviceSet = deviceGroupService.getDevices(Collections.singletonList(group), retrieveCount);
@@ -93,14 +99,22 @@ public class DeviceGroupCollectionHelperImpl implements DeviceGroupCollectionHel
             
             @Override
             public MessageSourceResolvable getDescription() {
-                return new YukonMessageSourceResolvable("yukon.common.device.bulk.bulkAction.collection.group", group.getFullName());
+                if (group.isHidden()) {
+                    if (descriptionHint != null) {
+                        return new YukonMessageSourceResolvable("yukon.common.device.bulk.bulkAction.collection.group.temporaryWithHint", descriptionHint);
+                    } else {
+                        return new YukonMessageSourceResolvable("yukon.common.device.bulk.bulkAction.collection.group.temporary");
+                    }
+                } else {
+                    return new YukonMessageSourceResolvable("yukon.common.device.bulk.bulkAction.collection.group", group.getFullName());
+                }
             }
 
         };
     }
     
     @Transactional
-    public DeviceCollection createDeviceGroupCollection(Iterator<Integer> deviceIds) {
+    public DeviceCollection createDeviceGroupCollection(Iterator<Integer> deviceIds, String descriptionHint) {
         
         // step 1, create a new group with random name (will delete itself in 24 hours)
         final StoredDeviceGroup group = temporaryDeviceGroupService.createTempGroup(null);
@@ -109,7 +123,7 @@ public class DeviceGroupCollectionHelperImpl implements DeviceGroupCollectionHel
         deviceGroupMemberEditorDao.addDevicesById(group, deviceIds);
         
         // step 3, build DeviceCollection
-        DeviceCollection deviceCollection = buildDeviceCollection(group);
+        DeviceCollection deviceCollection = buildDeviceCollection(group, descriptionHint);
         
         return deviceCollection;
     }

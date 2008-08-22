@@ -27,11 +27,13 @@
     <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.downloadErrorFileTitle">Download CSV File Of Failed Lines</entry>
     
     <!-- Device Collections -->
-    <entry key="yukon.common.device.bulk.bulkAction.collection.addressRange">All devices in address range: {0} - {1}</entry>
-    <entry key="yukon.common.device.bulk.bulkAction.collection.group">All devices in device group: {0}</entry>
-    <entry key="yukon.common.device.bulk.bulkAction.collection.idList">Devices selected from picker</entry>
-    <entry key="yukon.common.device.bulk.bulkAction.collection.deviceFilter">Devices matching: {0}</entry>
-    <entry key="yukon.common.device.bulk.bulkAction.collection.deviceFilter.all">All Devices</entry>
+    <entry key="yukon.common.device.bulk.bulkAction.collection.addressRange">address range {0,number,#} - {1,number,#}</entry>
+    <entry key="yukon.common.device.bulk.bulkAction.collection.group">device group {0}</entry>
+    <entry key="yukon.common.device.bulk.bulkAction.collection.group.temporary">temporary collection</entry>
+    <entry key="yukon.common.device.bulk.bulkAction.collection.group.temporaryWithHint">devices from {0}</entry>
+    <entry key="yukon.common.device.bulk.bulkAction.collection.idList">individually selected devices</entry>
+    <entry key="yukon.common.device.bulk.bulkAction.collection.deviceFilter">{0}</entry>
+    <entry key="yukon.common.device.bulk.bulkAction.collection.deviceFilter.all">all Devices</entry>
 
     <!-- deviceSelection.jsp -->
     <entry key="yukon.common.device.bulk.deviceSelection.pageTitle">Device Selection</entry>
@@ -123,7 +125,8 @@
     <!-- ******************************************************************************************************************** -->
     
     <!-- SELECTED DEVICES POPUP selectedDevices.jsp -->
-    <entry key="yukon.common.device.bulk.selectedDevicesPopup.linkLabel">Selected Devices</entry>
+    <entry key="yukon.common.device.bulk.selectedDevicesPopup.linkLabel">Devices Selected</entry>
+    <entry key="yukon.common.device.bulk.selectedDevicesPopup.count">Device Count: {0}</entry>
     <entry key="yukon.common.device.bulk.selectedDevicesPopup.popupTitle">Selected Devices</entry>
     <entry key="yukon.common.device.bulk.selectedDevicesPopup.warning">View names of selected devices.</entry>
     
