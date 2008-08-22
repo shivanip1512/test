@@ -238,15 +238,10 @@ public void update()
 	}
 }
 
-@SuppressWarnings("unchecked")
 public final static boolean usesHolidaySchedule(int holSchID) throws java.sql.SQLException {
-    String sql = "SELECT BaselineID FROM " + TABLE_NAME + " WHERE HolidayScheduleID = " + holSchID;
     JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
-    List<Integer> baselineIds = jdbcOps.queryForList(sql);
-    if(baselineIds.size() > 0) {
-        return true;
-    } else {
-        return false;
-    }
+    String sql = "select count(*) from " + TABLE_NAME + " where holidayscheduleid = ?";
+    int count = jdbcOps.queryForInt(sql, new Integer[] {holSchID});
+    return count > 0; 
 }
 }
