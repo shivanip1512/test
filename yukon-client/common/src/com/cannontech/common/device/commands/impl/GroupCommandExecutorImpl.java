@@ -126,7 +126,7 @@ public class GroupCommandExecutorImpl implements GroupCommandExecutor {
         request.setDevice(device);
         request.setBackgroundPriority(true);
         
-        final String commandStr = command + " update" + " noqueue";
+        final String commandStr = command + " update";
         request.setCommand(commandStr);
         return request;
     }
