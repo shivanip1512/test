@@ -30,6 +30,7 @@ import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.util.TemplateProcessorFactory;
+import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
@@ -48,7 +49,6 @@ import com.cannontech.simplereport.SimpleReportService;
 import com.cannontech.tools.email.EmailService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
-import com.cannontech.web.security.WebSecurityChecker;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.widget.support.WidgetControllerBase;
@@ -76,7 +76,7 @@ public class ProfileWidget extends WidgetControllerBase {
     private ToggleProfilingService toggleProfilingService = null;
     private MeterReadService meterReadService = null;
     private TemplateProcessorFactory templateProcessorFactory = null;
-    private WebSecurityChecker webSecurityChecker = null;
+    private AuthDao authDao;
     
     /*
      * Long load profile email message format NOTE: Outlook will sometimes strip
@@ -250,15 +250,14 @@ public class ProfileWidget extends WidgetControllerBase {
     
     public ModelAndView initiateLoadProfile(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-        webSecurityChecker.checkRoleProperty(MeteringRole.PROFILE_COLLECTION);
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+        authDao.verifyTrueProperty(userContext.getYukonUser(), MeteringRole.PROFILE_COLLECTION);
         
         // init to basic refresh of render
         // after command runs, pending list will be re-got, and dates will be set to requested
         // and error requesting will be added to mav also
         ModelAndView mav = render(request, response);
 
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        
         String errorMsg = "";
 
         String email = WidgetParameterHelper.getRequiredStringParameter(request, "email");
@@ -399,10 +398,10 @@ public class ProfileWidget extends WidgetControllerBase {
     public ModelAndView toggleProfiling(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
-        webSecurityChecker.checkRoleProperty(MeteringRole.PROFILE_COLLECTION_SCANNING);
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+        authDao.verifyTrueProperty(userContext.getYukonUser(), MeteringRole.PROFILE_COLLECTION_SCANNING);
         
         String toggleErrorMsg = null;
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         
         // get parameters
         int channelNum = WidgetParameterHelper.getRequiredIntParameter(request, "channelNum");
@@ -709,8 +708,8 @@ public class ProfileWidget extends WidgetControllerBase {
     }
     
     @Autowired
-    public void setWebSecurityChecker(WebSecurityChecker webSecurityChecker) {
-        this.webSecurityChecker = webSecurityChecker;
+    public void setAuthDao(AuthDao authDao) {
+        this.authDao = authDao;
     }
     
 }

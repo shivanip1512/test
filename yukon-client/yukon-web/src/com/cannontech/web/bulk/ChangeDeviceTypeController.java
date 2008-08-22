@@ -27,8 +27,8 @@ import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.bulk.processor.SingleProcessor;
 import com.cannontech.common.bulk.service.BulkOperationCallbackResults;
 import com.cannontech.common.bulk.service.BulkOperationTypeEnum;
+import com.cannontech.common.bulk.service.DeviceCollectionContainingFileInfo;
 import com.cannontech.common.bulk.service.MassChangeCallbackResults;
-import com.cannontech.common.bulk.service.MassChangeFileInfo;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
@@ -43,15 +43,15 @@ import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
 import com.cannontech.roles.operator.DeviceActionsRole;
-import com.cannontech.web.security.WebSecurityChecker;
 import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @CheckRole(DeviceActionsRole.ROLEID)
+@CheckRoleProperty(DeviceActionsRole.MASS_CHANGE)
 public class ChangeDeviceTypeController extends BulkControllerBase {
 
     private PaoDao paoDao = null;
     private RecentResultsCache<BulkOperationCallbackResults<?>> recentBulkOperationResultsCache = null;
-    private WebSecurityChecker webSecurityChecker = null;
     private BulkProcessor bulkProcessor = null;
     private PaoGroupsWrapper paoGroupsWrapper = null;
     private DeviceDefinitionService deviceDefinitionService = null;
@@ -69,8 +69,6 @@ public class ChangeDeviceTypeController extends BulkControllerBase {
      */
     public ModelAndView chooseDeviceType(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 
-        webSecurityChecker.checkRoleProperty(DeviceActionsRole.MASS_CHANGE);
-        
         ModelAndView mav = new ModelAndView("changeDeviceType/chooseDeviceType.jsp");
         
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
@@ -97,8 +95,6 @@ public class ChangeDeviceTypeController extends BulkControllerBase {
      */
     public ModelAndView changeDeviceType(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 
-        webSecurityChecker.checkRoleProperty(DeviceActionsRole.MASS_CHANGE);
-        
         ModelAndView mav = null;
         String cancelButton = ServletRequestUtils.getStringParameter(request, "cancelButton", null);
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
@@ -124,8 +120,8 @@ public class ChangeDeviceTypeController extends BulkControllerBase {
             // STORE RESULTS INFO TO CACHE
             String id = StringUtils.replace(UUID.randomUUID().toString(), "-", "");
             bulkOperationCallbackResults.setResultsId(id);
-            MassChangeFileInfo massChangeFileInfo = new MassChangeFileInfo(deviceCollection, "deviceType");
-            bulkOperationCallbackResults.setBulkFileInfo(massChangeFileInfo);
+            DeviceCollectionContainingFileInfo deviceCollectionContainingFileInfo = new DeviceCollectionContainingFileInfo(deviceCollection);
+            bulkOperationCallbackResults.setBulkFileInfo(deviceCollectionContainingFileInfo);
             recentBulkOperationResultsCache.addResult(id, bulkOperationCallbackResults);
             
             // PROCESS
@@ -192,8 +188,6 @@ public class ChangeDeviceTypeController extends BulkControllerBase {
      */
     public ModelAndView changeDeviceTypeResults(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 
-        webSecurityChecker.checkRoleProperty(DeviceActionsRole.MASS_CHANGE);
-        
         ModelAndView mav = new ModelAndView("changeDeviceType/changeDeviceTypeResults.jsp");
 
         // result info
@@ -201,9 +195,9 @@ public class ChangeDeviceTypeController extends BulkControllerBase {
         BulkOperationCallbackResults<?> bulkOperationCallbackResults = recentBulkOperationResultsCache.getResult(resultsId);
         
         // file info
-        MassChangeFileInfo massChangeFileInfo = (MassChangeFileInfo)bulkOperationCallbackResults.getBulkFileInfo();
+        DeviceCollectionContainingFileInfo deviceCollectionContainingFileInfo = (DeviceCollectionContainingFileInfo)bulkOperationCallbackResults.getBulkFileInfo();
         
-        mav.addObject("deviceCollection", massChangeFileInfo.getDeviceCollection());
+        mav.addObject("deviceCollection", deviceCollectionContainingFileInfo.getDeviceCollection());
         mav.addObject("bulkUpdateOperationResults", bulkOperationCallbackResults);
 
         return mav;
@@ -218,11 +212,6 @@ public class ChangeDeviceTypeController extends BulkControllerBase {
     public void setRecentBulkOperationResultsCache(
             RecentResultsCache<BulkOperationCallbackResults<?>> recentBulkOperationResultsCache) {
         this.recentBulkOperationResultsCache = recentBulkOperationResultsCache;
-    }
-    
-    @Autowired
-    public void setWebSecurityChecker(WebSecurityChecker webSecurityChecker) {
-        this.webSecurityChecker = webSecurityChecker;
     }
     
     @Required

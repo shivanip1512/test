@@ -1,6 +1,7 @@
 package com.cannontech.web.bulk;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.ServletException;
@@ -24,7 +25,7 @@ import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.bulk.processor.SingleProcessor;
 import com.cannontech.common.bulk.service.BulkOperationCallbackResults;
 import com.cannontech.common.bulk.service.BulkOperationTypeEnum;
-import com.cannontech.common.bulk.service.MassChangeFileInfo;
+import com.cannontech.common.bulk.service.DeviceCollectionContainingFileInfo;
 import com.cannontech.common.bulk.service.MassDeleteCallbackResults;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
@@ -34,15 +35,16 @@ import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.roles.operator.DeviceActionsRole;
-import com.cannontech.web.security.WebSecurityChecker;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @CheckRole(DeviceActionsRole.ROLEID)
+@CheckRoleProperty(DeviceActionsRole.MASS_DELETE)
 public class MassDeleteController extends BulkControllerBase {
 
     private DeviceDao deviceDao = null;
     private RecentResultsCache<BulkOperationCallbackResults<?>> recentBulkOperationResultsCache = null;
-    private WebSecurityChecker webSecurityChecker = null;
     
     private BulkProcessor bulkProcessor = null;
     private TemporaryDeviceGroupService temporaryDeviceGroupService;
@@ -58,8 +60,6 @@ public class MassDeleteController extends BulkControllerBase {
      */
     public ModelAndView massDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 
-        webSecurityChecker.checkRoleProperty(DeviceActionsRole.MASS_DELETE);
-        
         ModelAndView mav = new ModelAndView("massDelete/massDeleteConfirm.jsp");
         
         // pass along deviceCollection
@@ -83,8 +83,6 @@ public class MassDeleteController extends BulkControllerBase {
      */
     public ModelAndView doMassDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 
-        webSecurityChecker.checkRoleProperty(DeviceActionsRole.MASS_DELETE);
-        
         ModelAndView mav = null;
         String cancelButton = ServletRequestUtils.getStringParameter(request, "cancelButton", null);
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
@@ -92,24 +90,29 @@ public class MassDeleteController extends BulkControllerBase {
         // CANCEL
         if (cancelButton != null) {
             
-            mav = new ModelAndView("collectionActions.jsp");
-            mav.addObject("deviceCollection", deviceCollection);
+            Map<String, String> collectionParameters = deviceCollection.getCollectionParameters();
+            String queryString = ServletUtil.buildSafeQueryStringFromMap(collectionParameters, true);
+            String url = "/spring/bulk/collectionActions?" + queryString;
+            url = ServletUtil.createSafeUrl(request, url);
+            
+            // redirect
+            mav = new ModelAndView("redirect:" + url);
+            return mav;
         
         // DO CHANGE
         } else {
             
             // create a temp group
-            final StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup(null);
             final StoredDeviceGroup processingExceptionGroup = temporaryDeviceGroupService.createTempGroup(null);
             
             // init callcback, use a TranslatingBulkProcessorCallback to get from UpdateableDevice to YukonDevice
-            MassDeleteCallbackResults bulkOperationCallbackResults = new MassDeleteCallbackResults(successGroup, processingExceptionGroup, deviceGroupMemberEditorDao, deviceGroupCollectionHelper, new ArrayList<BulkFieldColumnHeader>(0), BulkOperationTypeEnum.MASS_DELETE, deviceCollection.getDeviceCount());
+            MassDeleteCallbackResults bulkOperationCallbackResults = new MassDeleteCallbackResults(processingExceptionGroup, deviceGroupMemberEditorDao, deviceGroupCollectionHelper, new ArrayList<BulkFieldColumnHeader>(0), BulkOperationTypeEnum.MASS_DELETE, deviceCollection.getDeviceCount());
             
             // STORE RESULTS INFO TO CACHE
             String id = StringUtils.replace(UUID.randomUUID().toString(), "-", "");
             bulkOperationCallbackResults.setResultsId(id);
-            MassChangeFileInfo massChangeFileInfo = new MassChangeFileInfo(deviceCollection, null);
-            bulkOperationCallbackResults.setBulkFileInfo(massChangeFileInfo);
+            DeviceCollectionContainingFileInfo deviceCollectionContainingFileInfo = new DeviceCollectionContainingFileInfo(deviceCollection);
+            bulkOperationCallbackResults.setBulkFileInfo(deviceCollectionContainingFileInfo);
             recentBulkOperationResultsCache.addResult(id, bulkOperationCallbackResults);
             
             // PROCESS
@@ -151,18 +154,11 @@ public class MassDeleteController extends BulkControllerBase {
      */
     public ModelAndView massDeleteResults(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 
-        webSecurityChecker.checkRoleProperty(DeviceActionsRole.MASS_DELETE);
-        
         ModelAndView mav = new ModelAndView("massDelete/massDeleteResults.jsp");
 
         // result info
         String resultsId = ServletRequestUtils.getRequiredStringParameter(request, "resultsId");
         MassDeleteCallbackResults bulkOperationCallbackResults = (MassDeleteCallbackResults)recentBulkOperationResultsCache.getResult(resultsId);
-        
-        // file info
-        MassChangeFileInfo massChangeFileInfo = (MassChangeFileInfo)bulkOperationCallbackResults.getBulkFileInfo();
-        
-        mav.addObject("deviceCollection", massChangeFileInfo.getDeviceCollection());
         mav.addObject("bulkUpdateOperationResults", bulkOperationCallbackResults);
 
         return mav;
@@ -178,11 +174,6 @@ public class MassDeleteController extends BulkControllerBase {
     public void setRecentBulkOperationResultsCache(
             RecentResultsCache<BulkOperationCallbackResults<?>> recentBulkOperationResultsCache) {
         this.recentBulkOperationResultsCache = recentBulkOperationResultsCache;
-    }
-    
-    @Autowired
-    public void setWebSecurityChecker(WebSecurityChecker webSecurityChecker) {
-        this.webSecurityChecker = webSecurityChecker;
     }
     
     @Required

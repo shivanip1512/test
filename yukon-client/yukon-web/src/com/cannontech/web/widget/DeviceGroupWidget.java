@@ -24,10 +24,12 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroupHierarchy;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.service.ModifiableDeviceGroupPredicate;
+import com.cannontech.core.dao.AuthDao;
 import com.cannontech.roles.operator.DeviceActionsRole;
+import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.group.DeviceGroupTreeUtils;
 import com.cannontech.web.group.NodeAttributeSettingCallback;
-import com.cannontech.web.security.WebSecurityChecker;
 import com.cannontech.web.util.ExtTreeNode;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
@@ -42,7 +44,7 @@ public class DeviceGroupWidget extends WidgetControllerBase {
     private DeviceGroupEditorDao deviceGroupEditorDao;
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     private MeterDao meterDao;
-    private WebSecurityChecker webSecurityChecker = null;
+    private AuthDao authDao;
 
     /**
      * This method renders the default deviceGroupWidget
@@ -130,8 +132,9 @@ public class DeviceGroupWidget extends WidgetControllerBase {
     public ModelAndView remove(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
-        webSecurityChecker.checkRole(DeviceActionsRole.ROLEID);
-        webSecurityChecker.checkRoleProperty(DeviceActionsRole.DEVICE_GROUP_MODIFY);
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+        authDao.verifyRole(userContext.getYukonUser(), DeviceActionsRole.ROLEID);
+        authDao.verifyTrueProperty(userContext.getYukonUser(), DeviceActionsRole.DEVICE_GROUP_MODIFY);
         
         // Gets the parameters from the request
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request,
@@ -161,8 +164,9 @@ public class DeviceGroupWidget extends WidgetControllerBase {
     public ModelAndView add(HttpServletRequest request, HttpServletResponse response)
             throws Exception {
 
-        webSecurityChecker.checkRole(DeviceActionsRole.ROLEID);
-        webSecurityChecker.checkRoleProperty(DeviceActionsRole.DEVICE_GROUP_MODIFY);
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+        authDao.verifyRole(userContext.getYukonUser(), DeviceActionsRole.ROLEID);
+        authDao.verifyTrueProperty(userContext.getYukonUser(), DeviceActionsRole.DEVICE_GROUP_MODIFY);
         
         // Gets the parameters from the request
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
@@ -210,7 +214,7 @@ public class DeviceGroupWidget extends WidgetControllerBase {
     }
 
     @Autowired
-    public void setWebSecurityChecker(WebSecurityChecker webSecurityChecker) {
-        this.webSecurityChecker = webSecurityChecker;
+    public void setAuthDao(AuthDao authDao) {
+        this.authDao = authDao;
     }
 }
