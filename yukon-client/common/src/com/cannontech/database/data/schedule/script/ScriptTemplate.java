@@ -337,9 +337,9 @@ public class ScriptTemplate {
             // this is the old syntax, decode
             String groupTypeStr = getParameterValue(type);
             FixedDeviceGroups groupType = FixedDeviceGroups.COLLECTIONGROUP;
-            if ("altgroup".equals(groupTypeStr)) {
+            if ("altgroup".equalsIgnoreCase(groupTypeStr)) {
                 groupType = FixedDeviceGroups.TESTCOLLECTIONGROUP;
-            } else if ("billgroup".equals(groupTypeStr)) {
+            } else if ("billgroup".equalsIgnoreCase(groupTypeStr)) {
                 groupType = FixedDeviceGroups.BILLINGGROUP;
             }
             

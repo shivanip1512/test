@@ -2268,7 +2268,6 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     /**
      * 
      */
-    @SuppressWarnings("unchecked")
     private void loadParamMapFromSwingComp() {
         //Some of the flag parameters are set throughout the code, i.e. on item change and panel load.
         
@@ -2280,9 +2279,12 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
         getScriptTemplate().setParameterValue(SCRIPT_FILE_NAME_PARAM, fileName);
         getScriptTemplate().setParameterValue(SCRIPT_DESC_PARAM, getDescriptionTextField().getText());
         DeviceGroupTreeFactory modelFactory = YukonSpringHook.getBean("deviceGroupTreeFactory", DeviceGroupTreeFactory.class);
-        DeviceGroup group = modelFactory.getGroupForPath(getMeterReadGroupTree().getSelectionPath());
-        getScriptTemplate().setParameterValue(GROUP_NAME_PARAM, group.getFullName());
-    
+        if(getMeterReadGroupTree().getSelectionPath() != null) {
+            DeviceGroup group = modelFactory.getGroupForPath(getMeterReadGroupTree().getSelectionPath());
+            getScriptTemplate().setParameterValue(GROUP_NAME_PARAM, group.getFullName());
+        } else {
+            getScriptTemplate().setParameterValue(GROUP_NAME_PARAM, "");
+        }
         getScriptTemplate().setParameterValue(PORTER_TIMEOUT_PARAM, getPorterTimeoutTextField().getText());
         getScriptTemplate().setParameterValue(FILE_PATH_PARAM, getFilePathTextField().getText());
         getScriptTemplate().setParameterValue(MISSED_FILE_NAME_PARAM, getMissedFileNameTextField().getText());
