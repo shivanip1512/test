@@ -22,13 +22,7 @@
         <cti:crumbLink url="/spring/bulk/deviceSelection" title="${deviceSelectionPageTitle}"/>
         
         <%-- collection actions --%>
-        <c:url var="collectionActionsUrl" value="/spring/bulk/collectionActions">
-            <c:forEach var="deviceCollectionParam" items="${deviceCollection.collectionParameters}">
-                <c:param name="${deviceCollectionParam.key}" value="${deviceCollectionParam.value}"/>
-            </c:forEach>
-        </c:url>
-        <cti:msg var="collectionActionsPageTitle" key="yukon.common.device.bulk.collectionActions.pageTitle"/>
-        <cti:crumbLink url="${collectionActionsUrl}" title="${collectionActionsPageTitle}" />
+        <tags:collectionActionsCrumbLink deviceCollection="${deviceCollection}" />
         
         <%-- mass delete --%>
         <cti:crumbLink>${pageTitle}</cti:crumbLink>
@@ -40,10 +34,8 @@
     <br>
     
     <%-- BOX --%>
-    <tags:bulkActionContainer   titleKey="yukon.common.device.bulk.changeDeviceTypeChoose.header" 
-                            noteLabelKey="yukon.common.device.bulk.changeDeviceTypeChoose.noteLabel"
-                            noteTextKey="yukon.common.device.bulk.changeDeviceTypeChoose.noteText"
-                            deviceCollection="${deviceCollection}">
+    <tags:bulkActionContainer   key="yukon.common.device.bulk.changeDeviceTypeChoose" 
+                                deviceCollection="${deviceCollection}">
     
     
         <form id="changeTypeForm" method="post" action="/spring/bulk/changeDeviceType/changeDeviceType">

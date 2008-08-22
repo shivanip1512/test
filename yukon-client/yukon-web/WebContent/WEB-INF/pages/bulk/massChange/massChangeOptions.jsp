@@ -23,13 +23,7 @@
         <cti:crumbLink url="/spring/bulk/deviceSelection" title="${deviceSelectionPageTitle}"/>
         
         <%-- collection actions --%>
-        <c:url var="collectionActionsUrl" value="/spring/bulk/collectionActions">
-            <c:forEach var="deviceCollectionParam" items="${deviceCollection.collectionParameters}">
-                <c:param name="${deviceCollectionParam.key}" value="${deviceCollectionParam.value}"/>
-            </c:forEach>
-        </c:url>
-        <cti:msg var="collectionActionsPageTitle" key="yukon.common.device.bulk.collectionActions.pageTitle"/>
-        <cti:crumbLink url="${collectionActionsUrl}" title="${collectionActionsPageTitle}" />
+        <tags:collectionActionsCrumbLink deviceCollection="${deviceCollection}" />
         
         <%-- mass change options --%>
         <c:url var="massChangeSelectUrl" value="/spring/bulk/massChange/massChangeSelect">
@@ -51,7 +45,7 @@
     <br>
     
     <%-- BOX --%>
-    <tags:bulkActionContainer   titleKey="yukon.common.device.bulk.massChangeOptions.${massChangeBulkFieldName}.header" 
+    <tags:bulkActionContainer   key="yukon.common.device.bulk.massChangeOptions.${massChangeBulkFieldName}" 
                                 deviceCollection="${deviceCollection}">
                                 
         <c:if test="${not empty statusMsg}">

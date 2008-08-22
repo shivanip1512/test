@@ -46,9 +46,7 @@ function showElementsOnComplete(totalCount, elementsToShow) {
             // sometimes not all elements passed in will actually be available on page
             // success div for mass delete for example
             $A(elementsToShow).each(function(el) {
-                try {
-                    $(el).show();
-                } catch(e) {}
+                $(el).show();
             });
         }
     };

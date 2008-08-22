@@ -24,7 +24,7 @@
 	<h2>Group Processing</h2>
   <br>
   
-    <tags:bulkActionContainer titleKey="yukon.common.device.group.pageTitle" deviceCollection="${deviceCollection}">
+    <tags:bulkActionContainer key="yukon.common.device.group" deviceCollection="${deviceCollection}">
   
 	
 	<c:if test="${errorMsg != null}">

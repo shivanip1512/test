@@ -138,9 +138,11 @@
     <!-- massChangeOptions.jsp -->
     <entry key="yukon.common.device.bulk.massChangeOptions.pageTitle">Mass Change Options</entry>
     <entry key="yukon.common.device.bulk.massChangeOptions.route.header">Select Route To Change Selected Devices To:</entry>
+    <entry key="yukon.common.device.bulk.massChangeOptions.route.noteLabel"></entry>
+    <entry key="yukon.common.device.bulk.massChangeOptions.route.noteText"></entry>
     <entry key="yukon.common.device.bulk.massChangeOptions.enable.header">Choose To Enable Or Disable Selected Devices:</entry>
-    <entry key="yukon.common.device.bulk.massChangeOptions.substation.header">Select Substation To Change Selected Devices To:</entry>
-    <entry key="yukon.common.device.bulk.massChangeOptions.deviceType.header">Select Type To Change Selected Devices To:</entry>
+    <entry key="yukon.common.device.bulk.massChangeOptions.enable.noteLabel"></entry>
+    <entry key="yukon.common.device.bulk.massChangeOptions.enable.noteText"></entry>
     
     <!-- massChangeResults.jsp -->
     <entry key="yukon.common.device.bulk.massChangeResults.pageTitle">Mass Change Results</entry>

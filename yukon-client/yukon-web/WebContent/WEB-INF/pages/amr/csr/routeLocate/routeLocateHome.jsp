@@ -18,13 +18,7 @@
         <cti:crumbLink url="/spring/bulk/deviceSelection" title="${deviceSelectionPageTitle}"/>
         
         <%-- collection actions --%>
-        <c:url var="collectionActionsUrl" value="/spring/bulk/collectionActions">
-            <c:forEach var="deviceCollectionParam" items="${deviceCollection.collectionParameters}">
-                <c:param name="${deviceCollectionParam.key}" value="${deviceCollectionParam.value}"/>
-            </c:forEach>
-        </c:url>
-        <cti:msg var="collectionActionsPageTitle" key="yukon.common.device.bulk.collectionActions.pageTitle"/>
-        <cti:crumbLink url="${collectionActionsUrl}" title="${collectionActionsPageTitle}" />
+        <tags:collectionActionsCrumbLink deviceCollection="${deviceCollection}" />
         
         <%-- locate route --%>
         <cti:crumbLink>${pageTitle}</cti:crumbLink>
@@ -40,9 +34,7 @@
     <h2>${pageTitle}</h2>
     <br>
                 
-    <tags:bulkActionContainer   titleKey="yukon.web.modules.amr.routeLocateHome.boxTitle" 
-                                noteLabelKey="yukon.web.modules.amr.routeLocateHome.noteLabel"
-                                noteTextKey="yukon.web.modules.amr.routeLocateHome.noteText"
+    <tags:bulkActionContainer   key="yukon.web.modules.amr.routeLocateHome" 
                                 deviceCollection="${deviceCollection}">
         
         <%-- ERROR MSG --%>

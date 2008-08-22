@@ -22,13 +22,7 @@
         <cti:crumbLink url="/spring/bulk/deviceSelection" title="${deviceSelectionPageTitle}"/>
         
         <%-- collection actions --%>
-        <c:url var="collectionActionsUrl" value="/spring/bulk/collectionActions">
-            <c:forEach var="deviceCollectionParam" items="${deviceCollection.collectionParameters}">
-                <c:param name="${deviceCollectionParam.key}" value="${deviceCollectionParam.value}"/>
-            </c:forEach>
-        </c:url>
-        <cti:msg var="collectionActionsPageTitle" key="yukon.common.device.bulk.collectionActions.pageTitle"/>
-        <cti:crumbLink url="${collectionActionsUrl}" title="${collectionActionsPageTitle}" />
+        <tags:collectionActionsCrumbLink deviceCollection="${deviceCollection}" />
         
         <%-- mass delete --%>
         <cti:crumbLink>${pageTitle}</cti:crumbLink>
@@ -40,13 +34,29 @@
     <br>
     
     <%-- BOX --%>
-    <tags:bulkActionContainer   titleKey="yukon.common.device.bulk.massDeleteConfirm.header" 
-                            noteLabelKey="yukon.common.device.bulk.massDeleteConfirm.noteLabel"
-                            noteLabelStyle="color:#CC0000;"
-                            noteTextKey="yukon.common.device.bulk.massDeleteConfirm.noteText"
-                            noteTextArguments="${deviceCount}"
-                            deviceCollection="${deviceCollection}">
+    <cti:msg var="headerTitle" key="yukon.common.device.bulk.massDeleteConfirm.header"/>
+    <tags:boxContainer title="${headerTitle}" id="collectionActionsContainer" hideEnabled="false">
     
+        <%-- SELECTED DEVICES POPUP, NOTE TO USER --%>
+        <table cellpadding="2">
+        
+            <tr>
+                <td valign="top" colspan="2" class="smallBoldLabel">
+                    <tags:selectedDevices deviceCollection="${deviceCollection}" id="selectedDevices"/>
+                </td>
+            </tr>
+            
+            <%-- NOTE --%>
+            <tr>
+                <td valign="top" class="smallBoldLabel errorRed">
+                    <cti:msg key="yukon.common.device.bulk.massDeleteConfirm.noteLabel"/>
+                </td>
+                <td style="font-size:11px;">
+                    <cti:msg key="yukon.common.device.bulk.massDeleteConfirm.noteText" arguments="${deviceCount}" />
+                </td>
+            </tr>
+        </table>
+        <br>
     
         <form id="massDeleteForm" method="post" action="/spring/bulk/massDelete/doMassDelete">
         
@@ -61,6 +71,6 @@
             
         </form>
             
-    </tags:bulkActionContainer>
+    </tags:boxContainer>
     
 </cti:standardPage>

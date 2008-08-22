@@ -4,14 +4,11 @@
 
     <!-- RESULTS routeLocateResults.jsp -->
     <entry key="yukon.web.modules.amr.routeLocateResults.pageTitle">Locate Route Results</entry>
-    <entry key="yukon.web.modules.amr.routeLocateResults.boxTitle">Results</entry>
+    <entry key="yukon.web.modules.amr.routeLocateResults.header">Results</entry>
     
     <entry key="yukon.web.modules.amr.routeLocateResults.noteLabel">Note:</entry>
-    <entry key="yukon.web.modules.amr.routeLocateResults.noteTextAutoSetEnabled"><![CDATA[
-        Automatic Route Updating is Enabled.<br>When locating completes, the "View Routes" button will become enabled to allow you to view updated routes.
-    ]]></entry>
-    <entry key="yukon.web.modules.amr.routeLocateResults.noteTextAutoSetDisabled"><![CDATA[
-        Automatic Route Updating is Disabled.<br>When locating completes, the "Set Routes" button will become enabled to allow you to set found routes.
+    <entry key="yukon.web.modules.amr.routeLocateResults.noteText"><![CDATA[
+        When locating completes, the "View/Set Routes" button will become enabled to allow you to view or set updated routes.
     ]]></entry>
     
     <entry key="yukon.web.modules.amr.routeLocateResults.progressLabel">Progress</entry>

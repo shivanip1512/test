@@ -1,7 +1,5 @@
-<%@ attribute name="titleKey" required="true" type="java.lang.String"%>
-<%@ attribute name="noteLabelKey" required="false" type="java.lang.String"%>
+<%@ attribute name="key" required="true" type="java.lang.String"%>
 <%@ attribute name="noteLabelStyle" required="false" type="java.lang.String"%>
-<%@ attribute name="noteTextKey" required="false" type="java.lang.String"%>
 <%@ attribute name="noteTextArguments" required="false" type="java.lang.String"%>
 <%@ attribute name="deviceCollection" required="false" type="com.cannontech.common.bulk.collection.DeviceCollection"%>
 
@@ -9,7 +7,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:msg var="headerTitle" key="${titleKey}"/>
+<cti:msg var="headerTitle" key="${key}.header"/>
 <tags:boxContainer title="${headerTitle}" id="collectionActionsContainer" hideEnabled="false">
 
     <%-- SELECTED DEVICES POPUP, NOTE TO USER --%>
@@ -24,11 +22,14 @@
         </c:if>
         
         <%-- NOTE --%>
-        <c:if test="${not empty noteLabelKey && not empty noteTextKey}">
+        <cti:msg var="noteLabel" key="${key}.noteLabel"/>
+        <cti:msg var="noteText" key="${key}.noteText" arguments="${noteTextArguments}" />
+        
+        <c:if test="${not empty noteLabel && not empty noteText}">
             <tr>
-                <td valign="top" class="smallBoldLabel" <c:if test="${not empty noteLabelStyle}">style="${noteLabelStyle}"</c:if>><cti:msg key="${noteLabelKey}"/></td>
+                <td valign="top" class="smallBoldLabel" <c:if test="${not empty noteLabelStyle}">style="${noteLabelStyle}"</c:if>>${noteLabel}</td>
                 <td style="font-size:11px;">
-                    <cti:msg key="${noteTextKey}" arguments="${noteTextArguments}" />
+                    ${noteText}
                 </td>
             </tr>
         </c:if>

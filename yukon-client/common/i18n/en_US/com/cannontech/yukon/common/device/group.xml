@@ -2,5 +2,8 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
     <entry key="yukon.common.device.group.pageTitle">Group Commander</entry>
+    <entry key="yukon.common.device.group.header">Group Commander</entry>
+    <entry key="yukon.common.device.group.noteLabel"></entry>
+    <entry key="yukon.common.device.group.noteText"></entry>
 
 </properties>

@@ -13,9 +13,9 @@ public class MassDeleteCallbackResults extends MassChangeCallbackResults {
 
     private long initialDeviceCount = 0;
     
-    public MassDeleteCallbackResults(StoredDeviceGroup successGroup, StoredDeviceGroup processingExceptionGroup, DeviceGroupMemberEditorDao deviceGroupMemberEditorDao, DeviceGroupCollectionHelper deviceGroupCollectionHelper, List<BulkFieldColumnHeader> bulkFieldColumnHeaders, BulkOperationTypeEnum bulkOperationType, long initialDeviceCount) {
+    public MassDeleteCallbackResults(StoredDeviceGroup processingExceptionGroup, DeviceGroupMemberEditorDao deviceGroupMemberEditorDao, DeviceGroupCollectionHelper deviceGroupCollectionHelper, List<BulkFieldColumnHeader> bulkFieldColumnHeaders, BulkOperationTypeEnum bulkOperationType, long initialDeviceCount) {
 
-        super(successGroup, processingExceptionGroup, deviceGroupMemberEditorDao, deviceGroupCollectionHelper, bulkFieldColumnHeaders, bulkOperationType);
+        super(null, processingExceptionGroup, deviceGroupMemberEditorDao, deviceGroupCollectionHelper, bulkFieldColumnHeaders, bulkOperationType);
         this.deviceGroupCollectionHelper = deviceGroupCollectionHelper;
         this.startTime = new Date();
         this.bulkFieldColumnHeaders = bulkFieldColumnHeaders;

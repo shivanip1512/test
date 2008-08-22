@@ -30,9 +30,7 @@
     <h2>${pageTitle}</h2>
     <br>
 
-    <tags:bulkActionContainer   titleKey="yukon.common.device.bulk.collectionActions.header" 
-                                noteLabelKey="yukon.common.device.bulk.collectionActions.noteLabel"
-                                noteTextKey="yukon.common.device.bulk.collectionActions.noteText"
+    <tags:bulkActionContainer   key="yukon.common.device.bulk.collectionActions" 
                                 deviceCollection="${deviceCollection}">
         
         <%-- LABELS AND DESCRIPTIONS --%>

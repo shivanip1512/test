@@ -5,8 +5,6 @@
 <%@ attribute name="resultsTypeMsgKey" required="true" type="java.lang.String"%>
 <%@ attribute name="totalCount" required="true" type="java.lang.Integer"%>
 <%@ attribute name="bulkUpdateOperationResults" required="true" type="com.cannontech.common.bulk.service.BulkOperationCallbackResults"%>
-<%@ attribute name="isMassChange" required="true" type="java.lang.Boolean"%>
-<%@ attribute name="isMassDelete" required="true" type="java.lang.Boolean"%>
 
 <c:set var="resultsId" value="${bulkUpdateOperationResults.resultsId}" />
 
@@ -71,7 +69,7 @@
 <br>
 <div class="normalBoldLabel"><cti:msg key="yukon.common.device.bulk.${resultsTypeMsgKey}Results.successLabel" />: <span style="color:#006633;"><cti:dataUpdaterValue type="BULKRESULT" identifier="${resultsId}/SUCCESS_COUNT"/></span></div>
 
-<c:if test="${not isMassDelete}">
+<c:if test="${!bulkUpdateOperationResults.massDelete}">
 
     <div id="successActionsDiv" style="padding:10px;display:none;">
     
@@ -82,6 +80,8 @@
         <tags:selectedDevicesPopup deviceCollection="${bulkUpdateOperationResults.successDeviceCollection}" />
     
     </div>
+    
+    <cti:dataUpdaterCallback function="showElementsOnComplete(${totalCount},['successActionsDiv'])" initialize="true" completedCount="BULKRESULT/${resultsId}/COMPLETED_LINES" />
 
 </c:if>
 
@@ -96,7 +96,7 @@
     <c:choose>
                                 
         <%-- MASS CHANGE/DELETE --%>
-        <c:when test="${isMassChange || isMassDelete}">
+        <c:when test="${bulkUpdateOperationResults.massChange || bulkUpdateOperationResults.massDelete}">
             
             <cti:link href="/spring/bulk/collectionActions" key="yukon.common.device.bulk.${resultsTypeMsgKey}Results.collectionActionOnDevicesLabel" class="small">
                 <cti:mapParam value="${bulkUpdateOperationResults.processingExceptionDeviceCollection.collectionParameters}"/>
@@ -124,4 +124,4 @@
 
 </div>
 
-<cti:dataUpdaterCallback function="showElementsOnComplete(${totalCount},['successActionsDiv','errorActionsDiv'])" initialize="true" completedCount="BULKRESULT/${resultsId}/COMPLETED_LINES" />
+<cti:dataUpdaterCallback function="showElementsOnComplete(${totalCount},['errorActionsDiv'])" initialize="true" completedCount="BULKRESULT/${resultsId}/COMPLETED_LINES" />

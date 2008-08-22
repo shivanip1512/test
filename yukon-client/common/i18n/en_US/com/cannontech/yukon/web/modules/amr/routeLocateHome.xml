@@ -4,7 +4,7 @@
 
     <!-- HOME routeLocateHome.jsp -->
     <entry key="yukon.web.modules.amr.routeLocateHome.pageTitle">Locate Route</entry>
-    <entry key="yukon.web.modules.amr.routeLocateHome.boxTitle">Choose Routes</entry>
+    <entry key="yukon.web.modules.amr.routeLocateHome.header">Choose Routes</entry>
     <entry key="yukon.web.modules.amr.routeLocateHome.noteLabel">Note:</entry>
     <entry key="yukon.web.modules.amr.routeLocateHome.noteText">Choose one or more routes. Use the Locate Route button to begin route location for each device.</entry>
     
