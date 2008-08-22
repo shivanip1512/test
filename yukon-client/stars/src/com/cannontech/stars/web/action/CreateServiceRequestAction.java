@@ -1,6 +1,5 @@
 package com.cannontech.stars.web.action;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
@@ -25,12 +24,12 @@ import com.cannontech.database.data.stars.event.EventWorkOrder;
 import com.cannontech.database.db.stars.integration.SAMToCRS_PTJ;
 import com.cannontech.database.db.stars.report.WorkOrderBase;
 import com.cannontech.servlet.YukonUserContextUtils;
-import com.cannontech.stars.util.AbstractFilter;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.FilterWrapper;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
-import com.cannontech.stars.util.WorkOrderFilter;
+import com.cannontech.stars.util.filter.AbstractFilter;
+import com.cannontech.stars.util.filter.WorkOrderFilter;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.bean.WorkOrderBean;
 import com.cannontech.stars.web.util.WorkOrderManagerUtil;
@@ -113,7 +112,7 @@ public class CreateServiceRequestAction implements ActionBase {
                 
                 WorkOrderBean workOrderBean = (WorkOrderBean) session.getAttribute("workOrderBean");
                 if (workOrderBean != null) {
-                    this.addWorkOrderToBean(workOrderBean, liteOrder);
+                    this.addWorkOrderToBean(workOrderBean, energyCompany);
                 }
             }
             catch (WebClientException e) {
@@ -249,8 +248,7 @@ public class CreateServiceRequestAction implements ActionBase {
 			workOrder.getWorkOrderBase().setAccountID( new Integer(liteAcctInfo.getAccountID()) );
 		workOrder.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
         
-		workOrder = (com.cannontech.database.data.stars.report.WorkOrderBase)
-				Transaction.createTransaction(Transaction.INSERT, workOrder).execute();
+		workOrder = Transaction.createTransaction(Transaction.INSERT, workOrder).execute();
         
 		//New event!
 		Date eventTimestamp = createOrder.getDateReported();
@@ -278,11 +276,11 @@ public class CreateServiceRequestAction implements ActionBase {
 		return createServiceRequest(createOrder, liteAcctInfo, energyCompany, userID, true);
 	}
     
-    private void addWorkOrderToBean(final WorkOrderBean workOrderBean, final LiteWorkOrderBase liteWorkOrderBase) {
+    private void addWorkOrderToBean(WorkOrderBean workOrderBean, LiteStarsEnergyCompany energyCompany) {
         final List<FilterWrapper> filterList = workOrderBean.getFilters();
         if(filterList != null) {
-            final AbstractFilter<LiteWorkOrderBase> filter = new WorkOrderFilter();
-            final List<LiteWorkOrderBase> filteredWorkOrderList = filter.filter(Arrays.asList(liteWorkOrderBase), filterList); 
+            final AbstractFilter<LiteWorkOrderBase> filter = new WorkOrderFilter(energyCompany);
+            final List<LiteWorkOrderBase> filteredWorkOrderList = filter.filter(filterList); 
             if (filteredWorkOrderList.size() > 0) {
                 List<LiteWorkOrderBase> workOrderList = workOrderBean.getWorkOrderList();
                 synchronized (workOrderList) {

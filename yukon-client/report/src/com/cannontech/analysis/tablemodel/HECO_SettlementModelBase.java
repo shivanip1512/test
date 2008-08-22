@@ -24,7 +24,6 @@ import com.cannontech.analysis.data.lm.SettlementCustomer;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -36,6 +35,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompanyFactory;
 import com.cannontech.database.db.customer.CICustomerPointData;
 import com.cannontech.database.db.pao.LMControlHistory;
 import com.cannontech.database.db.point.RawPointHistory;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.util.SettlementConfigFuncs;
 
 /**
@@ -649,8 +649,11 @@ public class HECO_SettlementModelBase extends ReportModelBase
 	{
 		if( liteStarsEC == null)
 		{
-			if (getEnergyCompanyID() != null)
-				liteStarsEC = LiteStarsEnergyCompanyFactory.createEnergyCompany(getEnergyCompanyID().intValue());
+			if (getEnergyCompanyID() != null) {
+			    LiteStarsEnergyCompanyFactory factory = 
+			        YukonSpringHook.getBean("liteStarsEnergyCompanyFactory", LiteStarsEnergyCompanyFactory.class);
+				liteStarsEC = factory.createEnergyCompany(getEnergyCompanyID().intValue());
+			}	
 		}
 		return liteStarsEC;
 	}

@@ -21,6 +21,7 @@ import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
@@ -149,7 +150,9 @@ public class NewEnergyCompanyController extends StarsAdminActionController {
                     );
                     stmt.execute();
 
-                    LiteStarsEnergyCompany newCompany = LiteStarsEnergyCompanyFactory.createEnergyCompany(company);
+                    LiteStarsEnergyCompanyFactory factory = 
+                        YukonSpringHook.getBean("liteStarsEnergyCompanyFactory", LiteStarsEnergyCompanyFactory.class);
+                    LiteStarsEnergyCompany newCompany = factory.createEnergyCompany(company);
                     newCompany.setInventoryLoaded( true );
                     newCompany.setWorkOrdersLoaded( true );
 

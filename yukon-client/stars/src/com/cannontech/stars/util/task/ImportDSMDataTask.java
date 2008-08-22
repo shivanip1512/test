@@ -889,7 +889,9 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 						CtiUtilities.getDatabaseAlias() );
 				stmt.execute();
 				
-				LiteStarsEnergyCompany member = LiteStarsEnergyCompanyFactory.createEnergyCompany(company );
+				LiteStarsEnergyCompanyFactory factory = 
+                    YukonSpringHook.getBean("liteStarsEnergyCompanyFactory", LiteStarsEnergyCompanyFactory.class);
+				LiteStarsEnergyCompany member = factory.createEnergyCompany(company);
 				StarsDatabaseCache.getInstance().addEnergyCompany( member );
 				ServerUtils.handleDBChange( member, DBChangeMsg.CHANGE_TYPE_ADD );
 				

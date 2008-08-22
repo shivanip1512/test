@@ -5,38 +5,24 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.core.dao.AddressDao;
 import com.cannontech.database.db.company.EnergyCompany;
-import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsRowCountDao;
 
 public class LiteStarsEnergyCompanyFactory {
-    private static LiteStarsEnergyCompanyFactory instance;
     private AddressDao addressDao;
     private StarsRowCountDao starsRowCountDao;
     private StarsInventoryBaseDao starsInventoryBaseDao;
     private StarsCustAccountInformationDao starsCustAccountInformationDao;
     private SimpleJdbcTemplate simpleJdbcTemplate;
     
-    private LiteStarsEnergyCompanyFactory() {
-        
-    }
-    
-    public static LiteStarsEnergyCompany createEnergyCompany(final int energyCompanyId) {
-        return getInstance().create(energyCompanyId);
-    }
-    
-    public static LiteStarsEnergyCompany createEnergyCompany(final EnergyCompany energyCompany) {
-        return getInstance().create(energyCompany);
-    }
-    
-    private LiteStarsEnergyCompany create(EnergyCompany energyCompany) {
+    public LiteStarsEnergyCompany createEnergyCompany(EnergyCompany energyCompany) {
         LiteStarsEnergyCompany liteStarsEnergyCompany = new LiteStarsEnergyCompany(energyCompany);
         applyPropertySetters(liteStarsEnergyCompany);
         return liteStarsEnergyCompany;
     }
     
-    private LiteStarsEnergyCompany create(int energyCompanyId) {
+    public LiteStarsEnergyCompany createEnergyCompany(int energyCompanyId) {
         LiteStarsEnergyCompany energyCompany = new LiteStarsEnergyCompany(energyCompanyId);
         applyPropertySetters(energyCompany);
         return energyCompany;
@@ -48,13 +34,6 @@ public class LiteStarsEnergyCompanyFactory {
         energyCompany.setStarsInventoryBaseDao(starsInventoryBaseDao);
         energyCompany.setStarsCustAccountInformationDao(starsCustAccountInformationDao);
         energyCompany.setSimpleJdbcTemplate(simpleJdbcTemplate);
-    }
-    
-    private static synchronized LiteStarsEnergyCompanyFactory getInstance() {
-        if (instance == null) {
-            instance = YukonSpringHook.getBean("liteStarsEnergyCompanyFactory", LiteStarsEnergyCompanyFactory.class);
-        }    
-        return instance;
     }
     
     @Autowired

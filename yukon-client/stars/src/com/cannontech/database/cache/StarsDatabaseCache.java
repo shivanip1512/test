@@ -234,9 +234,12 @@ public class StarsDatabaseCache implements DBChangeListener {
             
             if (companies == null) return null;
 	    	
+            LiteStarsEnergyCompanyFactory factory = 
+                YukonSpringHook.getBean("liteStarsEnergyCompanyFactory", LiteStarsEnergyCompanyFactory.class);
+            
             synchronized (energyCompanies) {
                 for (int i = 0; i < companies.length; i++)
-                    energyCompanies.add(LiteStarsEnergyCompanyFactory.createEnergyCompany(companies[i]));
+                    energyCompanies.add(factory.createEnergyCompany(companies[i]));
             }
 	    	
 	    	CTILogger.info( "All energy companies loaded" );
