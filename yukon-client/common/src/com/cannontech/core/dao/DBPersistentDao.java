@@ -3,7 +3,6 @@ package com.cannontech.core.dao;
 import java.util.List;
 
 import com.cannontech.database.data.lite.LiteBase;
-import com.cannontech.database.data.multi.MultiDBPersistent;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 
@@ -34,7 +33,7 @@ public interface DBPersistentDao {
      * @param items
      * @param transactionType
      */
-    public void performDBChangeWithNoMsg(MultiDBPersistent multiDBPersistent, int transactionType);
+    public void performDBChangeWithNoMsg(DBPersistent dbPersistent, int transactionType);
 
     /**
      * Process a db change message

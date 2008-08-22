@@ -33,7 +33,6 @@ import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.database.db.point.Point;
 import com.cannontech.device.range.DeviceAddressRange;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 
@@ -177,29 +176,21 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         
         int deviceId = device.getPAObjectID();
         
-        try {
-            
-            MultiDBPersistent pointsToAdd = new MultiDBPersistent();
-            Vector<DBPersistent> newPoints = new Vector<DBPersistent>(points.size());
+        MultiDBPersistent pointsToAdd = new MultiDBPersistent();
+        Vector<DBPersistent> newPoints = new Vector<DBPersistent>(points.size());
 
-            for (PointBase point : points) {
+        for (PointBase point : points) {
+        
+            int nextPointId = pointDao.getNextPointId();
+            point.setPointID(nextPointId);
+            point.getPoint().setPaoID(deviceId);
             
-                int nextPointId = pointDao.getNextPointId();
-                point.setPointID(nextPointId);
-                point.getPoint().setPaoID(deviceId);
-                
-                newPoints.add(point);
-            }
-            
-            // insert
-            pointsToAdd.setDBPersistentVector(newPoints);
-            Transaction.createTransaction(Transaction.INSERT, pointsToAdd).execute();
-            
-            //Do not sent a DBChange for points, the device dbChange should handle it on the server side.
+            newPoints.add(point);
         }
-        catch (TransactionException e) {
-            throw new DeviceCreationException("Could not apply points to new device.", e);
-        }
+        
+        // insert
+        pointsToAdd.setDBPersistentVector(newPoints);
+        dbPersistentDao.performDBChangeWithNoMsg(pointsToAdd, Transaction.INSERT);
     }
     
     private List<PointBase> getPointsForPao(int id) {

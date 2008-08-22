@@ -201,15 +201,15 @@ public class DBPersistentDaoImpl implements DBPersistentDao
 
 
     @Override
-    public void performDBChangeWithNoMsg(MultiDBPersistent multiDBPersistent, int transactionType) {
+    public void performDBChangeWithNoMsg(DBPersistent dbPersistent, int transactionType) {
         
         try {
-            Transaction<?> t = Transaction.createTransaction( transactionType, multiDBPersistent);
+            Transaction<?> t = Transaction.createTransaction( transactionType, dbPersistent);
             t.execute();
             
         } catch( TransactionException e ) {
-            throw new PersistenceException("Unable to save DBPersistent (multi=" + 
-                                           multiDBPersistent + ", transactionType=" + transactionType + ")", e);
+            throw new PersistenceException("Unable to save DBPersistent (dbpersistent=" + 
+                                           dbPersistent + ", transactionType=" + transactionType + ")", e);
         }
     }
 

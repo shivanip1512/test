@@ -26,7 +26,6 @@ import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.multi.MultiDBPersistent;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.DBPersistent;
@@ -158,7 +157,7 @@ public class LongLoadProfileServiceImplTest {
 
             @Override
             public void performDBChangeWithNoMsg(
-                    MultiDBPersistent multiDBPersistent, int transactionType) {
+                    DBPersistent dbPersistent, int transactionType) {
             }
 
         });
