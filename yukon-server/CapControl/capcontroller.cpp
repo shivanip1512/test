@@ -3030,24 +3030,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                         }
                         if (twoWayPts->setTwoWayStatusPointValue(pointID, value))
                         {   
-                            if ( (twoWayPts->getLastControlLocalId() == pointID && twoWayPts->getLastControlLocal() > 0) ||  
-                                 (twoWayPts->getLastControlOvUvId() == pointID && twoWayPts->getLastControlOvUv() > 0) || 
-                                 (twoWayPts->getLastControlNeutralFaultId() == pointID && twoWayPts->getLastControlNeutralFault() > 0) || 
-                                 (twoWayPts->getLastControlScheduledId() == pointID && twoWayPts->getLastControlScheduled() > 0) || 
-                                 (twoWayPts->getLastControlDigitalId()== pointID && twoWayPts->getLastControlDigital() > 0) ||  
-                                 (twoWayPts->getLastControlAnalogId() == pointID && twoWayPts->getLastControlAnalog() > 0) || 
-                                 (twoWayPts->getLastControlTemperatureId() == pointID && twoWayPts->getLastControlTemperature() > 0) ) 
-                            {
-                                currentCapBank->setUnsolicitedChangeTimeUpdated(timestamp);
-                                if ( currentCapBank->getUnsolicitedPendingFlag() )
-                                {    
-                                    handleUnsolicitedMessaging(currentCapBank, currentFeeder, currentSubstationBus, twoWayPts);
-                                    store->removeCapbankFromUnsolicitedCapBankList(currentCapBank);
-                                }
-                                
-                                currentCapBank->setReportedCBCLastControlReason(twoWayPts->getLastControl());
-                            }
-                            else if (twoWayPts->getCapacitorBankStateId() == pointID) 
+                            if (twoWayPts->getCapacitorBankStateId() == pointID) 
                             {
                                 if (currentCapBank->getReportedCBCState() != value &&
                                     currentCapBank->getReportedCBCState() >= 0) 
