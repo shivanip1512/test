@@ -7,6 +7,7 @@ import com.cannontech.common.device.configuration.model.DeviceConfiguration;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DBDeleteResult;
 import com.cannontech.core.dao.DBDeletionDao;
+import com.cannontech.core.dao.MACScheduleDao;
 import com.cannontech.database.data.config.ConfigTwoWay;
 import com.cannontech.database.data.holiday.HolidaySchedule;
 import com.cannontech.database.data.route.RouteBase;
@@ -15,8 +16,8 @@ import com.cannontech.database.data.tou.TOUSchedule;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.device.lm.LMGroup;
+import com.cannontech.database.db.baseline.Baseline;
 import com.cannontech.database.db.device.lm.LMProgramConstraint;
-
 
 /**
  * Insert the type's description here.
@@ -26,6 +27,7 @@ import com.cannontech.database.db.device.lm.LMProgramConstraint;
 public class DBDeletionDaoImpl implements DBDeletionDao 
 {
 	private static final String CR_LF = System.getProperty("line.separator");
+	private static MACScheduleDao macScheduleDao;
       
 	/**
 	 * DBDeletionWarn constructor comment.
@@ -256,6 +258,16 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 			dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "because it is in use by a Constraint.") );
 			return DBDeletionDao.STATUS_DISALLOW;
 		}
+		
+		if( Baseline.usesHolidaySchedule(dbRes.getItemID())) {
+            dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "because it is in use by a Baseline.") );
+            return DBDeletionDao.STATUS_DISALLOW;
+        }
+		
+		if( macScheduleDao.usesHolidaySchedule(dbRes.getItemID())) {
+            dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "because it is in use by a MAC Schedule.") );
+            return DBDeletionDao.STATUS_DISALLOW;
+        }
 	
 		//this object is deleteable
 		return STATUS_ALLOW;
@@ -660,5 +672,10 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 		else
 			return DBDeletionDao.STATUS_DISALLOW;
 	}
+	
+	@SuppressWarnings("static-access")
+    public void setMacScheduleDao(MACScheduleDao macScheduleDao) {
+        this.macScheduleDao = macScheduleDao;
+    }
 
 }

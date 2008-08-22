@@ -37,7 +37,7 @@ public Baseline(Integer id, String name)
 	setBaselineName(name);
 }
 
-public Baseline(Integer id, String name, Integer usedDays, Integer windowPercent, Integer daysCalc, String weekdaysExcluded, Integer usedHolidays )
+public Baseline(Integer id, String name, Integer usedDays, Integer windowPercent, Integer daysCalc, String weekdaysExcluded, Integer holidayScheduleId )
 {
 	super();
 
@@ -47,7 +47,7 @@ public Baseline(Integer id, String name, Integer usedDays, Integer windowPercent
 	setPercentWindow(windowPercent);
 	setCalcDays(daysCalc);
 	setExcludedWeekdays(weekdaysExcluded);
-	setHolidaysUsed(usedHolidays);
+	setHolidayScheduleId(holidayScheduleId);
 }
 
 public void add() throws java.sql.SQLException 
@@ -61,8 +61,6 @@ public void add() throws java.sql.SQLException
 
 public void delete() throws java.sql.SQLException 
 {
-	//com.cannontech.database.db.baseline.Baseline.deleteAllBaselines(getBaseline().getBaselineID(), getDbConnection());
-	
 	getBaseline().delete();	
 }
 
@@ -123,9 +121,9 @@ public String getExcludedWeekdays()
 	return getBaseline().getExcludedWeekdays();
 }
 
-public Integer getHolidaysUsed()
+public Integer getHolidayScheduleId()
 {
-	return getBaseline().getHolidaysUsed();
+	return getBaseline().getHolidayScheduleId();
 }
 
 public void retrieve() throws java.sql.SQLException 
@@ -179,9 +177,9 @@ public void setExcludedWeekdays(String weekdaysExcluded)
 	getBaseline().setExcludedWeekdays(weekdaysExcluded);
 }
 
-public void setHolidaysUsed(Integer usedHolidays)
+public void setHolidayScheduleId(Integer holidayScheduleId)
 {
-	getBaseline().setHolidaysUsed(usedHolidays);
+	getBaseline().setHolidayScheduleId(holidayScheduleId);
 }
 /**
  * Insert the method's description here.

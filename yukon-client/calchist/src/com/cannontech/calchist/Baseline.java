@@ -373,7 +373,7 @@ public class Baseline implements Serializable
 	
 	private boolean isHoliday(GregorianCalendar cal)
 	{
-		HolidaySchedule schedule = new HolidaySchedule(getBaselineProperties().getHolidaysUsed());
+		HolidaySchedule schedule = new HolidaySchedule(getBaselineProperties().getHolidayScheduleId());
 		try
 		{
 			Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, schedule);
@@ -814,7 +814,7 @@ public class Baseline implements Serializable
 					baselineProps.setPercentWindow(new Integer(rset.getInt(2)));
 					baselineProps.setCalcDays(new Integer(rset.getInt(3)));
 					baselineProps.setExcludedWeekdays(rset.getString(4));
-					baselineProps.setHolidaysUsed(new Integer(rset.getInt(5)));
+					baselineProps.setHolidayScheduleId(new Integer(rset.getInt(5)));
 					baselineProps.setBaselineName(rset.getString(6));
 				}
 			}
@@ -884,7 +884,7 @@ public class Baseline implements Serializable
 			baselineProps.setPercentWindow(new Integer(75));
 			baselineProps.setCalcDays(new Integer(5));
 			baselineProps.setExcludedWeekdays("YNNNNNY");
-			baselineProps.setHolidaysUsed(new Integer(0));
+			baselineProps.setHolidayScheduleId(new Integer(0));
 		}
 		return baselineProps;
 	}

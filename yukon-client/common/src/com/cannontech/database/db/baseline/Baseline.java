@@ -1,5 +1,12 @@
 package com.cannontech.database.db.baseline;
 
+import java.util.List;
+
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.jdbc.core.JdbcOperations;
+
+import com.cannontech.database.JdbcTemplateHelper;
+import com.cannontech.database.SqlStatement;
 import com.cannontech.database.SqlUtils;
 
 /**
@@ -15,12 +22,12 @@ public class Baseline extends com.cannontech.database.db.DBPersistent
 	private Integer daysUsed;
 	private Integer calcDays;
 	private String excludedWeekdays;
-	private Integer holidaysUsed;
+	private Integer holidayScheduleId;
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 
 		"BASELINEID", "BASELINENAME", "DAYSUSED", 
-		"PERCENTWINDOW", "CALCDAYS", "EXCLUDEDWEEKDAYS", "HOLIDAYSUSED" 
+		"PERCENTWINDOW", "CALCDAYS", "EXCLUDEDWEEKDAYS", "HOLIDAYSCHEDULEID" 
 	};
 
 	public static final String CONSTRAINT_COLUMNS[] = { "baselineID" };
@@ -36,7 +43,7 @@ public Baseline() {
 /**
  * Baseline constructor comment.
  */
-public Baseline(Integer baseID, String name, Integer day, Integer pWindow, Integer cDay, String wDays, Integer holidays) {
+public Baseline(Integer baseID, String name, Integer day, Integer pWindow, Integer cDay, String wDays, Integer holidayScheduleId) {
 	super();
 	baselineID = baseID;
 	baselineName = name;
@@ -44,7 +51,7 @@ public Baseline(Integer baseID, String name, Integer day, Integer pWindow, Integ
 	daysUsed = day;
 	calcDays = cDay;
 	excludedWeekdays = wDays;
-	holidaysUsed = holidays;
+	this.holidayScheduleId = holidayScheduleId;
 	
 }
 
@@ -56,7 +63,7 @@ public void add() throws java.sql.SQLException
 		getBaselineID(), getBaselineName(),
 		getDaysUsed(), getPercentWindow(), 
 		getCalcDays(), getExcludedWeekdays(), 
-		getHolidaysUsed()
+		getHolidayScheduleId()
 	};
 
 	add( TABLE_NAME, addValues );
@@ -97,95 +104,6 @@ public static boolean deleteAllBaselines(Integer blineID, java.sql.Connection co
 	return true;
 }
    
-   
-/*
-public final java.util.Vector getAllBaselines(java.sql.Connection conn)
-{
-	java.util.Vector returnVector = new java.util.Vector();
-	Integer baselineID = null;
-	String 	baselineName = null;
-	Integer percentWindow = null;
-	Integer daysUsed = null;
-	Integer calcDays = null;
-	String excludedWeekdays = null;
-	Integer holidaysUsed = null;
-
-	java.sql.PreparedStatement pstmt = null;
-	java.sql.ResultSet rset = null;
-	
-	String sql = "SELECT " + SETTER_COLUMNS[0] +"," 
-		+ SETTER_COLUMNS[1] + ","
-		+ SETTER_COLUMNS[2] + "," 
-		+ SETTER_COLUMNS[3] + "," 
-		+ SETTER_COLUMNS[4] + ","
-		+ SETTER_COLUMNS[5] + ","
-		+ SETTER_COLUMNS[6] +
-		" FROM " + TABLE_NAME +
-		" ORDER BY " + SETTER_COLUMNS[0];
-
-	try
-	{		
-		if( conn == null )
-		{
-			throw new IllegalStateException("Database connection should not be (null).");
-		}
-		else
-		{
-			pstmt = conn.prepareStatement(sql.toString());
-			
-			rset = pstmt.executeQuery();
-	
-			while( rset.next() )
-			{
-				baselineID = new Integer( rset.getInt(SETTER_COLUMNS[0]) );
-				baselineName = rset.getString(SETTER_COLUMNS[1]);
-				percentWindow = new Integer( rset.getInt(SETTER_COLUMNS[2]) );
-				daysUsed = new Integer(rset.getInt(SETTER_COLUMNS[3]));
-				calcDays = new Integer( rset.getInt(SETTER_COLUMNS[4]) );
-				excludedWeekdays = rset.getString(SETTER_COLUMNS[5]);
-				holidaysUsed = new Integer( rset.getInt(SETTER_COLUMNS[6]));				
-				
-				returnVector.addElement( new Baseline(
-						baselineID, 
-						baselineName, 
-						percentWindow, 
-						daysUsed, 
-						calcDays, excludedWeekdays, holidaysUsed) );				
-			}
-					
-		}		
-	}
-	catch( java.sql.SQLException e )
-	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	}
-	finally
-	{
-		try
-		{
-			if( pstmt != null ) pstmt.close();
-		} 
-		catch( java.sql.SQLException e2 )
-		{
-			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
-		}	
-	}
-
-
-	return returnVector;
-}
-
-public java.util.Vector getAllBaselines()
-{
-	java.sql.Connection conn = null;
-	
-	conn = com.cannontech.database.PoolManager.getInstance().getConnection("yukon");
-
-	return getAllBaselines(conn);
-	 
-	
-}
-*/
 public static synchronized Integer getNextBaselineID( java.sql.Connection conn )
 	{
 		if( conn == null )
@@ -240,8 +158,8 @@ public String getExcludedWeekdays() {
 	return excludedWeekdays;
 }
 
-public java.lang.Integer getHolidaysUsed() {
-	return holidaysUsed;
+public java.lang.Integer getHolidayScheduleId() {
+	return holidayScheduleId;
 }
 
 public void retrieve() 
@@ -259,7 +177,7 @@ public void retrieve()
 			setPercentWindow( (Integer) results[3] );
 			setCalcDays( (Integer) results[4] );
 			setExcludedWeekdays( (String) results[5] );
-			setHolidaysUsed( (Integer) results[6] );
+			setHolidayScheduleId( (Integer) results[6] );
 		}
 	else
 		throw new Error(getClass() + " - Incorrect Number of results retrieved");
@@ -294,8 +212,8 @@ public void setExcludedWeekdays(java.lang.String newExcludedWeekdays) {
 	excludedWeekdays = newExcludedWeekdays;
 }
 
-public void setHolidaysUsed(java.lang.Integer newUsed) {
-	holidaysUsed = newUsed;
+public void setHolidayScheduleId(java.lang.Integer holidayScheduleId) {
+	this.holidayScheduleId = holidayScheduleId;
 }
 
 public void update() 
@@ -305,7 +223,7 @@ public void update()
 		getBaselineID(),
 		getBaselineName(), getDaysUsed(),
 		getPercentWindow(), getCalcDays(),
-		getExcludedWeekdays(), getHolidaysUsed()
+		getExcludedWeekdays(), getHolidayScheduleId()
 	};
 	
 	Object constraintValues[] = { getBaselineID() };
@@ -318,5 +236,17 @@ public void update()
 	{
 		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 	}
+}
+
+@SuppressWarnings("unchecked")
+public final static boolean usesHolidaySchedule(int holSchID) throws java.sql.SQLException {
+    String sql = "SELECT BaselineID FROM " + TABLE_NAME + " WHERE HolidayScheduleID = " + holSchID;
+    JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
+    List<Integer> baselineIds = jdbcOps.queryForList(sql);
+    if(baselineIds.size() > 0) {
+        return true;
+    } else {
+        return false;
+    }
 }
 }

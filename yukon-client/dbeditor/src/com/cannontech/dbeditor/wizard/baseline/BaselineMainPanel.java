@@ -657,10 +657,10 @@ public Object getValue(Object o)
 			getJCheckBoxDayChooser().getSelectedDays8Chars().substring(0,7) );
 
 	if( getJComboBoxHoliday().getSelectedItem() != null )
-		basil.getBaseline().setHolidaysUsed( 
+		basil.getBaseline().setHolidayScheduleId( 
 			new Integer( ((com.cannontech.database.data.lite.LiteHolidaySchedule)getJComboBoxHoliday().getSelectedItem()).getHolidayScheduleID() ) );
 	else
-		basil.getBaseline().setHolidaysUsed( new Integer(0) );
+		basil.getBaseline().setHolidayScheduleId( new Integer(0) );
 	
 	return basil;
 }
@@ -815,7 +815,7 @@ public void setValue(Object o)
 		
 	}
 
-	Integer holDay = basil.getBaseline().getHolidaysUsed();
+	Integer holDay = basil.getBaseline().getHolidayScheduleId();
 	if( holDay != null )
 		for( int i = 0; i < getJComboBoxHoliday().getItemCount(); i++ )
 			if( ((com.cannontech.database.data.lite.LiteHolidaySchedule)getJComboBoxHoliday().getItemAt(i)).getHolidayScheduleID()
