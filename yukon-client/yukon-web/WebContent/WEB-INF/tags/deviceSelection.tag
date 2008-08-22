@@ -70,7 +70,7 @@
     <tr>
     
         <td>
-            <form id="selectDevicesForm" method="post" action="${action}">
+            <form id="selectDevicesForm" method="get" action="${action}">
                 <input type="hidden" id="deviceIds" name="idList.ids" />
                 <input type="hidden" name="collectionType" value="idList" />
                 <tags:mapToHiddenInputs values="${extraInputs}"/>
@@ -102,7 +102,7 @@
             <input type="button" id="selectByGroupButton" value="${addDeviceLabel}" style="width:140px;" />
             
             
-            <form id="selectDevicesByGroupForm" method="post" action="${action}">
+            <form id="selectDevicesByGroupForm" method="get" action="${action}">
                 
                 <input type="hidden" name="collectionType" value="group" />
                 <tags:mapToHiddenInputs values="${extraInputs}"/>
@@ -146,7 +146,7 @@
                 <div style="font-weight: bold;margin-bottom: 5px;">
                     <cti:msg key="yukon.common.device.bulk.deviceSelection.selectAddress" />
                 </div>
-                <form id="addByAddressForm" method="post" action="${action}">
+                <form id="addByAddressForm" method="get" action="${action}">
                 
                     <input type="hidden" name="collectionType" value="addressRange" />
                     

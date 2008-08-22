@@ -68,9 +68,16 @@ public class BulkController extends BulkControllerBase {
     // COLLECTION ACTIONS
     public ModelAndView collectionActions(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 
-        ModelAndView mav = new ModelAndView("collectionActions.jsp");
-        
-        this.addDeviceCollectionToModel(mav, request);
+        ModelAndView mav;
+        if (request.getMethod().equals("POST")) {
+            // if we got here from a post (like the file upload), let's redirect
+            mav = new ModelAndView("redirect:/spring/bulk/collectionActions");
+            Map<String, String> collectionParameters = this.getDeviceCollection(request).getCollectionParameters();
+            mav.addAllObjects(collectionParameters);
+        } else {
+            mav = new ModelAndView("collectionActions.jsp");
+            this.addDeviceCollectionToModel(mav, request);
+        }
         
         return mav;
     }

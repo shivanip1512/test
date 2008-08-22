@@ -12,5 +12,5 @@
 
 <c:set value="${deviceCollection.deviceCount}" var="deviceCount"/>
 
-${linkLabel}: 
-${deviceCount} <c:if test="${deviceCount > 0}"><tags:selectedDevicesPopup  deviceCollection="${deviceCollection}" /></c:if>
+${linkLabel}: <cti:msg key="${deviceCollection.description}"/><c:if test="${deviceCount > 0}"><tags:selectedDevicesPopup  deviceCollection="${deviceCollection}" /></c:if><br>
+<cti:msg key="yukon.common.device.bulk.selectedDevicesPopup.count" argument="${deviceCount}"/>

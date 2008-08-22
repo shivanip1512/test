@@ -43,7 +43,7 @@
             <cti:checkProperty property="operator.DeviceActionsRole.BULK_IMPORT_OPERATION">
             <tr>
                 <td>
-                    <form id="bulkImportForm" method="post" action="/spring/bulk/import/upload">
+                    <form id="bulkImportForm" method="get" action="/spring/bulk/import/upload">
                         <input type="button" id="massChangeTypeButton" value="Bulk Import" onclick="$('bulkImportForm').submit();" style="width:140px;"/>
                     </form>
                 </td>
@@ -55,7 +55,7 @@
             <cti:checkProperty property="operator.DeviceActionsRole.BULK_UPDATE_OPERATION">
             <tr>
                 <td>
-                    <form id="bulkUpdateForm" method="post" action="/spring/bulk/update/upload">
+                    <form id="bulkUpdateForm" method="get" action="/spring/bulk/update/upload">
                         <input type="button" id="massChangeTypeButton" value="Bulk Update" onclick="$('bulkUpdateForm').submit();" style="width:140px;"/>
                     </form>
                 </td>
@@ -67,7 +67,7 @@
             
             <tr>
                 <td>
-                    <form id="createCollectionForm" method="post" action="/spring/bulk/deviceSelection">
+                    <form id="createCollectionForm" method="get" action="/spring/bulk/deviceSelection">
                         <input type="button" id="massChangeTypeButton" value="Create Collection" onclick="$('createCollectionForm').submit();" style="width:140px;"/>
                     </form>
                 </td>

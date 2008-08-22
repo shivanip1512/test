@@ -8,6 +8,7 @@ import java.util.Iterator;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -52,7 +53,7 @@ public class DeviceFileUploadCollectionProducer extends DeviceCollectionProducer
             MultipartHttpServletRequest mRequest = (MultipartHttpServletRequest) request;
 
             MultipartFile dataFile = mRequest.getFile(getParameterName("dataFile"));
-            if (dataFile == null) {
+            if (dataFile == null || StringUtils.isBlank(dataFile.getOriginalFilename())) {
                 throw new RuntimeException("dataFile is null");
             }
             return handleInitialRequest(request, dataFile);
@@ -78,7 +79,7 @@ public class DeviceFileUploadCollectionProducer extends DeviceCollectionProducer
             MappingIterator<YukonDevice, Integer> deviceIds =
                 new MappingIterator<YukonDevice, Integer>(deviceIterator,
                                                           new YukonDeviceToIdMapper());
-            groupCollection = deviceGroupCollectionProducer.createDeviceGroupCollection(deviceIds);
+            groupCollection = deviceGroupCollectionProducer.createDeviceGroupCollection(deviceIds, originalFilename);
         } finally {
             CtiUtilities.close(deviceIterator);
         }
