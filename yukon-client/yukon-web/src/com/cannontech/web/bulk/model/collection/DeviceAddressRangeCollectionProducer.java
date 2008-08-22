@@ -6,7 +6,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.web.bind.ServletRequestBindingException;
@@ -47,11 +47,12 @@ public class DeviceAddressRangeCollectionProducer extends
     public DeviceCollection createDeviceCollection(HttpServletRequest request)
             throws ServletRequestBindingException {
 
-        String startAddressStr = ServletRequestUtils.getStringParameter(request, getParameterName("start"));
-        String endAddressStr = ServletRequestUtils.getStringParameter(request, getParameterName("end"));
+        final int startAddress = ServletRequestUtils.getIntParameter(request, getParameterName("start"), -1);
+        final int endAddress = ServletRequestUtils.getIntParameter(request, getParameterName("end"), -1);
         
-        final int startAddress = Integer.valueOf(StringUtils.strip(startAddressStr));
-        final int endAddress = Integer.valueOf(StringUtils.strip(endAddressStr));
+        Validate.isTrue(startAddress >= 0, "start address must be greater than or equal to 0");
+        Validate.isTrue(endAddress >= 0, "start address must be greater than or equal to 0");
+        Validate.isTrue(startAddress <= endAddress, "end address must be greater than start address");
 
         return new ListBasedDeviceCollection() {
 
