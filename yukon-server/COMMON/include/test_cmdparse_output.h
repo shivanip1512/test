@@ -139,7 +139,7 @@ std::string parse_asString[TEST_SIZE] = {
 "command=6:flags=0::silver=(none),1,1.000:type=versacom,0,0.000",
 "command=6:flags=0::gold=(none),4,4.000:type=versacom,0,0.000",
 "command=6:flags=0::silver=(none),60,60.000:type=versacom,0,0.000",
-"command=0:flags=0::type=versacom,0,0.000",
+"command=6:flags=0::raw=04w,-2147483648,0.000:serial=(none),200148000,200148000.000:type=versacom,0,0.000",
 "command=0:flags=0::type=versacom,0,0.000",
 "command=0:flags=0::type=versacom,0,0.000",
 "command=0:flags=0::type=versacom,0,0.000",

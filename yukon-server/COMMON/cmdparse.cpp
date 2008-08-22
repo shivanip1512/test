@@ -3369,16 +3369,16 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
                 CtiTokenizer   tok(token);
 
                 tok();   // Get us past the "raw" moniker..
-
+                token = tok(); // Returns each whitespace seperated token successivly.
                 for(i = 0; i < 20 && !token.empty(); i++)
                 {
-                    token = tok(); // Returns each whitespace seperated token successivly.
-
                     //  strtol returns 0 if token is empty or not convertable, which is what we want
                     rawStr.append(1, (CHAR)strtol(token.c_str(), &ptr, 16));
+
+                    token = tok(); // Returns each whitespace seperated token successivly.
                 }
 
-                _cmd["raw"] = rawStr;
+                _cmd["raw"] = CtiParseValue(rawStr);
             }
         }
 

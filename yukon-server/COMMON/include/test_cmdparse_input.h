@@ -142,6 +142,7 @@ std::string inputString[TEST_SIZE] = {
 "putconfig vcom silver 1",
 "putconfig vcom gold 4",
 "putconfig vcom silver 60",
+"putconfig emetcon raw 0x30 34 77 serial 200148000",
 };
 
 
