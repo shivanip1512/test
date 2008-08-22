@@ -42,7 +42,7 @@ public class YukonSpringHook {
     }
     
     /**
-     * This is used to get a special context. It should be called once at the begining of
+     * This is used to get a special context. It should be called once at the beginning of
      * a program. Other, possibly shared, code can then call getContext() and get the
      * same copy of the context.
      * @param contextName
