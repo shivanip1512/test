@@ -118,7 +118,7 @@ public class ScriptTemplate {
         paramToValueMap.put(BILLING_DEMAND_DAYS_PARAM, "30");
         //IED parameters
         paramToValueMap.put(IED_FLAG_PARAM, "false");
-        paramToValueMap.put(TOU_RATE_PARAM, "rate C"); 
+        paramToValueMap.put(TOU_RATE_PARAM, "rate A"); 
         paramToValueMap.put(RESET_COUNT_PARAM, "0");
         paramToValueMap.put(READ_FROZEN_PARAM, "");
         paramToValueMap.put(IED_TYPE_PARAM, "");
