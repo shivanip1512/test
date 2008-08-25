@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 import javax.servlet.ServletException;
@@ -14,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -30,7 +28,6 @@ import com.cannontech.common.bulk.service.BulkOperationTypeEnum;
 import com.cannontech.common.bulk.service.DeviceCollectionContainingFileInfo;
 import com.cannontech.common.bulk.service.MassChangeCallbackResults;
 import com.cannontech.common.device.YukonDevice;
-import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
 import com.cannontech.common.device.definition.service.DeviceDefinitionService;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
@@ -38,11 +35,8 @@ import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.RecentResultsCache;
-import com.cannontech.core.dao.PaoDao;
-import com.cannontech.core.dao.PersistenceException;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.PaoGroupsWrapper;
 import com.cannontech.roles.operator.DeviceActionsRole;
+import com.cannontech.web.bulk.service.ChangeDeviceTypeService;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
@@ -50,15 +44,13 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 @CheckRoleProperty(DeviceActionsRole.MASS_CHANGE)
 public class ChangeDeviceTypeController extends BulkControllerBase {
 
-    private PaoDao paoDao = null;
     private RecentResultsCache<BulkOperationCallbackResults<?>> recentBulkOperationResultsCache = null;
     private BulkProcessor bulkProcessor = null;
-    private PaoGroupsWrapper paoGroupsWrapper = null;
     private DeviceDefinitionService deviceDefinitionService = null;
-    private DeviceDefinitionDao deviceDefinitionDao = null;
     private TemporaryDeviceGroupService temporaryDeviceGroupService;
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao = null;
     private DeviceGroupCollectionHelper deviceGroupCollectionHelper = null;
+    private ChangeDeviceTypeService changeDeviceTypeService;
     
     /**
      * CHOOSE DEVICE TYPE TO CHANGE TO
@@ -131,7 +123,7 @@ public class ChangeDeviceTypeController extends BulkControllerBase {
 
                 @Override
                 public void process(YukonDevice device) throws ProcessingException {
-                    processDeviceTypeChange(device, selectedDeviceType);
+                    changeDeviceTypeService.processDeviceTypeChange(device, selectedDeviceType);
                 }
             };
             
@@ -143,42 +135,6 @@ public class ChangeDeviceTypeController extends BulkControllerBase {
         }
         
         return mav;
-    }
-    
-    private YukonDevice processDeviceTypeChange(YukonDevice device, int newDeviceType ) {
-
-        try {
-
-            // get the definition for the type selected
-            if (newDeviceType == device.getType()) {
-                return device;
-            }
-
-            DeviceDefinition selectedDeviceDefinition = deviceDefinitionDao.getDeviceDefinition(newDeviceType);
-
-            // get set of all definition applicable for this device to be changed to
-            Set<DeviceDefinition> applicableDefinitions = deviceDefinitionService.getChangeableDevices(device);
-
-            // if its not in the set, throw a processing error
-            if (!applicableDefinitions.contains(selectedDeviceDefinition)) {
-
-                LiteYukonPAObject devicePao = paoDao.getLiteYukonPAO(device.getDeviceId());
-                String errorMsg = selectedDeviceDefinition.getDisplayName() + " is not an applicable type for device: " + devicePao.getPaoName();
-                throw new ProcessingException(errorMsg);
-            }
-            else {
-                return deviceDefinitionService.changeDeviceType(device, selectedDeviceDefinition);
-            }
-
-        }
-        catch (IllegalArgumentException e) {
-            throw new ProcessingException("Invalid device type: " + paoGroupsWrapper.getPAOTypeString(newDeviceType));
-        } catch (DataRetrievalFailureException e) {
-            throw new ProcessingException("Could not find device with id: " + device.getDeviceId(),
-                                          e);
-        } catch (PersistenceException e) {
-            throw new ProcessingException("Could not change device type for device with id: " + device.getDeviceId(), e);
-        }
     }
     
     /**
@@ -205,11 +161,6 @@ public class ChangeDeviceTypeController extends BulkControllerBase {
         return mav;
     }
     
-    @Autowired
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
-    }
-    
     @Required
     public void setRecentBulkOperationResultsCache(
             RecentResultsCache<BulkOperationCallbackResults<?>> recentBulkOperationResultsCache) {
@@ -222,18 +173,8 @@ public class ChangeDeviceTypeController extends BulkControllerBase {
     }
     
     @Autowired
-    public void setPaoGroupsWrapper(PaoGroupsWrapper paoGroupsWrapper) {
-        this.paoGroupsWrapper = paoGroupsWrapper;
-    }
-    
-    @Autowired
     public void setDeviceDefinitionService(DeviceDefinitionService deviceDefinitionService) {
         this.deviceDefinitionService = deviceDefinitionService;
-    }
-    
-    @Autowired
-    public void setDeviceDefinitionDao(DeviceDefinitionDao deviceDefinitionDao) {
-        this.deviceDefinitionDao = deviceDefinitionDao;
     }
     
     @Autowired
@@ -252,5 +193,11 @@ public class ChangeDeviceTypeController extends BulkControllerBase {
     public void setDeviceGroupCollectionHelper(
             DeviceGroupCollectionHelper deviceGroupCollectionHelper) {
         this.deviceGroupCollectionHelper = deviceGroupCollectionHelper;
+    }
+    
+    @Autowired
+    public void setChangeDeviceTypeService(
+            ChangeDeviceTypeService changeDeviceTypeService) {
+        this.changeDeviceTypeService = changeDeviceTypeService;
     }
 }

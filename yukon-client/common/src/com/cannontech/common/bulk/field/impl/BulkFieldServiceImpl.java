@@ -111,6 +111,22 @@ public class BulkFieldServiceImpl implements BulkFieldService, ApplicationContex
         return identifierHeaders;
     }
     
+    @SuppressWarnings("unchecked")
+    public <T> boolean processorExistsForBulkFieldColumnHeader(BulkFieldColumnHeader bulkFieldColumnHeader) {
+        
+        List<BulkField<?, T>> matchingBulkFields = new ArrayList<BulkField<?, T>>();
+        Map<String, BulkField<?, T>> allBulkFields = BeanFactoryUtils.beansOfTypeIncludingAncestors(context, BulkField.class);
+        for (BulkField<?, T> field : allBulkFields.values()) {
+            if (field.getInputSource().getField().equals(bulkFieldColumnHeader.getFieldName())) {
+                matchingBulkFields.add(field);
+                break;
+            }
+        }
+        
+        List<BulkYukonDeviceFieldProcessor> bulkYukonDeviceFieldProcessors = findProcessorsForFields(matchingBulkFields);
+        return bulkYukonDeviceFieldProcessors.size() > 0;
+    }
+    
     
     public BulkFieldColumnHeader getColumnHeaderForFieldName(String fieldName) {
         

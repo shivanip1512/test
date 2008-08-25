@@ -319,25 +319,6 @@
     </bean>
     <!-- no processor for DeviceId field -->
     
-    <!-- TEMPLATE BULK FIELD -->
-    <bean id="templateBulkField" parent="bulkFieldBase"
-        class="com.cannontech.common.bulk.field.impl.TemplateBulkField">
-        <property name="massChangable" value="false" />
-        <property name="blankHandlingEnum" value="NOT_APPLICABLE" />
-
-        <property name="inputSource">
-            <bean class="com.cannontech.web.input.InputBase">
-                <property name="displayName" value="Template" />
-                <property name="field" value="template" />
-                <property name="description">
-                    <value>Name of device</value>
-                </property>
-                <property name="type" ref="inputStringType" />
-            </bean>
-        </property>
-
-    </bean>
-    <!-- no processor for Template field -->
 
     <!-- BULK FIELD FACTORY -->
     <bean id="bulkFieldFactory"
@@ -356,7 +337,6 @@
                 <ref bean="nameBulkField" />
                 <ref bean="routeBulkField" />
                 <ref bean="deviceIdBulkField" />
-                <ref bean="templateBulkField" />
             </list>
         </property>
     </bean>
@@ -404,6 +384,9 @@
     <bean class="com.cannontech.common.bulk.DelayThrottleCalculator">
         <qualifier value="bulkImport"/>
         <property name="configurationPropertyName" value="WEB_RESUBMITTING_PROCESSOR_DELAY_MS"/>
+    </bean>
+    
+    <bean id="changeDeviceTypeService" class="com.cannontech.web.bulk.service.impl.ChangeDeviceTypeServiceImpl">
     </bean>
     
 </beans>
