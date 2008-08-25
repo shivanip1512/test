@@ -1,7 +1,6 @@
 package com.cannontech.web.bulk;
 
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.ServletException;
@@ -35,7 +34,6 @@ import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.roles.operator.DeviceActionsRole;
-import com.cannontech.util.ServletUtil;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
@@ -90,13 +88,9 @@ public class MassDeleteController extends BulkControllerBase {
         // CANCEL
         if (cancelButton != null) {
             
-            Map<String, String> collectionParameters = deviceCollection.getCollectionParameters();
-            String queryString = ServletUtil.buildSafeQueryStringFromMap(collectionParameters, true);
-            String url = "/spring/bulk/collectionActions?" + queryString;
-            url = ServletUtil.createSafeUrl(request, url);
-            
             // redirect
-            mav = new ModelAndView("redirect:" + url);
+            mav = new ModelAndView("redirect:/spring/bulk/collectionActions");
+            mav.addAllObjects(deviceCollection.getCollectionParameters());
             return mav;
         
         // DO CHANGE

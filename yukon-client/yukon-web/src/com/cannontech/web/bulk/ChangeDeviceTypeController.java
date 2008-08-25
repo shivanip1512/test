@@ -102,8 +102,10 @@ public class ChangeDeviceTypeController extends BulkControllerBase {
         // CANCEL
         if (cancelButton != null) {
             
-            mav = new ModelAndView("collectionActions.jsp");
-            mav.addObject("deviceCollection", deviceCollection);
+            // redirect
+            mav = new ModelAndView("redirect:/spring/bulk/collectionActions");
+            mav.addAllObjects(deviceCollection.getCollectionParameters());
+            return mav;
         
         // DO CHANGE
         } else {
