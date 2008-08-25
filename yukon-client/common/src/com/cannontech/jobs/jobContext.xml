@@ -64,7 +64,6 @@
         <property name="yukonJobDao" ref="yukonJobDao"/>
         <property name="jobStatusDao" ref="jobStatusDao"/>
         <property name="transactionTemplate" ref="transactionTemplate"/>
-        <property name="yukonUserDao" ref="yukonUserDao"/>
         <property name="scheduledExecutor" ref="jobScheduledExecutor"/>
     </bean>
 </beans>

@@ -30,6 +30,8 @@ public class JobDaoBase implements InitializingBean {
             p.addValue("locale", locale);
             String timeZone = job.getUserContext().getTimeZone().getDisplayName();
             p.addValue("timezone", timeZone);
+            String themeName = job.getUserContext().getThemeName();
+            p.addValue("themeName", themeName);
         }
 
         public Number getPrimaryKey(YukonJob job) {

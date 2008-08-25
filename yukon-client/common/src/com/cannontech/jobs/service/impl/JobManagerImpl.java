@@ -25,7 +25,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.common.util.TimeSource;
-import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.jobs.dao.JobStatusDao;
 import com.cannontech.jobs.dao.ScheduledOneTimeJobDao;
 import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
@@ -48,7 +47,6 @@ import com.cannontech.web.input.InputUtil;
 public class JobManagerImpl implements JobManager {
     private Logger log = YukonLogManager.getLogger(JobManagerImpl.class);
     private TimeSource timeSource;
-    private YukonUserDao yukonUserDao;
     private JobStatusDao jobStatusDao;
     private YukonJobDao yukonJobDao;
     private ScheduledOneTimeJobDao scheduledOneTimeJobDao;
@@ -543,11 +541,6 @@ public class JobManagerImpl implements JobManager {
     @Required
     public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
         this.transactionTemplate = transactionTemplate;
-    }
-
-    @Required
-    public void setYukonUserDao(YukonUserDao yukonUserDao) {
-        this.yukonUserDao = yukonUserDao;
     }
     
     @Required

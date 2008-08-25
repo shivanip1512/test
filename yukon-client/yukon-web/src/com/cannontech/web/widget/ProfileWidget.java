@@ -425,23 +425,12 @@ public class ProfileWidget extends WidgetControllerBase {
         // - with option to schedule stop later
         if (newToggleVal == true) {
             
-            boolean scheduledStartOk = false;
             Date scheduledStartDate = null;
             Date scheduledStopDate = null;
+            Date today = DateUtils.round(new Date(), Calendar.MINUTE);
             
-            // start now
-            if (startRadio.equalsIgnoreCase("now")) {
-                
-                // already scheduled to start? cancel it
-                toggleProfilingService.disableScheduledJob(deviceId, channelNum, true);
-                toggleProfilingService.toggleProfilingForDevice(deviceId, channelNum, true);
-            }
-            
-            // start later
-            else if (startRadio.equalsIgnoreCase("future")) {
-                
-                // validate scheduled start date
-                Date today = DateUtils.round(new Date(), Calendar.MINUTE);
+            // validate scheduled start date
+            if (startRadio.equalsIgnoreCase("future")) {
                 try {
                     scheduledStartDate = dateFormattingService.flexibleDateParser(startDate, DateFormattingService.DateOnlyMode.START_OF_DAY, userContext);
                     scheduledStartDate = DateUtils.addHours(scheduledStartDate, startHour);
@@ -455,12 +444,49 @@ public class ProfileWidget extends WidgetControllerBase {
                 } catch (ParseException e) {
                     toggleErrorMsg = "Invalid Start Date: " + e.getMessage();
                 }
+            }
+
+            // validate scheduled stop date
+            if(stopRadio.equalsIgnoreCase("future")) {
+                try {
+                    scheduledStopDate = dateFormattingService.flexibleDateParser(stopDate, DateFormattingService.DateOnlyMode.START_OF_DAY, userContext);
+                    scheduledStopDate = DateUtils.addHours(scheduledStopDate, stopHour);
+                    scheduledStopDate = DateUtils.addMinutes(scheduledStopDate, 0);
+                    if (scheduledStopDate == null) {
+                        toggleErrorMsg = "Stop Date Required";
+                    } else if (scheduledStopDate.compareTo(today) <= 0) {
+                        toggleErrorMsg = "Stop Date Date Must Be After Today";
+                    }
+                } catch (ParseException e) {
+                    toggleErrorMsg = "Invalid Stop Date: " + e.getMessage();
+                }
+            }
+            
+            // start now
+            if (startRadio.equalsIgnoreCase("now")) {
+
+                // already scheduled to start? cancel it
+                if(toggleErrorMsg == null) {
+                    toggleProfilingService.disableScheduledJob(deviceId, channelNum, true);
+                    toggleProfilingService.toggleProfilingForDevice(deviceId, channelNum, true);
+                }
+            }
+            
+            // start later
+            else if (startRadio.equalsIgnoreCase("future")) {
+                
+                // was starting scheduled for later as well? make sure its before this scheduled stop date
+                if (stopRadio.equalsIgnoreCase("future") && toggleErrorMsg == null) {
+                    
+                    if (scheduledStopDate.compareTo(scheduledStartDate) <= 0) {
+                        toggleErrorMsg = "Stop Date Date Must Be After Start Date";
+                    }
+                }
                 
                 // schedule it!, already scheduled? cancel it
                 if (toggleErrorMsg == null) {
                     toggleProfilingService.disableScheduledJob(deviceId, channelNum, true);
                     toggleProfilingService.scheduleToggleProfilingForDevice(deviceId, channelNum, true, scheduledStartDate, userContext);
-                    scheduledStartOk = true;
                 }
             }
             
@@ -472,41 +498,14 @@ public class ProfileWidget extends WidgetControllerBase {
             
             // stop later?
             // - don't bother if there was an error scheduling the start date
-            else if (toggleErrorMsg == null && stopRadio.equalsIgnoreCase("future")) {
-                
-                // validate schedule date
-                Date today = DateUtils.round(new Date(), Calendar.MINUTE);
-                try {
-                    scheduledStopDate = dateFormattingService.flexibleDateParser(stopDate, DateFormattingService.DateOnlyMode.START_OF_DAY, userContext);
-                    scheduledStopDate = DateUtils.addHours(scheduledStopDate, stopHour);
-                    scheduledStopDate = DateUtils.addMinutes(scheduledStopDate, 0);
-                    if (scheduledStopDate == null) {
-                        toggleErrorMsg = "Stop Date Required";
-                    } 
-                    else if (scheduledStopDate.compareTo(today) <= 0) {
-                        toggleErrorMsg = "Stop Date Date Must Be After Today";
-                    }
-                } catch (ParseException e) {
-                    toggleErrorMsg = "Invalid Stop Date: " + e.getMessage();
-                }
-                
-                // was starting scheduled for later as well? make sure its before this scheduled stop date
-                if (startRadio.equalsIgnoreCase("future") && scheduledStartOk && toggleErrorMsg == null) {
-                    if (scheduledStopDate.compareTo(scheduledStartDate) <= 0) {
-                        toggleErrorMsg = "Stop Date Date Must Be After Start Date";
-                    }
-                }
-                
-                
+            else if (stopRadio.equalsIgnoreCase("future")) {
+                                
                 // schedule it!, already scheduled? cancel it
                 if (toggleErrorMsg == null) {
                     toggleProfilingService.disableScheduledJob(deviceId, channelNum, false);
                     toggleProfilingService.scheduleToggleProfilingForDevice(deviceId, channelNum, false, scheduledStopDate, userContext);
-                }
-                
+                } 
             }
-            
-            
         }
            
         // STOP
@@ -549,10 +548,7 @@ public class ProfileWidget extends WidgetControllerBase {
                     toggleProfilingService.scheduleToggleProfilingForDevice(deviceId, channelNum, false, scheduledStopDate, userContext);
                 }
             }
-            
         }
-        
-        
         
         // re-load page values into mav, add any error from scheduling
         ModelAndView mav = render(request, response);
