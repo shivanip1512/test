@@ -23,13 +23,12 @@ public interface DateFormattingService {
         TIME(null), 
         TIME_TZ(null),
         TIMEZONE(null),
-        DATE(MidnightMode.PREV_DAY), 
-        DATE_SHORTYEAR(MidnightMode.PREV_DAY),
+        DATE(null), 
         BOTH(null), 
         DATEHM(null), 
-        DATEH_AP(MidnightMode.PREV_DAY),
-        HOUR_AP(null),
-        HM_AP(null),
+        DATEH(null),
+        HOUR(null),
+        DATE_MIDNIGHT_PREV(MidnightMode.INCLUDES_MIDNIGHT),
         ;
         
         private MidnightMode midnightMode = null;
@@ -50,7 +49,7 @@ public interface DateFormattingService {
     }
 
     public static enum MidnightMode {
-        PREV_DAY
+        INCLUDES_MIDNIGHT
     };
     
     public static enum DateOnlyMode {

@@ -122,12 +122,10 @@ public class PeakReportWidget extends WidgetControllerBase {
         mav = setDefaultMavDateTime(request, mav, userContext);
        
         // get previous peak report
-        PeakReportResult peakResult = peakReportService.retrieveArchivedPeakReport(deviceId, PeakReportRunType.SINGLE, userContext.getYukonUser());
+        PeakReportResult peakResult = peakReportService.retrieveArchivedPeakReport(deviceId, PeakReportRunType.SINGLE, userContext);
         
         if(peakResult != null){
             mav.addObject("peakResult", peakResult);
-            Map<String, Object> formattedPeakMap = peakReportService.formatPeakReportResult(peakResult, userContext, deviceId, prevChannel);
-            mav.addAllObjects(formattedPeakMap);
         }
         
         boolean readable = commandAuthorizationService.isAuthorized(userContext.getYukonUser(), "getvalue lp peak", meter);
@@ -219,12 +217,6 @@ public class PeakReportWidget extends WidgetControllerBase {
         PeakReportResult peakResult = peakReportService.requestPeakReport(deviceId, peakType, PeakReportRunType.SINGLE, channel, startDate, stopDate, true, userContext);
         
         mav.addObject("peakResult", peakResult);
-        
-        // special formatting of peakResult dates for display purposes
-        if(!peakResult.isNoData()) {
-            Map<String, Object> formattedPeakMap = peakReportService.formatPeakReportResult(peakResult, userContext, deviceId, channel);
-            mav.addAllObjects(formattedPeakMap);
-        }
         
         return mav;
     }

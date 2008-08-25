@@ -77,9 +77,9 @@
 </script>
 
     <%-- FORMATTED DATE STRINGS --%>
-    <cti:formatDate var="startDate" value="${startDateDate}" type="DATE" />
-    <cti:formatDate var="stopDate" value="${stopDateDate}" type="DATE" />
-
+    <cti:formatDate var="formattedStartDate" value="${startDate}" type="DATE" />
+    <cti:formatDate var="formattedStopDate" value="${stopDate}" type="DATE" />
+    
     <%-- HBC TITLE --%>
     <table class="widgetColumns">
         <tr>
@@ -112,8 +112,8 @@
         <tags:sectionContainer title="Step 1: Find The Peak day" id="hbcStep1">
             
             <%-- GET REPORT --%>
-            <div class="smallBoldLabel" style="display:inline;">Start Date: </div><tags:dateInputCalendar fieldName="getReportStartDate" fieldValue="${startDate}"/>
-            <div class="smallBoldLabel" style="display:inline;">End Date: </div><tags:dateInputCalendar fieldName="getReportStopDate" fieldValue="${stopDate}"/>
+            <div class="smallBoldLabel" style="display:inline;">Start Date: </div><tags:dateInputCalendar fieldName="getReportStartDate" fieldValue="${formattedStartDate}"/>
+            <div class="smallBoldLabel" style="display:inline;">End Date: </div><tags:dateInputCalendar fieldName="getReportStopDate" fieldValue="${formattedStopDate}"/>
             
             <c:if test="${readable}">
                 <c:url var="getReportUrl" value="/spring/csr/highBill/getReport"/>
@@ -134,8 +134,8 @@
                                 <c:url var="analyzeThisDataUrl" value="/spring/csr/highBill/view">
                                     <c:param name="deviceId" value="${deviceId}"/>
                                     <c:param name="analyze" value="true"/>
-                                    <c:param name="getReportStartDate" value="${prePeriodStartDateDisplay}"/>
-                                    <c:param name="getReportStopDate" value="${prePeriodStopDateDisplay}"/>
+                                    <c:param name="getReportStartDate" value="${formattedStartDate}"/>
+                                    <c:param name="getReportStopDate" value="${formattedStopDate}"/>
                                 </c:url>
                                 Previous Reports: <a href="${analyzeThisDataUrl}">Expand Available Report</a>
                             </jsp:attribute>
@@ -157,20 +157,7 @@
             <tags:profilePeakReportsTable   id="hbcProfilePeakReport" 
                                             title="${reportHeader}"
                                             preResult="${preResult}"
-                                            postResult="${postResult}"
-                                            
-                                            displayName="${displayName}"
-                                            prePeriodStartDate="${prePeriodStartDate}"
-                                            prePeriodStopDate="${prePeriodStopDate}"
-                                            prePeriodStartDateDisplay="${prePeriodStartDateDisplay}"
-                                            prePeriodStopDateDisplay="${prePeriodStopDateDisplay}"
-                                            prePeakValue="${prePeakValue}"
-                                            
-                                            postPeriodStartDate="${postPeriodStartDate}"
-                                            postPeriodStopDate="${postPeriodStopDate}"
-                                            postPeriodStartDateDisplay="${postPeriodStartDateDisplay}"
-                                            postPeriodStopDateDisplay="${postPeriodStopDateDisplay}"
-                                            postPeakValue="${postPeakValue}"></tags:profilePeakReportsTable>
+                                            postResult="${postResult}" />
             
         </tags:sectionContainer>
         <br><br>
@@ -181,19 +168,14 @@
         <tags:sectionContainer title="Step 2: Collect Profile Data" id="hbcStep2">  
         
             <%-- COLLECT PROFILE DATA AROUND PEAK --%>
+            <c:set var="pre"/>
             <tags:collectProfileDataAroundPeaks deviceId="${deviceId}"
             
-                                                prePeakValue="${prePeakValue}"
                                                 preResult="${preResult}"
                                                 preAvailableDaysAfterPeak="${preAvailableDaysAfterPeak}"
-                                                preStartDate="${prePeriodStartDateDisplay}"
-                                                preStopDate="${prePeriodStopDateDisplay}"
                                                 
-                                                postPeakValue="${postPeakValue}"
                                                 postResult="${postResult}"
                                                 postAvailableDaysAfterPeak="${postAvailableDaysAfterPeak}"
-                                                postStartDate="${postPeriodStartDateDisplay}"
-                                                postStopDate="${postPeriodStopDateDisplay}"
                                                 
                                                 profileRequestOrigin="HBC"
                                                 isReadable="${readable}"
@@ -211,8 +193,8 @@
             <c:url var="chartUrlPrefix" value="/spring/csr/highBill/view">
                 <c:param name="deviceId" value="${deviceId}"/>
                 <c:param name="analyze" value="true"/>
-                <c:param name="getReportStartDate" value="${startDate}"/>
-                <c:param name="getReportStopDate" value="${stopDate}"/>
+                <c:param name="getReportStartDate" value="${formattedStartDate}"/>
+                <c:param name="getReportStopDate" value="${formattedStopDate}"/>
             </c:url>
         
             <%-- PRE CHART  --%>
@@ -232,33 +214,33 @@
                 </c:url>
                 
                 <div class="smallBoldLabel" style="display:inline;">Chart Range: </div>
-                <c:if test="${chartRange == 'PEAK'}"><div style="display:inline;" title="${prePeakValue}">Peak Day</div></c:if> 
-                <c:if test="${chartRange != 'PEAK'}"><a href="${prePeakDayChartUrl}" title="${prePeakValue}">Peak Day</a></c:if> 
+                <c:if test="${chartRange == 'PEAK'}"><div style="display:inline;">Peak Day</div></c:if> 
+                <c:if test="${chartRange != 'PEAK'}"><a href="${prePeakDayChartUrl}">Peak Day</a></c:if> 
                 |
-                <c:if test="${chartRange == 'PEAKPLUSMINUS3'}"><div style="display:inline;" title="${prePeakValue} +/- 3 Days">Peak +/- 3 Days</div></c:if> 
-                <c:if test="${chartRange != 'PEAKPLUSMINUS3'}"><a href="${prePeakPlusMinus3ChartUrl}" title="${prePeakValue} +/- 3 Days">Peak +/- 3 Days</a></c:if> 
+                <c:if test="${chartRange == 'PEAKPLUSMINUS3'}"><div style="display:inline;">Peak +/- 3 Days</div></c:if> 
+                <c:if test="${chartRange != 'PEAKPLUSMINUS3'}"><a href="${prePeakPlusMinus3ChartUrl}">Peak +/- 3 Days</a></c:if> 
                 | 
-                <c:if test="${chartRange == 'ENTIRE'}"><div style="display:inline;" title="${prePeriodStartDateDisplay} - ${prePeriodStopDateDisplay}">Report Period</div></c:if>
-                <c:if test="${chartRange != 'ENTIRE'}"><a href="${preEntireRangeChartUrl}" title="${prePeriodStartDateDisplay} - ${prePeriodStopDateDisplay}">Report Period</a></c:if>
+                <c:if test="${chartRange == 'ENTIRE'}"><div style="display:inline;">Report Period</div></c:if>
+                <c:if test="${chartRange != 'ENTIRE'}"><a href="${preEntireRangeChartUrl}">Report Period</a></c:if>
                 
                 <%-- chart title --%>
                 <c:choose>
                     <c:when test="${chartRange == 'PEAK'}">
-                        <cti:formatDate var="preChartTitle" value="${preRangeStartDate}" type="DATE" />
+                        <c:set var="preChartTitle" value="${preResult.peakValue}" />
                     </c:when>
                     <c:when test="${chartRange == 'PEAKPLUSMINUS3'}">
-                        <cti:formatDate var="chartTitleStartDate" value="${preRangeStartDate}" type="DATE" />
-                        <cti:formatDate var="chartTitleStopDate" value="${preRangeStopDate}" type="DATE" />
-                        <c:set var="preChartTitle" value="${chartTitleStartDate} - ${chartTitleStopDate} (${prePeakValue} +/- 3 Days)" />
+                        <cti:formatDate var="chartTitleStartDate" value="${preChartStartDate}" type="DATE" />
+                        <cti:formatDate var="chartTitleStopDate" value="${preChartStopDate}" type="DATE_MIDNIGHT_PREV" />
+                        <c:set var="preChartTitle" value="${chartTitleStartDate} - ${chartTitleStopDate} (${preResult.peakValue} +/- 3 Days)" />
                     </c:when>
                     <c:when test="${chartRange == 'ENTIRE'}">
-                        <cti:formatDate var="chartTitleStartDate" value="${preRangeStartDate}" type="DATE" />
-                        <cti:formatDate var="chartTitleStopDate" value="${preRangeStopDate}" type="DATE" />
+                        <cti:formatDate var="chartTitleStartDate" value="${preChartStartDate}" type="DATE" />
+                        <cti:formatDate var="chartTitleStopDate" value="${preChartStopDate}" type="DATE_MIDNIGHT_PREV" />
                         <c:set var="preChartTitle" value="${chartTitleStartDate} - ${chartTitleStopDate}" />
                     </c:when>
                 </c:choose>
                 
-                <tags:trend title="${preChartTitle}" width="600" height="220" reloadInterval="30" min="${yMin}" max="${yMax}" pointIds="${pointId}" startDate="${preStartDateMillis}" endDate="${preStopDateMillis}" interval="${preChartInterval}" converterType="${converterType}" graphType="${graphType}"/>
+                <tags:trend title="${preChartTitle}" width="600" height="220" reloadInterval="30" min="${yMin}" max="${yMax}" pointIds="${pointId}" startDate="${preChartStartDateMillis}" endDate="${preChartStopDateMillis}" interval="${preChartInterval}" converterType="${converterType}" graphType="${graphType}"/>
                 <br>
                 
                 <%-- tabular data links --%>
@@ -267,31 +249,31 @@
                 <c:url var="preHbcArchivedDataReportUrl" value="/spring/amr/reports/hbcArchivedDataReport">
                     <c:param name="def" value="rawPointHistoryDefinition"/>
                     <c:param name="pointId" value="${pointId}"/>
-                    <c:param name="startDate" value="${preStartDateMillis}"/>
-                    <c:param name="stopDate" value="${preStopDateMillis}"/>
+                    <c:param name="startDate" value="${preChartStartDateMillis}"/>
+                    <c:param name="stopDate" value="${preChartStopDateMillis}"/>
                     <c:param name="def" value="rawPointHistoryDefinition"/>
                     
                     <c:param name="analyze" value="true"/>
                     <c:param name="deviceId" value="${deviceId}"/>
-                    <c:param name="getReportStartDate" value="${startDate}"/>
-                    <c:param name="getReportStopDate" value="${stopDate}"/>
+                    <c:param name="getReportStartDate" value="${formattedStartDate}"/>
+                    <c:param name="getReportStopDate" value="${formattedStopDate}"/>
                     <c:param name="chartRange" value="${chartRange}"/>
                 </c:url>
-                
+
                 <a href="${preHbcArchivedDataReportUrl}"/>HTML</a>
                 |
-                <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="csvView" pointId="${pointId}" startDate="${preStartDateMillis}" stopDate="${preStopDateMillis}">CSV</cti:simpleReportLinkFromNameTag>
+                <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="csvView" pointId="${pointId}" startDate="${preChartStartDateMillis}" stopDate="${preChartStopDateMillis}">CSV</cti:simpleReportLinkFromNameTag>
                 |
-                <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="pdfView" pointId="${pointId}" startDate="${preStartDateMillis}" stopDate="${preStopDateMillis}">PDF</cti:simpleReportLinkFromNameTag>
+                <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="pdfView" pointId="${pointId}" startDate="${preChartStartDateMillis}" stopDate="${preChartStopDateMillis}">PDF</cti:simpleReportLinkFromNameTag>
                 
                 <%-- daily usage links --%>
                 <br>
                 <div class="smallBoldLabel" style="display:inline;">Daily Usage Report: </div>
-                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="htmlView" module="amr" showMenu="true" menuSelection="deviceselection" pointId="${pointId}" startDate="${preRangeStartDate}" stopDate="${preRangeStopDate}">HTML</cti:simpleReportLinkFromNameTag>
+                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="htmlView" module="amr" showMenu="true" menuSelection="deviceselection" pointId="${pointId}" startDate="${preChartStartDate}" stopDate="${preChartStopDate}">HTML</cti:simpleReportLinkFromNameTag>
                 |
-                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="csvView" module="amr" showMenu="true" menuSelection="deviceselection" pointId="${pointId}" startDate="${preRangeStartDate}" stopDate="${preRangeStopDate}">CSV</cti:simpleReportLinkFromNameTag>
+                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="csvView" module="amr" showMenu="true" menuSelection="deviceselection" pointId="${pointId}" startDate="${preChartStartDate}" stopDate="${preChartStopDate}">CSV</cti:simpleReportLinkFromNameTag>
                 |
-                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="pdfView" module="amr" showMenu="true" menuSelection="deviceselection" pointId="${pointId}" startDate="${preRangeStartDate}" stopDate="${preReangeStopDate}">PDF</cti:simpleReportLinkFromNameTag>
+                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="pdfView" module="amr" showMenu="true" menuSelection="deviceselection" pointId="${pointId}" startDate="${preChartStartDate}" stopDate="${preChartStopDate}">PDF</cti:simpleReportLinkFromNameTag>
                 
             </c:if>
             
@@ -301,21 +283,21 @@
                 <%-- chart title --%>
                 <c:choose>
                     <c:when test="${chartRange == 'PEAK'}">
-                        <cti:formatDate var="postChartTitle" value="${postRangeStartDate}" type="DATE" />
+                        <c:set var="postChartTitle" value="${postResult.peakValue}" />
                     </c:when>
                     <c:when test="${chartRange == 'PEAKPLUSMINUS3'}">
-                        <cti:formatDate var="chartTitleStartDate" value="${postRangeStartDate}" type="DATE" />
-                        <cti:formatDate var="chartTitleStopDate" value="${postRangeStopDate}" type="DATE" />
-                        <c:set var="postChartTitle" value="${chartTitleStartDate} - ${chartTitleStopDate} (${postPeakValue} +/- 3 Days)" />
+                        <cti:formatDate var="chartTitleStartDate" value="${postChartStartDate}" type="DATE" />
+                        <cti:formatDate var="chartTitleStopDate" value="${postChartStopDate}" type="DATE_MIDNIGHT_PREV" />
+                        <c:set var="postChartTitle" value="${chartTitleStartDate} - ${chartTitleStopDate} (${postResult.peakValue} +/- 3 Days)" />
                     </c:when>
                     <c:when test="${chartRange == 'ENTIRE'}">
-                        <cti:formatDate var="chartTitleStartDate" value="${postRangeStartDate}" type="DATE" />
-                        <cti:formatDate var="chartTitleStopDate" value="${postRangeStopDate}" type="DATE" />
+                        <cti:formatDate var="chartTitleStartDate" value="${postChartStartDate}" type="DATE" />
+                        <cti:formatDate var="chartTitleStopDate" value="${postChartStopDate}" type="DATE_MIDNIGHT_PREV" />
                         <c:set var="postChartTitle" value="${chartTitleStartDate} - ${chartTitleStopDate}" />
                     </c:when>
                 </c:choose>
                 
-                <tags:trend title="${postChartTitle}" width="600" height="220" reloadInterval="30" min="${yMin}" max="${yMax}" pointIds="${pointId}" startDate="${postStartDateMillis}" endDate="${postStopDateMillis}" interval="${postChartInterval}" converterType="${converterType}" graphType="${graphType}"/>
+                <tags:trend title="${postChartTitle}" width="600" height="220" reloadInterval="30" min="${yMin}" max="${yMax}" pointIds="${pointId}" startDate="${postChartStartDateMillis}" endDate="${postChartStopDateMillis}" interval="${postChartInterval}" converterType="${converterType}" graphType="${graphType}"/>
                 <br>
                 
                 <%-- tabular data links --%>
@@ -324,22 +306,22 @@
                 <c:url var="postHbcArchivedDataReportUrl" value="/spring/amr/reports/hbcArchivedDataReport">
                     <c:param name="def" value="rawPointHistoryDefinition"/>
                     <c:param name="pointId" value="${pointId}"/>
-                    <c:param name="startDate" value="${postStartDateMillis}"/>
-                    <c:param name="stopDate" value="${postStopDateMillis}"/>
+                    <c:param name="startDate" value="${postChartStartDateMillis}"/>
+                    <c:param name="stopDate" value="${postChartStopDateMillis}"/>
                     <c:param name="def" value="rawPointHistoryDefinition"/>
                     
                     <c:param name="analyze" value="true"/>
                     <c:param name="deviceId" value="${deviceId}"/>
-                    <c:param name="getReportStartDate" value="${startDate}"/>
-                    <c:param name="getReportStopDate" value="${stopDate}"/>
+                    <c:param name="getReportStartDate" value="${formattedStartDate}"/>
+                    <c:param name="getReportStopDate" value="${formattedStopDate}"/>
                     <c:param name="chartRange" value="${chartRange}"/>
                 </c:url>
                 
                 <a href="${postHbcArchivedDataReportUrl}"/>HTML</a>
                 |
-                <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="csvView" pointId="${pointId}" startDate="${postStartDateMillis}" stopDate="${postStopDateMillis}">CSV</cti:simpleReportLinkFromNameTag>
+                <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="csvView" pointId="${pointId}" startDate="${postChartStartDateMillis}" stopDate="${postChartStopDateMillis}">CSV</cti:simpleReportLinkFromNameTag>
                 |
-                <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="pdfView" pointId="${pointId}" startDate="${postStartDateMillis}" stopDate="${postStopDateMillis}">PDF</cti:simpleReportLinkFromNameTag>
+                <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="pdfView" pointId="${pointId}" startDate="${postChartStartDateMillis}" stopDate="${postChartStopDateMillis}">PDF</cti:simpleReportLinkFromNameTag>
                 
                 <%-- daily usage links --%>
                 <br>

@@ -8,12 +8,11 @@
 <entry key="yukon.common.dateFormatting.TIME_TZ">HH:mm z</entry>
 <entry key="yukon.common.dateFormatting.TIMEZONE">z</entry>
 <entry key="yukon.common.dateFormatting.DATE">MM/dd/yyyy</entry>
-<entry key="yukon.common.dateFormatting.DATE_SHORTYEAR">MM/dd/yy</entry>
 <entry key="yukon.common.dateFormatting.BOTH">MM/dd/yyyy HH:mm:ss zz</entry>
 <entry key="yukon.common.dateFormatting.DATEHM">MM/dd/yyyy HH:mm zz</entry>
-<entry key="yukon.common.dateFormatting.DATEH_AP">MM/dd/yyyy ha zz</entry>
-<entry key="yukon.common.dateFormatting.HOUR_AP">ha</entry>
-<entry key="yukon.common.dateFormatting.HM_AP">h:mma</entry>
+<entry key="yukon.common.dateFormatting.DATEH">MM/dd/yyyy HH zz</entry>
+<entry key="yukon.common.dateFormatting.HOUR">HH zz</entry>
+<entry key="yukon.common.dateFormatting.DATE_MIDNIGHT_PREV">MM/dd/yyyy</entry>
 
 <entry key="yukon.common.dateFormatting.parserImplementation">MDY</entry>
 

@@ -7,19 +7,6 @@
 
 <%@ attribute name="preResult" required="true" type="java.lang.Object"%>
 <%@ attribute name="postResult" required="true" type="java.lang.Object"%>
-
-<%@ attribute name="displayName" required="true" type="java.lang.String"%>
-<%@ attribute name="prePeriodStartDate" required="true" type="java.util.Date"%>
-<%@ attribute name="prePeriodStopDate" required="true" type="java.util.Date"%>
-<%@ attribute name="prePeriodStartDateDisplay" required="true" type="java.lang.String"%>
-<%@ attribute name="prePeriodStopDateDisplay" required="true" type="java.lang.String"%>
-<%@ attribute name="prePeakValue" required="true" type="java.lang.String"%>
-
-<%@ attribute name="postPeriodStartDate" required="true" type="java.util.Date"%>
-<%@ attribute name="postPeriodStopDate" required="true" type="java.util.Date"%>
-<%@ attribute name="postPeriodStartDateDisplay" required="true" type="java.lang.String"%>
-<%@ attribute name="postPeriodStopDateDisplay" required="true" type="java.lang.String"%>
-<%@ attribute name="postPeakValue" required="true" type="java.lang.String"%>
             
 <div id="${id}">
 
@@ -38,7 +25,7 @@
                             Avg Daily / <br /> Total Usage
                         </th>
                         <th>
-                            Peak ${displayName}
+                            Peak ${preResult.peakType.displayName}
                         </th>
                         <th>
                             Peak Day Total Usage
@@ -49,13 +36,14 @@
                                 <c:when test="${!preResult.noData && preResult.deviceError == ''}">
                                     <tr>
                                         <td>
-                                            ${prePeriodStartDateDisplay} - ${prePeriodStopDateDisplay}
+                                            <cti:formatDate value="${preResult.rangeStartDate}" type="DATE" /> - 
+                                            <cti:formatDate value="${preResult.rangeStopDate}" type="DATE_MIDNIGHT_PREV" />  
                                         </td>
                                         <td>
                                             ${preResult.averageDailyUsage} / ${preResult.totalUsage} kWH
                                         </td>
                                         <td>
-                                            ${prePeakValue}
+                                            ${preResult.peakValue}
                                         </td>
                                         <td>
                                             ${preResult.usage} kWH
@@ -83,13 +71,14 @@
                                 <c:when test="${!postResult.noData && postResult.deviceError == ''}">
                                     <tr>
                                         <td>
-                                            ${postPeriodStartDateDisplay} - ${postPeriodStopDateDisplay}
+                                            <cti:formatDate value="${postResult.rangeStartDate}" type="DATE" /> - 
+                                            <cti:formatDate value="${postResult.rangeStopDate}" type="DATE_MIDNIGHT_PREV" />
                                         </td>
                                         <td nowrap>
                                             ${postResult.averageDailyUsage} / ${postResult.totalUsage} kWH
                                         </td>
                                         <td>
-                                            ${postPeakValue}
+                                            ${postResult.peakValue}
                                         </td>
                                         <td>
                                             ${postResult.usage} kWH

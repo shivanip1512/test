@@ -32,9 +32,9 @@ public class DateFormattingServiceImpl implements DateFormattingService {
             
             // will result in dates that would normally format to midnight of a date, to format instead
             // to the previous date.
-            // MidnightMode.PREV_DAY is only set on date-only type DateFormatEnum values
-            if (type.getMidnightMode() == MidnightMode.PREV_DAY) {
-                date = DateUtils.addSeconds(date, -1);
+            // MidnightMode.INCLUDES_MIDNIGHT is only set on date-only type DateFormatEnum values
+            if (type.getMidnightMode() == MidnightMode.INCLUDES_MIDNIGHT) {
+                date = DateUtils.addMilliseconds(date, -1);
             }
             
             return df.format(date);

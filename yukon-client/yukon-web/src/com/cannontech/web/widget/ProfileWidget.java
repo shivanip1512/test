@@ -279,9 +279,10 @@ public class ProfileWidget extends WidgetControllerBase {
                                                                       userContext);
 
             Date stopDate = dateFormattingService.flexibleDateParser(stopDateStr,
-                                                                     DateFormattingService.DateOnlyMode.END_OF_DAY,
+                                                                     DateFormattingService.DateOnlyMode.START_OF_DAY,
                                                                      userContext);
-            stopDate = DateUtils.addMinutes(stopDate, -1);
+            stopDate = DateUtils.truncate(stopDate, Calendar.DATE);
+            stopDate = DateUtils.addDays(stopDate, 1);
 
             boolean datesOk = false;
 
@@ -576,6 +577,8 @@ public class ProfileWidget extends WidgetControllerBase {
     
     public ModelAndView viewDailyUsageReport(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+        
         // get pointId
         int deviceId = ServletRequestUtils.getRequiredIntParameter(request, "deviceId");
         YukonDevice device = deviceDao.getYukonDeviceObjectById(deviceId);
@@ -586,6 +589,14 @@ public class ProfileWidget extends WidgetControllerBase {
         // get date range
         String reportStartDateStr = ServletRequestUtils.getRequiredStringParameter(request, "reportStartDateStr");
         String reportStopDateStr = ServletRequestUtils.getRequiredStringParameter(request, "reportStopDateStr");
+        
+        // end date should be inclusive
+        Date stopDate = dateFormattingService.flexibleDateParser(reportStopDateStr,
+                                                                 DateFormattingService.DateOnlyMode.START_OF_DAY,
+                                                                 userContext);
+        stopDate = DateUtils.truncate(stopDate, Calendar.DATE);
+        stopDate = DateUtils.addDays(stopDate, 1);
+        reportStopDateStr = dateFormattingService.formatDate(stopDate, DateFormattingService.DateFormatEnum.DATE, userContext);
         
         // build query
         Map<String, String> propertiesMap = new HashMap<String, String>();

@@ -1,16 +1,10 @@
 <%@ attribute name="deviceId" required="true" type="java.lang.Long"%>
 
-<%@ attribute name="prePeakValue" required="true" type="java.lang.String"%>
 <%@ attribute name="preResult" required="true" type="java.lang.Object"%>
 <%@ attribute name="preAvailableDaysAfterPeak" required="true" type="java.util.List"%>
-<%@ attribute name="preStartDate" required="true" type="java.lang.String"%>
-<%@ attribute name="preStopDate" required="true" type="java.lang.String"%>
 
-<%@ attribute name="postPeakValue" required="true" type="java.lang.String"%>
 <%@ attribute name="postResult" required="true" type="java.lang.Object"%>
 <%@ attribute name="postAvailableDaysAfterPeak" required="true" type="java.util.List"%>
-<%@ attribute name="postStartDate" required="true" type="java.lang.String"%>
-<%@ attribute name="postStopDate" required="true" type="java.lang.String"%>
 
 <%@ attribute name="styleClass" required="false" type="java.lang.String"%>
 <%@ attribute name="profileRequestOrigin" required="true" type="java.lang.String"%>
@@ -23,6 +17,11 @@
 
 <cti:uniqueIdentifier prefix="pdp_" var="id"/>
 <cti:includeScript link="/JavaScript/collectProfileDataAroundPeak.js"/>
+
+<cti:formatDate var="preStartDate" value="${preResult.rangeStartDate}" type="DATE" />
+<cti:formatDate var="preStopDate" value="${preResult.rangeStopDate}" type="DATE_MIDNIGHT_PREV" />
+<cti:formatDate var="postStartDate" value="${postResult.rangeStartDate}" type="DATE" />
+<cti:formatDate var="postStopDate" value="${postResult.rangeStopDate}" type="DATE_MIDNIGHT_PREV" />
 
 <input type="hidden" id="${id}_deviceId" value="${deviceId}">
 <input type="hidden" id="${id}_startDate" value="${preStartDate}">
@@ -62,7 +61,7 @@
             setAvailableValuesForDaysAfterSelectElement(afterDaysSelectElement, preAvailableDaysAfterPeak);
         }
         else {
-        
+            
             $('${id}_startDate').value='${postStartDate}';
             $('${id}_stopDate').value='${postStopDate}';
             
@@ -108,12 +107,12 @@
         </td>
         <td style="text-align:center;">
             
-            <select id="${id}_selectedPeakDate" onchange="javascript:changePeak();">
+            <select id="${id}_selectedPeakDate" onchange="changePeak();">
                 <c:if test="${!preResult.noData && preResult.deviceError == ''}">
-                    <option value="${prePeakValue}" selected>${prePeakValue}</option>
+                    <option value="${preResult.peakValue}" selected>${preResult.peakValue}</option>
                 </c:if>
                 <c:if test="${!postResult.noData && postResult.deviceError == ''}">
-                    <option value="${postPeakValue}">${postPeakValue}</option>
+                    <option value="${postResult.peakValue}">${postResult.peakValue}</option>
                 </c:if>
             </select>
                         

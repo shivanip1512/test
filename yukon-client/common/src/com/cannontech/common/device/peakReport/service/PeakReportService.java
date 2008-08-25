@@ -1,12 +1,10 @@
 package com.cannontech.common.device.peakReport.service;
 
 import java.util.Date;
-import java.util.Map;
 
 import com.cannontech.common.device.peakReport.model.PeakReportPeakType;
 import com.cannontech.common.device.peakReport.model.PeakReportResult;
 import com.cannontech.common.device.peakReport.model.PeakReportRunType;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.user.YukonUserContext;
 
 public interface PeakReportService {
@@ -35,7 +33,7 @@ public interface PeakReportService {
      * @param user
      * @return
      */
-    public PeakReportResult retrieveArchivedPeakReport(int deviceId, PeakReportRunType runType, LiteYukonUser user);
+    public PeakReportResult retrieveArchivedPeakReport(int deviceId, PeakReportRunType runType, YukonUserContext userContext);
     
     /**
      * To remove a report for a given device and run type. 
@@ -55,14 +53,4 @@ public interface PeakReportService {
      * @return
      */
     public int getChannelIntervalForDevice(int deviceId, int channel);
-    
-    /**
-     * Formats major values of PeakReportResult for display, returns map of formatted string values.
-     * @param peakResult
-     * @param userContext
-     * @param deviceId
-     * @param channel
-     * @return
-     */
-    public Map<String, Object> formatPeakReportResult(PeakReportResult peakResult, YukonUserContext userContext, int deviceId, int channel);
 }

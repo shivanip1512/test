@@ -159,22 +159,20 @@ public class HighBillController extends MultiActionController {
             stopDate = dateFormattingService.flexibleDateParser(stopDateStr, userContext);
         }
         
-        mav.addObject("startDateDate", startDate);
-        mav.addObject("stopDateDate", stopDate);
+        mav.addObject("startDate", startDate);
+        mav.addObject("stopDate", stopDate);
         
         
         
         // GATHER ARCHIVED RESULTS
         //-------------------------------------------
-        PeakReportResult preResult = peakReportService.retrieveArchivedPeakReport(deviceId, PeakReportRunType.PRE, userContext.getYukonUser());
-        PeakReportResult postResult = peakReportService.retrieveArchivedPeakReport(deviceId, PeakReportRunType.POST, userContext.getYukonUser());
+        PeakReportResult preResult = peakReportService.retrieveArchivedPeakReport(deviceId, PeakReportRunType.PRE, userContext);
+        PeakReportResult postResult = peakReportService.retrieveArchivedPeakReport(deviceId, PeakReportRunType.POST, userContext);
         
-        // PARSE RESULTS AND ADD TO MAV
-        //-------------------------------------------
-        Map<String, Object> preMap = peakReportService.formatPeakReportResult(preResult, userContext, deviceId, 1);
-        Map<String, Object> postMap = peakReportService.formatPeakReportResult(postResult, userContext, deviceId, 1);
-        addProfileResultsToMav(mav, deviceId, userContext, preResult, postResult, preMap, postMap);
-        
+        mav.addObject("preResult", preResult);
+        mav.addObject("postResult", postResult);
+        mav.addObject("preAvailableDaysAfterPeak", getAvailableDaysAfterPeak(preResult));
+        mav.addObject("postAvailableDaysAfterPeak", getAvailableDaysAfterPeak(postResult));
         
         // remaining items are only required during "step 2" (analyze=true)
         if (analyze) {
@@ -195,30 +193,30 @@ public class HighBillController extends MultiActionController {
             // PRE CHART
             if (preResult != null && !preResult.isNoData()) {
                 
-                RangeStartStopDateHolder preRangeStartStopDateHolder = getRangeStartStopDate(preResult, chartRange, userContext);
+                ChartStartStopDateHolder preChartStartStopDateHolder = getChartStartStopDate(preResult, chartRange, userContext);
                 
-                Date preRangeStartDate = preRangeStartStopDateHolder.getRangeStartDate();
-                Date preRangeStopDate = preRangeStartStopDateHolder.getRangeStopDate();
+                Date preChartStartDate = preChartStartStopDateHolder.getChartStartDate();
+                Date preChartStopDate = preChartStartStopDateHolder.getChartStopDate();
                 
-                mav.addObject("preRangeStartDate", preRangeStartDate);
-                mav.addObject("preRangeStopDate", preRangeStopDate);
-                mav.addObject("preStartDateMillis", preRangeStartDate.getTime());
-                mav.addObject("preStopDateMillis", preRangeStopDate.getTime());
-                mav.addObject("preChartInterval", calcIntervalForPeriod(preRangeStartDate, preRangeStopDate));
+                mav.addObject("preChartStartDate", preChartStartDate);
+                mav.addObject("preChartStopDate", preChartStopDate);
+                mav.addObject("preChartStartDateMillis", preChartStartDate.getTime());
+                mav.addObject("preChartStopDateMillis", preChartStopDate.getTime());
+                mav.addObject("preChartInterval", calcIntervalForPeriod(preChartStartDate, preChartStopDate));
                 
                 // POST CHART
                 if (postResult != null && !postResult.isNoData()) {
                     
-                    RangeStartStopDateHolder postRangeStartStopDateHolder = getRangeStartStopDate(postResult, chartRange, userContext);
+                    ChartStartStopDateHolder postChartStartStopDateHolder = getChartStartStopDate(postResult, chartRange, userContext);
                     
-                    Date postRangeStartDate = postRangeStartStopDateHolder.getRangeStartDate();
-                    Date postRangeStopDate = postRangeStartStopDateHolder.getRangeStopDate();
+                    Date postChartStartDate = postChartStartStopDateHolder.getChartStartDate();
+                    Date postChartStopDate = postChartStartStopDateHolder.getChartStopDate();
                     
-                    mav.addObject("postRangeStartDate", postRangeStartDate);
-                    mav.addObject("postRangeStopDate", postRangeStopDate);
-                    mav.addObject("postStartDateMillis", postRangeStartDate.getTime());
-                    mav.addObject("postStopDateMillis", postRangeStopDate.getTime());
-                    mav.addObject("postChartInterval", calcIntervalForPeriod(postRangeStartDate, postRangeStopDate));
+                    mav.addObject("postChartStartDate", postChartStartDate);
+                    mav.addObject("postChartStopDate", postChartStopDate);
+                    mav.addObject("postChartStartDateMillis", postChartStartDate.getTime());
+                    mav.addObject("postChartStopDateMillis", postChartStopDate.getTime());
+                    mav.addObject("postChartInterval", calcIntervalForPeriod(postChartStartDate, postChartStopDate));
                     
                     // Get point values for each range to determine the min/max y values
                     double preMin = 0.0;
@@ -227,7 +225,7 @@ public class HighBillController extends MultiActionController {
                     double postMax = 0.0;
                     
                     // pre min/max
-                    List<PointValueHolder> prePointData = rphDao.getPointData(pointId, preRangeStartDate, preRangeStopDate);
+                    List<PointValueHolder> prePointData = rphDao.getPointData(pointId, preChartStartDate, preChartStopDate);
                     for (PointValueHolder data : prePointData) {
                         double val = data.getValue();
                         if (val < preMin) {
@@ -239,7 +237,7 @@ public class HighBillController extends MultiActionController {
                     }
                     
                     // post min/max
-                    List<PointValueHolder> postPointData = rphDao.getPointData(pointId, postRangeStartDate, postRangeStopDate);
+                    List<PointValueHolder> postPointData = rphDao.getPointData(pointId, postChartStartDate, postChartStopDate);
                     for (PointValueHolder data : postPointData) {
                         double val = data.getValue();
                         if (val < postMin) {
@@ -261,60 +259,57 @@ public class HighBillController extends MultiActionController {
         return mav;
     }
     
-    private RangeStartStopDateHolder getRangeStartStopDate(PeakReportResult result, String chartRange, YukonUserContext userContext) {
+    private ChartStartStopDateHolder getChartStartStopDate(PeakReportResult result, String chartRange, YukonUserContext userContext) {
         
         Calendar dateCal = dateFormattingService.getCalendar(userContext);
         
-        Date rangeStartDate = null;
-        Date rangeStopDate = null;
+        Date chartStartDate = null;
+        Date chartStopDate = null;
         
         if (chartRange.equals("PEAK")) {
             
             dateCal.setTime(result.getPeakStopDate()); 
-            rangeStartDate = DateUtils.truncate(dateCal, Calendar.DATE).getTime();
-            
-            rangeStopDate = DateUtils.addDays(rangeStartDate, 1);
+            chartStartDate = DateUtils.truncate(dateCal, Calendar.DATE).getTime();
+            chartStopDate = DateUtils.addDays(chartStartDate, 1);
         }
         else if (chartRange.equals("PEAKPLUSMINUS3")) {
             
             dateCal.setTime(result.getPeakStopDate()); 
-            rangeStartDate = DateUtils.truncate(dateCal, Calendar.DATE).getTime();
-            rangeStartDate = DateUtils.addDays(rangeStartDate, -3);
+            chartStartDate = DateUtils.truncate(dateCal, Calendar.DATE).getTime();
+            chartStartDate = DateUtils.addDays(chartStartDate, -3);
             
             dateCal.setTime(result.getPeakStopDate()); 
-            rangeStopDate = DateUtils.truncate(dateCal, Calendar.DATE).getTime();
-            rangeStopDate = DateUtils.addDays(rangeStopDate, 4);
+            chartStopDate = DateUtils.truncate(dateCal, Calendar.DATE).getTime();
+            chartStopDate = DateUtils.addDays(chartStopDate, 4);
         }
         else if (chartRange.equals("ENTIRE")) {
             
             dateCal.setTime(result.getRangeStartDate()); 
-            rangeStartDate = DateUtils.truncate(dateCal, Calendar.DATE).getTime();
+            chartStartDate = DateUtils.truncate(dateCal, Calendar.DATE).getTime();
             
             dateCal.setTime(result.getRangeStopDate()); 
-            rangeStopDate = DateUtils.truncate(dateCal, Calendar.DATE).getTime();
-            rangeStopDate = DateUtils.addDays(rangeStopDate, 1);
+            chartStopDate = DateUtils.truncate(dateCal, Calendar.DATE).getTime();
         }
         
-        return new RangeStartStopDateHolder(rangeStartDate, rangeStopDate);
+        return new ChartStartStopDateHolder(chartStartDate, chartStopDate);
     }
     
-    private class RangeStartStopDateHolder {
+    private class ChartStartStopDateHolder {
         
-        public Date rangeStartDate = null;
-        public Date rangeStopDate = null;
+        public Date chartStartDate = null;
+        public Date chartStopDate = null;
         
-        public RangeStartStopDateHolder(Date rangeStartDate, Date rangeStopDate) {
+        public ChartStartStopDateHolder(Date chartStartDate, Date chartStopDate) {
             
-            this.rangeStartDate = rangeStartDate;
-            this.rangeStopDate = rangeStopDate;
+            this.chartStartDate = chartStartDate;
+            this.chartStopDate = chartStopDate;
         }
         
-        public Date getRangeStartDate() {
-            return rangeStartDate;
+        public Date getChartStartDate() {
+            return chartStartDate;
         }
-        
-        public Date getRangeStopDate() {
-            return rangeStopDate;
+        public Date getChartStopDate() {
+            return chartStopDate;
         }
     }
     
@@ -353,6 +348,7 @@ public class HighBillController extends MultiActionController {
         //-------------------------------------------
         Date preCommandStartDate = null;
         Date preCommandStopDate = null;
+        Date postCommandStartDate = null;
         Date postCommandStopDate = new Date();
         
         try {
@@ -386,6 +382,7 @@ public class HighBillController extends MultiActionController {
             return mav;
         }
         
+        postCommandStartDate = DateUtils.addDays(preCommandStopDate, 1);
         
         // EXECUTE COMMANDS TO GET RESULTS
         //-------------------------------------------
@@ -395,7 +392,7 @@ public class HighBillController extends MultiActionController {
         try {
             preResult = peakReportService.requestPeakReport(deviceId, PeakReportPeakType.DAY, PeakReportRunType.PRE, 1, preCommandStartDate, preCommandStopDate, true, userContext);
             if (getDaysBetween(postCommandStopDate, preCommandStopDate) > 0) {
-                postResult = peakReportService.requestPeakReport(deviceId, PeakReportPeakType.DAY, PeakReportRunType.POST, 1, preCommandStopDate, postCommandStopDate, true, userContext);
+                postResult = peakReportService.requestPeakReport(deviceId, PeakReportPeakType.DAY, PeakReportRunType.POST, 1, postCommandStartDate, postCommandStopDate, true, userContext);
             }
             
             // if the range we ran for only gives us a peak report and not a post report
@@ -466,12 +463,12 @@ public class HighBillController extends MultiActionController {
             
             // after peak
             if (afterDaysStr.equalsIgnoreCase("ALL")) {
-                stopDate = dateFormattingService.flexibleDateParser(stopDateStr, DateFormattingService.DateOnlyMode.END_OF_DAY, userContext);
+                stopDate = dateFormattingService.flexibleDateParser(stopDateStr, DateFormattingService.DateOnlyMode.START_OF_DAY, userContext);
                 stopDate = DateUtils.truncate(stopDate, Calendar.DATE);
                 stopDate = DateUtils.addDays(stopDate, 1);
             }
             else {
-                stopDate = dateFormattingService.flexibleDateParser(peakDateStr, DateFormattingService.DateOnlyMode.END_OF_DAY, userContext);
+                stopDate = dateFormattingService.flexibleDateParser(peakDateStr, DateFormattingService.DateOnlyMode.START_OF_DAY, userContext);
                 stopDate = DateUtils.truncate(stopDate, Calendar.DATE);
                 stopDate = DateUtils.addDays(stopDate, Integer.parseInt(afterDaysStr));
                 stopDate = DateUtils.addDays(stopDate, 1);
@@ -554,64 +551,26 @@ public class HighBillController extends MultiActionController {
         mav.addObject("pointId", pointId);
     }
     
-    /**
-     * HELPER to call parse and add parsed results to mav.
-     * @param mav
-     * @param deviceId
-     * @param userContext
-     * @param preResult
-     * @param postResult
-     * @return
-     */
-    private void addProfileResultsToMav(ModelAndView mav, int deviceId, YukonUserContext userContext, PeakReportResult preResult, PeakReportResult postResult, Map<String, Object> preMap, Map<String, Object> postMap) {
+    private List<String> getAvailableDaysAfterPeak(PeakReportResult result) {
         
-        Date today = DateUtils.truncate(new Date(), Calendar.DATE);
-        mav.addObject("preResult", preResult);
-        mav.addObject("postResult", postResult);
-        
-        List<String> preAvailableDaysAfterPeak = new ArrayList<String>();
-        if(preResult != null && !preResult.isNoData()) {
-            mav.addObject("prePeriodStartDate",preMap.get("periodStartDate"));
-            mav.addObject("prePeriodStopDate",preMap.get("periodStopDate"));
-            mav.addObject("prePeriodStartDateDisplay",preMap.get("periodStartDateDisplay"));
-            mav.addObject("prePeriodStopDateDisplay",preMap.get("periodStopDateDisplay"));
-            mav.addObject("prePeakValue",preMap.get("peakValueStr"));
-            
-            // how many days after peak should be available to gather lp data? 0,1,2,3?
-            Date peakDate = DateUtils.truncate(preResult.getPeakStopDate(), Calendar.DATE);
-            preAvailableDaysAfterPeak.add("0");
-            long daysBetween = getDaysBetween(today, peakDate) + 1;
-            for (int d = 1; d < daysBetween && d <= 3; d++) {
-                preAvailableDaysAfterPeak.add(Integer.valueOf(d).toString());
-            }
-            Date rangeStopDate = DateUtils.truncate(preResult.getRangeStopDate(), Calendar.DATE);
-            if (rangeStopDate.compareTo(today) <= 0) {
-                preAvailableDaysAfterPeak.add("All");
-            }
-        }
-        mav.addObject("preAvailableDaysAfterPeak", preAvailableDaysAfterPeak);
-        
+        Date today = new Date();
         List<String> postAvailableDaysAfterPeak = new ArrayList<String>();
-        if(postResult != null && !postResult.isNoData()) {
-            mav.addObject("postPeriodStartDate",postMap.get("periodStartDate"));
-            mav.addObject("postPeriodStopDate",postMap.get("periodStopDate"));
-            mav.addObject("postPeriodStartDateDisplay",postMap.get("periodStartDateDisplay"));
-            mav.addObject("postPeriodStopDateDisplay",postMap.get("periodStopDateDisplay"));
-            mav.addObject("postPeakValue",postMap.get("peakValueStr"));
+        if(result != null && !result.isNoData()) {
             
             // how many days after peak should be available to gather lp data? 0,1,2,3?
-            Date peakDate = DateUtils.truncate(postResult.getPeakStopDate(), Calendar.DATE);
+            Date peakDate = DateUtils.truncate(result.getPeakStopDate(), Calendar.DATE);
             postAvailableDaysAfterPeak.add("0");
             long daysBetween = getDaysBetween(today, peakDate) + 1;
             for (int d = 1; d < daysBetween && d <= 3; d++) {
                 postAvailableDaysAfterPeak.add(Integer.valueOf(d).toString());
             }
-            Date rangeStopDate = DateUtils.truncate(preResult.getRangeStopDate(), Calendar.DATE);
+            Date rangeStopDate = DateUtils.truncate(result.getRangeStopDate(), Calendar.DATE);
             if (rangeStopDate.compareTo(today) <= 0) {
                 postAvailableDaysAfterPeak.add("All");
             }
         }
-        mav.addObject("postAvailableDaysAfterPeak", postAvailableDaysAfterPeak);
+        
+        return postAvailableDaysAfterPeak;
     }
     
     /**

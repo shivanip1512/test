@@ -25,6 +25,7 @@ public class PeakReportResult {
     private double demand = 0.0;
     private double averageDailyUsage = 0.0;
     private double totalUsage = 0.0;
+    private String peakValue = "";
     
     // error values
     private boolean noData = true;
@@ -124,6 +125,12 @@ public class PeakReportResult {
     }
     public void setUsage(double usage) {
         this.usage = usage;
+    }
+    public String getPeakValue() {
+        return peakValue;
+    }
+    public void setPeakValue(String peakValue) {
+        this.peakValue = peakValue;
     }
     
     // error
