@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_numeric.h-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2008/06/30 15:24:29 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2008/08/25 19:47:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -64,8 +64,6 @@ public:
 
    virtual UINT getStaticTags();
    virtual UINT adjustStaticTags(UINT &tag) const;
-   virtual double getDefaultValue( ) const;
-   virtual double getInitialValue( ) const;
 
    virtual void DumpData();
 

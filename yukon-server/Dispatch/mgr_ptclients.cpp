@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/mgr_ptclients.cpp-arc  $
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2008/07/30 19:49:44 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2008/08/25 19:47:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -110,7 +110,8 @@ void verifyInitialDynamicData(CtiPointSPtr &pTempPoint)
             pTempPoint->setDynamic(pDyn);
         }
     }
-    else   {
+    else
+    {
         UINT statictags = pDyn->getDispatch().getTags();
         pTempPoint->adjustStaticTags(statictags);
 
@@ -133,26 +134,46 @@ void ApplyInitialDynamicConditions(const long key, CtiPointSPtr pTempPoint, void
 }
 
 //This gives the point its initial data. We should not need a mutex for this.
-void CtiPointClientManager::processPointDynamicData(LONG pntID)
+//If loading by pao, it is assumed we are ADDING a point.
+void CtiPointClientManager::processPointDynamicData(LONG pntID, LONG paoID)
 {
-    CtiPointSPtr pTempPoint;
-
-    //Lets be smart about handling a single point.
-    pTempPoint = getEqual(pntID);
-    if(pTempPoint)
+    if(pntID)
     {
-        ApplyInitialDynamicConditions(0,pTempPoint,NULL);
-
-        //This will probably always be true, but why not check.
-        if(findNonUpdatedDynamicData(0,pTempPoint,NULL))
+        CtiPointSPtr pTempPoint;
+    
+        //Lets be smart about handling a single point.
+        pTempPoint = getEqual(pntID);
+        if(pTempPoint)
         {
-            RefreshDynamicData(pntID);
-            ApplyInsertNonUpdatedDynamicData(0, pTempPoint, NULL);
+            ApplyInitialDynamicConditions(0,pTempPoint,NULL);
+    
+            //This will probably always be true, but why not check.
+            if(findNonUpdatedDynamicData(0,pTempPoint,NULL))
+            {
+                RefreshDynamicData(pntID);
+                //ApplyInsertNonUpdatedDynamicData(0, pTempPoint, NULL);
+            }
         }
+    }
+    else if(paoID)
+    {
+        std::vector<Inherited::ptr_type>           pointVec;
+        std::vector<Inherited::ptr_type>::iterator iter;
+        getEqualByPAO(paoID, pointVec);
+
+        for(iter = pointVec.begin(); iter != pointVec.end(); iter++)
+        {
+            if(*iter)
+            {
+                ApplyInitialDynamicConditions(0,*iter,NULL);
+            }
+        }
+
+        //A PAO has nothing in dynamic point dispatch, so it cant be loaded.
     }
 }
 
-//Points cannot actually load by PAO, but it is close.
+//Points can be loaded by pao, not updated!
 void CtiPointClientManager::refreshList(BOOL (*testFunc)(CtiPoint *,void*), void *arg, LONG pntID, LONG paoID, CtiPointType_t pntType)
 {
     Inherited::refreshList(testFunc, arg, pntID, paoID, pntType);                // Load all points in the system
@@ -160,19 +181,9 @@ void CtiPointClientManager::refreshList(BOOL (*testFunc)(CtiPoint *,void*), void
     refreshReasonabilityLimits(pntID, paoID);
     refreshPointLimits(pntID, paoID);
 
-    if(pntID != 0)
+    if(pntID != 0 || paoID != 0)
     {
-        processPointDynamicData(pntID);
-    }
-    else if(paoID != 0)
-    {
-        vector<Inherited::ptr_type> points;
-        Inherited::getEqualByPAO(paoID, points);
-
-        for(int i = 0; i < points.size(); i++)
-        {
-            processPointDynamicData(points[i]->getPointID());
-        }
+        processPointDynamicData(pntID, paoID);
     }
     else
     {
@@ -180,8 +191,8 @@ void CtiPointClientManager::refreshList(BOOL (*testFunc)(CtiPoint *,void*), void
         Inherited::apply(ApplyInitialDynamicConditions, NULL);     // Make sure everyone has been initialized with Dynamic data.
         if((pTempPoint = Inherited::find(findNonUpdatedDynamicData, NULL))) // If there is at least one nonupdated dynamic entry.
         {
-            RefreshDynamicData(pntID);
-            Inherited::apply(ApplyInsertNonUpdatedDynamicData, NULL);
+            RefreshDynamicData();
+            //Inherited::apply(ApplyInsertNonUpdatedDynamicData, NULL);
         }
     }
 }
@@ -479,7 +490,7 @@ void CtiPointClientManager::storeDirtyRecords()
             {
                 CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)pPt->getDynamic();
 
-                if(pDyn != NULL && pDyn->getDispatch().isDirty())
+                if(pDyn != NULL && (pDyn->getDispatch().isDirty() || !pDyn->getDispatch().getUpdatedFlag()) )
                 {
                     UINT statictags = pDyn->getDispatch().getTags();
                     pDyn->getDispatch().resetTags();                    // clear them all!
@@ -487,6 +498,7 @@ void CtiPointClientManager::storeDirtyRecords()
 
                     updateList.push_back(pDyn->getDispatch());
                     pDyn->getDispatch().resetDirty();
+                    pDyn->getDispatch().setUpdatedFlag();
 
                     count++;
                 }
@@ -510,7 +522,14 @@ void CtiPointClientManager::storeDirtyRecords()
 
         for(updateListIter = updateList.begin(); updateListIter != updateList.end(); updateListIter++)
         {
-            updateListIter->Update(conn);
+            if(!updateListIter->getUpdatedFlag())
+            {
+                updateListIter->Insert(conn);
+            }
+            else
+            {
+                updateListIter->Update(conn);
+            }
         }
         updateList.clear();
 

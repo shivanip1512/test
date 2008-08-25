@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/pt_numeric.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2008/06/30 15:24:29 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2008/08/25 19:47:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -180,16 +180,6 @@ UINT CtiPointNumeric::adjustStaticTags(UINT &tag) const
 UINT CtiPointNumeric::getStaticTags()
 {
    return Inherited::getStaticTags();
-}
-
-double CtiPointNumeric::getInitialValue( ) const
-{
-   return _pointUnits.getDefaultValue();
-}
-
-double CtiPointNumeric::getDefaultValue( ) const
-{
-   return _pointUnits.getDefaultValue();
 }
 
 DOUBLE CtiPointNumeric::computeValueForUOM(DOUBLE Value) const

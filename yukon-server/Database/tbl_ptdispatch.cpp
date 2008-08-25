@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_ptdispatch.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2008/06/30 15:24:29 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2008/08/25 19:47:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -70,6 +70,7 @@ CtiTablePointDispatch& CtiTablePointDispatch::operator=(const CtiTablePointDispa
 {
     if(this != &right)
     {
+        Inherited::operator=(right);
         setDirty(TRUE);
         setPointID( right.getPointID() );
 

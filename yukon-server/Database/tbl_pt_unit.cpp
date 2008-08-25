@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_unit.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2008/06/30 15:24:29 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2008/08/25 19:47:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -82,11 +82,6 @@ INT CtiTablePointUnit::getUnitID() const
 INT CtiTablePointUnit::getLogFrequency() const
 {
     return _logFrequency;
-}
-
-DOUBLE CtiTablePointUnit::getDefaultValue() const
-{
-    return 0.0;
 }
 
 CtiTablePointUnit& CtiTablePointUnit::setUnitID(const INT &id)

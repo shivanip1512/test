@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.191 $
-* DATE         :  $Date: 2008/07/30 20:10:58 $
+* REVISION     :  $Revision: 1.192 $
+* DATE         :  $Date: 2008/08/25 19:47:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -4830,12 +4830,19 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
             }
 
             // This loads up the points that VanGogh will manage.
-            if( pChg == NULL || (pChg->getDatabase() == ChangePointDb) )
+            if( pChg == NULL || (pChg->getDatabase() == ChangePointDb) ||
+               (pChg->getDatabase() == ChangePAODb && pChg->getTypeOfChange() == ChangeTypeAdd) )
             {
                 CtiServerExclusion pmguard(_server_exclusion, 10000);
                 if(pmguard.isAcquired())
                 {
-                    if(pChg != NULL && (pChg->getTypeOfChange() == ChangeTypeUpdate || pChg->getTypeOfChange() == ChangeTypeAdd))
+                    if(pChg != NULL && pChg->getDatabase() == ChangePAODb && pChg->getTypeOfChange() == ChangeTypeAdd )
+                    {
+                        //Load all points for this PAO!
+                        PointMgr.refreshList(isPoint, NULL, 0, pChg->getId());
+                        //TriggerMgr is really not used so I am currently not loading it here!
+                    }
+                    else if(pChg != NULL && (pChg->getTypeOfChange() == ChangeTypeUpdate || pChg->getTypeOfChange() == ChangeTypeAdd))
                     {
                         PointMgr.refreshList(isPoint, NULL, pChg->getId(), 0, resolvePointType(pChg->getObjectType()) );
                         TriggerMgr.refreshList(pChg->getId(), PointMgr);

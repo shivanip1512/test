@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_pt_unit.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2008/06/30 15:24:29 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2008/08/25 19:47:32 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -77,8 +77,6 @@ public:
 
    INT                  getLogFrequency() const;
    CtiTablePointUnit&   setLogFrequency(INT i);
-
-   DOUBLE               getDefaultValue() const;
 
    CtiTableUnitMeasure  getUnitMeasure() const;
    CtiTableUnitMeasure& getUnitMeasure();

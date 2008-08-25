@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/mgr_ptclients.h-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2008/07/29 15:14:25 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2008/08/25 19:47:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -67,7 +67,7 @@ private:
 
    void refreshReasonabilityLimits(LONG pntID, LONG paoID);
    void refreshPointLimits(LONG pntID, LONG paoID);
-   void processPointDynamicData(LONG pntID);
+   void processPointDynamicData(LONG pntID, LONG paoID);
 
 protected:
 
