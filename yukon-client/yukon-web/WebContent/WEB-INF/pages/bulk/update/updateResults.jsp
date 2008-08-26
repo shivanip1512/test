@@ -36,7 +36,7 @@
         
            <%-- RESULTS --%>
            <tags:bulkUpdateResultsTable resultsTypeMsgKey="update"
-                                        totalCount="${bulkUpdateOperationResults.bulkFileInfo.lineCount}"
+                                        totalCount="${bulkUpdateOperationResults.bulkFileInfo.dataCount}"
                                         bulkUpdateOperationResults="${bulkUpdateOperationResults}" />
             
             

@@ -40,6 +40,10 @@ public abstract class BulkFileInfo {
     public int getLineCount() {
         return lineCount;
     }
+    
+    public int getDataCount() {
+        return getLineCount() - 1;
+    }
 
     public void setLineCount(int lineCount) {
         this.lineCount = lineCount;

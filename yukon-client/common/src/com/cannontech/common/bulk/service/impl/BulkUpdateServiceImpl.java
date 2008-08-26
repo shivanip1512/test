@@ -25,6 +25,13 @@ public class BulkUpdateServiceImpl extends BaseBulkService implements BulkUpdate
         
         try {
 
+            // line count for BulkFileInfo
+            int lineCount = getLineCount(info);
+            info.setLineCount(lineCount);
+            
+            // set reference to BulkFileInfo
+            result.setBulkFileInfo(info);
+            
             // create-check headers
             List<BulkFieldColumnHeader> headerColumnList = createColumnHeaders(info, result);
             if (result.hasErrors()) {
@@ -78,9 +85,6 @@ public class BulkUpdateServiceImpl extends BaseBulkService implements BulkUpdate
             if (!info.isIgnoreInvalidIdentifiers()) {
                 findIdentifierErrors(info, result);
             }
-            
-            // line count
-            result.setLineCount(getLineCount(info));
 
         } catch (IOException e) {
             result.addError(new YukonMessageSourceResolvable("yukon.common.device.bulk.fileUpload.error.emptyFile"));

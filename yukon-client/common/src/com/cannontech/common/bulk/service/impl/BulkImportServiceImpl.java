@@ -34,6 +34,13 @@ public class BulkImportServiceImpl extends BaseBulkService implements BulkImport
         
         try {
 
+            // line count for BulkFileInfo
+            int lineCount = getLineCount(info);
+            info.setLineCount(lineCount);
+            
+            // set reference to BulkFileInfo
+            result.setBulkFileInfo(info);
+            
             // create-check headers
             List<BulkFieldColumnHeader> headerColumnList = createColumnHeaders(info, result);
             if (result.hasErrors()) {
@@ -77,9 +84,6 @@ public class BulkImportServiceImpl extends BaseBulkService implements BulkImport
             
             // set the update bulk fields
             result.addUpdateBulkFieldColumnHeaders(updateBulkFieldColumnHeaders);
-            
-            // set line count
-            result.setLineCount(getLineCount(info));
             
         } catch (IOException e) {
             result.addError(new YukonMessageSourceResolvable("yukon.common.device.bulk.fileUpload.error.emptyFile"));

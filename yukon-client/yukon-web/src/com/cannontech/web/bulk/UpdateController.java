@@ -41,6 +41,7 @@ public class UpdateController extends MultiActionController {
     private RecentResultsCache<BulkOperationCallbackResults<?>> recentBulkOperationResultsCache = null;
    
     private Map<String, BulkUpdateFileInfo> bulkUpdateFileInfoMap = new HashMap<String, BulkUpdateFileInfo>();
+    private Map<String, ParsedBulkUpdateFileInfo> parsedBulkUpdateFileInfoMap = new HashMap<String, ParsedBulkUpdateFileInfo>();
     
     // UPLOAD
     public ModelAndView upload(HttpServletRequest request, HttpServletResponse response) throws ServletException {
@@ -112,7 +113,6 @@ public class UpdateController extends MultiActionController {
         mav.addObject("bulkUpdateFileInfo", bulkUpdateFileInfo);
         
         ParsedBulkUpdateFileInfo parsedResult = bulkUpdateService.createParsedBulkUpdateFileInfo(bulkUpdateFileInfo);
-        mav.addObject("parsedResult", parsedResult);
         
         // has file errors
         if (parsedResult.hasErrors()) {
@@ -131,6 +131,9 @@ public class UpdateController extends MultiActionController {
             return errorMav;
         }
         
+        parsedBulkUpdateFileInfoMap.put(fileInfoId, parsedResult);
+        mav.addObject("parsedResult", parsedResult);
+        
         return mav;
     }
     
@@ -139,10 +142,9 @@ public class UpdateController extends MultiActionController {
         
         ModelAndView mav = new ModelAndView("redirect:/spring/bulk/update/updateResults");
         
-        // open file as csv
+        // grab parsed result from map
         String fileInfoId = ServletRequestUtils.getRequiredStringParameter(request, "fileInfoId");
-        BulkUpdateFileInfo bulkUpdateFileInfo = bulkUpdateFileInfoMap.get(fileInfoId);
-        ParsedBulkUpdateFileInfo parsedResult = bulkUpdateService.createParsedBulkUpdateFileInfo(bulkUpdateFileInfo);
+        ParsedBulkUpdateFileInfo parsedResult = parsedBulkUpdateFileInfoMap.get(fileInfoId);
        
         String resultsId = bulkUpdateService.startBulkUpdate(parsedResult);
         

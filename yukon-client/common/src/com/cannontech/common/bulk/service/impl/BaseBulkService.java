@@ -320,8 +320,6 @@ public abstract class BaseBulkService {
         }
         csvReader.close();
         
-        lineCount--;
-        
         info.setLineCount(lineCount);
         
         return lineCount;

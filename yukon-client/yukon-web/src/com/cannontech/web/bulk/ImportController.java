@@ -42,6 +42,7 @@ public class ImportController extends MultiActionController {
     
     private List<BulkImportMethod> importMethods = null;
     private Map<String, BulkImportFileInfo> bulkImportFileInfoMap = new HashMap<String, BulkImportFileInfo>();
+    private Map<String, ParsedBulkImportFileInfo> parsedBulkImportFileInfoMap = new HashMap<String, ParsedBulkImportFileInfo>();
     
     
     
@@ -122,8 +123,9 @@ public class ImportController extends MultiActionController {
         String fileInfoId = ServletRequestUtils.getRequiredStringParameter(request, "fileInfoId");
         BulkImportFileInfo bulkImportFileInfo = bulkImportFileInfoMap.get(fileInfoId);
         
+        // parse fileinfo
         ParsedBulkImportFileInfo parsedResult = bulkImportService.createParsedBulkImportFileInfo(bulkImportFileInfo);
-        mav.addObject("parsedResult", parsedResult);
+        
         
         // header errors
         if (parsedResult.hasErrors()) {
@@ -138,6 +140,10 @@ public class ImportController extends MultiActionController {
             return errorMav;
         }
         
+        // saved parsed info
+        parsedBulkImportFileInfoMap.put(fileInfoId, parsedResult);
+        mav.addObject("parsedResult", parsedResult);
+        
         return mav;
     }
     
@@ -146,11 +152,10 @@ public class ImportController extends MultiActionController {
         
         ModelAndView mav = new ModelAndView("redirect:/spring/bulk/import/importResults");
         
-        // open file as csv
+        // grab parsed result from map
         String fileInfoId = ServletRequestUtils.getRequiredStringParameter(request, "fileInfoId");
-        BulkImportFileInfo bulkImportFileInfo = bulkImportFileInfoMap.get(fileInfoId);
+        ParsedBulkImportFileInfo parsedResult = parsedBulkImportFileInfoMap.get(fileInfoId);
         
-        ParsedBulkImportFileInfo parsedResult = bulkImportService.createParsedBulkImportFileInfo(bulkImportFileInfo);
         String resultsId = bulkImportService.startBulkImport(parsedResult);
         
         mav.addObject("resultsId", resultsId);

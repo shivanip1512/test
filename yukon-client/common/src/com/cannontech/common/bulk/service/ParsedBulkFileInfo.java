@@ -16,8 +16,6 @@ public abstract class ParsedBulkFileInfo {
     // member data
     private List<MessageSourceResolvable> errorResolvers = new ArrayList<MessageSourceResolvable>();
     private List<BulkFieldColumnHeader> updateBulkFieldColumnHeaders = new ArrayList<BulkFieldColumnHeader>();
-    int lineCount = 0;
-
 
     // PUBLIC GETTERS
     //----------------------------------------------------------------------------------------------
@@ -55,13 +53,6 @@ public abstract class ParsedBulkFileInfo {
 
     public void setBulkFileInfo(BulkFileInfo bulkFileInfo) {
         this.bulkFileInfo = bulkFileInfo;
-    }
-
-    public int getLineCount() {
-        return lineCount;
-    }
-    public void setLineCount(int lineCount) {
-        this.lineCount = lineCount;
     }
 
 }

@@ -42,7 +42,7 @@
             <table cellspacing="8" border="0">
                 <tr valign="top">
                     <td class="normalBoldLabel">${rows}</td>
-                    <td>${parsedResult.lineCount}</td>
+                    <td>${parsedResult.bulkFileInfo.dataCount}</td>
                 </tr>
                 <tr valign="top">
                     <td class="normalBoldLabel">${identifierColumn}</td>
