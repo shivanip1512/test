@@ -386,7 +386,7 @@
         <property name="configurationPropertyName" value="WEB_RESUBMITTING_PROCESSOR_DELAY_MS"/>
     </bean>
     
-    <bean id="changeDeviceTypeService" class="com.cannontech.web.bulk.service.impl.ChangeDeviceTypeServiceImpl">
+    <bean id="changeDeviceTypeService" class="com.cannontech.common.bulk.service.impl.ChangeDeviceTypeServiceImpl">
     </bean>
     
 </beans>

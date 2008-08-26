@@ -25,6 +25,7 @@ import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.bulk.processor.SingleProcessor;
 import com.cannontech.common.bulk.service.BulkOperationCallbackResults;
 import com.cannontech.common.bulk.service.BulkOperationTypeEnum;
+import com.cannontech.common.bulk.service.ChangeDeviceTypeService;
 import com.cannontech.common.bulk.service.DeviceCollectionContainingFileInfo;
 import com.cannontech.common.bulk.service.MassChangeCallbackResults;
 import com.cannontech.common.device.YukonDevice;
@@ -36,7 +37,6 @@ import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.roles.operator.DeviceActionsRole;
-import com.cannontech.web.bulk.service.ChangeDeviceTypeService;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 

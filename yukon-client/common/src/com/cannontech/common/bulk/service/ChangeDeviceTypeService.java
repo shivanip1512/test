@@ -1,4 +1,4 @@
-package com.cannontech.web.bulk.service;
+package com.cannontech.common.bulk.service;
 
 import com.cannontech.common.device.YukonDevice;
 

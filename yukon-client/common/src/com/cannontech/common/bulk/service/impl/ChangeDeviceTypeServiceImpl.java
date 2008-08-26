@@ -1,4 +1,4 @@
-package com.cannontech.web.bulk.service.impl;
+package com.cannontech.common.bulk.service.impl;
 
 import java.util.Set;
 
@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataRetrievalFailureException;
 
 import com.cannontech.common.bulk.processor.ProcessingException;
+import com.cannontech.common.bulk.service.ChangeDeviceTypeService;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
@@ -14,7 +15,6 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
-import com.cannontech.web.bulk.service.ChangeDeviceTypeService;
 
 public class ChangeDeviceTypeServiceImpl implements ChangeDeviceTypeService {
 
