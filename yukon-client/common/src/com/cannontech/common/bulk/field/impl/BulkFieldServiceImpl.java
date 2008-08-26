@@ -112,14 +112,18 @@ public class BulkFieldServiceImpl implements BulkFieldService, ApplicationContex
     }
     
     @SuppressWarnings("unchecked")
-    public <T> boolean processorExistsForBulkFieldColumnHeader(BulkFieldColumnHeader bulkFieldColumnHeader) {
+    public <T> boolean processorExistsForBulkFieldColumnHeaders(List<BulkFieldColumnHeader> bulkFieldColumnHeaders) {
         
         List<BulkField<?, T>> matchingBulkFields = new ArrayList<BulkField<?, T>>();
         Map<String, BulkField<?, T>> allBulkFields = BeanFactoryUtils.beansOfTypeIncludingAncestors(context, BulkField.class);
-        for (BulkField<?, T> field : allBulkFields.values()) {
-            if (field.getInputSource().getField().equals(bulkFieldColumnHeader.getFieldName())) {
-                matchingBulkFields.add(field);
-                break;
+        
+        for (BulkFieldColumnHeader bulkFieldColumnHeader : bulkFieldColumnHeaders) {
+            
+            for (BulkField<?, T> field : allBulkFields.values()) {
+                if (field.getInputSource().getField().equals(bulkFieldColumnHeader.getFieldName())) {
+                    matchingBulkFields.add(field);
+                    break;
+                }
             }
         }
         

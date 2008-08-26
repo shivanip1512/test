@@ -23,7 +23,7 @@ public class ChangeDeviceTypeServiceImpl implements ChangeDeviceTypeService {
     private PaoDao paoDao;
     private DeviceDefinitionService deviceDefinitionService;
     
-    public YukonDevice processDeviceTypeChange(YukonDevice device, int newDeviceType ) {
+    public YukonDevice changeDeviceType(YukonDevice device, int newDeviceType ) {
 
         try {
 

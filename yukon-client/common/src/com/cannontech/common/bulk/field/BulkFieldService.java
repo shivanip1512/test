@@ -19,7 +19,7 @@ public interface BulkFieldService {
     // hard code YukonDevice to make things simpler for now...
     public List<BulkYukonDeviceFieldProcessor> getBulkFieldProcessors();
     
-    public <T> boolean processorExistsForBulkFieldColumnHeader(BulkFieldColumnHeader bulkFieldColumnHeader);
+    public <T> boolean processorExistsForBulkFieldColumnHeaders(List<BulkFieldColumnHeader> bulkFieldColumnHeaders);
     
     public BulkFieldColumnHeader getColumnHeaderForFieldName(String fieldName);
     

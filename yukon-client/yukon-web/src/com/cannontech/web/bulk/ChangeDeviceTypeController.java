@@ -123,7 +123,7 @@ public class ChangeDeviceTypeController extends BulkControllerBase {
 
                 @Override
                 public void process(YukonDevice device) throws ProcessingException {
-                    changeDeviceTypeService.processDeviceTypeChange(device, selectedDeviceType);
+                    changeDeviceTypeService.changeDeviceType(device, selectedDeviceType);
                 }
             };
             

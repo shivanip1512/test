@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -115,7 +116,7 @@ public abstract class BaseBulkService {
     protected void checkUpdateBulkFieldColumnHeaders(ParsedBulkFileInfo result, Collection<BulkFieldColumnHeader> updateBulkFieldColumnHeaders) {
         
         for (BulkFieldColumnHeader bulkFieldColumnHeader : updateBulkFieldColumnHeaders) {
-            if (!bulkFieldService.processorExistsForBulkFieldColumnHeader(bulkFieldColumnHeader)) {
+            if (!bulkFieldService.processorExistsForBulkFieldColumnHeaders(Collections.singletonList(bulkFieldColumnHeader))) {
                 result.addError(new YukonMessageSourceResolvable("yukon.common.device.bulk.columnHeader.error.notUpdateableColumnName", bulkFieldColumnHeader.toString()));
             }
         }
