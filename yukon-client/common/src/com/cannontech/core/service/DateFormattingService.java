@@ -20,14 +20,14 @@ import com.cannontech.user.YukonUserContext;
 public interface DateFormattingService {
 
     static public enum DateFormatEnum {
-        TIME(null), 
-        TIME_TZ(null),
-        TIMEZONE(null),
-        DATE(null), 
-        BOTH(null), 
-        DATEHM(null), 
-        DATEH(null),
-        HOUR(null),
+        TIME(MidnightMode.NORMAL), 
+        TIME_TZ(MidnightMode.NORMAL),
+        TIMEZONE(MidnightMode.NORMAL),
+        DATE(MidnightMode.NORMAL), 
+        BOTH(MidnightMode.NORMAL), 
+        DATEHM(MidnightMode.NORMAL), 
+        DATEH(MidnightMode.NORMAL),
+        HOUR(MidnightMode.NORMAL),
         DATE_MIDNIGHT_PREV(MidnightMode.INCLUDES_MIDNIGHT),
         ;
         
@@ -49,6 +49,7 @@ public interface DateFormattingService {
     }
 
     public static enum MidnightMode {
+        NORMAL,
         INCLUDES_MIDNIGHT
     };
     
