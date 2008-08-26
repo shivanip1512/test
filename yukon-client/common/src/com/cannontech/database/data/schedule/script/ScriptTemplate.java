@@ -333,7 +333,7 @@ public class ScriptTemplate {
     private void fixCollectionGroups(ScriptParameters name, ScriptParameters type) {
         // we need to check the GroupName for the new vs old syntax
         String groupName = getParameterValue(name);
-        if (!groupName.startsWith("/")) {
+        if (!groupName.startsWith("/") && StringUtils.isNotBlank(groupName)) {
             // this is the old syntax, decode
             String groupTypeStr = getParameterValue(type);
             FixedDeviceGroups groupType = FixedDeviceGroups.COLLECTIONGROUP;

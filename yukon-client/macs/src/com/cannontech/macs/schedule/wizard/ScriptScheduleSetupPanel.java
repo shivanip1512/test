@@ -2121,10 +2121,6 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
                 TreePath pathForGroup = modelFactory.getPathForGroup((TreeNode) getMeterReadGroupTree().getModel().getRoot(), group);
                 getMeterReadGroupTree().getSelectionModel().addSelectionPath(pathForGroup);
                 getMeterReadGroupTree().makeVisible(pathForGroup);
-            }else {
-                TreePath pathForGroup = getMeterReadGroupTree().getPathForRow(0);
-                getMeterReadGroupTree().getSelectionModel().setSelectionPath(pathForGroup);
-                getMeterReadGroupTree().makeVisible(pathForGroup);
             }
         }
         
@@ -2142,10 +2138,6 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
                 DeviceGroup group = deviceGroupService.resolveGroupName(billGroupName);
                 TreePath pathForGroup = modelFactory.getPathForGroup((TreeNode) getBillingGroupTree().getModel().getRoot(), group);
                 getBillingGroupTree().getSelectionModel().addSelectionPath(pathForGroup);
-                getBillingGroupTree().makeVisible(pathForGroup);
-            }else {
-                TreePath pathForGroup = getBillingGroupTree().getPathForRow(0);
-                getBillingGroupTree().getSelectionModel().setSelectionPath(pathForGroup);
                 getBillingGroupTree().makeVisible(pathForGroup);
             }
         }
