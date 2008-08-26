@@ -11,6 +11,10 @@
     
     function changeTemp(amount) {
     
+        if('OFF' == $('mode').value) {
+            return;
+        }
+    
         var tempField = $('temperature');
         
         var currentTemp = $F(tempField)
