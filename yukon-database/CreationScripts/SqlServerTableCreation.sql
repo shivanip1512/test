@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     8/19/2008 1:04:13 AM                         */
+/* Created on:     8/26/2008 10:53:48 AM                        */
 /*==============================================================*/
 
 
@@ -10282,7 +10282,7 @@ insert into YukonGroupRole values(-237,-1,-6,-1507,'(none)');
 insert into YukonGroupRole values(-270,-1,-7,-1600,'0');
 
 /* Configuration (Device) */
-insert into YukonGroupRole values(-280,-1,-8,-1700,'{name}');
+INSERT INTO YukonGroupRole VALUES(-280,-1,-8,-1700,'DEVICE_NAME');
 
 /* Esubstation Editor */
 insert into YukonGroupRole values(-250,-100,-107,-10700,'(none)');
@@ -11527,9 +11527,9 @@ insert into YukonRoleProperty values(-1601,-7,'Primary CIS Vendor','0','Defines 
 insert into YukonRoleProperty values(-1602,-7,'Msp BillingCyle DeviceGroup','/Meters/Billing/','Defines the Device Group parent group name for the MultiSpeak billingCycle element. Valid values are ''/Meters/Billing/'', ''/Meters/Collection'', ''/Meters/Alternate''');
 
 /* Configuration */
-insert into YukonRoleProperty values(-1700,-8,'Device Display Template','{name}','Defines the format for displaying devices. Available placeholders: {name},{meterNumber},{id},{address}');
-insert into YukonRoleProperty values(-1701,-8,'Alert Timeout Hours', '168', 'The number of hours that an alert should be held (zero = forever, decimal numbers are okay)'); 
-insert into YukonRoleProperty values(-1702,-8,'Customer Info Importer File Location', ' ', 'File location of the automated consumer information import process.');
+INSERT INTO YukonRoleProperty VALUES(-1700,-8,'Device Display Template','DEVICE_NAME','Defines the format for displaying devices. Available placeholders: DEVICE_NAME, METER_NUMBER, ID, ADDRESS');
+INSERT INTO YukonRoleProperty VALUES(-1701,-8,'Alert Timeout Hours', '168', 'The number of hours that an alert should be held (zero = forever, decimal numbers are okay)'); 
+INSERT INTO YukonRoleProperty VALUES(-1702,-8,'Customer Info Importer File Location', ' ', 'File location of the automated consumer information import process.');
 INSERT INTO YukonRoleProperty VALUES(-1703,-8,'System Default TimeZone', ' ', 'System Default TimeZone (e.g. America/Denver, America/Chicago, America/Los_Angeles, or America/New_York)'); 
 
 /* TDC Role */
@@ -12500,7 +12500,7 @@ LEFT JOIN (SELECT EntryId, PAObjectId, Owner, InfoKey, Value, UpdateTime
 LEFT JOIN CCSubstationSubbusList SSL ON SSL.SubstationBusId = EL.SubId         
 LEFT JOIN YukonPAObject YP5 ON YP5.PAObjectId =  SSL.SubstationBusId        
 LEFT JOIN CCSubAreaAssignment CSA ON CSA.SubstationBusId = SSL.SubstationId        
-LEFT JOIN YukonPAObject YP4 ON YP4.PAObjectId = CSA.AreaId;
+LEFT JOIN YukonPAObject YP4 ON YP4.PAObjectId = CSA.AreaId
 go
 
 /*==============================================================*/

@@ -1174,6 +1174,25 @@ go
 /* @end-block */
 /* End YUK-6139 */
 
+/* Start YUK-6268 */
+UPDATE YukonUserRole 
+SET value = 'DEVICE_NAME' 
+WHERE rolePropertyId = -1700 
+AND value != '(none)';
+go
+
+UPDATE YukonGroupRole 
+SET value = 'DEVICE_NAME' 
+WHERE rolePropertyId = -1700 
+AND value != '(none)';
+go
+
+UPDATE YukonRoleProperty 
+SET defaultValue = 'DEVICE_NAME', description = 'Defines the format for displaying devices. Available placeholders: DEVICE_NAME, METER_NUMBER, ID, ADDRESS' 
+WHERE rolePropertyId = -1700;
+go
+/* End YUK-6268 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /**************************************************************/
