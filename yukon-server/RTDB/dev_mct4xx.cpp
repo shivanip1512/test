@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.91 $
-* DATE         :  $Date: 2008/08/21 18:40:41 $
+* REVISION     :  $Revision: 1.92 $
+* DATE         :  $Date: 2008/08/26 18:27:29 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -647,9 +647,9 @@ INT CtiDeviceMCT4xx::executeGetValue( CtiRequestMsg        *pReq,
                 }
                 else if( !cmd.compare("lp") )
                 {
-                    bool initialVal;
-                    if( (initialVal = InterlockedCompareExchange((PVOID *)&_llpInterest.in_progress, (PVOID)true, (PVOID)false)) && 
-                        _llpInterest.user_id != pReq->UserMessageId() )
+                    const bool requestAlreadyInProgress = InterlockedCompareExchange((PVOID *)&_llpInterest.in_progress, (PVOID)true, (PVOID)false);
+
+                    if( requestAlreadyInProgress && _llpInterest.user_id != pReq->UserMessageId() )
                     {
                         if( errRet )
                         {
@@ -662,7 +662,7 @@ INT CtiDeviceMCT4xx::executeGetValue( CtiRequestMsg        *pReq,
                             errRet = NULL;
                         }
                     }
-                    else if( initialVal == true && _llpInterest.time_end == 0 )
+                    else if( requestAlreadyInProgress && _llpInterest.time_end == 0 )
                     {
                         //This means this is an old command, and a cancel was received for it!
                         InterlockedExchange(&_llpInterest.in_progress, false);
