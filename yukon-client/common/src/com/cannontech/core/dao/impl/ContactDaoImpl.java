@@ -530,11 +530,13 @@ public final class ContactDaoImpl implements ContactDao {
     public void saveContact(LiteContact contact) {
 
         int contactId = contact.getContactID();
-
+        int changeType;
+        
         StringBuilder sql = new StringBuilder();
         if (contactId == -1) {
             // Insert if id is -1
-
+            changeType = DBChangeMsg.CHANGE_TYPE_ADD;
+            
             contactId = nextValueHelper.getNextValue("Contact");
             contact.setContactID(contactId);
 
@@ -543,6 +545,7 @@ public final class ContactDaoImpl implements ContactDao {
             sql.append(" VALUES (?,?,?,?,?)");
         } else {
             // Update if id is not -1
+            changeType = DBChangeMsg.CHANGE_TYPE_UPDATE;
 
             sql.append("UPDATE Contact");
             sql.append(" SET ContFirstName = ?, ContLastName = ?, LogInId = ?, AddressId = ?");
@@ -568,7 +571,7 @@ public final class ContactDaoImpl implements ContactDao {
                                                 DBChangeMsg.CHANGE_CONTACT_DB,
                                                 DBChangeMsg.CAT_CUSTOMERCONTACT,
                                                 DBChangeMsg.CAT_CUSTOMERCONTACT,
-                                                DBChangeMsg.CHANGE_TYPE_UPDATE);
+                                                changeType);
         
         dbPersistantDao.processDBChange(changeMsg);
         asyncDynamicDataSource.handleDBChange(changeMsg);
@@ -623,7 +626,7 @@ public final class ContactDaoImpl implements ContactDao {
                                                 DBChangeMsg.CHANGE_CONTACT_DB,
                                                 DBChangeMsg.CAT_CUSTOMERCONTACT,
                                                 DBChangeMsg.CAT_CUSTOMERCONTACT,
-                                                DBChangeMsg.CHANGE_TYPE_ADD);
+                                                DBChangeMsg.CHANGE_TYPE_UPDATE);
         
         dbPersistantDao.processDBChange(changeMsg);
         asyncDynamicDataSource.handleDBChange(changeMsg);

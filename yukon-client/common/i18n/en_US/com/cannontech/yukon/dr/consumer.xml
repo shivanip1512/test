@@ -37,6 +37,7 @@
     <entry key="yukon.dr.consumer.contacts.firstName">First Name:</entry>
     <entry key="yukon.dr.consumer.contacts.lastName">Last Name:</entry>
     <entry key="yukon.dr.consumer.contacts.newContact">New Contact</entry>
+    <entry key="yukon.dr.consumer.contacts.createNewContact">Create New Contact</entry>
     <entry key="yukon.dr.consumer.contacts.noNotifications">This contact has no notifications</entry>
     <entry key="yukon.dr.consumer.contacts.removeContact">Remove Contact</entry>
     <entry key="yukon.dr.consumer.contacts.updateContact">Update Contact</entry>

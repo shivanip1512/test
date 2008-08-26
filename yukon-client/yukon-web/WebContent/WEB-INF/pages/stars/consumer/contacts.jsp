@@ -16,7 +16,7 @@
     </c:forEach>
     
     <form action="/spring/stars/consumer/contacts/newContact" method="post">
-        <input type="submit" value="Create New Contact" />
+        <input type="submit" value="<cti:msg key='yukon.dr.consumer.contacts.createNewContact'/>" />
     </form>
 
 </cti:standardPage>
