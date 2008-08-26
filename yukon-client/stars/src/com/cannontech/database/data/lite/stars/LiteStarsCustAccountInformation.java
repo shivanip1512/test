@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.database.Transaction;
@@ -28,15 +26,7 @@ import com.cannontech.stars.xml.serialize.StarsCallReport;
  *
  */
 public class LiteStarsCustAccountInformation extends LiteBase {
-    private static final Logger log = YukonLogManager.getLogger(LiteStarsCustAccountInformation.class);
-    private final StarsApplianceDao starsApplianceDao = YukonSpringHook.getBean("starsApplianceDao", StarsApplianceDao.class);
-    private final InventoryBaseDao inventoryBaseDao = YukonSpringHook.getBean("inventoryBaseDao", InventoryBaseDao.class);
-    private final LMProgramWebPublishingDao lmProgramWebPublishingDao =
-        YukonSpringHook.getBean("lmProgramWebPublishingDao", LMProgramWebPublishingDao.class);
-    private final CustomerDao customerDao = YukonSpringHook.getBean("customerDao", CustomerDao.class); 
-    
     private final int energyCompanyId;
-    
 	private LiteCustomerAccount customerAccount = null;
 	private LiteCustomer customer = null;
 	private LiteAccountSite accountSite = null;
@@ -92,6 +82,7 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	public synchronized List<LiteStarsAppliance> getAppliances() {
 		if (appliances == null) {
             if (getCustomerAccount() != null) { //Must already have at least the base objects loaded
+                StarsApplianceDao starsApplianceDao = YukonSpringHook.getBean("starsApplianceDao", StarsApplianceDao.class);
                 appliances = starsApplianceDao.getByAccountId(getAccountID(), energyCompanyId);
             }
         }
@@ -127,6 +118,7 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	public synchronized List<Integer> getInventories() {
 		if (inventories == null) {
             if (getCustomerAccount() != null) { //Must already have at least the base objects loaded
+                InventoryBaseDao inventoryBaseDao = YukonSpringHook.getBean("inventoryBaseDao", InventoryBaseDao.class);
                 inventories = inventoryBaseDao.getInventoryIdsByAccountId(getAccountID());
             }
 		}    
@@ -139,6 +131,8 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	 */
 	public synchronized List<LiteStarsLMProgram> getPrograms() {
 		if (programs == null) {
+		    LMProgramWebPublishingDao lmProgramWebPublishingDao =
+		        YukonSpringHook.getBean("lmProgramWebPublishingDao", LMProgramWebPublishingDao.class);
 			programs = lmProgramWebPublishingDao.getPrograms(this, energyCompanyId);
 		}	
 		return programs;
@@ -225,6 +219,7 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	 */
 	public synchronized LiteCustomer getCustomer() {
 		if (customer == null) {
+		    CustomerDao customerDao = YukonSpringHook.getBean("customerDao", CustomerDao.class);
 		    customer = customerDao.getLiteCustomer(getCustomerAccount().getCustomerID());
 		}
 	    return customer;
@@ -291,8 +286,11 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	 * @return
 	 */
 	public synchronized List<LiteLMProgramEvent> getProgramHistory() {
-		if (programHistory == null)
-			programHistory = lmProgramWebPublishingDao.getProgramHistory(getAccountID(), energyCompanyId);
+		if (programHistory == null) {
+		    LMProgramWebPublishingDao lmProgramWebPublishingDao =
+		        YukonSpringHook.getBean("lmProgramWebPublishingDao", LMProgramWebPublishingDao.class);
+		    programHistory = lmProgramWebPublishingDao.getProgramHistory(getAccountID(), energyCompanyId);
+		}    
 		return programHistory;
 	}
 
@@ -322,7 +320,7 @@ public class LiteStarsCustAccountInformation extends LiteBase {
                             LiteLMThermostatSchedule liteSchedule = StarsLiteFactory.createLiteLMThermostatSchedule( schedule );
                             thermostatSchedules.add( liteSchedule );
                         } catch (TransactionException e) {
-                            log.error(e);
+                            YukonLogManager.getLogger(getClass()).error(e);
                         }
                     }
                 }
