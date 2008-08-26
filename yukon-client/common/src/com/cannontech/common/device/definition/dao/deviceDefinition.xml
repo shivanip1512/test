@@ -593,7 +593,7 @@
         </attributes>        
     </device>
     <device>
-        <type value="1086" javaConstant="MCT430A"/>
+        <type value="1086" javaConstant="MCT430A" changeGroup="mct" />
         <displayName value="MCT-430A"/>
         <displayGroup value="MCT"/>
         <points>
@@ -890,7 +890,7 @@
         </attributes>
     </device>
     <device>
-        <type value="1087" javaConstant="MCT430S4"/>
+        <type value="1087" javaConstant="MCT430S4" changeGroup="mct" />
         <displayName value="MCT-430S4"/>
         <displayGroup value="MCT"/>
         <points>
@@ -1215,7 +1215,7 @@
         </attributes>
     </device>
         <device>
-        <type value="1097" javaConstant="MCT430SL"/>
+        <type value="1097" javaConstant="MCT430SL" changeGroup="mct" />
         <displayName value="MCT-430SL"/>
         <displayGroup value="MCT"/>
         <points>
