@@ -23,7 +23,9 @@ public class DeviceSelectionController {
     private DeviceGroupService deviceGroupService = null;
     
     @RequestMapping
-    public void display(ModelMap map) throws JspException {
+    public void display(ModelMap map, String errorMsg) throws JspException {
+        
+        map.addAttribute("errorMsg", errorMsg);
         
         // Ext tree JSON
         DeviceGroup rootGroup = deviceGroupService.getRootGroup();

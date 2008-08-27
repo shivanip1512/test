@@ -25,6 +25,10 @@
     
     <cti:msg var="headerTitle" key="yukon.common.device.bulk.deviceSelection.header"/>
     <tags:boxContainer title="${headerTitle}" id="updateConfirmContainer" hideEnabled="false">
+        
+        <c:if test="${not empty errorMsg}">
+            <span class="ErrorMsg">${errorMsg}</span>
+        </c:if>
     
         <tags:deviceSelection action="/spring/bulk/collectionActions" groupDataJson="${groupDataJson}" pickerConstraint="com.cannontech.common.search.criteria.MeterCriteria"/>
     

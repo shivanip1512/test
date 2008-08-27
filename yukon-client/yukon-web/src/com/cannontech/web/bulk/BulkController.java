@@ -21,6 +21,7 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.common.bulk.collection.DeviceCollection;
+import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.bulk.service.BulkOperationCallbackResults;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.util.RecentResultsCache;
@@ -69,14 +70,22 @@ public class BulkController extends BulkControllerBase {
     public ModelAndView collectionActions(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 
         ModelAndView mav;
-        if (request.getMethod().equals("POST")) {
-            // if we got here from a post (like the file upload), let's redirect
-            mav = new ModelAndView("redirect:/spring/bulk/collectionActions");
-            Map<String, String> collectionParameters = this.getDeviceCollection(request).getCollectionParameters();
-            mav.addAllObjects(collectionParameters);
-        } else {
-            mav = new ModelAndView("collectionActions.jsp");
-            this.addDeviceCollectionToModel(mav, request);
+        
+        try {
+        
+            if (request.getMethod().equals("POST")) {
+                // if we got here from a post (like the file upload), let's redirect
+                mav = new ModelAndView("redirect:/spring/bulk/collectionActions");
+                Map<String, String> collectionParameters = this.getDeviceCollection(request).getCollectionParameters();
+                mav.addAllObjects(collectionParameters);
+            } else {
+                mav = new ModelAndView("collectionActions.jsp");
+                this.addDeviceCollectionToModel(mav, request);
+            }
+        } catch (ObjectMappingException e) {
+            
+            mav = new ModelAndView("redirect:/spring/bulk/deviceSelection");
+            mav.addObject("errorMsg", e.getMessage());
         }
         
         return mav;
