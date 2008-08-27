@@ -26,8 +26,7 @@ public class BulkUpdateServiceImpl extends BaseBulkService implements BulkUpdate
         try {
 
             // line count for BulkFileInfo
-            int lineCount = getLineCount(info);
-            info.setLineCount(lineCount);
+            calculateLineCount(info);
             
             // set reference to BulkFileInfo
             result.setBulkFileInfo(info);

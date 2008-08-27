@@ -35,8 +35,7 @@ public class BulkImportServiceImpl extends BaseBulkService implements BulkImport
         try {
 
             // line count for BulkFileInfo
-            int lineCount = getLineCount(info);
-            info.setLineCount(lineCount);
+            calculateLineCount(info);
             
             // set reference to BulkFileInfo
             result.setBulkFileInfo(info);

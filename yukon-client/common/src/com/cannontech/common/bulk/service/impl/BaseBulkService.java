@@ -311,7 +311,7 @@ public abstract class BaseBulkService {
         return resultsId;
     }
     
-    public int getLineCount(BulkFileInfo info) throws IOException {
+    public int calculateLineCount(BulkFileInfo info) throws IOException {
 
         CSVReader csvReader = getCSVReader(info.getFileResource());
 
