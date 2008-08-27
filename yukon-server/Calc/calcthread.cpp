@@ -2139,7 +2139,7 @@ void CtiCalculateThread::getBaselineMap(BaselineMap &baselineMap)
         << table["PERCENTWINDOW"]
         << table["CALCDAYS"]
         << table["EXCLUDEDWEEKDAYS"]
-        << table["HOLIDAYSUSED"];
+        << table["HOLIDAYSCHEDULEID"];
 
         selector.from( table );
 
@@ -2155,7 +2155,7 @@ void CtiCalculateThread::getBaselineMap(BaselineMap &baselineMap)
             rdr["PERCENTWINDOW"] >> baseline.percent;
             rdr["CALCDAYS"] >> baseline.usedDays;
             rdr["EXCLUDEDWEEKDAYS"] >> baseline.excludedWeekDays;
-            rdr["HOLIDAYSUSED"] >> baseline.holidays;
+            rdr["HOLIDAYSCHEDULEID"] >> baseline.holidays;
 
             //The copy is unfortunate, but relatively inexpensive for a small number of objects
             baselineMap.insert(BaselineMap::value_type(baselineID, baseline));
