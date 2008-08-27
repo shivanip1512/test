@@ -41,8 +41,11 @@ public abstract class BulkFileInfo {
         return lineCount;
     }
     
-    // this is the number of total lines in file, minus the header row
-    // it is used for display of how many actual device items will be processed
+    /**
+     * This is the number of total lines in file, minus the header row,
+     * it is used for display of how many actual device items will be processed.
+     * @return The number of lines in file, not including the header row.
+     */
     public int getDataCount() {
         return getLineCount() - 1;
     }
