@@ -69,7 +69,6 @@ import com.cannontech.stars.util.OptOutEventQueue;
 import com.cannontech.stars.util.ProgressChecker;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.StarsUtils;
-import com.cannontech.stars.util.task.LoadInventoryTask;
 import com.cannontech.stars.util.task.LoadWorkOrdersTask;
 import com.cannontech.stars.util.task.TimeConsumingTask;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -188,7 +187,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
     private long nextCallNo = 0;
     private long nextOrderNo = 0;
     
-    private boolean inventoryLoaded = false;
     private boolean workOrdersLoaded = false;
     private boolean hierarchyLoaded = false;
     
@@ -383,14 +381,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
         return adminEmail;
     }
     
-    public boolean isInventoryLoaded() {
-        return inventoryLoaded;
-    }
-    
-    public void setInventoryLoaded(boolean loaded) {
-        inventoryLoaded = loaded;
-    }
-    
     public boolean isWorkOrdersLoaded() {
         return workOrdersLoaded;
     }
@@ -399,49 +389,9 @@ public class LiteStarsEnergyCompany extends LiteBase {
         workOrdersLoaded = loaded;
     }
     
-    private synchronized void startLoadInventoryTask() {
-        if (loadInvTaskID == 0 && !ECUtils.isDefaultEnergyCompany( this )) {
-            loadInvTaskID = ProgressChecker.addTask( new LoadInventoryTask(this) );
-            CTILogger.info( "*** Start loading inventory for energy company #" + getEnergyCompanyID() );
-        }
-    }
-    
-    private synchronized boolean isLoadInventoryTaskRunning() {
-        TimeConsumingTask task = ProgressChecker.getTask( loadInvTaskID );
-        if (task == null) return false;
-        
-        if (task.getStatus() == TimeConsumingTask.STATUS_FINISHED
-            || task.getStatus() == TimeConsumingTask.STATUS_ERROR
-            || task.getStatus() == TimeConsumingTask.STATUS_CANCELED)
-        {
-            ProgressChecker.removeTask( loadInvTaskID );
-            loadInvTaskID = 0;
-            return false;
-        }
-        
-        return true;
-    }
-    
     public List<LiteInventoryBase> loadAllInventory(boolean blockOnWait) {
-        if (isInventoryLoaded()) return getAllInventory();
-        startLoadInventoryTask();
-        
-        if (!blockOnWait) return null;
-        
-        while (true) {
-            if (isLoadInventoryTaskRunning()) {
-                try {
-                    Thread.sleep( 1000 );
-                }
-                catch (InterruptedException e) {}
-            }
-            else {
-                if (isInventoryLoaded())
-                    return getAllInventory();
-
-                return null;
-            }
-        }
+        List<LiteInventoryBase> list = starsInventoryBaseDao.getAllByEnergyCompanyId(getEnergyCompanyID());
+        return list;
     }
     
     private synchronized void startLoadWorkOrdersTask() {
@@ -490,8 +440,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
     }
     
     public void init() {
-        if (!isInventoryLoaded())
-            loadAllInventory( false );
         if (!isWorkOrdersLoaded())
             loadAllWorkOrders( false );
     }
@@ -507,11 +455,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
         
         // Wait up to 3 seconds for them to stop
         for (int i = 0; i < 6; i++) {
-            if ((loadInvTask == null
-                    || loadInvTask.getStatus() == LoadInventoryTask.STATUS_FINISHED
-                    || loadInvTask.getStatus() == LoadInventoryTask.STATUS_CANCELED
-                    || loadInvTask.getStatus() == LoadInventoryTask.STATUS_ERROR)
-                && (loadOrdersTask == null
+            if ((loadOrdersTask == null
                     || loadOrdersTask.getStatus() == LoadWorkOrdersTask.STATUS_FINISHED
                     || loadOrdersTask.getStatus() == LoadWorkOrdersTask.STATUS_CANCELED
                     || loadOrdersTask.getStatus() == LoadWorkOrdersTask.STATUS_ERROR))
@@ -536,7 +480,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
             loadOrdersTaskID = 0;
         }
         
-        inventoryLoaded = false;
         workOrdersLoaded = false;
         
         pubPrograms = null;
@@ -563,34 +506,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
         parent = null;
         children = null;
         memberLoginIDs = null;
-    }
-    
-    public void clearInventory() {
-        // If the inventory loading task is alive, cancel it first
-        TimeConsumingTask loadInvTask = ProgressChecker.getTask( loadInvTaskID );
-        if (loadInvTask != null) loadInvTask.cancel();
-        
-        // Wait up to 3 seconds for it to stop
-        for (int i = 0; i < 6; i++) {
-                if ((loadInvTask == null
-                    || loadInvTask.getStatus() == LoadInventoryTask.STATUS_FINISHED
-                    || loadInvTask.getStatus() == LoadInventoryTask.STATUS_CANCELED
-                    || loadInvTask.getStatus() == LoadInventoryTask.STATUS_ERROR))
-                break;
-            
-            try {
-                Thread.sleep( 500 );
-            }
-            catch (InterruptedException e) {}
-        }
-        
-        if (loadInvTaskID > 0) {
-            ProgressChecker.removeTask( loadInvTaskID );
-            loadInvTaskID = 0;
-        }
-        
-        inventoryLoaded = false;
-        inventory = null;
     }
     
     public String getEnergyCompanySetting(int rolePropertyID) {

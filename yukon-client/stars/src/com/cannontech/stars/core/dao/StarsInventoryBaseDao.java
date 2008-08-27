@@ -11,4 +11,11 @@ public interface StarsInventoryBaseDao {
     
     public List<LiteInventoryBase> getByIds(Set<Integer> inventoryIds);
     
+    /**
+     * @deprecated - Any call to this method should be refactored, loading all
+     *               inventory from an EnergyCompany at one time is to heavy. 
+     */
+    @Deprecated
+    public List<LiteInventoryBase> getAllByEnergyCompanyId(int energyCompanyId);
+    
 }

@@ -64,9 +64,7 @@
 
     <bean id="lmProgramWebPublishingDao" class="com.cannontech.stars.core.dao.impl.LMProgramWebPublishingDaoImpl"/>
 
-    <bean id="starsInventoryBaseDao" class="com.cannontech.stars.core.dao.impl.StarsInventoryBaseDaoImpl">
-        <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
-    </bean>
+    <bean id="starsInventoryBaseDao" class="com.cannontech.stars.core.dao.impl.StarsInventoryBaseDaoImpl"/>
 
     <bean id="accountSiteDao" class="com.cannontech.stars.dr.account.dao.impl.AccountSiteDaoImpl"/>
     

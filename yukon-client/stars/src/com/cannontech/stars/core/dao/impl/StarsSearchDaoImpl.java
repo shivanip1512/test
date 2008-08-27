@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -11,14 +12,15 @@ import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.stars.core.dao.ECMappingDao;
-import com.cannontech.stars.core.dao.LiteInventoryBaseMapper;
 import com.cannontech.stars.core.dao.LiteStarsLMHardwareMapper;
+import com.cannontech.stars.core.dao.SmartLiteInventoryBaseRowMapper;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 
 public class StarsSearchDaoImpl implements StarsSearchDao {
-
+    private static final ParameterizedRowMapper<LiteInventoryBase> inventoryRowMapper =
+        new SmartLiteInventoryBaseRowMapper();
 	private SimpleJdbcTemplate jdbcTemplate;
 	private ECMappingDao ecMappingDao;
 	private StarsInventoryBaseDao starsInventoryBaseDao;
@@ -91,7 +93,7 @@ public class StarsSearchDaoImpl implements StarsSearchDao {
 		
 		List<LiteInventoryBase> hardwareList = jdbcTemplate.query(
 				sql.toString(), 
-				new LiteInventoryBaseMapper(),
+				inventoryRowMapper,
 				serialNumber);
 		
 		return hardwareList;
@@ -116,7 +118,7 @@ public class StarsSearchDaoImpl implements StarsSearchDao {
 		
 		List<LiteInventoryBase> inventoryBaseList = jdbcTemplate.query(
 				sql.toString(), 
-				new LiteInventoryBaseMapper(),
+				inventoryRowMapper,
 				categoryID,
 				deviceName + "%");
 		
@@ -159,7 +161,7 @@ public class StarsSearchDaoImpl implements StarsSearchDao {
 		
 		List<LiteInventoryBase> inventoryList = jdbcTemplate.query(
 				sql.toString(), 
-				new LiteInventoryBaseMapper(),
+				inventoryRowMapper,
 				deviceName + "%");
 		
 		return inventoryList;
@@ -206,7 +208,7 @@ public class StarsSearchDaoImpl implements StarsSearchDao {
 		
 		List<LiteInventoryBase> inventoryBaseList = jdbcTemplate.query(
 				sql.toString(), 
-				new LiteInventoryBaseMapper(),
+				inventoryRowMapper,
 				altTrackNumber);
 		
 		return inventoryBaseList;

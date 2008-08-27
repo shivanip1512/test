@@ -121,9 +121,7 @@ public class StarsDatabaseCache implements DBChangeListener {
                     LiteStarsEnergyCompany company = companies.get(i);
                     if (!ECUtils.isDefaultEnergyCompany( company )) {
                         // Fire the data loading threads off, and wait for all of them to stop
-                        company.loadAllInventory( false );
                         company.loadAllWorkOrders( false );
-                        company.loadAllInventory( true );
                         company.loadAllWorkOrders( true );
                     }
                 }
@@ -196,31 +194,6 @@ public class StarsDatabaseCache implements DBChangeListener {
             fireLoadThread(descendants);
 		}
 	}
-
-     public void refreshInventory() {
-        if (energyCompanies != null) {
-            synchronized (energyCompanies) {
-                for (int i = 0; i < energyCompanies.size(); i++)
-                    energyCompanies.get(i).clearInventory();
-            }
-        }
-        
-        DefaultDatabaseCache.getInstance().releaseAllCache();
-        
-        final List<LiteStarsEnergyCompany> companies = energyCompanies;
-        Thread initThrd = new Thread(new Runnable() {
-            public void run() {
-                for (int i = 0; i < companies.size(); i++) {
-                    LiteStarsEnergyCompany company = companies.get(i);
-                    if (!ECUtils.isDefaultEnergyCompany( company )) {
-                        company.loadAllInventory( false );
-                        company.loadAllInventory( true );
-                    }
-                }
-            }
-        }, "StarsDatabaseCacheRefreshInventory");
-        initThrd.start();
-    }
     
 	/*
 	 * Start implementation of class functions
@@ -452,18 +425,6 @@ public class StarsDatabaseCache implements DBChangeListener {
 		else if (msg.getDatabase() == DBChangeMsg.CHANGE_PAO_DB) {
 		    LiteYukonPAObject litePao = null;
             
-            /*
-            * Need to handle a msg with an id of zero
-            * This is the bulk importer telling everybody that there have been mass changes
-            * 
-            * TODO: Separate out mcts from the rest of inventory so we don't have to reload
-            * all accounts and inventory.  Adding a proper DAO layer to STARS would go a long way
-            * towards this.
-            */
-           if(msg.getId() == 0) {
-               refreshInventory();
-           }
-
             /*
              * Why look this up if it has just been deleted from cache?
              *TODO: Will need to add more functionality to handle deletes and adds if STARS is tied
