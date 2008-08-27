@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/26/2008 10:55:54 AM                        */
+/* Created on:     8/26/2008 4:36:41 PM                         */
 /*==============================================================*/
 
 
@@ -1210,7 +1210,7 @@ create table BaseLine  (
    PercentWindow        NUMBER                          not null,
    CalcDays             NUMBER                          not null,
    ExcludedWeekDays     CHAR(7)                         not null,
-   HolidaysUsed         NUMBER                          not null,
+   HolidayScheduleId    NUMBER                          not null,
    constraint PK_BASELINE primary key (BaselineID)
 );
 
@@ -10114,6 +10114,10 @@ alter table ApplianceWaterHeater
    add constraint FK_AppWtHt_AppB foreign key (ApplianceID)
       references ApplianceBase (ApplianceID);
 
+alter table BaseLine
+   add constraint FK_BASELINE_HOLIDAYS foreign key (HolidayScheduleId)
+      references HolidaySchedule (HolidayScheduleID);
+
 alter table CALCBASE
    add constraint SYS_C0013434 foreign key (POINTID)
       references POINT (POINTID);
@@ -11572,6 +11576,10 @@ alter table MACROROUTE
 alter table MACROROUTE
    add constraint SYS_C0013275 foreign key (SINGLEROUTEID)
       references Route (RouteID);
+
+alter table MACSchedule
+   add constraint FK_MACSCHED_HOLIDAYS foreign key (HolidayScheduleID)
+      references HolidaySchedule (HolidayScheduleID);
 
 alter table MACSchedule
    add constraint FK_SchdID_PAOID foreign key (ScheduleID)

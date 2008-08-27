@@ -1193,6 +1193,22 @@ WHERE rolePropertyId = -1700;
 go
 /* End YUK-6268 */
 
+/* Start YUK-6393 */
+EXEC sp_rename 'BaseLine.holidaysUsed', 'HolidayScheduleId', 'COLUMN'; 
+go 
+
+alter table BaseLine 
+   add constraint FK_BASELINE_HOLIDAYS foreign key (HolidayScheduleId) 
+      references HolidaySchedule (HolidayScheduleID) 
+go 
+
+alter table MACSchedule 
+   add constraint FK_MACSCHED_HOLIDAYS foreign key (HolidayScheduleID) 
+      references HolidaySchedule (HolidayScheduleID) 
+go 
+/* End YUK-6393 */
+
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /**************************************************************/

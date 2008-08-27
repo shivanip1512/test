@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     8/26/2008 10:53:48 AM                        */
+/* Created on:     8/26/2008 4:23:51 PM                         */
 /*==============================================================*/
 
 
@@ -3522,7 +3522,7 @@ create table BaseLine (
    PercentWindow        numeric              not null,
    CalcDays             numeric              not null,
    ExcludedWeekDays     char(7)              not null,
-   HolidaysUsed         numeric              not null,
+   HolidayScheduleId    numeric              not null,
    constraint PK_BASELINE primary key (BaselineID)
 )
 go
@@ -12920,6 +12920,11 @@ alter table ApplianceWaterHeater
       references ApplianceBase (ApplianceID)
 go
 
+alter table BaseLine
+   add constraint FK_BASELINE_HOLIDAYS foreign key (HolidayScheduleId)
+      references HolidaySchedule (HolidayScheduleID)
+go
+
 alter table CALCBASE
    add constraint SYS_C0013434 foreign key (POINTID)
       references POINT (POINTID)
@@ -14738,6 +14743,11 @@ go
 alter table MACROROUTE
    add constraint SYS_C0013275 foreign key (SINGLEROUTEID)
       references Route (RouteID)
+go
+
+alter table MACSchedule
+   add constraint FK_MACSCHED_HOLIDAYS foreign key (HolidayScheduleID)
+      references HolidaySchedule (HolidayScheduleID)
 go
 
 alter table MACSchedule

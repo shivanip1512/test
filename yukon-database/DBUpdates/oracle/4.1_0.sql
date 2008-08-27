@@ -1029,6 +1029,19 @@ SET defaultValue = 'DEVICE_NAME', description = 'Defines the format for displayi
 WHERE rolePropertyId = -1700; 
 /* End YUK-6268 */
 
+/* Start YUK-6393 */
+ALTER TABLE Baseline
+RENAME COLUMN holidaysused TO holidayScheduleId;
+
+alter table BaseLine
+   add constraint FK_BASELINE_HOLIDAYS foreign key (HolidayScheduleId)
+      references HolidaySchedule (HolidayScheduleID);
+
+alter table MACSchedule
+   add constraint FK_MACSCHED_HOLIDAYS foreign key (HolidayScheduleID)
+      references HolidaySchedule (HolidayScheduleID);
+/* End YUK-6393 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
