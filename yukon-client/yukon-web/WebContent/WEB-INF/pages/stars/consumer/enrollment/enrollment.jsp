@@ -205,7 +205,7 @@ function submitEnrollment() {
 		                                    <spring:escapeBody htmlEscape="true">${enrollmentProgram.program.description}</spring:escapeBody>
 		                                </td>
 		                                <td class="${programClass}" rowspan="${inventoryRowspan}">
-                                            <a href="/spring/stars/consumer/enrollment/details?programId=${programId}">
+                                            <a href="/spring/stars/consumer/enrollment/details?categoryId=${applianceCategoryId}&programId=${programId}">
                                                 <cti:msg key="yukon.dr.consumer.enrollment.details"/>
                                             </a>
                                         </td>
