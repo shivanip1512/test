@@ -92,18 +92,12 @@
     </td>
   </tr>
 </cti:checkMultiProperty>
-<cti:checkMultiProperty propertyid="<%= Integer.toString(ConsumerInfoRole.CONSUMER_INFO_METERING_INTERVAL_DATA) + ',' + Integer.toString(ConsumerInfoRole.CONSUMER_INFO_METERING_USAGE) %>">
+<cti:checkMultiProperty propertyid="<%= Integer.toString(ConsumerInfoRole.CONSUMER_INFO_METERING_INTERVAL_DATA) + ',' + Integer.toString(ConsumerInfoRole.CONSUMER_INFO_METERING_CREATE) %>">
   <tr> 
     <td> 
       <div align="left">
 	    <span class="NavHeader"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_HEADING_METERING %>" defaultvalue="Metering"/></span><br>
         <table width="100%" border="0" cellspacing="0" cellpadding="0">
-	      <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_METERING_USAGE %>"> 
-          <tr>
-            <td width="10"><%= ((String[]) links.get("Usage.jsp"))[0] %></td>
-            <td style="padding:1"><%= ((String[]) links.get("Usage.jsp"))[1] %></td>
-          </tr>
-		  </cti:checkProperty>        
           <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_METERING_INTERVAL_DATA %>"> 
           <tr>
             <td width="10">&nbsp;</td>

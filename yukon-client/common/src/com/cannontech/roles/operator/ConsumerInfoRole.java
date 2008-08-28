@@ -12,7 +12,6 @@ public interface ConsumerInfoRole {
 	public static final int CONSUMER_INFO_ACCOUNT_RESIDENCE = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 2;
 	public static final int CONSUMER_INFO_ACCOUNT_CALL_TRACKING = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 3;
 	public static final int CONSUMER_INFO_METERING_INTERVAL_DATA = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 4;
-	public static final int CONSUMER_INFO_METERING_USAGE = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 5;
 	public static final int CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 6;
 	public static final int CONSUMER_INFO_PROGRAMS_ENROLLMENT = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 7;
 	public static final int CONSUMER_INFO_PROGRAMS_OPT_OUT = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 8;
