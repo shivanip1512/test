@@ -57,7 +57,7 @@
                             </c:choose>
                         
                         
-                            <cti:formatDate value="${jobInfo.startTime}" type="DATEH_AP" var="formattedScheduleDate" />
+                            <cti:formatDate value="${jobInfo.startTime}" type="DATEH" var="formattedScheduleDate" />
                             <c:choose>
                                 <c:when test="${jobInfo.newToggleVal}">
                                     <td>(Starts ${formattedScheduleDate})</td>
