@@ -3,7 +3,6 @@ package com.cannontech.stars.core.dao.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
@@ -88,7 +87,9 @@ public class StarsSearchDaoImpl implements StarsSearchDao {
 		sql.append("AND etim.inventoryId = lhb.InventoryId");
 		sql.append("AND yle.EntryId = ib.CategoryId");
 		sql.append("AND UPPER(lhb.ManufacturerSerialNumber) = UPPER(?)");
-		sql.append("AND etim.energyCompanyId IN (" + StringUtils.join(ecIdList, ",") + ")");
+		sql.append("AND etim.energyCompanyId IN (");
+		sql.append(ecIdList);
+		sql.append(")");
 		
 		
 		List<LiteInventoryBase> hardwareList = jdbcTemplate.query(
@@ -156,7 +157,9 @@ public class StarsSearchDaoImpl implements StarsSearchDao {
 		sql.append("JOIN YukonListEntry yle ON yle.EntryId = ib.CategoryId");
 		sql.append("JOIN YukonPAObject ypo ON ypo.PAObjectId = ib.DeviceId");
 		sql.append("WHERE ib.DeviceID > 0");
-		sql.append("AND etim.energyCompanyId IN (" + StringUtils.join(ecIdList, ",") + ")");
+		sql.append("AND etim.energyCompanyId IN (");
+		sql.append(ecIdList);
+		sql.append(")");
 		sql.append("AND UPPER(ypo.paoname) LIKE UPPER(?)");
 		
 		List<LiteInventoryBase> inventoryList = jdbcTemplate.query(
@@ -204,7 +207,9 @@ public class StarsSearchDaoImpl implements StarsSearchDao {
 		sql.append("JOIN YukonListEntry yle ON yle.EntryId = ib.CategoryId");
 		sql.append("WHERE ib.InventoryId >= 0");
 		sql.append("AND UPPER(ib.AlternateTrackingNumber) = UPPER(?)");
-		sql.append("AND etim.energyCompanyId IN (" + StringUtils.join(ecIdList, ",") + ")");
+		sql.append("AND etim.energyCompanyId IN (");
+		sql.append(ecIdList);
+		sql.append(")");
 		
 		List<LiteInventoryBase> inventoryBaseList = jdbcTemplate.query(
 				sql.toString(), 
@@ -233,7 +238,9 @@ public class StarsSearchDaoImpl implements StarsSearchDao {
 		sql.append("JOIN YukonListEntry yle ON yle.EntryId = ib.CategoryId");
 		sql.append("WHERE ib.InventoryId >= 0");
 		sql.append("AND ib.InstallationCompanyId = ?");
-		sql.append("AND etim.energyCompanyId IN (" + StringUtils.join(ecIdList, ",") + ")");
+		sql.append("AND etim.energyCompanyId IN (");
+		sql.append(ecIdList);
+		sql.append(")");
 		
 		List<LiteInventoryBase> inventoryBaseList = jdbcTemplate.query(
 				sql.toString(), 
@@ -255,12 +262,14 @@ public class StarsSearchDaoImpl implements StarsSearchDao {
 		}
 
 		sql.append("SELECT ib.*, lhb.*, etim.energyCompanyId, yle.YukonDefinitionId AS CategoryDefId");
-		sql.append("FROM InventoryBase ib, LMHardwareBase lhb, ECToInventoryMapping etim, YukonListEntry yle");
-		sql.append("WHERE lhb.InventoryId = ib.InventoryId");
-		sql.append("AND etim.inventoryId = lhb.InventoryId");
-		sql.append("AND yle.EntryId = ib.CategoryId");
+		sql.append("FROM InventoryBase ib");
+		sql.append("JOIN LMHardwareBase lhb ON lhb.InventoryId = ib.InventoryId");
+		sql.append("JOIN ECToInventoryMapping etim ON etim.inventoryId = lhb.InventoryId");
+		sql.append("JOIN YukonListEntry yle ON yle.EntryId = ib.CategoryId");
 		sql.append("AND lhb.RouteId = ?");
-		sql.append("AND etim.EnergyCompanyId IN (" + StringUtils.join(ecIdList, ",") + ")");
+		sql.append("AND etim.EnergyCompanyId IN (");
+		sql.append(ecIdList);
+		sql.append(")");
 		
 		
 		List<LiteStarsLMHardware> hardwareList = jdbcTemplate.query(
@@ -286,14 +295,16 @@ public class StarsSearchDaoImpl implements StarsSearchDao {
 		}
 
 		sql.append("SELECT ib.*, lhb.*, etim.energyCompanyId, yle.YukonDefinitionId AS CategoryDefId");
-		sql.append("FROM InventoryBase ib, LMHardwareBase lhb, ECToInventoryMapping etim, YukonListEntry yle");
-		sql.append("WHERE lhb.InventoryId = ib.InventoryId");
-		sql.append("AND etim.inventoryId = lhb.InventoryId");
-		sql.append("AND yle.EntryId = ib.CategoryId");
+		sql.append("FROM InventoryBase ib");
+		sql.append("JOIN LMHardwareBase lhb ON lhb.InventoryId = ib.InventoryId");
+		sql.append("JOIN ECToInventoryMapping etim ON etim.inventoryId = lhb.InventoryId");
+		sql.append("JOIN YukonListEntry yle ON yle.EntryId = ib.CategoryId");
 		sql.append("AND yle.YukonDefinitionId = ?");
 		sql.append("AND CAST(lhb.ManufacturerSerialNumber AS NUMERIC) >= ?");
 		sql.append("AND CAST(lhb.ManufacturerSerialNumber AS NUMERIC) <= ?");
-		sql.append("AND etim.EnergyCompanyId IN (" + StringUtils.join(ecIdList, ",") + ")");
+		sql.append("AND etim.EnergyCompanyId IN (");
+		sql.append(ecIdList);
+		sql.append(")");
 		
 		
 		List<LiteStarsLMHardware> hardwareList = jdbcTemplate.query(
