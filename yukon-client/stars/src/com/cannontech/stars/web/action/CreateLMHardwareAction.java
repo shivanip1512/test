@@ -350,7 +350,6 @@ public class CreateLMHardwareAction implements ActionBase {
 						initThermostatSchedule( liteHw, energyCompany );
 	            	
 					liteInv = liteHw;
-					energyCompany.addInventory( liteInv );
 				}
 				else {
 					com.cannontech.database.data.stars.hardware.InventoryBase inventory =
@@ -362,7 +361,6 @@ public class CreateLMHardwareAction implements ActionBase {
 					
 					liteInv = new LiteInventoryBase();
 					StarsLiteFactory.setLiteInventoryBase( liteInv, invDB );
-					energyCompany.addInventory( liteInv );
 				}
 			}
 			else {

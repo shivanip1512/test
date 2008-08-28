@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 
 public interface StarsSearchDao {
@@ -72,6 +73,41 @@ public interface StarsSearchDao {
 	 */
 	public List<LiteInventoryBase> searchInventoryByAltTrackNumber(
 			String altTrackNumber, 
+			List<LiteStarsEnergyCompany> energyCompanyList);
+
+	/**
+	 * Method to find a device by installation company id within a given list of energy companies
+	 * @param installationCompanyId - Id of installation company
+	 * @param energyCompanyList - Energy companies to look for device in
+	 * @return List of hardware found
+	 */
+	public List<LiteInventoryBase> searchInventoryByInstallationCompany(
+			int installationCompanyId, 
+			List<LiteStarsEnergyCompany> energyCompanyList);
+	
+	/**
+	 * Method to find all devices on a given route within a given list of energy companies
+	 * @param routeId - Id of route
+	 * @param energyCompanyList - Energy companies to look for device in
+	 * @return List of hardware found
+	 */
+	public List<LiteStarsLMHardware> searchLMHardwareByRoute(
+			int routeId, 
+			List<LiteStarsEnergyCompany> energyCompanyList);
+
+	/**
+	 * Method to find all devices of a given type and in a given serial number range within a given 
+	 * list of energy companies
+	 * @param startSerialNumber - Start of serial number range
+	 * @param endSerialNumber - End of serial number range
+	 * @param deviceTypeDefinitionId - Type of device to look for
+	 * @param energyCompanyList - Energy companies to look for device in
+	 * @return List of hardware found
+	 */
+	public List<LiteStarsLMHardware> searchLMHardwareBySerialNumberRange(
+			int startSerialNumber, 
+			int endSerialNumber, 
+			int deviceTypeDefinitionId, 
 			List<LiteStarsEnergyCompany> energyCompanyList);
 	
 	

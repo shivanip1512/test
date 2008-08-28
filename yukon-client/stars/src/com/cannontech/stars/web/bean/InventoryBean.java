@@ -30,6 +30,7 @@ import com.cannontech.database.db.stars.hardware.Warehouse;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
+import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.util.AbstractFilter;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.FilterWrapper;
@@ -221,6 +222,9 @@ public class InventoryBean {
     private List<LiteInventoryBase> getHardwareList(boolean showEnergyCompany) throws WebClientException {
 		if (inventoryList != null && !shipmentCheck) return inventoryList;
 		
+		StarsInventoryBaseDao starsInventoryBaseDao = 
+			YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
+		
 		List<LiteInventoryBase> hardwares = new ArrayList<LiteInventoryBase>();
 		if ((getHtmlStyle() & HTML_STYLE_INVENTORY_SET) != 0 && inventorySet != null) {
 			hardwares = inventorySet;
@@ -228,31 +232,23 @@ public class InventoryBean {
 		else if (showEnergyCompany) {
 		    List<LiteStarsEnergyCompany> memberList = getMembersFromFilterList();
 		    if (memberList.size() > 0) {
-		        for (final LiteStarsEnergyCompany company : memberList) {
-		            List<LiteInventoryBase> invList = company.loadAllInventory(true);
-		            for (LiteInventoryBase inv : invList) {
-		                hardwares.add(inv);
-		            }
-		        }
+		        hardwares = starsInventoryBaseDao.getAllByEnergyCompanyList(memberList);
 			} else if (getSearchBy() == 0) {
                 List<LiteStarsEnergyCompany> members = ECUtils.getAllDescendants( getEnergyCompany() );
-				hardwares = new ArrayList<LiteInventoryBase>();
-				
-				for (int i = 0; i < members.size(); i++) {
-					LiteStarsEnergyCompany member = members.get(i);
-                    List<LiteInventoryBase> inventory = member.loadAllInventory( true );
-                    hardwares.addAll(inventory);
-				}
+				hardwares = starsInventoryBaseDao.getAllByEnergyCompanyList(members);
 			}
 			else {
 				hardwares = InventoryManagerUtil.searchInventory( getEnergyCompany(), getSearchBy(), getSearchValue(), true );
 			}
 		}
 		else {
-			if (getSearchBy() == 0)
-				hardwares = getEnergyCompany().loadAllInventory( true );
-			else
+			if (getSearchBy() == 0) {
+				hardwares = 
+					starsInventoryBaseDao.getAllByEnergyCompanyList(
+							Collections.singletonList(getEnergyCompany()));
+			} else {
 				hardwares = InventoryManagerUtil.searchInventory( getEnergyCompany(), getSearchBy(), getSearchValue(), false );
+			}
 		}
 		
 		if ((getHtmlStyle() & HTML_STYLE_SELECT_LM_HARDWARE) != 0) {

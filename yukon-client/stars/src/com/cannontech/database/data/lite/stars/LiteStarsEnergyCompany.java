@@ -170,7 +170,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
     private int primaryContactID = CtiUtilities.NONE_ZERO_ID;
     private int userID = com.cannontech.user.UserUtils.USER_DEFAULT_ID;
     
-    private Map<Integer,LiteInventoryBase> inventory = null;
     private Map<Integer,LiteWorkOrderBase> workOrders = null;
     
     private List<LiteLMProgramWebPublishing> pubPrograms = null;
@@ -389,11 +388,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
         workOrdersLoaded = loaded;
     }
     
-    public List<LiteInventoryBase> loadAllInventory(boolean blockOnWait) {
-        List<LiteInventoryBase> list = starsInventoryBaseDao.getAllByEnergyCompanyId(getEnergyCompanyID());
-        return list;
-    }
-    
     private synchronized void startLoadWorkOrdersTask() {
         if (!isWorkOrdersLoaded() && loadOrdersTaskID == 0 && !ECUtils.isDefaultEnergyCompany( this )) {
             loadOrdersTaskID = ProgressChecker.addTask( new LoadWorkOrdersTask(this) );
@@ -483,7 +477,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
         workOrdersLoaded = false;
         
         pubPrograms = null;
-        inventory = null;
         appCategories = null;
         workOrders = null;
         serviceCompanies = null;
@@ -1135,20 +1128,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
         return addressList;
     }
     
-    private synchronized Map<Integer,LiteInventoryBase> getInventoryMap() {
-        if (inventory == null) {
-            int count = starsRowCountDao.getInventoryRowCount(getEnergyCompanyID());
-            int initialCap = (int) (count / 0.75f);
-            inventory = new Hashtable<Integer,LiteInventoryBase>(initialCap);
-        }
-        return inventory;
-    }
-    
-    public List<LiteInventoryBase> getAllInventory() {
-        Collection<LiteInventoryBase> values = getInventoryMap().values();
-        return new ArrayList<LiteInventoryBase>(values);
-    }
-    
     private synchronized Map<Integer,LiteWorkOrderBase> getWorkOrderMap() {
         if (workOrders == null) {
             int count = starsRowCountDao.getWorkOrdersRowCount(getEnergyCompanyID());
@@ -1316,20 +1295,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
         }
         
         return null;
-    }
-    
-    public void addInventory(LiteInventoryBase liteInv) {
-        Map<Integer,LiteInventoryBase> invMap = getInventoryMap();
-        synchronized (invMap) {
-            invMap.put( new Integer(liteInv.getInventoryID()), liteInv );
-        }
-    }
-    
-    public LiteInventoryBase deleteInventory(int invID) {
-        Map<Integer,LiteInventoryBase> invMap = getInventoryMap();
-        synchronized (invMap) {
-            return invMap.remove( new Integer(invID) );
-        }
     }
     
     public LiteStarsThermostatSettings getThermostatSettings(LiteStarsLMHardware liteHw) {

@@ -41,6 +41,7 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
+import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.LMControlHistoryUtil;
 import com.cannontech.stars.util.OptOutEventQueue;
@@ -483,12 +484,14 @@ public class StarsDatabaseCache implements DBChangeListener {
     				}
     			}
     			else if (DeviceTypesFuncs.isMCT( litePao.getType() )) {
-                    List<LiteInventoryBase> inventory = energyCompany.getAllInventory();
-                    for (final LiteInventoryBase liteInv : inventory) {
-                        if (liteInv.getDeviceID() == msg.getId()) {
-                            handleDeviceChange( msg, energyCompany, liteInv );
-                            return;
-                        }
+    				
+    				StarsInventoryBaseDao starsInventoryBaseDao = 
+    					YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
+    				
+    				LiteInventoryBase inventoryBase = starsInventoryBaseDao.getById(msg.getId());
+    				if (inventoryBase != null) {
+                        handleDeviceChange(msg, energyCompany, inventoryBase);
+                        return;
                     }
     			}
     		}

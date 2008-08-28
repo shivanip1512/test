@@ -12,7 +12,7 @@ import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.stars.core.dao.ECMappingDao;
-import com.cannontech.stars.core.dao.LiteStarsLMHardwareMapper;
+import com.cannontech.stars.core.dao.LiteStarsLMHardwareRowMapper;
 import com.cannontech.stars.core.dao.SmartLiteInventoryBaseRowMapper;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
@@ -54,7 +54,7 @@ public class StarsSearchDaoImpl implements StarsSearchDao {
 
 		List<LiteStarsLMHardware> liteHardwareList = jdbcTemplate.query(
 				sql.toString(), 
-				new LiteStarsLMHardwareMapper(),
+				new LiteStarsLMHardwareRowMapper(),
 				serialNumber);
 		
 		if(liteHardwareList.size() == 0) {
@@ -212,6 +212,99 @@ public class StarsSearchDaoImpl implements StarsSearchDao {
 				altTrackNumber);
 		
 		return inventoryBaseList;
+	}
+
+	@Override
+	public List<LiteInventoryBase> searchInventoryByInstallationCompany(
+			int installationCompanyId,
+			List<LiteStarsEnergyCompany> energyCompanyList) {
+
+		List<Integer> ecIdList = new ArrayList<Integer>();
+		for(LiteStarsEnergyCompany energyCompany : energyCompanyList) {
+			ecIdList.add(energyCompany.getEnergyCompanyID());
+		}
+		
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		sql.append("SELECT ib.*, lhb.*, mhb.*, etim.energyCompanyId, yle.YukonDefinitionId AS CategoryDefId");
+		sql.append("FROM InventoryBase ib");
+		sql.append("LEFT OUTER JOIN LMHardwareBase lhb ON lhb.InventoryId = ib.InventoryId");
+		sql.append("LEFT OUTER JOIN MeterHardwareBase mhb ON mhb.InventoryId = ib.InventoryId");
+		sql.append("JOIN ECToInventoryMapping etim ON etim.InventoryId = ib.InventoryId");
+		sql.append("JOIN YukonListEntry yle ON yle.EntryId = ib.CategoryId");
+		sql.append("WHERE ib.InventoryId >= 0");
+		sql.append("AND ib.InstallationCompanyId = ?");
+		sql.append("AND etim.energyCompanyId IN (" + StringUtils.join(ecIdList, ",") + ")");
+		
+		List<LiteInventoryBase> inventoryBaseList = jdbcTemplate.query(
+				sql.toString(), 
+				inventoryRowMapper,
+				installationCompanyId);
+		
+		return inventoryBaseList;
+	}
+
+	@Override
+	public List<LiteStarsLMHardware> searchLMHardwareByRoute(int routeId,
+			List<LiteStarsEnergyCompany> energyCompanyList) {
+
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		
+		List<Integer> ecIdList = new ArrayList<Integer>();
+		for(LiteStarsEnergyCompany energyCompany : energyCompanyList) {
+			ecIdList.add(energyCompany.getEnergyCompanyID());
+		}
+
+		sql.append("SELECT ib.*, lhb.*, etim.energyCompanyId, yle.YukonDefinitionId AS CategoryDefId");
+		sql.append("FROM InventoryBase ib, LMHardwareBase lhb, ECToInventoryMapping etim, YukonListEntry yle");
+		sql.append("WHERE lhb.InventoryId = ib.InventoryId");
+		sql.append("AND etim.inventoryId = lhb.InventoryId");
+		sql.append("AND yle.EntryId = ib.CategoryId");
+		sql.append("AND lhb.RouteId = ?");
+		sql.append("AND etim.EnergyCompanyId IN (" + StringUtils.join(ecIdList, ",") + ")");
+		
+		
+		List<LiteStarsLMHardware> hardwareList = jdbcTemplate.query(
+				sql.toString(), 
+				new LiteStarsLMHardwareRowMapper(),
+				routeId);
+		
+		return hardwareList;
+	}
+
+	@Override
+	public List<LiteStarsLMHardware> searchLMHardwareBySerialNumberRange(
+			int startSerialNumber, int endSerialNumber,
+			int deviceTypeDefinitionId,
+			List<LiteStarsEnergyCompany> energyCompanyList) {
+
+
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		
+		List<Integer> ecIdList = new ArrayList<Integer>();
+		for(LiteStarsEnergyCompany energyCompany : energyCompanyList) {
+			ecIdList.add(energyCompany.getEnergyCompanyID());
+		}
+
+		sql.append("SELECT ib.*, lhb.*, etim.energyCompanyId, yle.YukonDefinitionId AS CategoryDefId");
+		sql.append("FROM InventoryBase ib, LMHardwareBase lhb, ECToInventoryMapping etim, YukonListEntry yle");
+		sql.append("WHERE lhb.InventoryId = ib.InventoryId");
+		sql.append("AND etim.inventoryId = lhb.InventoryId");
+		sql.append("AND yle.EntryId = ib.CategoryId");
+		sql.append("AND yle.YukonDefinitionId = ?");
+		sql.append("AND CAST(lhb.ManufacturerSerialNumber AS NUMERIC) >= ?");
+		sql.append("AND CAST(lhb.ManufacturerSerialNumber AS NUMERIC) <= ?");
+		sql.append("AND etim.EnergyCompanyId IN (" + StringUtils.join(ecIdList, ",") + ")");
+		
+		
+		List<LiteStarsLMHardware> hardwareList = jdbcTemplate.query(
+				sql.toString(), 
+				new LiteStarsLMHardwareRowMapper(),
+				deviceTypeDefinitionId,
+				startSerialNumber,
+				endSerialNumber);
+		
+		return hardwareList;
+		
 	}
 
 }

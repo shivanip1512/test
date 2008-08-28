@@ -7,7 +7,7 @@
 package com.cannontech.stars.util.task;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,38 +15,29 @@ import javax.servlet.http.HttpSession;
 
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.Pair;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
-import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteCustomer;
-import com.cannontech.database.data.lite.stars.LiteInventoryBase;
-import com.cannontech.database.data.lite.stars.LiteLMConfiguration;
-import com.cannontech.database.data.lite.stars.LiteLMHardwareEvent;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
-import com.cannontech.database.db.stars.appliance.ApplianceBase;
-import com.cannontech.database.db.stars.hardware.LMHardwareConfiguration;
 import com.cannontech.database.db.stars.hardware.StaticLoadGroupMapping;
 import com.cannontech.roles.operator.AdministratorRole;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.util.ECUtils;
-import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServletUtils;
-import com.cannontech.stars.util.SwitchCommandQueue;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.web.action.UpdateLMHardwareConfigAction;
 import com.cannontech.stars.web.action.YukonSwitchCommandAction;
 import com.cannontech.stars.web.util.InventoryManagerUtil;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsInventory;
-import com.cannontech.stars.xml.serialize.StarsLMConfiguration;
 
 /**
  * @author yao
@@ -61,10 +52,9 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
 	HttpServletRequest request = null;
 	
 	List<StaticLoadGroupMapping> mappingsToAdjust = null;
-	ArrayList hwsToAdjust = null;
-	ArrayList configurationSet = new ArrayList();
+	List<LiteStarsLMHardware> hwsToAdjust = null;
+	List<LiteStarsLMHardware> configurationSet = new ArrayList<LiteStarsLMHardware>();
     List<String> failureInfo = new ArrayList<String>();
-    HashMap<Integer, LMHardwareConfiguration> existingsConfigs = new HashMap<Integer, LMHardwareConfiguration>();
     //don't need since liteHw already has the config loaded....HashMap<Integer, com.cannontech.database.db.stars.hardware.LMHardwareConfiguration> existingConfigEntries;
 	int numSuccess = 0, numFailure = 0;
 	int numToBeConfigured = 0;
@@ -129,54 +119,23 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
 		
 		boolean searchMembers = DaoFactory.getAuthDao().checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS )
 				&& energyCompany.getChildren().size() > 0;
-		hwsToAdjust = new ArrayList();
+		hwsToAdjust = new ArrayList<LiteStarsLMHardware>();
         
-        if(!fullReset)
-            existingsConfigs = LMHardwareConfiguration.getAllLMHardwareConfigurationsWithoutLoadGroups();
+        StarsInventoryBaseDao starsInventoryBaseDao = 
+        	YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
         
+		List<LiteStarsEnergyCompany> energyCompanyList = null;
 		if (!searchMembers) {
-			List<LiteInventoryBase> hwsFromEC = energyCompany.loadAllInventory(true);
-            /*
-             * If not a full reset, we will want to only look for those with an addressing group ID of zero
-             */
-			for (int j = 0; j < hwsFromEC.size(); j++) {
-				if (hwsFromEC.get(j) instanceof LiteStarsLMHardware) {
-                    if(!fullReset)
-                    { 
-                        LMHardwareConfiguration config = existingsConfigs.get(hwsFromEC.get(j).getInventoryID());
-                        if(config != null) {
-                            hwsToAdjust.add( hwsFromEC.get(j) );
-                        }
-                    }
-                    else
-                        hwsToAdjust.add( hwsFromEC.get(j) );
-                }
-			}
-		}
-        /*May have a problem here if inventory isn't loaded yet since the for loop may move on even if the load task hasn't come back
-         */
-		else {
-            List<LiteStarsEnergyCompany> descendants = ECUtils.getAllDescendants( energyCompany );
-			for (int i = 0; i < descendants.size(); i++) {
-				LiteStarsEnergyCompany company = descendants.get(i);
-                List<LiteInventoryBase> hwsFromEC = company.loadAllInventory(true);
-                /*  
-                 * If not a full reset, we will want to only look for those with an addressing group ID of zero
-                 */
-                for (int j = 0; j < hwsFromEC.size(); j++) {
-                    if (hwsFromEC.get(j) instanceof LiteStarsLMHardware) {
-                        if(!fullReset)
-                        { 
-                            LMHardwareConfiguration config = existingsConfigs.get(hwsFromEC.get(j).getInventoryID());
-                            if(config != null) {
-                                hwsToAdjust.add( hwsFromEC.get(j) );
-                            }
-                        }
-                        else
-                            hwsToAdjust.add( hwsFromEC.get(j) );
-                    }
-                }
-			}
+			energyCompanyList = Collections.singletonList(energyCompany);
+		} else {
+			energyCompanyList = ECUtils.getAllDescendants(energyCompany);
+		} 
+		
+		if(!fullReset) {
+			// If not a full reset, we will want to only look for those with an addressing group ID of zero
+			hwsToAdjust = starsInventoryBaseDao.getAllLMHardwareWithoutLoadGroups(energyCompanyList);
+		} else {
+			hwsToAdjust = starsInventoryBaseDao.getAllLMHardware(energyCompanyList);
 		}
 		
 		numToBeConfigured = hwsToAdjust.size();
@@ -186,7 +145,6 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
 			return;
 		}
 		
-        existingsConfigs = null;
 		/*TODO: shouldn't need to support hardware addressing, but make sure 
 		 *User has specified a new configuration
 		 *StarsLMConfiguration hwConfig = null;
@@ -211,7 +169,7 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
                 return;
             }
             
-            LiteStarsLMHardware liteHw = (LiteStarsLMHardware) hwsToAdjust.get(i);;
+            LiteStarsLMHardware liteHw = hwsToAdjust.get(i);
 			LiteStarsEnergyCompany company = energyCompany;
 						
             //get the current Configuration

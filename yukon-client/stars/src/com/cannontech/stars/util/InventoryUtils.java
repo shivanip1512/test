@@ -6,7 +6,7 @@
  */
 package com.cannontech.stars.util;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -17,10 +17,11 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.JdbcTemplateHelper;
-import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteLMThermostatSchedule;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.StarsSearchDao;
 
 
 /**
@@ -150,27 +151,23 @@ public class InventoryUtils {
 	}
 	
 	public static List<LiteStarsLMHardware> getLMHardwareInRange(LiteStarsEnergyCompany energyCompany, int devTypeDefID, Integer snFrom, Integer snTo) {
-		List<LiteStarsLMHardware> hwList = new ArrayList<LiteStarsLMHardware>();
 		
-        List<LiteInventoryBase> inventory = energyCompany.loadAllInventory( true );
-		synchronized (inventory) {
-			for (int i = 0; i < inventory.size(); i++) {
-				if (!(inventory.get(i) instanceof LiteStarsLMHardware)) continue;
-				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) inventory.get(i);
-				
-				if (DaoFactory.getYukonListDao().getYukonListEntry(liteHw.getLmHardwareTypeID()).getYukonDefID() != devTypeDefID)
-					continue;
-				
-				try {
-					int serialNo = Integer.parseInt( liteHw.getManufacturerSerialNumber() );
-					if (snFrom != null && serialNo < snFrom.intValue()) continue;
-					if (snTo != null && serialNo > snTo.intValue()) continue;
-				}
-				catch (NumberFormatException nfe) { continue; }
-				
-				hwList.add( liteHw );
-			}
+		StarsSearchDao starsSearchDao = 
+			YukonSpringHook.getBean("starsSearchDao", StarsSearchDao.class);
+		
+		// If either end of the range is null - there is no limit on that end
+		if(snFrom == null) {
+			snFrom = Integer.MIN_VALUE;
 		}
+		if(snTo == null) {
+			snTo = Integer.MAX_VALUE;
+		}
+		
+		List<LiteStarsLMHardware> hwList = starsSearchDao.searchLMHardwareBySerialNumberRange(
+														snFrom, 
+														snTo, 
+														devTypeDefID, 
+														Collections.singletonList(energyCompany));
 		
 		return hwList;
 	}

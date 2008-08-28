@@ -58,6 +58,7 @@ import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.pao.DeviceTypes;
+import com.cannontech.database.data.stars.hardware.LMHardwareBase;
 import com.cannontech.database.db.macro.GenericMacro;
 import com.cannontech.database.db.macro.MacroTypes;
 import com.cannontech.database.db.stars.ECToGenericMapping;
@@ -74,6 +75,7 @@ import com.cannontech.roles.yukon.AuthenticationRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
+import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.StarsUtils;
@@ -126,13 +128,13 @@ public class StarsAdminUtil {
                 if (stmtLMGE.getRowCount() > 0) {
                     int deviceID = ((java.math.BigDecimal) stmtLMGE.getRow(0)[0]).intValue();
                     grpExpresscom.setDeviceID(deviceID);
-                    grpExpresscom = (LMGroupExpressCom) Transaction.createTransaction( Transaction.RETRIEVE, grpExpresscom ).execute();
+                    grpExpresscom = Transaction.createTransaction( Transaction.RETRIEVE, grpExpresscom ).execute();
                 } else {
                     //  Creates the expresscom if it doesn't exist.
                     grpExpresscom = (LMGroupExpressCom) LMFactory.createLoadManagement( DeviceTypes.LM_GROUP_EXPRESSCOMM );
                     grpExpresscom.setPAOName( energyCompany.getName() + " Default Route" );  
                     grpExpresscom.setRouteID( new Integer(routeID) );  
-                    grpExpresscom = (LMGroupExpressCom) Transaction.createTransaction( Transaction.INSERT, grpExpresscom ).execute();
+                    grpExpresscom = Transaction.createTransaction( Transaction.INSERT, grpExpresscom ).execute();
                     ServerUtils.handleDBChangeMsg( grpExpresscom.getDBChangeMsgs(DBChangeMsg.CHANGE_TYPE_ADD)[0] );
                 }
 
@@ -152,7 +154,7 @@ public class StarsAdminUtil {
                 if (stmtMG.getRowCount() > 0) {
                     int deviceID = ((java.math.BigDecimal) stmtMG.getRow(0)[0]).intValue();
                     grpSerial.setDeviceID(deviceID);
-                    grpSerial = (MacroGroup) Transaction.createTransaction( Transaction.RETRIEVE, grpSerial ).execute();
+                    grpSerial = Transaction.createTransaction( Transaction.RETRIEVE, grpSerial ).execute();
                 } else {
                     // Creates a macrogroup if it doesn't exist.
                     grpSerial = (MacroGroup) LMFactory.createLoadManagement( DeviceTypes.MACRO_GROUP );  
@@ -162,7 +164,7 @@ public class StarsAdminUtil {
 				macro.setChildOrder( new Integer(0) );
 				macro.setMacroType( MacroTypes.GROUP );
 				grpSerial.getMacroGroupVector().add( macro );
-				grpSerial = (MacroGroup) Transaction.createTransaction( Transaction.INSERT, grpSerial ).execute();
+				grpSerial = Transaction.createTransaction( Transaction.INSERT, grpSerial ).execute();
 				ServerUtils.handleDBChangeMsg( grpSerial.getDBChangeMsgs(DBChangeMsg.CHANGE_TYPE_ADD)[0] );
                 }
                 
@@ -194,7 +196,7 @@ public class StarsAdminUtil {
     				int groupID = ((java.math.BigDecimal) stmt.getRow(0)[0]).intValue();
     				LMGroupExpressCom group = (LMGroupExpressCom)LMFactory.createLoadManagement( DeviceTypes.LM_GROUP_EXPRESSCOMM );
     				group.setLMGroupID( new Integer(groupID) );
-    				group = (LMGroupExpressCom) Transaction.createTransaction( Transaction.RETRIEVE, group ).execute();
+    				group = Transaction.createTransaction( Transaction.RETRIEVE, group ).execute();
 				
     				com.cannontech.database.db.device.lm.LMGroupExpressCom grpDB = group.getLMGroupExpressComm();
     				grpDB.setRouteID( new Integer(routeID) );
@@ -270,8 +272,7 @@ public class StarsAdminUtil {
 		appCat.setWebConfiguration( config );
 		appCat.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
 		
-		appCat = (com.cannontech.database.data.stars.appliance.ApplianceCategory)
-				Transaction.createTransaction( Transaction.INSERT, appCat ).execute();
+		appCat = Transaction.createTransaction( Transaction.INSERT, appCat ).execute();
 		
 		LiteApplianceCategory liteAppCat = (LiteApplianceCategory) StarsLiteFactory.createLite( appCat.getApplianceCategory() );
 		energyCompany.addApplianceCategory( liteAppCat );
@@ -376,8 +377,7 @@ public class StarsAdminUtil {
 		companyDB.setCompanyName( companyName );
 		company.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
 		
-		company = (com.cannontech.database.data.stars.report.ServiceCompany)
-				Transaction.createTransaction( Transaction.INSERT, company ).execute();
+		company = Transaction.createTransaction( Transaction.INSERT, company ).execute();
 		
 		LiteContact liteContact = (LiteContact) StarsLiteFactory.createLite(company.getPrimaryContact());
 		ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_ADD );
@@ -393,25 +393,27 @@ public class StarsAdminUtil {
 		// set InstallationCompanyID = 0 for all inventory assigned to this service company
 		com.cannontech.database.db.stars.hardware.InventoryBase.resetInstallationCompany( companyID );
 		
+		StarsSearchDao starsSearchDao = 
+			YukonSpringHook.getBean("starsSearchDao", StarsSearchDao.class);
+		
         List<LiteStarsEnergyCompany> descendants = ECUtils.getAllDescendants( energyCompany );
 		for (int i = 0; i < descendants.size(); i++) {
 			LiteStarsEnergyCompany company = descendants.get(i);
 			
-            List<LiteInventoryBase> inventory = company.getAllInventory();
-			for (int j = 0; j < inventory.size(); j++) {
-				LiteInventoryBase liteInv = inventory.get(j);
-				if (liteInv.getInstallationCompanyID() == companyID) {
-					liteInv.setInstallationCompanyID(0);
-					
-					if (liteInv.getAccountID() > 0) {
-						StarsCustAccountInformation starsAcctInfo = company.getStarsCustAccountInformation( liteInv.getAccountID(), false );
-						if (starsAcctInfo != null) {
-							for (int k = 0; k < starsAcctInfo.getStarsInventories().getStarsInventoryCount(); k++) {
-								StarsInventory starsInv = starsAcctInfo.getStarsInventories().getStarsInventory(k);
-								if (starsInv.getInventoryID() == liteInv.getInventoryID()) {
-									starsInv.setInstallationCompany( (InstallationCompany)StarsFactory.newEmptyStarsCustListEntry(InstallationCompany.class) );
-									break;
-								}
+			List<LiteInventoryBase> inventory = 
+				starsSearchDao.searchInventoryByInstallationCompany(
+						companyID, 
+						Collections.singletonList(company));
+			
+			for (LiteInventoryBase liteInv : inventory) {
+				if (liteInv.getAccountID() > 0) {
+					StarsCustAccountInformation starsAcctInfo = company.getStarsCustAccountInformation( liteInv.getAccountID(), false );
+					if (starsAcctInfo != null) {
+						for (int k = 0; k < starsAcctInfo.getStarsInventories().getStarsInventoryCount(); k++) {
+							StarsInventory starsInv = starsAcctInfo.getStarsInventories().getStarsInventory(k);
+							if (starsInv.getInventoryID() == liteInv.getInventoryID()) {
+								starsInv.setInstallationCompany( (InstallationCompany)StarsFactory.newEmptyStarsCustListEntry(InstallationCompany.class) );
+								break;
 							}
 						}
 					}
@@ -486,8 +488,7 @@ public class StarsAdminUtil {
 		subDB.setRouteID( new Integer(routeID) );
 		sub.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
 		
-		sub = (com.cannontech.database.data.stars.Substation)
-				Transaction.createTransaction( Transaction.INSERT, sub ).execute();
+		sub = Transaction.createTransaction( Transaction.INSERT, sub ).execute();
 		
 		LiteSubstation liteSub = (LiteSubstation) StarsLiteFactory.createLite( subDB );
 		energyCompany.addSubstation( liteSub );
@@ -956,21 +957,6 @@ public class StarsAdminUtil {
 				conn.close();
 			} 
 		}
-		
-		for (int i = 0; i < companies.size(); i++) {
-			LiteStarsEnergyCompany company = companies.get(i);
-			
-			if (newList.getListName().equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE)) {
-                List<LiteInventoryBase> inventory = company.getAllInventory();
-				for (int j = 0; j < inventory.size(); j++) {
-					if (!(inventory.get(j) instanceof LiteStarsLMHardware))
-						continue;
-					LiteStarsLMHardware liteHw = (LiteStarsLMHardware) inventory.get(j);
-					Integer newDevTypeID = entryIDMap.get( new Integer(liteHw.getLmHardwareTypeID()) );
-					if (newDevTypeID != null) liteHw.setLmHardwareTypeID( newDevTypeID.intValue() );
-				}
-			}
-		}
 	}
 	
 	public static void removeRoute(LiteStarsEnergyCompany energyCompany, int routeID)
@@ -980,28 +966,24 @@ public class StarsAdminUtil {
 		Integer rtID = new Integer(routeID);
 		if (!routeIDs.contains( rtID )) return;
 		
-        List<LiteInventoryBase> inventory = energyCompany.loadAllInventory( true );
-		synchronized (inventory) {
-			for (int i = 0; i < inventory.size(); i++) {
-				if (!(inventory.get(i) instanceof LiteStarsLMHardware)) continue;
-				
-				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) inventory.get(i);
-				if (liteHw.getRouteID() == routeID) {
-					com.cannontech.database.data.stars.hardware.LMHardwareBase hw =
-							new com.cannontech.database.data.stars.hardware.LMHardwareBase();
-					StarsLiteFactory.setLMHardwareBase( hw, liteHw );
-					hw.getLMHardwareBase().setRouteID( new Integer(CtiUtilities.NONE_ZERO_ID) );
-					
-					Transaction.createTransaction( Transaction.UPDATE, hw.getLMHardwareBase() ).execute();
-					liteHw.setRouteID( CtiUtilities.NONE_ZERO_ID );
-					
-					if (liteHw.getAccountID() > 0) {
-						StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteHw.getAccountID() );
-						if (starsAcctInfo != null) {
-							StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteHw, energyCompany );
-							UpdateLMHardwareAction.parseResponse( liteHw.getInventoryID(), starsInv, starsAcctInfo, null );
-						}
-					}
+		StarsSearchDao starsSearchDao = 
+			YukonSpringHook.getBean("starsSearchDao", StarsSearchDao.class);
+		List<LiteStarsLMHardware> inventory = 
+			starsSearchDao.searchLMHardwareByRoute(routeID, Collections.singletonList(energyCompany));
+		for (LiteStarsLMHardware liteHw : inventory) {
+			
+			LMHardwareBase hw = new LMHardwareBase();
+			StarsLiteFactory.setLMHardwareBase( hw, liteHw );
+			hw.getLMHardwareBase().setRouteID( new Integer(CtiUtilities.NONE_ZERO_ID) );
+			
+			Transaction.createTransaction( Transaction.UPDATE, hw.getLMHardwareBase() ).execute();
+			liteHw.setRouteID( CtiUtilities.NONE_ZERO_ID );
+			
+			if (liteHw.getAccountID() > 0) {
+				StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteHw.getAccountID() );
+				if (starsAcctInfo != null) {
+					StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteHw, energyCompany );
+					UpdateLMHardwareAction.parseResponse( liteHw.getInventoryID(), starsInv, starsAcctInfo, null );
 				}
 			}
 		}
@@ -1109,8 +1091,7 @@ public class StarsAdminUtil {
 			}
 		}
 		
-		newGroup = (com.cannontech.database.data.user.YukonGroup)
-				Transaction.createTransaction(Transaction.INSERT, newGroup).execute();
+		newGroup = Transaction.createTransaction(Transaction.INSERT, newGroup).execute();
 		
 		LiteYukonGroup liteGroup = new LiteYukonGroup( newGroup.getGroupID().intValue() );
 		ServerUtils.handleDBChange( liteGroup, DBChangeMsg.CHANGE_TYPE_ADD );
@@ -1157,8 +1138,7 @@ public class StarsAdminUtil {
 			adminGrp.getYukonGroupRoles().add( groupRole );
 		}
 		
-		adminGrp = (com.cannontech.database.data.user.YukonGroup)
-				Transaction.createTransaction(Transaction.INSERT, adminGrp).execute();
+		adminGrp = Transaction.createTransaction(Transaction.INSERT, adminGrp).execute();
 		
 		LiteYukonGroup liteGroup = new LiteYukonGroup( adminGrp.getGroupID().intValue() );
 		ServerUtils.handleDBChange( liteGroup, DBChangeMsg.CHANGE_TYPE_ADD );

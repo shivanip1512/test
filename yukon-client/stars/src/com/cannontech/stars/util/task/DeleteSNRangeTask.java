@@ -7,6 +7,7 @@
 package com.cannontech.stars.util.task;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,6 +22,9 @@ import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
+import com.cannontech.database.data.stars.hardware.InventoryBase;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -92,34 +96,30 @@ public class DeleteSNRangeTask extends TimeConsumingTask {
 		if (InventoryUtils.isMCT(categoryID)) {
 			List<LiteInventoryBase> mctList = new ArrayList<LiteInventoryBase>();
 			
-            List<LiteInventoryBase> inventory = energyCompany.loadAllInventory( true );
-			synchronized (inventory) {
-				for (int i = 0; i < inventory.size(); i++) {
-					LiteInventoryBase liteInv = inventory.get(i);
-					if (InventoryUtils.isMCT( liteInv.getCategoryID() )) {
-						if (liteInv.getAccountID() > 0) {
-							hardwareSet.add( liteInv );
-							numFailure++;
-						}
-						else
-							mctList.add( liteInv );
-					}
-				}
-			}
+			StarsInventoryBaseDao starsInventoryBaseDao = 
+				YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
 			
+			// Get MCTs with account assigned
+			List<LiteInventoryBase> mctWithAccountList = 
+				starsInventoryBaseDao.getAllMCTsWithAccount(Collections.singletonList(energyCompany));
+			hardwareSet.addAll(mctWithAccountList);
+			numFailure += mctWithAccountList.size();
+			
+			// Get MCTs without account assigned
+			List<LiteInventoryBase> mctWithoutAccountList = 
+				starsInventoryBaseDao.getAllMCTsWithoutAccount(Collections.singletonList(energyCompany));
+			mctList.addAll(mctWithoutAccountList);
 			numToBeDeleted = mctList.size();
 			
-			for (int i = 0; i < mctList.size(); i++) {
-				LiteInventoryBase liteInv = (LiteInventoryBase) mctList.get(i);
+			// Remove MCTs without account
+			for (LiteInventoryBase liteInv : mctList) {
 				
 				try {
-					com.cannontech.database.data.stars.hardware.InventoryBase inv =
-							new com.cannontech.database.data.stars.hardware.InventoryBase();
+					InventoryBase inv = new InventoryBase();
 					inv.setInventoryID( new Integer(liteInv.getInventoryID()) );
 					
 					Transaction.createTransaction( Transaction.DELETE, inv ).execute();
 					
-					energyCompany.deleteInventory( liteInv.getInventoryID() );
 					numSuccess++;
 				}
 				catch (TransactionException e) {
@@ -160,7 +160,6 @@ public class DeleteSNRangeTask extends TimeConsumingTask {
 					hardware.setInventoryID( new Integer(liteHw.getInventoryID()) );
 					Transaction.createTransaction( Transaction.DELETE, hardware ).execute();
 					
-					energyCompany.deleteInventory( liteHw.getInventoryID() );
 					numSuccess++;
 				}
 				catch (TransactionException e) {

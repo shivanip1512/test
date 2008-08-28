@@ -8,6 +8,7 @@ package com.cannontech.stars.util.task;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -49,8 +50,7 @@ public class AddShipmentSNRangeTask extends TimeConsumingTask {
     Integer warehouseID = 0;
 	HttpServletRequest request = null;
 	
-	ArrayList hardwareSet = new ArrayList();
-	ArrayList serialNoSet = new ArrayList();
+	List<String> serialNoSet = new ArrayList<String>();
 	int numSuccess = 0, numFailure = 0;
 	
 	public AddShipmentSNRangeTask(LiteStarsEnergyCompany energyCompany, String snFrom, String snTo, Integer devTypeID, Integer devStateID, Integer warehouseID, HttpServletRequest request)
@@ -113,12 +113,10 @@ public class AddShipmentSNRangeTask extends TimeConsumingTask {
 				hwDB.setRouteID( 0 ); //DefaultRouteID for the energyCompany instead?
 				hardware.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
 				
-				hardware = (com.cannontech.database.data.stars.hardware.LMHardwareBase)
-						Transaction.createTransaction( Transaction.INSERT, hardware ).execute();
+				hardware = Transaction.createTransaction( Transaction.INSERT, hardware ).execute();
 				
 				LiteStarsLMHardware liteHw = new LiteStarsLMHardware();
 				StarsLiteFactory.setLiteStarsLMHardware( liteHw, hardware );
-				energyCompany.addInventory( liteHw );
                 EventUtils.logSTARSEvent(user.getUserID(), EventUtils.EVENT_CATEGORY_INVENTORY, devTypeID, liteHw.getInventoryID(), session);
                 
                 if(warehouseID.intValue() > 0)

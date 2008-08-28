@@ -494,11 +494,9 @@ public class InventoryManagerUtil {
 	
 	public static void deleteInventory(LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany, boolean deleteFromYukon) throws Exception
 	{
-		int invID = liteInv.getInventoryID();
 		InventoryBase inventory = (InventoryBase)StarsLiteFactory.createDBPersistent(liteInv);
 		
 		Transaction.createTransaction( Transaction.DELETE, inventory ).execute();
-		energyCompany.deleteInventory( invID );
 		
 		if (liteInv.getDeviceID() > 0 && deleteFromYukon) {
 			
