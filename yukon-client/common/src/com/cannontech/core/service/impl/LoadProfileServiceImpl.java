@@ -217,16 +217,18 @@ public class LoadProfileServiceImpl implements LoadProfileService {
         // see if a message was heard recently
         boolean containedIt = recentlyReceivedRequestIds.remove(requestId);
         if (!containedIt) {
+            log.debug("discovered possible abandoned request id " + requestId + ", asking porter");
             // haven't heard anything, lets ask porter about our request
             long countForRequest;
             try {
                 countForRequest = queueDataService.getMessageCountForRequest(requestId);
             } catch (RuntimeException e) {
-                log.error("Exception from porter in timer thread",e);
+                log.error("Exception from porter in timer thread for request id " + requestId,e);
                 countForRequest = 0;
             }
             if (countForRequest == 0) {
                 // our request has probably died, cancel it
+                log.warn("porter indicates abandonded request id " + requestId + ", failing");
                 currentRequestIds.remove(requestId);
                 int deviceId = info.request.getDeviceID();
                 currentDeviceRequests.remove(deviceId);
@@ -243,6 +245,7 @@ public class LoadProfileServiceImpl implements LoadProfileService {
                 
                 return;
             }
+            log.debug("porter returned countForRequest of " + countForRequest + ", continuing");
         }
         // good news, lets restart the timer for another 5 minutes
         executor.schedule(new Runnable() {
@@ -309,6 +312,7 @@ public class LoadProfileServiceImpl implements LoadProfileService {
                 receivedReturnsCount.remove(requestId);
                 lastReturnMsgs.put(requestId, resultString);
                 
+                log.debug("received last return for request id " + requestId + ", status was " + returnStatus + ", response was " + returnMsg.getResultString());
                 // get runner and execute it on the global thread pool
                 executor.execute(new Runnable() {
                     public void run() {
@@ -343,6 +347,8 @@ public class LoadProfileServiceImpl implements LoadProfileService {
             
             receivedCancelRequestIds.add(requestId);
             
+        } else {
+            log.debug("received unwanted return for request id " + requestId);
         }
     }
     
@@ -420,6 +426,8 @@ public class LoadProfileServiceImpl implements LoadProfileService {
         req.setDeviceID(deviceId);
         long requestIdOfCancelCommand = RandomUtils.nextInt();
         req.setUserMessageID(requestIdOfCancelCommand);
+        
+        log.info("sending cancel command for device id " + deviceId + ", request id " + requestIdToBeCanceled + "; this is request id " + requestIdOfCancelCommand);
         
         // run cancel command
         porterConnection.write(req);

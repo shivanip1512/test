@@ -20,7 +20,7 @@ public class DefineCollectableQueueData extends DefineCollectableMessage {
     }
 
     public Object create(VirtualInputStream vstr) throws java.io.IOException {
-        return new Request();
+        return new QueueData();
     }
 
     public int getCxxClassId() {
@@ -32,20 +32,22 @@ public class DefineCollectableQueueData extends DefineCollectableMessage {
     }
 
     public Class getJavaClass() {
-        return Request.class;
+        return QueueData.class;
     }
     
     public void restoreGuts(Object obj, VirtualInputStream vstr, CollectableStreamer polystr) throws IOException 
     {
-        QueueData req = (QueueData) obj;
+        super.restoreGuts(obj, vstr, polystr);
         
-        req.setQueueId(vstr.extractLong());
-        req.setQueueCount(vstr.extractUnsignedInt());
-        req.setRate(vstr.extractUnsignedInt());
-        req.setRequestId(vstr.extractLong());
-        req.setRequestIdCount(vstr.extractUnsignedInt());
-        req.setTime((Date) vstr.restoreObject(SimpleMappings.Time));
-        req.setUserMessageId(vstr.extractLong());
+        QueueData data = (QueueData) obj;
+        
+        data.setQueueId(vstr.extractLong());
+        data.setQueueCount(vstr.extractUnsignedInt());
+        data.setRate(vstr.extractUnsignedInt());
+        data.setRequestId(vstr.extractLong());
+        data.setRequestIdCount(vstr.extractUnsignedInt());
+        data.setTime((Date) vstr.restoreObject(SimpleMappings.Time));
+        data.setUserMessageId(vstr.extractLong());
     }
 
     public void saveGuts(Object obj, VirtualOutputStream vstr, CollectableStreamer polystr) throws IOException 
