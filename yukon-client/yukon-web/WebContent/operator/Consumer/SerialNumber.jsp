@@ -217,7 +217,7 @@ function init() {
 <% } %>
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  
-			  <form name="MForm" method="post" action="<%= request.getContextPath() %>/servlet/InventoryManager">
+			  <form name="MForm" method="GET" action="<%= request.getContextPath() %>/servlet/InventoryManager">
 			    <input type="hidden" name="action" value="CheckInventory">
 				<input type="hidden" name="REDIRECT" value="<%= referer %>">
                 Please select a device from the current inventory (Select Inventory),<br>
