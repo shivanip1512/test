@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     8/26/2008 4:23:51 PM                         */
+/* Created on:     8/28/2008 10:13:04 AM                        */
 /*==============================================================*/
 
 
@@ -795,6 +795,15 @@ if exists (select 1
             and   indid > 0
             and   indid < 255)
    drop index TOUDayRateSwitches.Indx_todsw_idoff
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('YukonGroup')
+            and   name  = 'Indx_YukonGroup_groupName_UNQ'
+            and   indid > 0
+            and   indid < 255)
+   drop index YukonGroup.Indx_YukonGroup_groupName_UNQ
 go
 
 if exists (select 1
@@ -10157,6 +10166,14 @@ insert into yukongroup values (-300,'Residential Customers Grp','The default gro
 insert into yukongroup values (-302, 'Web Client Customers Grp', 'The default group of web client customers');
 insert into yukongroup values (-303,'STARS Operators Grp','The default group for STARS operators');
 insert into yukongroup values (-304,'STARS Residential Customers Grp','The default group for STARS residential customers');
+
+/*==============================================================*/
+/* Index: Indx_YukonGroup_groupName_UNQ                         */
+/*==============================================================*/
+create unique index Indx_YukonGroup_groupName_UNQ on YukonGroup (
+GroupName ASC
+)
+go
 
 /*==============================================================*/
 /* Table: YukonGroupRole                                        */

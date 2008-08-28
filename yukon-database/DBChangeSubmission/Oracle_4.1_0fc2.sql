@@ -140,3 +140,8 @@ alter table MACSchedule
       references HolidaySchedule (HolidayScheduleID);
 /* End YUK-6393 */
 
+/* Start YUK-6395 */
+CREATE UNIQUE INDEX Indx_YukonGroup_groupName_UNQ ON YukonGroup (
+   GroupName ASC
+);
+/* End YUK-6395 */

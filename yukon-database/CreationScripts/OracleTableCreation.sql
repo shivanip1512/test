@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/26/2008 4:36:41 PM                         */
+/* Created on:     8/28/2008 10:15:41 AM                        */
 /*==============================================================*/
 
 
@@ -196,6 +196,8 @@ drop index Indx_SYSLG_Date;
 drop index Indx_SYSLG_PtId;
 
 drop index Indx_todsw_idoff;
+
+drop index Indx_YukonGroup_groupName_UNQ;
 
 drop index Indx_YkLstDefID;
 
@@ -7469,6 +7471,13 @@ insert into yukongroup values (-300,'Residential Customers Grp','The default gro
 insert into yukongroup values (-302, 'Web Client Customers Grp', 'The default group of web client customers');
 insert into yukongroup values (-303,'STARS Operators Grp','The default group for STARS operators');
 insert into yukongroup values (-304,'STARS Residential Customers Grp','The default group for STARS residential customers');
+
+/*==============================================================*/
+/* Index: Indx_YukonGroup_groupName_UNQ                         */
+/*==============================================================*/
+create unique index Indx_YukonGroup_groupName_UNQ on YukonGroup (
+   GroupName ASC
+);
 
 /*==============================================================*/
 /* Table: YukonGroupRole                                        */
