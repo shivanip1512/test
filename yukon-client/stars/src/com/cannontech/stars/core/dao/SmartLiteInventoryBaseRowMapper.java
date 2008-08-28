@@ -22,7 +22,7 @@ public class SmartLiteInventoryBaseRowMapper implements ParameterizedRowMapper<L
     
     @Override
     public LiteInventoryBase mapRow(ResultSet rs, int rowNum) throws SQLException {
-        StrategyTypeMapper mapper = StrategyTypeMapper.valueOf(rs.getInt("CategoryDefId"));
+        ParameterizedRowMapper<LiteInventoryBase> mapper = StrategyTypeMapper.valueOf(rs.getInt("CategoryDefId"));
         return mapper.mapRow(rs, rowNum);
     }
     
