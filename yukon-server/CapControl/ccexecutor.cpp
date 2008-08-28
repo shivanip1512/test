@@ -6754,21 +6754,19 @@ void CtiCCPointDataMsgExecutor::Execute()
                             currentSubstationBus->figureEstimatedVarLoadPointValue();
                             if( currentSubstationBus->getEstimatedVarLoadPointId() > 0 )
                                 CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getEstimatedVarLoadPointId(),currentSubstationBus->getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
+
+                            string text = "";
                             if (logToCCEvent)  
                             { 
-                                string text = string("Var: Cancelled by Pending Override, "); 
-                                if (currentCapBank->getControlStatus() == CtiCCCapBank::Open)  
-                                    text += "Open"; 
-                                else if (currentCapBank->getControlStatus() == CtiCCCapBank::OpenQuestionable)  
-                                    text += "OpenQuestionable"; 
-                                else if (currentCapBank->getControlStatus() == CtiCCCapBank::OpenFail)  
-                                    text += "OpenFail"; 
-                                else if (currentCapBank->getControlStatus() == CtiCCCapBank::Close)  
-                                    text += "Close"; 
-                                else if (currentCapBank->getControlStatus() == CtiCCCapBank::CloseQuestionable)  
-                                    text += "CloseQuestionable"; 
-                                else if (currentCapBank->getControlStatus() == CtiCCCapBank::CloseFail)  
-                                    text += "CloseFail"; 
+                                text = string("Var: Cancelled by Pending Override, "); 
+                            }
+                            else
+                            {
+                                text = "CapBank: ";
+                                text += currentCapBank->getPAOName(); 
+                                text += " Manual State Change to ";
+                            }
+                            text += currentCapBank->getControlStatusText();
 
                                 LONG stationId, areaId, spAreaId;
                                 store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId); 
@@ -6777,7 +6775,6 @@ void CtiCCPointDataMsgExecutor::Execute()
                                 eventMsg->setStateInfo(currentCapBank->getControlStatusQualityString());
 
                                 CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMsg); 
-                            } 
 
                         }
                         currentCapBank->setIgnoreFlag(FALSE);
