@@ -637,7 +637,7 @@ public class PointForm extends DBEditorForm
             checkForErrors();
             updateDBObject( getDbPersistent(), facesMsg );
             updateStaleData();
-            facesMsg.setDetail( "Database update was SUCCESSFULL" );
+            facesMsg.setDetail( "Database update was SUCCESSFUL" );
         }
         catch( TransactionException te ) {
             String errorString = te.getMessage();
