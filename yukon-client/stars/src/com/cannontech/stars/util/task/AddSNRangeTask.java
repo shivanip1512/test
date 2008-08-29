@@ -24,7 +24,6 @@ import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
-import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.FilterWrapper;
 import com.cannontech.stars.util.InventoryUtils;
@@ -163,10 +162,8 @@ public class AddSNRangeTask extends TimeConsumingTask {
 				
 				hardware = Transaction.createTransaction( Transaction.INSERT, hardware ).execute();
 				
-				LiteStarsLMHardware liteHw = new LiteStarsLMHardware();
-				StarsLiteFactory.setLiteStarsLMHardware( liteHw, hardware );
-				
-                EventUtils.logSTARSEvent(user.getUserID(), EventUtils.EVENT_CATEGORY_INVENTORY, devStateID, liteHw.getInventoryID(), session);
+				Integer inventoryID = hardware.getLMHardwareBase().getInventoryID();
+                EventUtils.logSTARSEvent(user.getUserID(), EventUtils.EVENT_CATEGORY_INVENTORY, devStateID, inventoryID, session);
                 numSuccess++;
 			}
 			catch (com.cannontech.database.TransactionException e) {

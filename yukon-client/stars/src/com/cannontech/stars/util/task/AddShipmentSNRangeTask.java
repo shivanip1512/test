@@ -19,8 +19,6 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
-import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.db.stars.hardware.Warehouse;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.InventoryUtils;
@@ -115,15 +113,14 @@ public class AddShipmentSNRangeTask extends TimeConsumingTask {
 				
 				hardware = Transaction.createTransaction( Transaction.INSERT, hardware ).execute();
 				
-				LiteStarsLMHardware liteHw = new LiteStarsLMHardware();
-				StarsLiteFactory.setLiteStarsLMHardware( liteHw, hardware );
-                EventUtils.logSTARSEvent(user.getUserID(), EventUtils.EVENT_CATEGORY_INVENTORY, devTypeID, liteHw.getInventoryID(), session);
+				Integer inventoryID = hardware.getLMHardwareBase().getInventoryID();
+                EventUtils.logSTARSEvent(user.getUserID(), EventUtils.EVENT_CATEGORY_INVENTORY, devTypeID, inventoryID, session);
                 
                 if(warehouseID.intValue() > 0)
                 {
                    Warehouse house = new Warehouse();
                    house.setWarehouseID(warehouseID);
-                   house.setInventoryID(new Integer(liteHw.getInventoryID()));
+                   house.setInventoryID(inventoryID);
                    Transaction.createTransaction( Transaction.ADD_PARTIAL, house ).execute();
                 }
 				numSuccess++;
