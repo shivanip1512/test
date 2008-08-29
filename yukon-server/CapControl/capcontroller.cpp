@@ -393,14 +393,14 @@ void CtiCapController::controlLoop()
                     CtiCCSubstation* currentStation = NULL;
 
                     currentStation = store->findSubstationByPAObjectID(currentSubstationBus->getParentId());
-                    if (currentStation != NULL && !currentStation->getDisableFlag())
+                    if (currentStation != NULL )//&& !currentStation->getDisableFlag())
                     {
                         currentArea = store->findAreaByPAObjectID(currentStation->getParentId());
                     }
 
                     try
                     {
-                        if (currentArea != NULL && !currentArea->getDisableFlag()) 
+                        if (currentArea != NULL )//&& !currentArea->getDisableFlag()) 
                         {
                             //currentSubstationBus->isPeakTime(currentDateTime);//put here to make sure the peak time flag is set correctly
                             if (currentSubstationBus->isDataOldAndFallBackNecessary())
@@ -445,6 +445,8 @@ void CtiCapController::controlLoop()
                                         else if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(),CtiCCSubstationBus::IndividualFeederControlMethod) )
                                         {
                                             if( !currentSubstationBus->getDisableFlag() &&
+                                                (!currentArea->getDisableFlag() && !currentStation->getSaEnabledFlag()) && 
+                                                !currentStation->getDisableFlag() &&
                                                 !currentSubstationBus->getWaiveControlFlag() &&
                                                 stringCompareIgnoreCase(currentSubstationBus->getControlMethod(),CtiCCSubstationBus::ManualOnlyControlMethod) )//intentionally left the ! off
                                             {
@@ -678,17 +680,23 @@ void CtiCapController::controlLoop()
                                     try
                                     {
                                         if( !currentSubstationBus->getDisableFlag() &&
+                                            !currentArea->getDisableFlag() && 
+                                            !currentStation->getDisableFlag() &&
                                             currentSubstationBus->getLikeDayControlFlag() &&
                                             stringCompareIgnoreCase(currentSubstationBus->getControlMethod(),CtiCCSubstationBus::ManualOnlyControlMethod) )//intentionally left the ! off
                                         {
                                             currentSubstationBus->checkForAndProvideNeededFallBackControl(currentDateTime, pointChanges, ccEvents, pilMessages);
                                         }
                                         else if ( !currentSubstationBus->getDisableFlag() &&
+                                                !currentArea->getDisableFlag() &&  
+                                                !currentStation->getDisableFlag() && 
                                             !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(),CtiCCSubstationBus::TimeOfDayMethod) )
                                         {
                                             currentSubstationBus->checkForAndProvideNeededTimeOfDayControl(currentDateTime, pointChanges, ccEvents, pilMessages);
                                         }
                                         else if( !currentSubstationBus->getDisableFlag() &&
+                                            !currentArea->getDisableFlag() &&
+                                            !currentStation->getDisableFlag() &&
                                             !currentSubstationBus->getWaiveControlFlag() &&
                                             stringCompareIgnoreCase(currentSubstationBus->getControlMethod(),CtiCCSubstationBus::ManualOnlyControlMethod) )//intentionally left the ! off
                                         {

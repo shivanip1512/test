@@ -195,15 +195,17 @@ void CtiCCSubstationVerificationExecutor::EnableSubstationBusVerification()
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
     LONG subID = _subVerificationMsg->getSubBusId();
-    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
-
-    for(LONG i=0;i<ccSubstationBuses.size();i++)
+    CtiCCSubstationBus* currentSubstationBus = store->findSubBusByPAObjectID(subID);
+    CtiCCAreaPtr currentArea = NULL;
+    CtiCCSubstationPtr currentStation = NULL;
+    if (currentSubstationBus != NULL && !currentSubstationBus->getDisableFlag()) 
     {
-        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses.at(i);
-        if( subID == currentSubstationBus->getPAOId() )
-        {
-            if (!currentSubstationBus->getDisableFlag())
-            {    
+        currentStation = store->findSubstationByPAObjectID(currentSubstationBus->getParentId());
+        if (currentStation != NULL && !currentStation->getDisableFlag())
+        {   
+            currentArea = store->findAreaByPAObjectID(currentStation->getParentId());
+            if (currentArea != NULL && !currentArea->getDisableFlag()) 
+            {
                 if (!currentSubstationBus->getVerificationFlag())
                 {
                     //Check to see if sub is already being operated on.  Set flag, which will finish out normal control
@@ -319,7 +321,35 @@ void CtiCCSubstationVerificationExecutor::EnableSubstationBusVerification()
                     }
                 }
             }
-            break;
+            else
+            {
+                if( currentArea != NULL &&
+                    _CC_DEBUG & CC_DEBUG_STANDARD )
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() <<  " - Verification Not Enabled on SubBus: "<<currentSubstationBus->getPAOName() 
+                    <<" due to Area: "<<currentArea->getPAOName() <<" DisableFlag"<< endl;
+                }
+            }
+        }
+        else
+        {
+            if( currentStation != NULL &&
+                _CC_DEBUG & CC_DEBUG_STANDARD )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() <<  " - Verification Not Enabled on SubBus: "<<currentSubstationBus->getPAOName() 
+                <<" due to Substation: "<<currentStation->getPAOName() <<" DisableFlag"<< endl;
+            }
+        }
+    }
+    else
+    {
+        if( currentSubstationBus != NULL &&
+            _CC_DEBUG & CC_DEBUG_STANDARD )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() <<  " - Verification Not Enabled on SubBus: "<<currentSubstationBus->getPAOName() <<" due to SubBus DisableFlag"<< endl;
         }
     }
 }
@@ -3210,8 +3240,10 @@ void CtiCCCommandExecutor::DisableArea()
     BOOL found = FALSE;
     CtiMultiMsg* multi = new CtiMultiMsg();
     CtiMultiMsg* eventMulti = new CtiMultiMsg();
+    CtiMultiMsg* multiCapMsg = new CtiMultiMsg();
     CtiMultiMsg_vec& pointChanges = multi->getData();
     CtiMultiMsg_vec& ccEvents = eventMulti->getData();
+    CtiMultiMsg_vec& capMessages = multiCapMsg->getData();
 
     CtiCCArea_vec& ccAreas = *store->getCCGeoAreas(CtiTime().seconds());
 
@@ -3227,6 +3259,7 @@ void CtiCCCommandExecutor::DisableArea()
 
         currentArea->setDisableFlag(TRUE);
         store->UpdateAreaDisableFlagInDB(currentArea);
+        currentArea->checkForAndStopVerificationOnChildSubBuses(capMessages);
         
         
         if (eventMulti->getCount() > 0)
@@ -3237,6 +3270,19 @@ void CtiCCCommandExecutor::DisableArea()
             CtiCapController::getInstance()->sendMessageToDispatch(multi);
         else
             delete multi;
+
+
+        CtiMultiMsg_vec& temp = multiCapMsg->getData( );
+        for(int i=0;i<temp.size( );i++)
+        {
+            CtiCCMessage* msg = new CtiCCMessage();
+
+            msg = (CtiCCMessage *) temp[i];
+            CtiCCExecutorFactory f;
+            CtiCCExecutor* executor = f.createExecutor(msg);
+            executor->Execute();
+            delete executor;
+        }
 
         CtiCCExecutorFactory f;
         CtiCCExecutor *executor = f.createExecutor(new CtiCCGeoAreasMsg(ccAreas)); 
@@ -3311,7 +3357,7 @@ void CtiCCCommandExecutor::DisableArea()
 
                 station->setDisableFlag(TRUE);
                 store->UpdateSubstationDisableFlagInDB(station);
-              
+                station->checkForAndStopVerificationOnChildSubBuses(capMessages);
                        
                 if (eventMulti->getCount() > 0)
                     CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
@@ -3322,6 +3368,19 @@ void CtiCCCommandExecutor::DisableArea()
                 else
                     delete multi;
               
+                
+                CtiMultiMsg_vec& temp = multiCapMsg->getData( );
+                for(int i=0;i<temp.size( );i++)
+                {
+                    CtiCCMessage* msg = new CtiCCMessage();
+
+                    msg = (CtiCCMessage *) temp[i];
+                    CtiCCExecutorFactory f;
+                    CtiCCExecutor* executor = f.createExecutor(msg);
+                    executor->Execute();
+                    delete executor;
+                }
+
                 
                 CtiCCExecutorFactory f;
                 CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationsMsg(*store->getCCSubstations(CtiTime().seconds()))); 
@@ -6766,13 +6825,13 @@ void CtiCCPointDataMsgExecutor::Execute()
                             }
                             text += currentCapBank->getControlStatusText();
 
-                                LONG stationId, areaId, spAreaId;
-                                store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId); 
-                                CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text, _pointDataMsg->getUser() );
-                                eventMsg->setActionId(CCEventActionIdGen(currentCapBank->getStatusPointId()));
-                                eventMsg->setStateInfo(currentCapBank->getControlStatusQualityString());
+                            LONG stationId, areaId, spAreaId;
+                            store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId); 
+                            CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text, _pointDataMsg->getUser() );
+                            eventMsg->setActionId(CCEventActionIdGen(currentCapBank->getStatusPointId()));
+                            eventMsg->setStateInfo(currentCapBank->getControlStatusQualityString());
 
-                                CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMsg); 
+                            CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMsg);
 
                         }
                         currentCapBank->setIgnoreFlag(FALSE);

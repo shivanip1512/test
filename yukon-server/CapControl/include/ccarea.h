@@ -146,6 +146,7 @@ RWDECLARE_COLLECTABLE( CtiCCArea )
     CtiCCArea& setEstPFactor(DOUBLE estPfactor);
 
     void setStrategyValues(CtiCCStrategyPtr strategy);
+    void checkForAndStopVerificationOnChildSubBuses(CtiMultiMsg_vec& capMessages);
 
     BOOL isDirty() const;
     void dumpDynamicData();

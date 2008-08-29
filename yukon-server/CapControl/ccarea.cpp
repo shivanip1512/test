@@ -1026,7 +1026,25 @@ CtiCCArea& CtiCCArea::setEstPFactor(DOUBLE estPfactor)
     return *this;
 }
 
+void CtiCCArea::checkForAndStopVerificationOnChildSubBuses(CtiMultiMsg_vec& capMessages)
+{
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
+    std::list <long>::iterator subIter = getSubStationList()->begin();;
+    CtiCCSubstationPtr currentSubstation = NULL;
+
+    while (subIter != getSubStationList()->end())
+    {
+        currentSubstation = store->findSubstationByPAObjectID(*subIter);
+        subIter++;            
+        if (currentSubstation != NULL  &&
+            (getDisableFlag() || currentSubstation->getDisableFlag()))
+        {
+            currentSubstation->checkForAndStopVerificationOnChildSubBuses(capMessages);
+        }
+    }
+}
 
 
 

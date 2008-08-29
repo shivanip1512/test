@@ -1167,6 +1167,7 @@ void CtiCCSubstationBusStore::reset()
             dout << CtiTime() << " - Store reset." << endl;
         }
 
+        CtiMultiMsg_vec capMessages;
         _reregisterforpoints = TRUE;
         _lastdbreloadtime.now();
         if ( !wasAlreadyRunning )
@@ -1200,8 +1201,29 @@ void CtiCCSubstationBusStore::reset()
         {
             CtiCCAreaPtr area =  (CtiCCAreaPtr)(*_ccGeoAreas).at(i);
             cascadeStrategySettingsToChildren(0, area->getPAOId(), 0);
-        }
 
+            //disables verification on a subbus if the parent area or substation have been disabled.
+            area->checkForAndStopVerificationOnChildSubBuses(capMessages);
+        }
+        try
+        {
+            for(int i=0;i<capMessages.size( );i++)
+            {
+                CtiCCMessage* msg = new CtiCCMessage();
+           
+                msg = (CtiCCMessage *) capMessages[i];
+                CtiCCExecutorFactory f;
+                CtiCCExecutor* executor = f.createExecutor(msg);
+                executor->Execute();
+                delete executor;
+            }
+        }
+        catch(...)
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        }
+        
 
         for(i=0;i<_ccSubstationBuses->size();i++)
         {
@@ -9353,6 +9375,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
     //list <CtiCCSubstationBusPtr> modifiedSubsList;
     CtiMultiMsg_vec modifiedSubsList;
     CtiMultiMsg_vec modifiedStationsList;
+    CtiMultiMsg_vec capMessages;
     ULONG msgBitMask = 0x00000000;
     ULONG msgSubsBitMask = 0x00000000;
 
@@ -9703,8 +9726,10 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                                     addSubBusObjectsToList(station->getCCSubIds(), modifiedSubsList);
                                     updateSubstationObjectList(station->getPAOId(), modifiedStationsList);
                                     msgSubsBitMask |= CtiCCSubstationsMsg::SubModified;
+                                    if (station->getDisableFlag())
+                                        station->checkForAndStopVerificationOnChildSubBuses(capMessages);
                                 }
-
+                                
                             }
                             else
                             {
@@ -9720,6 +9745,8 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                                     updateSubstationObjectList(station->getPAOId(), modifiedStationsList);
 
                                     msgSubsBitMask |= CtiCCSubstationsMsg::SubAdded;
+                                    if (station->getDisableFlag())
+                                        station->checkForAndStopVerificationOnChildSubBuses(capMessages);
                                 }
                             }
                         }
@@ -9776,6 +9803,9 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                                             }
                                             iter++;
                                         }
+                                        if (tempArea->getDisableFlag())
+                                            tempArea->checkForAndStopVerificationOnChildSubBuses(capMessages);
+
                                     }
                                 }
                             }
@@ -9803,6 +9833,8 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                                         }
                                         iter++;
                                     }
+                                    if (tempArea->getDisableFlag())
+                                        tempArea->checkForAndStopVerificationOnChildSubBuses(capMessages);
                                 }
                             }
                         }
@@ -9977,12 +10009,29 @@ void CtiCCSubstationBusStore::checkDBReloadList()
 
             }
 
-
             if (sendBusInfo)
             {
                 locateOrphans(&_orphanedCapBanks, &_orphanedFeeders, _paobject_capbank_map, _paobject_feeder_map,
                                      _capbank_feeder_map, _feeder_subbus_map);
 
+                try
+                {
+                    for(int i=0;i<capMessages.size( );i++)
+                    {
+                        CtiCCMessage* msg = new CtiCCMessage();
+                   
+                        msg = (CtiCCMessage *) capMessages[i];
+                        CtiCCExecutorFactory f;
+                        CtiCCExecutor* executor = f.createExecutor(msg);
+                        executor->Execute();
+                        delete executor;
+                    }
+                }
+                catch(...)
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                }
                 try
                 {
 
@@ -10020,12 +10069,9 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                 }
 
 
+
                 _lastindividualdbreloadtime.now();
 
-                /*if ( _wassubbusdeletedflag )
-                {
-                    msgBitMask = CtiCCSubstationBusMsg::AllSubBusesSent | CtiCCSubstationBusMsg::SubBusDeleted;
-                } */
 
                 for(LONG i=0;i<_ccSubstationBuses->size();i++)
                 {

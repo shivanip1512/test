@@ -788,3 +788,41 @@ DOUBLE CtiCCSubstation::calculatePowerFactor(DOUBLE kvar, DOUBLE kw)
 
     return newPowerFactorValue;
 }
+
+void CtiCCSubstation::checkForAndStopVerificationOnChildSubBuses(CtiMultiMsg_vec& capMessages)
+{
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+
+    CtiCCSubstationBusPtr currentSubstationBus = NULL;
+    std::list <long>::iterator busIter = NULL;
+
+
+    busIter = getCCSubIds()->begin();
+    
+    while (busIter != getCCSubIds()->end() )
+    {
+        currentSubstationBus = store->findSubBusByPAObjectID(*busIter);
+        busIter++;
+
+        if (currentSubstationBus != NULL && currentSubstationBus->getVerificationFlag())
+        {          
+            try
+            {
+                //reset VerificationFlag
+                capMessages.push_back(new CtiCCSubstationVerificationMsg(CtiCCSubstationVerificationMsg::DISABLE_SUBSTATION_BUS_VERIFICATION, currentSubstationBus->getPAOId(),0, -1));
+                
+            }
+            catch(...)
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            }
+                    
+        }
+    }
+
+}
+
+
+

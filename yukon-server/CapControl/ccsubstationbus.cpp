@@ -5724,15 +5724,6 @@ BOOL CtiCCSubstationBus::isVarCheckNeeded(const CtiTime& currentDateTime)
             else
             {
                 returnBoolean = (getNextCheckTime().seconds() <= currentDateTime.seconds());
-                if (returnBoolean)
-                {
-                    if (_CC_DEBUG & CC_DEBUG_TIMEOFDAY )
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " - TOD DEBUG: getNextCheckTime().seconds() <= currentDateTime.seconds() : " <<CtiTime(getNextCheckTime().seconds())<<"<="<<CtiTime(currentDateTime.seconds()) << " for SubBus: "<<getPAOName()
-                        << endl;
-                    }
-                }
             }
         }
         else

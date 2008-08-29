@@ -99,6 +99,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstation )
     CtiCCSubstation& setVoltReductionControlId(LONG pointid);
     
     DOUBLE calculatePowerFactor(DOUBLE kvar, DOUBLE kw);
+    void checkForAndStopVerificationOnChildSubBuses(CtiMultiMsg_vec& capMessages);
     BOOL isDirty() const;
     void dumpDynamicData();
     void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
