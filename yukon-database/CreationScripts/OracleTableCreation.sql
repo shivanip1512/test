@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/28/2008 11:10:52 PM                        */
+/* Created on:     8/29/2008 10:29:55 AM                        */
 /*==============================================================*/
 
 
@@ -7387,8 +7387,6 @@ INSERT INTO UnitMeasure VALUES( 51,'km/h',0,'Kilometers Per Hour','(none)');
 INSERT INTO UnitMeasure VALUES( 52,'m/s',0,'Meters Per Second','(none)');
 INSERT INTO UnitMeasure VALUES( 53,'KV', 0,'KVolts','(none)' );
 INSERT INTO UnitMeasure VALUES( 54,'UNDEF', 0,'Undefined','(none)' );
-INSERT INTO UnitMeasure VALUES( 55,'A', 0,'Amps (A)','(none)' );
-
 
 /*==============================================================*/
 /* Table: UserPaoPermission                                     */

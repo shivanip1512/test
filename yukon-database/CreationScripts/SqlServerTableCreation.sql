@@ -5,10 +5,6 @@
 /*==============================================================*/
 
 
-set define off;
-
-
-
 if exists (select 1
             from  sysobjects
            where  id = object_id('TempMovedCapBanks_View')
