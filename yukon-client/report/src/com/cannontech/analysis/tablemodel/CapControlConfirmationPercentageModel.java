@@ -328,7 +328,7 @@ public class CapControlConfirmationPercentageModel extends BareDatedReportModelB
             }
             double successRate = 0;
             if(row.Attempts.doubleValue() - row.Refusals.doubleValue() > 0) {
-                successRate = ((row.Success.doubleValue() + row.Questionable.doubleValue()) / (row.Attempts.doubleValue() - row.Refusals.doubleValue())* 100.0);
+                successRate = ((row.Success.doubleValue() + row.Questionable.doubleValue() + row.Refusals.doubleValue()) / row.Attempts.doubleValue() )* 100.0; 
             }
             
             DecimalFormat twoPlaces = new DecimalFormat("00.00");
