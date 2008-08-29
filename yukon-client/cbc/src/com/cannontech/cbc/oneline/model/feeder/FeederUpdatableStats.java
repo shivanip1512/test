@@ -31,7 +31,7 @@ public class FeederUpdatableStats extends LxAbstractView implements
     private static final String LBL_WATT = "kW";
     private static final String LBL_VOLT = "Volt";
     private static final String LBL_TARGET = "Target: ";
-    private static final String LBL_WATT_VOLT = "Watt/Volt: ";
+    private static final String LBL_WATT_VOLT = "kW/Volt: ";
     private static final String LBL_THREE_PHASE = "Phase A/B/C: ";
     
     private UpdatableTextList 			timestamp = new UpdatableTextList(CBCOnelineSettingsRole.FDR_TIMESTAMP, this);
