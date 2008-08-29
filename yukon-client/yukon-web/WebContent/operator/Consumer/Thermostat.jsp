@@ -86,7 +86,7 @@
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
               <% if (thermoType.compareTo(StarsThermostatTypes.EXPRESSSTAT_HEATPUMP.toString()) == 0) { %>
               		<%@ include file="../../include/therm_manual_emheat.jspf" %>
-              <% } else if(thermoType.compareTo(StarsThermostatTypes.EXPRESSSTAT_UTILITYPRO.toString()) == 0){%>
+              <% } else if(thermoType.compareTo(StarsThermostatTypes.UTILITYPRO.toString()) == 0){%>
                     <%@ include file="../../include/therm_manual_utilitypro.jspf"%>
               <% } else { %>
               	<%@ include file="../../include/therm_manual2.jspf" %>

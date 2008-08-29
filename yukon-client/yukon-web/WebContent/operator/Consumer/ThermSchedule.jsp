@@ -104,7 +104,7 @@
 			  <%@ include file="../../include/therm_schedule3.jspf" %>
 <%
 	}
-	else if (thermoType.getType() == StarsThermostatTypes.EXPRESSSTAT_UTILITYPRO_TYPE) {
+	else if (thermoType.getType() == StarsThermostatTypes.UTILITYPRO_TYPE) {
 %>
 	    	  <%@ include file="../../include/therm_schedule4.jspf" %>
 <%
