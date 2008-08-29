@@ -1048,6 +1048,15 @@ CREATE UNIQUE INDEX Indx_YukonGroup_groupName_UNQ ON YukonGroup (
 );
 /* End YUK-6395 */
 
+/* Start YUK-6351 */
+UPDATE PointUnit
+SET PointUnit.UOMID = 8
+WHERE PointUnit.UOMID = 55;
+
+DELETE FROM UnitMeasure
+WHERE UOMID = 55;
+/* End YUK-6351 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
