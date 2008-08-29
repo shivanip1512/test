@@ -124,7 +124,7 @@
                                                 </tr>
                                                 <!-- Utility Pro has an extra mode setting -->
                                                 <c:choose>
-                                                    <c:when test="${thermostat.type == 'EXPRESSSTAT_UTILITY_PRO'}">
+                                                    <c:when test="${thermostat.type == 'UTILITY_PRO'}">
                                                         <tr>
                                                             <td class="arrow"><img id="autoArrowMode" src="${arrow}" <c:if test="${eventMode != 'AUTO'}">style="display: none;" </c:if>>&nbsp;</td>
                                                             <td class="clickable subItem" onClick="setMode('AUTO')">
@@ -193,7 +193,7 @@
                                                 
                                                 <!-- Utility Pro has an extra fan mode setting -->
                                                 <c:choose>
-                                                    <c:when test="${thermostat.type == 'EXPRESSSTAT_UTILITY_PRO'}">
+                                                    <c:when test="${thermostat.type == 'UTILITY_PRO'}">
                                                         <tr>
                                                             <td class="arrow"><img id="circulateArrow" src="${arrow}" <c:if test="${eventFanState != 'CIRCULATE'}">style="display: none;" </c:if>>&nbsp;</td>
                                                             <td class="clickable subItem" onClick="setFan('circulateArrow', 'CIRCULATE')">
@@ -240,7 +240,7 @@
                 <cti:msg key="yukon.dr.consumer.thermostat.stepText" />
                 <!-- Utility Pro has an extra mode setting -->
                 <c:choose>
-                    <c:when test="${thermostat.type != 'EXPRESSSTAT_UTILITY_PRO'}">
+                    <c:when test="${thermostat.type != 'UTILITY_PRO'}">
                         <cti:msg key="yukon.dr.consumer.thermostat.runProgramText" />
                         <br><br>
                         <form action="/spring/stars/consumer/thermostat/manual" method="post" >

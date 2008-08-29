@@ -1995,7 +1995,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
                 hasComm = true;
             else if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT_HEATPUMP)
                 hasPump = true;
-            else if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT_UTILITYPRO)
+            else if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_UTILITYPRO)
                 hasUPro = true;
         }
         
@@ -2023,7 +2023,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
         }
         if (hasUPro) {
             StarsThermostatProgram starsThermProg = StarsLiteFactory.createStarsThermostatProgram(
-                    getDefaultThermostatSchedule(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT_UTILITYPRO), this );
+                    getDefaultThermostatSchedule(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_UTILITYPRO), this );
             starsDftThermSchedules.addStarsThermostatProgram( starsThermProg );
         }
         
