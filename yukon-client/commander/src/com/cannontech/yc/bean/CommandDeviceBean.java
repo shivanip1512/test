@@ -979,10 +979,10 @@ public class CommandDeviceBean implements DBChangeListener
 	{
 		switch(getSortBy())
 		{
-			case DeviceClasses.RTU:
 			case DeviceClasses.IED:
 				return searchByStrings_Meter;
 			case PAOGroups.CAT_CAPCONTROL:
+			case DeviceClasses.RTU:
 			case DeviceClasses.TRANSMITTER:
 			case DeviceClasses.GROUP:
 				return searchByStrings_SimpleDevice;
