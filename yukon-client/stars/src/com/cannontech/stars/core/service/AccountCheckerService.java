@@ -7,6 +7,8 @@ import com.cannontech.database.data.lite.LiteYukonUser;
  * Interface used to check user authorization.  The AccountCheckerService will not be called for
  * a LiteYukonUser that is an Operator.
  * 
+ * Every method must match this signature: accessModifier void methodName(LiteYukonUser user, ..)
+ *
  * @see AccountCheckerServiceAdvice
  */
 public interface AccountCheckerService {
