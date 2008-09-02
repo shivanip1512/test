@@ -45,14 +45,11 @@ import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
-import com.cannontech.database.data.lite.stars.LiteLMProgramEvent;
 import com.cannontech.database.data.lite.stars.LiteLMProgramWebPublishing;
 import com.cannontech.database.data.lite.stars.LiteServiceCompany;
-import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
-import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.database.data.lite.stars.LiteSubstation;
 import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
@@ -301,41 +298,6 @@ public class StarsAdminUtil {
 		
 		// Delete all appliances in the category
 		com.cannontech.database.db.stars.appliance.ApplianceBase.deleteAppliancesByCategory( appCatID );
-		
-        final StarsCustAccountInformationDao starsCustAccountInformationDao = 
-            YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
-		
-        List<LiteStarsEnergyCompany> descendants = ECUtils.getAllDescendants( energyCompany );
-		for (int i = 0; i < descendants.size(); i++) {
-			LiteStarsEnergyCompany company = descendants.get(i);
-			
-            List<LiteStarsCustAccountInformation> accounts = starsCustAccountInformationDao.getAll(company.getEnergyCompanyID());
-			for (int j = 0; j < accounts.size(); j++) {
-				LiteStarsCustAccountInformation liteAcctInfo = accounts.get(j);
-				
-				Iterator<LiteStarsAppliance> appIt = liteAcctInfo.getAppliances().iterator();
-				while (appIt.hasNext()) {
-					LiteStarsAppliance liteApp = appIt.next();
-					if (liteApp.getApplianceCategoryID() == liteAppCat.getApplianceCategoryID()) {
-						appIt.remove();
-					}
-				}
-				
-				Iterator<LiteStarsLMProgram> progIt = liteAcctInfo.getPrograms().iterator();
-				while (progIt.hasNext()) {
-					int progID = progIt.next().getProgramID();
-					if (Arrays.binarySearch(programIDs, progID) >= 0)
-						progIt.remove();
-				}
-				
-				Iterator<LiteLMProgramEvent> it = liteAcctInfo.getProgramHistory().iterator();
-				while (it.hasNext()) {
-					int progID = it.next().getProgramID();
-					if (Arrays.binarySearch(programIDs, progID) >= 0)
-						it.remove();
-				}
-			}
-		}
 		
 		com.cannontech.database.data.stars.appliance.ApplianceCategory appCat =
 				new com.cannontech.database.data.stars.appliance.ApplianceCategory();
