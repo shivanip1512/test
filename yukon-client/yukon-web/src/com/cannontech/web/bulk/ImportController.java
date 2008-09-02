@@ -10,6 +10,7 @@ import java.util.Set;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
@@ -42,8 +43,6 @@ public class ImportController extends MultiActionController {
     
     private List<BulkImportMethod> importMethods = null;
     private Map<String, BulkImportFileInfo> bulkImportFileInfoMap = new HashMap<String, BulkImportFileInfo>();
-    private Map<String, ParsedBulkImportFileInfo> parsedBulkImportFileInfoMap = new HashMap<String, ParsedBulkImportFileInfo>();
-    
     
     
     // UPLOAD
@@ -140,8 +139,10 @@ public class ImportController extends MultiActionController {
             return errorMav;
         }
         
-        // saved parsed info
-        parsedBulkImportFileInfoMap.put(fileInfoId, parsedResult);
+        // saved parsed info to session so it doesn't have to be re-parsed after confirm
+        HttpSession session = request.getSession(false);
+        session.setAttribute(fileInfoId, parsedResult);
+        
         mav.addObject("parsedResult", parsedResult);
         
         return mav;
@@ -152,12 +153,15 @@ public class ImportController extends MultiActionController {
         
         ModelAndView mav = new ModelAndView("redirect:/spring/bulk/import/importResults");
         
-        // grab parsed result from map
+        // grab parsed result from session, remove from session
         String fileInfoId = ServletRequestUtils.getRequiredStringParameter(request, "fileInfoId");
-        ParsedBulkImportFileInfo parsedResult = parsedBulkImportFileInfoMap.get(fileInfoId);
         
+        HttpSession session = request.getSession(false);
+        ParsedBulkImportFileInfo parsedResult = (ParsedBulkImportFileInfo)session.getAttribute(fileInfoId);
+        session.removeAttribute(fileInfoId);
+        
+        // start import
         String resultsId = bulkImportService.startBulkImport(parsedResult);
-        
         mav.addObject("resultsId", resultsId);
         
         return mav;

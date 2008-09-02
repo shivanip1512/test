@@ -10,6 +10,7 @@ import java.util.Set;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
@@ -41,7 +42,6 @@ public class UpdateController extends MultiActionController {
     private RecentResultsCache<BulkOperationCallbackResults<?>> recentBulkOperationResultsCache = null;
    
     private Map<String, BulkUpdateFileInfo> bulkUpdateFileInfoMap = new HashMap<String, BulkUpdateFileInfo>();
-    private Map<String, ParsedBulkUpdateFileInfo> parsedBulkUpdateFileInfoMap = new HashMap<String, ParsedBulkUpdateFileInfo>();
     
     // UPLOAD
     public ModelAndView upload(HttpServletRequest request, HttpServletResponse response) throws ServletException {
@@ -131,7 +131,10 @@ public class UpdateController extends MultiActionController {
             return errorMav;
         }
         
-        parsedBulkUpdateFileInfoMap.put(fileInfoId, parsedResult);
+        // saved parsed info to session so it doesn't have to be re-parsed after confirm
+        HttpSession session = request.getSession(false);
+        session.setAttribute(fileInfoId, parsedResult);
+        
         mav.addObject("parsedResult", parsedResult);
         
         return mav;
@@ -142,12 +145,15 @@ public class UpdateController extends MultiActionController {
         
         ModelAndView mav = new ModelAndView("redirect:/spring/bulk/update/updateResults");
         
-        // grab parsed result from map
+        // grab parsed result from session, remove from session
         String fileInfoId = ServletRequestUtils.getRequiredStringParameter(request, "fileInfoId");
-        ParsedBulkUpdateFileInfo parsedResult = parsedBulkUpdateFileInfoMap.get(fileInfoId);
-       
-        String resultsId = bulkUpdateService.startBulkUpdate(parsedResult);
         
+        HttpSession session = request.getSession(false);
+        ParsedBulkUpdateFileInfo parsedResult = (ParsedBulkUpdateFileInfo)session.getAttribute(fileInfoId);
+        session.removeAttribute(fileInfoId);
+        
+        // start import
+        String resultsId = bulkUpdateService.startBulkUpdate(parsedResult);
         mav.addObject("resultsId", resultsId);
         
         return mav;
