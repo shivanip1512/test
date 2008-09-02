@@ -299,7 +299,8 @@ public class StarsSearchDaoImpl implements StarsSearchDao {
 		sql.append("JOIN LMHardwareBase lhb ON lhb.InventoryId = ib.InventoryId");
 		sql.append("JOIN ECToInventoryMapping etim ON etim.inventoryId = lhb.InventoryId");
 		sql.append("JOIN YukonListEntry yle ON yle.EntryId = ib.CategoryId");
-		sql.append("AND yle.YukonDefinitionId = ?");
+		sql.append("JOIN YukonListEntry yle2 ON yle2.EntryId = lhb.LMHardwareTypeId");
+		sql.append("AND yle2.YukonDefinitionId = ?");
 		sql.append("AND CAST(lhb.ManufacturerSerialNumber AS NUMERIC) >= ?");
 		sql.append("AND CAST(lhb.ManufacturerSerialNumber AS NUMERIC) <= ?");
 		sql.append("AND etim.EnergyCompanyId IN (");
