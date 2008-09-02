@@ -802,14 +802,10 @@ void CtiCapController::controlLoop()
                         CtiMultiMsg_vec& temp = multiCapMsg->getData( );
                         for(int i=0;i<temp.size( );i++)
                         {
-                            CtiCCMessage* msg = new CtiCCMessage();
-
-                            msg = (CtiCCMessage *) temp[i];
                             CtiCCExecutorFactory f;
-                            CtiCCExecutor* executor = f.createExecutor(msg);
+                            CtiCCExecutor* executor = f.createExecutor((CtiCCMessage *) temp[i]);
                             executor->Execute();
                             delete executor;
-                           // delete msg;
                         } 
                         multiCapMsg = new CtiMultiMsg();
                     }

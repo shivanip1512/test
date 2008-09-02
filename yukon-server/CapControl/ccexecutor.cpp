@@ -3275,13 +3275,12 @@ void CtiCCCommandExecutor::DisableArea()
         CtiMultiMsg_vec& temp = multiCapMsg->getData( );
         for(int i=0;i<temp.size( );i++)
         {
-            CtiCCMessage* msg = new CtiCCMessage();
-
-            msg = (CtiCCMessage *) temp[i];
+        
             CtiCCExecutorFactory f;
-            CtiCCExecutor* executor = f.createExecutor(msg);
+           CtiCCExecutor* executor = f.createExecutor((CtiCCMessage*)capMessages[i]);
             executor->Execute();
             delete executor;
+        
         }
 
         CtiCCExecutorFactory f;
@@ -3372,11 +3371,9 @@ void CtiCCCommandExecutor::DisableArea()
                 CtiMultiMsg_vec& temp = multiCapMsg->getData( );
                 for(int i=0;i<temp.size( );i++)
                 {
-                    CtiCCMessage* msg = new CtiCCMessage();
 
-                    msg = (CtiCCMessage *) temp[i];
                     CtiCCExecutorFactory f;
-                    CtiCCExecutor* executor = f.createExecutor(msg);
+                    CtiCCExecutor* executor = f.createExecutor((CtiCCMessage*)capMessages[i]);
                     executor->Execute();
                     delete executor;
                 }

@@ -1209,11 +1209,8 @@ void CtiCCSubstationBusStore::reset()
         {
             for(int i=0;i<capMessages.size( );i++)
             {
-                CtiCCMessage* msg = new CtiCCMessage();
-           
-                msg = (CtiCCMessage *) capMessages[i];
                 CtiCCExecutorFactory f;
-                CtiCCExecutor* executor = f.createExecutor(msg);
+                CtiCCExecutor* executor = f.createExecutor((CtiCCMessage*)capMessages[i]);
                 executor->Execute();
                 delete executor;
             }
@@ -10018,11 +10015,8 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                 {
                     for(int i=0;i<capMessages.size( );i++)
                     {
-                        CtiCCMessage* msg = new CtiCCMessage();
-                   
-                        msg = (CtiCCMessage *) capMessages[i];
                         CtiCCExecutorFactory f;
-                        CtiCCExecutor* executor = f.createExecutor(msg);
+                        CtiCCExecutor* executor = f.createExecutor((CtiCCMessage*)capMessages[i]);
                         executor->Execute();
                         delete executor;
                     }
