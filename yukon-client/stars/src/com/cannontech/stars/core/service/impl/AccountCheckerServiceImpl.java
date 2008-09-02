@@ -27,7 +27,6 @@ import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.model.ScheduleDropDownItem;
-import com.cannontech.stars.util.StarsUtils;
 
 public class AccountCheckerServiceImpl implements AccountCheckerService {
     private final Logger logger = YukonLogManager.getLogger(AccountCheckerServiceImpl.class);
@@ -191,9 +190,6 @@ public class AccountCheckerServiceImpl implements AccountCheckerService {
     private void doCheck(LiteYukonUser user, List<Integer> actualIdList, Integer[] ids, String type) {
         boolean isEmptyIds = isEmptyIds(ids);
         if (isEmptyIds) return;
-        
-        boolean isOperator = StarsUtils.isOperator(user);
-        if (isOperator) return; 
         
         for (final Integer id : ids) {
             boolean containsId = actualIdList.contains(id);

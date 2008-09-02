@@ -21,6 +21,8 @@
 
     <bean id="accountCheckerService" class="com.cannontech.stars.core.service.impl.AccountCheckerServiceImpl"/>
 
+    <bean id="accountCheckerServiceAdvice" class="com.cannontech.stars.core.service.AccountCheckerServiceAdvice"/>
+
     <bean id="deviceActivationService"
         class="com.cannontech.stars.dr.hardware.service.impl.DeviceActivationServiceImpl">
         <property name="customerAccountDao" ref="customerAccountDao" />

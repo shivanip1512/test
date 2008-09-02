@@ -4,7 +4,10 @@ import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 /**
- * Interface used to check user authorization
+ * Interface used to check user authorization.  The AccountCheckerService will not be called for
+ * a LiteYukonUser that is an Operator.
+ * 
+ * @see AccountCheckerServiceAdvice
  */
 public interface AccountCheckerService {
 
