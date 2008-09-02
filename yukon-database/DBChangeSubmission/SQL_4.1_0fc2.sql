@@ -208,3 +208,14 @@ WHERE PointUnit.UOMID = 55;
 DELETE FROM UnitMeasure
 WHERE UOMID = 55;
 /* End YUK-6351 */
+
+/* Start YUK-6409 */
+DELETE FROM YukonUserRole 
+WHERE RolePropertyId = -20105;
+
+DELETE FROM YukonGroupRole 
+WHERE RolePropertyId = -20105;
+
+DELETE FROM YukonRoleProperty 
+WHERE RolePropertyId = -20105;
+/* End YUK-6409 */

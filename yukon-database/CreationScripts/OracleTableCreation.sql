@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/29/2008 10:29:55 AM                        */
+/* Created on:     9/2/2008 11:53:51 AM                         */
 /*==============================================================*/
 
 
@@ -7732,7 +7732,6 @@ insert into yukongrouprole values (-721,-301,-201,-20101,'true');
 insert into yukongrouprole values (-722,-301,-201,-20102,'true');
 insert into yukongrouprole values (-723,-301,-201,-20103,'true');
 insert into yukongrouprole values (-724,-301,-201,-20104,'false');
-insert into yukongrouprole values (-725,-301,-201,-20105,'false');
 insert into yukongrouprole values (-726,-301,-201,-20106,'true');
 insert into yukongrouprole values (-727,-301,-201,-20107,'true');
 insert into yukongrouprole values (-728,-301,-201,-20108,'true');
@@ -7933,7 +7932,6 @@ insert into yukongrouprole values (-2021,-303,-201,-20101,'(none)');
 insert into yukongrouprole values (-2022,-303,-201,-20102,'true');
 insert into yukongrouprole values (-2023,-303,-201,-20103,'(none)');
 insert into yukongrouprole values (-2024,-303,-201,-20104,'(none)');
-insert into yukongrouprole values (-2025,-303,-201,-20105,'(none)');
 insert into yukongrouprole values (-2026,-303,-201,-20106,'(none)');
 insert into yukongrouprole values (-2027,-303,-201,-20107,'(none)');
 insert into yukongrouprole values (-2028,-303,-201,-20108,'(none)');
@@ -8933,7 +8931,6 @@ insert into YukonRoleProperty values(-20101,-201,'Account General','true','Contr
 insert into YukonRoleProperty values(-20102,-201,'Account Residence','false','Controls whether to show the customer residence information');
 insert into YukonRoleProperty values(-20103,-201,'Account Call Tracking','false','Controls whether to enable the call tracking feature');
 insert into YukonRoleProperty values(-20104,-201,'Metering Interval Data','false','Controls whether to show the metering interval data');
-insert into YukonRoleProperty values(-20105,-201,'Metering Usage','false','Controls whether to show the metering time of use');
 insert into YukonRoleProperty values(-20106,-201,'Programs Control History','true','Controls whether to show the program control history');
 insert into YukonRoleProperty values(-20107,-201,'Programs Enrollment','true','Controls whether to enable the program enrollment feature');
 insert into YukonRoleProperty values(-20108,-201,'Programs Opt Out','true','Controls whether to enable the program opt out/reenable feature');
