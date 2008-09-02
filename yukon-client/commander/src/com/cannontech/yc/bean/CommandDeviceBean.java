@@ -61,11 +61,6 @@ public class CommandDeviceBean implements DBChangeListener
 	public static final int ORDER_DIR_DESCENDING = 1;
 
 	private static final String NULL_OBJECT_STRING = "---";
-
-	//device search by values
-	public static final int DEVICE_NAME_SEARCH_BY = 0;
-	public static final int ADDRESS_SEARCH_BY = 1;
-	public static final int METER_NUM_SEARCH_BY = 2;
     
 	//device order by values
 	public static final int DEVICE_NAME_ORDER_BY = 0;
@@ -158,7 +153,7 @@ public class CommandDeviceBean implements DBChangeListener
 	private int orderDir = ORDER_DIR_ASCENDING;
 	private int sortBy = DeviceClasses.CARRIER;
 	private int filterBy = NO_FILTER;
-	private int searchBy = DEVICE_NAME_SEARCH_BY;
+	private String searchBy = DEVICE_NAME_STRING;
 	private String searchValue = "";
     
 	//List of <route> values
@@ -463,11 +458,11 @@ public class CommandDeviceBean implements DBChangeListener
 					LiteYukonPAObject lPao = (LiteYukonPAObject) allPaos.get(i);
 					if( getSearchValue().length() > 0)
 					{
-						if( getSearchBy() == DEVICE_NAME_SEARCH_BY)
+						if( getSearchBy().equalsIgnoreCase(DEVICE_NAME_STRING))
 							isValid = lPao.getPaoName().toLowerCase().startsWith(getSearchValue().toLowerCase());
-						else if( getSearchBy() == ADDRESS_SEARCH_BY)
+						else if( getSearchBy().equalsIgnoreCase(ADDRESS_STRING))
 							isValid = String.valueOf(lPao.getAddress()).toLowerCase().startsWith(getSearchValue().toLowerCase());
-						else if( getSearchBy() == METER_NUM_SEARCH_BY)
+						else if( getSearchBy().equalsIgnoreCase(METER_NUMBER_STRING))
 						{
 							LiteDeviceMeterNumber ldmn = DaoFactory.getDeviceDao().getLiteDeviceMeterNumber(lPao.getYukonID());
 							if (ldmn != null) 
@@ -1065,16 +1060,18 @@ public class CommandDeviceBean implements DBChangeListener
         
 		return 15;        
 	}
-	public int getSearchBy()
-	{
-		return searchBy;
-	}
-	public void setSearchBy(int searchBy)
-	{
-		if( this.searchBy != searchBy)
-			setChanged(true);
-		this.searchBy = searchBy;
-	}
+	
+    public String getSearchBy()
+    {
+        return searchBy;
+    }
+    public void setSearchBy(String searchBy)
+    {
+        if( this.searchBy != searchBy)
+            setChanged(true);
+        this.searchBy = searchBy;
+    }
+    
 	public String getSearchValue()
 	{
 		return searchValue;
@@ -1105,7 +1102,7 @@ public class CommandDeviceBean implements DBChangeListener
 		if( clear )	//clear all previous settings, show all
 		{
 			setSearchValue("");
-			setSearchBy(DEVICE_NAME_SEARCH_BY);
+			setSearchBy(DEVICE_NAME_STRING);
 			setFilterBy(NO_FILTER);
 		}
 		this.clear = clear;
