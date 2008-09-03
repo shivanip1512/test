@@ -116,16 +116,23 @@ public class ProfileWidget extends WidgetControllerBase {
         DeviceLoadProfile deviceLoadProfile = toggleProfilingService.getDeviceLoadProfile(deviceId);
         Meter meter = meterDao.getForId(deviceId);
         
-        // ALL Channel Names / Attributes
-        // - for all possible channels
-        Integer channelNums[] = {1, 4};
+        // Supported Channel Names / Attributes
+        List<Integer> supportedChannels = new ArrayList<Integer>();
+        Set<BuiltInAttribute> supportedProfileAttributes = getSupportedProfileAttributes(meter);
+        if (supportedProfileAttributes.contains(BuiltInAttribute.LOAD_PROFILE)) {
+            supportedChannels.add(1);
+        }
+        if (supportedProfileAttributes.contains(BuiltInAttribute.VOLTAGE_PROFILE)) {
+            supportedChannels.add(4);
+        }
+        
         Map<Integer, Boolean> channelProfilingOn = new HashMap<Integer, Boolean>();
         Map<Integer, List<Map<String, Object>>> channelJobInfos = new HashMap<Integer, List<Map<String, Object>>>();
         Map<Integer, String> channelDisplayNames = new HashMap<Integer, String>();
         Map<Integer, Attribute> channelAttributes = new HashMap<Integer, Attribute>();
         Map<Integer, String> channelProfileRates = new HashMap<Integer, String>();
         
-        for (Integer channelNum : channelNums) {
+        for (Integer channelNum : supportedChannels) {
             
             channelProfilingOn.put(channelNum, toggleProfilingService.getToggleValueForDevice(deviceId, channelNum));
             channelJobInfos.put(channelNum, toggleProfilingService.getToggleJobInfos(deviceId, channelNum));
@@ -144,22 +151,18 @@ public class ProfileWidget extends WidgetControllerBase {
         
         
         // AVAILABLE channel infos
-        // - only channels which are supported by this device
-        // - this list of channels info is order by channel number
+        // - this list of channels info is ordered by channel number
         List<Map<String, Object>> availableChannels = new ArrayList<Map<String, Object>>();
-        for(Integer channelNum : channelNums){
+        for(Integer channelNum : supportedChannels){
             
-            if(attributeService.isAttributeSupported(meter, channelAttributes.get(channelNum))){
-                
-                Map<String, Object> channelInfo = new HashMap<String, Object>();
-                channelInfo.put("channelProfilingOn", channelProfilingOn.get(channelNum));
-                channelInfo.put("jobInfos", channelJobInfos.get(channelNum));
-                channelInfo.put("channelNumber", channelNum.toString());
-                channelInfo.put("channelDescription", channelDisplayNames.get(channelNum));
-                channelInfo.put("channelProfileRate", channelProfileRates.get(channelNum));
-                
-                availableChannels.add(channelInfo);
-            }
+            Map<String, Object> channelInfo = new HashMap<String, Object>();
+            channelInfo.put("channelProfilingOn", channelProfilingOn.get(channelNum));
+            channelInfo.put("jobInfos", channelJobInfos.get(channelNum));
+            channelInfo.put("channelNumber", channelNum.toString());
+            channelInfo.put("channelDescription", channelDisplayNames.get(channelNum));
+            channelInfo.put("channelProfileRate", channelProfileRates.get(channelNum));
+            
+            availableChannels.add(channelInfo);
         }
         
         return availableChannels;
@@ -191,6 +194,18 @@ public class ProfileWidget extends WidgetControllerBase {
         }
         mav.addObject("hours", hours);
         
+    }
+    
+    private Set<BuiltInAttribute> getSupportedProfileAttributes(Meter meter) {
+        
+        Set<BuiltInAttribute> supportedProfileAttributes = new HashSet<BuiltInAttribute>();
+        if (attributeService.isAttributeSupported(meter, BuiltInAttribute.LOAD_PROFILE)) {
+            supportedProfileAttributes.add(BuiltInAttribute.LOAD_PROFILE);
+        }
+        if (attributeService.isAttributeSupported(meter, BuiltInAttribute.VOLTAGE_PROFILE)) {
+            supportedProfileAttributes.add(BuiltInAttribute.VOLTAGE_PROFILE);
+        }
+        return supportedProfileAttributes;
     }
     
     public ModelAndView render(HttpServletRequest request,
@@ -232,11 +247,8 @@ public class ProfileWidget extends WidgetControllerBase {
         mav.addObject("email", getUserEmail(userContext));
 
         // Checks to see if the meter is readable for load profile attributes
-        Set<Attribute> lpAttributes = new HashSet<Attribute>();
-        lpAttributes.add(BuiltInAttribute.LOAD_PROFILE);
-        lpAttributes.add(BuiltInAttribute.VOLTAGE_PROFILE);
-        
-        boolean isReadable = meterReadService.isReadable(meter, lpAttributes, userContext.getYukonUser());
+        Set<BuiltInAttribute> supportedProfileAttributes = getSupportedProfileAttributes(meter);
+        boolean isReadable = meterReadService.isReadable(meter, supportedProfileAttributes, userContext.getYukonUser());
         mav.addObject("isReadable", isReadable);
         
         // pending requests
