@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/msg_queuedata.h-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2008/08/06 21:08:40 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2008/09/03 21:49:05 $
 *
 * Copyright (c) 2007 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -138,7 +138,7 @@ void CtiRequestCancelMsg::dump() const
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
 
-        dout << " ------- Message -------       " << typeString() << endl;
+        dout << " ------ Cancel Response ------ " << typeString() << endl;
         dout << " RequestId                     " << getRequestId() << endl;
         dout << " Cancelled ID Count            " << getRequestIdCount() << endl;
         dout << " Time                          " << getTime() << endl;

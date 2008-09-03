@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.77 $
-* DATE         :  $Date: 2008/08/14 15:57:40 $
+* REVISION     :  $Revision: 1.78 $
+* DATE         :  $Date: 2008/09/03 21:49:05 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1800,9 +1800,16 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
         if( now > lastPorterCountTime + PORT_COUNT_REQUEST_SECONDS )
         {
             lastPorterCountTime = now;
-            PILConnection->WriteConnQue(CTIDBG_new CtiRequestMsg(0, "system message request count", 0, msgid));
+            PILConnection->WriteConnQue(CTIDBG_new CtiRequestMsg(0, "system message request count", msgid, msgid));
         }
     } while(true);
+
+    if( interrupted )
+    {
+        string info = "Command exiting due to interrupt!";
+
+        WriteOutput(info.c_str());
+    }
 
     //I left the next line because i'm not sure everything is getting cleanedup
     //uncommenting it will cause a bomb however since all the messages are now stored
@@ -1812,7 +1819,7 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
     // We now always send the cancel message.
     if( two_way && timeout > 0 && !gDoNotSendCancel)
     {
-        PILConnection->WriteConnQue(CTIDBG_new CtiRequestMsg(0, "system message request cancel", 0, msgid));
+        PILConnection->WriteConnQue(CTIDBG_new CtiRequestMsg(0, "system message request cancel", msgid, msgid));
     }
 
     // set up good and bad tcl lists
@@ -1866,20 +1873,13 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
         }
     }
 
-    WriteResultsToDatabase(resultQueue, requestLogId);
-
-    if( timeout != 0 && jobId > 0 ) // don't bother if we don't want responses
-    {
-        deviceReadLog.setStopTime(CtiTime::now());
-        deviceReadLog.Update();
-    }
-
     //Remove the queue from the InQueueStore
     {
         RWRecursiveLock<RWMutexLock>::LockGuard guard(_queue_mux);
         InQueueStore.remove(msgid);
     }
 
+    //Lets write this to the screen before the database locks us up.
     while( queue_ptr->read(msg,10) )
     {
         if( msg->isA() == MSG_PCRETURN )
@@ -1893,7 +1893,15 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
         }
         delete msg;
     }
-    
+
+
+    WriteResultsToDatabase(resultQueue, requestLogId);
+
+    if( timeout != 0 && jobId > 0 ) // don't bother if we don't want responses
+    {
+        deviceReadLog.setStopTime(CtiTime::now());
+        deviceReadLog.Update();
+    }
 
     return (interrupted ?
                 TCL_ERROR : TCL_OK);
