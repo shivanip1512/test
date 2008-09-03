@@ -27,6 +27,7 @@ import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.model.ScheduleDropDownItem;
+import com.cannontech.stars.util.StarsUtils;
 
 public class AccountCheckerServiceImpl implements AccountCheckerService {
     private final Logger logger = YukonLogManager.getLogger(AccountCheckerServiceImpl.class);
@@ -43,7 +44,9 @@ public class AccountCheckerServiceImpl implements AccountCheckerService {
     public void checkInventory(final LiteYukonUser user, final Integer... inventoryIds)
             throws NotAuthorizedException {
         
-        final List<Integer> actualInventoryIds = getInventoryIdsByUser(user);
+        if (isOperator(user)) return;
+        
+        List<Integer> actualInventoryIds = getInventoryIdsByUser(user);
         doCheck(user, actualInventoryIds, inventoryIds, "Inventory");
     }
     
@@ -51,6 +54,8 @@ public class AccountCheckerServiceImpl implements AccountCheckerService {
     public void checkThermostatSchedule(final LiteYukonUser user, final Integer... scheduleIds)
             throws NotAuthorizedException {
     	
+        if (isOperator(user)) return;
+        
         if (isEmptyIds(scheduleIds)) return;
         
         final List<Integer> actualSchedulIds = getScheduleIdsByUser(user);
@@ -74,7 +79,9 @@ public class AccountCheckerServiceImpl implements AccountCheckerService {
     public void checkContact(final LiteYukonUser user, final Integer... contactIds) 
             throws NotAuthorizedException {
         
-        final List<Integer> actualContactIds = getContactIdsByUser(user);
+        if (isOperator(user)) return;
+        
+        List<Integer> actualContactIds = getContactIdsByUser(user);
         doCheck(user, actualContactIds, contactIds, "Contact");
     }
     
@@ -82,40 +89,52 @@ public class AccountCheckerServiceImpl implements AccountCheckerService {
     public void checkApplianceCategory(final LiteYukonUser user, final Integer... categoryIds) 
             throws NotAuthorizedException {
         
-        final List<Integer> actualCategoryIds = getApplianceCategoryIdsByUser(user);
+        if (isOperator(user)) return;
+        
+        List<Integer> actualCategoryIds = getApplianceCategoryIdsByUser(user);
         doCheck(user, actualCategoryIds, categoryIds, "ApplianceCategory");
     }
     
     @Override
     public void checkProgram(final LiteYukonUser user, final Integer... programIds)
             throws NotAuthorizedException {
-        final List<Integer> actualProgramIds = getProgramIdsByUser(user);
+        
+        if (isOperator(user)) return;
+        
+        List<Integer> actualProgramIds = getProgramIdsByUser(user);
         doCheck(user, actualProgramIds, programIds, "Program");
     }
     
     @Override
     public void checkAppliance(final LiteYukonUser user, final Integer... applianceIds)
             throws NotAuthorizedException {
-        final List<Integer> actualApplianceIds = getApplianceIdsByUser(user);
+        
+        if (isOperator(user)) return;
+        
+        List<Integer> actualApplianceIds = getApplianceIdsByUser(user);
         doCheck(user, actualApplianceIds, applianceIds, "Appliance");
     }
     
     @Override
     public void checkCustomerAccount(final LiteYukonUser user, final Integer... customerAccountIds) 
             throws NotAuthorizedException {
-        final List<Integer> actualCustomerAccountIds = getCustomerAccountIdsByUser(user);
+        
+        if (isOperator(user)) return;
+        
+        List<Integer> actualCustomerAccountIds = getCustomerAccountIdsByUser(user);
         doCheck(user, actualCustomerAccountIds, customerAccountIds, "CustomerAccount");
     }
-    
 
 	@Override
 	public void checkGraph(LiteYukonUser user, Integer... graphDefinitionIds)
 			throws NotAuthorizedException {
-		final List<Integer> actualDefinitionIds = getGraphDefinitionIdsByUser(user);
+	    
+	    if (isOperator(user)) return;
+	    
+		List<Integer> actualDefinitionIds = getGraphDefinitionIdsByUser(user);
 		doCheck(user, actualDefinitionIds, graphDefinitionIds, "Graph");
 		
 	}
-    
     
     @Override
     public void haltOnCheckInventory(final LiteYukonUser user, final Integer... inventoryIds)
@@ -342,6 +361,11 @@ public class AccountCheckerServiceImpl implements AccountCheckerService {
         
         String errorMessage = sb.toString();
         return errorMessage;
+    }
+    
+    private boolean isOperator(LiteYukonUser user) {
+        boolean isOperator = StarsUtils.isOperator(user);
+        return isOperator;
     }
     
     @Autowired
