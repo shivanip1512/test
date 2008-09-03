@@ -222,7 +222,7 @@ public class DirectControlJPanel extends javax.swing.JPanel implements java.awt.
         d.setModal(true);
         d.setTitle ("Target Cycle Gear Configuration");
         d.setContentPane(gearConfigJPanel);
-        d.setSize( 350, (gearConfigJPanel.getTimeSlots() * 30) + 70 );
+        d.setSize( 350, (gearConfigJPanel.getTimeSlots() * 30) + 85 );
         d.setLocationRelativeTo(this);
         d.setLocation(d.getLocation().x, d.getLocation().y + 150);
         d.show();
