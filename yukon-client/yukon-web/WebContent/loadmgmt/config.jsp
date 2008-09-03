@@ -30,6 +30,8 @@ int timeSlots = LCUtils.getTimeSlotsForTargetCycle(sp, st, gearPeriod);
     <body>
         <h4 align="center" style="color: blue"> <%=gName%></h4>
         <input type="hidden" id="prg_idx" value="<%=gearIdx%>"/>
+        
+        <div style="overflow: scroll">
         <table id="tgctable" width="200" border="1" cellspacing="0" cellpadding="6" align="center" 
             valign="top" bgcolor="#FFFFFF">
         <tr> 
@@ -52,6 +54,7 @@ int timeSlots = LCUtils.getTimeSlotsForTargetCycle(sp, st, gearPeriod);
         }
         %>
         </table>
+        </div>
         <br/><br/>
             <input id="b_submit" type="submit" name="submit" value="Submit" class="defButton" 
                     onclick = "check_and_submit();">

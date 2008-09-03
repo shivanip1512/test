@@ -19,6 +19,29 @@ function showtgconfig (idx)
         }
     }
 }
+
+function dateChanged (t) 
+{
+    var hidden = null;
+    var d = new Date();
+    if (t == 'start') {
+        hidden = $('h_starttime');
+        
+        if($F('startbutton') == 'startnow') {
+            // do nothing - d is set to now 
+        } else {
+            s = document.cmdForm.startdate.value + ' ' + document.cmdForm.startTime1.value; 
+            d.setTime (Date.parse(s));
+        }
+    }
+    if (t == 'stop') {
+        hidden = $('h_stoptime');
+        s = document.cmdForm.stopdate.value + ' ' + document.cmdForm.stopTime1.value;
+        d.setTime (Date.parse(s));
+    }
+    
+    hidden.value = d.toString(); 
+}
                
 function openConfigWin (gear, idx, period) 
 {
@@ -31,16 +54,8 @@ function openConfigWin (gear, idx, period)
     url += s;
     start.setTime (Date.parse (document.cmdForm.h_starttime.value));
     stop.setTime (Date.parse (document.cmdForm.h_stoptime.value));
-    
-    if (validateDate(start, stop)) 
-    {
-        w = ((stop - start)/(1000 * 60)) + 60;   
-    }
-    else
-    {
-        w = 250;
-    }
-    return GB_show ('Target Cycle Gear Config', url, w, 300);
+   
+    return GB_show ('Target Cycle Gear Config', url, 250, 300);
 
 }
 

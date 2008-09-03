@@ -261,7 +261,7 @@ pageContext.setAttribute("nowDate", nowStartOrStop);%>
                 <div align="right"><b>Start now: </b></div>
               </td>
               <td width="25"> 
-                <input type="radio" name="startbutton" value="startnow" onClick="setStartAble(this)" checked>
+                <input type="radio" id="startbutton" name="startbutton" value="startnow" onClick="setStartAble(this);dateChanged('start'); " checked>
                 <br>
               </td>
               <td width="36">&nbsp;</td>
@@ -273,7 +273,7 @@ pageContext.setAttribute("nowDate", nowStartOrStop);%>
                 <div align="right"><b>Start at: </b></div>
               </td>
               <td width="25"> 
-                <input type="radio" name="startbutton" value="startat" onClick="setStartAble(this)">
+                <input type="radio" name="startbutton" value="startat" onClick="setStartAble(this);dateChanged('start');">
               </td>
               <td width="36" class="TableCell"> 
                 <div align="right">Date: </div>
