@@ -36,6 +36,11 @@ LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_
 
 CtiNavObject nav = (CtiNavObject) request.getSession(false).getAttribute(ServletUtil.NAVIGATE);
 String returnURL = nav.getPreviousPage();
+if(returnURL.indexOf("?") != -1){
+    returnURL += "&back=true";
+}else{
+    returnURL += "?back=true";
+}
 
 final CBCDisplay cbcDisplay = new CBCDisplay(user);
 String popupEvent = DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
@@ -105,6 +110,6 @@ Event.observe(window, 'load', function() {
 </script>		
 </cti:titledContainer>
 
-<input type="button" value="Back" onclick="javascript:location.href='<%=returnURL %>'">
+<input type="button" value="Back" onclick="javascript:location.href='<%=returnURL%>'">
 
 </cti:standardPage>

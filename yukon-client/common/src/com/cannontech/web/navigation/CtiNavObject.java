@@ -44,21 +44,6 @@ public class CtiNavObject implements Serializable{
 		return previousPage;
 	}
 	
-	public String getPreviousPageForSearch() {
-	    String returnURL = getPreviousPage();
-    	if(returnURL.contains("tabledata")){
-            Iterator<String> history = getHistory().iterator();
-            while(history.hasNext()){
-                String next = history.next();
-                if(!next.contains("tabledata")){
-                    returnURL = next;
-                    break;
-                }
-            }
-        }
-    	return returnURL;
-    }
-	
 	public boolean isMemberECAdmin()
 	{
 		return memberECAdmin;
@@ -77,12 +62,34 @@ public class CtiNavObject implements Serializable{
 	/**
 	 * This is the useful one.  Takes a new page string and sets
 	 * it as the current page, first moving the old current page to 
-	 * the previous field.
+	 * the previous field. Does not remember pages moves that are 
+	 * the same page. ie: same page, different parameters (search page).
 	 */
 	public void setNavigation(String page)
 	{
-		previousPage = currentPage;
-		currentPage = page;
+	    if(page.indexOf("?") != -1) {
+	        String url = page.substring(0, page.indexOf("?"));
+	        if(!currentPage.contains(url)) {
+	            if(previousPage != null && !previousPage.isEmpty()) {
+	                getHistory().push(previousPage);
+	            }
+	            previousPage = currentPage;
+	            currentPage = page;
+	        }
+	    } else if (!currentPage.contains(page)) {
+	        if(previousPage != null && !previousPage.isEmpty()) {
+                getHistory().push(previousPage);
+            }
+	        previousPage = currentPage;
+	        currentPage = page;
+	    }
+	}
+	
+	public void setNavigationBack(String page) {
+	    String prev = previousPage;
+	    String newPrevious = getHistory().pop();
+	    previousPage = newPrevious;
+	    currentPage = prev;
 	}
 	
 	public void setMemberECAdmin(boolean isManaging)

@@ -1,6 +1,7 @@
 package com.cannontech.servlet.filter;
 
 import java.io.IOException;
+import java.util.Stack;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -68,11 +69,9 @@ public class ReferrerPageFilter implements Filter {
      * @see javax.servlet.Filter#doFilter(ServletRequest, ServletResponse,
      *      FilterChain)
      */
-    public void doFilter(ServletRequest req, ServletResponse resp,
-            FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException, ServletException {
 
         HttpServletRequest request = (HttpServletRequest) req;
-        HttpServletResponse response = (HttpServletResponse) resp;
 
         boolean excludedRequest = isExcludedRequest(request);
         if (excludedRequest) {
@@ -89,8 +88,18 @@ public class ReferrerPageFilter implements Filter {
             String url = request.getRequestURL().toString();
             String urlParams = request.getQueryString();
             String navUrl = url + ((urlParams != null) ? "?" + urlParams : "");
-            navigator.setNavigation(navUrl);
-
+            
+            
+            String back = request.getParameter("back");
+            if (back != null) {
+                Stack<String> stack = navigator.getHistory();
+                if(!stack.empty()) {
+                    navigator.setNavigationBack(navUrl);
+                }
+            }else {
+                navigator.setNavigation(navUrl);
+            }
+            
             session.setAttribute(ServletUtil.NAVIGATE, navigator);
         }
 

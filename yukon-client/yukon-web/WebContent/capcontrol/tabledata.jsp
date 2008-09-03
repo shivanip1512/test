@@ -41,6 +41,12 @@
 	CtiNavObject nav = (CtiNavObject) request.getSession(false).getAttribute(ServletUtil.NAVIGATE);
     String returnURL = nav.getPreviousPageForSearch();
 	nav.getHistory().push(returnURL);
+    String returnURL = nav.getPreviousPage();
+    if(returnURL.indexOf("?") != -1){
+        returnURL += "&back=true";
+    }else{
+        returnURL += "?back=true";
+    }
 	
 	int MAX_DAYS_CNT = 7;	
 	String type = ParamUtil.getString(request, "type", "");
@@ -200,14 +206,13 @@ while(paoIDs.hasMoreElements()){
 %>
 
 	<script type="text/javascript">
-Event.observe(window, 'load', function() { new CtiNonScrollTable('resTable<%=id%>','resHeaderTable<%=id%>');});
-</script>
+        Event.observe(window, 'load', function() { new CtiNonScrollTable('resTable<%=id%>','resHeaderTable<%=id%>');});
+    </script>
 	<% }
 
 } 
 
 %>
-	<input type="button" value="Back"
-		onclick="javascript:location.href='<%=returnURL %>'">
+	<input type="button" value="Back" onclick="javascript:location.href='<%=returnURL%>'">
 
 </cti:standardPage>
