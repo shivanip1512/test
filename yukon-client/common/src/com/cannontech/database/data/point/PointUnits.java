@@ -70,8 +70,6 @@ public final class PointUnits
 	public static final int UOMID_M_S = 52;
 	public static final int UOMID_KV = 53;
 	public static final int UOMID_UNDEF = 54;
-	public static final int UOMID_A = 55;
-
 
    public static final Integer[] CAP_CONTROL_VAR_UOMIDS =
    {
