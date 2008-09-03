@@ -39,8 +39,6 @@
 	PaoDao paoDao = (PaoDao)YukonSpringHook.getBean("paoDao");
 	DateFormattingService dateFormattingService = (DateFormattingService)YukonSpringHook.getBean("dateFormattingService");
 	CtiNavObject nav = (CtiNavObject) request.getSession(false).getAttribute(ServletUtil.NAVIGATE);
-    String returnURL = nav.getPreviousPageForSearch();
-	nav.getHistory().push(returnURL);
     String returnURL = nav.getPreviousPage();
     if(returnURL.indexOf("?") != -1){
         returnURL += "&back=true";
