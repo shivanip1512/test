@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     9/2/2008 11:56:48 AM                         */
+/* Created on:     9/3/2008 11:43:39 AM                         */
 /*==============================================================*/
 
 
@@ -12520,9 +12520,16 @@ go
 /*==============================================================*/
 go
 create view DISPLAY2WAYDATA_VIEW as
-select POINTID as PointID, POINTNAME as PointName, POINTTYPE as PointType, SERVICEFLAG as PointState, YukonPAObject.PAOName as DeviceName, YukonPAObject.Type as DeviceType, YukonPAObject.Description as DeviceCurrentState, YukonPAObject.PAObjectID as DeviceID, '**DYNAMIC**' as PointValue, '**DYNAMIC**' as PointQuality, '**DYNAMIC**' as PointTimeStamp, (select uomname from pointunit,unitmeasure where pointunit.pointid=point.pointid and pointunit.uomid=unitmeasure.uomid) as UofM, '**DYNAMIC**' as Tags
-from YukonPAObject, POINT
-where YukonPAObject.PAObjectID = POINT.PAObjectID
+SELECT P.POINTID AS PointID, P.POINTNAME AS PointName, P.POINTTYPE AS PointType, 
+       P.SERVICEFLAG AS PointState, PAO.PAOName AS DeviceName, PAO.Type AS DeviceType, 
+       PAO.Description AS DeviceCurrentState, PAO.PAObjectID AS DeviceID, '**DYNAMIC**' AS PointValue, 
+       '**DYNAMIC**' AS PointQuality, '**DYNAMIC**' AS PointTimeStamp, 
+       (SELECT uomname 
+        FROM PointUnit PU, UnitMeasure UM 
+        WHERE PU.pointId = P.pointId 
+        AND PU.uomId = UM.uomId) AS UofM, '**DYNAMIC**' AS Tags
+FROM YukonPAObject PAO, POINT P
+WHERE PAO.PAObjectID = P.PAObjectID
 go
 
 /*==============================================================*/

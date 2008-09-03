@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     9/2/2008 11:53:51 AM                         */
+/* Created on:     9/3/2008 11:44:48 AM                         */
 /*==============================================================*/
 
 
@@ -9783,9 +9783,16 @@ LEFT JOIN YukonPAObject YP4 ON YP4.PAObjectId = CSA.AreaId;
 /* View: DISPLAY2WAYDATA_VIEW                                   */
 /*==============================================================*/
 create or replace view DISPLAY2WAYDATA_VIEW as
-select POINTID as PointID, POINTNAME as PointName, POINTTYPE as PointType, SERVICEFLAG as PointState, YukonPAObject.PAOName as DeviceName, YukonPAObject.Type as DeviceType, YukonPAObject.Description as DeviceCurrentState, YukonPAObject.PAObjectID as DeviceID, '**DYNAMIC**' as PointValue, '**DYNAMIC**' as PointQuality, '**DYNAMIC**' as PointTimeStamp, (select uomname from pointunit,unitmeasure where pointunit.pointid=point.pointid and pointunit.uomid=unitmeasure.uomid) as UofM, '**DYNAMIC**' as Tags
-from YukonPAObject, POINT
-where YukonPAObject.PAObjectID = POINT.PAObjectID;
+SELECT P.POINTID AS PointID, P.POINTNAME AS PointName, P.POINTTYPE AS PointType, 
+       P.SERVICEFLAG AS PointState, PAO.PAOName AS DeviceName, PAO.Type AS DeviceType, 
+       PAO.Description AS DeviceCurrentState, PAO.PAObjectID AS DeviceID, '**DYNAMIC**' AS PointValue, 
+       '**DYNAMIC**' AS PointQuality, '**DYNAMIC**' AS PointTimeStamp, 
+       (SELECT uomname 
+        FROM PointUnit PU, UnitMeasure UM 
+        WHERE PU.pointId = P.pointId 
+        AND PU.uomId = UM.uomId) AS UofM, '**DYNAMIC**' AS Tags
+FROM YukonPAObject PAO, POINT P
+WHERE PAO.PAObjectID = P.PAObjectID;
 
 /*==============================================================*/
 /* View: ExpressComAddress_View                                 */
