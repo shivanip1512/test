@@ -14,7 +14,7 @@ public final class StateGroupUtils {
     // predefined uneditable stateGroups
     public static final int STATEGROUPID_CAPBANK = PREDEFINED_MAX_STATE_GROUPID;
 
-    public static final int STATEGROUP_THREE_STATE_STATUS = 2;
+    public static final int STATEGROUP_THREE_STATE_STATUS = -9;
 
     public static final int STATEGROUP_TWO_STATE_STATUS = 1;
 
