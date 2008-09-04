@@ -132,7 +132,7 @@ public YukonDevice getYukonDeviceObjectByMeterNumber(String meterNumber) {
     return device;
 }
 
-public YukonDevice getYukonDeviceObjectByAddress(String address) {
+public YukonDevice getYukonDeviceObjectByAddress(Long address) {
     
     String sql = "SELECT ypo.PAObjectID, ypo.Type " + 
     " FROM YukonPaObject ypo " +

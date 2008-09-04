@@ -404,7 +404,7 @@ public class ObjectMapperFactoryImplTest extends TestCase {
         }
 
         @Override
-        public YukonDevice getYukonDeviceObjectByAddress(String address) {
+        public YukonDevice getYukonDeviceObjectByAddress(Long address) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 

@@ -25,7 +25,7 @@ public interface DeviceDao {
     public YukonDevice getYukonDeviceObjectById(int deviceId);
     public YukonDevice getYukonDeviceObjectByName(String name);
     public YukonDevice getYukonDeviceObjectByMeterNumber(String meterNumber);
-    public YukonDevice getYukonDeviceObjectByAddress(String address);
+    public YukonDevice getYukonDeviceObjectByAddress(Long address);
     
     public LiteDeviceMeterNumber getLiteDeviceMeterNumber(int deviceID);
     
