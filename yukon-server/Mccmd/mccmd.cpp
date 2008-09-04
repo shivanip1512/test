@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.78 $
-* DATE         :  $Date: 2008/09/03 21:49:05 $
+* REVISION     :  $Revision: 1.79 $
+* DATE         :  $Date: 2008/09/04 14:37:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1894,6 +1894,7 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
         delete msg;
     }
 
+    WriteOutput("Database Write Starting");
 
     WriteResultsToDatabase(resultQueue, requestLogId);
 
@@ -1902,6 +1903,8 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
         deviceReadLog.setStopTime(CtiTime::now());
         deviceReadLog.Update();
     }
+
+    WriteOutput("Database Write Complete");
 
     return (interrupted ?
                 TCL_ERROR : TCL_OK);
