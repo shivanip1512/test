@@ -32,11 +32,7 @@
     <tr valign="top">
         <td class="label">Address:</td>
         <td>
-            <tags:address  address1="${mspCustomer.billAddr1}"
-                           address2="${mspCustomer.billAddr2}"
-                           city="${mspCustomer.billCity}"
-                           state="${mspCustomer.billState}"
-                           zip="${mspCustomer.billZip}"/>
+            <tags:address address="${custAddress}" />
         </td>
     </tr>
     
@@ -83,11 +79,7 @@
     <tr valign="top">
         <td class="label">Address:</td>
         <td>
-            <tags:address  address1="${mspServLoc.servAddr1}"
-                           address2="${mspServLoc.servAddr2}"
-                           city="${mspServLoc.servCity}"
-                           state="${mspServLoc.servState}"
-                           zip="${mspServLoc.servZip}"/>
+            <tags:address address="${servLocAddress}" />
         </td>
     </tr>
     

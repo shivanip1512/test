@@ -6,70 +6,79 @@
 
 <%-- CUSTOMER INFORMATION --%>
 <br>
-<table class="compactResultsTable">
+<tags:nameValueContainer tableClass="compactResultsTable nameValue" altRowOn="true">
     <tr><th colspan="2" align="left">Customer Information:</th></tr>
+    <c:forEach var="x" items="${custBasicsInfo}">
+        <tags:nameValue name="${x.label}" nameColumnWidth="30%">${x.value}</tags:nameValue>
+    </c:forEach>
+</tags:nameValueContainer>
 
-    <amr:moreInfoRows infoList="${custBasicsInfo}" />
-    
-    <c:choose>
-        <c:when test="${fn:length(custBasicsInfo) % 2 eq 0}">
-            <tr valign="top">
-        </c:when>
-        <c:otherwise>
-            <tr valign="top" class="altRow">
-        </c:otherwise>
-    </c:choose>
-    
-        <td class="label">Address:</td>
-        <td>
-            <tags:address address1="${custAddressInfo['Address 1']}"
-                  address2="${custAddressInfo['Address 2']}"
-                  city="${custAddressInfo['City']}"
-                  state="${custAddressInfo['State']}"
-                  zip="${custAddressInfo['Zip']}" />
-        </td>
-    </tr>
-</table>
-
-<c:if test="${not empty custContactInfo}">
-    <amr:moreInfoTable title="Contact Info" infoList="${custContactInfo}" indent="30" titleSize="11" />
-</c:if>
+<%-- CUSTOMER CONTACT INFORMATION --%>
+<br>
+<div style="padding-left:30px;">
+<tags:nameValueContainer tableClass="compactResultsTable nameValue" style="font-size:11px;" altRowOn="true">
+    <tr><th colspan="2" align="left">Contact Info:</th></tr>
+    <c:forEach var="x" items="${custContactInfo}">
+        <tags:nameValue name="${x.label}" nameColumnWidth="30%">${x.value}</tags:nameValue>
+    </c:forEach>
+    <tags:nameValue name="Address" nameColumnWidth="30%">
+        <tags:address address="${custAddress}" />
+    </tags:nameValue>
+</tags:nameValueContainer>
+</div>
 
 <%-- SERVICE LOCATION INFORMATION --%>
 <br>
-<table class="compactResultsTable">
+<br>
+<tags:nameValueContainer tableClass="compactResultsTable nameValue" altRowOn="true">
     <tr><th colspan="2" align="left">Service Location:</th></tr>
-
-    <amr:moreInfoRows infoList="${servLocBasicsInfo}" />
-    
-    <c:choose>
-        <c:when test="${fn:length(servLocBasicsInfo) % 2 eq 0}">
-            <tr valign="top">
-        </c:when>
-        <c:otherwise>
-            <tr valign="top" class="altRow">
-        </c:otherwise>
-    </c:choose>
-    
-        <td class="label">Address:</td>
-        <td>
-            <tags:address address1="${servLocAddressInfo['Address 1']}"
-                  address2="${servLocAddressInfo['Address 2']}"
-                  city="${servLocAddressInfo['City']}"
-                  state="${servLocAddressInfo['State']}"
-                  zip="${servLocAddressInfo['Zip']}" />
-        </td>
-    </tr>
-</table>
+    <c:forEach var="x" items="${servLocBasicsInfo}">
+        <tags:nameValue name="${x.label}" nameColumnWidth="30%">${x.value}</tags:nameValue>
+    </c:forEach>
+    <tags:nameValue name="Address" nameColumnWidth="30%">
+        <tags:address address="${servLocAddress}" />
+    </tags:nameValue>
+</tags:nameValueContainer>
 
 <%-- SERVICE LOCATION NETWORK INFORMATION --%>
-<amr:moreInfoTable title="Network" infoList="${servLocNetworkInfo}" indent="30" titleSize="11"/>
+<br>
+<div style="padding-left:30px;">
+<tags:nameValueContainer tableClass="compactResultsTable nameValue" style="font-size:11px;" altRowOn="true">
+    <tr><th colspan="2" align="left">Network:</th></tr>
+    <c:forEach var="x" items="${servLocNetworkInfo}">
+        <tags:nameValue name="${x.label}" nameColumnWidth="30%">${x.value}</tags:nameValue>
+    </c:forEach>
+</tags:nameValueContainer>
+</div>
 
 <%-- METER BASIC INFORMATION --%>
-<amr:moreInfoTable title="Meter" infoList="${meterBasicsInfo}" />
+<br>
+<br>
+<tags:nameValueContainer tableClass="compactResultsTable nameValue" altRowOn="true">
+    <tr><th colspan="2" align="left">Meter:</th></tr>
+    <c:forEach var="x" items="${meterBasicsInfo}">
+        <tags:nameValue name="${x.label}" nameColumnWidth="30%">${x.value}</tags:nameValue>
+    </c:forEach>
+</tags:nameValueContainer>
 
 <%-- METER NAMEPLATE INFORMATION --%>
-<amr:moreInfoTable title="Nameplate" infoList="${meterNameplateInfo}" indent="30" titleSize="11" />
+<br>
+<div style="padding-left:30px;">
+<tags:nameValueContainer tableClass="compactResultsTable nameValue" style="font-size:11px;" altRowOn="true">
+    <tr><th colspan="2" align="left">Nameplate:</th></tr>
+    <c:forEach var="x" items="${meterNameplateInfo}">
+        <tags:nameValue name="${x.label}" nameColumnWidth="30%">${x.value}</tags:nameValue>
+    </c:forEach>
+</tags:nameValueContainer>
+</div>
 
 <%-- METER UTILITY INFORMATION --%>
-<amr:moreInfoTable title="Utility Information" infoList="${meterUtilInfoInfo}" indent="30" titleSize="11" />
+<br>
+<div style="padding-left:30px;">
+<tags:nameValueContainer tableClass="compactResultsTable nameValue" style="font-size:11px;" altRowOn="true">
+    <tr><th colspan="2" align="left">Utility Information:</th></tr>
+    <c:forEach var="x" items="${meterUtilInfoInfo}">
+        <tags:nameValue name="${x.label}" nameColumnWidth="30%">${x.value}</tags:nameValue>
+    </c:forEach>
+</tags:nameValueContainer>
+</div>

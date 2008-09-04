@@ -1,5 +1,6 @@
 <%@ attribute name="name" required="true" %>
 <%@ attribute name="rowHighlight" required="false" %>
+<%@ attribute name="nameColumnWidth" required="false" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
@@ -18,7 +19,7 @@
 		</c:choose>
 		<c:set var="altRow" value="${!altRow}" scope="request"/>
 
-			<td class="name">${name}${(not empty name)? ':':'&nbsp;'}</td>
+			<td class="name" <c:if test="${not empty nameColumnWidth}">style="width:${nameColumnWidth};"</c:if>>${name}${(not empty name)? ':':'&nbsp;'}</td>
 			<td class="value"><jsp:doBody/></td>
 		</tr>
 	</c:when>
