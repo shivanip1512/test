@@ -238,10 +238,13 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     	text += getScriptTemplate().buildParameterScript();
     	
     	//Get main code
-        text += ScriptTemplate.getScriptCode(getTemplateType());
+    	String tempText = ScriptTemplate.getScriptSection(getScriptText(), ScriptTemplate.MAIN_CODE);
+    	if (tempText == null) {
+    		tempText = ScriptTemplate.getScriptCode(getTemplateType());
+    	}
+    	text += tempText;
     	
     	//Get email notification code
-    	String tempText = "";
     	if(getSendEmailCheckBox().isSelected()) {
     	    tempText = ScriptTemplate.getScriptSection(getScriptText(), ScriptTemplate.NOTIFICATION);
     	    if( tempText == null) {

@@ -1923,7 +1923,6 @@ private void setScriptOnlyFieldsEnabled(boolean value)
 {
     boolean editValue = value && (!editMode);
 	getTemplateComboBox().setEnabled(editValue);
-	getTemplateLabel().setEnabled(editValue);
 }
 /**
  * Insert the method's description here.
