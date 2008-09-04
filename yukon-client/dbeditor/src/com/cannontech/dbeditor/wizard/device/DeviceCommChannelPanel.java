@@ -7,12 +7,14 @@ import java.awt.Dimension;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.device.definition.service.DeviceDefinitionService;
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.wizard.CancelInsertException;
@@ -25,31 +27,23 @@ import com.cannontech.database.data.device.IDLCBase;
 import com.cannontech.database.data.device.PagingTapTerminal;
 import com.cannontech.database.data.device.RemoteBase;
 import com.cannontech.database.data.device.Series5Base;
-import com.cannontech.database.data.device.TransdataMarkV;
 import com.cannontech.database.data.device.TwoWayDevice;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
-import com.cannontech.database.data.pao.DeviceClasses;
-import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.RouteTypes;
 import com.cannontech.database.data.point.PointBase;
-import com.cannontech.database.data.point.PointFactory;
-import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.database.data.port.DirectPort;
 import com.cannontech.database.data.route.CCURoute;
 import com.cannontech.database.data.route.RouteBase;
 import com.cannontech.database.data.route.RouteFactory;
-import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.device.DeviceIDLCRemote;
 import com.cannontech.database.db.device.DeviceVerification;
-import com.cannontech.database.db.point.PointStatus;
 import com.cannontech.database.db.route.CarrierRoute;
-import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.dbeditor.DatabaseEditorOptionPane;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
  
 public class DeviceCommChannelPanel extends com.cannontech.common.gui.util.DataInputPanel implements ActionListener, MouseListener, ListSelectionListener {
@@ -270,8 +264,8 @@ private void checkAddress()
 
         // transmitter is a special case
 
-        if (DeviceClasses.getClass(((DeviceBase) val).getPAOClass()) == DeviceClasses.TRANSMITTER) {
-            SmartMultiDBPersistent newVal = new SmartMultiDBPersistent();
+        if (DeviceTypesFuncs.isTransmitter( devType )) {
+
             PaoDao paoDao = DaoFactory.getPaoDao();
             ((DeviceBase) val).setDeviceID(paoDao.getNextPaoId());
 
@@ -319,25 +313,8 @@ private void checkAddress()
                 ((CCURoute) route).setCarrierRoute(new CarrierRoute(routeID));
             }
 
-            Integer pointID = DaoFactory.getPointDao().getNextPointId();
-
-            // A status point is automatically added to each transmitter
-            PointBase newPoint = PointFactory.createNewPoint(pointID,
-                                                             PointTypes.STATUS_POINT,
-                                                             "COMM STATUS",
-                                                             ((DeviceBase) val).getDevice()
-                                                                               .getDeviceID(),
-                                                             new Integer(PointTypes.PT_OFFSET_TRANS_STATUS));
-
-            newPoint.getPoint()
-                    .setStateGroupID(new Integer(StateGroupUtils.STATEGROUP_TWO_STATE_STATUS));
-
-            ((StatusPoint) newPoint).setPointStatus(new PointStatus(pointID));
-
-            newVal.addDBPersistent((DBPersistent) val);
-            newVal.addDBPersistent(newPoint);
+            SmartMultiDBPersistent newVal = createSmartDBPersistent((DeviceBase)val);
             newVal.addDBPersistent(route);
-            newVal.setOwnerDBPersistent((DBPersistent) val);
 
             // newVal is a vector that contains: Transmitter device, a route & a
             // status point
@@ -346,98 +323,38 @@ private void checkAddress()
             checkAddress();
 
             return newVal;
-        } else if (DeviceTypesFuncs.isMeter(devType) && devType != DeviceTypes.DR_87) {
+        } else if (DeviceTypesFuncs.isMeter(devType)) {
             PaoDao paoDao = DaoFactory.getPaoDao();
             ((DeviceBase) val).setDeviceID(paoDao.getNextPaoId());
 
-            SmartMultiDBPersistent smartDB = null;
-
-            // only add a COMM STATUS for an ION meter
-            if (DeviceTypesFuncs.isIon(devType)) {
-                smartDB = new SmartMultiDBPersistent();
-                Integer pointID = DaoFactory.getPointDao().getNextPointId();
-
-                // A status point is automatically added to each transmitter
-                PointBase newPoint = PointFactory.createNewPoint(pointID,
-                                                                 PointTypes.STATUS_POINT,
-                                                                 "COMM STATUS",
-                                                                 ((DeviceBase) val).getDevice()
-                                                                                   .getDeviceID(),
-                                                                 new Integer(PointTypes.PT_OFFSET_TRANS_STATUS));
-
-                newPoint.getPoint()
-                        .setStateGroupID(new Integer(StateGroupUtils.STATEGROUP_TWO_STATE_STATUS));
-
-                ((StatusPoint) newPoint).setPointStatus(new PointStatus(pointID));
-
-                smartDB.addDBPersistent(newPoint);
-            } else
-                smartDB = createPoints((DeviceBase) val);
-
-            smartDB.addDBPersistent((DeviceBase) val);
-            smartDB.setOwnerDBPersistent((DeviceBase) val);
-
+            SmartMultiDBPersistent smartDB = createSmartDBPersistent((DeviceBase) val);
             return smartDB;
         } else
             return val;
     }
 
-private SmartMultiDBPersistent createPoints( DeviceBase val )
+    /**
+     * Returns a SmartMultiDBPersistent for the deviceBase.
+     * Includes all points and the deviceBase as the OwnerDBPersistent.
+     * @param deviceBase
+     * @return
+     */
+private SmartMultiDBPersistent createSmartDBPersistent( DeviceBase deviceBase )
 {
-	if( val == null )
+	if( deviceBase == null )
 		return null;
 
 	SmartMultiDBPersistent smartDB = new SmartMultiDBPersistent();
-	Integer paoID = val.getPAObjectID();
+    smartDB.addOwnerDBPersistent(deviceBase);
 
-	if( val instanceof TransdataMarkV )
-	{
-		// very special case since Transdata devices have unique points compared
-        // to
-		// other IEDs
-		smartDB = TransdataMarkV.createPoints( paoID );
-	}
-	else
-	{
-		// majority of the cases are the same
-		int[] ids = DaoFactory.getPointDao().getNextPointIds(4);
-		
-		// add all ther point to the smart object
-		smartDB.addDBPersistent( 
-			PointFactory.createAnalogPoint(
-				"Total kWh",
-				paoID,
-				new Integer(ids[0]),
-				PointTypes.PT_OFFSET_TOTAL_KWH,
-				com.cannontech.database.data.point.PointUnits.UOMID_KWH) );
-	
-		smartDB.addDBPersistent( 
-			PointFactory.createAnalogPoint(
-				"Total kVArh",
-				paoID,
-				new Integer(ids[1]),
-				PointTypes.PT_OFFSET_TOTAL_KVARH,
-				com.cannontech.database.data.point.PointUnits.UOMID_KVARH) );
-					
-		smartDB.addDBPersistent( 
-			PointFactory.createAnalogPoint(
-				"LP kW Demand",
-				paoID,
-				new Integer(ids[2]),
-				PointTypes.PT_OFFSET_LP_KW_DEMAND,
-				com.cannontech.database.data.point.PointUnits.UOMID_KW) );
-	
-		smartDB.addDBPersistent( 
-			PointFactory.createAnalogPoint(
-				"LP kVAr Demand",
-				paoID,
-				new Integer(ids[3]),
-				PointTypes.PT_OFFSET_KVAR_DEMAND,
-				com.cannontech.database.data.point.PointUnits.UOMID_KVAR) );
-	}				
+	DeviceDefinitionService deviceDefinitionService = (DeviceDefinitionService) YukonSpringHook.getBean("deviceService");
+    List<PointBase> defaultPoints = deviceDefinitionService.createDefaultPointsForDevice(deviceBase);
 
+    for (PointBase point : defaultPoints) {
+        smartDB.addDBPersistent(point);
+    }
 
-	return smartDB;	
+    return smartDB;	
 }
 
 /**

@@ -10,6 +10,7 @@ import java.util.Vector;
 import javax.swing.JOptionPane;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.device.definition.service.DeviceDefinitionService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
@@ -27,20 +28,16 @@ import com.cannontech.database.data.multi.MultiDBPersistent;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.pao.RouteTypes;
 import com.cannontech.database.data.point.PointBase;
-import com.cannontech.database.data.point.PointFactory;
-import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.database.data.route.CCURoute;
 import com.cannontech.database.data.route.MacroRoute;
 import com.cannontech.database.data.route.RouteBase;
 import com.cannontech.database.data.route.RouteFactory;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.database.db.point.PointStatus;
 import com.cannontech.database.db.route.RepeaterRoute;
-import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.dbeditor.editor.regenerate.RegenerateRoute;
 import com.cannontech.dbeditor.editor.regenerate.RoleConflictDialog;
 import com.cannontech.dbeditor.editor.regenerate.RouteRole;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class DeviceRoutePanel
@@ -203,23 +200,13 @@ public class DeviceRoutePanel
 
             PaoDao paoDao = DaoFactory.getPaoDao();
             ((DeviceBase) value).setDeviceID(paoDao.getNextPaoId());
-            // ((DeviceBase) val).setDeviceID(paoDao.getMaxPAOid()+1);
 
-            Integer pointID = DaoFactory.getPointDao().getNextPointId();
-
-            // A status point is automatically added to each repeater
-            PointBase newPoint = PointFactory.createNewPoint(pointID,
-                                                             PointTypes.STATUS_POINT,
-                                                             "COMM STATUS",
-                                                             ((DeviceBase) value).getDevice()
-                                                                                 .getDeviceID(),
-                                                             new Integer(PointTypes.PT_OFFSET_TRANS_STATUS));
-
-            newPoint.getPoint().setStateGroupID(new Integer(StateGroupUtils.STATEGROUP_TWO_STATE_STATUS));
-
-            ((StatusPoint) newPoint).setPointStatus(new PointStatus(pointID));
-
-            newVal.getDBPersistentVector().add(newPoint);
+            // Automatically add default points
+            DeviceDefinitionService deviceDefinitionService = (DeviceDefinitionService) YukonSpringHook.getBean("deviceService");
+            List<PointBase> defaultPoints = deviceDefinitionService.createDefaultPointsForDevice((DeviceBase)value);
+            for (PointBase point : defaultPoints) {
+                newVal.getDBPersistentVector().add(point);
+            }
 
             // if the chosen route is a macro route then the generated route
             // will be copied from

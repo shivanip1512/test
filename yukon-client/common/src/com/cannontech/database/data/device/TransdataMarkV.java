@@ -32,38 +32,4 @@ public void setDbConnection(java.sql.Connection conn)
 public void setDeviceID(Integer deviceID) {
 	super.setDeviceID(deviceID);
 }
-
-
-/**
- * This method is placed on this device since it differs greatly from all the
- * other devices. This is not the norm!
- * @param paoID
- * @return
- */
-public static synchronized SmartMultiDBPersistent createPoints( Integer paoID )
-{
-	SmartMultiDBPersistent smartDB = new SmartMultiDBPersistent();
-	int[] ids = DaoFactory.getPointDao().getNextPointIds(2);
-
-	//add all ther point to the smart object
-	smartDB.addDBPersistent( 
-		PointFactory.createAnalogPoint(
-			"Total kWh",
-			paoID,
-			new Integer(ids[0]),
-			PointTypes.PT_OFFSET_TOTAL_KWH,
-			com.cannontech.database.data.point.PointUnits.UOMID_KWH) );
-	
-	smartDB.addDBPersistent( 
-		PointFactory.createAnalogPoint(
-			"kW",
-			paoID,
-			new Integer(ids[1]),
-			2,
-			com.cannontech.database.data.point.PointUnits.UOMID_KW) );
-		
-	
-	return smartDB;	
-}
-
 }

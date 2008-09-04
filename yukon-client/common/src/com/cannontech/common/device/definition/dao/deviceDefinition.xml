@@ -5414,10 +5414,10 @@
         <displayName value="CCU-710A"/>
         <displayGroup value="Signal Transmitters"/>
         <points>
-            <point type="Status">
+            <point init="true" type="Status">
                 <name>Comm Status</name>
                 <offset value="2000"/>
-                <stategroup value="SystemState"/>
+                <stategroup value="TwoStateStatus"/>
             </point>
         </points>
     </device>
@@ -5426,27 +5426,25 @@
         <displayName value="CCU-711"/>
         <displayGroup value="Signal Transmitters"/>
         <points>
-            <point type="Status">
+            <point init="true" type="Status">
                 <name>Comm Status</name>
                 <offset value="2000"/>
-                <stategroup value="SystemState"/>
+                <stategroup value="TwoStateStatus"/>
             </point>
         </points>
     </device>
-    <!--
     <device>
         <type value="1098" javaConstant="CCU721" changeGroup="transmitter"/>
         <displayName value="CCU-721"/>
         <displayGroup value="Signal Transmitters"/>
         <points>
-            <point type="Status">
+            <point init="true" type="Status">
                 <name>Comm Status</name>
                 <offset value="2000"/>
-                <stategroup value="SystemState"/>
+                <stategroup value="TwoStateStatus"/>
             </point>
         </points>
     </device>
-     -->
     <device>
         <type value="1005" javaConstant="LCU415" changeGroup="transmitter"/>
         <displayName value="LCU-415"/>
@@ -5578,10 +5576,10 @@
                 <offset value="27"/>
                 <stategroup value="SystemState"/>
             </point>
-            <point type="Status">
+            <point init="true" type="Status">
                 <name>Comm Status</name>
                 <offset value="2000"/>
-                <stategroup value="SystemState"/>
+                <stategroup value="TwoStateStatus"/>
             </point>
         </points>
     </device>
@@ -5589,31 +5587,59 @@
         <type value="1006" javaConstant="LCULG" changeGroup="transmitter"/>
         <displayName value="LCU-LG"/>
         <displayGroup value="Signal Transmitters"/>
+        <points>
+            <point init="true" type="Status">
+                <name>Comm Status</name>
+                <offset value="2000"/>
+                <stategroup value="TwoStateStatus"/>
+            </point>
+        </points>
     </device>
     <device>
         <type value="1008" javaConstant="LCU_T3026"/>
         <displayName value="LCU-T3026"/>
         <displayGroup value="Signal Transmitters"/>
+        <points>
+            <point init="true" type="Status">
+                <name>Comm Status</name>
+                <offset value="2000"/>
+                <stategroup value="TwoStateStatus"/>
+            </point>
+        </points>
     </device>
     <device>
         <type value="1007" javaConstant="LCU_ER"/>
         <displayName value="LCU-EASTRIVER"/>
         <displayGroup value="Signal Transmitters"/>
+        <points>
+            <point init="true" type="Status">
+                <name>Comm Status</name>
+                <offset value="2000"/>
+                <stategroup value="TwoStateStatus"/>
+            </point>
+        </points>
     </device>
     <device>
         <type value="1033" javaConstant="TAPTERMINAL"/>
         <displayName value="PAGING TAP TERMINAL"/>
         <displayGroup value="Signal Transmitters"/>
+        <points>
+            <point init="true" type="Status">
+                <name>Comm Status</name>
+                <offset value="2000"/>
+                <stategroup value="TwoStateStatus"/>
+            </point>
+        </points>
     </device>
     <device>
         <type value="1027" javaConstant="REPEATER" changeGroup="repeater"/>
         <displayName value="REPEATER 900"/>
         <displayGroup value="Signal Transmitters"/>
         <points>
-            <point type="Status">
+            <point init="true" type="Status">
                 <name>Comm Status</name>
                 <offset value="2000"/>
-                <stategroup value="SystemState"/>
+                <stategroup value="TwoStateStatus"/>
             </point>
         </points>
     </device>
@@ -5622,10 +5648,10 @@
         <displayName value="REPEATER 902"/>
         <displayGroup value="Signal Transmitters"/>
         <points>
-            <point type="Status">
+            <point init="true" type="Status">
                 <name>Comm Status</name>
                 <offset value="2000"/>
-                <stategroup value="SystemState"/>
+                <stategroup value="TwoStateStatus"/>
             </point>
         </points>
     </device>
@@ -5633,31 +5659,73 @@
         <type value="1018" javaConstant="REPEATER_800" changeGroup="repeater"/>
         <displayName value="REPEATER 800"/>
         <displayGroup value="Signal Transmitters"/>
+        <points>
+            <point init="true" type="Status">
+                <name>Comm Status</name>
+                <offset value="2000"/>
+                <stategroup value="TwoStateStatus"/>
+            </point>
+        </points>
     </device>
     <device>
         <type value="1093" javaConstant="REPEATER_801"/>
         <displayName value="REPEATER 801"/>
         <displayGroup value="Signal Transmitters"/>
+        <points>
+            <point init="true" type="Status">
+                <name>Comm Status</name>
+                <offset value="2000"/>
+                <stategroup value="TwoStateStatus"/>
+            </point>
+        </points>
     </device>
     <device>
         <type value="1094" javaConstant="REPEATER_921"/>
         <displayName value="REPEATER 921"/>
         <displayGroup value="Signal Transmitters"/>
+        <points>
+            <point init="true" type="Status">
+                <name>Comm Status</name>
+                <offset value="2000"/>
+                <stategroup value="TwoStateStatus"/>
+            </point>
+        </points>
     </device>
     <device>
         <type value="1072" javaConstant="RTC"/>
         <displayName value="RTC"/>
         <displayGroup value="Signal Transmitters"/>
+        <points>
+            <point init="true" type="Status">
+                <name>Comm Status</name>
+                <offset value="2000"/>
+                <stategroup value="TwoStateStatus"/>
+            </point>
+        </points>
     </device>
     <device>
         <type value="1071" javaConstant="SERIES_5_LMI"/>
         <displayName value="RTU-LMI"/>
         <displayGroup value="Signal Transmitters"/>
+        <points>
+            <point init="true" type="Status">
+                <name>Comm Status</name>
+                <offset value="2000"/>
+                <stategroup value="TwoStateStatus"/>
+            </point>
+        </points>
     </device>
     <device>
         <type value="1084" javaConstant="SNPP_TERMINAL"/>
         <displayName value="SNPP TERMINAL"/>
         <displayGroup value="Signal Transmitters"/>
+        <points>
+            <point init="true" type="Status">
+                <name>Comm Status</name>
+                <offset value="2000"/>
+                <stategroup value="TwoStateStatus"/>
+            </point>
+        </points>
     </device>
     <device>
         <type value="1003" javaConstant="TCU5000" changeGroup="transmitter"/>
@@ -5714,10 +5782,10 @@
                 <offset value="29"/>
                 <stategroup value="SystemState"/>
             </point>
-            <point type="Status">
+            <point init="true" type="Status">
                 <name>Comm Status</name>
                 <offset value="2000"/>
-                <stategroup value="SystemState"/>
+                <stategroup value="TwoStateStatus"/>
             </point>
         </points>
     </device>
@@ -5786,10 +5854,10 @@
                 <offset value="29"/>
                 <stategroup value="SystemState"/>
             </point>
-            <point type="Status">
+            <point init="true" type="Status">
                 <name>Comm Status</name>
                 <offset value="2000"/>
-                <stategroup value="SystemState"/>
+                <stategroup value="TwoStateStatus"/>
             </point>
         </points>
     </device>
@@ -5797,6 +5865,13 @@
         <type value="1038" javaConstant="WCTP_TERMINAL"/>
         <displayName value="WCTP TERMINAL"/>
         <displayGroup value="Signal Transmitters"/>
+        <points>
+            <point init="true" type="Status">
+                <name>Comm Status</name>
+                <offset value="2000"/>
+                <stategroup value="TwoStateStatus"/>
+            </point>
+        </points>
     </device>
     
     <!-- Electronic Meters -->
@@ -7609,6 +7684,13 @@
         <type value="1061" javaConstant="ION_7330"/>
         <displayName value="ION-7330"/>
         <displayGroup value="Electronic Meters"/>
+        <points>
+            <point init="true" type="Status">
+                <name>Comm Status</name>
+                <offset value="2000"/>
+                <stategroup value="TwoStateStatus"/>
+            </point>        
+        </points>
     </device>
     <device>
         <type value="1059" javaConstant="ION_7700"/>
@@ -7618,7 +7700,7 @@
             <point init="true" type="Status">
                 <name>Comm Status</name>
                 <offset value="2000"/>
-                <stategroup value="SystemState"/>
+                <stategroup value="TwoStateStatus"/>
             </point>        
         </points>
     </device>
@@ -7630,7 +7712,7 @@
             <point init="true" type="Status">
                 <name>Comm Status</name>
                 <offset value="2000"/>
-                <stategroup value="SystemState"/>
+                <stategroup value="TwoStateStatus"/>
             </point>        
         </points>
     </device>
