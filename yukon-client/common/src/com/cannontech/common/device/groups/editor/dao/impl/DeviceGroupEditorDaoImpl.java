@@ -87,8 +87,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         sql.append("select count(*)");
         sql.append("from DeviceGroupMember dgm");
         sql.append("where dgm.devicegroupid = ? and dgm.yukonpaoid = ?");
-        YukonDeviceRowMapper mapper = new YukonDeviceRowMapper(paoGroupsWrapper);
-        int count = jdbcTemplate.queryForInt(sql.toString(), mapper, group.getId(), device.getDeviceId());
+        int count = jdbcTemplate.queryForInt(sql.toString(), group.getId(), device.getDeviceId());
         return count > 0;
     }
 
