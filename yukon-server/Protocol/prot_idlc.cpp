@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2008/06/13 13:39:49 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2008/09/05 15:45:37 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -390,10 +390,10 @@ int IDLC::decode( CtiXfer &xfer, int status )
         }
     }
 
-    if( _input_loops         > MaximumInputLoops     ||
-        _protocol_errors     > MaximumProtocolErrors ||
-        _comm_errors         > MaximumCommErrors     ||
-        _framing_seek_length > MaximumFramingSeekLength )
+    if( _input_loops         >  MaximumInputLoops     ||
+        _protocol_errors     >= MaximumProtocolErrors ||
+        _comm_errors         >= MaximumCommErrors     ||
+        _framing_seek_length >= MaximumFramingSeekLength )
     {
         //  this should be a nicer error - this is very generic
         retval = !NORMAL;

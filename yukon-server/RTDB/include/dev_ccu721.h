@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2008/06/13 13:39:49 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2008/09/05 15:45:37 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -35,6 +35,11 @@ private:
     CtiTableDeviceAddress _address;
 
     OUTMESS *om;
+
+    enum
+    {
+        InMessage_StringOffset = 96  //  hopefully enough to stay out of the way of the DSTRUCT
+    };
 
 protected:
 
@@ -72,6 +77,8 @@ public:
     bool hasWaitingWork()  const;
     bool hasRemoteWork()   const;
     INT  queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt);
+
+    string queueReport() const;
 
     virtual LONG getAddress() const;
 

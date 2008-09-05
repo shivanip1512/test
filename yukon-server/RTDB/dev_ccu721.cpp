@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2008/07/17 20:29:42 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2008/09/05 15:45:37 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -54,15 +54,34 @@ INT CCU721::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMES
         case LoopbackRequest:
         {
             OutMessage->Sequence = Klondike::Command_Loopback;
+
             nRet = NoError;
 
             break;
         }
+        case GetConfigRequest:
+        {
+            if( parse.isKeyValid("time") )
+            {
+                OutMessage->Sequence = Klondike::Command_TimeRead;
+
+                nRet = NoError;
+            }
+        }
         case PutConfigRequest:
         {
+            if( parse.isKeyValid("raw") )
+            {
+                OutMessage->Sequence = Klondike::Command_Raw;
+                OutMessage->OutLength = parse.getsValue("raw").length();
+                memcpy(OutMessage->Buffer.OutMessage, parse.getsValue("raw").data(), OutMessage->OutLength);
+
+                nRet = NoError;
+            }
             if( parse.isKeyValid("timesync") )
             {
                 OutMessage->Sequence = Klondike::Command_TimeSync;
+
                 nRet = NoError;
             }
 
@@ -129,25 +148,22 @@ INT CCU721::ErrorDecode( INMESS *InMessage, CtiTime &Now, list<CtiMessage *> &vg
 INT CCU721::ResultDecode( INMESS *InMessage, CtiTime &Now, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, list<OUTMESS *> &outList )
 {
     INT ErrReturn = InMessage->EventCode & 0x3fff;
-    string result_string;
-/*
-    if( !ErrReturn && !_klondike.recvCommResult(InMessage, outList) )
-    {
-        result_string = _klondike.describeCurrentStatus();
 
+    if( !ErrReturn )
+    {
         retList.push_back(CTIDBG_new CtiReturnMsg(getID(),
                                                   string(InMessage->Return.CommandStr),
-                                                  result_string.c_str(),
+                                                  string((char *)(InMessage->Buffer.InMessage + 96), 4000),
                                                   InMessage->EventCode & 0x7fff,
                                                   InMessage->Return.RouteID,
                                                   InMessage->Return.MacroOffset,
                                                   InMessage->Return.Attempt,
-                                                  InMessage->Return.TrxID,
+                                                  InMessage->Return.GrpMsgID,
                                                   InMessage->Return.UserID));
 
         resetScanFlag();
     }
-*/
+
     return 0;
 }
 
@@ -184,6 +200,8 @@ bool CCU721::hasWaitingWork() const {  return _klondike.hasWaitingWork();   }
 bool CCU721::hasRemoteWork()  const {  return _klondike.hasRemoteWork();    }
 
 INT CCU721::queuedWorkCount() const {  return _klondike.queuedWorkCount();  }
+
+string CCU721::queueReport() const  {  return _klondike.queueReport();      }
 
 
 INT CCU721::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
@@ -288,7 +306,7 @@ int CCU721::recvCommRequest(OUTMESS *OutMessage)
 {
     int error = NoError;
 
-    if( OutMessage == 0 )
+    if( !OutMessage )
     {
         error = MEMORY;
     }
@@ -308,6 +326,17 @@ extern bool addCommResult(long deviceID, bool wasFailure, bool retryGtZero);
 int CCU721::sendCommResult(INMESS *InMessage)
 {
     int status = NoError;
+
+    //  if the CCU owns the InMessage - we don't end up owning the DTRAN InMessage, the MCT does...
+    //    so there's no use in putting a string in there, since we won't decode it anyway
+    if( _klondike.getCommand() != Klondike::Command_DirectTransmission )
+    {
+        string results = _klondike.describeCurrentStatus();
+
+        strncpy(reinterpret_cast<char *>(InMessage->Buffer.InMessage + InMessage_StringOffset),
+                results.data(),
+                4096 - InMessage_StringOffset);
+    }
 
     if( _klondike.errorCondition() )
     {
@@ -358,6 +387,8 @@ int CCU721::sendCommResult(INMESS *InMessage)
                     //addCommResult(im->TargetID, (im->EventCode & 0x3fff) != NORMAL, false);
 
                     //statisticsNewCompletion(im->Port, im->DeviceID, im->TargetID, im->EventCode & 0x3fff, im->MessageFlags);
+
+                    //  WE NEED TO EXPORT THE STATISTICS TO PORTFIELD SO IT CAN UPDATE THEM FOR US
 
                     /* this is a completed result so send it to originating process */
                     im->EventCode |= DECODED;

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.125 $
-* DATE         :  $Date: 2008/08/18 22:13:52 $
+* REVISION     :  $Revision: 1.126 $
+* DATE         :  $Date: 2008/09/05 15:45:37 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -168,6 +168,8 @@
 #include "pilserver.h"
 #include "msg_pcrequest.h"
 #include "numstr.h"
+
+#include "dev_ccu721.h"
 
 #define DO_GATEWAYTHREAD               1
 #define DO_PORTERINTERFACETHREAD       1
@@ -532,38 +534,62 @@ void applyDeviceQueueReport(const long unusedid, CtiDeviceSPtr RemoteDevice, voi
         QueWorkCnt = RemoteDevice->queuedWorkCount();
         CtiTime ent(RemoteDevice->getExclusion().getEvaluateNextAt());
 
-        if(RemoteDevice->getType() == TYPE_CCU711)
+        switch( RemoteDevice->getType() )
         {
-            CtiTransmitter711Info *pInfo = (CtiTransmitter711Info *)RemoteDevice->getTrxInfo();
-
-            if(pInfo != NULL)
+            case TYPE_CCU711:
             {
-                QueryQueue (pInfo->QueueHandle, &QueEntCnt);
-                QueryQueue (pInfo->ActinQueueHandle, &AQueEntCnt);
-                int ccuStatus = (int)pInfo->getStatus();
+                CtiTransmitter711Info *pInfo = (CtiTransmitter711Info *)RemoteDevice->getTrxInfo();
+
+                if(pInfo != NULL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << " " << RemoteDevice->getName() << ": the time is now " << CtiTime( ) << endl;
-                    if(QueWorkCnt) dout << "       " << setw(8) << QueWorkCnt  << " queued work elements. Evaluate next at " << ent << "." << endl;
-                    dout << "       Queue Entries:  Queue: " << setw(8) << QueEntCnt << " Actin:  " << setw(8) << AQueEntCnt << " Status Byte: " << hex << setw(4) << ccuStatus << dec << " FreeSlots: " << pInfo->FreeSlots << endl;
-                    for(int i = 0; i < 32; i++)
+                    QueryQueue (pInfo->QueueHandle, &QueEntCnt);
+                    QueryQueue (pInfo->ActinQueueHandle, &AQueEntCnt);
+                    int ccuStatus = (int)pInfo->getStatus();
                     {
-                        if(pInfo->QueTable[i].InUse)
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << " " << RemoteDevice->getName() << ": the time is now " << CtiTime( ) << endl;
+                        if(QueWorkCnt) dout << "       " << setw(8) << QueWorkCnt  << " queued work elements. Evaluate next at " << ent << "." << endl;
+                        dout << "       Queue Entries:  Queue: " << setw(8) << QueEntCnt << " Actin:  " << setw(8) << AQueEntCnt << " Status Byte: " << hex << setw(4) << ccuStatus << dec << " FreeSlots: " << pInfo->FreeSlots << endl;
+                        for(int i = 0; i < 32; i++)
                         {
-                            dout << "       CCU QueTable Slot " << setw(3)  << i << " is " <<
-                                ((pInfo->QueTable[i].InUse & INUSE) ? "    INUSE" : "NOT INUSE" ) << " and " <<
-                                ((pInfo->QueTable[i].InUse & INCCU) ? "    INCCU" : "NOT INCCU" ) << " TimeSent = " << CtiTime( pInfo->QueTable[i].TimeSent ) << " Sequence " << hex << setw(5) << pInfo->QueTable[i].QueueEntrySequence << dec << endl;
+                            if(pInfo->QueTable[i].InUse)
+                            {
+                                dout << "       CCU QueTable Slot " << setw(3)  << i << " is " <<
+                                    ((pInfo->QueTable[i].InUse & INUSE) ? "    INUSE" : "NOT INUSE" ) << " and " <<
+                                    ((pInfo->QueTable[i].InUse & INCCU) ? "    INCCU" : "NOT INCCU" ) << " TimeSent = " << CtiTime( pInfo->QueTable[i].TimeSent ) << " Sequence " << hex << setw(5) << pInfo->QueTable[i].QueueEntrySequence << dec << endl;
+                            }
                         }
                     }
                 }
-            }
-        }
-        else if(QueWorkCnt > 0)
-        {
-            {
 
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << " " << setw(8) << QueWorkCnt  << " queued commands. Evaluate next at " << ent << ". Transmitter: " << RemoteDevice->getName() << (ent < ent.now() ? ". *** PAST DUE *** " + CtiNumStr(ent.now().seconds() - ent.seconds()) : " seconds.") << endl;
+                break;
+            }
+
+            case TYPE_CCU721:
+            {
+                using Cti::Device::CCU721;
+                Cti::Device::CCU721SPtr ccu = boost::static_pointer_cast<CCU721>(RemoteDevice);
+
+                //  don't lock dout while we do this - the CCU locks internally, and we want to avoid acquiring any muxes out of order
+                string queue_report = ccu->queueReport();
+
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << " " << RemoteDevice->getName() << ": the time is now " << CtiTime( ) << endl;
+
+                    dout << queue_report << endl;
+                }
+
+                break;
+            }
+
+            default:
+            {
+                if(QueWorkCnt > 0)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << " " << setw(8) << QueWorkCnt  << " queued commands. Evaluate next at " << ent << ". Transmitter: " << RemoteDevice->getName() << (ent < ent.now() ? ". *** PAST DUE *** " + CtiNumStr(ent.now().seconds() - ent.seconds()) : " seconds.") << endl;
+                }
             }
         }
     }

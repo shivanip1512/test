@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2008/06/25 15:55:40 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2008/09/05 15:45:37 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -58,7 +58,7 @@ private:
     };
 
     static const command_state_map_t _command_states;
-    friend class command_state_map_t;  //  so it can see our private enum
+    friend class command_state_map_t;  //  so it can see our private enums
 
     struct command_state_t
     {
@@ -69,13 +69,15 @@ private:
     } _current_command;
 
     bool nextCommandState();
+    bool commandStateValid();
 
     unsigned short _masterAddress,
                    _slaveAddress;
 
     void refreshMCTTimeSync(BSTRUCT &bst);
 
-    OUTMESS *_dtran_outmess;  //  the outbound information for a direct transmission
+    OUTMESS *_dtran_outmess,  //  the outbound information for a direct transmission
+             _raw_outmess;
     unsigned char _d_words[DWORDLEN * 3];  //  the response (if any) from a direct transmission
     unsigned char _response_length;
 
@@ -83,8 +85,10 @@ private:
     int _read_toggle;
 
     typedef fifo_multiset<const OUTMESS *, ptr_priority_sort<OUTMESS> > local_work_t;
-    typedef std::map<unsigned, local_work_t::iterator>                  pending_work_t;
+    typedef std::map<unsigned, local_work_t::const_iterator>            pending_work_t;
     typedef std::map<unsigned, const OUTMESS *>                         remote_work_t;
+
+    mutable CtiCriticalSection _sync;
 
     local_work_t   _waiting_requests;
     pending_work_t _pending_requests;
@@ -152,6 +156,8 @@ private:
         CommandCode_ACK_NoData           = 0x80,
         CommandCode_ACK_Data             = 0x81,
         CommandCode_NAK                  = 0xc1,
+
+        CommandCode_Raw                  = 0x100  //  out of range for the one byte we have available
     };
 
     enum NAK_Errors
@@ -224,11 +230,12 @@ public:
     void setAddresses(unsigned short slaveAddress, unsigned short masterAddress);
     //void setWrap(ProtocolWrap w);
 
-    int setCommand(const OUTMESS *const outmessage);
+    int setCommand(const OUTMESS *outmessage);
 
     Command getCommand() const;
 
     void getResults(result_queue_t &results);
+    string describeCurrentStatus(void) const;
 
     int generate(CtiXfer &xfer);
     int decode  (CtiXfer &xfer, int status);
@@ -252,6 +259,8 @@ public:
     bool isReadingDeviceQueue() const;
     bool setReadingDeviceQueue(bool loading);
 
+    string queueReport() const;
+
     static int decodeDWords(unsigned char *input, unsigned input_length, unsigned Remote, DSTRUCT *DSt);
 
     void clearRoutes();
@@ -271,7 +280,10 @@ public:
         Command_ReadQueue,
         Command_DirectTransmission,
         Command_TimeSync,
+        Command_TimeRead,
         Command_LoadRoutes,
+
+        Command_Raw
     };
 
     enum
