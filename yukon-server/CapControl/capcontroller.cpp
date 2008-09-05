@@ -2976,7 +2976,8 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                         //JULIE: TXU fix for status change time setting to old date on disabled banks.
                         if (!currentCapBank->getDisableFlag()) 
                         {    
-                            if (currentCapBank->getControlStatus() != (LONG)value)
+                            if (currentCapBank->getControlStatus() != (LONG)value &&
+                                !currentCapBank->getInsertDynamicDataFlag())
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << CtiTime() << " - CapBank: "<<currentCapBank->getPAOName()<<" State adjusted from "<<currentCapBank->getControlStatus() <<" to "<<value<< endl;
@@ -3026,7 +3027,8 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                         //NEED to check this value for a toggle, before setting status points.
                         if (twoWayPts->getIgnoredIndicatorId() == pointID) 
                         {
-                            if (twoWayPts->getIgnoredIndicator() != value) 
+                            if (twoWayPts->getIgnoredIndicator() != value &&
+                                timestamp >= currentCapBank->getIgnoreIndicatorTimeUpdated() ) 
                             { 
                                 currentCapBank->setIgnoreIndicatorTimeUpdated(timestamp);
                                 store->insertRejectedCapBankList(currentCapBank);                               
@@ -3034,17 +3036,18 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                         }
                         if (twoWayPts->setTwoWayStatusPointValue(pointID, value))
                         {   
-                            if (twoWayPts->getCapacitorBankStateId() == pointID) 
+                            if (twoWayPts->getCapacitorBankStateId() == pointID ) 
                             {
                                 if (currentCapBank->getReportedCBCState() != value &&
-                                    currentCapBank->getReportedCBCState() >= 0) 
+                                    currentCapBank->getReportedCBCState() >= 0 ) 
                                 {
                                     currentCapBank->setReportedCBCStateTime(timestamp);
 
                                     if ((!currentFeeder->getRecentlyControlledFlag() && 
                                          !currentSubstationBus->getRecentlyControlledFlag() &&
                                          !currentCapBank->getControlRecentlySentFlag() &&
-                                         !currentCapBank->getVerificationFlag() ) &&
+                                         !currentCapBank->getVerificationFlag() &&
+                                         !currentCapBank->getInsertDynamicDataFlag() ) &&
                                         ( currentCapBank->getControlStatus() != CtiCCCapBank::OpenQuestionable &&
                                           currentCapBank->getControlStatus() != CtiCCCapBank::OpenFail &&
                                           currentCapBank->getControlStatus() != CtiCCCapBank::CloseQuestionable &&
@@ -3269,8 +3272,8 @@ void CtiCapController::porterReturnMsg( long deviceId, const string& _commandStr
     
     if( currentCapBank->getControlDeviceId() == deviceId && deviceId > 0)
     {
-        if( (currentSubstationBus->getRecentlyControlledFlag() || 
-             currentSubstationBus->getVerificationFlag() ))
+        if( currentSubstationBus->getRecentlyControlledFlag() || 
+             currentSubstationBus->getVerificationFlag() )
         {
             
             if( status == 0 )
@@ -3414,6 +3417,19 @@ void CtiCapController::handleRejectionMessaging(CtiCCCapBank* currentCapBank, Ct
     string text = string("CBC rejected command!");
     string text1 = string("Var:");
     string afterVarsString = string(" CBC rejected ");
+    if (!currentFeeder->getRecentlyControlledFlag() && 
+        !currentSubstationBus->getRecentlyControlledFlag() &&
+        currentCapBank->getControlStatus() == CtiCCCapBank::Open)
+    {
+        afterVarsString += "OpenPending";
+    }
+    else if (!currentFeeder->getRecentlyControlledFlag() && 
+             !currentSubstationBus->getRecentlyControlledFlag() &&
+             currentCapBank->getControlStatus() == CtiCCCapBank::Close)
+    {
+        afterVarsString += "ClosePending";
+    }
+    else
     afterVarsString += currentCapBank->getControlStatusText();                                   
     text1 += afterVarsString;
     currentCapBank->setAfterVarsString(afterVarsString);
@@ -3423,19 +3439,23 @@ void CtiCapController::handleRejectionMessaging(CtiCCCapBank* currentCapBank, Ct
     text1 += currentCapBank->getIgnoreReasonText();
     if (twoWayPts->getIgnoredReason() == 4) //voltage
     {
-        if ( (currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending &&
+        if ( ((currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending ||
+              currentCapBank->getControlStatus() == CtiCCCapBank::Close) && //if bank was set directly to close, through sendAll command
              (twoWayPts->getVoltage() + twoWayPts->getDeltaVoltage()) > twoWayPts->getOvSetPoint()) ||
-             (currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending &&
+             ((currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending ||
+              currentCapBank->getControlStatus() == CtiCCCapBank::Open) && //if bank was set directly to open, through sendAll command
              (twoWayPts->getVoltage() - twoWayPts->getDeltaVoltage()) < twoWayPts->getUvSetPoint()) )
         {
             currentCapBank->setPercentChangeString(" Rejection by Delta Voltage ");
             text1 += " delta";
         }
 
-        if ( (currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending &&
+        else if ( ( (currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending ||
+              currentCapBank->getControlStatus() == CtiCCCapBank::Close) && //if bank was set directly to open, through sendAll command
               twoWayPts->getVoltage() >= twoWayPts->getOvSetPoint())  ||
-             (currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending &&
-              twoWayPts->getVoltage() <= twoWayPts->getUvSetPoint()) ||
+             ( (currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending ||
+              currentCapBank->getControlStatus() == CtiCCCapBank::Open) && //if bank was set directly to open, through sendAll command
+              twoWayPts->getVoltage() <= twoWayPts->getUvSetPoint() ) ||
              twoWayPts->getOvCondition() || twoWayPts->getUvCondition() )
         {
             currentCapBank->setPercentChangeString(" Rejection by OVUV ");
@@ -3445,6 +3465,7 @@ void CtiCapController::handleRejectionMessaging(CtiCCCapBank* currentCapBank, Ct
 
     text1 += "! Adjusting state, ";
     currentCapBank->setControlStatus(twoWayPts->getCapacitorBankState());
+    currentCapBank->setReportedCBCState(twoWayPts->getCapacitorBankState());
     text1 += currentCapBank->getControlStatusText();
     currentCapBank->setControlStatusQuality(CC_NoControl);
     
@@ -3478,12 +3499,6 @@ void CtiCapController::handleRejectionMessaging(CtiCCCapBank* currentCapBank, Ct
 
     currentCapBank->setLastStatusChangeTime(CtiTime());
     currentCapBank->setControlRecentlySentFlag(FALSE);
-
-    //SYNC with what CBC is reporting.
-    currentCapBank->setControlStatus(twoWayPts->getCapacitorBankState());
-
-    //store->removeCapbankFromRejectedCapBankList(currentCapBank);
-
 }
 void CtiCapController::handleUnsolicitedMessaging(CtiCCCapBank* currentCapBank, CtiCCFeeder* currentFeeder, 
                                                   CtiCCSubstationBus* currentSubstationBus, CtiCCTwoWayPoints* twoWayPts)

@@ -2431,6 +2431,11 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
 
 }
 
+BOOL CtiCCCapBank::getInsertDynamicDataFlag() const
+{
+    return _insertDynamicDataFlag;
+}
+
 void CtiCCCapBank::setDynamicData(RWDBReader& rdr)
 {
 

@@ -267,6 +267,7 @@ public:
     CtiCCTwoWayPoints* getTwoWayPoints();
 
     BOOL isDirty() const;
+    BOOL getInsertDynamicDataFlag() const;
     void dumpDynamicData();
     void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
 
