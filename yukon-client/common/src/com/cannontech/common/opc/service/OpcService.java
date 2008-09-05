@@ -11,7 +11,6 @@ import java.util.StringTokenizer;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -393,10 +392,12 @@ public class OpcService implements OpcConnectionListener, DBChangeListener{
 		while ( iter.hasNext()) {
 			Map.Entry<String, YukonOpcConnection> entry = iter.next();
 			YukonOpcConnection conn = entry.getValue();
-			conn.isEmpty();
-        	conn.shutdown();
-        	opcConnectionMap.remove(conn);
-        }
+			if (conn.isEmpty())
+			{
+				conn.shutdown();
+				opcConnectionMap.remove(conn);
+			}
+		}
 	}
 	
 	/* Spring stuff */
