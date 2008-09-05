@@ -2546,4 +2546,4 @@ go
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
-insert into CTIDatabase values('4.0', 'David', '07-Dec-2007', 'Latest Update', 0 );
+insert into CTIDatabase values('4.0', 'David Matt K', '25-AUG-2008', 'Latest Update', 0 );
