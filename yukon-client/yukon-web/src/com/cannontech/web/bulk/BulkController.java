@@ -16,21 +16,30 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.cannontech.amr.meter.dao.MeterDao;
+import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.bulk.service.BulkOperationCallbackResults;
 import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.common.util.ReverseList;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.simplereport.ColumnInfo;
 import com.cannontech.tools.csv.CSVReader;
 import com.cannontech.tools.csv.CSVWriter;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.reports.XmlReportDataUtils;
 
 /**
  * Spring controller class for bulk operations
@@ -41,6 +50,8 @@ public class BulkController extends BulkControllerBase {
     
     private PaoDao paoDao = null;
     private RecentResultsCache<BulkOperationCallbackResults<?>> recentResultsCache = null;
+    private MeterDao meterDao = null;
+    private YukonUserContextMessageSourceResolver messageSourceResolver = null;
     
     // BULK HOME
     public ModelAndView bulkHome(HttpServletRequest request, HttpServletResponse response) throws ServletException {
@@ -121,6 +132,63 @@ public class BulkController extends BulkControllerBase {
         
     }
     
+    // DEVICE COLLECTION REPORT
+    public ModelAndView deviceCollectionReport(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+        
+        ModelAndView mav = new ModelAndView("deviceCollectionReport.jsp");
+        DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
+        mav.addObject("deviceCollection", deviceCollection);
+        
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+        List<ColumnInfo> columnInfo = getDeviceCollectionReportColumnInfo(userContext);
+        mav.addObject("columnInfo", columnInfo);
+        
+        return mav;
+    }
+    
+    public ModelAndView deviceCollectionReportXmlData(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+        DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
+        
+        List<ColumnInfo> columnInfo = getDeviceCollectionReportColumnInfo(userContext);
+        
+        List<List<String>> data = new ArrayList<List<String>>();
+        for (YukonDevice device : deviceCollection.getDeviceList()) {
+
+            Meter meter = meterDao.getForId(device.getDeviceId());
+            
+            List<String> cols = new ArrayList<String>();
+            cols.add(meter.getName());
+            cols.add(meter.getMeterNumber());
+            cols.add(meter.getTypeStr());
+            cols.add(meter.getAddress());
+            cols.add(meter.getRoute());
+            data.add(cols);
+        }
+        
+        XmlReportDataUtils.outputReportData(data, columnInfo, response.getOutputStream());
+        
+        return null;
+        
+    }
+    
+    private List<ColumnInfo> getDeviceCollectionReportColumnInfo(YukonUserContext userContext) {
+        
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        
+        String keyBase = "yukon.common.device.bulk.collectionActions.deviceCollectionReport.headers.";
+        List<ColumnInfo> columnInfo = new ArrayList<ColumnInfo>();
+        columnInfo.add(new ColumnInfo(messageSourceAccessor.getMessage(keyBase + "deviceName"), 200, null));
+        columnInfo.add(new ColumnInfo(messageSourceAccessor.getMessage(keyBase + "meterNumber"), 150, null));
+        columnInfo.add(new ColumnInfo(messageSourceAccessor.getMessage(keyBase + "deviceType"), 150, null));
+        columnInfo.add(new ColumnInfo(messageSourceAccessor.getMessage(keyBase + "address"), 150, null));
+        columnInfo.add(new ColumnInfo(messageSourceAccessor.getMessage(keyBase + "route"), 150, null));
+        
+        return columnInfo;
+    }
+    
+    
     public ModelAndView processingExceptionErrorsRefresh(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 
         ModelAndView mav = new ModelAndView("processingExceptionErrorsList.jsp");
@@ -176,5 +244,14 @@ public class BulkController extends BulkControllerBase {
         this.recentResultsCache = recentResultsCache;
     }
 
+    @Autowired
+    public void setMeterDao(MeterDao meterDao) {
+        this.meterDao = meterDao;
+    }
     
+    @Autowired
+    public void setMessageSourceResolver(
+            YukonUserContextMessageSourceResolver messageSourceResolver) {
+        this.messageSourceResolver = messageSourceResolver;
+    }
 }

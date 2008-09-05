@@ -90,6 +90,20 @@
     <entry key="yukon.common.device.bulk.collectionActions.routeLocateDescription">Find route that devices respond on.</entry>
     <entry key="yukon.common.device.bulk.collectionActions.massDeleteLabel">Mass Delete</entry>
     <entry key="yukon.common.device.bulk.collectionActions.massDeleteDescription">Delete multiple devices.</entry>
+    <entry key="yukon.common.device.bulk.collectionActions.deviceCollectionReportLabel">Device Report</entry>
+    <entry key="yukon.common.device.bulk.collectionActions.deviceCollectionReportDescription">View a report detailing devices.</entry>
+    
+    <!-- DEVICE COLLECTION REPORT -->
+    <!-- ******************************************************************************************************************** -->
+    <!-- ******************************************************************************************************************** -->
+    
+    <!-- deviceCollectionReport.jsp -->
+    <entry key="yukon.common.device.bulk.collectionActions.deviceCollectionReport.pageTitle">Device Collection Report</entry>
+    <entry key="yukon.common.device.bulk.collectionActions.deviceCollectionReport.headers.deviceName">Device Name</entry>
+    <entry key="yukon.common.device.bulk.collectionActions.deviceCollectionReport.headers.meterNumber">Meter Number</entry>
+    <entry key="yukon.common.device.bulk.collectionActions.deviceCollectionReport.headers.deviceType">Device Type</entry>
+    <entry key="yukon.common.device.bulk.collectionActions.deviceCollectionReport.headers.address">Address</entry>
+    <entry key="yukon.common.device.bulk.collectionActions.deviceCollectionReport.headers.route">Route</entry>
     
     <!-- ADD TO GROUP -->
     <!-- ******************************************************************************************************************** -->

@@ -344,8 +344,6 @@
                     
                     <%--########################## COLLECTION ACTIONS ##########################--%>
                     <%--########################################################################--%>
-                    <cti:checkRole role="operator.DeviceActionsRole.ROLEID">
-                    
                     <h4><cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.collectionActionLabel"/></h4>
                     <c:choose>
                         <c:when test="${deviceCount > 0}">
@@ -371,19 +369,15 @@
                             <br>
                             </cti:checkProperty>
                             
-                            <cti:checkMultiProperty property="DeviceActionsRole.DEVICE_GROUP_MODIFY,DeviceActionsRole.GROUP_COMMANDER,DeviceActionsRole.MASS_CHANGE,DeviceActionsRole.LOCATE_ROUTE,DeviceActionsRole.MASS_DELETE">
                             <cti:link href="/spring/bulk/collectionActions" key="yukon.web.deviceGroups.editor.operationsContainer.otherActions">
                                 <cti:mapParam value="${deviceCollection.collectionParameters}"/>
                             </cti:link>
-                            </cti:checkMultiProperty>
                             
                         </c:when>
                         <c:otherwise>
                             No devices
                         </c:otherwise>
                     </c:choose>
-                    
-                    </cti:checkRole>
                     
                 </div>
             </jsp:body>

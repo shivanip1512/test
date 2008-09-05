@@ -7,6 +7,16 @@ public class ColumnInfo {
     private String columnAlignment;
     private Integer columnWidthPercentage;
     
+    public ColumnInfo() {
+    }
+
+    public ColumnInfo(String columnName, Integer columnWidth, String columnAlignment) {
+        
+        this.columnName = columnName;
+        this.columnWidth = columnWidth;
+        this.columnAlignment = columnAlignment;
+    }
+    
     public void calculateColumnWidthPercentage(Integer totalWidth) {
         setColumnWidthPercentage(Math.round((columnWidth / (float)totalWidth) * 100));
     }

@@ -48,6 +48,8 @@
         <cti:msg var="routeLocateDescription" key="yukon.common.device.bulk.collectionActions.routeLocateDescription"/>
         <cti:msg var="massDeleteLabel" key="yukon.common.device.bulk.collectionActions.massDeleteLabel"/>
         <cti:msg var="massDeleteDescription" key="yukon.common.device.bulk.collectionActions.massDeleteDescription"/>
+        <cti:msg var="deviceCollectionReportLabel" key="yukon.common.device.bulk.collectionActions.deviceCollectionReportLabel"/>
+        <cti:msg var="deviceCollectionReportDescription" key="yukon.common.device.bulk.collectionActions.deviceCollectionReportDescription"/>
         
         <cti:checkRole role="operator.DeviceActionsRole.ROLEID">
         <table cellspacing="10">
@@ -144,6 +146,17 @@
                 <td>${massDeleteDescription}</td>
             </tr>
             </cti:checkProperty>
+            
+            <%-- DEVICE REPORT --%>
+            <tr>
+                <td>
+                    <form id="deviceCollectionReportForm" method="get" action="/spring/bulk/deviceCollectionReport">
+                        <cti:deviceCollection deviceCollection="${deviceCollection}" />
+                        <input type="submit" id="deviceCollectionReportButton" value="${deviceCollectionReportLabel}" style="width:140px;"/>
+                    </form>
+                </td>
+                <td>${deviceCollectionReportDescription}</td>
+            </tr>
             
         </table>
         </cti:checkRole>

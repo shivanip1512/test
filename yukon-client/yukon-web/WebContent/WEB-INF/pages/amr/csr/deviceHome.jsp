@@ -135,16 +135,15 @@
                         <br>
                         </cti:checkProperty>
                         
-                        <!-- Actions: Other Collection actions -->
-                        <c:url var="collectionActionsUrl" value="/spring/bulk/collectionActions">
-                            <c:param name="collectionType" value="idList" />
-                            <c:param name="idList.ids" value="${deviceId}" />
-                        </c:url>
-                        <a href="${collectionActionsUrl}">Other Actions...</a>
-                        <br>
-                        
 					</cti:checkRole>
                     
+                    <!-- Actions: Other Collection actions -->
+                    <c:url var="collectionActionsUrl" value="/spring/bulk/collectionActions">
+                        <c:param name="collectionType" value="idList" />
+                        <c:param name="idList.ids" value="${deviceId}" />
+                    </c:url>
+                    <a href="${collectionActionsUrl}">Other Actions...</a>
+                        
                     <c:url var="commanderUrl" value="/spring/moveInMoveOut/moveInMoveOut">
                         <c:param name="deviceId" value="${deviceId}" />
                     </c:url>

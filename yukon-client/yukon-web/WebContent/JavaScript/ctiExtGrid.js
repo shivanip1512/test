@@ -47,6 +47,9 @@ function initializeGrid(divId, columnInfo, dataUrl) {
 	    autoLoad: true
 	});
 	
+    var loadMask = new Ext.LoadMask(Ext.getBody(), {msg:"Loading data...", store:store});
+    loadMask.show();
+
 	// create the Grid
 	var grid = new Ext.grid.GridPanel({
 	    store: store,
