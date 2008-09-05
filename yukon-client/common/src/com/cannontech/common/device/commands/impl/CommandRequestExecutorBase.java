@@ -46,7 +46,7 @@ public abstract class CommandRequestExecutorBase<T> implements
     private Set<Permission> loggableCommandPermissions = new HashSet<Permission>();
     
     private int defaultForegroundPriority = 14;
-    private int defaultBackgroundPriority = 7;
+    private int defaultBackgroundPriority = 8;
 
     Logger log = YukonLogManager.getLogger(CommandRequestExecutorBase.class);
 
