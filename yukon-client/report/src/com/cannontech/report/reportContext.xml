@@ -23,9 +23,44 @@
         <property name="simpleReportService" ref="simpleReportService"/>
     </bean>
     
+    <!-- Cap Control Strategy Assignment -->
+    <bean id="strategyAssignmentModel" class="com.cannontech.analysis.tablemodel.StrategyAssignmentModel"
+    scope="prototype">
+        <property name="jdbcOps" ref="jdbcTemplate"/>
+    </bean>
+    
+    <bean id="startegyAssingmentDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
+        <property name="reportModelName"><idref local="strategyAssignmentModel"/></property>
+        <property name="inputs">
+          <bean class="com.cannontech.web.input.InputRoot">
+            <property name="inputList">
+              <list>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="feederIdsFilter"/>
+                    <property name="displayName" value="Feeder IDs Filter"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.IntegerSetType"/>
+                    </property>
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="subbusIdsFilter"/>
+                    <property name="displayName" value="Sub Bus IDs Filter"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.IntegerSetType"/>
+                    </property>
+                </bean>
+              </list>
+            </property>
+          </bean>
+        </property>
+        <property name="reportLayoutData">
+           <bean class="com.cannontech.simplereport.reportlayoutdata.StrategyAssignmentReportLayoutData"/>
+        </property>
+    </bean>
+
    <!-- Cap Control Disabled Devices -->
    <bean id="capControlDisabledDevicesModel" class="com.cannontech.analysis.tablemodel.CapControlDisabledDevicesModel"
-         scope="prototype">
+        scope="prototype">
         <property name="jdbcOps" ref="jdbcTemplate"/>
     </bean>
     

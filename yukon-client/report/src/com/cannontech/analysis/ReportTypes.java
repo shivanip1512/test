@@ -52,6 +52,8 @@ public enum ReportTypes {
         "Detailed report showing cbc information and attached parent objects."),
     CBC_SPECIALAREA_ASSIGNMENT("CBC Special Area Assignment ", CBCSpecialAreaAssignmentController.class, ReportGroup.CAP_CONTROL,
         "Report showing the special area assignment for cbc's."),
+    STRATEGY_ASSIGNMENT("Strategy Assignment ", StrategyAssignmentController.class, ReportGroup.CAP_CONTROL,
+        "Report showing the devices assigned to each strategy."),
     CAP_CONTROL_UNSOLICITED_MESSAGES("Unsolicited Messages", CapControlUnsolicitedMessagesController.class, ReportGroup.CAP_CONTROL,
         "Report showing unsolicited messages recieved form cbc's."),
     CAP_CONTROL_DISABLED_DEVICES("Disabled Devices", CapControlDisabledDevicesController.class, ReportGroup.CAP_CONTROL,
