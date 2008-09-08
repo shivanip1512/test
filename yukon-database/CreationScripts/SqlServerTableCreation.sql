@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     9/4/2008 10:52:23 AM                         */
+/* Created on:     9/8/2008 1:16:35 PM                          */
 /*==============================================================*/
 
 
@@ -4620,6 +4620,20 @@ insert into command values(-142, 'getconfig freeze', 'Read freeze config from me
 INSERT INTO Command VALUES(-143, 'putconfig xcom extended tier ?''tier'' rate ?''rate'' cmd ?''cmd'' display 3 timeout 600 delay 5432', 'Thermostat Extended Tier Message', 'ExpresscomSerial');
 INSERT INTO Command VALUES(-144, 'putconfig emetcon channel 1 ied input 1', 'Configure 430 kW LP Collection', 'MCT-430A'); 
 
+/* Versacom */ 
+INSERT INTO Command VALUES(-145, 'putconfig vcom lcrmode ?''Enter e|v (for Emetcon or Versacom)''', 'Set LCR3100 Versacom mode', 'VersacomSerial'); 
+INSERT INTO Command VALUES(-146, 'putconfig vcom silver ?''Enter a value 1-60''', 'Set LCR3100 Versacom Silver Addressing', 'VersacomSerial'); 
+INSERT INTO Command VALUES(-147, 'putconfig vcom gold ?''Enter a value 1-4''', 'Set LCR3100 Versacom Gold Addressing', 'VersacomSerial'); 
+
+/* ExpressCom */ 
+INSERT INTO Command VALUES(-148, 'putconfig xcom lcrmode ?''Enter Ex|Em|V|G (For example: ExEmVG or ExV)''', 'Set LCR3100 Expresscom mode', 'ExpresscomSerial'); 
+INSERT INTO Command VALUES(-149, 'putconfig xcom silver ?''Enter a value 1-60''', 'Set LCR3100 Expresscom Silver Addressing', 'ExpresscomSerial'); 
+INSERT INTO Command VALUES(-150, 'putconfig xcom gold ?''Enter a value 1-4''', 'Set LCR3100 Expresscom Gold Addressing', 'ExpresscomSerial'); 
+
+INSERT INTO Command VALUES(-151, 'putconfig xcom lcrmode Ex', 'Set LCR3100 Expresscom mode', 'ExpresscomSerial'); 
+INSERT INTO Command VALUES(-152, 'putconfig xcom lcrmode V', 'Set LCR3100 Versacom mode', 'ExpresscomSerial'); 
+INSERT INTO Command VALUES(-153, 'putconfig xcom lcrmode Em', 'Set LCR3100 Emetcon mode', 'ExpresscomSerial'); 
+
 
 /*==============================================================*/
 /* Table: CommandGroup                                          */
@@ -6801,7 +6815,16 @@ INSERT INTO DeviceTypeCommand VALUES (-725, -144, 'MCT-430A', 30, 'N', -1);
 INSERT INTO DeviceTypeCommand VALUES (-726, -144, 'MCT-430S4', 30, 'N', -1); 
 INSERT INTO DeviceTypeCommand VALUES (-727, -144, 'MCT-430SL', 30, 'N', -1); 
 
+INSERT INTO DEVICETYPECOMMAND VALUES (-728, -148, 'ExpresscomSerial', 25, 'N', -1); 
+INSERT INTO DEVICETYPECOMMAND VALUES (-729, -149, 'ExpresscomSerial', 26, 'Y', -1); 
+INSERT INTO DEVICETYPECOMMAND VALUES (-730, -150, 'ExpresscomSerial', 27, 'Y', -1); 
+INSERT INTO DEVICETYPECOMMAND VALUES (-731, -151, 'ExpresscomSerial', 28, 'Y', -1); 
+INSERT INTO DEVICETYPECOMMAND VALUES (-732, -152, 'ExpresscomSerial', 29, 'Y', -1); 
+INSERT INTO DEVICETYPECOMMAND VALUES (-733, -153, 'ExpresscomSerial', 30, 'Y', -1); 
 
+INSERT INTO DEVICETYPECOMMAND VALUES (-734, -145, 'VersacomSerial', 24, 'Y', -1); 
+INSERT INTO DEVICETYPECOMMAND VALUES (-735, -146, 'VersacomSerial', 25, 'Y', -1); 
+INSERT INTO DEVICETYPECOMMAND VALUES (-736, -147, 'VersacomSerial', 26, 'Y', -1); 
 
 /*==============================================================*/
 /* Index: Indx_DevTypeCmd_GroupID                               */

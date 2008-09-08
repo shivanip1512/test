@@ -1080,6 +1080,33 @@ INSERT INTO YukonGroupRole VALUES (-1156, -2, -213, -21306, '(none)');
 INSERT INTO YukonGroupRole VALUES (-1157, -2, -213, -21307, '(none)');
 /* End YUK-6289 */
 
+/* Start YUK-6426 */
+/* Versacom */ 
+INSERT INTO Command VALUES(-145, 'putconfig vcom lcrmode ?''Enter e|v (for Emetcon or Versacom)''', 'Set LCR3100 Versacom mode', 'VersacomSerial'); 
+INSERT INTO Command VALUES(-146, 'putconfig vcom silver ?''Enter a value 1-60''', 'Set LCR3100 Versacom Silver Addressing', 'VersacomSerial'); 
+INSERT INTO Command VALUES(-147, 'putconfig vcom gold ?''Enter a value 1-4''', 'Set LCR3100 Versacom Gold Addressing', 'VersacomSerial'); 
+
+/* ExpressCom */ 
+INSERT INTO Command VALUES(-148, 'putconfig xcom lcrmode ?''Enter Ex|Em|V|G (For example: ExEmVG or ExV)''', 'Set LCR3100 Expresscom mode', 'ExpresscomSerial'); 
+INSERT INTO Command VALUES(-149, 'putconfig xcom silver ?''Enter a value 1-60''', 'Set LCR3100 Expresscom Silver Addressing', 'ExpresscomSerial'); 
+INSERT INTO Command VALUES(-150, 'putconfig xcom gold ?''Enter a value 1-4''', 'Set LCR3100 Expresscom Gold Addressing', 'ExpresscomSerial'); 
+
+INSERT INTO Command VALUES(-151, 'putconfig xcom lcrmode Ex', 'Set LCR3100 Expresscom mode', 'ExpresscomSerial'); 
+INSERT INTO Command VALUES(-152, 'putconfig xcom lcrmode V', 'Set LCR3100 Versacom mode', 'ExpresscomSerial'); 
+INSERT INTO Command VALUES(-153, 'putconfig xcom lcrmode Em', 'Set LCR3100 Emetcon mode', 'ExpresscomSerial'); 
+
+INSERT INTO DEVICETYPECOMMAND VALUES (-728, -148, 'ExpresscomSerial', 25, 'N', -1); 
+INSERT INTO DEVICETYPECOMMAND VALUES (-729, -149, 'ExpresscomSerial', 26, 'Y', -1); 
+INSERT INTO DEVICETYPECOMMAND VALUES (-730, -150, 'ExpresscomSerial', 27, 'Y', -1); 
+INSERT INTO DEVICETYPECOMMAND VALUES (-731, -151, 'ExpresscomSerial', 28, 'Y', -1); 
+INSERT INTO DEVICETYPECOMMAND VALUES (-732, -152, 'ExpresscomSerial', 29, 'Y', -1); 
+INSERT INTO DEVICETYPECOMMAND VALUES (-733, -153, 'ExpresscomSerial', 30, 'Y', -1); 
+
+INSERT INTO DEVICETYPECOMMAND VALUES (-734, -145, 'VersacomSerial', 24, 'Y', -1); 
+INSERT INTO DEVICETYPECOMMAND VALUES (-735, -146, 'VersacomSerial', 25, 'Y', -1); 
+INSERT INTO DEVICETYPECOMMAND VALUES (-736, -147, 'VersacomSerial', 26, 'Y', -1); 
+/* End YUK-6426 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
