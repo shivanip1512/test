@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.124 $
-* DATE         :  $Date: 2008/08/21 15:58:43 $
+* REVISION     :  $Revision: 1.125 $
+* DATE         :  $Date: 2008/09/08 18:25:11 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -4134,8 +4134,16 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 pointname += string(1, (char)('A' + rate));
                 pointname += " peak";
 
-                insertPointDataReport(AnalogPointType, offset + rate * 2,
-                                      ReturnMsg, pi, pointname, peak_time);
+                if( is_valid_time(peak_time) )
+                {
+                    insertPointDataReport(AnalogPointType, offset + rate * 2,
+                                          ReturnMsg, pi, pointname, peak_time);
+                }
+                else
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - invalid time (" << std::hex << peak_time << ") in IED peak decode for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
             }
         }
 
