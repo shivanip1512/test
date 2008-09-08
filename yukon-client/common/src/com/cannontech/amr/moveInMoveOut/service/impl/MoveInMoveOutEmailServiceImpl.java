@@ -32,6 +32,7 @@ import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.tools.email.DefaultEmailMessage;
 import com.cannontech.tools.email.EmailService;
+import com.cannontech.user.SystemUserContext;
 import com.cannontech.user.YukonUserContext;
 
 public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService {
@@ -131,10 +132,12 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
                                                           userContext));
         msgData.put("calculatedUsage",
                     pointFormattingService.getValueString(moveInResult.getCalculatedDifference(),
-                                                          Format.SHORT));
+                                                          Format.SHORT,
+                                                          new SystemUserContext()));
         msgData.put("calculatedTotalUsage",
                     pointFormattingService.getValueString(moveInResult.getCalculatedPreviousReading(),
-                                                          Format.SHORTDATE));
+                                                          Format.SHORTDATE,
+                                                          new SystemUserContext()));
 
         msgData.put("user", userContext.getYukonUser().getUsername());
         msgData.put("processingDate", Calendar.getInstance()
@@ -200,8 +203,7 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
         msgData.put("prevMeterName", moveInResult.getPreviousMeter().getName());
 
         setDatesMoveIn(moveInResult, msgData, userContext);
-        msgData.put("errorMessage", moveInResult.getErrorMessage());
-        buildErrorStr(moveInResult.getErrors(), msgData);
+        buildErrorStr(moveInResult.getErrors(), moveInResult.getErrorMessage(), msgData);
 
         String subject = tp.process(baseSubjectFormat, msgData);
         String body = null;
@@ -241,10 +243,12 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
                                                           userContext));
         msgData.put("calculatedUsage",
                     pointFormattingService.getValueString(moveOutResult.getCalculatedDifference(),
-                                                          Format.SHORT));
+                                                          Format.SHORT,
+                                                          new SystemUserContext()));
         msgData.put("calculatedTotalUsage",
                     pointFormattingService.getValueString(moveOutResult.getCalculatedReading(),
-                                                          Format.SHORTDATE));
+                                                          Format.SHORTDATE,
+                                                          new SystemUserContext()));
 
         msgData.put("user", userContext.getYukonUser().getUsername());
         msgData.put("processingDate", Calendar.getInstance()
@@ -309,8 +313,7 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
         msgData.put("prevMeterName", moveOutResult.getPreviousMeter().getName());
 
         setDatesMoveOut(moveOutResult, msgData, userContext);
-        msgData.put("errorMessage", moveOutResult.getErrorMessage());
-        buildErrorStr(moveOutResult.getErrors(), msgData);
+        buildErrorStr(moveOutResult.getErrors(), moveOutResult.getErrorMessage(), msgData);
 
         String subject = tp.process(baseSubjectFormat, msgData);
         String body = null;
@@ -370,12 +373,20 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
     }
 
     private void buildErrorStr(List<DeviceErrorDescription> errors,
-            Map<String, Object> msgData) {
+            String errorMessage, Map<String, Object> msgData) {
         String errorsStr = "";
         String tab = "    ";
+
+        if (errorMessage != null){
+            msgData.put("errorMessage", errorMessage);
+        } else {
+            msgData.put("errorMessage", " ");
+        }
+        
         for (DeviceErrorDescription description : errors) {
             errorsStr += description.getDescription() + " " + description.getErrorCode() + "\r\n" + tab + description.getPorter() + " \r\n" + tab + description.getTroubleshooting() + " \r\n";
         }
+        
         msgData.put("errors", errorsStr);
     }
 

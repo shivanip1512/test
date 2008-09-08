@@ -14,6 +14,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.FormattingTemplateProcessor;
+import com.cannontech.common.util.MethodNotImplementedException;
 import com.cannontech.common.util.TemplateProcessorFactory;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
@@ -167,7 +168,7 @@ public class PointFormattingServiceImpl implements PointFormattingService {
 
             @Override
             public String getValueString(PointValueHolder value, Format format) {
-                return null;
+                throw new MethodNotImplementedException();
             }
             
             @Override

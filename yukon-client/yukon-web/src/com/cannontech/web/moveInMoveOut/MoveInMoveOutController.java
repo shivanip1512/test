@@ -124,7 +124,7 @@ public class MoveInMoveOutController extends MultiActionController {
         if (!currentDate.before(moveInDate)) {
             moveInResult = moveInMoveOutService.moveIn(moveInForm);
             moveInResult.setMoveInDate(moveInDate);
-            if (moveInResult.getErrors().isEmpty()) {
+            if (moveInResult.getErrors().isEmpty() && StringUtils.isBlank(moveInResult.getErrorMessage())) {
                 mav.addObject("endDate",
                               dateFormattingService.formatDate(moveInResult.getCurrentReading()
                                                                            .getPointDataTimeStamp(),
@@ -149,6 +149,7 @@ public class MoveInMoveOutController extends MultiActionController {
         mav.addObject("prevMeter", moveInResult.getPreviousMeter());
         mav.addObject("newMeter", moveInResult.getNewMeter());
         mav.addObject("errors", moveInResult.getErrors());
+        mav.addObject("errorMessage", moveInResult.getErrorMessage());
         mav.addObject("deviceGroups", moveInResult.getDeviceGroupsRemoved());
         mav.addObject("submissionType", moveInResult.getSubmissionType());
         mav.addObject("scheduled", moveInResult.isScheduled());
@@ -232,7 +233,7 @@ public class MoveInMoveOutController extends MultiActionController {
                 return mav;
             }
 
-            if (moveOutResult.getErrors().isEmpty()) {
+            if (moveOutResult.getErrors().isEmpty() && StringUtils.isBlank(moveOutResult.getErrorMessage()) ) {
                 Date currentReadingDate = moveOutResult.getCurrentReading()
                                                        .getPointDataTimeStamp();
                 Date calcReadingDate = new Date(moveOutResult.getCalculatedReading()
@@ -267,6 +268,7 @@ public class MoveInMoveOutController extends MultiActionController {
                       moveOutResult.getCalculatedDifference());
         mav.addObject("meter", moveOutResult.getPreviousMeter());
         mav.addObject("errors", moveOutResult.getErrors());
+        mav.addObject("errorMessage", moveOutResult.getErrorMessage());
         mav.addObject("deviceGroups", moveOutResult.getDeviceGroupsAdded());
         mav.addObject("submissionType", moveOutResult.getSubmissionType());
         mav.addObject("scheduled", moveOutResult.isScheduled());

@@ -3,7 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
 <c:choose>
-    <c:when test="${empty errors}">
+    <c:when test="${empty errors and empty errorMessage}">
     
         <c:choose>
             <c:when test="${scheduled}">
@@ -49,7 +49,12 @@
         </c:choose>
     </c:when>
     <c:otherwise>
-        <span class="internalSectionHeader">The system was not able to process the move out request for ${meter.name} for the following reasons.</span><br/> <br/>
+        <span class="internalSectionHeader">The system was not able to process the move out request for ${meter.name} for the following reasons.</span>
+        <br/><br/>
+        <c:if test="${not empty errorMessage}">
+            <span class="internalSectionHeader">${errorMessage}</span>
+            <br/><br/>
+        </c:if>
         <c:forEach items="${errors}" var="error">
             <ct:hideReveal
                 title="<span class=\"internalSectionHeader\">${error.description} (${error.errorCode})</span>"
