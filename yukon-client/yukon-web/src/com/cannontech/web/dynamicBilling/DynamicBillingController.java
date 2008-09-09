@@ -223,14 +223,8 @@ public class DynamicBillingController extends MultiActionController {
 				.getBillingFileString(Collections.singletonList(device))
 				.toString()));
 
-		// for our html page purposes, we try to insert <br /> into the string
-		// for a newline
-		returnString.insert(StringEscapeUtils.escapeHtml(format.getHeader())
-				.length(), "<br>");
-		returnString.insert(
-				returnString.length()
-						- StringEscapeUtils.escapeHtml(format.getFooter())
-								.length() - 1, "<br>");
+		// for our html page purposes, replace carriage returns with <BR>
+		returnString = new StringBuffer(returnString.toString().replaceAll("\r\n", "<BR>"));
 
 		// replace spaces with &nbsp; for html display
 		return new ModelAndView(new TextView(returnString.toString()
