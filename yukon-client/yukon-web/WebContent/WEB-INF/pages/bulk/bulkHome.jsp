@@ -143,8 +143,9 @@
                                 
                                 <%-- MASS DELETE HAS NO SUCCESS GRUP --%>
                                 <c:when test="${b.massDelete}">
-                                    <cti:msg key="yukon.common.device.bulk.bulkHome.recentBulkOperations.deletedCountLabel" /> 
-                                    <cti:dataUpdaterValue type="BULKRESULT" identifier="${b.resultsId}/SUCCESS_COUNT"/>                          
+                                    <div style="font-size:12px;padding-right:20px;">
+                                        <cti:dataUpdaterValue type="BULKRESULT" identifier="${b.resultsId}/SUCCESS_COUNT"/>
+                                    </div>                  
                                 </c:when>
                                 
                                 <%-- BULK IMPORT/UPDATE, MASS CHANGE DO HAVE SUCCESS GROUP --%>

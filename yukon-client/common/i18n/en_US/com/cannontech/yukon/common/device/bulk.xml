@@ -17,7 +17,6 @@
     <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.detailLink">View</entry>
     <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.detail">Detail</entry>
     <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.status">Status</entry>
-    <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.deletedCountLabel">Deleted</entry>
     
     <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.STOP_TIME">{finished|{stopTime|BOTH}|In Progress...}</entry>
     <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.IS_COMPLETE_TEXT">{isComplete|Complete|In Progress}</entry>
