@@ -11,6 +11,7 @@
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%@ page import="com.cannontech.common.constants.LoginController" %>
 <%@ page import="com.cannontech.web.navigation.CtiNavObject" %>
+<%@ page import="com.cannontech.util.ServletUtil" %>
 
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="java.util.List" %>
@@ -36,11 +37,8 @@ LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_
 
 CtiNavObject nav = (CtiNavObject) request.getSession(false).getAttribute(ServletUtil.NAVIGATE);
 String returnURL = nav.getPreviousPage();
-if(returnURL.indexOf("?") != -1){
-    returnURL += "&back=true";
-}else{
-    returnURL += "?back=true";
-}
+HashMap<String, String[]> parameters = new HashMap<String, String[]>();
+returnURL = ServletUtil.addParameters(returnURL, "back", "true");
 
 final CBCDisplay cbcDisplay = new CBCDisplay(user);
 String popupEvent = DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);

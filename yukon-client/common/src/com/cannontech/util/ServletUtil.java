@@ -1229,6 +1229,29 @@ public static Date roundToMinute(Date toRound) {
         return fileName;
     }
     
+    /**
+     * Returns the url passed in with the parameter and value appended.
+     * Note: this method does not protect against adding a parameter that is 
+     * already on the query string.
+     * @param url
+     * @param parameterMap
+     * @return a full path and query string
+     */
+    public static String addParameters(String url, String parameter, String value) {
+        HashMap<String, String[]> parameterMap = new HashMap<String, String[]>();
+        parameterMap.put(parameter, new String[] {value});
+        StringBuffer fullURL = new StringBuffer();
+        fullURL.append(url);
+        if(!url.contains("?")) {
+            fullURL.append("?");
+        } else {
+            fullURL.append("&");
+        }
+
+        String queryString = buildQueryStringParameters(parameterMap);
+        fullURL.append(queryString);
+        return fullURL.toString();
+    }
     
     /**
      * Returns a URL that points to the same page as request, but has newParameter and newValue
@@ -1248,39 +1271,42 @@ public static Date roundToMinute(Date toRound) {
      * @param newValue the value of the new parameter
      * @return a full path and query string
      */
-    @SuppressWarnings("unchecked")
-	public static String tweakRequestURI(HttpServletRequest request, String newParameter, String newValue) {
-        final String urlEncoding = "UTF-8"; 
+    public static String tweakRequestURI(HttpServletRequest request, String newParameter, String newValue) {
+        StringBuffer result = new StringBuffer();
+        result.append(request.getRequestURI());
+        result.append("?");
+        Map parameterMap = new HashMap(request.getParameterMap());
+        if(newValue == null) {
+            parameterMap.remove(newParameter);
+        }
+        else {              
+            parameterMap.put(newParameter, new String[] {newValue});
+        }
+        String queryString = buildQueryStringParameters(parameterMap);
+        result.append(queryString);
+        return result.toString();
+    }
+        
+    private static String buildQueryStringParameters(Map<String, String[]> parameterMap) {
+        String queryString;
         try {
-            StringBuffer result = new StringBuffer();
-            result.append(request.getRequestURI());
-            result.append("?");
-            Map<String, String[]> parameterMap = new HashMap<String, String[]>(request.getParameterMap());
-            if(newValue == null) {
-            	parameterMap.remove(newParameter);
-            }
-            else {            	
-            	parameterMap.put(newParameter, new String[] {newValue});
-            }
+            final String urlEncoding = "UTF-8"; 
             List<String> parameterPairs = new ArrayList<String>(parameterMap.size());
             for (Iterator<String> iter = parameterMap.keySet().iterator(); iter.hasNext();) {
                 String thisParameter = iter.next();
                 String thisSafeParameter = URLEncoder.encode(thisParameter, urlEncoding);
-                String[] theseValues = (String[])parameterMap.get(thisParameter);
+                String[] theseValues = parameterMap.get(thisParameter);
                 for (int i = 0; i < theseValues.length; i++) {
                     String thisPair = thisSafeParameter + "=" 
                         + URLEncoder.encode(theseValues[i], urlEncoding);
                     parameterPairs.add(thisPair);
                 }
             }
-            String queryString = StringUtils.join(parameterPairs.iterator(), "&");
-            result.append(queryString);
-            return result.toString();
+            queryString = StringUtils.join(parameterPairs.iterator(), "&");
         } catch (UnsupportedEncodingException e) {
-            CTILogger.error(e);
             throw new RuntimeException(e);
         }
-        
+        return queryString;
     }
 
     /**

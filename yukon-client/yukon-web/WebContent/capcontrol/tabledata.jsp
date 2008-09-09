@@ -40,11 +40,7 @@
 	DateFormattingService dateFormattingService = (DateFormattingService)YukonSpringHook.getBean("dateFormattingService");
 	CtiNavObject nav = (CtiNavObject) request.getSession(false).getAttribute(ServletUtil.NAVIGATE);
     String returnURL = nav.getPreviousPage();
-    if(returnURL.indexOf("?") != -1){
-        returnURL += "&back=true";
-    }else{
-        returnURL += "?back=true";
-    }
+    returnURL = ServletUtil.addParameters(returnURL, "back", "true");
 	
 	int MAX_DAYS_CNT = 7;	
 	String type = ParamUtil.getString(request, "type", "");

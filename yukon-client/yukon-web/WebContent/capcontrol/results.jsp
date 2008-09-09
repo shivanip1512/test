@@ -21,11 +21,7 @@
 	ParentStringPrinter psp = printerFactory.createParentStringPrinter(request);
 	CtiNavObject nav = (CtiNavObject) request.getSession(false).getAttribute(ServletUtil.NAVIGATE);
 	String returnURL = nav.getPreviousPage();
-	if(returnURL.indexOf("?") != -1){
-	    returnURL += "&back=true";
-	}else{
-	    returnURL += "?back=true";
-	}
+	returnURL = ServletUtil.addParameters(returnURL, "back", "true");
 	
 	if( srchCriteria == null )
 		srchCriteria = ccSession.getLastSearchCriteria();
