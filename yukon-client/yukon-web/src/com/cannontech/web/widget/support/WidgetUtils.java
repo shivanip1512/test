@@ -1,9 +1,11 @@
 package com.cannontech.web.widget.support;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringEscapeUtils;
@@ -31,7 +33,9 @@ public class WidgetUtils {
         if (obj instanceof String) {
             return "\"" + StringEscapeUtils.escapeJavaScript((String) obj) + "\"";
         } else if (obj instanceof Map) {
-            return new JSONObject((Map)obj).toString();
+            return new JSONObject((Map<?, ?>)obj).toString();
+        } else if (obj instanceof Collection) {
+            return new JSONArray((Collection<?>)obj).toString();
         } else {
             return JSONObject.fromObject(obj).toString();
         }
