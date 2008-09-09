@@ -127,7 +127,7 @@
                         
                         <!-- Actions: Locate Route -->
                         <cti:checkProperty property="operator.DeviceActionsRole.LOCATE_ROUTE">
-                        <c:url var="routeLocateUrl" value="/spring/csr/routeLocate/home">
+                        <c:url var="routeLocateUrl" value="/spring/bulk/routeLocate/home">
                             <c:param name="collectionType" value="idList" />
                             <c:param name="idList.ids" value="${deviceId}" />
                         </c:url>

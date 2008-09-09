@@ -125,7 +125,7 @@
             <cti:checkProperty property="operator.DeviceActionsRole.LOCATE_ROUTE">
             <tr>
                 <td>
-                    <form id="routeLocateForm" method="get" action="/spring/csr/routeLocate/home">
+                    <form id="routeLocateForm" method="get" action="/spring/bulk/routeLocate/home">
                         <cti:deviceCollection deviceCollection="${deviceCollection}" />
                         <input type="submit" id="routeLocateButton" value="${routeLocateLabel}" style="width:140px;"/>
                     </form>

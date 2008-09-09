@@ -13,6 +13,10 @@
     
         <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
         
+        <%-- bulk home --%>
+        <cti:msg var="bulkOperationsPageTitle" key="yukon.common.device.bulk.bulkHome.pageTitle"/>
+        <cti:crumbLink url="/spring/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
+        
         <%-- device selection --%>
         <cti:msg var="deviceSelectionPageTitle" key="yukon.common.device.bulk.deviceSelection.pageTitle"/>
         <cti:crumbLink url="/spring/bulk/deviceSelection" title="${deviceSelectionPageTitle}"/>
@@ -42,7 +46,7 @@
             <div class="formErrorSummary">${errorMsg}</div><br>
         </c:if>
         
-        <form id="executeLocateForm" action="<c:url value="/spring/csr/routeLocate/executeRouteLocation" />">
+        <form id="executeLocateForm" action="<c:url value="/spring/bulk/routeLocate/executeRouteLocation" />">
         
             <%-- DEVICE COLLECTION --%>
             <cti:deviceCollection deviceCollection="${deviceCollection}" />
@@ -136,7 +140,7 @@
                         
                         
                         <%-- DEATIL LINK --%>
-                        <c:url var="resultDetailUrl" value="/spring/csr/routeLocate/results">
+                        <c:url var="resultDetailUrl" value="/spring/bulk/routeLocate/results">
                             <c:param name="resultId" value="${b.resultId}" />
                         </c:url>
                 

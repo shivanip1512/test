@@ -15,6 +15,10 @@
     
         <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
         
+        <%-- bulk home --%>
+        <cti:msg var="bulkOperationsPageTitle" key="yukon.common.device.bulk.bulkHome.pageTitle"/>
+        <cti:crumbLink url="/spring/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
+        
         <%-- device selection --%>
         <cti:msg var="deviceSelectionPageTitle" key="yukon.common.device.bulk.deviceSelection.pageTitle"/>
         <cti:crumbLink url="/spring/bulk/deviceSelection" title="${deviceSelectionPageTitle}"/>
@@ -23,7 +27,7 @@
         <tags:collectionActionsCrumbLink deviceCollection="${result.deviceCollection}" />
         
         <%-- locate route --%>
-        <c:url var="routeLocateHomeUrl" value="/spring/csr/routeLocate/home">
+        <c:url var="routeLocateHomeUrl" value="/spring/bulk/routeLocate/home">
             <cti:mapParam value="${result.deviceCollection.collectionParameters}"/>
         </c:url>
         <cti:msg var="routeLocateHomePageTitle" key="yukon.web.modules.amr.routeLocateHome.pageTitle"/>
@@ -73,7 +77,7 @@
                                 
             <%-- set/view routes --%>
             <br>
-            <form id="routeLocateSettingsForm" action="<c:url value="/spring/csr/routeLocate/routeSettings" />" method="get">
+            <form id="routeLocateSettingsForm" action="<c:url value="/spring/bulk/routeLocate/routeSettings" />" method="get">
                 <input type="hidden" name="resultId" value="${resultId}">
                 
                 <c:choose>

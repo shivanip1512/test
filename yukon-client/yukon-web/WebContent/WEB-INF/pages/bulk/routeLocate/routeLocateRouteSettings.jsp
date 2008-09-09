@@ -17,6 +17,10 @@
     
         <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
         
+        <%-- bulk home --%>
+        <cti:msg var="bulkOperationsPageTitle" key="yukon.common.device.bulk.bulkHome.pageTitle"/>
+        <cti:crumbLink url="/spring/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
+        
         <%-- device selection --%>
         <cti:msg var="deviceSelectionPageTitle" key="yukon.common.device.bulk.deviceSelection.pageTitle"/>
         <cti:crumbLink url="/spring/bulk/deviceSelection" title="${deviceSelectionPageTitle}"/>
@@ -25,14 +29,14 @@
         <tags:collectionActionsCrumbLink deviceCollection="${result.deviceCollection}" />
         
         <%-- locate route --%>
-        <c:url var="routeLocateHomeUrl" value="/spring/csr/routeLocate/home">
+        <c:url var="routeLocateHomeUrl" value="/spring/bulk/routeLocate/home">
             <cti:mapParam value="${result.deviceCollection.collectionParameters}"/>
         </c:url>
         <cti:msg var="routeLocateHomePageTitle" key="yukon.web.modules.amr.routeLocateHome.pageTitle"/>
         <cti:crumbLink url="${routeLocateHomeUrl}" title="${routeLocateHomePageTitle}" />
         
         <%-- results --%>
-        <c:url var="routeLocateResultsUrl" value="/spring/csr/routeLocate/results">
+        <c:url var="routeLocateResultsUrl" value="/spring/bulk/routeLocate/results">
             <c:param name="resultId" value="${resultId}" />
         </c:url>
         <cti:msg var="routeLocateResultsPageTitle" key="yukon.web.modules.amr.routeLocateResults.pageTitle"/>
@@ -50,7 +54,7 @@
             buttonObj.disabled = true;
             $('waitImg' + deviceRouteLocationId).show();
         
-            var url = '/spring/csr/routeLocate/setRoute';
+            var url = '/spring/bulk/routeLocate/setRoute';
             var args = {};
             args.deviceId = deviceId;
             args.routeId = routeId;
