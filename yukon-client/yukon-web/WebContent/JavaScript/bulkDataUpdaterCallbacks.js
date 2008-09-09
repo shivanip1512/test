@@ -21,32 +21,42 @@ function updateProgressBar(pbarId, totalCount) {
     };
 }
 
-function updateProgressDescription(pDescId, totalCount, completeText) {
+function cancelProgressBar(pbarId) {
 
     return function(data) {
-    
-        var completedCount = data['completedCount'];
-        
-        if (completedCount == totalCount) {
-            try {
-                $('progressDescription_' + pDescId).innerHTML = completeText;
-            } catch(e) {}
+
+        if (data['isCanceled'] == 'true') {
+            $('progressBorder_' + pbarId).style.backgroundColor = '#CC0000';
         }
     };
 }
 
-function showElementsOnComplete(totalCount, elementsToShow) {
+function updateProgressDescription(pDescId, text) {
+
+    return function(data) {
+    
+        var isCompleteCondition = data['isCompleteCondition'];
+        
+        if (isCompleteCondition == 'true') {
+            $('progressDescription_' + pDescId).innerHTML = text;
+        }
+    };
+}
+
+function toggleElementsOnComplete(elementsToToggle, show) {
     
     return function(data) {
-
-        var completedCount = data['completedCount'];
         
-        if (completedCount == totalCount) {
+        var isComplete = data['isComplete'];
         
-            // sometimes not all elements passed in will actually be available on page
-            // success div for mass delete for example
-            $A(elementsToShow).each(function(el) {
-                $(el).show();
+        if (isComplete == 'true') {
+            
+            $A(elementsToToggle).each(function(el) {
+                if (show) {
+                    $(el).show();
+                } else {
+                    $(el).hide();
+                }
             });
         }
     };

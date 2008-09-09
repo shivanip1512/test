@@ -231,7 +231,7 @@
                         
                         <%-- COMPLETE? --%>
                         <td align="right">
-                            <cti:dataUpdaterValue type="BULKRESULT" identifier="${b.resultsId}/IS_COMPLETE"/>
+                            <cti:dataUpdaterValue type="BULKRESULT" identifier="${b.resultsId}/IS_COMPLETE_TEXT"/>
                         </td>
                     </tr>
                 

@@ -36,13 +36,13 @@
     
     <script type="text/javascript">
     
-        function enableButton(totalCount) {
+        function enableButton() {
 
             return function(data) {
             
-                var completedCount = data['completedCount'];
+                var isComplete = data['isComplete'];
                 
-                if (completedCount == totalCount) {
+                if (isComplete == 'true') {
                     $('setViewRoutesButton').disabled = false;
                 }
             };
@@ -64,11 +64,12 @@
         
         
         
-        <tags:bulkResultProgress labelKey="yukon.web.modules.amr.routeLocateResults.progressLabel" 
-                                inProgressKey="yukon.web.modules.amr.routeLocateResults.inProgress" 
-                                completeKey="yukon.web.modules.amr.routeLocateResults.complete"
+        <tags:bulkResultProgress progressLabelTextKey="yukon.web.modules.amr.routeLocateResults.progressLabel" 
+                                inProgressTextKey="yukon.web.modules.amr.routeLocateResults.inProgress" 
+                                completeTextKey="yukon.web.modules.amr.routeLocateResults.complete"
                                 totalCount="${deviceCount}" 
-                                updateKey="ROUTELOCATE/${resultId}/COMPLETED_COUNT">
+                                countKey="ROUTELOCATE/${resultId}/COMPLETED_COUNT"
+                                completeKey="ROUTELOCATE/${resultId}/IS_COMPLETE">
                                 
             <%-- set/view routes --%>
             <br>
@@ -121,7 +122,7 @@
                     
     </tags:bulkActionContainer>
     
-    <cti:dataUpdaterCallback function="enableButton(${deviceCount})" initialize="true" completedCount="ROUTELOCATE/${resultId}/COMPLETED_COUNT" />
-    <cti:dataUpdaterCallback function="showElementsOnComplete(${deviceCount},['successActionsDiv','errorActionsDiv'])" initialize="true" completedCount="ROUTELOCATE/${resultId}/COMPLETED_COUNT" />
+    <cti:dataUpdaterCallback function="enableButton()" initialize="true" isComplete="ROUTELOCATE/${resultId}/IS_COMPLETE" />
+    <cti:dataUpdaterCallback function="toggleElementsOnComplete(['successActionsDiv','errorActionsDiv'],true)" initialize="true" isComplete="ROUTELOCATE/${resultId}/IS_COMPLETE" />
     
  </cti:standardPage>

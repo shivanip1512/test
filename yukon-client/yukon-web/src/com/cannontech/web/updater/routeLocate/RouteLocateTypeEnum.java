@@ -44,8 +44,14 @@ public enum RouteLocateTypeEnum {
     
     IS_COMPLETE(new ResultAccessor<RouteLocateResult>() {
         public Object getValue(RouteLocateResult routeLocateResult) {
+            return routeLocateResult.isComplete();
+        }
+    }),
+    
+    IS_COMPLETE_TEXT(new ResultAccessor<RouteLocateResult>() {
+        public Object getValue(RouteLocateResult routeLocateResult) {
             
-            ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.web.modules.amr.routeLocateHome.recentRouteLocateResults.IS_COMPLETE");
+            ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.web.modules.amr.routeLocateHome.recentRouteLocateResults.IS_COMPLETE_TEXT");
             resolvableTemplate.addData("isComplete", routeLocateResult.isComplete());
             
             return resolvableTemplate;

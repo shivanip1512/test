@@ -10,4 +10,5 @@ public interface CommandCompletionCallback<T> {
     public void receivedIntermediateResultString(T command, String value);
     public void receivedLastResultString(T command, String value);
     public void complete();
+    public void cancel();
 }

@@ -39,7 +39,7 @@ public interface CommandRequestExecutor<T> {
 
     /**
      * Method to execute multiple command request for a given user (this method
-     * will NOT block until command execution is complete)
+     * will NOT block until command execution is complete).
      * @param commands - Commands to execute
      * @param callback - Callback which will be called as the commands execute
      * @param user - User executing the commands
@@ -48,4 +48,13 @@ public interface CommandRequestExecutor<T> {
      */
     public void execute(List<T> commands, CommandCompletionCallback<? super T> callback,
             LiteYukonUser user) throws PaoAuthorizationException;
+    
+    /**
+     * 
+     * @param commands
+     * @param commandRequestToken
+     * @param user
+     * @return
+     */
+    public long cancelExecution(CommandCompletionCallback<? super T> callback, LiteYukonUser user);
 }

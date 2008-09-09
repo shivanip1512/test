@@ -4,16 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
+import com.cannontech.common.util.Cancelable;
 import com.cannontech.common.util.Completable;
 import com.cannontech.core.dynamic.PointValueHolder;
 
 public class CollectingCommandCompletionCallback implements
-        CommandCompletionCallback<Object>, CommandResultHolder, Completable {
+        CommandCompletionCallback<Object>, CommandResultHolder, Completable, Cancelable {
     
     private List<DeviceErrorDescription> errors = new ArrayList<DeviceErrorDescription>();
     private List<PointValueHolder> values = new ArrayList<PointValueHolder>();
     private List<String> resultStrings = new ArrayList<String>();
     private boolean complete = false;
+    private boolean canceled = false;
 
     @Override
     public void receivedIntermediateError(Object command, DeviceErrorDescription error) {
@@ -72,12 +74,22 @@ public class CollectingCommandCompletionCallback implements
     }
     
     @Override
+    final public void cancel() {
+        canceled = true;
+        complete();
+    }
+    
+    @Override
     public boolean isComplete() {
         return complete;
+    }
+    
+    @Override
+    public boolean isCanceled() {
+        return canceled;
     }
 
     protected void doComplete() {
         // noop
     }
-
 }

@@ -46,6 +46,14 @@
                 });
             }
         }
+        
+        function showCmdCanceldMsg() {
+            return function(data) {
+                if (data['isCanceled'] == 'true') {
+                    $('cmdCanceldMsg').show();
+                }
+            };
+        }
     
     </script>
     
@@ -73,12 +81,21 @@
 
         <%-- PROGRESS --%>
         <c:set var="totalCount" value="${result.deviceCollection.deviceCount}" />
-        <tags:bulkResultProgress labelKey="yukon.common.device.commander.results.progressLabel" 
-                                inProgressKey="yukon.common.device.commander.results.inProgress" 
-                                completeKey="yukon.common.device.commander.results.complete"
+        <tags:bulkResultProgress progressLabelTextKey="yukon.common.device.commander.results.progressLabel" 
+                                inProgressTextKey="yukon.common.device.commander.results.inProgress" 
+                                completeTextKey="yukon.common.device.commander.results.complete"
+                                canceledTextKey="yukon.common.device.commander.results.canceled"
                                 totalCount="${totalCount}" 
-                                updateKey="COMMANDER/${result.key}/COMPLETED_ITEMS">
-                                
+                                countKey="COMMANDER/${result.key}/COMPLETED_ITEMS"
+                                completeKey="COMMANDER/${result.key}/IS_COMPLETE"
+                                canceledKey="COMMANDER/${result.key}/IS_CANCELED" >
+                    
+            <%-- cancel commands --%>
+            <div id="cancelCommandsDiv">
+                <br>
+                <tags:cancelCommands resultId="${result.key}" />
+            </div>
+            
             <%-- device collection action --%>
             <div id="allDevicesActionsDiv" style="display:none;">
                 <br>
@@ -92,7 +109,7 @@
         
         <%-- SUCCESS --%>
         <br>
-        <div class="normalBoldLabel">Successfully Executed: <span style="color:#006633;"><cti:dataUpdaterValue type="COMMANDER" identifier="${result.key}/SUCCESS_COUNT"/></span></div>
+        <div class="normalBoldLabel">Successfully Executed: <span class="okGreen"><cti:dataUpdaterValue type="COMMANDER" identifier="${result.key}/SUCCESS_COUNT"/></span></div>
         
         <div id="successActionsDiv" style="padding:10px;display:none;">
         
@@ -113,9 +130,16 @@
     
         <%-- PROCESSING EXCEPTION --%>
         <br>
-        <div class="normalBoldLabel">Failed To Execute: <span style="color:#CC0000;"><cti:dataUpdaterValue type="COMMANDER" identifier="${result.key}/FAILURE_COUNT"/></span></div>
+        <div class="normalBoldLabel">Failed To Execute: <span class="errorRed"><cti:dataUpdaterValue type="COMMANDER" identifier="${result.key}/FAILURE_COUNT"/></span></div>
         
         <div id="errorActionsDiv" style="padding:10px;display:none;">
+        
+            <%-- canceled? --%>
+            <div id="cmdCanceldMsg" style="display:none;">
+                <span class="errorRed">Commands were canceled.</span>
+                <br><br>
+            </div>
+            <cti:dataUpdaterCallback function="showCmdCanceldMsg()" initialize="true" isCanceled="COMMANDER/${result.key}/IS_CANCELED" />
             
             <%-- device collection action --%>
             <cti:link href="/spring/bulk/collectionActions" key="yukon.common.device.commander.collectionActionOnDevicesLabel.failureResults" class="small">
@@ -134,6 +158,7 @@
         
     </tags:boxContainer>
     
-    <cti:dataUpdaterCallback function="showElementsOnComplete(${totalCount},['allDevicesActionsDiv','successActionsDiv','errorActionsDiv'])" initialize="true" completedCount="COMMANDER/${result.key}/COMPLETED_ITEMS" />
-    
+    <cti:dataUpdaterCallback function="toggleElementsOnComplete(['allDevicesActionsDiv','successActionsDiv','errorActionsDiv'],true)" initialize="true" isComplete="COMMANDER/${result.key}/IS_COMPLETE" />
+    <cti:dataUpdaterCallback function="toggleElementsOnComplete(['cancelCommandsDiv'],false)" initialize="true" isComplete="COMMANDER/${result.key}/IS_COMPLETE" />
+      
 </cti:standardPage>

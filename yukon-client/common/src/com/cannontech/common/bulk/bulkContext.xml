@@ -389,4 +389,8 @@
     <bean id="changeDeviceTypeService" class="com.cannontech.common.bulk.service.impl.ChangeDeviceTypeServiceImpl">
     </bean>
     
+    <bean id="porterRequestCancelService" class="com.cannontech.core.service.impl.PorterRequestCancelServiceImpl">
+        <property name="porterConnection" ref="porterConnection"/>
+    </bean>
+    
 </beans>

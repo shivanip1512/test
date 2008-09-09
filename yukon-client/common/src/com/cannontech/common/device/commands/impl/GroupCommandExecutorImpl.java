@@ -102,6 +102,7 @@ public class GroupCommandExecutorImpl implements GroupCommandExecutor {
         groupCommandResult.setCommand(command);
         groupCommandResult.setResultHolder(commandCompletionCallback);
         groupCommandResult.setDeviceCollection(deviceCollection);
+        groupCommandResult.setCallback(commandCompletionCallback);
         
         DeviceCollection successCollection = deviceGroupCollectionHelper.buildDeviceCollection(successGroup);
         groupCommandResult.setSuccessCollection(successCollection);
@@ -112,13 +113,20 @@ public class GroupCommandExecutorImpl implements GroupCommandExecutor {
         // is the weird?
         groupCommandResult.setKey(key);
         
-        commandRequestExecutor.execute(requests,
-                                       commandCompletionCallback,
-                                       user);
+        commandRequestExecutor.execute(requests, commandCompletionCallback, user);
         
         log.debug("executing " + command + " on the " + requests.size() + " devices in " + deviceCollection);
         
         return key;
+    }
+    
+    @Override
+    public long cancelExecution(String resultId, LiteYukonUser user) {
+
+        GroupCommandResult result = getResult(resultId);
+        long commandsCanceled = commandRequestExecutor.cancelExecution(result.getCallback(), user);
+        
+        return commandsCanceled;
     }
     
     private CommandRequestDevice buildStandardRequest(YukonDevice device, final String command) {

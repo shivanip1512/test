@@ -31,5 +31,9 @@ public class CommandCompletionCallbackAdapter<T> implements
     @Override
     public void receivedValue(T command, PointValueHolder value) {
     }
+    
+    @Override
+    public void cancel() {
+    }
 
 }

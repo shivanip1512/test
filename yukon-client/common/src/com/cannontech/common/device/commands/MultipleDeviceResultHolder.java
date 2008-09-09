@@ -25,6 +25,8 @@ public interface MultipleDeviceResultHolder {
     public Map<YukonDevice, List<PointValueHolder>> getValues();
 
     public boolean isComplete();
+    
+    public boolean isCanceled();
 
     public Map<YukonDevice, DeviceErrorDescription> getErrors();
 

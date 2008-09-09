@@ -44,8 +44,14 @@ public enum BulkResultTypeEnum {
     
     IS_COMPLETE(new ResultAccessor<BulkOperationCallbackResults<?>>() {
         public Object getValue(BulkOperationCallbackResults<?> bulkOperationCallbackResults) {
+            return bulkOperationCallbackResults.isComplete();
+        }
+    }),
+    
+    IS_COMPLETE_TEXT(new ResultAccessor<BulkOperationCallbackResults<?>>() {
+        public Object getValue(BulkOperationCallbackResults<?> bulkOperationCallbackResults) {
             
-            ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.common.device.bulk.bulkHome.recentBulkOperations.IS_COMPLETE");
+            ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.common.device.bulk.bulkHome.recentBulkOperations.IS_COMPLETE_TEXT");
             resolvableTemplate.addData("isComplete", bulkOperationCallbackResults.isComplete());
             
             return resolvableTemplate;

@@ -10,7 +10,9 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.TimeoutException;
 
+import org.apache.commons.lang.math.RandomUtils;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.style.ToStringCreator;
 
@@ -23,6 +25,7 @@ import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.core.authorization.support.CommandPermissionConverter;
 import com.cannontech.core.authorization.support.Permission;
+import com.cannontech.core.service.PorterRequestCancelService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.dispatch.message.PointData;
@@ -43,11 +46,14 @@ public abstract class CommandRequestExecutorBase<T> implements
     private BasicServerConnection porterConnection;
     private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
     private CommandPermissionConverter commandPermissionConverter;
+    private PorterRequestCancelService porterRequestCancelService;
     private Set<Permission> loggableCommandPermissions = new HashSet<Permission>();
     
     private int defaultForegroundPriority = 14;
     private int defaultBackgroundPriority = 8;
 
+    private Map<CommandCompletionCallback<? super T>, CommandResultMessageListener> msgListeners = new HashMap<CommandCompletionCallback<? super T>, CommandResultMessageListener>();
+    
     Logger log = YukonLogManager.getLogger(CommandRequestExecutorBase.class);
 
     protected int getDefaultForegroundPriority() {
@@ -61,10 +67,15 @@ public abstract class CommandRequestExecutorBase<T> implements
     private final class CommandResultMessageListener implements MessageListener {
         private final CommandCompletionCallback<? super T> callback;
         private Map<Long, T> pendingUserMessageIds;
+        private int groupMessageId;
 
         private CommandResultMessageListener(List<RequestHolder> requests,
-                CommandCompletionCallback<? super T> callback) {
+                CommandCompletionCallback<? super T> callback,
+                int groupMessageId) {
+            
             this.callback = callback;
+            this.groupMessageId = groupMessageId;
+            
             pendingUserMessageIds = new HashMap<Long, T>(requests.size());
             for (RequestHolder requestHolder : requests) {
                 pendingUserMessageIds.put(requestHolder.request.getUserMessageID(), requestHolder.command);
@@ -142,7 +153,7 @@ public abstract class CommandRequestExecutorBase<T> implements
                     if (debug) {
                         log.debug("Removing porter message listener because pending list is empty: " + this);
                     }
-                    porterConnection.removeMessageListener(this);
+                    this.removeListener();
                 }
             }
         }
@@ -157,10 +168,31 @@ public abstract class CommandRequestExecutorBase<T> implements
             log.warn("received a message in the result vector that wasn't a PointData: " + 
                      aResult.getClass().toString() + "; original command was: " + origCommand);
         }
+        
+        public int getGroupMessageId() {
+            return groupMessageId;
+        }
+        
+        private void removeListener() {
+            porterConnection.removeMessageListener(this);
+            msgListeners.remove(this.callback);
+        }
+        
+        public void cancelCommands(LiteYukonUser user) {
+
+            // log remaining commands as cacneled
+            for (T cmd : pendingUserMessageIds.values()) {
+                log.debug("Command canceled by user '" + user.getUsername() + "':" + cmd.toString());
+            }
+            
+            // remove listener
+            removeListener();
+        }
 
         @Override
         public String toString() {
             ToStringCreator tsc = new ToStringCreator(this);
+            tsc.append("groupMessageId", groupMessageId);
             tsc.append("callback", callback);
             tsc.append("pendingUserMessageIds", pendingUserMessageIds.keySet());
             return tsc.toString();
@@ -205,8 +237,10 @@ public abstract class CommandRequestExecutorBase<T> implements
 
         // build up a list of command requests
         final List<RequestHolder> commandRequests = new ArrayList<RequestHolder>(commands.size());
+        int groupMessageId = RandomUtils.nextInt();
         for (T command : commands) {
             Request request = buildRequest(command);
+            request.setGroupMessageID(groupMessageId);
             RequestHolder requestHolder = new RequestHolder();
             requestHolder.command = command;
             requestHolder.request = request;
@@ -215,7 +249,10 @@ public abstract class CommandRequestExecutorBase<T> implements
 
         // create listener
         CommandResultMessageListener messageListener = new CommandResultMessageListener(commandRequests,
-                                                                                        callback);
+                                                                                        callback, 
+                                                                                        groupMessageId);
+        msgListeners.put(callback, messageListener);
+        
         log.debug("Addinging porter message listener: " + messageListener);
         porterConnection.addMessageListener(messageListener);
 
@@ -235,12 +272,29 @@ public abstract class CommandRequestExecutorBase<T> implements
         } finally {
             if (nothingWritten) {
                 log.debug("Removing porter message listener because nothing was written: " + messageListener);
-                porterConnection.removeMessageListener(messageListener);
+                messageListener.removeListener();
             }
         }
-
     }
-
+    
+    public long cancelExecution(CommandCompletionCallback<? super T> callback, LiteYukonUser user) {
+        
+        // get listener
+        CommandResultMessageListener messageListener = msgListeners.get(callback);
+        
+        // run cancel command
+        long commandsCanceled = porterRequestCancelService.cancelRequests(messageListener.getGroupMessageId());
+        
+        // cancel listener
+        log.debug("Removing porter message listener due to cancel: " + messageListener);
+        messageListener.cancelCommands(user);
+        
+        // cancel callback
+        callback.cancel();
+        
+        return commandsCanceled;
+    }
+    
     private void logCommand(Request request, LiteYukonUser user) {
         new SystemLogHelper(PointTypes.SYS_PID_SYSTEM).log("Manual: " + request.getCommandString(), "ID: " + request.getDeviceID() + ", Route: " + request.getRouteID(), user);
     }
@@ -251,7 +305,7 @@ public abstract class CommandRequestExecutorBase<T> implements
         boolean result = loggableCommandPermissions.contains(permission);
         return result;
     }
-
+    
     protected abstract Request buildRequest(T commandRequest);
 
     @Required
@@ -290,6 +344,12 @@ public abstract class CommandRequestExecutorBase<T> implements
     public void setCommandPermissionConverter(
             CommandPermissionConverter commandPermissionConverter) {
         this.commandPermissionConverter = commandPermissionConverter;
+    }
+    
+    @Autowired
+    public void setPorterRequestCancelService(
+            PorterRequestCancelService porterRequestCancelService) {
+        this.porterRequestCancelService = porterRequestCancelService;
     }
 
 }

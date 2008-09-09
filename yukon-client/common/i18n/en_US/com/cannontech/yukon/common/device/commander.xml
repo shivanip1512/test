@@ -2,7 +2,8 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
     
-    <entry key="yukon.common.device.commander.groupCommandExecutor.IS_COMPLETE">{isComplete|Complete|In Progress}</entry>
+    <entry key="yukon.common.device.commander.groupCommandExecutor.IS_COMPLETE_TEXT">{isComplete|Complete|In Progress}</entry>
+    <entry key="yukon.common.device.commander.groupCommandExecutor.IS_CANCELED_TEXT">{isCanceled|(Canceled)| }</entry>
     
     <entry key="yukon.common.device.commander.collectionActionOnDevicesLabel.allResults">Choose New Operation For All Devices</entry>
     
@@ -13,5 +14,10 @@
     <entry key="yukon.common.device.commander.results.progressLabel">Progress</entry>
     <entry key="yukon.common.device.commander.results.inProgress">In Progress...</entry>
     <entry key="yukon.common.device.commander.results.complete">Complete.</entry>
+    <entry key="yukon.common.device.commander.results.canceled">Canceled.</entry>
+    
+    <entry key="yukon.common.device.commander.results.cancelCommands">Cancel Commands</entry>
+    <entry key="yukon.common.device.commander.results.cancelingCommands">Canceling Commands...</entry>
+    <entry key="yukon.common.device.commander.results.finishedCancelingCommands">Commands Canceled.</entry>
     
 </properties>

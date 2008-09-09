@@ -8,12 +8,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.util.Cancelable;
 import com.cannontech.common.util.Completable;
 import com.cannontech.common.util.MapList;
 import com.cannontech.core.dynamic.PointValueHolder;
 
 public class GroupCommandCompletionCallback implements
-        CommandCompletionCallback<CommandRequestDevice>, Completable, MultipleDeviceResultHolder {
+        CommandCompletionCallback<CommandRequestDevice>, Completable, Cancelable, MultipleDeviceResultHolder {
     
     private Map<YukonDevice,DeviceErrorDescription> errors = new ConcurrentHashMap<YukonDevice, DeviceErrorDescription>(100, .75f, 1);
     private Map<YukonDevice,String> resultStrings = new ConcurrentHashMap<YukonDevice, String>(100, .75f, 1);
@@ -21,6 +22,7 @@ public class GroupCommandCompletionCallback implements
     private Object PRESENT = new Object(); // used as the value for the allDevices map
     private MapList<YukonDevice,PointValueHolder> receivedValues = new MapList<YukonDevice, PointValueHolder>();
     private boolean complete = false;
+    private boolean canceled = false;
     
     @Override
     public void receivedIntermediateError(CommandRequestDevice command, DeviceErrorDescription error) {
@@ -97,9 +99,20 @@ public class GroupCommandCompletionCallback implements
     }
     
     @Override
+    final public void cancel() {
+        canceled = true;
+        complete();
+    }
+    
+    @Override
     public boolean isComplete() {
         return complete;
     }
+    
+    @Override
+    public boolean isCanceled() {
+        return canceled;
+    };
 
     protected void doComplete() {
         // noop

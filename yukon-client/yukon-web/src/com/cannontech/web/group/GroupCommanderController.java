@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.analysis.tablemodel.GroupCommanderFailureResultsModel;
 import com.cannontech.analysis.tablemodel.GroupCommanderSuccessResultsModel;
@@ -57,6 +58,7 @@ import com.cannontech.util.ServletUtil;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.ExtTreeNode;
+import com.cannontech.web.util.JsonView;
 
 @Controller
 @RequestMapping("/commander/*")
@@ -310,6 +312,22 @@ public class GroupCommanderController implements InitializingBean {
         GroupCommandResult result = groupCommandExecutor.getResult(resultKey);
         
         map.addAttribute("result", result);
+    }
+    
+    @RequestMapping
+    public ModelAndView cancelCommands(String resultId, YukonUserContext userContext) {
+        
+        ModelAndView mav = new ModelAndView(new JsonView());
+        String errorMsg = "";
+        
+        try {
+            groupCommandExecutor.cancelExecution(resultId, userContext.getYukonUser());
+        } catch (Exception e) {
+            errorMsg = e.getMessage();
+        }
+            
+        mav.addObject("errorMsg", errorMsg);
+        return mav;
     }
 
     @Resource(name="groupCommanderSuccessResultDefinition")

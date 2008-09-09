@@ -15,7 +15,8 @@ public class CollectableMappings {
 		new com.cannontech.message.porter.message.DefineCollectableReturn(),
 		new com.cannontech.message.dispatch.message.DefineCollectablePointData(),
 		new com.cannontech.message.dispatch.message.DefineCollectableSignal(),
-		new com.cannontech.message.porter.message.DefineCollectableQueueData()
+		new com.cannontech.message.porter.message.DefineCollectableQueueData(),
+		new com.cannontech.message.porter.message.DefineCollectableRequestCancel()
 	};
 /**
  * This method was created in VisualAge.

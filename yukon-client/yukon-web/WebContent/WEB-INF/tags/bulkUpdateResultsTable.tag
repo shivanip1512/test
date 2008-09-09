@@ -56,11 +56,12 @@
 
 
 <%-- PROGRESS --%>
-<tags:bulkResultProgress labelKey="yukon.common.device.bulk.${resultsTypeMsgKey}Results.progressLabel" 
-                        inProgressKey="yukon.common.device.bulk.${resultsTypeMsgKey}Results.inProgress" 
-                        completeKey="yukon.common.device.bulk.${resultsTypeMsgKey}Results.complete"
+<tags:bulkResultProgress progressLabelTextKey="yukon.common.device.bulk.${resultsTypeMsgKey}Results.progressLabel" 
+                        inProgressTextKey="yukon.common.device.bulk.${resultsTypeMsgKey}Results.inProgress" 
+                        completeTextKey="yukon.common.device.bulk.${resultsTypeMsgKey}Results.complete"
                         totalCount="${totalCount}" 
-                        updateKey="BULKRESULT/${resultsId}/COMPLETED_LINES">
+                        countKey="BULKRESULT/${resultsId}/COMPLETED_LINES"
+                        completeKey="BULKRESULT/${resultsId}/IS_COMPLETE">
                         
 </tags:bulkResultProgress>
 
@@ -81,7 +82,7 @@
     
     </div>
     
-    <cti:dataUpdaterCallback function="showElementsOnComplete(${totalCount},['successActionsDiv'])" initialize="true" completedCount="BULKRESULT/${resultsId}/COMPLETED_LINES" />
+    <cti:dataUpdaterCallback function="toggleElementsOnComplete(['successActionsDiv'],true)" initialize="true" isComplete="BULKRESULT/${resultsId}/IS_COMPLETE" />
 
 </c:if>
 
@@ -124,4 +125,4 @@
 
 </div>
 
-<cti:dataUpdaterCallback function="showElementsOnComplete(${totalCount},['errorActionsDiv'])" initialize="true" completedCount="BULKRESULT/${resultsId}/COMPLETED_LINES" />
+<cti:dataUpdaterCallback function="toggleElementsOnComplete(['errorActionsDiv'],true)" initialize="true" isComplete="BULKRESULT/${resultsId}/IS_COMPLETE" />

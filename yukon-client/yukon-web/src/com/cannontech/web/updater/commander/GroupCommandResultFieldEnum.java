@@ -29,9 +29,31 @@ public enum GroupCommandResultFieldEnum {
     
     IS_COMPLETE(new ResultAccessor<GroupCommandResult>() {
         public Object getValue(GroupCommandResult groupCommandResult) {
+            return groupCommandResult.isComplete();
+        }
+    }),
+    
+    IS_COMPLETE_TEXT(new ResultAccessor<GroupCommandResult>() {
+        public Object getValue(GroupCommandResult groupCommandResult) {
             
-            ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.common.device.commander.groupCommandExecutor.IS_COMPLETE");
+            ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.common.device.commander.groupCommandExecutor.IS_COMPLETE_TEXT");
             resolvableTemplate.addData("isComplete", groupCommandResult.isComplete());
+            
+            return resolvableTemplate;
+        }
+    }),
+    
+    IS_CANCELED(new ResultAccessor<GroupCommandResult>() {
+        public Object getValue(GroupCommandResult groupCommandResult) {
+            return groupCommandResult.isCanceled();
+        }
+    }),
+    
+    IS_CANCELED_TEXT(new ResultAccessor<GroupCommandResult>() {
+        public Object getValue(GroupCommandResult groupCommandResult) {
+            
+            ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.common.device.commander.groupCommandExecutor.IS_CANCELED_TEXT");
+            resolvableTemplate.addData("isCanceled", groupCommandResult.isCanceled());
             
             return resolvableTemplate;
         }

@@ -1,10 +1,11 @@
 <%--  updateCallback is the name of  js function that will be passed the values of --%>
 <%--  completedItems and totalItems as parameters after they have been used to update the bar --%>
-<%@ attribute name="updateKey" required="true" type="java.lang.String"%>
+<%@ attribute name="countKey" required="true" type="java.lang.String"%>
 <%@ attribute name="totalCount" required="true" type="java.lang.Integer"%>
+<%@ attribute name="canceledKey" required="false" type="java.lang.String"%>
 
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
-
     
 <cti:includeScript link="/JavaScript/bulkDataUpdaterCallbacks.js"/>
 <cti:uniqueIdentifier var="pbarId" prefix="pbar_"/>
@@ -26,4 +27,8 @@
     </tr>
 </table>
 
-<cti:dataUpdaterCallback function="updateProgressBar('${pbarId}', ${totalCount})" initialize="true" completedCount="${updateKey}" />
+<cti:dataUpdaterCallback function="updateProgressBar('${pbarId}', ${totalCount})" initialize="true" completedCount="${countKey}" />
+
+<c:if test="${not empty canceledKey}">
+    <cti:dataUpdaterCallback function="cancelProgressBar('${pbarId}')" initialize="true" isCanceled="${canceledKey}" />
+</c:if>

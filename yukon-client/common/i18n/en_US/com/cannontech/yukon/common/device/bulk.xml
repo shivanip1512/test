@@ -20,7 +20,7 @@
     <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.deletedCountLabel">Deleted</entry>
     
     <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.STOP_TIME">{finished|{stopTime|BOTH}|In Progress...}</entry>
-    <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.IS_COMPLETE">{isComplete|Complete|In Progress}</entry>
+    <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.IS_COMPLETE_TEXT">{isComplete|Complete|In Progress}</entry>
     
     <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.performNewActionLinkTitle">Perform another action on these devices</entry>
     <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.downloadErrorFileLabel">Download</entry>

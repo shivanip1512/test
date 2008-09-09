@@ -45,7 +45,10 @@
                     <td style="text-align:right;"><cti:dataUpdaterValue type="COMMANDER" identifier="${result.key}/FAILURE_COUNT"/></td>
                     <td><div style="width:20px;"></div></td>
                     <td><a href="${resultDetailUrl}">View</a></td>
-                    <td><cti:dataUpdaterValue type="COMMANDER" identifier="${result.key}/IS_COMPLETE"/></td>
+                    <td>
+                        <cti:dataUpdaterValue type="COMMANDER" identifier="${result.key}/IS_COMPLETE_TEXT"/>
+                        <cti:dataUpdaterValue type="COMMANDER" identifier="${result.key}/IS_CANCELED_TEXT"/>
+                    </td>
                 </tr>
             </c:forEach>
             

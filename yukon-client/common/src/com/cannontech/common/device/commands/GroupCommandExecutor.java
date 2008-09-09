@@ -20,5 +20,7 @@ public interface GroupCommandExecutor {
     public List<GroupCommandResult> getPending();
 
     public GroupCommandResult getResult(String id);
+    
+    public long cancelExecution(String resultId, LiteYukonUser user);
 
 }
