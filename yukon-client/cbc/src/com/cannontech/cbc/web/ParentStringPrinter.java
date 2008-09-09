@@ -21,7 +21,8 @@ import com.cannontech.util.ServletUtil;
 public class ParentStringPrinter {
     private HttpServletRequest request;
     private static final String ORPH_STRING = "---";
-    private static final String FEEDER_URL = "/capcontrol/feeders.jsp";
+//    private static final String FEEDER_URL = "/capcontrol/feeders.jsp";
+    private static final String FEEDER_URL = "javascript:postMany('parentForm', '" + CCSessionInfo.STR_SUBID +"', 'paoId');";
     private static final String AREA_URL = "/capcontrol/subareas.jsp";
     private static final String SPECIAL_AREA_URL = "/capcontrol/specialSubAreas.jsp";
     private CapbankDao capbankDao = YukonSpringHook.getBean("capbankDao",CapbankDao.class);
@@ -154,12 +155,17 @@ public class ParentStringPrinter {
         }
     }
     
-    private String buildLink(final HttpServletRequest request, final String paoName, final Integer paoId, final String url) {
-        String safeUrl = ServletUtil.createSafeUrl(request, url);
+    private String buildLink(final HttpServletRequest request, final String paoName, final Integer paoId, String url) {
+        String safeUrl = "";
         final StringBuilder sb = new StringBuilder();
+        if(url.equalsIgnoreCase(FEEDER_URL)) {
+            safeUrl = FEEDER_URL.replace("paoId", paoId.toString());
+        }else {
+            safeUrl = ServletUtil.createSafeUrl(request, url);
+        }
         sb.append("<a href=\"");
         sb.append(safeUrl);
-        if (paoId != null) sb.append("?id=" + paoId);
+        if (!url.equalsIgnoreCase(FEEDER_URL) && paoId != null) sb.append("?id=" + paoId);
         sb.append("\">");
         sb.append(paoName);
         sb.append("</a>");
