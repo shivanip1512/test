@@ -25,11 +25,14 @@ import java.util.Observer;
 import java.util.Vector;
 
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JTextPane;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.html.HTMLDocument;
@@ -44,6 +47,7 @@ import com.cannontech.common.gui.util.TreeViewPanel;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.login.ClientStartupHelper;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.FileFilter;
 import com.cannontech.common.util.NativeIntVector;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.core.dao.DaoFactory;
@@ -1676,24 +1680,30 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 		//This will need to be updated someday for a new version of swing
 		java.awt.Frame parent = com.cannontech.common.util.CtiUtilities.getParentFrame(this);
 		javax.swing.JFileChooser  fileChooser = new javax.swing.JFileChooser();
+
+		FileFilter filter = new FileFilter("rtf", "Rich Text Format");
+		fileChooser.setFileFilter(filter);
 		
 		if( fileChooser.showSaveDialog(parent) == javax.swing.JFileChooser.APPROVE_OPTION )
 		{
 			java.io.FileWriter fWriter = null;
-			try
-			{
-				fWriter = new java.io.FileWriter( fileChooser.getSelectedFile().getPath(), true );
+			try	{
+			    String fileName = getFileName(fileChooser);
+			    
+				fWriter = new java.io.FileWriter( fileName, true );
 				java.io.PrintWriter pWriter = new java.io.PrintWriter( fWriter );
-	
-				pWriter.print( textPane.getText() );
+				Document document = textPane.getDocument();
+				
+				try {
+				    pWriter.print( document.getText(0, document.getLength()));
+				} catch (BadLocationException ble) {
+				    ble.printStackTrace();
+				}
+
 				fWriter.close();
-			}
-			catch( java.io.IOException e )
-			{				
+			} catch( java.io.IOException e ) {				
 				javax.swing.JOptionPane.showMessageDialog( parent, "An error occurred saving to a file", "Error", javax.swing.JOptionPane.ERROR_MESSAGE );
-			}
-			finally
-			{
+			} finally {
 				try
 				{
 					if( fWriter != null )
@@ -2194,5 +2204,15 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 		}
 		return treeModels;
 	}
+	
+	private String getFileName(JFileChooser fileChooser){
+	    String fileName = fileChooser.getSelectedFile().getPath();
 
+	    if(!fileName.endsWith(".rtf") && 
+	       fileChooser.getFileFilter().getDescription().contains("Rich Text Format")){
+	        fileName += ".rtf";
+	    }
+	    
+	    return fileName;
+	}
 }
