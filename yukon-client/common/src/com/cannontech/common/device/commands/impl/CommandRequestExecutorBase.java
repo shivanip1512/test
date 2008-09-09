@@ -211,7 +211,7 @@ public abstract class CommandRequestExecutorBase<T> implements
         execute(commands, callback, user);
 
         try {
-            callback.waitForCompletion(60);
+            callback.waitForCompletion(60,180);
             return callback;
         } catch (InterruptedException e) {
             throw new CommandCompletionException("Interrupted while block for command completion",
