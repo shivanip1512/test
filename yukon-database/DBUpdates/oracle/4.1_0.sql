@@ -1107,6 +1107,18 @@ INSERT INTO DEVICETYPECOMMAND VALUES (-735, -146, 'VersacomSerial', 25, 'Y', -1)
 INSERT INTO DEVICETYPECOMMAND VALUES (-736, -147, 'VersacomSerial', 26, 'Y', -1); 
 /* End YUK-6426 */
 
+/* Start YUK-6441 */
+DELETE BillingFileFormats 
+WHERE formatId < 0 
+AND formatType IN (SELECT DISTINCT formatType 
+                   FROM BillingFileFormats 
+                   WHERE formatId >= 0); 
+
+create unique index Indx_BillFile_FormType_UNQ on BillingFileFormats ( 
+FormatType ASC 
+);
+/* End YUK-6441 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     9/8/2008 1:16:35 PM                          */
+/* Created on:     9/10/2008 5:34:32 PM                         */
 /*==============================================================*/
 
 
@@ -219,6 +219,15 @@ if exists (select 1
             and   indid > 0
             and   indid < 255)
    drop index ApplianceBase.CstLdTy_CstLdInf_FK
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('BillingFileFormats')
+            and   name  = 'Indx_BillFile_FormType_UNQ'
+            and   indid > 0
+            and   indid < 255)
+   drop index BillingFileFormats.Indx_BillFile_FormType_UNQ
 go
 
 if exists (select 1
@@ -3568,6 +3577,14 @@ insert into billingfileformats values(-25, 'Itron Register Readings Export',1);
 insert into billingfileformats values(-26, 'SIMPLE_TOU_DeviceName',1);
 insert into billingfileformats values( 31, 'STANDARD',1);
 insert into billingfileformats values(-32, 'NISC TOU (kVarH) Rates Only',1); 
+
+/*==============================================================*/
+/* Index: Indx_BillFile_FormType_UNQ                            */
+/*==============================================================*/
+create unique index Indx_BillFile_FormType_UNQ on BillingFileFormats (
+FormatType ASC
+)
+go
 
 /*==============================================================*/
 /* Table: CALCBASE                                              */

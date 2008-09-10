@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     9/8/2008 1:19:18 PM                          */
+/* Created on:     9/10/2008 5:40:45 PM                         */
 /*==============================================================*/
 
 
@@ -68,6 +68,8 @@ drop index CstSrvCstProp_FK;
 drop index CstAcc_CstLdInfo_FK;
 
 drop index CstLdTy_CstLdInf_FK;
+
+drop index Indx_BillFile_FormType_UNQ;
 
 drop index Indx_ClcBaseUpdTyp;
 
@@ -1247,6 +1249,13 @@ insert into billingfileformats values(-25, 'Itron Register Readings Export',1);
 insert into billingfileformats values(-26, 'SIMPLE_TOU_DeviceName',1);
 insert into billingfileformats values( 31, 'STANDARD',1);
 insert into billingfileformats values(-32, 'NISC TOU (kVarH) Rates Only',1); 
+
+/*==============================================================*/
+/* Index: Indx_BillFile_FormType_UNQ                            */
+/*==============================================================*/
+create unique index Indx_BillFile_FormType_UNQ on BillingFileFormats (
+   FormatType ASC
+);
 
 /*==============================================================*/
 /* Table: CALCBASE                                              */
