@@ -246,7 +246,6 @@ public class SimpleThermostatSetbackGearPanel extends GenericGearPanel implement
         if (howToStopControlBox == null) {
             howToStopControlBox = new javax.swing.JComboBox();
             howToStopControlBox.setName("JComboBoxHowToStop");
-            howToStopControlBox.setPreferredSize(new java.awt.Dimension(150, 23));
             howToStopControlBox.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
             howToStopControlBox.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.STOP_TIME_IN ) );
             howToStopControlBox.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.STOP_RESTORE ) );
@@ -338,7 +337,7 @@ public class SimpleThermostatSetbackGearPanel extends GenericGearPanel implement
 
         c.gridx = 0;
         c.gridy = 0;
-        statEditorPanel.add(new JLabel("Random Start Time"), c);
+        statEditorPanel.add(new JLabel("Random Start Time:"), c);
 
         c.gridx = 1;
         c.gridy = 0;
@@ -451,12 +450,13 @@ public class SimpleThermostatSetbackGearPanel extends GenericGearPanel implement
         
         c.gridx = 0;
         c.gridy = 9;
-        c.gridwidth = 2;
+        c.weightx = 1.0;
         statEditorPanel.add(getHowToStopLabel(), c);
         
-        c.gridx = 2;
+        c.gridx = 1;
         c.gridy = 9;
         c.gridwidth = 2;
+        c.weightx = 0.0;
         statEditorPanel.add(getHowToStopBox(), c);
 
         return statEditorPanel;
@@ -467,7 +467,6 @@ public class SimpleThermostatSetbackGearPanel extends GenericGearPanel implement
                 howToStopLabel = new javax.swing.JLabel();
                 howToStopLabel.setName("JLabelHowToStop");
                 howToStopLabel.setFont(new java.awt.Font("dialog", 0, 12));
-                howToStopLabel.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
                 howToStopLabel.setText("How to Stop Control:");
         }
         return howToStopLabel;
@@ -630,17 +629,27 @@ public class SimpleThermostatSetbackGearPanel extends GenericGearPanel implement
     
     private void initialize() {
         setName("SimpleThermostatSetbackGearPanel");
-        setPreferredSize(new Dimension(402, 430));
-        setAlignmentX(Component.LEFT_ALIGNMENT);
-        setAlignmentY(Component.TOP_ALIGNMENT);
-        //setSize(402, 430);
-        setLayout(new BorderLayout());
+        setLayout(new GridBagLayout());
         
         customChangeListener = new CustomChangeListener();
+        
+        GridBagConstraints imagePanelConstraint = new GridBagConstraints();
+        imagePanelConstraint.gridx = 0;
+        imagePanelConstraint.gridy = 0;
+        imagePanelConstraint.anchor = GridBagConstraints.WEST;
+        add(getImagePanel(), imagePanelConstraint);
 
-        add(getImagePanel(), BorderLayout.NORTH);
-        add(getMainPanel(), BorderLayout.CENTER);
-        add(getChangePanel(), BorderLayout.SOUTH);
+        GridBagConstraints mainPanelConstraint = new GridBagConstraints();
+        mainPanelConstraint.gridx = 0;
+        mainPanelConstraint.gridy = 1;
+        mainPanelConstraint.anchor = GridBagConstraints.WEST;
+        add(getMainPanel(), mainPanelConstraint);
+        
+        GridBagConstraints changePanelConstraint = new GridBagConstraints();
+        changePanelConstraint.gridx = 0;
+        changePanelConstraint.gridy = 2;
+        changePanelConstraint.anchor = GridBagConstraints.WEST;
+        add(getChangePanel(), changePanelConstraint);
         
         try {
             initConnections();

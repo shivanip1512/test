@@ -160,8 +160,7 @@ private DirectModifyGearPanel getDirectModifyGearPanel() {
 			ivjDirectModifyGearPanel = new com.cannontech.dbeditor.wizard.device.lmprogram.DirectModifyGearPanel();
 			ivjDirectModifyGearPanel.setName("DirectModifyGearPanel");
 			ivjDirectModifyGearPanel.setPreferredSize(new java.awt.Dimension(336, 266));
-			ivjDirectModifyGearPanel.setMinimumSize(new java.awt.Dimension(0, 0));
-			ivjDirectModifyGearPanel.setMaximumSize(new java.awt.Dimension(336, 266));
+			ivjDirectModifyGearPanel.setMinimumSize(new java.awt.Dimension(336, 266));
 			// user code begin {1}
 
 			ivjDirectModifyGearPanel.setVisible( false );
@@ -535,10 +534,9 @@ public void jButtonCreate_ActionPerformed(java.awt.event.ActionEvent actionEvent
 	com.cannontech.common.gui.util.OkCancelDialog d = new com.cannontech.common.gui.util.OkCancelDialog(
 		com.cannontech.common.util.CtiUtilities.getParentFrame(this), "Gear Creation", true, p );
 
-	d.setSize( 400, 385 );
-	//d.pack();
+	d.setSize(500, 500);
 	d.setLocationRelativeTo( this );
-	d.show();
+	d.setVisible(true);
 
 	if( d.getButtonPressed() == d.OK_PRESSED )
 	{
