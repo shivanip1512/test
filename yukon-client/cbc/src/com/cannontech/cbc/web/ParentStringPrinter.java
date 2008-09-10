@@ -21,7 +21,6 @@ import com.cannontech.util.ServletUtil;
 public class ParentStringPrinter {
     private HttpServletRequest request;
     private static final String ORPH_STRING = "---";
-//    private static final String FEEDER_URL = "/capcontrol/feeders.jsp";
     private static final String FEEDER_URL = "javascript:postMany('parentForm', '" + CCSessionInfo.STR_SUBID +"', 'paoId');";
     private static final String AREA_URL = "/capcontrol/subareas.jsp";
     private static final String SPECIAL_AREA_URL = "/capcontrol/specialSubAreas.jsp";
