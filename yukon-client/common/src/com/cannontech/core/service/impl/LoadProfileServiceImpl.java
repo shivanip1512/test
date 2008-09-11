@@ -236,7 +236,7 @@ public class LoadProfileServiceImpl implements LoadProfileService {
                 receivedReturnsCount.remove(info.requestId);
                 executor.execute(new Runnable() {
                     public void run() {
-                        info.runner.onFailure(-1, "Unknown Error");
+                        info.runner.onFailure(-1, "Load Profile command has not responded, request has been abandoned.");
                     }
                 });
                 
