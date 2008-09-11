@@ -7,6 +7,7 @@
 package com.cannontech.stars.util.task;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -17,19 +18,19 @@ import javax.servlet.http.HttpSession;
 
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.activity.ActivityLogActions;
-import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.StarsSearchDao;
+import com.cannontech.stars.dr.util.YukonListEntryHelper;
 import com.cannontech.stars.util.EventUtils;
-import com.cannontech.stars.util.FilterWrapper;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.web.bean.InventoryBean;
 import com.cannontech.stars.web.util.InventoryManagerUtil;
 
 /**
@@ -97,41 +98,27 @@ public class AddSNRangeTask extends TimeConsumingTask {
 		StarsYukonUser user = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
 		
 		Integer categoryID = new Integer( InventoryUtils.getInventoryCategoryID(devTypeID.intValue(), energyCompany) );
+        
 		
-        /*
-         * Let's cheat a little and use the inventoryBean filtering to look for serial range.
-         */
-        InventoryBean iBean = (InventoryBean) session.getAttribute("inventoryBean");
-        if(iBean == null)
-        {
-            session.setAttribute("inventoryBean", new InventoryBean());
-            iBean = (InventoryBean) session.getAttribute("inventoryBean");
+        // Get any existing hardware in the serial number range and create a map keyed on serial number
+		int deviceTypeDefinitionId = 
+			YukonListEntryHelper.getYukonDefinitionId(
+					energyCompany, 
+					YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE, 
+					devTypeID);
+        StarsSearchDao starsSearchDao = YukonSpringHook.getBean("starsSearchDao", StarsSearchDao.class);
+        List<LiteStarsLMHardware> existingHardware = starsSearchDao.searchLMHardwareBySerialNumberRange(
+											        		snFrom, 
+											        		snTo, 
+											        		deviceTypeDefinitionId, 
+											        		Collections.singletonList(energyCompany));
+        
+        Map<String, LiteStarsLMHardware> foundMap = new HashMap<String, LiteStarsLMHardware>();
+        for(LiteStarsLMHardware hardware : existingHardware) {
+        	foundMap.put(hardware.getManufacturerSerialNumber(), hardware);
         }
         
-        List<FilterWrapper> tempList = new ArrayList<FilterWrapper>();
-        String serialStart = Integer.toString(snFrom);
-        String serialEnd = Integer.toString(snTo);
-        String devType = Integer.toString(devTypeID);
-        tempList.add(new FilterWrapper(String.valueOf(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_DEV_TYPE), devType, devType));
-        tempList.add(new FilterWrapper(String.valueOf(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE_MAX), serialEnd, serialEnd));
-        tempList.add(new FilterWrapper(String.valueOf(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE_MIN), serialStart, serialStart));
-        iBean.setFilterByList(tempList);
-        
-        iBean.setShipmentCheck(true);
-        List<LiteInventoryBase> found = iBean.getLimitedHardwareList();
-        LiteInventoryBase liteInv = null;
-        Map<String, LiteStarsLMHardware> foundMap = new HashMap<String, LiteStarsLMHardware>(found.size());
-        for(int j = 0; j < found.size(); j++)
-        {
-        	liteInv = iBean.getInventoryList().get(j);
-            
-            /*
-             * if this needs to do meters, will have to add a clause
-             */
-            if(liteInv != null && liteInv instanceof LiteStarsLMHardware)
-                foundMap.put(((LiteStarsLMHardware)liteInv).getManufacturerSerialNumber(), ((LiteStarsLMHardware)liteInv));
-        }
-        
+        // Create a piece of hardware for each sn in the range
 		for (int sn = snFrom; sn <= snTo; sn++) {
 			String serialNo = String.valueOf(sn);
 			
