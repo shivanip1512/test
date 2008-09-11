@@ -12,13 +12,16 @@ import com.cannontech.yukon.BasicServerConnection;
 
 public class PorterQueueDataServiceImpl implements PorterQueueDataService {
     private BasicServerConnection porterConnection;
+    
+    private final String commandString = "system message request count";
+    private final long timeout = 30000;
 
     public long getMessageCountForRequest(long requestId) {
         Request req = new Request();
         final int randomId = RandomUtils.nextInt();
-        req.setCommandString("system message request count");
+        req.setCommandString(commandString);
         req.setUserMessageID(randomId);
-        req.setOptionsField((int) requestId);
+        req.setGroupMessageID(requestId);
         
         ServerRequestBlocker<QueueData> blocker = 
             new ServerRequestBlocker<QueueData>(porterConnection, QueueData.class, new Checker<QueueData>() {
@@ -28,7 +31,7 @@ public class PorterQueueDataServiceImpl implements PorterQueueDataService {
         });
         
         try {
-            QueueData response = blocker.execute(req, 30000);
+            QueueData response = blocker.execute(req, timeout);
             return response.getRequestIdCount();
         } catch (TimeoutException e) {
             throw new RuntimeException("Unable to get message count for request", e);

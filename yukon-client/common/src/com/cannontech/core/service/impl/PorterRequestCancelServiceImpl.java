@@ -17,12 +17,15 @@ public class PorterRequestCancelServiceImpl implements PorterRequestCancelServic
     private BasicServerConnection porterConnection;
     private Logger log = YukonLogManager.getLogger(PorterRequestCancelServiceImpl.class);
 
+    private final String commandString = "system message request cancel";
+    private final long timeout = 30000;
+    
     public long cancelRequests(int groupMessageId) {
         
         final int randomId = RandomUtils.nextInt();
         
         Request req = new Request();
-        req.setCommandString("system message request cancel");
+        req.setCommandString(commandString);
         req.setUserMessageID(randomId);
         req.setGroupMessageID(groupMessageId);
         
@@ -35,12 +38,10 @@ public class PorterRequestCancelServiceImpl implements PorterRequestCancelServic
         
         try {
             
-            log.debug("Executing 'system message request cancel' for groupMessageId " + groupMessageId + ", user id " + randomId);
-            RequestCancel response = blocker.execute(req, 30000);
-            
+            RequestCancel response = blocker.execute(req, timeout);
             long itemsCanceled = response.getRequestIdCount();
             
-            log.debug("Cancel command canceled " + itemsCanceled + " commands with groupMessageId " + groupMessageId + ", user id " + randomId);
+            log.debug("Canceled " + itemsCanceled + " commands with groupMessageId " + groupMessageId);
             return itemsCanceled;
             
         } catch (TimeoutException e) {

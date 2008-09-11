@@ -3,24 +3,35 @@
  */
 package com.cannontech.message.util;
 
+import org.apache.log4j.Logger;
+
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.Checker;
+import com.cannontech.message.porter.message.Request;
 import com.cannontech.yukon.BasicServerConnection;
 
 public class ServerRequestBlocker<T extends Message> implements MessageListener {
     private BasicServerConnection _connection;
     private T _responseMsg = null;
     private final Checker<T> checker;
-    private final Class<T> responseType;        
+    private final Class<T> responseType;  
+    
+    private Logger log = YukonLogManager.getLogger(ServerRequestBlocker.class);
+    
     public ServerRequestBlocker(BasicServerConnection conn, Class<T> responseType, Checker<T> checker) {
         _connection = conn;
         this.responseType = responseType;
         this.checker = checker;
     }
 
-    public synchronized T execute(Message request, long timeoutMilliSec) throws TimeoutException {
+    public synchronized T execute(Request request, long timeoutMilliSec) throws TimeoutException {
         try { 
             //Add this as a listener so we can look for a response
             _connection.addMessageListener(this);
+            
+            log.debug("Executing '" + request.getCommandString() 
+                      + "', userMessageId " + request.getUserMessageID() 
+                      + ", groupMessageId " + request.getGroupMessageID());
             _connection.write(request);
             wait(timeoutMilliSec);
         }

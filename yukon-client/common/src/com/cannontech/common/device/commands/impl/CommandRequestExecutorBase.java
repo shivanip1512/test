@@ -182,7 +182,7 @@ public abstract class CommandRequestExecutorBase<T> implements
 
             // log remaining commands as cacneled
             for (T cmd : pendingUserMessageIds.values()) {
-                log.debug("Command canceled by user '" + user.getUsername() + "':" + cmd.toString());
+                log.info("Command canceled by user '" + user.getUsername() + "':" + cmd.toString());
             }
             
             // remove listener
