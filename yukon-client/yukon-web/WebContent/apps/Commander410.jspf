@@ -18,7 +18,7 @@ if( request.getParameter("clearids") != null)
     com.cannontech.clientutils.CTILogger.info("Clearing the RequestMessageIDs, they aren't coming back!");
 }
 //set the deviceID of the YC_BEAN
-YC_BEAN.setDeviceID(deviceID);
+YC_BEAN.setLiteYukonPao(deviceID);
 %>
 
 <cti:breadCrumbs>
