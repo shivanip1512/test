@@ -42,7 +42,7 @@ class Mct410Sim
         int getNumberOfRepeaters();
         void setNumberOfRepeaters(int num);
 
-        unsigned char* generateEmetconWordResponse(int& responseSize, int function, CtiTime time);
+        unsigned char* generateEmetconWordResponse(int& responseSize, int function, CtiTime time, unsigned char ack);
         unsigned char * getLongLoadProfileData(int function, int bytesToReturn);
         unsigned char * getLoadProfileData(int function, int bytesToReturn);
         unsigned char * getKWHData(int bytesToReturn);

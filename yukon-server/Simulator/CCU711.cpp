@@ -605,7 +605,7 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], unsign
 
                 //Generate response word(s).
                 int size = 0;
-                unsigned char *ptr = mctPtr->generateEmetconWordResponse(size,getEmetconBWord()->getFunction(),CtiTime());
+                unsigned char *ptr = mctPtr->generateEmetconWordResponse(size,getEmetconBWord()->getFunction(),CtiTime(),ack);
                 
                 for (int i = 0; i < size; i++)
                 {
@@ -653,7 +653,7 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], unsign
 
                 //Ctr = newWord.InsertWord(D_WORD, CtiTime(), _outmessageData, Function, mctNumber, Ctr, (getRepeaters()));
                 int size = 0;
-                unsigned char *ptr = mctPtr->generateEmetconWordResponse(size,getEmetconBWord()->getFunction(),CtiTime());
+                unsigned char *ptr = mctPtr->generateEmetconWordResponse(size,getEmetconBWord()->getFunction(),CtiTime(),ack);
                 
                 for (int i = 0; i < size; i++)
                 {

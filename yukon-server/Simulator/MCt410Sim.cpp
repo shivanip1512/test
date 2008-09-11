@@ -55,9 +55,9 @@ void Mct410Sim::setNumberOfRepeaters(int num)
     numberOfRepeaters = num;
 }
 
-unsigned char* Mct410Sim::generateEmetconWordResponse(int& responseSize, int function, CtiTime time)
+unsigned char* Mct410Sim::generateEmetconWordResponse(int& responseSize, int function, CtiTime time, unsigned char ack)
 {
-    unsigned char ack = makeAck(mctAddress>>1);
+    //unsigned char ack = makeAck(mctAddress>>1);
     unsigned char* resp = NULL;
     responseSize = 0;
 
