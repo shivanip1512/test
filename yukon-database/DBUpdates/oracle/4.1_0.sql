@@ -1119,6 +1119,10 @@ FormatType ASC
 );
 /* End YUK-6441 */
 
+/* Start YUK-6450 */
+INSERT INTO BillingFileFormats VALUES( 33, 'NISC Interval Readings', 1); 
+/* End YUK-6450 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

@@ -1,8 +1,12 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     9/10/2008 5:34:32 PM                         */
+/* Created on:     9/11/2008 2:13:25 PM                         */
 /*==============================================================*/
+
+
+set define off;
+
 
 
 if exists (select 1
@@ -3558,25 +3562,27 @@ create table BillingFileFormats (
 )
 go
 
-insert into billingfileformats values(-11, 'MV_90 DATA Import',1);
-insert into billingfileformats values(-100,'INVALID',1);
-insert into billingfileformats values( 1,'CADP',1);
-insert into billingfileformats values( 2,'CADPXL2',1);
-insert into billingfileformats values( 3,'WLT-40',1);
-insert into billingfileformats values( 4,'CTI-CSV',1);
-insert into billingfileformats values( 5,'OPU',1);
-insert into billingfileformats values( 9, 'CTI2',1);
-insert into billingfileformats values( 15, 'NCDC-Handheld',1);
-insert into billingfileformats values( 16, 'NISC TOU (kVarH)',1);
-insert into billingfileformats values(-20, 'IVUE_BI_T65',1);
-insert into billingfileformats values( 21, 'SIMPLE_TOU',1);
-insert into billingfileformats values( 22, 'EXTENDED_TOU',1);
-insert into billingfileformats values(-23, 'Big Rivers Elec Coop',1);
-insert into billingfileformats values(-24, 'INCODE (Extended TOU)',1);
-insert into billingfileformats values(-25, 'Itron Register Readings Export',1);
-insert into billingfileformats values(-26, 'SIMPLE_TOU_DeviceName',1);
-insert into billingfileformats values( 31, 'STANDARD',1);
-insert into billingfileformats values(-32, 'NISC TOU (kVarH) Rates Only',1); 
+INSERT INTO BillingFileFormats VALUES(-11, 'MV_90 DATA Import',1);
+INSERT INTO BillingFileFormats VALUES(-100,'INVALID',1);
+INSERT INTO BillingFileFormats VALUES( 1,'CADP',1);
+INSERT INTO BillingFileFormats VALUES( 2,'CADPXL2',1);
+INSERT INTO BillingFileFormats VALUES( 3,'WLT-40',1);
+INSERT INTO BillingFileFormats VALUES( 4,'CTI-CSV',1);
+INSERT INTO BillingFileFormats VALUES( 5,'OPU',1);
+INSERT INTO BillingFileFormats VALUES( 9, 'CTI2',1);
+INSERT INTO BillingFileFormats VALUES( 15, 'NCDC-Handheld',1);
+INSERT INTO BillingFileFormats VALUES( 16, 'NISC TOU (kVarH)',1);
+
+INSERT INTO BillingFileFormats VALUES(-20, 'IVUE_BI_T65',1);
+INSERT INTO BillingFileFormats VALUES( 21, 'SIMPLE_TOU',1);
+INSERT INTO BillingFileFormats VALUES( 22, 'EXTENDED_TOU',1);
+INSERT INTO BillingFileFormats VALUES(-23, 'Big Rivers Elec Coop',1);
+INSERT INTO BillingFileFormats VALUES(-24, 'INCODE (Extended TOU)',1);
+INSERT INTO BillingFileFormats VALUES(-25, 'Itron Register Readings Export',1);
+INSERT INTO BillingFileFormats VALUES(-26, 'SIMPLE_TOU_DeviceName',1);
+INSERT INTO BillingFileFormats VALUES( 31, 'STANDARD',1);
+INSERT INTO BillingFileFormats VALUES(-32, 'NISC TOU (kVarH) Rates Only',1);
+INSERT INTO BillingFileFormats VALUES( 33, 'NISC Interval Readings', 1); 
 
 /*==============================================================*/
 /* Index: Indx_BillFile_FormType_UNQ                            */
