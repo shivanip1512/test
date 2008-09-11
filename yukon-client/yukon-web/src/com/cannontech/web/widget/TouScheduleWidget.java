@@ -66,7 +66,7 @@ public class TouScheduleWidget extends WidgetControllerBase {
 
         LiteYukonUser user = ServletUtil.getYukonUser(request);
         ycBean.setUserID(user.getUserID());
-        ycBean.setDeviceID(deviceId);
+        ycBean.setLiteYukonPao(deviceId);
 
         return ycBean;
     }

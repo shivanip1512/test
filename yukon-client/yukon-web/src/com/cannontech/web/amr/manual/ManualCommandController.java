@@ -60,7 +60,7 @@ public class ManualCommandController extends MultiActionController {
 
 		LiteYukonUser user = ServletUtil.getYukonUser(request);
 		ycBean.setUserID(user.getUserID());
-		ycBean.setDeviceID(deviceId);
+		ycBean.setLiteYukonPao(deviceId);
 		ycBean.setDeviceType(deviceId);
 
 		LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);

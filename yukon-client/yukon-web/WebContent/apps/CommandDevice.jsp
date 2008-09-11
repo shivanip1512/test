@@ -43,13 +43,14 @@
 	if( request.getParameter("deviceID") != null)
 	{
 		deviceID = Integer.parseInt(request.getParameter("deviceID"));
-        if( YC_BEAN.getDeviceID() != deviceID) {
-            YC_BEAN.setDeviceID(deviceID);
+        if( YC_BEAN.getLiteYukonPao() != null &&
+            YC_BEAN.getLiteYukonPao().getLiteID() != deviceID) {
+            YC_BEAN.setLiteYukonPao(deviceID);
             session.removeAttribute("CustomerDetail"); //delete this for now, we'll figure out a way to store per meter later
             session.removeAttribute("ServLocDetail"); //delete this for now, we'll figure out a way to store per meter later
         }
 	} else {
-		deviceID = YC_BEAN.getDeviceID();
+		deviceID = YC_BEAN.getLiteYukonPao().getLiteID();
 	}
 
 	//get the liteYukonPao using the deviceID
@@ -181,7 +182,7 @@
 			<!-- Devices side menu section -->
 			<div class="header">Devices</div>
 			
-			<c:forEach items="${YC_BEAN.liteDevices}" var="device">
+			<c:forEach items="${YC_BEAN.deviceHistory}" var="device">
 				<c:if test="${cti:isDeviceSortByGroup(device)}">
 					<c:choose>
 						<c:when test="${deviceId == device.yukonID}">
@@ -203,7 +204,7 @@
 			<!-- Load Management menu section -->
 			<div class="header">Load Management</div>
 			
-			<c:forEach items="${YC_BEAN.liteDevices}" var="device">
+			<c:forEach items="${YC_BEAN.deviceHistory}" var="device">
 				<c:if test="${cti:isLoadManagementSortByGroup(device)}">
 					<c:choose>
 						<c:when test="${deviceId == device.yukonID}">
@@ -377,7 +378,7 @@
 			<!-- Cap Control menu section -->
 			<div class="header">Cap Control</div>
 			
-			<c:forEach items="${YC_BEAN.liteDevices}" var="device">
+			<c:forEach items="${YC_BEAN.deviceHistory}" var="device">
 				<c:if test="${cti:isCapControlSortByGroup(device)}">
 					<c:choose>
 						<c:when test="${deviceId == device.yukonID}">

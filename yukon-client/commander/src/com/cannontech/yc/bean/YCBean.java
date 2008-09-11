@@ -26,7 +26,6 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
@@ -38,7 +37,6 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.RouteTypes;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.database.db.device.Device;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.porter.message.Return;
 import com.cannontech.message.util.Message;
@@ -56,10 +54,10 @@ import com.cannontech.yc.gui.YC;
  */
 public class YCBean extends YC implements MessageListener, HttpSessionBindingListener
 {
+    List<LiteYukonPAObject> deviceHistory = new ArrayList<LiteYukonPAObject>();
+    
     private java.text.SimpleDateFormat dateTimeFormat = new java.text.SimpleDateFormat("MM/dd/yy HH:mm");
 
-	private Vector<Integer> deviceIDs = null;
-	
     //Contains <String>serialType to <Vector<String>> serialNumbers
 	private HashMap<String, Vector<String>> serialTypeToNumberMap = null;
 
@@ -93,31 +91,6 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 	public YCBean()
 	{
 		super();
-	}
-
-	/* (non-Javadoc)
-	 * Sets the current deviceID from the session.
-	 * Loads a collection of points to register with dispatch.
-	 * @see com.cannontech.yc.gui.YC#setDeviceID(int)
-	 */
-	public void setDeviceID(int deviceID_) {
-	    
-		if( deviceID_ != getDeviceID()) {
-			super.setDeviceID(deviceID_);
-			
-			if( deviceID_ > Device.SYSTEM_DEVICE_ID && !getDeviceIDs().contains(new Integer(deviceID_)))
-				getDeviceIDs().addElement(deviceID_);
-			
-			//Remove data from other devices..we don't care about it anymore
-			clearResultText();
-			try {
-				setCommandString("");
-			} catch (PaoAuthorizationException e) {
-				//IGNORE, we're clearing it out, we have the right to do this.
-			}
-			clearErrorMsg();
-            clearCurrentData();
-		}
 	}
 
 	/**
@@ -392,13 +365,6 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 		}
 		return pd;
 	}
-
-	public Vector<Integer> getDeviceIDs() {
-		if( deviceIDs == null)
-			deviceIDs = new Vector<Integer>();
-			
-		return deviceIDs;
-	}
 	
 	/**
 	 * Returns a vector of serialNumbers from the serialTypeToNumbersMap with key value of serialType_
@@ -543,17 +509,6 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
         setLiteUser(DaoFactory.getYukonUserDao().getLiteYukonUser(userID));
     }
     
-    public List<LiteYukonPAObject> getLiteDevices(){
-        List<LiteYukonPAObject> deviceList = new ArrayList<LiteYukonPAObject>();
-        
-        PaoDao paoDao = DaoFactory.getPaoDao();
-        for(Object deviceId : this.getDeviceIDs()){
-            deviceList.add(paoDao.getLiteYukonPAO((Integer)deviceId));
-        }
-        
-        return deviceList;
-    }
-    
     public String getFormattedTimestamp(PointValueHolder pointValueHolder, String defaultValue) { //int deviceID, int pointOffset, int pointType){
 	    if( pointValueHolder != null)
 	    	return dateTimeFormat.format(pointValueHolder.getPointDataTimeStamp()); 
@@ -575,7 +530,38 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
    		}
 	  	return defaultValue;
     }
+    
+    // Adds an element to the previously viewed devices
+    private void addToDeviceHistory(LiteYukonPAObject liteYukonPao){
+        if(liteYukonPao != null){
+            if(!this.deviceHistory.contains(liteYukonPao)){ 
+                this.deviceHistory.add(liteYukonPao);
+            }
+        }
+        
+        // Remove data from other devices
+        try{
+            setCommandString("");
+        } catch (PaoAuthorizationException e){}
+        
+        clearResultText();
+        clearErrorMsg();
+        clearCurrentData();
+    }
 
+    // Gets the list of previously added devices
+    public List<LiteYukonPAObject> getDeviceHistory(){
+        return this.deviceHistory;
+    }
+    
+    /**
+     * @param liteYukonPao
+     */
+    public void setLiteYukonPao(LiteYukonPAObject liteYukonPao){
+        super.setLiteYukonPao(liteYukonPao);
+        addToDeviceHistory(liteYukonPao);
+    }
+    
     public int getPeakProfileDays() {
         return peakProfileDays;
     }

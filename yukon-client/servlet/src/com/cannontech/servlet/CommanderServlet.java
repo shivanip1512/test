@@ -95,9 +95,9 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 		 * deviceID/serialNumber command is sent. */
 		String deviceID = req.getParameter("deviceID");
 		if( deviceID != null )
-			localBean.setDeviceID(Integer.parseInt(deviceID));
+			localBean.setLiteYukonPao(Integer.parseInt(deviceID));
 		else
-			localBean.setDeviceID(PAOGroups.INVALID);
+			localBean.setLiteYukonPao(PAOGroups.INVALID);
 		
 		String serialNumber = req.getParameter("serialNumber");
 		if( serialNumber != null)
@@ -125,7 +125,7 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 		  	resp.setContentType("text/plain");
 //		  	CSVQuoter quoter = new CSVQuoter(",");
 
-            List<LitePoint> litePoints = DaoFactory.getPointDao().getLitePointsByPaObjectId(localBean.getDeviceID());
+            List<LitePoint> litePoints = DaoFactory.getPointDao().getLitePointsByPaObjectId(localBean.getLiteYukonPao().getLiteID());
 			if( litePoints != null)
 			{
                 for (LitePoint point : litePoints) {
@@ -133,7 +133,7 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 					{
 						out.write(new String("LP Peak Report - " + point.getPointName() + "\r\n").getBytes());
 						
-						PointData pointData = (PointData)localBean.getRecentPointData(localBean.getDeviceID(), PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND, PointTypes.LP_PEAK_REPORT);						
+						PointData pointData = (PointData)localBean.getRecentPointData(localBean.getLiteYukonPao().getLiteID(), PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND, PointTypes.LP_PEAK_REPORT);						
 						if( pointData != null)
 						{
 							String tempStr = pointData.getStr();
@@ -152,7 +152,7 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 					{
 						out.write(new String("LP Peak Report - " + point.getPointName() + "\r\n").getBytes());
 						
-						PointData pointData = (PointData)localBean.getRecentPointData(localBean.getDeviceID(), PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND, PointTypes.LP_PEAK_REPORT);						
+						PointData pointData = (PointData)localBean.getRecentPointData(localBean.getLiteYukonPao().getLiteID(), PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND, PointTypes.LP_PEAK_REPORT);						
 						if( pointData != null)
 						{
 							String tempStr = pointData.getStr();
@@ -198,7 +198,7 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 				DeviceLoadProfile dlp = new DeviceLoadProfile();
 				try
 				{
-					dlp.setDeviceID(new Integer(localBean.getDeviceID()));
+					dlp.setDeviceID(new Integer(localBean.getLiteYukonPao().getLiteID()));
 					Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, dlp);
 					dlp = (DeviceLoadProfile)t.execute();
 				}

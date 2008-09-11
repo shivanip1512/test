@@ -5,28 +5,34 @@ package com.cannontech.core.authorization.support;
  */
 public enum Permission {
 
-    READ_COMMAND("read command", false), 
-    WRITE_COMMAND("write command", false), 
-    CONTROL_COMMAND("control command", false), 
-    OTHER_COMMAND("Unrecognized device command", false), 
-    LM_VISIBLE("Load Management Visibility", false), 
-    ALLOWED_COMMAND("Allowed Command", false),
-    PAO_VISIBLE("Object Visibility", true),
-    DEFAULT_ROUTE("Default Route", false);
+    READ_COMMAND("read command", false, false), 
+    WRITE_COMMAND("write command", false, false), 
+    CONTROL_COMMAND("control command", false, false), 
+    OTHER_COMMAND("Unrecognized device command", false, false), 
+    LM_VISIBLE("Load Management Visibility", false, true), 
+    ALLOWED_COMMAND("Allowed Command", false, false),
+    PAO_VISIBLE("Object Visibility", true, true),
+    DEFAULT_ROUTE("Default Route", false, true);
 
     private final String description;
-    private final Boolean defaultAuth;
+    private final boolean defaultAuth;
+    private final boolean settablePerPao;
     
-    private Permission(String description, Boolean defaultAuth) {
+    private Permission(String description, boolean defaultAuth, boolean settablePerPao) {
         this.description = description;
         this.defaultAuth = defaultAuth;
+        this.settablePerPao = settablePerPao;
     }
 
     public String getDescription() {
         return this.description;
     }
     
-    public Boolean getDefault() {
+    public boolean getDefault() {
         return this.defaultAuth;
+    }
+    
+    public boolean isSettablePerPao(){
+        return this.settablePerPao;
     }
 }

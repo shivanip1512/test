@@ -71,11 +71,12 @@ import com.cannontech.util.ColorUtil;
 import com.cannontech.yc.MessageType;
 import com.cannontech.yukon.BasicServerConnection;
 import com.cannontech.yukon.IDatabaseCache;
-import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.conns.ConnPool;
 
 public class YC extends Observable implements MessageListener
 {
+    protected PaoDao paoDao = (PaoDao) YukonSpringHook.getBean("paoDao");
+    
     private final SystemLogHelper _systemLogHelper;
     private String logUserName = null;
     
@@ -103,9 +104,9 @@ public class YC extends Observable implements MessageListener
 	private String commandString = "";	//the actual string entered from the command line
 	private Vector<String> executeCmdsVector = null;	// the parsed vector of commands from the command line.
 	
-	/** deviceID(opt1) or serialNumber(opt2) will be used to send command to.
-	/** Selected deviceID */
-	private int deviceID = -1; 
+	/** liteYukonPAObject(opt1) or serialNumber(opt2) will be used to send command to.
+	/** Selected liteYukonPAObject */	
+	private LiteYukonPAObject liteYukonPao = null; 
 	/** Selected serial Number */
 	private String serialNumber;
 	/** Selected tree item object*/
@@ -235,14 +236,15 @@ public class YC extends Observable implements MessageListener
             if( getTreeItem() instanceof LiteYukonPAObject )
             {
                 LiteYukonPAObject liteYukonPao = (LiteYukonPAObject) getTreeItem();
-                setDeviceID(liteYukonPao.getYukonID());
+                setLiteYukonPao(liteYukonPao);
                 handleDevice();
             }
             // Meter number item in tree selected.
             else if( getTreeItem() instanceof LiteDeviceMeterNumber )
             {
                 LiteDeviceMeterNumber ldmn = (LiteDeviceMeterNumber) getTreeItem();
-                setDeviceID(ldmn.getLiteID());
+                LiteYukonPAObject liteYukonPao = paoDao.getLiteYukonPAO(ldmn.getLiteID());
+                setLiteYukonPao(liteYukonPao);
                 handleDevice();
             }		
             // Serial Number item in tree selected.
@@ -266,7 +268,8 @@ public class YC extends Observable implements MessageListener
                     while (deviceIter.hasNext())
                     {
                         int deviceId = deviceIter.next();
-                        setDeviceID(deviceId);
+                        LiteYukonPAObject liteYukonPao = paoDao.getLiteYukonPAO(deviceId);
+                        setLiteYukonPao(liteYukonPao);
                         handleDevice();
                         // clone the vector because handleDevice() removed the command but in truth, it
                         // shouldn't be removed until all of the devices have been looped through.							
@@ -284,7 +287,7 @@ public class YC extends Observable implements MessageListener
         else	//are we coming from the servlet and have no treeObject? (only deviceID or serial number)
         {
             //Send the command out on deviceID/serialNumber
-            if( getDeviceID() > PAOGroups.INVALID )
+            if(liteYukonPao != null)
             {	
                 handleDevice();
             }
@@ -413,9 +416,7 @@ public class YC extends Observable implements MessageListener
 	 */
 	public void handleDevice()
 	{
-		LiteYukonPAObject liteYukonPao = DaoFactory.getPaoDao().getLiteYukonPAO(getDeviceID());
-
-		if( getDeviceID() < 0 )	//no device selected
+		if( liteYukonPao == null)	//no device selected
 		{
 			logCommand(" *** Warning: Please select a Device (or Serial Number) ***");
 			return;
@@ -435,7 +436,7 @@ public class YC extends Observable implements MessageListener
 		}
 	
 		//send the first command from the vector out!
-		porterRequest = new Request( getDeviceID(), getExecuteCmdsVector().get(0), currentUserMessageID );
+		porterRequest = new Request( liteYukonPao.getLiteID(), getExecuteCmdsVector().get(0), currentUserMessageID );
 		porterRequest.setPriority(getCommandPriority());
 		getExecuteCmdsVector().remove(0);	//remove the sent command from the list!
 		
@@ -702,18 +703,13 @@ public class YC extends Observable implements MessageListener
     
     public boolean isAllowCommand(String command, LiteYukonUser user) {
 
-        if (this.deviceID != -1) {
-            // Get the device
-            PaoDao paoDao = (PaoDao) YukonSpringHook.getBean("paoDao");
-            LiteYukonPAObject pao = paoDao.getLiteYukonPAO(this.deviceID);
-
-            return this.isAllowCommand(command, user, pao);
-
+        if (liteYukonPao != null) {
+            return this.isAllowCommand(command, user, liteYukonPao);
 
         } else if (getModelType() == DeviceGroupTreeFactory.LiteBaseModel.class) {
         	
         	PaoCommandAuthorizationService service = (PaoCommandAuthorizationService) YukonSpringHook.getBean("paoCommandAuthorizationService");
-        	return service.isAuthorized(user, command) || getCommandMode() == YC.CGP_MODE;
+                return service.isAuthorized(user, command) || getCommandMode() == YC.CGP_MODE;
         	
         } else if (!PAOGroups.STRING_INVALID.equalsIgnoreCase(serialNumber)) {
         	
@@ -837,14 +833,15 @@ public class YC extends Observable implements MessageListener
         // Set device id for tree item
         if (treeItem instanceof LiteYukonPAObject) {
             LiteYukonPAObject liteYukonPao = (LiteYukonPAObject) getTreeItem();
-            setDeviceID(liteYukonPao.getYukonID());
+            setLiteYukonPao(liteYukonPao);
         }
         // Meter number item in tree selected.
         else if (treeItem instanceof LiteDeviceMeterNumber) {
             LiteDeviceMeterNumber ldmn = (LiteDeviceMeterNumber) getTreeItem();
-            setDeviceID(ldmn.getLiteID());
+            LiteYukonPAObject liteYukonPao = paoDao.getLiteYukonPAO(ldmn.getLiteID());
+            setLiteYukonPao(liteYukonPao);
         } else {
-            setDeviceID(-1);
+            setLiteYukonPao(null);
         }
     }
 	/**
@@ -1182,24 +1179,6 @@ public class YC extends Observable implements MessageListener
 		while (false);
 	}
 
-	/**
-	 * DeviceId of the current selected device, if exists.
- 	 * @return int deviceID
-	 */
-	public int getDeviceID()
-	{
-		return deviceID;
-	}
-
-	/**
-	 * Sets the deviceID
-	 * @param deviceID_ int
-	 */
-	public void setDeviceID(int deviceID_)
-	{
-		deviceID = deviceID_;
-	}
-	
 	/**
 	 * generate a unique mesageid, don't let it be negative
 	 * @return long currentMessageID
@@ -1654,7 +1633,7 @@ public class YC extends Observable implements MessageListener
     
     private int getLogPointID( int pointType, int pointOffset)
     {
-        List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(deviceID);
+        List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(liteYukonPao.getLiteID());
         for (LitePoint point : points) {
             if(point.getPointType() == pointType && point.getPointOffset() == pointOffset) {
                 return point.getPointID();
@@ -1696,4 +1675,28 @@ public class YC extends Observable implements MessageListener
 	{
 		setErrorMsg("");
 	}
+	
+	/**
+	 * @param liteYukonPao
+	 */
+	public void setLiteYukonPao(LiteYukonPAObject liteYukonPao){
+	    this.liteYukonPao = liteYukonPao;
+	}
+	/**
+	 * 
+	 * @param paoId
+	 */
+	public void setLiteYukonPao(int paoId){
+	    LiteYukonPAObject litePAO = null;
+	    if (paoId != PAOGroups.INVALID){
+            litePAO = paoDao.getLiteYukonPAO(paoId);
+	    }
+	    this.setLiteYukonPao(litePAO);
+    }
+	/**
+	 * @return
+	 */
+	public LiteYukonPAObject getLiteYukonPao(){
+        return liteYukonPao;
+    }
 }

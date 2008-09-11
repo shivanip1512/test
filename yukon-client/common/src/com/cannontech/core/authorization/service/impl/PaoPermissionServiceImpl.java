@@ -67,10 +67,12 @@ public class PaoPermissionServiceImpl implements PaoPermissionService {
     }
 
     public void addPermission(LiteYukonUser user, LiteYukonPAObject pao, Permission permission, boolean allow) {
+        validatePermission(permission);
         userPaoPermissionDao.addPermission(user, pao, permission, allow);
     }
 
     public void removePermission(LiteYukonUser user, LiteYukonPAObject pao, Permission permission) {
+        validatePermission(permission);
         userPaoPermissionDao.removePermission(user, pao, permission);
     }
 
@@ -79,9 +81,14 @@ public class PaoPermissionServiceImpl implements PaoPermissionService {
     }
 
     public AuthorizationResponse hasPermission(LiteYukonUser user, LiteYukonPAObject pao, Permission permission) {
+        if(!permission.isSettablePerPao()) {
+            return AuthorizationResponse.UNKNOWN;
+        }
+        
         AuthorizationResponse ret = userPaoPermissionDao.hasPermissionForPao(user, pao, permission);        
-        if( ret != AuthorizationResponse.UNKNOWN)
+        if( ret != AuthorizationResponse.UNKNOWN) {
             return ret;
+        }
 
         // Get all groups that the user is in
         List<LiteYukonGroup> userGroups = groupDao.getGroupsForUser(user);
@@ -92,6 +99,7 @@ public class PaoPermissionServiceImpl implements PaoPermissionService {
 
     public void addGroupPermission(LiteYukonGroup group, LiteYukonPAObject pao,
             Permission permission, boolean allow) {
+        validatePermission(permission);
         groupPaoPermissionDao.addPermission(group, pao, permission, allow);
     }
 
@@ -118,9 +126,9 @@ public class PaoPermissionServiceImpl implements PaoPermissionService {
 
     public AuthorizationResponse hasPermission(List<LiteYukonGroup> groupList, LiteYukonPAObject pao,
             Permission permission) {
-    	if(permission.equals(Permission.ALLOWED_COMMAND)) {
-    		// ALLOWED_COMMAND permission are always allowed
-    		return AuthorizationResponse.AUTHORIZED;
+        
+    	if(!permission.isSettablePerPao()) {
+            return AuthorizationResponse.UNKNOWN;
     	}
     	
         return groupPaoPermissionDao.hasPermissionForPao(groupList, pao, permission);
@@ -128,6 +136,7 @@ public class PaoPermissionServiceImpl implements PaoPermissionService {
 
     public void removeGroupPermission(LiteYukonGroup group, LiteYukonPAObject pao,
             Permission permission) {
+        validatePermission(permission);
         groupPaoPermissionDao.removePermission(group, pao, permission);
     }
 
@@ -177,4 +186,11 @@ public class PaoPermissionServiceImpl implements PaoPermissionService {
         userPaoPermissionDao.removeAllPaoPermissions(paoId);
         groupPaoPermissionDao.removeAllPaoPermissions(paoId);
     }
+
+    private void validatePermission(Permission permission) {
+        if(!permission.isSettablePerPao()) {
+            throw new IllegalArgumentException("Permission not settable per pao.");
+        }
+    }
 }
+

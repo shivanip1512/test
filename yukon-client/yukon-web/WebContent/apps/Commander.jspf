@@ -18,7 +18,7 @@ div.scroll { font-size: 12px;
 
 <%
 	//set the deviceID of the YC_BEAN
-	YC_BEAN.setDeviceID(deviceID);
+	YC_BEAN.setLiteYukonPao(deviceID);
 	
 	if( serialType.equals("xcom"))
 	{
