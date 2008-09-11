@@ -190,9 +190,15 @@ public class DynamicBillingController extends MultiActionController {
 		ModelAndView mav = new ModelAndView("redirect:overview.jsp");
 
 		// retrieve all information from the page and save it to db
-		DynamicFormat savedFormat = parseIntoDynamicFormat(request);
+		DynamicFormat savedFormat = null;
+		try{
+		    savedFormat = parseIntoDynamicFormat(request);
+		} catch(IllegalArgumentException IAE){
+            return new ModelAndView(new TextView(StringEscapeUtils.escapeHtml("errorMsg:"+IAE.getMessage())));
+        }
 		dynamicBillingFileDao.save(savedFormat);
 
+		
 		// retrieve new list of formats after saving
 		List<DynamicFormat> allRows = dynamicBillingFileDao.retrieveAll();
 
@@ -211,8 +217,12 @@ public class DynamicBillingController extends MultiActionController {
 			HttpServletResponse response) throws ServletException {
 
 		StringBuffer returnString = new StringBuffer();
-		DynamicFormat format = parseIntoDynamicFormat(request);
-
+		DynamicFormat format = null;
+		try {
+		    format = parseIntoDynamicFormat(request);
+		} catch(IllegalArgumentException IAE){
+		    return new ModelAndView(new TextView(StringEscapeUtils.escapeHtml("errorMsg:"+IAE.getMessage())));
+		}
 		dynamicFormatter.setDynamicFormat(format);
 
 		BillableDevice device = this.getDefaultDevice();
@@ -286,6 +296,9 @@ public class DynamicBillingController extends MultiActionController {
 
 		format.setFormatId(ServletRequestUtils.getIntParameter(request, "formatId"));
 		format.setName(ServletRequestUtils.getStringParameter( request, "formatName"));
+		if (!dynamicBillingFileDao.isFormatNameUnique(format.getName(),format.getFormatId())){
+		    throw new IllegalArgumentException("The format name is not unique.  Please supply a unique format name");
+		}
 		format.setFooter(ServletRequestUtils.getStringParameter(request, "footer"));
 		format.setHeader(ServletRequestUtils.getStringParameter(request, "header"));
 		format.setDelim(ServletRequestUtils.getStringParameter(request, "delimiter"));

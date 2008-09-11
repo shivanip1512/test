@@ -17,4 +17,6 @@ public interface DynamicBillingFileDao {
 
 	public List<DynamicFormat> retrieveAll();
 	
+	public boolean isFormatNameUnique(String formatName, int formatId); 
+	
 }

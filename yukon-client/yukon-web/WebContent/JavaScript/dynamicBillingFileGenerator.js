@@ -407,8 +407,17 @@ function updatePreview(){
 			
 			//if successful, display the string to the page
 			onSuccess: function(transport){
-				theDiv.innerHTML = transport.responseText;
-				canBeSaved = 1;
+                var responseText = transport.responseText;
+                if(responseText.indexOf("errorMsg:") < 0) {
+                    theDiv.innerHTML = transport.responseText;
+                    $('errorMsg').innerHTML = "&nbsp;";
+                    canBeSaved = 1;
+                } else {
+                    var errorMsg = responseText.replace("errorMsg:", "");
+                    $('errorMsg').innerHTML = errorMsg;
+                    theDiv.innerHTML = "Error.  Please See Header for more information";
+                    canBeSaved = 0;
+                }
 			},
 			
 			//any exception raised on the java side is displayed on the page
