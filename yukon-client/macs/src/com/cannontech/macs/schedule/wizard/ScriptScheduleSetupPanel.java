@@ -75,6 +75,7 @@ import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.service.DeviceGroupTreeFactory;
 import com.cannontech.common.gui.tree.CustomRenderJTree;
 import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.database.data.schedule.script.ScriptTemplate;
@@ -2181,10 +2182,15 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
      * @return boolean
      */
     public boolean isInputValid(){
-    	if(getScriptNameTextField().getText() == null || getScriptNameTextField().getText().length() <= 0) {
+        
+    	String scriptName = getScriptNameTextField().getText();
+        if(scriptName == null || scriptName.length() <= 0) {
     		setErrorString("The Script Name text field must be filled in or the Use Schedule Name check box must be selected.");
     		return false;
-    	}else if(getMeterReadGroupTree().getSelectionPath() == null ) {
+    	}else if(!isValidFileName(scriptName) || !isValidPaoName(scriptName)) {
+            setErrorString("The script name cannot contain invalid file name characters.");
+            return false;
+        }else if(getMeterReadGroupTree().getSelectionPath() == null ) {
             setErrorString("A meter read group must be selected.");
             return false;
         }else if(getGenerateBillingCheckBox().isSelected() && getBillingGroupTree().getSelectionPath() == null) {
@@ -2192,6 +2198,26 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
             return false;
         }
     	return true;
+    }
+
+    private boolean isValidFileName(String fileName) {
+        char[] invalids = TextFieldDocument.INVALID_CHARS_WINDOWS; 
+    	for(char invalid: invalids) {
+    	    if(fileName.indexOf(invalid) != -1) {
+                return false;
+            }
+    	}
+    	return true;
+    }
+    
+    private boolean isValidPaoName(String paoName) {
+        char[] invalids = TextFieldDocument.INVALID_CHARS_PAO; 
+        for(char invalid: invalids) {
+            if(paoName.indexOf(invalid) != -1) {
+                return false;
+            }
+        }
+        return true;
     }
     
     /* (non-Javadoc)

@@ -52,6 +52,18 @@ public class TextFieldDocument extends javax.swing.text.PlainDocument
 	
 	private char[] invalidChars = null;
 
+	public static final char[] INVALID_CHARS_WINDOWS =
+    {
+        '*',
+        '|',
+        '\\',
+        '/',
+        ':',
+        '"',
+        '<',
+        '>',
+        '?'
+    };
 
 	public static final char[] INVALID_CHARS_PAO =
 	{
