@@ -2,6 +2,7 @@ package com.cannontech.web.widget;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -103,9 +104,9 @@ public class AccountInformationWidget extends WidgetControllerBase{
     private List<Info> getCustomerBasicsInfo(com.cannontech.multispeak.deploy.service.Customer mspCustomer, YukonUserContext userContext) {
         
         List<Info> infoList = new ArrayList<Info>();
-        add("Last Name", new Date(), false, infoList, userContext);
-        add("First Name", new Float(1.4), false, infoList, userContext);
-        add("Middle Name", new Integer(7), true, infoList, userContext);
+        add("Last Name", mspCustomer.getLastName(), false, infoList, userContext);
+        add("First Name", mspCustomer.getFirstName(), false, infoList, userContext);
+        add("Middle Name", mspCustomer.getMName(), true, infoList, userContext);
         add("DBA", mspCustomer.getDBAName(), false, infoList, userContext);
         add("Home Phone", formatPhone(mspCustomer.getHomeAc(), mspCustomer.getHomePhone()), true, infoList, userContext);
         add("Day Phone", formatPhone(mspCustomer.getDayAc(), mspCustomer.getDayPhone()), true, infoList, userContext);
@@ -187,7 +188,11 @@ public class AccountInformationWidget extends WidgetControllerBase{
         add("Type", mspServLoc.getServType(), false, infoList, userContext);
         add("Revenue Class", mspServLoc.getRevenueClass(), true, infoList, userContext);
         add("Status", mspServLoc.getServStatus(), true, infoList, userContext);
-        add("Outage Status", mspServLoc.getOutageStatus(), true, infoList, userContext);
+        if (mspServLoc.getOutageStatus() != null) {
+            add("Outage Status", mspServLoc.getOutageStatus().getValue(), true, infoList, userContext);
+        } else {
+            add("Outage Status", null, true, infoList, userContext);
+        }
         add("Billing Cycle", mspServLoc.getBillingCycle(), true, infoList, userContext);
         add("Route", mspServLoc.getRoute(), true, infoList, userContext);
         add("Special Needs", mspServLoc.getSpecialNeeds(), true, infoList, userContext);
@@ -271,8 +276,16 @@ public class AccountInformationWidget extends WidgetControllerBase{
             add("City Code", n.getCityCode(), true, infoList, userContext);
             add("Substation Code", n.getSubstationCode(), true, infoList, userContext);
             add("Feeder", n.getFeeder(), true, infoList, userContext);
-            add("Phasing code", n.getPhaseCd(), true, infoList, userContext);
-            add("Engineering analysis location", n.getEaLoc(), false, infoList, userContext);
+            if (n.getPhaseCd() != null) {
+                add("Phasing code", n.getPhaseCd().getValue(), true, infoList, userContext);
+            } else {
+                add("Phasing code", null, true, infoList, userContext);
+            }
+            if (n.getEaLoc() != null) {
+                add("Engineering analysis location", n.getEaLoc().getName(), true, infoList, userContext);
+            } else {
+                add("Engineering analysis location", null, true, infoList, userContext);
+            }
             add("Pole Number", n.getPoleNo(), true, infoList, userContext);
             add("Section", n.getSection(), true, infoList, userContext);
             add("Township", n.getTownship(), true, infoList, userContext);
@@ -325,12 +338,32 @@ public class AccountInformationWidget extends WidgetControllerBase{
             
             add("Meter kh (watthour) constant", np.getKh(), true, infoList, userContext);
             add("Watthour meter register constant", np.getKr(), true, infoList, userContext);
-            add("Frequency", np.getFrequency(), true, infoList, userContext);
-            add("Number Of Element", np.getNumberOfElements(), true, infoList, userContext);
-            add("Base Type", np.getBaseType(), true, infoList, userContext);
+            if (np.getFrequency() != null) {
+                add("Frequency", np.getFrequency().getValue(), true, infoList, userContext);
+            } else {
+                add("Frequency", null, true, infoList, userContext);
+            }
+            if (np.getNumberOfElements() != null) {
+                add("Number Of Element", np.getNumberOfElements().getValue(), true, infoList, userContext);
+            } else {
+                add("Number Of Element", null, true, infoList, userContext);
+            }
+            if (np.getBaseType() != null) {
+                add("Base Type", np.getBaseType().getValue(), true, infoList, userContext);
+            } else {
+                add("Base Type", null, true, infoList, userContext);
+            }
             add("Accuracy Class", np.getAccuracyClass(), true, infoList, userContext);
-            add("Element Voltage", np.getElementsVoltage(), true, infoList, userContext);
-            add("Supply Voltage", np.getSupplyVoltage(), true, infoList, userContext);
+            if (np.getElementsVoltage() != null) {
+                add("Element Voltage", np.getElementsVoltage().getValue(), true, infoList, userContext);
+            } else {
+                add("Element Voltage", null, true, infoList, userContext);
+            }
+            if (np.getSupplyVoltage() != null) {
+                add("Supply Voltage", np.getSupplyVoltage().getValue(), true, infoList, userContext);
+            } else {
+                add("Supply Voltage", null, true, infoList, userContext);
+            }
             add("Max Amperage", np.getMaxAmperage(), true, infoList, userContext);
             add("Test Amperage", np.getTestAmperage(), true, infoList, userContext);
             add("Reg Ratio", np.getRegRatio(), true, infoList, userContext);
@@ -429,11 +462,17 @@ public class AccountInformationWidget extends WidgetControllerBase{
                     DecimalFormat formatter = new DecimalFormat("#.###");
                     this.value = formatter.format(value);
                 } else if (value instanceof Date) {
-                    this.value = dateFormattingService.formatDate((Date)value, DateFormattingService.DateFormatEnum.DATE, userContext);
+                    this.value = formatDate((Date)value, userContext);
+                } else if (value instanceof Calendar) {
+                    this.value = formatDate(((Calendar)value).getTime(), userContext);
                 } else {
                     this.value = value.toString();
                 }
             }
+        }
+        
+        private String formatDate(Date date, YukonUserContext userContext) {
+            return dateFormattingService.formatDate(date, DateFormattingService.DateFormatEnum.DATE, userContext);
         }
 
         public String getLabel() {

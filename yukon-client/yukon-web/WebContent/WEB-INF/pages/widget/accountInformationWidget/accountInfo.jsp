@@ -26,7 +26,10 @@
 
     <tr>
         <td width="30%" class="label">Name:</td>
-        <td>${mspCustomer.firstName} ${mspCustomer.lastName}</td>
+        <td>${mspCustomer.firstName} 
+            <c:if test="${not empty mspCustomer.MName}">${mspCustomer.MName}</c:if>
+            ${mspCustomer.lastName}
+        </td>
     </tr>
     
     <tr valign="top">
