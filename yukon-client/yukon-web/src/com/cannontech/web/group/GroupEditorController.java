@@ -3,7 +3,6 @@ package com.cannontech.web.group;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -34,10 +33,8 @@ import com.cannontech.common.device.groups.service.CopyDeviceGroupService;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.service.ModifiableDeviceGroupPredicate;
 import com.cannontech.common.device.groups.service.NonHiddenDeviceGroupPredicate;
-import com.cannontech.common.device.groups.util.YukonDeviceToIdMapper;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.MapQueue;
-import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.predicate.AggregateAndPredicate;
 import com.cannontech.common.util.predicate.Predicate;
 import com.cannontech.core.dao.AuthDao;
@@ -62,6 +59,9 @@ public class GroupEditorController extends MultiActionController {
 
     private MeterDao meterDao = null;
     private DeviceGroupCollectionHelper deviceGroupCollectionHelper = null;
+
+    private final int maxToShowImmediately = 10;
+    private final int maxGetDevicesSize = 1000;
     
     @Required
     public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
@@ -156,9 +156,7 @@ public class GroupEditorController extends MultiActionController {
         Boolean showDevices = ServletRequestUtils.getBooleanParameter(request, "showDevices", false);
         mav.addObject("showDevices", showDevices);
         
-        List<? extends YukonDevice> deviceList = null;
         // check the size of the group
-        final int maxToShowImmediately = 10;
         int childDeviceCount = deviceGroupDao.getChildDeviceCount(group);
         mav.addObject("deviceCount", childDeviceCount);
         
@@ -167,22 +165,11 @@ public class GroupEditorController extends MultiActionController {
         
         boolean showImmediately = childDeviceCount < maxToShowImmediately;
         mav.addObject("showImmediately", showImmediately);
-        
+        mav.addObject("maxGetDevicesSize", maxGetDevicesSize);
         if (showImmediately || showDevices) {
-            deviceList = meterDao.getChildMetersByGroup(group);
-            mav.addObject("deviceList", deviceList);
+            addMaxDevicesToMav(mav, group);
         }
                 
-        if (groupModifiable) {
-            if (deviceList == null) {
-                // it might have been loaded in the showImmediately block, if not we can load a slimmer version
-                Set<YukonDevice> childDevices = deviceGroupDao.getChildDevices(group);
-                deviceList = new ArrayList<YukonDevice>(childDevices);
-            }
-            List<Integer> deviceIdList = new MappingList<YukonDevice, Integer>(deviceList, new YukonDeviceToIdMapper());
-            mav.addObject("deviceIdsInGroup", StringUtils.join(deviceIdList, ","));
-        }
-        
         // ALL GROUPS HIERARCHY
         DeviceGroupHierarchy allGroupsGroupHierarchy = deviceGroupService.getDeviceGroupHierarchy(rootGroup, new NonHiddenDeviceGroupPredicate());
         
@@ -297,16 +284,27 @@ public class GroupEditorController extends MultiActionController {
 
         DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
 
-        List<Meter> deviceList = meterDao.getChildMetersByGroup(group);
+        addMaxDevicesToMav(mav, group);
+
+        mav.addObject("group", group);
         
+        return mav;
+
+    }
+    
+    private void addMaxDevicesToMav(ModelAndView mav, DeviceGroup group) {
+        
+        List<Meter> deviceList = meterDao.getChildMetersByGroup(group, maxGetDevicesSize);
         Collections.sort(deviceList, meterDao.getMeterComparator());
         
         mav.addObject("deviceList", deviceList);
-
-        mav.addObject("group", group);
-
-        return mav;
-
+        
+        // To display "you've been limted" text to user.
+        // If we have maxGetDevicesSize devices, assume we've ben limted.
+        mav.addObject("maxGetDevicesSize", maxGetDevicesSize);
+        if (deviceList.size() == maxGetDevicesSize) {
+            mav.addObject("limted", true);
+        }
     }
 
     public ModelAndView updateGroupName(HttpServletRequest request, HttpServletResponse response)

@@ -1,5 +1,7 @@
 package com.cannontech.amr.meter.dao.impl;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -9,6 +11,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +37,6 @@ public class MeterDaoImpl implements MeterDao {
     private DBPersistentDao dbPersistentDao;
     private SimpleJdbcOperations simpleJdbcTemplate;
     private JdbcOperations jdbcOps;
-    private SimpleJdbcOperations jdbcTemplate;
     private ParameterizedRowMapper<Meter> meterRowMapper;
     private PaoDao paoDao;
     private RoleDao roleDao;
@@ -137,13 +139,43 @@ public class MeterDaoImpl implements MeterDao {
 
         return meterList;
     }
-
-    public List<Meter> getChildMetersByGroup(DeviceGroup group) {
+    
+    private String getChildMetersByGroupSql(DeviceGroup group) {
+        
         String sqlWhereClause = deviceGroupProviderDao.getChildDeviceGroupSqlWhereClause(group,
                                                                                          "Device.deviceId");
-        String sql = retrieveMeterSql + " where " + sqlWhereClause;
+        return retrieveMeterSql + " where " + sqlWhereClause;
+    }
+    
+    public List<Meter> getChildMetersByGroup(DeviceGroup group) {
+        String sql = getChildMetersByGroupSql(group);
 
         List<Meter> meterList = simpleJdbcTemplate.query(sql, meterRowMapper);
+
+        return meterList;
+    }
+    
+    public List<Meter> getChildMetersByGroup(DeviceGroup group, final int maxSize) {
+        String sql = getChildMetersByGroupSql(group);
+
+        final List<Meter> meterList = new ArrayList<Meter>();
+            
+        ResultSetExtractor rse = new ResultSetExtractor() {
+
+            @Override
+            public Object extractData(ResultSet rs) throws SQLException, DataAccessException {
+                
+                int i = 0;
+                while (meterList.size() < maxSize && rs.next()) {
+                    Meter meter = meterRowMapper.mapRow(rs, i);
+                    meterList.add(meter);
+                    i++;
+                }
+                return null;
+            }
+        };
+        
+        simpleJdbcTemplate.getJdbcOperations().query(sql, rse);
 
         return meterList;
     }

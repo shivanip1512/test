@@ -34,6 +34,12 @@
                     </tr>
                 </c:if>
                 
+                <c:if test="${limted}">
+                    <span class="errorRed">
+                        Results limited to ${maxGetDevicesSize} devices.
+                    </span>
+                    <br><br>
+                </c:if>
             
 				<c:forEach var="device" items="${deviceList}">
 					<tr class="<tags:alternateRow odd="" even="altRow"/>">

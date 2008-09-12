@@ -477,7 +477,10 @@
                                         <td>
                                             <cti:msg key="yukon.web.deviceGroups.editor.membersContainer.groupContainsCountLabel" arguments="${deviceCount}"/>
                                             <c:if test="${deviceCount > 0}">
-                                                <a href="javascript:showDevices()">
+                                                <cti:msg var="showDevicesLimitText" 
+                                                         key="yukon.web.deviceGroups.editor.membersContainer.showDevicesLimitText" 
+                                                         argument="${maxGetDevicesSize}"/>
+                                                <a href="javascript:showDevices()" title="${showDevicesLimitText}">
                                                     <cti:msg key="yukon.web.deviceGroups.editor.membersContainer.showDeviceslabel"/>
                                                 </a>
                                             </c:if>

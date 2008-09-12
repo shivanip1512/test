@@ -27,6 +27,8 @@ public interface MeterDao extends StandardDaoOperations<Meter> {
     
     public List<Meter> getChildMetersByGroup(DeviceGroup group);
     
+    public List<Meter> getChildMetersByGroup(DeviceGroup group, int maxSize);
+    
     public Comparator<Meter> getMeterComparator();
     
     public void update(Meter newMeterInfo);
