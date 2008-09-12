@@ -92,6 +92,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 	private int [] treeModels = null;
 	private static final String YC_TITLE = "Commander";
 	public static final String HELP_FILE = "Yukon_Commander_Help.chm";
+    public String[] restrictedCharacters = {"*", "?", "\"", "<", ">", "|"};//{
 	
     public static final URL COMMANDER_IMG_16 = YukonCommander.class.getResource("/Commander16.gif");
     public static final URL COMMANDER_IMG_24 = YukonCommander.class.getResource("/Commander24.gif");
@@ -1684,37 +1685,58 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 		FileFilter filter = new FileFilter("rtf", "Rich Text Format");
 		fileChooser.setFileFilter(filter);
 		
-		if( fileChooser.showSaveDialog(parent) == javax.swing.JFileChooser.APPROVE_OPTION )
-		{
-			java.io.FileWriter fWriter = null;
-			try	{
-			    String fileName = getFileName(fileChooser);
-			    
-				fWriter = new java.io.FileWriter( fileName, true );
-				java.io.PrintWriter pWriter = new java.io.PrintWriter( fWriter );
-				Document document = textPane.getDocument();
-				
-				try {
-				    pWriter.print( document.getText(0, document.getLength()));
-				} catch (BadLocationException ble) {
-				    ble.printStackTrace();
-				}
+		while (true) {
+		    int dialogActionValue = fileChooser.showSaveDialog(parent);
+		    if (dialogActionValue == javax.swing.JFileChooser.CANCEL_OPTION ||
+		        dialogActionValue == javax.swing.JFileChooser.ERROR_OPTION){
+		        break;
+		    }
+		    
+		    if( dialogActionValue == javax.swing.JFileChooser.APPROVE_OPTION) {
+		        
+		        /* Checks to see if a restricted character was 
+		         * used in the submitted file path 
+		         */
+		        String filePath = getFilePath(fileChooser);
 
-				fWriter.close();
-			} catch( java.io.IOException e ) {				
-				javax.swing.JOptionPane.showMessageDialog( parent, "An error occurred saving to a file", "Error", javax.swing.JOptionPane.ERROR_MESSAGE );
-			} finally {
-				try
-				{
-					if( fWriter != null )
-						fWriter.close();
-				} 
-				catch( java.io.IOException e2 )
-				{
-					e2.printStackTrace();
-				}
-			}
-	
+		        String restrictedCharacterFound = null;
+		        for (String restrictedChar : restrictedCharacters) {
+		            if (filePath.contains(restrictedChar)){
+		                restrictedCharacterFound = restrictedChar;
+		                break;
+		            }
+		        }
+		        if(restrictedCharacterFound != null){
+	                javax.swing.JOptionPane.showMessageDialog( parent, "Please use none restricted characters. ("+restrictedCharacterFound+")", "Error", javax.swing.JOptionPane.ERROR_MESSAGE );
+		            continue;
+		        }
+            
+		        java.io.FileWriter fWriter = null;
+		        try	{
+               
+		            fWriter = new java.io.FileWriter( filePath, true );
+		            java.io.PrintWriter pWriter = new java.io.PrintWriter( fWriter );
+		            Document document = textPane.getDocument();
+				
+		            try {
+		                pWriter.print( document.getText(0, document.getLength()));
+		            } catch (BadLocationException ble) {
+		                CTILogger.error( ble.getMessage(), ble );
+		            }
+
+		            fWriter.close();
+		        } catch( java.io.IOException e ) {				
+		            javax.swing.JOptionPane.showMessageDialog( parent, "An error occurred saving to a file", "Error", javax.swing.JOptionPane.ERROR_MESSAGE );
+		        } finally {
+		            try {
+		                if( fWriter != null )
+		                    fWriter.close();
+		            } catch( java.io.IOException e2 ) {
+		                CTILogger.error( e2.getMessage(), e2 );
+		            }
+		        }
+		        break;
+		    }
 		}	 	
 	}
 	/**
@@ -2205,14 +2227,23 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 		return treeModels;
 	}
 	
-	private String getFileName(JFileChooser fileChooser){
-	    String fileName = fileChooser.getSelectedFile().getPath();
-
-	    if(!fileName.endsWith(".rtf") && 
-	       fileChooser.getFileFilter().getDescription().contains("Rich Text Format")){
-	        fileName += ".rtf";
+	private String getFilePath(JFileChooser fileChooser){
+	    String filePath = fileChooser.getSelectedFile().getPath();
+	    String fileName = fileChooser.getSelectedFile().getName();
+	    
+	    // Special Case where the user puts a file name with two double "s
+	    // EX.  "file.txt" should be file.txt not "file.txt".rtf 
+	    if(fileName.length() > 2 &&
+	       fileName.startsWith("\"") &&
+	       fileName.endsWith("\"")){
+	        filePath = filePath.replace(fileName, fileName.substring(1, fileName.length()-1));
+	    } else {
+	        if(!filePath.endsWith(".rtf") && 
+	           fileChooser.getFileFilter().getDescription().contains("Rich Text Format")){
+	            filePath += ".rtf";
+	        }
 	    }
 	    
-	    return fileName;
+	    return filePath;
 	}
 }
