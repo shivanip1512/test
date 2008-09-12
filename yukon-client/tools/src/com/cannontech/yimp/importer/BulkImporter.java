@@ -633,13 +633,14 @@ public void runImport(List<ImportData> imps) {
 			}
 			
 			try {
-			    //Add Points (Database insert but NO dbChange Message
-			    dbPersistentDao.performDBChangeWithNoMsg(pointsToAdd, Transaction.INSERT);
-			    log.debug("Insert into DB with NO DBChangeMessage: " + points.size() + " Points for Device(" + current400Series.getPAObjectID() + ").");
 			    //Add Pao (Database insert AND DbChange Message
 			    dbPersistentDao.performDBChange(current400Series, Transaction.INSERT);
 			    log.debug("Insert into DB with DBChangeMessage: Device(" + current400Series.getPAObjectID() + ").");
 			
+                //Add Points (Database insert but NO dbChange Message
+                dbPersistentDao.performDBChangeWithNoMsg(pointsToAdd, Transaction.INSERT);
+                log.debug("Insert into DB with NO DBChangeMessage: " + points.size() + " Points for Device(" + current400Series.getPAObjectID() + ").");
+
                 YukonDevice yukonDevice = new YukonDevice(current400Series.getPAObjectID(), PAOGroups.getDeviceType(current400Series.getPAOType()));
                 deviceGroupMemberEditorDao.addDevices(alternateGroup, yukonDevice);
                 deviceGroupMemberEditorDao.addDevices(billingGroup, yukonDevice);
