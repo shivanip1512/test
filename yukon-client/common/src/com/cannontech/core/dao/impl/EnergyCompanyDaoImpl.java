@@ -2,17 +2,15 @@ package com.cannontech.core.dao.impl;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
-
-import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.EnergyCompanyDao;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -36,8 +34,8 @@ private EnergyCompanyDaoImpl() {
  */
 public LiteEnergyCompany getEnergyCompany(int energyCompanyID) {
 		synchronized( databaseCache ) {
-			for(Iterator i = databaseCache.getAllEnergyCompanies().iterator(); i.hasNext();) {
-				LiteEnergyCompany e = (LiteEnergyCompany) i.next();
+			for(Iterator<LiteEnergyCompany> i = databaseCache.getAllEnergyCompanies().iterator(); i.hasNext();) {
+				LiteEnergyCompany e = i.next();
 				if(e.getEnergyCompanyID() == energyCompanyID) {
 					return e;
 				}
@@ -51,8 +49,8 @@ public LiteEnergyCompany getEnergyCompany(int energyCompanyID) {
  */
 public LiteEnergyCompany getEnergyCompany(LiteYukonUser user) {
 	synchronized( databaseCache ) {
-		Map m = databaseCache.getAllUserEnergyCompanies();
-		LiteEnergyCompany liteEnergyCompany = (LiteEnergyCompany) m.get(user);
+		Map<LiteYukonUser, LiteEnergyCompany> m = databaseCache.getAllUserEnergyCompanies();
+		LiteEnergyCompany liteEnergyCompany = m.get(user);
         if (liteEnergyCompany == null) {
             return getEnergyCompany(DEFAULT_ENERGY_COMPANY_ID);
         }
@@ -60,17 +58,29 @@ public LiteEnergyCompany getEnergyCompany(LiteYukonUser user) {
 	}	
 }
 
+    @Override
+    public LiteEnergyCompany getEnergyCompanyByName(final String energyCompanyName) {
+        synchronized (databaseCache) {
+            List<LiteEnergyCompany> energyCompanies = databaseCache.getAllEnergyCompanies();
+            for (final LiteEnergyCompany energyCompany : energyCompanies) {
+                String name = energyCompany.getName();
+                if (name.equalsIgnoreCase(energyCompanyName)) return energyCompany;
+            }
+        }
+        throw new NotFoundException("Energy Company with name: " + energyCompanyName + " not found.");
+    }
+
 /* (non-Javadoc)
  * @see com.cannontech.core.dao.EnergyCompanyDao#getEnergyCompaniesByCustomer(int)
  */
 public LiteEnergyCompany[] getEnergyCompaniesByCustomer( int customerID_ )
 {
-	ArrayList enrgComps = new ArrayList( 16 );
+	List<LiteEnergyCompany> enrgComps = new ArrayList<LiteEnergyCompany>( 16 );
 	synchronized( databaseCache )
 	{
 		for( int i = 0; i < databaseCache.getAllEnergyCompanies().size(); i++ )
 		{
-			LiteEnergyCompany e = (LiteEnergyCompany)databaseCache.getAllEnergyCompanies().get(i);
+			LiteEnergyCompany e = databaseCache.getAllEnergyCompanies().get(i);
 
 			for( int j = 0; j < e.getCiCustumerIDs().size(); i++ )
 			{
@@ -84,7 +94,7 @@ public LiteEnergyCompany[] getEnergyCompaniesByCustomer( int customerID_ )
 	}
 
 	LiteEnergyCompany[] cArr = new LiteEnergyCompany[ enrgComps.size() ];
-	return (LiteEnergyCompany[])enrgComps.toArray( cArr );
+	return enrgComps.toArray( cArr );
 }
 
 /* (non-Javadoc)

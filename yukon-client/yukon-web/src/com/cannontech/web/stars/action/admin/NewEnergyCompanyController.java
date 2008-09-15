@@ -9,6 +9,7 @@ import javax.servlet.http.HttpSession;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.StarsDatabaseCache;
@@ -45,6 +46,13 @@ public class NewEnergyCompanyController extends StarsAdminActionController {
         final boolean isAddMember = request.getParameter("AddMember") != null;
 
         try {
+            final String companyName = request.getParameter("CompanyName");
+            
+            try {
+                energyCompanyDao.getEnergyCompanyByName(companyName); 
+                throw new WebClientException("Energy Company with Company Name \"" + companyName + "\" already exists.");
+            } catch (NotFoundException safeToIgnore) { }
+            
             LiteYukonGroup operGroup = null;
 
             String[] operGroupNames = request.getParameter("OperatorGroup").split(",");
@@ -99,7 +107,7 @@ public class NewEnergyCompanyController extends StarsAdminActionController {
             else
                 rolePropMap.put( new Integer(AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY), CtiUtilities.TRUE_STRING );
 
-            String adminGroupName = request.getParameter("CompanyName") + " Admin Grp";
+            String adminGroupName = companyName + " Admin Grp";
             LiteYukonGroup liteAdminGrp = StarsAdminUtil.createOperatorAdminGroup( adminGroupName, rolePropMap );
 
             // Create the default operator login
@@ -138,7 +146,7 @@ public class NewEnergyCompanyController extends StarsAdminActionController {
                     // Create the energy company
                     com.cannontech.database.db.company.EnergyCompany company =
                         new com.cannontech.database.db.company.EnergyCompany();
-                    company.setName( request.getParameter("CompanyName") );
+                    company.setName(companyName);
                     company.setPrimaryContactID( contact.getContact().getContactID() );
                     company.setUserID( new Integer(liteUser.getUserID()) );
                     company = Transaction.createTransaction(Transaction.INSERT, company).execute();
@@ -177,10 +185,18 @@ public class NewEnergyCompanyController extends StarsAdminActionController {
         }
         catch (WebClientException e) {
             session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, e.getMessage());
+            
+            String location = ServletUtil.createSafeRedirectUrl(request, "/operator/Admin/NewEnergyCompany.jsp");
+            response.sendRedirect(location);
+            return;
         }
         catch (Exception e) {
             CTILogger.error( e.getMessage(), e );
             session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to create the energy company");
+            
+            String location = ServletUtil.createSafeRedirectUrl(request, "/operator/Admin/NewEnergyCompany.jsp");
+            response.sendRedirect(location);
+            return;
         }
         
         boolean hasMemberManagementAccess = authDao.checkRoleProperty(user.getUserID(), AdministratorRole.ADMIN_MANAGE_MEMBERS);

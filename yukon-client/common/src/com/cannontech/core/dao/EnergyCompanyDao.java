@@ -23,6 +23,13 @@ public interface EnergyCompanyDao {
     public LiteEnergyCompany getEnergyCompany(LiteYukonUser user);
 
     /**
+     * @param energyCompanyName
+     * @return LiteEnergyCompany
+     * @throws NotFoundException
+     */
+    public LiteEnergyCompany getEnergyCompanyByName(String energyCompanyName);
+    
+    /**
      * Returns all the LiteEnergyCompany's that have customerID_ in it.
      * 
      * @param customerID_ int
