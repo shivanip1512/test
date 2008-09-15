@@ -98,7 +98,7 @@ function prepareSubmit(form) {
                     <td width="5%" class="TableCell">
                       <input type="checkbox" name="InvID" value="<%= inventory.getInventoryID() %>" checked>
                     </td>
-                    <td width="35%" class="TableCell"><%= label %></td>
+                    <td width="35%" class="TableCell"><%= StringEscapeUtils.escapeHtml(label) %></td>
                     <td width="60%" class="TableCell"> 
                       <table width="100%" border="0" cellspacing="0" cellpadding="1" class="TableCell">
                         <%
