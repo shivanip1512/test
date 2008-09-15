@@ -2,8 +2,8 @@
 #                                                         #
 #       Makefile Template for CTI Apps                    #
 #                                                         #
-#       $Revision: 1.16 $                               #
-#       $Date: 2008/03/10 17:04:50 $                  #
+#       $Revision: 1.17 $                               #
+#       $Date: 2008/09/15 17:59:17 $                  #
 #                                                         #
 # Definitions                                             #
 ###########################################################
@@ -127,16 +127,18 @@ BOOSTTESTLIBS = $(BOOST)\stage\lib\libboost_unit_test_framework-vc6-mt-gd-1_31.l
 
 %ENDIF
 
+D_BOOST_ENABLE_ASSERT_HANDLER = /DBOOST_ENABLE_ASSERT_HANDLER
+
 !IFDEF DEBUG
-CFLAGS  = /nologo /EHsc- /Zi /Yd /Od /MDd /Zm200 /FD $(D_VERSION) $(D_VERSION_DETAILS)
-DLLFLAGS= /nologo /EHsc- /Zi /Yd /Od /GD /LD /MDd /Zm200 /FD $(D_VERSION) $(D_VERSION_DETAILS)
+CFLAGS  = /nologo /EHsc- /Zi /Yd /Od /MDd /Zm200 /FD $(D_VERSION) $(D_VERSION_DETAILS) $(D_BOOST_ENABLE_ASSERT_HANDLER)
+DLLFLAGS= /nologo /EHsc- /Zi /Yd /Od /GD /LD /MDd /Zm200 /FD $(D_VERSION) $(D_VERSION_DETAILS) $(D_BOOST_ENABLE_ASSERT_HANDLER)
 LINKFLAGS = /link /FORCE
 TCL_LIB = tcl81d
 XERCES_LIB = xerces-c_1D
 XERCES_DLL = xerces-c_1_7_0D
 !ELSE
-CFLAGS  = /nologo /EHsc- /O2 /MD /Zm200 /FD $(D_VERSION) $(D_VERSION_DETAILS)
-DLLFLAGS= /nologo /EHsc- /O2 /GD /LD /MD /Zm200 /FD $(D_VERSION) $(D_VERSION_DETAILS)
+CFLAGS  = /nologo /EHsc- /O2 /MD /Zm200 /FD $(D_VERSION) $(D_VERSION_DETAILS) $(D_BOOST_ENABLE_ASSERT_HANDLER)
+DLLFLAGS= /nologo /EHsc- /O2 /GD /LD /MD /Zm200 /FD $(D_VERSION) $(D_VERSION_DETAILS) $(D_BOOST_ENABLE_ASSERT_HANDLER)
 TCL_LIB = tcl81
 XERCES_LIB = xerces-c_1
 XERCES_DLL = xerces-c_1_7_0
