@@ -14,6 +14,14 @@
  *                 design document for more information
  *    History:
  *      $Log$
+ *      Revision 1.6  2008/09/15 21:09:16  tspar
+ *      YUK-5013 Full FDR reload should not happen with every point db change
+ *
+ *      Changed interfaces to handle points on an individual basis so they can be added
+ *      and removed by point id.
+ *
+ *      Changed the fdr point manager to use smart pointers to help make this transition possible.
+ *
  *      Revision 1.5  2007/11/12 16:46:55  mfisher
  *      Removed some Rogue Wave includes
  *
@@ -219,7 +227,8 @@ class IM_EX_FDRACSMULTI CtiFDRAcsMulti : public CtiFDRScadaServer
         virtual CtiFDRClientServerConnection* createNewConnection(SOCKET newConnection);
 
         virtual void begineNewPoints();
-        virtual bool processNewDestination(CtiFDRDestination& pointDestination, bool isSend);
+        virtual bool translateSinglePoint(shared_ptr<CtiFDRPoint> translationPoint, bool send);
+        virtual void cleanupTranslationPoint(shared_ptr<CtiFDRPoint> translationPoint, bool recvList);
 
         virtual bool buildForeignSystemHeartbeatMsg(char** buffer,
                                                     unsigned int& bufferSize);

@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrasciiimportbase.cpp-arc  $
-*    REVISION     :  $Revision: 1.14 $
-*    DATE         :  $Date: 2008/03/20 21:27:14 $
+*    REVISION     :  $Revision: 1.15 $
+*    DATE         :  $Date: 2008/09/15 21:08:47 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,14 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrasciiimportbase.cpp,v $
+      Revision 1.15  2008/09/15 21:08:47  tspar
+      YUK-5013 Full FDR reload should not happen with every point db change
+
+      Changed interfaces to handle points on an individual basis so they can be added
+      and removed by point id.
+
+      Changed the fdr point manager to use smart pointers to help make this transition possible.
+
       Revision 1.14  2008/03/20 21:27:14  tspar
       YUK-5541 FDR Textimport and other interfaces incorrectly use the boost tokenizer.
 
@@ -275,13 +283,9 @@ void CtiFDRAsciiImportBase::sendLinkState (int aState)
 */
 bool CtiFDRAsciiImportBase::loadTranslationLists()
 {
-    bool                successful(FALSE);
-    CtiFDRPoint *       translationPoint = NULL;
-    string           tempString1;
-    string           tempString2;
-    string           translationName;
-    bool                foundPoint = false;
-    RWDBStatus          listStatus;
+    bool successful = false;
+    bool foundPoint = false;
+    RWDBStatus listStatus;
 
     try
     {
@@ -305,6 +309,15 @@ bool CtiFDRAsciiImportBase::loadTranslationLists()
             if (((pointList->entries() == 0) && (getReceiveFromList().getPointList()->entries() <= 2)) ||
                 (pointList->entries() > 0))
             {
+                // get iterator on send list
+                CtiFDRManager::CTIFdrPointIterator  myIterator = getReceiveFromList().getPointList()->getMap().begin();
+
+                for ( ; myIterator != getReceiveFromList().getPointList()->getMap().end(); ++myIterator )
+                {
+                    foundPoint = true;
+                    shared_ptr<CtiFDRPoint> translationPoint = (*myIterator).second;
+                    translateSinglePoint(translationPoint);
+                }
 
                 // lock the receive list and remove the old one
                 CtiLockGuard<CtiMutex> receiveGuard(getReceiveFromList().getMutex());  
@@ -314,63 +327,7 @@ bool CtiFDRAsciiImportBase::loadTranslationLists()
                 }
                 getReceiveFromList().setPointList (pointList);
 
-                // get iterator on send list
-                CtiFDRManager::CTIFdrPointIterator  myIterator = getReceiveFromList().getPointList()->getMap().begin();
-                int x;
-
-                for ( ; myIterator != getReceiveFromList().getPointList()->getMap().end(); ++myIterator )
-                {
-                    foundPoint = true;
-                    translationPoint = (*myIterator).second;
-
-                    for (x=0; x < translationPoint->getDestinationList().size(); x++)
-                    {
-                        if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << "Parsing Yukon Point ID " << translationPoint->getPointID();
-                            dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
-                        }
-                        /********************
-                        * for our current FTP interfaces, the points are being retrieved only
-                        * and have specific names already assigned them
-                        *********************
-                        */
-                        const string translation = translationPoint->getDestinationList()[x].getTranslation();
-                        boost::char_separator<char> sep1(";");
-                        Boost_char_tokenizer nextTranslate(translation, sep1);
-                        Boost_char_tokenizer::iterator tok_iter = nextTranslate.begin(); 
-
-                        if ( tok_iter != nextTranslate.end())
-                        {
-                            tempString1 = *tok_iter;
-                            boost::char_separator<char> sep2(":");
-                            Boost_char_tokenizer nextTempToken(tempString1, sep2);
-                            Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
-
-                            if( tok_iter1 != nextTempToken.end() )
-                            {
-                                tok_iter1++;
-                                if( tok_iter1 != nextTempToken.end() )
-                                {
-                                    Boost_char_tokenizer nextTempToken_(tok_iter1.base(), tok_iter1.end(), sep1);
-        
-                                    tempString2 = *nextTempToken_.begin();
-                                    tempString2.replace(0,tempString2.length(), tempString2.substr(1,(tempString2.length()-1)));
-        
-                                    // now we have a point id
-                                    if ( !tempString2.empty() )
-                                    {
-                                        translationPoint->getDestinationList()[x].setTranslation (tempString2);
-                                        successful = true;
-                                    }
-                                }
-                            }
-                        }   // first token invalid
-                    }
-                }   // end for interator
-
-                pointList=NULL;
+                pointList = NULL;
                 if (!successful)
                 {
                     if (!foundPoint)
@@ -414,6 +371,62 @@ bool CtiFDRAsciiImportBase::loadTranslationLists()
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Error loading translation lists for " << getInterfaceName() << endl;
+    }
+
+    return successful;
+}
+
+bool CtiFDRAsciiImportBase::translateSinglePoint(shared_ptr<CtiFDRPoint> translationPoint, bool send)
+{
+    bool successful = false;
+    string           tempString1;
+    string           tempString2;
+    string           translationName;
+
+    for (int x = 0; x < translationPoint->getDestinationList().size(); x++)
+    {
+        if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << "Parsing Yukon Point ID " << translationPoint->getPointID();
+            dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
+        }
+        /********************
+        * for our current FTP interfaces, the points are being retrieved only
+        * and have specific names already assigned them
+        *********************
+        */
+        const string translation = translationPoint->getDestinationList()[x].getTranslation();
+        boost::char_separator<char> sep1(";");
+        Boost_char_tokenizer nextTranslate(translation, sep1);
+        Boost_char_tokenizer::iterator tok_iter = nextTranslate.begin(); 
+
+        if ( tok_iter != nextTranslate.end())
+        {
+            tempString1 = *tok_iter;
+            boost::char_separator<char> sep2(":");
+            Boost_char_tokenizer nextTempToken(tempString1, sep2);
+            Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
+
+            if( tok_iter1 != nextTempToken.end() )
+            {
+                tok_iter1++;
+                if( tok_iter1 != nextTempToken.end() )
+                {
+                    Boost_char_tokenizer nextTempToken_(tok_iter1.base(), tok_iter1.end(), sep1);
+
+                    tempString2 = *nextTempToken_.begin();
+                    tempString2.replace(0,tempString2.length(), tempString2.substr(1,(tempString2.length()-1)));
+
+                    // now we have a point id
+                    if ( !tempString2.empty() )
+                    {
+                        translationPoint->getDestinationList()[x].setTranslation (tempString2);
+                        successful = true;
+                    }
+                }
+            }
+        }   // first token invalid
     }
 
     return successful;

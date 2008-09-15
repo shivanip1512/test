@@ -10,8 +10,8 @@
  * Author: Tom Mack
  *
  * PVCS KEYWORDS:
- *    REVISION     :  $Revision: 1.3 $
- *    DATE         :  $Date: 2007/11/12 16:46:55 $
+ *    REVISION     :  $Revision: 1.4 $
+ *    DATE         :  $Date: 2008/09/15 21:09:16 $
  *    History:
  *      $History:$
  */
@@ -99,9 +99,11 @@ protected:
 
   virtual void doUpdates();
 
-  virtual void processNewPoint(CtiFDRPoint *ctiPoint);
-  virtual void beginNewPoints();
-  virtual void endNewPoints();
+  void cleanupTranslationPoint(shared_ptr<CtiFDRPoint> translationPoint, bool recvList);
+  virtual void processNewPoint(shared_ptr<CtiFDRPoint> ctiPoint);
+  virtual void removeAllPoints();
+  virtual void handleNewPoints();
+  virtual void handleNewPoint(shared_ptr<CtiFDRPoint> ctiPoint){};
 
   void invalidatePendingRequests();
 

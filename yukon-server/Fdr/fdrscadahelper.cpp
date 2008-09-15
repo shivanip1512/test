@@ -278,6 +278,39 @@ void CtiFDRScadaHelper<T>::addReceiveMapping(const T& id, const CtiFDRDestinatio
 }
 
 template<typename T>
+void CtiFDRScadaHelper<T>::removeSendMapping(const T& id, const CtiFDRDestination& pointDestination)
+{
+    //just call erase, there can only be one
+    sendMap.erase(pointDestination);
+    if (_parent->getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        _parent->logNow() << "Removing send mapping " << pointDestination << " to " << id << endl;
+    }
+}
+
+template<typename T>
+void CtiFDRScadaHelper<T>::removeReceiveMapping(const T& id, const CtiFDRDestination& pointDestination)
+{
+    //Remove on the iterator that matches id and pointdestination
+    ReceiveMap::iterator itr;
+    for (itr = receiveMap.equal_range(id).first; itr != receiveMap.equal_range(id).second; itr++ ) 
+    {
+        if ((*itr).second == pointDestination)
+        {
+            receiveMap.erase(itr);
+            break;
+        }
+    }
+
+    if (_parent->getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        _parent->logNow() << "Removing receive mapping " << id << " to " << pointDestination << endl;
+    }
+}
+
+template<typename T>
 bool CtiFDRScadaHelper<T>::getIdForDestination(const CtiFDRDestination& pointDestination, T& result) const
 {
     SendMap::const_iterator iter = sendMap.find(pointDestination);

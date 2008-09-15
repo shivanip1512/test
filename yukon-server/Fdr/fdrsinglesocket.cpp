@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrsinglesocket.cpp-arc  $
-*    REVISION     :  $Revision: 1.10 $
-*    DATE         :  $Date: 2006/04/24 14:47:33 $
+*    REVISION     :  $Revision: 1.11 $
+*    DATE         :  $Date: 2008/09/15 21:08:48 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,14 @@
 *    ---------------------------------------------------
 *    History: 
 *     $Log: fdrsinglesocket.cpp,v $
+*     Revision 1.11  2008/09/15 21:08:48  tspar
+*     YUK-5013 Full FDR reload should not happen with every point db change
+*
+*     Changed interfaces to handle points on an individual basis so they can be added
+*     and removed by point id.
+*
+*     Changed the fdr point manager to use smart pointers to help make this transition possible.
+*
 *     Revision 1.10  2006/04/24 14:47:33  tspar
 *     RWreplace: replacing a few missed or new Rogue Wave elements
 *
@@ -241,22 +249,16 @@ BOOL CtiFDRSingleSocket::stop( void )
 */
 bool CtiFDRSingleSocket::loadList(string &aDirection,  CtiFDRPointList &aList)
 {
-    bool                successful(false);
-    CtiFDRPoint *       translationPoint = NULL;
-    CtiFDRPoint *       point = NULL;
-    string           tempString1;
-    string           tempString2;
-    string           translationName;
-    bool                foundPoint = false, translatedPoint(false);
-    string           controlDirection;
-    static bool firstPassHackFlag=false;  // yuck
-    RWDBStatus          listStatus;
+    bool successful = false;
+    bool foundPoint = false;
+
+    static bool firstPassHackFlag = false;// yuck
+    RWDBStatus listStatus;
 
     try
     {
         // make a list with all received points
-        CtiFDRManager   *pointList = new CtiFDRManager(getInterfaceName(), 
-                                                       aDirection);
+        CtiFDRManager   *pointList = new CtiFDRManager(getInterfaceName(), aDirection);
         listStatus = pointList->loadPointList();
 
         // if status is ok, we were able to read the database at least
@@ -274,30 +276,13 @@ bool CtiFDRSingleSocket::loadList(string &aDirection,  CtiFDRPointList &aList)
             {
                 // get iterator on list
                 CtiFDRManager::CTIFdrPointIterator  myIterator = pointList->getMap().begin();
-//                CtiFDRManager::CTIFdrPointIterator  myIterator(aList.getPointList()->getMap());
-                int x;
 
                 for ( ; myIterator != pointList->getMap().end(); ++myIterator )
                 {
                     foundPoint = true;
-                    translationPoint = (*myIterator).second;
-
-                    for (x=0; x < translationPoint->getDestinationList().size(); x++)
-                    {
-                        if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Point ID " << translationPoint->getPointID();
-                            dout << " translate: " << translationPoint->getDestinationList()[0].getTranslation() << endl;
-                        }
-                        // translate and put the point id the list
-                        if (translateAndUpdatePoint (translationPoint, x))
-                        {
-                            translatedPoint = true;
-                            successful = true;
-                        }
-                    }
-                }   // end for interator
+                    shared_ptr<CtiFDRPoint> translationPoint = (*myIterator).second;
+                    successful = translateSinglePoint(translationPoint);
+                }
 
                 // lock the list I'm inserting into so it doesn't get deleted on me
                 CtiLockGuard<CtiMutex> sendGuard(aList.getMutex());  
@@ -310,7 +295,7 @@ bool CtiFDRSingleSocket::loadList(string &aDirection,  CtiFDRPointList &aList)
                 // set this to null, the memory is now assigned to the other point
                 pointList=NULL;
 
-                if (!translatedPoint)
+                if (!successful)
                 {
                     if (!foundPoint)
                     {
@@ -351,6 +336,27 @@ bool CtiFDRSingleSocket::loadList(string &aDirection,  CtiFDRPointList &aList)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime () << " " << __FILE__ << " (" << __LINE__ << ") loadTranslationList():  (...)" << endl;
+    }
+
+    return successful;
+}
+
+bool CtiFDRSingleSocket::translateSinglePoint(shared_ptr<CtiFDRPoint> translationPoint, bool send)
+{
+    bool successful = false;
+    for (int x = 0; x < translationPoint->getDestinationList().size(); x++)
+    {
+        if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Point ID " << translationPoint->getPointID();
+            dout << " translate: " << translationPoint->getDestinationList()[0].getTranslation() << endl;
+        }
+        // translate and put the point id the list
+        if (translateAndUpdatePoint (translationPoint, x))
+        {
+            successful = true;
+        }
     }
 
     return successful;

@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrtextexport.cpp-arc  $
-*    REVISION     :  $Revision: 1.15 $
-*    DATE         :  $Date: 2006/11/16 16:54:41 $
+*    REVISION     :  $Revision: 1.16 $
+*    DATE         :  $Date: 2008/09/15 21:08:48 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,14 @@
 *    ---------------------------------------------------
 *    History:
       $Log: fdrtextexport.cpp,v $
+      Revision 1.16  2008/09/15 21:08:48  tspar
+      YUK-5013 Full FDR reload should not happen with every point db change
+
+      Changed interfaces to handle points on an individual basis so they can be added
+      and removed by point id.
+
+      Changed the fdr point manager to use smart pointers to help make this transition possible.
+
       Revision 1.15  2006/11/16 16:54:41  mfisher
       removing RWTime and rwEpoch references
 
@@ -362,13 +370,9 @@ int CtiFDR_TextExport::readConfig( void )
 */
 bool CtiFDR_TextExport::loadTranslationLists()
 {
-    bool                successful(FALSE);
-    CtiFDRPoint *       translationPoint = NULL;
-    string           tempString1;
-    string           tempString2;
-    string           translationName;
-    bool                foundPoint = false;
-    RWDBStatus          listStatus;
+    bool successful = false;
+    bool foundPoint = false;
+    RWDBStatus listStatus;
 
     try
     {
@@ -395,33 +399,13 @@ bool CtiFDR_TextExport::loadTranslationLists()
 
                 // get iterator on send list
                 CtiFDRManager::CTIFdrPointIterator  myIterator = pointList->getMap().begin();
-                int x;
 
                 for ( ; myIterator != pointList->getMap().end(); ++myIterator )
                 {
                     foundPoint = true;
-                    translationPoint = (*myIterator).second;
-
-                    for (x=0; x < translationPoint->getDestinationList().size(); x++)
-                    {
-                        if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << "Parsing Yukon Point ID " << translationPoint->getPointID();
-                            //dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
-                            dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
-                        }
-
-                        tempString2 = translationPoint->getDestinationList()[x].getTranslationValue("Point ID");
-                            // now we have a point id
-                            if ( !tempString2.empty() )
-                            {
-                                translationPoint->getDestinationList()[x].setTranslation (tempString2);
-                                successful = true;
-                            }
-
-                    }
-                }   // end for interator
+                    shared_ptr<CtiFDRPoint> translationPoint = (*myIterator).second;
+                    translateSinglePoint(translationPoint);
+                }
 
                 {
                     // lock the send list and remove the old one
@@ -482,6 +466,34 @@ bool CtiFDR_TextExport::loadTranslationLists()
     return successful;
 }
 
+bool CtiFDR_TextExport::translateSinglePoint(shared_ptr<CtiFDRPoint> translationPoint, bool send)
+{
+    bool successful = false;
+    string tempString2;
+
+    for (int x = 0; x < translationPoint->getDestinationList().size(); x++)
+    {
+        if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << "Parsing Yukon Point ID " << translationPoint->getPointID();
+            //dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
+            dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
+        }
+
+        tempString2 = translationPoint->getDestinationList()[x].getTranslationValue("Point ID");
+        // now we have a point id
+        if ( !tempString2.empty() )
+        {
+            translationPoint->getDestinationList()[x].setTranslation (tempString2);
+            successful = true;
+        }
+
+    }
+
+    return successful;
+}
+
 bool CtiFDR_TextExport::sendMessageToForeignSys ( CtiMessage *aMessage )
 {
     bool retVal = true;
@@ -510,7 +522,7 @@ void CtiFDR_TextExport::threadFunctionWriteToFile( void )
     CHAR fileName[200];
     FILE* fptr;
     char workBuffer[500];  // not real sure how long each line possibly is
-    CtiFDRPoint *       translationPoint = NULL;
+    shared_ptr<CtiFDRPoint> translationPoint;
     CtiTime lastWrite(0UL);
 
     try
@@ -716,7 +728,7 @@ LAU04A_KWH                          360 0
 ...
 ***************************************************************************
 */
-void CtiFDR_TextExport::processPointToSurvalent (FILE* aFilePtr, CtiFDRPoint *aPoint, CtiTime aLastWrite)
+void CtiFDR_TextExport::processPointToSurvalent (FILE* aFilePtr, shared_ptr<CtiFDRPoint> aPoint, CtiTime aLastWrite)
 {
 //    static CtiTime lastWrite;
     int quality;

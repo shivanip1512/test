@@ -16,9 +16,17 @@
 *    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
 *
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/INCLUDE/fdrpointlist.h-arc  $
-*    REVISION     :  $Revision: 1.3 $
-*    DATE         :  $Date: 2002/04/16 15:58:45 $
+*    REVISION     :  $Revision: 1.4 $
+*    DATE         :  $Date: 2008/09/15 21:09:16 $
       $Log: fdrpointlist.h,v $
+      Revision 1.4  2008/09/15 21:09:16  tspar
+      YUK-5013 Full FDR reload should not happen with every point db change
+
+      Changed interfaces to handle points on an individual basis so they can be added
+      and removed by point id.
+
+      Changed the fdr point manager to use smart pointers to help make this transition possible.
+
       Revision 1.3  2002/04/16 15:58:45  softwarebuild
       20020416_1031_2_16
 
@@ -50,15 +58,15 @@ class IM_EX_FDRBASE CtiFDRPointList
 
         ~CtiFDRPointList();
 
-    CtiFDRPointList& operator=( CtiFDRPointList &other );
-
-    CtiMutex& getMutex (void);
-
-    CtiFDRManager *getPointList (void);
-    CtiFDRPointList& setPointList (CtiFDRPointList &aList);
-    CtiFDRPointList& setPointList (CtiFDRManager *aList);
-
-    void deletePointList ();
+        CtiFDRPointList& operator=( CtiFDRPointList &other );
+    
+        CtiMutex& getMutex (void);
+    
+        CtiFDRManager *getPointList (void);
+        CtiFDRPointList& setPointList (CtiFDRPointList &aList);
+        CtiFDRPointList& setPointList (CtiFDRManager *aList);
+    
+        void deletePointList ();
 
     private:
 

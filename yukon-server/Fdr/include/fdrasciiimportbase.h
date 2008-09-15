@@ -63,6 +63,8 @@ class IM_EX_FDRBASE CtiFDRAsciiImportBase : public CtiFDRInterface
         void sendLinkState (int aState);
 
         virtual bool loadTranslationLists(void);
+        virtual bool translateSinglePoint(shared_ptr<CtiFDRPoint> translationPoint, bool send=false);
+
         virtual bool validateAndDecodeLine( string &input, CtiMessage **aRetMsg) = 0;
     
     private:

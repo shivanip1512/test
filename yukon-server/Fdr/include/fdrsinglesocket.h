@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/INCLUDE/fdrsinglesocket.h-arc  $
-*    REVISION     :  $Revision: 1.6 $
-*    DATE         :  $Date: 2007/11/12 16:46:55 $
+*    REVISION     :  $Revision: 1.7 $
+*    DATE         :  $Date: 2008/09/15 21:09:16 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +20,14 @@
 *    ---------------------------------------------------
 *    History:
 *     $Log: fdrsinglesocket.h,v $
+*     Revision 1.7  2008/09/15 21:09:16  tspar
+*     YUK-5013 Full FDR reload should not happen with every point db change
+*
+*     Changed interfaces to handle points on an individual basis so they can be added
+*     and removed by point id.
+*
+*     Changed the fdr point manager to use smart pointers to help make this transition possible.
+*
 *     Revision 1.6  2007/11/12 16:46:55  mfisher
 *     Removed some Rogue Wave includes
 *
@@ -29,6 +37,14 @@
 *     Revision 1.4  2005/09/13 20:45:53  tmack
 *     In the process of working on the new ACS(MULTI) implementation, the following changes were made:
       $Log: fdrsinglesocket.h,v $
+      Revision 1.7  2008/09/15 21:09:16  tspar
+      YUK-5013 Full FDR reload should not happen with every point db change
+
+      Changed interfaces to handle points on an individual basis so they can be added
+      and removed by point id.
+
+      Changed the fdr point manager to use smart pointers to help make this transition possible.
+
       Revision 1.6  2007/11/12 16:46:55  mfisher
       Removed some Rogue Wave includes
 
@@ -131,7 +147,9 @@ class IM_EX_FDRBASE CtiFDRSingleSocket : public CtiFDRSocketInterface
         virtual CHAR *buildForeignSystemMsg (CtiFDRPoint &aPoint)=0;
         virtual bool buildAndWriteToForeignSystem (CtiFDRPoint &aPoint );
         virtual int readConfig( void )=0;
-        virtual bool translateAndUpdatePoint(CtiFDRPoint *translationPoint, int aIndex)=0;
+        virtual bool translateAndUpdatePoint(shared_ptr<CtiFDRPoint> translationPoint, int aIndex)=0;
+        
+        virtual bool translateSinglePoint(shared_ptr<CtiFDRPoint> translationPoint, bool send=false);
 
         virtual int processValueMessage(CHAR *data);
         virtual int processStatusMessage(CHAR *data);

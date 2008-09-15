@@ -2563,6 +2563,39 @@ LONG GetPAOIdOfEnergyPro(long devicesn)
     return id;
 }
 
+vector<int> getPointIdsOnPao(long paoid)
+{
+    string sql("SELECT pointid FROM point WHERE paobjectid = ");
+    sql += CtiNumStr(paoid);
+
+    vector<int> ids;
+
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
+
+    RWDBReader  rdr = ExecuteQuery( conn, sql.c_str() );
+
+    if(rdr.isValid())
+    {
+        while (rdr())
+        {
+            int id;
+            rdr["pointid"] >> id;
+            ids.push_back(id);
+        }
+    }
+    else if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << " " << sql << endl;
+        }
+    }
+    
+    return ids;
+}
+
 double limitValue(double input, double min, double max)
 {
     if(input < min)

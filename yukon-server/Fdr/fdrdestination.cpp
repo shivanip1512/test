@@ -65,6 +65,24 @@ bool CtiFDRDestination::operator<(const CtiFDRDestination& other) const
     }
 }
 
+bool CtiFDRDestination::operator==(const CtiFDRDestination& other) const
+{
+    bool eq = false;
+
+    if (iParentPoint->getPointID() == other.getParentPoint()->getPointID())
+    {
+        if (iDestination == other.iDestination)
+        {
+            if (iTranslation == other.iTranslation)
+            {
+                return true;
+            }
+        }
+    }
+
+    return eq;
+}
+
 
 string & CtiFDRDestination::getTranslation(void)
 {

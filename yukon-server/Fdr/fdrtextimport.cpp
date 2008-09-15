@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrtextimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.26 $
-*    DATE         :  $Date: 2008/06/03 17:42:04 $
+*    REVISION     :  $Revision: 1.27 $
+*    DATE         :  $Date: 2008/09/15 21:08:48 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,14 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrtextimport.cpp,v $
+      Revision 1.27  2008/09/15 21:08:48  tspar
+      YUK-5013 Full FDR reload should not happen with every point db change
+
+      Changed interfaces to handle points on an individual basis so they can be added
+      and removed by point id.
+
+      Changed the fdr point manager to use smart pointers to help make this transition possible.
+
       Revision 1.26  2008/06/03 17:42:04  tspar
       YUK-4360 FDR crashes when the comma separated txt file has an unrecognized format
 
@@ -375,8 +383,8 @@ bool CtiFDR_TextImport::processFunctionOne (Tokenizer& cmdLine, CtiMessage **aRe
     bool retCode = false;
     bool pointValidFlag=true;
          
-    CtiFDRPoint         point;
-    CtiFDRPoint* pointPtr;
+    CtiFDRPoint point;
+    boost::shared_ptr<CtiFDRPoint> pointPtr;
     int fieldNumber=1,quality;
     double value;
     string action;
@@ -417,7 +425,7 @@ bool CtiFDR_TextImport::processFunctionOne (Tokenizer& cmdLine, CtiMessage **aRe
                 pointValidFlag = false;
             }
         }
-        if (pointValidFlag != true)
+        if (pointValidFlag == false)
         {
             if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
             {
@@ -430,7 +438,9 @@ bool CtiFDR_TextImport::processFunctionOne (Tokenizer& cmdLine, CtiMessage **aRe
                 action = translationName;
                 logEvent (desc,action);
             }
-        } else {
+        }
+        else
+        {
             if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
             {
                 {
@@ -829,27 +839,16 @@ int CtiFDR_TextImport::readConfig( void )
 */
 bool CtiFDR_TextImport::loadTranslationLists()
 {
-    bool                successful(FALSE);
-    CtiFDRPoint *       translationPoint = NULL;
-    string           tempString1;
-    string           tempString2;
-    string           pointID;
-    CtiString           translationName;
-    CtiString           translationDrivePath; 
-    CtiString           translationFilename; 
-    CtiString           translationFolderName; 
-    bool                foundPoint = false;
-    RWDBStatus          listStatus;
-    CHAR fileName[200]; 
-    CHAR fileName2[200]; 
+    bool foundPoint = false;
+    bool successful = false;
+    RWDBStatus listStatus;
 
+    shared_ptr<CtiFDRPoint> translationPoint;
 
     try
     {
         // make a list with all received points
-        CtiFDRManager   *pointList = new CtiFDRManager(getInterfaceName(), 
-                                                       string (FDR_INTERFACE_RECEIVE));
-
+        CtiFDRManager *pointList = new CtiFDRManager(getInterfaceName(), string (FDR_INTERFACE_RECEIVE));
         // keep the status
         listStatus = pointList->loadPointList();
 
@@ -880,112 +879,7 @@ bool CtiFDR_TextImport::loadTranslationLists()
                 {
                     foundPoint = true;
                     translationPoint = (*myIterator).second;
-
-                    translationDrivePath = getFileImportBaseDrivePath(); 
-                    translationFilename = getFileName(); 
-                    if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout); 
-                        dout << CtiTime() << " translationPoint " <<translationPoint->getPointID() <<endl; 
-                        dout << CtiTime() << " translationFolderName " << translationFolderName <<endl; 
-                        dout << CtiTime() << " translationDrivePath " << translationDrivePath <<endl; 
-                    }
-
-
-                    for (x=0; x < translationPoint->getDestinationList().size(); x++)
-                    {
-                        if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << "Parsing Yukon Point ID " << translationPoint->getPointID();
-                            dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
-                        }
-                        translationName = ""; 
-
-                        pointID = translationPoint->getDestinationList()[x].getTranslationValue("Point ID");
-                        /* For optimized find**/
-                        string pointName = pointID;
-                        std::transform(pointName.begin(), pointName.end(), pointName.begin(), toupper);
-                        nameToPointId.insert(std::pair<string,int>(pointName,translationPoint->getPointID()));
-                        /***/
-                        // now we have a point id
-                        if ( !pointID.empty() )
-                        {
-                            successful = true;
-
-                            translationName += " "; 
-                            translationName += pointID; 
-                            translationName.toUpper();
-
-                            tempString1 = translationPoint->getDestinationList()[x].getTranslationValue("DrivePath");
-                            if (!tempString1.empty())
-                            {
-                                // now we have a Drive/Path 
-                                translationFolderName = tempString1; 
-                                translationFolderName.toLower(); 
-
-                                if ((translationDrivePath = translationFolderName.match(boost::regex("([A-Z]|[a-z]):\\\\"))).empty())
-                                {
-                                    translationDrivePath = getFileImportBaseDrivePath(); 
-                                    translationDrivePath.toUpper(); 
-                                } else
-                                    translationDrivePath = translationFolderName; 
-
-                                if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout); 
-                                    dout << CtiTime() << " translationFolderName " << translationFolderName <<endl; 
-                                    dout << CtiTime() << " translationDrivePath " << translationDrivePath <<endl; 
-                                }
-
-                                translationName += " ";
-                                translationName += tempString1;
-                                translationName.toUpper();
-
-                                tempString1 = translationPoint->getDestinationList()[x].getTranslationValue("Filename");
-                                if ( !tempString1.empty() )
-                                {
-                                    translationFilename = tempString1;
-                                    translationFilename.toLower();
-
-                                    translationName += " ";
-                                    translationName += translationFilename;
-                                    translationName.toUpper();
-                                }
-                            }
-                            translationPoint->getDestinationList()[x].setTranslation (pointID);//ts
-
-                            if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout); 
-                                dout << " translationFilename ** "<< translationFilename<<" translationDrivePath ** "<<translationDrivePath<< endl; 
-                            }
-                            CtiFDRTextFileInterfaceParts tempFileInfoList ( translationFilename, translationDrivePath, 0); 
-
-                            //check if its already there before putting it in the list.
-                            std::vector<CtiFDRTextFileInterfaceParts> *fInfoList = getFileInfoList();
-                            std::vector<CtiFDRTextFileInterfaceParts>::iterator itr = fInfoList->begin();
-                            string fn = translationDrivePath + translationFilename;
-                            bool found = false;
-                            for( ; itr != fInfoList->end(); itr++ )
-                            {    
-                                string fn2 = itr->getDriveAndPath() + itr->getFileName();
-                                if( fn2.compare(fn) == 0 )
-                                        found = true;
-                            }
-                            if( !found )//unique
-                                fInfoList->push_back(tempFileInfoList);
-
-                            if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout); 
-                                dout << CtiTime() << " Point ID " << translationPoint->getPointID(); 
-                                dout << " translated: " << translationName << endl; 
-                                dout << " FILE INFO LIST SIZE = " << getFileInfoList()->size() << endl; 
-                                dout << " Translation... = " << translationPoint->getDestinationList()[x].getTranslation() << endl; 
-                            }
-                        }
-                    }
+                    successful = translateSinglePoint(translationPoint);
                 }   // end for interator
 
                 // lock the receive list and remove the old one
@@ -1044,6 +938,160 @@ bool CtiFDR_TextImport::loadTranslationLists()
 
     return successful;
 }
+
+bool CtiFDR_TextImport::translateSinglePoint(shared_ptr<CtiFDRPoint> translationPoint, bool send)
+{
+    bool successful = false;
+
+    string tempString1;
+    string tempString2;
+    string pointID;
+    CtiString translationName;
+    CtiString translationDrivePath; 
+    CtiString translationFilename; 
+    CtiString translationFolderName; 
+
+    translationDrivePath = getFileImportBaseDrivePath(); 
+    translationFilename = getFileName(); 
+
+    if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout); 
+        dout << CtiTime() << " translationPoint " << translationPoint->getPointID() <<endl; 
+        dout << CtiTime() << " translationFolderName " << translationFolderName <<endl; 
+        dout << CtiTime() << " translationDrivePath " << translationDrivePath <<endl; 
+    }
+
+
+    for (int x = 0; x < translationPoint->getDestinationList().size(); x++)
+    {
+        if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << "Parsing Yukon Point ID " << translationPoint->getPointID();
+            dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
+        }
+        translationName = ""; 
+
+        pointID = translationPoint->getDestinationList()[x].getTranslationValue("Point ID");
+
+        /* For optimized find**/
+        string pointName = pointID;
+        std::transform(pointName.begin(), pointName.end(), pointName.begin(), toupper);
+        nameToPointId.insert(std::pair<string,int>(pointName,translationPoint->getPointID()));
+        /***/
+
+        // now we have a point id
+        if ( !pointID.empty() )
+        {
+            successful = true;
+
+            translationName += " "; 
+            translationName += pointID; 
+            translationName.toUpper();
+
+            tempString1 = translationPoint->getDestinationList()[x].getTranslationValue("DrivePath");
+            if (!tempString1.empty())
+            {
+                // now we have a Drive/Path 
+                translationFolderName = tempString1; 
+                translationFolderName.toLower(); 
+
+                if ((translationDrivePath = translationFolderName.match(boost::regex("([A-Z]|[a-z]):\\\\"))).empty())
+                {
+                    translationDrivePath = getFileImportBaseDrivePath(); 
+                    translationDrivePath.toUpper(); 
+                } else
+                    translationDrivePath = translationFolderName; 
+
+                if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout); 
+                    dout << CtiTime() << " translationFolderName " << translationFolderName <<endl; 
+                    dout << CtiTime() << " translationDrivePath " << translationDrivePath <<endl; 
+                }
+
+                translationName += " ";
+                translationName += tempString1;
+                translationName.toUpper();
+
+                tempString1 = translationPoint->getDestinationList()[x].getTranslationValue("Filename");
+                if ( !tempString1.empty() )
+                {
+                    translationFilename = tempString1;
+                    translationFilename.toLower();
+
+                    translationName += " ";
+                    translationName += translationFilename;
+                    translationName.toUpper();
+                }
+            }
+            translationPoint->getDestinationList()[x].setTranslation (pointID);//ts
+
+            if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout); 
+                dout << " translationFilename ** "<< translationFilename<<" translationDrivePath ** "<<translationDrivePath<< endl; 
+            }
+
+            //check if its already there before putting it in the list.
+            std::vector<CtiFDRTextFileInterfaceParts> *fInfoList = getFileInfoList();
+            std::vector<CtiFDRTextFileInterfaceParts>::iterator itr = fInfoList->begin();
+
+            string fn = translationDrivePath + translationFilename;
+
+            bool found = false;
+            for( ; itr != fInfoList->end(); itr++ )
+            {    
+                string fn2 = itr->getDriveAndPath() + itr->getFileName();
+                if( fn2.compare(fn) == 0 ) {
+                    found = true;
+                    break;
+                }
+            }
+
+            if( !found ) {//unique
+                CtiFDRTextFileInterfaceParts tempFileInfoList ( translationFilename, translationDrivePath, 0); 
+                fInfoList->push_back(tempFileInfoList);
+            }
+
+            if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout); 
+                dout << CtiTime() << " Point ID " << translationPoint->getPointID(); 
+                dout << " translated: " << translationName << endl; 
+                dout << " FILE INFO LIST SIZE = " << getFileInfoList()->size() << endl; 
+                dout << " Translation... = " << translationPoint->getDestinationList()[x].getTranslation() << endl; 
+            }
+        }
+    }
+
+    return successful;
+}
+
+void CtiFDR_TextImport::cleanupTranslationPoint(shared_ptr<CtiFDRPoint> translationPoint, bool recvList)
+{
+    if (recvList)
+    {
+        if (translationPoint.get() == NULL)
+        {
+            return;
+        }
+            
+        int size = translationPoint->getDestinationList().size();
+        for ( int i = 0 ; i < size; i++) {
+            string str = translationPoint->getDestinationList()[i].getTranslation();
+            if (str != "")
+            {
+                std::transform(str.begin(), str.end(), str.begin(), toupper);
+                nameToPointId.erase(str);
+            }
+        }
+    }
+
+    return;
+}
+
 
 /***
 * Function Name: list<string> GetFileNames()
@@ -1156,7 +1204,7 @@ void CtiFDR_TextImport::threadFunctionReadFromFile( void )
                     {
                         queueMessageToDispatch( msg );
                     }
-                }                      
+                }
 
                 pointUpdates.clear();
                 refreshTime = CtiTime() - (CtiTime::now().seconds() % getInterval()) + getInterval(); 

@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrtextexport.cpp-arc  $
-*    REVISION     :  $Revision: 1.4 $
-*    DATE         :  $Date: 2005/12/20 17:17:16 $
+*    REVISION     :  $Revision: 1.5 $
+*    DATE         :  $Date: 2008/09/15 21:09:16 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +20,14 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrtextexport.h,v $
+      Revision 1.5  2008/09/15 21:09:16  tspar
+      YUK-5013 Full FDR reload should not happen with every point db change
+
+      Changed interfaces to handle points on an individual basis so they can be added
+      and removed by point id.
+
+      Changed the fdr point manager to use smart pointers to help make this transition possible.
+
       Revision 1.4  2005/12/20 17:17:16  tspar
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
@@ -81,7 +89,9 @@ public:
 
     void threadFunctionWriteToFile( void );
     virtual bool loadTranslationLists(void);
-    void processPointToSurvalent (FILE* aFilePtr, CtiFDRPoint *aPoint, CtiTime aTime);
+    virtual bool translateSinglePoint(shared_ptr<CtiFDRPoint> translationPoint, bool send=false);
+
+    void processPointToSurvalent (FILE* aFilePtr, shared_ptr<CtiFDRPoint> aPoint, CtiTime aTime);
     // ddefine these for each interface type
     static const CHAR * KEY_INTERVAL;
     static const CHAR * KEY_FILENAME;

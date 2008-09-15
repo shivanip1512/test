@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:43 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2008/09/15 21:09:16 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -38,9 +38,10 @@
 // global just makes it that much easier   
 typedef enum {
      NotReloaded=0,
-     Signaled,
+     DbChange,
      Periodic,
-     Initial
+     Initial,
+     ForceReload
 } FDRDbReloadReason;
 
 

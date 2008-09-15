@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinet.cpp-arc  $
-*    REVISION     :  $Revision: 1.22 $
-*    DATE         :  $Date: 2008/06/09 15:48:08 $
+*    REVISION     :  $Revision: 1.23 $
+*    DATE         :  $Date: 2008/09/15 21:08:48 $
 *
 *
 *    AUTHOR: David Sutton
@@ -22,6 +22,14 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrinet.cpp,v $
+      Revision 1.23  2008/09/15 21:08:48  tspar
+      YUK-5013 Full FDR reload should not happen with every point db change
+
+      Changed interfaces to handle points on an individual basis so they can be added
+      and removed by point id.
+
+      Changed the fdr point manager to use smart pointers to help make this transition possible.
+
       Revision 1.22  2008/06/09 15:48:08  tspar
       YUK-6032 FDR Inet Will not send data
 
@@ -470,22 +478,16 @@ bool CtiFDR_Inet::loadTranslationLists()
 */
 bool CtiFDR_Inet::loadList(string &aDirection,  CtiFDRPointList &aList)
 {
-    bool                successful(FALSE);
-    CtiFDRPoint *       translationPoint = NULL;
+    bool successful = false;
+    bool foundPoint = false;
+    RWDBStatus listStatus;
 
-    CtiFDRPoint *       pointIdMap = NULL;
-    string           tempString1;
-    string           tempString2;
-    string           translationName;
-    int                 entries;
-    bool                foundPoint = false;
-    RWDBStatus          listStatus;
+    int entries;
 
     try
     {
         // make a list with all received points
-        CtiFDRManager   *pointList = new CtiFDRManager(getInterfaceName(), 
-                                                       aDirection);
+        CtiFDRManager *pointList = new CtiFDRManager(getInterfaceName(), aDirection);
 
         listStatus = pointList->loadPointList();
 
@@ -499,8 +501,7 @@ bool CtiFDR_Inet::loadList(string &aDirection,  CtiFDRPointList &aList)
             * the 2 entry thing is completly arbitrary
             ***************************************
             */
-            if (((pointList->entries() == 0) && (aList.getPointList()->entries() <= 2)) ||
-                (pointList->entries() > 0))
+            if (((pointList->entries() == 0) && (aList.getPointList()->entries() <= 2)) || (pointList->entries() > 0))
             {
                 // get iterator on send list
                 CtiFDRManager::CTIFdrPointIterator  myIterator = pointList->getMap().begin();
@@ -508,97 +509,10 @@ bool CtiFDR_Inet::loadList(string &aDirection,  CtiFDRPointList &aList)
                 for ( ; myIterator != pointList->getMap().end(); ++myIterator )
                 {
                     foundPoint = true;
-    
-                    translationPoint = (*myIterator).second;
-    
-                    for (int x=0; x < translationPoint->getDestinationList().size(); x++)
-                    {
-                        const string translation = translationPoint->getDestinationList()[x].getTranslation();
-                        boost::char_separator<char> sep1(";");
-                        Boost_char_tokenizer nextTranslate(translation, sep1);
-                        Boost_char_tokenizer::iterator tok_iter = nextTranslate.begin(); 
+                    shared_ptr<CtiFDRPoint> translationPoint = (*myIterator).second;
+                    successful = translateSinglePoint(translationPoint);
+                }
 
-                        if ( tok_iter != nextTranslate.end() )
-                        {
-                            tempString1 = *tok_iter;tok_iter++;
-                            boost::char_separator<char> sep2(":");
-                            Boost_char_tokenizer nextTempToken(tempString1, sep2);
-                            Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
-
-                            if( tok_iter1 != nextTempToken.end() )
-                            {
-                                tok_iter1++;
-                                if( tok_iter1 != nextTempToken.end() )
-                                {
-                                    tempString2 = *tok_iter1;
-                                }else
-                                {
-                                    tempString2 = "";
-                                }
-    
-                                // now we have a device name
-                                if ( !tempString2.empty() )
-                                {
-                                    // blank pad device
-                                    tempString2.resize(20);
-                                    translationName = tempString2;
-        
-                                    // next token is the point name
-                                    if ( tok_iter != nextTranslate.end())
-                                    {
-                                        tempString1 = *tok_iter;
-                                        boost::char_separator<char> sep2(":");
-                                        Boost_char_tokenizer nextTempToken(tempString1, sep2);
-                                        Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
-    
-                                        tok_iter1++;
-                                        if( tok_iter1 != nextTempToken.end() )
-                                        {
-                                            tempString2 = *tok_iter1;
-            
-                                            // now we have a point name:
-                                            if ( !tempString2.empty() )
-                                            {
-                                                tempString2.resize(20);
-                                                translationName += tempString2;
-                                                std::transform(translationName.begin(), translationName.end(), translationName.begin(), ::toupper);
-            
-                                                translationPoint->getDestinationList()[x].setTranslation(translationName);
-                                                /***/
-                                                string s = translationPoint->getDestinationList()[x].getDestination();
-                                                if (getDebugLevel() & MAJOR_DETAIL_FDR_DEBUGLEVEL)
-                                                {
-                                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                                    dout << " Destination: " << translationPoint->getDestinationList()[x].getDestination() << endl;
-                                                }
-                                                std::transform(s.begin(), s.end(), s.begin(), ::toupper);
-                                                translationPoint->getDestinationList()[x].setDestination(s); 
-                                                if (getDebugLevel() & MAJOR_DETAIL_FDR_DEBUGLEVEL)
-                                                {
-                                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                                    dout << " Destination: " << translationPoint->getDestinationList()[x].getDestination() << endl;
-                                                }
-                                                /***/
-                                                successful = true;
-            
-                                                if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
-                                                {
-                                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                                    dout << CtiTime() << " Point ID " << translationPoint->getPointID();
-                                                    dout << " translated: " << translationName << " for " << translationPoint->getDestinationList()[x].getDestination() << endl;
-                                                }
-            
-                                            }   // point id invalid
-                                        }
-                                    }   // second token invalid
-        
-                                }   // category invalid
-                            }
-                        }   // first token invalid
-    
-                    }   // end of while entries
-                }   // end for interator
-    
                 // lock the list I'm swapping 
                 CtiLockGuard<CtiMutex> sendGuard(aList.getMutex());  
                 if (aList.getPointList() != NULL)
@@ -657,6 +571,103 @@ bool CtiFDR_Inet::loadList(string &aDirection,  CtiFDRPointList &aList)
 }
 
 
+bool CtiFDR_Inet::translateSinglePoint(shared_ptr<CtiFDRPoint> translationPoint, bool send)
+{
+    bool successful = false;
+    string tempString1;
+    string tempString2;
+    string translationName;
+
+    for (int x=0; x < translationPoint->getDestinationList().size(); x++)
+    {
+        const string translation = translationPoint->getDestinationList()[x].getTranslation();
+        boost::char_separator<char> sep1(";");
+        Boost_char_tokenizer nextTranslate(translation, sep1);
+        Boost_char_tokenizer::iterator tok_iter = nextTranslate.begin(); 
+
+        if ( tok_iter != nextTranslate.end() )
+        {
+            tempString1 = *tok_iter;tok_iter++;
+            boost::char_separator<char> sep2(":");
+            Boost_char_tokenizer nextTempToken(tempString1, sep2);
+            Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
+
+            if( tok_iter1 != nextTempToken.end() )
+            {
+                tok_iter1++;
+                if( tok_iter1 != nextTempToken.end() )
+                {
+                    tempString2 = *tok_iter1;
+                }else
+                {
+                    tempString2 = "";
+                }
+
+                // now we have a device name
+                if ( !tempString2.empty() )
+                {
+                    // blank pad device
+                    tempString2.resize(20);
+                    translationName = tempString2;
+
+                    // next token is the point name
+                    if ( tok_iter != nextTranslate.end())
+                    {
+                        tempString1 = *tok_iter;
+                        boost::char_separator<char> sep2(":");
+                        Boost_char_tokenizer nextTempToken(tempString1, sep2);
+                        Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
+
+                        tok_iter1++;
+                        if( tok_iter1 != nextTempToken.end() )
+                        {
+                            tempString2 = *tok_iter1;
+
+                            // now we have a point name:
+                            if ( !tempString2.empty() )
+                            {
+                                tempString2.resize(20);
+                                translationName += tempString2;
+                                std::transform(translationName.begin(), translationName.end(), translationName.begin(), ::toupper);
+
+                                translationPoint->getDestinationList()[x].setTranslation(translationName);
+                                /***/
+                                string s = translationPoint->getDestinationList()[x].getDestination();
+                                if (getDebugLevel() & MAJOR_DETAIL_FDR_DEBUGLEVEL)
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << " Destination: " << translationPoint->getDestinationList()[x].getDestination() << endl;
+                                }
+                                std::transform(s.begin(), s.end(), s.begin(), ::toupper);
+                                translationPoint->getDestinationList()[x].setDestination(s); 
+                                if (getDebugLevel() & MAJOR_DETAIL_FDR_DEBUGLEVEL)
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << " Destination: " << translationPoint->getDestinationList()[x].getDestination() << endl;
+                                }
+                                /***/
+                                successful = true;
+
+                                if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << CtiTime() << " Point ID " << translationPoint->getPointID();
+                                    dout << " translated: " << translationName << " for " << translationPoint->getDestinationList()[x].getDestination() << endl;
+                                }
+
+                            }   // point id invalid
+                        }
+                    }   // second token invalid
+
+                }   // category invalid
+            }
+        }   // first token invalid
+
+    }   // end of while entries
+
+    return successful;
+}
+
 /************************************************************************
 * Function Name: CtiFDR_Inet::loadDestinationList()
 *
@@ -667,7 +678,7 @@ bool CtiFDR_Inet::loadList(string &aDirection,  CtiFDRPointList &aList)
 bool CtiFDR_Inet::loadClientList()
 {
     bool                successful(FALSE);
-    CtiFDRPoint *       translationPoint = NULL;
+    shared_ptr<CtiFDRPoint> translationPoint;
     string           receiveConnections;
     int                 entries;
     RWDBStatus          listStatus;
@@ -1563,7 +1574,7 @@ void CtiFDR_Inet::threadFunctionSendDebugData( void )
 {
     RWRunnableSelf  pSelf = rwRunnable( );
     INT retVal=0;
-    CtiFDRPoint         *point;
+    shared_ptr<CtiFDRPoint> point;
     CtiPointDataMsg     *localMsg;
     int quality = NormalQuality, index, entries;
     FLOAT value = 1.0;

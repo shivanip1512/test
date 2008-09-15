@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrDSm2Filein.cpp-arc  $
-*    REVISION     :  $Revision: 1.12 $
-*    DATE         :  $Date: 2006/06/07 22:34:04 $
+*    REVISION     :  $Revision: 1.13 $
+*    DATE         :  $Date: 2008/09/15 21:08:48 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,14 @@
 *    ---------------------------------------------------
 *    History:
       $Log: fdrdsm2filein.cpp,v $
+      Revision 1.13  2008/09/15 21:08:48  tspar
+      YUK-5013 Full FDR reload should not happen with every point db change
+
+      Changed interfaces to handle points on an individual basis so they can be added
+      and removed by point id.
+
+      Changed the fdr point manager to use smart pointers to help make this transition possible.
+
       Revision 1.12  2006/06/07 22:34:04  tspar
       _snprintf  adding .c_str() to all strings. Not having this does not cause compiler errors, but does cause runtime errors. Also tweaks and fixes to FDR due to some differences in STL / RW
 
@@ -801,9 +809,7 @@ int CtiFDR_Dsm2Filein::readConfig( void )
 */
 bool CtiFDR_Dsm2Filein::loadTranslationLists()
 {
-    bool                successful(FALSE);
-    CtiFDRPoint *       translationPoint = NULL;
-    string              tempString2;
+    bool successful = false;
     bool                foundPoint = false;
     RWDBStatus          listStatus;
 
@@ -832,38 +838,12 @@ bool CtiFDR_Dsm2Filein::loadTranslationLists()
 
                 // get iterator on send list
                 CtiFDRManager::CTIFdrPointIterator  myIterator = pointList->getMap().begin();
-                int x;
-                string translation_name;
 
                 for ( ; myIterator != pointList->getMap().end(); ++myIterator )
                 {
                     foundPoint = true;
-                    translationPoint = (*myIterator).second;
-
-                    for (x=0; x < translationPoint->getDestinationList().size(); x++)
-                    {
-                        if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << "Parsing Yukon Point ID " << translationPoint->getPointID();
-                            //dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
-                            dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
-                        }
-                        tempString2 = translationPoint->getDestinationList()[x].getTranslationValue("Option Number");
-                        if (!tempString2.empty())
-                        {
-                            translation_name = tempString2 + "-----";
-                            successful = true;
-                        }
-                                                
-                        tempString2 = translationPoint->getDestinationList()[x].getTranslationValue("Point ID");
-                        if (!tempString2.empty() && successful == true)
-                        {
-                            translation_name+=tempString2;
-                            translationPoint->getDestinationList()[x].setTranslation (translation_name);
-                            // we end up with a translation of function #-----id
-                        }
-                    }
+                    shared_ptr<CtiFDRPoint> translationPoint = (*myIterator).second;
+                    translateSinglePoint(translationPoint);
                 }   // end for interator
 
                 // lock the receive list and remove the old one
@@ -922,6 +902,39 @@ bool CtiFDR_Dsm2Filein::loadTranslationLists()
         dout << CtiTime() << " Error loading translation lists for " << getInterfaceName() << endl;
     }
 
+    return successful;
+}
+
+bool CtiFDR_Dsm2Filein::translateSinglePoint(shared_ptr<CtiFDRPoint> translationPoint, bool send)
+{
+    bool successful = false;
+    string tempString2;
+    string translation_name;
+
+    for (int x = 0; x < translationPoint->getDestinationList().size(); x++)
+    {
+        if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << "Parsing Yukon Point ID " << translationPoint->getPointID();
+            //dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
+            dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
+        }
+        tempString2 = translationPoint->getDestinationList()[x].getTranslationValue("Option Number");
+        if (!tempString2.empty())
+        {
+            translation_name = tempString2 + "-----";
+            successful = true;
+        }
+                                
+        tempString2 = translationPoint->getDestinationList()[x].getTranslationValue("Point ID");
+        if (!tempString2.empty() && successful == true)
+        {
+            translation_name+=tempString2;
+            translationPoint->getDestinationList()[x].setTranslation (translation_name);
+            // we end up with a translation of function #-----id
+        }
+    }
     return successful;
 }
 

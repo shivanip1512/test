@@ -32,6 +32,7 @@
 
 #include "dlldefs.h"
 #include "message.h"
+#include "msg_dbchg.h"
 #include "connection.h"
 #include "mgr_fdrpoint.h"
 #include "cparms.h"
@@ -71,7 +72,8 @@ class IM_EX_FDRBASE CtiFDRInterface
         CtiFDRInterface&    setQueueFlushRate (INT aTime);
 
         FDRDbReloadReason   getDbReloadReason() const;
-        CtiFDRInterface&    setDbReloadReason(FDRDbReloadReason aLevel=Signaled);
+        CtiFDRInterface&    setDbReloadReason(FDRDbReloadReason aLevel=DbChange);
+        virtual void        processDbChange(CtiDBChangeMsg* change);
 
         BOOL                isInterfaceInDebugMode() const;
         void                setInterfaceDebugMode(const BOOL aChangeFlag = TRUE);
@@ -94,10 +96,18 @@ class IM_EX_FDRBASE CtiFDRInterface
 
         // load a single copy of the cparms
         static CtiConfigParameters  iConfigParameters;
-        bool reloadTranslationLists(void);
-
         virtual int processMessageFromForeignSystem (CHAR *data) = 0;
+
+        bool reloadTranslationLists(void);
         virtual bool loadTranslationLists(void)=0;
+        virtual bool translateSinglePoint(shared_ptr<CtiFDRPoint> translationPoint, bool send=false)=0;
+
+        //Load single point, maintaining current lists
+        virtual bool loadTranslationPoint(long pointId);
+        //remove single point maintaining current lists
+        void removeTranslationPoint(long pointId);
+        //here to be call
+        virtual void cleanupTranslationPoint(shared_ptr<CtiFDRPoint> translationPoint, bool recvList);
 
         CtiFDRPointList   getSendToList () const;
         CtiFDRPointList & getSendToList ();
@@ -124,6 +134,7 @@ class IM_EX_FDRBASE CtiFDRInterface
         std::ostream logNow();
 
     protected:
+
         CtiMutex            iDispatchMux;
         CtiConnection       *iDispatchConn;
         CtiFDRManager       *iOutBoundPoints;
@@ -137,6 +148,8 @@ class IM_EX_FDRBASE CtiFDRInterface
         void threadFunctionReceiveFromDispatch( void );
         void threadFunctionReloadDb( void );
         void threadFunctionConnectToDispatch( void );
+
+        void printLists(string title, int pid);
 
         static const CHAR * KEY_DISPATCH_NAME;
         static const CHAR * KEY_DEBUG_LEVEL;
@@ -171,9 +184,7 @@ class IM_EX_FDRBASE CtiFDRInterface
         CtiFDRPointList    iReceiveFromList;
 
         // add things here and then send dispatch a multi point msg
-        // 20060104 CGP // CtiQueue<CtiMessage, less<CtiMessage> > iDispatchQueue;
         CtiFIFOQueue<CtiMessage> iDispatchQueue;
-
 
         int  readConfig( void );
         void disconnect( void );

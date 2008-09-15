@@ -11,8 +11,8 @@
  * Author: Tom Mack
  *
  * ARCHIVE      :  $Archive$
- * REVISION     :  $Revision: 1.3 $
- * DATE         :  $Date: 2005/12/20 17:17:13 $
+ * REVISION     :  $Revision: 1.4 $
+ * DATE         :  $Date: 2008/09/15 21:08:48 $
  */
 
 #include <windows.h>
@@ -150,10 +150,10 @@ void CtiFDRLiveData::testConnection()
 /**
  * Add a new point to the appropriate lists.
  */ 
-void CtiFDRLiveData::processNewPoint(CtiFDRPoint *ctiPoint)
+void CtiFDRLiveData::processNewPoint(shared_ptr<CtiFDRPoint> ctiPoint)
 {
   PointInfo info;
-  info.ctiPoint = ctiPoint;
+  info.ctiPoint = ctiPoint.get();
 
   LiveDataTypes::Factory *typeFactory = LiveDataTypes::Factory::getInstance();
 
@@ -167,7 +167,6 @@ void CtiFDRLiveData::processNewPoint(CtiFDRPoint *ctiPoint)
   try
   {
     info.liveDataType = typeFactory->getDataType(dataTypeStr.c_str());
-  
   
     _pointMap.insert(PointMap::value_type(info.pointAddress, info));
   
@@ -183,14 +182,28 @@ void CtiFDRLiveData::processNewPoint(CtiFDRPoint *ctiPoint)
     CtiLockGuard<CtiLogger> doubt_guard( dout );
     logNow() << "Unkown point type " << dataTypeStr << " for address " << address << endl;
   }
+}
 
+void CtiFDRLiveData::cleanupTranslationPoint(shared_ptr<CtiFDRPoint> translationPoint, bool recvList)
+{
+  if (recvList)
+  {
+    string address = translationPoint->getDestinationList()[0].getTranslationValue("Address");
+    LDAddress laddr = atoi(address.c_str());
+    _pointMap.erase(laddr);
 
+    if( isDebugLevel( DETAIL_FDR_DEBUGLEVEL ) )
+    {
+      CtiLockGuard<CtiLogger> doubt_guard( dout );
+      logNow() << "Removed point " << address << endl;
+    }
+  }
 }
 
 /**
  * Clear out data about existing points.
  */ 
-void CtiFDRLiveData::beginNewPoints() {
+void CtiFDRLiveData::removeAllPoints() {
   _okayToWrite = false;
   _pointMap.clear();
 }
@@ -198,7 +211,7 @@ void CtiFDRLiveData::beginNewPoints() {
 /**
  * Set next update time for the new points.
  */ 
-void CtiFDRLiveData::endNewPoints()
+void CtiFDRLiveData::handleNewPoints()
 {
   _okayToWrite = true;
 }

@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/utility.h-arc  $
-* REVISION     :  $Revision: 1.50 $
-* DATE         :  $Date: 2008/09/15 17:59:18 $
+* REVISION     :  $Revision: 1.51 $
+* DATE         :  $Date: 2008/09/15 21:14:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -226,6 +226,8 @@ IM_EX_CTIBASE void testSA305CRC(char* testData);
 
 IM_EX_CTIBASE LONG GetPAOIdOfEnergyPro(long devicesn);
 
+IM_EX_CTIBASE vector<int> getPointIdsOnPao(long paoid);
+
 //String Functions
 inline void CtiToLower( std::string& str)
 {
@@ -304,7 +306,6 @@ inline void delete_container( Container &C )
         *itr = NULL;
     }
 }
-
 
 template <class Container, class Element, class Argument>
 void delete_container_if( Container &C, bool (*predicate)(const Element *, Argument), Argument arg)

@@ -16,6 +16,14 @@
 *                 design document for more information
 *    History:
       $Log: fdrvalmet.h,v $
+      Revision 1.7  2008/09/15 21:09:16  tspar
+      YUK-5013 Full FDR reload should not happen with every point db change
+
+      Changed interfaces to handle points on an individual basis so they can be added
+      and removed by point id.
+
+      Changed the fdr point manager to use smart pointers to help make this transition possible.
+
       Revision 1.6  2007/11/12 16:46:55  mfisher
       Removed some Rogue Wave includes
 
@@ -195,7 +203,7 @@ class IM_EX_FDRVALMET CtiFDR_Valmet : public CtiFDRSingleSocket
         USHORT      YukonToForeignQuality (USHORT aQuality);
         USHORT      YukonToForeignStatus (int aStatus);
 
-        bool translateAndUpdatePoint(CtiFDRPoint *translationPoint, int aIndex);
+        bool translateAndUpdatePoint(shared_ptr<CtiFDRPoint> translationPoint, int aIndex);
 
 
         enum {  Valmet_Invalid = 0,

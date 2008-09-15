@@ -35,7 +35,9 @@ class IM_EX_FDRBASE CtiFDRScadaHelper
         bool handleStatusUpdate(const T& id, int value, int quality, CtiTime timestamp) const;
         bool handleControl(const T& id, int controlState) const;
         void addSendMapping(const T& id, const CtiFDRDestination& destination);
+        void removeSendMapping(const T& id, const CtiFDRDestination& destination);
         void addReceiveMapping(const T& id, const CtiFDRDestination& destination);
+        void removeReceiveMapping(const T& id, const CtiFDRDestination& destination);
         bool getIdForDestination(const CtiFDRDestination& destination, T& result) const;
         void clearMappings();
 

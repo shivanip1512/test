@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.33 $
-*    DATE         :  $Date: 2008/08/13 22:42:52 $
+*    REVISION     :  $Revision: 1.34 $
+*    DATE         :  $Date: 2008/09/15 21:08:48 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -19,6 +19,14 @@
 *    ---------------------------------------------------
 *    History:
       $Log: fdrlodestarimport.cpp,v $
+      Revision 1.34  2008/09/15 21:08:48  tspar
+      YUK-5013 Full FDR reload should not happen with every point db change
+
+      Changed interfaces to handle points on an individual basis so they can be added
+      and removed by point id.
+
+      Changed the fdr point manager to use smart pointers to help make this transition possible.
+
       Revision 1.33  2008/08/13 22:42:52  jrichter
       YUK-3163
       FDR doesn't log reason for failure to import LSE data
@@ -457,17 +465,9 @@ int CtiFDR_LodeStarImportBase::readConfig( void )
 */
 bool CtiFDR_LodeStarImportBase::loadTranslationLists()
 {
-    bool                successful(TRUE);
-    CtiFDRPoint *       translationPoint = NULL;
-    string           tempString1;
-    string           translationName;
-    string           translationDrivePath;
-    string           translationFilename;
-    string           translationFolderName;
-    bool                foundPoint = false;
-    RWDBStatus          listStatus;
-    CHAR fileName[200];
-    CHAR fileName2[200];
+    bool successful = true;
+    bool foundPoint = false;
+    RWDBStatus listStatus;
 
     try
     {
@@ -494,77 +494,12 @@ bool CtiFDR_LodeStarImportBase::loadTranslationLists()
 
                 // get iterator on send list
                 CtiFDRManager::CTIFdrPointIterator  myIterator = pointList->getMap().begin();
-                int x;
 
                 for ( ; myIterator != pointList->getMap().end(); ++myIterator)
                 {
                     foundPoint = true;
-                    translationPoint = (*myIterator).second;
-
-                    for (x=0; x < translationPoint->getDestinationList().size(); x++)
-                    {
-                        if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << "Parsing Yukon Point ID " << translationPoint->getPointID();
-                            dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
-                        }
-                        //123 1 C:/ASD ASD.EXE
-                        translationName = translationPoint->getDestinationList()[x].getTranslationValue("Customer");
-                        if ( translationName.empty() )
-                            successful = false;
-                        string translationChannel = translationPoint->getDestinationList()[x].getTranslationValue("Channel");
-                        if ( translationChannel.empty() )
-                            successful = false;
-
-                        translationName += (string)" " + translationChannel;
-
-
-                        translationFolderName = translationPoint->getDestinationList()[x].getTranslationValue("DrivePath");
-                        if ( translationFolderName.empty() )
-                            successful = false;
-                        translationDrivePath = getFileImportBaseDrivePath();
-
-                        translationName += (string)" " + translationFolderName;
-                        translationDrivePath += translationFolderName;
-
-                        translationFilename = translationPoint->getDestinationList()[x].getTranslationValue("Filename");
-                        if ( translationFilename.empty() )
-                            successful = false;
-                        translationName += (string)" " + translationFilename;
-                        transform(translationName.begin(), translationName.end(), translationName.begin(), toupper);
-
-
-                        CtiFDR_LodeStarInfoTable tempFileInfoList (translationDrivePath, translationFilename, translationFolderName);
-                        string t1 = tempFileInfoList.getLodeStarDrivePath();
-                        string t2 = tempFileInfoList.getLodeStarFileName();
-                        _snprintf(fileName, 200, "%s\\%s",t1.c_str(),t2.c_str());
-                        int matchFlag = 0;
-                        for (int xx = 0; xx < getFileInfoList().size(); xx++)
-                        {
-                            string t3 = getFileInfoList()[xx].getLodeStarDrivePath();
-                            string t4 = getFileInfoList()[xx].getLodeStarFileName();
-                            _snprintf(fileName2, 200, "%s\\%s",t3.c_str(),t4.c_str());
-                            if (!strcmp(fileName,fileName2))
-                            {
-                                matchFlag = 1;
-                            }
-
-                        }
-                        if (!matchFlag)
-                        {
-                            getFileInfoList().push_back(tempFileInfoList);
-                        }
-                        translationPoint->getDestinationList()[x].setTranslation(translationName);
-
-
-                        if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Point ID " << translationPoint->getPointID();
-                            dout << " translated: " << translationName << endl;//
-                        }
-                    }
+                    shared_ptr<CtiFDRPoint> translationPoint = (*myIterator).second;
+                    successful = translateSinglePoint(translationPoint);
                 }   // end for interator
 
 
@@ -620,6 +555,86 @@ bool CtiFDR_LodeStarImportBase::loadTranslationLists()
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Error loading translation lists for " << getInterfaceName() << endl;
+    }
+
+    return successful;
+}
+
+bool CtiFDR_LodeStarImportBase::translateSinglePoint(shared_ptr<CtiFDRPoint> translationPoint, bool send)
+{
+    bool successful = true;
+
+    string           tempString1;
+    string           translationName;
+    string           translationDrivePath;
+    string           translationFilename;
+    string           translationFolderName;
+    CHAR fileName[200];
+    CHAR fileName2[200];
+
+    for (int x = 0; x < translationPoint->getDestinationList().size(); x++)
+    {
+        if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << "Parsing Yukon Point ID " << translationPoint->getPointID();
+            dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
+        }
+        //123 1 C:/ASD ASD.EXE
+        translationName = translationPoint->getDestinationList()[x].getTranslationValue("Customer");
+        if ( translationName.empty() )
+            successful = false;
+        string translationChannel = translationPoint->getDestinationList()[x].getTranslationValue("Channel");
+        if ( translationChannel.empty() )
+            successful = false;
+
+        translationName += (string)" " + translationChannel;
+
+
+        translationFolderName = translationPoint->getDestinationList()[x].getTranslationValue("DrivePath");
+        if ( translationFolderName.empty() )
+            successful = false;
+        translationDrivePath = getFileImportBaseDrivePath();
+
+        translationName += (string)" " + translationFolderName;
+        translationDrivePath += translationFolderName;
+
+        translationFilename = translationPoint->getDestinationList()[x].getTranslationValue("Filename");
+        if ( translationFilename.empty() )
+            successful = false;
+        translationName += (string)" " + translationFilename;
+        transform(translationName.begin(), translationName.end(), translationName.begin(), toupper);
+
+
+        CtiFDR_LodeStarInfoTable tempFileInfoList (translationDrivePath, translationFilename, translationFolderName);
+        string t1 = tempFileInfoList.getLodeStarDrivePath();
+        string t2 = tempFileInfoList.getLodeStarFileName();
+        _snprintf(fileName, 200, "%s\\%s",t1.c_str(),t2.c_str());
+        int matchFlag = 0;
+        for (int xx = 0; xx < getFileInfoList().size(); xx++)
+        {
+            string t3 = getFileInfoList()[xx].getLodeStarDrivePath();
+            string t4 = getFileInfoList()[xx].getLodeStarFileName();
+            _snprintf(fileName2, 200, "%s\\%s",t3.c_str(),t4.c_str());
+            if (!strcmp(fileName,fileName2))
+            {
+                matchFlag = 1;
+            }
+
+        }
+        if (!matchFlag)
+        {
+            getFileInfoList().push_back(tempFileInfoList);
+        }
+        translationPoint->getDestinationList()[x].setTranslation(translationName);
+
+
+        if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Point ID " << translationPoint->getPointID();
+            dout << " translated: " << translationName << endl;//
+        }
     }
 
     return successful;

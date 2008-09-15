@@ -55,12 +55,13 @@ class IM_EX_FDRBASE CtiFDRDestination
         CtiFDRDestination& setParentPoint (CtiFDRPoint* parentPoint);
         
         bool operator<(const CtiFDRDestination& other) const;
+        bool operator==(const CtiFDRDestination& other) const;
 
     private:
         // private data
         string           iTranslation;
         string           iDestination;
-        CtiFDRPoint*        iParentPoint;
+        CtiFDRPoint*     iParentPoint;
 
 };
 

@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdracs.cpp-arc  $
-*    REVISION     :  $Revision: 1.18 $
-*    DATE         :  $Date: 2008/03/20 21:27:14 $
+*    REVISION     :  $Revision: 1.19 $
+*    DATE         :  $Date: 2008/09/15 21:08:47 $
 *
 *
 *    AUTHOR: David Sutton
@@ -23,6 +23,14 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdracs.cpp,v $
+      Revision 1.19  2008/09/15 21:08:47  tspar
+      YUK-5013 Full FDR reload should not happen with every point db change
+
+      Changed interfaces to handle points on an individual basis so they can be added
+      and removed by point id.
+
+      Changed the fdr point manager to use smart pointers to help make this transition possible.
+
       Revision 1.18  2008/03/20 21:27:14  tspar
       YUK-5541 FDR Textimport and other interfaces incorrectly use the boost tokenizer.
 
@@ -380,7 +388,7 @@ int CtiFDR_ACS::readConfig()
 }
 
 
-bool CtiFDR_ACS::translateAndUpdatePoint(CtiFDRPoint *translationPoint, int aDestinationIndex)
+bool CtiFDR_ACS::translateAndUpdatePoint(shared_ptr<CtiFDRPoint> translationPoint, int aDestinationIndex)
 {
     bool                successful(false);
     string           tempString1;

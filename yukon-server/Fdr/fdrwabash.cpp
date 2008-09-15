@@ -81,10 +81,6 @@ FDRWabash::~FDRWabash(){
 
 bool FDRWabash::loadTranslationLists()
 {   
-    CtiFDRPoint*     translationPoint;
-    string           pointID;
-    string           filename;
-    string           drivePath;
     RWDBStatus       listStatus;
 
     try
@@ -102,30 +98,8 @@ bool FDRWabash::loadTranslationLists()
                 CtiFDRManager::CTIFdrPointIterator  myIterator = pointList->getMap().begin();
                 for ( ; myIterator != pointList->getMap().end(); ++myIterator)
                 {
-                    translationPoint = (*myIterator).second;
-                    for (int x=0; x < translationPoint->getDestinationList().size(); x++)
-                    {
-                        //go through destination list?
-                        pointID = translationPoint->getDestinationList()[x].getTranslationValue("SchedName");
-                        drivePath = translationPoint->getDestinationList()[x].getTranslationValue("Path");
-                        filename = translationPoint->getDestinationList()[x].getTranslationValue("Filename");
-
-                        if( !pointID.empty() && !drivePath.empty() && !filename.empty() )
-                        {
-                            translationPoint->getDestinationList()[x].setTranslation (pointID);
-
-                            //This only allows for one file name. In the event we want to use multiple files for different points
-                            //the filename and path will need to be added into CtiFDRPoint or tracked per point by another method.
-                            _fileName = filename;
-                            _path = drivePath;
-                            if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " Filename and Path: " << _fileName << " " << _path << std::endl;
-                            }
-                            //Also the last point loaded gets the final say in the path and filename
-                        }
-                    }
+                    shared_ptr<CtiFDRPoint> translationPoint = (*myIterator).second;
+                    translateSinglePoint(translationPoint);
                 }
                 // lock the receive list and remove the old one
                 {
@@ -151,9 +125,42 @@ bool FDRWabash::loadTranslationLists()
 
      return true;
 }
+
+bool FDRWabash::translateSinglePoint(shared_ptr<CtiFDRPoint> translationPoint, bool send)
+{
+    string pointID;
+    string filename;
+    string drivePath;
+
+    for (int x=0; x < translationPoint->getDestinationList().size(); x++)
+    {
+        //go through destination list?
+        pointID = translationPoint->getDestinationList()[x].getTranslationValue("SchedName");
+        drivePath = translationPoint->getDestinationList()[x].getTranslationValue("Path");
+        filename = translationPoint->getDestinationList()[x].getTranslationValue("Filename");
+
+        if( !pointID.empty() && !drivePath.empty() && !filename.empty() )
+        {
+            translationPoint->getDestinationList()[x].setTranslation (pointID);
+
+            //This only allows for one file name. In the event we want to use multiple files for different points
+            //the filename and path will need to be added into CtiFDRPoint or tracked per point by another method.
+            _fileName = filename;
+            _path = drivePath;
+            if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Filename and Path: " << _fileName << " " << _path << std::endl;
+            }
+            //Also the last point loaded gets the final say in the path and filename
+        }
+    }
+    return true;
+}
+
 void FDRWabash::resetForInitialLoad()
 {
-    CtiFDRPoint        *point=NULL;
+    shared_ptr<CtiFDRPoint> point;
 
     CtiFDRManager::CTIFdrPointIterator  myIterator = getSendToList().getPointList()->getMap().begin();
     for ( ; myIterator != getSendToList().getPointList()->getMap().end(); ++myIterator)
@@ -168,7 +175,7 @@ bool FDRWabash::sendMessageToForeignSys( CtiMessage *msg )
     bool               ok = true;
     bool               initialmsg = false;
     bool               equivalentValue = false;
-    CtiFDRPoint        *point=NULL;
+    shared_ptr<CtiFDRPoint> point;
     CtiTime time;
     string date,schedName,action;
 
@@ -209,10 +216,8 @@ bool FDRWabash::sendMessageToForeignSys( CtiMessage *msg )
         itr = getSendToList().getPointList()->getMap().find(aMessage->getId());
         if( itr != getSendToList().getPointList()->getMap().end() )
             point = (*itr).second;
-        else
-            point = NULL;
     
-        if ( getSendToList().getPointList()->getMap().size() == 0 ||  point == NULL)
+        if ( getSendToList().getPointList()->getMap().size() == 0 ||  point.get() == NULL)
         {
             ok = false;
         }

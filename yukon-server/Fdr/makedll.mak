@@ -128,10 +128,7 @@ fdrpi.dll \
 fdrxa21lm.dll \
 fdrlivedata.dll \
 fdrwabash.dll \
-fdrtristatesub.dll \
-fdrareva.dll
-
-
+fdrtristatesub.dll 
 
 #  commented out because of bigtime Microsoft compiler problems.  i'm compiling
 #    all of the code into one .obj, because it can't handle the code being contained

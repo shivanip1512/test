@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrtextimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.6 $
-*    DATE         :  $Date: 2008/03/20 21:27:14 $
+*    REVISION     :  $Revision: 1.7 $
+*    DATE         :  $Date: 2008/09/15 21:09:16 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +20,14 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrtextimport.h,v $
+      Revision 1.7  2008/09/15 21:09:16  tspar
+      YUK-5013 Full FDR reload should not happen with every point db change
+
+      Changed interfaces to handle points on an individual basis so they can be added
+      and removed by point id.
+
+      Changed the fdr point manager to use smart pointers to help make this transition possible.
+
       Revision 1.6  2008/03/20 21:27:14  tspar
       YUK-5541 FDR Textimport and other interfaces incorrectly use the boost tokenizer.
 
@@ -127,7 +135,14 @@ public:
     void handleFilePostOp( string fileName );
 
     void threadFunctionReadFromFile( void );
+
+    //Load all points
     virtual bool loadTranslationLists(void);
+    virtual bool translateSinglePoint(shared_ptr<CtiFDRPoint> translationPoint, bool send=false);
+
+    //remove single point maintaining current lists
+    virtual void cleanupTranslationPoint(shared_ptr<CtiFDRPoint> translationPoint, bool recvList);
+
     // ddefine these for each interface type
     static const CHAR * KEY_INTERVAL;
     static const CHAR * KEY_FILENAME;
@@ -141,8 +156,8 @@ public:
     bool getLegacy();
     void setLegacy( bool val );
 
-
 private:
+
     RWThreadFunction    _threadReadFromFile;
     bool                _deleteFileAfterImportFlag;
     bool _renameSaveFileAfterImportFlag; 

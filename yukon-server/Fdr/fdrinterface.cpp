@@ -15,10 +15,18 @@
  *    Copyright (C) 2005 Cannon Technologies, Inc.  All rights reserved.
  *
  *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinterface.cpp-arc  $
- *    REVISION     :  $Revision: 1.29 $
- *    DATE         :  $Date: 2008/03/20 21:27:14 $
+ *    REVISION     :  $Revision: 1.30 $
+ *    DATE         :  $Date: 2008/09/15 21:08:48 $
  *    History:
  *     $Log: fdrinterface.cpp,v $
+ *     Revision 1.30  2008/09/15 21:08:48  tspar
+ *     YUK-5013 Full FDR reload should not happen with every point db change
+ *
+ *     Changed interfaces to handle points on an individual basis so they can be added
+ *     and removed by point id.
+ *
+ *     Changed the fdr point manager to use smart pointers to help make this transition possible.
+ *
  *     Revision 1.29  2008/03/20 21:27:14  tspar
  *     YUK-5541 FDR Textimport and other interfaces incorrectly use the boost tokenizer.
  *
@@ -97,11 +105,11 @@ CtiConfigParameters CtiFDRInterface::iConfigParameters;
 const CHAR * CtiFDRInterface::KEY_DISPATCH_NAME = "DISPATCH_MACHINE";
 const CHAR * CtiFDRInterface::KEY_DEBUG_LEVEL = "_DEBUGLEVEL";
 
-bool isPointIdEqual (CtiFDRPoint* a, void* arg);
-bool isTranslationNameEqual (CtiFDRPoint* a, void* arg);
+bool isPointIdEqual (shared_ptr<CtiFDRPoint> a, void* arg);
+bool isTranslationNameEqual (shared_ptr<CtiFDRPoint> a, void* arg);
 
 
-bool isPointIdEqual(CtiFDRPoint* aPoint, void *arg)
+bool isPointIdEqual(shared_ptr<CtiFDRPoint> aPoint, void *arg)
 {
     LONG  id = *((LONG*)arg);  // Wha tis the ID of the pointI care for!
     BOOL  retVal = false;
@@ -112,7 +120,7 @@ bool isPointIdEqual(CtiFDRPoint* aPoint, void *arg)
     return retVal;
 }
 
-bool isTranslationNameEqual(CtiFDRPoint* aPoint, void *arg)
+bool isTranslationNameEqual(shared_ptr<CtiFDRPoint> aPoint, void *arg)
 {
     string name = *((string*)arg);  // Wha tis the ID of the pointI care for!
 
@@ -185,8 +193,8 @@ CtiFDRInterface& CtiFDRInterface::setReceiveFromList (CtiFDRPointList &aList)
 long CtiFDRInterface::getClientLinkStatusID(string &aClientName)
 {
     bool                successful(false);
-    CtiFDRPoint *       translationPoint = NULL;
-    CtiFDRPoint *       point = NULL;
+    shared_ptr<CtiFDRPoint>  translationPoint;
+    shared_ptr<CtiFDRPoint>  point;
     string           tempString1;
     string           tempString2;
     string           translationName;
@@ -822,7 +830,7 @@ bool CtiFDRInterface::sendPointRegistration( void )
 
 void CtiFDRInterface::buildRegistrationPointList (CtiPointRegistrationMsg **aMsg)
 {
-    CtiFDRPoint             *pFdrPoint = NULL;
+    shared_ptr<CtiFDRPoint> pFdrPoint;
     CtiPointRegistrationMsg *testMsg;
 
     // we have some points to send
@@ -961,15 +969,31 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
 
             switch (incomingMsg->isA())
             {
-
                 case MSG_DBCHANGE:
                     // db change message reload if type if point
                     if ( ((CtiDBChangeMsg*)incomingMsg)->getDatabase() == ChangePointDb)
                     {
-                        //FIXFIXFIX code here to reload and re-register point list
+                        processDbChange((CtiDBChangeMsg*)incomingMsg);
+                    }
+                    else if (((CtiDBChangeMsg*)incomingMsg)->getDatabase() == ChangePAODb)
+                    {
+                        // Ignoring delete device changes. If its a delete, we will error on sql anyways, they are gone
+                        if (((CtiDBChangeMsg*)incomingMsg)->getTypeOfChange() != ChangeTypeDelete)
+                        {
+                            // get all points on device and make a message for each
+                            std::vector<int> ids = getPointIdsOnPao(((CtiDBChangeMsg*)incomingMsg)->getId());
+                            int changeType = ((CtiDBChangeMsg*)incomingMsg)->getTypeOfChange();
 
-                        // let Inherited class know we had a change
-                        setDbReloadReason(Signaled);
+                            for (std::vector<int>::iterator itr = ids.begin(); itr != ids.end(); itr++)
+                            {
+                                // Only have to setId to id in list and setTypeOfChange to match original message.
+                                int pid = *itr;
+                                //CtiDBChangeMsg(LONG id,INT database, string category, string objecttype, INT typeofchange);
+                                CtiDBChangeMsg* ptr = new CtiDBChangeMsg(pid, 0, "", "", changeType);
+                                processDbChange(ptr);
+                                delete ptr;
+                            }
+                        }
                     }
                     break;
 
@@ -978,7 +1002,7 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
                         // we will handle this message for other classes
                         CtiCommandMsg* cmd = (CtiCommandMsg*)incomingMsg;
 
-                        switch ( cmd->getOperation())
+                        switch (cmd->getOperation())
                         {
                             case (CtiCommandMsg::Shutdown):
                                 {
@@ -1021,7 +1045,6 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
                             //  send the current node change to foreign system
                             sendMessageToForeignSys((CtiMessage *)((CtiMultiMsg *)incomingMsg)->getData()[x]);
                         }
-
                     }
                     break;
                 case MSG_POINTDATA:
@@ -1207,29 +1230,26 @@ void CtiFDRInterface::threadFunctionReloadDb( void )
         for ( ; ; )
         {
             pSelf.serviceCancellation( );
-            pSelf.sleep (100);
+            pSelf.sleep (1000);
 
             timeNow = CtiTime();
 
-            if ((getDbReloadReason() != NotReloaded) || (timeNow >= refreshTime))
+            if ((getDbReloadReason() == ForceReload) || (timeNow >= refreshTime))
             {
-                if ((getDbReloadReason() != NotReloaded))
+                if ((getDbReloadReason() == ForceReload))
                 {
-                    // reload point list
-//                    if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        logNow() << "Db change reloading points" << endl;
+                        logNow() << "Reload of DB Forced. Reloading Translations" << endl;
                     }
                 }
                 else
                 {
                     // reload point list
                     setDbReloadReason(Periodic);
-//                    if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        logNow() << "Periodic timer expired -  reloading" << endl;
+                        logNow() << "Periodic Timer expired -  Reloading Translations" << endl;
                     }
                 }
 
@@ -1238,7 +1258,6 @@ void CtiFDRInterface::threadFunctionReloadDb( void )
                 {
                     // do this whenever we reload the database
                     reRegisterWithDispatch();
-
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " - Re-registered with dispatch - " << getInterfaceName() << endl;
@@ -1489,7 +1508,7 @@ bool CtiFDRInterface::updatePointByIdInList(CtiFDRPointList &aList,
                                             CtiPointDataMsg *aMessage)
 {
     bool               foundFlag= false;
-    CtiFDRPoint        *point=NULL;
+    shared_ptr<CtiFDRPoint> point;
 
     // lock the list
     CtiLockGuard<CtiMutex> sendGuard(aList.getMutex());
@@ -1499,10 +1518,8 @@ bool CtiFDRInterface::updatePointByIdInList(CtiFDRPointList &aList,
     itr = aList.getPointList()->getMap().find(aMessage->getId());
     if( itr != aList.getPointList()->getMap().end() )
         point = (*itr).second;
-    else
-        point = NULL;
 
-    if ( aList.getPointList()->getMap().size() == 0 ||  point == NULL)
+    if ( aList.getPointList()->getMap().size() == 0 ||  point.get() == NULL)
     {
         foundFlag = false;
     }
@@ -1529,7 +1546,7 @@ bool CtiFDRInterface::findPointIdInList(long aPointId,
                                         CtiFDRPoint &aPoint)
 {
     bool               foundFlag= false;
-    CtiFDRPoint        *point=NULL;
+    shared_ptr<CtiFDRPoint> point;
 
     // lock the list
     CtiLockGuard<CtiMutex> sendGuard(aList.getMutex());
@@ -1539,10 +1556,8 @@ bool CtiFDRInterface::findPointIdInList(long aPointId,
     itr = aList.getPointList()->getMap().find(aPointId);
     if( itr != aList.getPointList()->getMap().end() )
         point = (*itr).second;
-    else
-        point = NULL;
 
-    if ( aList.getPointList()->getMap().size() == 0 ||  point == NULL)
+    if ( aList.getPointList()->getMap().size() == 0 ||  point.get() == NULL)
     {
         foundFlag = false;
     }
@@ -1568,25 +1583,156 @@ bool CtiFDRInterface::findTranslationNameInList(string aTranslationName,
 {
     bool               foundFlag= false;
     int                index =0;
-    CtiFDRPoint        *point=rwnil;
+    shared_ptr<CtiFDRPoint> point;
 
     // lock the list
     CtiLockGuard<CtiMutex> sendGuard(aList.getMutex());
     point = aList.getPointList()->find(isTranslationNameEqual, (void *) &aTranslationName);
 
-    if (point == rwnil)
+    if (point.get() == NULL)
     {
         foundFlag = false;
     }
     else
     {
         // reset reason for reload
-        aPoint = *point;
-        foundFlag=true;
+        aPoint = *(point.get());
+        foundFlag = true;
     }
     return foundFlag;
 }
 
+/*** 
+* Process a db change. 
+*  
+* If there is any added tracking for an interface 
+* this will have to be extended to maintain the difference. 
+*  
+* This function links FDR closer to the database. 
+*/
+void CtiFDRInterface::processDbChange(CtiDBChangeMsg* msg)
+{
+    //Note: Handle the PAO Add case (with no point adds to follow)
+    // The most logical method for this is to remove it from our list if we have it. 
+    // Then re-insert it if the db query finds something. (unless it is a delete)
+    // Question is do the interfaces
+
+    removeTranslationPoint(msg->getId());
+
+    //already know its a point db change. So just check for not delete
+    if (msg->getTypeOfChange() != ChangeTypeDelete)
+    {
+        //if type is delete. we dont have to re-add.
+        loadTranslationPoint(msg->getId());
+    }
+}
+
+//Load single point, maintaining current lists
+bool CtiFDRInterface::loadTranslationPoint(long pointId)
+{
+    bool ret = false;
+    bool inRecv = false;
+    bool inSend = false;
+
+    CtiLockGuard<CtiMutex> receiveGuard(iReceiveFromList.getMutex());
+    CtiLockGuard<CtiMutex> sendGuard(iSendToList.getMutex());  
+
+    CtiFDRManager* recvMgr = iReceiveFromList.getPointList();
+    CtiFDRManager* sendMgr = iSendToList.getPointList();
+
+    printLists("Before point add call for ", pointId);
+
+    if (recvMgr != NULL)
+    {
+        inRecv = recvMgr->addFDRPointId(pointId);
+    }
+    if (sendMgr != NULL)
+    {
+        inSend = sendMgr->addFDRPointId(pointId);
+    }
+
+    shared_ptr<CtiFDRPoint> fdrPoint;
+
+    if (inSend)
+    {
+        fdrPoint = sendMgr->findFDRPointID(pointId);
+    }
+    else if (inRecv)
+    {
+        fdrPoint = recvMgr->findFDRPointID(pointId);
+    }
+
+    if (fdrPoint.get() != NULL)
+    {
+        translateSinglePoint(fdrPoint,inSend);
+        ret = true;
+    }
+
+    printLists("After point add call for ", pointId);
+
+    return ret;
+}
+
+//remove single point maintaining current lists
+void CtiFDRInterface::removeTranslationPoint(long pointId)
+{
+    shared_ptr<CtiFDRPoint> inRecv;
+    shared_ptr<CtiFDRPoint> inSend;
+
+    printLists(" Before remove of point ", pointId);
+    {
+        CtiLockGuard<CtiMutex> receiveGuard(iReceiveFromList.getMutex());
+        CtiLockGuard<CtiMutex> sendGuard(iSendToList.getMutex());  
+
+        CtiFDRManager* recvMgr = iReceiveFromList.getPointList();
+        CtiFDRManager* sendMgr = iSendToList.getPointList();
+
+        if (recvMgr != NULL)
+        {
+            inRecv = recvMgr->removeFDRPointID(pointId);
+            cleanupTranslationPoint(inRecv,true);
+        }
+        if (sendMgr != NULL) 
+        {
+            inSend = sendMgr->removeFDRPointID(pointId);
+            cleanupTranslationPoint(inSend,false);
+        }
+    }
+    printLists(" After remove of point ", pointId);
+
+    return;
+}
+
+void CtiFDRInterface::printLists(string title, int pid)
+{
+    if (getDebugLevel() & MAJOR_DETAIL_FDR_DEBUGLEVEL)
+    {
+        CtiLockGuard<CtiMutex> receiveGuard(iReceiveFromList.getMutex());
+        CtiLockGuard<CtiMutex> sendGuard(iSendToList.getMutex());  
+
+        CtiFDRManager* recvMgr = iReceiveFromList.getPointList();
+        CtiFDRManager* sendMgr = iSendToList.getPointList();
+
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << title << " " << pid << endl << "Recv: ";
+        if (recvMgr != NULL)
+        {
+            recvMgr->printIds(dout);            
+        }
+        dout << "\nSend: ";
+        if (sendMgr != NULL)
+        {
+            sendMgr->printIds(dout);            
+        }
+        dout << endl;
+    }
+}
+
+/* This is here to be replaced with child processes to notify them of the removal and give them the chance to act.*/
+void CtiFDRInterface::cleanupTranslationPoint(shared_ptr<CtiFDRPoint> translationPoint, bool recvList)
+{
+    return;
+}
 
 /**
  * Return the 'dout' logger and prepend the current time and the interface name.

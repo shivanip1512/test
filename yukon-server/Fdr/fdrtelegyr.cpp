@@ -965,19 +965,9 @@ void CtiFDRTelegyr::buildAndRegisterGroups( void )
 
 bool CtiFDRTelegyr::loadGroupLists( void )
 {
-   CtiFDRPoint    *translationPoint = NULL;
-   string         pointType;           //analog or status
-   string         pointStr;            //pointid
-   string         interval;
    RWDBStatus     listStatus;
-   bool           successful( FALSE );
-   bool           foundPoint        = false;
-   bool           foundGroup        = false;
-   int            groupNum          = 1;
-   int            analogNum         = 1;
-   int            statusNum         = 501;
-
-   vector< CtiTelegyrGroup >  groupList;
+   bool           successful = false;
+   bool           foundPoint = false;
 
    try
    {
@@ -1012,103 +1002,24 @@ bool CtiFDRTelegyr::loadGroupLists( void )
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime::now() << " ---- Found " << pointList->entries() << " Telegyr points" << endl;
             }
-
             // get iterator on list
             CtiFDRManager::CTIFdrPointIterator myIterator = pointList->getMap().begin();
+
+            //FIXME
+            //for some reason, we need to wipe the old list first
+            //because it seems that the name and type get set to the name
+            //which cause us to fail in build&reg
+            if( !_groupList.empty() )
+            {
+               _groupList.clear();
+            }
 
             //iterate through all our points in the list
             for( ; myIterator != pointList->getMap().end(); ++myIterator )
             {
                foundPoint = true;
-               translationPoint = (*myIterator).second;
-               
-               //iterate through all our destinations per point (should have 1 for telegyr)
-               for( int x = 0; x < translationPoint->getDestinationList().size(); x++ )
-               {
-                  pointStr = translationPoint->getDestinationList()[x].getTranslationValue( "Point" );
-                  interval = translationPoint->getDestinationList()[x].getTranslationValue( "Interval (sec)" );
-                  pointType = translationPoint->getDestinationList()[x].getTranslationValue( "POINTTYPE" );
-                  
-                  if( pointStr.empty() || pointType.empty() )
-                  {
-                     successful = false;
-
-                     if( getDebugLevel() & STARTUP_FDR_DEBUGLEVEL )
-                     {
-                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                         dout << "*** Error *** Empty point or type!";
-                         dout << "Point :" << translationPoint->getDestinationList()[x].getTranslationValue( "Point" );
-                         dout << "Type  : " << translationPoint->getDestinationList()[x].getTranslationValue( "POINTTYPE" ) << endl;
-                     }
-                  }
-                  else
-                  {
-                     translationPoint->getDestinationList()[x].setTranslation( pointStr );
-                  }
-               }
-
-               int i;
-               bool done;
-
-               for( i = 0, done = false; ( i < groupList.size() ) && ( !done ); i++ )
-               {
-                  string type = groupList[i].getGroupType();
-                  int interval = groupList[i].getInterval();
-                  int size = groupList[i].getPointList().size();
-                  std::transform(type.begin(), type.end(), type.begin(), tolower);
-                  std::transform(pointType.begin(), pointType.end(), pointType.begin(), tolower);
-
-                  if(( type == pointType ) && ( size < 127 ))
-                  {
-                     groupList[i].getPointList().push_back( *translationPoint );
-                     foundGroup = true;
-                     done = true;
-                  }
-               }
-
-               //we didn't stick the point anywhere, make a new group and put it there
-               if( !foundGroup )
-               {
-                  CtiTelegyrGroup tempGroup;
-                  char valStr[15];
-
-                  std::transform(pointType.begin(), pointType.end(), pointType.begin(), tolower);
-
-                  if( "status" == pointType )
-                  {
-                     itoa( statusNum, valStr, 10 );
-                     groupNum = statusNum;
-                     statusNum++;
-                  }
-                  else
-                  {
-                     itoa( analogNum, valStr, 10 );
-                     groupNum = analogNum;
-                     analogNum++;
-                  }
-
-                  string name( pointType + valStr );
-                  tempGroup.setGroupID( groupNum );         
-                  tempGroup.setGroupName( name );    
-
-                  if( interval.empty() )
-                  {
-                     tempGroup.setInterval( 120 );             //just temp until we fix MEC's database
-                  }
-                  else
-                  {
-                     tempGroup.setInterval( 120 );
-                     //tempGroup.setInterval( atoi( interval ) );
-                  }
-
-                  tempGroup.setGroupType( pointType );
-                  tempGroup.getPointList().push_back( *translationPoint );
-                  groupList.push_back( tempGroup );
-               }
-               else
-               {
-                  foundGroup = false;     //reset for the next point
-               }   
+               shared_ptr<CtiFDRPoint> translationPoint = (*myIterator).second;
+               successful = translateSinglePoint(translationPoint);
             }
 
             _reloadPending = true;
@@ -1125,20 +1036,8 @@ bool CtiFDRTelegyr::loadGroupLists( void )
                }
             }
 
-            //FIXME
-            //for some reason, we need to wipe the old list first
-            //because it seems that the name and type get set to the name
-            //which cause us to fail in build&reg
             if( !_groupList.empty() )
             {
-               _groupList.erase( _groupList.begin(), _groupList.end() );
-            }
-
-            if( !groupList.empty() )
-            {
-               _groupList = groupList;
-
-               _controlCenter.deleteTelegyrGroupList();
                _controlCenter.getTelegyrGroupList() = _groupList;
                successful = true;
             }
@@ -1164,6 +1063,107 @@ bool CtiFDRTelegyr::loadGroupLists( void )
       CtiLockGuard<CtiLogger> doubt_guard( dout );
       dout << CtiTime::now() << "loadTranslationList():  " << e.why() << endl;
       RWTHROW( e );
+   }
+
+   return successful;
+}
+
+bool CtiFDRTelegyr::translateSinglePoint(shared_ptr<CtiFDRPoint> translationPoint, bool send)
+{
+   bool successful = false;
+   bool foundGroup = false;
+
+   string pointType;//analog or status
+   string pointStr; //pointid
+   string interval;
+
+   int groupNum   = 1;
+   int analogNum  = 1;
+   int statusNum  = 501;
+
+   //iterate through all our destinations per point (should have 1 for telegyr)
+   for( int x = 0; x < translationPoint->getDestinationList().size(); x++ )
+   {
+      pointStr = translationPoint->getDestinationList()[x].getTranslationValue( "Point" );
+      interval = translationPoint->getDestinationList()[x].getTranslationValue( "Interval (sec)" );
+      pointType = translationPoint->getDestinationList()[x].getTranslationValue( "POINTTYPE" );
+      
+      if( pointStr.empty() || pointType.empty() )
+      {
+         successful = false;
+   
+         if( getDebugLevel() & STARTUP_FDR_DEBUGLEVEL )
+         {
+             CtiLockGuard<CtiLogger> doubt_guard(dout);
+             dout << "*** Error *** Empty point or type!";
+             dout << "Point :" << translationPoint->getDestinationList()[x].getTranslationValue( "Point" );
+             dout << "Type  : " << translationPoint->getDestinationList()[x].getTranslationValue( "POINTTYPE" ) << endl;
+         }
+      }
+      else
+      {
+         translationPoint->getDestinationList()[x].setTranslation( pointStr );
+      }
+   }
+   int i;
+   bool done;
+   for(i=0,done=false; ( i < _groupList.size() ) && ( !done ); i++ )
+   {
+      string type = _groupList[i].getGroupType();
+      int interval = _groupList[i].getInterval();
+      int size = _groupList[i].getPointList().size();
+      std::transform(type.begin(), type.end(), type.begin(), tolower);
+      std::transform(pointType.begin(), pointType.end(), pointType.begin(), tolower);
+   
+      if(( type == pointType ) && ( size < 127 ))
+      {
+         _groupList[i].getPointList().push_back( *translationPoint );
+         foundGroup = true;
+         done = true;
+      }
+   }
+   
+   //we didn't stick the point anywhere, make a new group and put it there
+   if( !foundGroup )
+   {
+      CtiTelegyrGroup tempGroup;
+      char valStr[15];
+   
+      std::transform(pointType.begin(), pointType.end(), pointType.begin(), tolower);
+   
+      if( "status" == pointType )
+      {
+         itoa( statusNum, valStr, 10 );
+         groupNum = statusNum;
+         statusNum++;
+      }
+      else
+      {
+         itoa( analogNum, valStr, 10 );
+         groupNum = analogNum;
+         analogNum++;
+      }
+   
+      string name( pointType + valStr );
+      tempGroup.setGroupID( groupNum );         
+      tempGroup.setGroupName( name );    
+   
+      if( interval.empty() )
+      {
+         tempGroup.setInterval( 120 );//just temp until we fix MEC's database
+      }
+      else
+      {
+         tempGroup.setInterval( 120 );
+      }
+   
+      tempGroup.setGroupType( pointType );
+      tempGroup.getPointList().push_back( *translationPoint );
+      _groupList.push_back( tempGroup );
+   }
+   else
+   {
+      foundGroup = false;     //reset for the next point
    }
 
    return successful;

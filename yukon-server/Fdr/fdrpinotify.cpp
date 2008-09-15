@@ -9,8 +9,8 @@
  * Author: Tom Mack
  *
  * ARCHIVE      :  $Archive$
- * REVISION     :  $Revision: 1.4 $
- * DATE         :  $Date: 2005/12/20 17:17:14 $
+ * REVISION     :  $Revision: 1.5 $
+ * DATE         :  $Date: 2008/09/15 21:08:48 $
  */
 
 #include <windows.h>
@@ -50,22 +50,22 @@ CtiFDRPiNotify::CtiFDRPiNotify()
  */ 
 CtiFDRPiNotify::~CtiFDRPiNotify()
 {
-  unregisterPoints();
+  unregisterAllPoints();
 }
 
 /**
  * Begin receiving new point notifications.
  */ 
-void CtiFDRPiNotify::beginNewPoints()
+void CtiFDRPiNotify::removeAllPoints()
 {
-  unregisterPoints();
+  unregisterAllPoints();
   _pointMap.clear();
 }
 
 /**
- * Stop receiving new point notifications.
+ * Setup receiving for all point notifications.
  */ 
-void CtiFDRPiNotify::endNewPoints()
+void CtiFDRPiNotify::handleNewPoints()
 {
   // register for all points in the pointMap
   for (PiPointMap::const_iterator myIter = _pointMap.begin();
@@ -83,13 +83,13 @@ void CtiFDRPiNotify::endNewPoints()
   if (err != 0 || count != initial_count)
   {
       CtiLockGuard<CtiLogger> doubt_guard( dout );
-      logNow() << "Unable to registered for "
+      logNow() << "Unable to register for "
         << (initial_count - count) << " of " << initial_count
         << " point notications from Pi, pisn_evmestablish returned "
         << getPiErrorDescription(err, "pisn_evmestablish") << endl;
   }
 
-  forceUpdate();
+  forceUpdateAllPoints();
 
   if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
   {
@@ -100,9 +100,57 @@ void CtiFDRPiNotify::endNewPoints()
 }
 
 /**
+ * Setup receiving for all point notifications.
+ */ 
+void CtiFDRPiNotify::handleNewPoint(shared_ptr<CtiFDRPoint> ctiPoint)
+{
+  // we're interested in the first (and only) destination
+  string tagName = ctiPoint->getDestinationList()[0].getTranslationValue("Tag Name");
+  
+  PiPointId pid;
+  int err = getPiPointIdFromTag(tagName,pid);
+  if (err == 0)
+  {
+    {
+      std::string piError = getPiErrorDescription(err, "pipt_findpoint");
+      CtiLockGuard<CtiLogger> doubt_guard( dout );
+      logNow() << "Unable to find PI tag '" << tagName <<
+        "' for point " << ctiPoint->getPointID() <<
+        ", pipt_findpoint returned " << piError << endl;
+    }
+    return;
+  }
+
+  _registerList.push_back(pid);
+
+  int32 count = 1;
+  int32 initial_count = count;
+
+  PiPointId *piIdArray = &pid;
+  err = pisn_evmestablish(&count, piIdArray);
+  if (err != 0 || count != initial_count)
+  {
+      CtiLockGuard<CtiLogger> doubt_guard( dout );
+      logNow() << "Unable to register for point id "
+        << pid
+        << "with Pi, pisn_evmestablish returned "
+        << getPiErrorDescription(err, "pisn_evmestablish") << endl;
+  }
+
+  //excessive since its only one point?
+  forceUpdateAllPoints();
+
+  if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
+  {
+    CtiLockGuard<CtiLogger> doubt_guard( dout );
+    logNow() << "Registered for " << count << " points with Pi " << endl;
+  }
+}
+
+/**
  * Send message to Pi to unregister for point notifications.
  */ 
-void CtiFDRPiNotify::unregisterPoints()
+void CtiFDRPiNotify::unregisterAllPoints()
 {
   if (isConnected())
   {
@@ -137,6 +185,50 @@ void CtiFDRPiNotify::unregisterPoints()
 }
 
 /**
+ * Send message to Pi to unregister for point notification.
+ */ 
+void CtiFDRPiNotify::unregisterPoint(PiPointId& pid)
+{
+  if (isConnected())
+  {
+    // unregister for currently registered points
+    int32 count = 1;
+    int32 initial_count = count;
+    PiPointId *piIdArray = &pid;
+    int err = pisn_evmdisestablish(&count, piIdArray);
+    if (err != 0 || count != initial_count)
+    {
+      if( getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL )
+      {
+        CtiLockGuard<CtiLogger> doubt_guard( dout );
+        logNow() << "Unable to unregister for point notications from Pi point " 
+                 << pid 
+                 << ", pisn_evmdisestablish returned "
+                 << getPiErrorDescription(err, "pisn_evmdisestablish") 
+                 << endl;
+      }
+    }
+  }
+  else
+  {
+    if( getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL )
+    {
+      CtiLockGuard<CtiLogger> doubt_guard( dout );
+      logNow() << "Unable to unregister for point notification from Pi (not connected)" << endl;
+    }
+  }
+  //Removing from register list
+  for (vector<PiPointId>::iterator itr = _registerList.begin(); itr != _registerList.end(); itr++)
+  {
+    if(*itr == pid)
+    {
+      _registerList.erase(itr);
+      break;
+    }
+  }
+}
+
+/**
  * Notification of new point.
  */ 
 void CtiFDRPiNotify::processNewPiPoint(PiPointInfo &info) 
@@ -144,6 +236,29 @@ void CtiFDRPiNotify::processNewPiPoint(PiPointInfo &info)
   _pointMap.insert(PiPointMap::value_type(info.piPointId, info));
 }
 
+void CtiFDRPiNotify::cleanupTranslationPoint(shared_ptr<CtiFDRPoint> translationPoint, bool recvList)
+{
+  string tagName = translationPoint->getDestinationList()[0].getTranslationValue("Tag Name");
+
+  PiPointId piId;
+  int err = getPiPointIdFromTag(tagName,piId);
+  if (err != 0)
+  {
+    //if( getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL )
+    {
+      std::string piError = getPiErrorDescription(err, "pipt_findpoint");
+      CtiLockGuard<CtiLogger> doubt_guard( dout );
+      logNow() << "Unable to find PI tag '" << tagName <<
+        "' for point " << translationPoint->getPointID() <<
+        ", pipt_findpoint returned " << piError << endl;
+    }
+    return;
+  }
+
+  _pointMap.erase(piId);
+
+  unregisterPoint(piId);
+}
 /**
  * Check for new updates for the registered points.
  */ 
@@ -225,7 +340,7 @@ void CtiFDRPiNotify::doUpdates()
 /**
  * Get the current value of all of the points.
  */ 
-void CtiFDRPiNotify::forceUpdate()
+void CtiFDRPiNotify::forceUpdateAllPoints()
 {
   int32 pointCount = _registerList.size();
   if (pointCount > 0) {
@@ -283,8 +398,6 @@ void CtiFDRPiNotify::forceUpdate()
         const PiPointInfo &info = (*myIter).second;
         handlePiUpdate(info, rvalArray[i], istatArray[i], timeToSend, errorArray[i]);
       }
-
-      //handlePiUpdate(infoList[i], rvalArray[i], istatArray[i], timeToSend, errorArray[i]);
     }
   }
 }

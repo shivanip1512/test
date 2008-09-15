@@ -7,8 +7,8 @@
  *
  * PVCS KEYWORDS:
  * ARCHIVE      :  $Archive$
- * REVISION     :  $Revision: 1.7 $
- * DATE         :  $Date: 2006/11/02 15:49:07 $
+ * REVISION     :  $Revision: 1.8 $
+ * DATE         :  $Date: 2008/09/15 21:08:48 $
  */
 #include "yukon.h"
 
@@ -211,21 +211,23 @@ void CtiFDRPiBase::testConnection()
 /**
  * Add a new point to the appropriate lists.
  */
-void CtiFDRPiBase::processNewPoint(CtiFDRPoint *ctiPoint)
+void CtiFDRPiBase::processNewPoint(shared_ptr<CtiFDRPoint> ctiPoint)
 {
   PiPointInfo info;
-  info.ctiPoint = ctiPoint;
+  info.ctiPoint = ctiPoint.get();
 
 
   // we're interested in the first (and only) destination
   string tagName = ctiPoint->getDestinationList()[0].getTranslationValue("Tag Name");
-
-  char tagBuf[80]; // max length of a tag, pipt_findpoint writes the tag back to this buffer
-  strcpy(tagBuf, tagName.c_str());
-  PiPointId piId = 0;
-  int err = 0;
-  err = pipt_findpoint(tagBuf, &piId);
-  if (err != 0) {
+  
+  PiPointId piId;
+  int err = getPiPointIdFromTag(tagName,piId);
+  if (err != 0)
+  {
+    info.piPointId = piId;
+  }
+  else
+  {
     //if( getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL )
     {
       std::string piError = getPiErrorDescription(err, "pipt_findpoint");
@@ -236,7 +238,7 @@ void CtiFDRPiBase::processNewPoint(CtiFDRPoint *ctiPoint)
     }
     return;
   }
-  info.piPointId = piId;
+
   char type = '\0';
   err = pipt_pointtype(piId, &type);
   if (err != 0) {
@@ -304,6 +306,16 @@ void CtiFDRPiBase::processNewPoint(CtiFDRPoint *ctiPoint)
     logNow() << "Added point " << info.ctiPoint->getPointID() << " and tag " << tagName << endl;
   }
 
+}
+
+int CtiFDRPiBase::getPiPointIdFromTag(const string& tagName, PiPointId& piId)
+{
+  char tagBuf[80]; // max length of a tag, pipt_findpoint writes the tag back to this buffer
+  strcpy(tagBuf, tagName.c_str());
+  piId = 0;
+  int err = 0;
+  err = pipt_findpoint(tagBuf, &piId);
+  return err;
 }
 
 /**

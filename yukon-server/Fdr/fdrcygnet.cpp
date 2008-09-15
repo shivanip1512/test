@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive$
-*    REVISION     :  $Revision: 1.13 $
-*    DATE         :  $Date: 2006/06/07 22:34:04 $
+*    REVISION     :  $Revision: 1.14 $
+*    DATE         :  $Date: 2008/09/15 21:08:48 $
 *
 *
 *    AUTHOR: Ben Wallace
@@ -23,6 +23,14 @@
 *    ---------------------------------------------------
 *    History:
       $Log: fdrcygnet.cpp,v $
+      Revision 1.14  2008/09/15 21:08:48  tspar
+      YUK-5013 Full FDR reload should not happen with every point db change
+
+      Changed interfaces to handle points on an individual basis so they can be added
+      and removed by point id.
+
+      Changed the fdr point manager to use smart pointers to help make this transition possible.
+
       Revision 1.13  2006/06/07 22:34:04  tspar
       _snprintf  adding .c_str() to all strings. Not having this does not cause compiler errors, but does cause runtime errors. Also tweaks and fixes to FDR due to some differences in STL / RW
 
@@ -715,7 +723,7 @@ bool CtiFDRCygnet::retreiveAnalogPoints()
 
     string   desc("Cygnet Update");  // not sure if this is needed
 
-    CtiFDRPoint *       point = NULL;
+    shared_ptr<CtiFDRPoint> point;
 
     RT_GET_NAMED_REC_REQ    CygnetRequest;
     RT_GET_NAMED_REC_RESP   CygnetResponse;
@@ -1000,7 +1008,7 @@ bool CtiFDRCygnet::retreiveStatusPoints()
     USHORT      bytesReceived;
     double      myNewValue = 0;
     CtiTime      myNewTime;
-    CtiFDRPoint *       point = NULL;
+    shared_ptr<CtiFDRPoint> point;
 
     bool        sendNoneUpdate;
 
@@ -1299,81 +1307,33 @@ bool CtiFDRCygnet::loadTranslationLists()
 */
 bool CtiFDRCygnet::loadLists(CtiFDRPointList &aList)
 {
-    bool                successful(FALSE);
-    int                 analogCount = 0;
-    int                 statusCount = 0;
-
-    CtiFDRPoint *       translationPoint = NULL;
-    string           myTranslateName;
-    string           tempString1;
-    string           tempString2;
-    bool                foundPoint = false;
+    bool successful = false;
+    bool foundPoint = false;
 
     try
     {
         // make a list with all received points
-        CtiFDRManager   *pointList = new CtiFDRManager(getInterfaceName(),
-                                                       string (FDR_INTERFACE_RECEIVE));
+        CtiFDRManager   *pointList = new CtiFDRManager(getInterfaceName(), string (FDR_INTERFACE_RECEIVE));
 
         if (pointList->loadPointList().errorCode() == (RWDBStatus::ok))
         {
+            // get iterator on list
+            CtiFDRManager::CTIFdrPointIterator myIterator = pointList->getMap().begin();
+
+            for ( ; myIterator != pointList->getMap().end(); ++myIterator )
+            {
+                foundPoint = true;
+                shared_ptr<CtiFDRPoint> translationPoint = (*myIterator).second;
+                translateSinglePoint(translationPoint);
+            }
+
             CtiLockGuard<CtiMutex> sendGuard(aList.getMutex());
             if (aList.getPointList() != NULL)
             {
                 aList.deletePointList();
             }
             aList.setPointList (pointList);
-
-            // get iterator on list
-            CtiFDRManager::CTIFdrPointIterator  myIterator = aList.getPointList()->getMap().begin();
-            int x;
-
-            for ( ; myIterator != aList.getPointList()->getMap().end(); ++myIterator )
-            {
-                foundPoint = true;
-                translationPoint = (*myIterator).second;
-
-                for (x=0; x < translationPoint->getDestinationList().size(); x++)
-                {
-
-                    if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << "Parsing Yukon Point ID" << translationPoint->getPointID();
-                        dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
-                    }
-
-                  
-                    tempString2 = translationPoint->getDestinationList()[x].getTranslationValue("PointID");
-
-                    // now we have a id with a :
-                    if ( !tempString2.empty() )
-                    {
-                        translationPoint->getDestinationList()[x].setTranslation (tempString2);
-                        successful = true;
-
-                        if (translationPoint->getPointType() == StatusPointType)
-                        {
-                            statusCount++;
-                        }
-                        else
-                        {
-                            analogCount++;
-                        }
-                    } // end if null
-
-                    
-                }
-            }   // end for interator
-
-            pointList=NULL;
-
-            if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "-- Cygnet Analog Points Loaded: " << analogCount << endl;
-                dout << "-- Cygnet Status Points Loaded: " << statusCount << endl;
-            }
+            pointList = NULL;
 
             if (!successful)
             {
@@ -1406,6 +1366,56 @@ bool CtiFDRCygnet::loadLists(CtiFDRPointList &aList)
 
     return successful;
 }
+
+bool CtiFDRCygnet::translateSinglePoint(shared_ptr<CtiFDRPoint> translationPoint, bool send)
+{
+    bool successful = false;
+
+    int analogCount = 0;
+    int statusCount = 0;
+    string tempString2;
+
+
+    for (int x = 0; x < translationPoint->getDestinationList().size(); x++)
+    {
+
+        if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << "Parsing Yukon Point ID" << translationPoint->getPointID();
+            dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
+        }
+
+      
+        tempString2 = translationPoint->getDestinationList()[x].getTranslationValue("PointID");
+
+        // now we have a id with a :
+        if ( !tempString2.empty() )
+        {
+            translationPoint->getDestinationList()[x].setTranslation (tempString2);
+            successful = true;
+
+            if (translationPoint->getPointType() == StatusPointType)
+            {
+                statusCount++;
+            }
+            else
+            {
+                analogCount++;
+            }
+        } // end if null
+    }
+
+    if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << "-- Cygnet Analog Points Loaded: " << analogCount << endl;
+        dout << "-- Cygnet Status Points Loaded: " << statusCount << endl;
+    }
+
+    return successful;
+}
+
 /************************************************************************
 * Function Name: CtiFDRCygnet::calculateNextSendTime()
 *

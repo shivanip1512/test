@@ -53,6 +53,8 @@ CtiFDRSocketServer::CtiFDRSocketServer(string &name)
     CtiFDRManager   *sendList = new CtiFDRManager(getInterfaceName(), string(FDR_INTERFACE_SEND));
     getSendToList().setPointList (sendList);
     sendList = NULL;
+
+
 }
 
 
@@ -178,21 +180,20 @@ bool CtiFDRSocketServer::loadTranslationLists()
     return retCode;
 }
 
+
 bool CtiFDRSocketServer::loadList(string &aDirection,  CtiFDRPointList &aList)
 {
-    bool                successful = true;
-    CtiFDRPoint *       translationPoint = NULL;
-    CtiFDRPoint *       point = NULL;
-    string           translationName;
-    bool                foundPoint = false, translatedPoint(false);
-    RWDBStatus          listStatus;
+    bool successful = true;
+    string translationName;
+    bool foundPoint = false, translatedPoint = false;
+    RWDBStatus listStatus;
     bool isSend = (aDirection == FDR_INTERFACE_SEND);
 
     try
     {
         // make a list with all received points
-        CtiFDRManager   *pointList = new CtiFDRManager(getInterfaceName(), 
-                                                       aDirection);
+        CtiFDRManager   *pointList = new CtiFDRManager(getInterfaceName(),aDirection);
+
         listStatus = pointList->loadPointList();
 
         // if status is ok, we were able to read the database at least
@@ -213,22 +214,13 @@ bool CtiFDRSocketServer::loadList(string &aDirection,  CtiFDRPointList &aList)
             CtiLockGuard<CtiMutex> sendGuard(aList.getMutex());  
             // get iterator on list
             CtiFDRManager::CTIFdrPointIterator  myIterator = pointList->getMap().begin();
-
     
             while (myIterator != pointList->getMap().end())
             {
-                translationPoint = (*myIterator).second;
-
-                int x;
-                for (x=0; x < translationPoint->getDestinationList().size(); x++)
-                {
-                    foundPoint = true;
-                    // translate and put the point id the list
-                    processNewDestination(translationPoint->getDestinationList()[x], 
-                                          isSend);
-                }
+                shared_ptr<CtiFDRPoint> translationPoint = (*myIterator).second;
+                foundPoint = translateSinglePoint(translationPoint,isSend);
                 ++myIterator;
-            } // end for interator
+            }
 
             // lock the list I'm inserting into so it doesn't get deleted on me
             if (aList.getPointList() != NULL)
@@ -246,8 +238,7 @@ bool CtiFDRSocketServer::loadList(string &aDirection,  CtiFDRPointList &aList)
                 if (getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    logNow() << " No (" << aDirection << ") "
-                        << "points defined for use by interface" << endl;
+                    logNow() << " No (" << aDirection << ") " << "points defined for use by interface" << endl;
                 }
             }
         }
@@ -278,8 +269,7 @@ bool CtiFDRSocketServer::loadList(string &aDirection,  CtiFDRPointList &aList)
     return successful;
 }
 
-bool CtiFDRSocketServer::buildForeignSystemHeartbeatMsg(char** buffer, 
-                                                         unsigned int& bufferSize)
+bool CtiFDRSocketServer::buildForeignSystemHeartbeatMsg(char** buffer, unsigned int& bufferSize)
 {
     bufferSize = 0;
     *buffer = NULL;
@@ -541,7 +531,7 @@ SOCKET CtiFDRSocketServer::createBoundListener() {
 bool CtiFDRSocketServer::sendAllPoints(CtiFDRClientServerConnection* connection)
 {
     bool retVal = true;
-    CtiFDRPoint* point = NULL;
+    shared_ptr<CtiFDRPoint> point;
 
     CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());
     CtiFDRManager::CTIFdrPointIterator  myIterator = getSendToList().getPointList()->getMap().begin();
@@ -785,5 +775,4 @@ void CtiFDRSocketServer::setLinkTimeout(const int linkTimeout)
 {
     _linkTimeout = linkTimeout;
 }
-
 

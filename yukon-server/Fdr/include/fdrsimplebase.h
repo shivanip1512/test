@@ -16,8 +16,8 @@
  *
  * PVCS KEYWORDS:
  *    ARCHIVE      :  $Archive:     $
- *    REVISION     :  $Revision: 1.5 $
- *    DATE         :  $Date: 2007/11/12 16:46:55 $
+ *    REVISION     :  $Revision: 1.6 $
+ *    DATE         :  $Date: 2008/09/15 21:09:16 $
  */
 
 #include <windows.h>    //  NOTE:  if porting this to non-WIN32, make sure to replace this
@@ -70,9 +70,12 @@ protected:
   virtual void testConnection() = 0;
   virtual void shutdown() {};
 
-  virtual void beginNewPoints() {};
-  virtual void processNewPoint(CtiFDRPoint *ctiPoint) = 0;
-  virtual void endNewPoints() {};
+  virtual void removeAllPoints() {};
+  virtual void processNewPoint(shared_ptr<CtiFDRPoint> ctiPoint)=0;
+  virtual void handleNewPoint(shared_ptr<CtiFDRPoint> ctiPoint)=0;
+  virtual bool translateSinglePoint(shared_ptr<CtiFDRPoint> translationPoint, bool send);
+  virtual void cleanupTranslationPoint(shared_ptr<CtiFDRPoint> translationPoint, bool recvList)=0;
+  virtual void handleNewPoints(){};
 
   virtual void doUpdates() = 0;
 

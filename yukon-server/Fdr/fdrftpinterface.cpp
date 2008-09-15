@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrftpinterface.cpp-arc  $
-*    REVISION     :  $Revision: 1.17 $
-*    DATE         :  $Date: 2008/03/20 21:27:14 $
+*    REVISION     :  $Revision: 1.18 $
+*    DATE         :  $Date: 2008/09/15 21:08:48 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,14 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrftpinterface.cpp,v $
+      Revision 1.18  2008/09/15 21:08:48  tspar
+      YUK-5013 Full FDR reload should not happen with every point db change
+
+      Changed interfaces to handle points on an individual basis so they can be added
+      and removed by point id.
+
+      Changed the fdr point manager to use smart pointers to help make this transition possible.
+
       Revision 1.17  2008/03/20 21:27:14  tspar
       YUK-5541 FDR Textimport and other interfaces incorrectly use the boost tokenizer.
 
@@ -411,21 +419,14 @@ void CtiFDRFtpInterface::sendLinkState (int aState)
 */
 bool CtiFDRFtpInterface::loadTranslationLists()
 {
-    bool                successful(FALSE);
-    CtiFDRPoint *       translationPoint = NULL;
-    string           tempString1;
-    string           tempString2;
-    string           translationName;
-    bool                foundPoint = false;
-    RWDBStatus          listStatus;
-
+    bool successful = false;
+    bool foundPoint = false;
+    RWDBStatus listStatus;
 
     try
     {
         // make a list with all received points
-        CtiFDRManager   *pointList = new CtiFDRManager(getInterfaceName(), 
-                                                       string (FDR_INTERFACE_RECEIVE));
-
+        CtiFDRManager   *pointList = new CtiFDRManager(getInterfaceName(), string (FDR_INTERFACE_RECEIVE));
         listStatus = pointList->loadPointList();
 
         // if status is ok, we were able to read the database at least
@@ -451,60 +452,13 @@ bool CtiFDRFtpInterface::loadTranslationLists()
 
                 // get iterator on send list
                 CtiFDRManager::CTIFdrPointIterator  myIterator = getReceiveFromList().getPointList()->getMap().begin();
-                int x;
 
                 for ( ; myIterator != getReceiveFromList().getPointList()->getMap().end(); ++myIterator)
                 {
                     foundPoint = true;
-                    translationPoint = (*myIterator).second;
-
-                    for (x=0; x < translationPoint->getDestinationList().size(); x++)
-                    {
-                        if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << "Parsing Yukon Point ID " << translationPoint->getPointID();
-                            dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
-                        }
-
-                        /********************
-                        * for the our current FTP interfaces, the points are being retrieved only
-                        * and have specific names already assigned them
-                        *********************
-                        */
-                        const string translation = translationPoint->getDestinationList()[x].getTranslation();
-                        boost::char_separator<char> sep(";");
-                        Boost_char_tokenizer nextTranslate(translation, sep);
-                        Boost_char_tokenizer::iterator tok_iter = nextTranslate.begin(); 
-
-                        if ( tok_iter != nextTranslate.end() )
-                        {
-                            tempString1 = *tok_iter;
-                            boost::char_separator<char> sep1(":");
-                            Boost_char_tokenizer nextTempToken(tempString1, sep1);
-                            Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
-
-                            if( tok_iter1 != nextTempToken.end() )
-                            {
-                                tok_iter1++;
-                                if( tok_iter1 != nextTempToken.end() )
-                                {
-                                    tempString2 = *tok_iter1;
-                                }else
-                                {
-                                    tempString2 = "";
-                                }
-    
-                                // now we have a point name
-                                if ( !tempString2.empty() )
-                                {
-                                    translationPoint->getDestinationList()[x].setTranslation (tempString2);
-                                    successful = true;
-                                }
-                            }
-                        }   // first token invalid
-                    }
-                }   // end for interator
+                    shared_ptr<CtiFDRPoint> translationPoint = (*myIterator).second;
+                    translateSinglePoint(translationPoint);
+                }
 
                 pointList=NULL;
                 if (!successful)
@@ -554,6 +508,63 @@ bool CtiFDRFtpInterface::loadTranslationLists()
 
     return successful;
 }
+
+bool CtiFDRFtpInterface::translateSinglePoint(shared_ptr<CtiFDRPoint> translationPoint, bool send)
+{
+    string           tempString1;
+    string           tempString2;
+    bool successful = false;
+
+    for (int x = 0; x < translationPoint->getDestinationList().size(); x++)
+    {
+        if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << "Parsing Yukon Point ID " << translationPoint->getPointID();
+            dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
+        }
+
+        /********************
+        * for the our current FTP interfaces, the points are being retrieved only
+        * and have specific names already assigned them
+        *********************
+        */
+        const string translation = translationPoint->getDestinationList()[x].getTranslation();
+        boost::char_separator<char> sep(";");
+        Boost_char_tokenizer nextTranslate(translation, sep);
+        Boost_char_tokenizer::iterator tok_iter = nextTranslate.begin(); 
+
+        if ( tok_iter != nextTranslate.end() )
+        {
+            tempString1 = *tok_iter;
+            boost::char_separator<char> sep1(":");
+            Boost_char_tokenizer nextTempToken(tempString1, sep1);
+            Boost_char_tokenizer::iterator tok_iter1 = nextTempToken.begin(); 
+
+            if( tok_iter1 != nextTempToken.end() )
+            {
+                tok_iter1++;
+                if( tok_iter1 != nextTempToken.end() )
+                {
+                    tempString2 = *tok_iter1;
+                }else
+                {
+                    tempString2 = "";
+                }
+
+                // now we have a point name
+                if ( !tempString2.empty() )
+                {
+                    translationPoint->getDestinationList()[x].setTranslation (tempString2);
+                    successful = true;
+                }
+            }
+        }   // first token invalid
+    }
+
+    return successful;
+}
+
 
 /**************************************************************************
 * Function Name: CtiFDRFtpInterface::threadFunctionRetrieveFrom (void )

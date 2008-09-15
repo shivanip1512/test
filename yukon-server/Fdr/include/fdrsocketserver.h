@@ -29,7 +29,10 @@ class IM_EX_FDRBASE CtiFDRSocketServer : public CtiFDRInterface
         virtual int processMessageFromForeignSystem(
           CtiFDRClientServerConnection& connection, char* data, unsigned int size) = 0;
 
-        bool loadTranslationLists(void);
+        virtual bool loadTranslationLists(void);
+        virtual bool translateSinglePoint(shared_ptr<CtiFDRPoint> translationPoint, bool send=false)=0;
+        //Force Cleanup in sub classes from this point.
+        virtual void cleanupTranslationPoint(shared_ptr<CtiFDRPoint> translationPoint, bool recvList)=0;
 
         virtual BOOL init( void );
         virtual BOOL run( void );
@@ -50,7 +53,6 @@ class IM_EX_FDRBASE CtiFDRSocketServer : public CtiFDRInterface
         int  getLinkTimeout() const;
         void setLinkTimeout(const int linkTimeout);
 
-
         typedef std::list<CtiFDRClientServerConnection*> ConnectionList;
 
     protected:
@@ -60,7 +62,7 @@ class IM_EX_FDRBASE CtiFDRSocketServer : public CtiFDRInterface
         virtual CtiFDRClientServerConnection* createNewConnection(SOCKET newConnection) = 0;
 
         virtual void begineNewPoints() {};
-        virtual bool processNewDestination(CtiFDRDestination& pointDestination, bool isSend) {return true;};
+        virtual bool processNewPoint(CtiFDRDestination& pointDestination, bool isSend) {return true;};
 
         bool sendAllPoints(CtiFDRClientServerConnection* layer);
         virtual bool forwardPointData(const CtiPointDataMsg& localMsg);
@@ -90,6 +92,7 @@ class IM_EX_FDRBASE CtiFDRSocketServer : public CtiFDRInterface
         int _timestampReasonabilityWindow;
         int _linkTimeout;
 
+        string direction;
         HANDLE _shutdownEvent;
 };
 

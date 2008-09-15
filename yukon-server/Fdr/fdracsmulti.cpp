@@ -23,6 +23,14 @@
  *    ---------------------------------------------------
  *    History:
  *      $Log$
+ *      Revision 1.10  2008/09/15 21:08:47  tspar
+ *      YUK-5013 Full FDR reload should not happen with every point db change
+ *
+ *      Changed interfaces to handle points on an individual basis so they can be added
+ *      and removed by point id.
+ *
+ *      Changed the fdr point manager to use smart pointers to help make this transition possible.
+ *
  *      Revision 1.9  2007/05/11 19:05:06  tspar
  *      YUK-3880
  *
@@ -296,12 +304,16 @@ void CtiFDRAcsMulti::begineNewPoints()
     _helper->clearMappings();
 }
 
-bool CtiFDRAcsMulti::processNewDestination(CtiFDRDestination& pointDestination, bool isSend)
+bool CtiFDRAcsMulti::translateSinglePoint(shared_ptr<CtiFDRPoint> translationPoint, bool isSend)
 {
-    bool successful = true;
+    bool foundPoint = false;
 
-    try
+    for (int x = 0; x < translationPoint->getDestinationList().size(); x++)
     {
+        foundPoint = true;
+        CtiFDRDestination pointDestination = translationPoint->getDestinationList()[x];
+        // translate and put the point id the list
+
         string remoteNumber = pointDestination.getTranslationValue("Remote");
         string pointNumber = pointDestination.getTranslationValue("Point");
         string categoryCode = pointDestination.getTranslationValue("Category");
@@ -329,23 +341,45 @@ bool CtiFDRAcsMulti::processNewDestination(CtiFDRDestination& pointDestination, 
         {
             _helper->addReceiveMapping(acsId, pointDestination);
         }
-    } // end try
-
-    catch (RWExternalErr e)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << "Exception in CtiFDRAcsMulti::processNewDestination(): " << e.why() << endl;
-        RWTHROW(e);
     }
 
-    // try and catch the thread death
-    catch ( ... )
+    return foundPoint;
+}
+
+void CtiFDRAcsMulti::cleanupTranslationPoint(shared_ptr<CtiFDRPoint> translationPoint, bool recvList)
+{
+    for (int x = 0; x < translationPoint->getDestinationList().size(); x++)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << "Unknown exception in CtiFDRAcsMulti::processNewDestination()" << endl;
-        successful = false;
+        CtiFDRDestination pointDestination = translationPoint->getDestinationList()[x];
+        // translate and put the point id the list
+
+        string remoteNumber = pointDestination.getTranslationValue("Remote");
+        string pointNumber = pointDestination.getTranslationValue("Point");
+        string categoryCode = pointDestination.getTranslationValue("Category");
+
+        if (remoteNumber.empty() || pointNumber.empty() || categoryCode.empty())
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            logNow() << "Unable to remove destination " << pointDestination << " because one of the fields was blank" << endl;
+            return;
+        }
+
+        CtiAcsId acsId;
+        acsId.RemoteNumber = atoi(remoteNumber.c_str());
+        acsId.PointNumber = atoi(pointNumber.c_str());
+        const char* temp = categoryCode.c_str();
+        acsId.CategoryCode = temp[0];
+        acsId.ServerName = pointDestination.getDestination();
+
+        if (!recvList)
+        {
+            _helper->removeSendMapping(acsId, pointDestination);
+        }
+        else
+        {
+            _helper->removeReceiveMapping(acsId, pointDestination);
+        }
     }
-    return successful;
 }
 
 bool CtiFDRAcsMulti::buildForeignSystemMessage(const CtiFDRDestination& destination,

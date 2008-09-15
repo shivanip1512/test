@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.13 $
-*    DATE         :  $Date: 2008/08/13 22:42:52 $
+*    REVISION     :  $Revision: 1.14 $
+*    DATE         :  $Date: 2008/09/15 21:09:16 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -20,6 +20,14 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrlodestarimport.h,v $
+      Revision 1.14  2008/09/15 21:09:16  tspar
+      YUK-5013 Full FDR reload should not happen with every point db change
+
+      Changed interfaces to handle points on an individual basis so they can be added
+      and removed by point id.
+
+      Changed the fdr point manager to use smart pointers to help make this transition possible.
+
       Revision 1.13  2008/08/13 22:42:52  jrichter
       YUK-3163
       FDR doesn't log reason for failure to import LSE data
@@ -78,6 +86,7 @@
 #include "dlldefs.h"
 #include "fdrtextfilebase.h"
 #include "fdrlodestarinfo.h"
+#include "rtdb.h"
 #include <list>
 using std::list;
 
@@ -143,6 +152,7 @@ public:
 
     void threadFunctionReadFromFile( void );
     virtual bool loadTranslationLists(void);
+    virtual bool translateSinglePoint(shared_ptr<CtiFDRPoint> translationPoint, bool send=false);
 
 private:
     RWThreadFunction    _threadReadFromFile;

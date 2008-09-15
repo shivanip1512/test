@@ -320,7 +320,7 @@ class IM_EX_FDRXA21LM CtiFDR_XA21LM : public CtiFDRSingleSocket
     ULONG YukonToXA21Time(time_t time, bool is_dst, XA21TIME* xa21_time);
 
         enum {XA21LM_Open = 0, XA21LM_Closed = 1, XA21LM_Invalid=99};
-        virtual bool translateAndUpdatePoint(CtiFDRPoint *translationPoint, int aDestinationIndex);
+        virtual bool translateAndUpdatePoint(shared_ptr<CtiFDRPoint> translationPoint, int aDestinationIndex);
         virtual bool isRegistrationNeeded(void);
 
     void dumpXA21LMMessage(XA21LMMESS* lm_msg);

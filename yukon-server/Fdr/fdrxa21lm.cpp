@@ -363,7 +363,7 @@ int CtiFDR_XA21LM::readConfig()
  * Replaces the translation string stored in the database with what we should match when a point
  * change comes in.
  */
-bool CtiFDR_XA21LM::translateAndUpdatePoint(CtiFDRPoint *translationPoint, int aDestinationIndex)
+bool CtiFDR_XA21LM::translateAndUpdatePoint(shared_ptr<CtiFDRPoint> translationPoint, int aDestinationIndex)
 {
     bool                successful(false);
     string           tempString1;

@@ -25,11 +25,15 @@
 #include <rw/db/connect.h>
 
 #include "dlldefs.h"
-#include "rtdb.h"
+#include "rtdbSmartPointer.h"
 #include "fdrpoint.h"
+#include "logger.h"
 
+#include <boost/shared_ptr.hpp>
 
-class IM_EX_FDRBASE CtiFDRManager : public CtiRTDB< CtiFDRPoint >
+using boost::shared_ptr;
+
+class IM_EX_FDRBASE CtiFDRManager : public CtiRTDBSmartPointer< shared_ptr<CtiFDRPoint> >
 {
     
     public:
@@ -49,22 +53,20 @@ class IM_EX_FDRBASE CtiFDRManager : public CtiRTDB< CtiFDRPoint >
         string       getWhereSelectStr();
         CtiFDRManager & setWhereSelectStr(string &);
        
-       
-       //void DumpList(void);
-       
-        void            DeleteList(void)   
+        void DeleteList(void)   
         {
-            for (MapIterator itr = Map.begin(); itr != Map.end(); itr++) {
-                delete (*itr).second;
-            }        
             Map.clear();
         }
-//        CtiFDRManager & loadPointList(void);
+
         RWDBStatus loadPointList(void);
-//        CtiFDRManager & refreshPointList(void);
-        RWDBStatus  refreshPointList(void);
+        RWDBStatus loadPoint(long pointId);
+        RWDBStatus refreshPointList(void);
     
-        CtiFDRPoint *   findFDRPointID(LONG myPointId);
+        shared_ptr<CtiFDRPoint> findFDRPointID(LONG myPointId);
+        shared_ptr<CtiFDRPoint> removeFDRPointID(long myPointId);
+        bool addFDRPointId(long myPointId);
+
+        void printIds(CtiLogger& dout);
 
     protected:
         static const CHAR * TBLNAME_FDRTRANSLATION;
@@ -85,6 +87,9 @@ class IM_EX_FDRBASE CtiFDRManager : public CtiRTDB< CtiFDRPoint >
 
 
     private:
+        RWDBStatus getPointsFromDB(RWDBConnection& conn, RWDBSelector& selector, 
+                                                  std::map<long,boost::shared_ptr<CtiFDRPoint> >& fdrPtrMap);
+
         // private data
         string   iInterfaceName;
         string   iWhereSelectStr;

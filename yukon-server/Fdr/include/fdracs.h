@@ -16,6 +16,14 @@
 *                 design document for more information
 *    History:
       $Log: fdracs.h,v $
+      Revision 1.8  2008/09/15 21:09:16  tspar
+      YUK-5013 Full FDR reload should not happen with every point db change
+
+      Changed interfaces to handle points on an individual basis so they can be added
+      and removed by point id.
+
+      Changed the fdr point manager to use smart pointers to help make this transition possible.
+
       Revision 1.7  2007/11/12 16:46:55  mfisher
       Removed some Rogue Wave includes
 
@@ -254,7 +262,7 @@ class IM_EX_FDRACS CtiFDR_ACS : public CtiFDRSingleSocket
 
         enum {ACS_Open = 0, ACS_Closed = 1, ACS_Invalid=99};
 
-        virtual bool translateAndUpdatePoint(CtiFDRPoint *translationPoint, int aDestinationIndex);
+        virtual bool translateAndUpdatePoint(shared_ptr<CtiFDRPoint> translationPoint, int aDestinationIndex);
 
 };
 

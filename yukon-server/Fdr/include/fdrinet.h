@@ -163,7 +163,7 @@ class IM_EX_FDRINET CtiFDR_Inet : public CtiFDRSocketInterface
         virtual bool loadTranslationLists(void);
         virtual bool loadClientList(void);
         bool loadList(string &aDirection, CtiFDRPointList &aList);
-
+        
         virtual int   readConfig( void );
         virtual void setCurrentClientLinkStates();
         int   findConnectionByNameInList(string aName);
@@ -186,6 +186,8 @@ class IM_EX_FDRINET CtiFDR_Inet : public CtiFDRSocketInterface
         CtiMutex & getClientListMux ();
 
     private:
+        //translateSingle Point
+        virtual bool translateSinglePoint(shared_ptr<CtiFDRPoint> translationPoint, bool send=false);
 
         string                   iSourceName;
 

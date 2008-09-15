@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrsocketinterface.cpp-arc  $
-*    REVISION     :  $Revision: 1.14 $
-*    DATE         :  $Date: 2008/06/09 15:48:08 $
+*    REVISION     :  $Revision: 1.15 $
+*    DATE         :  $Date: 2008/09/15 21:08:48 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,14 @@
 *    ---------------------------------------------------
 *    History: 
 *     $Log: fdrsocketinterface.cpp,v $
+*     Revision 1.15  2008/09/15 21:08:48  tspar
+*     YUK-5013 Full FDR reload should not happen with every point db change
+*
+*     Changed interfaces to handle points on an individual basis so they can be added
+*     and removed by point id.
+*
+*     Changed the fdr point manager to use smart pointers to help make this transition possible.
+*
 *     Revision 1.14  2008/06/09 15:48:08  tspar
 *     YUK-6032 FDR Inet Will not send data
 *
@@ -250,7 +258,7 @@ int CtiFDRSocketInterface::sendAllPoints()
 {
     CHAR *ptr=NULL;
     int retVal=NORMAL;
-    CtiFDRPoint *point=NULL;
+    shared_ptr<CtiFDRPoint> point;
 
     // bad bad bad
     if (iDispatchConn == NULL)

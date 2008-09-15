@@ -27,14 +27,7 @@
 #include "ctitime.h"
 #include "pointtypes.h"
 #include "dlldefs.h"
-
-// global to make my life that much easier DLS
-typedef enum {
-     NotReloaded=0,
-     Signaled,
-     Periodic,
-     Initial
-} FDRDbReloadReason;
+#include "fdr.h"
 
 
 class IM_EX_FDRBASE CtiFDRPointIdMap
@@ -70,7 +63,7 @@ class IM_EX_FDRBASE CtiFDRPointIdMap
         CtiFDRPointIdMap &  setLastTimeStamp ( const CtiTime & aTime );
         
         FDRDbReloadReason   getReasonForReload( void ) const;
-        CtiFDRPointIdMap &  setReasonForReload(FDRDbReloadReason aReason=Signaled);
+        CtiFDRPointIdMap &  setReasonForReload(FDRDbReloadReason aReason=DbChange);
 
         CtiPointType_t getPointType() const;        
         CtiFDRPointIdMap & setPointType(CtiPointType_t aType);

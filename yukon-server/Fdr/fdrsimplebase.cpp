@@ -8,8 +8,8 @@
  * Author: Tom Mack
  *
  * ARCHIVE      :  $Archive$
- * REVISION     :  $Revision: 1.9 $
- * DATE         :  $Date: 2006/11/16 16:54:41 $
+ * REVISION     :  $Revision: 1.10 $
+ * DATE         :  $Date: 2008/09/15 21:08:48 $
  */
 
 #include <windows.h>
@@ -201,7 +201,7 @@ bool CtiFDRSimple::loadTranslationLists()
   bool    retCode = true;
   bool                successful = true;
   bool                foundPoint = false;
-  CtiFDRPoint *       point = NULL;
+  shared_ptr<CtiFDRPoint> point;
 
   if (!isConnected()) {
     if( isDebugLevel( DETAIL_FDR_DEBUGLEVEL ) )
@@ -250,7 +250,7 @@ bool CtiFDRSimple::loadTranslationLists()
         // get iterator on list
         CtiFDRManager::CTIFdrPointIterator  myIterator = aList.getPointList()->getMap().begin();
 
-        beginNewPoints();
+        removeAllPoints();
 
         while ( myIterator != aList.getPointList()->getMap().end() )
         {
@@ -260,7 +260,7 @@ bool CtiFDRSimple::loadTranslationLists()
           ++myIterator;
 
         }
-        endNewPoints();
+        handleNewPoints();
       }
     }
     else
@@ -280,6 +280,13 @@ bool CtiFDRSimple::loadTranslationLists()
   return( successful );
 }
 
+
+bool CtiFDRSimple::translateSinglePoint(shared_ptr<CtiFDRPoint> translationPoint, bool send)
+{
+  processNewPoint(translationPoint);
+  handleNewPoint(translationPoint);
+  return true;
+}
 
 /**
  * Formats and sends an update message.

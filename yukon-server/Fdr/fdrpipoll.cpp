@@ -8,8 +8,8 @@
  * Author: Tom Mack
  *
  * ARCHIVE      :  $Archive$
- * REVISION     :  $Revision: 1.4 $
- * DATE         :  $Date: 2006/01/03 20:23:37 $
+ * REVISION     :  $Revision: 1.5 $
+ * DATE         :  $Date: 2008/09/15 21:08:48 $
  */
 
 #include <windows.h>
@@ -59,7 +59,7 @@ CtiFDRPiPoll::~CtiFDRPiPoll()
 /**
  * Begin receiving new point notifications.
  */ 
-void CtiFDRPiPoll::beginNewPoints()
+void CtiFDRPiPoll::removeAllPoints()
 {
   _pollData.clear();
 }
@@ -88,10 +88,124 @@ void CtiFDRPiPoll::processNewPiPoint(PiPointInfoStruct &info)
 
 }
 
+void CtiFDRPiPoll::cleanupTranslationPoint(shared_ptr<CtiFDRPoint> translationPoint, bool recvList)
+{
+  string periodStr = translationPoint->getDestinationList()[0].getTranslationValue("Period (sec)");
+
+  unsigned int period = atoi(periodStr.c_str());
+
+  if (period <= 0)
+  {
+    period = _defaultPeriod; 
+  }
+
+  string tagName = translationPoint->getDestinationList()[0].getTranslationValue("Tag Name");
+
+  PiPointId piId;
+  int err = getPiPointIdFromTag(tagName,piId);
+  if (err != 0)
+  {
+    {
+      std::string piError = getPiErrorDescription(err, "pipt_findpoint");
+      CtiLockGuard<CtiLogger> doubt_guard( dout );
+      logNow() << "Unable to find PI tag '" << tagName <<
+        "' for point " << translationPoint->getPointID() <<
+        ", pipt_findpoint returned " << piError << endl;
+    }
+    return;
+  }
+
+  vector<PiPointId>::iterator pointListItr = _pollData[period].pointList.begin();
+  for ( ; pointListItr != _pollData[period].pointList.end(); pointListItr++)
+  {
+    if (*pointListItr == piId)
+    {
+      _pollData[period].pointList.erase(pointListItr);
+      break;
+    }
+  }
+
+  vector<PiPointInfo>::iterator infoListItr = _pollData[period].infoList.begin();
+  for ( ; infoListItr != _pollData[period].infoList.end(); infoListItr++)
+  {
+    if ((*infoListItr).piPointId == piId)
+    {
+      _pollData[period].infoList.erase(infoListItr);
+      break;
+    }
+  }
+
+  _pollData[period].rvalList.pop_back();
+  _pollData[period].istatList.pop_back();
+  _pollData[period].timeList.pop_back();
+  _pollData[period].errorList.pop_back();
+
+}
+
+void CtiFDRPiPoll::handleNewPoint(shared_ptr<CtiFDRPoint> ctiPoint)
+{
+  //would do a single version of this, but re updating all points is acceptable
+  string periodStr = ctiPoint->getDestinationList()[0].getTranslationValue("Period (sec)");
+
+  unsigned int period = atoi(periodStr.c_str());
+
+  if (period <= 0)
+  {
+    period = _defaultPeriod; 
+  }
+
+  //No good way to update the single point, so every point in the period is being updated.
+  //Setting next update to one period ago for this single period.
+
+  PollDataList::iterator itr = _pollData.find(period);
+
+  if (itr != _pollData.end())
+  {
+    PollInfo &pollInfo = (*itr).second;
+    int pollPeriod = (*itr).first;
+
+    time_t now;
+    ::time(&now);
+    struct tm *now_local = NULL;
+    now_local = CtiTime::localtime_r(&now);
+
+    int secondsPastHour;
+    secondsPastHour = now_local->tm_min * 60;
+    secondsPastHour += now_local->tm_sec;
+  
+    time_t topOfThisHour = now - secondsPastHour;
+    if (pollPeriod < 60 * 60)
+    {
+      // Set next update to be one period ago, forces all points to get
+      // updated immediately.
+      int periodsToAdd = secondsPastHour / pollPeriod;
+      pollInfo.nextUpdate = topOfThisHour + periodsToAdd * pollPeriod; 
+    }
+    else
+    {
+      pollInfo.nextUpdate = topOfThisHour;
+    }
+    if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
+    {
+      CtiLockGuard<CtiLogger> doubt_guard( dout );
+      logNow() << pollInfo.pointList.size() << 
+        " points will update every " << pollPeriod << " seconds" << endl;
+    }
+  }
+  else
+  {
+    if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
+    {
+      CtiLockGuard<CtiLogger> doubt_guard( dout );
+      logNow() << "Check Point. No points setup for the peroid " << period << ", expected at least 1." << endl;
+    }
+  }
+}
+
 /**
- * Stop receiving new point notifications.
+ * Setup receiving new point notifications.
  */ 
-void CtiFDRPiPoll::endNewPoints()
+void CtiFDRPiPoll::handleNewPoints()
 {
   // loop through all the points we were notified of in the processNewPiPoint call
   for (PollDataList::iterator myIter =  _pollData.begin();

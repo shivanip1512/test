@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrbepc.cpp-arc  $
-*    REVISION     :  $Revision: 1.7 $
-*    DATE         :  $Date: 2007/04/10 23:04:35 $
+*    REVISION     :  $Revision: 1.8 $
+*    DATE         :  $Date: 2008/09/15 21:08:48 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +20,14 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrbepc.cpp,v $
+      Revision 1.8  2008/09/15 21:08:48  tspar
+      YUK-5013 Full FDR reload should not happen with every point db change
+
+      Changed interfaces to handle points on an individual basis so they can be added
+      and removed by point id.
+
+      Changed the fdr point manager to use smart pointers to help make this transition possible.
+
       Revision 1.7  2007/04/10 23:04:35  tspar
       Added some more protection against bad input when tokenizing.
 
@@ -360,13 +368,9 @@ int CtiFDR_BEPC::readConfig( void )
 */
 bool CtiFDR_BEPC::loadTranslationLists()
 {
-    bool                successful(FALSE);
-    CtiFDRPoint *       translationPoint = NULL;
-    string           tempString1;
-    string           tempString2;
-    string           translationName;
-    bool                foundPoint = false;
-    RWDBStatus          listStatus;
+    bool successful = false;
+    bool foundPoint = false;
+    RWDBStatus          listStatus;   
 
     try
     {
@@ -398,38 +402,9 @@ bool CtiFDR_BEPC::loadTranslationLists()
                 for ( ; myIterator != pointList->getMap().end(); ++myIterator)
                 {
                     foundPoint = true;
-                    translationPoint = (*myIterator).second;
-
-                    for (x=0; x < translationPoint->getDestinationList().size(); x++)
-                    {
-                        if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << "Parsing Yukon Point ID " << translationPoint->getPointID();
-                            dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
-                        }
-                        CtiTokenizer nextTranslate(translationPoint->getDestinationList()[x].getTranslation());
-
-                        if (!(tempString1 = nextTranslate(";")).empty())
-                        {
-                            CtiTokenizer nextTempToken(tempString1);
-
-                            // do not care about the first part
-                            nextTempToken(":");
-                            if(!(tempString2 = nextTempToken(";")).empty())
-                            {    
-                                tempString2 = tempString2.substr(1,(tempString2.length()-1));
-    
-                                // now we have a point id
-                                if ( !tempString2.empty() )
-                                {
-                                    translationPoint->getDestinationList()[x].setTranslation (tempString2.c_str());
-                                    successful = true;
-                                }
-                            }
-                        }   // first token invalid
-                    }
-                }   // end for interator
+                    shared_ptr<CtiFDRPoint> translationPoint = (*myIterator).second;
+                    successful = translateSinglePoint(translationPoint);
+                }
 
                 {
                     // lock the send list and remove the old one
@@ -487,6 +462,46 @@ bool CtiFDR_BEPC::loadTranslationLists()
         dout << CtiTime() << " Error loading translation lists for " << getInterfaceName() << endl;
     }
 
+    return successful;
+}
+
+bool CtiFDR_BEPC::translateSinglePoint(shared_ptr<CtiFDRPoint> translationPoint, bool send)
+{
+    bool successful = false;
+
+    string           tempString1;
+    string           tempString2;
+    string           translationName;
+
+    for ( int x = 0; x < translationPoint->getDestinationList().size(); x++)
+    {
+        if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << "Parsing Yukon Point ID " << translationPoint->getPointID();
+            dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
+        }
+        CtiTokenizer nextTranslate(translationPoint->getDestinationList()[x].getTranslation());
+
+        if (!(tempString1 = nextTranslate(";")).empty())
+        {
+            CtiTokenizer nextTempToken(tempString1);
+
+            // do not care about the first part
+            nextTempToken(":");
+            if(!(tempString2 = nextTempToken(";")).empty())
+            {    
+                tempString2 = tempString2.substr(1,(tempString2.length()-1));
+
+                // now we have a point id
+                if ( !tempString2.empty() )
+                {
+                    translationPoint->getDestinationList()[x].setTranslation (tempString2.c_str());
+                    successful = true;
+                }
+            }
+        }   // first token invalid
+    }
     return successful;
 }
 
