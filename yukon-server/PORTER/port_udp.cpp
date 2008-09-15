@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2008/08/14 15:57:41 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2008/09/15 17:59:17 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,7 +21,8 @@
 
 using namespace std;
 
-#include "boost/shared_ptr.hpp"
+#include <boost/shared_ptr.hpp>
+#include "boostutil.h"
 
 #include "portglob.h"
 #include "mgr_device.h"

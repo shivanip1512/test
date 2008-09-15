@@ -9,15 +9,16 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/disable_entry.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2007/11/12 17:05:17 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2008/09/15 17:59:18 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #ifndef __DISABLE_ENTRY_H__
 #define __DISABLE_ENTRY_H__
 
-#include "boost/shared_ptr.hpp"
+#include <boost/shared_ptr.hpp>
+#include "boostutil.h"
 using boost::shared_ptr;
 #include <set>
 

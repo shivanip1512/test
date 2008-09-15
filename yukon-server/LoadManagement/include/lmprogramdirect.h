@@ -19,6 +19,7 @@
 #include <set>
 
 #include <boost/shared_ptr.hpp>
+#include "boostutil.h"
 
 #include <rw/collect.h>
 #include <rw/vstream.h>

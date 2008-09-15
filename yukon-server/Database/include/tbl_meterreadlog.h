@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/Database/Include/tbl_meterreadlog.h-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2007/03/08 21:56:14 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2008/09/15 17:59:18 $
 *
 * Copyright (c) 2007 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,7 +26,8 @@
 #include "utility.h"
 #include "yukon.h"
 
-#include "boost/shared_ptr.hpp"
+#include <boost/shared_ptr.hpp>
+#include "boostutil.h"
 using boost::shared_ptr;
 
 class IM_EX_CTIYUKONDB CtiTableMeterReadLog

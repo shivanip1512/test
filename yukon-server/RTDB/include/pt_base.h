@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_base.h-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2008/07/29 14:25:54 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2008/09/15 17:59:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,7 +17,8 @@
 
 
 #include <rw/db/reader.h>
-#include "boost/shared_ptr.hpp"
+#include <boost/shared_ptr.hpp>
+#include "boostutil.h"
 #include "boost/weak_ptr.hpp"
 using boost::shared_ptr;
 using boost::weak_ptr;

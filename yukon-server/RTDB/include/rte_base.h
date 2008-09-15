@@ -9,15 +9,16 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/rte_base.h-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2007/11/12 16:49:47 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2008/09/15 17:59:18 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #ifndef __RTE_BASE_H__
 #define __RTE_BASE_H__
 
-#include "boost/shared_ptr.hpp"
+#include <boost/shared_ptr.hpp>
+#include "boostutil.h"
 using boost::shared_ptr;
 
 #include <rw/db/dbase.h>

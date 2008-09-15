@@ -18,6 +18,7 @@
 #include <vector>
 
 #include <boost/shared_ptr.hpp>
+#include "boostutil.h"
 #include <boost/weak_ptr.hpp>
 
 #include <rw/pstream.h>

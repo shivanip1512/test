@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2007/02/09 20:52:21 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2008/09/15 17:59:17 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -25,7 +25,8 @@
 
 #include "boost_time.h"
 #include "cticalls.h"
-#include "boost/shared_ptr.hpp"
+#include <boost/shared_ptr.hpp>
+#include "boostutil.h"
 
 using boost::shared_ptr;
 

@@ -1154,8 +1154,7 @@ typedef struct _MODULEINFO
     LPVOID EntryPoint;
 } MODULEINFO, *LPMODULEINFO;
 
-
-void autopsy(char *calleefile, int calleeline)
+void autopsy(const char *calleefile, int calleeline)
 {
     HANDLE hThread;
     CONTEXT c;

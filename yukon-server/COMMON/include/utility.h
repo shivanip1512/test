@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/utility.h-arc  $
-* REVISION     :  $Revision: 1.49 $
-* DATE         :  $Date: 2008/07/21 20:38:27 $
+* REVISION     :  $Revision: 1.50 $
+* DATE         :  $Date: 2008/09/15 17:59:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -61,7 +61,7 @@ IM_EX_CTIBASE string& traceBuffer(string &str, BYTE *Message, ULONG Length);
 
 IM_EX_CTIBASE CtiTime nextScheduledTimeAlignedOnRate( const CtiTime &origin, LONG rate );
 
-IM_EX_CTIBASE void autopsy(char *calleefile, int calleeline);       // Usage is: autopsy( __FILE__, __LINE__);
+IM_EX_CTIBASE void autopsy(const char *calleefile, int calleeline);       // Usage is: autopsy( __FILE__, __LINE__);
 
 IM_EX_CTIBASE BOOL searchFuncForOutMessageDevID(void *pId, void* d);
 IM_EX_CTIBASE BOOL searchFuncForOutMessageRteID(void *pId, void* d);

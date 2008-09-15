@@ -29,6 +29,7 @@
 #include "boost_time.h"
 #include <boost/tokenizer.hpp>
 #include <boost/shared_ptr.hpp>
+#include "boostutil.h"
 
 /*
  * for RWDBDateTime

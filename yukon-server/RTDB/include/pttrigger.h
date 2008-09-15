@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/pttrigger.h-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2006/06/16 20:09:20 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2008/09/15 17:59:18 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -15,7 +15,8 @@
 #define __PTTRIGGER_H__
 
 #include "yukon.h"
-#include "boost/shared_ptr.hpp"
+#include <boost/shared_ptr.hpp>
+#include "boostutil.h"
 //using boost::shared_ptr;
 
 #include "logger.h"

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_numeric.h-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2008/08/25 19:47:32 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2008/09/15 17:59:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -15,7 +15,8 @@
 #define __PT_NUMERIC_H__
 #pragma warning( disable : 4786)
 
-#include "boost/shared_ptr.hpp"
+#include <boost/shared_ptr.hpp>
+#include "boostutil.h"
 using boost::shared_ptr;
 
 #include <rw/db/reader.h>

@@ -8,10 +8,16 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2007/02/09 20:56:14 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2008/09/15 17:59:18 $
 * HISTORY      :
 * $Log: dev_exclusion.h,v $
+* Revision 1.12  2008/09/15 17:59:18  jotteson
+* YUK-6456 Change Boost Assert behavior to print stack trace instead of asserting
+* Added boostutil.h to define boost functions necessary to override boost_assert
+* Added #define to override boost_assert
+* Changed boost_assert to call print function to print stack trace.
+*
 * Revision 1.11  2007/02/09 20:56:14  mfisher
 * removed VSLICK_TAG_WORKAROUND #define - tagging problem was fixed in Slick 11
 *
@@ -60,7 +66,8 @@ using std::vector;
 using std::pair;
 using std::queue;
 
-#include "boost/shared_ptr.hpp"
+#include <boost/shared_ptr.hpp>
+#include "boostutil.h"
 using boost::shared_ptr;
 
 #include "dlldefs.h"

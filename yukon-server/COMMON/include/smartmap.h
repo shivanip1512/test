@@ -28,7 +28,8 @@
 
 #include <rw/thr/rwlock.h>
 
-#include "boost/shared_ptr.hpp"
+#include <boost/shared_ptr.hpp>
+#include "boostutil.h"
 using boost::shared_ptr;
 
 #include "dllbase.h"

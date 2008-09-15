@@ -2,14 +2,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_status.h-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2007/09/18 14:31:32 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2008/09/15 17:59:18 $
 *
 */
 #ifndef __PT_STATUS_H__
 #define __PT_STATUS_H__
 
-#include "boost/shared_ptr.hpp"
+#include <boost/shared_ptr.hpp>
+#include "boostutil.h"
 using boost::shared_ptr;
 
 #include "dlldefs.h"

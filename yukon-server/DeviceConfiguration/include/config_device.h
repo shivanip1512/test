@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/include/config_device.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2007/12/03 22:15:20 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2008/09/15 17:59:18 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -16,7 +16,8 @@
 
 #include "yukon.h"
 
-#include "boost/shared_ptr.hpp"
+#include <boost/shared_ptr.hpp>
+#include "boostutil.h"
 using boost::shared_ptr;
 
 #include "logger.h"
