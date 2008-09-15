@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.60 $
-* DATE         :  $Date: 2008/08/14 15:57:41 $
+* REVISION     :  $Revision: 1.61 $
+* DATE         :  $Date: 2008/09/15 15:43:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1183,24 +1183,23 @@ INT GenerateCompleteRequest(list< OUTMESS* > &outList, OUTMESS *&OutMessage)
 
         CtiDeviceSPtr Dev = DeviceManager.getEqual(pReq->DeviceId());
 
-        // Re-establish the connection on the beastie..
-        pReq->setRouteId( OutMessage->Request.RouteID );
-
-        if(OutMessage->Request.MacroOffset == 0)
-        {
-            OutMessage->Request.MacroOffset = Dev->selectInitialMacroRouteOffset(OutMessage->Request.RouteID);
-        }
-
-        pReq->setMacroOffset( OutMessage->Request.MacroOffset );
-
-        pReq->setMessagePriority(OutMessage->Priority);
-
-
         if(Dev)
         {
             CtiReturnMsg   *pcRet = NULL;
             CtiMessage     *pMsg  = NULL;
             CtiMessage     *pVg  = NULL;
+
+            // Re-establish the connection on the beastie..
+            pReq->setRouteId( OutMessage->Request.RouteID );
+    
+            if(OutMessage->Request.MacroOffset == 0)
+            {
+                OutMessage->Request.MacroOffset = Dev->selectInitialMacroRouteOffset(OutMessage->Request.RouteID);
+            }
+    
+            pReq->setMacroOffset( OutMessage->Request.MacroOffset );
+    
+            pReq->setMessagePriority(OutMessage->Priority);
 
             /*
              *  We will execute based upon the data in the request....
