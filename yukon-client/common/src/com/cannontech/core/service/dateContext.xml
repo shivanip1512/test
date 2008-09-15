@@ -37,6 +37,7 @@
                 <value>MM/dd/yyyy hh:mm a</value>
                 <value>MM/dd/yy HH:mm</value>
                 <value>MM/dd/yyyy HH:mm</value>
+                <value>EEE MMM dd HH:mm:ss zzz yyyy</value>
             </list>
         </property>
         <property name="dateFormats">

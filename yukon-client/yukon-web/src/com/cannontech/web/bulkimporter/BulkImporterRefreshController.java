@@ -2,6 +2,7 @@ package com.cannontech.web.bulkimporter;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,8 +45,18 @@ public class BulkImporterRefreshController implements Controller  {
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         
         // import times
-        jsonUpdates.put("lastImportAttempt", bulkImportDataDao.getLastImportTime());
-        jsonUpdates.put("nextImportAttempt", bulkImportDataDao.getNextImportTime());
+        Date lastImportTime = bulkImportDataDao.getLastImportTime(userContext);
+        String lastImportTimeStr = dateFormattingService.formatDate(lastImportTime,
+                                                                    DateFormattingService.DateFormatEnum.BOTH,
+                                                                    userContext);
+
+        Date nextImportTime = bulkImportDataDao.getNextImportTime(userContext);
+        String nextImportTimeStr = dateFormattingService.formatDate(nextImportTime,
+                                                                    DateFormattingService.DateFormatEnum.BOTH,
+                                                                    userContext);
+        
+        jsonUpdates.put("lastImportAttempt", lastImportTimeStr);
+        jsonUpdates.put("nextImportAttempt", nextImportTimeStr);
         
         // get raw data
         List<ImportFail> failuresList = bulkImportDataDao.getAllDataFailures();
