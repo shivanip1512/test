@@ -422,22 +422,22 @@
 <!-- 		<command name="Read Frozen Peak">
         		<cmd text="getvalue peak frozen"/>
         		<pointRef name="Peak kW"/>
-        		<pointRef name="kWh"/>
+        		<pointRef name="Minimum kW"/>
         	</command>
 			<command name="Read Frozen Peak (Channel 2)">
         		<cmd text="getvalue peak offset 2 frozen"/>
         		<pointRef name="Peak kW (Channel 2)"/>
-        		<pointRef name="kWh (Channel 2)"/>
+        		<pointRef name="Minimum kW (Channel 2)"/>
         	</command>
 			<command name="Read Frozen Peak (Channel 3)">
         		<cmd text="getvalue peak offset 3 frozen"/>
         		<pointRef name="Peak kW (Channel 3)"/>
-        		<pointRef name="kWh (Channel 3)"/>
+        		<pointRef name="Minimum kW (Channel 3)"/>
         	</command>
 			<command name="Read Frozen Peak (Channel 4)">
         		<cmd text="getvalue peak offset 4 frozen"/>
         		<pointRef name="Peak kW (Channel 4)"/>
-        		<pointRef name="kWh (Channel 4)"/>
+        		<pointRef name="Minimum kW (Channel 4)"/>
         	</command>-->
         	
 			<command name="Read TOU Rate A Channel 1">
