@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
-import com.cannontech.common.util.Cancelable;
+import com.cannontech.common.util.CancelStatus;
 import com.cannontech.common.util.Completable;
 import com.cannontech.core.dynamic.PointValueHolder;
 
 public class CollectingCommandCompletionCallback implements
-        CommandCompletionCallback<Object>, CommandResultHolder, Completable, Cancelable {
+        CommandCompletionCallback<Object>, CommandResultHolder, Completable, CancelStatus {
     
     private List<DeviceErrorDescription> errors = new ArrayList<DeviceErrorDescription>();
     private List<PointValueHolder> values = new ArrayList<PointValueHolder>();

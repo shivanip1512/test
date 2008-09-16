@@ -1,10 +1,10 @@
 package com.cannontech.common.device.commands;
 
 import com.cannontech.common.bulk.collection.DeviceCollection;
-import com.cannontech.common.util.Cancelable;
+import com.cannontech.common.util.CancelStatus;
 import com.cannontech.common.util.Completable;
 
-public class GroupCommandResult implements Completable, Cancelable {
+public class GroupCommandResult implements Completable, CancelStatus {
     private String key;
     private String command;
     private DeviceCollection deviceCollection;

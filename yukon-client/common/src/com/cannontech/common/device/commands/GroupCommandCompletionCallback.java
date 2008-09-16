@@ -8,13 +8,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.common.device.YukonDevice;
-import com.cannontech.common.util.Cancelable;
+import com.cannontech.common.util.CancelStatus;
 import com.cannontech.common.util.Completable;
 import com.cannontech.common.util.MapList;
 import com.cannontech.core.dynamic.PointValueHolder;
 
 public class GroupCommandCompletionCallback implements
-        CommandCompletionCallback<CommandRequestDevice>, Completable, Cancelable, MultipleDeviceResultHolder {
+        CommandCompletionCallback<CommandRequestDevice>, Completable, CancelStatus, MultipleDeviceResultHolder {
     
     private Map<YukonDevice,DeviceErrorDescription> errors = new ConcurrentHashMap<YukonDevice, DeviceErrorDescription>(100, .75f, 1);
     private Map<YukonDevice,String> resultStrings = new ConcurrentHashMap<YukonDevice, String>(100, .75f, 1);
