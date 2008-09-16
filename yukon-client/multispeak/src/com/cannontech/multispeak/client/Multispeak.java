@@ -489,6 +489,14 @@ public class Multispeak implements MessageListener {
         
         for (ConnectDisconnectEvent cdEvent : cdEvents) {
             String meterNumber = cdEvent.getObjectID();
+            
+            //Try to load MeterNumber from another element
+            if( StringUtils.isBlank(meterNumber)) {
+                meterNumber = cdEvent.getMeterID().trim(); //SEDC
+                if( StringUtils.isBlank(meterNumber)) {
+                    meterNumber = cdEvent.getMeterNo().trim();
+                }
+            }
             com.cannontech.amr.meter.model.Meter meter;
             try {
  	        	meter = meterDao.getForMeterNumber(meterNumber);
