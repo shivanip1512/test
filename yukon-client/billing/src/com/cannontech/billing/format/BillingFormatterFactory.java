@@ -88,6 +88,9 @@ public final class BillingFormatterFactory {
             
         case FileFormatTypes.NISC_TOU_KVARH_RATES_ONLY:
             return new NISC_TOU_kVarH_RatesOnlyRecordFormatter();
+        
+        case FileFormatTypes.NISC_INTERVAL_READINGS:
+            return new NISCIntervalReadings();
             
         case FileFormatTypes.WLT_40:
         case FileFormatTypes.MV_90:

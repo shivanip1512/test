@@ -49,6 +49,10 @@ public class BillingDao {
      */
     public static List<BillableDevice> retrieveBillingData(BillingFileDefaults defaults) {
 
+        if( defaults.getFormatID() == FileFormatTypes.NISC_INTERVAL_READINGS) {
+            return retrieveIntervalReadingsData(defaults);
+        }
+        
         long timer = System.currentTimeMillis();
 
         List<BillableDevice> deviceList = null;
@@ -403,5 +407,121 @@ public class BillingDao {
 
         System.exit(0);
 
+    }
+    
+    /**
+     * Retrieves all readings data from the database and returns a list of
+     * BillableDevices which contain all of the billing data
+     * Data of interest for the NISC Interval Readings format is kW, peak kW, and blink count (for all rates/registers)
+     * @param defaults - Information about the billing data to be retrieved
+     * @param multiplier - Reading value multiplier
+     * @return A list of BillableDevices
+     */
+    private static List<BillableDevice> retrieveIntervalReadingsData(BillingFileDefaults defaults) {
+
+        long timer = System.currentTimeMillis();
+
+        List<BillableDevice> deviceList = null;
+
+        String sql = "SELECT distinct dmg.meternumber, p.pointid, p.pointoffset, p.pointtype, p.pointname, rph.timestamp, " +
+                     " rph.value, dmg.deviceid, ypo.type, ypo.category, uom.uomid, ypo.paoname, dcs.address " +
+                     " FROM devicemetergroup dmg, point p, rawpointhistory rph, yukonpaobject ypo " +
+                     " LEFT JOIN devicecarriersettings dcs ON ypo.paobjectid = dcs.deviceid, " +
+                     " unitmeasure uom, pointunit pu " +
+                     " WHERE p.pointid = rph.pointid " +
+                     " AND pu.pointid = p.pointid " +
+                     " AND uom.uomid = pu.uomid " +
+                     " AND timestamp > ? " +
+                     " AND timestamp <= ? " +
+                     " AND ypo.paobjectid = p.paobjectid " +
+                     " AND dmg.deviceid = ypo.paobjectid " +
+                     //Don't include the  load profile points
+                     " AND (pointoffset < 101 or pointoffset > 104) " +
+                     getDeviceMeterGroupWhereClause(defaults) +
+                     " ORDER BY dmg.meternumber, dmg.deviceid, p.pointtype, p.pointoffset, rph.timestamp DESC";
+
+        Connection con = null;
+        PreparedStatement stmt = null;
+        ResultSet rset = null;
+
+        try {
+            CTILogger.info("SQL Statement: " + sql.replaceAll(" {2,}", " "));
+
+            con = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+
+            if (con == null) {
+                CTILogger.info(BillingDao.class + ":  Error getting database connection.");
+                return null;
+            } else {
+                stmt = con.prepareStatement(sql);
+                stmt.setTimestamp(1, new Timestamp(defaults.getEarliestStartDate().getTime()));
+                stmt.setTimestamp(2, new Timestamp(defaults.getEndDate().getTime()));
+
+                rset = stmt.executeQuery();
+
+                deviceList = new ArrayList<BillableDevice>();
+                Map<String, Integer> meterPositionNumberMap = new HashMap<String, Integer>();
+
+                BillableDevice device = null;
+                while (rset.next()) {
+                    String meterNumber = rset.getString(1);
+                    int pointId = rset.getInt(2);
+                    int ptOffset = rset.getInt(3);
+                    String ptType = rset.getString(4);
+                    String pointName = rset.getString(5);
+                    Timestamp ts = rset.getTimestamp(6);
+
+                    double multiplier = 1;
+                    if (defaults.isRemoveMultiplier()) {
+                        multiplier = retrievePointIDMultiplierHashTable().get(new Integer(pointId)).doubleValue();
+                    }
+
+                    double reading = rset.getDouble(7) / multiplier;
+                    int deviceID = rset.getInt(8);
+                    String paoType = rset.getString(9);
+                    String category = rset.getString(10);
+                    int unitOfMeasure = rset.getInt(11);
+                    String paoName = rset.getString(12);
+                    int address = rset.getInt(13);
+
+                    int pointType = PointTypes.getType(ptType);
+                    DevicePointIdentifier devicePointIdentifier = new DevicePointIdentifier(pointType, ptOffset);
+                    java.util.Date tsDate = new java.util.Date(ts.getTime());
+                    
+                    //AccountNumber will always be the same as paoName for interval readings.
+                    String accountNumber = paoName;
+
+                    device = BillableDeviceFactory.createBillableDevice(category, paoType);
+                    if (device != null) {
+                        
+                        if( (device.isEnergy(devicePointIdentifier) &&  !tsDate.before(defaults.getEnergyStartDate()) )  || 
+                            (device.isDemand(devicePointIdentifier) &&  !tsDate.before(defaults.getDemandStartDate()) ) ) { 
+
+                            DeviceData meterData = new DeviceData(meterNumber,
+                                                                  getMeterPositionNumber(meterPositionNumberMap,
+                                                                                         accountNumber),
+                                                                  String.valueOf(address),
+                                                                  accountNumber,
+                                                                  paoName);
+                            device.populate(devicePointIdentifier,
+                                            ts,
+                                            reading,
+                                            unitOfMeasure,
+                                            pointName,
+                                            meterData);
+
+                            deviceList.add(device);
+                        }
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            CTILogger.error(e);
+        } finally {
+            SqlUtils.close(rset, stmt, con );
+        }
+        CTILogger.info("@" + BillingDao.class.toString() + " Data Collection : Took "
+                + (System.currentTimeMillis() - timer));
+        return deviceList;
     }
 }

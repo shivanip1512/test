@@ -265,6 +265,7 @@ public class DynamicBillingController extends MultiActionController {
 
 			// put the word reading and timestamp into the right fields
 			if (tempString.hasValue() || tempString.hasTimestamp()) {
+//			        || tempString.hasRate() || tempString.hasUnitOfMeasure() ) {   //not being used yet, will uncomment at a later time
 				if (tempString.hasValue()) {
 
 					// Append reading to end of field name and add to list
@@ -274,7 +275,21 @@ public class DynamicBillingController extends MultiActionController {
 
 					// Append timestamp to end of field name and add to list
 					tempList.add(tempString + " - timestamp");
-				}
+				} 
+				
+				/** This section has been commented out as it is not being used yet, but has been implemented */
+				/*
+                if (tempString.hasRate()) {
+
+                    // Append rate to end of field name and add to list
+                    tempList.add(tempString + " - rate");
+                }
+                if (tempString.hasUnitOfMeasure()) {
+
+                    // Append unitMeasure to end of field name and add to list
+                    tempList.add(tempString + " - unitMeasure");
+                }
+                */
 			} else {
 				tempList.add(tempString + "");
 			}

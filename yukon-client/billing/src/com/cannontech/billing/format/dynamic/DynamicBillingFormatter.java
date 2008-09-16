@@ -9,7 +9,6 @@ import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.billing.device.base.BillableDevice;
 import com.cannontech.billing.format.BillingFormatterBase;
-import com.cannontech.common.dynamicBilling.Channel;
 import com.cannontech.common.dynamicBilling.dao.DynamicBillingFileDao;
 import com.cannontech.common.dynamicBilling.model.BillableField;
 import com.cannontech.common.dynamicBilling.model.DynamicBillingField;
@@ -25,6 +24,10 @@ public class DynamicBillingFormatter extends BillingFormatterBase {
 	private static final String READING = "reading";
 
 	private static final String TIMESTAMP = "timestamp";
+
+    private static final String UNITMEASURE = "unitMeasure";
+    
+    private static final String RATE = "rate";
 
 	private DynamicFormat dynamicFormat;
 
@@ -126,8 +129,25 @@ public class DynamicBillingFormatter extends BillingFormatterBase {
 							
 							writeToFile.append(valueString);
 						}
+					} else if (field.getName().endsWith(UNITMEASURE) == true) {
+					    String unitMeasure = device.getUnitOfMeasure(field.getReadingType(), billableField);
+                        if (unitMeasure == null) {
+                            writeToFile.append(processValueString(field, ""));
+                        } else {
+                            String valueString = processValueString(field, unitMeasure);
+                            writeToFile.append(valueString);
+                        }
 
-						// no timestamp or reading, just data
+                    } else if (field.getName().endsWith(RATE) == true) {
+                        String rate = device.getRate(field.getReadingType(), billableField);
+                        if (rate== null) {
+                            writeToFile.append(processValueString(field, ""));
+                        } else {
+                            String valueString = processValueString(field, rate);
+                            writeToFile.append(valueString);
+                        }
+
+						// no timestamp, reading, uom, or rate...just data
 					} else {
 					    String data = device.getData(field.getReadingType(), billableField);
 						if (data == null) {

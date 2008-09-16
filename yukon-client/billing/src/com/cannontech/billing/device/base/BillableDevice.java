@@ -65,6 +65,24 @@ public interface BillableDevice {
     public String getUnitOfMeasure(Channel channel, ReadingType type, BillableField field);
 
     /**
+     * Helper method to return the rate based on the billableField.
+     * Gets the value from channel one
+     * @param type - The type to get the field for
+     * @param field - Field to get the rate for
+     * @return The value
+     */
+    public String getRate(ReadingType type, BillableField billableField);
+
+    /**
+     * Helper method to return the rate based on the billableField.
+     * @param channel - The channel to get the field for
+     * @param type - The type to get the field for
+     * @param field - Field to get the rate for
+     * @return The value
+     */
+    public String getRate(Channel channel, ReadingType type, BillableField billableField);
+
+    /**
      * Method to get a specific value from this device. Gets the value from
      * channel one and electric type. If the value is total consumption or total
      * demand, the value will be adjusted/aggregated if not found using the given 'total'

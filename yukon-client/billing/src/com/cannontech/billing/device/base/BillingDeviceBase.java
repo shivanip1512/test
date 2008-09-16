@@ -151,6 +151,26 @@ public abstract class BillingDeviceBase implements BillableDevice {
 
     }
 
+    public String getRate(ReadingType type, BillableField field) {
+        return this.getRate(Channel.ONE, type, field);
+    }
+    
+    public String getRate(Channel channel, ReadingType type, BillableField field) {
+    
+        String rate = field.getRate();
+        if (rate == null) {
+            throw new IllegalArgumentException("Field " + field.toString()
+                    + " does not have a rate");
+        }
+
+        // Need to check that we have some data first.
+        BillingData data = this.getBillingData(channel, type, field);
+        if( data != null) {
+            return rate;
+        }
+        return null;
+    }
+    
     /**
      * Method to add data to the dataMap (key: field, value: data). Data will be
      * added to the defaultChannel and readingType type
