@@ -1,13 +1,6 @@
 package com.cannontech.common.opc.service;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.StringTokenizer;
+import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -301,16 +294,36 @@ public class OpcService implements OpcConnectionListener, DBChangeListener{
     @Override
     public void dbChangeReceived(final DBChangeMsg dbChange) {
         
+        //List for the points to reload.
+        final List<Integer> pointList = new ArrayList<Integer>();
+        
         if (dbChange.getDatabase() == DBChangeMsg.CHANGE_POINT_DB) {
-            final int pid = dbChange.getId();
+            // This is a single change, so the id in the message is the point id
+            int pid = dbChange.getId();
             log.debug(" OPC dispatch event with ID: " + pid);
+            pointList.add(pid);
+        } else if (dbChange.getDatabase() == DBChangeMsg.CHANGE_PAO_DB) {
+            // This is for a device, need to grab all point id's related to it.
+            int paoId = dbChange.getId();
+            List<LitePoint> points = pointDao.getLitePointsByPaObjectId(paoId);
             
-            globalScheduledExecutor.execute(new Runnable() {
-                public void run() {
-                    
-                    YukonOpcItem item = getItemFromConnections(pid);
+            // Working off the basis that point delete messages will be sent.
+            // If this is a PAO delete, this query will return nothing, those deletes will come 
+            // from delete messages
+            for (LitePoint point : points) {
+                pointList.add(point.getPointID());
+            }
+        } else {
+            // Not handled
+            return;
+        }
+        
+        globalScheduledExecutor.execute(new Runnable() {
+            public void run() {
+                for(Integer pointId : pointList) {
+                    YukonOpcItem item = getItemFromConnections(pointId);
                     if (item != null) {
-                        log.debug(" Change to Point, " + pid +", involved with OPC");
+                        log.debug(" Change to Point, " + pointId +", involved with OPC");
                         //If here, we are already monitoring this point; lets remove it so it can be updated.
                         String connName = item.getServerName();
                         YukonOpcConnection conn = opcConnectionMap.get(connName);
@@ -321,22 +334,22 @@ public class OpcService implements OpcConnectionListener, DBChangeListener{
                         conn.removeItem(item);
                     }
                     
-                    //If its a delete, do not attempt to re-add it.
+                    //If its a delete, do not attempt to re-add it. This is for all points being processed.
                     if (dbChange.getTypeOfChange() != DBChangeMsg.CHANGE_TYPE_DELETE) {
                         try {
-                            FdrTranslation translation = fdrTranslationDao.getByPointIdAndType(pid, FdrInterfaceType.OPC);
+                            FdrTranslation translation = fdrTranslationDao.getByPointIdAndType(pointId, FdrInterfaceType.OPC);
                             //If found its a new one to add to the list.
                             //if not an exception will have thrown. Point could have been removed or its missing...
                             processOpcTranslation(translation);                            
                             log.debug(" translation found, new FDR translation");
                         } catch (IncorrectResultSizeDataAccessException exception) {
-                            log.error(" translation not found for ID: " + pid);
+                            log.error(" translation not found for ID: " + pointId);
                         }
                     }
                     cleanUpConnections();
                 }
-            });
-        }
+            }
+        });
     }
 	
     /* This will have to change with a different implementation of Connection. */
