@@ -5,80 +5,61 @@ table.itemPickerResultTable {
 
 table.itemPickerResultTable th {
     text-align: left;
-}
-
-.query {
-	float: left;
-}
-
-.itemPicker_commandLinks {
-	float: right;
-}
-
-.multiItemPicker_commandLinks {
-	float: right;
-	margin-right: 22px;
+    padding-top:12px;
+    padding-bottom:6px;
 }
 
 #itemPicker_resultAreaFixed {
-    height: 20em;
+    height: 26em;
 }
 
 #itemPicker_popup {
     position: absolute;
     background: white;
-    opacity: .93;
     left: 120px;
     top: 30px;
-    width: 35em;
-    height: 32em;
-    border: 3px ridge #696;
-    padding: 10px;
+    width: 32em;
+    border: 12px solid #666;
     z-index: 100;
     overflow: hidden;
-}
-
-/* the following was pulled from http://www.hedgerwow.com/360/bugs/css-select-free.html */
-/* if this needs to be reused, consider making a generic class selector in one of the common css files */
-#itemPicker_popup iframe
-{
-	display:none;/*sorry for IE5*/
-	display/**/:block;/*sorry for IE5*/
-	position:absolute;/*must have*/
-	top:0;/*must have*/
-	left:0;/*must have*/
-	z-index:-1;/*must have*/
-	filter:mask();/*must have*/
-	width:3000px;/*must have for any big value*/
-	height:3000px/*must have for any big value*/;
 }
 
 table.itemPickerResultTable tr.itemPicker_currentItemRow {
     background: yellow;
 }
 
-table#itemPicker_navTable {
-	position: absolute;
-	bottom: 0px;
-	margin-right: 10px;
-	padding-right: 10px;
-    width: 95%;
+/* TITLE TABLE (query, navigation) */
+table.itemPicker_titleTable {
+    width: 90%;
 }
-
-table#itemPicker_navTable td.left {
+table.itemPicker_titleTable td.query {
     text-align: left;
-    width: 30px;
+    width:40px;
 }
-table#itemPicker_navTable td.center {
+table.itemPicker_titleTable td.prevNavArrow {
+    width: 16px;
+    text-align: right;
+    cursor: pointer;
+}
+table.itemPicker_titleTable td.nextNavArrow {
+    width: 16px;
+    text-align: left;
+    cursor: pointer;
+}
+table.itemPicker_titleTable td.pageNum {
+    width: 100px;
     text-align: center;
 }
-table#itemPicker_navTable td.right {
+
+
+/* BUTTON TABLE (show all, select) */
+table.itemPicker_buttonTable {
+    width: 100%;
+}
+table.itemPicker_buttonTable td.left {
+    text-align: left;
+}
+table.itemPicker_buttonTable td.right {
     text-align: right;
-    width: 30px;
 }
-
-.itemPicker_selectedLink {
-    background-color: yellow;
-}
-
   

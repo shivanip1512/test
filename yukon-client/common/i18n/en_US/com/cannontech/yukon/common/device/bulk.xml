@@ -39,6 +39,7 @@
     
     <entry key="yukon.common.device.bulk.deviceSelection.selectDevices">Select By Device</entry>
     <entry key="yukon.common.device.bulk.deviceSelection.selectDevicesTitle">Select devices individually</entry>
+    <entry key="yukon.common.device.bulk.deviceSelection.selectDevicesPopupButtonText">Select Devices</entry>
     
     <entry key="yukon.common.device.bulk.deviceSelection.selectDevicesByGroup">Select By Group</entry>
     <entry key="yukon.common.device.bulk.deviceSelection.selectDevicesByGroupTitle">Select devices by Device Group</entry>
@@ -57,9 +58,10 @@
     <entry key="yukon.common.device.bulk.deviceSelection.cancel">cancel</entry>
 
     <entry key="yukon.common.device.bulk.deviceSelection.selectGroup">Select Group of Devices:</entry>
-    <entry key="yukon.common.device.bulk.deviceSelection.selectAddress">Physical address range:</entry>
-    <entry key="yukon.common.device.bulk.deviceSelection.selectDataFileType">Type of data:</entry>
-    <entry key="yukon.common.device.bulk.deviceSelection.selectDataFile">Data file:</entry>
+    <entry key="yukon.common.device.bulk.deviceSelection.selectAddressPopupTitle">Physical Address Range</entry>
+    <entry key="yukon.common.device.bulk.deviceSelection.selectDataFilePopupTitle">File Upload</entry>
+    <entry key="yukon.common.device.bulk.deviceSelection.selectDataFileType">Type of data</entry>
+    <entry key="yukon.common.device.bulk.deviceSelection.selectDataFile">Data file</entry>
 
     <entry key="yukon.common.device.bulk.deviceSelection.dataFileAddress">Physical Address (one per line)</entry>
     <entry key="yukon.common.device.bulk.deviceSelection.dataFileName">Device Name (one per line)</entry>

@@ -18,12 +18,15 @@ form {
 }
 
 div.simplePopup {
-  position: fixed;
   width: 800px;
   border: 12px solid #666;
   background-color: white;
   left: 75px;
   top: 150px;
+}
+
+div.deviceSelectionPopup {
+  width: 500px;
 }
 
 #alertSpan a {

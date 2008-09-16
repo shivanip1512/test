@@ -138,37 +138,22 @@ ItemPicker.prototype = {
 	        resultAreaFixed.appendChild(emptyResultDiv);
 	    }
 		         
-	    // create lower section
-	    var navTable = document.createElement("table");
-	    navTable.id = "itemPicker_navTable";
-	    resultArea.appendChild(navTable);
-	    var navTableBody = document.createElement("tbody");
-	    navTable.appendChild(navTableBody);
-	    var row1 = document.createElement("tr");
-	    navTableBody.appendChild(row1);
-	    var leftCell = document.createElement("td");
-	    leftCell.className = "left";
-	    row1.appendChild(leftCell);
-	    var centerCell = document.createElement("td");
-	    //centerCell.setAttribute("class", "center");
-	    centerCell.className = "center";
-	    row1.appendChild(centerCell);
-	    var rightCell = document.createElement("td");
-	    rightCell.className = "right";
-	    row1.appendChild(rightCell);
-	    
+	    // navigation
+        var prevLink = "<img src=\"/WebConfig/yukon/Icons/resultset_previous_disabled.gif\">";
 	    if (json.startIndex > 0) {
-	        // need previous button
-	        leftCell.innerHTML = "<a href=\"javascript:" + this.pickerId + ".previous(" + json.previousIndex + ")\">Previous</a>";
-	    }
+	        prevLink = "<img src=\"/WebConfig/yukon/Icons/resultset_previous.gif\" onclick=\"javascript:" + this.pickerId + ".previous(" + json.previousIndex + ")\">";
+        }
+        $('itemPicker_popup_titleBar_prevLink').innerHTML = prevLink;
 	    
+        var nextLink = "<img src=\"/WebConfig/yukon/Icons/resultset_next_disabled.gif\">";
 	    if (json.endIndex < json.hitCount) {
-	        // need next button
-	        rightCell.innerHTML = "<a href=\"javascript:" + this.pickerId + ".next(" + json.nextIndex + ")\">Next</a>";
-	    }
+            nextLink = "<img src=\"/WebConfig/yukon/Icons/resultset_next.gif\" onclick=\"javascript:" + this.pickerId + ".next(" + json.nextIndex + ")\">";
+        }
+        $('itemPicker_popup_titleBar_nextLink').innerHTML = nextLink;
 	    
-	    centerCell.innerHTML = (json.startIndex + 1) + " - " + json.endIndex + " of " + json.hitCount;
-	    
+	    var pageNum = (json.startIndex + 1) + " - " + json.endIndex + " of " + json.hitCount;
+        $('itemPicker_popup_titleBar_pageNum').innerHTML = pageNum;
+        
 	    return resultArea;
 	},
 	
@@ -198,13 +183,13 @@ ItemPicker.prototype = {
 	        this.doPartialSearch(0);
 	    } else {
 	        this.inSearch = false;
-	        $('itemPicker_indicator').style.visibility = 'hidden';
+	        $('itemPicker_indicator').hide();
 	    }
 	},
 	
 	ajaxError: function(transport, json) {
 	    this.inSearch = false;
-	    $('itemPicker_indicator').style.visibility = 'hidden';
+	    $('itemPicker_indicator').hide();
 	    $("itemPicker_results").innerHTML = "";
 	    errorHolder = document.createElement("div");
 	    errorHolder.id = "itemPicker_errorHolder";
@@ -213,26 +198,22 @@ ItemPicker.prototype = {
 	},
 	
 	doKeyUp: function() {
-	    $('showAllLink').removeClassName('itemPicker_selectedLink');
-	    $('sameParentItemLink').removeClassName('itemPicker_selectedLink');
 	    var pickerThis = this;
 	    var timerFunction = function() {
 	        var ss = escape($('itemPicker_query').value);
 	        if (!this.inSearch && this.currentSearch != ss) {
 	            pickerThis.doPartialSearch(0);
 	        } else {
-	            $('itemPicker_indicator').style.visibility = 'hidden';
+	            $('itemPicker_indicator').hide();
 	        }
 	    };
 	    var quietDelay = 300;
 	    setTimeout(timerFunction, quietDelay);
-	    $('itemPicker_indicator').style.visibility = 'visible';
+	    $('itemPicker_indicator').show();
 	},
 	
 	showAll: function() {
-	    $('itemPicker_indicator').style.visibility = 'visible';
-	    $('showAllLink').addClassName('itemPicker_selectedLink');
-	    $('sameParentItemLink').removeClassName('itemPicker_selectedLink');
+	    $('itemPicker_indicator').show();
 	    $('itemPicker_query').value = '';
 	    this.doPartialSearch();
 	},
@@ -255,19 +236,17 @@ ItemPicker.prototype = {
 	},
 	
 	previous: function(index) {
-	    $('itemPicker_indicator').style.visibility = 'visible';
+	    $('itemPicker_indicator').show();
 	    this.lastMethod(index);
 	},
 	
 	next: function(index) {
-	    $('itemPicker_indicator').style.visibility = 'visible';
+	    $('itemPicker_indicator').show();
 	    this.lastMethod(index);
 	},
 	
 	sameParentItem: function() {
-	    $('itemPicker_indicator').style.visibility = 'visible';
-	    $('sameParentItemLink').addClassName('itemPicker_selectedLink');
-	    $('showAllLink').removeClassName('itemPicker_selectedLink');
+	    $('itemPicker_indicator').show();
 	    $('itemPicker_query').value = '';
 	    this.doSameItemSearch(0);
 	},

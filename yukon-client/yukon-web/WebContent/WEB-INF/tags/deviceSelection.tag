@@ -3,6 +3,7 @@
 <%@ attribute name="groupDataJson" required="true" type="java.lang.String"%>
 <%@ attribute name="pickerConstraint" required="false" type="java.lang.String"%>
 
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="ext" tagdir="/WEB-INF/tags/ext" %>
@@ -37,10 +38,10 @@
             return true;
         }
         
-        function updateFileNote(){
+        function updateFileNote(id){
         
-            var selection = $F('uploadType');
-            var fileNote = $('fileNote');
+            var selection = $F(id + '_uploadType');
+            var fileNote = $(id + '_fileNote');
             
             if(selection == 'ADDRESS') {
                 fileNote.update('Note: The file must contain 1 valid Physical Address per line.');
@@ -55,8 +56,26 @@
             }
         }
         
-        function divToggle(theDiv) {
-            $(theDiv).toggle();
+        function toggleByAddrPopup(id) {
+            $(id + '_startRange').value = '';;
+            $(id + '_endRange').value = '';
+            togglePopup(id);
+            if ($(id).visible()) { 
+                $(id + '_startRange').focus();
+            }
+        }
+        
+        function toggleByFileUploadPopup(id) {
+            togglePopup(id);
+            if ($(id).visible()) {
+                $(id + '_uploadType').options[0].selected = true;
+                updateFileNote(id);
+                $(id + '_uploadType').focus();
+            }
+        }
+        
+        function togglePopup(id) {
+            $(id).toggle();
         }
         
     </script>
@@ -136,32 +155,36 @@
     <%-- ADDRESS RANGE --%>
     <tr>
         <td>
+
+            <c:set var="byAddrPopupId" value="byAddrPopup" />
+            <cti:msg var="selectAddressPopupTitle" key="yukon.common.device.bulk.deviceSelection.selectAddressPopupTitle" />
             <cti:msg var="selectAddressLabel" key="yukon.common.device.bulk.deviceSelection.selectDevicesByAddress" />
-            <input type="button" id="addressButton" value="${selectAddressLabel}" onclick="javascript:divToggle('selectDevicesByAddress');" style="width:140px;"/>
+
+            <input type="button" id="addressButton" value="${selectAddressLabel}" onclick="toggleByAddrPopup('${byAddrPopupId}');" style="width:140px;"/>
             
-            <div id="selectDevicesByAddress" class="popUpDiv" style="width: 350px; display: none; background-color: white; border: 1px solid black;padding: 10px 10px;">
-                <div style="width: 100%; text-align: right;margin-bottom: 10px;">
-                    <a href="javascript:divToggle('selectDevicesByAddress');">${cancel}</a>
-                </div>
-                <div style="font-weight: bold;margin-bottom: 5px;">
-                    <cti:msg key="yukon.common.device.bulk.deviceSelection.selectAddress" />
-                </div>
+            <tags:simplePopup id="${byAddrPopupId}" title="${selectAddressPopupTitle}" styleClass="deviceSelectionPopup"  onClose="toggleByAddrPopup('${byAddrPopupId}');">
+                
                 <form id="addByAddressForm" method="get" action="${action}">
                 
                     <input type="hidden" name="collectionType" value="addressRange" />
                     
                     <tags:nameValueContainer>
                         <tags:nameValue name="Start of Range">
-                            <input type="text" id="startRange" name="addressRange.start" />
+                            <input type="text" id="${byAddrPopupId}_startRange" name="addressRange.start" />
                         </tags:nameValue>
                         <tags:nameValue name="End of Range">
-                            <input type="text" id="endRange" name="addressRange.end" />
+                            <input type="text" id="${byAddrPopupId}_endRange" name="addressRange.end" />
                         </tags:nameValue>
                     </tags:nameValueContainer>
-                    <input type="submit" name="addressSubmit" value="Select Devices" onclick="return selectDevicesByAddress();" />
+                    
+                    <br>
+                    <cti:msg var="selectDevicesPopupButtonText" key="yukon.common.device.bulk.deviceSelection.selectDevicesPopupButtonText" />
+                    <tags:slowInput myFormId="addByAddressForm" labelBusy="${selectDevicesPopupButtonText}" label="${selectDevicesPopupButtonText}" />
                     <tags:mapToHiddenInputs values="${extraInputs}"/>
-                </form> 
-            </div>
+                
+                </form>
+                
+            </tags:simplePopup>
         
         </td>
         
@@ -174,45 +197,61 @@
     <%-- FILE UPLOAD --%>
     <tr>
         <td>
+            
+            <c:set var="byFileUploadId" value="byFileUpload" />
+            <cti:msg var="selectDataFilePopupTitle" key="yukon.common.device.bulk.deviceSelection.selectDataFilePopupTitle" />
             <cti:msg var="selectFileLabel" key="yukon.common.device.bulk.deviceSelection.selectDevicesByFile" />
-            <input type="button" id="fileButton" value="${selectFileLabel}" onclick="javascript:divToggle('selectDevicesByFile');" style="width:140px;"/>
+            
+            <input type="button" id="fileButton" value="${selectFileLabel}" onclick="toggleByFileUploadPopup('${byFileUploadId}');" style="width:140px;"/>
         
-            <div id="selectDevicesByFile" class="popUpDiv" style="width: 350px; display: none; background-color: white; border: 1px solid black;padding: 10px 10px;">
-                <div style="width: 100%; text-align: right;margin-bottom: 10px;">
-                    <a href="javascript:divToggle('selectDevicesByFile');">${cancel}</a>
-                </div>
-               <form method="post" action="${action}" enctype="multipart/form-data">
-               
+            <tags:simplePopup id="${byFileUploadId}" title="${selectDataFilePopupTitle}" styleClass="deviceSelectionPopup" onClose="toggleByFileUploadPopup('${byFileUploadId}');">
+                
+                <form id="addByFileUploadForm" method="post" action="${action}" enctype="multipart/form-data">
+                
                     <input type="hidden" name="collectionType" value="fileUpload" />
-                    <cti:msg key="yukon.common.device.bulk.deviceSelection.selectDataFileType" />
-                    <select id="uploadType" name="fileUpload.uploadType" onchange="updateFileNote()">
-                        <option value="ADDRESS">
-                            <cti:msg key="yukon.common.device.bulk.deviceSelection.dataFileAddress" />
-                        </option>
-                        <option value="PAONAME">
-                            <cti:msg key="yukon.common.device.bulk.deviceSelection.dataFileName" />
-                        </option>
-                        <option value="METERNUMBER">
-                            <cti:msg key="yukon.common.device.bulk.deviceSelection.dataFileMeterNumber" />
-                        </option>
-                        <option value="DEVICEID">
-                            <cti:msg key="yukon.common.device.bulk.deviceSelection.dataFileDeviceId" />
-                        </option>
-                        <option value="BULK">
-                            <cti:msg key="yukon.common.device.bulk.deviceSelection.dataFileBulk" />
-                        </option>
-                    </select>
                     
-                    <br/><br/>
+                    <cti:msg var="typeLabel" key="yukon.common.device.bulk.deviceSelection.selectDataFileType" />
+                    <cti:msg var="dataFileLabel" key="yukon.common.device.bulk.deviceSelection.selectDataFile" />
                     
-                    <cti:msg key="yukon.common.device.bulk.deviceSelection.selectDataFile" />
-                    <input type="file" id="fileUpload.dataFile" name="fileUpload.dataFile" size="40" /><br/>
-                    <span id="fileNote" style="font-size: .7em; color: blue;">Note: The file must contain 1 valid Physical Address per line.</span>
-                    <br/><br/>
-                    <input type="submit" name="fileSubmit" value="Select Devices" />
+                    <tags:nameValueContainer>
+                    
+                        <tags:nameValue name="${typeLabel}">
+                            <select id="${byFileUploadId}_uploadType" name="fileUpload.uploadType" onchange="updateFileNote('${byFileUploadId}')">
+                                <option value="ADDRESS">
+                                    <cti:msg key="yukon.common.device.bulk.deviceSelection.dataFileAddress" />
+                                </option>
+                                <option value="PAONAME">
+                                    <cti:msg key="yukon.common.device.bulk.deviceSelection.dataFileName" />
+                                </option>
+                                <option value="METERNUMBER">
+                                    <cti:msg key="yukon.common.device.bulk.deviceSelection.dataFileMeterNumber" />
+                                </option>
+                                <option value="DEVICEID">
+                                    <cti:msg key="yukon.common.device.bulk.deviceSelection.dataFileDeviceId" />
+                                </option>
+                                <option value="BULK">
+                                    <cti:msg key="yukon.common.device.bulk.deviceSelection.dataFileBulk" />
+                                </option>
+                            </select>
+                        </tags:nameValue>
+                        
+                        <tags:nameValue name="${dataFileLabel}">
+                            <input type="file" id="fileUpload.dataFile" name="fileUpload.dataFile" size="40" />
+                            <br>
+                            <span id="${byFileUploadId}_fileNote" style="font-size: .7em; color: blue;">Note: The file must contain 1 valid Physical Address per line.</span>
+                        </tags:nameValue>
+                        
+                    </tags:nameValueContainer>
+                    
+                    <br>
+                    <cti:msg var="selectDevicesPopupButtonText" key="yukon.common.device.bulk.deviceSelection.selectDevicesPopupButtonText" />
+                    <tags:slowInput myFormId="addByFileUploadForm" labelBusy="${selectDevicesPopupButtonText}" label="${selectDevicesPopupButtonText}" />
                     <tags:mapToHiddenInputs values="${extraInputs}"/>
+                    
+                
                 </form>
-            </div>
+                
+            </tags:simplePopup>
         
         </td>
         
