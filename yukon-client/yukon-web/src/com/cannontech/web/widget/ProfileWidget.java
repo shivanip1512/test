@@ -360,7 +360,7 @@ public class ProfileWidget extends WidgetControllerBase {
                 Map<String, String> optionalAttributeDefaults = new HashMap<String, String>();
                 optionalAttributeDefaults.put("module", "amr");
                 optionalAttributeDefaults.put("showMenu", "true");
-                optionalAttributeDefaults.put("menuSelection", "deviceselection");
+                optionalAttributeDefaults.put("menuSelection", "meters");
                 optionalAttributeDefaults.put("viewJsp", "MENU");
                 
                 String reportHtmlUrl = simpleReportService.getReportUrl(request, "rawPointHistoryDefinition", inputValues, optionalAttributeDefaults, "htmlView", true);
@@ -615,7 +615,7 @@ public class ProfileWidget extends WidgetControllerBase {
         propertiesMap.put("def", "dailyUsageDefinition");
         propertiesMap.put("viewJsp", "MENU");
         propertiesMap.put("module", "amr");
-        propertiesMap.put("menuSelection", "deviceselection");
+        propertiesMap.put("menuSelection", "meters");
         propertiesMap.put("showMenu", "true");
         propertiesMap.put("pointId", pointId.toString());
         propertiesMap.put("startDate", reportStartDateStr);

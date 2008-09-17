@@ -1,4 +1,4 @@
-<%@ attribute name="orderBy" required="true" type="com.cannontech.amr.csr.model.OrderBy"%>
+<%@ attribute name="orderBy" required="true" type="com.cannontech.amr.meter.search.model.OrderBy"%>
 <%@ attribute name="startIndex" required="true" type="java.lang.String"%>
 <%@ attribute name="count" required="true" type="java.lang.String"%>
 <%@ attribute name="selected" required="false" type="java.lang.Boolean"%>
@@ -6,7 +6,7 @@
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-<c:url  var="url" scope="page" value="/spring/csr/search">
+<c:url  var="url" scope="page" value="/spring/meter/search">
 	<c:param name="startIndex" value="${startIndex}" />
 	<c:param name="count" value="${count}" />
 	<c:param name="orderBy" value="${orderBy.field}" />

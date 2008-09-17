@@ -3,11 +3,13 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
     
 <cti:standardPage title="Manual Commander Page" module="amr">
-	<cti:standardMenu menuSelection="deviceselection" />
+	<cti:standardMenu menuSelection="meters" />
 	<cti:breadCrumbs>
 	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
-	    <cti:crumbLink url="/spring/csr/search" title="Device Selection"  />
-	    <cti:crumbLink url="/spring/csr/home?deviceId=${deviceId}" title="Device Detail"  />
+	    <cti:crumbLink url="/spring/meter/search" title="Meters"  />
+	    <cti:crumbLink url="/spring/meter/home?deviceId=${deviceId}">
+            <cti:deviceName deviceId="${deviceId}"></cti:deviceName>
+        </cti:crumbLink>
 	    &gt; Manual Commander
 	</cti:breadCrumbs>
 

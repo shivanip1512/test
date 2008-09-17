@@ -13,12 +13,12 @@ import org.springframework.context.MessageSourceResolvable;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 
-import com.cannontech.amr.csr.dao.CsrSearchDao;
-import com.cannontech.amr.csr.model.CsrSearchField;
-import com.cannontech.amr.csr.model.ExtendedMeter;
-import com.cannontech.amr.csr.model.FilterBy;
-import com.cannontech.amr.csr.model.FilterByGenerator;
-import com.cannontech.amr.csr.model.OrderBy;
+import com.cannontech.amr.meter.search.dao.MeterSearchDao;
+import com.cannontech.amr.meter.search.model.MeterSearchField;
+import com.cannontech.amr.meter.search.model.ExtendedMeter;
+import com.cannontech.amr.meter.search.model.FilterBy;
+import com.cannontech.amr.meter.search.model.FilterByGenerator;
+import com.cannontech.amr.meter.search.model.OrderBy;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.collection.RangeBasedDeviceCollection;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
@@ -29,11 +29,11 @@ import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 
 public class DeviceFilterCollectionProducer extends DeviceCollectionProducerBase implements DeviceFilterCollectionHelper {
-    private CsrSearchDao csrSearchDao;
+    private MeterSearchDao meterSearchDao;
     
     @Autowired
-    public void setCsrSearchDao(CsrSearchDao csrSearchDao) {
-        this.csrSearchDao = csrSearchDao;
+    public void setMeterSearchDao(MeterSearchDao meterSearchDao) {
+        this.meterSearchDao = meterSearchDao;
     }
 
     @Override
@@ -46,7 +46,7 @@ public class DeviceFilterCollectionProducer extends DeviceCollectionProducerBase
         throws ServletRequestBindingException {
         String orderByField = ServletRequestUtils.getStringParameter(request,
                                                                      getParameterName("orderBy"),
-                                                                     CsrSearchField.PAONAME.toString());
+                                                                     MeterSearchField.PAONAME.toString());
         boolean orderByDescending = ServletRequestUtils.getBooleanParameter(request,
                                                                             getParameterName("descending"),
                                                                             false);
@@ -94,7 +94,7 @@ public class DeviceFilterCollectionProducer extends DeviceCollectionProducerBase
                 if (filterSize > 0) {
                     List<String> filterByString = new ArrayList<String>(filterSize);
                     for (FilterBy filterBy : filterBys) {
-                        filterByString .add(filterBy.toCsrString());
+                        filterByString .add(filterBy.toSearchString());
                     }
                     String searchDescription = StringUtils.join(filterByString, " and ");
                     return new YukonMessageSourceResolvable("yukon.common.device.bulk.bulkAction.collection.deviceFilter", searchDescription);
@@ -106,7 +106,7 @@ public class DeviceFilterCollectionProducer extends DeviceCollectionProducerBase
 
             @Override
             public List<YukonDevice> getDevices(int start, int size) {
-                SearchResult<ExtendedMeter> searchResult = csrSearchDao.search(filterBys, orderBy, start, size);
+                SearchResult<ExtendedMeter> searchResult = meterSearchDao.search(filterBys, orderBy, start, size);
                 List<ExtendedMeter> resultList = searchResult.getResultList();
                 ObjectMapper<ExtendedMeter, YukonDevice> mapper = new ObjectMapper<ExtendedMeter, YukonDevice>() {
                     public YukonDevice map(ExtendedMeter from) throws ObjectMappingException {

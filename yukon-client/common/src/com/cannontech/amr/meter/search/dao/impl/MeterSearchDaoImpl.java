@@ -1,4 +1,4 @@
-package com.cannontech.amr.csr.dao.impl;
+package com.cannontech.amr.meter.search.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -11,13 +11,13 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
-import com.cannontech.amr.csr.dao.CsrSearchDao;
-import com.cannontech.amr.csr.model.ExtendedMeter;
-import com.cannontech.amr.csr.model.FilterBy;
-import com.cannontech.amr.csr.model.OrderBy;
+import com.cannontech.amr.meter.search.dao.MeterSearchDao;
+import com.cannontech.amr.meter.search.model.ExtendedMeter;
+import com.cannontech.amr.meter.search.model.FilterBy;
+import com.cannontech.amr.meter.search.model.OrderBy;
 import com.cannontech.common.search.SearchResult;
 
-public class CsrSearchDaoImpl implements CsrSearchDao {
+public class MeterSearchDaoImpl implements MeterSearchDao {
 
     private SimpleJdbcTemplate jdbcTemplate = null;
     private ParameterizedRowMapper<ExtendedMeter> meterRowMapper;

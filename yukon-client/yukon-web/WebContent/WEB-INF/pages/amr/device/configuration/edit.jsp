@@ -4,7 +4,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage title="Device Configuration Page" module="amr">
-	<cti:standardMenu menuSelection="deviceselection"/>
+	<cti:standardMenu/>
 	<cti:breadCrumbs>
 		<cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
 	    <cti:crumbLink url="/spring/deviceConfiguration?home" title="Device Configuration Home"  />

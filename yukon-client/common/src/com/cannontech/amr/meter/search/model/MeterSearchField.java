@@ -1,9 +1,9 @@
-package com.cannontech.amr.csr.model;
+package com.cannontech.amr.meter.search.model;
 
 /**
- * Enumeration of the fields for csr pao search
+ * Enumeration of the fields for meter search
  */
-public enum CsrSearchField {
+public enum MeterSearchField {
 
     METERNUMBER("Meter Number"), 
     PAONAME("Device Name") {
@@ -26,15 +26,15 @@ public enum CsrSearchField {
         }
     };
 
-    private String csrString = null;
+    private String meterSearchString = null;
 
     // Constructor
-    private CsrSearchField(String csrString) {
-        this.csrString = csrString;
+    private MeterSearchField(String meterSearchString) {
+        this.meterSearchString = meterSearchString;
     }
 
     /**
-     * Method to get the name of the query field for this CsrSearchField
+     * Method to get the name of the query field for this MeterSearchField
      * @return The name of the table column
      */
     public String getSearchQueryField() {
@@ -42,16 +42,16 @@ public enum CsrSearchField {
     }
 
     /**
-     * Method to get the csr friendly name for this CsrSearchField 
+     * Method to get the meter search friendly name for this MeterSearchField 
      * @return The name
      */
-    public String getCsrString() {
-        return csrString;
+    public String getMeterSearchString() {
+        return meterSearchString;
     }
 
     
     /**
-     * Method to get the toString() value for this CsrSearchField (neccessary for JSP EL) 
+     * Method to get the toString() value for this MeterSearchField (neccessary for JSP EL) 
      * @return toString() value
      */
     public String getName() {

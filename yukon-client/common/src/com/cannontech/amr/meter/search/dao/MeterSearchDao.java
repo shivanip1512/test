@@ -1,16 +1,16 @@
-package com.cannontech.amr.csr.service;
+package com.cannontech.amr.meter.search.dao;
 
 import java.util.List;
 
-import com.cannontech.amr.csr.model.FilterBy;
-import com.cannontech.amr.csr.model.OrderBy;
-import com.cannontech.amr.csr.model.ExtendedMeter;
+import com.cannontech.amr.meter.search.model.ExtendedMeter;
+import com.cannontech.amr.meter.search.model.FilterBy;
+import com.cannontech.amr.meter.search.model.OrderBy;
 import com.cannontech.common.search.SearchResult;
 
 /**
- * Service class for csr
+ * Data Access Object for meter search data 
  */
-public interface CsrService {
+public interface MeterSearchDao {
 
     /**
      * Method used to search for a list of paos

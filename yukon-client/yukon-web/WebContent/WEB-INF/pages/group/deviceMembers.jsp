@@ -44,11 +44,11 @@
 				<c:forEach var="device" items="${deviceList}">
 					<tr class="<tags:alternateRow odd="" even="altRow"/>">
 						<td style="border: none;">
-                           <c:url value="/spring/csr/home" var="csrHomeUrl">
+                           <c:url value="/spring/meter/home" var="meterHomeUrl">
                              <c:param name="deviceId" value="${device.deviceId}"/>
                            </c:url>
             
-							<a href="${csrHomeUrl}"><cti:deviceName device="${device}" /></a>
+							<a href="${meterHomeUrl}"><cti:deviceName device="${device}" /></a>
 						</td>
                         
                         <c:if test="${hasModifyRoleProperty}">

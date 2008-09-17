@@ -8,7 +8,7 @@
 </c:forEach>
 
 
-<form action="/spring/csr/moveOutRequest?deviceId=${meter.deviceId}" id="moveOutForm" method="post">
+<form action="/spring/meter/moveOutRequest?deviceId=${meter.deviceId}" id="moveOutForm" method="post">
 
     <input name="deviceId" type="hidden" value="${meter.deviceId}" />
 

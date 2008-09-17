@@ -50,10 +50,10 @@ public class AMRReportsController extends MultiActionController  {
      * @return
      * @throws Exception
      */
-    public ModelAndView csrArchivedDataReport(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public ModelAndView archivedDataReport(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
         // mav
-        ModelAndView mav = new ModelAndView("reports/htmlCSRArchivedDataReportView.jsp");
+        ModelAndView mav = new ModelAndView("reports/htmlArchivedDataReportView.jsp");
         
         setupArchivedDataReportMav(request, mav);
         

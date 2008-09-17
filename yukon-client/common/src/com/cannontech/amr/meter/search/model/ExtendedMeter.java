@@ -1,9 +1,9 @@
-package com.cannontech.amr.csr.model;
+package com.cannontech.amr.meter.search.model;
 
 import com.cannontech.amr.meter.model.Meter;
 
 /**
- * Data Transfer Object class for csr pao searches
+ * Data Transfer Object class for meter searches
  */
 public class ExtendedMeter extends Meter {
 

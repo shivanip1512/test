@@ -2,17 +2,18 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <c:url var="moveInFormUrl"
-    value="/WEB-INF/pages/amr/csr/moveInForm.jsp" />
+    value="/WEB-INF/pages/amr/meter/moveInForm.jsp" />
 <c:url var="moveInResultsUrl"
-    value="/WEB-INF/pages/amr/csr/moveInResults.jsp" />
+    value="/WEB-INF/pages/amr/meter/moveInResults.jsp" />
 <cti:standardPage title="Move In" module="amr">
-    <cti:standardMenu menuSelection="deviceselection" />
+    <cti:standardMenu menuSelection="meters" />
     <cti:breadCrumbs>
         <cti:crumbLink url="/operator/Operations.jsp"
             title="Operations Home" />
-        <cti:crumbLink url="/spring/csr/search" title="Device Selection" />
-        <cti:crumbLink url="/spring/csr/home?deviceId=${meter.deviceId}"
-            title="Device Detail" />
+        <cti:crumbLink url="/spring/meter/search" title="Meters" />
+        <cti:crumbLink url="/spring/meter/home?deviceId=${meter.deviceId}">
+            <cti:deviceName deviceId="${deviceId}"></cti:deviceName>
+        </cti:crumbLink>
         &gt; Move In
     </cti:breadCrumbs>
 

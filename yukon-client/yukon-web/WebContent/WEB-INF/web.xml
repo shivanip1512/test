@@ -329,7 +329,7 @@
 	</servlet>
 	
 	<servlet>
-		<servlet-name>csr</servlet-name>
+		<servlet-name>meter</servlet-name>
 		<servlet-class>
 			com.cannontech.web.spring.CannonDispatcherServlet
 		</servlet-class>
@@ -864,8 +864,8 @@
 	</servlet-mapping>
 	
 	<servlet-mapping>
-		<servlet-name>csr</servlet-name>
-		<url-pattern>/spring/csr/*</url-pattern>
+		<servlet-name>meter</servlet-name>
+		<url-pattern>/spring/meter/*</url-pattern>
 	</servlet-mapping>
 
 	<servlet-mapping>

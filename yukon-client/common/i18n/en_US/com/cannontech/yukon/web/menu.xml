@@ -81,7 +81,7 @@
      configured below) passed in. -->
      
 <!-- AMR Module -->
-<entry key="yukon.web.menu.config.amr.deviceselection">Device Selection</entry>
+<entry key="yukon.web.menu.config.amr.meters">Meters</entry>
 <entry key="yukon.web.menu.config.amr.billing">Billing</entry>
 <entry key="yukon.web.menu.config.amr.billing.generation">Billing Generation</entry>
 <entry key="yukon.web.menu.config.amr.billing.setup">Billing Setup</entry>

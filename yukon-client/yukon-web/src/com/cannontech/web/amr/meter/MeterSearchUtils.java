@@ -1,4 +1,4 @@
-package com.cannontech.web.amr.csr;
+package com.cannontech.web.amr.meter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,9 +8,9 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.ServletRequestUtils;
 
-import com.cannontech.amr.csr.model.FilterBy;
+import com.cannontech.amr.meter.search.model.FilterBy;
 
-public class CsrUtils {
+public class MeterSearchUtils {
 
     public static List<FilterBy> getQueryFilter(HttpServletRequest request, List<FilterBy> filterByList) {
         
@@ -30,9 +30,8 @@ public class CsrUtils {
         
         List<String> filterByStringList = new ArrayList<String>();
         for (FilterBy filterBy : queryFilter) {
-            filterByStringList.add(filterBy.toCsrString());
+            filterByStringList.add(filterBy.toSearchString());
         }
         return StringUtils.join(filterByStringList, " and ");
     }
-    
 }

@@ -20,7 +20,7 @@
                 <prop key="/moveOut">MoveInMoveOutController</prop>
                 <prop key="/moveOutRequest">MoveInMoveOutController</prop>
                 <prop key="/highBill/*">HighBillController</prop>
-                <prop key="/*">CsrController</prop>
+                <prop key="/*">MeterController</prop>
             </props>
         </property>
     </bean>
@@ -28,10 +28,10 @@
     <bean id="viewResolver"
       class="org.springframework.web.servlet.view.UrlBasedViewResolver">
         <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
-        <property name="prefix" value="/WEB-INF/pages/amr/csr/"/>
+        <property name="prefix" value="/WEB-INF/pages/amr/meter/"/>
     </bean>
     
-	<bean id="CsrController" class="com.cannontech.web.amr.csr.CsrController" >
+	<bean id="MeterController" class="com.cannontech.web.amr.meter.MeterController" >
         <property name="cacheSeconds">
             <value type="int">0</value>
         </property>
@@ -50,7 +50,7 @@
 		<property name="deviceDao" ref="deviceDao"/>
 		<property name="authDao" ref="authDao"/>
 		<property name="roleDao" ref="roleDao"/>
-		<property name="csrService" ref="csrService" />
+		<property name="meterSearchService" ref="meterSearchService"/>
 		<property name="attributeService" ref="attributeService" />
 		<property name="filterCollectionHelper" ref="deviceFilterCollectionProducer" />
     </bean>
@@ -80,5 +80,4 @@
         <property name="rphDao" ref="rphDao"/>
         <property name="templateProcessorFactory" ref="templateProcessorFactory"/>
     </bean>    
-    
 </beans>

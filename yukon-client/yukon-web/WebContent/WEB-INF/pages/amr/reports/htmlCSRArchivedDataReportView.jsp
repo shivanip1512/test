@@ -6,12 +6,14 @@
 <%-- MODULE, MENU --%>
 <cti:standardPage title="${reportTitle}" module="amr">
 
-    <cti:standardMenu menuSelection="deviceselection" />
+    <cti:standardMenu menuSelection="meters" />
 
     <cti:breadCrumbs>
     	<cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-    	<cti:crumbLink url="/spring/csr/search" title="Device Selection" />
-        <cti:crumbLink url="/spring/csr/home?deviceId=${deviceId}"><cti:deviceName deviceId="${deviceId}"></cti:deviceName></cti:crumbLink>
+    	<cti:crumbLink url="/spring/meter/search" title="Meters" />
+        <cti:crumbLink url="/spring/meter/home?deviceId=${deviceId}">
+            <cti:deviceName deviceId="${deviceId}"></cti:deviceName>
+        </cti:crumbLink>
         <cti:crumbLink>${reportTitle}</cti:crumbLink>
     </cti:breadCrumbs>
 

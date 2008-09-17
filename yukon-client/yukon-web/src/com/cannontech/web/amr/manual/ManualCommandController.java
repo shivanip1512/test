@@ -22,7 +22,7 @@ import com.cannontech.util.ServletUtil;
 import com.cannontech.yc.bean.YCBean;
 
 /**
- * Spring controller class for csr
+ * Spring controller class
  */
 public class ManualCommandController extends MultiActionController {
 

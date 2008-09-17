@@ -112,7 +112,7 @@
         </cti:checkRole>
         <cti:checkMultiRole roles="operator.MeteringRole.ROLEID,application.BillingRole.ROLEID,SchedulerRole.ROLEID,CommanderRole.ROLEID">
 			<tags:sectionLink>
-    	    	<a href="<c:url value="/spring/csr/search"/>">Metering</a>
+    	    	<a href="<c:url value="/spring/meter/search"/>">Metering</a>
 	        </tags:sectionLink>
         </cti:checkMultiRole>
         

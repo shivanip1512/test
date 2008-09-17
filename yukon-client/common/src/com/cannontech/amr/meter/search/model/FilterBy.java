@@ -1,27 +1,27 @@
-package com.cannontech.amr.csr.model;
+package com.cannontech.amr.meter.search.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 /**
- * Class used to filter a csr search
+ * Class used to filter a meter search
  */
 public class FilterBy {
 
     private String name = null;
     private String filterValue = null;
-    private List<CsrSearchField> fieldList = new ArrayList<CsrSearchField>();
+    private List<MeterSearchField> fieldList = new ArrayList<MeterSearchField>();
 
     public FilterBy() {
     }
 
-    public FilterBy(String name, List<CsrSearchField> fieldList) {
+    public FilterBy(String name, List<MeterSearchField> fieldList) {
         this.name = name;
         this.fieldList = fieldList;
     }
 
-    public FilterBy(String name, CsrSearchField... fieldList) {
+    public FilterBy(String name, MeterSearchField... fieldList) {
         this.name = name;
         this.fieldList = Arrays.asList(fieldList);
     }
@@ -42,15 +42,15 @@ public class FilterBy {
         this.filterValue = filterValue;
     }
 
-    public List<CsrSearchField> getFieldList() {
+    public List<MeterSearchField> getFieldList() {
         return fieldList;
     }
 
-    public void setFieldList(List<CsrSearchField> fieldList) {
+    public void setFieldList(List<MeterSearchField> fieldList) {
         this.fieldList = fieldList;
     }
 
-    public void addFilterField(CsrSearchField field) {
+    public void addFilterField(MeterSearchField field) {
         this.fieldList.add(field);
     }
 
@@ -66,7 +66,7 @@ public class FilterBy {
             sb.append(" (");
         }
         boolean first = true;
-        for (CsrSearchField field : fieldList) {
+        for (MeterSearchField field : fieldList) {
 
             if (!first) {
                 sb.append(" OR ");
@@ -84,22 +84,22 @@ public class FilterBy {
     }
 
     /**
-     * Method to return a csr friendly string representation of this FilterBy
-     * @return Csr friendly string
+     * Method to return a meter search friendly string representation of this FilterBy
+     * @return Meter Search friendly string
      */
-    public String toCsrString() {
+    public String toSearchString() {
 
         StringBuffer sb = new StringBuffer();
 
         if (fieldList.size() == 1) {
-            return fieldList.get(0).getCsrString() + " starts with '" + filterValue + "'";
+            return fieldList.get(0).getMeterSearchString() + " starts with '" + filterValue + "'";
         }
 
         if (fieldList.size() > 1) {
             sb.append(" (");
         }
         boolean first = true;
-        for (CsrSearchField field : fieldList) {
+        for (MeterSearchField field : fieldList) {
 
             if (!first) {
                 sb.append(" OR ");
@@ -107,7 +107,7 @@ public class FilterBy {
                 first = false;
             }
 
-            sb.append(" " + field.getCsrString() + " starts with '" + filterValue + "' ");
+            sb.append(" " + field.getMeterSearchString() + " starts with '" + filterValue + "' ");
         }
         if (fieldList.size() > 1) {
             sb.append(") ");

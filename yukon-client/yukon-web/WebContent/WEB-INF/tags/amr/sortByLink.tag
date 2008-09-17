@@ -1,12 +1,12 @@
-<%@ attribute name="field" required="true" type="com.cannontech.amr.csr.model.CsrSearchField"%>
+<%@ attribute name="field" required="true" type="com.cannontech.amr.meter.search.model.MeterSearchField"%>
 <%@ attribute name="results" required="true" type="com.cannontech.common.search.SearchResult"%>
-<%@ attribute name="orderBy" required="true" type="com.cannontech.amr.csr.model.OrderBy"%>
+<%@ attribute name="orderBy" required="true" type="com.cannontech.amr.meter.search.model.OrderBy"%>
 <%@ attribute name="filterByList" required="false" type="java.util.List"%>
 
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-<c:url  var="url" scope="page" value="/spring/csr/search">
+<c:url  var="url" scope="page" value="/spring/meter/search">
 	<c:param name="startIndex" value="${results.startIndex}" />
 	<c:param name="count" value="${results.count}" />
 	<c:param name="orderBy" value="${field.name}" />

@@ -65,7 +65,7 @@
         </option>
 
         <option id="metering">
-          <link>/spring/csr/search</link>
+          <link>/spring/meter/search</link>
           <requireRoleProperty value="MeteringRole.ROLEID,application.BillingRole.ROLEID,SchedulerRole.ROLEID,CommanderRole.ROLEID" />
         </option>
         
@@ -255,8 +255,8 @@
   <module name="amr">
     <skin name="standard"/>
    	<links>
-   		<option id="deviceselection">
-   		   <link>/spring/csr/search</link>	
+   		<option id="meters">
+   		   <link>/spring/meter/search</link>	
    		</option>
    		<option id="billing">
    		   <links>

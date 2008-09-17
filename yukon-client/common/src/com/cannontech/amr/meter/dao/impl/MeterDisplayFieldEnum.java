@@ -1,18 +1,18 @@
 package com.cannontech.amr.meter.dao.impl;
 
-import com.cannontech.amr.csr.model.CsrSearchField;
 import com.cannontech.amr.meter.dao.MeterDisplayFieldAccessor;
 import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.search.model.MeterSearchField;
 
 public enum MeterDisplayFieldEnum {
 
-    DEVICE_NAME("Device Name", "deviceName", CsrSearchField.PAONAME, new MeterDisplayFieldAccessor() {
+    DEVICE_NAME("Device Name", "deviceName", MeterSearchField.PAONAME, new MeterDisplayFieldAccessor() {
         public String getField(Meter meter) {
             return meter.getName();
         }
     }),
     
-    METER_NUMBER("Meter Number", "meterNumber", CsrSearchField.METERNUMBER, new MeterDisplayFieldAccessor() {
+    METER_NUMBER("Meter Number", "meterNumber", MeterSearchField.METERNUMBER, new MeterDisplayFieldAccessor() {
         public String getField(Meter meter) {
             String meterNumber = meter.getMeterNumber();
             if (meterNumber == null) {
@@ -22,7 +22,7 @@ public enum MeterDisplayFieldEnum {
         }
     }),
     
-    ADDRESS("Address", "address", CsrSearchField.ADDRESS, new MeterDisplayFieldAccessor() {
+    ADDRESS("Address", "address", MeterSearchField.ADDRESS, new MeterDisplayFieldAccessor() {
         public String getField(Meter meter) {
             return meter.getAddress();
         }
@@ -30,9 +30,9 @@ public enum MeterDisplayFieldEnum {
     
     /**
      * Not an explictly supported "Device Display Template" role property value.
-     * Used for CSR device selection page only
+     * Used for meter search selection page only
      */
-    ROUTE("Route", "route", CsrSearchField.ROUTE, new MeterDisplayFieldAccessor() {
+    ROUTE("Route", "route", MeterSearchField.ROUTE, new MeterDisplayFieldAccessor() {
         public String getField(Meter meter) {
             return meter.getRoute();
         }
@@ -40,9 +40,9 @@ public enum MeterDisplayFieldEnum {
     
     /**
      * Not an explictly supported "Device Display Template" role property value.
-     * Used for CSR device selection page only
+     * Used for meter search selection page only
      */
-    DEVICE_TYPE("Device Type", "deviceType",CsrSearchField.TYPE, new MeterDisplayFieldAccessor() {
+    DEVICE_TYPE("Device Type", "deviceType",MeterSearchField.TYPE, new MeterDisplayFieldAccessor() {
         public String getField(Meter meter) {
             return meter.getTypeStr();
         }
@@ -56,10 +56,10 @@ public enum MeterDisplayFieldEnum {
     
     private String label;
     private String id;
-    private CsrSearchField searchField;
+    private MeterSearchField searchField;
     private MeterDisplayFieldAccessor meterDisplayFieldAccessor;
     
-    MeterDisplayFieldEnum(String label, String id, CsrSearchField searchField,
+    MeterDisplayFieldEnum(String label, String id, MeterSearchField searchField,
             MeterDisplayFieldAccessor meterDisplayFieldAccessor) {
         this.label = label;
         this.id = id;
@@ -75,7 +75,7 @@ public enum MeterDisplayFieldEnum {
         return label;
     }
     
-    public CsrSearchField getSearchField() {
+    public MeterSearchField getSearchField() {
         return searchField;
     }
     

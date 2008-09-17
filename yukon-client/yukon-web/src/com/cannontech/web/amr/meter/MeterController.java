@@ -1,4 +1,4 @@
-package com.cannontech.web.amr.csr;
+package com.cannontech.web.amr.meter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,13 +15,13 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
-import com.cannontech.amr.csr.model.CsrSearchField;
-import com.cannontech.amr.csr.model.ExtendedMeter;
-import com.cannontech.amr.csr.model.FilterBy;
-import com.cannontech.amr.csr.model.FilterByGenerator;
-import com.cannontech.amr.csr.model.OrderBy;
-import com.cannontech.amr.csr.service.CsrService;
 import com.cannontech.amr.meter.dao.impl.MeterDisplayFieldEnum;
+import com.cannontech.amr.meter.search.model.MeterSearchField;
+import com.cannontech.amr.meter.search.model.ExtendedMeter;
+import com.cannontech.amr.meter.search.model.FilterBy;
+import com.cannontech.amr.meter.search.model.FilterByGenerator;
+import com.cannontech.amr.meter.search.model.OrderBy;
+import com.cannontech.amr.meter.search.service.MeterSearchService;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.attribute.model.Attribute;
@@ -40,25 +40,25 @@ import com.cannontech.util.ServletUtil;
 import com.cannontech.web.bulk.model.collection.DeviceFilterCollectionHelper;
 
 /**
- * Spring controller class for csr
+ * Spring controller class
  */
-public class CsrController extends MultiActionController {
+public class MeterController extends MultiActionController {
 
     private AuthDao authDao = null;
     private RoleDao roleDao = null;
-    private CsrService csrService = null;
+    private MeterSearchService meterSearchService = null;
     private AttributeService attributeService = null;
     private DeviceDao deviceDao = null;
     private DeviceFilterCollectionHelper filterCollectionHelper = null;
 
-    public CsrController() {
+    public MeterController() {
         super();
     }
-
-    public void setCsrService(CsrService csrService) {
-        this.csrService = csrService;
+    
+    public void setMeterSearchService(MeterSearchService meterSearchService) {
+        this.meterSearchService = meterSearchService;
     }
-
+    
     public void setAuthDao(AuthDao authDao) {
         this.authDao = authDao;
     }
@@ -101,7 +101,7 @@ public class CsrController extends MultiActionController {
         // Get the order by field
         String orderByField = ServletRequestUtils.getStringParameter(request,
                                                                      "orderBy",
-                                                                     CsrSearchField.PAONAME.toString());
+                                                                     MeterSearchField.PAONAME.toString());
         OrderBy orderBy = new OrderBy(orderByField,
                                       ServletRequestUtils.getBooleanParameter(request,
                                                                               "descending",
@@ -109,11 +109,11 @@ public class CsrController extends MultiActionController {
 
         // Build up filter by list
         List<FilterBy> filterByList = FilterByGenerator.getFilterByList();
-        List<FilterBy> queryFilter = CsrUtils.getQueryFilter(request, filterByList);
-        String filterByString = CsrUtils.getFilterByString(queryFilter);
+        List<FilterBy> queryFilter = MeterSearchUtils.getQueryFilter(request, filterByList);
+        String filterByString = MeterSearchUtils.getFilterByString(queryFilter);
 
         // Perform the search
-        SearchResult<ExtendedMeter> results = csrService.search(queryFilter,
+        SearchResult<ExtendedMeter> results = meterSearchService.search(queryFilter,
                                                                 orderBy,
                                                                 startIndex,
                                                                 count);
@@ -122,13 +122,13 @@ public class CsrController extends MultiActionController {
         ModelAndView mav;
         // Redirect to device home page if only one result is found
         if (results.getResultCount() == 1) {
-            mav = new ModelAndView("redirect:/spring/csr/home");
+            mav = new ModelAndView("redirect:/spring/meter/home");
 
             ExtendedMeter meter = results.getResultList().get(0);
             mav.addObject("deviceId", meter.getDeviceId());
 
         } else {
-            mav = new ModelAndView("deviceSelection.jsp");
+            mav = new ModelAndView("meters.jsp");
             // Create a device collection (only used to generate a link)
             DeviceCollection deviceGroupCollection = filterCollectionHelper.createDeviceGroupCollection(queryFilter, orderBy);
             
@@ -137,7 +137,7 @@ public class CsrController extends MultiActionController {
             mav.addObject("filterByString", filterByString);
             mav.addObject("orderBy", orderBy);
             mav.addObject("results", results);
-            mav.addObject("orderByFields", CsrSearchField.values());
+            mav.addObject("orderByFields", MeterSearchField.values());
             mav.addObject("filterByList", filterByList);
             
             List<MeterDisplayFieldEnum> defaultDispEnumsOrder = new ArrayList<MeterDisplayFieldEnum>();
@@ -197,7 +197,7 @@ public class CsrController extends MultiActionController {
     public ModelAndView home(HttpServletRequest request, HttpServletResponse response)
             throws ServletException {
 
-        ModelAndView mav = new ModelAndView("deviceHome.jsp");
+        ModelAndView mav = new ModelAndView("meterHome.jsp");
 
         int deviceId = ServletRequestUtils.getIntParameter(request, "deviceId");
 

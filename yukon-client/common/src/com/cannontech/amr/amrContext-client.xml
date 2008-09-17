@@ -23,13 +23,13 @@
         <property name="template" ref="simpleJdbcTemplate" />
     </bean>
 
-    <bean id="csrService"
-        class="com.cannontech.amr.csr.service.impl.CsrServiceImpl">
-        <property name="csrSearchDao" ref="csrSearchDao" />
+    <bean id="meterSearchService"
+        class="com.cannontech.amr.meter.search.service.impl.MeterSearchServiceImpl">
+        <property name="meterSearchDao" ref="meterSearchDao" />
     </bean>
 
-    <bean id="csrSearchDao"
-        class="com.cannontech.amr.csr.dao.impl.CsrSearchDaoImpl">
+    <bean id="meterSearchDao"
+        class="com.cannontech.amr.meter.search.dao.impl.MeterSearchDaoImpl">
         <property name="jdbcTemplate" ref="simpleJdbcTemplate" />
         <property name="meterRowMapper" ref="extendedMeterRowMapper" />
     </bean>
@@ -61,7 +61,7 @@
     </bean>
 
     <bean id="extendedMeterRowMapper"
-        class="com.cannontech.amr.csr.dao.impl.ExtendedMeterRowMapper">
+        class="com.cannontech.amr.meter.search.dao.impl.ExtendedMeterRowMapper">
         <constructor-arg ref="paoGroupsWrapper" />
     </bean>
 

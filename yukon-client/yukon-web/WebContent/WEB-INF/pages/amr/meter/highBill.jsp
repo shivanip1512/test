@@ -3,12 +3,14 @@
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
-<cti:standardPage title="High Bill Complaint Device Selection" module="amr">
-    <cti:standardMenu menuSelection="deviceselection" />
+<cti:standardPage title="High Bill Complaint" module="amr">
+    <cti:standardMenu menuSelection="meters" />
     <cti:breadCrumbs>
         <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-        <cti:crumbLink url="/spring/csr/search" title="Device Selection" />
-        <cti:crumbLink url="/spring/csr/home?deviceId=${deviceId}" title="Device Detail" />
+        <cti:crumbLink url="/spring/meter/search" title="Meters" />
+        <cti:crumbLink url="/spring/meter/home?deviceId=${deviceId}">
+            <cti:deviceName deviceId="${deviceId}"></cti:deviceName>
+        </cti:crumbLink>
     &gt; High Bill Complaint
 </cti:breadCrumbs>
 
@@ -116,8 +118,8 @@
             <div class="smallBoldLabel" style="display:inline;">End Date: </div><tags:dateInputCalendar fieldName="getReportStopDate" fieldValue="${formattedStopDate}"/>
             
             <c:if test="${readable}">
-                <c:url var="getReportUrl" value="/spring/csr/highBill/getReport"/>
-                <c:url var="hbcRedirectUrl" value="/spring/csr/highBill/view"/>
+                <c:url var="getReportUrl" value="/spring/meter/highBill/getReport"/>
+                <c:url var="hbcRedirectUrl" value="/spring/meter/highBill/view"/>
                 
                 <input type="button" id="getReportButton" value="Get Report" onclick="getReport('${getReportUrl}', '${hbcRedirectUrl}');" value="click me">
                 <img id="getReportProcessImg" style="display:none;" src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>">
@@ -131,7 +133,7 @@
                         <c:when test="${not empty preResult && !preResult.noData && preResult.deviceError == ''}">
                         <c:set var="reportHeader">
                             <jsp:attribute name="value">
-                                <c:url var="analyzeThisDataUrl" value="/spring/csr/highBill/view">
+                                <c:url var="analyzeThisDataUrl" value="/spring/meter/highBill/view">
                                     <c:param name="deviceId" value="${deviceId}"/>
                                     <c:param name="analyze" value="true"/>
                                     <c:param name="getReportStartDate" value="${formattedStartDate}"/>
@@ -190,7 +192,7 @@
         <c:if test="${analyze}">
         <tags:sectionContainer title="Step 3: Analyze Profile Data" id="hbcStep3">  
             
-            <c:url var="chartUrlPrefix" value="/spring/csr/highBill/view">
+            <c:url var="chartUrlPrefix" value="/spring/meter/highBill/view">
                 <c:param name="deviceId" value="${deviceId}"/>
                 <c:param name="analyze" value="true"/>
                 <c:param name="getReportStartDate" value="${formattedStartDate}"/>
@@ -269,11 +271,11 @@
                 <%-- daily usage links --%>
                 <br>
                 <div class="smallBoldLabel" style="display:inline;">Daily Usage Report: </div>
-                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="htmlView" module="amr" showMenu="true" menuSelection="deviceselection" pointId="${pointId}" startDate="${preChartStartDate}" stopDate="${preChartStopDate}">HTML</cti:simpleReportLinkFromNameTag>
+                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="htmlView" module="amr" showMenu="true" menuSelection="meters" pointId="${pointId}" startDate="${preChartStartDate}" stopDate="${preChartStopDate}">HTML</cti:simpleReportLinkFromNameTag>
                 |
-                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="csvView" module="amr" showMenu="true" menuSelection="deviceselection" pointId="${pointId}" startDate="${preChartStartDate}" stopDate="${preChartStopDate}">CSV</cti:simpleReportLinkFromNameTag>
+                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="csvView" module="amr" showMenu="true" menuSelection="meters" pointId="${pointId}" startDate="${preChartStartDate}" stopDate="${preChartStopDate}">CSV</cti:simpleReportLinkFromNameTag>
                 |
-                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="pdfView" module="amr" showMenu="true" menuSelection="deviceselection" pointId="${pointId}" startDate="${preChartStartDate}" stopDate="${preChartStopDate}">PDF</cti:simpleReportLinkFromNameTag>
+                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="pdfView" module="amr" showMenu="true" menuSelection="meters" pointId="${pointId}" startDate="${preChartStartDate}" stopDate="${preChartStopDate}">PDF</cti:simpleReportLinkFromNameTag>
                 
             </c:if>
             
@@ -326,11 +328,11 @@
                 <%-- daily usage links --%>
                 <br>
                 <div class="smallBoldLabel" style="display:inline;">Daily Usage Report: </div>
-                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="htmlView" module="amr" showMenu="true" menuSelection="deviceselection" pointId="${pointId}" startDate="${postRangeStartDate}" stopDate="${postRangeStopDate}">HTML</cti:simpleReportLinkFromNameTag>
+                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="htmlView" module="amr" showMenu="true" menuSelection="meters" pointId="${pointId}" startDate="${postRangeStartDate}" stopDate="${postRangeStopDate}">HTML</cti:simpleReportLinkFromNameTag>
                 |
-                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="csvView" module="amr" showMenu="true" menuSelection="deviceselection" pointId="${pointId}" startDate="${postRangeStartDate}" stopDate="${postRangeStopDate}">CSV</cti:simpleReportLinkFromNameTag>
+                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="csvView" module="amr" showMenu="true" menuSelection="meters" pointId="${pointId}" startDate="${postRangeStartDate}" stopDate="${postRangeStopDate}">CSV</cti:simpleReportLinkFromNameTag>
                 |
-                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="pdfView" module="amr" showMenu="true" menuSelection="deviceselection" pointId="${pointId}" startDate="${postRangeStartDate}" stopDate="${postRangeStopDate}">PDF</cti:simpleReportLinkFromNameTag>
+                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="pdfView" module="amr" showMenu="true" menuSelection="meters" pointId="${pointId}" startDate="${postRangeStartDate}" stopDate="${postRangeStopDate}">PDF</cti:simpleReportLinkFromNameTag>
                 
                 
             </c:if>
@@ -342,7 +344,7 @@
         <%-- CREATE LM POINT --%>
         <c:otherwise>
         
-            <c:url var="highBillUrl" value="/spring/csr/highBill/view">
+            <c:url var="highBillUrl" value="/spring/meter/highBill/view">
                 <c:param name="deviceId" value="${deviceId}" />
                 <c:param name="createLPPoint" value="true" />
             </c:url>

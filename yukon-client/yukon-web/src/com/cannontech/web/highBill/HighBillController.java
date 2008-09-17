@@ -498,7 +498,7 @@ public class HighBillController extends MultiActionController {
             Map<String, String> optionalAttributeDefaults = new HashMap<String, String>();
             optionalAttributeDefaults.put("module", "amr");
             optionalAttributeDefaults.put("showMenu", "true");
-            optionalAttributeDefaults.put("menuSelection", "deviceselection");
+            optionalAttributeDefaults.put("menuSelection", "meters");
             optionalAttributeDefaults.put("viewJsp", "MENU");
             
             String reportHtmlUrl = simpleReportService.getReportUrl(request, "rawPointHistoryDefinition", inputValues, optionalAttributeDefaults, "htmlView", true);

@@ -1,12 +1,12 @@
-package com.cannontech.amr.csr.model;
+package com.cannontech.amr.meter.search.model;
 
 /**
- * Class used to sort a csr search
+ * Class used to sort a meter search
  */
 public class OrderBy {
 
     private boolean descending = false;
-    private CsrSearchField field = CsrSearchField.PAONAME;
+    private MeterSearchField field = MeterSearchField.PAONAME;
 
     public OrderBy() {
     }
@@ -14,7 +14,7 @@ public class OrderBy {
     public OrderBy(String field, boolean descending) {
 
         if (field != null && field.length() > 0) {
-            this.field = CsrSearchField.valueOf(field);
+            this.field = MeterSearchField.valueOf(field);
         }
 
         this.descending = descending;
@@ -29,16 +29,16 @@ public class OrderBy {
         this.descending = descending;
     }
 
-    public CsrSearchField getField() {
+    public MeterSearchField getField() {
         return field;
     }
 
-    public void setField(CsrSearchField field) {
+    public void setField(MeterSearchField field) {
         this.field = field;
     }
 
     public String toString() {
-        return field.getSearchQueryField() + ((descending) ? " desc" : "") + ((field.equals(CsrSearchField.PAONAME)) ? ""
-                : ", " + CsrSearchField.PAONAME.getSearchQueryField());
+        return field.getSearchQueryField() + ((descending) ? " desc" : "") + ((field.equals(MeterSearchField.PAONAME)) ? ""
+                : ", " + MeterSearchField.PAONAME.getSearchQueryField());
     }
 }

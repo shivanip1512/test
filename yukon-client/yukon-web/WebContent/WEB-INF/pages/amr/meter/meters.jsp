@@ -3,20 +3,20 @@
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:standardPage title="Device Selection" module="amr">
-<cti:standardMenu menuSelection="deviceselection"/>
+<cti:standardPage title="Meters" module="amr">
+<cti:standardMenu menuSelection="meters"/>
 <cti:breadCrumbs>
     <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
-    &gt; Device Selection
+    &gt; Meters
 </cti:breadCrumbs>
 
-<c:url value="/spring/csr/home" var="csrHomeUrl"/>
+<c:url value="/spring/meter/home" var="meterHomeUrl"/>
 
 <script language="JavaScript">
 
-	function forwardToCsrHome(row, id) {
+	function forwardToMeterHome(row, id) {
 		$('deviceTable').removeClassName('activeResultsTable');
-		window.location = "${csrHomeUrl}?deviceId=" + id;
+		window.location = "${meterHomeUrl}?deviceId=" + id;
 	}
 
 	function clearFilter() {
@@ -41,7 +41,7 @@
 	
 </script>
 	
-	<h2>Device Selection</h2>
+	<h2>Meters</h2>
 	<br>
 	
 	<b>
@@ -67,7 +67,7 @@
 	<br/><br/>
 
     <tags:hideReveal title="Edit Filters" showInitially="true">
-    <form id="filterForm" action="/spring/csr/search">
+    <form id="filterForm" action="/spring/meter/search">
         <input type="hidden" name="Filter" value="true" />
         <input type="hidden" name="startIndex" value="${results.startIndex}" />
         <input type="hidden"  name="count" value="${results.count}" />
@@ -116,7 +116,7 @@
                                     results="${results}" 
                                     orderBy="${orderBy}" 
                                     filterByList="${filterByList}">
-                                        ${dispEnum.searchField.csrString}
+                                        ${dispEnum.searchField.meterSearchString}
                                 </amr:sortByLink>
                             </th>
                         </c:when>
@@ -133,7 +133,7 @@
             
             <%-- DATA ROWS --%>
             <c:forEach var="row" items="${resultColumnsList}">
-                <tr class="<tags:alternateRow odd="" even="altRow"/>" onclick="javascript:forwardToCsrHome(this, ${row[idEnum]})" onmouseover="highLightRow(this)" onmouseout="unHighLightRow(this)">
+                <tr class="<tags:alternateRow odd="" even="altRow"/>" onclick="javascript:forwardToMeterHome(this, ${row[idEnum]})" onmouseover="highLightRow(this)" onmouseout="unHighLightRow(this)">
                 <c:forEach var="dispEnum" items="${orderedDispEnums}">
                     <td>
                         <%-- although the result of ${null} is <BLANK>, explicitly leave --%>

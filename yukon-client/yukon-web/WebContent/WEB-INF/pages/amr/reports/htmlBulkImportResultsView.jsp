@@ -6,7 +6,7 @@
 <%-- MODULE, MENU --%>
 <cti:standardPage title="${reportTitle}" module="amr">
 
-    <cti:standardMenu menuSelection="deviceselection" />
+    <cti:standardMenu menuSelection="meters" />
 
     <cti:breadCrumbs>
         <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
