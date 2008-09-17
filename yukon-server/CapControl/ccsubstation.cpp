@@ -117,7 +117,8 @@ void CtiCCSubstation::restoreGuts(RWvistream& istrm)
         >> _estPfactor
         >> _saEnabledFlag
         >> _saEnabledId
-        >> _voltReductionFlag;
+        >> _voltReductionFlag
+        >> _recentlyControlledFlag;
     
 
 }
@@ -153,7 +154,8 @@ void CtiCCSubstation::saveGuts(RWvostream& ostrm ) const
         << _estPfactor
         << _saEnabledFlag
         << _saEnabledId
-        << _voltReductionFlag;
+        << _voltReductionFlag
+        << _recentlyControlledFlag;
 
 
 }
@@ -185,6 +187,8 @@ CtiCCSubstation& CtiCCSubstation::operator=(const CtiCCSubstation& right)
         _estPfactor = right._estPfactor;
         _saEnabledFlag = right._saEnabledFlag;
         _saEnabledId = right._saEnabledId;
+        _recentlyControlledFlag = right._recentlyControlledFlag;
+        _stationUpdatedFlag = right._stationUpdatedFlag;
 
         _subBusIds.clear();
         _subBusIds.assign(right._subBusIds.begin(), right._subBusIds.end());
@@ -249,6 +253,9 @@ void CtiCCSubstation::restore(RWDBReader& rdr)
     setEstPFactor(0);
     setSaEnabledFlag(FALSE);
     setSaEnabledId(0);
+    setRecentlyControlledFlag(FALSE);
+    setStationUpdatedFlag(FALSE);
+
 
 
 
@@ -289,8 +296,11 @@ void CtiCCSubstation::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDate
             addFlags[0] = (_ovUvDisabledFlag?'Y':'N');
             addFlags[1] = (_saEnabledFlag?'Y':'N');
             addFlags[2] = (_voltReductionFlag?'Y':'N');
-            _additionalFlags = string(char2string(*addFlags) + char2string(*(addFlags+1)) + char2string(*(addFlags+2)));
-            _additionalFlags.append("NNNNNNNNNNNNNNNNN");
+            addFlags[3] = (_recentlyControlledFlag?'Y':'N');
+            addFlags[4] = (_stationUpdatedFlag?'Y':'N');
+            _additionalFlags = string(char2string(*addFlags) + char2string(*(addFlags+1)) + 
+                                char2string(*(addFlags+2)) + char2string(*(addFlags+3)) + char2string(*(addFlags+4)));
+            _additionalFlags.append("NNNNNNNNNNNNNNN");
 
             updater.clear();
 
@@ -372,6 +382,9 @@ void CtiCCSubstation::setDynamicData(RWDBReader& rdr)
     _ovUvDisabledFlag = (_additionalFlags[0]=='y'?TRUE:FALSE);
     _saEnabledFlag = (_additionalFlags[1]=='y'?TRUE:FALSE);
     _voltReductionFlag = (_additionalFlags[2]=='y'?TRUE:FALSE);
+    _recentlyControlledFlag = (_additionalFlags[3]=='y'?TRUE:FALSE);
+    _stationUpdatedFlag = (_additionalFlags[4]=='y'?TRUE:FALSE);
+
     if (_voltReductionControlId <= 0)
     {
         setVoltReductionFlag(FALSE);
@@ -533,6 +546,15 @@ DOUBLE CtiCCSubstation::getEstPFactor() const
 BOOL CtiCCSubstation::getSaEnabledFlag() const
 {
     return _saEnabledFlag;
+}
+
+BOOL CtiCCSubstation::getRecentlyControlledFlag() const
+{
+    return _recentlyControlledFlag;
+}
+BOOL CtiCCSubstation::getStationUpdatedFlag() const
+{
+    return _stationUpdatedFlag;
 }
 
 LONG CtiCCSubstation::getSaEnabledId() const
@@ -745,6 +767,38 @@ CtiCCSubstation& CtiCCSubstation::setSaEnabledFlag(BOOL flag)
 }
 
 /*---------------------------------------------------------------------------
+    setRecentlyControlledFlag
+
+    Sets the Substation RecentlyControlled Flag of the substation
+---------------------------------------------------------------------------*/
+CtiCCSubstation& CtiCCSubstation::setRecentlyControlledFlag(BOOL flag)
+{
+    if (_recentlyControlledFlag != flag)
+    {
+        _dirty = TRUE;
+        _stationUpdatedFlag = TRUE;
+    }
+    _recentlyControlledFlag = flag;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setRecentlyControlledFlag
+
+    Sets the Substation RecentlyControlled Flag of the substation
+---------------------------------------------------------------------------*/
+CtiCCSubstation& CtiCCSubstation::setStationUpdatedFlag(BOOL flag)
+{
+    if (_stationUpdatedFlag != flag)
+    {
+        _dirty = TRUE;
+    }
+    _stationUpdatedFlag = flag;
+    return *this;
+}
+
+
+/*---------------------------------------------------------------------------
     setSaEnabledId
 
     Sets the Special Area Enabled Id of the substation
@@ -824,5 +878,41 @@ void CtiCCSubstation::checkForAndStopVerificationOnChildSubBuses(CtiMultiMsg_vec
 
 }
 
+
+/*---------------------------------------------------------------------------
+    setRecentlyControlledFlag
+
+    Sets the recently controlled flag of the substation
+---------------------------------------------------------------------------*/
+CtiCCSubstation& CtiCCSubstation::checkAndUpdateRecentlyControlledFlag()
+{
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+
+    CtiCCSubstationBusPtr currentSubstationBus = NULL;
+    std::list <long>::iterator busIter = NULL;
+
+    int numberOfSubBusesPending = 0;
+
+    busIter = getCCSubIds()->begin();
+
+    while (busIter != getCCSubIds()->end() )
+    {
+        currentSubstationBus = store->findSubBusByPAObjectID(*busIter);
+        busIter++;
+
+        if (currentSubstationBus->getRecentlyControlledFlag())
+        {
+            setRecentlyControlledFlag(TRUE);
+            numberOfSubBusesPending += 1;
+        }
+    }
+    if (numberOfSubBusesPending == 0)
+    {
+        setRecentlyControlledFlag(FALSE);
+    }
+
+    return *this;
+}
 
 

@@ -227,6 +227,7 @@ void CtiCapController::controlLoop()
         CtiTime currentDateTime;
         CtiTime registerTimeElapsed;
         CtiCCSubstationBus_vec substationBusChanges;
+        CtiMultiMsg_vec stationChanges;
         CtiMultiMsg* multiDispatchMsg = new CtiMultiMsg();
         CtiMultiMsg* multiPilMsg = new CtiMultiMsg();
         CtiMultiMsg* multiCapMsg = new CtiMultiMsg();
@@ -314,6 +315,7 @@ void CtiCapController::controlLoop()
                 rwRunnable().serviceCancellation();
 
                 CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(secondsFrom1901);
+                CtiCCSubstation_vec& ccSubstations = *store->getCCSubstations(secondsFrom1901);
 
                 {
                     if( (secondsFrom1901%60) == 0 && secondsFrom1901 != lastThreadPulse )
@@ -739,6 +741,12 @@ void CtiCapController::controlLoop()
                         //accumulate all buses with any changes into msg for all clients
                         if( currentSubstationBus->getBusUpdatedFlag() )
                         {
+                            currentStation->checkAndUpdateRecentlyControlledFlag();
+                            if (currentStation->getStationUpdatedFlag())
+                            {
+                                store->updateSubstationObjectList(currentStation->getPAOId(), stationChanges);
+                                currentStation->setStationUpdatedFlag(FALSE);
+                            }                
                             substationBusChanges.push_back(currentSubstationBus);
                             currentSubstationBus->setBusUpdatedFlag(FALSE);
                         }
@@ -922,20 +930,40 @@ void CtiCapController::controlLoop()
                 /*******************************************************************/
                 try
                 {
-                    if( substationBusChanges.size() > 0 && !waitToBroadCastEverything)
+                    if( !waitToBroadCastEverything )
                     {
-                        CtiCCExecutorFactory f1;
-                        CtiCCExecutor* executor1 = f1.createExecutor(new CtiCCSubstationBusMsg(substationBusChanges, CtiCCSubstationBusMsg::SubBusModified));
-                        try
+                        if (substationBusChanges.size() > 0)
                         {
-                            executor1->Execute();
-                            delete executor1;
-                            substationBusChanges.clear();
+                            CtiCCExecutorFactory f1;
+                            CtiCCExecutor* executor1 = f1.createExecutor(new CtiCCSubstationBusMsg(substationBusChanges, CtiCCSubstationBusMsg::SubBusModified));
+                            try
+                            {
+                                executor1->Execute();
+                                delete executor1;
+                                substationBusChanges.clear();
+                            }
+                            catch(...)
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                            }
                         }
-                        catch(...)
+                        if( stationChanges.size() > 0 )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                            CtiCCExecutorFactory f1;
+                            //CtiCCExecutor* executor1 = f1.createExecutor(new CtiCCSubstationsMsg(stationChanges, CtiCCSubstationsMsg::SubModified));
+                            CtiCCExecutor* executor1 = f1.createExecutor(new CtiCCSubstationsMsg((CtiCCSubstation_vec&)stationChanges, CtiCCSubstationsMsg::SubModified));
+                            try
+                            {
+                                executor1->Execute();
+                                delete executor1;
+                                stationChanges.clear();
+                            }
+                            catch(...)
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                            }
                         }
                     }
                     else if (waitToBroadCastEverything && (registerTimeElapsed.seconds() + 15) < currentDateTime.seconds() )
@@ -955,6 +983,21 @@ void CtiCapController::controlLoop()
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                         }
+
+                        //send the substation changes to all cap control clients
+                        executor1 = f1.createExecutor(new CtiCCSubstationsMsg(ccSubstations, CtiCCSubstationsMsg::AllSubsSent));
+
+                        try
+                        {
+                            executor1->Execute();
+                            delete executor1;
+                            stationChanges.clear();//TS//DO NOT DESTROY
+                        }
+                        catch(...)
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        }
                         waitToBroadCastEverything = FALSE;
 
                     }
@@ -964,8 +1007,7 @@ void CtiCapController::controlLoop()
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                 }
-
-
+                
             /********************************************************************/
             }
             try
@@ -3545,6 +3587,7 @@ void CtiCapController::handleUnsolicitedMessaging(CtiCCCapBank* currentCapBank, 
         multiCCEventMsg = NULL;
     
     currentCapBank->setUnsolicitedPendingFlag(FALSE);
+    currentCapBank->setIgnoreFlag(FALSE);
     //store->removeCapbankFromUnsolicitedCapBankList(currentCapBank);
 
 }

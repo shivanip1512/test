@@ -2120,6 +2120,10 @@ void CtiCCCommandExecutor::OpenCapBank()
     CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
     CtiCCSubstationBus_vec updatedSubs;
 
+    CtiCCSubstationPtr parentStation = NULL;
+    CtiCCSubstation_vec updatedStations;
+
+
     if (bankID != 0) 
     {
     
@@ -2329,6 +2333,12 @@ void CtiCCCommandExecutor::OpenCapBank()
                                 doConfirmImmediately(currentSubstationBus,pointChanges, ccEvents, bankID);
                             }
                             currentSubstationBus->verifyControlledStatusFlags();
+                            parentStation = store->findSubstationByPAObjectID(currentSubstationBus->getParentId());
+                            if (parentStation != NULL && currentSubstationBus->getRecentlyControlledFlag()) 
+                            {    
+                                parentStation->setRecentlyControlledFlag(TRUE);
+                                updatedStations.push_back(parentStation);
+                            }
                             break;
                         }
                         else
@@ -2386,6 +2396,13 @@ void CtiCCCommandExecutor::OpenCapBank()
             executor->Execute();
             delete executor;
         }
+        if (updatedStations.size() > 0)
+        {
+            CtiCCExecutorFactory f;
+            CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationsMsg(updatedStations));
+            executor->Execute();
+            delete executor;
+        }
     }
     else
     {
@@ -2421,6 +2438,9 @@ void CtiCCCommandExecutor::CloseCapBank()
 
     CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
     CtiCCSubstationBus_vec updatedSubs;
+
+    CtiCCSubstationPtr parentStation = NULL;
+    CtiCCSubstation_vec updatedStations;
 
     if (bankID != 0) 
     {
@@ -2633,6 +2653,13 @@ void CtiCCCommandExecutor::CloseCapBank()
                             
 
                             currentSubstationBus->verifyControlledStatusFlags();
+                            parentStation = store->findSubstationByPAObjectID(currentSubstationBus->getParentId());
+                            if (parentStation != NULL && currentSubstationBus->getRecentlyControlledFlag()) 
+                            {    
+                                parentStation->setRecentlyControlledFlag(TRUE);
+                                updatedStations.push_back(parentStation);
+                            }
+
                             break;
                         }
                         else
@@ -2684,6 +2711,13 @@ void CtiCCCommandExecutor::CloseCapBank()
         {
             CtiCCExecutorFactory f;
             CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg(updatedSubs));
+            executor->Execute();
+            delete executor;
+        }
+        if (updatedStations.size() > 0)
+        {
+            CtiCCExecutorFactory f;
+            CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationsMsg(updatedStations));
             executor->Execute();
             delete executor;
         }
