@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.111 $
-* DATE         :  $Date: 2008/08/14 15:57:41 $
+* REVISION     :  $Revision: 1.112 $
+* DATE         :  $Date: 2008/09/17 21:31:16 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1883,6 +1883,11 @@ INT CtiPILServer::analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, l
                         dout << endl;
                     }
 #endif
+                    if( i != 0 && i % 6 == 0 )
+                    {
+                        roleStr += " : ";
+                        roleStr += CtiNumStr(i+1); // When we re-send this, we have to specify this number again.
+                    }
                     roleStr += " " + CtiNumStr((int)roleVector[i].getFixBits());
                     roleStr += " " + CtiNumStr((int)roleVector[i].getOutBits());
                     roleStr += " " + CtiNumStr((int)roleVector[i].getInBits());

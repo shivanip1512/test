@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.42 $
-* DATE         :  $Date: 2008/08/14 15:57:40 $
+* REVISION     :  $Revision: 1.43 $
+* DATE         :  $Date: 2008/09/17 21:31:16 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,7 +27,7 @@
 #include "porter.h"
 #include "utility.h"
 #include "numstr.h"
-
+#include "ctistring.h"
 using Cti::Protocol::Emetcon;
 
 
@@ -385,7 +385,7 @@ INT CtiDeviceRepeater900::executePutConfig(CtiRequestMsg          *pReq,
        int stagestf;
 
        int j;
-       int msgcnt = ((parse.getiValue("multi_rolecount") + 6) / 6);     // This is the number of OutMessages to send.
+       int msgcnt = ((parse.getiValue("multi_rolecount") + 5) / 6);     // This is the number of OutMessages to send.
        int firstrole = parse.getiValue("multi_rolenum") - 1;            // The first role to send.
        int rolenum   = parse.getiValue("multi_rolenum") - 1;            // The first role to send.
 
@@ -771,7 +771,8 @@ INT CtiDeviceRepeater900::decodePutConfigRole(INMESS *InMessage, CtiTime &TimeNo
    {
       INT   j;
       ULONG pfCount = 0;
-      string resultString;
+      string resultString, tempString;
+      bool expectMore = false;
 
       CtiReturnMsg  *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
@@ -785,11 +786,46 @@ INT CtiDeviceRepeater900::decodePutConfigRole(INMESS *InMessage, CtiTime &TimeNo
 
       ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-      resultString = getName() + " / command complete";
+      CtiString cmdStr = InMessage->Return.CommandStr;
+      //This should look like "putconfig emetcon mrole 1 2 3 4.... : 6 3 4 5 5 .... : 12 3 4 1 4...
+      //We want to grab the numbers after the leading : then remove the leading :
+      
+      if( cmdStr.contains(": ") )
+      {
+          cmdStr.replace("( [0-9]+)+ *:", "");
+          if( !(tempString = cmdStr.contains("( [0-9]+)+")).empty() )
+          {
+              //We stripped one, another still exists. We need to res-submit this.
+              CtiRequestMsg *newReq = new CtiRequestMsg( getID(),
+                                                         cmdStr,
+                                                         InMessage->Return.UserID,
+                                                         InMessage->Return.GrpMsgID,
+                                                         InMessage->Return.RouteID,
+                                                         selectInitialMacroRouteOffset(InMessage->Return.RouteID),
+                                                         0,
+                                                         0,
+                                                         InMessage->Priority);
+
+              newReq->setMessageTime(CtiTime::now().seconds() + 5);
+              newReq->setConnectionHandle((void *)InMessage->Return.Connection);
+              retList.push_back(newReq);
+              expectMore = true;
+
+          }
+      }
+
+      if( expectMore )
+      {
+          resultString = getName() + " / command continuing";
+      }
+      else
+      {
+          resultString = getName() + " / command complete";
+      }
 
       ReturnMsg->setResultString( resultString );
 
-      retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+      retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList, expectMore );
    }
 
    return status;
