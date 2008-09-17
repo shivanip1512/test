@@ -49,6 +49,7 @@ extern bool _RATE_OF_CHANGE;
 extern unsigned long _RATE_OF_CHANGE_DEPTH;
 extern LONG _MAXOPS_ALARM_CATID;
 extern BOOL _RETRY_ADJUST_LAST_OP_TIME;
+extern ULONG _REFUSAL_TIMEOUT;
 
 RWDEFINE_COLLECTABLE( CtiCCFeeder, CTICCFEEDER_ID )
 
@@ -1976,6 +1977,7 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution,  CtiMult
 {
     CtiCCCapBank* returnCapBank = NULL;
     int i = 0;
+    CtiTime currentTime = CtiTime();
 
     if( kvarSolution < 0.0 )
     {
@@ -1987,6 +1989,10 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution,  CtiMult
         for(i=0;i<closeCaps.size();i++)
         {
             CtiCCCapBank* currentCapBank = (CtiCCCapBank*)closeCaps[i];
+
+            if( currentCapBank->getIgnoreFlag() && 
+                currentTime >= CtiTime(currentCapBank->getLastStatusChangeTime().seconds() + (_REFUSAL_TIMEOUT * 60)) )
+                currentCapBank->setIgnoreFlag(FALSE);
 
             if( !currentCapBank->getDisableFlag() && !currentCapBank->getControlInhibitFlag() &&
                 !stringCompareIgnoreCase(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState) &&
@@ -2083,6 +2089,11 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution,  CtiMult
         for(i=0; i < tripCaps.size();i++)
         {
             CtiCCCapBank* currentCapBank = (CtiCCCapBank*)tripCaps[i];
+            if( currentCapBank->getIgnoreFlag() && 
+                currentTime >= CtiTime(currentCapBank->getLastStatusChangeTime().seconds() + (_REFUSAL_TIMEOUT * 60)) )
+                currentCapBank->setIgnoreFlag(FALSE);
+
+
             if( !currentCapBank->getDisableFlag() && !currentCapBank->getControlInhibitFlag() &&
                 !stringCompareIgnoreCase(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState) &&
                 ( currentCapBank->getControlStatus() == CtiCCCapBank::Close ||

@@ -47,6 +47,7 @@ unsigned long _RATE_OF_CHANGE_DEPTH;
 BOOL _TIME_OF_DAY_VAR_CONF;
 string _MAXOPS_ALARM_CAT;
 LONG _MAXOPS_ALARM_CATID;
+ULONG _REFUSAL_TIMEOUT;
 
 ULONG _OP_STATS_USER_DEF_PERIOD;
 ULONG _OP_STATS_REFRESH_RATE;
@@ -599,6 +600,12 @@ void CtiCCService::Init()
         dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
     }
 
+    _REFUSAL_TIMEOUT = gConfigParms.getValueAsULong("CAP_CONTROL_REFUSAL_TIMEOUT", 240); //minutes
+    if ( _CC_DEBUG & CC_DEBUG_STANDARD)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - CAP_CONTROL_REFUSAL_TIMEOUT: " << _REFUSAL_TIMEOUT << endl;
+    }
 
 
     _quit = false;

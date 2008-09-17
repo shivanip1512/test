@@ -79,6 +79,7 @@ extern BOOL _TIME_OF_DAY_VAR_CONF;
 extern ULONG _OP_STATS_USER_DEF_PERIOD;
 extern ULONG _OP_STATS_REFRESH_RATE;
 extern BOOL _RETRY_ADJUST_LAST_OP_TIME;
+extern ULONG _REFUSAL_TIMEOUT;
 
 
 //DLLEXPORT BOOL  bGCtrlC = FALSE;
@@ -4073,6 +4074,12 @@ void CtiCapController::refreshCParmGlobals(bool force)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        }
+        _REFUSAL_TIMEOUT = gConfigParms.getValueAsULong("CAP_CONTROL_REFUSAL_TIMEOUT", 240); //minutes
+        if ( _CC_DEBUG & CC_DEBUG_STANDARD)
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - CAP_CONTROL_REFUSAL_TIMEOUT: " << _REFUSAL_TIMEOUT << endl;
         }
 
 
