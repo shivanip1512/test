@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.112 $
-* DATE         :  $Date: 2008/09/17 21:31:16 $
+* REVISION     :  $Revision: 1.113 $
+* DATE         :  $Date: 2008/09/17 21:47:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1883,10 +1883,19 @@ INT CtiPILServer::analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, l
                         dout << endl;
                     }
 #endif
+                    // dev_repeater.cpp now looks for a : and uses this to later send out a second command.
+                    // This gives us a way to "sleep" between transmissions so the RPT-901 can keep up with us.
+                    // The repeater code essentially strips off the first command then sends the 2nd, so to tell
+                    // it how to do this we add a : to seperate the commands. We must put the role number in front
+                    // so dev_repeater.cpp has a proper command to work with. This is all decoded in 
+                    // CtiDeviceRepeater900::decodePutConfigRole().
+                    // 
+                    // putconfig emetcon mrole 1 3 4 7 0 4 5 6 1 0 5 7 0 6 2 7 0 2 5 7 0 1 1 7 0 : 7 0 2 7 0 5 5 7 0
+                    //                         ^ Role number                                       ^ Role number
                     if( i != 0 && i % 6 == 0 )
                     {
                         roleStr += " : ";
-                        roleStr += CtiNumStr(i+1); // When we re-send this, we have to specify this number again.
+                        roleStr += CtiNumStr(i+1); 
                     }
                     roleStr += " " + CtiNumStr((int)roleVector[i].getFixBits());
                     roleStr += " " + CtiNumStr((int)roleVector[i].getOutBits());

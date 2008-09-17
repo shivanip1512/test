@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.43 $
-* DATE         :  $Date: 2008/09/17 21:31:16 $
+* REVISION     :  $Revision: 1.44 $
+* DATE         :  $Date: 2008/09/17 21:47:59 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -795,7 +795,7 @@ INT CtiDeviceRepeater900::decodePutConfigRole(INMESS *InMessage, CtiTime &TimeNo
           cmdStr.replace("( [0-9]+)+ *:", "");
           if( !(tempString = cmdStr.contains("( [0-9]+)+")).empty() )
           {
-              //We stripped one, another still exists. We need to res-submit this.
+              //We stripped one, another still exists. We need to re-submit this.
               CtiRequestMsg *newReq = new CtiRequestMsg( getID(),
                                                          cmdStr,
                                                          InMessage->Return.UserID,
