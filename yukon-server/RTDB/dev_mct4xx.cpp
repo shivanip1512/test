@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.92 $
-* DATE         :  $Date: 2008/08/26 18:27:29 $
+* REVISION     :  $Revision: 1.93 $
+* DATE         :  $Date: 2008/09/17 21:36:26 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2007,7 +2007,7 @@ INT CtiDeviceMCT4xx::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< 
                 CtiRequestMsg *newReq = new CtiRequestMsg(getID(),
                                                           InMessage->Return.CommandStr,
                                                           InMessage->Return.UserID,
-                                                          0,
+                                                          InMessage->Return.GrpMsgID,
                                                           InMessage->Return.RouteID,
                                                           0,  //  PIL will recalculate this;  if we include it, we will potentially be bypassing the initial macro routes
                                                           0,
@@ -3040,7 +3040,7 @@ INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
                 CtiRequestMsg newReq(getID(),
                                      lp_request_str,
                                      InMessage->Return.UserID,
-                                     0,
+                                     InMessage->Return.GrpMsgID,
                                      InMessage->Return.RouteID,
                                      selectInitialMacroRouteOffset(InMessage->Return.RouteID),
                                      0,
@@ -3082,7 +3082,7 @@ INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
                 CtiRequestMsg newReq(getID(),
                                      InMessage->Return.CommandStr,
                                      InMessage->Return.UserID,
-                                     0,
+                                     InMessage->Return.GrpMsgID,
                                      InMessage->Return.RouteID,
                                      selectInitialMacroRouteOffset(InMessage->Return.RouteID));
 
@@ -3140,7 +3140,7 @@ INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
             CtiRequestMsg newReq(getID(),
                                  lp_request_str,
                                  InMessage->Return.UserID,
-                                 0,
+                                 InMessage->Return.GrpMsgID,
                                  InMessage->Return.RouteID,
                                  selectInitialMacroRouteOffset(InMessage->Return.RouteID),
                                  0,

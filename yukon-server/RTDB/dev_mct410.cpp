@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.171 $
-* DATE         :  $Date: 2008/08/21 15:58:42 $
+* REVISION     :  $Revision: 1.172 $
+* DATE         :  $Date: 2008/09/17 21:36:26 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -873,7 +873,7 @@ INT CtiDeviceMCT410::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
             CtiRequestMsg newReq(getID(),
                                  "getstatus disconnect noqueue",
                                  InMessage->Return.UserID,
-                                 0,
+                                 InMessage->Return.GrpMsgID,
                                  InMessage->Return.RouteID,
                                  InMessage->Return.MacroOffset,
                                  0,
@@ -929,7 +929,7 @@ INT CtiDeviceMCT410::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
                 CtiRequestMsg newReq(getID(),
                                      request_str,
                                      InMessage->Return.UserID,
-                                     0,
+                                     InMessage->Return.GrpMsgID,
                                      InMessage->Return.RouteID,
                                      InMessage->Return.MacroOffset,
                                      0,
@@ -3169,7 +3169,7 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
                         CtiRequestMsg newReq(getID(),
                                              request_str,
                                              InMessage->Return.UserID,
-                                             0,
+                                             InMessage->Return.GrpMsgID,
                                              InMessage->Return.RouteID,
                                              InMessage->Return.MacroOffset,
                                              0,
@@ -3395,7 +3395,7 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
             CtiRequestMsg newReq(getID(),
                                  request_str,
                                  InMessage->Return.UserID,
-                                 0,
+                                 InMessage->Return.GrpMsgID,
                                  InMessage->Return.RouteID,
                                  InMessage->Return.MacroOffset,
                                  0,
