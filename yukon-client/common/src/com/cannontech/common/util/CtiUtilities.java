@@ -22,9 +22,12 @@ import java.net.SocketException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -1814,6 +1817,16 @@ public static double convertTemperature(double temperature, String fromUnit, Str
              throw new BadConfigurationException("Invalid TimeZone Id value: " + timeZoneStr); 
          } 
          return timeZone; 
+    }
+     
+     /**
+      * Used to parse strings that are the result of Java <Date>.toString().
+      * So, date strings in the format EEE MMM dd HH:mm:ss zzz yyyy
+      * @return
+      */
+     public static Date parseJavaDateString(String javaDateStr) throws ParseException {
+        SimpleDateFormat df = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
+        return df.parse(javaDateStr);
     }
 }
 
