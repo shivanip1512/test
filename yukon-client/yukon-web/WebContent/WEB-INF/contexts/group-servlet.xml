@@ -31,15 +31,6 @@
     </bean>
     
     <bean id="groupEditorController" class="com.cannontech.web.group.GroupEditorController" >
-        <property name="cacheSeconds">
-            <value type="int">0</value>
-        </property>
-        <property name="requireSession">
-            <value type="boolean">true</value>
-        </property>
-        <property name="synchronizeOnSession">
-            <value type="boolean">true</value>
-        </property>
         
         <property name="deviceGroupService" ref="deviceGroupService"/>
         <property name="deviceGroupDao" ref="deviceGroupDao" />
@@ -48,7 +39,7 @@
         <property name="copyDeviceGroupService" ref="copyDeviceGroupService" />
         <property name="deviceCollectionFactory" ref="deviceCollectionFactory" />
         
-        <property name="meterDao" ref="meterDao" />
+        <property name="groupMetersDao" ref="groupMetersDao" />
         <property name="deviceGroupCollectionHelper" ref="deviceGroupCollectionHelper" />
         <property name="deviceCollectionDeviceGroupHelper" ref="deviceCollectionDeviceGroupHelper" />
         

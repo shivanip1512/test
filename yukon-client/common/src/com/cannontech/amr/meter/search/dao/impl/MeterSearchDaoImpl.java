@@ -8,7 +8,6 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.amr.meter.search.dao.MeterSearchDao;
@@ -16,11 +15,12 @@ import com.cannontech.amr.meter.search.model.ExtendedMeter;
 import com.cannontech.amr.meter.search.model.FilterBy;
 import com.cannontech.amr.meter.search.model.OrderBy;
 import com.cannontech.common.search.SearchResult;
+import com.cannontech.database.SqlProvidingRowMapper;
 
 public class MeterSearchDaoImpl implements MeterSearchDao {
 
     private SimpleJdbcTemplate jdbcTemplate = null;
-    private ParameterizedRowMapper<ExtendedMeter> meterRowMapper;
+    private SqlProvidingRowMapper<ExtendedMeter> meterRowMapper;
 
     public void setJdbcTemplate(SimpleJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -60,28 +60,7 @@ public class MeterSearchDaoImpl implements MeterSearchDao {
 
         totalCount = jdbcTemplate.getJdbcOperations().queryForInt(sqlCount, filterList.toArray());
 
-        // Get all of the devices that match the search criteria
-        String sql = "SELECT                                                    " + 
-        "       ypo.paobjectid,                                                 " + 
-        "       ypo.paoname,                                                    " + 
-        "       ypo.type,                                                       " + 
-        "       ypo.disableFlag,                                                " + 
-        "       dcs.address,                                                    " + 
-        "       dmg.meternumber,                                                " + 
-        "       dr.routeId,                                                     " + 
-        "       rypo.paoname as route                                           " + 
-        "   FROM                                                                " + 
-        "       device                                                          " +
-        "       JOIN yukonpaobject ypo                                          " + 
-        "           ON device.deviceid = ypo.paobjectid                         " + 
-        "       LEFT OUTER JOIN devicecarriersettings dcs                       " + 
-        "           ON dcs.deviceid = ypo.paobjectid                            " + 
-        "       JOIN devicemetergroup dmg                                       " + 
-        "           ON dmg.deviceid = ypo.paobjectid                            " + 
-        "       LEFT OUTER JOIN deviceroutes dr                                 " + 
-        "           on ypo.paobjectid = dr.deviceid                             " +
-        "       LEFT OUTER JOIN yukonpaobject rypo                              " +
-        "           on dr.routeid = rypo.paobjectid                             " +
+        String sql = meterRowMapper.getSql() +
         ((filterByList.size() > 0) ? " WHERE " + StringUtils.join(filterByList, " AND ") : "") +
         "   ORDER BY                                                            " +
         orderBy.toString();
@@ -133,7 +112,7 @@ public class MeterSearchDaoImpl implements MeterSearchDao {
     }
     
     public void setMeterRowMapper(
-            ParameterizedRowMapper<ExtendedMeter> meterRowMapper) {
+            SqlProvidingRowMapper<ExtendedMeter> meterRowMapper) {
         this.meterRowMapper = meterRowMapper;
     }
 }

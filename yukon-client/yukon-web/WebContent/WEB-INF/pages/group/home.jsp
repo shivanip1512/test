@@ -94,6 +94,9 @@
         }
         
         function showDevices() {
+        
+            $('showDevicesButton').disabled = true;
+            $('showDevicesWaitImg').show();
             
             // escape the group name to escape problem characters
             var groupName = '${cti:escapeJavaScript(group.fullName)}';
@@ -102,6 +105,20 @@
             
         }
         
+        function removeAllDevices(confirmText) {
+        
+            var doRemove = confirm(confirmText);
+            
+            if (doRemove) {
+            
+                $('removeAllDevicesButton').disabled = true;
+                $('removeAllDevicesWaitImg').show();
+            
+                var groupName = '${cti:escapeJavaScript(group.fullName)}';
+                var params = {'groupName': groupName};
+                new Ajax.Updater('deviceMembers', '/spring/group/editor/removeAllDevicesFromGroup', {method: 'post', parameters: params});
+            }
+        }
     
         function confirmRemoveAllDevices(confirmText) {
         
@@ -480,9 +497,10 @@
                                                 <cti:msg var="showDevicesLimitText" 
                                                          key="yukon.web.deviceGroups.editor.membersContainer.showDevicesLimitText" 
                                                          argument="${maxGetDevicesSize}"/>
-                                                <a href="javascript:showDevices()" title="${showDevicesLimitText}">
-                                                    <cti:msg key="yukon.web.deviceGroups.editor.membersContainer.showDeviceslabel"/>
-                                                </a>
+                                                         
+                                                <cti:msg var="showDeviceslabel" key="yukon.web.deviceGroups.editor.membersContainer.showDeviceslabel"/>         
+                                                <input id="showDevicesButton" type="button" onclick="showDevices()" value="${showDeviceslabel}" title="${showDevicesLimitText}">
+                                                <img id="showDevicesWaitImg" src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" style="display:none;">       
                                             </c:if>
                                         </td>
                                     </tr>

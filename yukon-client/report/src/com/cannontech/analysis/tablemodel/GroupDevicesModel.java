@@ -7,7 +7,7 @@ import java.util.List;
 import org.apache.commons.lang.BooleanUtils;
 import org.springframework.beans.factory.annotation.Required;
 
-import com.cannontech.amr.meter.dao.MeterDao;
+import com.cannontech.amr.meter.dao.GroupMetersDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.groups.model.DeviceGroup;
@@ -18,7 +18,7 @@ public class GroupDevicesModel extends BareReportModelBase<GroupDevicesModel.Mod
     
     // dependencies
     private DeviceGroupService deviceGroupService = null;
-    private MeterDao meterDao = null;
+    private GroupMetersDao groupMetersDao = null;
     
     // inputs
     private String groupName;
@@ -43,9 +43,9 @@ public class GroupDevicesModel extends BareReportModelBase<GroupDevicesModel.Mod
         
         List<Meter> deviceList;
         if (includeSubGroups) {
-            deviceList = meterDao.getMetersByGroup(group);
+            deviceList = groupMetersDao.getMetersByGroup(group);
         } else {
-            deviceList = meterDao.getChildMetersByGroup(group);
+            deviceList = groupMetersDao.getChildMetersByGroup(group);
         }
         
         for (Meter meter : deviceList) {
@@ -104,8 +104,8 @@ public class GroupDevicesModel extends BareReportModelBase<GroupDevicesModel.Mod
     }
 
     @Required
-    public void setMeterDao(MeterDao meterDao) {
-        this.meterDao = meterDao;
+    public void setGroupMetersDao(GroupMetersDao groupMetersDao) {
+        this.groupMetersDao = groupMetersDao;
     }
 
     public boolean isIncludeSubGroups() {

@@ -1,54 +1,56 @@
 package com.cannontech.amr.meter.dao.impl;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import org.apache.commons.lang.Validate;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
-import org.springframework.jdbc.core.ResultSetExtractor;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.YukonDevice;
-import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
-import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.core.dao.RoleDao;
 import com.cannontech.database.ListRowCallbackHandler;
 import com.cannontech.database.MaxRowCalbackHandlerRse;
+import com.cannontech.database.SqlProvidingRowMapper;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.yukon.ConfigurationRole;
 import com.cannontech.util.NaturalOrderComparator;
 
-public class MeterDaoImpl implements MeterDao {
+public class MeterDaoImpl implements MeterDao, InitializingBean {
     private DBPersistentDao dbPersistentDao;
     private SimpleJdbcOperations simpleJdbcTemplate;
     private JdbcOperations jdbcOps;
-    private ParameterizedRowMapper<Meter> meterRowMapper;
+    private SqlProvidingRowMapper<Meter> meterRowMapper;
     private PaoDao paoDao;
-    private RoleDao roleDao;
-    private DeviceGroupProviderDao deviceGroupProviderDao;
+    private AuthDao authDao;
+    
+    private String retrieveOneByIdSql;
+    private String retrieveOneByMeterNumberSql;
+    private String retrieveOneByPaoNameSql;
+    private String retrieveOneByPhysicalAddressSql;
 
-    String retrieveMeterSql = "select YukonPaObject.*, DeviceMeterGroup.*, DeviceCarrierSettings.*, DeviceRoutes.*, yporoute.paoName as route " + "from YukonPaObject " + "join Device on YukonPaObject.paObjectId = Device.deviceId " + "join DeviceMeterGroup on Device.deviceId = DeviceMeterGroup.deviceId " + "left outer join DeviceCarrierSettings on Device.deviceId = DeviceCarrierSettings.deviceId " + "left outer join DeviceRoutes on Device.deviceId = DeviceRoutes.deviceId " + "left outer join YukonPaObject yporoute on DeviceRoutes.routeId = yporoute.paObjectId ";
+    @Override
+    public void afterPropertiesSet() throws Exception {
 
-    String retrieveOneByIdSql = retrieveMeterSql + "where YukonPaObject.paObjectId = ? ";
-    String retrieveOneByMeterNumberSql = retrieveMeterSql + "where DeviceMeterGroup.MeterNumber = ? ";
-    String retrieveOneByPaoNameSql = retrieveMeterSql + "where YukonPaobject.PaoName = ? ";
-    String retrieveOneByPhysicalAddressSql = retrieveMeterSql + "where DeviceCarrierSettings.Address = ? ";
-
+        retrieveOneByIdSql = meterRowMapper.getSql() + "where ypo.paObjectId = ? ";
+        retrieveOneByMeterNumberSql = meterRowMapper.getSql() + "where DeviceMeterGroup.MeterNumber = ? ";
+        retrieveOneByPaoNameSql = meterRowMapper.getSql() + "where ypo.PaoName = ? ";
+        retrieveOneByPhysicalAddressSql = meterRowMapper.getSql() + "where DeviceCarrierSettings.Address = ? ";
+        
+    }
+    
     public void delete(Meter object) {
         throw new UnsupportedOperationException("maybe someday...");
     }
@@ -130,81 +132,24 @@ public class MeterDaoImpl implements MeterDao {
         }
     }
 
-    public List<Meter> getMetersByGroup(DeviceGroup group) {
-        String sqlWhereClause = deviceGroupProviderDao.getDeviceGroupSqlWhereClause(group,
-                                                                                    "Device.deviceId");
-        String sql = retrieveMeterSql + " where " + sqlWhereClause;
-
-        List<Meter> meterList = simpleJdbcTemplate.query(sql, meterRowMapper);
-
-        return meterList;
-    }
-    
-    private String getChildMetersByGroupSql(DeviceGroup group) {
-        
-        String sqlWhereClause = deviceGroupProviderDao.getChildDeviceGroupSqlWhereClause(group,
-                                                                                         "Device.deviceId");
-        return retrieveMeterSql + " where " + sqlWhereClause;
-    }
-    
-    public List<Meter> getChildMetersByGroup(DeviceGroup group) {
-        String sql = getChildMetersByGroupSql(group);
-
-        List<Meter> meterList = simpleJdbcTemplate.query(sql, meterRowMapper);
-
-        return meterList;
-    }
-    
-    public List<Meter> getChildMetersByGroup(DeviceGroup group, final int maxSize) {
-        String sql = getChildMetersByGroupSql(group);
-
-        final List<Meter> meterList = new ArrayList<Meter>();
-            
-        ResultSetExtractor rse = new ResultSetExtractor() {
-
-            @Override
-            public Object extractData(ResultSet rs) throws SQLException, DataAccessException {
-                
-                int i = 0;
-                while (meterList.size() < maxSize && rs.next()) {
-                    Meter meter = meterRowMapper.mapRow(rs, i);
-                    meterList.add(meter);
-                    i++;
-                }
-                return null;
-            }
-        };
-        
-        simpleJdbcTemplate.getJdbcOperations().query(sql, rse);
-
-        return meterList;
-    }
-
     public void save(Meter object) {
         throw new UnsupportedOperationException("maybe someday...");
     }
 
-    public String getFormattedDeviceName(Meter device) {
+    public String getFormattedDeviceName(Meter device) throws IllegalArgumentException{
         
-        String formattingStr = roleDao.getGlobalPropertyValue(ConfigurationRole.DEVICE_DISPLAY_TEMPLATE);
-        Validate.notNull(formattingStr, "Device display template role property does not exist.");
-        
-        try {
-            MeterDisplayFieldEnum meterDisplayFieldEnumVal = MeterDisplayFieldEnum.valueOf(formattingStr);
-            
-            String formattedName = meterDisplayFieldEnumVal.getField(device);
-            if (formattedName == null) {
-                String defaultName = "n/a";
-                if (!meterDisplayFieldEnumVal.equals(MeterDisplayFieldEnum.DEVICE_NAME)) {
-                    return defaultName + " (" + device.getName() + ")";
-                }
-                return defaultName;
+        MeterDisplayFieldEnum meterDisplayFieldEnumVal = authDao.getRolePropertyValue(MeterDisplayFieldEnum.class,
+                                                                                      ConfigurationRole.DEVICE_DISPLAY_TEMPLATE);
+
+        String formattedName = meterDisplayFieldEnumVal.getField(device);
+        if (formattedName == null) {
+            String defaultName = "n/a";
+            if (!meterDisplayFieldEnumVal.equals(MeterDisplayFieldEnum.DEVICE_NAME)) {
+                return defaultName + " (" + device.getName() + ")";
             }
-            return formattedName;
-            
-        } catch (IllegalArgumentException e) {
-            return formattingStr;
+            return defaultName;
         }
+        return formattedName;
     }
 
     /**
@@ -217,7 +162,7 @@ public class MeterDaoImpl implements MeterDao {
         if (lastReceived == null)
             lastReceived = "";
 
-        String sql = retrieveMeterSql + " AND MeterNumber > ? ORDER BY MeterNumber";
+        String sql = meterRowMapper.getSql() + " AND MeterNumber > ? ORDER BY MeterNumber";
 
         List<Meter> mspMeters = new ArrayList<Meter>();
         ListRowCallbackHandler lrcHandler = new ListRowCallbackHandler(mspMeters,
@@ -238,7 +183,7 @@ public class MeterDaoImpl implements MeterDao {
         if (lastReceived == null)
             lastReceived = "";
 
-        String sql = retrieveMeterSql + " AND PaoName > ? ORDER BY PaoName";
+        String sql = meterRowMapper.getSql() + " AND PaoName > ? ORDER BY PaoName";
 
         List<Meter> mspMeters = new ArrayList<Meter>();
         ListRowCallbackHandler lrcHandler = new ListRowCallbackHandler(mspMeters,
@@ -268,7 +213,7 @@ public class MeterDaoImpl implements MeterDao {
 
     }
 
-    public void setMeterRowMapper(ParameterizedRowMapper<Meter> meterRowMapper) {
+    public void setMeterRowMapper(SqlProvidingRowMapper<Meter> meterRowMapper) {
         this.meterRowMapper = meterRowMapper;
     }
 
@@ -276,18 +221,12 @@ public class MeterDaoImpl implements MeterDao {
         this.simpleJdbcTemplate = simpleJdbcTemplate;
     }
 
-    public void setRoleDao(RoleDao roleDao) {
-        this.roleDao = roleDao;
+    public void setAuthDao(AuthDao authDao) {
+        this.authDao = authDao;
     }
 
     public void setJdbcOps(JdbcOperations jdbcOps) {
         this.jdbcOps = jdbcOps;
-    }
-
-    @Required
-    public void setDeviceGroupProviderDao(
-            DeviceGroupProviderDao deviceGroupProviderDao) {
-        this.deviceGroupProviderDao = deviceGroupProviderDao;
     }
 
     @Required

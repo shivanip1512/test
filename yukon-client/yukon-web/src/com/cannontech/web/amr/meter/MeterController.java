@@ -10,16 +10,15 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.Validate;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.amr.meter.dao.impl.MeterDisplayFieldEnum;
-import com.cannontech.amr.meter.search.model.MeterSearchField;
 import com.cannontech.amr.meter.search.model.ExtendedMeter;
 import com.cannontech.amr.meter.search.model.FilterBy;
 import com.cannontech.amr.meter.search.model.FilterByGenerator;
+import com.cannontech.amr.meter.search.model.MeterSearchField;
 import com.cannontech.amr.meter.search.model.OrderBy;
 import com.cannontech.amr.meter.search.service.MeterSearchService;
 import com.cannontech.common.bulk.collection.DeviceCollection;
@@ -175,13 +174,11 @@ public class MeterController extends MultiActionController {
     
     private List<MeterDisplayFieldEnum> orderColumnsByDisplayTemplate(List<MeterDisplayFieldEnum> defaultColumnOrder) {
         
-        String formattingStr = roleDao.getGlobalPropertyValue(ConfigurationRole.DEVICE_DISPLAY_TEMPLATE);
-        Validate.notNull(formattingStr, "Device display template role property does not exist.");
-        
         List<MeterDisplayFieldEnum> newOrder = new ArrayList<MeterDisplayFieldEnum>();
         
         try {
-            MeterDisplayFieldEnum roleDispFieldEnumVal = MeterDisplayFieldEnum.valueOf(formattingStr);
+            MeterDisplayFieldEnum roleDispFieldEnumVal = authDao.getRolePropertyValue(MeterDisplayFieldEnum.class,
+                                                                                          ConfigurationRole.DEVICE_DISPLAY_TEMPLATE);
             
             newOrder.addAll(defaultColumnOrder);
             newOrder.remove(roleDispFieldEnumVal); // remove if present

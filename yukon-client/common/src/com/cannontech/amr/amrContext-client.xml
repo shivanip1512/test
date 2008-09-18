@@ -45,8 +45,14 @@
         <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
         <property name="meterRowMapper" ref="meterRowMapper" />
         <property name="paoDao" ref="paoDao" />
-        <property name="roleDao" ref="roleDao" />
+        <property name="authDao" ref="authDao" />
         <property name="jdbcOps" ref="jdbcTemplate" />
+    </bean>
+    
+    <bean id="groupMetersDao" class="com.cannontech.amr.meter.dao.impl.GroupMetersDaoImpl">
+        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
+        <property name="meterRowMapper" ref="meterRowMapper" />
+        <property name="authDao" ref="authDao" />
         <property name="deviceGroupProviderDao" ref="deviceGroupDao" />
     </bean>
     

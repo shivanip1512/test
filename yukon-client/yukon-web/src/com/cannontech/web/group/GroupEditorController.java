@@ -17,7 +17,7 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
-import com.cannontech.amr.meter.dao.MeterDao;
+import com.cannontech.amr.meter.dao.GroupMetersDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
@@ -33,6 +33,7 @@ import com.cannontech.common.device.groups.service.CopyDeviceGroupService;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.service.ModifiableDeviceGroupPredicate;
 import com.cannontech.common.device.groups.service.NonHiddenDeviceGroupPredicate;
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.MapQueue;
 import com.cannontech.common.util.predicate.AggregateAndPredicate;
@@ -57,7 +58,7 @@ public class GroupEditorController extends MultiActionController {
     
     private DeviceCollectionFactory deviceCollectionFactory = null;
 
-    private MeterDao meterDao = null;
+    private GroupMetersDao groupMetersDao = null;
     private DeviceGroupCollectionHelper deviceGroupCollectionHelper = null;
 
     private final int maxToShowImmediately = 10;
@@ -90,8 +91,8 @@ public class GroupEditorController extends MultiActionController {
     }
     
     @Required
-    public void setMeterDao(MeterDao meterDao) {
-        this.meterDao = meterDao;
+    public void setGroupMetersDao(GroupMetersDao groupMetersDao) {
+        this.groupMetersDao = groupMetersDao;
     }
     
     @Required
@@ -163,7 +164,7 @@ public class GroupEditorController extends MultiActionController {
         boolean groupModifiable = group.isModifiable() && group.getParent() != null;
         mav.addObject("groupModifiable", groupModifiable);
         
-        boolean showImmediately = childDeviceCount < maxToShowImmediately;
+        boolean showImmediately = childDeviceCount <= maxToShowImmediately;
         mav.addObject("showImmediately", showImmediately);
         mav.addObject("maxGetDevicesSize", maxGetDevicesSize);
         if (showImmediately || showDevices) {
@@ -294,17 +295,14 @@ public class GroupEditorController extends MultiActionController {
     
     private void addMaxDevicesToMav(ModelAndView mav, DeviceGroup group) {
         
-        List<Meter> deviceList = meterDao.getChildMetersByGroup(group, maxGetDevicesSize);
-        Collections.sort(deviceList, meterDao.getMeterComparator());
+        List<Meter> deviceList = groupMetersDao.getChildMetersByGroup(group, maxGetDevicesSize + 1);
+        if (deviceList.size() > maxGetDevicesSize) {
+            mav.addObject("limted", true);
+            deviceList = deviceList.subList(0, maxGetDevicesSize);
+        }
         
         mav.addObject("deviceList", deviceList);
-        
-        // To display "you've been limted" text to user.
-        // If we have maxGetDevicesSize devices, assume we've ben limted.
         mav.addObject("maxGetDevicesSize", maxGetDevicesSize);
-        if (deviceList.size() == maxGetDevicesSize) {
-            mav.addObject("limted", true);
-        }
     }
 
     public ModelAndView updateGroupName(HttpServletRequest request, HttpServletResponse response)
@@ -639,30 +637,37 @@ public class GroupEditorController extends MultiActionController {
         return mav;
     }
     
-    public ModelAndView removeAllDevicesFromGroup(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException {
-    
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        authDao.verifyRole(userContext.getYukonUser(), DeviceActionsRole.ROLEID);
-        authDao.verifyTrueProperty(userContext.getYukonUser(), DeviceActionsRole.DEVICE_GROUP_MODIFY);
-        
-        ModelAndView mav = new ModelAndView("redirect:/spring/group/editor/home");
-        
-        String groupName = ServletRequestUtils.getStringParameter(request, "groupName");
-        mav.addObject("groupName", groupName);
-        
-        StoredDeviceGroup removeGroup = deviceGroupEditorDao.getStoredGroup(groupName, false);
-        
-        // Make sure we can remove the group
-        if (removeGroup.isEditable()) {
-            
-            List<? extends YukonDevice> deviceList = meterDao.getChildMetersByGroup(removeGroup);
-            deviceGroupMemberEditorDao.removeDevices(removeGroup, deviceList);
-        } else {
-            mav.addObject("errorMessage", "Cannot remove Group: " + removeGroup.getFullName());
-        }
-        
-        return mav;
-    }
+    public ModelAndView removeAllDevicesFromGroup(HttpServletRequest request,
+            HttpServletResponse response) throws ServletException {
 
+        ModelAndView mav = new ModelAndView("deviceMembers.jsp");
+        String groupName = ServletRequestUtils.getStringParameter(request, "groupName");
+        StoredDeviceGroup removeGroup = deviceGroupEditorDao.getStoredGroup(groupName, false);
+        String membersErrorMessage = "";
+        
+        try {
+            
+            YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+            authDao.verifyRole(userContext.getYukonUser(), DeviceActionsRole.ROLEID);
+            authDao.verifyTrueProperty(userContext.getYukonUser(), DeviceActionsRole.DEVICE_GROUP_MODIFY);
+            
+            // Make sure we can remove the group
+            if (removeGroup.isEditable()) {
+                
+                List<? extends YukonDevice> deviceList = groupMetersDao.getChildMetersByGroup(removeGroup);
+                deviceGroupMemberEditorDao.removeDevices(removeGroup, deviceList);
+            } else {
+                membersErrorMessage = "Cannot remove Group: " + removeGroup.getFullName();
+            }
+        } catch (NotAuthorizedException e) {
+            membersErrorMessage = "User not authorized to remove devices.";
+            addMaxDevicesToMav(mav, removeGroup);
+        }
+
+        mav.addObject("membersErrorMessage", membersErrorMessage);
+        mav.addObject("group", removeGroup);
+
+        return mav;
+
+    }
 }

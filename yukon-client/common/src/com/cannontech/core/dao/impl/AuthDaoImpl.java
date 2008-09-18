@@ -8,6 +8,7 @@ import java.util.TimeZone;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.CTILogger;
@@ -20,6 +21,7 @@ import com.cannontech.core.authorization.service.PaoPermissionService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.ContactDao;
+import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.dao.UnknownRolePropertyException;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.service.SystemDateFormattingService;
@@ -45,6 +47,7 @@ public class AuthDaoImpl implements AuthDao {
     private IDatabaseCache databaseCache;
     private AuthenticationService authenticationService;
     private SystemDateFormattingService systemDateFormattingService;
+    private RoleDao roleDao;
     
 	public LiteYukonUser login(String username, String password) {
         try {
@@ -319,6 +322,12 @@ public class AuthDaoImpl implements AuthDao {
         return timeZone;
     }
 
+    public <E extends Enum<E>> E getRolePropertyValue(Class<E> class1, int rolePropertyID) {
+        String rolePropertyValue = roleDao.getGlobalPropertyValue(rolePropertyID);
+        E enumValue = Enum.valueOf(class1, rolePropertyValue);
+        return enumValue;
+    }
+    
     @Required
     public void setContactDao(ContactDao contactDao) {
         this.contactDao = contactDao;
@@ -341,5 +350,10 @@ public class AuthDaoImpl implements AuthDao {
     @Required
     public void setSystemDateFormattingService(SystemDateFormattingService systemDateFormattingService) {
         this.systemDateFormattingService = systemDateFormattingService;
+    }
+    
+    @Autowired
+    public void setRoleDao(RoleDao roleDao) {
+        this.roleDao = roleDao;
     }
 }

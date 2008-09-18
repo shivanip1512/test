@@ -24,23 +24,25 @@
                             <cti:msg var="removeAllDevicesFromGroupDescription" key="yukon.web.deviceGroups.editor.membersContainer.removeAllDevicesFromGroupDescription"/>
                             <cti:msg var="confirmRemoveText" key="yukon.web.deviceGroups.editor.membersContainer.confirmRemoveText" javaScriptEscape="true"/>
                             
-                            <form id="removeAllDevicesFromGroupForm" method="post" action="/spring/group/editor/removeAllDevicesFromGroup">
-                                <input type="hidden" name="groupName" value="${group.fullName}">
-                            </form>
-                            
-                            <%-- <a onclick="confirmRemoveAllDevices('${confirmRemoveText}');" href="javascript:void(0);" title="${removeAllDevicesFromGroupDescription}" style="font-size:11px;">${removeAllDevicesFromGroupLabel}</a><br><br> --%>
-                            <a href="javascript:confirmRemoveAllDevices('${confirmRemoveText}');" title="${removeAllDevicesFromGroupDescription}" style="font-size:11px;">${removeAllDevicesFromGroupLabel}</a><br><br>
+                            <input id="removeAllDevicesButton" type="button" onclick="removeAllDevices('${confirmRemoveText}')" value="${removeAllDevicesFromGroupLabel}" title="${removeAllDevicesFromGroupDescription}">
+                            <img id="removeAllDevicesWaitImg" src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" style="display:none;">       
                         </td>
                     </tr>
                 </c:if>
                 
+                <c:if test="${not empty membersErrorMessage}">
+                    <span class="errorRed">${membersErrorMessage}</span>
+                    <br><br>
+                </c:if>
+                
                 <c:if test="${limted}">
                     <span class="errorRed">
-                        Results limited to ${maxGetDevicesSize} devices.
+                        <cti:msg key="yukon.web.deviceGroups.editor.membersContainer.showDevicesLimitText" 
+                                 argument="${maxGetDevicesSize}"/>
                     </span>
                     <br><br>
                 </c:if>
-            
+                
 				<c:forEach var="device" items="${deviceList}">
 					<tr class="<tags:alternateRow odd="" even="altRow"/>">
 						<td style="border: none;">

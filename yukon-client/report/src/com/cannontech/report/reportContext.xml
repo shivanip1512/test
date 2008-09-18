@@ -331,7 +331,7 @@
    <bean id="groupDevicesModel" class="com.cannontech.analysis.tablemodel.GroupDevicesModel"
          scope="prototype">
         <property name="deviceGroupService" ref="deviceGroupService"/>
-        <property name="meterDao" ref="meterDao"/>
+        <property name="groupMetersDao" ref="groupMetersDao"/>
     </bean>
     
     <bean id="groupDevicesDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">

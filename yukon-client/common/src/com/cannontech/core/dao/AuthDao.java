@@ -178,4 +178,6 @@ public interface AuthDao {
      * @return
      */
     public TimeZone getUserTimeZone(LiteYukonUser user) throws BadConfigurationException, IllegalArgumentException;
+
+    public <E extends Enum<E>> E getRolePropertyValue(Class<E> class1, int rolePropertyID);
 }
