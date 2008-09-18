@@ -24,9 +24,13 @@ import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.deploy.service.ContactInfo;
 import com.cannontech.multispeak.deploy.service.CoordType;
 import com.cannontech.multispeak.deploy.service.EMailAddress;
+import com.cannontech.multispeak.deploy.service.LinkedTransformer;
 import com.cannontech.multispeak.deploy.service.Nameplate;
 import com.cannontech.multispeak.deploy.service.Network;
+import com.cannontech.multispeak.deploy.service.NodeIdentifier;
+import com.cannontech.multispeak.deploy.service.ObjectRef;
 import com.cannontech.multispeak.deploy.service.PhoneNumber;
+import com.cannontech.multispeak.deploy.service.PointType;
 import com.cannontech.multispeak.deploy.service.UtilityInfo;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
@@ -40,7 +44,6 @@ public class AccountInformationWidget extends WidgetControllerBase{
     private MultispeakDao multispeakDao;
     private MeterDao meterDao;
     private DateFormattingService dateFormattingService;
-    
     
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
@@ -89,16 +92,6 @@ public class AccountInformationWidget extends WidgetControllerBase{
         
         return mav;
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
     // CUST INFO
     private List<Info> getCustomerBasicsInfo(com.cannontech.multispeak.deploy.service.Customer mspCustomer, YukonUserContext userContext) {
@@ -188,11 +181,7 @@ public class AccountInformationWidget extends WidgetControllerBase{
         add("Type", mspServLoc.getServType(), false, infoList, userContext);
         add("Revenue Class", mspServLoc.getRevenueClass(), true, infoList, userContext);
         add("Status", mspServLoc.getServStatus(), true, infoList, userContext);
-        if (mspServLoc.getOutageStatus() != null) {
-            add("Outage Status", mspServLoc.getOutageStatus().getValue(), true, infoList, userContext);
-        } else {
-            add("Outage Status", null, true, infoList, userContext);
-        }
+        add("Outage Status", mspServLoc.getOutageStatus(), true, infoList, userContext);
         add("Billing Cycle", mspServLoc.getBillingCycle(), true, infoList, userContext);
         add("Route", mspServLoc.getRoute(), true, infoList, userContext);
         add("Special Needs", mspServLoc.getSpecialNeeds(), true, infoList, userContext);
@@ -215,35 +204,14 @@ public class AccountInformationWidget extends WidgetControllerBase{
         add("Is Cogeneration Site", mspServLoc.getIsCogenerationSite(), true, infoList, userContext);
         add("Work order number", mspServLoc.getWoNumber(), true, infoList, userContext);
         add("Service order number", mspServLoc.getSoNumber(), true, infoList, userContext);
-        if (mspServLoc.getPhaseCode() != null) {
-            add("Phasing code", mspServLoc.getPhaseCode().getValue(), true, infoList, userContext);
-        } else {
-            add("Phasing code", null, true, infoList, userContext);
-        }
-        if (mspServLoc.getMapLocation() != null && mspServLoc.getMapLocation().getCoord() != null) {
-            String xyz = makeMapLocation(mspServLoc.getMapLocation().getCoord());
-            add("Map Location", xyz, false, infoList, userContext);
-        } else {
-            add("Map Location", null, false, infoList, userContext);
-        }
+        add("Phasing code", mspServLoc.getPhaseCode(), true, infoList, userContext);
+        add("Map Location", mspServLoc.getMapLocation(), false, infoList, userContext);
         add("Grid Location", mspServLoc.getGridLocation(), false, infoList, userContext);
         add("Rotation", mspServLoc.getRotation(), true, infoList, userContext);
-        if (mspServLoc.getFromNodeID() != null) {
-            add("From Node ID", mspServLoc.getFromNodeID().getName(), true, infoList, userContext);
-        } else {
-            add("From Node ID", null, true, infoList, userContext);
-        }
-        if (mspServLoc.getToNodeID() != null) {
-            add("To Node ID", mspServLoc.getToNodeID().getName(), true, infoList, userContext);
-        } else {
-            add("To Node ID", null, true, infoList, userContext);
-        }
+        add("From Node ID", mspServLoc.getFromNodeID(), true, infoList, userContext);
+        add("To Node ID", mspServLoc.getToNodeID(), true, infoList, userContext);
         add("Section ID", mspServLoc.getSectionID(), true, infoList, userContext);
-        if (mspServLoc.getParentSectionID() != null) {
-            add("Parent Section ID", mspServLoc.getParentSectionID().getName(), true, infoList, userContext);
-        } else {
-            add("Parent Section ID", null, true, infoList, userContext);
-        }
+        add("Parent Section ID", mspServLoc.getParentSectionID(), true, infoList, userContext);
         add("Comments", mspServLoc.getComments(), true, infoList, userContext);
         add("Error String", mspServLoc.getErrorString(), true, infoList, userContext);
         
@@ -276,16 +244,8 @@ public class AccountInformationWidget extends WidgetControllerBase{
             add("City Code", n.getCityCode(), true, infoList, userContext);
             add("Substation Code", n.getSubstationCode(), true, infoList, userContext);
             add("Feeder", n.getFeeder(), true, infoList, userContext);
-            if (n.getPhaseCd() != null) {
-                add("Phasing code", n.getPhaseCd().getValue(), true, infoList, userContext);
-            } else {
-                add("Phasing code", null, true, infoList, userContext);
-            }
-            if (n.getEaLoc() != null) {
-                add("Engineering analysis location", n.getEaLoc().getName(), true, infoList, userContext);
-            } else {
-                add("Engineering analysis location", null, true, infoList, userContext);
-            }
+            add("Phasing code", n.getPhaseCd(), true, infoList, userContext);
+            add("Engineering analysis location", n.getEaLoc(), true, infoList, userContext);
             add("Pole Number", n.getPoleNo(), true, infoList, userContext);
             add("Section", n.getSection(), true, infoList, userContext);
             add("Township", n.getTownship(), true, infoList, userContext);
@@ -293,11 +253,7 @@ public class AccountInformationWidget extends WidgetControllerBase{
             add("Subdivision", n.getSubdivision(), true, infoList, userContext);
             add("Block", n.getBlock(), true, infoList, userContext);
             add("Lot", n.getLot(), true, infoList, userContext);
-            if (n.getLinkedTransformer() != null && n.getLinkedTransformer().getBankID() != null) {
-                add("Linked Transformer", "Bank ID: " + n.getLinkedTransformer().getBankID(), true, infoList, userContext);
-            } else {
-                add("Linked Transformer", null, true, infoList, userContext);
-            }
+            add("Linked Transformer", n.getLinkedTransformer(), true, infoList, userContext);
             add("Lineman Service Area", n.getLinemanServiceArea(), true, infoList, userContext);
         }
         return infoList;
@@ -309,15 +265,10 @@ public class AccountInformationWidget extends WidgetControllerBase{
         List<Info> infoList = new ArrayList<Info>();
         add("Meter Number", mspMeter.getMeterNo(), false, infoList, userContext);
         add("Meter Type", mspMeter.getMeterType(), false, infoList, userContext);
-        if (mspMeter.getSealNumberList() != null) {
-            add("Seal Numbers", StringUtils.join(mspMeter.getSealNumberList(), ", "), true, infoList, userContext);
-        } else {
-            add("Seal Numbers", null, true, infoList, userContext);
-        }
+        add("Seal Numbers", mspMeter.getSealNumberList(), true, infoList, userContext);
         add("AMR Type", mspMeter.getAMRType(), false, infoList, userContext);
         add("AMR Device Type", mspMeter.getAMRDeviceType(), false, infoList, userContext);
         add("AMR Vendor", mspMeter.getAMRVendor(), false, infoList, userContext);
-        
         add("In Service Date", mspMeter.getInServiceDate(), false, infoList, userContext);
         add("Out Service Date", mspMeter.getOutServiceDate(), false, infoList, userContext);
         add("Serial Number", mspMeter.getSerialNumber(), true, infoList, userContext);
@@ -338,32 +289,12 @@ public class AccountInformationWidget extends WidgetControllerBase{
             
             add("Meter kh (watthour) constant", np.getKh(), true, infoList, userContext);
             add("Watthour meter register constant", np.getKr(), true, infoList, userContext);
-            if (np.getFrequency() != null) {
-                add("Frequency", np.getFrequency().getValue(), true, infoList, userContext);
-            } else {
-                add("Frequency", null, true, infoList, userContext);
-            }
-            if (np.getNumberOfElements() != null) {
-                add("Number Of Element", np.getNumberOfElements().getValue(), true, infoList, userContext);
-            } else {
-                add("Number Of Element", null, true, infoList, userContext);
-            }
-            if (np.getBaseType() != null) {
-                add("Base Type", np.getBaseType().getValue(), true, infoList, userContext);
-            } else {
-                add("Base Type", null, true, infoList, userContext);
-            }
+            add("Frequency", np.getFrequency(), true, infoList, userContext);
+            add("Number Of Element", np.getNumberOfElements(), true, infoList, userContext);
+            add("Base Type", np.getBaseType(), true, infoList, userContext);
             add("Accuracy Class", np.getAccuracyClass(), true, infoList, userContext);
-            if (np.getElementsVoltage() != null) {
-                add("Element Voltage", np.getElementsVoltage().getValue(), true, infoList, userContext);
-            } else {
-                add("Element Voltage", null, true, infoList, userContext);
-            }
-            if (np.getSupplyVoltage() != null) {
-                add("Supply Voltage", np.getSupplyVoltage().getValue(), true, infoList, userContext);
-            } else {
-                add("Supply Voltage", null, true, infoList, userContext);
-            }
+            add("Element Voltage", np.getElementsVoltage(), true, infoList, userContext);
+            add("Supply Voltage", np.getSupplyVoltage(), true, infoList, userContext);
             add("Max Amperage", np.getMaxAmperage(), true, infoList, userContext);
             add("Test Amperage", np.getTestAmperage(), true, infoList, userContext);
             add("Reg Ratio", np.getRegRatio(), true, infoList, userContext);
@@ -393,25 +324,11 @@ public class AccountInformationWidget extends WidgetControllerBase{
             add("Substation Name", u.getSubstationName(), false, infoList, userContext);
             add("Feeder", u.getFeeder(), true, infoList, userContext);
             add("Bus", u.getBus(), true, infoList, userContext);
-            if (u.getPhaseCd() != null) {
-                add("Phasing code", u.getPhaseCd().getValue(), true, infoList, userContext);
-            } else {
-                add("Phasing code", null, true, infoList, userContext);
-            }
-            if (u.getEaLoc() != null) {
-                add("Engineering analysis location", u.getEaLoc().getName(), true, infoList, userContext);
-            } else {
-                add("Engineering analysis location", null, true, infoList, userContext);
-            }
+            add("Phasing code", u.getPhaseCd(), true, infoList, userContext);
+            add("Engineering analysis location", u.getEaLoc(), true, infoList, userContext);
             add("Transformer Bank ID", u.getTransformerBankID(), true, infoList, userContext);
             add("Meter Base ID", u.getMeterBaseID(), true, infoList, userContext);
-            if (u.getMapLocation() != null && u.getMapLocation().getCoord() != null) {
-                String xyz = makeMapLocation(u.getMapLocation().getCoord());
-                add("Map Location", xyz, true, infoList, userContext);
-            } else {
-                add("Map Location", null, true, infoList, userContext);
-            }
-            
+            add("Map Location", u.getMapLocation(), true, infoList, userContext);
         }
         
         return infoList;
@@ -465,6 +382,29 @@ public class AccountInformationWidget extends WidgetControllerBase{
                     this.value = formatDate((Date)value, userContext);
                 } else if (value instanceof Calendar) {
                     this.value = formatDate(((Calendar)value).getTime(), userContext);
+                } else if (value instanceof ObjectRef) {
+                    this.value = ((ObjectRef)value).getName();
+                } else if (value instanceof NodeIdentifier) {
+                    this.value = ((NodeIdentifier)value).getName();
+                } else if (value instanceof LinkedTransformer) {
+                    
+                    LinkedTransformer linkedTransformer = (LinkedTransformer)value;
+                    String linkedTransformerStr = "";
+                    if (linkedTransformer.getBankID() != null) {
+                        linkedTransformerStr += "Bank ID: " + linkedTransformer.getBankID();
+                    }
+                    if (linkedTransformer.getUnitList() != null && linkedTransformer.getUnitList().length > 0) {
+                        linkedTransformerStr += "Unit List: " + StringUtils.join(linkedTransformer.getUnitList(), ", ");
+                    }
+                    this.value = linkedTransformerStr;
+                } else if (value instanceof PointType) {
+                    
+                    PointType pointType = (PointType)value;
+                    if (pointType.getCoord() != null) {
+                        this.value = makeMapLocation(pointType.getCoord());
+                    }
+                } else if (value instanceof String[]) {
+                    this.value = StringUtils.join((String[])value, ", ");
                 } else {
                     this.value = value.toString();
                 }
@@ -492,7 +432,7 @@ public class AccountInformationWidget extends WidgetControllerBase{
         }
 
         public Boolean isBlank() {
-            return this.value == null || StringUtils.isBlank(this.value);
+            return StringUtils.isBlank(this.value);
         }
     }
     
