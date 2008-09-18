@@ -10,8 +10,8 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
+import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.amr.meter.search.dao.MeterSearchDao;
-import com.cannontech.amr.meter.search.model.ExtendedMeter;
 import com.cannontech.amr.meter.search.model.FilterBy;
 import com.cannontech.amr.meter.search.model.OrderBy;
 import com.cannontech.common.search.SearchResult;
@@ -20,20 +20,20 @@ import com.cannontech.database.SqlProvidingRowMapper;
 public class MeterSearchDaoImpl implements MeterSearchDao {
 
     private SimpleJdbcTemplate jdbcTemplate = null;
-    private SqlProvidingRowMapper<ExtendedMeter> meterRowMapper;
+    private SqlProvidingRowMapper<Meter> meterRowMapper;
 
     public void setJdbcTemplate(SimpleJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @SuppressWarnings("unchecked")
-    public SearchResult<ExtendedMeter> search(List<FilterBy> filterByList,
+    public SearchResult<Meter> search(List<FilterBy> filterByList,
                                           OrderBy orderBy, 
                                           final int start, 
                                           final int count) {
 
         int totalCount = 0;
-        List<ExtendedMeter> resultList = null;
+        List<Meter> resultList = null;
         
         // Get total number of records for search
         String sqlCount = "SELECT                                               " + 
@@ -66,14 +66,14 @@ public class MeterSearchDaoImpl implements MeterSearchDao {
         orderBy.toString();
 
 
-        resultList = (List<ExtendedMeter>) jdbcTemplate.getJdbcOperations()
+        resultList = (List<Meter>) jdbcTemplate.getJdbcOperations()
             .query(sql,
                    filterList.toArray(),
                    new SearchPaoResultSetExtractor(start, count));
 
-        SearchResult<ExtendedMeter> searchResult = new SearchResult<ExtendedMeter>();
+        SearchResult<Meter> searchResult = new SearchResult<Meter>();
         searchResult.setBounds(start, count, totalCount);
-        searchResult.setResultList((List<ExtendedMeter>) resultList);
+        searchResult.setResultList((List<Meter>) resultList);
         
         return searchResult;
     }
@@ -93,7 +93,7 @@ public class MeterSearchDaoImpl implements MeterSearchDao {
 
         public Object extractData(ResultSet rs) throws SQLException, DataAccessException {
             
-            List<ExtendedMeter> paoList = new ArrayList<ExtendedMeter>();
+            List<Meter> paoList = new ArrayList<Meter>();
             
             // Move the cursor to the correct spot in the result set so we only
             // process the results we want
@@ -103,7 +103,7 @@ public class MeterSearchDaoImpl implements MeterSearchDao {
             
             while(rs.next() && pageCount-- > 0){
                 
-                ExtendedMeter meter = meterRowMapper.mapRow(rs, rs.getRow());
+                Meter meter = meterRowMapper.mapRow(rs, rs.getRow());
                 paoList.add(meter);
             }
 
@@ -112,7 +112,7 @@ public class MeterSearchDaoImpl implements MeterSearchDao {
     }
     
     public void setMeterRowMapper(
-            SqlProvidingRowMapper<ExtendedMeter> meterRowMapper) {
+            SqlProvidingRowMapper<Meter> meterRowMapper) {
         this.meterRowMapper = meterRowMapper;
     }
 }

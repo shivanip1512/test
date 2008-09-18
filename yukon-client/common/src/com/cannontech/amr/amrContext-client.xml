@@ -31,7 +31,7 @@
     <bean id="meterSearchDao"
         class="com.cannontech.amr.meter.search.dao.impl.MeterSearchDaoImpl">
         <property name="jdbcTemplate" ref="simpleJdbcTemplate" />
-        <property name="meterRowMapper" ref="extendedMeterRowMapper" />
+        <property name="meterRowMapper" ref="meterRowMapper" />
     </bean>
 
     <bean id="macsScheduleService"
@@ -63,11 +63,6 @@
 
     <bean id="meterRowMapper"
         class="com.cannontech.amr.meter.dao.impl.MeterRowMapper">
-        <constructor-arg ref="paoGroupsWrapper" />
-    </bean>
-
-    <bean id="extendedMeterRowMapper"
-        class="com.cannontech.amr.meter.search.dao.impl.ExtendedMeterRowMapper">
         <constructor-arg ref="paoGroupsWrapper" />
     </bean>
 

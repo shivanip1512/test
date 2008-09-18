@@ -13,9 +13,9 @@ import org.springframework.context.MessageSourceResolvable;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 
+import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.amr.meter.search.dao.MeterSearchDao;
 import com.cannontech.amr.meter.search.model.MeterSearchField;
-import com.cannontech.amr.meter.search.model.ExtendedMeter;
 import com.cannontech.amr.meter.search.model.FilterBy;
 import com.cannontech.amr.meter.search.model.FilterByGenerator;
 import com.cannontech.amr.meter.search.model.OrderBy;
@@ -106,15 +106,15 @@ public class DeviceFilterCollectionProducer extends DeviceCollectionProducerBase
 
             @Override
             public List<YukonDevice> getDevices(int start, int size) {
-                SearchResult<ExtendedMeter> searchResult = meterSearchDao.search(filterBys, orderBy, start, size);
-                List<ExtendedMeter> resultList = searchResult.getResultList();
-                ObjectMapper<ExtendedMeter, YukonDevice> mapper = new ObjectMapper<ExtendedMeter, YukonDevice>() {
-                    public YukonDevice map(ExtendedMeter from) throws ObjectMappingException {
+                SearchResult<Meter> searchResult = meterSearchDao.search(filterBys, orderBy, start, size);
+                List<Meter> resultList = searchResult.getResultList();
+                ObjectMapper<Meter, YukonDevice> mapper = new ObjectMapper<Meter, YukonDevice>() {
+                    public YukonDevice map(Meter from) throws ObjectMappingException {
                         YukonDevice yukonDevice = new YukonDevice(from.getDeviceId(), from.getType());
                         return yukonDevice;
                     }
                 };
-                List<YukonDevice> result = new MappingList<ExtendedMeter, YukonDevice>(resultList, mapper);
+                List<YukonDevice> result = new MappingList<Meter, YukonDevice>(resultList, mapper);
                 
                 return result;
             }

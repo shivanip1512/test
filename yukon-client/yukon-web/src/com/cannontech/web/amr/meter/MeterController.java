@@ -15,7 +15,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.amr.meter.dao.impl.MeterDisplayFieldEnum;
-import com.cannontech.amr.meter.search.model.ExtendedMeter;
+import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.amr.meter.search.model.FilterBy;
 import com.cannontech.amr.meter.search.model.FilterByGenerator;
 import com.cannontech.amr.meter.search.model.MeterSearchField;
@@ -112,7 +112,7 @@ public class MeterController extends MultiActionController {
         String filterByString = MeterSearchUtils.getFilterByString(queryFilter);
 
         // Perform the search
-        SearchResult<ExtendedMeter> results = meterSearchService.search(queryFilter,
+        SearchResult<Meter> results = meterSearchService.search(queryFilter,
                                                                 orderBy,
                                                                 startIndex,
                                                                 count);
@@ -123,7 +123,7 @@ public class MeterController extends MultiActionController {
         if (results.getResultCount() == 1) {
             mav = new ModelAndView("redirect:/spring/meter/home");
 
-            ExtendedMeter meter = results.getResultList().get(0);
+            Meter meter = results.getResultList().get(0);
             mav.addObject("deviceId", meter.getDeviceId());
 
         } else {
@@ -150,9 +150,9 @@ public class MeterController extends MultiActionController {
             
             
             List<Map<MeterDisplayFieldEnum, String>> resultColumnsList = new ArrayList<Map<MeterDisplayFieldEnum, String>>();
-            List<ExtendedMeter> resultMeterList = new ArrayList<ExtendedMeter>();
+            List<Meter> resultMeterList = new ArrayList<Meter>();
             
-            for (ExtendedMeter meter : results.getResultList()) {
+            for (Meter meter : results.getResultList()) {
                 
                 Map<MeterDisplayFieldEnum, String> rowMap = new HashMap<MeterDisplayFieldEnum, String>();
                 for (MeterDisplayFieldEnum meterDisplayFieldEnum : MeterDisplayFieldEnum.values()) {
