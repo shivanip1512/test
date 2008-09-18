@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.72 $
-* DATE         :  $Date: 2008/08/08 13:48:39 $
+* REVISION     :  $Revision: 1.73 $
+* DATE         :  $Date: 2008/09/18 15:30:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1121,6 +1121,10 @@ void InitScannerGlobals(void)
     {
         string Temp = gConfigParms.getValueAsString("SCANNER_RELOAD_RATE");
         ScannerReloadRate = atoi (Temp.c_str());
+        if(ScannerReloadRate < 86400)
+        {
+            ScannerReloadRate = 86400;
+        }
     }
 
     if(gConfigParms.isOpt("SCANNER_DEBUGLEVEL"))

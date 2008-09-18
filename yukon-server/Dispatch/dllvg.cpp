@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/dllvg.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2007/07/10 20:59:31 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2008/09/18 15:30:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,7 +25,7 @@ using namespace std;
 #include "utility.h"
 
 IM_EX_CTIVANGOGH UINT gDispatchDebugLevel = 0x00000000;
-IM_EX_CTIVANGOGH UINT gDispatchReloadRate = 3600;
+IM_EX_CTIVANGOGH UINT gDispatchReloadRate = 86400;
 IM_EX_CTIVANGOGH INT gCommErrorDays = 7;
 
 
@@ -69,6 +69,10 @@ IM_EX_CTIVANGOGH void InitDispatchGlobals(void)
    if( !(str = gConfigParms.getValueAsString(var)).empty() )
    {
       gDispatchReloadRate = atoi (str.c_str());
+      if( gDispatchReloadRate < 86400 )
+      {
+          gDispatchReloadRate = 86400;
+      }
    }
 
    strcpy(var, "DISPATCH_COMMERROR_DAYS");

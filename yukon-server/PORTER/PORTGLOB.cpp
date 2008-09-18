@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTGLOB.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2008/08/06 18:24:20 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2008/09/18 15:30:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -74,7 +74,7 @@ IM_EX_PORTGLOB ULONG           PILMaxQueueSize = 1000;
 
 /* Porter only globals... */
 IM_EX_PORTGLOB CTINEXUS       PorterListenNexus;
-IM_EX_PORTGLOB INT            PorterRefreshRate = 3600;
+IM_EX_PORTGLOB INT            PorterRefreshRate = 86400;
 
 IM_EX_PORTGLOB BOOL           cParmPorterServiceLog = FALSE;
 
