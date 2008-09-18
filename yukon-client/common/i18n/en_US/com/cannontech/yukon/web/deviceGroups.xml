@@ -20,8 +20,7 @@
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.editGroupLabel">Edit Group</entry>
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.editGroupNameText">Edit Group Name</entry>
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.newGroupNameText">New Name</entry>
-<entry key="yukon.web.deviceGroups.editor.operationsContainer.editGroupNameCancelText">cancel</entry>
-<entry key="yukon.web.deviceGroups.editor.operationsContainer.newGroupNameSaveText">Save</entry>
+<entry key="yukon.web.deviceGroups.editor.operationsContainer.newGroupNameSaveText">Change Name</entry>
 
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.removeGroup">Delete Group</entry>
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.removeGroup.title">Click to delete this group</entry>
@@ -51,8 +50,7 @@
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.subgroupNameLabel">Sub Group Name</entry>
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.cannotAddSubgroupText">Cannot add sub groups to this group</entry>
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.cannotEditGroupText">Cannot edit this group</entry>
-<entry key="yukon.web.deviceGroups.editor.operationsContainer.addSubgroupCancelText">cancel</entry>
-<entry key="yukon.web.deviceGroups.editor.operationsContainer.subgroupNameSaveText">Save</entry>
+<entry key="yukon.web.deviceGroups.editor.operationsContainer.subgroupNameSaveText">Create Sub Group</entry>
 
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.addDevicesLabel">Add Devices</entry>
 

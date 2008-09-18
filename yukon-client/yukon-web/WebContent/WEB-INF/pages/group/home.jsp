@@ -20,21 +20,9 @@
             
             $(popupDiv).toggle();
             if($(popupDiv).visible() && focusElem != null){
+                $(focusElem).value = '';
                 $(focusElem).focus();
             }
-            
-        }
-        
-        function addDevice(devices){
-        
-            var ids = '';
-            $(devices).each(function(device){
-                ids += device.paoId + ',';
-            });
-        
-            $('deviceToAdd').value = ids;
-            $('addDeviceForm').submit();
-            window.event.returnValue = false;
         }
         
         function removeGroup(formName){
@@ -54,32 +42,24 @@
             return false;
         }
         
-        function changeGroupName() {
-            
-            var newName = $F('newGroupName');
-            if(newName == null || newName == '' || (newName.indexOf('/') != -1) || (newName.indexOf('\\') != -1)) {
-                alert('Please enter a New Group Name.  Group names may not contain slashes.');
-            } else {
-                return true;
+        function isValidGroupName(name) {
+            if(name == null || name == '' || (name.indexOf('/') != -1) || (name.indexOf('\\') != -1)) {
+                return false;
             }
-            
-            $('newGroupName').focus();
-            
-            return false;
+            return true;
         }
         
-        function addSubGroup() {
-            
-            var subGroupName = $F('childGroupName');
-            if(subGroupName == null || subGroupName == '' || (subGroupName.indexOf('/') != -1) || (subGroupName.indexOf('\\') != -1)) {
-                alert('Please enter a Sub Group Name.  Group names may not contain slashes.');
+        function checkAndSubmitNewName(nameId, formId, buttonId, waitImgId) {
+        
+            var newName = $F(nameId);
+            if(!isValidGroupName(newName)) {
+                alert('Group names may not contain slashes.\n\nPlease enter a new name.');
+                $(nameId).focus();
             } else {
-                return true;
+                $(buttonId).disabled = true;
+                $(waitImgId).show();
+                $(formId).submit();
             }
-            
-            $('childGroupName').focus();
-            
-            return false;
         }
         
         function submitMoveGroupForm() {
@@ -203,17 +183,35 @@
                         <h4><cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.editGroupLabel"/></h4>
                         
                         <%-- EDIT NAME --%>
-                        <a title="Click to edit group name" href="javascript:showGroupPopup('editGroupNameDiv', 'newGroupName');"><cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.editGroupNameText"/></a>
-                        <div id="editGroupNameDiv" class="popUpDiv" style="width: 330px; display: none; background-color: white; border: 1px solid black;padding: 10px 10px;">
-                            <div style="width: 100%; text-align: right;margin-bottom: 10px;">
-                                <a href="javascript:showGroupPopup('editGroupNameDiv');"><cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.editGroupNameCancelText"/></a>
-                            </div>
-                            <form method="post" action="/spring/group/editor/updateGroupName" onsubmit="return changeGroupName();">
-                                <cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.newGroupNameText"/>: <input id="newGroupName" name="newGroupName" type="text" value="${fn:escapeXml(group.name)}" />
+                        <c:set var="editGroupNamePopupId" value="editGroupNamePopup" />
+                        <cti:msg var="editGroupNameText" key="yukon.web.deviceGroups.editor.operationsContainer.editGroupNameText" />
+                        <cti:msg var="newGroupNameText" key="yukon.web.deviceGroups.editor.operationsContainer.newGroupNameText" />
+                        <cti:msg var="changeNameButtonText" key="yukon.web.deviceGroups.editor.operationsContainer.newGroupNameSaveText" />
+                        
+                        <a title="Click to edit group name" onclick="showGroupPopup('${editGroupNamePopupId}', 'newGroupName')" href="javascript:void(0);">
+                            ${editGroupNameText}
+                        </a>
+                        
+                        <tags:simplePopup id="${editGroupNamePopupId}" title="${editGroupNameText}" styleClass="groupEditorPopup"  onClose="showGroupPopup('${editGroupNamePopupId}');">
+                            
+                            <form id="editGroupNameForm" method="post" action="/spring/group/editor/updateGroupName" onsubmit="return changeGroupName();">
+                            
                                 <input type="hidden" name="groupName" value="${fn:escapeXml(group.fullName)}">
-                                <input type="submit" value="<cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.newGroupNameSaveText"/>" onclick="return changeGroupName();">
+                                
+                                <tags:nameValueContainer>
+                                    <tags:nameValue name="${newGroupNameText}">
+                                        <input id="newGroupName" name="newGroupName" type="text" value="${fn:escapeXml(group.name)}" />
+                                    </tags:nameValue>
+                                </tags:nameValueContainer>
+                                
+                                <br>
+                                <input id="editGroupNameSaveButton" type="button" value="${changeNameButtonText}" 
+                                        onclick="checkAndSubmitNewName('newGroupName', 'editGroupNameForm', 'editGroupNameSaveButton', 'editGroupNameWaitImg');">
+                                <img id="editGroupNameWaitImg" src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" style="display:none;">
+                            
                             </form>
-                        </div>
+                            
+                        </tags:simplePopup>
                         
                         <%-- REMOVE --%>
                         <form id="removeGroupForm" action="/spring/group/editor/removeGroup" method="post">
@@ -267,17 +265,38 @@
                     <%-- ADD GROUP --%>
                     <c:choose>
                         <c:when test="${group.modifiable}">
-                            <a title="<cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.addSubgroupLinkTitle"/>" href="javascript:showGroupPopup('addGroup', 'childGroupName');"><cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.addSubgroupText"/></a>
-                            <div id="addGroup" class="popUpDiv" style="width: 330px; display: none; background-color: white; border: 1px solid black;padding: 10px 10px;">
-                                <div style="width: 100%; text-align: right;margin-bottom: 10px;">
-                                    <a href="javascript:showGroupPopup('addGroup');"><cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.addSubgroupCancelText"/></a>
-                                </div>
-                                <form id="addSubGroupForm" method="post"  action="/spring/group/editor/addChild" onsubmit="return addSubGroup()">
-                                    <cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.subgroupNameLabel"/>: <input id="childGroupName" name="childGroupName" type="text" />
-                                    <input type="submit" value="<cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.subgroupNameSaveText"/>" onclick="return addSubGroup();" >
+                            
+                            <c:set var="addSubGroupPopupId" value="addSubGroupPopup" />
+                            <cti:msg var="addSubgroupText" key="yukon.web.deviceGroups.editor.operationsContainer.addSubgroupText"/>
+                            <cti:msg var="addSubgroupLinkTitle" key="yukon.web.deviceGroups.editor.operationsContainer.addSubgroupLinkTitle" />
+                            <cti:msg var="subgroupNameLabel" key="yukon.web.deviceGroups.editor.operationsContainer.subgroupNameLabel" />
+                            <cti:msg var="subgroupNameSaveText" key="yukon.web.deviceGroups.editor.operationsContainer.subgroupNameSaveText" />
+                            
+                            <a title="${addSubgroupLinkTitle}" onclick="showGroupPopup('${addSubGroupPopupId}', 'childGroupName')" href="javascript:void(0);">
+                                ${addSubgroupText}
+                            </a>
+                            
+                            <tags:simplePopup id="${addSubGroupPopupId}" title="${addSubgroupText}" styleClass="groupEditorPopup"  onClose="showGroupPopup('${addSubGroupPopupId}');">
+                            
+                                <form id="addSubGroupForm" method="post" action="/spring/group/editor/addChild" onsubmit="return changeGroupName();">
+                                
                                     <input type="hidden" name="groupName" value="${fn:escapeXml(group.fullName)}">
+                                    
+                                    <tags:nameValueContainer>
+                                        <tags:nameValue name="${subgroupNameLabel}">
+                                            <input id="childGroupName" name="childGroupName" type="text" />
+                                        </tags:nameValue>
+                                    </tags:nameValueContainer>
+                                    
+                                    <br>
+                                    <input id="addSubGroupSaveButton" type="button" value="${subgroupNameSaveText}" 
+                                           onclick="checkAndSubmitNewName('childGroupName', 'addSubGroupForm', 'addSubGroupSaveButton', 'addSubGroupWaitImg');">
+                                    <img id="addSubGroupWaitImg" src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" style="display:none;">
+                                
                                 </form>
-                            </div>
+                                
+                            </tags:simplePopup>
+                            
                         </c:when>
                         <c:otherwise>
                             <span><cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.cannotAddSubgroupText"/></span>

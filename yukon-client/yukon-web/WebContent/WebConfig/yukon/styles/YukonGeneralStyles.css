@@ -29,6 +29,10 @@ div.deviceSelectionPopup {
   width: 500px;
 }
 
+div.groupEditorPopup {
+  width: 350px;
+}
+
 #alertSpan a {
   color: #FF4B4F !important;
 }
