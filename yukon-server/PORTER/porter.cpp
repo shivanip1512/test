@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.127 $
-* DATE         :  $Date: 2008/09/18 15:30:45 $
+* REVISION     :  $Revision: 1.128 $
+* DATE         :  $Date: 2008/09/18 19:15:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1743,11 +1743,7 @@ void LoadPorterGlobals(void)
 
     if(!(Temp = gConfigParms.getValueAsString("PORTER_RELOAD_RATE")).empty())
     {
-        PorterRefreshRate = atoi(Temp.c_str());
-        if(PorterRefreshRate < 86400)
-        {
-            PorterRefreshRate = 86400;
-        }
+        PorterRefreshRate = std::max((unsigned long)gConfigParms.getValueAsULong("PORTER_RELOAD_RATE"), (unsigned long)86400);
     }
 
     if( !(Temp = gConfigParms.getValueAsString("PIL_QUEUE_SIZE")).empty())

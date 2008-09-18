@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/dllvg.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2008/09/18 15:30:45 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2008/09/18 19:15:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -68,11 +68,7 @@ IM_EX_CTIVANGOGH void InitDispatchGlobals(void)
    strcpy(var, "DISPATCH_RELOAD_RATE");
    if( !(str = gConfigParms.getValueAsString(var)).empty() )
    {
-      gDispatchReloadRate = atoi (str.c_str());
-      if( gDispatchReloadRate < 86400 )
-      {
-          gDispatchReloadRate = 86400;
-      }
+       gDispatchReloadRate = std::max((unsigned long)gConfigParms.getValueAsULong(var), (unsigned long)86400);
    }
 
    strcpy(var, "DISPATCH_COMMERROR_DAYS");
