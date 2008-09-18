@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.73 $
-* DATE         :  $Date: 2008/09/18 15:30:45 $
+* REVISION     :  $Revision: 1.74 $
+* DATE         :  $Date: 2008/09/18 18:49:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1119,12 +1119,7 @@ void InitScannerGlobals(void)
 {
     if(gConfigParms.isOpt("SCANNER_RELOAD_RATE"))
     {
-        string Temp = gConfigParms.getValueAsString("SCANNER_RELOAD_RATE");
-        ScannerReloadRate = atoi (Temp.c_str());
-        if(ScannerReloadRate < 86400)
-        {
-            ScannerReloadRate = 86400;
-        }
+        ScannerReloadRate = std::max((unsigned int)gConfigParms.getValueAsULong("SCANNER_RELOAD_RATE"), (unsigned int)86400);
     }
 
     if(gConfigParms.isOpt("SCANNER_DEBUGLEVEL"))
