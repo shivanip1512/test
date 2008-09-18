@@ -3086,7 +3086,8 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                                 {
                                     currentCapBank->setReportedCBCStateTime(timestamp);
 
-                                    if ((!currentFeeder->getRecentlyControlledFlag() && 
+                                    if ( currentCapBank->getControlStatus() != value &&
+                                        (!currentFeeder->getRecentlyControlledFlag() && 
                                          !currentSubstationBus->getRecentlyControlledFlag() &&
                                          !currentCapBank->getControlRecentlySentFlag() &&
                                          !currentCapBank->getVerificationFlag() &&
