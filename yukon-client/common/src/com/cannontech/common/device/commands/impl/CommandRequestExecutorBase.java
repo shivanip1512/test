@@ -10,15 +10,20 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.TimeoutException;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang.math.RandomUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.style.ToStringCreator;
+import org.springframework.jmx.export.annotation.ManagedAttribute;
+import org.springframework.jmx.export.annotation.ManagedResource;
 
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestExecutor;
 import com.cannontech.common.device.commands.CommandResultHolder;
@@ -41,6 +46,7 @@ import com.cannontech.yukon.BasicServerConnection;
  * Abstract base class for CommandRequestExecutor
  * @param <T> - Type of command request this executor will execute
  */
+@ManagedResource
 public abstract class CommandRequestExecutorBase<T> implements
         CommandRequestExecutor<T> {
     private BasicServerConnection porterConnection;
@@ -48,6 +54,7 @@ public abstract class CommandRequestExecutorBase<T> implements
     private CommandPermissionConverter commandPermissionConverter;
     private PorterRequestCancelService porterRequestCancelService;
     private Set<Permission> loggableCommandPermissions = new HashSet<Permission>();
+    private ConfigurationSource configurationSource;
     
     private int defaultForegroundPriority = 14;
     private int defaultBackgroundPriority = 8;
@@ -55,6 +62,8 @@ public abstract class CommandRequestExecutorBase<T> implements
     private Map<CommandCompletionCallback<? super T>, CommandResultMessageListener> msgListeners = new HashMap<CommandCompletionCallback<? super T>, CommandResultMessageListener>();
     
     Logger log = YukonLogManager.getLogger(CommandRequestExecutorBase.class);
+    private int betweenResultsMaxDelay = 60;
+    private int totalMaxDelay = 180;
 
     protected int getDefaultForegroundPriority() {
         return defaultForegroundPriority;
@@ -62,6 +71,12 @@ public abstract class CommandRequestExecutorBase<T> implements
 
     protected int getDefaultBackgroundPriority() {
         return defaultBackgroundPriority;
+    }
+    
+    @PostConstruct
+    public void initialize() {
+        betweenResultsMaxDelay = configurationSource.getInteger("COMMAND_REQUEST_EXECUTOR_BETWEEN_RESULTS_MAX_DELAY", betweenResultsMaxDelay);
+        totalMaxDelay = configurationSource.getInteger("COMMAND_REQUEST_EXECUTOR_TOTAL_MAX_DELAY", totalMaxDelay);
     }
 
     private final class CommandResultMessageListener implements MessageListener {
@@ -211,7 +226,7 @@ public abstract class CommandRequestExecutorBase<T> implements
         execute(commands, callback, user);
 
         try {
-            callback.waitForCompletion(60,180);
+            callback.waitForCompletion(betweenResultsMaxDelay,totalMaxDelay);
             return callback;
         } catch (InterruptedException e) {
             throw new CommandCompletionException("Interrupted while block for command completion",
@@ -350,6 +365,31 @@ public abstract class CommandRequestExecutorBase<T> implements
     public void setPorterRequestCancelService(
             PorterRequestCancelService porterRequestCancelService) {
         this.porterRequestCancelService = porterRequestCancelService;
+    }
+    
+    @Autowired
+    public void setConfigurationSource(ConfigurationSource configurationSource) {
+        this.configurationSource = configurationSource;
+    }
+
+    @ManagedAttribute
+    public int getBetweenResultsMaxDelay() {
+        return betweenResultsMaxDelay;
+    }
+
+    @ManagedAttribute
+    public void setBetweenResultsMaxDelay(int betweenResultsMaxDelay) {
+        this.betweenResultsMaxDelay = betweenResultsMaxDelay;
+    }
+
+    @ManagedAttribute
+    public int getTotalMaxDelay() {
+        return totalMaxDelay;
+    }
+
+    @ManagedAttribute
+    public void setTotalMaxDelay(int totalMaxDelay) {
+        this.totalMaxDelay = totalMaxDelay;
     }
 
 }
