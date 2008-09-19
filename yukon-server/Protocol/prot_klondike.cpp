@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2008/09/19 11:40:41 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2008/09/19 11:49:32 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -695,7 +695,7 @@ void Klondike::processResponse(const vector<unsigned char> &inbound)
     {
         case CommandCode_TimeSyncCCU:
         {
-            _waiting_requests.push_back()  //  add a timesync to the queue
+            //_waiting_requests.push_back()  //  add a timesync to the queue
         }
         case CommandCode_RoutingTableWrite:
         case CommandCode_RoutingTableClear:
