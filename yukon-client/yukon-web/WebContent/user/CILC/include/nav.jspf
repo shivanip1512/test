@@ -17,9 +17,6 @@ function dispStatusMsg(msgStr)
 	int HTML = 1;
 	// Table of (link, page name, dir location) pairs
 	String linkPairs[][] = {{"user_direct.jsp", DaoFactory.getAuthDao().getRolePropertyValue(liteYukonUser, DirectLoadcontrolRole.LOADCONTROL_LABEL), "/user/CILC/"},
-						  {"user_lm_control.jsp", "Auto Control", "/user/CILC/"},
-						  {"user_lm_time.jsp", "Time Based", "/user/CILC/"},
-						  {"switch_commands.jsp", "Switch Command", "/user/CILC/"},
 						  {"user_trending.jsp", "Trending", "/user/CILC/"},
   						  {"user_reporting.jsp", "Reporting", "/user/CILC/"},
   						  {"user_get_data_now.jsp", "Get Data Now", "/user/CILC/"},
@@ -57,7 +54,7 @@ function dispStatusMsg(msgStr)
 			<%
 			for( int i = 0; i < gData.length; i++ )                                                          
 			{
-				if( Integer.parseInt(gData[i][0].toString()) == graphBean.getGdefid() && linkPairs[4][FILE].equalsIgnoreCase(pageName))
+				if( Integer.parseInt(gData[i][0].toString()) == graphBean.getGdefid() && linkPairs[1][FILE].equalsIgnoreCase(pageName))
 				{%>
           <tr> 
             <td width="10"><%= bulletImg %></td>
@@ -68,7 +65,7 @@ function dispStatusMsg(msgStr)
 				{%>
           <tr> 
             <td width="10">&nbsp;</td>
-            <td style="padding:1"><a href="<%=request.getContextPath()+linkPairs[4][DIR] + linkPairs[4][FILE]+'?'%><%= "gdefid=" + gData[i][0]%>" class = "link2"><span class="NavText"><%=gData[i][1] %></span></a></td>
+            <td style="padding:1"><a href="<%=request.getContextPath()+linkPairs[1][DIR] + linkPairs[1][FILE]+'?'%><%= "gdefid=" + gData[i][0]%>" class = "link2"><span class="NavText"><%=gData[i][1] %></span></a></td>
           </tr>
 				<%}
 			}%>
@@ -104,34 +101,6 @@ function dispStatusMsg(msgStr)
           </tr>
         </table>
 	  </div>
-    </td>
-  </tr>
-  </cti:checkRole>
-  <cti:checkRole roleid="<%=UserControlRole.ROLEID%>">
-  <tr>
-    <td height="20">
-      <div align="left"><span class="NavHeader"><cti:getProperty propertyid="<%= UserControlRole.USER_CONTROL_LABEL%>"/></span><br>
-        <table width="100%" border="0" cellspacing="0" cellpadding="0">
-          <cti:checkProperty propertyid="<%=UserControlRole.AUTO%>">
-          <tr> 
-            <td width="10"><%= ((String[]) links.get("user_lm_control.jsp"))[IMG] %></td>
-            <td style="padding:1"><%= ((String[]) links.get("user_lm_control.jsp"))[HTML] %></td>
-          </tr>
-          </cti:checkProperty>
-          <cti:checkProperty propertyid="<%=UserControlRole.TIME_BASED%>">
-          <tr> 
-            <td width="10"><%= ((String[]) links.get("user_lm_time.jsp"))[IMG] %></td>
-            <td style="padding:1"><%= ((String[]) links.get("user_lm_time.jsp"))[HTML] %></td>
-          </tr>
-          </cti:checkProperty>
-          <cti:checkProperty propertyid="<%=UserControlRole.SWITCH_COMMAND%>">
-          <tr> 
-            <td width="10"><%= ((String[]) links.get("switch_commands.jsp"))[IMG] %></td>
-            <td style="padding:1"><%= ((String[]) links.get("switch_commands.jsp"))[HTML] %></td>
-          </tr>
-          </cti:checkProperty>
-        </table>
-      </div>
     </td>
   </tr>
   </cti:checkRole>
