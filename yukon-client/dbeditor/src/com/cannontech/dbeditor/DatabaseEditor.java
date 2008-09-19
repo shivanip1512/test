@@ -1042,16 +1042,22 @@ public void showCopyWizardPanel(com.cannontech.database.db.DBPersistent toCopy) 
 	showCopyWizardPanel( devicePanel );
 }
 
+
+
 private void deleteDBPersistent( DBPersistent deletable )
 {
 	try
 	{
+	    // get dbChangeMsgs BEFORE execute
+        // this may be a delete and the dbChangeMsgs may not be retrievable after execute
+	    DBChangeMsg[] msgs = getDBChangeMsgs(deletable, DBChangeMsg.CHANGE_TYPE_DELETE);
+	    
 		Transaction t = Transaction.createTransaction(Transaction.DELETE, deletable);
 		
 		deletable = t.execute();
 	
 		//fire DBChange messages out to Dispatch
-		generateDBChangeMsg( deletable, DBChangeMsg.CHANGE_TYPE_DELETE );
+		queueDBChangeMsgs(deletable, DBChangeMsg.CHANGE_TYPE_DELETE, msgs);
 	
 		fireMessage(new MessageEvent(this, deletable + " deleted successfully from the database."));
 	}
@@ -1115,8 +1121,6 @@ private void executeDeleteButton_ActionPerformed(ActionEvent event)
 	}
 
 }
-
-
 
 /**
  * Insert the method's description here.
@@ -1440,47 +1444,79 @@ public void fireMessage(MessageEvent event) {
 		((MessageEventListener) messageListeners.elementAt(i)).messageEvent(event);
 	}
 }
+
 /**
- * Insert the method's description here.
- * Creation date: (10/9/2001 1:49:24 PM)
+ * Used only to retrieve the dbChangeMsgs before executing a transaction, since that transaction 
+ * may be a delete - in which case you'll want to retrieve dbChangeMsgs, execute, then queue the changes
+ * using queueDBChangeMsgs().
+ * 
+ * This is because when it is a delete the dbChangeMsgs may not be retrievable after execute.
+ * 
+ * Use the standard generateDBChangeMsg() when not executing a delete, it does both get+queue steps.
+ * @param object
+ * @param changeType
+ * @return
  */
-private void generateDBChangeMsg( com.cannontech.database.db.DBPersistent object, int changeType  ) 
-{
-	if( object instanceof com.cannontech.database.db.CTIDbChange )
-	{
-		com.cannontech.message.dispatch.message.DBChangeMsg[] dbChange = 
-				com.cannontech.database.cache.DefaultDatabaseCache.getInstance().createDBChangeMessages(
-					(com.cannontech.database.db.CTIDbChange)object, changeType );
-
-               
-		for( int i = 0; i < dbChange.length; i++ )
-		{
-			//handle the DBChangeMsg locally
-			com.cannontech.database.data.lite.LiteBase lBase = 
-					com.cannontech.database.cache.DefaultDatabaseCache.getInstance().handleDBChangeMessage(dbChange[i]);
-
-            // Special case for point deletion
-            if (lBase == null && dbChange[i].getDatabase() == DBChangeMsg.CHANGE_POINT_DB
-			        && changeType == DBChangeMsg.CHANGE_TYPE_DELETE && object instanceof PointBase) {
-			    
-			    lBase = LiteFactory.createLite(object);
-			}
-
-			//tell our tree we may need to change the display
-			updateTreePanel( lBase, dbChange[i].getTypeOfChange() );
-         
-			getConnToDispatch().queue(dbChange[i]);
-		}
-	}
-	else
-	{
-		throw new IllegalArgumentException("Non " + 
+private DBChangeMsg[] getDBChangeMsgs(com.cannontech.database.db.DBPersistent object, int changeType) {
+    
+    com.cannontech.message.dispatch.message.DBChangeMsg[] dbChanges = null;
+    
+    if( object instanceof com.cannontech.database.db.CTIDbChange )
+    {
+        dbChanges = com.cannontech.database.cache.DefaultDatabaseCache.getInstance().createDBChangeMessages(
+                    (com.cannontech.database.db.CTIDbChange)object, changeType );
+    } else {
+        
+        throw new IllegalArgumentException("Non " + 
          com.cannontech.database.db.CTIDbChange.class.getName() + 
          " class tried to generate a " + DBChangeMsg.class.getName() + 
-			" its class was : " + object.getClass().getName() );
-	}
-		
+            " its class was : " + object.getClass().getName() );
+    }
+    
+    return dbChanges;
 }
+
+/**
+ * Queues dbChanges to dispatch.
+ * @param object
+ * @param changeType
+ * @param dbChange
+ */
+private void queueDBChangeMsgs(com.cannontech.database.db.DBPersistent object, int changeType, DBChangeMsg[] dbChange) 
+{
+	for( int i = 0; i < dbChange.length; i++ )
+	{
+		//handle the DBChangeMsg locally
+		com.cannontech.database.data.lite.LiteBase lBase = 
+				com.cannontech.database.cache.DefaultDatabaseCache.getInstance().handleDBChangeMessage(dbChange[i]);
+
+        // Special case for point deletion
+        if (lBase == null && dbChange[i].getDatabase() == DBChangeMsg.CHANGE_POINT_DB
+		        && changeType == DBChangeMsg.CHANGE_TYPE_DELETE && object instanceof PointBase) {
+		    
+		    lBase = LiteFactory.createLite(object);
+		}
+
+		//tell our tree we may need to change the display
+		updateTreePanel( lBase, dbChange[i].getTypeOfChange() );
+     
+		getConnToDispatch().queue(dbChange[i]);
+	}
+}
+
+/**
+ * Gets and queues dbChangeMsgs.
+ * Not to be used when executing a DELETE.
+ * @param object
+ * @param changeType
+ */
+private void generateDBChangeMsg( com.cannontech.database.db.DBPersistent object, int changeType  ) {
+    
+    DBChangeMsg[] msgs = getDBChangeMsgs(object, changeType);
+    queueDBChangeMsgs(object, changeType, msgs);
+}
+	
+		
 /**
  * Insert the method's description here.
  * Creation date: (3/13/2001 3:42:38 PM)
@@ -1902,11 +1938,11 @@ public void handleDBChangeMsg( final DBChangeMsg msg, final LiteBase liteBase ) 
         			//tell our tree we may need to change the display
         			updateTreePanel( liteBase, msg.getTypeOfChange() );
         		}
-
+        
         		//display a message on the message panel telling us about this event...Only if its a Device Change OR INSERT/UPDATE...other wise don't bother printing out Point Add messages.
-                if(msg.getDatabase() == DBChangeMsg.CHANGE_PAO_DB  || 
-                        msg.getTypeOfChange() == DBChangeMsg.CHANGE_TYPE_DELETE ||
-                        msg.getTypeOfChange() == DBChangeMsg.CHANGE_TYPE_UPDATE ) {
+        		if(msg.getDatabase() == DBChangeMsg.CHANGE_PAO_DB  || 
+        		        msg.getTypeOfChange() == DBChangeMsg.CHANGE_TYPE_DELETE ||
+        		        msg.getTypeOfChange() == DBChangeMsg.CHANGE_TYPE_UPDATE ) {
         		    fireMessage( new MessageEvent( DatabaseEditor.this, txtMsg.toString(), MessageEvent.INFORMATION_MESSAGE) );
         		}
 	        }

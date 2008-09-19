@@ -81,13 +81,21 @@ public class DBPersistentDaoImpl implements DBPersistentDao
         }
 
         try {
+            
+            // get dbChangeMsgs BEFORE execute
+            // this may be a delete and the dbChangeMsgs may not be retrievable after execute
+            DBChangeMsg[] dbChangeMsgs = null;
+            if (dbChangeType != DBChangeMsg.CHANGE_TYPE_NONE) {
+                dbChangeMsgs = ((CTIDbChange)item).getDBChangeMsgs(dbChangeType);
+            }
+            
+            // execute
             Transaction<DBPersistent> t = Transaction.createTransaction( transactionType, item);
             item = t.execute();
             
             //write the DBChangeMessage out to Dispatch since it was a Successful UPDATE
-            if (dbChangeType != DBChangeMsg.CHANGE_TYPE_NONE) {
+            if (dbChangeMsgs != null) {
                 
-                DBChangeMsg[] dbChangeMsgs = ((CTIDbChange)item).getDBChangeMsgs(dbChangeType);
                 for (DBChangeMsg changeMsg : dbChangeMsgs) {
                     processDBChange(changeMsg);
                 }
