@@ -342,37 +342,6 @@ private:
 
 };
 
-class CtiCCAreaMsg : public CtiCCMessage
-{
-RWDECLARE_COLLECTABLE( CtiCCAreaMsg )
-
-public:
-    CtiCCAreaMsg(CtiCCArea_vec& areas, ULONG bitMask = 0);
-    CtiCCAreaMsg(const CtiCCAreaMsg& areasMsg);
-
-    virtual ~CtiCCAreaMsg();
-
-    ULONG getMsgInfoBitMask() const { return _msgInfoBitMask; };
-    CtiCCArea_vec* getCCAreas() const     { return _ccAreas; }
-    virtual CtiMessage* replicateMessage() const;
-
-    void restoreGuts( RWvistream& );
-    void saveGuts( RWvostream&) const;
-
-    CtiCCAreaMsg& operator=(const CtiCCAreaMsg& right);
-
-    // Possible bit mask settings
-    static ULONG AllAreasSent;
-    static ULONG AreaDeleted;
-    static ULONG AreaAdded;
-
-private:
-    CtiCCAreaMsg() : CtiCCMessage("CCAreas"), _ccAreas(NULL), _msgInfoBitMask(0) {};
-    
-    ULONG _msgInfoBitMask;
-    CtiCCArea_vec* _ccAreas;
-};
-
 
 
 class CtiCCSubstationBusMsg : public CtiCCMessage

@@ -699,6 +699,7 @@ CtiCCSubstation& CtiCCSubstation::setChildVoltReductionFlag(BOOL flag)
 {                 
     if (_childVoltReductionFlag != flag)
     {
+        _stationUpdatedFlag = TRUE;
         _dirty = TRUE;
     }
     _childVoltReductionFlag = flag;

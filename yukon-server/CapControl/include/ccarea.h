@@ -101,6 +101,7 @@ RWDECLARE_COLLECTABLE( CtiCCArea )
     CtiCCOperationStats& getOperationStats();
     CtiCCConfirmationStats& getConfirmationStats();
     list <LONG>* getPointIds() {return &_pointIds;};
+    BOOL getAreaUpdatedFlag() const;
 
     void deleteCCSubs(long subId);
 
@@ -146,6 +147,7 @@ RWDECLARE_COLLECTABLE( CtiCCArea )
     CtiCCArea& setPFactor(DOUBLE pfactor);
     CtiCCArea& setEstPFactor(DOUBLE estPfactor);
     CtiCCArea& setChildVoltReductionFlag(BOOL flag);
+    CtiCCArea& setAreaUpdatedFlag(BOOL flag);
 
     void setStrategyValues(CtiCCStrategyPtr strategy);
     void checkForAndStopVerificationOnChildSubBuses(CtiMultiMsg_vec& capMessages);
@@ -226,6 +228,7 @@ RWDECLARE_COLLECTABLE( CtiCCArea )
        //don't stream
     BOOL _insertDynamicDataFlag;
     BOOL _dirty;
+    BOOL _areaUpdatedFlag;
 
     void restore(RWDBReader& rdr);
 

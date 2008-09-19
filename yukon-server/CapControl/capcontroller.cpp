@@ -229,6 +229,7 @@ void CtiCapController::controlLoop()
         CtiTime registerTimeElapsed;
         CtiCCSubstationBus_vec substationBusChanges;
         CtiMultiMsg_vec stationChanges;
+        CtiMultiMsg_vec areaChanges;
         CtiMultiMsg* multiDispatchMsg = new CtiMultiMsg();
         CtiMultiMsg* multiPilMsg = new CtiMultiMsg();
         CtiMultiMsg* multiCapMsg = new CtiMultiMsg();
@@ -317,6 +318,7 @@ void CtiCapController::controlLoop()
 
                 CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(secondsFrom1901);
                 CtiCCSubstation_vec& ccSubstations = *store->getCCSubstations(secondsFrom1901);
+                CtiCCArea_vec& ccAreas = *store->getCCGeoAreas(secondsFrom1901);
 
                 {
                     if( (secondsFrom1901%60) == 0 && secondsFrom1901 != lastThreadPulse )
@@ -748,6 +750,11 @@ void CtiCapController::controlLoop()
                                 store->updateSubstationObjectList(currentStation->getPAOId(), stationChanges);
                                 currentStation->setStationUpdatedFlag(FALSE);
                             }                
+                            if (currentArea->getAreaUpdatedFlag())
+                            {
+                                store->updateAreaObjectList(currentArea->getPAOId(), areaChanges);
+                                currentArea->setAreaUpdatedFlag(FALSE);
+                            }
                             substationBusChanges.push_back(currentSubstationBus);
                             currentSubstationBus->setBusUpdatedFlag(FALSE);
                         }
@@ -952,13 +959,28 @@ void CtiCapController::controlLoop()
                         if( stationChanges.size() > 0 )
                         {
                             CtiCCExecutorFactory f1;
-                            //CtiCCExecutor* executor1 = f1.createExecutor(new CtiCCSubstationsMsg(stationChanges, CtiCCSubstationsMsg::SubModified));
                             CtiCCExecutor* executor1 = f1.createExecutor(new CtiCCSubstationsMsg((CtiCCSubstation_vec&)stationChanges, CtiCCSubstationsMsg::SubModified));
                             try
                             {
                                 executor1->Execute();
                                 delete executor1;
                                 stationChanges.clear();
+                            }
+                            catch(...)
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                            }
+                        }
+                        if( areaChanges.size() > 0 )
+                        {
+                            CtiCCExecutorFactory f1;
+                            CtiCCExecutor* executor1 = f1.createExecutor(new CtiCCGeoAreasMsg((CtiCCArea_vec&)areaChanges));
+                            try
+                            {
+                                executor1->Execute();
+                                delete executor1;
+                                areaChanges.clear();
                             }
                             catch(...)
                             {
@@ -987,12 +1009,23 @@ void CtiCapController::controlLoop()
 
                         //send the substation changes to all cap control clients
                         executor1 = f1.createExecutor(new CtiCCSubstationsMsg(ccSubstations, CtiCCSubstationsMsg::AllSubsSent));
-
                         try
                         {
                             executor1->Execute();
                             delete executor1;
                             stationChanges.clear();//TS//DO NOT DESTROY
+                        }
+                        catch(...)
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        }
+                        executor1 = f1.createExecutor(new CtiCCGeoAreasMsg(ccAreas));
+                        try
+                        {
+                            executor1->Execute();
+                            delete executor1;
+                            areaChanges.clear();//TS//DO NOT DESTROY
                         }
                         catch(...)
                         {

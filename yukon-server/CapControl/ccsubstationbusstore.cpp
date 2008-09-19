@@ -10203,6 +10203,27 @@ void CtiCCSubstationBusStore::updateSubstationObjectList(LONG substationId, CtiM
 
 }
 
+void CtiCCSubstationBusStore::updateAreaObjectList(LONG areaId, CtiMultiMsg_vec &modifiedAreasList)
+{  
+    CtiMultiMsg_vec::iterator iter = modifiedAreasList.begin();
+    CtiCCAreaPtr area = findAreaByPAObjectID(areaId);
+    if (area != NULL)
+    {
+        while (iter != modifiedAreasList.end()) 
+        {
+            if (((CtiCCAreaPtr)*iter)->getPAOId() == areaId) 
+            {  
+                modifiedAreasList.erase(iter);
+                iter = modifiedAreasList.end();
+            }
+            else
+                iter++;
+        }
+        modifiedAreasList.push_back(area);
+    }
+
+}
+
 
 void CtiCCSubstationBusStore::addSubBusObjectsToList(list <LONG> *subBusIds, CtiMultiMsg_vec &modifiedSubsList)
 {

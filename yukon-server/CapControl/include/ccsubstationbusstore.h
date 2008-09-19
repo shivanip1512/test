@@ -283,6 +283,7 @@ public:
     void addSubstationObjectsToList(list <LONG> *subBusIds, CtiMultiMsg_vec &modifiedSubsList);
     void addSubBusObjectsToList(list <LONG> *subBusIds, CtiMultiMsg_vec &modifiedSubsList);
     void updateSubstationObjectList(LONG substationId, CtiMultiMsg_vec &modifiedStationsList);
+    void updateAreaObjectList(LONG areaId, CtiMultiMsg_vec &modifiedAreasList);
     void clearDBReloadList();
     void insertUnsolicitedCapBankList(CtiCCCapBankPtr x);
     void removeCapbankFromUnsolicitedCapBankList(CtiCCCapBankPtr x);

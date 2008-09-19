@@ -199,6 +199,8 @@ CtiCCArea& CtiCCArea::operator=(const CtiCCArea& right)
         _operationStats = right._operationStats;
         _confirmationStats = right._confirmationStats;
         
+        _areaUpdatedFlag = right._areaUpdatedFlag;
+        
     }
     return *this;
 }
@@ -291,6 +293,8 @@ void CtiCCArea::restore(RWDBReader& rdr)
     setEstPFactor(0);
 
     setVoltReductionControlValue(FALSE);
+    setChildVoltReductionFlag(FALSE);
+    setAreaUpdatedFlag(FALSE);
 
     _insertDynamicDataFlag = TRUE;
     //_dirty = FALSE;
@@ -332,9 +336,10 @@ void CtiCCArea::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
             addFlags[0] = (_ovUvDisabledFlag?'Y':'N');
             addFlags[1] = (_reEnableAreaFlag?'Y':'N');
             addFlags[2] = (_childVoltReductionFlag?'Y':'N');
-            _additionalFlags = string(char2string(*addFlags) + char2string(*(addFlags+1)) + 
-                                char2string(*(addFlags+2)));
-            _additionalFlags.append("NNNNNNNNNNNNNNNNN");
+            addFlags[3] = (_areaUpdatedFlag?'Y':'N');
+            _additionalFlags = string(char2string(*addFlags) + char2string(*(addFlags+1)) + char2string(*(addFlags+2)) + 
+                                char2string(*(addFlags+3)));
+            _additionalFlags.append("NNNNNNNNNNNNNNNN");
 
             updater.clear();
 
@@ -419,6 +424,7 @@ void CtiCCArea::setDynamicData(RWDBReader& rdr)
     _ovUvDisabledFlag = (_additionalFlags[0]=='y'?TRUE:FALSE);
     _reEnableAreaFlag = (_additionalFlags[1]=='y'?TRUE:FALSE);
     _childVoltReductionFlag = (_additionalFlags[2]=='y'?TRUE:FALSE);
+    _areaUpdatedFlag = (_additionalFlags[3]=='y'?TRUE:FALSE);
 
     rdr["controlvalue"] >> _voltReductionControlValue;
     if (_voltReductionControlPointId <= 0)
@@ -503,6 +509,15 @@ BOOL CtiCCArea::getDisableFlag() const
     return _disableflag;
 }
 
+/*---------------------------------------------------------------------------
+    getAreaUpdatedFlag()
+
+    Returns the getAreaUpdatedFlag() of the area
+---------------------------------------------------------------------------*/
+BOOL CtiCCArea::getAreaUpdatedFlag() const
+{
+    return _areaUpdatedFlag;
+}
 /*---------------------------------------------------------------------------
     getControlValue
 
@@ -819,7 +834,16 @@ CtiCCArea& CtiCCArea::setDisableFlag(BOOL disable)
     return *this;
 }
 
+/*---------------------------------------------------------------------------
+    setAreaUpdatedFlag
 
+    Sets the AreaUpdated flag of the area
+---------------------------------------------------------------------------*/
+CtiCCArea& CtiCCArea::setAreaUpdatedFlag(BOOL flag)
+{
+    _areaUpdatedFlag = flag;
+    return *this;
+}
 /*---------------------------------------------------------------------------
     setControlPointId
 
@@ -839,7 +863,9 @@ CtiCCArea& CtiCCArea::setVoltReductionControlPointId(LONG pointId)
 CtiCCArea& CtiCCArea::setVoltReductionControlValue(BOOL flag)
 {
     if(_voltReductionControlValue != flag)
+    {    
         _dirty = TRUE;
+    }
     _voltReductionControlValue = flag;
     return *this;
 }
@@ -851,7 +877,10 @@ CtiCCArea& CtiCCArea::setVoltReductionControlValue(BOOL flag)
 CtiCCArea& CtiCCArea::setChildVoltReductionFlag(BOOL flag)
 {
     if(_childVoltReductionFlag != flag)
+    {    
+        setAreaUpdatedFlag(TRUE);
         _dirty = TRUE;
+    }
     _childVoltReductionFlag = flag;
     return *this;
 }
