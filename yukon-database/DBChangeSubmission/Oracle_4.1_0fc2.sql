@@ -148,7 +148,7 @@ CREATE UNIQUE INDEX Indx_YukonGroup_groupName_UNQ ON YukonGroup (
 
 /* Start YUK-6412 */
 Update YukonListEntry
-SET EntryText = 'UtilityPro'
+SET EntryText = 'UtilityPRO'
 WHERE EntryText = 'ExpressStat Utility Pro';
 /* End YUK-6412 */
 

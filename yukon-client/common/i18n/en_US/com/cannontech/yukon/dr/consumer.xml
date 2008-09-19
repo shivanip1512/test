@@ -256,7 +256,7 @@
     <entry key="yukon.dr.consumer.hardware.type.SA_SIMPLE">SA Simple</entry>
     <entry key="yukon.dr.consumer.hardware.type.EXPRESSSTAT_HEAT_PUMP">Heat Pump</entry>
     <entry key="yukon.dr.consumer.hardware.type.ENERGYPRO">Energypro</entry>
-    <entry key="yukon.dr.consumer.hardware.type.UTILITY_PRO">UtilityPro</entry>
+    <entry key="yukon.dr.consumer.hardware.type.UTILITY_PRO">UtilityPRO</entry>
     
     <!-- changeLogin.jsp -->
     <entry key="yukon.dr.consumer.changelogin.header">Administration - Change Login</entry>

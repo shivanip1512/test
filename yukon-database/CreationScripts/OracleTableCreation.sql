@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     9/11/2008 2:05:08 PM                         */
+/* Created on:     9/19/2008 1:10:29 PM                         */
 /*==============================================================*/
 
 
@@ -8265,7 +8265,7 @@ insert into YukonListEntry values (1061,1005,-1,'SA-305',1310);
 insert into YukonListEntry values (1062,1005,-1,'LCR-5000(VERSACOM)',1311);
 insert into YukonListEntry values (1063,1005,-1,'SA Simple',1312);
 insert into YukonListEntry values (1064,1005,-1,'ExpressStat Heat Pump',1313);
-INSERT INTO YukonListEntry VALUES (1065,1005,-1,'UtilityPro',1314); 
+INSERT INTO YukonListEntry VALUES (1065,1005,-1,'UtilityPRO',1314); 
 
 insert into YukonListEntry values (1071,1006,0,'Available',1701);
 insert into YukonListEntry values (1072,1006,0,'Temp Unavail',1702);

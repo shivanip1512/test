@@ -823,7 +823,7 @@ VALUES (-724, -143, 'Expresscom Group', 24, 'Y', -1);
 
 /* Start YUK-5757 */ 
 INSERT INTO YukonListEntry 
-VALUES (1065, 1005, -1, 'UtilityPro', 1314); 
+VALUES (1065, 1005, -1, 'UtilityPRO', 1314); 
 
 INSERT INTO YukonListEntry 
 VALUES (1224, 1019, 0, 'Circulate', 2504);  
