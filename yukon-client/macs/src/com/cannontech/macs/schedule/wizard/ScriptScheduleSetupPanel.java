@@ -2187,7 +2187,7 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
         if(scriptName == null || scriptName.length() <= 0) {
     		setErrorString("The Script Name text field must be filled in or the Use Schedule Name check box must be selected.");
     		return false;
-    	}else if(!isValidFileName(scriptName) || !isValidPaoName(scriptName)) {
+    	}else if(!isValidFileName(scriptName)) {
             setErrorString("The script name cannot contain invalid file name characters.");
             return false;
         }else if(getMeterReadGroupTree().getSelectionPath() == null ) {
@@ -2208,16 +2208,6 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
             }
     	}
     	return true;
-    }
-    
-    private boolean isValidPaoName(String paoName) {
-        char[] invalids = TextFieldDocument.INVALID_CHARS_PAO; 
-        for(char invalid: invalids) {
-            if(paoName.indexOf(invalid) != -1) {
-                return false;
-            }
-        }
-        return true;
     }
     
     /* (non-Javadoc)

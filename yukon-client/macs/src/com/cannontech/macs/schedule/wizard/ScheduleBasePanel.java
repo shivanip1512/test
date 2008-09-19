@@ -6,6 +6,7 @@ package com.cannontech.macs.schedule.wizard;
 import java.util.Calendar;
 import java.util.List;
 
+import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.database.data.schedule.script.ScriptTemplateTypes;
 import com.cannontech.message.macs.message.Schedule;
@@ -1652,7 +1653,6 @@ private void initialize() {
 public boolean isInputValid() 
 {
 	Integer startSecs = null, stopSecs = null;
-
 	try
 	{		
 		java.text.SimpleDateFormat df = new java.text.SimpleDateFormat("HH:mm");
@@ -1683,12 +1683,16 @@ public boolean isInputValid()
 		setErrorString("An Exception occurred while trying to decipher the Absolute Stop Time text field or the Start Time text field");
 		return false;
 	}
-
-	if( getJTextFieldScheduleName().getText() == null 
-		 || getJTextFieldScheduleName().getText().length() <= 0 )
+	
+	String scheduleName = getJTextFieldScheduleName().getText();
+    if( scheduleName == null 
+		 || scheduleName.length() <= 0 )
 	{
 		setErrorString("The Schedule Name text field must be filled in");
 		return false;
+	}else if(!isValidPaoName(scheduleName)) {
+	    setErrorString("The Schedule Name cannot contain invalid schedule name charaters.");
+        return false;
 	}
 
 	if( getJComboBoxCategory().getEditor().getItem() == null
@@ -1752,6 +1756,16 @@ public boolean isInputValid()
 */
 
 	return true;
+}
+
+private boolean isValidPaoName(String paoName) {
+    char[] invalids = TextFieldDocument.INVALID_CHARS_PAO; 
+    for(char invalid: invalids) {
+        if(paoName.indexOf(invalid) != -1) {
+            return false;
+        }
+    }
+    return true;
 }
 
 /**
