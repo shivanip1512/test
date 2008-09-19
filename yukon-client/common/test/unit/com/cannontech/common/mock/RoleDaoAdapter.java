@@ -54,4 +54,9 @@ public class RoleDaoAdapter implements RoleDao {
             throws CommandExecutionException, TransactionException {
         return false;
     }
+    
+    @Override
+    public <E extends Enum<E>> E getRolePropertyValue(Class<E> class1, int rolePropertyID) {
+        throw new UnsupportedOperationException();
+    }
 }
