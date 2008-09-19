@@ -1,9 +1,7 @@
 package com.cannontech.yukon.cbc;
 
 
-public class SubStation extends StreamableCapObject //implements PointQualityCheckable
-{
-
+public class SubStation extends StreamableCapObject {
 
 	private Boolean ovuvDisableFlag;
 	int[] subBusIds = null;
@@ -13,11 +11,11 @@ public class SubStation extends StreamableCapObject //implements PointQualityChe
     private Integer specialAreaId;
 	private Boolean verificationFlag = false;
 	private Boolean voltReductionFlag = false;
+	private Boolean recentlyControlledFlag = false;
     
 	public SubStation(){
 		super();
 	}
-
 
 	public Boolean getOvuvDisableFlag() {
 		return ovuvDisableFlag;
@@ -91,13 +89,19 @@ public class SubStation extends StreamableCapObject //implements PointQualityChe
         verificationFlag = bool;
     }
 
-
 	public Boolean getVoltReductionFlag() {
 		return voltReductionFlag;
 	}
 
-
 	public void setVoltReductionFlag(Boolean voltReductionFlag) {
 		this.voltReductionFlag = voltReductionFlag;
+	}
+	
+	public void setRecentlyControlledFlag(Boolean value) {
+	    this.recentlyControlledFlag = value;
+	}
+	
+	public Boolean getRecentlyControlledFlag() {
+	    return this.recentlyControlledFlag;
 	}
 }

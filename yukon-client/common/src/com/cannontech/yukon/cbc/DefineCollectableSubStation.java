@@ -52,6 +52,7 @@ public class DefineCollectableSubStation extends DefineCollectableStreamableCapO
         sub.setSpecialAreaEnabled(((int)vstr.extractUnsignedInt() == 1)? new Boolean(true) : new Boolean(false));
         sub.setSpecialAreaId(vstr.extractInt());
         sub.setVoltReductionFlag( ((int)vstr.extractUnsignedInt() == 1)? new Boolean(true) : new Boolean(false) );
+        sub.setRecentlyControlledFlag( ((int)vstr.extractUnsignedInt() == 1)? new Boolean(true) : new Boolean(false) );
         
 	}
     
@@ -69,6 +70,7 @@ public class DefineCollectableSubStation extends DefineCollectableStreamableCapO
         vstr.insertUnsignedInt( (sub.getSpecialAreaEnabled().booleanValue() == true) ? 1 : 0 );
         vstr.insertUnsignedInt( sub.getSpecialAreaId() );
         vstr.insertUnsignedInt( (sub.getVoltReductionFlag().booleanValue() == true) ? 1 : 0 );
+        vstr.insertUnsignedInt( (sub.getRecentlyControlledFlag().booleanValue() == true) ? 1 : 0 );
 		
 	}
 }

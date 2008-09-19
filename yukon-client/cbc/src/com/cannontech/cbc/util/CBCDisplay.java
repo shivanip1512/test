@@ -86,6 +86,7 @@ public class CBCDisplay {
     public static final int SUB_POWER_FACTOR_COLUMN = 6;
     public static final int SUB_TIME_STAMP_COLUMN = 7;
     public static final int SUB_DAILY_OPERATIONS_COLUMN = 8;
+    public static final int SUB_SP_AREA_ENABLED = 9;
 
     public static final int SUB_ONELINE_CONTROL_METHOD_COLUMN = 9;
     public static final int SUB_ONELINE_KVAR_LOAD_COLUMN = 10;
@@ -374,10 +375,8 @@ public class CBCDisplay {
         case SUB_CURRENT_STATE_COLUMN: {
             boolean isDisabled = substation.getCcDisableFlag().booleanValue();
             String state = (isDisabled) ? "DISABLED" : "ENABLED";
-
-            boolean isDisabledOVUV = substation.getOvuvDisableFlag().booleanValue();
-            if (isDisabledOVUV) state += "-V";
-
+            if (substation.getRecentlyControlledFlag()) state += " Pending";
+            if (substation.getOvuvDisableFlag()) state += "-V";
             return state;
         }
 
@@ -385,6 +384,16 @@ public class CBCDisplay {
             String pf =  getPowerFactorText(substation.getPowerFactorValue().doubleValue(), true)     
             + " / " + getPowerFactorText(substation.getEstimatedPFValue().doubleValue(), true);
             return pf;
+        }
+        
+        case SUB_SP_AREA_ENABLED: {
+            boolean saEnabled = substation.getSpecialAreaEnabled();
+            if (saEnabled) {
+                return " SA Enabled: " + DaoFactory.getPaoDao().getYukonPAOName(substation.getSpecialAreaId());
+                
+            } else {
+                return " ";
+            }
         }
 
         default: return null;
@@ -423,28 +432,24 @@ public class CBCDisplay {
         }
 
         case SUB_CURRENT_STATE_COLUMN: {
-            String state = null;
-
-            if (subBus.getCcDisableFlag().booleanValue()) {
+            String state = "";
+            if(subBus.getCcDisableFlag()) {
                 state = "DISABLED";
-            } else if (subBus.getRecentlyControlledFlag().booleanValue()) {
-                state = getSubBusPendingState(subBus);
-
-                if (state == null) {
-                    state = "PENDING"; // we only know its pending for sure
-                }
-
-            } else if (subBus.getSwitchOverStatus().booleanValue() && CBCUtils.isDualBusEnabled(subBus)) {
-                state = "ENABLED - ALT BUS";
             } else {
                 state = "ENABLED";
             }
-
-            // show waived with a W at the end of the state
-            if (subBus.getWaiveControlFlag().booleanValue())
-                state += "-W";
-            if (subBus.getOvUvDisabledFlag().booleanValue())
+            
+            if(subBus.getRecentlyControlledFlag()) {
+                state += " Pending";
+            }
+            
+            if (subBus.getSwitchOverStatus().booleanValue() && CBCUtils.isDualBusEnabled(subBus)) {
+                state += " ALT BUS";
+            }
+            
+            if (subBus.getOvUvDisabledFlag().booleanValue()) {
                 state += "-V";
+            }
             return state;
         }
         
@@ -614,30 +619,6 @@ public class CBCDisplay {
             return "---";
         }
 
-    }
-
-    /**
-     * Discovers if the given SubBus is in any Pending state
-     */
-    public String getSubBusPendingState(SubBus subBus) {
-        for (int i = 0; i < subBus.getCcFeeders().size(); i++) {
-            com.cannontech.yukon.cbc.Feeder feeder = subBus.getCcFeeders().get(i);
-
-            int size = feeder.getCcCapBanks().size();
-            for (int j = 0; j < size; j++) {
-                CapBankDevice capBank = feeder.getCcCapBanks().elementAt(j);
-
-                if (capBank.getControlStatus().intValue() == CapControlConst.BANK_CLOSE_PENDING)
-                    return CBCUtils.getCBCStateNames()[CapControlConst.BANK_CLOSE_PENDING].getStateText();
-
-                if (capBank.getControlStatus().intValue() == CapControlConst.BANK_OPEN_PENDING)
-                    return CBCUtils.getCBCStateNames()[CapControlConst.BANK_OPEN_PENDING].getStateText();
-            }
-
-        }
-
-        // we are not pending
-        return null;
     }
 
     /**

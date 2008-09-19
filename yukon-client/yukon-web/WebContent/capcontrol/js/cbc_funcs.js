@@ -99,13 +99,13 @@ function updateStateColorGenerator(id) {
         var anchorTag = $(id);
         var state = data.value;
         var color;
-        if (state.startsWith('ENABLED')) {
+        if (state.indexOf('Pending') != -1) {
+            color = '#F09100';
+        } else if (state.startsWith('ENABLED')) {
             color = '#3C8242';
         } else if (state.startsWith('DISABLED')) {
             color = '#FF0000';
-        } else if (state.indexOf('Pending') != -1) {
-            color = '#F09100';
-        }    
+        }
         anchorTag.style.color = color;
     };
 }

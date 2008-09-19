@@ -30,20 +30,14 @@ public class SubStationFormattingService extends AbstractAreaFormatingService<Su
 
     @Override
     protected String getState(final SubStation latestValue, final CBCDisplay cbcDisplay) {
-        String state = (latestValue.getCcDisableFlag()) ? "DISABLED" : "ENABLED";
-        if (latestValue.getOvuvDisableFlag()) state += "-V";
+        String state = (String) cbcDisplay.getSubstationValueAt(latestValue, CBCDisplay.SUB_CURRENT_STATE_COLUMN);
         return state;
     }
     
     @Override
     protected String getSpecialAreaEnabled(final SubStation latestValue, final CBCDisplay cbcDisplay) {
-        boolean saEnabled = latestValue.getSpecialAreaEnabled();
-        if (saEnabled) {
-            return " SA Enabled: " + DaoFactory.getPaoDao().getYukonPAOName(latestValue.getSpecialAreaId());
-            
-        } else {
-            return " ";
-        }
+        String spEnabled = (String)cbcDisplay.getSubstationValueAt(latestValue, CBCDisplay.SUB_SP_AREA_ENABLED);
+        return spEnabled;
     }
     
     @Override
