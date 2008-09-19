@@ -143,6 +143,13 @@ public class BulkController extends BulkControllerBase {
         List<ColumnInfo> columnInfo = getDeviceCollectionReportColumnInfo(userContext);
         mav.addObject("columnInfo", columnInfo);
         
+        List<Meter> meterList = new ArrayList<Meter>();
+        for (YukonDevice device : deviceCollection.getDeviceList()) {
+            Meter meter = meterDao.getForId(device.getDeviceId());
+            meterList.add(meter);
+        }
+        mav.addObject("meterList", meterList);
+        
         return mav;
     }
     
