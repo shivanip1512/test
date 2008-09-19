@@ -15,10 +15,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.YukonDevice;
-import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.RoleDao;
 import com.cannontech.database.ListRowCallbackHandler;
 import com.cannontech.database.MaxRowCalbackHandlerRse;
 import com.cannontech.database.SqlProvidingRowMapper;
@@ -34,7 +34,7 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
     private JdbcOperations jdbcOps;
     private SqlProvidingRowMapper<Meter> meterRowMapper;
     private PaoDao paoDao;
-    private AuthDao authDao;
+    private RoleDao roleDao;
     
     private String retrieveOneByIdSql;
     private String retrieveOneByMeterNumberSql;
@@ -138,7 +138,7 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
 
     public String getFormattedDeviceName(Meter device) throws IllegalArgumentException{
         
-        MeterDisplayFieldEnum meterDisplayFieldEnumVal = authDao.getRolePropertyValue(MeterDisplayFieldEnum.class,
+        MeterDisplayFieldEnum meterDisplayFieldEnumVal = roleDao.getRolePropertyValue(MeterDisplayFieldEnum.class,
                                                                                       ConfigurationRole.DEVICE_DISPLAY_TEMPLATE);
 
         String formattedName = meterDisplayFieldEnumVal.getField(device);
@@ -221,8 +221,8 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
         this.simpleJdbcTemplate = simpleJdbcTemplate;
     }
 
-    public void setAuthDao(AuthDao authDao) {
-        this.authDao = authDao;
+    public void setRoleDao(RoleDao roleDao) {
+        this.roleDao = roleDao;
     }
 
     public void setJdbcOps(JdbcOperations jdbcOps) {

@@ -92,5 +92,7 @@ public interface RoleDao {
                                            String newVal) 
         throws CommandExecutionException, 
                TransactionException;
+    
+    public <E extends Enum<E>> E getRolePropertyValue(Class<E> class1, int rolePropertyID);
 
 }

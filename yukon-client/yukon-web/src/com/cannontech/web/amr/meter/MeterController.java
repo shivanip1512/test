@@ -81,6 +81,7 @@ public class MeterController extends MultiActionController {
     public ModelAndView search(HttpServletRequest request, HttpServletResponse response)
             throws ServletException {
 
+        LiteYukonUser user = ServletUtil.getYukonUser(request);
 
         // Set the request url and parameters as a session attribute
         String url = request.getRequestURL().toString();
@@ -145,7 +146,7 @@ public class MeterController extends MultiActionController {
             defaultDispEnumsOrder.add(MeterDisplayFieldEnum.DEVICE_TYPE);
             defaultDispEnumsOrder.add(MeterDisplayFieldEnum.ADDRESS);
             defaultDispEnumsOrder.add(MeterDisplayFieldEnum.ROUTE);
-            List<MeterDisplayFieldEnum> orderedDispEnums = orderColumnsByDisplayTemplate(defaultDispEnumsOrder);
+            List<MeterDisplayFieldEnum> orderedDispEnums = orderColumnsByDisplayTemplate(defaultDispEnumsOrder, user);
             mav.addObject("orderedDispEnums", orderedDispEnums);
             
             
@@ -172,12 +173,12 @@ public class MeterController extends MultiActionController {
         return mav;
     }
     
-    private List<MeterDisplayFieldEnum> orderColumnsByDisplayTemplate(List<MeterDisplayFieldEnum> defaultColumnOrder) {
+    private List<MeterDisplayFieldEnum> orderColumnsByDisplayTemplate(List<MeterDisplayFieldEnum> defaultColumnOrder, LiteYukonUser user) {
         
         List<MeterDisplayFieldEnum> newOrder = new ArrayList<MeterDisplayFieldEnum>();
         
         try {
-            MeterDisplayFieldEnum roleDispFieldEnumVal = authDao.getRolePropertyValue(MeterDisplayFieldEnum.class,
+            MeterDisplayFieldEnum roleDispFieldEnumVal = authDao.getRolePropertyValue(MeterDisplayFieldEnum.class, user,
                                                                                           ConfigurationRole.DEVICE_DISPLAY_TEMPLATE);
             
             newOrder.addAll(defaultColumnOrder);

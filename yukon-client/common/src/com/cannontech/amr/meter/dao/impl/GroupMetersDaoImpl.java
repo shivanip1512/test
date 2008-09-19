@@ -12,7 +12,7 @@ import com.cannontech.amr.meter.dao.GroupMetersDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.model.DeviceGroup;
-import com.cannontech.core.dao.AuthDao;
+import com.cannontech.core.dao.RoleDao;
 import com.cannontech.database.ListRowCallbackHandler;
 import com.cannontech.database.MaxRowCalbackHandlerRse;
 import com.cannontech.database.SqlProvidingRowMapper;
@@ -23,7 +23,7 @@ public class GroupMetersDaoImpl implements GroupMetersDao {
     private SqlProvidingRowMapper<Meter> meterRowMapper;
     private SimpleJdbcOperations simpleJdbcTemplate;
     private DeviceGroupProviderDao deviceGroupProviderDao;
-    private AuthDao authDao;
+    private RoleDao roleDao;
     
     private static Map<MeterDisplayFieldEnum, String> orderByMap = new HashMap<MeterDisplayFieldEnum, String>();
     static {
@@ -42,8 +42,8 @@ public class GroupMetersDaoImpl implements GroupMetersDao {
         this.simpleJdbcTemplate = simpleJdbcTemplate;
     }
     @Required
-    public void setAuthDao(AuthDao authDao) {
-        this.authDao = authDao;
+    public void setRoleDao(RoleDao roleDao) {
+        this.roleDao = roleDao;
     }
     @Required
     public void setDeviceGroupProviderDao(
@@ -57,7 +57,7 @@ public class GroupMetersDaoImpl implements GroupMetersDao {
     
     private String getOrderBySql() {
         
-        MeterDisplayFieldEnum meterDisplayFieldEnumVal = authDao.getRolePropertyValue(MeterDisplayFieldEnum.class,
+        MeterDisplayFieldEnum meterDisplayFieldEnumVal = roleDao.getRolePropertyValue(MeterDisplayFieldEnum.class,
                                                                                       ConfigurationRole.DEVICE_DISPLAY_TEMPLATE);
         return getOrderByFromMeterDisplayFieldEnum(meterDisplayFieldEnumVal);
     }

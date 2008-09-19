@@ -322,8 +322,8 @@ public class AuthDaoImpl implements AuthDao {
         return timeZone;
     }
 
-    public <E extends Enum<E>> E getRolePropertyValue(Class<E> class1, int rolePropertyID) {
-        String rolePropertyValue = roleDao.getGlobalPropertyValue(rolePropertyID);
+    public <E extends Enum<E>> E getRolePropertyValue(Class<E> class1, LiteYukonUser user, int rolePropertyID) {
+        String rolePropertyValue = this.getRolePropertyValue(user, rolePropertyID);
         E enumValue = Enum.valueOf(class1, rolePropertyValue);
         return enumValue;
     }
