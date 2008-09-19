@@ -2190,7 +2190,7 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     	}else if(!isValidFileName(scriptName)) {
             setErrorString("The script name cannot contain invalid file name characters.");
             return false;
-        }else if(getMeterReadGroupTree().getSelectionPath() == null ) {
+        }else if(templateType != ScriptTemplateTypes.NO_TEMPLATE_SCRIPT && getMeterReadGroupTree().getSelectionPath() == null ) {
             setErrorString("A meter read group must be selected.");
             return false;
         }else if(getGenerateBillingCheckBox().isSelected() && getBillingGroupTree().getSelectionPath() == null) {
