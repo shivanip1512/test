@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.79 $
-* DATE         :  $Date: 2008/09/04 14:37:03 $
+* REVISION     :  $Revision: 1.80 $
+* DATE         :  $Date: 2008/09/19 16:14:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1718,7 +1718,8 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
             if( msg->isA() == MSG_PCRETURN )
             {
                 CtiReturnMsg* ret_msg = (CtiReturnMsg*) msg;
-                bool preventBreak = (ret_msg->Status() == DEVICEINHIBITED) | (ret_msg->Status() == NoMethod);
+                bool preventBreak = (ret_msg->Status() == DEVICEINHIBITED) | (ret_msg->Status() == NoMethod) |
+                                    (ret_msg->Status() == IDNF); // IDNF means not in the database
                 DumpReturnMessage(*ret_msg);
                 HandleReturnMessage(ret_msg, good_map, bad_map, device_map, resultQueue);
                 lastReturnMessageReceived = lastReturnMessageReceived.now();
