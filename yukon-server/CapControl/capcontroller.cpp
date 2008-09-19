@@ -2179,6 +2179,7 @@ void CtiCapController::pointDataMsgByArea( long pointID, double value, unsigned 
                                 
                                 }
                             }
+                            currentArea->checkAndUpdateChildVoltReductionFlags();
                         }
                     }
                 }
@@ -2258,6 +2259,7 @@ void CtiCapController::pointDataMsgBySubstation( long pointID, double value, uns
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
     CtiCCSubstation* currentStation = NULL;
+    CtiCCArea* currentArea = NULL;
     int sCount = 0;
     std::multimap< long, CtiCCSubstationPtr >::iterator stationIter = store->findSubstationByPointID(pointID, sCount);
     while (sCount > 0)
@@ -2274,6 +2276,11 @@ void CtiCapController::pointDataMsgBySubstation( long pointID, double value, uns
                         if (value > 0)
                         {
                             currentStation->setVoltReductionFlag(TRUE);
+                            currentArea = store->findAreaByPAObjectID(currentStation->getParentId());
+                            if (currentArea != NULL)
+                            {
+                                currentArea->setChildVoltReductionFlag(TRUE);
+                            }
                             if (_AUTO_VOLT_REDUCTION)
                             {
                                 CtiCCExecutorFactory f;
@@ -2289,7 +2296,11 @@ void CtiCapController::pointDataMsgBySubstation( long pointID, double value, uns
                         if (value == 0)
                         {
                             currentStation->setVoltReductionFlag(FALSE);
-
+                            currentArea = store->findAreaByPAObjectID(currentStation->getParentId());
+                            if (currentArea != NULL)
+                            {
+                                currentArea->checkAndUpdateChildVoltReductionFlags();
+                            }
                             if (_AUTO_VOLT_REDUCTION)
                             {
                                 CtiCCExecutorFactory f;
@@ -2323,6 +2334,9 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
     CtiCCSubstationBus* currentSubstationBus = NULL;
+    CtiCCSubstation* currentStation = NULL;
+    CtiCCArea* currentArea = NULL;
+
     int subCount = 0;
     std::multimap< long, CtiCCSubstationBusPtr >::iterator subIter = store->findSubBusByPointID(pointID, subCount);
     while (subCount > 0)
@@ -2705,6 +2719,18 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                         if (value > 0)
                         {
                             currentSubstationBus->setVoltReductionFlag(TRUE);
+                            currentStation = store->findSubstationByPAObjectID(currentSubstationBus->getParentId());
+                            if (currentStation != NULL)
+                            {    
+                                currentStation->setChildVoltReductionFlag(TRUE);
+                                currentArea = store->findAreaByPAObjectID(currentStation->getParentId());
+                                if (currentArea != NULL)
+                                {
+                                    currentArea->setChildVoltReductionFlag(TRUE);
+                                }
+                            }
+                            
+                           
                             if (_AUTO_VOLT_REDUCTION)
                             {
                                 CtiCCExecutorFactory f;
@@ -2718,8 +2744,17 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                     {
                         if (value == 0)
                         {
-
                             currentSubstationBus->setVoltReductionFlag(FALSE);
+                            currentStation = store->findSubstationByPAObjectID(currentSubstationBus->getParentId());
+                            if (currentStation != NULL)
+                            {    
+                                currentStation->checkAndUpdateChildVoltReductionFlags();
+                                currentArea = store->findAreaByPAObjectID(currentStation->getParentId());
+                                if (currentArea != NULL)
+                                {
+                                    currentArea->checkAndUpdateChildVoltReductionFlags();
+                                }
+                            }
                             if (_AUTO_VOLT_REDUCTION)
                             {
                                 CtiCCExecutorFactory f;

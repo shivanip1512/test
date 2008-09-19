@@ -96,6 +96,7 @@ RWDECLARE_COLLECTABLE( CtiCCArea )
     LONG getIntegratePeriod() const;
     DOUBLE getPFactor() const;
     DOUBLE getEstPFactor() const;
+    BOOL getChildVoltReductionFlag() const;
     std::list<long>* getSubStationList(){return &_subStationIds;};
     CtiCCOperationStats& getOperationStats();
     CtiCCConfirmationStats& getConfirmationStats();
@@ -144,9 +145,11 @@ RWDECLARE_COLLECTABLE( CtiCCArea )
     CtiCCArea& setIntegratePeriod(LONG period);
     CtiCCArea& setPFactor(DOUBLE pfactor);
     CtiCCArea& setEstPFactor(DOUBLE estPfactor);
+    CtiCCArea& setChildVoltReductionFlag(BOOL flag);
 
     void setStrategyValues(CtiCCStrategyPtr strategy);
     void checkForAndStopVerificationOnChildSubBuses(CtiMultiMsg_vec& capMessages);
+    CtiCCArea& checkAndUpdateChildVoltReductionFlags();
 
     BOOL isDirty() const;
     void dumpDynamicData();
@@ -212,6 +215,7 @@ RWDECLARE_COLLECTABLE( CtiCCArea )
     string _additionalFlags;
     BOOL _ovUvDisabledFlag;
     BOOL _reEnableAreaFlag;
+    BOOL _childVoltReductionFlag;
 
     std::list<long> _subStationIds;
     std::list <long> _pointIds;

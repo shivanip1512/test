@@ -118,7 +118,8 @@ void CtiCCSubstation::restoreGuts(RWvistream& istrm)
         >> _saEnabledFlag
         >> _saEnabledId
         >> _voltReductionFlag
-        >> _recentlyControlledFlag;
+        >> _recentlyControlledFlag
+        >> _childVoltReductionFlag;
     
 
 }
@@ -155,8 +156,9 @@ void CtiCCSubstation::saveGuts(RWvostream& ostrm ) const
         << _saEnabledFlag
         << _saEnabledId
         << _voltReductionFlag
-        << _recentlyControlledFlag;
-
+        << _recentlyControlledFlag
+        << _childVoltReductionFlag;
+        
 
 }
 
@@ -182,6 +184,7 @@ CtiCCSubstation& CtiCCSubstation::operator=(const CtiCCSubstation& right)
         _ovUvDisabledFlag = right._ovUvDisabledFlag;
         _voltReductionFlag = right._voltReductionFlag;
         _voltReductionControlId = right._voltReductionControlId;
+        _childVoltReductionFlag = right._childVoltReductionFlag;
 
         _pfactor = right._pfactor;
         _estPfactor = right._estPfactor;
@@ -255,9 +258,7 @@ void CtiCCSubstation::restore(RWDBReader& rdr)
     setSaEnabledId(0);
     setRecentlyControlledFlag(FALSE);
     setStationUpdatedFlag(FALSE);
-
-
-
+    setChildVoltReductionFlag(FALSE);
 
     _insertDynamicDataFlag = TRUE;
     _dirty = TRUE;
@@ -298,9 +299,11 @@ void CtiCCSubstation::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDate
             addFlags[2] = (_voltReductionFlag?'Y':'N');
             addFlags[3] = (_recentlyControlledFlag?'Y':'N');
             addFlags[4] = (_stationUpdatedFlag?'Y':'N');
+            addFlags[5] = (_childVoltReductionFlag?'Y':'N');
             _additionalFlags = string(char2string(*addFlags) + char2string(*(addFlags+1)) + 
-                                char2string(*(addFlags+2)) + char2string(*(addFlags+3)) + char2string(*(addFlags+4)));
-            _additionalFlags.append("NNNNNNNNNNNNNNN");
+                                char2string(*(addFlags+2)) + char2string(*(addFlags+3)) + 
+                                char2string(*(addFlags+4)) +  char2string(*(addFlags+5)));
+            _additionalFlags.append("NNNNNNNNNNNNNN");
 
             updater.clear();
 
@@ -384,6 +387,7 @@ void CtiCCSubstation::setDynamicData(RWDBReader& rdr)
     _voltReductionFlag = (_additionalFlags[2]=='y'?TRUE:FALSE);
     _recentlyControlledFlag = (_additionalFlags[3]=='y'?TRUE:FALSE);
     _stationUpdatedFlag = (_additionalFlags[4]=='y'?TRUE:FALSE);
+    _childVoltReductionFlag = (_additionalFlags[5]=='y'?TRUE:FALSE);
 
     if (_voltReductionControlId <= 0)
     {
@@ -483,7 +487,15 @@ BOOL CtiCCSubstation::getVoltReductionFlag() const
 {
     return _voltReductionFlag;
 }
+/*---------------------------------------------------------------------------
+    getChildVoltReductionFlag
 
+    Returns the ChildVoltReduction flag of the substation
+---------------------------------------------------------------------------*/
+BOOL CtiCCSubstation::getChildVoltReductionFlag() const
+{
+    return _childVoltReductionFlag;
+}
 /*---------------------------------------------------------------------------
     getVoltReductionControlId
 
@@ -676,6 +688,20 @@ CtiCCSubstation& CtiCCSubstation::setVoltReductionFlag(BOOL flag)
         _dirty = TRUE;
     }
     _voltReductionFlag = flag;
+    return *this;
+}
+/*---------------------------------------------------------------------------
+    setChildVoltReductionFlag
+
+    Sets the ChildVoltReduction flag of the substation
+---------------------------------------------------------------------------*/
+CtiCCSubstation& CtiCCSubstation::setChildVoltReductionFlag(BOOL flag)
+{                 
+    if (_childVoltReductionFlag != flag)
+    {
+        _dirty = TRUE;
+    }
+    _childVoltReductionFlag = flag;
     return *this;
 }
 
@@ -916,3 +942,33 @@ CtiCCSubstation& CtiCCSubstation::checkAndUpdateRecentlyControlledFlag()
 }
 
 
+CtiCCSubstation& CtiCCSubstation::checkAndUpdateChildVoltReductionFlags()
+{
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+
+    CtiCCSubstationBusPtr currentSubstationBus = NULL;
+    std::list <long>::iterator busIter = NULL;
+
+    int numberOfSubBusesVoltReducting = 0;
+
+    busIter = getCCSubIds()->begin();
+
+    while (busIter != getCCSubIds()->end() )
+    {
+        currentSubstationBus = store->findSubBusByPAObjectID(*busIter);
+        busIter++;
+
+        if (currentSubstationBus->getVoltReductionFlag())
+        {
+            setChildVoltReductionFlag(TRUE);
+            numberOfSubBusesVoltReducting += 1;
+        }
+    }
+    if (numberOfSubBusesVoltReducting == 0)
+    {
+        setChildVoltReductionFlag(FALSE);
+    }
+
+    return *this;
+}

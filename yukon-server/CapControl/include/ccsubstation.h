@@ -74,13 +74,13 @@ RWDECLARE_COLLECTABLE( CtiCCSubstation )
     BOOL getStationUpdatedFlag() const;
     LONG getSaEnabledId() const;
     LONG getVoltReductionControlId() const;
-
+    BOOL getChildVoltReductionFlag() const;
     
     list <LONG>* getCCSubIds(){return &_subBusIds;};
     CtiCCOperationStats& getOperationStats();
     CtiCCConfirmationStats& getConfirmationStats();
 
-    list <LONG>* getPointIds() {return &_pointIds;};
+    list <LONG>* getPointIds() {return &_pointIds; };
 
     CtiCCSubstation& setPAOId(LONG id);
     CtiCCSubstation& setPAOCategory(const string& category);
@@ -101,10 +101,12 @@ RWDECLARE_COLLECTABLE( CtiCCSubstation )
     CtiCCSubstation& setStationUpdatedFlag(BOOL flag);
     CtiCCSubstation& setSaEnabledId(LONG saId);
     CtiCCSubstation& setVoltReductionControlId(LONG pointid);
+    CtiCCSubstation& setChildVoltReductionFlag(BOOL flag);
     
     DOUBLE calculatePowerFactor(DOUBLE kvar, DOUBLE kw);
     void checkForAndStopVerificationOnChildSubBuses(CtiMultiMsg_vec& capMessages);
     CtiCCSubstation& checkAndUpdateRecentlyControlledFlag();
+    CtiCCSubstation& checkAndUpdateChildVoltReductionFlags();
     BOOL isDirty() const;
     void dumpDynamicData();
     void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
@@ -140,6 +142,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstation )
     BOOL _voltReductionFlag;
     BOOL _recentlyControlledFlag;
     BOOL _stationUpdatedFlag;
+    BOOL _childVoltReductionFlag;
 
     DOUBLE _pfactor;
     DOUBLE _estPfactor;
