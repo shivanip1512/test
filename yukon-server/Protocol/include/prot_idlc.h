@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2008/03/31 21:17:35 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2008/09/19 11:40:41 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -101,15 +101,14 @@ private:
     };
 
     //  outbound-specific
-    unsigned char _out_data_length;
-    unsigned char _out_data[255];
+    std::vector<unsigned char> _out_data;
     unsigned long _out_sent;
     unsigned char _master_sequence;
     frame _out_frame;
 
     //  inbound-specific
     unsigned char _in_data_length;
-    unsigned char _in_data[255];
+    std::vector<unsigned char> _in_data;
     unsigned long _in_expected;
     unsigned long _in_actual;
     unsigned long _in_recv;
@@ -147,7 +146,7 @@ private:
     bool isControlFrame (const frame &f);
     bool isCompleteFrame(const frame &f, unsigned bytes_received);
 
-    bool setOutData( const unsigned char *buf, unsigned len );
+    bool setOutData(const std::vector<unsigned char> &buf);
 
     enum IDLCFrameEnum
     {
@@ -186,13 +185,12 @@ public:
     virtual bool isTransactionComplete( void ) const;
     virtual bool errorCondition( void ) const;
 
-    bool send( const unsigned char *buf, unsigned len );
+    bool send( const std::vector<unsigned char> &buf );
     bool recv( void );
 
     bool init( void );
 
-    void getInboundData( unsigned char *buf );
-    unsigned getInboundDataLength( void ) const;
+    void getInboundData( std::vector<unsigned char> &buf );
 
     unsigned getMaximumPayload( void ) const;
 

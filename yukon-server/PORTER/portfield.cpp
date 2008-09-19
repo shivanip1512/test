@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.224 $
-* DATE         :  $Date: 2008/08/14 15:57:41 $
+* REVISION     :  $Revision: 1.225 $
+* DATE         :  $Date: 2008/09/19 11:40:41 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -100,6 +100,7 @@
 #include "mgr_device.h"
 #include "dev_base.h"
 #include "dev_cbc6510.h"
+#include "dev_ccu721.h"
 #include "dev_ied.h"
 #include "dev_schlum.h"
 #include "dev_remote.h"
@@ -516,69 +517,66 @@ bool RemoteReset(CtiDeviceSPtr &Device, CtiPortSPtr Port)
     bool didareset = false;
     extern LoadRemoteRoutes(CtiDeviceSPtr RemoteRecord);
 
-    ULONG j;
-    INT   eRet = 0;
-
     if(Port->getPortID() == Device->getPortID() && !Device->isInhibited() )
     {
-        if(0 <= Device->getAddress() && Device->getAddress() < MAXIDLC)
+        if( Device->getAddress() >= 0      &&
+            Device->getAddress() < MAXIDLC &&
+            Device->hasTrxInfo() )
         {
             CtiTransmitterInfo *pInfo = Device->getTrxInfo();
 
             if(pInfo)
             {
-                if( GetPreferredProtocolWrap(Port, Device) == ProtocolWrapIDLC ) // 031003 CGP // Port->getProtocolWrap() == ProtocolWrapIDLC)
+                if( GetPreferredProtocolWrap(Port, Device) == ProtocolWrapIDLC &&
+                    Device->getAddress() != RTUGLOBAL &&
+                    Device->getAddress() != CCUGLOBAL &&
+                    Device->getType()    == TYPE_CCU711 )
                 {
-                    if(Device->getAddress() != RTUGLOBAL && Device->getAddress() != CCUGLOBAL)
+                    didareset = true;
+
+                    INT   eRet = 0;
+
+                    if(!Port->isDialup())
                     {
-                        switch(Device->getType())
+                        ULONG j = 0;
+                        while((eRet = IDLCInit(Port, Device, &pInfo->RemoteSequence)) && j++ < 1);
+                    }
+
+                    if(!eRet)
+                    {
+                        if(ResetAll711s)
                         {
-                        case TYPE_CCU711:
+                            /* Reset the whole thing */
+                            IDLCFunction (Device, 0, DEST_BASE, COLD);
+                        }
+                        else
+                        {
+                            /* Download the delay sets */
+                            IDLCSetDelaySets (Device);
+
+                            /* flush the queue's */
                             {
-                                didareset = true;
-
-                                if(!Port->isDialup())
-                                {
-                                    j = 0;
-                                    while((eRet = IDLCInit(Port, Device, &pInfo->RemoteSequence)) && j++ < 1);
-                                }
-
-                                if(!eRet)
-                                {
-                                    if(ResetAll711s)
-                                    {
-                                        /* Reset the whole thing */
-                                        IDLCFunction (Device, 0, DEST_BASE, COLD);
-                                    }
-                                    else
-                                    {
-                                        /* Download the delay sets */
-                                        IDLCSetDelaySets (Device);
-
-                                        /* flush the queue's */
-                                        {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << CtiTime() << " Reset CCU: " << Device->getName() << "'s queueing control" << endl;
-                                        }
-                                        IDLCFunction (Device, 0, DEST_QUEUE, CLRDY);
-
-                                        /* Check if we need to load the routes */
-                                        if(LoadRoutes)
-                                        {
-                                            LoadRemoteRoutes(Device);
-                                        }
-                                    }
-                                }
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " Reset CCU: " << Device->getName() << "'s queueing control" << endl;
                             }
-                            break;
+                            IDLCFunction (Device, 0, DEST_QUEUE, CLRDY);
 
-                        default:
-                            break;
+                            /* Check if we need to load the routes */
+                            if(LoadRoutes)
+                            {
+                                LoadRemoteRoutes(Device);
+                            }
                         }
                     }
                 }
                 pInfo->clearStatus(NEEDSRESET);
             }
+        }
+        else if( Device->getType() == TYPE_CCU721 )
+        {
+            didareset = true;
+
+            LoadRemoteRoutes(Device);
         }
     }
 
@@ -1298,6 +1296,17 @@ void processPreloads(CtiPortSPtr Port)
 
 
 
+struct statistics_handler
+{
+    operator()(OUTMESS &om)
+    {
+        statisticsNewCompletion( om.Port, om.DeviceID, om.TargetID, om.EventCode, om.MessageFlags );
+
+        //  We had a comm error and need to report it.
+        addCommResult(om.TargetID, (om.EventCode & 0x3fff) != NORMAL, false);
+    }
+};
+
 
 INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceSPtr &Device)
 {
@@ -1378,68 +1387,67 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     case TYPE_FMU:
                     case TYPE_CCU721:
                     {
-                        CtiDeviceSingle *ds = static_cast<CtiDeviceSingle *>(Device.get());
+                        CtiDeviceSingleSPtr ds = boost::static_pointer_cast<CtiDeviceSingle>(Device);
                         int comm_status = NoError;
 
-                        if( Device->isSingle() )
+                        if( !Device->isSingle() )
                         {
-                            if( !(status = ds->recvCommRequest(OutMessage)) )
-                            {
-                                if(Device->getType() == TYPE_SNPP)
-                                {
-                                    Port->close(0);  //  Close the port so it re-opens every time!
-                                }
-
-                                while( !ds->isTransactionComplete() )
-                                {
-                                    if( !(status = ds->generate(trx)) )
-                                    {
-                                        comm_status = Port->outInMess(trx, Device, traceList);
-
-                                        status = ds->decode(trx, comm_status);
-                                    }
-
-                                    //  don't record boring outbounds - they don't indicate failure
-                                    if( status || trx.getInCountExpected() )
-                                    {
-                                        processCommResult(status,OutMessage->DeviceID,OutMessage->TargetID,OutMessage->Retry > 0, Device);
-                                    }
-
-                                    // Prepare for tracing
-                                    if(trx.doTrace(comm_status))
-                                    {
-                                        Port->traceXfer(trx, traceList, Device, comm_status);
-                                    }
-
-                                    DisplayTraceList(Port, traceList, true);
-                                }
-
-                                //  send real pointdata messages here
-                                ds->sendDispatchResults(VanGoghConnection);
-
-                                //  send text results to Commander here via return string
-                                ds->sendCommResult(InMessage);
-
-                                queue< CtiVerificationBase * > verification_queue;
-
-                                ds->getVerificationObjects(verification_queue);
-
-                                PorterVerificationThread.push(verification_queue);
-                            }
-                            else
-                            {
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " **** Checkpoint - error \"" << status << "\" in recvCommRequest() for \"" << Device->getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                }
-                            }
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " **** Checkpoint - device \'" << Device->getName() << "\' is not a CtiDeviceSingle, aborting communication **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+                        else if( status = ds->recvCommRequest(OutMessage) )
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " **** Checkpoint - error \"" << status << "\" in recvCommRequest() for \"" << Device->getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
                         else
                         {
+                            if(Device->getType() == TYPE_SNPP)
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint - device \'" << Device->getName() << "\' is not a CtiDeviceSingle, aborting communication **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                Port->close(0);  //  Close the port so it re-opens every time!
                             }
+
+                            while( !ds->isTransactionComplete() )
+                            {
+                                if( !(status = ds->generate(trx)) )
+                                {
+                                    comm_status = Port->outInMess(trx, Device, traceList);
+
+                                    status = ds->decode(trx, comm_status);
+                                }
+
+                                //  don't record boring outbounds - they don't indicate failure
+                                if( status || trx.getInCountExpected() )
+                                {
+                                    processCommResult(status,OutMessage->DeviceID,OutMessage->TargetID,OutMessage->Retry > 0, Device);
+                                }
+
+                                // Prepare for tracing
+                                if(trx.doTrace(comm_status))
+                                {
+                                    Port->traceXfer(trx, traceList, Device, comm_status);
+                                }
+
+                                DisplayTraceList(Port, traceList, true);
+                            }
+
+                            //  send real pointdata messages here
+                            ds->sendDispatchResults(VanGoghConnection);
+
+                            //  send text results to Commander here via return string
+                            ds->sendCommResult(InMessage);
+
+                            vector<OUTMESS> om_statistics;
+                            ds->getTargetDeviceStatistics(om_statistics);
+
+                            for_each(om_statistics.begin(),
+                                     om_statistics.end(),
+                                     statistics_handler());
+
+                            queue< CtiVerificationBase * > verification_queue;
+                            ds->getVerificationObjects(verification_queue);
+
+                            PorterVerificationThread.push(verification_queue);
                         }
 
                         break;
@@ -3516,9 +3524,9 @@ INT ValidateDevice(CtiPortSPtr Port, CtiDeviceSPtr &Device, OUTMESS *&OutMessage
 
     bool foreignCCU = (gForeignCCUPorts.find(Device->getPortID()) != gForeignCCUPorts.end());
 
-    if(!foreignCCU && Device->getAddress() != 0xffff)
+    if(!foreignCCU && Device->getAddress() != 0xffff && !Device->isInhibited())
     {
-        if( Device->hasTrxInfo() && !Device->isInhibited() ) // Does this device type support TrxInfo?
+        if( Device->hasTrxInfo() ) // Does this device type support TrxInfo?
         {
             CtiTransmitterInfo *pInfo = Device->getTrxInfo();
 
@@ -3546,6 +3554,31 @@ INT ValidateDevice(CtiPortSPtr Port, CtiDeviceSPtr &Device, OUTMESS *&OutMessage
                     status = RETRY_SUBMITTED;
 
                 }
+            }
+        }
+        else if( Device->getType() == TYPE_CCU721 )
+        {
+            /* Go Ahead an start this one up */
+            if( boost::static_pointer_cast<Cti::Device::CCU721>(Device)->needsReset()
+                && RemoteReset(Device, Port) )
+            {
+                // This device probably sourced some OMs.  We should requeue the OM which got us here!
+                OutMessage->Priority = MAXPRIORITY - 1;     // Get this message out next (after the reset messages).
+
+                if(Port->writeQueue(OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority, PortThread))
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Error Replacing entry onto Queue" << endl;
+                    }
+                    delete OutMessage;
+                }
+
+                OutMessage = 0;
+                Sleep(100L);
+
+                status = RETRY_SUBMITTED;
+
             }
         }
     }

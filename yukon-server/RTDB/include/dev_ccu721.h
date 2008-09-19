@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2008/09/05 15:45:37 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2008/09/19 11:40:41 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -34,7 +34,10 @@ private:
 
     CtiTableDeviceAddress _address;
 
-    OUTMESS *om;
+    bool _initialized;  //  this may need to be muxed, since a couple of different
+                        //    threads call buildCommand() for LoadRoutes
+
+    std::vector<OUTMESS> _statistics;
 
     enum
     {
@@ -57,6 +60,7 @@ public:
         Command_LoadQueue,
         Command_ReadQueue,
         Command_LoadRoutes,
+        Command_Timesync
     };
 
     virtual void getSQL(RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &selector);
@@ -69,6 +73,8 @@ public:
 
     INT ErrorDecode (INMESS *InMessage, CtiTime &Now, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, list<OUTMESS *> &outList, bool &overrideExpectMore);
     INT ResultDecode(INMESS *InMessage, CtiTime &Now, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, list<OUTMESS *> &outList);
+
+    bool needsReset() const;
 
     //  these commands just indicate that messages are queued into the Yukon-side CCU device;
     //    it does not indicate whether the messages are currently loaded into the field device
@@ -86,6 +92,8 @@ public:
 
     virtual int recvCommRequest(OUTMESS *OutMessage);
     virtual int sendCommResult (INMESS  *InMessage);
+
+    void getTargetDeviceStatistics(vector< OUTMESS > &om_statistics);
 
     void processInbound(const OUTMESS *om, INMESS *im);
 };

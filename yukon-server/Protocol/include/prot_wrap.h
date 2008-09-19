@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2008/03/31 21:17:35 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2008/09/19 11:40:41 $
 *
 * Copyright (c) 2007 Cannon Technologies. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,13 +27,12 @@ namespace Protocol  {
 class Wrap : public Interface
 {
 public:
-    virtual bool send( const unsigned char *payload, unsigned len ) = 0;
+    virtual bool send( const std::vector<unsigned char> &buf ) = 0;
     virtual bool recv( void ) = 0;
 
     virtual bool init( void ) = 0;
 
-    virtual unsigned getInboundDataLength( void ) const = 0;
-    virtual void getInboundData( unsigned char *buf ) = 0;
+    virtual void getInboundData( std::vector<unsigned char> &buf ) = 0;
 
     virtual unsigned getMaximumPayload() const = 0;
 };

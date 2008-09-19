@@ -5,8 +5,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.66 $
-* DATE         :  $Date: 2008/08/21 18:40:41 $
+* REVISION     :  $Revision: 1.67 $
+* DATE         :  $Date: 2008/09/19 11:40:41 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -711,15 +711,9 @@ bool CtiDeviceSingle::isTransactionComplete(void)
 }
 
 
-void CtiDeviceSingle::sendDispatchResults(CtiConnection &vg_connection)
-{
-    //if( getProtocol() )     retval = getProtocol()->isTransactionComplete();
-}
-
-
-void CtiDeviceSingle::getVerificationObjects(queue< CtiVerificationBase * > &work_queue)
-{
-}
+void CtiDeviceSingle::sendDispatchResults(CtiConnection &vg_connection)                     { }
+void CtiDeviceSingle::getVerificationObjects(queue< CtiVerificationBase * > &work_queue)    { }
+void CtiDeviceSingle::getTargetDeviceStatistics(vector< OUTMESS > &om_statistics)           { }
 
 
 INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,

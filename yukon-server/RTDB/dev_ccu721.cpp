@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2008/09/05 15:45:37 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2008/09/19 11:40:41 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,7 +28,8 @@ using Cti::Protocol::Klondike;
 namespace Cti       {
 namespace Device    {
 
-CCU721::CCU721()
+CCU721::CCU721() :
+    _initialized(false)
 {
 }
 
@@ -168,6 +169,11 @@ INT CCU721::ResultDecode( INMESS *InMessage, CtiTime &Now, list<CtiMessage *> &v
 }
 
 
+bool CCU721::needsReset() const
+{
+    return !_initialized;
+}
+
 void CCU721::getSQL(RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &selector)
 {
     Inherited::getSQL(db, keyTable, selector);
@@ -213,7 +219,7 @@ INT CCU721::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
         !(OutMessage->EventCode & DTRAN) )
     {
         //  the OM is now owned by _klondike
-        _klondike.addQueuedWork(OutMessage);
+        _klondike.addQueuedWork(OutMessage, false);
 
         *dqcnt = _klondike.queuedWorkCount();
 
@@ -224,7 +230,7 @@ INT CCU721::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
 }
 
 
-//  called by KickerThread() via applyKick()
+//  called by KickerThread() via applyKick() and by LoadRemoteRoutes()
 bool CCU721::buildCommand(CtiOutMessage *&OutMessage, Commands command)
 {
     bool command_built = false;
@@ -236,6 +242,8 @@ bool CCU721::buildCommand(CtiOutMessage *&OutMessage, Commands command)
         {
             case Command_LoadRoutes:
             {
+                _initialized = true;
+
                 OutMessage->Sequence = Klondike::Command_LoadRoutes;
 
                 CtiRouteManager::spiterator itr;
@@ -289,6 +297,15 @@ bool CCU721::buildCommand(CtiOutMessage *&OutMessage, Commands command)
 
                 break;
             }
+            case Command_Timesync:
+            {
+                OutMessage->Priority = MAXPRIORITY;
+                OutMessage->Sequence = Klondike::Command_TimeSync;
+
+                command_built = true;
+
+                break;
+            }
         }
 
         if( command_built )
@@ -320,8 +337,6 @@ int CCU721::recvCommRequest(OUTMESS *OutMessage)
     return error;
 }
 
-
-extern bool addCommResult(long deviceID, bool wasFailure, bool retryGtZero);
 
 int CCU721::sendCommResult(INMESS *InMessage)
 {
@@ -355,19 +370,49 @@ int CCU721::sendCommResult(INMESS *InMessage)
     }
     else
     {
+        Klondike::result_queue_t results;
+
+        _klondike.getResults(results);
+
         switch( _klondike.getCommand() )
         {
             case Klondike::Command_DirectTransmission:
+            {
+                if( results.empty() )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Cti::Device::CCU721::sendCommResult() : results.empty() : \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+                else
+                {
+                    Klondike::result_pair_t result = results.front();
+                    results.pop();
+
+                    const OUTMESS *om = result.first;
+                    INMESS  *im = result.second;
+
+                    if( !im->EventCode )
+                    {
+                        processInbound(om, im);
+                    }
+
+                    //  copy "im" into the InMessage passed in
+                    *InMessage = *im;
+
+                    delete im;
+                    delete om;
+                }
+
+                break;
+            }
             case Klondike::Command_ReadQueue:
             {
-                Klondike::result_queue_t results;
-
-                _klondike.getResults(results);
+                status = _klondike.errorCode();
 
                 if( results.empty() )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** No results in Cti::Device::CCU721::sendCommResult() for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Cti::Device::CCU721::sendCommResult() : results.empty() : \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 while( !results.empty() )
@@ -383,12 +428,15 @@ int CCU721::sendCommResult(INMESS *InMessage)
                     int socket_error;
                     unsigned long bytes_written;
 
-                    //We had a comm error and need to report it.
-                    //addCommResult(im->TargetID, (im->EventCode & 0x3fff) != NORMAL, false);
+                    OUTMESS statistics_report;
 
-                    //statisticsNewCompletion(im->Port, im->DeviceID, im->TargetID, im->EventCode & 0x3fff, im->MessageFlags);
+                    statistics_report.Port          = im->Port;
+                    statistics_report.DeviceID      = im->DeviceID;
+                    statistics_report.TargetID      = im->TargetID;
+                    statistics_report.EventCode     = im->EventCode & 0x3fff;
+                    statistics_report.MessageFlags  = im->MessageFlags;
 
-                    //  WE NEED TO EXPORT THE STATISTICS TO PORTFIELD SO IT CAN UPDATE THEM FOR US
+                    _statistics.push_back(statistics_report);
 
                     /* this is a completed result so send it to originating process */
                     im->EventCode |= DECODED;
@@ -420,6 +468,16 @@ int CCU721::sendCommResult(INMESS *InMessage)
     }
 
     return status;
+}
+
+
+void CCU721::getTargetDeviceStatistics(std::vector< OUTMESS > &om_statistics)
+{
+    om_statistics.insert(om_statistics.end(),
+                         _statistics.begin(),
+                         _statistics.end());
+
+    _statistics.clear();
 }
 
 

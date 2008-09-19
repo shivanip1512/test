@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2008/09/05 15:45:37 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2008/09/19 11:40:41 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -64,7 +64,7 @@ void IDLC::sendFrame( CtiXfer &xfer )
 {
     unsigned short crc;
 
-    unsigned char out_frame_length  = _out_data_length + Frame_DataPacket_OverheadLength;
+    unsigned char out_frame_length  = _out_data.size() + Frame_DataPacket_OverheadLength;
 
     //  byte 0
     _out_frame.header.flag      = FramingFlag;
@@ -79,9 +79,9 @@ void IDLC::sendFrame( CtiXfer &xfer )
     _out_frame.header.control.request_sequence  = _master_sequence;
     _out_frame.header.control.response_sequence = _slave_sequence;
 
-    _out_frame.data[0] = _out_data_length;
+    _out_frame.data[0] = _out_data.size();
 
-    memcpy(_out_frame.data + 1, _out_data, _out_data_length);
+    std::copy(_out_data.begin(), _out_data.end(), _out_frame.data + 1);
 
     //  the CRC omits the framing byte
     crc = NCrcCalc_C(_out_frame.raw + 1, out_frame_length - 1 - 2);  //  minus 1 for the framing byte and 2 for the CRC
@@ -355,9 +355,8 @@ int IDLC::decode( CtiXfer &xfer, int status )
                         _slave_sequence  = (_slave_sequence + 1) % 8;
 
                         //  and copy the data
-                        _in_data_length = _in_frame.data[0];
-
-                        memcpy(_in_data, _in_frame.data + 1, _in_data_length);
+                        _in_data.assign(_in_frame.data + 1,
+                                        _in_frame.data + 1 + _in_frame.data[0]);
 
                         //  we're done
                         _io_operation  = IO_Operation_Complete;
@@ -568,9 +567,9 @@ bool IDLC::errorCondition( void ) const
 }
 
 
-bool IDLC::send( const unsigned char *buf, unsigned len )
+bool IDLC::send( const std::vector<unsigned char> &buf )
 {
-    return setOutData(buf, len);
+    return setOutData(buf);
 }
 
 
@@ -593,16 +592,16 @@ bool IDLC::init( void )
 }
 
 
-bool IDLC::setOutData( const unsigned char *buf, unsigned len )
+bool IDLC::setOutData( const std::vector<unsigned char> &buf )
 {
-    if( buf && len && len < Frame_MaximumDataLength )
+    _out_data.clear();
+
+    if( !buf.empty() && buf.size() < Frame_MaximumDataLength )
     {
         _io_operation  = IO_Operation_Output;
         _control_state = Control_State_OK;
 
-        memcpy(_out_data, buf, len);
-
-        _out_data_length = len;
+        _out_data.assign(buf.begin(), buf.end());
 
         //  this is the only place these are reset to 0
         _input_loops     = 0;
@@ -616,25 +615,15 @@ bool IDLC::setOutData( const unsigned char *buf, unsigned len )
     {
         _io_operation    = IO_Operation_Invalid;
         _control_state   = Control_State_OK;
-        _out_data_length = 0;
     }
 
-    return _out_data_length > 0;
+    return !_out_data.empty();
 }
 
 
-void IDLC::getInboundData( unsigned char *buf )
+void IDLC::getInboundData( vector<unsigned char> &buf )
 {
-    if( buf )
-    {
-        memcpy(buf, _in_data, _in_data_length);
-    }
-}
-
-
-unsigned IDLC::getInboundDataLength( void ) const
-{
-    return _in_data_length;
+    buf.assign(_in_data.begin(), _in_data.end());
 }
 
 

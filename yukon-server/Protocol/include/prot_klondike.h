@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2008/09/05 15:45:37 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2008/09/19 11:40:41 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -74,21 +74,36 @@ private:
     unsigned short _masterAddress,
                    _slaveAddress;
 
-    void refreshMCTTimeSync(BSTRUCT &bst);
+    OUTMESS *_dtran_outmess;  //  the outbound information for a direct transmission
 
-    OUTMESS *_dtran_outmess,  //  the outbound information for a direct transmission
-             _raw_outmess;
+    std::vector<unsigned char> _raw_command;
+
     unsigned char _d_words[DWORDLEN * 3];  //  the response (if any) from a direct transmission
     unsigned char _response_length;
 
     int _protocol_errors;
     int _read_toggle;
 
-    typedef fifo_multiset<const OUTMESS *, ptr_priority_sort<OUTMESS> > local_work_t;
-    typedef std::map<unsigned, local_work_t::const_iterator>            pending_work_t;
-    typedef std::map<unsigned, const OUTMESS *>                         remote_work_t;
+    struct queue_entry_t
+    {
+        const OUTMESS *om;
+        unsigned priority;
+        vector<unsigned char> dlc_message;
+
+        queue_entry_t(const OUTMESS *om_) :
+            om       (om_),
+            priority (om_->Priority)
+        { };
+
+        operator>(const queue_entry_t &rhs) const   {  return priority > rhs.priority;  };
+    };
+
+    typedef fifo_multiset<queue_entry_t, std::greater<queue_entry_t> > local_work_t;
+    typedef std::map<unsigned, local_work_t::const_iterator>           pending_work_t;
+    typedef std::map<unsigned, const OUTMESS *>                        remote_work_t;
 
     mutable CtiCriticalSection _sync;
+    typedef CtiLockGuard<CtiCriticalSection> sync_guard_t;
 
     local_work_t   _waiting_requests;
     pending_work_t _pending_requests;
@@ -123,9 +138,8 @@ private:
     } _device_status;
 #pragma pack( pop )
 
-    unsigned writeDLCMessage(unsigned char *buf, const BSTRUCT &bst);
-    unsigned calcDLCMessageLength(const BSTRUCT &bst);
-    void processResponse(unsigned char *inbound, unsigned char inbound_length);
+    unsigned writeDLCMessage(std::vector<unsigned char> &buf, const OUTMESS *om);
+    void processResponse(const std::vector<unsigned char> &inbound);
 
     enum CommandCode
     {
@@ -143,7 +157,6 @@ private:
         CommandCode_ReplyQueueRead       = 0x17,
 
         CommandCode_TimeSyncCCU          = 0x21,
-        CommandCode_TimeSyncTransmit     = 0x22,
 
         CommandCode_RoutingTableWrite                 = 0x31,
         CommandCode_RoutingTableRead                  = 0x32,
@@ -180,7 +193,7 @@ private:
         WrapLengthMaximum      = 255,
         QueueWriteBasePriority =  11,
         QueueReadBasePriority  =  11,
-        QueueEntryHeaderLength =   4,
+        QueueEntryHeaderLength =   4,  //  CCU-721 Master Station Interface section 2.3.4.4: bytes 5-8 (assume bus is always nonzero)
     };
 
     enum IO_State
@@ -235,7 +248,6 @@ public:
     Command getCommand() const;
 
     void getResults(result_queue_t &results);
-    string describeCurrentStatus(void) const;
 
     int generate(CtiXfer &xfer);
     int decode  (CtiXfer &xfer, int status);
@@ -245,9 +257,12 @@ public:
     bool errorCondition() const;
     int  errorCode();
 
+    // --  these functions may be called at any time by another thread, meaning that their data must be muxed
+    string describeCurrentStatus(void) const;
+
     bool hasQueuedWork()  const;
     unsigned queuedWorkCount() const;
-    bool addQueuedWork(OUTMESS *&OutMessage);
+    bool addQueuedWork(OUTMESS *&OutMessage, bool broadcast);
 
     bool hasRemoteWork()  const;
     unsigned getRemoteWorkPriority() const;
@@ -261,10 +276,11 @@ public:
 
     string queueReport() const;
 
-    static int decodeDWords(unsigned char *input, unsigned input_length, unsigned Remote, DSTRUCT *DSt);
-
     void clearRoutes();
     void addRoute(const CtiRouteCCUSPtr &route);
+    // --
+
+    static int decodeDWords(unsigned char *input, unsigned input_length, unsigned Remote, DSTRUCT *DSt);
 
     /*enum ProtocolWrap
     {

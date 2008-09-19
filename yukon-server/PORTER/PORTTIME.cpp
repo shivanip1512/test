@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTTIME.cpp-arc  $
-* REVISION     :  $Revision: 1.52 $
-* DATE         :  $Date: 2008/08/14 15:57:41 $
+* REVISION     :  $Revision: 1.53 $
+* DATE         :  $Date: 2008/09/19 11:40:41 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -80,6 +80,7 @@
 #include "mgr_device.h"
 #include "dev_base.h"
 #include "dev_ccu.h"
+#include "dev_ccu721.h"
 #include "dev_mct4xx.h"
 #include "mgr_route.h"
 
@@ -197,93 +198,88 @@ static void apply710TimeSync(const long unusedid, CtiDeviceSPtr RemoteRecord, vo
         return;
     }
 
-    OUTMESS         *OutMessage;
-    CtiRouteSPtr    RouteRecord;
-    DEVICE          DeviceRecord;
-
-    switch(RemoteRecord->getType())
+    if( RemoteRecord->getType() != TYPE_CCU700 &&
+        RemoteRecord->getType() != TYPE_CCU710 )
     {
-        case TYPE_CCU700:
-        case TYPE_CCU710:
+        return;
+    }
 
-        try
+    try
+    {
+        OUTMESS         *OutMessage;
+        CtiRouteSPtr    RouteRecord;
+
+        CtiRouteManager::coll_type::reader_lock_guard_t guard(RouteManager.getLock());
+        CtiRouteManager::spiterator rte_itr;
+
+        //  Walk down the routes for this ccu and pick out the time sync ("default") routes
+        for(rte_itr = RouteManager.begin(); rte_itr != RouteManager.end(); CtiRouteManager::nextPos(rte_itr))
         {
-            CtiRouteManager::coll_type::reader_lock_guard_t guard(RouteManager.getLock());
-            CtiRouteManager::spiterator rte_itr;
+            RouteRecord = rte_itr->second;
 
-            //  Walk down the routes for this ccu and pick out the time sync ("default") routes
-            for(rte_itr = RouteManager.begin(); rte_itr != RouteManager.end(); CtiRouteManager::nextPos(rte_itr))
+            if(RouteRecord->getTrxDeviceID() == RemoteRecord->getID() && RouteRecord->isDefaultRoute())
             {
-                RouteRecord = rte_itr->second;
+                BSTRUCT message;
+                OUTMESS *OutMessage = CTIDBG_new OUTMESS;
 
-                if(RouteRecord->getTrxDeviceID() == RemoteRecord->getID() && RouteRecord->isDefaultRoute())
+                if( OutMessage )
                 {
-                    BSTRUCT message;
-                    OUTMESS *OutMessage = CTIDBG_new OUTMESS;
+                    //  load up all of the port/route specific items
+                    OutMessage->DeviceID  = RemoteRecord->getID();
+                    OutMessage->Port      = portid;
+                    OutMessage->Remote    = RemoteRecord->getAddress();
+                    OutMessage->TimeOut   = TIMEOUT;
+                    OutMessage->Retry     = 0;
+                    OutMessage->Sequence  = 0;
+                    OutMessage->Priority  = MAXPRIORITY;
+                    OutMessage->EventCode = NOWAIT | NORESULT | DTRAN | BWORD | TSYNC;
+                    OutMessage->Command   = CMND_DTRAN;
+                    OutMessage->InLength  = 0;
+                    OutMessage->ReturnNexus = NULL;
+                    OutMessage->SaveNexus   = NULL;
+                    OutMessage->MessageFlags = MessageFlag_ApplyExclusionLogic;
+                    OutMessage->ExpirationTime = getNextTimeSync();
 
-                    if( OutMessage )
+                    OutMessage->Buffer.BSt.Port     = RemoteRecord->getPortID();
+                    OutMessage->Buffer.BSt.Remote   = RemoteRecord->getAddress();
+                    OutMessage->Buffer.BSt.Address  = CtiDeviceDLCBase::BroadcastAddress;
+                    OutMessage->Buffer.BSt.Function = CtiDeviceMCT::Memory_TSyncPos;
+                    OutMessage->Buffer.BSt.Length   = CtiDeviceMCT::Memory_TSyncLen;
+                    OutMessage->Buffer.BSt.IO       = Cti::Protocol::Emetcon::IO_Write;
+                    //  we don't fill in the data because it's filled in by RefreshMCTTimeSync() later on
+
+                    //  this should all be filled in by the route's ExecuteRequest
+                    OutMessage->Buffer.BSt.DlcRoute.Amp        = ((CtiDeviceIDLC *)(RemoteRecord.get()))->getIDLC().getAmp();
+                    OutMessage->Buffer.BSt.DlcRoute.Bus        = RouteRecord->getBus();
+                    OutMessage->Buffer.BSt.DlcRoute.RepVar     = RouteRecord->getCCUVarBits();
+                    OutMessage->Buffer.BSt.DlcRoute.RepFixed   = RouteRecord->getCCUFixBits();
+                    OutMessage->Buffer.BSt.DlcRoute.Stages     = 0;  //  must set the stages to 0 on a CCU 710
+
+                    //  Ideally, use something like this instead of the above code...
+                    //RouteRecord->ExecuteRequest();
+                    //  ... but because we're not executing on the route, we have to do this manually
+                    Cti::Protocol::Emetcon::buildBWordMessage(OutMessage);
+
+                    if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
                     {
-                        //  load up all of the port/route specific items
-                        OutMessage->DeviceID  = RemoteRecord->getID();
-                        OutMessage->Port      = portid;
-                        OutMessage->Remote    = RemoteRecord->getAddress();
-                        OutMessage->TimeOut   = TIMEOUT;
-                        OutMessage->Retry     = 0;
-                        OutMessage->Sequence  = 0;
-                        OutMessage->Priority  = MAXPRIORITY;
-                        OutMessage->EventCode = NOWAIT | NORESULT | DTRAN | BWORD | TSYNC;
-                        OutMessage->Command   = CMND_DTRAN;
-                        OutMessage->InLength  = 0;
-                        OutMessage->ReturnNexus = NULL;
-                        OutMessage->SaveNexus   = NULL;
-                        OutMessage->MessageFlags = MessageFlag_ApplyExclusionLogic;
-                        OutMessage->ExpirationTime = getNextTimeSync();
-
-                        OutMessage->Buffer.BSt.Port     = RemoteRecord->getPortID();
-                        OutMessage->Buffer.BSt.Remote   = RemoteRecord->getAddress();
-                        OutMessage->Buffer.BSt.Address  = CtiDeviceDLCBase::BroadcastAddress;
-                        OutMessage->Buffer.BSt.Function = CtiDeviceMCT::Memory_TSyncPos;
-                        OutMessage->Buffer.BSt.Length   = CtiDeviceMCT::Memory_TSyncLen;
-                        OutMessage->Buffer.BSt.IO       = Cti::Protocol::Emetcon::IO_Write;
-                        //  we don't fill in the data because it's filled in by RefreshMCTTimeSync() later on
-
-                        //  this should all be filled in by the route's ExecuteRequest
-                        OutMessage->Buffer.BSt.DlcRoute.Amp        = ((CtiDeviceIDLC *)(RemoteRecord.get()))->getIDLC().getAmp();
-                        OutMessage->Buffer.BSt.DlcRoute.Bus        = RouteRecord->getBus();
-                        OutMessage->Buffer.BSt.DlcRoute.RepVar     = RouteRecord->getCCUVarBits();
-                        OutMessage->Buffer.BSt.DlcRoute.RepFixed   = RouteRecord->getCCUFixBits();
-                        OutMessage->Buffer.BSt.DlcRoute.Stages     = 0;  //  must set the stages to 0 on a CCU 710
-
-                        //  Ideally, use something like this instead of the above code...
-                        //RouteRecord->ExecuteRequest();
-                        //  ... but because we're not executing on the route, we have to do this manually
-                        Cti::Protocol::Emetcon::buildBWordMessage(OutMessage);
-
-                        if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
-                        {
-                            printf ("Error Writing to Queue for Port %2hd\n", portid);
-                            delete (OutMessage);
-                        }
+                        printf ("Error Writing to Queue for Port %2hd\n", portid);
+                        delete (OutMessage);
                     }
-                    else
+                }
+                else
+                {
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - unable to allocate OUTMESS for time sync on portid " << portid << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint - unable to allocate OUTMESS for time sync on portid " << portid << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
                 }
             }
         }
-        catch(...)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-        break;
-
-    default:
-        break;
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 }
 
@@ -316,17 +312,6 @@ static void applyDeviceTimeSync(const long unusedid, CtiDeviceSPtr RemoteRecord,
                 OutMessage->Buffer.OutMessage[Index++] = '\0';
 
                 /* Load the password into the buffer */
-#ifdef OLD_CRAP
-                for(i = 0; i < STANDNAMLEN; i++)
-                {
-                    if(DeviceRecord.RouteName[2][i] == ' ')
-                    {
-                        break;
-                    }
-                    OutMessage->Buffer.OutMessage[Index++] = DeviceRecord.RouteName[2][i];
-                }
-#else
-
                 cerr << __FILE__ << " (" << __LINE__ << ") This may break.. CGP 072599" << endl;
 
                 for(i = 0; i < STANDNAMLEN; i++)
@@ -337,7 +322,6 @@ static void applyDeviceTimeSync(const long unusedid, CtiDeviceSPtr RemoteRecord,
                     }
                     OutMessage->Buffer.OutMessage[Index++] = RemoteRecord->getPassword()[i];
                 }
-#endif
 
                 OutMessage->Buffer.OutMessage[Index++] = '\r';
                 OutMessage->Buffer.OutMessage[Index++] = '\0';
@@ -517,6 +501,35 @@ static void applyDeviceTimeSync(const long unusedid, CtiDeviceSPtr RemoteRecord,
                 break;
             }
 
+        case TYPE_CCU721:
+            {
+                /* Allocate some memory */
+                if((OutMessage = CTIDBG_new OUTMESS) == NULL)
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+
+                    return;
+                }
+
+                using Cti::Device::CCU721;
+                boost::shared_ptr<CCU721> ccu = boost::static_pointer_cast<CCU721>(RemoteRecord);
+
+                ccu->buildCommand(OutMessage, CCU721::Command_Timesync);
+
+                OutMessage->MessageFlags = MessageFlag_ApplyExclusionLogic;
+                OutMessage->ExpirationTime = getNextTimeSync();
+
+                if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
+                {
+                    printf ("Error Writing to Queue for Port %2hd\n", RemoteRecord->getPortID());
+                    delete (OutMessage);
+                }
+
+                break;
+            }
         default:
             break;
         }
@@ -536,11 +549,15 @@ static void applyMCT400TimeSync(const long key, CtiRouteSPtr pRoute, void* d)
 
         //  make sure the route's transmitting device is on this port...  and make sure this is a default route
         if( RemoteRecord &&
-            (RemoteRecord->getType() == TYPE_CCU700 || RemoteRecord->getType() == TYPE_CCU710 || RemoteRecord->getType() == TYPE_CCU711) &&
+            (RemoteRecord->getType() == TYPE_CCU700 ||
+             RemoteRecord->getType() == TYPE_CCU710 ||
+             RemoteRecord->getType() == TYPE_CCU711) &&  //  note that we're not including the 721 here - it has timesync broadcast abaility of its own
             (RemoteRecord->getPortID() == portid) && pRoute->isDefaultRoute() )
         {
             BSTRUCT message;
             OUTMESS *OutMessage = CTIDBG_new OUTMESS;
+
+            bool stages_supported = !(RemoteRecord->getType() == TYPE_CCU700 || RemoteRecord->getType() == TYPE_CCU710);
 
             if( OutMessage )
             {
@@ -573,11 +590,9 @@ static void applyMCT400TimeSync(const long key, CtiRouteSPtr pRoute, void* d)
                 OutMessage->Buffer.BSt.DlcRoute.Bus        = pRoute->getBus();
                 OutMessage->Buffer.BSt.DlcRoute.RepVar     = pRoute->getCCUVarBits();
                 OutMessage->Buffer.BSt.DlcRoute.RepFixed   = pRoute->getCCUFixBits();
-                OutMessage->Buffer.BSt.DlcRoute.Stages     = (RemoteRecord->getType() == TYPE_CCU711)?pRoute->getStages():0;  //  must set stages to 0 or the timesync will fail on the 700/710
+                OutMessage->Buffer.BSt.DlcRoute.Stages     = (stages_supported)?(pRoute->getStages()):(0);  //  must set stages to 0 or the timesync will fail on the 700/710
 
-                //  Ideally, use something like this instead of the above code...
-                //pRoute->ExecuteRequest();
-                //  ... but because we're not executing on the route, we have to do this manually
+                //  because we're not executing on the route, we have to do this manually
                 Cti::Protocol::Emetcon::buildBWordMessage(OutMessage);
 
                 if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
@@ -620,10 +635,8 @@ static void applyPortSendTime(const long unusedid, CtiPortSPtr PortRecord, void 
 
         if(PortRecord->getProtocolWrap() == ProtocolWrapIDLC)
         {
-
             /* make sure that the broadcast ccu is defined */
-            RemoteRecord = DeviceManager.RemoteGetPortRemoteEqual (PortRecord->getPortID(), CCUGLOBAL);
-            if(RemoteRecord) // It existed
+            if(RemoteRecord = DeviceManager.RemoteGetPortRemoteEqual (PortRecord->getPortID(), CCUGLOBAL))
             {
                 if(RemoteRecord->isInhibited())
                 {

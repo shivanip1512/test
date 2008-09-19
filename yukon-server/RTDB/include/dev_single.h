@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_single.h-arc  $
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2007/08/07 19:56:17 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2008/09/19 11:40:41 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -80,19 +80,10 @@ public:
 
         bool channelWithID::operator<(const channelWithID &rhs) const
         {
-            bool retval = false;
+            if( identifier < rhs.identifier )  return true;
+            if( identifier > rhs.identifier )  return false;
 
-            if( identifier < rhs.identifier )
-            {
-                retval = true;
-            }
-            else if( identifier == rhs.identifier
-                       && channel < rhs.channel )
-            {
-                retval = true;
-            }
-
-            return retval;
+            return channel < rhs.channel;
         }
     };
 
@@ -195,6 +186,7 @@ public:
     virtual void sendDispatchResults(CtiConnection &vg_connection);
 
     virtual void getVerificationObjects(queue< CtiVerificationBase * > &work_queue);
+    virtual void getTargetDeviceStatistics(vector< OUTMESS > &om_statistics);
 
     virtual INT  ProcessResult(INMESS*,
                                CtiTime&,

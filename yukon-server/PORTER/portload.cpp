@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/portload.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2008/08/14 15:57:41 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2008/09/19 11:40:41 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -118,25 +118,30 @@ LoadRemoteRoutes(CtiDeviceSPtr Dev)
                 return(MEMORY);
             }
 
-            ccu->buildCommand(OutMessage, CCU721::Command_LoadRoutes);
-
-            OutMessage->DeviceID = Dev->getID();
-            OutMessage->TargetID = Dev->getID();
-            OutMessage->Port     = Dev->getPortID();
-            OutMessage->Remote   = Dev->getAddress();
-            OutMessage->TimeOut  = TIMEOUT;
-            OutMessage->Retry    = 1;
-            OutMessage->InLength = 0;
-            OutMessage->Priority = MAXPRIORITY - 1;
-            OutMessage->EventCode    = NORESULT | ENCODED;  //  used?
-            OutMessage->ReturnNexus  = NULL;
-            OutMessage->SaveNexus    = NULL;
-
-            if( PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority) )
+            if( !ccu->buildCommand(OutMessage, CCU721::Command_LoadRoutes) )
             {
-                printf ("Error Writing to Queue for Port %2ld\n", Dev->getPortID());
-                delete (OutMessage);
-                return(QUEUE_WRITE);
+                delete OutMessage;
+            }
+            else
+            {
+                OutMessage->DeviceID = Dev->getID();
+                OutMessage->TargetID = Dev->getID();
+                OutMessage->Port     = Dev->getPortID();
+                OutMessage->Remote   = Dev->getAddress();
+                OutMessage->TimeOut  = TIMEOUT;
+                OutMessage->Retry    = 1;
+                OutMessage->InLength = 0;
+                OutMessage->Priority = MAXPRIORITY - 1;
+                OutMessage->EventCode    = NORESULT | ENCODED;  //  used?
+                OutMessage->ReturnNexus  = NULL;
+                OutMessage->SaveNexus    = NULL;
+
+                if( PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority) )
+                {
+                    printf ("Error Writing to Queue for Port %2ld\n", Dev->getPortID());
+                    delete (OutMessage);
+                    return(QUEUE_WRITE);
+                }
             }
         }
         /* Find all non-broadcast 711 transmitters. */
