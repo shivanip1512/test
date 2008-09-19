@@ -15,6 +15,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseListener;
 import java.awt.print.PrinterException;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.URL;
@@ -92,7 +93,6 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 	private int [] treeModels = null;
 	private static final String YC_TITLE = "Commander";
 	public static final String HELP_FILE = "Yukon_Commander_Help.chm";
-    public String[] restrictedCharacters = {"*", "?", "\"", "<", ">", "|"};//{
 	
     public static final URL COMMANDER_IMG_16 = YukonCommander.class.getResource("/Commander16.gif");
     public static final URL COMMANDER_IMG_24 = YukonCommander.class.getResource("/Commander24.gif");
@@ -1699,18 +1699,6 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 		         */
 		        String filePath = getFilePath(fileChooser);
 
-		        String restrictedCharacterFound = null;
-		        for (String restrictedChar : restrictedCharacters) {
-		            if (filePath.contains(restrictedChar)){
-		                restrictedCharacterFound = restrictedChar;
-		                break;
-		            }
-		        }
-		        if(restrictedCharacterFound != null){
-	                javax.swing.JOptionPane.showMessageDialog( parent, "Please use none restricted characters. ("+restrictedCharacterFound+")", "Error", javax.swing.JOptionPane.ERROR_MESSAGE );
-		            continue;
-		        }
-            
 		        java.io.FileWriter fWriter = null;
 		        try	{
                
@@ -1725,6 +1713,9 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 		            }
 
 		            fWriter.close();
+		            break;
+	            } catch( FileNotFoundException fnfe){
+	                javax.swing.JOptionPane.showMessageDialog( parent, "Invalid File Name", "Error", javax.swing.JOptionPane.ERROR_MESSAGE );
 		        } catch( java.io.IOException e ) {				
 		            javax.swing.JOptionPane.showMessageDialog( parent, "An error occurred saving to a file", "Error", javax.swing.JOptionPane.ERROR_MESSAGE );
 		        } finally {
@@ -1735,7 +1726,6 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 		                CTILogger.error( e2.getMessage(), e2 );
 		            }
 		        }
-		        break;
 		    }
 		}	 	
 	}
