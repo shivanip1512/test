@@ -190,14 +190,8 @@ public class DynamicBillingController extends MultiActionController {
 		ModelAndView mav = new ModelAndView("redirect:overview.jsp");
 
 		// retrieve all information from the page and save it to db
-		DynamicFormat savedFormat = null;
-		try{
-		    savedFormat = parseIntoDynamicFormat(request);
-		} catch(IllegalArgumentException IAE){
-            return new ModelAndView(new TextView(StringEscapeUtils.escapeHtml("errorMsg:"+IAE.getMessage())));
-        }
+		DynamicFormat savedFormat = parseIntoDynamicFormat(request);
 		dynamicBillingFileDao.save(savedFormat);
-
 		
 		// retrieve new list of formats after saving
 		List<DynamicFormat> allRows = dynamicBillingFileDao.retrieveAll();
@@ -217,12 +211,8 @@ public class DynamicBillingController extends MultiActionController {
 			HttpServletResponse response) throws ServletException {
 
 		StringBuffer returnString = new StringBuffer();
-		DynamicFormat format = null;
-		try {
-		    format = parseIntoDynamicFormat(request);
-		} catch(IllegalArgumentException IAE){
-		    return new ModelAndView(new TextView(StringEscapeUtils.escapeHtml("errorMsg:"+IAE.getMessage())));
-		}
+		DynamicFormat format = parseIntoDynamicFormat(request);
+
 		dynamicFormatter.setDynamicFormat(format);
 
 		BillableDevice device = this.getDefaultDevice();
@@ -240,6 +230,25 @@ public class DynamicBillingController extends MultiActionController {
 		return new ModelAndView(new TextView(returnString.toString()
 				.replaceAll(" ", "&nbsp;")));
 	}
+
+	   public ModelAndView updateFormatName(HttpServletRequest request,
+	            HttpServletResponse response) throws ServletException {
+
+	        StringBuffer returnString = new StringBuffer();
+	        DynamicFormat format = new DynamicFormat();
+	        format.setFormatId(ServletRequestUtils.getIntParameter(request, "formatId"));
+	        format.setName(ServletRequestUtils.getStringParameter( request, "formatName"));
+	        if (!dynamicBillingFileDao.isFormatNameUnique(format)){
+	            return new ModelAndView(new TextView("The format name is not unique.  Please supply a unique format name"));
+	        }
+
+	        // for our html page purposes, replace carriage returns with <BR>
+	        returnString = new StringBuffer(returnString.toString().replaceAll("\r\n", "<BR>"));
+
+	        // replace spaces with &nbsp; for html display
+	        return new ModelAndView(new TextView(returnString.toString()
+	                .replaceAll(" ", "&nbsp;")));
+	    }
 
 	/**
 	 * Helper method to create a list of billable field names for the UI. Will
@@ -305,15 +314,11 @@ public class DynamicBillingController extends MultiActionController {
 			throws ServletRequestBindingException {
 
 		DynamicFormat format = new DynamicFormat();
-//		List<DynamicBillingField> fieldList = new ArrayList<DynamicBillingField>();
 
         List<DynamicBillingField> fieldList = format.getFieldList();
 
 		format.setFormatId(ServletRequestUtils.getIntParameter(request, "formatId"));
 		format.setName(ServletRequestUtils.getStringParameter( request, "formatName"));
-		if (!dynamicBillingFileDao.isFormatNameUnique(format.getName(),format.getFormatId())){
-		    throw new IllegalArgumentException("The format name is not unique.  Please supply a unique format name");
-		}
 		format.setFooter(ServletRequestUtils.getStringParameter(request, "footer"));
 		format.setHeader(ServletRequestUtils.getStringParameter(request, "header"));
 		format.setDelim(ServletRequestUtils.getStringParameter(request, "delimiter"));

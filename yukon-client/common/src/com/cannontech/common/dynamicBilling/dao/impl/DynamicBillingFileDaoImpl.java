@@ -206,14 +206,14 @@ public final class DynamicBillingFileDaoImpl implements DynamicBillingFileDao {
 	/**
      * Check to see if the format name provided is unique.
      */
-    public boolean isFormatNameUnique(String formatName, int formatId) {
+    public boolean isFormatNameUnique(DynamicFormat format) {
         
         String sql = "SELECT COUNT(*) "
                 + " FROM BillingFileFormats BFF "
                 + " WHERE BFF.formatType = ? "
                 + " AND BFF.formatId != ? ";
 
-        int resultCount = simpleJdbcTemplate.queryForInt(sql, formatName, formatId);
+        int resultCount = simpleJdbcTemplate.queryForInt(sql, format.getName(), format.getFormatId());
         
         if (resultCount == 0) {
             return true;

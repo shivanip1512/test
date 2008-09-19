@@ -51,7 +51,7 @@
         <ct:sectionContainer title="Format Setup" id="dbgFormatSetup">
             <ct:nameValueContainer>
                 <ct:nameValue name="Name of Format">
-                    <input type="text" onkeyup="updatePreview();" name="formatName" style="width:300px" id="formatName" value="<c:out value="${format.name}"/>" ><span style="color:#CC0000;">*</span>
+                    <input type="text" onkeyup="updateFormatName()" name="formatName" style="width:300px" id="formatName" value="<c:out value="${format.name}"/>" ><span style="color:#CC0000;">*</span>
                 </ct:nameValue>
                 <ct:nameValue name="Delimiter">
                     <select  name="delimiterChoice" id="delimiterChoice" onchange="updateDelimiter();">
