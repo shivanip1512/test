@@ -2,6 +2,8 @@ package com.cannontech.billing.format;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.cannontech.billing.device.base.BillableDevice;
 import com.cannontech.common.dynamicBilling.Channel;
@@ -45,14 +47,28 @@ import com.cannontech.common.dynamicBilling.model.BillableField;
  */
 public class NISCIntervalReadings extends BillingFormatterBase {
 
-    private static final String HEADER = "H\r\n";
-    private static final String FOOTER = "L\r\n";
+    private final String HEADER = "H\r\n";
+    private final String FOOTER = "L\r\n";
 
-    private static final String RECORD_INDICATOR = "M";
-    private static SimpleDateFormat DATE_FORMAT_MMDDYYYY = new SimpleDateFormat("MMddyyyy");
-    public static final DecimalFormat DECIMAL_FORMAT_2 = new DecimalFormat("##");
-    public static final DecimalFormat DECIMAL_FORMAT_9 = new DecimalFormat("#########");
-    public static final DecimalFormat DECIMAL_FORMAT_10 = new DecimalFormat("##########");
+    private final String RECORD_INDICATOR = "M";
+    private SimpleDateFormat DATE_FORMAT_MMDDYYYY = new SimpleDateFormat("MMddyyyy");
+    public final DecimalFormat DECIMAL_FORMAT_2 = new DecimalFormat("##");
+    public final DecimalFormat DECIMAL_FORMAT_9 = new DecimalFormat("#########");
+    public final DecimalFormat DECIMAL_FORMAT_10 = new DecimalFormat("##########");
+    
+    private BillableField[] possibleKwhFields = 
+        new BillableField[]{BillableField.rateAConsumption,
+                            BillableField.rateBConsumption,
+                            BillableField.rateCConsumption,
+                            BillableField.rateDConsumption,
+                            BillableField.totalConsumption};
+    
+    private BillableField[] possiblePeakDemandFields = 
+        new BillableField[]{BillableField.rateADemand,
+                            BillableField.rateBDemand,
+                            BillableField.rateCDemand,
+                            BillableField.rateDDemand,
+                            BillableField.totalPeakDemand};
     
     public NISCIntervalReadings() {
     }
@@ -174,31 +190,12 @@ public class NISCIntervalReadings extends BillingFormatterBase {
      */
     private BillableField getkWhBillableField(BillableDevice device) {
         
-        Double kWh = device.getValue(Channel.ONE, ReadingType.ELECTRIC, BillableField.rateAConsumption);
-        if (kWh != null) {
-            return BillableField.rateAConsumption;
+        for (BillableField field : possibleKwhFields) {
+            Double kWh = device.getValue(Channel.ONE, ReadingType.ELECTRIC, field);
+            if (kWh != null) {
+                return field;
+            }
         }
-        
-        kWh = device.getValue(Channel.ONE, ReadingType.ELECTRIC, BillableField.rateBConsumption);
-        if (kWh != null) {
-            return BillableField.rateBConsumption;
-        }
-        
-        kWh = device.getValue(Channel.ONE, ReadingType.ELECTRIC, BillableField.rateCConsumption);
-        if (kWh != null) {
-            return BillableField.rateCConsumption;
-        }
-        
-        kWh = device.getValue(Channel.ONE, ReadingType.ELECTRIC, BillableField.rateDConsumption);
-        if (kWh != null) {
-            return BillableField.rateDConsumption;
-        }
-
-        kWh = device.getValue(Channel.ONE, ReadingType.ELECTRIC, BillableField.totalConsumption);
-        if (kWh != null) {
-            return BillableField.totalConsumption;
-        }
-
         return null;
     }
    
@@ -213,29 +210,11 @@ public class NISCIntervalReadings extends BillingFormatterBase {
      */
     private BillableField getPeakDemandBillableField(BillableDevice device) {
             
-        Double kWh = device.getValue(Channel.ONE, ReadingType.ELECTRIC, BillableField.rateADemand);
-        if (kWh != null) {
-            return BillableField.rateADemand;
-        }
-        
-        kWh = device.getValue(Channel.ONE, ReadingType.ELECTRIC, BillableField.rateBDemand);
-        if (kWh != null) {
-            return BillableField.rateBDemand;
-        }
-        
-        kWh = device.getValue(Channel.ONE, ReadingType.ELECTRIC, BillableField.rateCDemand);
-        if (kWh != null) {
-            return BillableField.rateCDemand;
-        }
-        
-        kWh = device.getValue(Channel.ONE, ReadingType.ELECTRIC, BillableField.rateDDemand);
-        if (kWh != null) {
-            return BillableField.rateDDemand;
-        }
-
-        kWh = device.getValue(Channel.ONE, ReadingType.ELECTRIC, BillableField.totalPeakDemand);
-        if (kWh != null) {
-            return BillableField.totalPeakDemand;
+        for (BillableField field : possiblePeakDemandFields) {
+            Double peakDemand = device.getValue(Channel.ONE, ReadingType.ELECTRIC, field);
+            if (peakDemand != null) {
+                return field;
+            }
         }
         return null;
     }
