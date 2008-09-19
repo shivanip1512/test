@@ -1759,13 +1759,7 @@ public boolean isInputValid()
 }
 
 private boolean isValidPaoName(String paoName) {
-    char[] invalids = TextFieldDocument.INVALID_CHARS_PAO; 
-    for(char invalid: invalids) {
-        if(paoName.indexOf(invalid) != -1) {
-            return false;
-        }
-    }
-    return true;
+    return org.apache.commons.lang.StringUtils.containsNone(paoName, TextFieldDocument.INVALID_CHARS_PAO);
 }
 
 /**

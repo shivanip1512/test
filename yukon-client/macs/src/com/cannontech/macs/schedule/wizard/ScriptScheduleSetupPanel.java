@@ -2201,13 +2201,7 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     }
 
     private boolean isValidFileName(String fileName) {
-        char[] invalids = TextFieldDocument.INVALID_CHARS_WINDOWS; 
-    	for(char invalid: invalids) {
-    	    if(fileName.indexOf(invalid) != -1) {
-                return false;
-            }
-    	}
-    	return true;
+        return org.apache.commons.lang.StringUtils.containsNone(fileName, TextFieldDocument.INVALID_CHARS_WINDOWS);
     }
     
     /* (non-Javadoc)
