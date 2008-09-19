@@ -26,8 +26,7 @@ public class CBCAreaFormattingService extends AbstractAreaFormatingService<CCAre
     
     @Override
     protected String getWarningFlag(final CCArea latestValue, CBCDisplay cbcDisplay) {
-        Boolean flag = latestValue.getVoltReductionFlag();
-        return flag.toString();
+        return cbcDisplay.getAreaValueAt(latestValue, CBCDisplay.AREA_VOLT_REDUCTION);
     }
     
     @Override

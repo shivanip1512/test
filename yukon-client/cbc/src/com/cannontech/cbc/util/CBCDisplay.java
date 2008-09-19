@@ -87,6 +87,7 @@ public class CBCDisplay {
     public static final int SUB_TIME_STAMP_COLUMN = 7;
     public static final int SUB_DAILY_OPERATIONS_COLUMN = 8;
     public static final int SUB_SP_AREA_ENABLED = 9;
+    public static final int SUB_VOLT_REDUCTION = 10;
 
     public static final int SUB_ONELINE_CONTROL_METHOD_COLUMN = 9;
     public static final int SUB_ONELINE_KVAR_LOAD_COLUMN = 10;
@@ -108,6 +109,7 @@ public class CBCDisplay {
     public static final int SUB_ONELINE_THREE_PHASE_COLUMN = 26;
 
     public static final int AREA_POWER_FACTOR_COLUMN = 0;
+    public static final int AREA_VOLT_REDUCTION = 1;
 
     public static final String WARNING_LIKE_DAY = "Operating in like-day history control.";
     public static final String WARNING_VOLT_REDUCTION = "Volt Reduction is active.";
@@ -395,6 +397,16 @@ public class CBCDisplay {
                 return " ";
             }
         }
+        
+        case SUB_VOLT_REDUCTION: {
+            Boolean flag = substation.getVoltReductionFlag();
+            Boolean childFlag = substation.getChildVoltReductionFlag();
+            if(flag || childFlag) {
+                return "true";
+            }else {
+                return "false";
+            }
+        }
 
         default: return null;
         }
@@ -408,6 +420,16 @@ public class CBCDisplay {
             String text = getPowerFactorText(area.getPowerFactorValue().doubleValue(), true) +
             " / " + getPowerFactorText(area.getEstimatedPFValue().doubleValue(), true); 
             return text;
+        }
+        
+        case AREA_VOLT_REDUCTION: { 
+            Boolean flag = area.getVoltReductionFlag();
+            Boolean childFlag = area.getChildVoltReductionFlag();
+            if(flag || childFlag) {
+                return "true";
+            }else {
+                return "false";
+            }
         }
 
         default: return null;

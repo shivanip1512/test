@@ -74,8 +74,7 @@ public class SubStationFormattingService extends AbstractAreaFormatingService<Su
     
     @Override
     protected String getWarningFlag(final SubStation latestValue, final CBCDisplay cbcDisplay) {
-        Boolean flag = latestValue.getVoltReductionFlag();
-        return flag.toString();
+        return (String)cbcDisplay.getSubstationValueAt(latestValue, CBCDisplay.SUB_VOLT_REDUCTION);
     }
 
     private SubStation getSubStation(final int paoId, final LiteYukonUser user) {

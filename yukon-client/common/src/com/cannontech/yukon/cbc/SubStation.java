@@ -11,6 +11,7 @@ public class SubStation extends StreamableCapObject {
     private Integer specialAreaId;
 	private Boolean verificationFlag = false;
 	private Boolean voltReductionFlag = false;
+	private Boolean childVoltReductionFlag = false;
 	private Boolean recentlyControlledFlag = false;
     
 	public SubStation(){
@@ -103,5 +104,13 @@ public class SubStation extends StreamableCapObject {
 	
 	public Boolean getRecentlyControlledFlag() {
 	    return this.recentlyControlledFlag;
+	}
+	
+	public Boolean getChildVoltReductionFlag() {
+	    return this.childVoltReductionFlag;
+	}
+	
+	public void setChildVoltReductionFlag(Boolean value) {
+	    this.childVoltReductionFlag = value;
 	}
 }

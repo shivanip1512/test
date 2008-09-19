@@ -15,6 +15,7 @@ public class CCArea extends StreamableCapObject {
     private Double powerFactorValue = null;
     private Double estimatedPFValue = null;
     private Boolean voltReductionFlag;
+    private Boolean childVoltReductionFlag;
     
     public int[] getStations() {
 		return stations;
@@ -148,5 +149,13 @@ public class CCArea extends StreamableCapObject {
 	public void setVoltReductionFlag(Boolean voltReductionFlag) {
 		this.voltReductionFlag = voltReductionFlag;
 	}
+	
+	public Boolean getChildVoltReductionFlag() {
+        return childVoltReductionFlag;
+    }
+
+    public void setChildVoltReductionFlag(Boolean childVoltReductionFlag) {
+        this.childVoltReductionFlag = childVoltReductionFlag;
+    }
 
 }
