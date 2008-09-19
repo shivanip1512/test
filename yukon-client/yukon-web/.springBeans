@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beansProjectDescription>
 	<version>1</version>
-	<pluginVersion><![CDATA[2.0.2.v200712142013]]></pluginVersion>
+	<pluginVersion><![CDATA[2.1.0.v200808011800]]></pluginVersion>
 	<configSuffixes>
 		<configSuffix><![CDATA[xml]]></configSuffix>
 	</configSuffixes>
@@ -10,7 +10,7 @@
 		<config>WebContent/WEB-INF/contexts/applicationContext.xml</config>
 		<config>WebContent/WEB-INF/contexts/capcontrol-servlet.xml</config>
 		<config>WebContent/WEB-INF/contexts/chart-servlet.xml</config>
-		<config>WebContent/WEB-INF/contexts/csr-servlet.xml</config>
+		<config>WebContent/WEB-INF/contexts/meter-servlet.xml</config>
 		<config>WebContent/WEB-INF/contexts/dataUpdater-servlet.xml</config>
 		<config>WebContent/WEB-INF/contexts/debug-servlet.xml</config>
 		<config>WebContent/WEB-INF/contexts/deviceConfiguration-servlet.xml</config>
@@ -47,7 +47,7 @@
 				<config>WebContent/WEB-INF/contexts/applicationContext.xml</config>
 				<config>WebContent/WEB-INF/contexts/capcontrol-servlet.xml</config>
 				<config>WebContent/WEB-INF/contexts/chart-servlet.xml</config>
-				<config>WebContent/WEB-INF/contexts/csr-servlet.xml</config>
+				<config>WebContent/WEB-INF/contexts/meter-servlet.xml</config>
 				<config>WebContent/WEB-INF/contexts/dataUpdater-servlet.xml</config>
 				<config>WebContent/WEB-INF/contexts/debug-servlet.xml</config>
 				<config>WebContent/WEB-INF/contexts/deviceConfiguration-servlet.xml</config>
@@ -82,7 +82,6 @@
 				<config>/common/src/com/cannontech/common/chart/chartContext.xml</config>
 				<config>/common/src/com/cannontech/common/device/config/deviceConfigurationContext.xml</config>
 				<config>/common/src/com/cannontech/common/device/deviceContext.xml</config>
-				<config>/common/src/com/cannontech/common/device/deviceContext-server.xml</config>
 				<config>/common/src/com/cannontech/common/search/searchContext.xml</config>
 				<config>/common/src/com/cannontech/core/authentication/authContext.xml</config>
 				<config>/common/src/com/cannontech/core/authorization/applicationContext.xml</config>
