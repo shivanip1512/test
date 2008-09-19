@@ -1685,8 +1685,7 @@ public boolean isInputValid()
 	}
 	
 	String scheduleName = getJTextFieldScheduleName().getText();
-    if( scheduleName == null 
-		 || scheduleName.length() <= 0 )
+    if( org.apache.commons.lang.StringUtils.isBlank(scheduleName) )
 	{
 		setErrorString("The Schedule Name text field must be filled in");
 		return false;
