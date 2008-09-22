@@ -32,20 +32,6 @@ public interface PointFormattingService {
     }
 
     /**
-     * This method determines a time zone and then delegates to
-     *   getValueString(PointValueHolder, Format, TimeZone);
-     *   
-     * This method should not be used if it is possible to use one of the
-     * other two versions. This may make sense to use in log files, but
-     * never for display on a web page.
-     * 
-     * @param value
-     * @param format
-     * @return
-     */
-    public String getValueString(PointValueHolder value, Format format); // used in move in/out
-    
-    /**
      * Gets the time zone for user and then delegates to
      *   getValueString(PointValueHolder, Format, TimeZone);
      *   

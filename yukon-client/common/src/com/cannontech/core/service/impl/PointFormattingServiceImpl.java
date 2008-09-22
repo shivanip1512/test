@@ -167,11 +167,6 @@ public class PointFormattingServiceImpl implements PointFormattingService {
             }
 
             @Override
-            public String getValueString(PointValueHolder value, Format format) {
-                throw new MethodNotImplementedException();
-            }
-            
-            @Override
             public PointFormattingService getCachedInstance() {
                 return this;
             }
@@ -185,10 +180,6 @@ public class PointFormattingServiceImpl implements PointFormattingService {
     
     public String getValueString(PointValueHolder value, String format, YukonUserContext userContext) {
         return getCachedInstance().getValueString(value, format, userContext);
-    }
-    
-    public String getValueString(PointValueHolder value, Format format) {
-        return getCachedInstance().getValueString(value, format);
     }
 
 }
