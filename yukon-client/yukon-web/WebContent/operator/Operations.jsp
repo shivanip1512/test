@@ -96,7 +96,7 @@
 </cti:checkRole>
 
 <!-- Metering section -->
-<cti:checkMultiRole roles="operator.MeteringRole.ROLEID,application.BillingRole.ROLEID,TrendingRole.ROLEID,operator.DeviceActionsRole.ROLEID">
+<cti:checkMultiRole roles="operator.MeteringRole.ROLEID,application.BillingRole.ROLEID,TrendingRole.ROLEID,operator.DeviceActionsRole.ROLEID,SchedulerRole.ROLEID,CommanderRole.ROLEID">
 	<tags:operationSection sectionName="Metering" sectionImageName="MeteringLogo">
 		<cti:checkRole role="TrendingRole.ROLEID">
 			<tags:sectionLink>
