@@ -1,10 +1,6 @@
 /* 4.1_0fc2 changes.  These are changes to 4.1 that have been made since 4.1_0fc1*/
 /* This script must be run manually using the SQL tool and not the DBToolsFrame tool. */
 
-/* A database that was newly created in verion 4.0 AND already upgraded to 4.1fc1 CANNOT be upgraded to fc2 using 
- * this script.  Manual processing will be needed for upgrading a brand new 4.0 database, that has already been upgraded
- * to 4.1fc1, to 4.1fc2. 
- */ 
 
 /* Start YUK-6139 */
 if exists (select 1 
