@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tnpp.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2008/08/14 15:57:40 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2008/09/22 15:35:35 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -396,7 +396,7 @@ INT CtiDeviceTnppPagingTerminal::generate(CtiXfer  &xfer)
                     }
                     else
                         strncat((char*)xfer.getOutBuffer(),CtiNumStr(_table.getPagerID()).zpad(8).toString().c_str(),10);
-                    strncat((char*)xfer.getOutBuffer(),(const char *)_outMessage.Buffer.OutMessage,30);
+                    strncat((char*)xfer.getOutBuffer(),(const char *)_outMessage.Buffer.OutMessage,300);
                     strncat((char*)xfer.getOutBuffer(),_ETX,10);
 
                     xfer.setOutCount(strlen((char *)xfer.getOutBuffer()) + 2);//The crc can have the null char, that causes errors.
