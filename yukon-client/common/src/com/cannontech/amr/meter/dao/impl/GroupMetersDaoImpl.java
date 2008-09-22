@@ -57,7 +57,7 @@ public class GroupMetersDaoImpl implements GroupMetersDao {
     
     private String getOrderBySql() {
         
-        MeterDisplayFieldEnum meterDisplayFieldEnumVal = roleDao.getRolePropertyValue(MeterDisplayFieldEnum.class,
+        MeterDisplayFieldEnum meterDisplayFieldEnumVal = roleDao.getGlobalRolePropertyValue(MeterDisplayFieldEnum.class,
                                                                                       ConfigurationRole.DEVICE_DISPLAY_TEMPLATE);
         return getOrderByFromMeterDisplayFieldEnum(meterDisplayFieldEnumVal);
     }

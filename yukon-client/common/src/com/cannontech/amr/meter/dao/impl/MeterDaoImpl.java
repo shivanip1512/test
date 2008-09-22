@@ -138,7 +138,7 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
 
     public String getFormattedDeviceName(Meter device) throws IllegalArgumentException{
         
-        MeterDisplayFieldEnum meterDisplayFieldEnumVal = roleDao.getRolePropertyValue(MeterDisplayFieldEnum.class,
+        MeterDisplayFieldEnum meterDisplayFieldEnumVal = roleDao.getGlobalRolePropertyValue(MeterDisplayFieldEnum.class,
                                                                                       ConfigurationRole.DEVICE_DISPLAY_TEMPLATE);
 
         String formattedName = meterDisplayFieldEnumVal.getField(device);

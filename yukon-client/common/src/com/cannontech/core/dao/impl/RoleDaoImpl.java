@@ -182,7 +182,7 @@ public class RoleDaoImpl implements RoleDao
         return true;
     }
     
-    public <E extends Enum<E>> E getRolePropertyValue(Class<E> class1, int rolePropertyID) {
+    public <E extends Enum<E>> E getGlobalRolePropertyValue(Class<E> class1, int rolePropertyID) {
         String rolePropertyValue = this.getGlobalPropertyValue(rolePropertyID);
         E enumValue = Enum.valueOf(class1, rolePropertyValue);
         return enumValue;
