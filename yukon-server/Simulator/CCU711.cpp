@@ -1093,9 +1093,9 @@ void CCU711::createLGRPQResponse(Mct410Sim* mct)
         _queueMessage msg = _messageQueue.back();
         _messageQueue.pop_back();
         //dont put back on...
+
         int len = msg.getOrigLength();
         unsigned char* buf = new unsigned char [len];
-
         msg.copyOutOriginal(buf);
         int function = buf[15];
 
@@ -1107,7 +1107,7 @@ void CCU711::createLGRPQResponse(Mct410Sim* mct)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << "Error: Data Size unexpected, " << buf[16] << ", expected 6. Unpredictable behavior from this point. " << endl;
-                        return;
+                        break;
                     }
                     // byte 0(17) is SPID
                     if (buf[17] != 255)
@@ -1115,7 +1115,7 @@ void CCU711::createLGRPQResponse(Mct410Sim* mct)
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << "Warning: SPID not supported. Need 0xFF. Received: " << buf[17] 
                              << " ." << endl;
-                        return;
+                        break;
                     }
                     // byte 1(18) is the Channel.  Dont know what to do with this.
     
@@ -1138,12 +1138,83 @@ void CCU711::createLGRPQResponse(Mct410Sim* mct)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << "Error: Write interval command not implemented. " << function << "." << endl;
+                    break;
                 }
             default:
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << "Error: Unsupported Function in Write Command, " << function << "." << endl;
                 break;
         }
+
+        Data[ctr++] = (0x0e);
+        Data[ctr++] = msg.getQENID(0);
+        Data[ctr++] = msg.getQENID(1);
+        Data[ctr++] = msg.getQENID(2);
+        Data[ctr++] = msg.getQENID(3);
+        Data[ctr++] = 0xf0; // ENSTA
+        Data[ctr++] = 0x00;//7
+        Data[ctr++] = 0x00;
+        Data[ctr++] = 0x00;
+        Data[ctr++] = 0xff; // ROUTE
+        Data[ctr++] = 0x01; // NFUNC //always 1.
+        Data[ctr++] = 0x40; // S1
+        Data[ctr++] = 0x01; // "  " 13
+        Data[ctr++] = 00;// L1, always 0 in a write
+        //15-16 Missing since nfunc is 1
+        //17 missing cause nfunc == 1
+        //18-19 missing cause nfunc != 3
+        //20 Missing cause nfunc != 3
+        Data[ctr++] = 0x00; // TS
+        Data[ctr++] = 0x00; // "  "
+        
+        msg.setmessageLength(ctr);
+        msg.copyInto(Data, ctr);
+        _messageQueue.push_back(msg);
+        return;
+    }
+    else if (_messageQueue.back().getioType() == WRITE)
+    {
+        _queueMessage msg = _messageQueue.back();
+        _messageQueue.pop_back();
+        //dont put back on...
+
+        int len = msg.getOrigLength();
+        unsigned char* buf = new unsigned char [len];
+        msg.copyOutOriginal(buf);
+        int function = buf[15];
+
+        switch (function)
+        {
+            default:
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << "No Writes Implemented." << endl;
+                break;
+        }
+
+        Data[ctr++] = (0x0e);
+        Data[ctr++] = msg.getQENID(0);
+        Data[ctr++] = msg.getQENID(1);
+        Data[ctr++] = msg.getQENID(2);
+        Data[ctr++] = msg.getQENID(3);
+        Data[ctr++] = 0xf0; // ENSTA
+        Data[ctr++] = 0x00;//7
+        Data[ctr++] = 0x00;
+        Data[ctr++] = 0x00;
+        Data[ctr++] = 0xff; // ROUTE
+        Data[ctr++] = 0x01; // NFUNC //always 1.
+        Data[ctr++] = 0x40; // S1
+        Data[ctr++] = 0x01; // "  " 13
+        Data[ctr++] = 00;// L1, always 0 in a write
+        //15-16 Missing since nfunc is 1
+        //17 missing cause nfunc == 1
+        //18-19 missing cause nfunc != 3
+        //20 Missing cause nfunc != 3
+        Data[ctr++] = 0x00; // TS
+        Data[ctr++] = 0x00; // "  "
+        
+        msg.setmessageLength(ctr);
+        msg.copyInto(Data, ctr);
+        _messageQueue.push_back(msg);
         return;
     }
 }
