@@ -1,5 +1,5 @@
-
-var canBeSaved = 0; //this indicate whether the format can be saved or not 
+var patternCanBeSaved = 0; //this indicate whether the pattern of the format can be saved or not 
+var formatInfoCanBeSaved = 0; //this indicate whether the format informoration can be saved such as format name and delimiter.
 var prevHighlight = new Date(); //this is to indicate when is the last preview highlighting done
 var errorHighlight = new Date(); //this is to indicate when is the last error highlighting done
 
@@ -164,10 +164,13 @@ function saveButton(){
 		errorMsg += "Name cannot be longer than 100 characters <br/>";
 	}
 	//see whether fields + patterns can be saved or not
-	if ( canBeSaved == 0 ){
+	if ( patternCanBeSaved == 0 ){
 		errorMsg += "invalid pattern detected. please check the pattern <br/>";
 	}
-	
+	//see whether format information can be saved or not
+    if ( formatInfoCanBeSaved == 0 ){
+        errorMsg += "invalid format information detected. please check the format information <br/>";
+    }
 	if (errorMsg.length > 0){
 		$('errorMsg').innerHTML = "Error saving format: <br />" + errorMsg + "<br/>";
 		var currTime = new Date();
@@ -407,20 +410,19 @@ function updateFormatName(){
             //if successful, display the string to the page
             onSuccess: function(transport){
                 var errorText = transport.responseText;
-                if(errorText.length > 0) {
-//alert("error");
+                if(errorText.length > 1) {
                     $('errorMsg').innerHTML = errorText;
-                    canBeSaved = 0;
+                    formatInfoCanBeSaved = 0;
                 } else {
                     $('errorMsg').innerHTML = "&nbsp;";
-                    canBeSaved = 1;
+                    formatInfoCanBeSaved = 1;
                 }
             },
             
             //any exception raised on the java side is displayed on the page
             onFailure: function(transport){
                 theDiv.innerHTML = "<label style='color: red;'>" + transport.responseText + "</label>";
-                canBeSaved = 0;
+                patternCanBeSaved = 0;
             },
 
             parameters: { 
@@ -450,14 +452,14 @@ function updatePreview(){
 			
 			//if successful, display the string to the page
 			onSuccess: function(transport){
-                    theDiv.innerHTML = transport.responseText;
-                    canBeSaved = 1;
+                theDiv.innerHTML = transport.responseText;
+                patternCanBeSaved = 1;
 			},
 			
 			//any exception raised on the java side is displayed on the page
 			onFailure: function(transport){
 				theDiv.innerHTML = "<label style='color: red;'>" + transport.responseText + "</label>";
-				canBeSaved = 0;
+				patternCanBeSaved = 0;
 			},
 
 			parameters: { 

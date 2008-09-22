@@ -291,6 +291,7 @@
             <div id="preview"></div>
             <script type="text/javascript"> 
                 updatePreview();
+                updateFormatName();
             </script>
             
             <br>
