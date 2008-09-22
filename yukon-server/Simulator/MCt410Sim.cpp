@@ -66,14 +66,19 @@ unsigned char* Mct410Sim::generateEmetconWordResponse(int& responseSize, int fun
         EmetconWordD1 word1;
         unsigned char buf[defaultWordSize];
 
+        unsigned char ebuf[3];
+        ebuf[0] = '\0';
+        ebuf[1] = '\0';
+        ebuf[2] = '\0';
         int ctr = 0;
+
         responseSize = defaultWordSize;
         resp = new unsigned char [responseSize];
 
         //Response is an empty Dword with Address
         word1.setMctAddress(mctAddress);
         word1.setNumberOfRepeaters(numberOfRepeaters);
-        word1.insertData(buf,3);
+        word1.insertData(ebuf,3);
         
         word1.getBytes(buf,defaultWordSize);
         for (int i = 0; i < defaultWordSize; i++)
@@ -81,25 +86,6 @@ unsigned char* Mct410Sim::generateEmetconWordResponse(int& responseSize, int fun
             resp[ctr++] = buf[i];
         }
 
-    }
-    else if (function == WritePointOfInterest)
-    {
-        //Function 0x05
-        EmetconWordD1 word1;
-        unsigned char buf[defaultWordSize];
-
-        int ctr = 0;
-        responseSize = defaultWordSize;
-        resp = new unsigned char [responseSize];
-        //Response is an empty Dword with NO Address
-
-        word1.insertData(buf,3);
-        
-        word1.getBytes(buf,defaultWordSize);
-        for (int i = 0; i < defaultWordSize; i++)
-        {
-            resp[ctr++] = buf[i];
-        }
     }
     else if (function == GetCurrentMeterReading)
     {
@@ -130,7 +116,6 @@ unsigned char* Mct410Sim::generateEmetconWordResponse(int& responseSize, int fun
         EmetconWordDn word2,word3;
 
         int ctr = 0;
-        unsigned char ack = makeAck(mctAddress>>1);
         unsigned char buf[defaultWordSize];
 
         responseSize = defaultWordSize*3+2;//3 is the number of words 
@@ -249,6 +234,31 @@ unsigned char* Mct410Sim::generateEmetconWordResponse(int& responseSize, int fun
 
         word2.getBytes(buf,defaultWordSize);
         for (i = 0; i < defaultWordSize; i++)
+        {
+            resp[ctr++] = buf[i];
+        }
+    }
+    else // WritePointOfInterest / WriteIntervals
+    {
+        //Default response is
+        //Response is an empty Dword with NO Address
+        EmetconWordD1 word1;
+        unsigned char buf[defaultWordSize];
+
+        unsigned char ebuf[3];
+        ebuf[0] = '\0';
+        ebuf[1] = '\0';
+        ebuf[2] = '\0';
+        int ctr = 0;
+
+        responseSize = defaultWordSize;
+        resp = new unsigned char [responseSize];
+
+
+        word1.insertData(ebuf,3);
+        
+        word1.getBytes(buf,defaultWordSize);
+        for ( int i = 0; i < defaultWordSize; i++)
         {
             resp[ctr++] = buf[i];
         }

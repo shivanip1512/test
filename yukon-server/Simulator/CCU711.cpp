@@ -619,7 +619,7 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], unsign
             {
                 int func = getEmetconBWord()->getFunction();
             
-                if (func == 5)
+                if (func == Mct410Sim::WritePointOfInterest)
                 {
                     //Assumed 2.  This can be verified
                     EmetconWordC cWord  (_messageData+17,7);
@@ -641,6 +641,11 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], unsign
             
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << "Debug: UTC Time in seconds: " << poi << ", Time: " << CtiTime((unsigned long)poi) <<  endl;
+                }
+                else if (func == Mct410Sim::WriteIntervals)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << "Error: Write interval command not implemented. " << func << "." << endl;
                 }
 
                 unsigned char ack = makeAck(Address>>1);
@@ -1085,45 +1090,55 @@ void CCU711::createLGRPQResponse(Mct410Sim* mct)
     }
     else if (_messageQueue.back().getioType() == FUNC_WRITE)
     {
-        int len = _messageQueue.back().getOrigLength();
+        _queueMessage msg = _messageQueue.back();
+        _messageQueue.pop_back();
+        //dont put back on...
+        int len = msg.getOrigLength();
         unsigned char* buf = new unsigned char [len];
 
-        _messageQueue.back().copyOutOriginal(buf);
+        msg.copyOutOriginal(buf);
         int function = buf[15];
 
         switch (function)
         {
-            case Mct410Sim::Ping:
-                if (buf[16] != 6)
+            case Mct410Sim::WritePointOfInterest:
+                {
+                    if (buf[16] != 6)
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << "Error: Data Size unexpected, " << buf[16] << ", expected 6. Unpredictable behavior from this point. " << endl;
+                        return;
+                    }
+                    // byte 0(17) is SPID
+                    if (buf[17] != 255)
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << "Warning: SPID not supported. Need 0xFF. Received: " << buf[17] 
+                             << " ." << endl;
+                        return;
+                    }
+                    // byte 1(18) is the Channel.  Dont know what to do with this.
+    
+                    // Byte 2-5 is the UTC Start Time
+                    {
+                        int poi = 0;
+                        poi = buf[19];  poi = poi << 8;
+                        poi += buf[20]; poi = poi << 8;
+                        poi += buf[21]; poi = poi << 8;
+                        poi += buf[22];
+                        
+                        mct->setPeroidOfInterest((long)poi);
+    
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << "Debug: UTC Time in seconds: " << poi << ", Time: " << CtiTime((unsigned long)poi) <<  endl;
+                    }
+                    break;
+                }
+            case Mct410Sim::WriteIntervals:
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "Error: Data Size unexpected, " << buf[16] << ", expected 6. Unpredictable behavior from this point. " << endl;
-                    return;
+                    dout << "Error: Write interval command not implemented. " << function << "." << endl;
                 }
-                // byte 0(17) is SPID
-                if (buf[17] != 255)
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "Warning: SPID not supported. Need 0xFF. Received: " << buf[17] 
-                         << " ." << endl;
-                    return;
-                }
-                // byte 1(18) is the Channel.  Dont know what to do with this.
-
-                // Byte 2-5 is the UTC Start Time
-                {
-                    int poi = 0;
-                    poi = buf[19];  poi = poi << 8;
-                    poi += buf[20]; poi = poi << 8;
-                    poi += buf[21]; poi = poi << 8;
-                    poi += buf[22];
-                    
-                    mct->setPeroidOfInterest((long)poi);
-
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "Debug: UTC Time in seconds: " << poi << ", Time: " << CtiTime((unsigned long)poi) <<  endl;
-                }
-                break;
             default:
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << "Error: Unsupported Function in Write Command, " << function << "." << endl;

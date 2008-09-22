@@ -15,6 +15,7 @@ class Mct410Sim
         enum MctCommands
         {
             Ping = 0,
+            WriteIntervals = 3,
             WritePointOfInterest = 5,
             LongLoadProfileTableMin = 64,
             LongLoadProfileTableMax = 79,
