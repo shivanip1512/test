@@ -6,8 +6,8 @@ import com.cannontech.common.device.YukonDevice;
 public class SubstationBulkFieldProcessor extends BulkYukonDeviceFieldProcessor {
 
     @Override
-    public YukonDevice updateField(YukonDevice device, YukonDeviceDto value) {
+    public void updateField(YukonDevice device, YukonDeviceDto value) {
         //TODO
-        return device;
+        return;
     }
 }
