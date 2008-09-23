@@ -39,7 +39,7 @@ import com.cannontech.tools.csv.CSVReader;
 import com.cannontech.tools.csv.CSVWriter;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
-import com.cannontech.web.reports.XmlReportDataUtils;
+import com.cannontech.web.reports.JsonReportDataUtils;
 
 /**
  * Spring controller class for bulk operations
@@ -153,7 +153,7 @@ public class BulkController extends BulkControllerBase {
         return mav;
     }
     
-    public ModelAndView deviceCollectionReportXmlData(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public ModelAndView deviceCollectionReportJsonData(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
@@ -174,7 +174,7 @@ public class BulkController extends BulkControllerBase {
             data.add(cols);
         }
         
-        XmlReportDataUtils.outputReportData(data, columnInfo, response.getOutputStream());
+        JsonReportDataUtils.outputReportData(data, columnInfo, response.getOutputStream());
         
         return null;
         

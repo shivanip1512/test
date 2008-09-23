@@ -28,20 +28,12 @@ function initializeGrid(divId, columnInfo, dataUrl) {
 	    // load using HTTP
 	    url: dataUrl,
 	
-	    // The data should be an XML file with a set of 'row' elements, each
-	    // containing one element per column with the column name as the element
-	    // name. For example, the following bit of xml could be used to generate
-	    // a grid with 2 columns - name and type:
-	    // <data> 
-	    //     <row>
-	    //         <name>Device 1</name>
-	    //         <type>MCT 470</type>
-        //     </row>
-	    //     <row>
-	    //         ...
-	    reader: new Ext.data.XmlReader(
+	    // The data should be an Json string with an elemnt named root in the form:
+        // {"root":[{"row1col1ID":"row1col1Val","row1col2ID":"row1Col2Val"},
+        //          {"row2col1ID":"row2col1Val","row2col2ID":"row2Col2Val"}]}
+	    reader: new Ext.data.JsonReader(
 	        {
-	            record: 'row'
+	            root: 'root'
 	        }, 
 	        columnStore),
 	    autoLoad: true

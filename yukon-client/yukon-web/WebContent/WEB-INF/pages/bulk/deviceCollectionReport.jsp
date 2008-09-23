@@ -31,34 +31,12 @@
     
     <h2>${pageTitle}</h2>
     <br>
-
-    <%-- EXT REPORT GRID (not working in IE yet)
-    <c:url var="dataUrl" value="/spring/bulk/deviceCollectionReportXmlData">
+    
+    <c:url var="dataUrl" value="/spring/bulk/deviceCollectionReportJsonData">
         <c:forEach var="p" items="${deviceCollection.collectionParameters}">
             <c:param name="${p.key}" value="${p.value}"/>
         </c:forEach>
     </c:url>
     <tags:extGrid columnInfo="${columnInfo}" dataUrl="${dataUrl}" />
-    --%> 
-    
-    <table class="resultsTable">
-        
-        <tr>
-            <c:forEach var="columnHeader" items="${columnInfo}">
-                <th>${columnHeader.columnName}</th>
-            </c:forEach>
-        </tr>
-        
-        <c:forEach var="meter" items="${meterList}">
-            <tr>
-                <td>${meter.name}</td>
-                <td>${meter.meterNumber}</td>
-                <td>${meter.typeStr}</td>
-                <td>${meter.address}</td>
-                <td>${meter.route}</td>
-            </tr>
-        </c:forEach>
-    
-    </table>
-    
+
 </cti:standardPage>
