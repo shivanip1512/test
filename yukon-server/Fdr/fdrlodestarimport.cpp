@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.34 $
-*    DATE         :  $Date: 2008/09/15 21:08:48 $
+*    REVISION     :  $Revision: 1.35 $
+*    DATE         :  $Date: 2008/09/23 15:14:58 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -19,6 +19,11 @@
 *    ---------------------------------------------------
 *    History:
       $Log: fdrlodestarimport.cpp,v $
+      Revision 1.35  2008/09/23 15:14:58  tspar
+      YUK-5013 Full FDR reload should not happen with every point db change
+
+      Review changes. Most notable is mgr_fdrpoint.cpp now encapsulates CtiSmartMap instead of extending from rtdb.
+
       Revision 1.34  2008/09/15 21:08:48  tspar
       YUK-5013 Full FDR reload should not happen with every point db change
 
@@ -493,13 +498,18 @@ bool CtiFDR_LodeStarImportBase::loadTranslationLists()
             {
 
                 // get iterator on send list
-                CtiFDRManager::CTIFdrPointIterator  myIterator = pointList->getMap().begin();
+                CtiFDRManager::spiterator  myIterator = pointList->getMap().begin();
 
                 for ( ; myIterator != pointList->getMap().end(); ++myIterator)
                 {
                     foundPoint = true;
-                    shared_ptr<CtiFDRPoint> translationPoint = (*myIterator).second;
-                    successful = translateSinglePoint(translationPoint);
+                    CtiFDRPointSPtr translationPoint = (*myIterator).second;
+                    bool temp = translateSinglePoint(translationPoint);
+
+                    if (temp == false)
+                    {
+                        successful = false;
+                    }
                 }   // end for interator
 
 
@@ -560,7 +570,7 @@ bool CtiFDR_LodeStarImportBase::loadTranslationLists()
     return successful;
 }
 
-bool CtiFDR_LodeStarImportBase::translateSinglePoint(shared_ptr<CtiFDRPoint> translationPoint, bool send)
+bool CtiFDR_LodeStarImportBase::translateSinglePoint(CtiFDRPointSPtr translationPoint, bool send)
 {
     bool successful = true;
 

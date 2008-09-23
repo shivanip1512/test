@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive$
-*    REVISION     :  $Revision: 1.14 $
-*    DATE         :  $Date: 2008/09/15 21:08:48 $
+*    REVISION     :  $Revision: 1.15 $
+*    DATE         :  $Date: 2008/09/23 15:14:57 $
 *
 *
 *    AUTHOR: Ben Wallace
@@ -23,6 +23,11 @@
 *    ---------------------------------------------------
 *    History:
       $Log: fdrcygnet.cpp,v $
+      Revision 1.15  2008/09/23 15:14:57  tspar
+      YUK-5013 Full FDR reload should not happen with every point db change
+
+      Review changes. Most notable is mgr_fdrpoint.cpp now encapsulates CtiSmartMap instead of extending from rtdb.
+
       Revision 1.14  2008/09/15 21:08:48  tspar
       YUK-5013 Full FDR reload should not happen with every point db change
 
@@ -723,7 +728,7 @@ bool CtiFDRCygnet::retreiveAnalogPoints()
 
     string   desc("Cygnet Update");  // not sure if this is needed
 
-    shared_ptr<CtiFDRPoint> point;
+    CtiFDRPointSPtr point;
 
     RT_GET_NAMED_REC_REQ    CygnetRequest;
     RT_GET_NAMED_REC_RESP   CygnetResponse;
@@ -735,7 +740,7 @@ bool CtiFDRCygnet::retreiveAnalogPoints()
 
     // loop through all analog points
     CtiLockGuard<CtiMutex> guard(getReceiveFromList().getMutex());
-    CtiFDRManager::CTIFdrPointIterator  myIterator = getReceiveFromList().getPointList()->getMap().begin();
+    CtiFDRManager::spiterator  myIterator = getReceiveFromList().getPointList()->getMap().begin();
     int x;
 
     pMultiData = new CtiMultiMsg;
@@ -1008,7 +1013,7 @@ bool CtiFDRCygnet::retreiveStatusPoints()
     USHORT      bytesReceived;
     double      myNewValue = 0;
     CtiTime      myNewTime;
-    shared_ptr<CtiFDRPoint> point;
+    CtiFDRPointSPtr point;
 
     bool        sendNoneUpdate;
 
@@ -1023,7 +1028,7 @@ bool CtiFDRCygnet::retreiveStatusPoints()
 
     // loop through all analog points
     CtiLockGuard<CtiMutex> guard(getReceiveFromList().getMutex());
-    CtiFDRManager::CTIFdrPointIterator  myIterator= getReceiveFromList().getPointList()->getMap().begin();
+    CtiFDRManager::spiterator  myIterator= getReceiveFromList().getPointList()->getMap().begin();
     int x;
 
     pMultiData = new CtiMultiMsg;
@@ -1318,12 +1323,12 @@ bool CtiFDRCygnet::loadLists(CtiFDRPointList &aList)
         if (pointList->loadPointList().errorCode() == (RWDBStatus::ok))
         {
             // get iterator on list
-            CtiFDRManager::CTIFdrPointIterator myIterator = pointList->getMap().begin();
+            CtiFDRManager::spiterator myIterator = pointList->getMap().begin();
 
             for ( ; myIterator != pointList->getMap().end(); ++myIterator )
             {
                 foundPoint = true;
-                shared_ptr<CtiFDRPoint> translationPoint = (*myIterator).second;
+                CtiFDRPointSPtr translationPoint = (*myIterator).second;
                 translateSinglePoint(translationPoint);
             }
 
@@ -1367,7 +1372,7 @@ bool CtiFDRCygnet::loadLists(CtiFDRPointList &aList)
     return successful;
 }
 
-bool CtiFDRCygnet::translateSinglePoint(shared_ptr<CtiFDRPoint> translationPoint, bool send)
+bool CtiFDRCygnet::translateSinglePoint(CtiFDRPointSPtr translationPoint, bool send)
 {
     bool successful = false;
 

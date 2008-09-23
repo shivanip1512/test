@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrftpinterface.cpp-arc  $
-*    REVISION     :  $Revision: 1.18 $
-*    DATE         :  $Date: 2008/09/15 21:08:48 $
+*    REVISION     :  $Revision: 1.19 $
+*    DATE         :  $Date: 2008/09/23 15:14:58 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,11 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrftpinterface.cpp,v $
+      Revision 1.19  2008/09/23 15:14:58  tspar
+      YUK-5013 Full FDR reload should not happen with every point db change
+
+      Review changes. Most notable is mgr_fdrpoint.cpp now encapsulates CtiSmartMap instead of extending from rtdb.
+
       Revision 1.18  2008/09/15 21:08:48  tspar
       YUK-5013 Full FDR reload should not happen with every point db change
 
@@ -451,12 +456,15 @@ bool CtiFDRFtpInterface::loadTranslationLists()
                 getReceiveFromList().setPointList (pointList);
 
                 // get iterator on send list
-                CtiFDRManager::CTIFdrPointIterator  myIterator = getReceiveFromList().getPointList()->getMap().begin();
+                CtiFDRManager* mgrPtr = getReceiveFromList().getPointList();
 
-                for ( ; myIterator != getReceiveFromList().getPointList()->getMap().end(); ++myIterator)
+                CtiFDRManager::writerLock guard(mgrPtr->getLock());
+                CtiFDRManager::spiterator myIterator = mgrPtr->getMap().begin();
+
+                for ( ; myIterator != mgrPtr->getMap().end(); ++myIterator )
                 {
                     foundPoint = true;
-                    shared_ptr<CtiFDRPoint> translationPoint = (*myIterator).second;
+                    CtiFDRPointSPtr translationPoint = (*myIterator).second;
                     translateSinglePoint(translationPoint);
                 }
 
@@ -509,7 +517,7 @@ bool CtiFDRFtpInterface::loadTranslationLists()
     return successful;
 }
 
-bool CtiFDRFtpInterface::translateSinglePoint(shared_ptr<CtiFDRPoint> translationPoint, bool send)
+bool CtiFDRFtpInterface::translateSinglePoint(CtiFDRPointSPtr translationPoint, bool send)
 {
     string           tempString1;
     string           tempString2;

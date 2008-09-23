@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrtextimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.7 $
-*    DATE         :  $Date: 2008/09/15 21:09:16 $
+*    REVISION     :  $Revision: 1.8 $
+*    DATE         :  $Date: 2008/09/23 15:15:22 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +20,11 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrtextimport.h,v $
+      Revision 1.8  2008/09/23 15:15:22  tspar
+      YUK-5013 Full FDR reload should not happen with every point db change
+
+      Review changes. Most notable is mgr_fdrpoint.cpp now encapsulates CtiSmartMap instead of extending from rtdb.
+
       Revision 1.7  2008/09/15 21:09:16  tspar
       YUK-5013 Full FDR reload should not happen with every point db change
 
@@ -138,10 +143,10 @@ public:
 
     //Load all points
     virtual bool loadTranslationLists(void);
-    virtual bool translateSinglePoint(shared_ptr<CtiFDRPoint> translationPoint, bool send=false);
+    virtual bool translateSinglePoint(CtiFDRPointSPtr translationPoint, bool send=false);
 
     //remove single point maintaining current lists
-    virtual void cleanupTranslationPoint(shared_ptr<CtiFDRPoint> translationPoint, bool recvList);
+    virtual void cleanupTranslationPoint(CtiFDRPointSPtr translationPoint, bool recvList);
 
     // ddefine these for each interface type
     static const CHAR * KEY_INTERVAL;

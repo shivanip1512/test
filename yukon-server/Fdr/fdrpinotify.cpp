@@ -9,8 +9,8 @@
  * Author: Tom Mack
  *
  * ARCHIVE      :  $Archive$
- * REVISION     :  $Revision: 1.5 $
- * DATE         :  $Date: 2008/09/15 21:08:48 $
+ * REVISION     :  $Revision: 1.6 $
+ * DATE         :  $Date: 2008/09/23 15:14:58 $
  */
 
 #include <windows.h>
@@ -102,7 +102,7 @@ void CtiFDRPiNotify::handleNewPoints()
 /**
  * Setup receiving for all point notifications.
  */ 
-void CtiFDRPiNotify::handleNewPoint(shared_ptr<CtiFDRPoint> ctiPoint)
+void CtiFDRPiNotify::handleNewPoint(CtiFDRPointSPtr ctiPoint)
 {
   // we're interested in the first (and only) destination
   string tagName = ctiPoint->getDestinationList()[0].getTranslationValue("Tag Name");
@@ -236,7 +236,7 @@ void CtiFDRPiNotify::processNewPiPoint(PiPointInfo &info)
   _pointMap.insert(PiPointMap::value_type(info.piPointId, info));
 }
 
-void CtiFDRPiNotify::cleanupTranslationPoint(shared_ptr<CtiFDRPoint> translationPoint, bool recvList)
+void CtiFDRPiNotify::cleanupTranslationPoint(CtiFDRPointSPtr translationPoint, bool recvList)
 {
   string tagName = translationPoint->getDestinationList()[0].getTranslationValue("Tag Name");
 

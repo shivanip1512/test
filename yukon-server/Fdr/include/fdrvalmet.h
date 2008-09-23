@@ -16,6 +16,11 @@
 *                 design document for more information
 *    History:
       $Log: fdrvalmet.h,v $
+      Revision 1.8  2008/09/23 15:15:22  tspar
+      YUK-5013 Full FDR reload should not happen with every point db change
+
+      Review changes. Most notable is mgr_fdrpoint.cpp now encapsulates CtiSmartMap instead of extending from rtdb.
+
       Revision 1.7  2008/09/15 21:09:16  tspar
       YUK-5013 Full FDR reload should not happen with every point db change
 
@@ -203,7 +208,7 @@ class IM_EX_FDRVALMET CtiFDR_Valmet : public CtiFDRSingleSocket
         USHORT      YukonToForeignQuality (USHORT aQuality);
         USHORT      YukonToForeignStatus (int aStatus);
 
-        bool translateAndUpdatePoint(shared_ptr<CtiFDRPoint> translationPoint, int aIndex);
+        bool translateAndUpdatePoint(CtiFDRPointSPtr translationPoint, int aIndex);
 
 
         enum {  Valmet_Invalid = 0,

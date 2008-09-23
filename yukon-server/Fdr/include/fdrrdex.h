@@ -16,6 +16,11 @@
 *             design document for more information
 *    History:
       $Log: fdrrdex.h,v $
+      Revision 1.8  2008/09/23 15:15:22  tspar
+      YUK-5013 Full FDR reload should not happen with every point db change
+
+      Review changes. Most notable is mgr_fdrpoint.cpp now encapsulates CtiSmartMap instead of extending from rtdb.
+
       Revision 1.7  2008/09/15 21:09:16  tspar
       YUK-5013 Full FDR reload should not happen with every point db change
 
@@ -275,7 +280,7 @@ class IM_EX_FDRRDEX CtiFDR_Rdex : public CtiFDRSingleSocket
         ULONG         YukonToForeignStatus (ULONG aStatus);
 
         enum {Rdex_Open = 0, Rdex_Closed = 1, Rdex_Invalid=99};
-        virtual bool translateAndUpdatePoint(shared_ptr<CtiFDRPoint> translationPoint, int aDestinationIndex);
+        virtual bool translateAndUpdatePoint(CtiFDRPointSPtr translationPoint, int aDestinationIndex);
         virtual bool isRegistrationNeeded(void);
 
 

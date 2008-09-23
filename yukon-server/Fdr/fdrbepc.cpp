@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrbepc.cpp-arc  $
-*    REVISION     :  $Revision: 1.8 $
-*    DATE         :  $Date: 2008/09/15 21:08:48 $
+*    REVISION     :  $Revision: 1.9 $
+*    DATE         :  $Date: 2008/09/23 15:14:57 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +20,11 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrbepc.cpp,v $
+      Revision 1.9  2008/09/23 15:14:57  tspar
+      YUK-5013 Full FDR reload should not happen with every point db change
+
+      Review changes. Most notable is mgr_fdrpoint.cpp now encapsulates CtiSmartMap instead of extending from rtdb.
+
       Revision 1.8  2008/09/15 21:08:48  tspar
       YUK-5013 Full FDR reload should not happen with every point db change
 
@@ -396,13 +401,14 @@ bool CtiFDR_BEPC::loadTranslationLists()
             {
 
                 // get iterator on send list
-                CtiFDRManager::CTIFdrPointIterator  myIterator = pointList->getMap().begin();
-                int x;
-
-                for ( ; myIterator != pointList->getMap().end(); ++myIterator)
+                CtiFDRManager::coll_type pointMap = pointList->getMap();
+                CtiFDRManager::spiterator myIterator = pointMap.begin();
+                //no reader/writer lock because this is the only copy of this so far.
+                
+                for ( ; myIterator != pointMap.end(); ++myIterator)
                 {
                     foundPoint = true;
-                    shared_ptr<CtiFDRPoint> translationPoint = (*myIterator).second;
+                    CtiFDRPointSPtr translationPoint = (*myIterator).second;
                     successful = translateSinglePoint(translationPoint);
                 }
 
@@ -465,7 +471,7 @@ bool CtiFDR_BEPC::loadTranslationLists()
     return successful;
 }
 
-bool CtiFDR_BEPC::translateSinglePoint(shared_ptr<CtiFDRPoint> translationPoint, bool send)
+bool CtiFDR_BEPC::translateSinglePoint(CtiFDRPointSPtr translationPoint, bool send)
 {
     bool successful = false;
 

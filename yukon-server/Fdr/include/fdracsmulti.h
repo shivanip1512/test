@@ -14,6 +14,11 @@
  *                 design document for more information
  *    History:
  *      $Log$
+ *      Revision 1.7  2008/09/23 15:15:22  tspar
+ *      YUK-5013 Full FDR reload should not happen with every point db change
+ *
+ *      Review changes. Most notable is mgr_fdrpoint.cpp now encapsulates CtiSmartMap instead of extending from rtdb.
+ *
  *      Revision 1.6  2008/09/15 21:09:16  tspar
  *      YUK-5013 Full FDR reload should not happen with every point db change
  *
@@ -227,8 +232,8 @@ class IM_EX_FDRACSMULTI CtiFDRAcsMulti : public CtiFDRScadaServer
         virtual CtiFDRClientServerConnection* createNewConnection(SOCKET newConnection);
 
         virtual void begineNewPoints();
-        virtual bool translateSinglePoint(shared_ptr<CtiFDRPoint> translationPoint, bool send);
-        virtual void cleanupTranslationPoint(shared_ptr<CtiFDRPoint> translationPoint, bool recvList);
+        virtual bool translateSinglePoint(CtiFDRPointSPtr translationPoint, bool send);
+        virtual void cleanupTranslationPoint(CtiFDRPointSPtr translationPoint, bool recvList);
 
         virtual bool buildForeignSystemHeartbeatMsg(char** buffer,
                                                     unsigned int& bufferSize);

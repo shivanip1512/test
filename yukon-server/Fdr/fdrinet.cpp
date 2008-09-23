@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinet.cpp-arc  $
-*    REVISION     :  $Revision: 1.23 $
-*    DATE         :  $Date: 2008/09/15 21:08:48 $
+*    REVISION     :  $Revision: 1.24 $
+*    DATE         :  $Date: 2008/09/23 15:14:58 $
 *
 *
 *    AUTHOR: David Sutton
@@ -22,6 +22,11 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrinet.cpp,v $
+      Revision 1.24  2008/09/23 15:14:58  tspar
+      YUK-5013 Full FDR reload should not happen with every point db change
+
+      Review changes. Most notable is mgr_fdrpoint.cpp now encapsulates CtiSmartMap instead of extending from rtdb.
+
       Revision 1.23  2008/09/15 21:08:48  tspar
       YUK-5013 Full FDR reload should not happen with every point db change
 
@@ -504,12 +509,12 @@ bool CtiFDR_Inet::loadList(string &aDirection,  CtiFDRPointList &aList)
             if (((pointList->entries() == 0) && (aList.getPointList()->entries() <= 2)) || (pointList->entries() > 0))
             {
                 // get iterator on send list
-                CtiFDRManager::CTIFdrPointIterator  myIterator = pointList->getMap().begin();
+                CtiFDRManager::spiterator  myIterator = pointList->getMap().begin();
     
                 for ( ; myIterator != pointList->getMap().end(); ++myIterator )
                 {
                     foundPoint = true;
-                    shared_ptr<CtiFDRPoint> translationPoint = (*myIterator).second;
+                    CtiFDRPointSPtr translationPoint = (*myIterator).second;
                     successful = translateSinglePoint(translationPoint);
                 }
 
@@ -571,7 +576,7 @@ bool CtiFDR_Inet::loadList(string &aDirection,  CtiFDRPointList &aList)
 }
 
 
-bool CtiFDR_Inet::translateSinglePoint(shared_ptr<CtiFDRPoint> translationPoint, bool send)
+bool CtiFDR_Inet::translateSinglePoint(CtiFDRPointSPtr translationPoint, bool send)
 {
     bool successful = false;
     string tempString1;
@@ -678,7 +683,7 @@ bool CtiFDR_Inet::translateSinglePoint(shared_ptr<CtiFDRPoint> translationPoint,
 bool CtiFDR_Inet::loadClientList()
 {
     bool                successful(FALSE);
-    shared_ptr<CtiFDRPoint> translationPoint;
+    CtiFDRPointSPtr translationPoint;
     string           receiveConnections;
     int                 entries;
     RWDBStatus          listStatus;
@@ -699,7 +704,7 @@ bool CtiFDR_Inet::loadClientList()
             iClientList.erase (iClientList.begin(),iClientList.end());
 
             // get iterator on send list
-            CtiFDRManager::CTIFdrPointIterator  myIterator = pointList->getMap().begin();
+            CtiFDRManager::spiterator  myIterator = pointList->getMap().begin();
 
             if (pointList->getMap().size())
             {
@@ -1574,7 +1579,7 @@ void CtiFDR_Inet::threadFunctionSendDebugData( void )
 {
     RWRunnableSelf  pSelf = rwRunnable( );
     INT retVal=0;
-    shared_ptr<CtiFDRPoint> point;
+    CtiFDRPointSPtr point;
     CtiPointDataMsg     *localMsg;
     int quality = NormalQuality, index, entries;
     FLOAT value = 1.0;
@@ -1595,10 +1600,13 @@ void CtiFDR_Inet::threadFunctionSendDebugData( void )
 
             index=0;
             {
-                CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());  
-                CtiFDRManager::CTIFdrPointIterator  myIterator = getSendToList().getPointList()->getMap().begin();
+                CtiFDRManager* mgrPtr = getSendToList().getPointList();
+                CtiFDRManager::readerLock guard(mgrPtr->getLock());
 
-                for ( ; myIterator != getSendToList().getPointList()->getMap().end(); ++myIterator )
+                CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());  
+                CtiFDRManager::spiterator myIterator = mgrPtr->getMap().begin();
+
+                for ( ; myIterator != mgrPtr->getMap().end(); ++myIterator )
                 {
                     // find the point id
                     point = (*myIterator).second;

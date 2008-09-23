@@ -1003,7 +1003,7 @@ bool CtiFDRTelegyr::loadGroupLists( void )
                 dout << CtiTime::now() << " ---- Found " << pointList->entries() << " Telegyr points" << endl;
             }
             // get iterator on list
-            CtiFDRManager::CTIFdrPointIterator myIterator = pointList->getMap().begin();
+            CtiFDRManager::spiterator myIterator = pointList->getMap().begin();
 
             //FIXME
             //for some reason, we need to wipe the old list first
@@ -1018,7 +1018,7 @@ bool CtiFDRTelegyr::loadGroupLists( void )
             for( ; myIterator != pointList->getMap().end(); ++myIterator )
             {
                foundPoint = true;
-               shared_ptr<CtiFDRPoint> translationPoint = (*myIterator).second;
+               CtiFDRPointSPtr translationPoint = (*myIterator).second;
                successful = translateSinglePoint(translationPoint);
             }
 
@@ -1068,7 +1068,7 @@ bool CtiFDRTelegyr::loadGroupLists( void )
    return successful;
 }
 
-bool CtiFDRTelegyr::translateSinglePoint(shared_ptr<CtiFDRPoint> translationPoint, bool send)
+bool CtiFDRTelegyr::translateSinglePoint(CtiFDRPointSPtr translationPoint, bool send)
 {
    bool successful = false;
    bool foundGroup = false;

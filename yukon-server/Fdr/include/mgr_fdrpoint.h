@@ -25,7 +25,7 @@
 #include <rw/db/connect.h>
 
 #include "dlldefs.h"
-#include "rtdbSmartPointer.h"
+#include "smartmap.h"
 #include "fdrpoint.h"
 #include "logger.h"
 
@@ -33,7 +33,7 @@
 
 using boost::shared_ptr;
 
-class IM_EX_FDRBASE CtiFDRManager : public CtiRTDBSmartPointer< shared_ptr<CtiFDRPoint> >
+class IM_EX_FDRBASE CtiFDRManager
 {
     
     public:
@@ -42,32 +42,37 @@ class IM_EX_FDRBASE CtiFDRManager : public CtiRTDBSmartPointer< shared_ptr<CtiFD
         CtiFDRManager(string & InterfaceName, string & aWhereSelectStr);
     
         virtual ~CtiFDRManager();
-    
-        // change to friendly name for Iterator
-        typedef MapIterator CTIFdrPointIterator;
 
+        typedef CtiSmartMap<CtiFDRPoint> FdrPointMap;
+        typedef CtiSmartMap<CtiFDRPoint>::coll_type coll_type;
+        typedef CtiSmartMap<CtiFDRPoint>::ptr_type ptr_type;
+        typedef CtiSmartMap<CtiFDRPoint>::spiterator spiterator;
+        typedef CtiSmartMap<CtiFDRPoint>::reader_lock_guard_t readerLock;
+        typedef CtiSmartMap<CtiFDRPoint>::writer_lock_guard_t writerLock;
+        typedef CtiSmartMap<CtiFDRPoint>::lock_t lock;
+
+        coll_type & getMap();
+        lock & getLock();
+        ptr_type find(bool (*testFun)(ptr_type&, void*),void* d);
 
         string       getInterfaceName();
         CtiFDRManager & setInterfaceName(string &);
 
         string       getWhereSelectStr();
         CtiFDRManager & setWhereSelectStr(string &);
-       
-        void DeleteList(void)   
-        {
-            Map.clear();
-        }
 
         RWDBStatus loadPointList(void);
         RWDBStatus loadPoint(long pointId);
         RWDBStatus refreshPointList(void);
     
-        shared_ptr<CtiFDRPoint> findFDRPointID(LONG myPointId);
-        shared_ptr<CtiFDRPoint> removeFDRPointID(long myPointId);
+        CtiFDRPointSPtr findFDRPointID(LONG myPointId);
+        CtiFDRPointSPtr removeFDRPointID(long myPointId);
         bool addFDRPointId(long myPointId);
 
         void printIds(CtiLogger& dout);
 
+        //Encapsulated functions:
+        size_t entries();
     protected:
         static const CHAR * TBLNAME_FDRTRANSLATION;
         static const CHAR * COLNAME_FDRTRANSLATION;
@@ -87,13 +92,13 @@ class IM_EX_FDRBASE CtiFDRManager : public CtiRTDBSmartPointer< shared_ptr<CtiFD
 
 
     private:
-        RWDBStatus getPointsFromDB(RWDBConnection& conn, RWDBSelector& selector, 
-                                                  std::map<long,boost::shared_ptr<CtiFDRPoint> >& fdrPtrMap);
+        RWDBStatus getPointsFromDB(RWDBSelector& selector, std::map<long,CtiFDRPointSPtr >& fdrPtrMap);
+        void buildFDRPointSelector(RWDBDatabase& db, RWDBSelector& selector, RWDBTable& fdrTranslation, RWDBTable& pointBaseTable, RWDBTable& pointAnalogTable);
 
         // private data
         string   iInterfaceName;
         string   iWhereSelectStr;
-
+        CtiSmartMap<CtiFDRPoint> pointMap;
     
 };
 

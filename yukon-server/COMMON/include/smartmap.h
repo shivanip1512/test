@@ -171,7 +171,7 @@ public:
 
         for(itr = _map.begin(); itr != itr_end; ++itr)
         {
-            if(testFun(itr->second, d))
+            if(testFun(*(itr->second), d))
             {
                 retRef = itr->second;
                 break;

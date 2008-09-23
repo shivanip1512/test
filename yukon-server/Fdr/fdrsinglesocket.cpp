@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrsinglesocket.cpp-arc  $
-*    REVISION     :  $Revision: 1.11 $
-*    DATE         :  $Date: 2008/09/15 21:08:48 $
+*    REVISION     :  $Revision: 1.12 $
+*    DATE         :  $Date: 2008/09/23 15:14:58 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,11 @@
 *    ---------------------------------------------------
 *    History: 
 *     $Log: fdrsinglesocket.cpp,v $
+*     Revision 1.12  2008/09/23 15:14:58  tspar
+*     YUK-5013 Full FDR reload should not happen with every point db change
+*
+*     Review changes. Most notable is mgr_fdrpoint.cpp now encapsulates CtiSmartMap instead of extending from rtdb.
+*
 *     Revision 1.11  2008/09/15 21:08:48  tspar
 *     YUK-5013 Full FDR reload should not happen with every point db change
 *
@@ -275,12 +280,12 @@ bool CtiFDRSingleSocket::loadList(string &aDirection,  CtiFDRPointList &aList)
                 (pointList->entries() > 0))
             {
                 // get iterator on list
-                CtiFDRManager::CTIFdrPointIterator  myIterator = pointList->getMap().begin();
+                CtiFDRManager::spiterator myIterator = pointList->getMap().begin();
 
                 for ( ; myIterator != pointList->getMap().end(); ++myIterator )
                 {
                     foundPoint = true;
-                    shared_ptr<CtiFDRPoint> translationPoint = (*myIterator).second;
+                    CtiFDRPointSPtr translationPoint = (*myIterator).second;
                     successful = translateSinglePoint(translationPoint);
                 }
 
@@ -341,7 +346,7 @@ bool CtiFDRSingleSocket::loadList(string &aDirection,  CtiFDRPointList &aList)
     return successful;
 }
 
-bool CtiFDRSingleSocket::translateSinglePoint(shared_ptr<CtiFDRPoint> translationPoint, bool send)
+bool CtiFDRSingleSocket::translateSinglePoint(CtiFDRPointSPtr translationPoint, bool send)
 {
     bool successful = false;
     for (int x = 0; x < translationPoint->getDestinationList().size(); x++)
@@ -801,10 +806,14 @@ void CtiFDRSingleSocket::threadFunctionSendDebugData( void )
                 index=0;
                 {
                     // for debug lock this the whole time we're sending the list
-                    CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());  
-                    CtiFDRManager::CTIFdrPointIterator  myIterator = getSendToList().getPointList()->getMap().begin();
+                    CtiFDRManager* mgrPtr = getSendToList().getPointList();
 
-                    for ( ; myIterator != getSendToList().getPointList()->getMap().end(); ++myIterator )
+                    CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());
+                    CtiFDRManager::readerLock guard(mgrPtr->getLock());
+
+                    CtiFDRManager::spiterator  myIterator = mgrPtr->getMap().begin();
+
+                    for ( ; myIterator != mgrPtr->getMap().end(); ++myIterator )
                     {
                         // find the point id
                         point = *((*myIterator).second);

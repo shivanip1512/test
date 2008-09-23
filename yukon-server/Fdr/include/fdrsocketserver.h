@@ -30,9 +30,9 @@ class IM_EX_FDRBASE CtiFDRSocketServer : public CtiFDRInterface
           CtiFDRClientServerConnection& connection, char* data, unsigned int size) = 0;
 
         virtual bool loadTranslationLists(void);
-        virtual bool translateSinglePoint(shared_ptr<CtiFDRPoint> translationPoint, bool send=false)=0;
+        virtual bool translateSinglePoint(CtiFDRPointSPtr translationPoint, bool send=false)=0;
         //Force Cleanup in sub classes from this point.
-        virtual void cleanupTranslationPoint(shared_ptr<CtiFDRPoint> translationPoint, bool recvList)=0;
+        virtual void cleanupTranslationPoint(CtiFDRPointSPtr translationPoint, bool recvList)=0;
 
         virtual BOOL init( void );
         virtual BOOL run( void );

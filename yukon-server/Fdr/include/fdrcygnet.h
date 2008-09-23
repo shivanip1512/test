@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2008/09/15 21:09:16 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2008/09/23 15:15:22 $
 *    DESCRIPTION: This class implements an interface that retrieves point data
 *                 from a Foreign System.  The data is status and Analog data.
 *                 This interface only receives at this time.  It links with
@@ -89,7 +89,7 @@ class IM_EX_FDRCYGNET CtiFDRCygnet : public CtiFDRInterface
         bool    retreiveStatusPoints(void);
 
         bool    loadTranslationLists(void);
-        virtual bool translateSinglePoint(shared_ptr<CtiFDRPoint> translationPoint, bool send=false);
+        virtual bool translateSinglePoint(CtiFDRPointSPtr translationPoint, bool send=false);
         bool    loadLists(CtiFDRPointList &aList);
 
         ULONG   calculateNextSendTime();

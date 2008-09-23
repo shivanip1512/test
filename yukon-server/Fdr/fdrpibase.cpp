@@ -7,8 +7,8 @@
  *
  * PVCS KEYWORDS:
  * ARCHIVE      :  $Archive$
- * REVISION     :  $Revision: 1.8 $
- * DATE         :  $Date: 2008/09/15 21:08:48 $
+ * REVISION     :  $Revision: 1.9 $
+ * DATE         :  $Date: 2008/09/23 15:14:58 $
  */
 #include "yukon.h"
 
@@ -211,7 +211,7 @@ void CtiFDRPiBase::testConnection()
 /**
  * Add a new point to the appropriate lists.
  */
-void CtiFDRPiBase::processNewPoint(shared_ptr<CtiFDRPoint> ctiPoint)
+void CtiFDRPiBase::processNewPoint(CtiFDRPointSPtr ctiPoint)
 {
   PiPointInfo info;
   info.ctiPoint = ctiPoint.get();

@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrDSm2Filein.cpp-arc  $
-*    REVISION     :  $Revision: 1.13 $
-*    DATE         :  $Date: 2008/09/15 21:08:48 $
+*    REVISION     :  $Revision: 1.14 $
+*    DATE         :  $Date: 2008/09/23 15:14:57 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,11 @@
 *    ---------------------------------------------------
 *    History:
       $Log: fdrdsm2filein.cpp,v $
+      Revision 1.14  2008/09/23 15:14:57  tspar
+      YUK-5013 Full FDR reload should not happen with every point db change
+
+      Review changes. Most notable is mgr_fdrpoint.cpp now encapsulates CtiSmartMap instead of extending from rtdb.
+
       Revision 1.13  2008/09/15 21:08:48  tspar
       YUK-5013 Full FDR reload should not happen with every point db change
 
@@ -837,12 +842,12 @@ bool CtiFDR_Dsm2Filein::loadTranslationLists()
             {
 
                 // get iterator on send list
-                CtiFDRManager::CTIFdrPointIterator  myIterator = pointList->getMap().begin();
+                CtiFDRManager::spiterator myIterator = pointList->getMap().begin();
 
                 for ( ; myIterator != pointList->getMap().end(); ++myIterator )
                 {
                     foundPoint = true;
-                    shared_ptr<CtiFDRPoint> translationPoint = (*myIterator).second;
+                    CtiFDRPointSPtr translationPoint = (*myIterator).second;
                     translateSinglePoint(translationPoint);
                 }   // end for interator
 
@@ -905,7 +910,7 @@ bool CtiFDR_Dsm2Filein::loadTranslationLists()
     return successful;
 }
 
-bool CtiFDR_Dsm2Filein::translateSinglePoint(shared_ptr<CtiFDRPoint> translationPoint, bool send)
+bool CtiFDR_Dsm2Filein::translateSinglePoint(CtiFDRPointSPtr translationPoint, bool send)
 {
     bool successful = false;
     string tempString2;

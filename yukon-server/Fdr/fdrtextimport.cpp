@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrtextimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.27 $
-*    DATE         :  $Date: 2008/09/15 21:08:48 $
+*    REVISION     :  $Revision: 1.28 $
+*    DATE         :  $Date: 2008/09/23 15:14:58 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,11 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrtextimport.cpp,v $
+      Revision 1.28  2008/09/23 15:14:58  tspar
+      YUK-5013 Full FDR reload should not happen with every point db change
+
+      Review changes. Most notable is mgr_fdrpoint.cpp now encapsulates CtiSmartMap instead of extending from rtdb.
+
       Revision 1.27  2008/09/15 21:08:48  tspar
       YUK-5013 Full FDR reload should not happen with every point db change
 
@@ -384,7 +389,7 @@ bool CtiFDR_TextImport::processFunctionOne (Tokenizer& cmdLine, CtiMessage **aRe
     bool pointValidFlag=true;
          
     CtiFDRPoint point;
-    boost::shared_ptr<CtiFDRPoint> pointPtr;
+    CtiFDRPointSPtr pointPtr;
     int fieldNumber=1,quality;
     double value;
     string action;
@@ -843,7 +848,7 @@ bool CtiFDR_TextImport::loadTranslationLists()
     bool successful = false;
     RWDBStatus listStatus;
 
-    shared_ptr<CtiFDRPoint> translationPoint;
+    CtiFDRPointSPtr translationPoint;
 
     try
     {
@@ -872,7 +877,7 @@ bool CtiFDR_TextImport::loadTranslationLists()
                 }
 
                 // get iterator on send list
-                CtiFDRManager::CTIFdrPointIterator  myIterator = pointList->getMap().begin();
+                CtiFDRManager::spiterator  myIterator = pointList->getMap().begin();
                 int x;
                 nameToPointId.clear();
                 for ( ; myIterator != pointList->getMap().end(); ++myIterator)
@@ -939,7 +944,7 @@ bool CtiFDR_TextImport::loadTranslationLists()
     return successful;
 }
 
-bool CtiFDR_TextImport::translateSinglePoint(shared_ptr<CtiFDRPoint> translationPoint, bool send)
+bool CtiFDR_TextImport::translateSinglePoint(CtiFDRPointSPtr translationPoint, bool send)
 {
     bool successful = false;
 
@@ -1069,7 +1074,7 @@ bool CtiFDR_TextImport::translateSinglePoint(shared_ptr<CtiFDRPoint> translation
     return successful;
 }
 
-void CtiFDR_TextImport::cleanupTranslationPoint(shared_ptr<CtiFDRPoint> translationPoint, bool recvList)
+void CtiFDR_TextImport::cleanupTranslationPoint(CtiFDRPointSPtr translationPoint, bool recvList)
 {
     if (recvList)
     {

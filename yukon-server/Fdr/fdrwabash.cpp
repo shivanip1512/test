@@ -95,10 +95,10 @@ bool FDRWabash::loadTranslationLists()
         {
             if(pointList->entries() > 0) 
             {
-                CtiFDRManager::CTIFdrPointIterator  myIterator = pointList->getMap().begin();
+                CtiFDRManager::spiterator  myIterator = pointList->getMap().begin();
                 for ( ; myIterator != pointList->getMap().end(); ++myIterator)
                 {
-                    shared_ptr<CtiFDRPoint> translationPoint = (*myIterator).second;
+                    CtiFDRPointSPtr translationPoint = (*myIterator).second;
                     translateSinglePoint(translationPoint);
                 }
                 // lock the receive list and remove the old one
@@ -126,7 +126,7 @@ bool FDRWabash::loadTranslationLists()
      return true;
 }
 
-bool FDRWabash::translateSinglePoint(shared_ptr<CtiFDRPoint> translationPoint, bool send)
+bool FDRWabash::translateSinglePoint(CtiFDRPointSPtr translationPoint, bool send)
 {
     string pointID;
     string filename;
@@ -160,22 +160,25 @@ bool FDRWabash::translateSinglePoint(shared_ptr<CtiFDRPoint> translationPoint, b
 
 void FDRWabash::resetForInitialLoad()
 {
-    shared_ptr<CtiFDRPoint> point;
+    CtiFDRPointSPtr point;
+    CtiFDRManager* mgrPtr = getSendToList().getPointList();
 
-    CtiFDRManager::CTIFdrPointIterator  myIterator = getSendToList().getPointList()->getMap().begin();
-    for ( ; myIterator != getSendToList().getPointList()->getMap().end(); ++myIterator)
+    CtiFDRManager::writerLock guard(mgrPtr->getLock());
+
+    CtiFDRManager::spiterator myIterator = mgrPtr->getMap().begin();
+    for ( ; myIterator != mgrPtr->getMap().end(); ++myIterator)
     {
         point = (*myIterator).second;
         point->setLastTimeStamp( CtiTime(YUKONEOT) );
     }
-
 }
+
 bool FDRWabash::sendMessageToForeignSys( CtiMessage *msg )
 {
     bool               ok = true;
     bool               initialmsg = false;
     bool               equivalentValue = false;
-    shared_ptr<CtiFDRPoint> point;
+    CtiFDRPointSPtr point;
     CtiTime time;
     string date,schedName,action;
 
@@ -211,13 +214,17 @@ bool FDRWabash::sendMessageToForeignSys( CtiMessage *msg )
     //get the schedName from the pointData
     {    
         CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());
-    
-        CtiFDRManager::CTIFdrPointIterator  itr;
-        itr = getSendToList().getPointList()->getMap().find(aMessage->getId());
-        if( itr != getSendToList().getPointList()->getMap().end() )
+        CtiFDRManager* mgrPtr = getSendToList().getPointList();
+        CtiFDRManager::readerLock guard(mgrPtr->getLock());
+
+        CtiFDRManager::spiterator  itr;
+        itr = mgrPtr->getMap().find(aMessage->getId());
+        if( itr != mgrPtr->getMap().end() )
+        {
             point = (*itr).second;
+        }
     
-        if ( getSendToList().getPointList()->getMap().size() == 0 ||  point.get() == NULL)
+        if ( mgrPtr->getMap().size() == 0 ||  point)
         {
             ok = false;
         }

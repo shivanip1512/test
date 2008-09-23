@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrsocketinterface.cpp-arc  $
-*    REVISION     :  $Revision: 1.15 $
-*    DATE         :  $Date: 2008/09/15 21:08:48 $
+*    REVISION     :  $Revision: 1.16 $
+*    DATE         :  $Date: 2008/09/23 15:14:58 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,11 @@
 *    ---------------------------------------------------
 *    History: 
 *     $Log: fdrsocketinterface.cpp,v $
+*     Revision 1.16  2008/09/23 15:14:58  tspar
+*     YUK-5013 Full FDR reload should not happen with every point db change
+*
+*     Review changes. Most notable is mgr_fdrpoint.cpp now encapsulates CtiSmartMap instead of extending from rtdb.
+*
 *     Revision 1.15  2008/09/15 21:08:48  tspar
 *     YUK-5013 Full FDR reload should not happen with every point db change
 *
@@ -258,7 +263,7 @@ int CtiFDRSocketInterface::sendAllPoints()
 {
     CHAR *ptr=NULL;
     int retVal=NORMAL;
-    shared_ptr<CtiFDRPoint> point;
+    CtiFDRPointSPtr point;
 
     // bad bad bad
     if (iDispatchConn == NULL)
@@ -290,9 +295,13 @@ int CtiFDRSocketInterface::sendAllPoints()
                     dout << CtiTime() << " Uploading all requested points to " << getInterfaceName() << endl;
                 }
 
-                CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());  
-                CtiFDRManager::CTIFdrPointIterator  myIterator = getSendToList().getPointList()->getMap().begin();
-                for ( ; myIterator != getSendToList().getPointList()->getMap().end(); ++myIterator)
+                CtiFDRManager* mgrPtr = getSendToList().getPointList();
+
+                CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());
+                CtiFDRManager::readerLock guard(mgrPtr->getLock());  
+
+                CtiFDRManager::spiterator  myIterator = mgrPtr->getMap().begin();
+                for ( ; myIterator != mgrPtr->getMap().end(); ++myIterator)
                 {
                     point = (*myIterator).second;
                     if (!point->isControllable())

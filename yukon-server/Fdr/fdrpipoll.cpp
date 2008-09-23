@@ -8,8 +8,8 @@
  * Author: Tom Mack
  *
  * ARCHIVE      :  $Archive$
- * REVISION     :  $Revision: 1.5 $
- * DATE         :  $Date: 2008/09/15 21:08:48 $
+ * REVISION     :  $Revision: 1.6 $
+ * DATE         :  $Date: 2008/09/23 15:14:58 $
  */
 
 #include <windows.h>
@@ -88,7 +88,7 @@ void CtiFDRPiPoll::processNewPiPoint(PiPointInfoStruct &info)
 
 }
 
-void CtiFDRPiPoll::cleanupTranslationPoint(shared_ptr<CtiFDRPoint> translationPoint, bool recvList)
+void CtiFDRPiPoll::cleanupTranslationPoint(CtiFDRPointSPtr translationPoint, bool recvList)
 {
   string periodStr = translationPoint->getDestinationList()[0].getTranslationValue("Period (sec)");
 
@@ -142,7 +142,7 @@ void CtiFDRPiPoll::cleanupTranslationPoint(shared_ptr<CtiFDRPoint> translationPo
 
 }
 
-void CtiFDRPiPoll::handleNewPoint(shared_ptr<CtiFDRPoint> ctiPoint)
+void CtiFDRPiPoll::handleNewPoint(CtiFDRPointSPtr ctiPoint)
 {
   //would do a single version of this, but re updating all points is acceptable
   string periodStr = ctiPoint->getDestinationList()[0].getTranslationValue("Period (sec)");

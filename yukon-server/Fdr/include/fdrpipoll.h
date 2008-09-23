@@ -14,8 +14,8 @@
  *
  * PVCS KEYWORDS:
  *    ARCHIVE      :  $Archive:     $
- *    REVISION     :  $Revision: 1.5 $
- *    DATE         :  $Date: 2008/09/15 21:09:16 $
+ *    REVISION     :  $Revision: 1.6 $
+ *    DATE         :  $Date: 2008/09/23 15:15:22 $
  *
  * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
  *    History:
@@ -58,12 +58,12 @@ public:
 
 protected:
 
-  virtual void cleanupTranslationPoint(shared_ptr<CtiFDRPoint> translationPoint, bool recvList);
+  virtual void cleanupTranslationPoint(CtiFDRPointSPtr translationPoint, bool recvList);
   void processNewPiPoint(PiPointInfoStruct &info);
   void removeAllPoints();
 
   void handleNewPoints();
-  void handleNewPoint(shared_ptr<CtiFDRPoint> ctiPoint);
+  void handleNewPoint(CtiFDRPointSPtr ctiPoint);
 
   void doUpdates();
 

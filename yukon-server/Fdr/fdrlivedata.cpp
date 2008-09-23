@@ -11,8 +11,8 @@
  * Author: Tom Mack
  *
  * ARCHIVE      :  $Archive$
- * REVISION     :  $Revision: 1.4 $
- * DATE         :  $Date: 2008/09/15 21:08:48 $
+ * REVISION     :  $Revision: 1.5 $
+ * DATE         :  $Date: 2008/09/23 15:14:58 $
  */
 
 #include <windows.h>
@@ -150,7 +150,7 @@ void CtiFDRLiveData::testConnection()
 /**
  * Add a new point to the appropriate lists.
  */ 
-void CtiFDRLiveData::processNewPoint(shared_ptr<CtiFDRPoint> ctiPoint)
+void CtiFDRLiveData::processNewPoint(CtiFDRPointSPtr ctiPoint)
 {
   PointInfo info;
   info.ctiPoint = ctiPoint.get();
@@ -184,7 +184,7 @@ void CtiFDRLiveData::processNewPoint(shared_ptr<CtiFDRPoint> ctiPoint)
   }
 }
 
-void CtiFDRLiveData::cleanupTranslationPoint(shared_ptr<CtiFDRPoint> translationPoint, bool recvList)
+void CtiFDRLiveData::cleanupTranslationPoint(CtiFDRPointSPtr translationPoint, bool recvList)
 {
   if (recvList)
   {

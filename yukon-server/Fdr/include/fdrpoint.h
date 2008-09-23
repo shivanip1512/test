@@ -16,10 +16,15 @@
 *
 *    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrpoint.h-arc  $
-*    REVISION     :  $Revision: 1.6 $
-*    DATE         :  $Date: 2007/11/12 16:46:55 $
+*    REVISION     :  $Revision: 1.7 $
+*    DATE         :  $Date: 2008/09/23 15:15:22 $
 *    History:
       $Log: fdrpoint.h,v $
+      Revision 1.7  2008/09/23 15:15:22  tspar
+      YUK-5013 Full FDR reload should not happen with every point db change
+
+      Review changes. Most notable is mgr_fdrpoint.cpp now encapsulates CtiSmartMap instead of extending from rtdb.
+
       Revision 1.6  2007/11/12 16:46:55  mfisher
       Removed some Rogue Wave includes
 
@@ -67,6 +72,8 @@ using std::vector;
 using std::string;
 
 class CtiTime;
+
+typedef boost::shared_ptr<CtiFDRPoint> CtiFDRPointSPtr;
 
 class IM_EX_FDRBASE CtiFDRPoint
 {

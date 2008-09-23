@@ -15,10 +15,15 @@
  *    Copyright (C) 2005 Cannon Technologies, Inc.  All rights reserved.
  *
  *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinterface.cpp-arc  $
- *    REVISION     :  $Revision: 1.30 $
- *    DATE         :  $Date: 2008/09/15 21:08:48 $
+ *    REVISION     :  $Revision: 1.31 $
+ *    DATE         :  $Date: 2008/09/23 15:14:58 $
  *    History:
  *     $Log: fdrinterface.cpp,v $
+ *     Revision 1.31  2008/09/23 15:14:58  tspar
+ *     YUK-5013 Full FDR reload should not happen with every point db change
+ *
+ *     Review changes. Most notable is mgr_fdrpoint.cpp now encapsulates CtiSmartMap instead of extending from rtdb.
+ *
  *     Revision 1.30  2008/09/15 21:08:48  tspar
  *     YUK-5013 Full FDR reload should not happen with every point db change
  *
@@ -105,11 +110,11 @@ CtiConfigParameters CtiFDRInterface::iConfigParameters;
 const CHAR * CtiFDRInterface::KEY_DISPATCH_NAME = "DISPATCH_MACHINE";
 const CHAR * CtiFDRInterface::KEY_DEBUG_LEVEL = "_DEBUGLEVEL";
 
-bool isPointIdEqual (shared_ptr<CtiFDRPoint> a, void* arg);
-bool isTranslationNameEqual (shared_ptr<CtiFDRPoint> a, void* arg);
+bool isPointIdEqual (CtiFDRManager::ptr_type &a, void* arg);
+bool isTranslationNameEqual (CtiFDRManager::ptr_type &a, void* arg);
 
 
-bool isPointIdEqual(shared_ptr<CtiFDRPoint> aPoint, void *arg)
+bool isPointIdEqual(CtiFDRManager::ptr_type &aPoint, void *arg)
 {
     LONG  id = *((LONG*)arg);  // Wha tis the ID of the pointI care for!
     BOOL  retVal = false;
@@ -120,7 +125,7 @@ bool isPointIdEqual(shared_ptr<CtiFDRPoint> aPoint, void *arg)
     return retVal;
 }
 
-bool isTranslationNameEqual(shared_ptr<CtiFDRPoint> aPoint, void *arg)
+bool isTranslationNameEqual(CtiFDRManager::ptr_type &aPoint, void *arg)
 {
     string name = *((string*)arg);  // Wha tis the ID of the pointI care for!
 
@@ -193,8 +198,8 @@ CtiFDRInterface& CtiFDRInterface::setReceiveFromList (CtiFDRPointList &aList)
 long CtiFDRInterface::getClientLinkStatusID(string &aClientName)
 {
     bool                successful(false);
-    shared_ptr<CtiFDRPoint>  translationPoint;
-    shared_ptr<CtiFDRPoint>  point;
+    CtiFDRPointSPtr  translationPoint;
+    CtiFDRPointSPtr  point;
     string           tempString1;
     string           tempString2;
     string           translationName;
@@ -206,7 +211,7 @@ long CtiFDRInterface::getClientLinkStatusID(string &aClientName)
     try
     {
         // make a list with all received points
-        CtiFDRManager   *pointList = new CtiFDRManager(string (FDR_SYSTEM),
+        CtiFDRManager *pointList = new CtiFDRManager(string (FDR_SYSTEM),
                                                        string (FDR_INTERFACE_LINK_STATUS));
 
         listStatus = pointList->loadPointList();
@@ -215,13 +220,12 @@ long CtiFDRInterface::getClientLinkStatusID(string &aClientName)
         if ( listStatus.errorCode() == (RWDBStatus::ok))
         {
             // get iterator on list
-            CtiFDRManager::CTIFdrPointIterator  myIterator = (pointList->getMap()).begin();
-            int x;
+            CtiFDRManager::spiterator myIterator = (pointList->getMap()).begin();
 
             for ( ; myIterator !=  (pointList->getMap()).end(); ++myIterator )
             {
                 translationPoint = (*myIterator).second;
-                for (x=0; x < translationPoint->getDestinationList().size(); x++)
+                for (int x = 0; x < translationPoint->getDestinationList().size(); x++)
                 {
                     string tempString1,tempString2;
                     const string translation = translationPoint->getDestinationList()[x].getTranslation();
@@ -830,7 +834,7 @@ bool CtiFDRInterface::sendPointRegistration( void )
 
 void CtiFDRInterface::buildRegistrationPointList (CtiPointRegistrationMsg **aMsg)
 {
-    shared_ptr<CtiFDRPoint> pFdrPoint;
+    CtiFDRPointSPtr pFdrPoint;
     CtiPointRegistrationMsg *testMsg;
 
     // we have some points to send
@@ -838,9 +842,10 @@ void CtiFDRInterface::buildRegistrationPointList (CtiPointRegistrationMsg **aMsg
     testMsg = *aMsg;
 
     // get iterator on outbound list
-    CtiFDRManager::CTIFdrPointIterator  myIterator = (iOutBoundPoints->getMap()).begin();
+    CtiFDRManager::readerLock guard(iOutBoundPoints->getLock());
+    CtiFDRManager::spiterator  myIterator = iOutBoundPoints->getMap().begin();
 
-    for ( ; myIterator != (iOutBoundPoints->getMap()).end(); ++myIterator)
+    for ( ; myIterator != iOutBoundPoints->getMap().end(); ++myIterator)
     {
         pFdrPoint = (*myIterator).second;
 
@@ -1508,18 +1513,22 @@ bool CtiFDRInterface::updatePointByIdInList(CtiFDRPointList &aList,
                                             CtiPointDataMsg *aMessage)
 {
     bool               foundFlag= false;
-    shared_ptr<CtiFDRPoint> point;
+    CtiFDRPointSPtr point;
 
     // lock the list
     CtiLockGuard<CtiMutex> sendGuard(aList.getMutex());
+    CtiFDRManager::readerLock guard(aList.getPointList()->getLock());
 
     // check if the point id exists
-    CtiFDRManager::CTIFdrPointIterator  itr;
+    CtiFDRManager::spiterator itr;
+
     itr = aList.getPointList()->getMap().find(aMessage->getId());
     if( itr != aList.getPointList()->getMap().end() )
-        point = (*itr).second;
+    {
+            point = (*itr).second;
+    }
 
-    if ( aList.getPointList()->getMap().size() == 0 ||  point.get() == NULL)
+    if ( aList.getPointList()->getMap().size() == 0 || point)
     {
         foundFlag = false;
     }
@@ -1546,13 +1555,13 @@ bool CtiFDRInterface::findPointIdInList(long aPointId,
                                         CtiFDRPoint &aPoint)
 {
     bool               foundFlag= false;
-    shared_ptr<CtiFDRPoint> point;
+    CtiFDRPointSPtr point;
 
     // lock the list
     CtiLockGuard<CtiMutex> sendGuard(aList.getMutex());
 
     // check if the point id exists
-    CtiFDRManager::CTIFdrPointIterator  itr;
+    CtiFDRManager::spiterator  itr;
     itr = aList.getPointList()->getMap().find(aPointId);
     if( itr != aList.getPointList()->getMap().end() )
         point = (*itr).second;
@@ -1583,7 +1592,7 @@ bool CtiFDRInterface::findTranslationNameInList(string aTranslationName,
 {
     bool               foundFlag= false;
     int                index =0;
-    shared_ptr<CtiFDRPoint> point;
+    CtiFDRPointSPtr point;
 
     // lock the list
     CtiLockGuard<CtiMutex> sendGuard(aList.getMutex());
@@ -1640,7 +1649,7 @@ bool CtiFDRInterface::loadTranslationPoint(long pointId)
     CtiFDRManager* recvMgr = iReceiveFromList.getPointList();
     CtiFDRManager* sendMgr = iSendToList.getPointList();
 
-    printLists("Before point add call for ", pointId);
+    printLists(" Before point add call for ", pointId);
 
     if (recvMgr != NULL)
     {
@@ -1651,7 +1660,7 @@ bool CtiFDRInterface::loadTranslationPoint(long pointId)
         inSend = sendMgr->addFDRPointId(pointId);
     }
 
-    shared_ptr<CtiFDRPoint> fdrPoint;
+    CtiFDRPointSPtr fdrPoint;
 
     if (inSend)
     {
@@ -1668,7 +1677,7 @@ bool CtiFDRInterface::loadTranslationPoint(long pointId)
         ret = true;
     }
 
-    printLists("After point add call for ", pointId);
+    printLists(" After point add call for ", pointId);
 
     return ret;
 }
@@ -1676,8 +1685,8 @@ bool CtiFDRInterface::loadTranslationPoint(long pointId)
 //remove single point maintaining current lists
 void CtiFDRInterface::removeTranslationPoint(long pointId)
 {
-    shared_ptr<CtiFDRPoint> inRecv;
-    shared_ptr<CtiFDRPoint> inSend;
+    CtiFDRPointSPtr inRecv;
+    CtiFDRPointSPtr inSend;
 
     printLists(" Before remove of point ", pointId);
     {
@@ -1729,7 +1738,7 @@ void CtiFDRInterface::printLists(string title, int pid)
 }
 
 /* This is here to be replaced with child processes to notify them of the removal and give them the chance to act.*/
-void CtiFDRInterface::cleanupTranslationPoint(shared_ptr<CtiFDRPoint> translationPoint, bool recvList)
+void CtiFDRInterface::cleanupTranslationPoint(CtiFDRPointSPtr translationPoint, bool recvList)
 {
     return;
 }

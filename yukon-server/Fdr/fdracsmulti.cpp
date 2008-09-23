@@ -23,6 +23,11 @@
  *    ---------------------------------------------------
  *    History:
  *      $Log$
+ *      Revision 1.11  2008/09/23 15:14:57  tspar
+ *      YUK-5013 Full FDR reload should not happen with every point db change
+ *
+ *      Review changes. Most notable is mgr_fdrpoint.cpp now encapsulates CtiSmartMap instead of extending from rtdb.
+ *
  *      Revision 1.10  2008/09/15 21:08:47  tspar
  *      YUK-5013 Full FDR reload should not happen with every point db change
  *
@@ -304,7 +309,7 @@ void CtiFDRAcsMulti::begineNewPoints()
     _helper->clearMappings();
 }
 
-bool CtiFDRAcsMulti::translateSinglePoint(shared_ptr<CtiFDRPoint> translationPoint, bool isSend)
+bool CtiFDRAcsMulti::translateSinglePoint(CtiFDRPointSPtr translationPoint, bool isSend)
 {
     bool foundPoint = false;
 
@@ -346,7 +351,7 @@ bool CtiFDRAcsMulti::translateSinglePoint(shared_ptr<CtiFDRPoint> translationPoi
     return foundPoint;
 }
 
-void CtiFDRAcsMulti::cleanupTranslationPoint(shared_ptr<CtiFDRPoint> translationPoint, bool recvList)
+void CtiFDRAcsMulti::cleanupTranslationPoint(CtiFDRPointSPtr translationPoint, bool recvList)
 {
     for (int x = 0; x < translationPoint->getDestinationList().size(); x++)
     {

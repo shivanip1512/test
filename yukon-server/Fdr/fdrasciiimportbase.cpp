@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrasciiimportbase.cpp-arc  $
-*    REVISION     :  $Revision: 1.15 $
-*    DATE         :  $Date: 2008/09/15 21:08:47 $
+*    REVISION     :  $Revision: 1.16 $
+*    DATE         :  $Date: 2008/09/23 15:14:57 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,11 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrasciiimportbase.cpp,v $
+      Revision 1.16  2008/09/23 15:14:57  tspar
+      YUK-5013 Full FDR reload should not happen with every point db change
+
+      Review changes. Most notable is mgr_fdrpoint.cpp now encapsulates CtiSmartMap instead of extending from rtdb.
+
       Revision 1.15  2008/09/15 21:08:47  tspar
       YUK-5013 Full FDR reload should not happen with every point db change
 
@@ -309,16 +314,6 @@ bool CtiFDRAsciiImportBase::loadTranslationLists()
             if (((pointList->entries() == 0) && (getReceiveFromList().getPointList()->entries() <= 2)) ||
                 (pointList->entries() > 0))
             {
-                // get iterator on send list
-                CtiFDRManager::CTIFdrPointIterator  myIterator = getReceiveFromList().getPointList()->getMap().begin();
-
-                for ( ; myIterator != getReceiveFromList().getPointList()->getMap().end(); ++myIterator )
-                {
-                    foundPoint = true;
-                    shared_ptr<CtiFDRPoint> translationPoint = (*myIterator).second;
-                    translateSinglePoint(translationPoint);
-                }
-
                 // lock the receive list and remove the old one
                 CtiLockGuard<CtiMutex> receiveGuard(getReceiveFromList().getMutex());  
                 if (getReceiveFromList().getPointList() != NULL)
@@ -326,8 +321,22 @@ bool CtiFDRAsciiImportBase::loadTranslationLists()
                     getReceiveFromList().deletePointList();
                 }
                 getReceiveFromList().setPointList (pointList);
-
                 pointList = NULL;
+
+                // get iterator on send list
+
+                CtiFDRManager* mgrPtr = getReceiveFromList().getPointList();
+
+                CtiFDRManager::writerLock guard(mgrPtr->getLock());
+                CtiFDRManager::spiterator myIterator = mgrPtr->getMap().begin();
+
+                for ( ; myIterator != mgrPtr->getMap().end(); ++myIterator )
+                {
+                    foundPoint = true;
+                    CtiFDRPointSPtr translationPoint = (*myIterator).second;
+                    translateSinglePoint(translationPoint);
+                }
+
                 if (!successful)
                 {
                     if (!foundPoint)
@@ -376,7 +385,7 @@ bool CtiFDRAsciiImportBase::loadTranslationLists()
     return successful;
 }
 
-bool CtiFDRAsciiImportBase::translateSinglePoint(shared_ptr<CtiFDRPoint> translationPoint, bool send)
+bool CtiFDRAsciiImportBase::translateSinglePoint(CtiFDRPointSPtr translationPoint, bool send)
 {
     bool successful = false;
     string           tempString1;

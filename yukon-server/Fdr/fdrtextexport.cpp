@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrtextexport.cpp-arc  $
-*    REVISION     :  $Revision: 1.16 $
-*    DATE         :  $Date: 2008/09/15 21:08:48 $
+*    REVISION     :  $Revision: 1.17 $
+*    DATE         :  $Date: 2008/09/23 15:14:58 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,11 @@
 *    ---------------------------------------------------
 *    History:
       $Log: fdrtextexport.cpp,v $
+      Revision 1.17  2008/09/23 15:14:58  tspar
+      YUK-5013 Full FDR reload should not happen with every point db change
+
+      Review changes. Most notable is mgr_fdrpoint.cpp now encapsulates CtiSmartMap instead of extending from rtdb.
+
       Revision 1.16  2008/09/15 21:08:48  tspar
       YUK-5013 Full FDR reload should not happen with every point db change
 
@@ -398,12 +403,12 @@ bool CtiFDR_TextExport::loadTranslationLists()
             {
 
                 // get iterator on send list
-                CtiFDRManager::CTIFdrPointIterator  myIterator = pointList->getMap().begin();
+                CtiFDRManager::spiterator  myIterator = pointList->getMap().begin();
 
                 for ( ; myIterator != pointList->getMap().end(); ++myIterator )
                 {
                     foundPoint = true;
-                    shared_ptr<CtiFDRPoint> translationPoint = (*myIterator).second;
+                    CtiFDRPointSPtr translationPoint = (*myIterator).second;
                     translateSinglePoint(translationPoint);
                 }
 
@@ -466,7 +471,7 @@ bool CtiFDR_TextExport::loadTranslationLists()
     return successful;
 }
 
-bool CtiFDR_TextExport::translateSinglePoint(shared_ptr<CtiFDRPoint> translationPoint, bool send)
+bool CtiFDR_TextExport::translateSinglePoint(CtiFDRPointSPtr translationPoint, bool send)
 {
     bool successful = false;
     string tempString2;
@@ -522,7 +527,7 @@ void CtiFDR_TextExport::threadFunctionWriteToFile( void )
     CHAR fileName[200];
     FILE* fptr;
     char workBuffer[500];  // not real sure how long each line possibly is
-    shared_ptr<CtiFDRPoint> translationPoint;
+    CtiFDRPointSPtr translationPoint;
     CtiTime lastWrite(0UL);
 
     try
@@ -571,12 +576,15 @@ void CtiFDR_TextExport::threadFunctionWriteToFile( void )
                 else
                 {
                     CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());
-                    CtiFDRManager::CTIFdrPointIterator  myIterator = getSendToList().getPointList()->getMap().begin();
+                    CtiFDRManager* mgrPtr = getSendToList().getPointList();
+                    CtiFDRManager::readerLock guard(mgrPtr->getLock());
+
+                    CtiFDRManager::spiterator  myIterator = mgrPtr->getMap().begin();
 
                     bool firstSurvalentPass=true;
 
 
-                    for ( ; myIterator != getSendToList().getPointList()->getMap().end(); ++myIterator)
+                    for ( ; myIterator != mgrPtr->getMap().end(); ++myIterator)
                     {
                         translationPoint = (*myIterator).second;
 
@@ -728,7 +736,7 @@ LAU04A_KWH                          360 0
 ...
 ***************************************************************************
 */
-void CtiFDR_TextExport::processPointToSurvalent (FILE* aFilePtr, shared_ptr<CtiFDRPoint> aPoint, CtiTime aLastWrite)
+void CtiFDR_TextExport::processPointToSurvalent (FILE* aFilePtr, CtiFDRPointSPtr aPoint, CtiTime aLastWrite)
 {
 //    static CtiTime lastWrite;
     int quality;

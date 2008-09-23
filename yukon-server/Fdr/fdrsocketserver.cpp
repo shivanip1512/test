@@ -213,11 +213,11 @@ bool CtiFDRSocketServer::loadList(string &aDirection,  CtiFDRPointList &aList)
         {
             CtiLockGuard<CtiMutex> sendGuard(aList.getMutex());  
             // get iterator on list
-            CtiFDRManager::CTIFdrPointIterator  myIterator = pointList->getMap().begin();
+            CtiFDRManager::spiterator myIterator = pointList->getMap().begin();
     
             while (myIterator != pointList->getMap().end())
             {
-                shared_ptr<CtiFDRPoint> translationPoint = (*myIterator).second;
+                CtiFDRPointSPtr translationPoint = (*myIterator).second;
                 foundPoint = translateSinglePoint(translationPoint,isSend);
                 ++myIterator;
             }
@@ -531,10 +531,10 @@ SOCKET CtiFDRSocketServer::createBoundListener() {
 bool CtiFDRSocketServer::sendAllPoints(CtiFDRClientServerConnection* connection)
 {
     bool retVal = true;
-    shared_ptr<CtiFDRPoint> point;
+    CtiFDRPointSPtr point;
 
     CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());
-    CtiFDRManager::CTIFdrPointIterator  myIterator = getSendToList().getPointList()->getMap().begin();
+    CtiFDRManager::spiterator  myIterator = getSendToList().getPointList()->getMap().begin();
     for ( ; myIterator != getSendToList().getPointList()->getMap().end(); ++myIterator)
     {
         point = (*myIterator).second;

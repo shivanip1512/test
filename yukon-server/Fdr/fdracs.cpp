@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdracs.cpp-arc  $
-*    REVISION     :  $Revision: 1.19 $
-*    DATE         :  $Date: 2008/09/15 21:08:47 $
+*    REVISION     :  $Revision: 1.20 $
+*    DATE         :  $Date: 2008/09/23 15:14:57 $
 *
 *
 *    AUTHOR: David Sutton
@@ -23,6 +23,11 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdracs.cpp,v $
+      Revision 1.20  2008/09/23 15:14:57  tspar
+      YUK-5013 Full FDR reload should not happen with every point db change
+
+      Review changes. Most notable is mgr_fdrpoint.cpp now encapsulates CtiSmartMap instead of extending from rtdb.
+
       Revision 1.19  2008/09/15 21:08:47  tspar
       YUK-5013 Full FDR reload should not happen with every point db change
 
@@ -388,7 +393,7 @@ int CtiFDR_ACS::readConfig()
 }
 
 
-bool CtiFDR_ACS::translateAndUpdatePoint(shared_ptr<CtiFDRPoint> translationPoint, int aDestinationIndex)
+bool CtiFDR_ACS::translateAndUpdatePoint(CtiFDRPointSPtr translationPoint, int aDestinationIndex)
 {
     bool                successful(false);
     string           tempString1;

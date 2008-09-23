@@ -100,14 +100,14 @@ class IM_EX_FDRBASE CtiFDRInterface
 
         bool reloadTranslationLists(void);
         virtual bool loadTranslationLists(void)=0;
-        virtual bool translateSinglePoint(shared_ptr<CtiFDRPoint> translationPoint, bool send=false)=0;
+        virtual bool translateSinglePoint(CtiFDRPointSPtr translationPoint, bool send=false)=0;
 
         //Load single point, maintaining current lists
         virtual bool loadTranslationPoint(long pointId);
         //remove single point maintaining current lists
         void removeTranslationPoint(long pointId);
         //here to be call
-        virtual void cleanupTranslationPoint(shared_ptr<CtiFDRPoint> translationPoint, bool recvList);
+        virtual void cleanupTranslationPoint(CtiFDRPointSPtr translationPoint, bool recvList);
 
         CtiFDRPointList   getSendToList () const;
         CtiFDRPointList & getSendToList ();
