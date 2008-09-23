@@ -38,10 +38,9 @@ public class JsonReportDataUtils {
         root.put("root", rows);
         
         JSONObject jsonObj = new JSONObject(root);
-        String responseJsonStr = jsonObj.toString();
         
         PrintWriter writer = new PrintWriter(oStream);
-        writer.write(responseJsonStr);
+        jsonObj.write(writer);
         writer.flush();
     }
 }
