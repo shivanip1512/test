@@ -2995,12 +2995,12 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
                     {
                         if( timestamp >= currentFeeder->getLastCurrentVarPointUpdateTime() )
                         {
-                            currentFeeder->setNewPointDataReceivedFlag(TRUE);
-                           
                             if (currentFeeder->getPhaseBId() == pointID) 
                             {
                                 if (currentFeeder->getPhaseBValue() != value) 
                                 {
+                                    currentFeeder->setNewPointDataReceivedFlag(TRUE);
+
                                     currentFeeder->setPhaseBValue(value, timestamp);
                                     currentSubstationBus->setBusUpdatedFlag(TRUE);
                                     currentFeeder->setCurrentVarLoadPointValue(currentFeeder->getPhaseAValue() + currentFeeder->getPhaseBValue() + currentFeeder->getPhaseCValue(),timestamp);
@@ -3010,6 +3010,8 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
                             {
                                 if (currentFeeder->getPhaseCValue() != value) 
                                 {
+                                    currentFeeder->setNewPointDataReceivedFlag(TRUE);
+
                                     currentFeeder->setPhaseCValue(value, timestamp);
                                     currentSubstationBus->setBusUpdatedFlag(TRUE);
                                     currentFeeder->setCurrentVarLoadPointValue(currentFeeder->getPhaseAValue() + currentFeeder->getPhaseBValue() + currentFeeder->getPhaseCValue(),timestamp);
@@ -3088,15 +3090,40 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                         if (!currentCapBank->getDisableFlag()) 
                         {    
                             if (currentCapBank->getControlStatus() != (LONG)value &&
-                                !currentCapBank->getInsertDynamicDataFlag())
+                                !currentCapBank->getInsertDynamicDataFlag() &&
+                                timestamp > currentCapBank->getLastStatusChangeTime())
                             {
+                                {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << CtiTime() << " - CapBank: "<<currentCapBank->getPAOName()<<" State adjusted from "<<currentCapBank->getControlStatus() <<" to "<<value<< endl;
                             }
+                                if ((currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending ||  
+                                    currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending) &&
+                                    value < 6 ) 
+                                { 
+                                    currentCapBank->setBeforeVarsString(" Point Data ");
+                                    currentCapBank->setAfterVarsString(" Point Data ");
+                                    currentCapBank->setPercentChangeString(" --- ");
+                                    string text = "";
+                                    text = string("Var: Cancelled by Pending Override, "); 
+                                    currentCapBank->setControlStatus((LONG)value);
+                                    text += currentCapBank->getControlStatusText();
+                                    currentFeeder->setRetryIndex(0);
+                                    LONG stationId, areaId, spAreaId;
+                                    store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId); 
+                                    CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text, "point data msg" );
+                                    eventMsg->setActionId(CCEventActionIdGen(currentCapBank->getStatusPointId()));
+                                    eventMsg->setStateInfo(currentCapBank->getControlStatusQualityString());
+                                    
+                                    CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMsg); 
+                                    currentCapBank->setIgnoreFlag(FALSE); 
+                                    currentCapBank->setPorterRetFailFlag(FALSE);
+                                } 
                             currentCapBank->setControlStatus((LONG)value);
-                            
                             currentCapBank->setTagsControlStatus((LONG)tags);
                             currentCapBank->setLastStatusChangeTime(timestamp);
+                                currentSubstationBus->checkAndUpdateRecentlyControlledFlag();
+                            }
                         }
                         currentSubstationBus->figureEstimatedVarLoadPointValue();
                         if( currentSubstationBus->getEstimatedVarLoadPointId() > 0 )
@@ -3156,7 +3183,6 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
 
                                     if ( currentCapBank->getControlStatus() != value &&
                                         (!currentFeeder->getRecentlyControlledFlag() && 
-                                         !currentSubstationBus->getRecentlyControlledFlag() &&
                                          !currentCapBank->getControlRecentlySentFlag() &&
                                          !currentCapBank->getVerificationFlag() &&
                                          !currentCapBank->getInsertDynamicDataFlag() ) &&
@@ -3190,7 +3216,6 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                                 }
                                 
                                 if ( !currentFeeder->getRecentlyControlledFlag() && 
-                                     !currentSubstationBus->getRecentlyControlledFlag() &&
                                      currentCapBank->getControlRecentlySentFlag() &&
                                      ( (currentCapBank->getControlStatus() == CtiCCCapBank::Open ||
                                         currentCapBank->getControlStatus() == CtiCCCapBank::Close ) &&
@@ -3355,7 +3380,6 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
 void CtiCapController::porterReturnMsg( long deviceId, const string& _commandString, int status, const string& _resultString, ULONG secondsFrom1901 )
 {
     string commandString = _commandString;
-
     if( _CC_DEBUG & CC_DEBUG_EXTENDED )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
