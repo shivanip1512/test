@@ -39,7 +39,8 @@ public interface SimpleReportService {
     @SuppressWarnings("unchecked")
     public abstract BareReportModel getReportModel(
             YukonReportDefinition<? extends BareReportModel> reportDefinition,
-            Map<String, String> parameterMap) throws Exception;
+            Map<String, String> parameterMap,
+            boolean loadData) throws Exception;
     
     public BareReportModel getStringReportModel(final YukonReportDefinition<? extends BareReportModel> reportDefinition,
             final BareReportModel reportModel,

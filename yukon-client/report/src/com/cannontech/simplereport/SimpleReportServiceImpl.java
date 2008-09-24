@@ -135,7 +135,7 @@ public class SimpleReportServiceImpl implements SimpleReportService {
      * @see com.cannontech.simplereport.SimpleReportService#getReportModel(com.cannontech.simplereport.YukonReportDefinition, javax.servlet.http.HttpServletRequest)
      */
     @SuppressWarnings("unchecked")
-    public BareReportModel getReportModel(YukonReportDefinition<? extends BareReportModel> reportDefinition, Map<String, String> parameterMap) throws Exception {
+    public BareReportModel getReportModel(YukonReportDefinition<? extends BareReportModel> reportDefinition, Map<String, String> parameterMap, boolean loadData) throws Exception {
         
         BareReportModel reportModel = reportDefinition.createBean();
         
@@ -145,7 +145,7 @@ public class SimpleReportServiceImpl implements SimpleReportService {
         InputUtil.applyProperties(inputRoot, reportModel, parameterMap);
         
         // if model instanceof LoadalbleModel, load it
-        if(reportModel instanceof LoadableModel) {
+        if(loadData && reportModel instanceof LoadableModel) {
             ((LoadableModel)reportModel).loadData();
         }
         

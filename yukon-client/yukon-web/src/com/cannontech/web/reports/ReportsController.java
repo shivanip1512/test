@@ -64,10 +64,9 @@ public class ReportsController extends MultiActionController  {
         
         // get report definition, model
         //-----------------------------------------------------------------------------------------
-        Map<String, String> parameterMap = getParameterMap(request);
+        Map<String, String> parameterMap = ServletUtil.getParameterMap(request);
         YukonReportDefinition<BareReportModel> reportDefinition = simpleReportService.getReportDefinition(request);
-        BareReportModel reportModel = simpleReportService.getReportModel(reportDefinition, parameterMap);
-        
+        BareReportModel reportModel = simpleReportService.getReportModel(reportDefinition, parameterMap, false);
         
         // title
         //-----------------------------------------------------------------------------------------
@@ -80,17 +79,6 @@ public class ReportsController extends MultiActionController  {
         List<ColumnInfo> columnInfo = simpleReportService.buildColumnInfoListFromColumnLayoutData(bodyColumns);
         
         mav.addObject("columnInfo", columnInfo);
-        
-        
-        // data grid
-        //-----------------------------------------------------------------------------------------
-        int columnCount = reportModel.getColumnCount();
-        int rowCount = reportModel.getRowCount();
-        List<List<String>> data = simpleReportService.getFormattedData(reportDefinition, reportModel, userContext);
-        
-        mav.addObject("columnCount", columnCount);
-        mav.addObject("rowCount", rowCount);
-        mav.addObject("data", data);
         
         
         // include definition name and model in order to create links to other styles of the same report
@@ -112,11 +100,39 @@ public class ReportsController extends MultiActionController  {
         Map<String, String> inputMap = InputUtil.extractProperties(reportDefinition.getInputs(), reportModel);
         mav.addObject("inputMap", inputMap);
         
-        
+        inputMap.put("def", definitionName);
+        String queryString = ServletUtil.buildSafeQueryStringFromMap(inputMap, true);
+        String dataUrl = "/spring/reports/simple/jsonData?" + queryString;
+        dataUrl = ServletUtil.createSafeUrl(request, dataUrl);
+        mav.addObject("dataUrl", dataUrl);
         
         return mav;
     }
+
     
+    public ModelAndView jsonData(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+        
+        // get report definition, model
+        //-----------------------------------------------------------------------------------------
+        Map<String, String> parameterMap = ServletUtil.getParameterMap(request);
+        YukonReportDefinition<BareReportModel> reportDefinition = simpleReportService.getReportDefinition(request);
+        BareReportModel reportModel = simpleReportService.getReportModel(reportDefinition, parameterMap, true);
+        
+        // column layout lists
+        //-----------------------------------------------------------------------------------------
+        ColumnLayoutData[] bodyColumns = reportDefinition.getReportLayoutData().getBodyColumns();
+        List<ColumnInfo> columnInfo = simpleReportService.buildColumnInfoListFromColumnLayoutData(bodyColumns);
+        
+        // data grid
+        //-----------------------------------------------------------------------------------------
+        List<List<String>> data = simpleReportService.getFormattedData(reportDefinition, reportModel, userContext);
+        
+        JsonReportDataUtils.outputReportData(data, columnInfo, response.getOutputStream());
+        
+        return null;
+    }
     
     /**
      * csvView - export report data as CSV file
@@ -136,7 +152,7 @@ public class ReportsController extends MultiActionController  {
         Map<String, String> parameterMap = getParameterMap(request);
         
         YukonReportDefinition<BareReportModel> reportDefinition = simpleReportService.getReportDefinition(request);
-        BareReportModel reportModel = simpleReportService.getReportModel(reportDefinition, parameterMap);
+        BareReportModel reportModel = simpleReportService.getReportModel(reportDefinition, parameterMap, true);
         
         response.setContentType("text/csv");
         response.setHeader("Content-Disposition","filename=\"" + ServletUtil.makeWindowsSafeFileName(reportModel.getTitle()) + ".csv\"");
@@ -177,7 +193,7 @@ public class ReportsController extends MultiActionController  {
                 
         Map<String, String> parameterMap = getParameterMap(request);
         YukonReportDefinition<BareReportModel> reportDefinition = simpleReportService.getReportDefinition(request);
-        BareReportModel reportModel = simpleReportService.getReportModel(reportDefinition, parameterMap);
+        BareReportModel reportModel = simpleReportService.getReportModel(reportDefinition, parameterMap, true);
         
         OutputStream outputStream = response.getOutputStream();
         

@@ -37,6 +37,6 @@
             <c:param name="${p.key}" value="${p.value}"/>
         </c:forEach>
     </c:url>
-    <tags:extGrid columnInfo="${columnInfo}" dataUrl="${dataUrl}" />
+    <tags:extBasicGrid height="350" width="1000" columnInfo="${columnInfo}" dataUrl="${dataUrl}" />
 
 </cti:standardPage>

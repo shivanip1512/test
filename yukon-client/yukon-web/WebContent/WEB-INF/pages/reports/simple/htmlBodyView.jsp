@@ -3,9 +3,6 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<%-- TITLE --%>
-<div class="simpleReportHeader">${reportTitle}</div>
-
 <%-- INPUTS --%>
 <c:if test="${not empty metaInfo}">
     <br/>
@@ -15,38 +12,24 @@
         </c:forEach>
     </tags:nameValueContainer>
 </c:if>
+<br>
 
+<%-- CSV URL --%>
+<cti:simpleReportUrlFromNameTag var="csvUrlBase" viewType="csvView" definitionName="${definitionName}" htmlOutput="true" />
+<c:url var="csvUrl" value="${csvUrlBase}">
+    <c:forEach var="input" items="${inputMap}">
+        <c:param name="${input.key}" value="${input.value}"/>
+    </c:forEach>
+</c:url>
 
-
-<%-- EXPORT OPTIONS --%>
-<br/>
-<tags:nameValueContainer style="width:30%;">
-    <tags:nameValue name="Export Data">
-        <cti:simpleReportLinkFromModelTag reportModel="${reportModel}" definitionName="${definitionName}" viewType="csvView">CSV</cti:simpleReportLinkFromModelTag>
-        |
-        <cti:simpleReportLinkFromModelTag reportModel="${reportModel}" definitionName="${definitionName}" viewType="pdfView">PDF</cti:simpleReportLinkFromModelTag>
-    </tags:nameValue>
-</tags:nameValueContainer>
-<br/>
+<%-- PDF URL --%>
+<cti:simpleReportUrlFromNameTag var="pdfUrlBase" viewType="pdfView" definitionName="${definitionName}" htmlOutput="true" />
+<c:url var="pdfUrl" value="${pdfUrlBase}">
+    <c:forEach var="input" items="${inputMap}">
+        <c:param name="${input.key}" value="${input.value}"/>
+    </c:forEach>
+</c:url>
 
 
 <%-- REPORT TABLE --%>
-<table class="resultsTable">
-
-    <!-- COLUMN HEADER -->
-    <tr>
-        <c:forEach var="ci" items="${columnInfo}">
-            <th style="text-align:${ci.columnAlignment};width:${ci.columnWidthPercentage}%">${ci.columnName}</th>
-        </c:forEach>
-    </tr>
-    
-    <!-- DATA -->
-    <c:forEach var="rowData" items="${data}">
-        <tr class="<tags:alternateRow odd="" even="altRow"/>">
-            <c:forEach var="colData" items="${rowData}" varStatus="colCounter">
-                <td>${colData}</td>
-            </c:forEach>
-        </tr>
-    </c:forEach>
-
-</table>
+<tags:extReportGrid title="${reportTitle}" height="350" width="1000" columnInfo="${columnInfo}" dataUrl="${dataUrl}" csvUrl="${csvUrl}" pdfUrl="${pdfUrl}" />
