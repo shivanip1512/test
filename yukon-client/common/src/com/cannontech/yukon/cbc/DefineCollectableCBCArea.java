@@ -120,6 +120,7 @@ public class DefineCollectableCBCArea extends
         VectorInsert.insertIntArray(area.getStations(), vstr, polystr);
         vstr.insertDouble( area.getPowerFactorValue().doubleValue() );
         vstr.insertDouble( area.getEstimatedPFValue().doubleValue() );
+        vstr.insertUnsignedInt((area.getVoltReductionFlag().booleanValue()) ? 1 : 0);
         vstr.insertUnsignedInt((area.getChildVoltReductionFlag().booleanValue()) ? 1 : 0);
         
     }
