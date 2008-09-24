@@ -466,7 +466,7 @@ public class CBCDisplay {
             }
             
             if (subBus.getSwitchOverStatus().booleanValue() && CBCUtils.isDualBusEnabled(subBus)) {
-                state += " ALT BUS";
+                state += " -ALT BUS";
             }
             
             if (subBus.getOvUvDisabledFlag().booleanValue()) {
