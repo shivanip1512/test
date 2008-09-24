@@ -12,4 +12,6 @@ public interface FdrTranslationDao {
     public List<FdrTranslation> getByInterfaceType(FdrInterfaceType type);
 
     public FdrTranslation getByPointIdAndType(int pointId, FdrInterfaceType type);
+    
+    public List<FdrTranslation> getByPaobjectIdAndType(int paoId, FdrInterfaceType type);
 }

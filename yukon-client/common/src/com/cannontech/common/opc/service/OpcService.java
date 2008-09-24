@@ -4,6 +4,7 @@ import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -294,60 +295,66 @@ public class OpcService implements OpcConnectionListener, DBChangeListener{
     @Override
     public void dbChangeReceived(final DBChangeMsg dbChange) {
         
-        //List for the points to reload.
-        final List<Integer> pointList = new ArrayList<Integer>();
-        
-        if (dbChange.getDatabase() == DBChangeMsg.CHANGE_POINT_DB) {
-            // This is a single change, so the id in the message is the point id
-            int pid = dbChange.getId();
-            log.debug(" OPC dispatch event with ID: " + pid);
-            pointList.add(pid);
-        } else if (dbChange.getDatabase() == DBChangeMsg.CHANGE_PAO_DB) {
-            // This is for a device, need to grab all point id's related to it.
-            int paoId = dbChange.getId();
-            List<LitePoint> points = pointDao.getLitePointsByPaObjectId(paoId);
-            
-            // Working off the basis that point delete messages will be sent.
-            // If this is a PAO delete, this query will return nothing, those deletes will come 
-            // from delete messages
-            for (LitePoint point : points) {
-                pointList.add(point.getPointID());
-            }
-        } else {
-            // Not handled
-            return;
-        }
-        
         globalScheduledExecutor.execute(new Runnable() {
             public void run() {
-                for(Integer pointId : pointList) {
-                    YukonOpcItem item = getItemFromConnections(pointId);
-                    if (item != null) {
-                        log.debug(" Change to Point, " + pointId +", involved with OPC");
-                        //If here, we are already monitoring this point; lets remove it so it can be updated.
-                        String connName = item.getServerName();
-                        YukonOpcConnection conn = opcConnectionMap.get(connName);
-                        if (conn == null) {
-                            log.error(" Expected connection not found. DB Change not Processed.");
-                            return;
-                        }
-                        conn.removeItem(item);
+                //List for the points to reload.
+                final List<FdrTranslation> translationList = new ArrayList<FdrTranslation>();
+
+                if (dbChange.getDatabase() == DBChangeMsg.CHANGE_POINT_DB) {
+                    // This is a single change, so the id in the message is the point id
+                    int pid = dbChange.getId();
+                    log.debug(" OPC dispatch event with ID: " + pid);
+                    FdrTranslation translation;
+                    
+                    try {
+                        translation = fdrTranslationDao.getByPointIdAndType(pid, FdrInterfaceType.OPC);
+                        log.debug(" Change to Point, " + translation.getId() +", involved with OPC");
+                        translationList.add(translation);
+                    } catch (IncorrectResultSizeDataAccessException e) {
+                        log.debug(" Point Change does not have an OPC translation attached to it. " + pid);
+                    } finally {
+                        // Removes the item from the connection even if it is there no matter what message type.
+                        YukonOpcItem item = getItemFromConnections(pid);
+                        if (item != null) {
+                            //If here, we are already monitoring this point; lets remove it so it can be updated.
+                            String connName = item.getServerName();
+                            YukonOpcConnection conn = opcConnectionMap.get(connName);
+                            if (conn == null) {
+                                log.error(" Expected connection not found. DB Change not Processed.");
+                                return;
+                            }
+                            log.debug(" Removing Item from OPC Interface. " + pid);
+                            conn.removeItem(item);
+                        }                    
                     }
                     
+                } else if (dbChange.getDatabase() == DBChangeMsg.CHANGE_PAO_DB 
+                        && dbChange.getTypeOfChange() != DBChangeMsg.CHANGE_TYPE_DELETE) {
+                    // This is for a device, need to grab all point id's related to it.
+                    int paoId = dbChange.getId();
+                    log.debug(" OPC dispatch event with ID: " + paoId);
+                    
+                    List<FdrTranslation> translations = fdrTranslationDao.getByPaobjectIdAndType(paoId, FdrInterfaceType.OPC);
+        
+                    // Working off the basis that point delete messages will be sent.
+                    // If this is a PAO delete, this query will return nothing, those deletes will come 
+                    // from delete messages
+                    for (FdrTranslation trans : translations) {
+                        translationList.add(trans);
+                    }
+                } else {
+                    // Device Delete Not handled. Point messages will be sent.
+                    return;
+                }
+        
+                for (FdrTranslation translation : translationList) {
+
                     //If its a delete, do not attempt to re-add it. This is for all points being processed.
                     if (dbChange.getTypeOfChange() != DBChangeMsg.CHANGE_TYPE_DELETE) {
-                        try {
-                            FdrTranslation translation = fdrTranslationDao.getByPointIdAndType(pointId, FdrInterfaceType.OPC);
-                            //If found its a new one to add to the list.
-                            //if not an exception will have thrown. Point could have been removed or its missing...
-                            processOpcTranslation(translation);                            
-                            log.debug(" translation found, new FDR translation");
-                        } catch (IncorrectResultSizeDataAccessException exception) {
-                            log.error(" translation not found for ID: " + pointId);
-                        }
+                        processOpcTranslation(translation);                            
                     }
-                    cleanUpConnections();
                 }
+                cleanUpConnections();
             }
         });
     }
@@ -408,7 +415,7 @@ public class OpcService implements OpcConnectionListener, DBChangeListener{
 			if (conn.isEmpty())
 			{
 				conn.shutdown();
-				opcConnectionMap.remove(conn);
+				opcConnectionMap.remove(entry.getKey());
 			}
 		}
 	}

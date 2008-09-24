@@ -2,8 +2,7 @@ package com.cannontech.core.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
@@ -18,7 +17,8 @@ import com.cannontech.core.dao.FdrTranslationDao;
 public class FdrTranslationDaoImpl implements FdrTranslationDao {
 
     private static final String insertSql;
-    private static final String selectByIdAndTypeSql;
+    private static final String selectByPointIdAndTypeSql;
+    private static final String selectByPaoIdAndTypeSql;    
     private static final String selectByTypeSql;
     
     private static final ParameterizedRowMapper<FdrTranslation> rowMapper;
@@ -30,8 +30,14 @@ public class FdrTranslationDaoImpl implements FdrTranslationDao {
         		"(pointid,directiontype,interfacetype,destination,translation) " +
         		"VALUES (?,?,?,?,?)";
         
-        selectByIdAndTypeSql = "SELECT pointid,directiontype,interfacetype,destination,translation FROM fdrtranslation" 
+        selectByPointIdAndTypeSql = "SELECT pointid,directiontype,interfacetype,destination,translation FROM fdrtranslation" 
         	+ " WHERE pointid = ? AND interfacetype = ?";
+        
+        selectByPaoIdAndTypeSql = "SELECT FDRT.pointid, FDRT.directiontype, FDRT.interfacetype, FDRT.destination, FDRT.translation " 
+                                + "FROM FDRTranslation FDRT, Point P " 
+                                + "WHERE FDRT.pointId = P.pointId "
+                                + "AND FDRT.interfaceType = ? "
+                                + "AND P.PAOBjectID = ? ";
         
         selectByTypeSql = "SELECT pointid,directiontype,interfacetype,destination,translation FROM fdrtranslation" 
         	+ " WHERE interfacetype = ?";     
@@ -88,8 +94,13 @@ public class FdrTranslationDaoImpl implements FdrTranslationDao {
     
     @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
 	public FdrTranslation getByPointIdAndType(int id, FdrInterfaceType type) {
-    	return simpleJdbcTemplate.queryForObject(selectByIdAndTypeSql, rowMapper, id, type.toString());
+    	return simpleJdbcTemplate.queryForObject(selectByPointIdAndTypeSql, rowMapper, id, type.toString());
 	}
+    
+    @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
+    public List<FdrTranslation> getByPaobjectIdAndType(int paoId, FdrInterfaceType type) {
+        return simpleJdbcTemplate.query(selectByPaoIdAndTypeSql, rowMapper, type.toString(), paoId);        
+    }
     
     @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
 	public List<FdrTranslation> getByInterfaceType(FdrInterfaceType type) {
