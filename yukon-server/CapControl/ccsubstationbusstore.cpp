@@ -9648,7 +9648,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                                     if (temp->getPAOId() == reloadTemp.objectId)
                                     {
                                         modifiedSubsList.erase(iter);
-                                        iter = modifiedSubsList.end();
+                                        break;
                                     }
                                     else
                                         iter++;
@@ -9679,7 +9679,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                                     if (temp->getPAOId() == reloadTemp.objectId)
                                     {
                                         modifiedSubsList.erase(iter);
-                                        iter = modifiedSubsList.end();
+                                        break;
                                     }
                                     else
                                         iter++;
@@ -9947,7 +9947,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                                         if (((CtiCCSubstationBusPtr)*iter)->getPAOId() == tempSub->getPAOId())
                                         {
                                             modifiedSubsList.erase(iter);
-                                            iter = modifiedSubsList.end();
+                                            break;
                                         }
                                         else
                                             iter++;
@@ -9970,7 +9970,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                                                 if (((CtiCCSubstationBusPtr)*iter)->getPAOId() == tempSub->getPAOId())
                                                 {
                                                     modifiedSubsList.erase(iter);
-                                                    iter = modifiedSubsList.end();
+                                                    break;
                                                 }
                                                 else
                                                     iter++;
@@ -10193,7 +10193,7 @@ void CtiCCSubstationBusStore::updateSubstationObjectList(LONG substationId, CtiM
             if (((CtiCCSubstationPtr)*iter)->getPAOId() == substationId)
             {
                 modifiedStationsList.erase(iter);
-                iter = modifiedStationsList.end();
+                break;
             }
             else
                 iter++;
@@ -10214,7 +10214,7 @@ void CtiCCSubstationBusStore::updateAreaObjectList(LONG areaId, CtiMultiMsg_vec 
             if (((CtiCCAreaPtr)*iter)->getPAOId() == areaId) 
             {  
                 modifiedAreasList.erase(iter);
-                iter = modifiedAreasList.end();
+                break;
             }
             else
                 iter++;
@@ -10240,7 +10240,7 @@ void CtiCCSubstationBusStore::addSubBusObjectsToList(list <LONG> *subBusIds, Cti
                 if (((CtiCCSubstationBusPtr)*iter)->getPAOId() == tempSub->getPAOId())
                 {
                     modifiedSubsList.erase(iter);
-                    iter = modifiedSubsList.end();
+                    break;
                 }
                 else
                     iter++;
@@ -10276,7 +10276,7 @@ void CtiCCSubstationBusStore::addSubstationObjectsToList(list <LONG> *substation
                         if (((CtiCCSubstationBusPtr)*iter)->getPAOId() == tempSub->getPAOId())
                         {
                             modifiedSubsList.erase(iter);
-                            iter = modifiedSubsList.end();
+                            break;
                         }
                         else
                             iter++;
