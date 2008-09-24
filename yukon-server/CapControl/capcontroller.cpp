@@ -3380,6 +3380,10 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
 void CtiCapController::porterReturnMsg( long deviceId, const string& _commandString, int status, const string& _resultString, ULONG secondsFrom1901 )
 {
     string commandString = _commandString;
+    if( !stringCompareIgnoreCase(commandString, "scan general") || 
+        !stringCompareIgnoreCase(commandString, "scan integrity") ) 
+        return; 
+
     if( _CC_DEBUG & CC_DEBUG_EXTENDED )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
