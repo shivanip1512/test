@@ -1,5 +1,7 @@
 package com.cannontech.core.dao.impl;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -8,18 +10,20 @@ import java.util.Map;
 
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.common.util.CommandExecutionException;
+import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.database.SqlUtils;
-import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.db.user.YukonGroupRole;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.YukonGroupRoleDefs;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -31,6 +35,7 @@ public class RoleDaoImpl implements RoleDao
 {
     private IDatabaseCache databaseCache;
     private SimpleJdbcTemplate simpleJdbcTemplate;
+    private DBPersistentDao dbPersistentDao;
 
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.RoleDao#getRoleProperties(int)
@@ -156,30 +161,36 @@ public class RoleDaoImpl implements RoleDao
           return null;
     }
 
-    public boolean updateGroupRoleProperty(LiteYukonGroup group, int roleID, int rolePropertyID, String newVal) 
+    public boolean updateGroupRoleProperty(LiteYukonGroup group, int roleID, int rolePropertyId, String newVal) 
         throws CommandExecutionException, TransactionException {
         
-        String oldVal = getRolePropValueGroup( group, rolePropertyID, null );
         newVal = SqlUtils.convertStringToDbValue(newVal);
-
-        if (oldVal != null) {
-            String sql = " UPDATE YukonGroupRole SET Value = ? "+
-                         " WHERE GroupID = ? "+
-                         " AND RoleID = ? "+
-                         " AND RolePropertyID = ? ";
-            simpleJdbcTemplate.update(sql, newVal, group.getGroupID(), roleID, rolePropertyID);
+        YukonGroupRole groupRole = getYukonGroupRole(group.getGroupID(), rolePropertyId);        
+        
+        if (groupRole != null) {
+            groupRole.setValue( newVal );
+            dbPersistentDao.performDBChange(groupRole, DBChangeMsg.CHANGE_TYPE_UPDATE);
             
         } else {
-            YukonGroupRole groupRole = new YukonGroupRole();
-            groupRole.setGroupID( new Integer(group.getGroupID()) );
-            groupRole.setRoleID( new Integer(roleID) );
-            groupRole.setRolePropertyID( new Integer(rolePropertyID) );
-            groupRole.setValue( newVal );
-
-            Transaction.createTransaction( Transaction.INSERT, groupRole ).execute();
+            groupRole = new YukonGroupRole(null, group.getGroupID(), roleID, rolePropertyId, newVal);
+            dbPersistentDao.performDBChange(groupRole, DBChangeMsg.CHANGE_TYPE_ADD);
+            
         }
         
         return true;
+    }
+
+    public YukonGroupRole getYukonGroupRole(int groupId, int rolePropertyId) {
+
+        String sql = " SELECT YGR.groupRoleId, YGR.groupId, YGR.roleId, "+
+                     " YGR.rolePropertyId, YGR.value "+
+                     " FROM YukonGroupRole YGR "+
+                     " WHERE YGR.GroupId = ? "+
+                     " AND YGR.rolePropertyId = ? ";
+        
+        YukonGroupRole groupRole = simpleJdbcTemplate.queryForObject(sql, new YukonGroupRoleRowMapper(), groupId, rolePropertyId);
+
+        return groupRole;
     }
     
     public <E extends Enum<E>> E getGlobalRolePropertyValue(Class<E> class1, int rolePropertyID) {
@@ -188,10 +199,28 @@ public class RoleDaoImpl implements RoleDao
         return enumValue;
     }
 
+    private class YukonGroupRoleRowMapper implements ParameterizedRowMapper<YukonGroupRole> {
+
+        public YukonGroupRole mapRow(ResultSet rs, int row) throws SQLException {
+            YukonGroupRole groupRole = new YukonGroupRole();
+            groupRole.setGroupRoleID(rs.getInt("groupRoleId"));
+            groupRole.setGroupID(rs.getInt("groupId"));
+            groupRole.setRoleID(rs.getInt("roleID"));
+            groupRole.setRolePropertyID(rs.getInt("rolePropertyId"));
+            groupRole.setValue(SqlUtils.convertDbValueToString(rs.getString("value")));
+            return groupRole;
+        }
+    }
+    
     public void setDatabaseCache(IDatabaseCache databaseCache) {
         this.databaseCache = databaseCache;
     }
 
+    @Required
+    public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
+        this.dbPersistentDao = dbPersistentDao;
+    }
+    
     @Required
     public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
         this.simpleJdbcTemplate = simpleJdbcTemplate;

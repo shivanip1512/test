@@ -86,7 +86,9 @@ public class DBPersistentDaoImpl implements DBPersistentDao
             // this may be a delete and the dbChangeMsgs may not be retrievable after execute
             DBChangeMsg[] dbChangeMsgs = null;
             if (dbChangeType != DBChangeMsg.CHANGE_TYPE_NONE) {
-                dbChangeMsgs = ((CTIDbChange)item).getDBChangeMsgs(dbChangeType);
+                if(item instanceof CTIDbChange){
+                    dbChangeMsgs = ((CTIDbChange)item).getDBChangeMsgs(dbChangeType);
+                }
             }
             
             // execute

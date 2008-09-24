@@ -121,6 +121,7 @@
   </bean>
   <bean id="roleDao" class="com.cannontech.core.dao.impl.RoleDaoImpl" >
     <property name="databaseCache" ref="databaseCache"/> 
+    <property name="dbPersistentDao" ref="dbPersistentDao"/>
     <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
   </bean>
   <bean id="standaloneRoleDao" class="com.cannontech.core.dao.impl.StandaloneRoleDaoImpl" >

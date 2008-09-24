@@ -4,12 +4,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import com.cannontech.database.SqlUtils;
+import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 
 /**
  * @author alauinger
  */
-public class YukonGroupRole extends DBPersistent implements IDefinedYukonRole
+public class YukonGroupRole extends DBPersistent implements IDefinedYukonRole, CTIDbChange
 {
 	public static final String TABLE_NAME = "YukonGroupRole";
 
@@ -38,7 +40,6 @@ public class YukonGroupRole extends DBPersistent implements IDefinedYukonRole
 		setRolePropertyID(rolePropertyID_);
 		setValue( value_ );
 	}
-
 
 	/**
 	 * Insert the method's description here.
@@ -278,4 +279,17 @@ public class YukonGroupRole extends DBPersistent implements IDefinedYukonRole
 		this.rolePropertyID = rolePropertyID;
 	}
 
+    @Override
+    public DBChangeMsg[] getDBChangeMsgs(int typeOfChange) {
+        DBChangeMsg[] msgs =
+        {
+            new DBChangeMsg(getGroupID().intValue(),
+                            DBChangeMsg.CHANGE_YUKON_USER_DB,
+                            DBChangeMsg.CAT_YUKON_USER_GROUP,
+                            DBChangeMsg.CAT_YUKON_USER,
+                            typeOfChange)
+        };
+
+        return msgs;
+    }
 }
