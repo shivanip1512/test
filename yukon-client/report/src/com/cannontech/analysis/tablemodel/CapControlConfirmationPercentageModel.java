@@ -326,7 +326,7 @@ public class CapControlConfirmationPercentageModel extends BareDatedReportModelB
             }else {
                 row.Refusals = 0;
             }
-            double successRate = 0;
+            double successRate = 100;
             if(row.Attempts.doubleValue() - row.Refusals.doubleValue() > 0) {
                 successRate = ((row.Success.doubleValue() + row.Questionable.doubleValue() + row.Refusals.doubleValue()) / row.Attempts.doubleValue() )* 100.0; 
             }
