@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2008/09/19 11:40:41 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2008/09/24 19:15:57 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,13 +24,11 @@
 #include <set>
 #include <functional>
 
-#include "dlldefs.h"
-#include "pointtypes.h"
-#include "rte_ccu.h"  //  so we can add knowledge of CCU routes
-
 #include "prot_wrap.h"
 #include "prot_idlc.h"
 //#include "dnp_datalink.h"  //  DNP should be reimplemented as a wrapper protocol
+
+#include "rte_ccu.h"  //  so we can add knowledge of CCU routes
 
 #include "fifo_multiset.h"
 
@@ -41,11 +39,34 @@ class IM_EX_PROT Klondike : public Interface
 {
 public:
 
-    typedef std::pair<const OUTMESS *, INMESS *> result_pair_t;
-    typedef std::queue<result_pair_t>            result_queue_t;
+    typedef std::vector<unsigned char> byte_buffer_t;
+
+    struct queue_result_t
+    {
+        const OUTMESS *om;
+        int error;
+        unsigned long timestamp;
+        byte_buffer_t message;
+
+        queue_result_t(const OUTMESS *om_, int error_, unsigned long timestamp_, const byte_buffer_t &message_) :
+            om       (om_),
+            error    (error_),
+            timestamp(timestamp_),
+            message  (message_)
+        {
+        };
+
+        queue_result_t() :
+            om(0),
+            error(0),
+            timestamp(0)
+        {
+        };
+    };
 
     enum Errors;
     enum Command;
+    enum PLCProtocols;
     //enum ProtocolWrap;
 
 private:
@@ -74,25 +95,38 @@ private:
     unsigned short _masterAddress,
                    _slaveAddress;
 
-    OUTMESS *_dtran_outmess;  //  the outbound information for a direct transmission
+    byte_buffer_t _raw_command;
 
-    std::vector<unsigned char> _raw_command;
-
-    unsigned char _d_words[DWORDLEN * 3];  //  the response (if any) from a direct transmission
-    unsigned char _response_length;
-
+    int _error;  //  eventually to be enum Errors
     int _protocol_errors;
     int _read_toggle;
 
     struct queue_entry_t
     {
-        const OUTMESS *om;
         unsigned priority;
-        vector<unsigned char> dlc_message;
+        PLCProtocols protocol;
+        unsigned char dlc_parms;
+        unsigned char stages;
+        byte_buffer_t outbound;
+        int result;  //  eventually to be enum Errors
+        const OUTMESS *om;
 
-        queue_entry_t(const OUTMESS *om_) :
-            om       (om_),
-            priority (om_->Priority)
+        queue_entry_t() :
+            protocol (PLCProtocol_Invalid),
+            result   (NoError)
+        {
+            om = 0;
+            priority = dlc_parms = stages = 0;
+        }
+
+        queue_entry_t(const byte_buffer_t &outbound_, unsigned priority_, unsigned char dlc_parms_, unsigned char stages_, const OUTMESS *om_) :
+            protocol (PLCProtocol_Emetcon),
+            outbound (outbound_),
+            priority (priority_),
+            dlc_parms(dlc_parms_),
+            stages   (stages_),
+            result   (NoError),
+            om(om_)
         { };
 
         operator>(const queue_entry_t &rhs) const   {  return priority > rhs.priority;  };
@@ -100,7 +134,7 @@ private:
 
     typedef fifo_multiset<queue_entry_t, std::greater<queue_entry_t> > local_work_t;
     typedef std::map<unsigned, local_work_t::const_iterator>           pending_work_t;
-    typedef std::map<unsigned, const OUTMESS *>                        remote_work_t;
+    typedef std::map<unsigned, queue_entry_t>                          remote_work_t;
 
     mutable CtiCriticalSection _sync;
     typedef CtiLockGuard<CtiCriticalSection> sync_guard_t;
@@ -109,7 +143,11 @@ private:
     pending_work_t _pending_requests;
     remote_work_t  _remote_requests;
 
-    result_queue_t _dlc_results;
+    std::queue<queue_result_t> _plc_results;
+
+    queue_entry_t _dtran_queue_entry;
+    byte_buffer_t _dtran_result;
+    unsigned      _dtran_in_expected;
 
     bool _loading_device_queue,
          _reading_device_queue;
@@ -131,15 +169,15 @@ private:
             unsigned short plc_transmitting_dtran_message   : 1;
             unsigned short plc_transmitting_buffer_message  : 1;
             unsigned short time_sync_required               : 1;
-            unsigned short reserved                         : 7;
+            unsigned short broadcast_in_progress            : 1;
+            unsigned short reserved                         : 6;
         };
         unsigned char  as_bytes[2];
         unsigned short as_ushort;
     } _device_status;
 #pragma pack( pop )
 
-    unsigned writeDLCMessage(std::vector<unsigned char> &buf, const OUTMESS *om);
-    void processResponse(const std::vector<unsigned char> &inbound);
+    void processResponse(const byte_buffer_t &inbound);
 
     enum CommandCode
     {
@@ -169,8 +207,6 @@ private:
         CommandCode_ACK_NoData           = 0x80,
         CommandCode_ACK_Data             = 0x81,
         CommandCode_NAK                  = 0xc1,
-
-        CommandCode_Raw                  = 0x100  //  out of range for the one byte we have available
     };
 
     enum NAK_Errors
@@ -183,10 +219,6 @@ private:
         NAK_DTran_InvalidDLCType,
     };
 
-    int _error_code;
-
-    //static const error_mapping_t _error_mapping;
-
     enum MiscNumeric
     {
         ProtocolErrorsMaximum  =   1,
@@ -194,6 +226,7 @@ private:
         QueueWriteBasePriority =  11,
         QueueReadBasePriority  =  11,
         QueueEntryHeaderLength =   4,  //  CCU-721 Master Station Interface section 2.3.4.4: bytes 5-8 (assume bus is always nonzero)
+        MaximumRoutes          =  32
     };
 
     enum IO_State
@@ -210,6 +243,13 @@ private:
 
     void doOutput(CommandCode command_code);
     void doInput (CommandCode command_code, CtiXfer &xfer);
+    unsigned getPLCTiming(PLCProtocols protocol);
+
+    enum PLCProtocolInfo
+    {
+        Emetcon_bps = 56  //  approximately 1 second per word per transmitter
+    };
+
     static bool responseExpected(CommandCode command);
 
     Klondike(const Klondike &aRef);
@@ -226,7 +266,6 @@ private:
         unsigned char variable;
         unsigned char stages;
         unsigned char bus;
-        unsigned char spid;
     };
 
     typedef list<route_entry_t> route_list_t;
@@ -243,11 +282,12 @@ public:
     void setAddresses(unsigned short slaveAddress, unsigned short masterAddress);
     //void setWrap(ProtocolWrap w);
 
-    int setCommand(const OUTMESS *outmessage);
+    int setCommand(int command, const byte_buffer_t payload=byte_buffer_t(), unsigned in_expected=0, unsigned priority=0, unsigned char stages=0, unsigned char dlc_parms=0);
 
     Command getCommand() const;
 
-    void getResults(result_queue_t &results);
+    void getQueuedResults(std::queue<queue_result_t> &results);
+    byte_buffer_t getDTranResult();
 
     int generate(CtiXfer &xfer);
     int decode  (CtiXfer &xfer, int status);
@@ -255,14 +295,14 @@ public:
     bool isTransactionComplete(void) const;
 
     bool errorCondition() const;
-    int  errorCode();
+    int  errorCode() const;
 
     // --  these functions may be called at any time by another thread, meaning that their data must be muxed
     string describeCurrentStatus(void) const;
 
     bool hasQueuedWork()  const;
     unsigned queuedWorkCount() const;
-    bool addQueuedWork(OUTMESS *&OutMessage, bool broadcast);
+    bool addQueuedWork(const OUTMESS *om, const byte_buffer_t &payload, unsigned priority, unsigned char dlc_parms, unsigned char stages);
 
     bool hasRemoteWork()  const;
     unsigned getRemoteWorkPriority() const;
@@ -280,7 +320,17 @@ public:
     void addRoute(const CtiRouteCCUSPtr &route);
     // --
 
-    static int decodeDWords(unsigned char *input, unsigned input_length, unsigned Remote, DSTRUCT *DSt);
+    enum PLCProtocols
+    {
+        PLCProtocol_Invalid,
+        PLCProtocol_Emetcon
+    };
+
+    enum DLCParms
+    {
+        DLCParms_None          = 0x00,
+        DLCParms_BroadcastFlag = 0x10
+    };
 
     /*enum ProtocolWrap
     {
@@ -290,7 +340,7 @@ public:
 
     enum Command
     {
-        Command_Null,
+        Command_Invalid,
         Command_Loopback,
         Command_LoadQueue,
         Command_ReadQueue,
@@ -300,6 +350,12 @@ public:
         Command_LoadRoutes,
 
         Command_Raw
+    };
+
+    enum Errors
+    {
+        Error_None,
+
     };
 
     enum

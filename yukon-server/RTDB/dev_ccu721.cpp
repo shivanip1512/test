@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2008/09/19 11:40:41 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2008/09/24 19:15:57 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -15,6 +15,7 @@
 
 
 #include "dev_ccu721.h"
+#include "dev_mct4xx.h"
 #include "prot_emetcon.h"
 #include "numstr.h"
 #include "porter.h"
@@ -23,6 +24,8 @@
 
 
 using Cti::Protocol::Klondike;
+using Cti::Protocol::Emetcon;
+using namespace std;
 
 
 namespace Cti       {
@@ -218,8 +221,18 @@ INT CCU721::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
         OutMessage->TargetID != OutMessage->DeviceID &&
         !(OutMessage->EventCode & DTRAN) )
     {
+        vector<unsigned char> queued_message;
+
+        writeDLCMessage(queued_message, OutMessage);
+
         //  the OM is now owned by _klondike
-        _klondike.addQueuedWork(OutMessage, false);
+        _klondike.addQueuedWork(OutMessage,
+                                queued_message,
+                                OutMessage->Priority,
+                                Klondike::DLCParms_None,
+                                OutMessage->Buffer.BSt.DlcRoute.Stages);
+
+        OutMessage = 0;  //  we control the horizontal and the vertical
 
         *dqcnt = _klondike.queuedWorkCount();
 
@@ -321,20 +334,30 @@ bool CCU721::buildCommand(CtiOutMessage *&OutMessage, Commands command)
 
 int CCU721::recvCommRequest(OUTMESS *OutMessage)
 {
-    int error = NoError;
-
     if( !OutMessage )
     {
-        error = MEMORY;
+        return MEMORY;
+    }
+
+    _current_om = OutMessage;
+
+    if( _current_om->EventCode & DTRAN &&
+        _current_om->EventCode & BWORD )
+    {
+        vector<unsigned char> dtran_message;
+
+        writeDLCMessage(dtran_message, _current_om);
+
+        return _klondike.setCommand(Klondike::Command_DirectTransmission,
+                                    dtran_message,
+                                    (_current_om->InLength)?(Cti::Protocol::Emetcon::determineDWordCount(_current_om->InLength) * DWORDLEN):(0),
+                                    _current_om->Priority,
+                                    _current_om->Buffer.BSt.DlcRoute.Stages);
     }
     else
     {
-        //  Klondike will determine if this is a DTRAN command or if
-        //    it should read the command from the outmessage's Sequence
-        error = _klondike.setCommand(OutMessage);
+        return _klondike.setCommand(_current_om->Sequence);
     }
-
-    return error;
 }
 
 
@@ -370,58 +393,77 @@ int CCU721::sendCommResult(INMESS *InMessage)
     }
     else
     {
-        Klondike::result_queue_t results;
-
-        _klondike.getResults(results);
-
         switch( _klondike.getCommand() )
         {
+            case Klondike::Command_TimeSync:
+            {
+                vector<unsigned char> timesync;
+                writeDLCTimesync(timesync);
+
+                _klondike.addQueuedWork(0,
+                                        timesync,
+                                        MAXPRIORITY,
+                                        Klondike::DLCParms_BroadcastFlag,
+                                        0);
+
+                break;
+            }
             case Klondike::Command_DirectTransmission:
             {
-                if( results.empty() )
+                vector<unsigned char> dtran_result = _klondike.getDTranResult();
+
+                OutEchoToIN(_current_om, InMessage);
+
+                InMessage->Port   = _current_om->Port;
+                InMessage->Remote = _current_om->Remote;
+
+                InMessage->Time   = CtiTime::now().seconds();
+
+                InMessage->EventCode = _klondike.errorCode();
+                InMessage->InLength  = dtran_result.size();
+                copy(dtran_result.begin(),
+                     dtran_result.end(),
+                     InMessage->Buffer.InMessage);
+
+                if( !InMessage->EventCode )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Cti::Device::CCU721::sendCommResult() : results.empty() : \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-                else
-                {
-                    Klondike::result_pair_t result = results.front();
-                    results.pop();
-
-                    const OUTMESS *om = result.first;
-                    INMESS  *im = result.second;
-
-                    if( !im->EventCode )
-                    {
-                        processInbound(om, im);
-                    }
-
-                    //  copy "im" into the InMessage passed in
-                    *InMessage = *im;
-
-                    delete im;
-                    delete om;
+                    processInbound(_current_om, InMessage);
                 }
 
                 break;
             }
             case Klondike::Command_ReadQueue:
             {
-                status = _klondike.errorCode();
+                std::queue<Klondike::queue_result_t> queued_results;
 
-                if( results.empty() )
+                _klondike.getQueuedResults(queued_results);
+
+                status = _klondike.errorCode();
+                /*
+                if( queued_results.empty() )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " **** Cti::Device::CCU721::sendCommResult() : results.empty() : \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
-
-                while( !results.empty() )
+                */
+                while( !queued_results.empty() )
                 {
-                    Klondike::result_pair_t result = results.front();
-                    results.pop();
+                    Klondike::queue_result_t result = queued_results.front();
+                    queued_results.pop();
 
-                    const OUTMESS *om = result.first;
-                    INMESS  *im = result.second;
+                    const OUTMESS *om = result.om;
+                    INMESS *im = CTIDBG_new INMESS;
+
+                    OutEchoToIN(om, im);
+
+                    im->Port      = om->Port;
+                    im->Remote    = om->Remote;
+
+                    im->Buffer.DSt.Address = om->Buffer.BSt.Address;
+
+                    im->EventCode = result.error;
+                    im->Time      = result.timestamp;
+                    im->InLength  = result.message.size();
 
                     processInbound(om, im);
 
@@ -481,6 +523,91 @@ void CCU721::getTargetDeviceStatistics(std::vector< OUTMESS > &om_statistics)
 }
 
 
+void CCU721::writeDLCMessage( vector<unsigned char> &buf, const OUTMESS *om )
+{
+    if( !om )   return;
+
+    unsigned char length = 0, word_pos = 0;
+
+    switch( om->EventCode & (AWORD | BWORD) )
+    {
+        case AWORD:  writeAWord(buf, om->Buffer.ASt);  break;
+        case BWORD:  writeBWord(buf, om->Buffer.BSt);  break;
+        default:
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint - Cti::Protocol::Klondike::writeDLCMessage() : unhandled word type (" << (om->EventCode & (AWORD | BWORD)) << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
+}
+
+
+void CCU721::writeDLCTimesync( vector<unsigned char> &buf )
+{
+    BSTRUCT timesync_bst;
+
+    timesync_bst.Address           = CtiDeviceMCT4xx::UniversalAddress;
+    timesync_bst.IO                = Emetcon::IO_Function_Write;
+    timesync_bst.Function          = CtiDeviceMCT4xx::FuncWrite_TSyncPos;
+    timesync_bst.Length            = CtiDeviceMCT4xx::FuncWrite_TSyncLen;
+
+    timesync_bst.DlcRoute.Amp      = 0;  //  filled in by the CCU
+    timesync_bst.DlcRoute.Bus      = 0;  //
+    timesync_bst.DlcRoute.RepFixed = 0;  //
+    timesync_bst.DlcRoute.RepVar   = 0;  //
+    timesync_bst.DlcRoute.Stages   = 0;  //
+
+    timesync_bst.Message[0]        = gMCT400SeriesSPID;
+    timesync_bst.Message[1]        = 0;  //  filled in by the CCU
+    timesync_bst.Message[2]        = 0;  //
+    timesync_bst.Message[3]        = 0;  //
+    timesync_bst.Message[4]        = 0;  //
+    timesync_bst.Message[5]        = CtiTime::now().isDST();
+
+    writeBWord(buf, timesync_bst);
+}
+
+
+void CCU721::writeAWord( vector<unsigned char> &buf, const ASTRUCT &ASt )
+{
+    buf.push_back(AWORDLEN);
+
+    buf.insert(buf.end(), AWORDLEN, 0);
+
+    A_Word(buf.end() - AWORDLEN, ASt);
+}
+
+void CCU721::writeBWord( vector<unsigned char> &buf, const BSTRUCT &BSt )
+{
+    buf.push_back(BWORDLEN);
+    buf.insert(buf.end(), BWORDLEN, 0);
+
+    int words;
+
+    if( BSt.IO == Emetcon::IO_Write ||
+        BSt.IO == Emetcon::IO_Function_Write )
+    {
+        words = (BSt.Length + 4) / 5;
+    }
+    else
+    {
+        words = Emetcon::determineDWordCount(BSt.Length);
+    }
+
+    B_Word(buf.end() - BWORDLEN, BSt, words);
+
+    if( BSt.IO == Emetcon::IO_Write ||
+        BSt.IO == Emetcon::IO_Function_Write )
+    {
+        buf.push_back(CWORDLEN * words);
+        buf.insert(buf.end(), CWORDLEN * words, 0);
+
+        //  I really don't know why C_Words takes a const pointer to unsigned char instead of a pointer to const unsigned char...
+        C_Words(buf.end() - CWORDLEN * words, const_cast<unsigned char * const>(BSt.Message), BSt.Length, 0);
+    }
+}
+
+
 void CCU721::processInbound(const OUTMESS *om, INMESS *im)
 {
     if( (om->EventCode & BWORD) &&
@@ -489,7 +616,7 @@ void CCU721::processInbound(const OUTMESS *om, INMESS *im)
         DSTRUCT tmp_d_struct;
 
         //  inbound command - decode the D words
-        im->EventCode  = Klondike::decodeDWords(im->Buffer.InMessage, im->InLength, om->Remote, &tmp_d_struct);
+        im->EventCode  = decodeDWords(im->Buffer.InMessage, im->InLength, om->Remote, &tmp_d_struct);
         im->Buffer.DSt = tmp_d_struct;
         im->InLength   = (im->InLength / DWORDLEN) * 5 - 2;  //  calculate the number of bytes we get back
         im->Buffer.DSt.Length = im->InLength;
@@ -501,6 +628,25 @@ void CCU721::processInbound(const OUTMESS *om, INMESS *im)
     {
         im->InLength = 0;
     }
+}
+
+
+int CCU721::decodeDWords(const unsigned char *input, unsigned input_length, unsigned Remote, DSTRUCT *DSt)
+{
+    int status = NoError;
+    unsigned short unused;
+
+    for( int i = 1; (i * DWORDLEN) <= input_length && !status; i++ )
+    {
+        switch( i )
+        {
+            case 1:  status = D1_Word (const_cast<unsigned char *>(input),                &DSt->Message[0], &DSt->RepVar, &DSt->Address, &DSt->Power, &DSt->Alarm);  break;
+            case 2:  status = D23_Word(const_cast<unsigned char *>(input + DWORDLEN),     &DSt->Message[3], &DSt->TSync, &unused);  break;
+            case 3:  status = D23_Word(const_cast<unsigned char *>(input + DWORDLEN * 2), &DSt->Message[8], &unused, &unused);  break;
+        }
+    }
+
+    return status;
 }
 
 
