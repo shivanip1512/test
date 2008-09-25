@@ -60,6 +60,11 @@
         <converter-class>com.cannontech.web.cc.ObjectSerializingConverter</converter-class>
     </converter>
     
+    <!-- Validators -->
+    <validator>
+        <validator-id>dateTimeValidator</validator-id>
+        <validator-class>com.cannontech.web.capcontrol.validators.DateTimeValidator</validator-class>
+    </validator>
 
 </faces-config>
         

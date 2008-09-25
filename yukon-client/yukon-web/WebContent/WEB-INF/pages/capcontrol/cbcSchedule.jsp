@@ -17,7 +17,9 @@
             </x:selectOneMenu>
 
             <h:outputText id="nextRunTime" value="Next Run Time: " title="The next time this shedule will run" />
-            <x:inputDate id="nextRunTimeVal" value="#{capControlForm.PAOBase.nextRunTime}" type="both" popupCalendar="true" />
+            <x:inputDate id="nextRunTimeVal" value="#{capControlForm.PAOBase.nextRunTime}" type="both" popupCalendar="true">
+                <f:validator validatorId="dateTimeValidator"/>
+            </x:inputDate>
         
             <h:outputText id="lastRunTime" value="Last Run Time: " title="The last time this schedule ran" />
             <x:panelGroup>
