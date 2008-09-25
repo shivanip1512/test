@@ -198,7 +198,8 @@ void CtiCCSubstationVerificationExecutor::EnableSubstationBusVerification()
     CtiCCSubstationBus* currentSubstationBus = store->findSubBusByPAObjectID(subID);
     CtiCCAreaPtr currentArea = NULL;
     CtiCCSubstationPtr currentStation = NULL;
-    if (currentSubstationBus != NULL && !currentSubstationBus->getDisableFlag()) 
+    if (currentSubstationBus != NULL && !currentSubstationBus->getDisableFlag() && 
+        currentSubstationBus->getStrategyId() > 0) 
     {
         currentStation = store->findSubstationByPAObjectID(currentSubstationBus->getParentId());
         if (currentStation != NULL && !currentStation->getDisableFlag())
@@ -348,8 +349,18 @@ void CtiCCSubstationVerificationExecutor::EnableSubstationBusVerification()
         if( currentSubstationBus != NULL &&
             _CC_DEBUG & CC_DEBUG_STANDARD )
         {
+
+            if (currentSubstationBus->getDisableFlag())
+            {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() <<  " - Verification Not Enabled on SubBus: "<<currentSubstationBus->getPAOName() <<" due to SubBus DisableFlag"<< endl;
+        }
+            else
+            {    
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() <<  " - Verification Not Enabled on SubBus: "<<currentSubstationBus->getPAOName() <<" due to SubBus Strategy = (none)"<< endl;
+            }
+
         }
     }
 }
