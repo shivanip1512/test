@@ -17,7 +17,7 @@ public class DateTimeValidator implements Validator{
         
         if(date.before(now)) {
             FacesMessage message = new FacesMessage();
-            message.setDetail("Date/Time must be after now.");
+            message.setDetail("Next run time cannot occur in the past.");
             message.setSummary("Date/Time is not valid: ");
             message.setSeverity(FacesMessage.SEVERITY_ERROR);
             throw new ValidatorException(message);
