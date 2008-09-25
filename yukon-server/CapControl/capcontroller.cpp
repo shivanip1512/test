@@ -3094,9 +3094,9 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                                 timestamp > currentCapBank->getLastStatusChangeTime())
                             {
                                 {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - CapBank: "<<currentCapBank->getPAOName()<<" State adjusted from "<<currentCapBank->getControlStatus() <<" to "<<value<< endl;
-                            }
+                                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                                    dout << CtiTime() << " - CapBank: "<<currentCapBank->getPAOName()<<" State adjusted from "<<currentCapBank->getControlStatus() <<" to "<<value<< endl;
+                                }
                                 if ((currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending ||  
                                     currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending) &&
                                     value < 6 ) 
@@ -3119,9 +3119,9 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                                     currentCapBank->setIgnoreFlag(FALSE); 
                                     currentCapBank->setPorterRetFailFlag(FALSE);
                                 } 
-                            currentCapBank->setControlStatus((LONG)value);
-                            currentCapBank->setTagsControlStatus((LONG)tags);
-                            currentCapBank->setLastStatusChangeTime(timestamp);
+                                currentCapBank->setControlStatus((LONG)value);
+                                currentCapBank->setTagsControlStatus((LONG)tags);
+                                currentCapBank->setLastStatusChangeTime(timestamp);
                                 currentSubstationBus->checkAndUpdateRecentlyControlledFlag();
                             }
                         }
