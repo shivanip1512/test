@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2008/09/24 19:15:57 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2008/09/25 15:54:02 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -46,12 +46,14 @@ private:
         InMessage_StringOffset = 96  //  hopefully enough to stay out of the way of the DSTRUCT
     };
 
-    static void writeDLCMessage (std::vector<unsigned char> &buf, const OUTMESS *om);
-    static void writeDLCTimesync(std::vector<unsigned char> &buf);
-    static void writeAWord      (std::vector<unsigned char> &buf, const ASTRUCT &ASt);
-    static void writeBWord      (std::vector<unsigned char> &buf, const BSTRUCT &BSt);
+    typedef std::vector<unsigned char> byte_buffer_t;
 
-    static int decodeDWords(const unsigned char *input, unsigned input_length, unsigned Remote, DSTRUCT *DSt);
+    static void writeDLCMessage (byte_buffer_t &buf, const OUTMESS *om);
+    static void writeDLCTimesync(byte_buffer_t &buf);
+    static void writeAWord      (byte_buffer_t &buf, const ASTRUCT &ASt);
+    static void writeBWord      (byte_buffer_t &buf, const BSTRUCT &BSt);
+
+    int decodeDWords(const unsigned char *input, unsigned input_length, unsigned Remote, DSTRUCT *DSt) const;
 
 protected:
 

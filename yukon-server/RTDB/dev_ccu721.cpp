@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2008/09/24 19:15:57 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2008/09/25 15:54:02 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -82,7 +82,7 @@ INT CCU721::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMES
 
                 nRet = NoError;
             }
-            if( parse.isKeyValid("timesync") )
+            else if( parse.isKeyValid("timesync") )
             {
                 OutMessage->Sequence = Klondike::Command_TimeSync;
 
@@ -344,7 +344,7 @@ int CCU721::recvCommRequest(OUTMESS *OutMessage)
     if( _current_om->EventCode & DTRAN &&
         _current_om->EventCode & BWORD )
     {
-        vector<unsigned char> dtran_message;
+        byte_buffer_t dtran_message;
 
         writeDLCMessage(dtran_message, _current_om);
 
@@ -397,7 +397,7 @@ int CCU721::sendCommResult(INMESS *InMessage)
         {
             case Klondike::Command_TimeSync:
             {
-                vector<unsigned char> timesync;
+                byte_buffer_t timesync;
                 writeDLCTimesync(timesync);
 
                 _klondike.addQueuedWork(0,
@@ -410,7 +410,7 @@ int CCU721::sendCommResult(INMESS *InMessage)
             }
             case Klondike::Command_DirectTransmission:
             {
-                vector<unsigned char> dtran_result = _klondike.getDTranResult();
+                byte_buffer_t dtran_result = _klondike.getDTranResult();
 
                 OutEchoToIN(_current_om, InMessage);
 
@@ -523,7 +523,7 @@ void CCU721::getTargetDeviceStatistics(std::vector< OUTMESS > &om_statistics)
 }
 
 
-void CCU721::writeDLCMessage( vector<unsigned char> &buf, const OUTMESS *om )
+void CCU721::writeDLCMessage( byte_buffer_t &buf, const OUTMESS *om )
 {
     if( !om )   return;
 
@@ -542,7 +542,7 @@ void CCU721::writeDLCMessage( vector<unsigned char> &buf, const OUTMESS *om )
 }
 
 
-void CCU721::writeDLCTimesync( vector<unsigned char> &buf )
+void CCU721::writeDLCTimesync( byte_buffer_t &buf )
 {
     BSTRUCT timesync_bst;
 
@@ -568,7 +568,7 @@ void CCU721::writeDLCTimesync( vector<unsigned char> &buf )
 }
 
 
-void CCU721::writeAWord( vector<unsigned char> &buf, const ASTRUCT &ASt )
+void CCU721::writeAWord( byte_buffer_t &buf, const ASTRUCT &ASt )
 {
     buf.push_back(AWORDLEN);
 
@@ -577,7 +577,7 @@ void CCU721::writeAWord( vector<unsigned char> &buf, const ASTRUCT &ASt )
     A_Word(buf.end() - AWORDLEN, ASt);
 }
 
-void CCU721::writeBWord( vector<unsigned char> &buf, const BSTRUCT &BSt )
+void CCU721::writeBWord( byte_buffer_t &buf, const BSTRUCT &BSt )
 {
     buf.push_back(BWORDLEN);
     buf.insert(buf.end(), BWORDLEN, 0);
@@ -603,7 +603,8 @@ void CCU721::writeBWord( vector<unsigned char> &buf, const BSTRUCT &BSt )
         buf.insert(buf.end(), CWORDLEN * words, 0);
 
         //  I really don't know why C_Words takes a const pointer to unsigned char instead of a pointer to const unsigned char...
-        C_Words(buf.end() - CWORDLEN * words, const_cast<unsigned char * const>(BSt.Message), BSt.Length, 0);
+        BSTRUCT tmpBSt = BSt;
+        C_Words(buf.end() - CWORDLEN * words, tmpBSt.Message, tmpBSt.Length, 0);
     }
 }
 
@@ -631,18 +632,27 @@ void CCU721::processInbound(const OUTMESS *om, INMESS *im)
 }
 
 
-int CCU721::decodeDWords(const unsigned char *input, unsigned input_length, unsigned Remote, DSTRUCT *DSt)
+int CCU721::decodeDWords(const unsigned char *input, unsigned input_length, unsigned Remote, DSTRUCT *DSt) const
 {
     int status = NoError;
     unsigned short unused;
+
+    if( input_length % DWORDLEN )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Cti::Device::CCU721::decodeDWords() : input_length % DWORDLEN > 0 : " << input_length << " : \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    byte_buffer_t input_buffer(input, input + input_length);
 
     for( int i = 1; (i * DWORDLEN) <= input_length && !status; i++ )
     {
         switch( i )
         {
-            case 1:  status = D1_Word (const_cast<unsigned char *>(input),                &DSt->Message[0], &DSt->RepVar, &DSt->Address, &DSt->Power, &DSt->Alarm);  break;
-            case 2:  status = D23_Word(const_cast<unsigned char *>(input + DWORDLEN),     &DSt->Message[3], &DSt->TSync, &unused);  break;
-            case 3:  status = D23_Word(const_cast<unsigned char *>(input + DWORDLEN * 2), &DSt->Message[8], &unused, &unused);  break;
+            //  old code is stuck in its non-const ways
+            case 1:  status = D1_Word (input_buffer.begin(),                &DSt->Message[0], &DSt->RepVar, &DSt->Address, &DSt->Power, &DSt->Alarm);  break;
+            case 2:  status = D23_Word(input_buffer.begin() + DWORDLEN,     &DSt->Message[3], &DSt->TSync, &unused);  break;
+            case 3:  status = D23_Word(input_buffer.begin() + DWORDLEN * 2, &DSt->Message[8], &unused, &unused);  break;
         }
     }
 

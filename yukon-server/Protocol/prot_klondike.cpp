@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2008/09/24 19:15:57 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2008/09/25 15:54:02 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -495,9 +495,16 @@ void Klondike::doInput(CommandCode command_code, CtiXfer &xfer)
     if( command_code == CommandCode_DirectMessageRequest )
     {
         //  hack the timeout into the xfer before we pass it to _wrap->generate()
-        xfer.setInTimeout((_dtran_queue_entry.stages + 1) *
-                          (_dtran_queue_entry.outbound.size() + _dtran_in_expected) *
-                          getPLCTiming(_dtran_queue_entry.protocol) / 250);
+        xfer.setInTimeout((_dtran_queue_entry.stages + 1)
+                          * (_dtran_queue_entry.outbound.size() + _dtran_in_expected)
+                          * getPLCTiming(_dtran_queue_entry.protocol)
+                          / 250);  //  the CtiXfer timeout is in 250ms chunks
+
+        //  If the CCU is busy with a queue entry, he needs some extra time - we'll fudge this here, similar to portfield's "lto"
+        if( !_remote_requests.empty() )
+        {
+            xfer.setInTimeout(xfer.getInTimeout() * 2);
+        }
     }
 }
 
