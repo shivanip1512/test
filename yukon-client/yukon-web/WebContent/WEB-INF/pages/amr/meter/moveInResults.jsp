@@ -40,7 +40,7 @@
                 <br />
                 <span class="internalSectionHeader">Move In
                     Reading: </span>
-                <b> <cti:pointValueFormatter format="SHORTDATE"
+                <b> <cti:pointValueFormatter format="FULL"
                         value="${previousReadingValue}" /> </b>
                 <br />
                 <br />
@@ -62,7 +62,7 @@
 
                 <span class="internalSectionHeader">Calculated
                     Beginning Usage Read:</span>
-                <b> <cti:pointValueFormatter format="SHORTDATE"
+                <b> <cti:pointValueFormatter format="FULL"
                         value="${previousReadingValue}" /> </b>
                 <c:if test="not ${autoArchivingEnabled}">
                     <a href="archive.jsp"> archive </a>

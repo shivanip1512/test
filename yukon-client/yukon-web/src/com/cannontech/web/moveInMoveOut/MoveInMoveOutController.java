@@ -30,6 +30,7 @@ import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.user.SystemUserContext;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 
@@ -102,7 +103,7 @@ public class MoveInMoveOutController extends MultiActionController {
             try {
                 moveInDate = dateFormattingService.flexibleDateParser(moveInDateStr,
                                                                       DateFormattingService.DateOnlyMode.START_OF_DAY,
-                                                                      userContext);
+                                                                      new SystemUserContext());
             } catch (ParseException pe) {
                 moveInDate = null;
             }
@@ -123,7 +124,6 @@ public class MoveInMoveOutController extends MultiActionController {
         MoveInResult moveInResult = null;
         if (!currentDate.before(moveInDate)) {
             moveInResult = moveInMoveOutService.moveIn(moveInForm);
-            moveInResult.setMoveInDate(moveInDate);
             if (moveInResult.getErrors().isEmpty() && StringUtils.isBlank(moveInResult.getErrorMessage())) {
                 mav.addObject("endDate",
                               dateFormattingService.formatDate(moveInResult.getCurrentReading()
@@ -144,7 +144,7 @@ public class MoveInMoveOutController extends MultiActionController {
                       moveInResult.getCalculatedPreviousReading());
         mav.addObject("beginDate",
                       dateFormattingService.formatDate(moveInForm.getMoveInDate(),
-                                                       DateFormatEnum.DATE,
+                                                       DateFormatEnum.BOTH,
                                                        userContext));
         mav.addObject("prevMeter", moveInResult.getPreviousMeter());
         mav.addObject("newMeter", moveInResult.getNewMeter());
@@ -206,7 +206,7 @@ public class MoveInMoveOutController extends MultiActionController {
             try {
                 moveOutDate = dateFormattingService.flexibleDateParser(moveOutDateStr,
                                                                        DateFormattingService.DateOnlyMode.END_OF_DAY,
-                                                                       userContext);
+                                                                       new SystemUserContext());
             } catch (ParseException pe) {
                 moveOutDate = null;
             }
@@ -226,7 +226,6 @@ public class MoveInMoveOutController extends MultiActionController {
         MoveOutResult moveOutResult = null;
         if ((new Date()).after(moveOutDate)) {
             moveOutResult = moveInMoveOutService.moveOut(moveOutForm);
-            moveOutResult.setMoveOutDate(moveOutDate);
             if (moveOutResult == null) {
                 mav.addObject("validationErrors",
                               "Move out must have previous readings to process!");
@@ -238,11 +237,11 @@ public class MoveInMoveOutController extends MultiActionController {
                                                        .getPointDataTimeStamp();
                 Date calcReadingDate = new Date(moveOutResult.getCalculatedReading()
                                                              .getPointDataTimeStamp()
-                                                             .getTime() - 1);
+                                                             .getTime());
 
                 mav.addObject("beginDate",
                               dateFormattingService.formatDate(calcReadingDate,
-                                                               DateFormatEnum.DATE,
+                                                               DateFormatEnum.BOTH,
                                                                userContext));
 
                 mav.addObject("endDate",
@@ -255,8 +254,8 @@ public class MoveInMoveOutController extends MultiActionController {
             moveOutResult = moveInMoveOutService.scheduleMoveOut(moveOutForm);
             moveOutResult.setMoveOutDate(moveOutDate);
             mav.addObject("endDate",
-                          dateFormattingService.formatDate(new Date(moveOutDate.getTime() - 1),
-                                                           DateFormatEnum.DATE,
+                          dateFormattingService.formatDate(new Date(moveOutDate.getTime()),
+                                                           DateFormatEnum.BOTH,
                                                            userContext));
         }
         moveInMoveOutEmailService.createMoveOutEmail(moveOutResult,

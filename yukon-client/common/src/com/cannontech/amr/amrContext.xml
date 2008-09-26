@@ -10,8 +10,6 @@
 
     <bean id="moveInMoveOutEmailService"
         class="com.cannontech.amr.moveInMoveOut.service.impl.MoveInMoveOutEmailServiceImpl">
-        <property name="dateFormattingService"
-            ref="dateFormattingService" />
         <property name="emailService" ref="emailService" />
         <property name="pointFormattingService"
             ref="pointFormattingService" />

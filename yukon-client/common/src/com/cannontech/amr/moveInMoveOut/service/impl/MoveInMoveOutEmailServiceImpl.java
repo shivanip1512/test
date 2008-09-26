@@ -1,7 +1,6 @@
 package com.cannontech.amr.moveInMoveOut.service.impl;
 
 import java.io.IOException;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -26,13 +25,10 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.util.FormattingTemplateProcessor;
 import com.cannontech.common.util.TemplateProcessorFactory;
-import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.PointFormattingService;
-import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.tools.email.DefaultEmailMessage;
 import com.cannontech.tools.email.EmailService;
-import com.cannontech.user.SystemUserContext;
 import com.cannontech.user.YukonUserContext;
 
 public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService {
@@ -40,7 +36,6 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
     private Logger logger = YukonLogManager.getLogger(MoveInMoveOutEmailServiceImpl.class);
 
     private TemplateProcessorFactory templateProcessorFactory;
-    private DateFormattingService dateFormattingService;
     private EmailService emailService;
     private PointFormattingService pointFormattingService;
     
@@ -53,8 +48,9 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
     Resource moveOutScheduledEmail = null;
     Resource moveOutSuccessEmail = null;
 
-    private final String baseSubjectFormat = "Moving information for {prevMeterName} from {startDate} - {stopDate} {status}.";
-    private final String moveInSuccessSubjectFormat = "Moving information for {newMeterName} from {startDate} - {stopDate} {status}.";
+    private final String baseSubjectFormatMoveIn = "Move in for {prevMeterName} from {startDate|BOTH} - {stopDate|BOTH} {status}.";
+    private final String baseSubjectFormatMoveOut = "Move out for {prevMeterName} from {startDate|BOTH} - {stopDate|BOTH} {status}.";
+    private final String moveInSuccessSubjectFormat = "Move in for {newMeterName} from {startDate|BOTH} - {stopDate|BOTH} {status}.";
     private final String scheduledMsgSub = "Scheduled meter reading for {prevMeterName}.";
 
     public void createMoveInEmail(MoveInResult moveInResult,
@@ -133,16 +129,14 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
         msgData.put("calculatedUsage",
                     pointFormattingService.getValueString(moveInResult.getCalculatedDifference(),
                                                           Format.SHORT,
-                                                          new SystemUserContext()));
+                                                          userContext));
         msgData.put("calculatedTotalUsage",
                     pointFormattingService.getValueString(moveInResult.getCalculatedPreviousReading(),
-                                                          Format.SHORTDATE,
-                                                          new SystemUserContext()));
+                                                          Format.FULL,
+                                                          userContext));
 
         msgData.put("user", userContext.getYukonUser().getUsername());
-        msgData.put("processingDate", Calendar.getInstance()
-                                              .getTime()
-                                              .toString());
+        msgData.put("processingDate", new Date());
 
         String subject = tp.process(moveInSuccessSubjectFormat, msgData);
         String body = null;
@@ -167,13 +161,7 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
         msgData.put("prevMeterNumber", moveInResult.getPreviousMeter()
                                                  .getMeterNumber());
         msgData.put("prevMeterName", moveInResult.getPreviousMeter().getName());
-
-        Date moveInDate = moveInResult.getMoveInDate();
-        String moveInDateStr = dateFormattingService.formatDate(moveInDate,
-                                                                DateFormatEnum.DATE,
-                                                                userContext);
-
-        msgData.put("startDate", moveInDateStr);
+        msgData.put("startDate", moveInResult.getMoveInDate());
 
         String subject = tp.process(scheduledMsgSub, msgData);
         String body = null;
@@ -205,7 +193,7 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
         setDatesMoveIn(moveInResult, msgData, userContext);
         buildErrorStr(moveInResult.getErrors(), moveInResult.getErrorMessage(), msgData);
 
-        String subject = tp.process(baseSubjectFormat, msgData);
+        String subject = tp.process(baseSubjectFormatMoveIn, msgData);
         String body = null;
         try{
             body = tp.process(moveInFailedEmail, msgData);
@@ -244,18 +232,16 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
         msgData.put("calculatedUsage",
                     pointFormattingService.getValueString(moveOutResult.getCalculatedDifference(),
                                                           Format.SHORT,
-                                                          new SystemUserContext()));
+                                                          userContext));
         msgData.put("calculatedTotalUsage",
                     pointFormattingService.getValueString(moveOutResult.getCalculatedReading(),
-                                                          Format.SHORTDATE,
-                                                          new SystemUserContext()));
+                                                          Format.FULL,
+                                                          userContext));
 
         msgData.put("user", userContext.getYukonUser().getUsername());
-        msgData.put("processingDate", Calendar.getInstance()
-                                              .getTime()
-                                              .toString());
+        msgData.put("processingDate", new Date());
 
-        String subject = tp.process(baseSubjectFormat, msgData);
+        String subject = tp.process(baseSubjectFormatMoveOut, msgData);
         String body = null;
         try{
             body = tp.process(moveOutSuccessEmail, msgData);
@@ -278,12 +264,8 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
         msgData.put("prevMeterNumber", moveOutResult.getPreviousMeter().getMeterNumber());
         msgData.put("prevMeterName", moveOutResult.getPreviousMeter().getName());
 
-        Date moveOutDate = new Date(moveOutResult.getMoveOutDate().getTime() - 1);
-        String moveOutDateStr = dateFormattingService.formatDate(moveOutDate,
-                                                                 DateFormatEnum.DATE,
-                                                                 userContext);
-
-        msgData.put("startDate", moveOutDateStr);
+        Date moveOutDate = new Date(moveOutResult.getMoveOutDate().getTime());
+        msgData.put("startDate", moveOutDate);
 
         String subject = tp.process(scheduledMsgSub, msgData);
         String body = null;
@@ -315,7 +297,7 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
         setDatesMoveOut(moveOutResult, msgData, userContext);
         buildErrorStr(moveOutResult.getErrors(), moveOutResult.getErrorMessage(), msgData);
 
-        String subject = tp.process(baseSubjectFormat, msgData);
+        String subject = tp.process(baseSubjectFormatMoveOut, msgData);
         String body = null;
         try{
             body = tp.process(moveOutFailedEmail, msgData);
@@ -342,34 +324,22 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
 
     private void setDatesMoveOut(MoveOutResult moveOutResult,
             Map<String, Object> msgData, YukonUserContext userContext) {
-        Date moveOutDate = new Date(moveOutResult.getMoveOutDate().getTime() - 1);
-        String moveOutDateStr = dateFormattingService.formatDate(moveOutDate,
-                                                                 DateFormatEnum.DATE,
-                                                                 userContext);
 
+        Date moveOutDate = new Date(moveOutResult.getMoveOutDate().getTime());
         Date currentReadDate = new Date();
-        String currentReadDateStr = dateFormattingService.formatDate(currentReadDate,
-                                                                     DateFormatEnum.BOTH,
-                                                                     userContext);
 
-        msgData.put("startDate", moveOutDateStr);
-        msgData.put("stopDate", currentReadDateStr);
+        msgData.put("startDate", moveOutDate);
+        msgData.put("stopDate", currentReadDate);
     }
 
     private void setDatesMoveIn(MoveInResult moveInResult,
             Map<String, Object> msgData, YukonUserContext userContext) {
+
         Date moveInDate = moveInResult.getMoveInDate();
-        String moveInDateStr = dateFormattingService.formatDate(moveInDate,
-                                                                DateFormatEnum.DATE,
-                                                                userContext);
-
         Date currentDate = new Date();
-        String currentDateStr = dateFormattingService.formatDate(currentDate,
-                                                                 DateFormatEnum.BOTH,
-                                                                 userContext);
 
-        msgData.put("startDate", moveInDateStr);
-        msgData.put("stopDate", currentDateStr);
+        msgData.put("startDate", moveInDate);
+        msgData.put("stopDate", currentDate);
     }
 
     private void buildErrorStr(List<DeviceErrorDescription> errors,
@@ -401,12 +371,6 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
         this.pointFormattingService = pointFormattingService;
     }
 
-    @Required
-    public void setDateFormattingService(
-            DateFormattingService dateFormattingService) {
-        this.dateFormattingService = dateFormattingService;
-    }
-    
     /* Injection of all the templates used for this service*/
     @Required
     public void setMoveInFailedEmail(Resource moveInFailedEmail) {

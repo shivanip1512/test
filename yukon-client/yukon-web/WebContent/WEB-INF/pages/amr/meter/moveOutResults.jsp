@@ -15,7 +15,7 @@
                 <br/><br/>
                 <span class="internalSectionHeader">Move Out Reading: </span>
                 <b><cti:pointValueFormatter
-                        format="SHORTDATE" value="${calculatedUsage}" /></b>
+                        format="FULL" value="${calculatedUsage}" /></b>
                 <br /> <br />
 
                 <c:if test="${null != currentReading.value}">
@@ -35,7 +35,7 @@
                 <span class="internalSectionHeader">Calculated
                     Move Out Read:</span><b>
                     <cti:pointValueFormatter
-                        format="SHORTDATE" value="${calculatedUsage}" /></b><c:if
+                        format="FULL" value="${calculatedUsage}" /></b><c:if
                     test="not ${autoArchivingEnabled}">
                     <a href="archive.jsp"> archive </a>
                 </c:if>
