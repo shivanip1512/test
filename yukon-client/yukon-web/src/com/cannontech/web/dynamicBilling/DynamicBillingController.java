@@ -231,24 +231,20 @@ public class DynamicBillingController extends MultiActionController {
 				.replaceAll(" ", "&nbsp;")));
 	}
 
-	   public ModelAndView updateFormatName(HttpServletRequest request,
-	            HttpServletResponse response) throws ServletException {
+    public ModelAndView updateFormatName(HttpServletRequest request,
+            HttpServletResponse response) throws ServletException {
 
-	        StringBuffer returnString = new StringBuffer();
-	        DynamicFormat format = new DynamicFormat();
-	        format.setFormatId(ServletRequestUtils.getIntParameter(request, "formatId"));
-	        format.setName(ServletRequestUtils.getStringParameter( request, "formatName"));
-	        if (!dynamicBillingFileDao.isFormatNameUnique(format)){
-	            return new ModelAndView(new TextView("The format name is not unique.  Please supply a unique format name"));
-	        }
+        DynamicFormat format = new DynamicFormat();
+        format.setFormatId(ServletRequestUtils.getIntParameter(request, "formatId"));
+        format.setName(ServletRequestUtils.getStringParameter( request, "formatName"));
+	        
+        if (!dynamicBillingFileDao.isFormatNameUnique(format)){
+            return new ModelAndView(new TextView("The format name is not unique.  Please supply a unique format name"));
+        }
 
-	        // for our html page purposes, replace carriage returns with <BR>
-	        returnString = new StringBuffer(returnString.toString().replaceAll("\r\n", "<BR>"));
-
-	        // replace spaces with &nbsp; for html display
-	        return new ModelAndView(new TextView(returnString.toString()
-	                .replaceAll(" ", "&nbsp;")));
-	    }
+        // returns a blank text view since to error occured.   
+        return new ModelAndView(new TextView(""));
+    }
 
 	/**
 	 * Helper method to create a list of billable field names for the UI. Will
