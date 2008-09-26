@@ -4,12 +4,15 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 import com.cannontech.common.bulk.importdata.dao.BulkImportDataDao;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.db.importer.FailType;
 import com.cannontech.database.db.importer.ImportFail;
 import com.cannontech.database.db.importer.ImportPendingComm;
@@ -18,6 +21,7 @@ import com.cannontech.user.YukonUserContext;
 public class BulkImportDataDaoImpl implements BulkImportDataDao {
 
     private SimpleJdbcOperations jdbcTemplate;
+    private DateFormattingService dateFormattingService;
     
     // GETS
     public List<ImportFail> getAllDataFailures() {
@@ -94,24 +98,50 @@ public class BulkImportDataDaoImpl implements BulkImportDataDao {
         return true;
     }
     
-    public Date getLastImportTime(YukonUserContext userContext) throws ParseException{
+    public String getLastImportTime() {
         
         String lastImportTime = jdbcTemplate.queryForObject("SELECT LASTIMPORTTIME FROM DYNAMICIMPORTSTATUS WHERE ENTRY = 'SYSTEMVALUE'", 
                                                             String.class);
-        
-        return CtiUtilities.parseJavaDateString(lastImportTime);
+        return lastImportTime;
     }
     
-    public Date getNextImportTime(YukonUserContext userContext) throws ParseException
-    {
+    public String getNextImportTime() {
         String nextImportTime = jdbcTemplate.queryForObject("SELECT NEXTIMPORTTIME FROM DYNAMICIMPORTSTATUS WHERE ENTRY = 'SYSTEMVALUE'", 
                                                                String.class);
-        
-        return CtiUtilities.parseJavaDateString(nextImportTime);
+        return nextImportTime;
+    }
+
+    public String getFormattedLastImportTime(YukonUserContext userContext, DateFormatEnum dateFormatEnum) {
+        String lastImportTime = getLastImportTime();
+        return getFormattedImportTime(lastImportTime, userContext, dateFormatEnum);
+    }
+
+    public String getFormattedNextImportTime(YukonUserContext userContext, DateFormatEnum dateFormatEnum) {
+        String nextImportTime = getNextImportTime();
+        return getFormattedImportTime(nextImportTime, userContext, dateFormatEnum);
+    }
+
+    private String getFormattedImportTime(String importTimeStr, YukonUserContext userContext, DateFormatEnum dateFormatEnum) {
+        try {
+            Date importTime = CtiUtilities.parseJavaDateString(importTimeStr);
+            return dateFormattingService.formatDate(importTime,
+                                                    dateFormatEnum,
+                                                    userContext);
+        } catch (ParseException okayToIgnore) {
+            //We can ignore this exception because we are actually storing the importTimes
+            // as a string in the database.  Other possibilities are "-----", "Currently Running...", for example.
+        }
+        return importTimeStr;
     }
 
     @Required
     public void setJdbcTemplate(SimpleJdbcOperations jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+    }
+    
+    @Autowired
+    public void setDateFormattingService(
+            DateFormattingService dateFormattingService) {
+        this.dateFormattingService = dateFormattingService;
     }
 }
