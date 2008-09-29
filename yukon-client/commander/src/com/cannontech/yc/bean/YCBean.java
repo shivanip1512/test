@@ -554,12 +554,29 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
         return this.deviceHistory;
     }
     
+
     /**
      * @param liteYukonPao
      */
     public void setLiteYukonPao(LiteYukonPAObject liteYukonPao){
-        super.setLiteYukonPao(liteYukonPao);
-        addToDeviceHistory(liteYukonPao);
+        //Only update the liteYukonPaobject if it has changed to prevent
+        // history from this paobject from being removed.
+        if( !(liteYukonPao.equals(super.getLiteYukonPao()))) {
+            super.setLiteYukonPao(liteYukonPao);
+            addToDeviceHistory(liteYukonPao);
+        }
+    }
+    
+    /**
+     * 
+     * @param paoId
+     */
+    public void setLiteYukonPao(int paoId){
+        LiteYukonPAObject litePAO = null;
+        if (paoId != PAOGroups.INVALID){
+            litePAO = paoDao.getLiteYukonPAO(paoId);
+        }
+        this.setLiteYukonPao(litePAO);
     }
     
     public int getPeakProfileDays() {

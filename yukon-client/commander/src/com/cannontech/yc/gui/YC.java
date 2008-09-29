@@ -1682,17 +1682,7 @@ public class YC extends Observable implements MessageListener
 	public void setLiteYukonPao(LiteYukonPAObject liteYukonPao){
 	    this.liteYukonPao = liteYukonPao;
 	}
-	/**
-	 * 
-	 * @param paoId
-	 */
-	public void setLiteYukonPao(int paoId){
-	    LiteYukonPAObject litePAO = null;
-	    if (paoId != PAOGroups.INVALID){
-            litePAO = paoDao.getLiteYukonPAO(paoId);
-	    }
-	    this.setLiteYukonPao(litePAO);
-    }
+
 	/**
 	 * @return
 	 */
