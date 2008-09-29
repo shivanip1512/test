@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.74 $
-* DATE         :  $Date: 2008/09/18 18:49:04 $
+* REVISION     :  $Revision: 1.75 $
+* DATE         :  $Date: 2008/09/29 22:17:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1274,7 +1274,7 @@ void LoadScannableDevices(void *ptr)
     {
         if( (pChg->getTypeOfChange() == ChangeTypeAdd) || (pChg->getTypeOfChange() == ChangeTypeUpdate) )
         {
-            ScannerPointManager.refreshList(isPoint, NULL, pChg->getId(), 0);
+            ScannerPointManager.refreshList(pChg->getId(), 0);
 
             LONG paoDeviceID = ScannerPointManager.getPAOIdForPointId(pChg->getId());
 

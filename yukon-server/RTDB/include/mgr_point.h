@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_point.h-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2008/07/17 20:26:39 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2008/09/29 22:17:24 $
 *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
  * All Rights Reserved
@@ -49,7 +49,7 @@ public:
 private:
 
     coll_type     _smartMap;
-    void refreshPoints(bool &rowFound, RWDBReader& rdr, BOOL (*testFunc)(CtiPointBase*,void*), void *arg);
+    void refreshPoints(bool &rowFound, RWDBReader& rdr);
 
     void addPoint(CtiPointBase *point);  //  also used by the unit test
     void updatePointMaps(const CtiPointBase &point, long old_pao, CtiPointType_t old_type, int old_offset, int old_control_offset );
@@ -74,6 +74,8 @@ private:
     bool _all_paoids_loaded;
     std::set<long> _paoids_loaded;
 
+    virtual void refreshListByIDs(const std::vector<long> &ids, bool paoids);
+
     friend class Test_CtiPointManager;
 
 protected:
@@ -88,8 +90,9 @@ public:
     CtiPointManager();
     virtual ~CtiPointManager();
 
-    virtual void refreshListByPAO(const std::vector<long> &paoids, BOOL (*fn)(CtiPointBase*,void*) = isPoint, void *d = NULL);
-    virtual void refreshList(BOOL (*fn)(CtiPointBase*,void*) = isPoint, void *d = NULL, LONG pntID = 0, LONG paoID = 0, CtiPointType_t pntType = InvalidPointType);
+    virtual void refreshList(LONG pntID = 0, LONG paoID = 0, CtiPointType_t pntType = InvalidPointType);
+    virtual void refreshListByPAOIDs  (const std::vector<long> &ids);
+    virtual void refreshListByPointIDs(const std::vector<long> &ids);
 
     virtual void DumpList(void);
     virtual void ClearList(void);

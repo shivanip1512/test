@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/mgr_ptclients.cpp-arc  $
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2008/08/25 19:47:32 $
+* REVISION     :  $Revision: 1.37 $
+* DATE         :  $Date: 2008/09/29 22:17:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -140,13 +140,13 @@ void CtiPointClientManager::processPointDynamicData(LONG pntID, LONG paoID)
     if(pntID)
     {
         CtiPointSPtr pTempPoint;
-    
+
         //Lets be smart about handling a single point.
         pTempPoint = getEqual(pntID);
         if(pTempPoint)
         {
             ApplyInitialDynamicConditions(0,pTempPoint,NULL);
-    
+
             //This will probably always be true, but why not check.
             if(findNonUpdatedDynamicData(0,pTempPoint,NULL))
             {
@@ -174,9 +174,9 @@ void CtiPointClientManager::processPointDynamicData(LONG pntID, LONG paoID)
 }
 
 //Points can be loaded by pao, not updated!
-void CtiPointClientManager::refreshList(BOOL (*testFunc)(CtiPoint *,void*), void *arg, LONG pntID, LONG paoID, CtiPointType_t pntType)
+void CtiPointClientManager::refreshList(LONG pntID, LONG paoID, CtiPointType_t pntType)
 {
-    Inherited::refreshList(testFunc, arg, pntID, paoID, pntType);                // Load all points in the system
+    Inherited::refreshList(pntID, paoID, pntType);                // Load all points in the system
     Inherited::refreshAlarming(pntID, paoID);
     refreshReasonabilityLimits(pntID, paoID);
     refreshPointLimits(pntID, paoID);
@@ -691,7 +691,7 @@ void CtiPointClientManager::refreshReasonabilityLimits(LONG pntID, LONG paoID)
     while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
     {
         rdr >> pointid >> limitValues.highLimit >> limitValues.lowLimit;
-        
+
         _reasonabilityLimits.insert(std::make_pair(pointid, limitValues));
     }
 

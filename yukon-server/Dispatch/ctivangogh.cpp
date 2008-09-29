@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.192 $
-* DATE         :  $Date: 2008/08/25 19:47:32 $
+* REVISION     :  $Revision: 1.193 $
+* DATE         :  $Date: 2008/09/29 22:17:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -4839,12 +4839,12 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
                     if(pChg != NULL && pChg->getDatabase() == ChangePAODb && pChg->getTypeOfChange() == ChangeTypeAdd )
                     {
                         //Load all points for this PAO!
-                        PointMgr.refreshList(isPoint, NULL, 0, pChg->getId());
+                        PointMgr.refreshList(0, pChg->getId());
                         //TriggerMgr is really not used so I am currently not loading it here!
                     }
                     else if(pChg != NULL && (pChg->getTypeOfChange() == ChangeTypeUpdate || pChg->getTypeOfChange() == ChangeTypeAdd))
                     {
-                        PointMgr.refreshList(isPoint, NULL, pChg->getId(), 0, resolvePointType(pChg->getObjectType()) );
+                        PointMgr.refreshList(pChg->getId(), 0, resolvePointType(pChg->getObjectType()) );
                         TriggerMgr.refreshList(pChg->getId(), PointMgr);
                     }
                     else if(pChg != NULL && pChg->getTypeOfChange() == ChangeTypeDelete)
@@ -4854,7 +4854,7 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
                     }
                     else
                     {
-                        PointMgr.refreshList(isPoint);
+                        PointMgr.refreshList();
                         TriggerMgr.refreshList(0, PointMgr);
                     }
                 }
@@ -6380,7 +6380,7 @@ void CtiVanGogh::adjustDeviceDisableTags(LONG id, bool dbchange, string user)
                 {
                     vector<CtiPointManager::ptr_type> points;
                     PointMgr.getEqualByPAO(id, points);
-                    
+
                     CtiDeviceLiteSet_t::iterator dliteit = deviceLiteFind(id);
                     CtiDeviceBaseLite &dLite = *dliteit;
 
@@ -6406,28 +6406,28 @@ void CtiVanGogh::adjustDeviceDisableTags(LONG id, bool dbchange, string user)
                 {
                     CtiPointManager::spiterator itr = PointMgr.begin();//Where is the exclusion here?
                     CtiPointManager::spiterator end = PointMgr.end();
-    
+
                     for( ; itr != end; itr++ )
                     {
                         CtiPointSPtr pPoint = itr->second;
-    
+
                         //if(id != 0 && pPoint->getDeviceID() != id) continue;    // Let's skip devices which DID NOT CHANGE!
-    
+
                         if(pPoint->getDeviceID() > 0)
                         {
                             CtiDeviceLiteSet_t::iterator dliteit = deviceLiteFind(pPoint->getDeviceID());
-    
+
                             if( dliteit != _deviceLiteSet.end() )   // We do know this device..
                             {
                                 bool devicedifferent;
                                 CtiDeviceBaseLite &dLite = *dliteit;
-    
+
                                 UINT setmask = 0;
                                 setmask |= (dLite.getDisableFlag() == "Y" ? TAG_DISABLE_DEVICE_BY_DEVICE : 0 );
                                 setmask |= (dLite.getControlInhibitFlag() == "Y" ? TAG_DISABLE_CONTROL_BY_DEVICE : 0 );
-    
+
                                 ablementPoint(pPoint, devicedifferent, setmask, tagmask, user, *pMulti);
-    
+
                                 if(devicedifferent && !dbchange)
                                 {
                                     devicesupdated.insert( pPoint->getDeviceID() );  // Relying on the fact that only one may be in there!
