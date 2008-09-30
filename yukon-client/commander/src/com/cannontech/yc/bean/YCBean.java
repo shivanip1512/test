@@ -533,10 +533,8 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
     
     // Adds an element to the previously viewed devices
     private void addToDeviceHistory(LiteYukonPAObject liteYukonPao){
-        if(liteYukonPao != null){
-            if(!this.deviceHistory.contains(liteYukonPao)){ 
-                this.deviceHistory.add(liteYukonPao);
-            }
+        if(!this.deviceHistory.contains(liteYukonPao)){ 
+            this.deviceHistory.add(liteYukonPao);
         }
         
         // Remove data from other devices
@@ -561,7 +559,8 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
     public void setLiteYukonPao(LiteYukonPAObject liteYukonPao){
         //Only update the liteYukonPaobject if it has changed to prevent
         // history from this paobject from being removed.
-        if( !(liteYukonPao.equals(super.getLiteYukonPao()))) {
+        if( liteYukonPao != null && 
+                !(liteYukonPao.equals(super.getLiteYukonPao()))) {
             super.setLiteYukonPao(liteYukonPao);
             addToDeviceHistory(liteYukonPao);
         }
