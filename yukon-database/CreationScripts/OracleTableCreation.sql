@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     9/19/2008 1:10:29 PM                         */
+/* Created on:     9/30/2008 2:01:36 PM                         */
 /*==============================================================*/
 
 
@@ -7634,7 +7634,7 @@ insert into YukonGroupRole values(-237,-1,-6,-1507,'(none)');
 insert into YukonGroupRole values(-270,-1,-7,-1600,'0');
 
 /* Configuration (Device) */
-INSERT INTO YukonGroupRole VALUES(-280,-1,-8,-1700,'DEVICE_NAME');
+INSERT INTO YukonGroupRole VALUES(-280,-1,-8,-1700,'(none)');
 
 /* Esubstation Editor */
 insert into YukonGroupRole values(-250,-100,-107,-10700,'(none)');
