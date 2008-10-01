@@ -12,7 +12,7 @@ public class TextFieldDocument extends javax.swing.text.PlainDocument
 	public static int MAX_IED_PASSWORD_LENGTH = 20;
 	public static int MAX_INITIALIZATION_STRING_LENGTH = 50;
 	public static int MAX_MCT_PASSWORD_LENGTH = 6;
-	public static int MAX_METER_NUMBER_LENGTH = 15;
+	public static int MAX_METER_NUMBER_LENGTH = 50;
 	public static int MAX_PAGER_NUMBER_LENGTH = 20;
 	public static int MAX_PASSWORD_LENGTH = 20;
 	public static int MAX_PHONE_NUMBER_LENGTH = 40;
