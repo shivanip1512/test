@@ -51,9 +51,10 @@
         <cti:msg var="deviceCollectionReportLabel" key="yukon.common.device.bulk.collectionActions.deviceCollectionReportLabel"/>
         <cti:msg var="deviceCollectionReportDescription" key="yukon.common.device.bulk.collectionActions.deviceCollectionReportDescription"/>
         
-        <cti:checkRole role="operator.DeviceActionsRole.ROLEID">
         <table cellspacing="10">
         
+            <cti:checkRole role="operator.DeviceActionsRole.ROLEID">        
+            
             <%-- ADD TO GROUP --%>
             <cti:checkProperty property="operator.DeviceActionsRole.DEVICE_GROUP_MODIFY">
             <tr>
@@ -147,6 +148,8 @@
             </tr>
             </cti:checkProperty>
             
+            </cti:checkRole>
+
             <%-- DEVICE REPORT --%>
             <tr>
                 <td>
@@ -157,9 +160,7 @@
                 </td>
                 <td>${deviceCollectionReportDescription}</td>
             </tr>
-            
         </table>
-        </cti:checkRole>
         
     </tags:bulkActionContainer>
     
