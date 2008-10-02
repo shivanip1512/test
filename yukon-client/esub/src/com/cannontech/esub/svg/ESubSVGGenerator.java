@@ -47,6 +47,8 @@ public class ESubSVGGenerator extends BaseSVGGenerator {
     public DrawingUpdater initDrawingUpdater(Drawing d) {
         ESubDrawingUpdater updater = new ESubDrawingUpdater(d);
         updater.setUpdateGraphs(false);
+        updater.setUserContext(d.getUserContext());
+        
         return updater;
     }
 

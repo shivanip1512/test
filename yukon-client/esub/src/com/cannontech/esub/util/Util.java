@@ -23,6 +23,7 @@ import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.activity.ActivityLog;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.element.DynamicGraphElement;
+import com.cannontech.user.SystemUserContext;
 import com.loox.jloox.LxGraph;
 import com.loox.jloox.LxRotatable;
 
@@ -344,7 +345,9 @@ public class Util {
 	 * @throws IOException
 	 */
 	public static void doExport(File inDir, File outDir) throws IOException {
-		doExport(new Drawing(), inDir, outDir);
+	    Drawing d = new Drawing();
+	    d.setUserContext(new SystemUserContext());
+	    doExport(d, inDir, outDir);
 	}	
 		
 	private static void doExport(Drawing drawing, File inDir, File outDir) throws IOException {

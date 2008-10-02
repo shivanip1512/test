@@ -7,6 +7,7 @@ import java.io.File;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.esub.Drawing;
+import com.cannontech.user.SystemUserContext;
 
 /**
  * Recursively load and save drawings.
@@ -46,6 +47,8 @@ public class UpdateDrawings implements Runnable {
 		}
 		else {
 			Drawing d = new Drawing();
+			d.setUserContext(new SystemUserContext());
+			
 			CTILogger.info(f.getAbsolutePath());
 			try {			
 				d.load(f.getAbsolutePath());

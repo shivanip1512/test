@@ -25,7 +25,9 @@ import com.cannontech.esub.element.LineElement;
 import com.cannontech.esub.element.StateImage;
 import com.cannontech.esub.model.PointAlarmTableModel;
 import com.cannontech.message.dispatch.message.Signal;
+import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.user.YukonUserContext;
 import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxView;
 
@@ -39,7 +41,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
 
     // The drawing to update
     private Drawing drawing;
-
+    private YukonUserContext userContext = null;
     // Graphs are too expensive to always generate, set to false when only
     // generating svg
     private boolean updateGraphs = false;
@@ -475,7 +477,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
                     }
                 }
             }else {
-                String text = UpdateUtil.getDynamicTextString(pointID, dt.getDisplayAttribs());
+                String text = UpdateUtil.getDynamicTextString(pointID, dt.getDisplayAttribs(), userContext);
                 if (!text.equals(dt.getText())) {
                     if (!text.equals(dt.getText())) {
                         dt.setText(text);
@@ -525,4 +527,13 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
     public void setUpdateGraphs(boolean b) {
         updateGraphs = b;
     }
+
+    public YukonUserContext getUserContext() {
+        return userContext;
+    }
+
+    public void setUserContext(YukonUserContext userContext) {
+        this.userContext = userContext;
+    }
+    
 }

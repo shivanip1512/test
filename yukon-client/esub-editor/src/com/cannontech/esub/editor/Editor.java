@@ -61,6 +61,7 @@ import com.cannontech.esub.util.ESubDrawingUpdater;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.util.Command;
 import com.cannontech.roles.application.EsubEditorRole;
+import com.cannontech.user.SystemUserContext;
 import com.cannontech.yukon.conns.ConnPool;
 import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxGraph;
@@ -368,6 +369,7 @@ public class Editor extends JPanel {
 		final EditorPrefs prefs = EditorPrefs.getPreferences();
 		
 		drawing = new Drawing();
+		drawing.setUserContext(new SystemUserContext());
 		
 		elementPlacer = new ElementPlacer();
 		undoManager = new UndoManager() {
@@ -504,7 +506,6 @@ public class Editor extends JPanel {
 								
 		stopUpdating();	
 		getDrawing().load(drawingFile);
-
 		LxComponent[] comps = getDrawing().getLxGraph().getComponents();
 		for (int i = 0; i < comps.length; i++) {
             if(comps[i] instanceof LineElement) {
@@ -790,6 +791,7 @@ public class Editor extends JPanel {
 		drawingUpdater = new ESubDrawingUpdater();	
 		drawingUpdater.setUpdateGraphs(true);
 		drawingUpdater.setDrawing( getDrawing() );
+		drawingUpdater.setUserContext(new SystemUserContext());
 		drawingUpdateTimer = new Timer();
 		drawingUpdateTimer.schedule(drawingUpdater, 0, 15000);
 	}

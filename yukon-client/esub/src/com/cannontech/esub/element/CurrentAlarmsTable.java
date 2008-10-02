@@ -11,6 +11,7 @@ import com.cannontech.esub.Drawing;
 import com.cannontech.esub.element.persist.PersistCurrentAlarmsTable;
 import com.cannontech.esub.model.PointAlarmTableModel;
 import com.cannontech.esub.table.Table;
+import com.cannontech.user.YukonUserContext;
 import com.loox.jloox.LxAbstractRectangle;
 
 /**
@@ -38,6 +39,7 @@ public class CurrentAlarmsTable extends LxAbstractRectangle implements DrawingEl
 	private boolean hideEvents = true;
 	private boolean hideAcknowledged = true;
 
+	
 	public CurrentAlarmsTable() {
 		getTable().setTitle(TABLE_TITLE);
 		
@@ -64,6 +66,7 @@ public class CurrentAlarmsTable extends LxAbstractRectangle implements DrawingEl
 	 */
 	public void setDrawing(Drawing d) {
 		drawing = d;
+		setUserContextOnTable(d.getUserContext());
 	}
 
 	public boolean hasActiveAlarms() {
@@ -158,58 +161,52 @@ public class CurrentAlarmsTable extends LxAbstractRectangle implements DrawingEl
 		return ((PointAlarmTableModel) table.getModel()).getAlarmCategoryIds();
 	}
 
-
 	public void setAlarmCategoryIds(int[] alarmCategoryIds) {
 		((PointAlarmTableModel) table.getModel()).setAlarmCategoryIds(alarmCategoryIds);
 	}
-
 
 	public int[] getDeviceIds() {
 		return ((PointAlarmTableModel) table.getModel()).getDeviceIds();		
 	}
 
-
 	public void setDeviceIds(int[] deviceIds) {
 		((PointAlarmTableModel) table.getModel()).setDeviceIds(deviceIds);		
 	}
-
 
 	public int[] getPointIds() {
 		return ((PointAlarmTableModel) table.getModel()).getPointIds();		
 	}
 
-
 	public void setPointIds(int[] pointIds) {
 		((PointAlarmTableModel) table.getModel()).setPointIds(pointIds);				
 	}
-
 
 	public boolean isHideInactive() {
 		return hideInactive;
 	}
 
-
 	public void setHideInactive(boolean active) {
 		this.hideInactive = active;
 	}
-
 
 	public boolean isHideAcknowledged() {
 		return hideAcknowledged;
 	}
 
-
 	public void setHideAcknowledged(boolean unacknowledged) {
 		this.hideAcknowledged = unacknowledged;
 	}
-
 
 	public boolean isHideEvents() {
 		return hideEvents;
 	}
 
-
 	public void setHideEvents(boolean alarmsOnly) {
 		this.hideEvents = alarmsOnly;
-	}	
+	}
+	
+	public void setUserContextOnTable(YukonUserContext userContext) {
+	    ((PointAlarmTableModel)getTable().getModel()).setUserContext(userContext);
+	}
+
 }

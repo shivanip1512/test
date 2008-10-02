@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.esub.util.UpdateUtil;
+import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.user.YukonUserContext;
 
 /**
  * PointData will take a point id and a set of attributes for that point and
@@ -48,12 +50,13 @@ public class DynamicTextServlet extends HttpServlet {
 		
 		String idStr = req.getParameter(POINT_ID_KEY);
 		String displayAttribStr = req.getParameter(DISPLAY_ATTRIBUTE_KEY);
-				
+		YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(req);
+		
 		try{
             int id = Integer.parseInt(idStr);
     		int dattrib = Integer.parseInt(displayAttribStr);
             Writer writer = resp.getWriter();     
-            String text = UpdateUtil.getDynamicTextString(id, dattrib);
+            String text = UpdateUtil.getDynamicTextString(id, dattrib, userContext);
             writer.write(text);
             writer.flush();
             }

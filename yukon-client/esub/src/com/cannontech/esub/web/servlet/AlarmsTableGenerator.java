@@ -20,6 +20,8 @@ import com.cannontech.esub.element.CurrentAlarmsTable;
 import com.cannontech.esub.model.PointAlarmTableModel;
 import com.cannontech.esub.svg.ESubSVGGenerator;
 import com.cannontech.esub.svg.SVGOptions;
+import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.user.YukonUserContext;
 
 /**
  * Writes out a svg representation of all the alarms for
@@ -70,6 +72,8 @@ public class AlarmsTableGenerator extends HttpServlet {
                 String eventStr = req.getParameter(PARAM_EVENT);                
                 String inactStr = req.getParameter(PARAM_INACTIVE);
                 
+                YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(req);
+                
                 try {
                         int[] deviceIds = StringUtils.parseIntString(deviceIdStr);
                         int[] pointIds = StringUtils.parseIntString(pointIdStr);
@@ -97,6 +101,8 @@ public class AlarmsTableGenerator extends HttpServlet {
                         cat.setHideAcknowledged(ack);
                         cat.setHideEvents(evnt);
                         cat.setHideInactive(inact);
+                        cat.setUserContextOnTable(userContext);
+                        
                         PointAlarmTableModel tableModel = (PointAlarmTableModel) cat.getTable().getModel();
                         tableModel.setHideInactive(cat.isHideInactive());
                         tableModel.setHideEvents(cat.isHideEvents());

@@ -23,7 +23,8 @@ import com.cannontech.esub.svg.ESubSVGGenerator;
 import com.cannontech.esub.svg.ISVGGenerator;
 import com.cannontech.esub.svg.SVGOptions;
 import com.cannontech.roles.cicustomer.EsubDrawingsRole;
-import com.cannontech.util.ParamUtil;
+import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.user.YukonUserContext;
 
 /**
  * Description Here
@@ -36,7 +37,7 @@ public class SVGGenerator extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 		throws ServletException, IOException {
 		
-		
+		YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(req);
         
         resp.setContentType("image/svg+xml");
 		
@@ -71,10 +72,12 @@ public class SVGGenerator extends HttpServlet {
 		
 		try {
 			Drawing d = new Drawing();
-			d.load(jlxPath);
-			
-			//Check if this user has access to this drawing!	
+			d.setUserContext(userContext);
+            //Check if this user has access to this drawing!
 			LiteYukonUser user = (LiteYukonUser) req.getSession(false).getAttribute(LoginController.YUKON_USER);
+			
+			d.load(jlxPath);
+
 			DrawingMetaElement metaElem = d.getMetaElement();
 			
 			// User requires the role specific to access this drawing
@@ -96,6 +99,7 @@ public class SVGGenerator extends HttpServlet {
                 gen.generate(w, d);	
 			} else {
 			    d = new Drawing();
+			    d.setUserContext(userContext);
 	            d.load(rejectedPath);
 	            SVGOptions svgOptions = new SVGOptions();
                 svgOptions.setStaticSVG(true);

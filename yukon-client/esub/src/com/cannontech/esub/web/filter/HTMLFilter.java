@@ -18,6 +18,8 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.util.HTMLGenerator;
+import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.user.YukonUserContext;
 
 /**
  * Forwards all request for any file that matches this filter to
@@ -69,14 +71,18 @@ public class HTMLFilter implements Filter {
 		
 		//Assume this ends with .html
 		jlxPath = jlxPath.substring(0, jlxPath.length()-5) + ".jlx";
+		YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(hreq);
 		
 		try {
 
 			Drawing d = new Drawing();
+			d.setUserContext(userContext);
+			
+            LiteYukonUser user = (LiteYukonUser) hreq.getSession(false).getAttribute(LoginController.YUKON_USER);
 			d.load(jlxPath);
 		 
 			//Check if this user has access to this drawing!	
-			LiteYukonUser user = (LiteYukonUser) hreq.getSession(false).getAttribute(LoginController.YUKON_USER);
+
 			if( DaoFactory.getAuthDao().getRole(user, d.getMetaElement().getRoleID()) != null) {
 				htmlGenerator.generate(hres.getWriter(), d);
 			}

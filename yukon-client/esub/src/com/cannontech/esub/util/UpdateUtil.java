@@ -1,6 +1,7 @@
 package com.cannontech.esub.util;
 
 import java.text.DecimalFormat;
+import java.util.Date;
 import java.util.Iterator;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -12,6 +13,7 @@ import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointService;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
+import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LitePointLimit;
 import com.cannontech.database.data.lite.LitePointUnit;
@@ -22,6 +24,7 @@ import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.esub.PointAttributes;
 import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.user.YukonUserContext;
 
 /**
  * TODO:  find commonolities and merge with displayupdater
@@ -77,11 +80,11 @@ public class UpdateUtil {
         return text;
     }
 	
-	public static String getDynamicTextString(int pointID, int displayAttrib) {
+	public static String getDynamicTextString(int pointID, int displayAttrib, YukonUserContext userContext) {
         String text = "";
         try {
             DynamicDataSource dynamicDataSource = (DynamicDataSource) YukonSpringHook.getBean("dynamicDataSource");        
-    		
+            DateFormattingService dateFormattingService = YukonSpringHook.getBean("dateFormattingService",DateFormattingService.class);
     		boolean prev = false;	
     		if( (displayAttrib & PointAttributes.VALUE) != 0 ) {			
                 PointValueHolder pData = dynamicDataSource.getPointValue(pointID);
@@ -162,7 +165,8 @@ public class UpdateUtil {
     				if( prev ) 
     					text += " ";
     
-    				text += pData.getPointDataTimeStamp();
+    				Date lastUpdate = pData.getPointDataTimeStamp();
+    				text += dateFormattingService.formatDate(lastUpdate, DateFormattingService.DateFormatEnum.BOTH, userContext);
      				prev = true;
     			}
     		}	

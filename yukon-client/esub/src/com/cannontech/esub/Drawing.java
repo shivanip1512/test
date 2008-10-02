@@ -8,12 +8,15 @@ import java.io.IOException;
 import java.io.Serializable;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.esub.element.DrawingElement;
 import com.cannontech.esub.element.DrawingMetaElement;
 import com.cannontech.esub.svg.ESubSVGGenerator;
 import com.cannontech.esub.svg.SVGOptions;
 import com.cannontech.esub.util.HTMLGenerator;
 import com.cannontech.esub.util.ImageExporter;
+import com.cannontech.user.SystemUserContext;
+import com.cannontech.user.YukonUserContext;
 import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxGraph;
 import com.loox.jloox.LxView;
@@ -33,9 +36,11 @@ public class Drawing implements Serializable {
 	// The jloox graph and view to use
 	private LxGraph lxGraph;
 	private LxView lxView;
+	private YukonUserContext userContext = null;
 	
 	public Drawing() {
 		//init the view
+	    userContext = new SystemUserContext();
 		getLxView();
 	}
 	
@@ -263,6 +268,14 @@ public class Drawing implements Serializable {
 		getLxGraph().add(metaInfo);
 		return metaInfo;							
 	}
+
+    public YukonUserContext getUserContext() {
+        return userContext;
+    }
+
+    public void setUserContext(YukonUserContext userContext) {
+        this.userContext = userContext;
+    }
 	
 	
 }
