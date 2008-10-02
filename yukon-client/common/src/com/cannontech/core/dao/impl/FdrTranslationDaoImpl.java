@@ -66,9 +66,9 @@ public class FdrTranslationDaoImpl implements FdrTranslationDao {
                 String [] parameters = translation.split(";");
                 
                 for( String paramSet : parameters ) {
-                    String [] keyValuePair = paramSet.split(":");
-                    if( (keyValuePair.length == 2) && (keyValuePair[1] != null)) {
-                        parameterMap.put(keyValuePair[0], keyValuePair[1]);
+                    int splitSpot = paramSet.indexOf(":");
+                    if (splitSpot != -1) {
+                        parameterMap.put(paramSet.substring(0, splitSpot), paramSet.substring(splitSpot+1));
                     }
                 }
         	
