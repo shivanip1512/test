@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_base.h-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2008/09/15 17:59:18 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2008/10/02 18:27:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,7 +25,6 @@ using boost::weak_ptr;
 #include "dbmemobject.h"
 #include "dlldefs.h"
 #include "resolvers.h"
-// #include "rtdb.h"
 
 
 #include "pointdefs.h"
@@ -34,13 +33,10 @@ using boost::weak_ptr;
 #include "pt_dyn_base.h"
 #include "tbl_pt_base.h"
 #include "tbl_pt_property.h"
-// #include "tbl_pt_alarm.h"
 #include "yukon.h"
 #include "tbl_pt_trigger.h"
-class CtiPointBase;     // Forward declaration...
-class CtiTablePointAlarming;
 
-void IM_EX_PNTDB DefDynamicFactory(const CtiPointBase& pt);
+class CtiTablePointAlarming;
 
 /*----------------------------------------------------------------------------------------*
  * CtiPointBase is the base class for all point objects in the YUKON system.
@@ -54,16 +50,6 @@ public:
 protected:
 
    CtiTablePointBase       _pointBase;
-   DynamicFactory          _fpDynFactory;
-
-   CtiDynamicPointBase     *_dynamic;
-   CtiTablePointProperty   *_properties; //Currently only in dispatch
-   CtiTablePointAlarming   *_alarming;
-
-   bool                    _triggerPoint;
-   bool                    _verificationPoint;
-
-   static CtiTablePointAlarming _defaultAlarming; //const but yet not...
 
 public:
 
@@ -80,7 +66,6 @@ public:
    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
 
    virtual void DecodeDatabaseReader(RWDBReader &rdr);
-   void DecodeAlarmingDatabaseReader(RWDBReader &rdr);
    void DecodeAttributeDatabaseReader(RWDBReader &rdr);
 
    virtual void DumpData();
@@ -111,11 +96,6 @@ public:
    BOOL            getArchivePending() const;
    BOOL            isArchivePending() const;
 
-   void            setIsTriggerPoint(bool isTrigPoint = true);
-   void            setIsVerificationPoint(bool isTrigPoint = true);
-   bool            isATriggerPoint(); //Only in Dispatch!!
-   bool            isAVerificationPoint(); //Only in Dispatch!!
-
    void            setType(CtiPointType_t type);
    CtiPointType_t  getType() const;
    CtiPointType_t  isA() const;
@@ -123,23 +103,6 @@ public:
 
    void setArchivePending(BOOL b = 1);
    void resetArchivePending(BOOL b = 0);
-
-   CtiTablePointAlarming& getAlarming();
-
-   CtiDynamicPointBase*    getDynamic();
-   CtiTablePointProperty* getProperties();
-
-   CtiPointBase& setDynamic(CtiDynamicPointBase *pDyn);
-
-   void           primeDynamicData();
-   CtiDynamicPointBase* replicateDynamicData() const;
-
-
-   DynamicFactory getDynamicFactory();
-   DynamicFactory setDynamicFactory(DynamicFactory fpNew);
-
-
-   virtual bool limitStateCheck( const int limitOrState, double val, int &direction);
 
    virtual UINT getStaticTags();
    virtual UINT adjustStaticTags(UINT &tag) const;
@@ -153,11 +116,12 @@ public:
 
    bool isNumeric() const;
    bool isStatus() const;
-   bool hasAlarming() const;
    bool isA(RWDBReader &rdr) const;
 
    virtual int getControlOffset() const { return 0; }
 };
+
+void IM_EX_PNTDB DefDynamicFactory(const CtiPointBase& pt);
 
 typedef CtiPointBase CtiPoint;
 

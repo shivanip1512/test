@@ -57,7 +57,6 @@ private:
    bool                          _broken;           // When the PILServer knows he's sick.
 
    int  getDeviceGroupMembers( string groupname, vector<long> &paoids );
-   void loadDevicePoints( const vector<long> &paoids );
 
 public:
 

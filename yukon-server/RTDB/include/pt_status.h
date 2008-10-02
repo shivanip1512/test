@@ -2,8 +2,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_status.h-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2008/09/15 17:59:18 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2008/10/02 18:27:29 $
 *
 */
 #ifndef __PT_STATUS_H__
@@ -41,7 +41,6 @@ public:
    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
    virtual void DecodeDatabaseReader(RWDBReader &rdr);
    virtual void DumpData();
-   virtual bool limitStateCheck( const int limitOrState, double val, int &direction);
    virtual UINT adjustStaticTags(UINT &tag) const;
    virtual UINT getStaticTags();
    virtual double getDefaultValue( ) const;

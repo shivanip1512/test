@@ -7,11 +7,15 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2008/04/24 19:41:50 $
+* REVISION     :  $Revision: 1.37 $
+* DATE         :  $Date: 2008/10/02 18:27:29 $
 *
 * HISTORY      :
 * $Log: pendingOpThread.cpp,v $
+* Revision 1.37  2008/10/02 18:27:29  mfisher
+* YUK-6504 Server-side point management is naive
+* Implemented first draft of LRU (least recently used) point expirations
+*
 * Revision 1.36  2008/04/24 19:41:50  jotteson
 * YUK-4897 Load management implementation of Expresscom priorities
 * Moved the handling of control status points to Dispatch.
@@ -1788,7 +1792,7 @@ void CtiPendingOpThread::processPendableAdd(CtiPendable *&pendable)
                     // Remember that 0 is high priority and higher than 0 is lower
                     // priority. If old priority value >= new, the new can
                     // override the old. By default most things will have priority 0.
-                    if(ppo.getControlState() == CtiPendingPointOperations::controlInProgress && 
+                    if(ppo.getControlState() == CtiPendingPointOperations::controlInProgress &&
                        ppo.getControl().getControlPriority() >= pendable->_ppo->getControl().getControlPriority())
                     {
                         tempTime = pendable->_time >= ppo.getControl().getPreviousLogTime() ? pendable->_time : ppo.getControl().getPreviousLogTime();
@@ -2019,14 +2023,10 @@ CtiPointNumericSPtr CtiPendingOpThread::getPointOffset(CtiPendingPointOperations
 
 CtiPendingOpThread::CtiPendingOpSet_t::iterator CtiPendingOpThread::erasePendingControl(CtiPendingOpThread::CtiPendingOpSet_t::iterator iter)
 {
-    CtiPointSPtr point = PointMgr.getEqual(iter->getPointID());
-    if( point )
+    CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(iter->getPointID());
+    if( pDyn != NULL )
     {
-        CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch *)point->getDynamic();
-        if( pDyn != NULL )
-        {
-            pDyn->getDispatch().resetTags( TAG_CONTROL_PENDING );
-        }
+        pDyn->getDispatch().resetTags( TAG_CONTROL_PENDING );
     }
     return _pendingControls.erase(iter);
 }

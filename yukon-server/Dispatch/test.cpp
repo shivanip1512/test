@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/test.cpp-arc  $
-* REVISION     :  $Revision: 1.47 $
-* DATE         :  $Date: 2006/11/16 16:54:40 $
+* REVISION     :  $Revision: 1.48 $
+* DATE         :  $Date: 2008/10/02 18:27:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -16,7 +16,6 @@
 #include <crtdbg.h>
 #include <windows.h>
 #include <iostream>
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
 #include <rw/thr/thrfunc.h>
 #include <rw/thr/mutex.h>
@@ -52,6 +51,8 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 #include "ctitime.h"
 #include "ctidate.h"
+
+using namespace std;
 
 BOOL bQuit = FALSE;
 

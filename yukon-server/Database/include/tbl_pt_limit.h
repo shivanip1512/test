@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_pt_limit.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2008/07/14 14:49:55 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2008/10/02 18:27:30 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -53,7 +53,7 @@ protected:
 
    LONG                 _pointID;
    INT                  _limitNumber;
-   DOUBLE               _highLimit;   // Values > Thsn this exceed the limit
+   DOUBLE               _highLimit;   // Values > than this exceed the limit
    DOUBLE               _lowLimit;    // Values < than this exceed the limit
    INT                  _limitDuration;   // Number of seconds a limit must be exceeded prior to an alarm.
 
@@ -61,7 +61,8 @@ private:
 
 public:
 
-   CtiTablePointLimit();
+   CtiTablePointLimit(long pointid, int limitnumber);
+   CtiTablePointLimit(RWDBReader &rdr);
    CtiTablePointLimit(const CtiTablePointLimit& aRef);
    virtual ~CtiTablePointLimit();
 
@@ -70,22 +71,14 @@ public:
    bool operator<(const CtiTablePointLimit &aRef) const;
    bool operator==(const CtiTablePointLimit &rhs) const;
 
-   INT getLimitNumber() const;
-   DOUBLE getHighLimit() const;
-   DOUBLE getLowLimit() const;
-   INT getLimitDuration() const;
-   LONG getPointID() const;
-
-   // setters
-   CtiTablePointLimit& setLimitNumber( const INT lin );
-   CtiTablePointLimit& setPointID(const LONG ptid);
-   CtiTablePointLimit& setHighLimit(DOUBLE d);
-   CtiTablePointLimit& setLowLimit(DOUBLE d);
-   CtiTablePointLimit& setLimitDuration(const INT aInt);
+   INT    getLimitNumber()   const;
+   DOUBLE getHighLimit()     const;
+   DOUBLE getLowLimit()      const;
+   INT    getLimitDuration() const;
+   LONG   getPointID()       const;
 
    static string getTableName();
    static void getSQL(string &sql, LONG pointID, LONG paoID);
-   void DecodeDatabaseReader(RWDBReader &rdr);
    void dump() const;
 };
 #endif // #ifndef __TBL_PT_LIMIT_H__

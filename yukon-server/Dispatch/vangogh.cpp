@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/vangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2007/05/03 14:31:45 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2008/10/02 18:27:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,7 +17,6 @@
 #include <windows.h>
 #include <iomanip>
 #include <iostream>
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
 #include <rw\thr\thrfunc.h>
 #include <rw/toolpro/winsock.h>
@@ -34,6 +33,8 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "dllvg.h"
 #include "stdexcepthdlr.h"
 #include "logger.h"
+
+using namespace std;
 
 DLLIMPORT extern BOOL  bGCtrlC;
 DLLIMPORT extern CtiLogger dout;

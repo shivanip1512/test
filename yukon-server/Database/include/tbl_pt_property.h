@@ -5,8 +5,8 @@
 * Date:   2/12/2008
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2008/02/22 23:47:08 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2008/10/02 18:27:30 $
 *
 * Copyright (c) 2008 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -36,31 +36,31 @@ class IM_EX_CTIYUKONDB CtiTablePointProperty : public CtiMemDBObject
 {
 protected:
 
-    // If memory becomes an issue, this string should be modified (pointer perhaps)
-    typedef std::map<unsigned int, float> PropertyMap;
-    typedef PropertyMap::iterator PropertyMapIter;
-
 private:
-    PropertyMap _propertyMap;
-    long _pointID;
+    long         _pointID;
+    unsigned int _propertyID;
+    float        _floatAttributeValue;
+
+    CtiTablePointProperty(const CtiTablePointProperty& aRef);
+
+    CtiTablePointProperty& operator=(const CtiTablePointProperty& aRef);
 
 public:
 
-    CtiTablePointProperty();
-    CtiTablePointProperty(const CtiTablePointProperty& aRef);
+    CtiTablePointProperty(RWDBReader &rdr);
     virtual ~CtiTablePointProperty();
-    
-    CtiTablePointProperty&   operator=(const CtiTablePointProperty& aRef);
 
-    bool   hasProperty(unsigned int propertyID);
-    float  getFloatProperty(unsigned int propertyID);
-    int    getIntProperty(unsigned int propertyID);
+    bool operator<(const CtiTablePointProperty &rhs) const;
 
-    static void          getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
-    void                 DecodeDatabaseReader(RWDBReader &rdr);
-    void                 dump() const;
-    static string        getTableName();
-    void                 resetTable();
+    long         getPointID()    const;
+    unsigned int getPropertyID() const;
+
+    float  getFloatProperty() const;
+    int    getIntProperty  () const;
+
+    static void   getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
+    void          dump() const;
+    static string getTableName();
 
     enum
     {

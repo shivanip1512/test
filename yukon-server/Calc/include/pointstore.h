@@ -69,7 +69,7 @@ private:
     bool _useRegression, _isPrimed;
     CtiTime _pointTime, _calcPointWindowEndTime;
     RWTValHashSet<depStore, depStore, depStore> _dependents;
-    
+
     // The following two elements are used to determine if the VALUE changes from one scan to the next.
     CtiTime _lastValueChangedTime;
     CtiRegression _regress;
@@ -155,17 +155,23 @@ public:
         {
             if( _ptLimitTable1 == NULL )
             {
-                _ptLimitTable1 = CTIDBG_new CtiTablePointLimit();
+                _ptLimitTable1 = CTIDBG_new CtiTablePointLimit(rdr);
             }
-            _ptLimitTable1->DecodeDatabaseReader(rdr);
+            else
+            {
+                *_ptLimitTable1 = CtiTablePointLimit(rdr);
+            }
         }
         else if( limitnum == 2 )
         {
             if( _ptLimitTable2 == NULL )
             {
-                _ptLimitTable2 = CTIDBG_new CtiTablePointLimit();
+                _ptLimitTable2 = CTIDBG_new CtiTablePointLimit(rdr);
             }
-            _ptLimitTable2->DecodeDatabaseReader(rdr);
+            else
+            {
+                *_ptLimitTable2 = CtiTablePointLimit(rdr);
+            }
         }
     }
 

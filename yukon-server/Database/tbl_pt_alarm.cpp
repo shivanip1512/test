@@ -1,7 +1,3 @@
-#include "yukon.h"
-
-
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   tbl_pt_alarm
@@ -10,18 +6,18 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_alarm.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2008/07/29 14:49:36 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2008/10/02 18:27:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
 
 #include <rw/db/db.h>
 #include <rw/db/dbase.h>
 #include <rw/db/table.h>
 #include <rw/db/reader.h>
-
 
 
 #include "dbaccess.h"
@@ -91,56 +87,6 @@ UINT CtiTablePointAlarming::resolveAutoAcknowledgeStates( string &str )
     return states;
 }
 
-string CtiTablePointAlarming::statesAsString( )
-{
-    char temp[40];
-
-    string str( (char)1 , ALARM_STATE_SIZE);
-
-    for(int i = 0; i < ALARM_STATE_SIZE - 1; i++)
-    {
-        str[(size_t)i] = (BYTE)getAlarmCategory(i);
-    }
-
-    return str;
-}
-
-string CtiTablePointAlarming::excludeAsString( )
-{
-    string str('N', ALARM_STATE_SIZE);
-
-    for(int i = 0; i < str.length() - 1 && i < ALARM_STATE_SIZE; i++)
-    {
-        bool excl = _excludeNotifyStates & (0x00000001 << i);
-        bool aack = _autoAckStates & (0x00000001 << i);
-
-        if( excl && aack )
-        {
-            str[i] = 'B';
-        }
-        else if(excl)
-        {
-            str[i] = 'E';
-        }
-        else if(aack)
-        {
-            str[i] = 'A';
-        }
-        else
-        {
-            str[i] = 'N';
-        }
-    }
-
-    return str;
-}
-
-
-/*LONG CtiTablePointAlarming::getPointID() const
-{
-    return _pointID;
-}*/
-
 LONG CtiTablePointAlarming::getRecipientID() const
 {
     return _recipientID;
@@ -172,12 +118,6 @@ BOOL CtiTablePointAlarming::getNotifyOnClear() const
 {
     return _notifyOnClear;
 }
-
-/*CtiTablePointAlarming& CtiTablePointAlarming::setPointID( const LONG &aLong )
-{
-    _pointID = aLong;
-    return *this;
-}*/
 
 CtiTablePointAlarming& CtiTablePointAlarming::setRecipientID( const LONG &aLong )
 {
@@ -239,90 +179,12 @@ string CtiTablePointAlarming::getTableName()
     return string("PointAlarming");
 }
 
-/*RWDBStatus CtiTablePointAlarming::Insert()
+
+bool CtiTablePointAlarming::operator<(const CtiTablePointAlarming &rhs) const
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBInserter inserter = table.inserter();
-
-    inserter <<
-    getPointID() <<
-    statesAsString() <<
-    getExcludeNotifyStates() <<
-    ( getNotifyOnAcknowledge() ? 'Y' : 'N' ) <<
-    getRecipientID() <<
-    getNotificationGroupID();
-
-    ExecuteInserter(conn,inserter,__FILE__,__LINE__);
-
-    return inserter.status();
+    return _pointID < rhs._pointID;
 }
 
-RWDBStatus CtiTablePointAlarming::Update()
-{
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBUpdater updater = table.updater();
-
-    updater.where( table["pointid"] == getPointID() );
-
-    updater <<
-    table["alarmstates"].assign( statesAsString( ).c_str() ) <<
-    table["excludenotifystates"].assign( excludeAsString( ).c_str()) <<
-    table["notifyonacknowledge"].assign(( getNotifyOnAcknowledge() ? 'Y' : 'N' )) <<
-    table["recipientid"].assign(getRecipientID()) <<
-    table["notificationgroupid"].assign(getNotificationGroupID());
-
-    ExecuteUpdater(conn,updater,__FILE__,__LINE__);
-
-    return updater.status();
-}*/
-
-/*RWDBStatus CtiTablePointAlarming::Restore()
-{
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBSelector selector = getDatabase().selector();
-
-    selector <<
-    table["pointid"] <<
-    table["alarmstates"] <<
-    table["excludenotifystates"] <<
-    table["notifyonacknowledge"] <<
-    table["recipientid"] <<
-    table["notificationgroupid"];
-
-    selector.where( table["pointid"] == getPointID() );
-
-    RWDBReader reader = selector.reader( conn );
-
-
-    if( reader() )
-    {
-        DecodeDatabaseReader( reader );
-    }
-
-    return reader.status();
-}*/
-
-/*RWDBStatus CtiTablePointAlarming::Delete()
-{
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBDeleter deleter = table.deleter();
-
-    deleter.where( table["pointid"] == getPointID() );
-
-    return deleter.execute( conn ).status();
-}*/
 
 //This SQL is only proper when we assume some things about alarmstates
 void CtiTablePointAlarming::getSQL(string &sql, LONG pointID, LONG paoID)
@@ -346,46 +208,6 @@ void CtiTablePointAlarming::getSQL(string &sql, LONG pointID, LONG paoID)
    }
 }
 
-/*
-void CtiTablePointAlarming::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
-{
-    keyTable = db.table( getTableName().c_str() );
-
-    selector <<
-    keyTable["pointid"] <<
-    keyTable["alarmstates"] <<
-    keyTable["excludenotifystates"] <<
-    keyTable["notifyonacknowledge"] <<
-    keyTable["recipientid"] <<
-    keyTable["notificationgroupid"];
-
-    selector.from(keyTable);
-}
-*/
-
-void CtiTablePointAlarming::DecodeDatabaseReader(RWDBReader& rdr)
-{
-    static const RWCString pointid = "pointid";
-    string temp;
-    
-    rdr[pointid] >> _pointID;
-    rdr >> temp;
-    setAlarmCategory( temp );
-
-    rdr >> temp;
-    setExcludeNotifyStates( resolveExcludeStates( temp ) );
-    setAutoAckStates( resolveAutoAcknowledgeStates( temp ) );
-
-    rdr >> temp;
-    std::transform(temp.begin(), temp.end(), temp.begin(), tolower);
-    setNotifyOnAcknowledge( temp[0] == 'a' || temp[0] == 'b' || temp[0] == 'y' );
-    setNotifyOnClear( temp[0] == 'c' || temp[0] == 'b' );
-
-    rdr >> _recipientID;
-    rdr >> _notificationGroupID;
-}
-
-
 CtiTablePointAlarming::~CtiTablePointAlarming()
 {
 }
@@ -408,6 +230,29 @@ bool CtiTablePointAlarming::isNotifyExcluded( int alarm) const
 bool CtiTablePointAlarming::isAutoAcked( int alarm) const
 {
     return(_autoAckStates & (0x00000001 << alarm));
+}
+
+
+CtiTablePointAlarming::CtiTablePointAlarming(RWDBReader& rdr)
+{
+    static const RWCString pointid = "pointid";
+    string temp;
+
+    rdr[pointid] >> _pointID;
+    rdr >> temp;
+    setAlarmCategory( temp );
+
+    rdr >> temp;
+    setExcludeNotifyStates( resolveExcludeStates( temp ) );
+    setAutoAckStates( resolveAutoAcknowledgeStates( temp ) );
+
+    rdr >> temp;
+    std::transform(temp.begin(), temp.end(), temp.begin(), tolower);
+    setNotifyOnAcknowledge( temp[0] == 'a' || temp[0] == 'b' || temp[0] == 'y' );
+    setNotifyOnClear( temp[0] == 'c' || temp[0] == 'b' );
+
+    rdr >> _recipientID;
+    rdr >> _notificationGroupID;
 }
 
 CtiTablePointAlarming::CtiTablePointAlarming( LONG pid) :

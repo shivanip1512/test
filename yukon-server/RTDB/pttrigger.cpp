@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/pttrigger.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2008/09/15 17:59:17 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2008/10/02 18:27:29 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -70,9 +70,9 @@ void CtiPointTriggerManager::refreshList(long ptID, CtiPointManager& pointMgr)
             CtiTablePointTrigger().getSQL( db, keyTable, selector, ptID );
 
             //Pick just the 1 point if thats all I requested
-            if(ptID != 0) 
+            if(ptID != 0)
             {
-                orphan(ptID, pointMgr);
+                erase(ptID);
             }
 
             rdr = selector.reader(conn);
@@ -95,7 +95,7 @@ void CtiPointTriggerManager::refreshList(long ptID, CtiPointManager& pointMgr)
     catch(RWExternalErr e )
     {
         //Make sure the list is cleared
-        { 
+        {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << "Attempting to clear trigger list..." << endl;
         }
@@ -154,21 +154,11 @@ void CtiPointTriggerManager::refreshTriggerData(long pointID, RWDBReader& rdr, C
                 if( origVerificationID != 0 )
                 {
                     _verificationIDMap.erase(origVerificationID);
-                    CtiPointSPtr oldVerificationPoint = pointMgr.getEqual(origVerificationID);
-                    if( oldVerificationPoint )
-                    {
-                        oldVerificationPoint->setIsVerificationPoint(false);
-                    }
                 }
 
                 if( tempIter->second->dbTriggerData.getVerificationID() != 0 )
                 {
                     _verificationIDMap.insert(coll_type::value_type(tempIter->second->dbTriggerData.getVerificationID(), tempIter->second));
-                    CtiPointSPtr newVerificationPoint = pointMgr.getEqual(tempIter->second->dbTriggerData.getVerificationID());
-                    if( newVerificationPoint )
-                    {
-                        newVerificationPoint->setIsVerificationPoint(true);
-                    }
                 }
             }
 
@@ -184,12 +174,8 @@ void CtiPointTriggerManager::refreshTriggerData(long pointID, RWDBReader& rdr, C
                     triggerIter->second.erase(ptID);
                     if( triggerIter->second.empty() )
                     {
-                        //If this trigger ID triggers no one else, remove this map portion and set trigger point = false
+                        //If this trigger ID triggers no one else, remove this map entry
                         _triggerIDMap.erase(origTrigID);
-                        if( oldTriggerPoint )
-                        {
-                            oldTriggerPoint->setIsTriggerPoint(false);
-                        }
                     }
                 }
 
@@ -208,11 +194,6 @@ void CtiPointTriggerManager::refreshTriggerData(long pointID, RWDBReader& rdr, C
                     _triggerIDMap.insert(trig_coll_type::value_type(tempIter->second->dbTriggerData.getTriggerID(), tempPointMap));
 
                     CtiPointSPtr newTriggerPoint = pointMgr.getEqual(tempIter->second->dbTriggerData.getTriggerID());
-
-                    if( newTriggerPoint )
-                    {
-                        newTriggerPoint->setIsTriggerPoint(true);
-                    }
                 }
             }
         }
@@ -222,7 +203,7 @@ void CtiPointTriggerManager::refreshTriggerData(long pointID, RWDBReader& rdr, C
             PtVerifyTriggerSPtr tempTriggerSPtr(tempTrigger);
             tempTriggerSPtr->lastTriggerValue = 0;
             tempTriggerSPtr->dbTriggerData.DecodeDatabaseReader(rdr);        // Fills himself in from the reader
-            
+
             // Add it to my lists....
             insertResult1 = _pointIDMap.insert(coll_type::value_type(ptID, tempTriggerSPtr)); // Stuff it in the list
 
@@ -239,29 +220,12 @@ void CtiPointTriggerManager::refreshTriggerData(long pointID, RWDBReader& rdr, C
                     insertResult2 = tempPointMap.insert(coll_type::value_type(ptID, tempTriggerSPtr));
                     _triggerIDMap.insert(trig_coll_type::value_type(tempTriggerSPtr->dbTriggerData.getTriggerID(), tempPointMap));
                 }
-    
-                CtiPointSPtr triggerPoint = pointMgr.getEqual(tempTriggerSPtr->dbTriggerData.getTriggerID());
-                if(triggerPoint)
-                {
-                    triggerPoint->setIsTriggerPoint(true);
-                }
-
-                CtiPointSPtr verificationPoint = pointMgr.getEqual(tempTriggerSPtr->dbTriggerData.getVerificationID());
-                if(verificationPoint)
-                {
-                    verificationPoint->setIsVerificationPoint(true);
-                }
             }
 
             //This is currently not checked for correctness..
             if(  tempTriggerSPtr->dbTriggerData.getVerificationID() != 0 )
             {
                 _verificationIDMap.insert(coll_type::value_type(tempTriggerSPtr->dbTriggerData.getVerificationID(), tempTriggerSPtr));
-                CtiPointSPtr newVerificationPoint = pointMgr.getEqual(tempTriggerSPtr->dbTriggerData.getVerificationID());
-                if( newVerificationPoint )
-                {
-                    newVerificationPoint->setIsVerificationPoint(true);
-                }
             }
 
 
@@ -273,19 +237,19 @@ void CtiPointTriggerManager::refreshTriggerData(long pointID, RWDBReader& rdr, C
                     dout << CtiTime() << " Point Map insert result: " << insertResult1.second << " Trigger Map insert result: " << insertResult2.second << " " << endl;
                 }
             }
-        }       
+        }
     }
 
     if( !rowFound && pointID )
     {
         //Ok, the update has shown us that there is no longer data for this particular point, but the point
-        //Was not deleted, we must orphan it!
+        //Was not deleted, we must erase it!
 
-        orphan(pointID, pointMgr);
+        erase(pointID);
     }
 }
 
-void CtiPointTriggerManager::orphan(long ptID, CtiPointManager& pointMgr)
+void CtiPointTriggerManager::erase(long ptID)
 {
     spiterator pointIter;
     int startCount = 0, endCount;
@@ -293,24 +257,19 @@ void CtiPointTriggerManager::orphan(long ptID, CtiPointManager& pointMgr)
     {
         LockGuard guard(_mapMux);
         pointIter = _pointIDMap.find(ptID);
-        
+
         if( pointIter != _pointIDMap.end() )
         {
             if( pointIter->second->dbTriggerData.getTriggerID() != 0 )
             {
                 trig_coll_type::iterator trigIter = _triggerIDMap.find(pointIter->second->dbTriggerData.getTriggerID());
-                CtiPointSPtr oldPoint = pointMgr.getEqual(pointIter->second->dbTriggerData.getTriggerID());
-    
+
                 if( trigIter != _triggerIDMap.end() )
                 {
                     trigIter->second.erase(ptID);
                     if( trigIter->second.empty() )
                     {
                         _triggerIDMap.erase(pointIter->second->dbTriggerData.getTriggerID());
-                        if( oldPoint )
-                        {
-                            oldPoint->setIsTriggerPoint(false);
-                        }
                     }
                 }
             }
@@ -318,12 +277,6 @@ void CtiPointTriggerManager::orphan(long ptID, CtiPointManager& pointMgr)
             if( pointIter->second->dbTriggerData.getVerificationID() != 0 )
             {
                 _verificationIDMap.erase(pointIter->second->dbTriggerData.getVerificationID());
-                CtiPointSPtr oldVerificaionPoint = pointMgr.getEqual(pointIter->second->dbTriggerData.getVerificationID());
-
-                if( oldVerificaionPoint )
-                {
-                    oldVerificaionPoint->setIsVerificationPoint(false);
-                }
             }
 
             startCount = _pointIDMap.size();
@@ -336,9 +289,23 @@ void CtiPointTriggerManager::orphan(long ptID, CtiPointManager& pointMgr)
     if( startCount && (startCount-endCount) != 1 )
     {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** odd behavior trying to orphan pointid: "<< ptID << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint **** odd behavior trying to erase pointid: "<< ptID << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << CtiTime() << " Start Count: " << startCount << " End Count: " << endCount << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
+}
+
+bool CtiPointTriggerManager::isATriggerPoint(long pointID) const
+{
+    LockGuard guard(_mapMux);
+
+    return _triggerIDMap.find(pointID) != _triggerIDMap.end();
+}
+
+bool CtiPointTriggerManager::isAVerificationPoint(long pointID) const
+{
+    LockGuard guard(_mapMux);
+
+    return _verificationIDMap.find(pointID) != _verificationIDMap.end();
 }
 
 //You must must must!!! mux all calls that use this iterator using getMux()!!!!!

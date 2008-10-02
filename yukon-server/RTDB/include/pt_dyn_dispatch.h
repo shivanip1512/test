@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_dyn_dispatch.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2008/06/30 15:24:29 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2008/10/02 18:27:29 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -75,7 +75,6 @@ public:
 
    void setConditionActive(int alarm_condition, bool active = true);
    bool isConditionActive(int alarm_condition) const;
-
-
 };
+
 #endif // #ifndef __PT_DYN_DISPATCH_H__

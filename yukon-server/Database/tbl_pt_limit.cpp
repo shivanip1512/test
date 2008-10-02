@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_limit.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2008/10/02 16:09:37 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2008/10/02 18:27:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,64 +32,12 @@ CtiTablePointLimit&   CtiTablePointLimit::operator=(const CtiTablePointLimit& aR
    return *this;
 }
 
-INT CtiTablePointLimit::getLimitNumber() const
-{
-   return _limitNumber;
-}
+INT    CtiTablePointLimit::getLimitNumber()   const  {  return _limitNumber;    }
+LONG   CtiTablePointLimit::getPointID()       const  {  return _pointID;        }
+DOUBLE CtiTablePointLimit::getHighLimit()     const  {  return _highLimit;      }
+DOUBLE CtiTablePointLimit::getLowLimit()      const  {  return _lowLimit;       }
+INT    CtiTablePointLimit::getLimitDuration() const  {  return _limitDuration;  }
 
-LONG CtiTablePointLimit::getPointID() const
-{
-   return _pointID;
-}
-
-DOUBLE CtiTablePointLimit::getHighLimit() const
-{
-
-
-   return _highLimit;
-}
-
-DOUBLE CtiTablePointLimit::getLowLimit() const
-{
-
-
-   return _lowLimit;
-}
-
-
-// setters
-
-CtiTablePointLimit& CtiTablePointLimit::setLimitNumber( const INT limitNum )
-{
-
-
-   _limitNumber = limitNum;
-   return *this;
-}
-
-CtiTablePointLimit& CtiTablePointLimit::setPointID( const LONG pointID )
-{
-
-
-   _pointID = pointID;
-   return *this;
-}
-
-CtiTablePointLimit& CtiTablePointLimit::setHighLimit(DOUBLE d)
-{
-
-
-   _highLimit = d;
-   return *this;
-}
-
-CtiTablePointLimit& CtiTablePointLimit::setLowLimit(DOUBLE d)
-{
-
-
-   _lowLimit = d;
-   return *this;
-}
 
 void CtiTablePointLimit::getSQL(string &sql, LONG pointID, LONG paoID)
 {
@@ -105,18 +53,6 @@ void CtiTablePointLimit::getSQL(string &sql, LONG pointID, LONG paoID)
    }
 }
 
-void CtiTablePointLimit::DecodeDatabaseReader(RWDBReader &rdr)
-{
-   static const RWCString pointid = "pointid";
-   INT iTemp;
-
-   rdr >> _pointID;
-   rdr >> _limitNumber;
-   rdr >> _highLimit;
-   rdr >> _lowLimit;
-   rdr >> _limitDuration;
-}
-
 void CtiTablePointLimit::dump() const
 {
    CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -128,27 +64,22 @@ void CtiTablePointLimit::dump() const
 }
 
 
-INT CtiTablePointLimit::getLimitDuration() const
-{
-
-
-   return _limitDuration;
-}
-
-CtiTablePointLimit& CtiTablePointLimit::setLimitDuration(const INT aInt)
-{
-
-
-   _limitDuration = aInt;
-   return *this;
-}
-
-CtiTablePointLimit::CtiTablePointLimit() :
-   _limitNumber(0),
+CtiTablePointLimit::CtiTablePointLimit(long pointid, int limitnumber) :
+   _pointID(pointid),
+   _limitNumber(limitnumber),
    _limitDuration(-1),
    _highLimit(DBL_MAX),
    _lowLimit(DBL_MIN)
 {}
+
+CtiTablePointLimit::CtiTablePointLimit(RWDBReader &rdr)
+{
+   rdr >> _pointID;
+   rdr >> _limitNumber;
+   rdr >> _highLimit;
+   rdr >> _lowLimit;
+   rdr >> _limitDuration;
+}
 
 CtiTablePointLimit::CtiTablePointLimit(const CtiTablePointLimit& aRef)
 {
@@ -157,10 +88,7 @@ CtiTablePointLimit::CtiTablePointLimit(const CtiTablePointLimit& aRef)
 
 CtiTablePointLimit::~CtiTablePointLimit() {}
 
-string CtiTablePointLimit::getTableName()
-{
-   return "PointLimits";
-}
+string CtiTablePointLimit::getTableName()  {  return "PointLimits";  }
 
 bool CtiTablePointLimit::operator<(const CtiTablePointLimit &rhs) const
 {
@@ -169,5 +97,6 @@ bool CtiTablePointLimit::operator<(const CtiTablePointLimit &rhs) const
 
 bool CtiTablePointLimit::operator==(const CtiTablePointLimit &rhs) const
 {
-    return (_pointID == rhs.getPointID() && _limitNumber == rhs.getLimitNumber());
+    return _pointID == rhs._pointID && _limitNumber == rhs._limitNumber;
 }
+

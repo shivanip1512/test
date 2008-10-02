@@ -86,43 +86,6 @@ public:
     }
 
 
-    #ifdef MISCROSOFT_EVER_FIXES_STL
-    /*
-     *  Selects all collection entries which match the function and return a smartpointer to them in match_col
-     */
-    vector< long > select(bool (*selectFun)(const long, ptr_type, void*), void* d )
-    {
-        int count = 0;
-
-        reader_lock_guard_t guard(_lock);
-
-        spiterator itr, itr_end = _map.end();
-
-        vector< long > local_coll;
-
-        for(itr = _map.begin(); itr != itr_end; ++itr)
-        {
-            val_type vp = *itr;
-            if(selectFun( vp.first, vp.second, d))
-            {
-                try
-                {
-                    local_coll.push_back(vp.first);
-                }
-                catch(...)
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-                }
-            }
-        }
-
-        return local_coll;
-    }
-    #endif
-
     insert_pair insert(long key, T* val)
     {
         writer_lock_guard_t guard(_lock);

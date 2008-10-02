@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.75 $
-* DATE         :  $Date: 2008/09/29 22:17:24 $
+* REVISION     :  $Revision: 1.76 $
+* DATE         :  $Date: 2008/10/02 18:27:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1294,7 +1294,7 @@ void LoadScannableDevices(void *ptr)
         }
         else if(pChg->getTypeOfChange() == ChangeTypeDelete)
         {
-            ScannerPointManager.orphan(pChg->getId());
+            ScannerPointManager.erase(pChg->getId());
         }
     }
 

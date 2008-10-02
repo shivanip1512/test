@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/exe_ptchg.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/12/20 17:16:57 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2008/10/02 18:27:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -16,9 +16,9 @@
 
 #include <windows.h>
 #include <iostream>
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
 #include <rw\thr\threadid.h>
+
 #include "message.h"
 #include "con_mgr_vg.h"
 #include "ctivangogh.h"
@@ -26,6 +26,8 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "msg_dbchg.h"
 #include "msg_commerrorhistory.h"
 #include "msg_pcreturn.h"
+
+using namespace std;
 
 INT CtiPointChangeExecutor::ServerExecute(CtiServer *Svr)
 {

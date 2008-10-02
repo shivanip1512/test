@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/pt_status.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2007/09/28 15:38:00 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2008/10/02 18:27:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,31 +18,6 @@
 #include "pt_status.h"
 #include "tbl_pt_alarm.h"
 using namespace std;
-
-/*----------------------------------------------------------------------------*
- * This method examines the point state, which should be in the range of
- * CtiTablePointAlarming::state0 - CtiTablePointAlarming::state9
- * if this Point has an non-event alarm grouping assigned to this state (limitOrState),
- * the method returns bool true and sets the error string.
- *----------------------------------------------------------------------------*/
-bool CtiPointStatus::limitStateCheck( const int limitOrState, double val, INT &direction)
-{
-   bool status = false;
-   int stateverify = CtiTablePointAlarming::state0 + limitOrState;
-
-   if(CtiTablePointAlarming::state0 <= stateverify && stateverify <= CtiTablePointAlarming::state9)
-   {
-      if( getAlarming().getAlarmCategory(stateverify) > SignalEvent)
-      {
-         if( (int)val == limitOrState )
-         {
-            status = true;
-         }
-      }
-   }
-
-   return status;
-}
 
 CtiPointStatus::CtiPointStatus()
 {

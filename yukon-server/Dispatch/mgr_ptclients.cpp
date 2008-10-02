@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/mgr_ptclients.cpp-arc  $
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2008/09/29 22:17:24 $
+* REVISION     :  $Revision: 1.38 $
+* DATE         :  $Date: 2008/10/02 18:27:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -40,61 +40,13 @@
 
 using namespace std;
 
-static void verifyDynamicData(CtiPointSPtr &pTempPoint);
-
-bool findNonUpdatedDynamicData(const long key, const CtiPointSPtr &pTempPoint, void* d)
-{
-    bool bRet = false;
-
-    CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)pTempPoint->getDynamic();
-
-    if(pDyn != NULL)
-    {
-        if(pDyn->getDispatch().getUpdatedFlag() == FALSE) bRet = true;
-    }
-
-    return bRet;
-}
-
-bool findDirtyDynamicData(const long key, const CtiPointSPtr &pTempPoint, void* d)
-{
-    bool bRet = false;
-
-    CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)pTempPoint->getDynamic();
-
-    if(pDyn != NULL)
-    {
-        if(pDyn->getDispatch().isDirty()) bRet = true;
-    }
-
-    return bRet;
-}
-
 /*
- *  This method attempts an insert on all non-valid tbl_ptdispatch objects to make sure they are in there..
+ *  This method initializes each point's dynamic data to it's default/initial values.
  */
-void ApplyInsertNonUpdatedDynamicData(const long key, CtiPointSPtr pTempPoint, void* d)
+void ApplyInitialDynamicConditions(const long key, CtiPointSPtr pTempPoint, void* d)
 {
-    CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)pTempPoint->getDynamic();
-
-    if(pDyn != NULL && !pDyn->getDispatch().getUpdatedFlag())
-    {
-        if( pDyn->getDispatch().Insert().errorCode() != RWDBStatus::ok )
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << " Unable to insert dynamicpointdata for " << pTempPoint->getName() << endl;
-            }
-        }
-        pDyn->getDispatch().setUpdatedFlag();
-    }
-    return;
-}
-
-void verifyInitialDynamicData(CtiPointSPtr &pTempPoint)
-{
-    CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)pTempPoint->getDynamic();
+    /*
+    CtiDynamicPointDispatch *pDyn = getDynamic(pTempPoint->getID());
 
     if(pDyn == NULL)
     {
@@ -107,7 +59,7 @@ void verifyInitialDynamicData(CtiPointSPtr &pTempPoint)
             pDyn->getDispatch().setTags(statictags);
             pDyn->getDispatch().setDirty( TRUE );                           // Make it update if it doesn't get reloaded!
 
-            pTempPoint->setDynamic(pDyn);
+            PointMgr.setDynamic(pTempPoint->getID(), pDyn);
         }
     }
     else
@@ -121,15 +73,8 @@ void verifyInitialDynamicData(CtiPointSPtr &pTempPoint)
             pDyn->getDispatch().setTags(statictags);
         }
     }
-}
+    */
 
-/*
- *  This method initializes each point's dynamic data to it's default/initial values.
- */
-void ApplyInitialDynamicConditions(const long key, CtiPointSPtr pTempPoint, void* d)
-{
-    LONG id = 0;
-    verifyInitialDynamicData(pTempPoint);
     return;
 }
 
@@ -147,8 +92,10 @@ void CtiPointClientManager::processPointDynamicData(LONG pntID, LONG paoID)
         {
             ApplyInitialDynamicConditions(0,pTempPoint,NULL);
 
+            const CtiDynamicPointDispatch *dynamic = getDynamic(pntID);
+
             //This will probably always be true, but why not check.
-            if(findNonUpdatedDynamicData(0,pTempPoint,NULL))
+            if(dynamic && !dynamic->getDispatch().getUpdatedFlag())
             {
                 RefreshDynamicData(pntID);
                 //ApplyInsertNonUpdatedDynamicData(0, pTempPoint, NULL);
@@ -173,11 +120,21 @@ void CtiPointClientManager::processPointDynamicData(LONG pntID, LONG paoID)
     }
 }
 
+
+struct non_updated_check
+{
+    bool operator()(std::pair<long, CtiDynamicPointDispatch *> dynamic)
+    {
+        return dynamic.second && !dynamic.second->getDispatch().getUpdatedFlag();
+    }
+};
+
+
 //Points can be loaded by pao, not updated!
 void CtiPointClientManager::refreshList(LONG pntID, LONG paoID, CtiPointType_t pntType)
 {
     Inherited::refreshList(pntID, paoID, pntType);                // Load all points in the system
-    Inherited::refreshAlarming(pntID, paoID);
+    refreshAlarming(pntID, paoID);
     refreshReasonabilityLimits(pntID, paoID);
     refreshPointLimits(pntID, paoID);
 
@@ -189,15 +146,115 @@ void CtiPointClientManager::refreshList(LONG pntID, LONG paoID, CtiPointType_t p
     {
         CtiPointSPtr pTempPoint;
         Inherited::apply(ApplyInitialDynamicConditions, NULL);     // Make sure everyone has been initialized with Dynamic data.
-        if((pTempPoint = Inherited::find(findNonUpdatedDynamicData, NULL))) // If there is at least one nonupdated dynamic entry.
+
+        if( std::find_if(_dynamic.begin(), _dynamic.end(), non_updated_check()) != _dynamic.end() )
         {
             RefreshDynamicData();
-            //Inherited::apply(ApplyInsertNonUpdatedDynamicData, NULL);
         }
     }
 }
 
 
+//Load based on PAO assumes it is in add!
+void CtiPointClientManager::refreshAlarming(LONG pntID, LONG paoID)
+{
+    coll_type::writer_lock_guard_t guard(getLock());
+
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
+
+    RWDBDatabase   db       = conn.database();
+    RWDBSelector   selector = conn.database().selector();
+    RWDBTable      keyTable;
+    RWDBReader     rdr;
+    string         sql;
+    CtiTime start, stop;
+
+    start = start.now();
+    CtiTablePointAlarming::getSQL(sql, pntID, paoID);
+
+    rdr = ExecuteQuery( conn, sql );
+
+    if( rdr.status().errorCode() != RWDBStatus::ok )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << sql << endl;
+    }
+
+    LONG pID;
+    ptr_type pPt;
+
+    while( rdr() )
+    {
+        _alarming.insert(CtiTablePointAlarming(rdr));
+    }
+
+    if((stop = stop.now()).seconds() - start.seconds() > 5 )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds for Alarming " << endl;
+    }
+}
+
+
+void CtiPointClientManager::refreshProperties(LONG pntID, LONG paoID)
+{
+    coll_type::writer_lock_guard_t guard(getLock());
+
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
+
+    RWDBDatabase   db       = conn.database();
+    RWDBSelector   selector = conn.database().selector();
+    RWDBTable      keyTable;
+    RWDBReader     rdr;
+    string         sql;
+    CtiTime start, stop;
+
+    RWDBSelector attributeSelector = conn.database().selector();
+    start = start.now();
+    CtiTablePointProperty::getSQL( db, keyTable, attributeSelector );
+
+    if(pntID)
+    {
+        attributeSelector.where( keyTable["pointid"] == pntID && attributeSelector.where() );
+
+        _properties.erase(pntID);
+    }
+
+    //  pao is assumed to be an add
+    if(paoID)
+    {
+        RWDBSelector paoSelector = conn.database().selector();
+        RWDBTable pointTable = db.table("point");
+        paoSelector << pointTable["pointid"];
+        paoSelector.from(pointTable);
+        paoSelector.where(pointTable["paobjectid"] == paoID);
+        selector.where(keyTable["pointid"].in(paoSelector) && selector.where());
+    }
+
+    rdr = attributeSelector.reader( conn );
+
+    if( rdr.status().errorCode() != RWDBStatus::ok)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << attributeSelector.asString() << endl;
+    }
+
+    while( rdr() )
+    {
+        CtiTablePointProperty *p = CTIDBG_new CtiTablePointProperty(rdr);
+        _properties.insert(make_pair(p->getPointID(), p));
+    }
+
+    if((stop = stop.now()).seconds() - start.seconds() > 5 )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds for Properties " << endl;
+    }
+}
 
 void CtiPointClientManager::DumpList(void)
 {
@@ -214,7 +271,7 @@ void CtiPointClientManager::DumpList(void)
             p = itr->second;
 
             {
-                CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)p->getDynamic();
+                const CtiDynamicPointDispatch *pDyn = getDynamic(p->getPointID());
 
                 if(p->isValid() && pDyn != NULL)
                 {
@@ -273,7 +330,7 @@ int CtiPointClientManager::InsertConnectionManager(CtiServer::ptr_type CM, const
         conIter = _conMgrPointMap.find(CM->hash(*CM.get()));
         if( conIter == _conMgrPointMap.end() )
         {
-            PointMap tempMap;
+            WeakPointMap tempMap;
             pair<ConnectionMgrPointMap::iterator, bool> tempVal;
             tempVal = _conMgrPointMap.insert(ConnectionMgrPointMap::value_type(CM->hash(*CM.get()), tempMap));
             conIter = tempVal.first;
@@ -335,7 +392,7 @@ int CtiPointClientManager::InsertConnectionManager(CtiServer::ptr_type CM, const
 
                         if( conIter != _conMgrPointMap.end() )
                         {
-                            conIter->second.insert(PointMap::value_type(temp->getPointID(), temp));
+                            conIter->second.insert(WeakPointMap::value_type(temp->getPointID(), temp));
                         }
                     }
                 }
@@ -357,7 +414,7 @@ int CtiPointClientManager::RemoveConnectionManager(CtiServer::ptr_type CM)
 
         if( conIter != _conMgrPointMap.end() && conIter->second.size() > 0 )
         {
-            for(PointMap::iterator pointIter = conIter->second.begin(); pointIter != conIter->second.end(); pointIter++)
+            for(WeakPointMap::iterator pointIter = conIter->second.begin(); pointIter != conIter->second.end(); pointIter++)
             {
                 CtiPointSPtr temp = pointIter->second.lock();
 
@@ -394,7 +451,7 @@ CtiTime CtiPointClientManager::findNextNearestArchivalTime()
         {
             CtiPointSPtr pPt = itr->second;
             {
-                CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)pPt->getDynamic();
+                const CtiDynamicPointDispatch *pDyn = getDynamic(pPt->getPointID());
 
                 if(pDyn != NULL)
                 {
@@ -422,7 +479,7 @@ void CtiPointClientManager::scanForArchival(const CtiTime &Now, CtiFIFOQueue<Cti
             CtiPointSPtr pPt = itr->second;
 
             {
-                CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)pPt->getDynamic();
+                CtiDynamicPointDispatch *pDyn = getDynamic(pPt->getPointID());
 
                 if(pDyn != NULL && !(pDyn->getDispatch().getTags() & MASK_ANY_SERVICE_DISABLE))  // Point is disabled.
                 {
@@ -488,7 +545,7 @@ void CtiPointClientManager::storeDirtyRecords()
 
             try
             {
-                CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)pPt->getDynamic();
+                CtiDynamicPointDispatch *pDyn = getDynamic(pPt->getPointID());
 
                 if(pDyn != NULL && (pDyn->getDispatch().isDirty() || !pDyn->getDispatch().getUpdatedFlag()) )
                 {
@@ -609,7 +666,7 @@ void CtiPointClientManager::RefreshDynamicData(LONG id)
 
         if(pTempPoint)
         {
-            CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)pTempPoint->getDynamic();
+            CtiDynamicPointDispatch *pDyn = getDynamic(pTempPoint->getPointID());
 
             if(pDyn != NULL)
             {
@@ -710,8 +767,7 @@ void CtiPointClientManager::refreshReasonabilityLimits(LONG pntID, LONG paoID)
 
 void CtiPointClientManager::refreshPointLimits(LONG pntID, LONG paoID)
 {
-    LONG        lTemp = 0;
-    CtiTablePointLimit limitTable;
+    LONG   lTemp = 0;
     string sql;
 
     coll_type::writer_lock_guard_t guard(getLock());
@@ -726,14 +782,12 @@ void CtiPointClientManager::refreshPointLimits(LONG pntID, LONG paoID)
 
     if(pntID != 0)
     {
-        limitTable.setPointID(pntID);
-        limitTable.setLimitNumber(0);
-        _limits.erase(limitTable);
-        limitTable.setLimitNumber(1);
-        _limits.erase(limitTable);
+        _limits.erase(CtiTablePointLimit(pntID, 0));
+        _limits.erase(CtiTablePointLimit(pntID, 1));
     }
     else if(paoID != 0)
     {
+        //  is this right?  If we refresh limits by pao, we clear all limits for all points?
         _limits.clear();
     }
     if(DebugLevel & 0x00010000)
@@ -741,7 +795,7 @@ void CtiPointClientManager::refreshPointLimits(LONG pntID, LONG paoID)
         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Limits" << endl;
     }
     /* Go after the point limits! */
-    CtiTablePointLimit().getSQL( sql, pntID, paoID );
+    CtiTablePointLimit::getSQL( sql, pntID, paoID );
 
     rdr = ExecuteQuery( conn, sql );
 
@@ -752,8 +806,7 @@ void CtiPointClientManager::refreshPointLimits(LONG pntID, LONG paoID)
 
     while( rdr() )
     {
-        limitTable.DecodeDatabaseReader(rdr);
-        _limits.insert(limitTable);
+        _limits.insert(CtiTablePointLimit(rdr));
     }
 
     if((stop = stop.now()).seconds() - start.seconds() > 5 )
@@ -779,9 +832,9 @@ void CtiPointClientManager::removePoint(Inherited::ptr_type pTempCtiPoint)
     Inherited::removePoint(pTempCtiPoint);
 }
 
-CtiPointClientManager::PointMap CtiPointClientManager::getRegistrationMap(LONG mgrID)
+CtiPointClientManager::WeakPointMap CtiPointClientManager::getRegistrationMap(LONG mgrID)
 {
-    PointMap temp;
+    WeakPointMap temp;
     ConnectionMgrPointMap::iterator conIter;
 
     if( (conIter = _conMgrPointMap.find(mgrID)) != _conMgrPointMap.end() )
@@ -837,9 +890,7 @@ CtiTablePointLimit CtiPointClientManager::getPointLimit(LONG pointID, LONG limit
 {
     coll_type::reader_lock_guard_t guard(getLock());
 
-    CtiTablePointLimit retVal;
-    retVal.setPointID(pointID);
-    retVal.setLimitNumber(limitNum);
+    CtiTablePointLimit retVal(pointID, limitNum);
 
     PointLimitSet::iterator iter = _limits.find(retVal);
     if(iter != _limits.end())
@@ -848,6 +899,74 @@ CtiTablePointLimit CtiPointClientManager::getPointLimit(LONG pointID, LONG limit
     }
 
     return retVal;
+}
+
+CtiTablePointAlarming CtiPointClientManager::getAlarming(LONG pointID)
+{
+    coll_type::reader_lock_guard_t guard(getLock());
+
+    CtiTablePointAlarming retVal(pointID);
+
+    PointAlarmingSet::iterator iter = _alarming.find(retVal);
+    if(iter != _alarming.end())
+    {
+        retVal = *iter;
+    }
+
+    return retVal;
+}
+
+CtiDynamicPointDispatch *CtiPointClientManager::getDynamic(LONG pointID)
+{
+    coll_type::reader_lock_guard_t guard(getLock());
+
+    CtiDynamicPointDispatch *retval = 0;
+
+    DynamicPointDispatchMap::iterator iter = _dynamic.find(pointID);
+    if(iter != _dynamic.end())
+    {
+        retval = iter->second;
+    }
+
+    return retval;
+}
+
+int CtiPointClientManager::getProperty(LONG pointID, unsigned int propertyID)
+{
+    coll_type::reader_lock_guard_t guard(getLock());
+
+    pair<PointPropertyMap::const_iterator,
+         PointPropertyMap::const_iterator> range = _properties.equal_range(pointID);
+
+    for( ; range.first != range.second; ++range.first )
+    {
+        const CtiTablePointProperty *property_ptr = range.first->second;
+        if( property_ptr && property_ptr->getPropertyID() == propertyID )
+        {
+            return property_ptr->getIntProperty();
+        }
+    }
+
+    return numeric_limits<int>::min();
+}
+
+bool CtiPointClientManager::hasProperty(LONG pointID, unsigned int propertyID)
+{
+    coll_type::reader_lock_guard_t guard(getLock());
+
+    pair<PointPropertyMap::const_iterator,
+         PointPropertyMap::const_iterator> range = _properties.equal_range(pointID);
+
+    for( ; range.first != range.second; ++range.first )
+    {
+        const CtiTablePointProperty *property_ptr = range.first->second;
+        if( property_ptr && property_ptr->getPropertyID() == propertyID )
+        {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 bool CtiPointClientManager::pointHasConnection(LONG pointID, const CtiServer::ptr_type &Conn)

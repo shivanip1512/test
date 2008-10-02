@@ -1,8 +1,3 @@
-
-#pragma warning( disable : 4786)
-#ifndef __TBL_PT_ALARM_H__
-#define __TBL_PT_ALARM_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   tbl_pt_alarm
@@ -14,11 +9,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_pt_alarm.h-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2008/07/14 14:49:55 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2008/10/02 18:27:30 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __TBL_PT_ALARM_H__
+#define __TBL_PT_ALARM_H__
+#pragma warning( disable : 4786)
 
 #include <limits.h>
 
@@ -48,14 +46,11 @@ class IM_EX_CTIYUKONDB CtiTablePointAlarming : public CtiMemDBObject
 {
 public:
 
+   //  This enumeration is tied VERY tightly to the order of the list elements in the
+   //  dbeditor.  If they change, this too must change!
 
-   /*
-    *  This enumeration is tied VERY tightly to the order of the list elements in the
-    *  dbeditor.  If they change, this too must change!
-    */
-
-   typedef enum {
-
+   enum CtiStatusPointAlarmStates_t
+   {
       nonUpdatedStatus,
       abnormal,
       uncommandedStateChange,
@@ -72,13 +67,12 @@ public:
       state8,
       state9,
       changeOfState,
-      
+
       invalidstatusstate // = 32
+   };
 
-   } CtiStatusPointAlarmStates_t;
-
-   typedef enum {
-
+   enum CtiNumericPointAlarmStates_t
+   {
       nonUpdatedNumeric,
       rateOfChange,            // for numeric points
       limit0,
@@ -92,10 +86,7 @@ public:
       staleNumeric,
 
       invalidnumericstate // = 32
-
-   } CtiNumericPointAlarmStates_t;
-
-
+   };
 
 protected:
 
@@ -111,59 +102,48 @@ protected:
    BOOL        _notifyOnClear;
    UINT        _notificationGroupID;
 
-private:
+   CtiTablePointAlarming& setPointID            ( const LONG &aLong );
+   CtiTablePointAlarming& setRecipientID        ( const LONG &aLong );
+   CtiTablePointAlarming& setAlarmCategory      ( const INT offset, const UINT &aInt );
+   CtiTablePointAlarming& setAlarmCategory      ( const string str );
+   CtiTablePointAlarming& setExcludeNotifyStates( const UINT &aInt );
+   CtiTablePointAlarming& setAutoAckStates      ( const UINT &aInt );
+   CtiTablePointAlarming& setNotifyOnAcknowledge( const BOOL &aBool );
+   CtiTablePointAlarming& setNotifyOnClear      ( const BOOL &aBool );
+   CtiTablePointAlarming& setNotificationGroupID( const UINT &aInt );
 
-   string statesAsString( );
-   string excludeAsString( );
+private:
 
    static UINT resolveExcludeStates( string &str );
    static UINT resolveAutoAcknowledgeStates( string &str );
 
 public:
 
-   CtiTablePointAlarming( LONG pid = 0 );
+   CtiTablePointAlarming(LONG pid = 0);
    CtiTablePointAlarming(const CtiTablePointAlarming& aRef);
+   CtiTablePointAlarming(RWDBReader& rdr);
    virtual ~CtiTablePointAlarming();
 
    CtiTablePointAlarming& operator=(const CtiTablePointAlarming& aRef);
 
-   LONG getPointID() const;
-   LONG getRecipientID() const;
-   UINT getAlarmCategory(const INT offset) const;
-   UINT getExcludeNotifyStates() const;
-   UINT getAutoAckStates() const;
-   BOOL getNotifyOnAcknowledge() const;
-   BOOL getNotifyOnClear() const;
-   UINT getNotificationGroupID() const;
-
-
-   CtiTablePointAlarming& setPointID( const LONG &aLong );
-   CtiTablePointAlarming& setRecipientID( const LONG &aLong );
-   CtiTablePointAlarming& setAlarmCategory( const INT offset, const UINT &aInt );
-   CtiTablePointAlarming& setAlarmCategory( const string str );
-   CtiTablePointAlarming& setExcludeNotifyStates( const UINT &aInt );
-   CtiTablePointAlarming& setAutoAckStates( const UINT &aInt );
-   CtiTablePointAlarming& setNotifyOnAcknowledge( const BOOL &aBool );
-   CtiTablePointAlarming& setNotifyOnClear( const BOOL &aBool );
-   CtiTablePointAlarming& setNotificationGroupID( const UINT &aInt );
-
+   bool operator<(const CtiTablePointAlarming &rhs) const;
 
    static void getSQL(string &sql, LONG pointID = 0, LONG paoID = 0);
-   //static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
    static string getTableName();
 
-   //virtual RWDBStatus Insert();
-   //virtual RWDBStatus Update();
-   //virtual RWDBStatus Restore();
-   //virtual RWDBStatus Delete();
+   LONG getPointID()                        const;
+   LONG getRecipientID()                    const;
+   UINT getAlarmCategory(const INT offset)  const;
+   UINT getExcludeNotifyStates()            const;
+   UINT getAutoAckStates()                  const;
+   BOOL getNotifyOnAcknowledge()            const;
+   BOOL getNotifyOnClear()                  const;
+   UINT getNotificationGroupID()            const;
 
-   virtual void DecodeDatabaseReader(RWDBReader& rdr);
-
-
-   bool isNotifyExcluded( int alarm) const;
-   bool isAutoAcked( int alarm) const;
-   bool alarmOn( int alarm ) const;
-   INT alarmPriority( int alarm ) const;
-
+   bool isNotifyExcluded( int alarm ) const;
+   bool isAutoAcked     ( int alarm ) const;
+   bool alarmOn         ( int alarm ) const;
+   INT  alarmPriority   ( int alarm ) const;
 };
+
 #endif // #ifndef __TBL_PT_ALARM_H__

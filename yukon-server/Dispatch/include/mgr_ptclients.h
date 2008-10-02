@@ -1,6 +1,3 @@
-#ifndef __MGR_PTCLIENTS_H__
-#pragma warning( disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   mgr_ptclients
@@ -9,22 +6,16 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/mgr_ptclients.h-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2008/09/29 22:17:24 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2008/10/02 18:27:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-
+#ifndef __MGR_PTCLIENTS_H__
 #define __MGR_PTCLIENTS_H__
+#pragma warning( disable : 4786)
 
 #include <list>
-using std::list;
-
-#include <rw/db/connect.h>
-
-#include <rw\tpslist.h>
-#include <rw\thr\mutex.h>
-#include <rw/thr/recursiv.h>
 
 #include "dlldefs.h"
 #include "mgr_point.h"
@@ -45,29 +36,35 @@ class CtiPointRegistrationMsg;
 class IM_EX_CTIVANGOGH CtiPointClientManager : public CtiPointManager
 {
 public:
-    typedef struct ReasonabilityLimitStruct
+    struct ReasonabilityLimitStruct
     {
         double highLimit;
         double lowLimit;
     };
 private:
-   typedef map<LONG, CtiPointWPtr>     PointMap;
-   typedef map<LONG, PointMap>         ConnectionMgrPointMap;
-   typedef map<LONG, ReasonabilityLimitStruct > ReasonabilityLimitMap;
-   typedef set<CtiTablePointLimit>     PointLimitSet;
-   typedef ConnectionMgrPointMap::iterator ConMgrPtMapIter;
-   typedef map<LONG, CtiPointConnection> PointConnectionMap;
+   typedef std::map<LONG, WeakPointMap>             ConnectionMgrPointMap;
+   typedef std::map<LONG, ReasonabilityLimitStruct> ReasonabilityLimitMap;
+   typedef std::set<CtiTablePointLimit>             PointLimitSet;
+   typedef std::set<CtiTablePointAlarming>          PointAlarmingSet;
+   typedef std::multimap<long, CtiTablePointProperty *> PointPropertyMap;
+   typedef std::map<long, CtiDynamicPointDispatch *>    DynamicPointDispatchMap;
+   typedef std::map<long, CtiPointConnection>           PointConnectionMap;
 
-   ConnectionMgrPointMap _conMgrPointMap;
-   ReasonabilityLimitMap _reasonabilityLimits;
-   PointLimitSet         _limits;
-   PointConnectionMap    _pointConnectionMap;
+   ConnectionMgrPointMap    _conMgrPointMap;
+   ReasonabilityLimitMap    _reasonabilityLimits;
+   PointLimitSet            _limits;
+   PointAlarmingSet         _alarming;
+   PointPropertyMap         _properties;
+   DynamicPointDispatchMap  _dynamic;
+   PointConnectionMap       _pointConnectionMap;
 
    typedef CtiPointManager Inherited;
 
+   void refreshAlarming           (LONG pntID, LONG paoID);
+   void refreshProperties         (LONG pntID, LONG paoID);
    void refreshReasonabilityLimits(LONG pntID, LONG paoID);
-   void refreshPointLimits(LONG pntID, LONG paoID);
-   void processPointDynamicData(LONG pntID, LONG paoID);
+   void refreshPointLimits        (LONG pntID, LONG paoID);
+   void processPointDynamicData   (LONG pntID, LONG paoID);
 
 protected:
 
@@ -96,9 +93,13 @@ public:
 
    bool hasReasonabilityLimits(LONG pointid);
    ReasonabilityLimitStruct getReasonabilityLimits(LONG pointID);
-   CtiTablePointLimit getPointLimit(LONG pointID, LONG limitNum);
+   CtiTablePointLimit       getPointLimit(LONG pointID, LONG limitNum);  //  is copying the table cheap/fast enough?
+   CtiTablePointAlarming    getAlarming  (LONG pointID);                 //    if not, we'll need to return smart pointers
+   CtiDynamicPointDispatch *getDynamic   (LONG pointID);    //  I have the feeling that dynamic data and point properties should
+   int  getProperty (LONG pointID, unsigned int property);  //    be smart pointers, since we're playing fast and loose with
+   bool hasProperty (LONG pointID, unsigned int property);  //    deletions and reloads
 
-   PointMap getRegistrationMap(LONG mgrID);
+   WeakPointMap getRegistrationMap(LONG mgrID);
 
 };
 

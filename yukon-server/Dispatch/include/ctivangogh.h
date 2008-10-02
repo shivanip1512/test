@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ctivangogh.h-arc  $
-* REVISION     :  $Revision: 1.54 $
-* DATE         :  $Date: 2008/06/30 15:24:29 $
+* REVISION     :  $Revision: 1.55 $
+* DATE         :  $Date: 2008/10/02 18:27:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -156,7 +156,7 @@ private:
     static void sendbGCtrlC(void *who);
     void sendPointTriggers( const CtiPointDataMsg &aPD , CtiPointSPtr point );
     void sendPendingControlRequest(const CtiPointDataMsg &aPD, CtiPointSPtr point, PtVerifyTriggerSPtr verificationPtr);
-    bool limitStateCheck( const int alarm, CtiTablePointLimit &limit, double val, int &direction);
+    bool limitStateCheck( const int alarm, const CtiTablePointLimit &limit, double val, int &direction);
 
     CtiPointDataMsg* createPointDataMsg(const CtiDynamicPointDispatch& pDyn);
 
@@ -175,7 +175,7 @@ private:
     std::multiset<StalePointTimeData> _expirationSet;//This is yucky. Oh well.
     std::map<long, CtiTime> _pointUpdatedTime;//The whole point of this is to give me a time associated with these points.
     void loadStalePointMaps(int pointID = 0);
-    void processStalePoint(CtiPointSPtr pPoint, CtiDynamicPointDispatch* pDyn, const CtiPointDataMsg &aPD, CtiMultiWrapper& wrap );
+    void processStalePoint(CtiPointSPtr pPoint, CtiDynamicPointDispatch* pDyn, int updateType, const CtiPointDataMsg &aPD, CtiMultiWrapper& wrap );
     void checkForStalePoints(CtiMultiWrapper &aWrap);
 
 public:
@@ -232,7 +232,7 @@ public:
     BOOL  isConnectionAttachedToMsgPoint(const CtiServer::ptr_type &Conn,
                                          const LONG                          pID);
     BOOL  isPointDataForConnection(const CtiServer::ptr_type &Conn, const CtiPointDataMsg &Msg);
-    BOOL  isPointDataNewInformation(const CtiPointDataMsg &Msg, CtiDynamicPointDispatch *&pDyn);
+    BOOL  isPointDataNewInformation(const CtiPointDataMsg &Msg, const CtiDynamicPointDispatch *pDyn);
     BOOL  isSignalForConnection(const CtiServer::ptr_type &Conn, const CtiSignalMsg &Msg);
     BOOL  isTagForConnection(const CtiServer::ptr_type   &Conn, const CtiTagMsg &Msg);
 

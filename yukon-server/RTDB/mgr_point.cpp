@@ -6,15 +6,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.54 $
-* DATE         :  $Date: 2008/09/29 22:17:23 $
+* REVISION     :  $Revision: 1.55 $
+* DATE         :  $Date: 2008/10/02 18:27:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-
-#include <rw/db/db.h>
+#include "boost/mem_fn.hpp"
 
 #include "ctidbgmem.h"  // CTIDBG_new
 #include "pt_base.h"
@@ -29,7 +28,6 @@
 #include "pt_status.h"
 
 #include "resolvers.h"
-#include "tbl_pt_alarm.h"
 #include "utility.h"
 
 #include "rwutil.h"
@@ -74,29 +72,41 @@ static RWDBReader& operator >> (RWDBReader& rdr, CtiPointBase& p);
 CtiPointBase* PointFactory(RWDBReader &rdr);
 
 
-inline RWBoolean
-isPointNotUpdated(CtiPointSPtr &pPoint, void* d)
-{
-    // Return TRUE if it is NOT SET
-    return(RWBoolean(!pPoint->getUpdatedFlag()));
-}
+// Return TRUE if it is NOT SET
+inline RWBoolean isPointNotUpdated(CtiPointSPtr &pPoint, void* d)  {  return(RWBoolean(!pPoint->getUpdatedFlag()));  }
 
-void
-ApplyPointResetUpdated(const long key, CtiPointSPtr pPoint, void* d)
+void ApplyPointResetUpdated(const long key, CtiPointSPtr pPoint, void* d)
 {
     pPoint->resetUpdatedFlag();
     pPoint->setValid();
     return;
 }
 
-void
-ApplyInvalidateNotUpdated(const long key, CtiPointSPtr pPoint, void* d)
+
+template <class K, class _Ty>
+void erase_from_multimap(multimap<K, _Ty> &coll, const K key, const _Ty value)
 {
-    if(!pPoint->getUpdatedFlag())
+    multimap<K, _Ty>::iterator itr, upper_bound;
+
+    itr         = coll.lower_bound(key);
+    upper_bound = coll.upper_bound(key);
+
+    for( ; itr != upper_bound; itr++ )
     {
-        pPoint->resetValid();   //   NOT NOT NOT Valid
+         if( itr->second == value )
+         {
+             coll.erase(itr);
+
+             break;
+         }
     }
-    return;
+}
+
+
+CtiPointManager::CtiPointManager() {}
+
+CtiPointManager::~CtiPointManager()
+{
 }
 
 
@@ -253,7 +263,7 @@ void CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType_t pntType
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << sql << endl;
                 }
-                /*CtiPointAccumulator().getSQL( db, keyTable, selector );
+                /*CtiPointAccumulator::getSQL( db, keyTable, selector );
                 if(pntID != 0) selector.where( keyTable["pointid"] == RWDBExpr( pntID ) && selector.where() );
                 if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
 
@@ -315,9 +325,7 @@ void CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType_t pntType
 
             if(pntID == 0 && paoID == 0 && rowFound)
             {
-                _smartMap.apply(ApplyInvalidateNotUpdated, NULL);
-
-                while( pTempCtiPoint = _smartMap.remove(isPointNotUpdated, NULL) )
+                while( pTempCtiPoint = _smartMap.find(isPointNotUpdated, NULL) )
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -325,8 +333,7 @@ void CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType_t pntType
                         dout << "  Evicting " << pTempCtiPoint->getName() << " from list" << endl;
                     }
 
-                    //  Remove the point from the lookup maps
-                    removePoint(pTempCtiPoint);
+                    erase(pTempCtiPoint->getPointID());
                 }
             }
         }   // Temporary results are destroyed to free the connection
@@ -472,38 +479,6 @@ void CtiPointManager::refreshListByIDs(const vector<long> &id_list, bool paoids)
 }
 
 
-void CtiPointManager::DumpList(void)
-{
-    try
-    {
-        coll_type::reader_lock_guard_t guard(getLock());
-
-        spiterator itr, itr_end = end();
-
-        for( itr = begin(); itr != itr_end; itr++)
-        {
-            itr->second->DumpData();
-
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << endl;
-            }
-        }
-    }
-    catch(RWExternalErr e )
-    {
-        //Make sure the list is cleared
-        { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Attempting to clear device list..." << endl;}
-
-        ClearList();
-
-        { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "DumpPoints:  " << e.why() << endl;}
-        RWTHROW(e);
-
-    }
-}
-
-
 CtiPointBase* PointFactory(RWDBReader &rdr)
 {
     static const RWCString pointtype = "pointtype";
@@ -627,11 +602,85 @@ void CtiPointManager::refreshPoints(bool &rowFound, RWDBReader& rdr)
     }
 }
 
+
+void CtiPointManager::updatePointMaps( const CtiPointBase &point, long old_pao, CtiPointType_t old_type, int old_offset, int old_control_offset )
+{
+    long point_id = point.getPointID();
+
+    long           new_pao            = point.getDeviceID();
+    CtiPointType_t new_type           = point.getType();
+    int            new_offset         = point.getPointOffset();
+    int            new_control_offset = point.getControlOffset();
+
+    bool pao_change            = new_pao            != old_pao,
+         type_change           = new_type           != old_type,
+         offset_change         = new_offset         != old_offset,
+         control_offset_change = new_control_offset != old_control_offset;
+
+    if( pao_change || type_change || offset_change || control_offset_change )
+    {
+        //  refresh the control offset if necessary
+        if( old_type == StatusPointType && old_control_offset && (pao_change || type_change || control_offset_change) )
+        {
+            _control_offsets.erase(pao_offset_t(old_pao, old_control_offset));
+
+            if( new_type == StatusPointType &&
+                new_control_offset )
+            {
+                _control_offsets.insert(std::make_pair(pao_offset_t(new_pao, new_control_offset), point_id));
+            }
+        }
+
+        if( pao_change || type_change || offset_change )
+        {
+            erase_from_multimap(_type_offsets, pao_offset_t(old_pao, old_offset), point_id);
+            _type_offsets.insert(std::make_pair(pao_offset_t(new_pao, new_offset), point_id));
+        }
+
+        if( pao_change )
+        {
+            erase_from_multimap(_pao_pointids, old_pao, point_id);
+            _pao_pointids.insert(std::make_pair(new_pao, point_id));
+        }
+    }
+}
+
+
+void CtiPointManager::updateAccess(long pointid, time_t time_now)
+{
+    lru_guard_t guard(_lru_mux);
+
+    time_t time_index = time_now / 10;
+
+    lru_point_lookup_map::iterator lru_point = _lru_points.find(pointid);
+
+    //  we know about this pointid
+    if( lru_point != _lru_points.end() )
+    {
+        lru_timeslice_map::iterator &timeslice = lru_point->second;
+
+        //  it's already in the right timeslice - we're done
+        if( timeslice->first == time_index )  return;
+
+        //  invalidate the old entry
+        timeslice->second.erase(pointid);
+    }
+
+    //  insert the pointid into the current timeslice's set
+    _lru_timeslices[time_index].insert(pointid);
+
+    //  update the point's iterator
+    _lru_points[pointid] = _lru_timeslices.find(time_now / 10);
+}
+
+
 void CtiPointManager::addPoint( CtiPointBase *point )
 {
     if( point )
     {
         _smartMap.insert(point->getID(), point); // Stuff it in the list
+
+        updateAccess(point->getID());
 
         //  add it into the offset lookup map
         _type_offsets.insert(std::make_pair(pao_offset_t(point->getDeviceID(), point->getPointOffset()), point->getPointID()));
@@ -648,6 +697,8 @@ void CtiPointManager::addPoint( CtiPointBase *point )
 
 CtiPointManager::ptr_type CtiPointManager::getEqual (LONG Pt)
 {
+    updateAccess(Pt);
+
     return _smartMap.find(Pt);
 }
 
@@ -693,6 +744,8 @@ CtiPointManager::ptr_type CtiPointManager::getEqualByName(LONG pao, string pname
             {
                 if(p->getUpdatedFlag())
                 {
+                    updateAccess(p->getPointID());
+
                     pRet = p;
                     break;
                 }
@@ -733,11 +786,18 @@ void CtiPointManager::getEqualByPAO(long pao, vector<ptr_type> &points)
         multimap<long, long>::const_iterator itr         = _pao_pointids.lower_bound(pao),
                                              lower_bound = _pao_pointids.upper_bound(pao);
 
+        time_t time_now = std::time(0);
+
         for( ; itr != lower_bound; itr++ )
         {
             ptr_type p = getEqual(itr->second);
 
-            if( p )  points.push_back(p);
+            if( p )
+            {
+                updateAccess(p->getPointID(), time_now);
+
+                points.push_back(p);
+            }
         }
     }
 }
@@ -784,6 +844,8 @@ CtiPointManager::ptr_type CtiPointManager::getOffsetTypeEqual(LONG pao, INT Offs
                 {
                     if( p->getUpdatedFlag() )
                     {
+                        updateAccess(p->getPointID());
+
                         pRet = p;
                     }
                     else
@@ -824,10 +886,12 @@ CtiPointManager::ptr_type CtiPointManager::getControlOffsetEqual(LONG pao, INT O
 
         if( control_itr != _control_offsets.end() )
         {
-            if( p = getEqual(control_itr->second) /* && p->getDeviceID() == pao */ )
+            if( p = getEqual(control_itr->second) )
             {
                 if( p->getUpdatedFlag() )
                 {
+                    updateAccess(p->getPointID());
+
                     pRet = p;
                 }
                 else
@@ -843,253 +907,10 @@ CtiPointManager::ptr_type CtiPointManager::getControlOffsetEqual(LONG pao, INT O
 }
 
 
-CtiPointManager::spiterator CtiPointManager::begin()
-{
-    return _smartMap.getMap().begin();
-}
-
-CtiPointManager::spiterator CtiPointManager::end()
-{
-    return _smartMap.getMap().end();
-}
-
-size_t CtiPointManager::entries()
-{
-    return _smartMap.entries();
-}
-
-
-long CtiPointManager::getPAOIdForPointId(long pointid)
-{
-    long retval = -1;
-
-    ptr_type p = getEqual(pointid);
-
-    if( p )
-    {
-        retval = p->getDeviceID();
-    }
-
-    return retval;
-}
-
-
-CtiPointManager::CtiPointManager() {}
-
-extern void cleanupDB();
-
-CtiPointManager::~CtiPointManager()
-{
-    // cleanupDB();  // Deallocate all the DB stuff.
-}
-
-
-void CtiPointManager::ClearList(void)
-{
-    coll_type::writer_lock_guard_t guard(getLock());
-
-    _smartMap.removeAll(NULL, 0);
-
-    _pao_pointids.clear();
-    _type_offsets.clear();
-    _control_offsets.clear();
-
-    _paoids_loaded.clear();
-    _all_paoids_loaded = false;
-}
-
-
-template <class K, class _Ty>
-void erase_from_multimap(multimap<K, _Ty> &coll, const K key, const _Ty value)
-{
-    multimap<K, _Ty>::iterator itr, upper_bound;
-
-    itr         = coll.lower_bound(key);
-    upper_bound = coll.upper_bound(key);
-
-    for( ; itr != upper_bound; itr++ )
-    {
-         if( itr->second == value )
-         {
-             coll.erase(itr);
-
-             break;
-         }
-    }
-}
-
-
-void CtiPointManager::updatePointMaps( const CtiPointBase &point, long old_pao, CtiPointType_t old_type, int old_offset, int old_control_offset )
-{
-    long point_id = point.getPointID();
-
-    long           new_pao            = point.getDeviceID();
-    CtiPointType_t new_type           = point.getType();
-    int            new_offset         = point.getPointOffset();
-    int            new_control_offset = point.getControlOffset();
-
-    bool pao_change            = new_pao            != old_pao,
-         type_change           = new_type           != old_type,
-         offset_change         = new_offset         != old_offset,
-         control_offset_change = new_control_offset != old_control_offset;
-
-    if( pao_change || type_change || offset_change || control_offset_change )
-    {
-        //  refresh the control offset if necessary
-        if( old_type == StatusPointType && old_control_offset && (pao_change || type_change || control_offset_change) )
-        {
-            _control_offsets.erase(pao_offset_t(old_pao, old_control_offset));
-
-            if( new_type == StatusPointType &&
-                new_control_offset )
-            {
-                _control_offsets.insert(std::make_pair(pao_offset_t(new_pao, new_control_offset), point_id));
-            }
-        }
-
-        if( pao_change || type_change || offset_change )
-        {
-            erase_from_multimap(_type_offsets, pao_offset_t(old_pao, old_offset), point_id);
-            _type_offsets.insert(std::make_pair(pao_offset_t(new_pao, new_offset), point_id));
-        }
-
-        if( pao_change )
-        {
-            erase_from_multimap(_pao_pointids, old_pao, point_id);
-            _pao_pointids.insert(std::make_pair(new_pao, point_id));
-        }
-    }
-}
-
-
-CtiPointManager::coll_type::lock_t &CtiPointManager::getLock()
-{
-    return _smartMap.getLock();
-}
-
-
-void CtiPointManager::removePoint(ptr_type pTempCtiPoint)
-{
-    if( pTempCtiPoint )
-    {
-        //  If it's a status point with control, remove it from the control point lookup as well
-        if( pTempCtiPoint->getType() == StatusPointType &&
-            pTempCtiPoint->getControlOffset() )
-        {
-            _control_offsets.erase(pao_offset_t(pTempCtiPoint->getDeviceID(), pTempCtiPoint->getControlOffset()));
-        }
-
-        erase_from_multimap(_type_offsets, pao_offset_t(pTempCtiPoint->getDeviceID(), pTempCtiPoint->getPointOffset()), pTempCtiPoint->getPointID());
-
-        erase_from_multimap(_pao_pointids, pTempCtiPoint->getDeviceID(), pTempCtiPoint->getPointID());
-    }
-}
-
-
-bool CtiPointManager::orphan(long pid)
-{
-    bool retVal = false;
-
-    if( _smartMap.remove(pid) )
-    {
-        retVal = true;
-    }
-    return retVal;
-}
-
-//Load based on PAO assumes it is in add!
-void CtiPointManager::refreshAlarming(LONG pntID, LONG paoID)
-{
-    coll_type::writer_lock_guard_t guard(getLock());
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBDatabase   db       = conn.database();
-    RWDBSelector   selector = conn.database().selector();
-    RWDBTable      keyTable;
-    RWDBReader     rdr;
-    string         sql;
-    CtiTime start, stop;
-
-    start = start.now();
-    CtiTablePointAlarming::getSQL(sql, pntID, paoID);
-
-    rdr = ExecuteQuery( conn, sql );
-
-    if(_smartMap.setErrorCode(rdr.status().errorCode()) != RWDBStatus::ok)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << sql << endl;
-    }
-
-    LONG pID;
-    ptr_type pPt;
-
-    while( rdr() )
-    {
-        rdr["pointid"] >> pID;
-
-        // Find it in our list and decode it.
-        pPt = _smartMap.find(pID);
-        if(pPt)
-        {
-            pPt->DecodeAlarmingDatabaseReader(rdr);
-        }
-    }
-
-    RWDBSelector attributeSelector = conn.database().selector();
-    start = start.now();
-    CtiTablePointProperty::getSQL( db, keyTable, attributeSelector );
-    RWDBReader attribRdr;
-
-    if(pntID)
-    {
-        attributeSelector.where( keyTable["pointid"] == pntID && attributeSelector.where() );
-        pPt = _smartMap.find(pID);
-        if(pPt && pPt->getProperties() != NULL)
-        {
-            pPt->getProperties()->resetTable();
-        }
-    }
-    if(paoID)
-    {
-        RWDBSelector paoSelector = conn.database().selector();
-        RWDBTable pointTable = db.table("point");
-        paoSelector << pointTable["pointid"];
-        paoSelector.from(pointTable);
-        paoSelector.where(pointTable["paobjectid"] == paoID);
-        selector.where(keyTable["pointid"].in(paoSelector) && selector.where());
-    }
-
-    attribRdr = attributeSelector.reader( conn );
-
-    if(_smartMap.setErrorCode(attribRdr.status().errorCode()) != RWDBStatus::ok)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << attributeSelector.asString() << endl;
-    }
-
-    while( attribRdr() )
-    {
-        attribRdr["pointid"] >> pID;
-
-        // Find it in our list and decode it.
-        pPt = _smartMap.find(pID);
-        if(pPt)
-        {
-            pPt->DecodeAttributeDatabaseReader(attribRdr);
-        }
-    }
-
-    if((stop = stop.now()).seconds() - start.seconds() > 5 )
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds for Alarming " << endl;
-    }
-}
+CtiPointManager::spiterator         CtiPointManager::begin()    {  return _smartMap.getMap().begin();  }
+CtiPointManager::spiterator         CtiPointManager::end()      {  return _smartMap.getMap().end();    }
+size_t                              CtiPointManager::entries()  {  return _smartMap.entries();         }
+CtiPointManager::coll_type::lock_t &CtiPointManager::getLock()  {  return _smartMap.getLock();         }
 
 
 void CtiPointManager::apply(void (*applyFun)(const long, ptr_type, void*), void* d)
@@ -1130,43 +951,144 @@ void CtiPointManager::apply(void (*applyFun)(const long, ptr_type, void*), void*
     }
 }
 
-CtiPointManager::ptr_type CtiPointManager::find(bool (*findFun)(const long, const ptr_type &, void*), void* d)
-{
-    ptr_type p;
 
+long CtiPointManager::getPAOIdForPointId(long pointid)
+{
+    ptr_type p = getEqual(pointid);
+
+    if( p )  return p->getDeviceID();
+
+    return -1;
+}
+
+
+void CtiPointManager::DumpList(void)
+{
     try
     {
-        int trycount = 0;
-        coll_type::reader_lock_guard_t guard(getLock(), 30000);
+        coll_type::reader_lock_guard_t guard(getLock());
 
-        while(!guard.isAcquired())
+        spiterator itr, itr_end = end();
+
+        for( itr = begin(); itr != itr_end; itr++)
         {
-            if(trycount++ > 6)
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint: Unable to lock device mutex **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "  CtiDeviceManager::find " << endl;
-                }
-                break;
-            }
+            itr->second->DumpData();
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint: Unable to lock device mutex.  Will retry. **** " << __FILE__ << " (" << __LINE__ << ") Last Acquired By TID: " << static_cast<string>(getLock()) << " Faddr: 0x" << findFun << endl;
+                dout << endl;
             }
+        }
+    }
+    catch(RWExternalErr e )
+    {
+        //Make sure the list is cleared
+        { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Attempting to clear device list..." << endl;}
 
-            guard.tryAcquire(30000);
+        ClearList();
+
+        { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "DumpPoints:  " << e.why() << endl;}
+        RWTHROW(e);
+
+    }
+}
+
+
+void CtiPointManager::ClearList(void)
+{
+    coll_type::writer_lock_guard_t guard(getLock());
+
+    _smartMap.removeAll(NULL, 0);
+
+    _pao_pointids.clear();
+    _type_offsets.clear();
+    _control_offsets.clear();
+
+    _paoids_loaded.clear();
+    _all_paoids_loaded = false;
+}
+
+
+void CtiPointManager::processExpired()
+{
+    lru_guard_t guard(_lru_mux);
+
+    lru_timeslice_map::iterator timeslice_itr = _lru_timeslices.begin(),
+                                timeslice_end = _lru_timeslices.end();
+
+    const int cache_max = 100 * 1000;
+    int valid_points = 0;
+
+    time_t expiration_time  = 300;  //  only expire points that were created longer than this ago
+    time_t expiration_index = (std::time(0) - expiration_time) / 10;
+
+    //  add up to our maximum number of points
+    for( ; timeslice_itr != timeslice_end && (valid_points + timeslice_itr->second.size()) < cache_max; ++timeslice_itr )
+    {
+        valid_points += timeslice_itr->second.size();
+    }
+
+    //  if we're not already into the expired timeslices, find the first expired entry
+    if( timeslice_itr != timeslice_end && _lru_timeslices.key_comp()(timeslice_itr->first, expiration_index) )
+    {
+        timeslice_itr = _lru_timeslices.upper_bound(expiration_index);
+    }
+
+    set<long> expired_pointids;
+
+    //  go through the remaining timeslices and expire everything
+    while( timeslice_itr != timeslice_end )
+    {
+        set<long>::iterator point_itr = timeslice_itr->second.begin(),
+                            point_end = timeslice_itr->second.end();
+
+        while( point_itr != point_end )
+        {
+            expired_pointids.insert(*point_itr++);
         }
 
-        p = _smartMap.find(findFun, d);
-    }
-    catch(...)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        timeslice_itr = _lru_timeslices.erase(timeslice_itr);
     }
 
-    return p;
+    vector<ptr_type> expired;
+
+    set<long>::iterator pointid_itr = expired_pointids.begin(),
+                        pointid_end = expired_pointids.end();
+
+    //  erase all expired points
+    for( ; pointid_itr != pointid_end; ++pointid_itr )
+    {
+        erase(*pointid_itr);
+
+        _lru_points.erase(*pointid_itr);
+    }
+}
+
+
+void CtiPointManager::erase(long pid)
+{
+    ptr_type deleted = _smartMap.remove(pid);
+
+    _pendingDeletions.insert(make_pair(pid, CtiPointWPtr(deleted)));
+
+    removePoint(deleted);
+}
+
+
+void CtiPointManager::removePoint(ptr_type pTempCtiPoint)
+{
+    if( pTempCtiPoint )
+    {
+        //  If it's a status point with control, remove it from the control point lookup as well
+        if( pTempCtiPoint->getType() == StatusPointType &&
+            pTempCtiPoint->getControlOffset() )
+        {
+            _control_offsets.erase(pao_offset_t(pTempCtiPoint->getDeviceID(), pTempCtiPoint->getControlOffset()));
+        }
+
+        erase_from_multimap(_type_offsets, pao_offset_t(pTempCtiPoint->getDeviceID(), pTempCtiPoint->getPointOffset()), pTempCtiPoint->getPointID());
+
+        erase_from_multimap(_pao_pointids, pTempCtiPoint->getDeviceID(), pTempCtiPoint->getPointID());
+    }
 }
 

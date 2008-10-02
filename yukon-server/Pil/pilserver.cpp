@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.114 $
-* DATE         :  $Date: 2008/09/29 22:17:24 $
+* REVISION     :  $Revision: 1.115 $
+* DATE         :  $Date: 2008/10/02 18:27:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -71,7 +71,7 @@
 
 #include "ctistring.h"
 
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
+using namespace std;
 
 void ReportMessagePriority( CtiMessage *MsgPtr, CtiDeviceManager *&DeviceManager );
 extern IM_EX_CTIBASE void DumpOutMessage(void *Mess);
@@ -82,7 +82,7 @@ CtiPILExecutorFactory   ExecFactory;
 DLLEXPORT CtiLocalConnect<OUTMESS, INMESS> PilToPorter; //Pil handles this one
 DLLEXPORT CtiFIFOQueue< CtiMessage > PorterSystemMessageQueue;
 
-bool user_message_id_equal(const INMESS &in, int user_message_id);
+bool inmess_user_message_id_equal(const INMESS &in, int user_message_id);
 
 static vector< CtiPointDataMsg > pdMsgCol;
 static bool findShedDeviceGroupControl(const long key, CtiDeviceSPtr otherdevice, void *vptrControlParent);
@@ -497,6 +497,24 @@ void CtiPILServer::connectionThread()
     return;
 }
 
+struct get_target_device
+{
+    back_insert_iterator<vector<long> > itr;
+
+    get_target_device(back_insert_iterator<vector<long> > itr_) :
+        itr(itr_)
+    {
+    }
+
+    operator()(INMESS *im)
+    {
+        if( im )
+        {
+            *itr++ = im->TargetID?im->TargetID:im->DeviceID;
+        }
+    }
+};
+
 void CtiPILServer::resultThread()
 {
     INT i;
@@ -517,9 +535,10 @@ void CtiPILServer::resultThread()
     ULONG       BytesRead;
     INMESS      *InMessage = 0;
 
-    list< OUTMESS*    > outList;
-    list< CtiMessage* > retList;
-    list< CtiMessage* > vgList;
+    list<OUTMESS*   > outList;
+    list<CtiMessage*> retList;
+    list<CtiMessage*> vgList;
+    deque<INMESS*>    pendingInQueue;
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -532,9 +551,41 @@ void CtiPILServer::resultThread()
     /* perform the wait loop forever */
     for( ; !bServerClosing ; )
     {
+        const unsigned int inQueueBlockSize =  50;
+        const unsigned int inQueueMaxWait   = 500;  //  500 ms
+
+        CtiHighPerfTimer millis("InQueue duration");
+
         try
         {
-            InMessage = _inQueue.getQueue(500);
+            millis.reset();
+            unsigned int timeWaited = 0;
+
+            while( pendingInQueue.size() < inQueueBlockSize && timeWaited < inQueueMaxWait )
+            {
+                if( !_inQueue.isEmpty() )
+                {
+                    //  can get data immediately...
+                    pendingInQueue.push_back(_inQueue.getQueue(0));
+                }
+                else
+                {
+                    pendingInQueue.push_back(_inQueue.getQueue(inQueueMaxWait - timeWaited));
+
+                    timeWaited = millis.delta();
+                }
+            }
+
+            if( !pendingInQueue.empty() )
+            {
+                vector<long> paoids;
+
+                for_each(pendingInQueue.begin(),
+                         pendingInQueue.end(),
+                         get_target_device(back_inserter(paoids)));
+
+                PointManager->refreshListByPAOIDs(paoids);
+            }
 
             try
             {
@@ -548,161 +599,167 @@ void CtiPILServer::resultThread()
                 bServerClosing = true;
             }
 
-            if( !bServerClosing && InMessage )
+            while( !bServerClosing && !pendingInQueue.empty() )
             {
-                LONG id = InMessage->TargetID;
+                InMessage = pendingInQueue.front();
+                pendingInQueue.pop_front();
 
-                if(id == 0)
+                if( InMessage )
                 {
-                    id = InMessage->DeviceID;
-                }
+                    LONG id = InMessage->TargetID;
 
-                // Find the device..
-                DeviceRecord = DeviceManager->getEqual(id);
-
-                if(DeviceRecord && !(InMessage->MessageFlags & MessageFlag_RouteToPorterGatewayThread))
-                {
-                    if(DebugLevel & DEBUGLEVEL_PIL_RESULTTHREAD)
+                    if(id == 0)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Pilserver resultThread received an InMessage for " << DeviceRecord->getName();
-                        dout << " at priority " << InMessage->Priority << endl;
+                        id = InMessage->DeviceID;
                     }
 
-                    /* get the time for use in the decodes */
-                    TimeNow = CtiTime();
+                    // Find the device..
+                    DeviceRecord = DeviceManager->getEqual(id);
+
+                    if(DeviceRecord && !(InMessage->MessageFlags & MessageFlag_RouteToPorterGatewayThread))
+                    {
+                        if(DebugLevel & DEBUGLEVEL_PIL_RESULTTHREAD)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " Pilserver resultThread received an InMessage for " << DeviceRecord->getName();
+                            dout << " at priority " << InMessage->Priority << endl;
+                        }
+
+                        /* get the time for use in the decodes */
+                        TimeNow = CtiTime();
+
+                        try
+                        {
+                            // Do some device dependant work on this Inbound message!
+                            DeviceRecord->ProcessResult( InMessage, TimeNow, vgList, retList, outList);
+                        }
+                        catch(...)
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << CtiTime() << " Process Result FAILED " << DeviceRecord->getName() << endl;
+                            }
+                        }
+                    }
+                    else if( InMessage->MessageFlags & MessageFlag_RouteToPorterGatewayThread )
+                    {
+                        // We need response strings from someone.  How can we get a list of results back?
+
+                        string bufstr((char*)(InMessage->Buffer.GWRSt.MsgData));
+                        retList.push_back( CTIDBG_new CtiReturnMsg(0,
+                                                                string(InMessage->Return.CommandStr),
+                                                                bufstr,
+                                                                InMessage->EventCode,
+                                                                InMessage->Return.RouteID,
+                                                                InMessage->Return.MacroOffset,
+                                                                InMessage->Return.Attempt,
+                                                                InMessage->Return.GrpMsgID,
+                                                                InMessage->Return.UserID,
+                                                                InMessage->Return.SOE,
+                                                                CtiMultiMsg_vec()));
+
+                    }
+                    else
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << "InMessage received from unknown device.  Device ID: " << InMessage->DeviceID << endl;
+                        dout << " Port listed as                                   : " << InMessage->Port     << endl;
+                        dout << " Remote listed as                                 : " << InMessage->Remote   << endl;
+                    }
 
                     try
                     {
-                        // Do some device dependant work on this Inbound message!
-                        DeviceRecord->ProcessResult( InMessage, TimeNow, vgList, retList, outList);
+                        if(outList.size())
+                        {
+                            for( i = outList.size() ; i > 0; i-- )
+                            {
+                                OutMessage = outList.front();outList.pop_front();
+                                OutMessage->MessageFlags |= MessageFlag_ApplyExclusionLogic;
+                                _porterOMQueue.putQueue(OutMessage);
+                                OutMessage = 0;
+                            }
+                        }
+
+                        if( retList.size() > 0 )
+                        {
+                            if((DebugLevel & DEBUGLEVEL_PIL_RESULTTHREAD) && vgList.size())
+                            {
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << CtiTime() << " **** Info **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    dout << "   Device " << (DeviceRecord ? DeviceRecord->getName() : "UNKNOWN") << " has generated a dispatch return message.  Data may be duplicated." << endl;
+                                }
+                            }
+
+                            string cmdstr(InMessage->Return.CommandStr);
+                            CtiCommandParser parse( cmdstr );
+                            if(parse.getFlags() & CMD_FLAG_UPDATE)
+                            {
+                                std::list< CtiMessage* >::iterator itr = retList.begin();
+                                while ( itr != retList.end() )
+                                //for(i = 0; i < retList.size(); i++)
+                                {
+                                    CtiMessage *&pMsg = *itr;
+
+                                    if(pMsg->isA() == MSG_PCRETURN || pMsg->isA() == MSG_POINTDATA)
+                                    {
+                                        vgList.push_back(pMsg->replicateMessage());       // Mash it in ther if we said to do so.
+                                    }
+                                    ++itr;
+                                }
+                            }
+                        }
+
+
+                        while( (i = retList.size()) > 0 )
+                        {
+                            CtiMessage *pRet = retList.front();retList.pop_front();
+
+                            if( pRet->isA() == MSG_PCREQUEST )
+                            {
+                                _schedulerQueue.putQueue(pRet);
+                            }
+                            else if((Conn = ((CtiConnection*)InMessage->Return.Connection)) != NULL)
+                            {
+                                if(DebugLevel & DEBUGLEVEL_PIL_RESULTTHREAD)
+                                {
+                                    pRet->dump();
+                                }
+
+                                Conn->WriteConnQue(pRet);
+                            }
+                            else
+                            {
+                                if(DebugLevel & DEBUGLEVEL_PIL_INTERFACE)
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << CtiTime() << " Notice: Request message did not indicate return path. " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    dout << CtiTime() << " Response to client will be discarded." << endl;
+                                }
+                                delete pRet;
+                            }
+                        }
+
+                        while( (i = vgList.size()) > 0 )
+                        {
+                            pVg = vgList.front();vgList.pop_front();
+                            VanGoghConnection.WriteConnQue(pVg);
+                        }
                     }
                     catch(...)
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << CtiTime() << " Process Result FAILED " << DeviceRecord->getName() << endl;
+                            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
                     }
-                }
-                else if( InMessage->MessageFlags & MessageFlag_RouteToPorterGatewayThread )
-                {
-                    // We need response strings from someone.  How can we get a list of results back?
 
-                    string bufstr((char*)(InMessage->Buffer.GWRSt.MsgData));
-                    retList.push_back( CTIDBG_new CtiReturnMsg(0,
-                                                            string(InMessage->Return.CommandStr),
-                                                            bufstr,
-                                                            InMessage->EventCode,
-                                                            InMessage->Return.RouteID,
-                                                            InMessage->Return.MacroOffset,
-                                                            InMessage->Return.Attempt,
-                                                            InMessage->Return.GrpMsgID,
-                                                            InMessage->Return.UserID,
-                                                            InMessage->Return.SOE,
-                                                            CtiMultiMsg_vec()));
-
-                }
-                else
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "InMessage received from unknown device.  Device ID: " << InMessage->DeviceID << endl;
-                    dout << " Port listed as                                   : " << InMessage->Port     << endl;
-                    dout << " Remote listed as                                 : " << InMessage->Remote   << endl;
-                }
-
-                try
-                {
-                    if(outList.size())
+                    if(InMessage)
                     {
-                        for( i = outList.size() ; i > 0; i-- )
-                        {
-                            OutMessage = outList.front();outList.pop_front();
-                            OutMessage->MessageFlags |= MessageFlag_ApplyExclusionLogic;
-                            _porterOMQueue.putQueue(OutMessage);
-                            OutMessage = 0;
-                        }
+                        delete InMessage;
+                        InMessage = 0;
                     }
-
-                    if( retList.size() > 0 )
-                    {
-                        if((DebugLevel & DEBUGLEVEL_PIL_RESULTTHREAD) && vgList.size())
-                        {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Info **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                dout << "   Device " << (DeviceRecord ? DeviceRecord->getName() : "UNKNOWN") << " has generated a dispatch return message.  Data may be duplicated." << endl;
-                            }
-                        }
-
-                        string cmdstr(InMessage->Return.CommandStr);
-                        CtiCommandParser parse( cmdstr );
-                        if(parse.getFlags() & CMD_FLAG_UPDATE)
-                        {
-                            std::list< CtiMessage* >::iterator itr = retList.begin();
-                            while ( itr != retList.end() )
-                            //for(i = 0; i < retList.size(); i++)
-                            {
-                                CtiMessage *&pMsg = *itr;
-
-                                if(pMsg->isA() == MSG_PCRETURN || pMsg->isA() == MSG_POINTDATA)
-                                {
-                                    vgList.push_back(pMsg->replicateMessage());       // Mash it in ther if we said to do so.
-                                }
-                                ++itr;
-                            }
-                        }
-                    }
-
-
-                    while( (i = retList.size()) > 0 )
-                    {
-                        CtiMessage *pRet = retList.front();retList.pop_front();
-
-                        if( pRet->isA() == MSG_PCREQUEST )
-                        {
-                            _schedulerQueue.putQueue(pRet);
-                        }
-                        else if((Conn = ((CtiConnection*)InMessage->Return.Connection)) != NULL)
-                        {
-                            if(DebugLevel & DEBUGLEVEL_PIL_RESULTTHREAD)
-                            {
-                                pRet->dump();
-                            }
-
-                            Conn->WriteConnQue(pRet);
-                        }
-                        else
-                        {
-                            if(DebugLevel & DEBUGLEVEL_PIL_INTERFACE)
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " Notice: Request message did not indicate return path. " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                dout << CtiTime() << " Response to client will be discarded." << endl;
-                            }
-                            delete pRet;
-                        }
-                    }
-
-                    while( (i = vgList.size()) > 0 )
-                    {
-                        pVg = vgList.front();vgList.pop_front();
-                        VanGoghConnection.WriteConnQue(pVg);
-                    }
-                }
-                catch(...)
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-                }
-
-                if(InMessage)
-                {
-                    delete InMessage;
-                    InMessage = 0;
                 }
             }
         }
@@ -989,7 +1046,7 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
                 }
             }
 
-            _inQueue.erase_if(boost::bind(user_message_id_equal, _1, group_message_id));
+            _inQueue.erase_if(boost::bind(inmess_user_message_id_equal, _1, group_message_id));
         }
 
         //This message is a system request for porter, send it to the porter system thread, not a device.
@@ -1478,31 +1535,6 @@ int CtiPILServer::getDeviceGroupMembers( string groupname, vector<long> &paoids 
 }
 
 
-void CtiPILServer::loadDevicePoints(const vector<long> &paoids)
-{
-    try
-    {
-        PointManager->refreshListByPAOIDs(paoids);
-    }
-    catch(RWExternalErr e )
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "CtiPILServer::loadDevicePoints:  " << e.why() << endl;
-        }
-
-        RWTHROW(e);
-    }
-    catch(...)
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-    }
-}
-
-
 INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &parse, list< CtiRequestMsg* > & execList, list< CtiMessage* > & retList)
 {
     INT status = NORMAL;
@@ -1869,17 +1901,6 @@ INT CtiPILServer::analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, l
 
                 for(i = 0; i < roleVector.size(); i++)
                 {
-#if 0
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << " RouteId " << roleVector[i].getRouteID() << endl;
-                        dout << " OutBits " << (int)roleVector[i].getOutBits() << endl;
-                        dout << " FixBits " << (int)roleVector[i].getFixBits() << endl;
-                        dout << " InBits  " << (int)roleVector[i].getInBits() << endl;
-                        dout << " Stages  " << (int)roleVector[i].getStages() << endl;
-                        dout << endl;
-                    }
-#endif
                     // dev_repeater.cpp now looks for a : and uses this to later send out a second command.
                     // This gives us a way to "sleep" between transmissions so the RPT-901 can keep up with us.
                     // The repeater code essentially strips off the first command then sends the 2nd, so to tell
@@ -2099,7 +2120,7 @@ int CtiPILServer::reportClientRequests(CtiDeviceSPtr &Dev, const CtiCommandParse
 }
 
 
-bool user_message_id_equal(const INMESS &in, int user_message_id)
+bool inmess_user_message_id_equal(const INMESS &in, int user_message_id)
 {
     return in.Return.UserID == user_message_id;
 }

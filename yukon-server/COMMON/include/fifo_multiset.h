@@ -4,7 +4,7 @@
 
 #include <set>
 
-template <class Element, class Compare=less<Element> >
+template <class Element, class Compare=std::less<Element> >
 struct ordered_pair_less : public std::binary_function<std::pair<Element, unsigned>,
                                                        std::pair<Element, unsigned>, bool>
 {
@@ -24,7 +24,7 @@ struct ordered_pair_less : public std::binary_function<std::pair<Element, unsign
 };
 
 
-template <class Element, class Compare=less<Element> >
+template <class Element, class Compare=std::less<Element> >
 class fifo_multiset : public std::set<std::pair<Element, unsigned>, ordered_pair_less<Element, Compare> >
 {
     //  we should not ever exhaust this count;

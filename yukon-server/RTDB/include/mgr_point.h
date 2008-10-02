@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_point.h-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2008/09/29 22:17:24 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2008/10/02 18:27:29 $
 *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
  * All Rights Reserved
@@ -24,17 +24,11 @@
 #pragma warning( disable : 4786 )
 
 
-#include <rw/db/connect.h>
-#include <map>
-
 #include "dlldefs.h"
 #include "smartmap.h"
+#include "fifo_multiset.h"
 #include "pt_base.h"
-#include "slctpnt.h"
 
-/*
- *  The following functions may be used to create sublists for the points in our database.
- */
 
 class IM_EX_PNTDB CtiPointManager
 {
@@ -46,10 +40,37 @@ public:
    typedef coll_type::spiterator     spiterator;
    typedef coll_type::insert_pair    insert_pair;
 
+   typedef std::map<LONG, CtiPointWPtr> WeakPointMap;
+
 private:
 
-    coll_type     _smartMap;
+    coll_type      _smartMap;
+
+    struct lru_data_t
+    {
+        long   pointid;
+        time_t access_time;
+
+        lru_data_t(long pointid_, time_t access_time_=time(0)) :
+            pointid(pointid_)
+        { };
+
+        bool operator<(const lru_data_t &rhs) const  {  return access_time < rhs.access_time;  };
+    };
+
+    typedef std::map<time_t, set<long>, std::greater<long> > lru_timeslice_map;  //  the make sure the map is sorted as newest-first (largest timestamps)
+    typedef std::map<long, lru_timeslice_map::iterator>      lru_point_lookup_map;
+    typedef CtiLockGuard<CtiCriticalSection>                 lru_guard_t;
+
+    CtiCriticalSection   _lru_mux;
+    lru_timeslice_map    _lru_timeslices;
+    lru_point_lookup_map _lru_points;
+
+    WeakPointMap _pendingDeletions;
+
     void refreshPoints(bool &rowFound, RWDBReader& rdr);
+
+    void updateAccess(long pointid, time_t time_now=time(0));
 
     void addPoint(CtiPointBase *point);  //  also used by the unit test
     void updatePointMaps(const CtiPointBase &point, long old_pao, CtiPointType_t old_type, int old_offset, int old_control_offset );
@@ -81,7 +102,6 @@ private:
 protected:
 
     virtual void removePoint(ptr_type pTempCtiPoint);
-    void refreshAlarming(LONG pntID = 0, LONG paoID = 0);
 
     coll_type::lock_t &getLock();
 
@@ -94,11 +114,13 @@ public:
     virtual void refreshListByPAOIDs  (const std::vector<long> &ids);
     virtual void refreshListByPointIDs(const std::vector<long> &ids);
 
+    void processExpired();
+
     virtual void DumpList(void);
     virtual void ClearList(void);
 
-    void apply(void (*applyFun)(const long, ptr_type, void*), void* d);
-    ptr_type find(bool (*findFun)(const long, const ptr_type &, void*), void* d);
+    void     apply(void (*applyFun)(const long, ptr_type, void*), void* d);
+
     ptr_type getControlOffsetEqual(LONG pao, INT Offset);
     ptr_type getOffsetTypeEqual(LONG pao, INT Offset, CtiPointType_t Type);
     ptr_type getEqual(LONG Pt);
@@ -106,7 +128,7 @@ public:
     void     getEqualByPAO(long pao, std::vector<ptr_type> &points);
     long     getPAOIdForPointId(long pointid);
 
-    bool orphan(long pid);
+    void     erase(long pid);
 
     spiterator begin();
     spiterator end();
