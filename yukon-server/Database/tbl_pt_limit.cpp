@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_limit.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2008/07/14 14:49:55 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2008/10/02 16:09:37 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -164,7 +164,7 @@ string CtiTablePointLimit::getTableName()
 
 bool CtiTablePointLimit::operator<(const CtiTablePointLimit &rhs) const
 {
-    return (_pointID < rhs.getPointID() || (_pointID == rhs.getLimitNumber() && _limitNumber < rhs.getLimitNumber()));
+    return (_pointID < rhs.getPointID() || (_pointID == rhs.getPointID() && _limitNumber < rhs.getLimitNumber()));
 }
 
 bool CtiTablePointLimit::operator==(const CtiTablePointLimit &rhs) const

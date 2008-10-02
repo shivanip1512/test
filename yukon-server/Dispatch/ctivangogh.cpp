@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.193 $
-* DATE         :  $Date: 2008/09/29 22:17:24 $
+* REVISION     :  $Revision: 1.194 $
+* DATE         :  $Date: 2008/10/02 16:09:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -6714,7 +6714,7 @@ void CtiVanGogh::checkNumericLimits(int alarm, CtiPointDataMsg *pData, CtiMultiW
 
     double  val = pData->getValue();
     INT     numericAlarmOffset = (alarm - CtiTablePointAlarming::limit0); // This gives a base 0 (limit0 alarm = 0) for the alarms for later use with pending operations
-    INT     limitnumber = getNumericLimitFromHighLow(numericAlarmOffset, alarm); //Currently returns 0 or 1 for limit 0 or 1
+    INT     limitnumber = getNumericLimitFromHighLow(numericAlarmOffset, alarm) + 1; //Currently returns 0 or 1 for limit 0 or 1
     INT     exceeds = LIMIT_IN_RANGE;
 
     try
