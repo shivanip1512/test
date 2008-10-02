@@ -16,6 +16,7 @@ import com.cannontech.stars.util.task.TimeConsumingTask;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.bean.ManipulationBean;
 import com.cannontech.stars.web.bean.WorkOrderBean;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.stars.action.StarsWorkorderActionController;
 
 public class ApplyActionsController extends StarsWorkorderActionController {
@@ -61,7 +62,11 @@ public class ApplyActionsController extends StarsWorkorderActionController {
             session.removeAttribute( ServletUtils.ATT_REDIRECT );
             LiteYukonUser liteYukonUser = (LiteYukonUser ) session.getAttribute( ServletUtils.ATT_YUKON_USER );
 
-            TimeConsumingTask  task = new ManipulateWorkOrderTask( liteYukonUser, workOrderBean.getWorkOrderList(), changeServiceCompanyID, changeServiceStatusID, changeServiceTypeID, request );
+            boolean confirmOnMessagePage = request.getParameter(ServletUtils.CONFIRM_ON_MESSAGE_PAGE) != null;
+            String redirectUrl = ServletUtil.createSafeRedirectUrl(request, "/operator/WorkOrder/WorkOrderResultSet.jsp");
+            
+            TimeConsumingTask  task = new ManipulateWorkOrderTask( liteYukonUser, workOrderBean.getWorkOrderList(), 
+                changeServiceCompanyID, changeServiceStatusID, changeServiceTypeID, confirmOnMessagePage, redirectUrl, session);
             long id = ProgressChecker.addTask( task );
             String redir = request.getContextPath() + "/operator/WorkOrder/WorkOrderResultSet.jsp";
             

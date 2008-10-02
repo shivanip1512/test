@@ -7,32 +7,30 @@
 package com.cannontech.stars.web.bean;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.cannontech.common.constants.YukonListEntry;
-import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.data.lite.stars.LiteServiceCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.stars.event.EventWorkOrder;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.dr.event.dao.EventWorkOrderDao;
-import com.cannontech.stars.util.AbstractFilter;
 import com.cannontech.stars.util.FilterWrapper;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
-import com.cannontech.stars.util.WorkOrderFilter;
+import com.cannontech.stars.util.filter.DirectionAwareOrderBy;
+import com.cannontech.stars.util.filter.OrderBy;
+import com.cannontech.stars.util.filter.filterby.workorder.WorkOrderOrderBy;
+import com.cannontech.stars.web.collection.SimpleCollection;
+import com.cannontech.stars.web.collection.SimpleCollectionFactory;
 import com.cannontech.stars.xml.serialize.StarsServiceRequest;
 import com.cannontech.util.ServletUtil;
 
@@ -58,90 +56,6 @@ public class WorkOrderBean {
     
 	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 	
-	private static final Comparator<LiteWorkOrderBase> ORDER_NO_CMPTOR = new Comparator<LiteWorkOrderBase>() {
-		public int compare(LiteWorkOrderBase so1, LiteWorkOrderBase so2) {
-			int result = 0;
-			
-			Long on1 = null;
-			try {
-				on1 = Long.valueOf( so1.getOrderNumber() );
-			}
-			catch (NumberFormatException e) {}
-			
-			Long on2 = null;
-			try {
-				on2 = Long.valueOf( so2.getOrderNumber() );
-			}
-			catch (NumberFormatException e) {}
-			
-			if (on1 != null && on2 != null) {
-				result = on1.compareTo( on2 );
-				if (result == 0) result = so1.getOrderNumber().compareTo( so2.getOrderNumber() );
-			}
-			else if (on1 != null && on2 == null)
-				return -1;
-			else if (on1 == null && on2 != null)
-				return 1;
-			else
-				result = so1.getOrderNumber().compareTo( so2.getOrderNumber() );
-			
-			if (result == 0) result = so1.getOrderID() - so2.getOrderID();
-			return result;
-		}
-	};
-	
-	private static final Comparator<LiteWorkOrderBase> SERVICE_COMPANY_CMPTOR = new Comparator<LiteWorkOrderBase>() {
-		public int compare(LiteWorkOrderBase so1, LiteWorkOrderBase so2) {
-			int servCo1 = so1.getServiceCompanyID();
-		    int servCo2 = so2.getServiceCompanyID();
-		    
-		    LiteServiceCompany lsc1 = StarsDatabaseCache.getInstance().getEnergyCompany(so1.getEnergyCompanyID()).getServiceCompany(servCo1);
-		    LiteServiceCompany lsc2 = StarsDatabaseCache.getInstance().getEnergyCompany(so2.getEnergyCompanyID()).getServiceCompany(servCo2);
-
-		    String thisVal = (lsc1 == null ? CtiUtilities.STRING_NONE : lsc1.getCompanyName());
-		    String anotherVal = (lsc2 == null ? CtiUtilities.STRING_NONE : lsc2.getCompanyName());
-
-			return (thisVal.compareToIgnoreCase(anotherVal));
-		}
-	};	
-	
-	private static final Comparator<LiteWorkOrderBase> SERVICE_STATUS_CMPTOR = new Comparator<LiteWorkOrderBase>() {
-		public int compare(LiteWorkOrderBase so1, LiteWorkOrderBase so2) {
-			int servStat1 = so1.getCurrentStateID();
-		    int servStat2 = so2.getCurrentStateID();
-		    YukonListEntry yle1 = DaoFactory.getYukonListDao().getYukonListEntry(servStat1);
-		    YukonListEntry yle2 = DaoFactory.getYukonListDao().getYukonListEntry(servStat2);
-		    
-		    String thisVal = (yle1 == null ? CtiUtilities.STRING_DASH_LINE : yle1.getEntryText());
-		    String anotherVal = (yle2 == null ? CtiUtilities.STRING_DASH_LINE : yle2.getEntryText());
-
-			return (thisVal.compareToIgnoreCase(anotherVal));
-		}
-	};	
-	
-	private static final Comparator<LiteWorkOrderBase> SERVICE_TYPE_CMPTOR = new Comparator<LiteWorkOrderBase>() {
-		public int compare(LiteWorkOrderBase so1, LiteWorkOrderBase so2) {
-			int servType1 = so1.getWorkTypeID();
-		    int servType2 = so2.getWorkTypeID();
-		    YukonListEntry yle1 = DaoFactory.getYukonListDao().getYukonListEntry(servType1);
-		    YukonListEntry yle2 = DaoFactory.getYukonListDao().getYukonListEntry(servType2);
-		    
-		    String thisVal = (yle1 == null ? CtiUtilities.STRING_DASH_LINE : yle1.getEntryText());
-		    String anotherVal = (yle2 == null ? CtiUtilities.STRING_DASH_LINE : yle2.getEntryText());
-
-			return (thisVal.compareToIgnoreCase(anotherVal));
-		}
-	};
-	
-	private static final Comparator<LiteWorkOrderBase> ORDER_DATE_CMPTOR = new Comparator<LiteWorkOrderBase>() {
-		public int compare(LiteWorkOrderBase so1, LiteWorkOrderBase so2) {
-			int rslt = (new Date(so1.getDateReported()).compareTo(new Date(so2.getDateReported())));
-			if (rslt == 0)
-				rslt = so1.getOrderID() - so2.getOrderID();
-			return rslt;
-		}
-	};
-	
 	private String start = null;
 	private String stop = null;
 	private Date startDate = null;
@@ -160,130 +74,88 @@ public class WorkOrderBean {
 	private int energyCompanyID = 0;
 	private int htmlStyle = HTML_STYLE_WORK_ORDERS;
 	private String referer = null;
-	private List<Object> searchResults = null;
-	
-	private boolean sortByChanged = false;
-	private boolean sortOrderChanged = false;
+	private List<LiteWorkOrderBase> searchResults = null;
 	
 	private LiteStarsEnergyCompany energyCompany = null;
-	private List<LiteWorkOrderBase> workOrderList = null;
+	
+    private final SimpleCollectionFactory simpleCollectionFactory = 
+        YukonSpringHook.getBean("simpleCollectionFactory", SimpleCollectionFactory.class);
 	
 	public WorkOrderBean() {
 	}
 	
-/*	private long getRelevantDate(LiteWorkOrderBase liteOrder) {
-		if (getFilterBy() == YukonListEntryTypes.YUK_DEF_ID_SO_FILTER_BY_STATUS) {
-			if (getServiceStatus() == YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PENDING)
-				return liteOrder.getDateReported();
-			if (getServiceStatus() == YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_SCHEDULED)
-				return liteOrder.getDateScheduled();
-			if (getServiceStatus() == YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_COMPLETED)
-				return liteOrder.getDateCompleted();
-			if (getServiceStatus() == YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_CANCELLED)
-				return liteOrder.getDateCompleted();
-		}
-		
-		return liteOrder.getDateReported();
-	}*/
-
-	/**
-	 * @return
-	 */
 	public LiteStarsEnergyCompany getEnergyCompany() {
 		if (energyCompany == null)
 			energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( energyCompanyID );
 		return energyCompany;
 	}
-    
-	public List<LiteWorkOrderBase> getWorkOrderList() {
-		if (workOrderList != null)
-		{	//Update the order without reloading all of the workOrder objects.
-			if( sortByChanged || sortOrderChanged )
-				workOrderList = sortList(workOrderList);
-
-			sortByChanged = sortOrderChanged = false;
-			return workOrderList;
-		}
-		
-		List<LiteWorkOrderBase> workOrders = null;
-		if (getHtmlStyle() == HTML_STYLE_SEARCH_RESULTS)
-        {
-            workOrders = new ArrayList<LiteWorkOrderBase>();
-            for (int i = 0; i < searchResults.size(); i++)
-            {
-                if( searchResults.get(i) instanceof Pair)
-                    workOrders.add( (LiteWorkOrderBase)((Pair)searchResults.get(i)).getFirst());
-                else
-                    workOrders.add( (LiteWorkOrderBase)searchResults.get(i));
-            }
-            workOrderList = sortList(workOrders);
-            return workOrderList;
-        }
-
-        workOrders = getEnergyCompany().loadAllWorkOrders( true );
-		
-        final List<FilterWrapper> filterList = getFilters();
-		if (filterList != null  && filterList.size() > 0) {
-            final AbstractFilter<LiteWorkOrderBase> workOrderFilter = new WorkOrderFilter();
-            workOrderFilter.setEnergyCompany(energyCompany);
-            workOrderFilter.setStartDate(getStartDate());
-            workOrderFilter.setStopDate(getStopDate());
-            List<LiteWorkOrderBase> filteredWorkOrderList = workOrderFilter.filter(workOrders, filterList);
-            workOrders = filteredWorkOrderList;
-		} else {
-			workOrders = Collections.emptyList();	
-		}
-		
-		workOrderList = sortList(workOrders);
-		return workOrderList;
-	}
-
-	private List<LiteWorkOrderBase> sortList(List<LiteWorkOrderBase> workOrders)
-	{
-		workOrderList = workOrders;
-		if (getSortBy() == YukonListEntryTypes.YUK_DEF_ID_SO_SORT_BY_ORDER_NO)
-			Collections.sort(workOrderList, ORDER_NO_CMPTOR );
-		else if (getSortBy() == YukonListEntryTypes.YUK_DEF_ID_SO_SORT_BY_SERV_COMP)
-			Collections.sort(workOrderList, SERVICE_COMPANY_CMPTOR );
-		else if (getSortBy() == YukonListEntryTypes.YUK_DEF_ID_SO_SORT_BY_SERV_STAT)
-			Collections.sort(workOrderList, SERVICE_STATUS_CMPTOR );
-		else if (getSortBy() == YukonListEntryTypes.YUK_DEF_ID_SO_SORT_BY_SERV_TYPE)
-			Collections.sort(workOrderList, SERVICE_TYPE_CMPTOR );
-//		else if (getSortBy() == YukonListEntryTypes.YUK_DEF_ID_SO_SORT_BY_CUST_TYPE)
-//			sortedOrders = new java.util.TreeSet( TODO);
-		else if (getSortBy() == YukonListEntryTypes.YUK_DEF_ID_SO_SORT_BY_DATE_TIME)
-			Collections.sort(workOrderList, ORDER_DATE_CMPTOR );
-		else
-			Collections.sort(workOrderList, ORDER_NO_CMPTOR );		
 	
-		if (getSortOrder() == SORT_ORDER_DESCENDING)
-			Collections.reverse(workOrderList);
-		
-		return workOrderList;
+	public boolean addWorkOrder(LiteWorkOrderBase workOrder) {
+	    if (searchResults == null || (getHtmlStyle() != HTML_STYLE_SEARCH_RESULTS)) {
+	        // This workOrder will be applied against the filters next time they are run.
+	        return false;
+	    }
+	    
+	    //workOrderList was set by a Search
+	    searchResults.add(workOrder);
+	    return true;
+	}
+	
+	private DirectionAwareOrderBy getDirectionAwareOrderBy() {
+	    boolean isAscending = getSortOrder() == SORT_ORDER_ASCENDING;
+	    OrderBy orderBy = WorkOrderOrderBy.valueOf(getSortBy());
+	    return new DirectionAwareOrderBy(orderBy, isAscending);
+	}
+    
+	private SimpleCollection<LiteWorkOrderBase> getSimpleCollection() {
+	    boolean isSearch = (searchResults != null && (getHtmlStyle() == HTML_STYLE_SEARCH_RESULTS));
+	    if (isSearch) {
+	        return simpleCollectionFactory.createWorkOrderSearchCollection(searchResults);
+	    }
+	    
+	    if (searchResults != null) {
+	        return simpleCollectionFactory.createWorkOrderSearchCollection(searchResults);
+	    }
+	    
+	    List<Integer> energyCompanyIds = Arrays.asList(getEnergyCompany().getEnergyCompanyID());
+        return simpleCollectionFactory.createWorkOrderFilterCollection(energyCompanyIds,
+	                                                                   getFilters(),
+	                                                                   getDirectionAwareOrderBy(),
+	                                                                   getStartDate(),
+	                                                                   getStopDate());
+	}
+	
+	public List<LiteWorkOrderBase> getWorkOrderList() {
+	    SimpleCollection<LiteWorkOrderBase> simpleCollection = getSimpleCollection();
+	    return simpleCollection.getList();
 	}
 	
 	public String getHTML(HttpServletRequest req) {
-        List<LiteWorkOrderBase> soList = getWorkOrderList();
-		if (soList == null || soList.size() == 0)
+	    
+	    SimpleCollection<LiteWorkOrderBase> simpleCollection = getSimpleCollection();
+	    int count = simpleCollection.getCount();
+	    
+	    if (count == 0) {
 			return "<p class='ErrorMsg'>No service order found.</p>";
-		
+	    }
+	    
 		String uri = req.getRequestURI();
 		String pageName = uri.substring( uri.lastIndexOf('/') + 1 );
 		
 		if (page < 1) page = 1;
-		int maxPageNo = (int) Math.ceil(soList.size() * 1.0 / pageSize);
+		int maxPageNo = (int) Math.ceil(count * 1.0 / pageSize);
 		if (page > maxPageNo) page = maxPageNo;
 		
 		int maxPageDigit = (int)(Math.log(maxPageNo) / Math.log(10)) + 1;
 		
 		int minOrderNo = (page - 1) * pageSize + 1;
-		int maxOrderNo = Math.min(page * pageSize, soList.size());
+		int maxOrderNo = Math.min(page * pageSize, count);
         
-		StringBuffer navBuf = new StringBuffer();
+		StringBuilder navBuf = new StringBuilder();
 		navBuf.append(minOrderNo);
 		if (maxOrderNo > minOrderNo)
 			navBuf.append("-").append(maxOrderNo);
-		navBuf.append(" of ").append(soList.size());
+		navBuf.append(" of ").append(count);
 		navBuf.append(" | ");
 		if (page == 1)
 			navBuf.append("<font color='#CCCCCC'>First</font>");
@@ -305,7 +177,7 @@ public class WorkOrderBean {
 		else
 			navBuf.append("<a class='Link1' href='").append(pageName).append("?page_=").append(maxPageNo).append("'>Last</a>");
 		
-		StringBuffer htmlBuf = new StringBuffer();
+		StringBuilder htmlBuf = new StringBuilder();
 		
 		htmlBuf.append("<script language='JavaScript'>").append(LINE_SEPARATOR);
         htmlBuf.append("function checkAll() {").append(LINE_SEPARATOR);
@@ -374,21 +246,27 @@ public class WorkOrderBean {
 		htmlBuf.append("          <td  class='HeaderCell' width='20%' >Assigned</td>").append(LINE_SEPARATOR);
 		htmlBuf.append("        </tr>").append(LINE_SEPARATOR);
 		
-		Map<Integer,List<EventWorkOrder>> eventWorkOrderMap = eventWorkOrderDao.getByWorkOrders(soList);
-		for (int i = minOrderNo; i <= maxOrderNo; i++) {
-        LiteStarsEnergyCompany liteStarsEC_Order = null;
-            LiteWorkOrderBase liteOrder = soList.get(i-1);
+		int fromIndex = minOrderNo - 1;
+		int toIndex = maxOrderNo;
+		
+		List<LiteWorkOrderBase> workOrderList = simpleCollection.getList(fromIndex, toIndex);
+		
+		Map<Integer,List<EventWorkOrder>> eventWorkOrderMap = 
+		    eventWorkOrderDao.getByWorkOrders(workOrderList);
+		
+		Map<Integer, LiteStarsEnergyCompany> energyCompanyIdMap = 
+		    StarsDatabaseCache.getInstance().getAllEnergyCompanyMap();
+		
+		for (final LiteWorkOrderBase liteOrder : workOrderList) {
+		    LiteStarsEnergyCompany liteStarsEC_Order = energyCompanyIdMap.get(liteOrder.getEnergyCompanyID());
             
-            List<EventWorkOrder> workOrderList = eventWorkOrderMap.get(liteOrder.getLiteID());
-            if (workOrderList == null) workOrderList = new ArrayList<EventWorkOrder>();
-            
-            if( liteStarsEC_Order == null || liteStarsEC_Order.getEnergyCompanyID().intValue() != liteOrder.getEnergyCompanyID())
-                liteStarsEC_Order = StarsDatabaseCache.getInstance().getEnergyCompany(liteOrder.getEnergyCompanyID());
+            List<EventWorkOrder> eventWorkOrderList = eventWorkOrderMap.get(liteOrder.getLiteID());
+            if (eventWorkOrderList == null) eventWorkOrderList = new ArrayList<EventWorkOrder>();
             
 			StarsServiceRequest starsOrder = StarsLiteFactory.createStarsServiceRequest(liteOrder, liteStarsEC_Order);
 			Date date = null;
-			if (workOrderList.size() > 0)
-				date = StarsUtils.translateDate(workOrderList.get(0).getEventBase().getEventTimestamp().getTime());
+			if (eventWorkOrderList.size() > 0)
+				date = StarsUtils.translateDate(eventWorkOrderList.get(0).getEventBase().getEventTimestamp().getTime());
 
 			String dateStr = (date != null)? StarsUtils.formatDate(date, liteStarsEC_Order.getDefaultTimeZone()) : "----";
 
@@ -408,10 +286,6 @@ public class WorkOrderBean {
 			htmlBuf.append("          <td class='TableCell' width='13%' >").append(starsOrder.getCurrentState().getContent()).append("</td>").append(LINE_SEPARATOR);
 			htmlBuf.append("          <td class='TableCell' width='13%' >").append(ServletUtils.forceNotEmpty( starsOrder.getOrderedBy() )).append("</td>").append(LINE_SEPARATOR);
 			htmlBuf.append("          <td class='TableCell' width='20%' >").append(ServletUtils.forceNotEmpty( starsOrder.getServiceCompany().getContent() )).append("</td>").append(LINE_SEPARATOR);
-/*			htmlBuf.append("          <td class='TableCell' width='34%'>").append(LINE_SEPARATOR);
-			htmlBuf.append("            <textarea name='textarea' rows='2' wrap='soft' cols='35' class='TableCell' readonly>")
-					.append(starsOrder.getDescription().replaceAll("<br>", LINE_SEPARATOR)).append("</textarea>").append(LINE_SEPARATOR);
-			htmlBuf.append("          </td>").append(LINE_SEPARATOR);*/
 			htmlBuf.append("        </tr>").append(LINE_SEPARATOR);
 		}
 		
@@ -456,9 +330,6 @@ public class WorkOrderBean {
             htmlBuf.append("    <td align='left'>").append(LINE_SEPARATOR);
             htmlBuf.append("      <input type='button' name='ChooseSelected' value='Manipulate Selected' onclick='manipSelected()'>").append(LINE_SEPARATOR);
             htmlBuf.append("    </td>").append(LINE_SEPARATOR);
-            /*htmlBuf.append("    <td align='right'>").append(LINE_SEPARATOR);
-            htmlBuf.append("      <input type='button' name='ChangeSelected' value='Change Selected' onclick='changeSelected()>").append(LINE_SEPARATOR);
-            htmlBuf.append("    </td>").append(LINE_SEPARATOR);*/
             htmlBuf.append("    <td>").append(LINE_SEPARATOR);
             if (referer != null)
                 htmlBuf.append("      <input type='button' name='Cancel' value='Cancel' onclick='location.href=\"").append(referer).append("\"'>").append(LINE_SEPARATOR);
@@ -521,7 +392,6 @@ public class WorkOrderBean {
 		if( sortOrder != i)
 		{
 			sortOrder = i;
-			sortOrderChanged = true;
 		}
 	}
 
@@ -549,12 +419,8 @@ public class WorkOrderBean {
 	/**
 	 * @param list
 	 */
-	public void setSearchResults(ArrayList list) {
-        if( list == null || !list.equals(searchResults))
-        {
-            workOrderList = null;
-            searchResults = list;
-        }
+	public void setSearchResults(List<LiteWorkOrderBase> list) {
+        searchResults = list;
 	}
 
 	public List<FilterWrapper> getFilters() {
@@ -565,7 +431,6 @@ public class WorkOrderBean {
 		if( newFilters == null || !(newFilters.equals(filters)) )
 		{
 			this.filters = newFilters;
-			workOrderList = null;	//TODO dump the existing list!
 			setPage(1);
 		}
 	}
@@ -574,8 +439,9 @@ public class WorkOrderBean {
     {
 		//TODO Need to tweak so we don't load all the WorkOrders multiple times. 
 //        setHtmlStyle(HTML_STYLE_FILTERED_INVENTORY_SUMMARY);
-        
-        setFilters((List<FilterWrapper>) req.getSession().getAttribute(ServletUtil.FILTER_WORKORDER_LIST));
+	    @SuppressWarnings("unchecked") List<FilterWrapper> filterList = 
+	        (List<FilterWrapper>) req.getSession(false).getAttribute(ServletUtil.FILTER_WORKORDER_LIST);
+        setFilters(filterList);
         String hardwareNum = getHTML(req);
 //        setHtmlStyle(HTML_STYLE_LIST_INVENTORY);
 //        numberOfRecords = hardwareNum;
@@ -595,9 +461,7 @@ public class WorkOrderBean {
 	}
 
 	public int getNumberOfRecords() {
-		if( getWorkOrderList() != null)
-			return getWorkOrderList().size();
-		return 0;
+	    return getSimpleCollection().getCount();
 	}
 
 	public String getStart() {
@@ -642,7 +506,9 @@ public class WorkOrderBean {
 	}
 
 	public void setWorkOrderList(List<LiteWorkOrderBase> workOrderList) {
-		this.workOrderList = workOrderList;
+	    List<LiteWorkOrderBase> cleanList = 
+	        new ArrayList<LiteWorkOrderBase>(Pair.removePair(workOrderList, LiteWorkOrderBase.class));
+		this.searchResults = cleanList;
 	}
 
 	public int getSortBy() {
@@ -653,7 +519,6 @@ public class WorkOrderBean {
 		if( this.sortBy != sortBy)
 		{
 			this.sortBy = sortBy;
-			sortByChanged = true;
 		}
 	}
 

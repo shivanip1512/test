@@ -52,5 +52,6 @@
 	<classpathentry exported="true" kind="lib" path="/third-party/aspectjweaver.jar"/>
 	<classpathentry kind="lib" path="/third-party/spring-test.jar"/>
 	<classpathentry kind="lib" path="/third-party/jopcbridge.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/google-collections-0.8.jar" sourcepath="Z:/java/Third-Party Sources/google-collections-0.8-src.zip"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

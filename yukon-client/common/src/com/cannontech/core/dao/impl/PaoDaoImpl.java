@@ -4,16 +4,23 @@ package com.cannontech.core.dao.impl;
  * Implementation of PaoDao Creation date: (7/1/2006 9:40:33 AM)
  * @author: alauinger
  */
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
@@ -163,6 +170,28 @@ public final class PaoDaoImpl implements PaoDao {
         } catch (IncorrectResultSizeDataAccessException e) {
             throw new NotFoundException("A PAObject with id " + paoID + "cannot be found.");
         }
+    }
+    
+    @Override
+    public Map<Integer, String> getYukonPAONames(Collection<Integer> ids) {
+        SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
+        sqlBuilder.append("select paobjectid,paoname from yukonpaobject where paobjectid in (");
+        sqlBuilder.append(ids);
+        sqlBuilder.append(")");
+        String sql = sqlBuilder.toString();
+        
+        final Map<Integer, String> resultMap = new HashMap<Integer, String>();
+        
+        jdbcOps.query(sql, new RowCallbackHandler() {
+            @Override
+            public void processRow(ResultSet rs) throws SQLException {
+                Integer key = rs.getInt("paobjectid");
+                String value = rs.getString("paoname");
+                resultMap.put(key, value);
+            }
+        });
+        
+        return resultMap;
     }
 
     public LiteYukonPAObject[] getAllLiteRoutes() {

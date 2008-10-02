@@ -6,21 +6,14 @@
  */
 package com.cannontech.stars.web.action;
 
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
-import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
-import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.web.bean.WorkOrderBean;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsDeleteServiceRequest;
@@ -78,49 +71,12 @@ public class DeleteServiceRequestAction implements ActionBase {
 				return SOAPUtil.buildSOAPMessage( respOper );
 			}
 			
-			LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
-			
 			int orderID = reqOper.getStarsDeleteServiceRequest().getOrderID();
-			LiteWorkOrderBase liteOrder = energyCompany.getWorkOrderBase( orderID, true );
 			
 			com.cannontech.database.data.stars.report.WorkOrderBase order =
 					new com.cannontech.database.data.stars.report.WorkOrderBase();
 			order.setOrderID( new Integer(orderID) );
 			Transaction.createTransaction(Transaction.DELETE, order).execute();
-			energyCompany.deleteWorkOrderBase( orderID );
-			
-			//Remove the order if it is in the WorkOrderBean list.
-			WorkOrderBean woBean = (WorkOrderBean) session.getAttribute("workOrderBean");
-			if( woBean != null)
-				woBean.getWorkOrderList().remove(liteOrder);
-			
-			LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) session.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
-			boolean fromWorkOrder = false;
-			
-			if (liteAcctInfo == null || liteAcctInfo.getAccountID() != liteOrder.getAccountID()) {
-				// Request from WorkOrder.jsp
-				liteAcctInfo = energyCompany.getCustAccountInformation(liteOrder.getAccountID(), false);
-				fromWorkOrder = true;
-			}
-			
-			if (liteAcctInfo != null) {
-                List<Integer> orderIDs = liteAcctInfo.getServiceRequestHistory();
-                for (final Integer id : orderIDs) {
-                    if (id.intValue() == orderID) {
-                        orderIDs.remove(id);
-                        break;
-                    }
-                }
-			}
-			
-			if (fromWorkOrder) {	
-				StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteOrder.getAccountID() );
-				if (starsAcctInfo != null)
-					parseResponse( orderID, starsAcctInfo );
-				
-				respOper.setStarsSuccess( new StarsSuccess() );
-				return SOAPUtil.buildSOAPMessage( respOper );
-			}
             
             StarsSuccess success = new StarsSuccess();
             success.setDescription( "Work order deleted successfully" );

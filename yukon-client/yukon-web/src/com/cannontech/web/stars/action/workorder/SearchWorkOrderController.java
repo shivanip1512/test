@@ -13,6 +13,7 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.Pair;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.database.db.stars.report.WorkOrderBase;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.stars.util.ServletUtils;
@@ -20,9 +21,10 @@ import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.util.WorkOrderManagerUtil;
 import com.cannontech.web.stars.action.StarsWorkorderActionController;
+import com.google.common.collect.PrimitiveArrays;
 
 public class SearchWorkOrderController extends StarsWorkorderActionController {
-
+    
     @Override
     public void doAction(final HttpServletRequest request, final HttpServletResponse response, 
             final HttpSession session, final StarsYukonUser user, final LiteStarsEnergyCompany energyCompany) throws Exception {
@@ -40,10 +42,12 @@ public class SearchWorkOrderController extends StarsWorkorderActionController {
             return;
         }
         
-        List<Object> liteWorkOrderList = new ArrayList<Object>();        
+        List<LiteWorkOrderBase> liteWorkOrderList = new ArrayList<LiteWorkOrderBase>();        
         if( searchBy < 0)//we use -1 for search by orderID.  This is a shortcut! and is useful when having member searches.
         {   //We are short cutting a big loop through all energy companies to find the EC with this OrderID by passing in the ECID.
-            liteWorkOrderList.add(energyCompany.getWorkOrderBase(Integer.parseInt(searchValue), true));
+            int workOrderId = Integer.valueOf(searchValue);
+            LiteWorkOrderBase workOrderBase = starsWorkOrderBaseDao.getById(workOrderId);
+            liteWorkOrderList.add(workOrderBase);
             session.setAttribute(WorkOrderManagerUtil.WORK_ORDER_SET, liteWorkOrderList);
             String redirect = request.getContextPath() + "/operator/WorkOrder/ModifyWorkOrder.jsp";
             response.sendRedirect(redirect);
@@ -58,16 +62,19 @@ public class SearchWorkOrderController extends StarsWorkorderActionController {
                                 (energyCompany.getChildren().size() > 0);
 
         if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_ORDER_NO) {
-            liteWorkOrderList = energyCompany.searchWorkOrderByOrderNo( searchValue, searchMembers );
+            liteWorkOrderList = cleanList(energyCompany.searchWorkOrderByOrderNo( searchValue, searchMembers),
+                                          LiteWorkOrderBase.class);
         }
         else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_ACCT_NO) {
-            List<Object> accounts = energyCompany.searchAccountByAccountNumber( searchValue, searchMembers, true );
+            List<LiteStarsCustAccountInformation> accounts = cleanList(energyCompany.searchAccountByAccountNumber( searchValue, searchMembers, true),
+                                                                       LiteStarsCustAccountInformation.class);
             liteWorkOrderList.addAll(getOrderIDsByAccounts( accounts, energyCompany ) );
         }
         else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_PHONE_NO) {
             try {
                 String phoneNo = ServletUtils.formatPhoneNumberForSearch( searchValue );
-                List<Object> accounts = energyCompany.searchAccountByPhoneNo( phoneNo, searchMembers );
+                List<LiteStarsCustAccountInformation> accounts = cleanList(energyCompany.searchAccountByPhoneNo( phoneNo, searchMembers),
+                                                                           LiteStarsCustAccountInformation.class);
                 liteWorkOrderList.addAll(getOrderIDsByAccounts( accounts, energyCompany ) );
             }
             catch (WebClientException e) {
@@ -78,30 +85,25 @@ public class SearchWorkOrderController extends StarsWorkorderActionController {
             }
         }
         else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_LAST_NAME) {
-            List<Object> accounts = energyCompany.searchAccountByLastName( searchValue, searchMembers , true);
+            List<LiteStarsCustAccountInformation> accounts = cleanList(energyCompany.searchAccountByLastName( searchValue, searchMembers , true),
+                                                                       LiteStarsCustAccountInformation.class);
             liteWorkOrderList.addAll(getOrderIDsByAccounts( accounts, energyCompany ) );
         }
         else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_SERIAL_NO) {
-            List<Object> accounts = energyCompany.searchAccountBySerialNo( searchValue, searchMembers );
+            List<LiteStarsCustAccountInformation> accounts = cleanList(energyCompany.searchAccountBySerialNo( searchValue, searchMembers),
+                                                                       LiteStarsCustAccountInformation.class);
             liteWorkOrderList.addAll(getOrderIDsByAccounts( accounts, energyCompany ) );
         }
         else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_ADDRESS) {
-            List<Object> accounts = energyCompany.searchAccountByAddress( searchValue, searchMembers, true);
-            liteWorkOrderList.addAll(getOrderIDsByAccounts( accounts, energyCompany ) );
+            List<LiteStarsCustAccountInformation> accounts = cleanList(energyCompany.searchAccountByAddress( searchValue, searchMembers, true),
+                                              LiteStarsCustAccountInformation.class);
+            liteWorkOrderList.addAll(getOrderIDsByAccounts( accounts, energyCompany ));
         }
         
         if (liteWorkOrderList.size() == 0) {
             session.setAttribute(WorkOrderManagerUtil.WORK_ORDER_SET_DESC, "<div class='ErrorMsg' align='center'>No service order found matching the search criteria.</div>");
         }
-        //Don't be smart about going directly to the web page, this way we can go through the context switch of EC if needed
-        /*else if (liteWorkOrderList.size() == 1) {   
-            session.setAttribute(WorkOrderManagerUtil.WORK_ORDER_SET, liteWorkOrderList);
-            redirect = req.getContextPath() + "/operator/WorkOrder/ModifyWorkOrder.jsp";
-        }*/
         else {
-//          ArrayList soList = new ArrayList();
-//          for (int i = 0; i < orderIDs.length; i++)
-//              soList.add( energyCompany.getWorkOrderBase(orderIDs[i], true) );
             session.setAttribute(WorkOrderManagerUtil.WORK_ORDER_SET, liteWorkOrderList);
             session.setAttribute(WorkOrderManagerUtil.WORK_ORDER_SET_DESC, "Click on a Order # to view the service order details.");
             session.setAttribute(ServletUtils.ATT_REFERRER, this.getReferer(request));
@@ -111,29 +113,29 @@ public class SearchWorkOrderController extends StarsWorkorderActionController {
         response.sendRedirect(redirect);
     }
     
-    private List<Object> getOrderIDsByAccounts(List<Object> accounts, LiteStarsEnergyCompany defaultEnergyCompany) {
-        List<Object> liteWorkOrderList = new ArrayList<Object>();
-        if (accounts != null && accounts.size() > 0) {
-            for (int i = 0; i < accounts.size(); i++) {
-                LiteStarsCustAccountInformation liteAcctInfo = null;             
-                LiteStarsEnergyCompany liteStarsEnergyCompany = null;
-                if (accounts.get(i) instanceof Pair){
-                    liteAcctInfo = (LiteStarsCustAccountInformation)((Pair)accounts.get(i)).getFirst();
-                    liteStarsEnergyCompany = (LiteStarsEnergyCompany)((Pair)accounts.get(i)).getSecond();
-                }
-                else
-                {
-                    liteAcctInfo = (LiteStarsCustAccountInformation) accounts.get(i);
-                    liteStarsEnergyCompany = defaultEnergyCompany;
-                }
-
-                int[] woIDs = WorkOrderBase.searchByAccountID( liteAcctInfo.getAccountID() );
-                for (int j = 0; j < woIDs.length; j++) {
-                    liteWorkOrderList.add(liteStarsEnergyCompany.getWorkOrderBase(woIDs[j], true));
-                }    
-            }
+    private List<LiteWorkOrderBase> getOrderIDsByAccounts(List<LiteStarsCustAccountInformation> accounts, LiteStarsEnergyCompany defaultEnergyCompany) {
+        List<Integer> workOrderIdList = new ArrayList<Integer>();
+        
+        for (final LiteStarsCustAccountInformation account : accounts) {
+            int[] woIDs = WorkOrderBase.searchByAccountID(account.getAccountID());
+            if (woIDs == null) continue;
+            workOrderIdList.addAll(PrimitiveArrays.asList(woIDs));
         }
-        return liteWorkOrderList;
+        
+        List<LiteWorkOrderBase> list = starsWorkOrderBaseDao.getByIds(workOrderIdList);
+        return list;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private <E> List<E> cleanList(List<Object> list, Class<E> type) {
+        List<E> resultList = new ArrayList<E>(list.size());
+        
+        for (final Object obj : list) {
+            Object realObject = (obj instanceof Pair) ? ((Pair) obj).getFirst() : obj;
+            resultList.add((E) realObject);
+        }
+        
+        return resultList;
     }
     
 }

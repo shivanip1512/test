@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import com.cannontech.clientutils.CTILogger;
@@ -43,28 +42,30 @@ public class ManipulateWorkOrderTask extends TimeConsumingTask {
     Integer changeServiceStatusID = null;
     Integer changeServiceTypeID = null;
     String statusMsg = null;
+    private final boolean confirmOnMessagePage;
+    private final String redirect;
+    private final HttpSession session;
 
-	HttpServletRequest request = null;
-	
 	ArrayList<String> failedWorkOrderMessages = new ArrayList<String>();
 	int numSuccess = 0, numFailure = 0;
 
 	private final StarsCustAccountInformationDao starsCustAccountInformationDao = 
 	    YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
 	
-	public ManipulateWorkOrderTask(LiteYukonUser liteYukonuser, List<LiteWorkOrderBase> workOrderList, Integer changeServiceCompanyID, Integer changeServiceStatusID, Integer changeServiceTypeID, HttpServletRequest req) {
+	public ManipulateWorkOrderTask(LiteYukonUser liteYukonuser, List<LiteWorkOrderBase> workOrderList, Integer changeServiceCompanyID, Integer changeServiceStatusID, Integer changeServiceTypeID, 
+	        boolean confirmOnMessagePage, String redirect, HttpSession session) {
 		this.liteYukonUser = liteYukonuser;
 		this.selectedWorkOrders = workOrderList;
 		this.changeServiceCompanyID = changeServiceCompanyID;
 		this.changeServiceStatusID = changeServiceStatusID;
 		this.changeServiceTypeID = changeServiceTypeID;
-		this.request = req;
+		this.confirmOnMessagePage = confirmOnMessagePage;
+		this.redirect = redirect;
+		this.session = session;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.cannontech.stars.util.task.TimeConsumingTask#getProgressMsg()
-	 */
-	public String getProgressMsg() {
+	@Override
+    public String getProgressMsg() {
 		if (selectedWorkOrders.size() > 0) {
             if (status == STATUS_FINISHED && numFailure == 0) {
                 if (statusMsg != null)
@@ -87,7 +88,6 @@ public class ManipulateWorkOrderTask extends TimeConsumingTask {
     {
 		status = STATUS_RUNNING;
 		
-		HttpSession session = request.getSession(false);
         ManipulationBean mBean = (ManipulationBean) session.getAttribute("woManipulationBean"); 
         WorkOrderBean woBean = (WorkOrderBean) session.getAttribute("workOrderBean");
         List<LiteWorkOrderBase> workOrderList = woBean.getWorkOrderList();
@@ -134,7 +134,7 @@ public class ManipulateWorkOrderTask extends TimeConsumingTask {
 				{
 					Date eventDate = new Date();
 					workOrderBase.getWorkOrderBase().setDateReported(eventDate);	//set the work order DateReported with the most recent event date.
-					workOrderBase = (WorkOrderBase)Transaction.createTransaction( Transaction.UPDATE, workOrderBase).execute();
+					workOrderBase = Transaction.createTransaction( Transaction.UPDATE, workOrderBase).execute();
 					if( isStatusChanged)
 					{
 		           		EventWorkOrder eventWorkOrder  = (EventWorkOrder)EventUtils.logSTARSDatedEvent(liteYukonUser.getUserID(), EventUtils.EVENT_CATEGORY_WORKORDER, workOrderBase.getWorkOrderBase().getCurrentStateID().intValue(), workOrderBase.getWorkOrderBase().getOrderID().intValue(), eventDate);
@@ -181,8 +181,6 @@ public class ManipulateWorkOrderTask extends TimeConsumingTask {
         mBean.setFailures(numFailure);
         mBean.setSuccesses(numSuccess);
         mBean.setFailedManipulateResults(failedWorkOrderMessages);
-
-        woBean.setWorkOrderList(null);	//force the list to be reloaded!
         
 		if (numFailure > 0) {
 			String resultDesc = "<span class='ConfirmMsg'>" + numSuccess + " Work Orders updated successfully.</span><br>" +
@@ -190,8 +188,8 @@ public class ManipulateWorkOrderTask extends TimeConsumingTask {
 			
 			session.setAttribute(WorkOrderManagerUtil.WORK_ORDER_SET_DESC, resultDesc);
 			session.setAttribute(WorkOrderManagerUtil.WORK_ORDER_SET, workOrderList);
-			session.setAttribute(ServletUtils.ATT_REDIRECT, request.getContextPath() + "/operator/WorkOrder/WorkOrderResultSet.jsp");
-			if (request.getParameter(ServletUtils.CONFIRM_ON_MESSAGE_PAGE) != null)
+			session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
+			if (confirmOnMessagePage)
 				session.setAttribute(ServletUtils.ATT_REFERRER, session.getAttribute(ServletUtils.ATT_MSG_PAGE_REFERRER));
 		}
 	}

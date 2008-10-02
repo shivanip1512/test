@@ -12,6 +12,7 @@
         <property name="starsDatabaseCache" ref="starsDatabaseCache"/>
         <property name="yukonListDao" ref="yukonListDao"/>
         <property name="yukonUserDao" ref="yukonUserDao"/>
+        <property name="starsWorkOrderBaseDao" ref="starsWorkOrderBaseDao"/>
     </bean>
 
     <bean id="workorderDefault" class="com.cannontech.web.stars.action.workorder.DefaultController"

@@ -1,5 +1,9 @@
 package com.cannontech.common.util;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 /**
  * Class to represent pairs of objects.
  * @author alauinger
@@ -43,6 +47,23 @@ public class Pair<K,V> {
 	 */
 	public void setSecond(V second) {
 		this.second = second;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static final <E> Collection<E> removePair(Collection<?> c, Class<E> requiredType) {
+	    List<E> list = new ArrayList<E>(c.size());
+	    for (final Object o : c) {
+	        Object element = o;
+	        if (o instanceof Pair) {
+	            element = ((Pair) o).getFirst();
+	        }
+	        
+	        if (!requiredType.isAssignableFrom(element.getClass())) {
+	            throw new IllegalArgumentException("Element of type: " + requiredType + " required but found: " + element.getClass());
+	        }
+	        list.add((E) element);
+	    }
+	    return list;
 	}
     
 	@Override

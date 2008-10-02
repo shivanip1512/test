@@ -2,9 +2,11 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
+    StarsWorkOrderBaseDao starsWorkOrderBaseDao = YukonSpringHook.getBean("starsWorkOrderBaseDao", StarsWorkOrderBaseDao.class);
+
 	int orderNo = Integer.parseInt(request.getParameter("OrderNo"));
 	StarsServiceRequest order = serviceHist.getStarsServiceRequest(orderNo);
-	LiteWorkOrderBase liteOrder = liteEC.getWorkOrderBase(order.getOrderID(), true);
+	LiteWorkOrderBase liteOrder = starsWorkOrderBaseDao.getById(order.getOrderID());
 	EventWorkOrderDao eventWorkOrderDao = YukonSpringHook.getBean("eventWorkOrderDao", EventWorkOrderDao.class);
 	List<EventWorkOrder> eventWorkOrderList = eventWorkOrderDao.getByWorkOrderId(liteOrder.getOrderID());
     
@@ -17,7 +19,8 @@
 <%@page import="com.cannontech.database.data.stars.event.EventWorkOrder"%>
 <%@page import="com.cannontech.stars.dr.event.dao.EventWorkOrderDao"%>
 <%@page import="com.cannontech.spring.YukonSpringHook"%>
-<html>
+
+<%@page import="com.cannontech.stars.core.dao.StarsWorkOrderBaseDao"%><html>
 <head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">

@@ -361,12 +361,24 @@
 			{
 				for (idx = 0; idx < filterTexts.length; idx++) 
 				{
-					var html = '<input type="hidden" name="SelectionIDs" value="' + selectionIDs[idx] + '">';
-					form.insertAdjacentHTML("beforeEnd", html);
-					html = '<input type="hidden" name="FilterTexts" value="' + filterTexts[idx] + '">';
-					form.insertAdjacentHTML("beforeEnd", html);
-					html = '<input type="hidden" name="YukonDefIDs" value="' + yukonDefIDs[idx] + '">';
-					form.insertAdjacentHTML("beforeEnd", html);
+                    var input = document.createElement('input');
+                    input.setAttribute('type', 'hidden');
+                    input.setAttribute('name', 'SelectionIDs');
+                    input.setAttribute('value', selectionIDs[idx]);
+
+                    var input2 = document.createElement('input');
+                    input2.setAttribute('type', 'hidden');
+                    input2.setAttribute('name', 'FilterTexts');
+                    input2.setAttribute('value', filterTexts[idx]);
+
+                    var input3 = document.createElement('input');
+                    input3.setAttribute('type', 'hidden');
+                    input3.setAttribute('name', 'YukonDefIDs');
+                    input3.setAttribute('value', yukonDefIDs[idx]);
+                    
+                    form.appendChild(input);
+                    form.appendChild(input2);
+                    form.appendChild(input3);
 				}
                 
                 $("submitbutton").toggle();

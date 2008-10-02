@@ -19,6 +19,9 @@
 <jsp:useBean id="inventoryBean" class="com.cannontech.stars.web.bean.InventoryBean" scope="session">
 	<%-- this body is executed only if the bean is created --%>
 </jsp:useBean>
+
+<% if (request.getParameter("page") == null) inventoryBean.resetInventoryList(); %>
+
 <jsp:setProperty name="inventoryBean" property="energyCompanyID" value="<%= liteEC.getEnergyCompanyID() %>"/>
 <jsp:setProperty name="inventoryBean" property="action" value="InsertInventory"/>
 <% if (request.getParameter("page") == null) { %>

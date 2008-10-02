@@ -1,21 +1,16 @@
 package com.cannontech.stars.web.bean;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.Iterator;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.Pair;
 import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteContact;
@@ -30,19 +25,20 @@ import com.cannontech.database.db.stars.hardware.Warehouse;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
-import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
-import com.cannontech.stars.util.AbstractFilter;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.FilterWrapper;
-import com.cannontech.stars.util.InventoryFilter;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.WebClientException;
+import com.cannontech.stars.util.filter.DirectionAwareOrderBy;
+import com.cannontech.stars.util.filter.OrderBy;
+import com.cannontech.stars.util.filter.filterby.inventory.InventoryOrderBy;
 import com.cannontech.stars.web.StarsYukonUser;
+import com.cannontech.stars.web.collection.SimpleCollection;
+import com.cannontech.stars.web.collection.SimpleCollectionFactory;
 import com.cannontech.stars.web.util.InventoryManagerUtil;
 import com.cannontech.stars.xml.serialize.StreetAddress;
-import com.cannontech.web.navigation.CtiNavObject;
 
 /**
  * @author yao
@@ -71,123 +67,34 @@ public class InventoryBean {
     private final int MAX_ALLOW_DISPLAY = 500;
 	
 	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
-	
-	private static final Comparator<LiteInventoryBase> INV_ID_CMPTOR = new Comparator<LiteInventoryBase>() {
-		public int compare(LiteInventoryBase o1, LiteInventoryBase o2) {
-			return o1.getInventoryID() - o2.getInventoryID();
-		}
-	};
     
     private HttpServletRequest internalRequest;
     private String numberOfRecords = "0";
     private boolean viewResults = false;
-    private boolean shipmentCheck = false;
     private boolean overHardwareDisplayLimit = false;
-	private boolean differentOrigin = true;
     private boolean checkInvenForAccount = false;
     
     private final StarsCustAccountInformationDao starsCustAccountInformationDao = 
         YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
     
-	/**
-	 * Comparator of serial # and device names. Serial # is always "less than"
-	 * device name. To compare two serial #s, try to convert them into decimal
-	 * values first, compare the decimal values if conversion is successful.
-	 */
-	private static final Comparator<LiteInventoryBase> SERIAL_NO_CMPTOR = new Comparator<LiteInventoryBase>() {
-		public int compare(LiteInventoryBase o1, LiteInventoryBase o2) {
-			int result = 0;
-			
-			if ((o1 instanceof LiteStarsLMHardware) && (o2 instanceof LiteStarsLMHardware)) {
-				LiteStarsLMHardware hw1 = (LiteStarsLMHardware) o1;
-				LiteStarsLMHardware hw2 = (LiteStarsLMHardware) o2;
-				
-				Long sn1 = null;
-				try {
-					sn1 = Long.valueOf( hw1.getManufacturerSerialNumber() );
-				}
-				catch (NumberFormatException e) {}
-				
-				Long sn2 = null;
-				try {
-					sn2 = Long.valueOf( hw2.getManufacturerSerialNumber() );
-				}
-				catch (NumberFormatException e) {}
-				
-				if (sn1 != null && sn2 != null) {
-					result = sn1.compareTo( sn2 );
-					if (result == 0) result = hw1.getManufacturerSerialNumber().compareTo( hw2.getManufacturerSerialNumber() );
-				}
-				else if (sn1 != null && sn2 == null)
-					return -1;
-				else if (sn1 == null && sn2 != null)
-					return 1;
-				else
-					result = hw1.getManufacturerSerialNumber().compareTo( hw2.getManufacturerSerialNumber() );
-			}
-			else if ((o1 instanceof LiteStarsLMHardware) && !(o2 instanceof LiteStarsLMHardware))
-				return -1;
-			else if (!(o1 instanceof LiteStarsLMHardware) && (o2 instanceof LiteStarsLMHardware))
-				return 1;
-			else {
-				String devName1 = null;
-				if (o1.getDeviceID() > 0)
-				{
-                    try
-                    {
-                        devName1 = DaoFactory.getPaoDao().getYukonPAOName( o1.getDeviceID() );
-                    }
-                    catch(NotFoundException e) {}
-                }
-				else if (o1.getDeviceLabel() != null && o1.getDeviceLabel().length() > 0)
-					devName1 = o1.getDeviceLabel();
-				
-				String devName2 = null;
-				if (o2.getDeviceID() > 0)
-					devName2 = DaoFactory.getPaoDao().getYukonPAOName( o2.getDeviceID() );
-				else if (o2.getDeviceLabel() != null && o2.getDeviceLabel().length() > 0)
-					devName2 = o2.getDeviceLabel();
-				
-				if (devName1 != null && devName2 != null)
-					result = devName1.compareTo( devName2 );
-				else if (devName1 != null && devName2 == null)
-					return -1;
-				else if (devName1 == null && devName2 != null)
-					return 1;
-				else
-					return -1;
-			}
-			
-			if (result == 0) result = o1.getInventoryID() - o2.getInventoryID();
-			return result;
-		}
-	};
-	
-	private static final Comparator<LiteInventoryBase> INST_DATE_CMPTOR = new Comparator<LiteInventoryBase>() {
-		public int compare(LiteInventoryBase o1, LiteInventoryBase o2) {
-			
-			int result = new Date(o1.getInstallDate()).compareTo( new Date(o2.getInstallDate()) );
-			if (result == 0)
-				result = o1.getInventoryID() - o2.getInventoryID();
-			
-			return result;
-		}
-	};
-	
+    private final SimpleCollectionFactory simpleCollectionFactory = 
+        YukonSpringHook.getBean("simpleCollectionFactory", SimpleCollectionFactory.class);
+    
 	private int sortBy = YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_SERIAL_NO;
 	private int sortOrder = SORT_ORDER_ASCENDING;
+	
+	private int searchBy = CtiUtilities.NONE_ZERO_ID;
+	private String searchValue = null;
+	
 	private int page = 1;
 	private int pageSize = DEFAULT_PAGE_SIZE;
 	private int energyCompanyID = 0;
 	private int htmlStyle = HTML_STYLE_LIST_INVENTORY;
 	private String referer = null;
 	private List<LiteInventoryBase> inventorySet = null;
-	private int searchBy = CtiUtilities.NONE_ZERO_ID;
-	private String searchValue = null;
 	private String action = null;
 	
 	private LiteStarsEnergyCompany energyCompany = null;
-	private List<LiteInventoryBase> inventoryList = null;
     private List<FilterWrapper> filterByList = null;
 	
 	public InventoryBean() {
@@ -198,13 +105,7 @@ public class InventoryBean {
 			energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( energyCompanyID );
 		return energyCompany;
 	}
-	
-    public List<LiteInventoryBase> getInventoryList()
-    {
-        return inventoryList;
-    }
     
-    @SuppressWarnings("unchecked")
     private List<LiteStarsEnergyCompany> getMembersFromFilterList() {
         final List<LiteStarsEnergyCompany> companyList = new ArrayList<LiteStarsEnergyCompany>();
         List<FilterWrapper> filterList = getFilterByList();
@@ -218,129 +119,97 @@ public class InventoryBean {
         return companyList;
     }
     
-	@SuppressWarnings("unchecked")
-    private List<LiteInventoryBase> getHardwareList(boolean showEnergyCompany) throws WebClientException {
-		if (inventoryList != null && !shipmentCheck) return inventoryList;
-		
-		StarsInventoryBaseDao starsInventoryBaseDao = 
-			YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
-		
-		List<LiteInventoryBase> hardwares = new ArrayList<LiteInventoryBase>();
-		if ((getHtmlStyle() & HTML_STYLE_INVENTORY_SET) != 0 && inventorySet != null) {
-			hardwares = inventorySet;
-		}
-		else if (showEnergyCompany) {
-		    List<LiteStarsEnergyCompany> memberList = getMembersFromFilterList();
-		    if (memberList.size() > 0) {
-		        hardwares = starsInventoryBaseDao.getAllByEnergyCompanyList(memberList);
-			} else if (getSearchBy() == 0) {
-                List<LiteStarsEnergyCompany> members = ECUtils.getAllDescendants( getEnergyCompany() );
-				hardwares = starsInventoryBaseDao.getAllByEnergyCompanyList(members);
-			}
-			else {
-				hardwares = InventoryManagerUtil.searchInventory( getEnergyCompany(), getSearchBy(), getSearchValue(), true );
-			}
-		}
-		else {
-			if (getSearchBy() == 0) {
-				hardwares = 
-					starsInventoryBaseDao.getAllByEnergyCompanyList(
-							Collections.singletonList(getEnergyCompany()));
-			} else {
-				hardwares = InventoryManagerUtil.searchInventory( getEnergyCompany(), getSearchBy(), getSearchValue(), false );
-			}
-		}
-		
-		if ((getHtmlStyle() & HTML_STYLE_SELECT_LM_HARDWARE) != 0) {
-			Iterator<LiteInventoryBase> it = hardwares.iterator();
-			while (it.hasNext()) {
-				LiteInventoryBase invObj = it.next();
-				if (!(invObj instanceof LiteStarsLMHardware)) {
-					it.remove();
-				}
-			}
-		}
-		
-        /*
-         * Now that we have potentially n filters instead of one, we need to iterate through.
-         */
-        if(getHtmlStyle() != HTML_STYLE_INVENTORY_SET) {
-            final AbstractFilter<LiteInventoryBase> inventoryFilter = new InventoryFilter();
-            inventoryFilter.setEnergyCompany(energyCompany);
-            final List filteredHardwareList = inventoryFilter.filter(hardwares, getFilterByList());
-            hardwares = filteredHardwareList;    
-        }
-            
-        Set<LiteInventoryBase> sortedInvs = null;
-        if (getSortBy() == YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_SERIAL_NO)
-            sortedInvs = new TreeSet<LiteInventoryBase>( SERIAL_NO_CMPTOR );
-        else if (getSortBy() == YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_INST_DATE)
-            sortedInvs = new TreeSet<LiteInventoryBase>( INST_DATE_CMPTOR );
-        else
-            sortedInvs = new TreeSet<LiteInventoryBase>( INV_ID_CMPTOR );
-
-        sortedInvs.addAll(hardwares);
+    private List<Integer> getEnergyCompanyIdList(boolean showEnergyCompany) {
+        if (!showEnergyCompany) 
+            return Arrays.asList(getEnergyCompany().getEnergyCompanyID());
         
-		inventoryList = new ArrayList<LiteInventoryBase>();
-		Iterator<LiteInventoryBase> it = sortedInvs.iterator();
-		while (it.hasNext()) {
-			if (getSortOrder() == SORT_ORDER_ASCENDING)
-				inventoryList.add( it.next() );
-			else
-				inventoryList.add( 0, it.next() );
-		}
-		
-		return inventoryList;
-	}
+        List<LiteStarsEnergyCompany> memberList = getMembersFromFilterList();
+        List<LiteStarsEnergyCompany> ecList = (!memberList.isEmpty()) ?
+                memberList : ECUtils.getAllDescendants( getEnergyCompany());
+
+        List<Integer> idList = new ArrayList<Integer>(ecList.size());
+        for (final LiteStarsEnergyCompany energyCompany : ecList) {
+            idList.add(energyCompany.getEnergyCompanyID());
+        }
+        
+        return idList;
+    }
+    
+    private DirectionAwareOrderBy getDirectionAwareOrderBy() {
+        boolean isAscending = getSortOrder() == SORT_ORDER_ASCENDING;
+        OrderBy orderBy = InventoryOrderBy.valueOf(getSortBy());
+        return new DirectionAwareOrderBy(orderBy, isAscending);
+    }
 	
 	public void resetInventoryList() {
-		inventoryList = null;
+		inventorySet = null;
 	}
 	
-	public String getHTML(HttpServletRequest req) 
-    {
-		StarsYukonUser user = (StarsYukonUser) req.getSession().getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-        String previousPage = ((CtiNavObject) req.getSession().getAttribute(ServletUtils.NAVIGATE)).getPreviousPage();        
-        setDifferentOrigin(previousPage.lastIndexOf("Inventory.jsp") < 0);
+	private SimpleCollection<LiteInventoryBase> getSimpleCollection(boolean showEnergyCompany) 
+	    throws WebClientException {
+	    
+	    boolean isSet = ((getHtmlStyle() & HTML_STYLE_INVENTORY_SET) != 0 && inventorySet != null);
+	    if (isSet) {
+	        return simpleCollectionFactory.createInventorySeachCollection(inventorySet);
+	    }
+	    
+	    boolean isSearch = ((getHtmlStyle() & HTML_STYLE_SELECT_INVENTORY) != 0) && getSearchBy() != CtiUtilities.NONE_ZERO_ID;
+	    if (isSearch) {
+	        setInventorySet(InventoryManagerUtil.searchInventory(getEnergyCompany(), getSearchBy(), getSearchValue(), showEnergyCompany));
+	        return simpleCollectionFactory.createInventorySeachCollection(inventorySet);	        
+	    }
+	    
+	    return simpleCollectionFactory.createInventoryFilterCollection(getEnergyCompanyIdList(showEnergyCompany),
+                                                                        getFilterByList(),
+                                                                        getDirectionAwareOrderBy());
+	}
+	
+	private boolean isShowEnergyCompany(HttpServletRequest request) {
+	    StarsYukonUser user = (StarsYukonUser) request.getSession(false).getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
+	    
+	    boolean showEnergyCompany = false;
+        boolean manageMembers = DaoFactory.getAuthDao().checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS);
+        boolean hasChildren = getEnergyCompany().getChildren().size() > 0;
         
-		boolean showEnergyCompany = false;
-		boolean manageMembers = DaoFactory.getAuthDao().checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS);
-		boolean hasChildren = getEnergyCompany().getChildren().size() > 0;
-		
-		int style = getHtmlStyle();
-		if ((style == HTML_STYLE_FILTERED_INVENTORY_SUMMARY
-				|| (style & HTML_STYLE_LIST_INVENTORY) != 0
-				|| (style & HTML_STYLE_SELECT_LM_HARDWARE) != 0
-				|| (style & HTML_STYLE_FILTERED_INVENTORY_SUMMARY) != 0 
-				|| (style & HTML_STYLE_SELECT_INVENTORY) != 0)
-				&& manageMembers && hasChildren) {
+        int style = getHtmlStyle();
+        if ((style == HTML_STYLE_FILTERED_INVENTORY_SUMMARY
+                || (style & HTML_STYLE_LIST_INVENTORY) != 0
+                || (style & HTML_STYLE_SELECT_LM_HARDWARE) != 0
+                || (style & HTML_STYLE_FILTERED_INVENTORY_SUMMARY) != 0 
+                || (style & HTML_STYLE_SELECT_INVENTORY) != 0)
+                && manageMembers && hasChildren) {
 
-			showEnergyCompany = true;
-		} else if ((style & HTML_STYLE_INVENTORY_SET) != 0) {
-				showEnergyCompany = manageMembers;
-		}
-		
-		List<LiteInventoryBase> hwList = null;
-		String errorMsg = null;
-        int numberOfHardware = 0;
-		try {
-			hwList = getHardwareList( showEnergyCompany );
-			if (hwList == null || hwList.size() == 0)
-            {
-				errorMsg = "No hardware found.";
-            }
+            showEnergyCompany = true;
+        } else if ((style & HTML_STYLE_INVENTORY_SET) != 0) {
+                showEnergyCompany = manageMembers;
         }
-		catch (WebClientException e) {
-			errorMsg = e.getMessage();
-		}
-		
-        StringBuffer htmlBuf = new StringBuffer();
         
-        numberOfHardware = hwList.size();
+        return showEnergyCompany;
+	}
+	
+	public String getHTML(HttpServletRequest req) throws WebClientException {
+		StarsYukonUser user = (StarsYukonUser) req.getSession().getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
+        
+		boolean showEnergyCompany = isShowEnergyCompany(req);
+		boolean manageMembers = DaoFactory.getAuthDao().checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS);
+
+		int style = getHtmlStyle();
+		
+		SimpleCollection<LiteInventoryBase> simpleCollection = getSimpleCollection(showEnergyCompany);
+		
+		String errorMsg = null;
+        int numberOfHardware = simpleCollection.getCount();
+        
+        if (numberOfHardware == 0) {
+            errorMsg = "No hardware found.";
+        }
+        
         if(style == HTML_STYLE_FILTERED_INVENTORY_SUMMARY)
         {
-            return htmlBuf.append(numberOfHardware).toString();
+            return Integer.toString(numberOfHardware);
         }
+
+        StringBuilder htmlBuf = new StringBuilder();
         		
 		if (errorMsg != null) {
 			htmlBuf.append("<p class='ErrorMsg'>").append(errorMsg).append("</p>").append(LINE_SEPARATOR);
@@ -376,19 +245,19 @@ public class InventoryBean {
 		}
 		
 		if (page < 1) page = 1;
-		int maxPageNo = (int) Math.ceil(hwList.size() * 1.0 / pageSize);
+		int maxPageNo = (int) Math.ceil(numberOfHardware * 1.0 / pageSize);
 		if (page > maxPageNo) page = maxPageNo;
 		
 		int maxPageDigit = (int)(Math.log(maxPageNo) / Math.log(10)) + 1;
 		
 		int minInvNo = (page - 1) * pageSize + 1;
-		int maxInvNo = Math.min(page * pageSize, hwList.size());
+		int maxInvNo = Math.min(page * pageSize, numberOfHardware);
         
-		StringBuffer navBuf = new StringBuffer();
+		StringBuilder navBuf = new StringBuilder();
 		navBuf.append(minInvNo);
 		if (maxInvNo > minInvNo)
 			navBuf.append("-").append(maxInvNo);
-		navBuf.append(" of ").append(hwList.size());
+		navBuf.append(" of ").append(numberOfHardware);
 		navBuf.append(" | ");
 		if (page == 1)
 			navBuf.append("<font color='#CCCCCC'>First</font>");
@@ -449,18 +318,20 @@ public class InventoryBean {
 		Map<Integer, LiteStarsEnergyCompany> ecMap = 
 			StarsDatabaseCache.getInstance().getAllEnergyCompanyMap();
 		
-		for (int i = minInvNo; i <= maxInvNo; i++) {
-			LiteInventoryBase liteInv = null;
+		int fromIndex = minInvNo - 1;
+		int toIndex = maxInvNo;
+		
+		List<LiteInventoryBase> hardwareList = simpleCollection.getList(fromIndex, toIndex);
+		
+		for (final LiteInventoryBase liteInv : hardwareList) {
 			LiteStarsEnergyCompany member = null;
 			boolean isManagable = false;
 			
 			if (showEnergyCompany) {
-				liteInv = hwList.get(i-1);
 				member = ecMap.get(liteInv.getEnergyCompanyId());
 				isManagable = manageMembers && ECUtils.isDescendantOf( member, getEnergyCompany() );
 			}
 			else {
-				liteInv = hwList.get(i-1);
 				member = getEnergyCompany();
 			}
         	
@@ -483,10 +354,6 @@ public class InventoryBean {
         	
 			String currentDeviceState = DaoFactory.getYukonListDao().getYukonListEntry(liteInv.getCurrentStateID()).getEntryText();
             
-            /*Date installDate = StarsUtils.translateDate( liteInv.getInstallDate() );
-			dateFormat.setTimeZone( getEnergyCompany().getDefaultTimeZone() );
-			String instDate = (installDate != null)? dateFormat.format(installDate) : "----";
-			*/
 			htmlBuf.append("        <tr>").append(LINE_SEPARATOR);
             
 			if ((style & HTML_STYLE_SELECT_INVENTORY) != 0
@@ -734,54 +601,9 @@ public class InventoryBean {
         return filterByList;
     }
     
-    public void setFilterByList(final List<FilterWrapper> newFilters)
-    {
-        if(newFilters == null)
-            return;
-        
-        List<FilterWrapper> oldFilters = filterByList;
-        filterByList = new ArrayList<FilterWrapper>();
-        
-        /**
-         * Because of the size of Xcel, we need to handle members as the first part of
-         * the filter process, regardless of where it is in the list of filters.
-         * This improves our best case significantly, and to some degree, also improves
-         * the worst case scenario.
-         * 
-         * Also added to this method: goes through and checks to see whether the stored
-         * inventoryList should be rebuilt, ie. did the filters actually change.
-         */
-        if(oldFilters == null || oldFilters.size() != newFilters.size())
-            inventoryList = null;
-        
-        for(int j = 0; j < newFilters.size(); j++)
-        {
-            Integer filterType = Integer.valueOf(newFilters.get(j).getFilterTypeID());
-            String specificFilterString = newFilters.get(j).getFilterID();
-            Integer specificFilterID = InventoryUtils.returnIntegerIfPossible(specificFilterString);
-
-            if(inventoryList != null)
-            {
-                boolean found = false;
-                for(int x = 0; x < oldFilters.size(); x++)
-                {
-                    if(filterType == new Integer(oldFilters.get(x).getFilterTypeID())
-                            && specificFilterID.intValue() == new Integer(oldFilters.get(x).getFilterID()).intValue())
-                    {
-                        found = true;
-                    }    
-                }
-                
-                if(!found)
-                    inventoryList = null;
-            }
-        }
-        
-        /*In order to add OR logic to the filters instead of AND logic we need to first
-         * sort the filters by type
-         */
-        Collections.sort(newFilters, FilterWrapper.filterWrapperComparator);
-        filterByList = newFilters;
+    public void setFilterByList(final List<FilterWrapper> filterByList) {
+        if (filterByList == null) throw new IllegalArgumentException("filterByList cannot be null.");
+        this.filterByList = filterByList;
 	}
 
 	/**
@@ -800,6 +622,22 @@ public class InventoryBean {
 		this.sortBy = sortBy;
 	}
 
+	public void setSearchBy(int searchBy) {
+        this.searchBy = searchBy;
+    }
+	
+	public int getSearchBy() {
+        return searchBy;
+    }
+	
+	public void setSearchValue(String searchValue) {
+        this.searchValue = searchValue;
+    }
+	
+	public String getSearchValue() {
+        return searchValue;
+    }
+	
 	/**
 	 * Sets the energyCompanyID.
 	 * @param energyCompanyID The energyCompanyID to set
@@ -854,12 +692,16 @@ public class InventoryBean {
 		pageSize = i;
 	}
 
-	/**
-	 * @param list
-	 */
-	public void setInventorySet(final List<LiteInventoryBase> list) {
-		inventorySet = list;
-		inventoryList = null;
+	@SuppressWarnings("unchecked")
+	public void setInventorySet(final List list) {
+	    if (list == null) {
+	        inventorySet = null;
+	        return;
+	    }
+	    
+	    List<LiteInventoryBase> cleanList = 
+	        new ArrayList<LiteInventoryBase>(Pair.removePair(list, LiteInventoryBase.class));
+		inventorySet = cleanList;
 	}
 
 	/**
@@ -867,43 +709,6 @@ public class InventoryBean {
 	 */
 	public void setReferer(String string) {
 		referer = string;
-	}
-
-	/**
-	 * @return
-	 */
-	public int getSearchBy() {
-		return searchBy;
-	}
-
-	/**
-	 * @return
-	 */
-	public String getSearchValue() {
-		return searchValue;
-	}
-
-	/**
-	 * @param i
-	 */
-	public void setSearchBy(int i) {
-		if (searchBy != CtiUtilities.NONE_ZERO_ID || i != CtiUtilities.NONE_ZERO_ID) {
-			searchBy = i;
-			inventoryList = null;
-			inventorySet = null;
-		}
-		
-		if (searchBy != CtiUtilities.NONE_ZERO_ID) {
-			//filterBy = CtiUtilities.NONE_ZERO_ID;
-			htmlStyle |= HTML_STYLE_INVENTORY_SET;
-		}
-	}
-
-	/**
-	 * @param string
-	 */
-	public void setSearchValue(String string) {
-		searchValue = string;
 	}
 
 	/**
@@ -921,8 +726,7 @@ public class InventoryBean {
 	}
     
     @SuppressWarnings("unchecked")
-    public String getFilterInventoryHTML()
-    {
+    public String getFilterInventoryHTML() throws WebClientException {
         setHtmlStyle(HTML_STYLE_FILTERED_INVENTORY_SUMMARY);
         
         setFilterByList((List) internalRequest.getSession().getAttribute(ServletUtils.FILTER_INVEN_LIST));
@@ -944,8 +748,6 @@ public class InventoryBean {
 
     public boolean getViewResults()
     {
-        if(isDifferentOrigin() && isOverHardwareDisplayLimit())
-            return false;
         return viewResults;
     }
     
@@ -959,45 +761,23 @@ public class InventoryBean {
     }
 
     public void setInventoryList(final List<LiteInventoryBase> inventoryList) {
-        this.inventoryList = inventoryList;
+        setInventorySet(inventoryList);
     }
     
-    public List<LiteInventoryBase> getLimitedHardwareList()
-    {
-        try
-        {
-            return getHardwareList(true);
-        }
-        catch (Exception e)
-        {
-            return null;
-        }
-    }
-
-    public boolean isShipmentCheck() 
-    {
-        return shipmentCheck;
-    }
-
-    public void setShipmentCheck(boolean shipmentCheck) 
-    {
-        this.shipmentCheck = shipmentCheck;
+    public List<LiteInventoryBase> getInventoryList(HttpServletRequest request) 
+        throws WebClientException {
+        
+        boolean showEnergyCompany = isShowEnergyCompany(request);
+        SimpleCollection<LiteInventoryBase> simpleCollection = getSimpleCollection(showEnergyCompany);
+        
+        List<LiteInventoryBase> list = simpleCollection.getList();
+        return list;
     }
 
     public boolean isOverHardwareDisplayLimit() 
     {
         overHardwareDisplayLimit = Integer.parseInt(numberOfRecords) > MAX_ALLOW_DISPLAY;
         return overHardwareDisplayLimit;
-    }
-    
-    public boolean isDifferentOrigin() 
-    {
-        return differentOrigin;
-    }
-
-    public void setDifferentOrigin(boolean truth) 
-    {
-        this.differentOrigin = truth;
     }
 
     public boolean isCheckInvenForAccount() {

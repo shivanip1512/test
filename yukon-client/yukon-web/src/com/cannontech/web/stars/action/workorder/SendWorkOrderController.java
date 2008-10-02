@@ -36,7 +36,7 @@ public class SendWorkOrderController extends StarsWorkorderActionController {
             final HttpSession session, final StarsYukonUser user, final LiteStarsEnergyCompany energyCompany) throws Exception {
         
         int orderID = ServletRequestUtils.getIntParameter(request, "OrderID");
-        LiteWorkOrderBase liteOrder = energyCompany.getWorkOrderBase( orderID, true );
+        LiteWorkOrderBase liteOrder = starsWorkOrderBaseDao.getById(orderID);
         
         if (liteOrder.getServiceCompanyID() == 0) {
             session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "You have not assigned this work order to a service company yet." );

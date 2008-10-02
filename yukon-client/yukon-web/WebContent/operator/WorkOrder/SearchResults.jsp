@@ -2,24 +2,25 @@
 <%@ page import="com.cannontech.stars.web.bean.WorkOrderBean" %>
 <%@ page import="com.cannontech.stars.web.util.WorkOrderManagerUtil" %>
 
-<jsp:useBean id="searchRsltBean" class="com.cannontech.stars.web.bean.WorkOrderBean" scope="session">
+<jsp:useBean id="workOrderBean" class="com.cannontech.stars.web.bean.WorkOrderBean" scope="session">
 	<%-- this body is executed only if the bean is created --%>
-	<jsp:setProperty name="searchRsltBean" property="energyCompanyID" value="<%= user.getEnergyCompanyID() %>"/>
-	<jsp:setProperty name="searchRsltBean" property="sortBy" value="<%= YukonListEntryTypes.YUK_DEF_ID_SO_SORT_BY_ORDER_NO %>"/>
-	<jsp:setProperty name="searchRsltBean" property="sortOrder" value="<%= WorkOrderBean.SORT_ORDER_DESCENDING %>"/>
-	<jsp:setProperty name="searchRsltBean" property="htmlStyle" value="<%= WorkOrderBean.HTML_STYLE_SEARCH_RESULTS %>"/>
+	<jsp:setProperty name="workOrderBean" property="energyCompanyID" value="<%= user.getEnergyCompanyID() %>"/>
+	<jsp:setProperty name="workOrderBean" property="sortBy" value="<%= YukonListEntryTypes.YUK_DEF_ID_SO_SORT_BY_ORDER_NO %>"/>
+	<jsp:setProperty name="workOrderBean" property="sortOrder" value="<%= WorkOrderBean.SORT_ORDER_DESCENDING %>"/>
+	<jsp:setProperty name="workOrderBean" property="htmlStyle" value="<%= WorkOrderBean.HTML_STYLE_SEARCH_RESULTS %>"/>
 </jsp:useBean>
 	
 <% if (request.getParameter("page") == null) { %>
 	<%-- intialize bean properties --%>
-	<jsp:setProperty name="searchRsltBean" property="page" value="1"/>
-	<jsp:setProperty name="searchRsltBean" property="referer" value="<%= session.getAttribute(ServletUtils.ATT_REFERRER) %>"/>
+	<jsp:setProperty name="workOrderBean" property="page" value="1"/>
+	<jsp:setProperty name="workOrderBean" property="referer" value="<%= session.getAttribute(ServletUtils.ATT_REFERRER) %>"/>
 <% } %>
 
 <%-- Grab the search criteria --%>
-<jsp:setProperty name="searchRsltBean" property="page" param="page"/>
+<jsp:setProperty name="workOrderBean" property="page" param="page"/>
 
-<html>
+
+<%@page import="com.cannontech.database.data.lite.stars.LiteWorkOrderBase"%><html>
 <head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
@@ -65,11 +66,12 @@
               <span class="MainText"><%= resultDesc %></span><br>
               <br>
 <%
-		ArrayList searchResults = (ArrayList) session.getAttribute(WorkOrderManagerUtil.WORK_ORDER_SET);
+		@SuppressWarnings("unchecked") List<LiteWorkOrderBase> searchResults =
+		    (List<LiteWorkOrderBase>) session.getAttribute(WorkOrderManagerUtil.WORK_ORDER_SET);
 		if (searchResults != null) {
-			searchRsltBean.setSearchResults(searchResults);
+			workOrderBean.setSearchResults(searchResults);
 %>
-              <%= searchRsltBean.getHTML(request) %> 
+              <%= workOrderBean.getHTML(request) %> 
 <%
 		}
 		else {

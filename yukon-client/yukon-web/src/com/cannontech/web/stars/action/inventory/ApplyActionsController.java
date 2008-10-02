@@ -16,6 +16,7 @@ import com.cannontech.stars.util.task.TimeConsumingTask;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.bean.InventoryBean;
 import com.cannontech.stars.web.bean.ManipulationBean;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.stars.action.StarsInventoryActionController;
 
 public class ApplyActionsController extends StarsInventoryActionController {
@@ -55,7 +56,7 @@ public class ApplyActionsController extends StarsInventoryActionController {
             InventoryBean iBean = (InventoryBean) session.getAttribute("inventoryBean");
             ManipulationBean mBean = (ManipulationBean) session.getAttribute("manipBean");
             mBean.setActionsApplied(appliedActions);
-            List<LiteInventoryBase> theWares = iBean.getInventoryList();
+            List<LiteInventoryBase> theWares = iBean.getInventoryList(request);
             if(theWares.size() < 1)
             {
                 session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "There is no selected inventory on which to apply actions.");
@@ -65,7 +66,12 @@ public class ApplyActionsController extends StarsInventoryActionController {
             }
             
             session.removeAttribute( ServletUtils.ATT_REDIRECT );
-            TimeConsumingTask task = new ManipulateInventoryTask( mBean.getEnergyCompany(), newEnergyCompanyID, theWares, newDevTypeID, newDevStateID, newServiceCompanyID, newWarehouseID, request );
+            
+            boolean confirmOnMessagePage = request.getParameter(ServletUtils.CONFIRM_ON_MESSAGE_PAGE) != null;
+            String redirectUrl = ServletUtil.createSafeRedirectUrl(request, "/operator/Hardware/InvenResultSet.jsp");
+            
+            TimeConsumingTask task = new ManipulateInventoryTask( mBean.getEnergyCompany(), newEnergyCompanyID, theWares, 
+                  newDevTypeID, newDevStateID, newServiceCompanyID, newWarehouseID, confirmOnMessagePage, redirectUrl, session);
             long id = ProgressChecker.addTask( task );
             String redir = request.getContextPath() + "/operator/Hardware/InvenResultSet.jsp";
             

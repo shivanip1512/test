@@ -23,6 +23,7 @@ import com.cannontech.database.db.stars.report.WorkOrderBase;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
+import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
@@ -98,7 +99,11 @@ public class UpdateServiceRequestAction implements ActionBase {
         	LiteStarsEnergyCompany liteStarsEC = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 
         	StarsUpdateServiceRequest updateOrder = reqOper.getStarsUpdateServiceRequest();
-        	LiteWorkOrderBase liteOrder = liteStarsEC.getWorkOrderBase( updateOrder.getOrderID(), true );
+        	
+        	StarsWorkOrderBaseDao starsWorkOrderBaseDao =
+        	    YukonSpringHook.getBean("starsWorkOrderBaseDao", StarsWorkOrderBaseDao.class);
+
+        	LiteWorkOrderBase liteOrder = starsWorkOrderBaseDao.getById(updateOrder.getOrderID());
 
         	LiteStarsCustAccountInformation liteAcctInfo = 
         	    starsCustAccountInformationDao.getById(liteOrder.getAccountID(), liteStarsEC.getEnergyCompanyID());

@@ -1,7 +1,8 @@
 package com.cannontech.stars.core.dao;
 
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -11,8 +12,10 @@ public interface StarsInventoryBaseDao {
 
     public LiteInventoryBase getById(int inventoryId);
     
-    public List<LiteInventoryBase> getByIds(Set<Integer> inventoryIds);
+    public List<LiteInventoryBase> getByIds(Collection<Integer> inventoryIds);
 
+    public Map<Integer,LiteInventoryBase> getByIdsMap(Collection<Integer> inventoryIds);
+    
     /**
      * Method to get a list of all MCTs that have an account for a given list of energy companies
      * @param energyCompanyList - Companies to get hardware for

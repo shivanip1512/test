@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import com.cannontech.clientutils.ActivityLogger;
@@ -46,12 +45,12 @@ public class AddShipmentSNRangeTask extends TimeConsumingTask {
 	Integer companyID = 0;
 	Integer routeID = 0;
     Integer warehouseID = 0;
-	HttpServletRequest request = null;
+	HttpSession session;
 	
 	List<String> serialNoSet = new ArrayList<String>();
 	int numSuccess = 0, numFailure = 0;
 	
-	public AddShipmentSNRangeTask(LiteStarsEnergyCompany energyCompany, String snFrom, String snTo, Integer devTypeID, Integer devStateID, Integer warehouseID, HttpServletRequest request)
+	public AddShipmentSNRangeTask(LiteStarsEnergyCompany energyCompany, String snFrom, String snTo, Integer devTypeID, Integer devStateID, Integer warehouseID, HttpSession session)
 	{
 		this.energyCompany = energyCompany;
 		this.snFrom = Integer.valueOf(snFrom).intValue();
@@ -59,18 +58,16 @@ public class AddShipmentSNRangeTask extends TimeConsumingTask {
 		this.devTypeID = devTypeID;
         this.devStateID = devStateID;
         this.warehouseID = warehouseID;
-		this.request = request;
+		this.session = session;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.cannontech.stars.util.task.TimeConsumingTask#getProgressMsg()
-	 */
-	public String getProgressMsg() {
+	@Override
+    public String getProgressMsg() {
 		int numTotal = snTo - snFrom + 1;
-		if (status == STATUS_FINISHED && numFailure == 0)
+		if (status == STATUS_FINISHED && numFailure == 0) {
 			return "The serial numbers " + snFrom + " to " + snTo + " have been added successfully.";
-		else
-			return numSuccess + " of " + numTotal + " hardware entries have been added.";
+		}	
+		return numSuccess + " of " + numTotal + " hardware entries have been added.";
 	}
 
 	/* (non-Javadoc)
@@ -85,7 +82,6 @@ public class AddShipmentSNRangeTask extends TimeConsumingTask {
 		
 		status = STATUS_RUNNING;
 		
-		HttpSession session = request.getSession(false);
 		StarsYukonUser user = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
 		
 		Integer categoryID = new Integer( InventoryUtils.getInventoryCategoryID(devTypeID.intValue(), energyCompany) );
@@ -144,30 +140,6 @@ public class AddShipmentSNRangeTask extends TimeConsumingTask {
 		
 		session.removeAttribute( InventoryManagerUtil.INVENTORY_SET );
 		status = STATUS_FINISHED;
-		
-		/*
-        if (numFailure > 0) {
-		  
-            String resultDesc = "<span class='ConfirmMsg'>" + numSuccess + " hardware entries added to inventory successfully.</span><br>" +
-					"<span class='ErrorMsg'>" + numFailure + " hardware entries failed (listed below).<br>" +
-					"Those serial numbers may already exist in the inventory.</span><br>";
-			if (serialNoSet.size() > 0) {
-				resultDesc += "<br><table width='100' cellspacing='0' cellpadding='0' border='0' align='center' class='TableCell'>";
-				for (int i = 0; i < serialNoSet.size(); i++) {
-					String serialNo = (String) serialNoSet.get(i);
-					resultDesc += "<tr><td align='center'>" + serialNo + "</td></tr>";
-				}
-				resultDesc += "</table><br>";
-			}
-			
-			/*session.setAttribute(InventoryManagerUtil.INVENTORY_SET_DESC, resultDesc);
-			if (hardwareSet.size() > 0)
-				session.setAttribute(InventoryManagerUtil.INVENTORY_SET, hardwareSet);
-			session.setAttribute(ServletUtils.ATT_REDIRECT, request.getContextPath() + "/operator/Hardware/ResultSet.jsp");
-			if (request.getParameter(ServletUtils.CONFIRM_ON_MESSAGE_PAGE) != null)
-				session.setAttribute(ServletUtils.ATT_REFERRER, session.getAttribute(ServletUtils.ATT_MSG_PAGE_REFERRER));
-		}
-        */
 	}
 
 }

@@ -4,11 +4,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.springframework.web.bind.ServletRequestUtils;
+
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.task.ConfigSNRangeTask;
+import com.cannontech.stars.util.task.ConfigSNRangeTaskDTO;
 import com.cannontech.stars.util.task.TimeConsumingTask;
 import com.cannontech.stars.web.StarsYukonUser;
+import com.cannontech.stars.web.util.InventoryManagerUtil;
+import com.cannontech.stars.xml.serialize.StarsLMConfiguration;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.stars.action.StarsInventoryActionController;
 import com.cannontech.web.stars.service.TimeConsumingTaskService;
 
@@ -24,11 +30,11 @@ public class ConfigSNRangeController extends StarsInventoryActionController {
             final HttpSession session, final StarsYukonUser user, 
                 final LiteStarsEnergyCompany energyCompany) throws Exception {
         
-    	boolean configNow = request.getParameter("ConfigNow") != null;
-
     	session.removeAttribute( ServletUtils.ATT_REDIRECT );
-
-    	TimeConsumingTask task = new ConfigSNRangeTask( energyCompany, configNow, request );
+    	
+    	ConfigSNRangeTaskDTO dto = ConfigSNRangeTaskDTO.valueOf(request);
+    	
+    	TimeConsumingTask task = new ConfigSNRangeTask(energyCompany, session, dto);
     	
     	String redirect = this.getRedirect(request);
     	String referer = this.getReferer(request);

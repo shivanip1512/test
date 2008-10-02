@@ -2,31 +2,39 @@ package com.cannontech.stars.core.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.stars.LiteAccountSite;
 import com.cannontech.database.data.lite.stars.LiteCustomerAccount;
 import com.cannontech.database.data.lite.stars.LiteSiteInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
+import com.cannontech.stars.util.ECUtils;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class StarsCustAccountInformationDaoImpl implements StarsCustAccountInformationDao {
+    private final Logger log = YukonLogManager.getLogger(getClass());
     private SimpleJdbcTemplate simpleJdbcTemplate;
+    private StarsDatabaseCache starsDatabaseCache;
     
     @Override
     @Transactional(readOnly = true)
@@ -42,23 +50,25 @@ public class StarsCustAccountInformationDaoImpl implements StarsCustAccountInfor
         sqlBuilder.append("AND ac.AccountSiteID = acs.AccountSiteID "); 
         sqlBuilder.append("AND acs.SiteInformationID = si.SiteID");
         sqlBuilder.append("AND ectam.AccountID = ac.AccountID");
-        sqlBuilder.append("AND ectam.EnergyCompanyID = ?");
+        sqlBuilder.append("AND ectam.EnergyCompanyID IN (");
+        sqlBuilder.append(getEnergyCompanyIdList(energyCompanyId));
+        sqlBuilder.append(")");
         final String sql = sqlBuilder.toString();
 
         try {
             LiteStarsCustAccountInformation liteAcctInfo = simpleJdbcTemplate.queryForObject(sql,
                                                                                              createRowMapper(energyCompanyId),
-                                                                                             accountId,
-                                                                                             energyCompanyId);
+                                                                                             accountId);
             return liteAcctInfo;
         } catch (IncorrectResultSizeDataAccessException e) {
+            log.error(e);
             return null;
         }
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Map<Integer, LiteStarsCustAccountInformation> getByIds(Set<Integer> accountIds, int energyCompanyId) {
+    public Map<Integer, LiteStarsCustAccountInformation> getByIds(Set<Integer> accountIds, final int energyCompanyId) {
         final ChunkingSqlTemplate<Integer> template = new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
 
         final List<LiteStarsCustAccountInformation> resultList = 
@@ -76,7 +86,9 @@ public class StarsCustAccountInformationDaoImpl implements StarsCustAccountInfor
                     sqlBuilder.append(" AND ac.AccountSiteID = acs.AccountSiteID "); 
                     sqlBuilder.append(" AND acs.SiteInformationID = si.SiteID");
                     sqlBuilder.append(" AND ectam.AccountID = ac.AccountID");
-                    sqlBuilder.append(" AND ectam.EnergyCompanyID = ?");
+                    sqlBuilder.append(" AND ectam.EnergyCompanyID IN (");
+                    sqlBuilder.append(getEnergyCompanyIdList(energyCompanyId));
+                    sqlBuilder.append(")");
                     String sql = sqlBuilder.toString();
                     return sql;
                 }
@@ -175,9 +187,29 @@ public class StarsCustAccountInformationDaoImpl implements StarsCustAccountInfor
         }
     }
     
+    private List<Integer> getEnergyCompanyIdList(int energyCompanyId) {
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
+        List<LiteStarsEnergyCompany> energyCompanyList = ECUtils.getAllDescendants(energyCompany);
+        List<Integer> energyCompanyIdList = toIdList(energyCompanyList);
+        return energyCompanyIdList;
+    }
+    
+    private List<Integer> toIdList(List<LiteStarsEnergyCompany> energyCompanyList) {
+        List<Integer> idList = new ArrayList<Integer>(energyCompanyList.size());
+        for (final LiteStarsEnergyCompany energyCompany : energyCompanyList) {
+            idList.add(energyCompany.getEnergyCompanyID());
+        }
+        return idList;
+    }
+    
     @Autowired
     public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
         this.simpleJdbcTemplate = simpleJdbcTemplate;
+    }
+    
+    @Autowired
+    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
+        this.starsDatabaseCache = starsDatabaseCache;
     }
     
 }

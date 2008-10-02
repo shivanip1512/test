@@ -10,6 +10,77 @@
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
+    <bean id="simpleCollectionFactory" class="com.cannontech.stars.web.collection.SimpleCollectionFactory"/>
+
+    <bean id="abstractFilter" class="com.cannontech.stars.util.filter.AbstractFilter" abstract="true"/>
+
+    <bean id="inventoryFilter" class="com.cannontech.stars.util.filter.InventoryFilter"
+          parent="abstractFilter">
+          <property name="batchSize" value="500"/>
+    </bean>          
+          
+    <bean id="workOrderFilter" class="com.cannontech.stars.util.filter.WorkOrderFilter"
+          parent="abstractFilter">
+          <property name="batchSize" value="500"/>
+    </bean>      
+
+    <bean id="abstractInventoryFilterByProducer" class="com.cannontech.stars.util.filter.filterby.inventory.AbstractInventoryFilterByProducer"
+          abstract="true"/>
+    
+    <bean id="abstractWorkOrderFilterByProducer" class="com.cannontech.stars.util.filter.filterby.workorder.AbstractWorkOrderFilterByProducer"
+          abstract="true"/>
+
+    <bean id="filterByFactory" class="com.cannontech.stars.util.filter.filterby.FilterByFactory">
+        <property name="filterByProducers">
+            <list>
+                <bean class="com.cannontech.stars.util.filter.filterby.inventory.DeviceTypeFilterByProducer" 
+                      parent="abstractInventoryFilterByProducer"/>
+                      
+                <bean class="com.cannontech.stars.util.filter.filterby.inventory.PostalCodesFilterByProducer" 
+                      parent="abstractInventoryFilterByProducer"/>
+                
+                <bean class="com.cannontech.stars.util.filter.filterby.inventory.ServiceCompanyFilterByProducer" 
+                      parent="abstractInventoryFilterByProducer"/>
+                
+                <bean class="com.cannontech.stars.util.filter.filterby.inventory.WarehouseFilterByProducer" 
+                      parent="abstractInventoryFilterByProducer"/>
+                
+                <bean class="com.cannontech.stars.util.filter.filterby.inventory.SerialNumberRangeMinFilterByProducer" 
+                      parent="abstractInventoryFilterByProducer"/>
+                
+                <bean class="com.cannontech.stars.util.filter.filterby.inventory.SerialNumberRangeMaxFilterByProducer" 
+                      parent="abstractInventoryFilterByProducer"/>
+                
+                <bean class="com.cannontech.stars.util.filter.filterby.inventory.ApplianceTypeFilterByProducer" 
+                      parent="abstractInventoryFilterByProducer"/>
+                
+                <bean class="com.cannontech.stars.util.filter.filterby.inventory.CustomerTypeFilterByProducer" 
+                      parent="abstractInventoryFilterByProducer"/>
+                
+                <bean class="com.cannontech.stars.util.filter.filterby.inventory.DeviceStatusFilterByProducer" 
+                      parent="abstractInventoryFilterByProducer"/>
+                
+                <bean class="com.cannontech.stars.util.filter.filterby.inventory.MemberFilterByProducer" 
+                      parent="abstractInventoryFilterByProducer"/>
+                
+                <bean class="com.cannontech.stars.util.filter.filterby.workorder.ServiceCompanyFilterByProducer" 
+                      parent="abstractWorkOrderFilterByProducer"/>
+                
+                <bean class="com.cannontech.stars.util.filter.filterby.workorder.ServiceTypeFilterByProducer" 
+                      parent="abstractWorkOrderFilterByProducer"/>
+                
+                <bean class="com.cannontech.stars.util.filter.filterby.workorder.PostalCodesFilterByProducer" 
+                      parent="abstractWorkOrderFilterByProducer"/>
+
+                <bean class="com.cannontech.stars.util.filter.filterby.workorder.CustomerTypeFilterByProducer" 
+                      parent="abstractWorkOrderFilterByProducer"/>
+                      
+                <bean class="com.cannontech.stars.util.filter.filterby.workorder.WorkOrderStatusFilterByProducer"
+                      parent="abstractWorkOrderFilterByProducer"/>
+            </list>
+        </property>
+    </bean>
+
     <bean id="liteStarsEnergyCompanyFactory" class="com.cannontech.database.data.lite.stars.LiteStarsEnergyCompanyFactory"/>
 
     <bean id="starsDatabaseCache"
@@ -65,6 +136,8 @@
     <bean id="lmProgramWebPublishingDao" class="com.cannontech.stars.core.dao.impl.LMProgramWebPublishingDaoImpl"/>
 
     <bean id="starsInventoryBaseDao" class="com.cannontech.stars.core.dao.impl.StarsInventoryBaseDaoImpl"/>
+    
+    <bean id="starsWorkOrderBaseDao" class="com.cannontech.stars.core.dao.impl.StarsWorkOrderBaseDaoImpl"/>
 
     <bean id="accountSiteDao" class="com.cannontech.stars.dr.account.dao.impl.AccountSiteDaoImpl"/>
     
@@ -108,10 +181,6 @@
     </bean>
 
     <bean id="inventoryBaseDao" class="com.cannontech.stars.dr.hardware.dao.impl.InventoryBaseDaoImpl"/>
-    
-    <bean id="starsRowCountDao" class="com.cannontech.stars.core.dao.impl.StarsRowCountDaoImpl">
-        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
-    </bean>
     
     <bean id="customerEventBaseDao" class="com.cannontech.stars.dr.event.dao.impl.LMCustomerEventBaseDaoImpl">
         <property name="nextValueHelper" ref="nextValueHelper" />

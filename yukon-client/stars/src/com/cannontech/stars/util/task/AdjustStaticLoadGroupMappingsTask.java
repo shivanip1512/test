@@ -49,7 +49,8 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
 	LiteStarsEnergyCompany energyCompany = null;
 	boolean fullReset = false;
     boolean sendConfig = true;
-	HttpServletRequest request = null;
+    String redirect;
+	HttpSession session;
 	
 	List<StaticLoadGroupMapping> mappingsToAdjust = null;
 	List<LiteStarsLMHardware> hwsToAdjust = null;
@@ -59,18 +60,17 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
 	int numSuccess = 0, numFailure = 0;
 	int numToBeConfigured = 0;
 	
-	public AdjustStaticLoadGroupMappingsTask(LiteStarsEnergyCompany energyCompany, boolean fullReset, boolean sendConfig, HttpServletRequest request)
+	public AdjustStaticLoadGroupMappingsTask(LiteStarsEnergyCompany energyCompany, boolean fullReset, boolean sendConfig, String redirect, HttpSession session)
 	{
 		this.energyCompany = energyCompany;
 		this.fullReset = fullReset;
         this.sendConfig = sendConfig;
-		this.request = request;
+        this.redirect = redirect;
+		this.session = session;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.cannontech.stars.util.task.TimeConsumingTask#getProgressMsg()
-	 */
-	public String getProgressMsg() {
+	@Override
+    public String getProgressMsg() {
 		if(numToBeConfigured == 0)
             return "Mapping task is sorting static mappings and inventory items";
 	    else if (fullReset) {
@@ -93,7 +93,6 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
-		HttpSession session = request.getSession(false);
 		StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
         
         StringBuffer logEntry = new StringBuffer();
@@ -283,7 +282,7 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
         if (numFailure > 0) {
             session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Addressing Groups adjustment failed for " + numFailure + " switches");
 			session.setAttribute(InventoryManagerUtil.INVENTORY_SET, configurationSet);
-			session.setAttribute(ServletUtils.ATT_REDIRECT, request.getContextPath() + "/operator/Hardware/PowerUserStaticLoadGroupReset.jsp");
+			session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
 		}
 	}
 }

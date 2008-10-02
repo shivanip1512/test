@@ -57,6 +57,7 @@
         <webClassPathEntry>/third-party/ecs-1.4.2.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/ejb3-persistence.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/ejbonly.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/google-collections-0.8.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/hibernate-annotations.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/hibernate3.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/itext.jar</webClassPathEntry>

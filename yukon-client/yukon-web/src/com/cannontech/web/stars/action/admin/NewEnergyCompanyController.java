@@ -173,7 +173,6 @@ public class NewEnergyCompanyController extends StarsAdminActionController {
                     LiteStarsEnergyCompanyFactory factory = 
                         YukonSpringHook.getBean("liteStarsEnergyCompanyFactory", LiteStarsEnergyCompanyFactory.class);
                     LiteStarsEnergyCompany newCompany = factory.createEnergyCompany(company);
-                    newCompany.setWorkOrdersLoaded( true );
                     
                     StarsDatabaseCache.getInstance().addEnergyCompany( newCompany );
                     ServerUtils.handleDBChange( newCompany, DBChangeMsg.CHANGE_TYPE_ADD );

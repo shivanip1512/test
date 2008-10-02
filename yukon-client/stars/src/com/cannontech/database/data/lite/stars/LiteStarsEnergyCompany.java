@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -61,16 +60,13 @@ import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
-import com.cannontech.stars.core.dao.StarsRowCountDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
+import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.OptOutEventQueue;
-import com.cannontech.stars.util.ProgressChecker;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.StarsUtils;
-import com.cannontech.stars.util.task.LoadWorkOrdersTask;
-import com.cannontech.stars.util.task.TimeConsumingTask;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.action.CreateLMHardwareAction;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
@@ -88,6 +84,7 @@ import com.cannontech.stars.xml.serialize.StarsSubstation;
 import com.cannontech.stars.xml.serialize.StarsSubstations;
 import com.cannontech.stars.xml.serialize.StarsThermostatProgram;
 import com.cannontech.yukon.IDatabaseCache;
+import com.google.common.collect.PrimitiveArrays;
 
 /**
  * @author yao
@@ -170,8 +167,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
     private int primaryContactID = CtiUtilities.NONE_ZERO_ID;
     private int userID = com.cannontech.user.UserUtils.USER_DEFAULT_ID;
     
-    private Map<Integer,LiteWorkOrderBase> workOrders = null;
-    
     private List<LiteLMProgramWebPublishing> pubPrograms = null;
     private List<LiteApplianceCategory> appCategories = null;
     private List<LiteServiceCompany> serviceCompanies = null;
@@ -186,13 +181,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
     private long nextCallNo = 0;
     private long nextOrderNo = 0;
     
-    private boolean workOrdersLoaded = false;
     private boolean hierarchyLoaded = false;
-    
-    // IDs of data loading tasks
-    private long loadAccountsTaskID = 0;
-    private long loadInvTaskID = 0;
-    private long loadOrdersTaskID = 0;
     
     private int dftRouteID = CtiUtilities.NONE_ZERO_ID;
     private int operDftGroupID = com.cannontech.database.db.user.YukonGroup.EDITABLE_MIN_GROUP_ID - 1;
@@ -205,9 +194,9 @@ public class LiteStarsEnergyCompany extends LiteBase {
     private List<Integer> memberLoginIDs = null;
 
     private AddressDao addressDao;
-    private StarsRowCountDao starsRowCountDao;
     private StarsInventoryBaseDao starsInventoryBaseDao;
     private StarsCustAccountInformationDao starsCustAccountInformationDao;
+    private StarsWorkOrderBaseDao starsWorkOrderBaseDao;
     private SimpleJdbcTemplate simpleJdbcTemplate;
     
     protected LiteStarsEnergyCompany() {
@@ -380,105 +369,9 @@ public class LiteStarsEnergyCompany extends LiteBase {
         return adminEmail;
     }
     
-    public boolean isWorkOrdersLoaded() {
-        return workOrdersLoaded;
-    }
-    
-    public void setWorkOrdersLoaded(boolean loaded) {
-        workOrdersLoaded = loaded;
-    }
-    
-    private synchronized void startLoadWorkOrdersTask() {
-        if (!isWorkOrdersLoaded() && loadOrdersTaskID == 0 && !ECUtils.isDefaultEnergyCompany( this )) {
-            loadOrdersTaskID = ProgressChecker.addTask( new LoadWorkOrdersTask(this) );
-            CTILogger.info( "*** Start loading work orders for energy company #" + getEnergyCompanyID() );
-        }
-    }
-    
-    private synchronized boolean isLoadWorkOrdersTaskRunning() {
-        TimeConsumingTask task = ProgressChecker.getTask( loadOrdersTaskID );
-        if (task == null) return false;
-        
-        if (task.getStatus() == TimeConsumingTask.STATUS_FINISHED
-            || task.getStatus() == TimeConsumingTask.STATUS_ERROR
-            || task.getStatus() == TimeConsumingTask.STATUS_CANCELED)
-        {
-            ProgressChecker.removeTask( loadOrdersTaskID );
-            loadOrdersTaskID = 0;
-            return false;
-        }
-        
-        return true;
-    }
-    
-    public List<LiteWorkOrderBase> loadAllWorkOrders(boolean blockOnWait) {
-        if (isWorkOrdersLoaded()) return getAllWorkOrders();
-        startLoadWorkOrdersTask();
-        
-        if (!blockOnWait) return null;
-        
-        while (true) {
-            if (isLoadWorkOrdersTaskRunning()) {
-                try {
-                    Thread.sleep( 1000 );
-                }
-                catch (InterruptedException e) {}
-            }
-            else {
-                if (isWorkOrdersLoaded())
-                    return getAllWorkOrders();
-                
-                return null;
-            }
-        }
-    }
-    
-    public void init() {
-        if (!isWorkOrdersLoaded())
-            loadAllWorkOrders( false );
-    }
-    
     public void clear() {
-        // If any of the data loading tasks are alive, cancel them first
-        TimeConsumingTask loadAccountsTask = ProgressChecker.getTask( loadAccountsTaskID );
-        if (loadAccountsTask != null) loadAccountsTask.cancel();
-        TimeConsumingTask loadInvTask = ProgressChecker.getTask( loadInvTaskID );
-        if (loadInvTask != null) loadInvTask.cancel();
-        TimeConsumingTask loadOrdersTask = ProgressChecker.getTask( loadOrdersTaskID );
-        if (loadOrdersTask != null) loadOrdersTask.cancel();
-        
-        // Wait up to 3 seconds for them to stop
-        for (int i = 0; i < 6; i++) {
-            if ((loadOrdersTask == null
-                    || loadOrdersTask.getStatus() == LoadWorkOrdersTask.STATUS_FINISHED
-                    || loadOrdersTask.getStatus() == LoadWorkOrdersTask.STATUS_CANCELED
-                    || loadOrdersTask.getStatus() == LoadWorkOrdersTask.STATUS_ERROR))
-                break;
-            
-            try {
-                Thread.sleep( 500 );
-            }
-            catch (InterruptedException e) {}
-        }
-        
-        if (loadAccountsTaskID > 0) {
-            ProgressChecker.removeTask( loadAccountsTaskID );
-            loadAccountsTaskID = 0;
-        }
-        if (loadInvTaskID > 0) {
-            ProgressChecker.removeTask( loadInvTaskID );
-            loadInvTaskID = 0;
-        }
-        if (loadOrdersTaskID > 0) {
-            ProgressChecker.removeTask( loadOrdersTaskID );
-            loadOrdersTaskID = 0;
-        }
-        
-        workOrdersLoaded = false;
-        
         pubPrograms = null;
         appCategories = null;
-        workOrders = null;
         serviceCompanies = null;
         substations = null;
         selectionLists = null;
@@ -1128,20 +1021,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
         return addressList;
     }
     
-    private synchronized Map<Integer,LiteWorkOrderBase> getWorkOrderMap() {
-        if (workOrders == null) {
-            int count = starsRowCountDao.getWorkOrdersRowCount(getEnergyCompanyID());
-            int initialCap = (int) (count / 0.75f);
-            workOrders = new Hashtable<Integer,LiteWorkOrderBase>(initialCap);
-        }
-        return workOrders;
-    }
-    
-    public List<LiteWorkOrderBase> getAllWorkOrders() {
-        Collection<LiteWorkOrderBase> values = getWorkOrderMap().values();
-        return new ArrayList<LiteWorkOrderBase>(values);
-    }
-    
     public LiteInterviewQuestion[] getInterviewQuestions(int qType) {
         List<LiteInterviewQuestion> qList = new ArrayList<LiteInterviewQuestion>();
         List<LiteInterviewQuestion> questions = getAllInterviewQuestions();
@@ -1351,36 +1230,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
         return null;
     }
     
-    public LiteWorkOrderBase getWorkOrderBase(int orderID, boolean autoLoad) {
-        LiteWorkOrderBase liteWorkOrder = getWorkOrderMap().get( new Integer(orderID) );
-        if (liteWorkOrder != null) return liteWorkOrder;
-        
-        if (autoLoad) {
-            try {
-                com.cannontech.database.data.stars.report.WorkOrderBase order = new com.cannontech.database.data.stars.report.WorkOrderBase();
-                order.setOrderID( new Integer(orderID) );
-                order = Transaction.createTransaction( Transaction.RETRIEVE, order ).execute();
-                liteWorkOrder = (LiteWorkOrderBase) StarsLiteFactory.createLite( order );
-                
-                addWorkOrderBase( liteWorkOrder );
-                return liteWorkOrder;
-            }
-            catch (Exception e) {
-                CTILogger.error( e.getMessage(), e );
-            }
-        }
-        
-        return null;
-    }
-    
-    public void addWorkOrderBase(LiteWorkOrderBase liteOrder) {
-        getWorkOrderMap().put( new Integer(liteOrder.getOrderID()), liteOrder );
-    }
-    
-    public void deleteWorkOrderBase(int orderID) {
-        getWorkOrderMap().remove( new Integer(orderID) );
-    }
-    
     /**
      * Search the work orders by order number. If searchMembers is true,
      * it returns a list of Pair(LiteWorkOrderBase, LiteStarsEnergyCompany);
@@ -1389,30 +1238,17 @@ public class LiteStarsEnergyCompany extends LiteBase {
     public List<Object> searchWorkOrderByOrderNo(String orderNo, boolean searchMembers) {
         List<Object> orderList = new ArrayList<Object>();
         
-        if (isWorkOrdersLoaded()) {
-            List<LiteWorkOrderBase> workOrders = getAllWorkOrders();
-            
-            for (int i = 0; i < workOrders.size(); i++) {
-                LiteWorkOrderBase liteOrder = workOrders.get(i);
-                if (liteOrder.getOrderNumber().equalsIgnoreCase(orderNo)) {
-                    if (searchMembers)
-                        orderList.add( new Pair<LiteWorkOrderBase,LiteStarsEnergyCompany>(liteOrder, this) );
-                    else
-                        orderList.add( liteOrder );
-                    break;
-                }
-            }
-        }
-        else {
-            int[] orderIDs = com.cannontech.database.db.stars.report.WorkOrderBase.searchByOrderNumber( orderNo, getLiteID() );
-            if (orderIDs == null) return null;
-            
-            for (int i = 0; i < orderIDs.length; i++) {
-                LiteWorkOrderBase liteOrder = getWorkOrderBase( orderIDs[i], true );
-                if (searchMembers)
-                    orderList.add( new Pair<LiteWorkOrderBase,LiteStarsEnergyCompany>(liteOrder, this) );
-                else
-                    orderList.add( liteOrder );
+        int[] orderIDs = com.cannontech.database.db.stars.report.WorkOrderBase.searchByOrderNumber( orderNo, getLiteID() );
+        if (orderIDs == null) return null;
+
+        List<Integer> workOrderIds = PrimitiveArrays.asList(orderIDs);
+        List<LiteWorkOrderBase> workOrderList = starsWorkOrderBaseDao.getByIds(workOrderIds);
+        
+        for (final LiteWorkOrderBase workOrderBase : workOrderList) {
+            if (searchMembers) {
+                orderList.add(new Pair<LiteWorkOrderBase,LiteStarsEnergyCompany>(workOrderBase, this));
+            } else {
+                orderList.add(workOrderBase);
             }
         }
         
@@ -1480,11 +1316,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
                 contAcctIDMap.remove( new Integer(contacts.get(i).getContactID()) );
         }
         
-        // Remove all work orders from the cache
-        for (int i = 0; i < liteAcctInfo.getServiceRequestHistory().size(); i++) {
-            int orderID = liteAcctInfo.getServiceRequestHistory().get(i).intValue();
-            deleteWorkOrderBase( orderID );
-        }
     }
     
     /**
@@ -2540,10 +2371,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
         this.addressDao = addressDao;
     }
     
-    void setStarsRowCountDao(StarsRowCountDao starsRowCountDao) {
-        this.starsRowCountDao = starsRowCountDao;
-    }
-    
     void setStarsInventoryBaseDao(
             StarsInventoryBaseDao starsInventoryBaseDao) {
         this.starsInventoryBaseDao = starsInventoryBaseDao;
@@ -2552,6 +2379,11 @@ public class LiteStarsEnergyCompany extends LiteBase {
     void setStarsCustAccountInformationDao(
             StarsCustAccountInformationDao starsCustAccountInformationDao) {
         this.starsCustAccountInformationDao = starsCustAccountInformationDao;
+    }
+
+    void setStarsWorkOrderBaseDao(
+            StarsWorkOrderBaseDao starsWorkOrderBaseDao) {
+        this.starsWorkOrderBaseDao = starsWorkOrderBaseDao;
     }
     
     void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {

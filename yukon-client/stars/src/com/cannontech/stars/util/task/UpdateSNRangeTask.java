@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import com.cannontech.clientutils.ActivityLogger;
@@ -48,14 +47,17 @@ public class UpdateSNRangeTask extends TimeConsumingTask {
 	Integer voltageID = null;
 	Integer companyID = null;
 	Integer routeID = null;
-	HttpServletRequest request = null;
+	private final boolean confirmOnMessagePage;
+	private final String redirect;
+	private final HttpSession session;
 	
 	List<LiteStarsLMHardware> hardwareSet = new ArrayList<LiteStarsLMHardware>();
 	int numSuccess = 0, numFailure = 0;
 	int numToBeUpdated = 0;
 	
 	public UpdateSNRangeTask(LiteStarsEnergyCompany energyCompany, Integer snFrom, Integer snTo, Integer devTypeID, Integer newDevTypeID,
-		Date recvDate, Integer voltageID, Integer companyID, Integer routeID, HttpServletRequest request)
+		Date recvDate, Integer voltageID, Integer companyID, Integer routeID, 
+		    boolean confirmOnMessagePage, String redirect, HttpSession session)
 	{
 		this.energyCompany = energyCompany;
 		this.snFrom = snFrom;
@@ -66,7 +68,9 @@ public class UpdateSNRangeTask extends TimeConsumingTask {
 		this.voltageID = voltageID;
 		this.companyID = companyID;
 		this.routeID = routeID;
-		this.request = request;
+		this.confirmOnMessagePage = confirmOnMessagePage;
+		this.redirect = redirect;
+		this.session = session;
 	}
 
 	/* (non-Javadoc)
@@ -102,7 +106,6 @@ public class UpdateSNRangeTask extends TimeConsumingTask {
 		
 		status = STATUS_RUNNING;
 		
-		HttpSession session = request.getSession(false);
 		StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 		
 		boolean devTypeChanged = newDevTypeID != null && newDevTypeID.intValue() != devTypeID.intValue();
@@ -215,8 +218,8 @@ public class UpdateSNRangeTask extends TimeConsumingTask {
 			
 			session.setAttribute(InventoryManagerUtil.INVENTORY_SET_DESC, resultDesc);
 			session.setAttribute(InventoryManagerUtil.INVENTORY_SET, hardwareSet);
-			session.setAttribute(ServletUtils.ATT_REDIRECT, request.getContextPath() + "/operator/Hardware/ResultSet.jsp");
-			if (request.getParameter(ServletUtils.CONFIRM_ON_MESSAGE_PAGE) != null)
+			session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
+			if (confirmOnMessagePage)
 				session.setAttribute(ServletUtils.ATT_REFERRER, session.getAttribute(ServletUtils.ATT_MSG_PAGE_REFERRER));
 		}
 	}

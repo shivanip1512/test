@@ -13,6 +13,7 @@ import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.task.TimeConsumingTask;
 import com.cannontech.stars.util.task.UpdateSNRangeTask;
 import com.cannontech.stars.web.StarsYukonUser;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.stars.action.StarsInventoryActionController;
 import com.cannontech.web.stars.service.TimeConsumingTaskService;
 
@@ -93,7 +94,11 @@ public class UpdateSNRangeController extends StarsInventoryActionController {
             
         session.removeAttribute( ServletUtils.ATT_REDIRECT );
 
-        TimeConsumingTask task = new UpdateSNRangeTask( member, snFrom, snTo, devTypeID, newDevTypeID, recvDate, voltageID, companyID, routeID, request );
+        boolean confirmOnMessagePage = request.getParameter(ServletUtils.CONFIRM_ON_MESSAGE_PAGE) != null;
+        String redirectUrl = ServletUtil.createSafeRedirectUrl(request, "/operator/Hardware/ResultSet.jsp");
+        
+        TimeConsumingTask task = new UpdateSNRangeTask( member, snFrom, snTo, devTypeID, 
+            newDevTypeID, recvDate, voltageID, companyID, routeID, confirmOnMessagePage, redirectUrl, session);
         
         String redirect = this.getRedirect(request);
         String referer = this.getReferer(request);

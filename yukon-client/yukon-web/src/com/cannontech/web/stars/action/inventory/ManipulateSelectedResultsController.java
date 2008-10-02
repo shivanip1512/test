@@ -1,7 +1,9 @@
 package com.cannontech.web.stars.action.inventory;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -39,28 +41,32 @@ public class ManipulateSelectedResultsController extends StarsInventoryActionCon
             selectionIDs[i] = Integer.valueOf(selections[i]).intValue();
         
         InventoryBean iBean = (InventoryBean) session.getAttribute("inventoryBean");
-        List<LiteInventoryBase> inventoryList = new ArrayList<LiteInventoryBase>(); 
-        for ( int i = 0; i < iBean.getInventoryList().size(); i ++)
-        {
-            LiteInventoryBase liteInvBase = iBean.getInventoryList().get(i);
-
-            if (liteInvBase != null) {
-                for (int j = 0; j < selectionIDs.length; j++)
-                {
-                    if( liteInvBase.getInventoryID() == selectionIDs[j])
-                    {
-                        inventoryList.add(iBean.getInventoryList().get(i));
-                        break;
-                    }
-                }   
-            }
+        List<LiteInventoryBase> iBeanInventoryList = iBean.getInventoryList(request);
+        Map<Integer, LiteInventoryBase> inventoryIdMap = toInventoryIdMap(iBeanInventoryList);
+        
+        List<LiteInventoryBase> inventoryList = new ArrayList<LiteInventoryBase>(inventoryIdMap.size());
+        
+        for (final Integer selectionId : selectionIDs) {
+            LiteInventoryBase inventory = inventoryIdMap.get(selectionId);
+            if (inventory != null) inventoryList.add(inventory);
         }
 
         iBean.setInventoryList(inventoryList);
-        iBean.setNumberOfRecords(String.valueOf((iBean.getInventoryList().size())));
+        iBean.setNumberOfRecords(String.valueOf((iBeanInventoryList.size())));
         //session.setAttribute("inventoryBean", iBean);
 
         this.manipulateInventoryResults.doAction(request, response, session, user, energyCompany);
+    }
+    
+    private Map<Integer, LiteInventoryBase> toInventoryIdMap(List<LiteInventoryBase> list) {
+        Map<Integer, LiteInventoryBase> resultMap = new HashMap<Integer, LiteInventoryBase>(list.size());
+
+        for (final LiteInventoryBase value : list) {
+            Integer key = value.getInventoryID();
+            resultMap.put(key, value);
+        }
+        
+        return resultMap;
     }
     
 }

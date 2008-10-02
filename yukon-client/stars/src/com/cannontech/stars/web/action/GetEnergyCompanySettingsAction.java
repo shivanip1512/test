@@ -71,7 +71,6 @@ public class GetEnergyCompanySettingsAction implements ActionBase {
             }
             
         	LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
-        	energyCompany.init();
         	
 			StarsEnergyCompanySettings settings = energyCompany.getStarsEnergyCompanySettings( user );
         	

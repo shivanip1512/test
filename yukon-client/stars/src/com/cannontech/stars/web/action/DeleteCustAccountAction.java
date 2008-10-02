@@ -18,7 +18,6 @@ import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
-import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.spring.YukonSpringHook;
@@ -26,7 +25,6 @@ import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.web.bean.WorkOrderBean;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsDeleteCustomerAccount;
@@ -114,17 +112,6 @@ public class DeleteCustAccountAction implements ActionBase {
 							YukonSwitchCommandAction.sendDisableCommand( energyCompany, liteHw, null );
 						}
 					}
-				}
-			}
-			//Remove any workorders from the work order list
-			WorkOrderBean woBean = (WorkOrderBean) session.getAttribute("workOrderBean");
-			if( woBean != null)
-			{
-				for (int i = 0; i < liteAcctInfo.getServiceRequestHistory().size(); i++)
-				{
-					Integer orderID = liteAcctInfo.getServiceRequestHistory().get(i);
-					LiteWorkOrderBase liteOrder = energyCompany.getWorkOrderBase(orderID.intValue(), true);
-					woBean.getWorkOrderList().remove(liteOrder);
 				}
 			}
 			

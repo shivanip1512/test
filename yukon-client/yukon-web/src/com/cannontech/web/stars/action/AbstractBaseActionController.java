@@ -20,6 +20,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
+import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.web.login.LoginService;
@@ -37,6 +38,7 @@ public abstract class AbstractBaseActionController implements Controller {
     protected LoginService loginService;
     protected StarsCustAccountInformationDao starsCustAccountInformationDao;
     protected StarsInventoryBaseDao starsInventoryBaseDao;
+    protected StarsWorkOrderBaseDao starsWorkOrderBaseDao;
     protected StarsSearchDao starsSearchDao;
 	
     
@@ -102,6 +104,11 @@ public abstract class AbstractBaseActionController implements Controller {
 			StarsInventoryBaseDao starsInventoryBaseDao) {
 		this.starsInventoryBaseDao = starsInventoryBaseDao;
 	}
+    
+    public void setStarsWorkOrderBaseDao(
+            StarsWorkOrderBaseDao starsWorkOrderBaseDao) {
+        this.starsWorkOrderBaseDao = starsWorkOrderBaseDao;
+    }
     
     public void setStarsSearchDao(StarsSearchDao starsSearchDao) {
 		this.starsSearchDao = starsSearchDao;

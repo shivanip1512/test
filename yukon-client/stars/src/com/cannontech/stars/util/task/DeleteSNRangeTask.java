@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import com.cannontech.clientutils.ActivityLogger;
@@ -38,42 +37,44 @@ import com.cannontech.stars.web.util.InventoryManagerUtil;
  */
 public class DeleteSNRangeTask extends TimeConsumingTask {
 	
-	LiteStarsEnergyCompany energyCompany = null;
-	Integer snFrom = null;
-	Integer snTo = null;
-	Integer devTypeID = null;
-	HttpServletRequest request = null;
+	private final LiteStarsEnergyCompany energyCompany;
+	private final Integer snFrom;
+	private final Integer snTo;
+	private final Integer devTypeID;
+	private final boolean confirmOnMessagePage;
+	private final String redirect;
+	private final HttpSession session;
 	
 	List<LiteInventoryBase> hardwareSet = new ArrayList<LiteInventoryBase>();
 	int numSuccess = 0, numFailure = 0;
 	int numToBeDeleted = 0;
 	
-	public DeleteSNRangeTask(LiteStarsEnergyCompany energyCompany, Integer snFrom, Integer snTo, Integer devTypeID, HttpServletRequest request) {
+	public DeleteSNRangeTask(LiteStarsEnergyCompany energyCompany, Integer snFrom, Integer snTo, Integer devTypeID, 
+	        boolean confirmOnMessagePage, String redirect, HttpSession session) {
 		this.energyCompany = energyCompany;
 		this.snFrom = snFrom;
 		this.snTo = snTo;
 		this.devTypeID = devTypeID;
-		this.request = request;
+		this.confirmOnMessagePage = confirmOnMessagePage;
+		this.redirect = redirect;
+		this.session = session;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.cannontech.stars.util.task.TimeConsumingTask#getProgressMsg()
-	 */
-	public String getProgressMsg() {
+	@Override
+    public String getProgressMsg() {
 		if (numToBeDeleted > 0) {
 			if (status == STATUS_FINISHED && numFailure == 0) {
 				String snRange = InventoryManagerUtil.getSNRange( snFrom, snTo );
-				if (snRange != null)
+				if (snRange != null) {
 					snRange = "The serial numbers " + snRange;
-				else
+				} else {
 					snRange = "All serial numbers";
+				}	
 				return snRange + " have been deleted successfully.";
 			}
-			else
-				return numSuccess + " of " + numToBeDeleted + " hardware entries have been deleted.";
+			return numSuccess + " of " + numToBeDeleted + " hardware entries have been deleted.";
 		}
-		else
-			return "Deleting hardware entries from inventory...";
+		return "Deleting hardware entries from inventory...";
 	}
 
 	/* (non-Javadoc)
@@ -88,7 +89,6 @@ public class DeleteSNRangeTask extends TimeConsumingTask {
 		
 		status = STATUS_RUNNING;
 		
-		HttpSession session = request.getSession(false);
 		StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 		
 		int categoryID = InventoryUtils.getInventoryCategoryID( devTypeID.intValue(), energyCompany );
@@ -191,8 +191,8 @@ public class DeleteSNRangeTask extends TimeConsumingTask {
 			
 			session.setAttribute(InventoryManagerUtil.INVENTORY_SET_DESC, resultDesc);
 			session.setAttribute(InventoryManagerUtil.INVENTORY_SET, hardwareSet);
-			session.setAttribute(ServletUtils.ATT_REDIRECT, request.getContextPath() + "/operator/Hardware/ResultSet.jsp");
-			if (request.getParameter(ServletUtils.CONFIRM_ON_MESSAGE_PAGE) != null)
+			session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
+			if (confirmOnMessagePage)
 				session.setAttribute(ServletUtils.ATT_REFERRER, session.getAttribute(ServletUtils.ATT_MSG_PAGE_REFERRER));
 		}
 	}

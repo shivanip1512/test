@@ -5,7 +5,8 @@
 <%@page import="com.cannontech.database.data.stars.event.EventWorkOrder"%>
 <%@page import="com.cannontech.stars.dr.event.dao.EventWorkOrderDao"%>
 <%@page import="com.cannontech.spring.YukonSpringHook"%>
-<html>
+
+<%@page import="com.cannontech.stars.core.dao.StarsWorkOrderBaseDao"%><html>
 <head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
@@ -82,9 +83,11 @@ function checkOrderNo(form) {
               </tr>
               <%
     EventWorkOrderDao eventWorkOrderDao = YukonSpringHook.getBean("eventWorkOrderDao", EventWorkOrderDao.class);
+    StarsWorkOrderBaseDao starsWorkOrderBaseDao = YukonSpringHook.getBean("starsWorkOrderBaseDao", StarsWorkOrderBaseDao.class);          
+              
 	for (int i = 0; i < serviceHist.getStarsServiceRequestCount(); i++) {
 		StarsServiceRequest order = serviceHist.getStarsServiceRequest(i);
-		LiteWorkOrderBase liteOrder = liteEC.getWorkOrderBase(order.getOrderID(), true);
+		LiteWorkOrderBase liteOrder = starsWorkOrderBaseDao.getById(order.getOrderID());
         List<EventWorkOrder> eventWorkOrderList = eventWorkOrderDao.getByWorkOrderId(liteOrder.getOrderID());
 		String companyName = "";
 		for (int j = 0; j < companies.getStarsServiceCompanyCount(); j++) {

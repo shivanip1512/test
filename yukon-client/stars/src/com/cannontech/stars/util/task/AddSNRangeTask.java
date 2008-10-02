@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import com.cannontech.clientutils.ActivityLogger;
@@ -49,15 +48,17 @@ public class AddSNRangeTask extends TimeConsumingTask {
 	Integer voltageID = null;
 	Integer companyID = null;
 	Integer routeID = null;
-	HttpServletRequest request = null;
+	boolean confirmOnMessagePage;
+	String redirect;
+	HttpSession session;
 	
 	List<LiteStarsLMHardware> hardwareSet = new ArrayList<LiteStarsLMHardware>();
 	List<String> serialNoSet = new ArrayList<String>();
 	int numSuccess = 0, numFailure = 0;
 	
 	public AddSNRangeTask(LiteStarsEnergyCompany energyCompany, int snFrom, int snTo, Integer devTypeID, Integer devStateID,
-		Date recvDate, Integer voltageID, Integer companyID, Integer routeID, HttpServletRequest request)
-	{
+		Date recvDate, Integer voltageID, Integer companyID, Integer routeID, boolean confirmOnMessagePage, 
+		    String redirect, HttpSession session) {
 		this.energyCompany = energyCompany;
 		this.snFrom = snFrom;
 		this.snTo = snTo;
@@ -67,19 +68,18 @@ public class AddSNRangeTask extends TimeConsumingTask {
 		this.voltageID = voltageID;
 		this.companyID = companyID;
 		this.routeID = routeID;
-		this.request = request;
+		this.confirmOnMessagePage = confirmOnMessagePage;
+		this.redirect = redirect;
+		this.session = session;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.cannontech.stars.util.task.TimeConsumingTask#getProgressMsg()
-	 */
 	@Override
 	public String getProgressMsg() {
 		int numTotal = snTo - snFrom + 1;
-		if (status == STATUS_FINISHED && numFailure == 0)
+		if (status == STATUS_FINISHED && numFailure == 0) {
 			return "The serial numbers " + snFrom + " to " + snTo + " have been added successfully.";
-		else
-			return numSuccess + " of " + numTotal + " hardware entries have been added.";
+		}
+		return numSuccess + " of " + numTotal + " hardware entries have been added.";
 	}
 
 	/* (non-Javadoc)
@@ -94,7 +94,6 @@ public class AddSNRangeTask extends TimeConsumingTask {
 		
 		status = STATUS_RUNNING;
 		
-		HttpSession session = request.getSession(false);
 		StarsYukonUser user = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
 		
 		Integer categoryID = new Integer( InventoryUtils.getInventoryCategoryID(devTypeID.intValue(), energyCompany) );
@@ -188,8 +187,8 @@ public class AddSNRangeTask extends TimeConsumingTask {
 			session.setAttribute(InventoryManagerUtil.INVENTORY_SET_DESC, resultDesc);
 			if (hardwareSet.size() > 0)
 				session.setAttribute(InventoryManagerUtil.INVENTORY_SET, hardwareSet);
-			session.setAttribute(ServletUtils.ATT_REDIRECT, request.getContextPath() + "/operator/Hardware/ResultSet.jsp");
-			if (request.getParameter(ServletUtils.CONFIRM_ON_MESSAGE_PAGE) != null)
+			session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
+			if (confirmOnMessagePage)
 				session.setAttribute(ServletUtils.ATT_REFERRER, session.getAttribute(ServletUtils.ATT_MSG_PAGE_REFERRER));
 		}
 	}

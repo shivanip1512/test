@@ -11,6 +11,7 @@ import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.task.DeleteSNRangeTask;
 import com.cannontech.stars.util.task.TimeConsumingTask;
 import com.cannontech.stars.web.StarsYukonUser;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.stars.action.StarsInventoryActionController;
 import com.cannontech.web.stars.service.TimeConsumingTaskService;
 
@@ -64,7 +65,11 @@ public class DeleteSNRangeController extends StarsInventoryActionController {
         
         session.removeAttribute( ServletUtils.ATT_REDIRECT );
         
-        TimeConsumingTask task = new DeleteSNRangeTask( member, snFrom, snTo, devTypeID, request );
+        boolean confirmOnMessagePage = request.getParameter(ServletUtils.CONFIRM_ON_MESSAGE_PAGE) != null;
+        String redirectUrl = ServletUtil.createSafeRedirectUrl(request, "/operator/Hardware/ResultSet.jsp");
+        
+        TimeConsumingTask task = new DeleteSNRangeTask( member, snFrom, snTo, 
+            devTypeID, confirmOnMessagePage, redirectUrl, session);
 
         String redirect = this.getRedirect(request);
         String referer = this.getReferer(request);

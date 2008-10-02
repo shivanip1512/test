@@ -2,10 +2,12 @@ package com.cannontech.database.data.lite.stars;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 
@@ -43,6 +45,7 @@ import com.cannontech.database.db.stars.report.ServiceCompanyDesignationCode;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
 import com.cannontech.stars.dr.event.dao.LMHardwareEventDao;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.OptOutEventQueue;
@@ -1638,9 +1641,12 @@ public class StarsLiteFactory {
 			StarsServiceRequestHistory starsOrders = new StarsServiceRequestHistory();
 			starsAcctInfo.setStarsServiceRequestHistory( starsOrders );
 			
-			for (int i = 0; i < liteOrders.size(); i++) {
-				LiteWorkOrderBase liteOrder = energyCompany.getWorkOrderBase( liteOrders.get(i).intValue(), true );
-				starsOrders.addStarsServiceRequest( createStarsServiceRequest(liteOrder, energyCompany) );
+			StarsWorkOrderBaseDao starsWorkOrderBaseDao = 
+			    YukonSpringHook.getBean("starsWorkOrderBaseDao", StarsWorkOrderBaseDao.class);
+			List<LiteWorkOrderBase> workOrderList = starsWorkOrderBaseDao.getByIds(liteOrders);
+			
+			for (final LiteWorkOrderBase workOrder : workOrderList) {
+			    starsOrders.addStarsServiceRequest( createStarsServiceRequest(workOrder, energyCompany) );
 			}
 		}
 	}
@@ -2165,26 +2171,35 @@ public class StarsLiteFactory {
 		StarsWebConfig starsConfig = createStarsWebConfig( liteConfig );
 		starsAppCat.setStarsWebConfig( starsConfig );
 		
-		for (int i = 0; i < liteAppCat.getPublishedPrograms().size(); i++) {
-			LiteLMProgramWebPublishing liteProg = (LiteLMProgramWebPublishing) liteAppCat.getPublishedPrograms().get(i);
-			
+		List<LiteLMProgramWebPublishing> programs = liteAppCat.getPublishedPrograms();
+		Set<Integer> deviceIds = new HashSet<Integer>(programs.size());
+		
+		for (final LiteLMProgramWebPublishing program : programs) {
+		    int deviceId = program.getDeviceID();
+		    if (deviceId > 0) {
+		        deviceIds.add(deviceId);
+		    }    
+		}
+		
+		StarsDatabaseCache starsDatabaseCache = StarsDatabaseCache.getInstance();
+		Map<Integer, String> nameMap = DaoFactory.getPaoDao().getYukonPAONames(deviceIds);
+		
+		for (final LiteLMProgramWebPublishing liteProg : programs) {
+		    int deviceId = liteProg.getDeviceID();
+		    
 			StarsEnrLMProgram starsProg = new StarsEnrLMProgram();
 			starsProg.setProgramID( liteProg.getProgramID() );
-			starsProg.setDeviceID( liteProg.getDeviceID() );
-			if (liteProg.getDeviceID() > 0)
-            {
-				try
-                {
-                    starsProg.setYukonName( DaoFactory.getPaoDao().getYukonPAOName(liteProg.getDeviceID()) );
-                }
-                catch(NotFoundException e)
-                {
-                    CTILogger.error(e.getMessage(), e);
-                    starsProg.setYukonName( "No Yukon name found." );
-                }
+			starsProg.setDeviceID(deviceId);
+			
+			if (deviceId > 0) {
+			    String yukonName = nameMap.get(deviceId);
+			    if (yukonName == null) {
+			        yukonName = "No Yukon name found.";
+			    }
+			    starsProg.setYukonName(yukonName);
             }
             
-			liteConfig = StarsDatabaseCache.getInstance().getWebConfiguration( liteProg.getWebSettingsID() );
+			liteConfig = starsDatabaseCache.getWebConfiguration( liteProg.getWebSettingsID() );
 			starsProg.setStarsWebConfig( createStarsWebConfig(liteConfig) );
 			
 			setAddressingGroups( starsProg, liteProg );

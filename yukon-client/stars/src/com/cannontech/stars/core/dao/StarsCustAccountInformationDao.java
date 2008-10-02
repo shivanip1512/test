@@ -12,6 +12,13 @@ public interface StarsCustAccountInformationDao {
     
     public Map<Integer, LiteStarsCustAccountInformation> getByIds(Set<Integer> accountIds, int energyCompanyId);
     
+    /**
+     * @deprecated Refactor any code that would need to load all 
+     *             LiteStarsCustAccountInformation from the database.
+     * @param energyCompanyId
+     * @return
+     */
+    @Deprecated 
     public List<LiteStarsCustAccountInformation> getAll(int energyCompanyId);
     
 }

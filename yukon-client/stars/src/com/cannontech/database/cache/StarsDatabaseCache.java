@@ -32,7 +32,6 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompanyFactory;
 import com.cannontech.database.data.lite.stars.LiteStarsLMControlHistory;
 import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
-import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.company.EnergyCompany;
@@ -56,8 +55,6 @@ import com.cannontech.stars.xml.serialize.StarsEnrLMProgram;
 import com.cannontech.stars.xml.serialize.StarsEnrollmentPrograms;
 import com.cannontech.stars.xml.serialize.StarsInventory;
 import com.cannontech.stars.xml.serialize.StarsServiceCompany;
-import com.cannontech.stars.xml.serialize.StarsServiceRequest;
-import com.cannontech.stars.xml.serialize.StarsServiceRequestHistory;
 
 /**
  * 
@@ -113,36 +110,14 @@ public class StarsDatabaseCache implements DBChangeListener {
 		StarsDatabaseCache instance = YukonSpringHook.getBean("starsDatabaseCache", StarsDatabaseCache.class);
 		return instance;
 	}
-    
-    public void fireLoadThread(final List<LiteStarsEnergyCompany> energyCompanies) {
-        final List<LiteStarsEnergyCompany> companies = energyCompanies;
-        Thread initThrd = new Thread(new Runnable() {
-            public void run() {
-                for (int i = 0; i < companies.size(); i++) {
-                    LiteStarsEnergyCompany company = companies.get(i);
-                    if (!ECUtils.isDefaultEnergyCompany( company )) {
-                        // Fire the data loading threads off, and wait for all of them to stop
-                        company.loadAllWorkOrders( false );
-                        company.loadAllWorkOrders( true );
-                    }
-                }
-            }
-        },"StarsDatabaseCacheFireLoadThread");
-        initThrd.start();
-    }
 	
     public void loadData() {
         getAllWebConfigurations();
         
-        
         // Force all contacts to be loaded (since this can take a long time, and slow down the first time login)
         DefaultDatabaseCache.getInstance().getAllContacts();
         
-        List<LiteStarsEnergyCompany> allCompanies = getAllEnergyCompanies();
-        final LiteStarsEnergyCompany[] companies = new LiteStarsEnergyCompany[ allCompanies.size() ];
-        allCompanies.toArray( companies );
-        
-        fireLoadThread(allCompanies);
+        getAllEnergyCompanies();
     }
 
 	public void refreshCache() {
@@ -191,8 +166,6 @@ public class StarsDatabaseCache implements DBChangeListener {
 		String preloadData = DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.STARS_PRELOAD_DATA );
 		if (CtiUtilities.isTrue( preloadData )) {
 			getAllWebConfigurations();
-			
-            fireLoadThread(descendants);
 		}
 	}
     
@@ -267,8 +240,6 @@ public class StarsDatabaseCache implements DBChangeListener {
 			for (int i = 0; i < companies.size(); i++) {
 	    		LiteStarsEnergyCompany company = companies.get(i);
 				if (company.getEnergyCompanyID().intValue() == energyCompanyID) {
-					String preloadData = DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.STARS_PRELOAD_DATA );
-					if (CtiUtilities.isFalse(preloadData)) company.init();
 					return company;
 				}
 			}
@@ -514,25 +485,6 @@ public class StarsDatabaseCache implements DBChangeListener {
 				}
 			}
 		}
-		else if( msg.getDatabase() == DBChangeMsg.CHANGE_WORK_ORDER_DB){
-			for (int i = 0; i < companies.size(); i++) {
-				LiteStarsEnergyCompany liteStarsEnergyCompany = companies.get(i);
-				LiteWorkOrderBase liteWorkOrderBase = liteStarsEnergyCompany.getWorkOrderBase( msg.getId(), false );
-				if( liteWorkOrderBase == null)
-				{
-					liteWorkOrderBase = new LiteWorkOrderBase(msg.getId());
-					liteWorkOrderBase.retrieve();
-                    if( liteWorkOrderBase.getEnergyCompanyID() == liteStarsEnergyCompany.getEnergyCompanyID().intValue()){
-                        handleWorkOrderChange( msg, liteStarsEnergyCompany, liteWorkOrderBase );
-                        return;
-                    }
-				}
-				else {
-				    handleWorkOrderChange( msg, liteStarsEnergyCompany, liteWorkOrderBase );
-				    return;
-				}
-			}
-		}
 	}
 	
 	private void handleCustomerAccountChange( DBChangeMsg msg, LiteStarsEnergyCompany energyCompany, LiteStarsCustAccountInformation liteAcctInfo )
@@ -740,62 +692,6 @@ public class StarsDatabaseCache implements DBChangeListener {
 			case DBChangeMsg.CHANGE_TYPE_DELETE:
 				// Don't need to do anything
 				break;
-		}
-	}
-
-	private void handleWorkOrderChange(DBChangeMsg msg, LiteStarsEnergyCompany liteStarsEnergyCompany, LiteWorkOrderBase liteWorkOrderBase)
-	{
-		LiteStarsCustAccountInformation liteStarsCustAcctInfo;
-		
-		switch( msg.getTypeOfChange() ) {
-			case DBChangeMsg.CHANGE_TYPE_ADD:
-            case DBChangeMsg.CHANGE_TYPE_UPDATE:
-            {
-                liteStarsEnergyCompany.deleteWorkOrderBase(liteWorkOrderBase.getOrderID());
-				liteStarsEnergyCompany.addWorkOrderBase(liteWorkOrderBase);
-				liteStarsCustAcctInfo = 
-				    starsCustAccountInformationDao.getById(liteWorkOrderBase.getAccountID(),
-				                                           liteStarsEnergyCompany.getEnergyCompanyID());
-                liteStarsCustAcctInfo.getServiceRequestHistory().remove(Integer.valueOf(liteWorkOrderBase.getOrderID()));
-                liteStarsCustAcctInfo.getServiceRequestHistory().add( 0, Integer.valueOf(liteWorkOrderBase.getOrderID()));
-                
-                StarsCustAccountInformation starsAcctInfo = liteStarsEnergyCompany.getStarsCustAccountInformation(liteWorkOrderBase.getAccountID(), true);
-				if (starsAcctInfo != null) {
-					StarsServiceRequest starsOrder = StarsLiteFactory.createStarsServiceRequest( liteWorkOrderBase, liteStarsEnergyCompany);
-                    StarsServiceRequestHistory orders = starsAcctInfo.getStarsServiceRequestHistory();
-                    boolean updated = false;
-                    for (int i = 0; i < orders.getStarsServiceRequestCount(); i++) {
-                        if (orders.getStarsServiceRequest(i).getOrderID() == starsOrder.getOrderID()) {
-                            orders.setStarsServiceRequest(i, starsOrder);
-                            updated = true;
-                            break;
-                        }
-                    }
-                    if (!updated)
-                        orders.addStarsServiceRequest(0, starsOrder);
-				}
-				break;
-            }
-			case DBChangeMsg.CHANGE_TYPE_DELETE:
-            {
-				liteStarsEnergyCompany.deleteWorkOrderBase(liteWorkOrderBase.getOrderID());
-				liteStarsCustAcctInfo = 
-				    starsCustAccountInformationDao.getById(liteWorkOrderBase.getAccountID(),
-				                                           liteStarsEnergyCompany.getEnergyCompanyID());
-				liteStarsCustAcctInfo.getServiceRequestHistory().remove(Integer.valueOf(liteWorkOrderBase.getOrderID()));
-                
-                StarsCustAccountInformation starsAcctInfo = liteStarsEnergyCompany.getStarsCustAccountInformation(liteWorkOrderBase.getAccountID(), true);
-                if (starsAcctInfo != null) {
-                    StarsServiceRequestHistory orders = starsAcctInfo.getStarsServiceRequestHistory();
-                    for (int i = 0; i < orders.getStarsServiceRequestCount(); i++) {
-                        if (orders.getStarsServiceRequest(i).getOrderID() == liteWorkOrderBase.getOrderID()) {
-                            orders.removeStarsServiceRequest(i);
-                            break;
-                        }
-                    }
-                }                
-				break;
-            }
 		}
 	}
 

@@ -9,7 +9,6 @@ package com.cannontech.stars.util.task;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import com.cannontech.clientutils.ActivityLogger;
@@ -42,9 +41,9 @@ import com.cannontech.stars.xml.serialize.StarsLMConfiguration;
  */
 public class ConfigSNRangeTask extends TimeConsumingTask {
 	
-	LiteStarsEnergyCompany energyCompany = null;
-	boolean configNow = false;
-	HttpServletRequest request = null;
+	private final LiteStarsEnergyCompany energyCompany;
+	private final HttpSession session;
+	private final ConfigSNRangeTaskDTO dto;
 	
 	ArrayList invToConfig = null;
 	ArrayList hwsToConfig = null;
@@ -52,18 +51,15 @@ public class ConfigSNRangeTask extends TimeConsumingTask {
 	int numSuccess = 0, numFailure = 0;
 	int numToBeConfigured = 0;
 	
-	public ConfigSNRangeTask(LiteStarsEnergyCompany energyCompany, boolean configNow, HttpServletRequest request)
-	{
+	public ConfigSNRangeTask(LiteStarsEnergyCompany energyCompany, HttpSession session, ConfigSNRangeTaskDTO dto) {
 		this.energyCompany = energyCompany;
-		this.configNow = configNow;
-		this.request = request;
+		this.session = session;
+		this.dto = dto;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.cannontech.stars.util.task.TimeConsumingTask#getProgressMsg()
-	 */
-	public String getProgressMsg() {
-		if (configNow) {
+	@Override
+    public String getProgressMsg() {
+		if (dto.isConfigNow()) {
 			if (status == STATUS_FINISHED && numFailure == 0) {
 				if (invToConfig.size() == 1 && invToConfig.get(0) instanceof Integer[]) {
 					Integer[] snRange = (Integer[]) invToConfig.get(0);
@@ -93,7 +89,6 @@ public class ConfigSNRangeTask extends TimeConsumingTask {
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
-		HttpSession session = request.getSession(false);
 		StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 		
 		invToConfig = (ArrayList) session.getAttribute( InventoryManagerUtil.SN_RANGE_TO_CONFIG );
@@ -153,28 +148,19 @@ public class ConfigSNRangeTask extends TimeConsumingTask {
 		StarsLMConfiguration hwConfig = null;
 		String options = null;
 		
-		if (Boolean.valueOf( request.getParameter("UseConfig") ).booleanValue()) {
+		if (dto.getUseConfig()) {
 			// User has specified a new configuration
-			if (request.getParameter("UseHardwareAddressing") != null) {
-				hwConfig = new StarsLMConfiguration();
-				try {
-					InventoryManagerUtil.setStarsLMConfiguration( hwConfig, request );
-				}
-				catch (WebClientException e) {
-					CTILogger.error( e.getMessage(), e );
-					status = STATUS_ERROR;
-					errorMsg = e.getMessage();
-					return;
-				}
+			if (dto.isUseHardwareAddressing()) {
+			    hwConfig = dto.getHwConfig();
 			}
 			else {
-				int groupID = Integer.parseInt( request.getParameter("Group") );
+				int groupID = dto.getGroup();
 				options = "GroupID:" + groupID;
 			}
 		}
 		
-		if (request.getParameter("Route") != null) {
-			int routeID = Integer.parseInt( request.getParameter("Route") );
+		if (dto.getRoute() != null) {
+			int routeID = dto.getRoute().intValue();
 			if (options != null)
 				options += ";RouteID:" + routeID;
 			else
@@ -197,7 +183,7 @@ public class ConfigSNRangeTask extends TimeConsumingTask {
 				if (hwConfig != null)
 					UpdateLMHardwareConfigAction.updateLMConfiguration( hwConfig, liteHw, company );
 				
-				if (configNow) {
+				if (dto.isConfigNow()) {
 					YukonSwitchCommandAction.sendConfigCommand(company, liteHw, true, options);
 					
 					if (liteHw.getAccountID() > 0) {
@@ -234,7 +220,7 @@ public class ConfigSNRangeTask extends TimeConsumingTask {
 			}
 		}
 		
-		if (!configNow) SwitchCommandQueue.getInstance().addCommand( null, true );
+		if (!dto.isConfigNow()) SwitchCommandQueue.getInstance().addCommand( null, true );
 		
 		String logMsg = "Serial Range:";
 		for (int i = 0; i < invToConfig.size(); i++) {
@@ -259,15 +245,15 @@ public class ConfigSNRangeTask extends TimeConsumingTask {
 		
 		if (numFailure > 0) {
 			String resultDesc = "<span class='ConfirmMsg'>" + "Configuration of " + numSuccess + " devices " +
-					((configNow)? "sent out" : "scheduled") + " successfully.</span><br>";
+					((dto.isConfigNow())? "sent out" : "scheduled") + " successfully.</span><br>";
 			resultDesc += "<span class='ErrorMsg'>" + numFailure + " hardware(s) failed (listed below).</span><br>";
 			if (errorMsg != null)
 				resultDesc += "<span class='ErrorMsg'>First error message: " + errorMsg + "</span><br>";
 			
 			session.setAttribute(InventoryManagerUtil.INVENTORY_SET_DESC, resultDesc);
 			session.setAttribute(InventoryManagerUtil.INVENTORY_SET, hardwareSet);
-			session.setAttribute(ServletUtils.ATT_REDIRECT, request.getContextPath() + "/operator/Hardware/ResultSet.jsp");
-			if (request.getParameter(ServletUtils.CONFIRM_ON_MESSAGE_PAGE) != null)
+			session.setAttribute(ServletUtils.ATT_REDIRECT, dto.getRedirect());
+			if (dto.getConfirmOnMessagePage())
 				session.setAttribute(ServletUtils.ATT_REFERRER, session.getAttribute(ServletUtils.ATT_MSG_PAGE_REFERRER));
 		}
 	}

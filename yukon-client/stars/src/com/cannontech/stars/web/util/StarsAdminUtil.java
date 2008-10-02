@@ -44,15 +44,12 @@ import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
-import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteLMProgramWebPublishing;
 import com.cannontech.database.data.lite.stars.LiteServiceCompany;
-import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.LiteSubstation;
 import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
-import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.stars.hardware.LMHardwareBase;
@@ -71,7 +68,6 @@ import com.cannontech.roles.operator.WorkOrderRole;
 import com.cannontech.roles.yukon.AuthenticationRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServerUtils;
@@ -79,14 +75,9 @@ import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.action.UpdateLMHardwareAction;
-import com.cannontech.stars.xml.StarsFactory;
-import com.cannontech.stars.xml.serialize.InstallationCompany;
-import com.cannontech.stars.xml.serialize.ServiceCompany;
 import com.cannontech.stars.xml.serialize.StarsApplianceCategory;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsInventory;
-import com.cannontech.stars.xml.serialize.StarsServiceRequest;
-import com.cannontech.stars.xml.serialize.Substation;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -355,56 +346,10 @@ public class StarsAdminUtil {
 		// set InstallationCompanyID = 0 for all inventory assigned to this service company
 		com.cannontech.database.db.stars.hardware.InventoryBase.resetInstallationCompany( companyID );
 		
-		StarsSearchDao starsSearchDao = 
-			YukonSpringHook.getBean("starsSearchDao", StarsSearchDao.class);
-		
         List<LiteStarsEnergyCompany> descendants = ECUtils.getAllDescendants( energyCompany );
 		for (int i = 0; i < descendants.size(); i++) {
-			LiteStarsEnergyCompany company = descendants.get(i);
-			
-			List<LiteInventoryBase> inventory = 
-				starsSearchDao.searchInventoryByInstallationCompany(
-						companyID, 
-						Collections.singletonList(company));
-			
-			for (LiteInventoryBase liteInv : inventory) {
-				if (liteInv.getAccountID() > 0) {
-					StarsCustAccountInformation starsAcctInfo = company.getStarsCustAccountInformation( liteInv.getAccountID(), false );
-					if (starsAcctInfo != null) {
-						for (int k = 0; k < starsAcctInfo.getStarsInventories().getStarsInventoryCount(); k++) {
-							StarsInventory starsInv = starsAcctInfo.getStarsInventories().getStarsInventory(k);
-							if (starsInv.getInventoryID() == liteInv.getInventoryID()) {
-								starsInv.setInstallationCompany( (InstallationCompany)StarsFactory.newEmptyStarsCustListEntry(InstallationCompany.class) );
-								break;
-							}
-						}
-					}
-				}
-			}
-			
 			// set ServiceCompanyID = 0 for all work orders assigned to this service company
 			com.cannontech.database.db.stars.report.WorkOrderBase.resetServiceCompany( companyID );
-			
-			List<LiteWorkOrderBase> orders = company.getAllWorkOrders();
-			for (int j = 0; j < orders.size(); j++) {
-				LiteWorkOrderBase liteOrder = orders.get(j);
-				if (liteOrder.getServiceCompanyID() == companyID) {
-					liteOrder.setServiceCompanyID(0);
-					
-					if (liteOrder.getAccountID() > 0) {
-						StarsCustAccountInformation starsAcctInfo = company.getStarsCustAccountInformation( liteOrder.getAccountID(), false );
-						if (starsAcctInfo != null) {
-							for (int k = 0; k < starsAcctInfo.getStarsServiceRequestHistory().getStarsServiceRequestCount(); k++) {
-								StarsServiceRequest starsReq = starsAcctInfo.getStarsServiceRequestHistory().getStarsServiceRequest(k);
-								if (starsReq.getOrderID() == liteOrder.getOrderID()) {
-									starsReq.setServiceCompany( (ServiceCompany)StarsFactory.newEmptyStarsCustListEntry(ServiceCompany.class) );
-									break;
-								}
-							}
-						}
-					}
-				}
-			}
 		}
         
         /**
@@ -462,28 +407,6 @@ public class StarsAdminUtil {
 	{
 		// set SubstationID = 0 for all sites using this substation
 		com.cannontech.database.db.stars.customer.SiteInformation.resetSubstation( subID );
-		
-        StarsCustAccountInformationDao starsCustAccountInformationDao = 
-            YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
-		
-        List<LiteStarsEnergyCompany> descendants = ECUtils.getAllDescendants( energyCompany );
-		for (int i = 0; i < descendants.size(); i++) {
-			LiteStarsEnergyCompany company = descendants.get(i);
-			
-            List<LiteStarsCustAccountInformation> accounts = starsCustAccountInformationDao.getAll(company.getEnergyCompanyID());
-			for (int j = 0; j < accounts.size(); j++) {
-				LiteStarsCustAccountInformation liteAcctInfo = accounts.get(j);
-				if (liteAcctInfo.getSiteInformation().getSubstationID() == subID) {
-					liteAcctInfo.getSiteInformation().setSubstationID(0);
-					
-					StarsCustAccountInformation starsAcctInfo = company.getStarsCustAccountInformation(liteAcctInfo.getAccountID(), false);
-					if (starsAcctInfo != null) {
-						starsAcctInfo.getStarsCustomerAccount().getStarsSiteInformation().setSubstation(
-								(Substation)StarsFactory.newEmptyStarsCustListEntry(Substation.class) );
-					}
-				}
-			}
-		}
 		
 		LiteSubstation liteSub = energyCompany.getSubstation( subID );
 		

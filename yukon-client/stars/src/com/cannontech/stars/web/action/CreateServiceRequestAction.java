@@ -1,8 +1,6 @@
 package com.cannontech.stars.web.action;
 
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,12 +23,11 @@ import com.cannontech.database.data.stars.event.EventWorkOrder;
 import com.cannontech.database.db.stars.integration.SAMToCRS_PTJ;
 import com.cannontech.database.db.stars.report.WorkOrderBase;
 import com.cannontech.servlet.YukonUserContextUtils;
-import com.cannontech.stars.util.AbstractFilter;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.util.EventUtils;
-import com.cannontech.stars.util.FilterWrapper;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
-import com.cannontech.stars.util.WorkOrderFilter;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.bean.WorkOrderBean;
 import com.cannontech.stars.web.util.WorkOrderManagerUtil;
@@ -102,18 +99,23 @@ public class CreateServiceRequestAction implements ActionBase {
 			LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 			
 			LiteStarsCustAccountInformation liteAcctInfo = null;
-			if (createOrder.hasAccountID())	// Request from CreateOrder.jsp
-				liteAcctInfo = energyCompany.getCustAccountInformation(createOrder.getAccountID(), false);
-			else
+			if (createOrder.hasAccountID())	{ 
+			    // Request from CreateOrder.jsp
+			    StarsCustAccountInformationDao starsCustAccountInformationDao =
+			        YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
+			    liteAcctInfo = starsCustAccountInformationDao.getById(createOrder.getAccountID(),
+			                                                          energyCompany.getEnergyCompanyID());
+			}else {
 				liteAcctInfo = (LiteStarsCustAccountInformation) session.getAttribute(ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
-            
+			}
+			
             LiteWorkOrderBase liteOrder = null;
             try {
             	liteOrder = createServiceRequest( createOrder, liteAcctInfo, energyCompany, user.getUserID());
                 
                 WorkOrderBean workOrderBean = (WorkOrderBean) session.getAttribute("workOrderBean");
                 if (workOrderBean != null) {
-                    this.addWorkOrderToBean(workOrderBean, liteOrder);
+                    workOrderBean.addWorkOrder(liteOrder);
                 }
             }
             catch (WebClientException e) {
@@ -249,8 +251,7 @@ public class CreateServiceRequestAction implements ActionBase {
 			workOrder.getWorkOrderBase().setAccountID( new Integer(liteAcctInfo.getAccountID()) );
 		workOrder.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
         
-		workOrder = (com.cannontech.database.data.stars.report.WorkOrderBase)
-				Transaction.createTransaction(Transaction.INSERT, workOrder).execute();
+		workOrder = Transaction.createTransaction(Transaction.INSERT, workOrder).execute();
         
 		//New event!
 		Date eventTimestamp = createOrder.getDateReported();
@@ -265,10 +266,6 @@ public class CreateServiceRequestAction implements ActionBase {
        	
 		
 		LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) StarsLiteFactory.createLite( workOrder );
-		energyCompany.addWorkOrderBase( liteOrder );
-		if (liteAcctInfo != null)
-			liteAcctInfo.getServiceRequestHistory().add( 0, new Integer(liteOrder.getOrderID()) );
-		
 		return liteOrder;
 	}
 	
@@ -277,19 +274,5 @@ public class CreateServiceRequestAction implements ActionBase {
 	{
 		return createServiceRequest(createOrder, liteAcctInfo, energyCompany, userID, true);
 	}
-    
-    private void addWorkOrderToBean(final WorkOrderBean workOrderBean, final LiteWorkOrderBase liteWorkOrderBase) {
-        final List<FilterWrapper> filterList = workOrderBean.getFilters();
-        if(filterList != null) {
-            final AbstractFilter<LiteWorkOrderBase> filter = new WorkOrderFilter();
-            final List<LiteWorkOrderBase> filteredWorkOrderList = filter.filter(Arrays.asList(liteWorkOrderBase), filterList); 
-            if (filteredWorkOrderList.size() > 0) {
-                List<LiteWorkOrderBase> workOrderList = workOrderBean.getWorkOrderList();
-                synchronized (workOrderList) {
-                    workOrderList.addAll(filteredWorkOrderList);
-                }
-            }    
-        }
-    }
 
 }

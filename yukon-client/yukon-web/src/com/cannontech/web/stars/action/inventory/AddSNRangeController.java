@@ -13,6 +13,7 @@ import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.task.AddSNRangeTask;
 import com.cannontech.stars.util.task.TimeConsumingTask;
 import com.cannontech.stars.web.StarsYukonUser;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.stars.action.StarsInventoryActionController;
 import com.cannontech.web.stars.service.TimeConsumingTaskService;
 
@@ -80,7 +81,10 @@ public class AddSNRangeController extends StarsInventoryActionController {
         // (the REDIRECT parameter is set within the AddSNRangeTask.run() method)
         session.removeAttribute( ServletUtils.ATT_REDIRECT );
 
-        TimeConsumingTask task = new AddSNRangeTask( member, snFrom, snTo, devTypeID, devStateID, new Date(), voltageID, companyID, routeID, request );
+        boolean confirmOnMessagePage = request.getParameter(ServletUtils.CONFIRM_ON_MESSAGE_PAGE) != null;
+        String resultSetRedirect =  ServletUtil.createSafeRedirectUrl(request, "/operator/Hardware/ResultSet.jsp");
+        
+        TimeConsumingTask task = new AddSNRangeTask( member, snFrom, snTo, devTypeID, devStateID, new Date(), voltageID, companyID, routeID, confirmOnMessagePage, resultSetRedirect, session);
         
         String redirect = this.getRedirect(request);
         String referer = this.getReferer(request);

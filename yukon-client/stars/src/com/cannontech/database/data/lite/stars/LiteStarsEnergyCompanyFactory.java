@@ -7,13 +7,13 @@ import com.cannontech.core.dao.AddressDao;
 import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
-import com.cannontech.stars.core.dao.StarsRowCountDao;
+import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
 
 public class LiteStarsEnergyCompanyFactory {
     private AddressDao addressDao;
-    private StarsRowCountDao starsRowCountDao;
     private StarsInventoryBaseDao starsInventoryBaseDao;
     private StarsCustAccountInformationDao starsCustAccountInformationDao;
+    private StarsWorkOrderBaseDao starsWorkOrderBaseDao;
     private SimpleJdbcTemplate simpleJdbcTemplate;
     
     public LiteStarsEnergyCompany createEnergyCompany(EnergyCompany energyCompany) {
@@ -30,20 +30,15 @@ public class LiteStarsEnergyCompanyFactory {
     
     private void applyPropertySetters(LiteStarsEnergyCompany energyCompany) {
         energyCompany.setAddressDao(addressDao);
-        energyCompany.setStarsRowCountDao(starsRowCountDao);
         energyCompany.setStarsInventoryBaseDao(starsInventoryBaseDao);
         energyCompany.setStarsCustAccountInformationDao(starsCustAccountInformationDao);
+        energyCompany.setStarsWorkOrderBaseDao(starsWorkOrderBaseDao);
         energyCompany.setSimpleJdbcTemplate(simpleJdbcTemplate);
     }
     
     @Autowired
     public void setAddressDao(AddressDao addressDao) {
         this.addressDao = addressDao;
-    }
-    
-    @Autowired
-    public void setStarsRowCountDao(StarsRowCountDao starsRowCountDao) {
-        this.starsRowCountDao = starsRowCountDao;
     }
     
     @Autowired
@@ -56,6 +51,12 @@ public class LiteStarsEnergyCompanyFactory {
     public void setStarsCustAccountInformationDao(
             StarsCustAccountInformationDao starsCustAccountInformationDao) {
         this.starsCustAccountInformationDao = starsCustAccountInformationDao;
+    }
+    
+    @Autowired
+    public void setStarsWorkOrderBaseDao(
+            StarsWorkOrderBaseDao starsWorkOrderBaseDao) {
+        this.starsWorkOrderBaseDao = starsWorkOrderBaseDao;
     }
     
     @Autowired

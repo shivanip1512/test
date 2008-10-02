@@ -13,6 +13,7 @@ import com.cannontech.stars.util.task.AddSNRangeTask;
 import com.cannontech.stars.util.task.AdjustStaticLoadGroupMappingsTask;
 import com.cannontech.stars.util.task.TimeConsumingTask;
 import com.cannontech.stars.web.StarsYukonUser;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.stars.action.StarsInventoryActionController;
 
 public class StaticLoadGroupMapController extends StarsInventoryActionController {
@@ -32,7 +33,9 @@ public class StaticLoadGroupMapController extends StarsInventoryActionController
         if(action.endsWith("NoConfig"))
             sendConfig = false;
         
-        TimeConsumingTask task = new AdjustStaticLoadGroupMappingsTask( energyCompany, resetAll, sendConfig, request);
+        String redirectUrl = ServletUtil.createSafeRedirectUrl(request, "/operator/Hardware/PowerUserStaticLoadGroupReset.jsp");
+        
+        TimeConsumingTask task = new AdjustStaticLoadGroupMappingsTask( energyCompany, resetAll, sendConfig, redirectUrl, session);
         long id = ProgressChecker.addTask( task );
         
         // Wait 5 seconds for the task to finish (or error out), if not, then go to the progress page

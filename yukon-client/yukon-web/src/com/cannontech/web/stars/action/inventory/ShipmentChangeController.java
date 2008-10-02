@@ -127,10 +127,7 @@ public class ShipmentChangeController extends StarsInventoryActionController {
                 tempList.add(new FilterWrapper(String.valueOf(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE_MIN), serialStart, serialStart));
                 iBean.setFilterByList(tempList);
                 
-                iBean.setShipmentCheck(true);
-                List<LiteInventoryBase> found = iBean.getLimitedHardwareList();
-                iBean.setShipmentCheck(false);
-                //failure
+                List<LiteInventoryBase> found = iBean.getInventoryList(request);
                 
                 pBean.setAllowSerialNumberInput(true);
                 if(found == null)

@@ -32,7 +32,7 @@ public class ShipmentSNRangeAddController extends StarsInventoryActionController
         
         TimeConsumingTask task = new AddShipmentSNRangeTask( pBean.getSerialNumberMember(), shipment.getSerialNumberStart(), shipment.getSerialNumberEnd(), 
                                                              pBean.getCurrentSchedule().getModelID(), new Integer(pBean.getSerialNumberDeviceState().getEntryID()), 
-                                                             shipment.getWarehouseID(), request);
+                                                             shipment.getWarehouseID(), session);
         long id = ProgressChecker.addTask( task );
         
         // Wait 5 seconds for the task to finish (or error out), if not, then go to the progress page

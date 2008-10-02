@@ -1,8 +1,10 @@
 package com.cannontech.stars.core.dao.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
@@ -56,14 +58,32 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao {
 
     @Override
     @Transactional(readOnly = true)
-    public List<LiteInventoryBase> getByIds(final Set<Integer> inventoryIds) {
-        final List<LiteInventoryBase> resultList = new ArrayList<LiteInventoryBase>(inventoryIds.size());
-
-        for (final Integer inventoryId : inventoryIds) {
-            resultList.add(getById(inventoryId));
+    public List<LiteInventoryBase> getByIds(final Collection<Integer> inventoryIds) {
+        SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
+        sqlBuilder.append(selectInventorySql);
+        sqlBuilder.append("WHERE ib.InventoryId IN (");
+        sqlBuilder.append(inventoryIds);
+        sqlBuilder.append(")");
+        String sql = sqlBuilder.toString();
+        
+        List<LiteInventoryBase> list = simpleJdbcTemplate.query(sql,
+                                                                smartInventoryRowMapper);
+        return list;
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public Map<Integer, LiteInventoryBase> getByIdsMap(Collection<Integer> inventoryIds) {
+        List<LiteInventoryBase> list = getByIds(inventoryIds);
+        
+        Map<Integer, LiteInventoryBase> map = new HashMap<Integer, LiteInventoryBase>(list.size());
+        
+        for (final LiteInventoryBase value : list) {
+            Integer key = value.getInventoryID();
+            map.put(key, value);
         }
         
-        return resultList;
+        return map;
     }
     
     @Override

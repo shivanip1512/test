@@ -51,6 +51,7 @@ import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.roles.operator.WorkOrderRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
 
@@ -177,9 +178,10 @@ public class WorkOrderModel extends ReportModelBase<WorkOrder> {
 			if (wo1.getLiteWorkOrderBase().getEnergyCompanyID() != wo2.getLiteWorkOrderBase().getEnergyCompanyID())
 				return wo1.getLiteWorkOrderBase().getEnergyCompanyID() - wo2.getLiteWorkOrderBase().getEnergyCompanyID();
 			
-			LiteStarsEnergyCompany ec = StarsDatabaseCache.getInstance().getEnergyCompany( wo1.getLiteWorkOrderBase().getEnergyCompanyID() );
-			LiteWorkOrderBase lOrder1 = ec.getWorkOrderBase( wo1.getLiteWorkOrderBase().getOrderID(), true );
-			LiteWorkOrderBase lOrder2 = ec.getWorkOrderBase( wo2.getLiteWorkOrderBase().getOrderID(), true );
+			StarsWorkOrderBaseDao starsWorkOrderBaseDao = 
+			    YukonSpringHook.getBean("starsWorkOrderBaseDao", StarsWorkOrderBaseDao.class);
+			LiteWorkOrderBase lOrder1 = starsWorkOrderBaseDao.getById(wo1.getLiteWorkOrderBase().getOrderID());
+			LiteWorkOrderBase lOrder2 = starsWorkOrderBaseDao.getById(wo2.getLiteWorkOrderBase().getOrderID());
 			
 			int result = 0;
 			
@@ -317,25 +319,27 @@ public class WorkOrderModel extends ReportModelBase<WorkOrder> {
 	public void collectData() {
 	    if (getEnergyCompanyID() == null) return;
 
+	    StarsWorkOrderBaseDao starsWorkOrderBaseDao = 
+	        YukonSpringHook.getBean("starsWorkOrderBaseDao", StarsWorkOrderBaseDao.class);
+	    
 	    LiteStarsEnergyCompany ec = StarsDatabaseCache.getInstance().getEnergyCompany( getEnergyCompanyID().intValue());
 	    ArrayList<LiteWorkOrderBase> woList = new ArrayList<LiteWorkOrderBase>();
 
 	    if (getOrderID() != null) {
-	        LiteWorkOrderBase liteOrder = ec.getWorkOrderBase( getOrderID().intValue(), true );
+	        LiteWorkOrderBase liteOrder = starsWorkOrderBaseDao.getById(getOrderID().intValue());
 	        if (liteOrder != null) woList.add( liteOrder );
 	    }
 	    else if (getAccountID() != null) {
 	        Map<Integer, LiteStarsCustAccountInformation> accountMap = getWorkOrderHelper().getAccountMap(getEnergyCompanyID());
 	        LiteStarsCustAccountInformation liteAcctInfo = accountMap.get(getAccountID());
 	        if (liteAcctInfo != null) {
-	            for (int j = 0; j < liteAcctInfo.getServiceRequestHistory().size(); j++) {
-	                Integer orderID = liteAcctInfo.getServiceRequestHistory().get(j);
-	                woList.add( ec.getWorkOrderBase(orderID.intValue(), true) );
-	            }
+	            List<Integer> workOrderIds = liteAcctInfo.getServiceRequestHistory();
+	            List<LiteWorkOrderBase> workOrders = starsWorkOrderBaseDao.getByIds(workOrderIds);
+	            woList.addAll(workOrders);
 	        }
 	    }
 	    else {
-	        List<LiteWorkOrderBase> allWOs = ec.loadAllWorkOrders(true);
+	        List<LiteWorkOrderBase> allWOs = starsWorkOrderBaseDao.getAll(ec.getEnergyCompanyID());
 	        if( allWOs != null)
 	            woList.addAll( allWOs );
 	    }

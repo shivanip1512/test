@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import com.cannontech.clientutils.ActivityLogger;
@@ -42,13 +41,15 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
 	Integer newDevStateID = null;
 	Integer newServiceCompanyID = null;
     Integer newWarehouseID = null;
-	HttpServletRequest request = null;
     String serialFrom = null;
     String serialTo = null;
     boolean hasChanged = false;
     boolean devTypeChanged = false;
     boolean stateChanged = false;
     boolean warehouseChanged = false;
+    private final boolean confirmOnMessagePage;
+    private final String redirect;
+    private final HttpSession session;
 	
 	List<LiteStarsLMHardware> hardwareSet = new ArrayList<LiteStarsLMHardware>();
 	int numSuccess = 0, numFailure = 0;
@@ -57,8 +58,8 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
     List<String> failedSerialNumbers = new ArrayList<String>();
 	
     public ManipulateInventoryTask(LiteStarsEnergyCompany currentCompany, Integer newEnergyCompanyID, List<LiteInventoryBase> selectedInventory, Integer newDevTypeID,
-        Integer newDevStateID, Integer newServiceCompanyID, Integer newWarehouseID, HttpServletRequest request)
-    {
+        Integer newDevStateID, Integer newServiceCompanyID, Integer newWarehouseID, 
+            boolean confirmOnMessagePage, String redirect, HttpSession session) {
         this.currentCompany = currentCompany;
         this.newEnergyCompanyID = newEnergyCompanyID;
         this.selectedInventory = selectedInventory;
@@ -66,27 +67,11 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
         this.newServiceCompanyID = newServiceCompanyID;
         this.newWarehouseID = newWarehouseID;
         this.newDevStateID = newDevStateID;
-        this.request = request;
+        this.confirmOnMessagePage = confirmOnMessagePage;
+        this.redirect = redirect;
+        this.session = session;
     }
-    
-    public ManipulateInventoryTask(LiteStarsEnergyCompany currentCompany, Integer newEnergyCompanyID, List<LiteInventoryBase> selectedInventory, Integer newDevTypeID,
-		Integer newDevStateID, Integer newServiceCompanyID, Integer newWarehouseID, String serialTo, String serialFrom, HttpServletRequest request)
-	{
-        this.currentCompany = currentCompany;
-        this.newEnergyCompanyID = newEnergyCompanyID;
-		this.selectedInventory = selectedInventory;
-		this.newDevTypeID = newDevTypeID;
-		this.newServiceCompanyID = newServiceCompanyID;
-		this.newWarehouseID = newWarehouseID;
-        this.newDevStateID = newDevStateID;
-		this.request = request;
-        this.serialTo = serialTo;
-        this.serialFrom = serialFrom;
-	}
 
-	/* (non-Javadoc)
-	 * @see com.cannontech.stars.util.task.TimeConsumingTask#getProgressMsg()
-	 */
     @Override
 	public String getProgressMsg() {
 		if (numToBeUpdated > 0) {
@@ -111,7 +96,6 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
     {
 		status = STATUS_RUNNING;
 		
-		HttpSession session = request.getSession(false);
 		StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
         ManipulationBean mBean = (ManipulationBean) session.getAttribute("manipBean"); 
         
@@ -280,8 +264,8 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
 			
 			session.setAttribute(InventoryManagerUtil.INVENTORY_SET_DESC, resultDesc);
 			session.setAttribute(InventoryManagerUtil.INVENTORY_SET, hardwareSet);
-			session.setAttribute(ServletUtils.ATT_REDIRECT, request.getContextPath() + "/operator/Hardware/InvenResultSet.jsp");
-			if (request.getParameter(ServletUtils.CONFIRM_ON_MESSAGE_PAGE) != null)
+			session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
+			if (confirmOnMessagePage)
 				session.setAttribute(ServletUtils.ATT_REFERRER, session.getAttribute(ServletUtils.ATT_MSG_PAGE_REFERRER));
 		}
 	}
