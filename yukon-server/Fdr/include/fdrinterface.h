@@ -73,7 +73,7 @@ class IM_EX_FDRBASE CtiFDRInterface
 
         FDRDbReloadReason   getDbReloadReason() const;
         CtiFDRInterface&    setDbReloadReason(FDRDbReloadReason aLevel=DbChange);
-        virtual void        processDbChange(CtiDBChangeMsg* change);
+        void                processFDRPointChange(int pointId, bool deleteType);
 
         BOOL                isInterfaceInDebugMode() const;
         void                setInterfaceDebugMode(const BOOL aChangeFlag = TRUE);
@@ -100,14 +100,14 @@ class IM_EX_FDRBASE CtiFDRInterface
 
         bool reloadTranslationLists(void);
         virtual bool loadTranslationLists(void)=0;
-        virtual bool translateSinglePoint(CtiFDRPointSPtr translationPoint, bool send=false)=0;
+        virtual bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send=false)=0;
 
         //Load single point, maintaining current lists
         virtual bool loadTranslationPoint(long pointId);
         //remove single point maintaining current lists
         void removeTranslationPoint(long pointId);
-        //here to be call
-        virtual void cleanupTranslationPoint(CtiFDRPointSPtr translationPoint, bool recvList);
+        //This is the interfaces hook to know when a point is removed. Most do not care so a default was written. 
+        virtual void cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint, bool recvList);
 
         CtiFDRPointList   getSendToList () const;
         CtiFDRPointList & getSendToList ();

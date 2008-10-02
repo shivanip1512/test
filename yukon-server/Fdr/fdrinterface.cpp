@@ -15,10 +15,15 @@
  *    Copyright (C) 2005 Cannon Technologies, Inc.  All rights reserved.
  *
  *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinterface.cpp-arc  $
- *    REVISION     :  $Revision: 1.31 $
- *    DATE         :  $Date: 2008/09/23 15:14:58 $
+ *    REVISION     :  $Revision: 1.32 $
+ *    DATE         :  $Date: 2008/10/02 23:57:15 $
  *    History:
  *     $Log: fdrinterface.cpp,v $
+ *     Revision 1.32  2008/10/02 23:57:15  tspar
+ *     YUK-5013 Full FDR reload should not happen with every point
+ *
+ *     YUKRV-325  review changes
+ *
  *     Revision 1.31  2008/09/23 15:14:58  tspar
  *     YUK-5013 Full FDR reload should not happen with every point db change
  *
@@ -975,33 +980,37 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
             switch (incomingMsg->isA())
             {
                 case MSG_DBCHANGE:
-                    // db change message reload if type if point
-                    if ( ((CtiDBChangeMsg*)incomingMsg)->getDatabase() == ChangePointDb)
                     {
-                        processDbChange((CtiDBChangeMsg*)incomingMsg);
-                    }
-                    else if (((CtiDBChangeMsg*)incomingMsg)->getDatabase() == ChangePAODb)
-                    {
-                        // Ignoring delete device changes. If its a delete, we will error on sql anyways, they are gone
-                        if (((CtiDBChangeMsg*)incomingMsg)->getTypeOfChange() != ChangeTypeDelete)
+                        // db change message reload if type if point
+                        int changeId = ((CtiDBChangeMsg*)incomingMsg)->getId();
+                        bool changeType = ((CtiDBChangeMsg*)incomingMsg)->getTypeOfChange();
+    
+                        if ( ((CtiDBChangeMsg*)incomingMsg)->getDatabase() == ChangePointDb)
                         {
-                            // get all points on device and make a message for each
-                            std::vector<int> ids = getPointIdsOnPao(((CtiDBChangeMsg*)incomingMsg)->getId());
-                            int changeType = ((CtiDBChangeMsg*)incomingMsg)->getTypeOfChange();
-
-                            for (std::vector<int>::iterator itr = ids.begin(); itr != ids.end(); itr++)
+                            processFDRPointChange(changeId, changeType == ChangeTypeDelete);
+                        }
+                        else if (((CtiDBChangeMsg*)incomingMsg)->getDatabase() == ChangePAODb)
+                        {
+                            // Ignoring delete device changes. If its a delete, we will error on sql anyways, they are gone
+                            // Updates get sent on point level. We only have to deal with change type add for pao's
+                            if (changeType == ChangeTypeAdd)
                             {
-                                // Only have to setId to id in list and setTypeOfChange to match original message.
-                                int pid = *itr;
-                                //CtiDBChangeMsg(LONG id,INT database, string category, string objecttype, INT typeofchange);
-                                CtiDBChangeMsg* ptr = new CtiDBChangeMsg(pid, 0, "", "", changeType);
-                                processDbChange(ptr);
-                                delete ptr;
+                                // get all points on device and make a message for each
+                                std::vector<int> ids = getPointIdsOnPao(changeId);
+    
+                                for (std::vector<int>::iterator itr = ids.begin(); itr != ids.end(); itr++)
+                                {
+                                    // Only have to setId to id in list and setTypeOfChange to match original message.
+                                    int pid = *itr;
+                                    CtiDBChangeMsg* ptr = new CtiDBChangeMsg(pid, 0, "", "", changeType);
+                                    processFDRPointChange(pid,false);//always false.  Tested up top.
+                                    delete ptr;
+                                }
                             }
                         }
+                        break;
+    
                     }
-                    break;
-
                 case MSG_COMMAND:
                     {
                         // we will handle this message for other classes
@@ -1612,27 +1621,20 @@ bool CtiFDRInterface::findTranslationNameInList(string aTranslationName,
 }
 
 /*** 
-* Process a db change. 
-*  
-* If there is any added tracking for an interface 
-* this will have to be extended to maintain the difference. 
-*  
-* This function links FDR closer to the database. 
+* Process a change to the FDR point list
 */
-void CtiFDRInterface::processDbChange(CtiDBChangeMsg* msg)
+void CtiFDRInterface::processFDRPointChange(int pointId, bool deleteType)
 {
-    //Note: Handle the PAO Add case (with no point adds to follow)
-    // The most logical method for this is to remove it from our list if we have it. 
-    // Then re-insert it if the db query finds something. (unless it is a delete)
-    // Question is do the interfaces
+    // Remove it from our list if we have it. 
+    // Then re-insert it if the db query finds something. (It will not find anything if is a delete)
 
-    removeTranslationPoint(msg->getId());
+    removeTranslationPoint(pointId);
 
     //already know its a point db change. So just check for not delete
-    if (msg->getTypeOfChange() != ChangeTypeDelete)
+    if (!deleteType)
     {
         //if type is delete. we dont have to re-add.
-        loadTranslationPoint(msg->getId());
+        loadTranslationPoint(pointId);
     }
 }
 
@@ -1671,7 +1673,7 @@ bool CtiFDRInterface::loadTranslationPoint(long pointId)
         fdrPoint = recvMgr->findFDRPointID(pointId);
     }
 
-    if (fdrPoint.get() != NULL)
+    if (fdrPoint)
     {
         translateSinglePoint(fdrPoint,inSend);
         ret = true;
@@ -1738,7 +1740,7 @@ void CtiFDRInterface::printLists(string title, int pid)
 }
 
 /* This is here to be replaced with child processes to notify them of the removal and give them the chance to act.*/
-void CtiFDRInterface::cleanupTranslationPoint(CtiFDRPointSPtr translationPoint, bool recvList)
+void CtiFDRInterface::cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint, bool recvList)
 {
     return;
 }

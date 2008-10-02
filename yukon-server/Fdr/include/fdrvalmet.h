@@ -16,6 +16,11 @@
 *                 design document for more information
 *    History:
       $Log: fdrvalmet.h,v $
+      Revision 1.9  2008/10/02 23:57:16  tspar
+      YUK-5013 Full FDR reload should not happen with every point
+
+      YUKRV-325  review changes
+
       Revision 1.8  2008/09/23 15:15:22  tspar
       YUK-5013 Full FDR reload should not happen with every point db change
 
@@ -208,7 +213,7 @@ class IM_EX_FDRVALMET CtiFDR_Valmet : public CtiFDRSingleSocket
         USHORT      YukonToForeignQuality (USHORT aQuality);
         USHORT      YukonToForeignStatus (int aStatus);
 
-        bool translateAndUpdatePoint(CtiFDRPointSPtr translationPoint, int aIndex);
+        bool translateAndUpdatePoint(CtiFDRPointSPtr & translationPoint, int aIndex);
 
 
         enum {  Valmet_Invalid = 0,

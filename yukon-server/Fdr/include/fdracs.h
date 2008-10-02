@@ -16,6 +16,11 @@
 *                 design document for more information
 *    History:
       $Log: fdracs.h,v $
+      Revision 1.10  2008/10/02 23:57:15  tspar
+      YUK-5013 Full FDR reload should not happen with every point
+
+      YUKRV-325  review changes
+
       Revision 1.9  2008/09/23 15:15:22  tspar
       YUK-5013 Full FDR reload should not happen with every point db change
 
@@ -267,7 +272,7 @@ class IM_EX_FDRACS CtiFDR_ACS : public CtiFDRSingleSocket
 
         enum {ACS_Open = 0, ACS_Closed = 1, ACS_Invalid=99};
 
-        virtual bool translateAndUpdatePoint(CtiFDRPointSPtr translationPoint, int aDestinationIndex);
+        virtual bool translateAndUpdatePoint(CtiFDRPointSPtr & translationPoint, int aDestinationIndex);
 
 };
 

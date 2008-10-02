@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrbepc.h-arc  $
-*    REVISION     :  $Revision: 1.5 $
-*    DATE         :  $Date: 2008/09/23 15:15:22 $
+*    REVISION     :  $Revision: 1.6 $
+*    DATE         :  $Date: 2008/10/02 23:57:15 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +20,11 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrbepc.h,v $
+      Revision 1.6  2008/10/02 23:57:15  tspar
+      YUK-5013 Full FDR reload should not happen with every point
+
+      YUKRV-325  review changes
+
       Revision 1.5  2008/09/23 15:15:22  tspar
       YUK-5013 Full FDR reload should not happen with every point db change
 
@@ -87,7 +92,7 @@ public:
 
     void threadFunctionWriteToFile( void );
     virtual bool loadTranslationLists(void);
-    virtual bool translateSinglePoint(CtiFDRPointSPtr translationPoint, bool send=false);
+    virtual bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send=false);
 
     // ddefine these for each interface type
     static const CHAR * KEY_INTERVAL;

@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinet.cpp-arc  $
-*    REVISION     :  $Revision: 1.24 $
-*    DATE         :  $Date: 2008/09/23 15:14:58 $
+*    REVISION     :  $Revision: 1.25 $
+*    DATE         :  $Date: 2008/10/02 23:57:15 $
 *
 *
 *    AUTHOR: David Sutton
@@ -22,6 +22,11 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrinet.cpp,v $
+      Revision 1.25  2008/10/02 23:57:15  tspar
+      YUK-5013 Full FDR reload should not happen with every point
+
+      YUKRV-325  review changes
+
       Revision 1.24  2008/09/23 15:14:58  tspar
       YUK-5013 Full FDR reload should not happen with every point db change
 
@@ -514,8 +519,7 @@ bool CtiFDR_Inet::loadList(string &aDirection,  CtiFDRPointList &aList)
                 for ( ; myIterator != pointList->getMap().end(); ++myIterator )
                 {
                     foundPoint = true;
-                    CtiFDRPointSPtr translationPoint = (*myIterator).second;
-                    successful = translateSinglePoint(translationPoint);
+                    successful = translateSinglePoint(myIterator->second);
                 }
 
                 // lock the list I'm swapping 
@@ -576,7 +580,7 @@ bool CtiFDR_Inet::loadList(string &aDirection,  CtiFDRPointList &aList)
 }
 
 
-bool CtiFDR_Inet::translateSinglePoint(CtiFDRPointSPtr translationPoint, bool send)
+bool CtiFDR_Inet::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send)
 {
     bool successful = false;
     string tempString1;

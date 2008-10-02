@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrsinglesocket.cpp-arc  $
-*    REVISION     :  $Revision: 1.12 $
-*    DATE         :  $Date: 2008/09/23 15:14:58 $
+*    REVISION     :  $Revision: 1.13 $
+*    DATE         :  $Date: 2008/10/02 23:57:15 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,11 @@
 *    ---------------------------------------------------
 *    History: 
 *     $Log: fdrsinglesocket.cpp,v $
+*     Revision 1.13  2008/10/02 23:57:15  tspar
+*     YUK-5013 Full FDR reload should not happen with every point
+*
+*     YUKRV-325  review changes
+*
 *     Revision 1.12  2008/09/23 15:14:58  tspar
 *     YUK-5013 Full FDR reload should not happen with every point db change
 *
@@ -285,8 +290,7 @@ bool CtiFDRSingleSocket::loadList(string &aDirection,  CtiFDRPointList &aList)
                 for ( ; myIterator != pointList->getMap().end(); ++myIterator )
                 {
                     foundPoint = true;
-                    CtiFDRPointSPtr translationPoint = (*myIterator).second;
-                    successful = translateSinglePoint(translationPoint);
+                    successful = translateSinglePoint(myIterator->second);
                 }
 
                 // lock the list I'm inserting into so it doesn't get deleted on me
@@ -346,7 +350,7 @@ bool CtiFDRSingleSocket::loadList(string &aDirection,  CtiFDRPointList &aList)
     return successful;
 }
 
-bool CtiFDRSingleSocket::translateSinglePoint(CtiFDRPointSPtr translationPoint, bool send)
+bool CtiFDRSingleSocket::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send)
 {
     bool successful = false;
     for (int x = 0; x < translationPoint->getDestinationList().size(); x++)

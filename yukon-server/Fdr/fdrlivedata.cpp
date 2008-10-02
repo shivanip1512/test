@@ -11,8 +11,8 @@
  * Author: Tom Mack
  *
  * ARCHIVE      :  $Archive$
- * REVISION     :  $Revision: 1.5 $
- * DATE         :  $Date: 2008/09/23 15:14:58 $
+ * REVISION     :  $Revision: 1.6 $
+ * DATE         :  $Date: 2008/10/02 23:57:15 $
  */
 
 #include <windows.h>
@@ -184,7 +184,7 @@ void CtiFDRLiveData::processNewPoint(CtiFDRPointSPtr ctiPoint)
   }
 }
 
-void CtiFDRLiveData::cleanupTranslationPoint(CtiFDRPointSPtr translationPoint, bool recvList)
+void CtiFDRLiveData::cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint, bool recvList)
 {
   if (recvList)
   {

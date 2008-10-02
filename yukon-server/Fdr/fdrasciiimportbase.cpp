@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrasciiimportbase.cpp-arc  $
-*    REVISION     :  $Revision: 1.16 $
-*    DATE         :  $Date: 2008/09/23 15:14:57 $
+*    REVISION     :  $Revision: 1.17 $
+*    DATE         :  $Date: 2008/10/02 23:57:15 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,11 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrasciiimportbase.cpp,v $
+      Revision 1.17  2008/10/02 23:57:15  tspar
+      YUK-5013 Full FDR reload should not happen with every point
+
+      YUKRV-325  review changes
+
       Revision 1.16  2008/09/23 15:14:57  tspar
       YUK-5013 Full FDR reload should not happen with every point db change
 
@@ -333,8 +338,7 @@ bool CtiFDRAsciiImportBase::loadTranslationLists()
                 for ( ; myIterator != mgrPtr->getMap().end(); ++myIterator )
                 {
                     foundPoint = true;
-                    CtiFDRPointSPtr translationPoint = (*myIterator).second;
-                    translateSinglePoint(translationPoint);
+                    translateSinglePoint(myIterator->second);
                 }
 
                 if (!successful)
@@ -385,7 +389,7 @@ bool CtiFDRAsciiImportBase::loadTranslationLists()
     return successful;
 }
 
-bool CtiFDRAsciiImportBase::translateSinglePoint(CtiFDRPointSPtr translationPoint, bool send)
+bool CtiFDRAsciiImportBase::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send)
 {
     bool successful = false;
     string           tempString1;

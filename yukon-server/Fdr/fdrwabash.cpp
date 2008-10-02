@@ -98,8 +98,7 @@ bool FDRWabash::loadTranslationLists()
                 CtiFDRManager::spiterator  myIterator = pointList->getMap().begin();
                 for ( ; myIterator != pointList->getMap().end(); ++myIterator)
                 {
-                    CtiFDRPointSPtr translationPoint = (*myIterator).second;
-                    translateSinglePoint(translationPoint);
+                    translateSinglePoint(myIterator->second);
                 }
                 // lock the receive list and remove the old one
                 {
@@ -126,7 +125,7 @@ bool FDRWabash::loadTranslationLists()
      return true;
 }
 
-bool FDRWabash::translateSinglePoint(CtiFDRPointSPtr translationPoint, bool send)
+bool FDRWabash::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send)
 {
     string pointID;
     string filename;

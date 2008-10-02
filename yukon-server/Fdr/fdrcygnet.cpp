@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive$
-*    REVISION     :  $Revision: 1.15 $
-*    DATE         :  $Date: 2008/09/23 15:14:57 $
+*    REVISION     :  $Revision: 1.16 $
+*    DATE         :  $Date: 2008/10/02 23:57:15 $
 *
 *
 *    AUTHOR: Ben Wallace
@@ -23,6 +23,11 @@
 *    ---------------------------------------------------
 *    History:
       $Log: fdrcygnet.cpp,v $
+      Revision 1.16  2008/10/02 23:57:15  tspar
+      YUK-5013 Full FDR reload should not happen with every point
+
+      YUKRV-325  review changes
+
       Revision 1.15  2008/09/23 15:14:57  tspar
       YUK-5013 Full FDR reload should not happen with every point db change
 
@@ -1328,8 +1333,7 @@ bool CtiFDRCygnet::loadLists(CtiFDRPointList &aList)
             for ( ; myIterator != pointList->getMap().end(); ++myIterator )
             {
                 foundPoint = true;
-                CtiFDRPointSPtr translationPoint = (*myIterator).second;
-                translateSinglePoint(translationPoint);
+                translateSinglePoint(myIterator->second);
             }
 
             CtiLockGuard<CtiMutex> sendGuard(aList.getMutex());
@@ -1372,7 +1376,7 @@ bool CtiFDRCygnet::loadLists(CtiFDRPointList &aList)
     return successful;
 }
 
-bool CtiFDRCygnet::translateSinglePoint(CtiFDRPointSPtr translationPoint, bool send)
+bool CtiFDRCygnet::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send)
 {
     bool successful = false;
 

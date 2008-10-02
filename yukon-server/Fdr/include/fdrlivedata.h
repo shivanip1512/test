@@ -10,8 +10,8 @@
  * Author: Tom Mack
  *
  * PVCS KEYWORDS:
- *    REVISION     :  $Revision: 1.5 $
- *    DATE         :  $Date: 2008/09/23 15:15:22 $
+ *    REVISION     :  $Revision: 1.6 $
+ *    DATE         :  $Date: 2008/10/02 23:57:15 $
  *    History:
  *      $History:$
  */
@@ -99,7 +99,7 @@ protected:
 
   virtual void doUpdates();
 
-  void cleanupTranslationPoint(CtiFDRPointSPtr translationPoint, bool recvList);
+  void cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint, bool recvList);
   virtual void processNewPoint(CtiFDRPointSPtr ctiPoint);
   virtual void removeAllPoints();
   virtual void handleNewPoints();

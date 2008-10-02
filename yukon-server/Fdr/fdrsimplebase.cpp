@@ -8,8 +8,8 @@
  * Author: Tom Mack
  *
  * ARCHIVE      :  $Archive$
- * REVISION     :  $Revision: 1.11 $
- * DATE         :  $Date: 2008/09/23 15:14:58 $
+ * REVISION     :  $Revision: 1.12 $
+ * DATE         :  $Date: 2008/10/02 23:57:15 $
  */
 
 #include <windows.h>
@@ -284,7 +284,7 @@ bool CtiFDRSimple::loadTranslationLists()
 }
 
 
-bool CtiFDRSimple::translateSinglePoint(CtiFDRPointSPtr translationPoint, bool send)
+bool CtiFDRSimple::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send)
 {
   processNewPoint(translationPoint);
   handleNewPoint(translationPoint);

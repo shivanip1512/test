@@ -1018,8 +1018,7 @@ bool CtiFDRTelegyr::loadGroupLists( void )
             for( ; myIterator != pointList->getMap().end(); ++myIterator )
             {
                foundPoint = true;
-               CtiFDRPointSPtr translationPoint = (*myIterator).second;
-               successful = translateSinglePoint(translationPoint);
+               successful = translateSinglePoint(myIterator->second);
             }
 
             _reloadPending = true;
@@ -1068,7 +1067,7 @@ bool CtiFDRTelegyr::loadGroupLists( void )
    return successful;
 }
 
-bool CtiFDRTelegyr::translateSinglePoint(CtiFDRPointSPtr translationPoint, bool send)
+bool CtiFDRTelegyr::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send)
 {
    bool successful = false;
    bool foundGroup = false;

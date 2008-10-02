@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrvalmet.cpp-arc  $
-*    REVISION     :  $Revision: 1.14 $
-*    DATE         :  $Date: 2008/09/23 15:14:58 $
+*    REVISION     :  $Revision: 1.15 $
+*    DATE         :  $Date: 2008/10/02 23:57:15 $
 *
 *
 *    AUTHOR: David Sutton
@@ -23,6 +23,11 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrvalmet.cpp,v $
+      Revision 1.15  2008/10/02 23:57:15  tspar
+      YUK-5013 Full FDR reload should not happen with every point
+
+      YUKRV-325  review changes
+
       Revision 1.14  2008/09/23 15:14:58  tspar
       YUK-5013 Full FDR reload should not happen with every point db change
 
@@ -335,7 +340,7 @@ int CtiFDR_Valmet::readConfig()
 }
 
 
-bool CtiFDR_Valmet::translateAndUpdatePoint(CtiFDRPointSPtr translationPoint, int aDestinationIndex)
+bool CtiFDR_Valmet::translateAndUpdatePoint(CtiFDRPointSPtr & translationPoint, int aDestinationIndex)
 {
     bool                successful(false);
     string           tempString1;

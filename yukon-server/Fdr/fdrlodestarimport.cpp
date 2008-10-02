@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.35 $
-*    DATE         :  $Date: 2008/09/23 15:14:58 $
+*    REVISION     :  $Revision: 1.36 $
+*    DATE         :  $Date: 2008/10/02 23:57:15 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -19,6 +19,11 @@
 *    ---------------------------------------------------
 *    History:
       $Log: fdrlodestarimport.cpp,v $
+      Revision 1.36  2008/10/02 23:57:15  tspar
+      YUK-5013 Full FDR reload should not happen with every point
+
+      YUKRV-325  review changes
+
       Revision 1.35  2008/09/23 15:14:58  tspar
       YUK-5013 Full FDR reload should not happen with every point db change
 
@@ -503,8 +508,7 @@ bool CtiFDR_LodeStarImportBase::loadTranslationLists()
                 for ( ; myIterator != pointList->getMap().end(); ++myIterator)
                 {
                     foundPoint = true;
-                    CtiFDRPointSPtr translationPoint = (*myIterator).second;
-                    bool temp = translateSinglePoint(translationPoint);
+                    bool temp = translateSinglePoint(myIterator->second);
 
                     if (temp == false)
                     {
@@ -570,7 +574,7 @@ bool CtiFDR_LodeStarImportBase::loadTranslationLists()
     return successful;
 }
 
-bool CtiFDR_LodeStarImportBase::translateSinglePoint(CtiFDRPointSPtr translationPoint, bool send)
+bool CtiFDR_LodeStarImportBase::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send)
 {
     bool successful = true;
 

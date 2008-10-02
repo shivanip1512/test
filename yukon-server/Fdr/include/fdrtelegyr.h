@@ -119,7 +119,7 @@ class IM_EX_FDRTELEGYRAPI CtiFDRTelegyr : public CtiFDRInterface
 
       bool processBadPoint( int groupid, int index );
       bool loadTranslationLists( void );
-      bool translateSinglePoint(CtiFDRPointSPtr translationPoint, bool send=false);
+      bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send=false);
       bool loadGroupLists( void );
       bool processAnalog( APICLI_GET_MEA aPoint, int groupid, int group_type, int index );
       bool processDigital( APICLI_GET_IND aPoint, int groupid, int group_type, int index );

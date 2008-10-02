@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrftpinterface.cpp-arc  $
-*    REVISION     :  $Revision: 1.19 $
-*    DATE         :  $Date: 2008/09/23 15:14:58 $
+*    REVISION     :  $Revision: 1.20 $
+*    DATE         :  $Date: 2008/10/02 23:57:15 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,11 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrftpinterface.cpp,v $
+      Revision 1.20  2008/10/02 23:57:15  tspar
+      YUK-5013 Full FDR reload should not happen with every point
+
+      YUKRV-325  review changes
+
       Revision 1.19  2008/09/23 15:14:58  tspar
       YUK-5013 Full FDR reload should not happen with every point db change
 
@@ -464,8 +469,7 @@ bool CtiFDRFtpInterface::loadTranslationLists()
                 for ( ; myIterator != mgrPtr->getMap().end(); ++myIterator )
                 {
                     foundPoint = true;
-                    CtiFDRPointSPtr translationPoint = (*myIterator).second;
-                    translateSinglePoint(translationPoint);
+                    translateSinglePoint(myIterator->second);
                 }
 
                 pointList=NULL;
@@ -517,7 +521,7 @@ bool CtiFDRFtpInterface::loadTranslationLists()
     return successful;
 }
 
-bool CtiFDRFtpInterface::translateSinglePoint(CtiFDRPointSPtr translationPoint, bool send)
+bool CtiFDRFtpInterface::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send)
 {
     string           tempString1;
     string           tempString2;

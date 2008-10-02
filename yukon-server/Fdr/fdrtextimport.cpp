@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrtextimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.28 $
-*    DATE         :  $Date: 2008/09/23 15:14:58 $
+*    REVISION     :  $Revision: 1.29 $
+*    DATE         :  $Date: 2008/10/02 23:57:15 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,11 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrtextimport.cpp,v $
+      Revision 1.29  2008/10/02 23:57:15  tspar
+      YUK-5013 Full FDR reload should not happen with every point
+
+      YUKRV-325  review changes
+
       Revision 1.28  2008/09/23 15:14:58  tspar
       YUK-5013 Full FDR reload should not happen with every point db change
 
@@ -848,8 +853,6 @@ bool CtiFDR_TextImport::loadTranslationLists()
     bool successful = false;
     RWDBStatus listStatus;
 
-    CtiFDRPointSPtr translationPoint;
-
     try
     {
         // make a list with all received points
@@ -883,8 +886,7 @@ bool CtiFDR_TextImport::loadTranslationLists()
                 for ( ; myIterator != pointList->getMap().end(); ++myIterator)
                 {
                     foundPoint = true;
-                    translationPoint = (*myIterator).second;
-                    successful = translateSinglePoint(translationPoint);
+                    successful = translateSinglePoint(myIterator->second);
                 }   // end for interator
 
                 // lock the receive list and remove the old one
@@ -944,7 +946,7 @@ bool CtiFDR_TextImport::loadTranslationLists()
     return successful;
 }
 
-bool CtiFDR_TextImport::translateSinglePoint(CtiFDRPointSPtr translationPoint, bool send)
+bool CtiFDR_TextImport::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send)
 {
     bool successful = false;
 
@@ -1074,7 +1076,7 @@ bool CtiFDR_TextImport::translateSinglePoint(CtiFDRPointSPtr translationPoint, b
     return successful;
 }
 
-void CtiFDR_TextImport::cleanupTranslationPoint(CtiFDRPointSPtr translationPoint, bool recvList)
+void CtiFDR_TextImport::cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint, bool recvList)
 {
     if (recvList)
     {

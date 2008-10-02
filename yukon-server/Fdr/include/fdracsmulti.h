@@ -14,6 +14,11 @@
  *                 design document for more information
  *    History:
  *      $Log$
+ *      Revision 1.8  2008/10/02 23:57:15  tspar
+ *      YUK-5013 Full FDR reload should not happen with every point
+ *
+ *      YUKRV-325  review changes
+ *
  *      Revision 1.7  2008/09/23 15:15:22  tspar
  *      YUK-5013 Full FDR reload should not happen with every point db change
  *
@@ -232,8 +237,8 @@ class IM_EX_FDRACSMULTI CtiFDRAcsMulti : public CtiFDRScadaServer
         virtual CtiFDRClientServerConnection* createNewConnection(SOCKET newConnection);
 
         virtual void begineNewPoints();
-        virtual bool translateSinglePoint(CtiFDRPointSPtr translationPoint, bool send);
-        virtual void cleanupTranslationPoint(CtiFDRPointSPtr translationPoint, bool recvList);
+        virtual bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send);
+        virtual void cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint, bool recvList);
 
         virtual bool buildForeignSystemHeartbeatMsg(char** buffer,
                                                     unsigned int& bufferSize);

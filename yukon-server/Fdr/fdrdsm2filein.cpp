@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrDSm2Filein.cpp-arc  $
-*    REVISION     :  $Revision: 1.14 $
-*    DATE         :  $Date: 2008/09/23 15:14:57 $
+*    REVISION     :  $Revision: 1.15 $
+*    DATE         :  $Date: 2008/10/02 23:57:15 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,11 @@
 *    ---------------------------------------------------
 *    History:
       $Log: fdrdsm2filein.cpp,v $
+      Revision 1.15  2008/10/02 23:57:15  tspar
+      YUK-5013 Full FDR reload should not happen with every point
+
+      YUKRV-325  review changes
+
       Revision 1.14  2008/09/23 15:14:57  tspar
       YUK-5013 Full FDR reload should not happen with every point db change
 
@@ -847,8 +852,7 @@ bool CtiFDR_Dsm2Filein::loadTranslationLists()
                 for ( ; myIterator != pointList->getMap().end(); ++myIterator )
                 {
                     foundPoint = true;
-                    CtiFDRPointSPtr translationPoint = (*myIterator).second;
-                    translateSinglePoint(translationPoint);
+                    translateSinglePoint(myIterator->second);
                 }   // end for interator
 
                 // lock the receive list and remove the old one
@@ -910,7 +914,7 @@ bool CtiFDR_Dsm2Filein::loadTranslationLists()
     return successful;
 }
 
-bool CtiFDR_Dsm2Filein::translateSinglePoint(CtiFDRPointSPtr translationPoint, bool send)
+bool CtiFDR_Dsm2Filein::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send)
 {
     bool successful = false;
     string tempString2;

@@ -16,6 +16,11 @@
 *             design document for more information
 *    History:
       $Log: fdrrdex.h,v $
+      Revision 1.9  2008/10/02 23:57:15  tspar
+      YUK-5013 Full FDR reload should not happen with every point
+
+      YUKRV-325  review changes
+
       Revision 1.8  2008/09/23 15:15:22  tspar
       YUK-5013 Full FDR reload should not happen with every point db change
 
@@ -280,7 +285,7 @@ class IM_EX_FDRRDEX CtiFDR_Rdex : public CtiFDRSingleSocket
         ULONG         YukonToForeignStatus (ULONG aStatus);
 
         enum {Rdex_Open = 0, Rdex_Closed = 1, Rdex_Invalid=99};
-        virtual bool translateAndUpdatePoint(CtiFDRPointSPtr translationPoint, int aDestinationIndex);
+        virtual bool translateAndUpdatePoint(CtiFDRPointSPtr & translationPoint, int aDestinationIndex);
         virtual bool isRegistrationNeeded(void);
 
 

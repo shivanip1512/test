@@ -9,8 +9,8 @@
  * Author: Tom Mack
  *
  * ARCHIVE      :  $Archive$
- * REVISION     :  $Revision: 1.6 $
- * DATE         :  $Date: 2008/09/23 15:14:58 $
+ * REVISION     :  $Revision: 1.7 $
+ * DATE         :  $Date: 2008/10/02 23:57:15 $
  */
 
 #include <windows.h>
@@ -236,7 +236,7 @@ void CtiFDRPiNotify::processNewPiPoint(PiPointInfo &info)
   _pointMap.insert(PiPointMap::value_type(info.piPointId, info));
 }
 
-void CtiFDRPiNotify::cleanupTranslationPoint(CtiFDRPointSPtr translationPoint, bool recvList)
+void CtiFDRPiNotify::cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint, bool recvList)
 {
   string tagName = translationPoint->getDestinationList()[0].getTranslationValue("Tag Name");
 

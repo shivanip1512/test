@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrbepc.cpp-arc  $
-*    REVISION     :  $Revision: 1.9 $
-*    DATE         :  $Date: 2008/09/23 15:14:57 $
+*    REVISION     :  $Revision: 1.10 $
+*    DATE         :  $Date: 2008/10/02 23:57:15 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +20,11 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrbepc.cpp,v $
+      Revision 1.10  2008/10/02 23:57:15  tspar
+      YUK-5013 Full FDR reload should not happen with every point
+
+      YUKRV-325  review changes
+
       Revision 1.9  2008/09/23 15:14:57  tspar
       YUK-5013 Full FDR reload should not happen with every point db change
 
@@ -408,8 +413,7 @@ bool CtiFDR_BEPC::loadTranslationLists()
                 for ( ; myIterator != pointMap.end(); ++myIterator)
                 {
                     foundPoint = true;
-                    CtiFDRPointSPtr translationPoint = (*myIterator).second;
-                    successful = translateSinglePoint(translationPoint);
+                    successful = translateSinglePoint(myIterator->second);
                 }
 
                 {
@@ -471,7 +475,7 @@ bool CtiFDR_BEPC::loadTranslationLists()
     return successful;
 }
 
-bool CtiFDR_BEPC::translateSinglePoint(CtiFDRPointSPtr translationPoint, bool send)
+bool CtiFDR_BEPC::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send)
 {
     bool successful = false;
 

@@ -217,8 +217,7 @@ bool CtiFDRSocketServer::loadList(string &aDirection,  CtiFDRPointList &aList)
     
             while (myIterator != pointList->getMap().end())
             {
-                CtiFDRPointSPtr translationPoint = (*myIterator).second;
-                foundPoint = translateSinglePoint(translationPoint,isSend);
+                foundPoint = translateSinglePoint(myIterator->second,isSend);
                 ++myIterator;
             }
 

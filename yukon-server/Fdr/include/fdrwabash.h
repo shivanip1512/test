@@ -36,7 +36,7 @@ class __declspec(dllexport) FDRWabash : public CtiFDRInterface
         BOOL init();
         bool readConfig();
         bool loadTranslationLists();
-        bool translateSinglePoint(CtiFDRPointSPtr translationPoint, bool send=false);
+        bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send=false);
         void resetForInitialLoad();
 
         //overloads

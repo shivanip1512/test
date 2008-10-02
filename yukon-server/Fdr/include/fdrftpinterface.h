@@ -91,7 +91,7 @@ class IM_EX_FDRBASE CtiFDRFtpInterface : public CtiFDRInterface
         virtual int fail() = 0;
         virtual int decodeFile() = 0;
         virtual bool loadTranslationLists(void);
-        virtual bool translateSinglePoint(CtiFDRPointSPtr translationPoint, bool send=false);
+        virtual bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send=false);
 
         long                getLinkStatusID( void ) const;
         CtiFDRFtpInterface  &  setLinkStatusID(const long aPointID);

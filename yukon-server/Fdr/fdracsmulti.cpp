@@ -23,6 +23,11 @@
  *    ---------------------------------------------------
  *    History:
  *      $Log$
+ *      Revision 1.12  2008/10/02 23:57:15  tspar
+ *      YUK-5013 Full FDR reload should not happen with every point
+ *
+ *      YUKRV-325  review changes
+ *
  *      Revision 1.11  2008/09/23 15:14:57  tspar
  *      YUK-5013 Full FDR reload should not happen with every point db change
  *
@@ -309,7 +314,7 @@ void CtiFDRAcsMulti::begineNewPoints()
     _helper->clearMappings();
 }
 
-bool CtiFDRAcsMulti::translateSinglePoint(CtiFDRPointSPtr translationPoint, bool isSend)
+bool CtiFDRAcsMulti::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool isSend)
 {
     bool foundPoint = false;
 
@@ -351,7 +356,7 @@ bool CtiFDRAcsMulti::translateSinglePoint(CtiFDRPointSPtr translationPoint, bool
     return foundPoint;
 }
 
-void CtiFDRAcsMulti::cleanupTranslationPoint(CtiFDRPointSPtr translationPoint, bool recvList)
+void CtiFDRAcsMulti::cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint, bool recvList)
 {
     for (int x = 0; x < translationPoint->getDestinationList().size(); x++)
     {
