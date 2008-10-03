@@ -5,7 +5,8 @@ public enum BulkOperationTypeEnum {
     UPDATE("Update", "update"),
     IMPORT("Import", "import"),
     MASS_CHANGE("Mass Change", "massChange"),
-    MASS_DELETE("Mass Delete", "massDelete")
+    MASS_DELETE("Mass Delete", "massDelete"),
+    CHANGE_DEVICE_TYPE("Change Device Type", "changeDeviceType")
     ;
     
     private String title;

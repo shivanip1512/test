@@ -109,7 +109,7 @@ public class ChangeDeviceTypeController extends BulkControllerBase {
             final StoredDeviceGroup processingExceptionGroup = temporaryDeviceGroupService.createTempGroup(null);
             
             // init callcback, use a TranslatingBulkProcessorCallback to get from UpdateableDevice to YukonDevice
-            MassChangeCallbackResults bulkOperationCallbackResults = new MassChangeCallbackResults(successGroup, processingExceptionGroup, deviceGroupMemberEditorDao, deviceGroupCollectionHelper, Collections.singletonList(BulkFieldColumnHeader.DEVICE_TYPE), BulkOperationTypeEnum.MASS_CHANGE);
+            MassChangeCallbackResults bulkOperationCallbackResults = new MassChangeCallbackResults(successGroup, processingExceptionGroup, deviceGroupMemberEditorDao, deviceGroupCollectionHelper, Collections.singletonList(BulkFieldColumnHeader.DEVICE_TYPE), BulkOperationTypeEnum.CHANGE_DEVICE_TYPE);
             
             // STORE RESULTS INFO TO CACHE
             String id = StringUtils.replace(UUID.randomUUID().toString(), "-", "");

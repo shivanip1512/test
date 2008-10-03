@@ -214,7 +214,7 @@
                         
                         <%-- DEATIL LINK --%>
                         <c:choose>
-                            <c:when test="${(hasBulkImportRP && b.import) || (hasBulkUpdateRP && b.update) || (hasMassChangeRP && (b.massChange || b.massDelete))}">
+                            <c:when test="${(hasBulkImportRP && b.import) || (hasBulkUpdateRP && b.update) || (hasMassChangeRP && (b.massChange || b.massDelete || b.changeDeviceType))}">
                                 <c:url var="resultDetailUrl" value="/spring/bulk/${b.bulkOperationType.name}/${b.bulkOperationType.name}Results">
                                     <c:param name="resultsId" value="${b.resultsId}" />
                                 </c:url>

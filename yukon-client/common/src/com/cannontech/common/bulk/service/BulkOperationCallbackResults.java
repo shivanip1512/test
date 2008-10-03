@@ -72,6 +72,10 @@ public class BulkOperationCallbackResults<I> extends DeviceGroupAddingBulkProces
         return this.bulkOperationType.equals(BulkOperationTypeEnum.MASS_DELETE);
     }
     
+    public boolean isChangeDeviceType() {
+        return this.bulkOperationType.equals(BulkOperationTypeEnum.CHANGE_DEVICE_TYPE);
+    }
+    
     // TIME
     public Date getStartTime() {
         return startTime;
