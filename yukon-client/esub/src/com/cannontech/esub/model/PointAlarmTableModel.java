@@ -169,51 +169,35 @@ public class PointAlarmTableModel extends AbstractTableModel {
 	    if(s != null) {	   
 	        int pointID = s.getPointID();
             LitePoint point = null;
-            AlarmRow row = new AlarmRow();
+            
             try {
                 point = DaoFactory.getPointDao().getLitePoint(pointID);
             }catch(NotFoundException nfe) {
                 // this point may have been deleted.
                 CTILogger.error("The point (pointId:"+ pointID + ") for this AlarmTable might have been deleted!", nfe);
             }
-            if(point != null) {
+            if(point != null) {   
+                
+                // Only add signals which pass the filtering criteria set in the dialog.
+                // Note that rows is empty upon the call to refresh().
+                if( (isHideEvents() && s.getCategoryID() <= Signal.EVENT_SIGNAL) ||
+                    (isHideAcknowledged() && (s.getCategoryID() > Signal.EVENT_SIGNAL) && !TagUtils.isAlarmUnacked(s.getTags())) ||
+                    (isHideInactive() && !TagUtils.isConditionActive(s.getTags())) ) {
+                    return;
+                }
+                
                 int devID = point.getPaobjectID();
                 LiteYukonPAObject device = DaoFactory.getPaoDao().getLiteYukonPAO(devID);
                 String activeAcknowledgedFlags = (TagUtils.isConditionActive(s.getTags()) ? "True / " : "False / ") + (!TagUtils.isAlarmUnacked(s.getTags()) ? "True" : "False");
-                row = new AlarmRow();
-                row.setTimeStamp(s.getTimeStamp());
-                row.paoName = device.getPaoName();
-                row.pointName = point.getPointName();
-                row.description = s.getDescription();
-                row.activeAcknowledgedFlags = activeAcknowledgedFlags;
-            }
-	        
-	    	if(isHideEvents() && s.getCategoryID() <= Signal.EVENT_SIGNAL) {
-	    	    if(rows.contains(s))
-	    		return;
-	    	}
-
-    		if(isHideAcknowledged() && (s.getCategoryID() > Signal.EVENT_SIGNAL) ) {
-		    	if( !TagUtils.isAlarmUnacked(s.getTags())) {	
-		    	    if(rows.contains(row)) {
-                        rows.remove(row);
-                    }
-	    	        return;
-	            }	    			
-    		}
-    		
-    		if(isHideInactive()) {
-    			if( !TagUtils.isConditionActive(s.getTags()) ) {
-    			    if(rows.contains(row)) {
-    			        rows.remove(row);
-    			    }
-    				return;
-    			}	    			
-    		}  		
-	    	
-    		if(point != null) {
-        		rows.add(row);
-    		}
+                AlarmRow newrow = new AlarmRow();
+                newrow.timeStamp = s.getTimeStamp();
+                newrow.paoName = device.getPaoName();
+                newrow.pointName = point.getPointName();
+                newrow.description = s.getDescription();
+                newrow.activeAcknowledgedFlags = activeAcknowledgedFlags;
+                
+                rows.add(newrow);
+            }	        	    
 	    }
 	}
 	
