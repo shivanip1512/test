@@ -1081,14 +1081,14 @@ CREATE VIEW CCOperationsASent_View
 as
 SELECT logid, pointid, datetime, text, feederid, subid, additionalinfo
 FROM CCEventLog
-WHERE text LIKE '%Close sent,%' OR text LIKE '%Open sent,%';
+WHERE text LIKE '%Close sent,%' OR text LIKE '%Open sent,%'
 go
 
 CREATE VIEW CCOperationsBConfirmed_view
 as
 SELECT logid, pointid, datetime, text, kvarbefore, kvarafter, kvarchange
 FROM CCEventLog
-WHERE text LIKE 'Var: %';
+WHERE text LIKE 'Var: %'
 go
 
 CREATE VIEW CCOperationsCOrphanedConf_view
@@ -1101,7 +1101,7 @@ LEFT JOIN (SELECT A.LogId AS AId, MIN(b.LogID) AS NextAId
            JOIN CCOperationsASent_View B ON A.PointId = B.PointId AND A.LogId < B.LogId 
            GROUP BY A.LogId) EL3 ON EL3.AId = EL.LogId 
 WHERE EL3.NextAId IS NULL
-GROUP BY EL.LogId;
+GROUP BY EL.LogId
 go
 
 CREATE VIEW CCOperationsDSentAndValid_view
@@ -1114,7 +1114,7 @@ LEFT JOIN (SELECT A.LogId AS AId, MIN(b.LogID) AS NextAId
            JOIN CCOperationsASent_View B ON A.PointId = B.PointId AND A.LogId < B.LogId 
            GROUP BY A.LogId) EL3 ON EL3.AId = EL.LogId 
 WHERE EL2.LogId < EL3.NextAId OR EL3.NextAId IS NULL
-GROUP BY EL.LogId;
+GROUP BY EL.LogId
 go 
 
 CREATE VIEW CCOperationsESentAndAll_view
@@ -1122,7 +1122,7 @@ as
 SELECT OP.LogId AS OId, MIN(aaa.confid) AS CId 
 FROM CCOperationsASent_View OP
 LEFT JOIN CCOperationsDSentAndValid_view AAA ON OP.LogId = AAA.OpId
-GROUP BY OP.LogId;
+GROUP BY OP.LogId
 go
 
 CREATE TABLE CCOperationLogCache 
@@ -1169,7 +1169,7 @@ LEFT JOIN (SELECT EntryId, PAObjectId, Owner, InfoKey, Value, UpdateTime
 LEFT JOIN CCSubstationSubbusList SSL ON SSL.SubstationBusId = EL.SubId         
 LEFT JOIN YukonPAObject YP5 ON YP5.PAObjectId =  SSL.SubstationBusId        
 LEFT JOIN CCSubAreaAssignment CSA ON CSA.SubstationBusId = SSL.SubstationId        
-LEFT JOIN YukonPAObject YP4 ON YP4.PAObjectId = CSA.AreaId; 
+LEFT JOIN YukonPAObject YP4 ON YP4.PAObjectId = CSA.AreaId 
 go
 /* @end-block */
 /* End YUK-6139 */
