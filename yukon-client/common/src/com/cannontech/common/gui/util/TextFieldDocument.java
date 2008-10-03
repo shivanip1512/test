@@ -17,10 +17,10 @@ public class TextFieldDocument extends javax.swing.text.PlainDocument
 	public static int MAX_PASSWORD_LENGTH = 20;
 	public static int MAX_PHONE_NUMBER_LENGTH = 40;
 	public static int MAX_POINT_LIMIT_NAME_LENGTH = 14;
-	public static int MAX_POINT_NAME_LENGTH = 40;
+	public static int MAX_POINT_NAME_LENGTH = 60;
 	public static int MAX_PORT_DESCRIPTION_LENGTH = 20;
 	public static int MAX_PREFIX_NUMBER_LENGTH = 10;
-	public static int MAX_ROUTE_NAME_LENGTH = 40;
+	public static int MAX_ROUTE_NAME_LENGTH = 60;
 	public static int MAX_STATE_GROUP_NAME_LENGTH = 20;
 	public static int MAX_STATE_NAME_LENGTH = 32;
 	public static int MAX_SUFFIX_NUMBER_LENGTH = 10;
