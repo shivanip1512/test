@@ -19,6 +19,7 @@ import com.cannontech.database.data.device.DNPBase;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.IDLCBase;
+import com.cannontech.database.data.device.CCU721;
 import com.cannontech.database.data.device.Ion7700;
 import com.cannontech.database.data.device.RTCBase;
 import com.cannontech.database.data.device.RTM;
@@ -427,9 +428,13 @@ public Object getValue(Object val)
 
 	Integer address = new Integer( getAddressTextField().getText() );
 	
-	if( val instanceof IDLCBase )
+   if( val instanceof IDLCBase )
    {
 		((IDLCBase)device).getDeviceIDLCRemote().setAddress( address );	
+   }
+   else if( val instanceof CCU721 )
+   {
+	   ((CCU721)device).getDeviceAddress().setSlaveAddress( address );
    }
    else if( val instanceof Ion7700 )
    {

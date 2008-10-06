@@ -14,6 +14,7 @@ import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.GridAdvisorBase;
 import com.cannontech.database.data.device.IDLCBase;
+import com.cannontech.database.data.device.CCU721;
 import com.cannontech.database.data.device.IEDBase;
 import com.cannontech.database.data.device.KV;
 import com.cannontech.database.data.device.MCT210;
@@ -2185,6 +2186,14 @@ private void setIDLCBaseValue( IDLCBase idlcBase )
 	getPhysicalAddressTextField().setVisible(true);
 
 }
+private void setCCU721BaseValue( CCU721 ccu721 )
+{
+	Integer address = ccu721.getDeviceAddress().getSlaveAddress();
+	getPhysicalAddressTextField().setText( address.toString() );
+	
+	getPhysicalAddressLabel().setVisible(true);
+	getPhysicalAddressTextField().setVisible(true);
+}
 /**
  * Insert the method's description here.
  * Creation date: (9/18/2001 1:58:37 PM)
@@ -2711,6 +2720,10 @@ public void setValue(Object val)
 	else if( val instanceof com.cannontech.database.data.device.IDLCBase )
 	{
 		setIDLCBaseValue( (com.cannontech.database.data.device.IDLCBase) val );
+	}
+	else if( val instanceof com.cannontech.database.data.device.CCU721 )
+	{
+		setCCU721BaseValue( (com.cannontech.database.data.device.CCU721) val );
 	}
 	else
 	{
