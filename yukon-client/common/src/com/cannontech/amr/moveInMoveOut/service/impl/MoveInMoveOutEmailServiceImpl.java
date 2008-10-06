@@ -263,9 +263,7 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
 
         msgData.put("prevMeterNumber", moveOutResult.getPreviousMeter().getMeterNumber());
         msgData.put("prevMeterName", moveOutResult.getPreviousMeter().getName());
-
-        Date moveOutDate = new Date(moveOutResult.getMoveOutDate().getTime());
-        msgData.put("startDate", moveOutDate);
+        msgData.put("startDate", moveOutResult.getMoveOutDate());
 
         String subject = tp.process(scheduledMsgSub, msgData);
         String body = null;
@@ -325,10 +323,9 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
     private void setDatesMoveOut(MoveOutResult moveOutResult,
             Map<String, Object> msgData, YukonUserContext userContext) {
 
-        Date moveOutDate = new Date(moveOutResult.getMoveOutDate().getTime());
         Date currentReadDate = new Date();
 
-        msgData.put("startDate", moveOutDate);
+        msgData.put("startDate", moveOutResult.getMoveOutDate());
         msgData.put("stopDate", currentReadDate);
     }
 
