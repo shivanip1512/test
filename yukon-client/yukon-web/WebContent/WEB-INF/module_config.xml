@@ -76,7 +76,7 @@
       </links>
     </option>
 
-    <!-- Client Launcher 
+    <!-- Client Launcher -->
     <option id="clientLauncher">
       <requireRoleProperty value="WebClientRole.JAVA_WEB_START_LAUNCHER_ENABLED" />
    
@@ -108,7 +108,7 @@
         
       </links>
     </option>
--->
+
     <!-- Load Response -->
     <option id="loadResponse">
       <requireRoleProperty value="loadcontrol.DirectLoadcontrolRole.ROLEID"/>
