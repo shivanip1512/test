@@ -1192,6 +1192,28 @@ public static Date roundToMinute(Date toRound) {
     }
     
     /**
+     * Using a <String, String> Map, build a name1=value1&name2=value2 style URL query string.
+     * Does NOT encode parameters, assumes parameters will be appropriately encoded already by caller.
+     * 
+     * @param propertiesMap
+     * @param htmlOutput
+     * @return
+     */
+    public static String buildQueryStringFromMap(Map<String,String> encodedParameters) {
+        
+        List<String> parameterPairs = new ArrayList<String>(encodedParameters.size()); 
+        for (Map.Entry<String, String> entry : encodedParameters.entrySet()) {
+            String thisPair = entry.getKey() + "=" + entry.getValue();
+            parameterPairs.add(thisPair);
+        }
+
+        String queryString = StringUtils.join(parameterPairs, "&");
+        queryString = StringEscapeUtils.escapeHtml(queryString);
+        
+        return queryString;
+    }
+    
+    /**
      * Using a <String, String> Map, build a name1=value1&name2=value2 style URL query string
      * using safe URL encoding.
      * 

@@ -2,9 +2,7 @@ package com.cannontech.web.i18n;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -61,14 +59,7 @@ public class LinkTag extends HtmlTagBase implements ParamParent {
         }
         
         // build query string
-        List<String> parameterPairs = new ArrayList<String>(encodedParameters.size()); 
-        for (Map.Entry<String, String> entry : encodedParameters.entrySet()) {
-            String thisPair = entry.getKey() + "=" + entry.getValue();
-            parameterPairs.add(thisPair);
-        }
-
-        String queryString = StringUtils.join(parameterPairs, "&");
-        queryString = StringEscapeUtils.escapeHtml(queryString);
+        String queryString = ServletUtil.buildQueryStringFromMap(encodedParameters);
         
         JspWriter out = getJspContext().getOut();
         out.write("<a href=\"");
