@@ -51,7 +51,12 @@ void readers_writer_lock_t::acquireWrite()
 
     if( !recursive )
     {
-        assert(!upgrade && "Read-to-write upgrades not allowed!");
+        if( upgrade )
+        {
+            //  upgrades not currently allowed
+            autopsy(__FILE__, __LINE__);
+            throw;
+        }
 
         /*if( upgrade )
         {
@@ -109,7 +114,12 @@ bool readers_writer_lock_t::acquireWrite(unsigned long milliseconds)
 
     if( !recursive )
     {
-        assert(!upgrade && "Read-to-write upgrades not allowed!");
+        if( upgrade )
+        {
+            //  upgrades not currently allowed
+            autopsy(__FILE__, __LINE__);
+            throw;
+        }
 
         /*if( upgrade )
         {
@@ -186,7 +196,12 @@ bool readers_writer_lock_t::tryAcquireWrite()
 
         if( !recursive )
         {
-            assert(!upgrade && "Read-to-write upgrades not allowed!");
+            if( upgrade )
+            {
+                //  upgrades not currently allowed
+                autopsy(__FILE__, __LINE__);
+                throw;
+            }
 
             /*if( upgrade )
             {
@@ -274,7 +289,12 @@ void readers_writer_lock_t::clear_tid()
     {
         id_coll_t::iterator itr = std::find(_reader_ids.begin(), _reader_ids.end(), GetCurrentThreadId());
 
-        assert(itr != _reader_ids.end() && "clear_tid() called once too many times!");
+        if( itr == _reader_ids.end() )
+        {
+            //  clear_tid() called one too many times
+            autopsy(__FILE__, __LINE__);
+            throw;
+        }
 
         *itr = 0;
     }
