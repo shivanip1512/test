@@ -2,6 +2,8 @@ package com.cannontech.importer.point;
 
 import java.io.IOException;
 
+import com.cannontech.clientutils.CTILogger;
+
 /**
  * Insert the type's description here.
  * Creation date: (11/19/2003 2:42:51 PM)
@@ -605,6 +607,9 @@ private void initialize() {
  */
 public static void main(java.lang.String[] args) {
 	try {
+	    String appName = "PointImportUtilityTool";
+        System.setProperty("cti.app.name", appName);
+        CTILogger.info(appName + " starting...");
 		PointImportUtilityPanel aPointImportUtilityPanel;
 		aPointImportUtilityPanel = new PointImportUtilityPanel();
 	} catch (Throwable exception) {
