@@ -86,7 +86,9 @@
                                         <td colspan="4" style="padding-bottom: .5em; font-size: .75em;">
                                             <cti:msg var="runProgramText" key="yukon.dr.consumer.thermostat.runProgram" />
                                             <cti:msg var="manualSettingsText" key="yukon.dr.consumer.thermostat.manualSettings" />
-                                            <cti:formatDate value="${event.date}" type="BOTH" /> - ${(runProgram)? runProgramText : manualSettingsText}
+                                            <c:if test="${not empty event.date}">
+                                                <cti:formatDate value="${event.date}" type="BOTH" /> - ${(runProgram)? runProgramText : manualSettingsText}
+                                            </c:if>
                                         </td>
                                     </tr>
                                     <tr> 
