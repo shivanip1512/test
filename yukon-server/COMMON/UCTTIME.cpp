@@ -200,66 +200,6 @@ int IM_EX_CTIBASE getUCTMemoryFlags (void)
 }
 
 
-/* Routine to set the local time by being passed the UCT time */
-IM_EX_CTIBASE INT UCTSetFTime (struct timeb *TimeBuffer)
-{
-    DATETIME Date;
-    int rc;
-    FILE *fptr;
-    struct tm *Temp = NULL;
-
-    /* Need to set memory for dst flag */
-    if(Flags == NULL)
-    {
-        if((rc = setUCTMemoryFlags(TimeBuffer)) != NORMAL)
-        {
-            /* we got some kind of an error */
-            return(rc);
-        }
-    }
-    else if(((!(Flags->MyDSTFlag) && TimeBuffer->dstflag) || Flags->MyDSTFlag && !(TimeBuffer->dstflag)))
-    {
-        /* Write file if not present or old data is incorrect */
-        Flags->MyDSTFlag = TimeBuffer->dstflag;
-        if((fptr = fopen (DST_FILE_NAME, "w+")) != NULL)
-        {
-            fprintf (fptr,"%ld", TimeBuffer->dstflag);
-            fclose (fptr);
-        }
-    }
-
-
-    /* Save the milliseconds offset */
-    Date.hundredths = TimeBuffer->millitm / 10;
-
-    /* Use the second that we are into */
-    TimeBuffer->millitm = 0;
-
-    /* see how we fair with the system */
-    if(TimeBuffer->dstflag && !(Flags->MyDSTFlag))
-    {
-        TimeBuffer->time += Flags->DSTFixOffset;
-    }
-    else if(!(TimeBuffer->dstflag) && Flags->MyDSTFlag)
-    {
-        TimeBuffer->time -= Flags->DSTFixOffset;
-    }
-
-    Temp = CtiTime::localtime_r (&TimeBuffer->time);
-    CTIGetDateTime(&Date);
-    Date.year     = Temp->tm_year + 1900;
-    Date.month    = Temp->tm_mon + 1;
-    Date.day      = Temp->tm_mday;
-    Date.hours    = Temp->tm_hour;
-    Date.minutes  = Temp->tm_min;
-    Date.seconds  = Temp->tm_sec;
-    Date.timezone = _timezone / 60;
-    CTISetDateTime (&Date);
-
-    return(NORMAL);
-}
-
-
 /* Routine to calculate the current UCT time */
 /* get our unix style time and dst flag */
 IM_EX_CTIBASE INT UCTFTime (struct timeb *TimeBuffer)

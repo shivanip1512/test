@@ -207,8 +207,6 @@ APIRET   IM_EX_CTIBASE CTIRead               (HANDLE &hFile, PVOID pBuf, ULONG B
 APIRET   IM_EX_CTIBASE CTIWrite              (HANDLE &hFile, PVOID pBuf, ULONG BufLen, PULONG pBytesWritten);
 APIRET   IM_EX_CTIBASE CTISetFilePtr         (HANDLE &hFile, LONG lDistance, ULONG ulMode, PULONG pNewPtr);
 
-APIRET   IM_EX_CTIBASE CTIGetDateTime        (PDATETIME dt);
-APIRET   IM_EX_CTIBASE CTISetDateTime        (PDATETIME dt);
 APIRET   IM_EX_CTIBASE CTISetMaxFH           (ULONG ulFH);
 
 APIRET   IM_EX_CTIBASE CTISetPriority        (ULONG ulPriClass, int tPri);

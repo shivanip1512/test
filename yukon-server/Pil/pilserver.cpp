@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.115 $
-* DATE         :  $Date: 2008/10/02 18:27:29 $
+* REVISION     :  $Revision: 1.116 $
+* DATE         :  $Date: 2008/10/07 15:03:46 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -499,20 +499,20 @@ void CtiPILServer::connectionThread()
 
 struct get_target_device
 {
-    back_insert_iterator<vector<long> > itr;
+    set<long> &c;
 
-    get_target_device(back_insert_iterator<vector<long> > itr_) :
-        itr(itr_)
+    get_target_device(set<long> &c_) :
+        c(c_)
     {
-    }
+    };
 
     operator()(INMESS *im)
     {
         if( im )
         {
-            *itr++ = im->TargetID?im->TargetID:im->DeviceID;
+            c.insert(im->TargetID?im->TargetID:im->DeviceID);
         }
-    }
+    };
 };
 
 void CtiPILServer::resultThread()
@@ -554,11 +554,11 @@ void CtiPILServer::resultThread()
         const unsigned int inQueueBlockSize =  50;
         const unsigned int inQueueMaxWait   = 500;  //  500 ms
 
-        CtiHighPerfTimer millis("InQueue duration");
+        unsigned long start, now;
 
         try
         {
-            millis.reset();
+            start = GetTickCount();
             unsigned int timeWaited = 0;
 
             while( pendingInQueue.size() < inQueueBlockSize && timeWaited < inQueueMaxWait )
@@ -572,17 +572,19 @@ void CtiPILServer::resultThread()
                 {
                     pendingInQueue.push_back(_inQueue.getQueue(inQueueMaxWait - timeWaited));
 
-                    timeWaited = millis.delta();
+                    now = GetTickCount();
+
+                    timeWaited = (now > start)?(now - start):(numeric_limits<unsigned long>::max() - start + now);
                 }
             }
 
             if( !pendingInQueue.empty() )
             {
-                vector<long> paoids;
+                set<long> paoids;
 
                 for_each(pendingInQueue.begin(),
                          pendingInQueue.end(),
-                         get_target_device(back_inserter(paoids)));
+                         get_target_device(paoids));
 
                 PointManager->refreshListByPAOIDs(paoids);
             }

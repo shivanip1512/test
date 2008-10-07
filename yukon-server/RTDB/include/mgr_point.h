@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_point.h-arc  $
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2008/10/02 18:27:29 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2008/10/07 15:03:46 $
 *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
  * All Rights Reserved
@@ -95,7 +95,7 @@ private:
     bool _all_paoids_loaded;
     std::set<long> _paoids_loaded;
 
-    virtual void refreshListByIDs(const std::vector<long> &ids, bool paoids);
+    virtual void refreshListByIDs(const std::set<long> &ids, bool paoids);
 
     friend class Test_CtiPointManager;
 
@@ -111,8 +111,8 @@ public:
     virtual ~CtiPointManager();
 
     virtual void refreshList(LONG pntID = 0, LONG paoID = 0, CtiPointType_t pntType = InvalidPointType);
-    virtual void refreshListByPAOIDs  (const std::vector<long> &ids);
-    virtual void refreshListByPointIDs(const std::vector<long> &ids);
+    virtual void refreshListByPAOIDs  (const std::set<long> &ids);
+    virtual void refreshListByPointIDs(const std::set<long> &ids);
 
     void processExpired();
 

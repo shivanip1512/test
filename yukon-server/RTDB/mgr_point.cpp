@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.55 $
-* DATE         :  $Date: 2008/10/02 18:27:29 $
+* REVISION     :  $Revision: 1.56 $
+* DATE         :  $Date: 2008/10/07 15:03:46 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -362,18 +362,21 @@ void CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType_t pntType
     }
 }
 
-void CtiPointManager::refreshListByPAOIDs(const vector<long> &id_list)
+void CtiPointManager::refreshListByPAOIDs(const set<long> &id_list)
 {
     refreshListByIDs(id_list, true);
 }
 
-void CtiPointManager::refreshListByPointIDs(const vector<long> &id_list)
+void CtiPointManager::refreshListByPointIDs(const set<long> &id_list)
 {
     refreshListByIDs(id_list, false);
 }
 
-void CtiPointManager::refreshListByIDs(const vector<long> &id_list, bool paoids)
+void CtiPointManager::refreshListByIDs(const set<long> &id_list, bool paoids)
 {
+    //  first thing we do before we grab any other locks
+    coll_type::writer_lock_guard_t guard(_smartMap.getLock());
+
     // Make sure all objects that that store results
     // are out of scope when the release is called
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
@@ -416,31 +419,42 @@ void CtiPointManager::refreshListByIDs(const vector<long> &id_list, bool paoids)
 
     int ids_per_select = min(static_cast<int>(id_list.size()), gConfigParms.getValueAsInt("MAX_IDS_PER_POINT_SELECT", 256));
 
-    vector<long> selector_paoids(ids_per_select, -1);  //  initialize to a list of -1s
-    vector<long>::iterator selector_id_itr;
-
     RWDBCriterion id_list_criterion_accum,
                   id_list_criterion_analog,
                   id_list_criterion_calc,
                   id_list_criterion_status,
                   id_list_criterion_system;
 
-    bool rowFound = false;
+    set<long> ids_to_load;
 
-    vector<long>::const_iterator id_itr, id_itr_end;
+    if( paoids )
+    {
+        set_difference(id_list.begin(),
+                       id_list.end(),
+                       _paoids_loaded.begin(),
+                       _paoids_loaded.end(),
+                       ids_to_load.begin());
+    }
+    else
+    {
+        //  we will need to get smarter about what points are and aren't loaded
+        copy(id_list.begin(),
+             id_list.end(),
+             inserter(ids_to_load, ids_to_load.begin()));
+    }
 
-    id_itr     = id_list.begin();
-    id_itr_end = id_list.end();
+    set<long>::const_iterator id_itr = ids_to_load.begin(),
+                              id_end = ids_to_load.end();
 
     const RWCString key_column(paoids?"paobjectid":"pointid");
 
-    while( distance(id_itr, id_itr_end) > 0 )
+    while( id_itr != id_end )
     {
         string in_list;
 
         in_list.erase();
 
-        for( int i = 0; (i < ids_per_select) && (id_itr != id_itr_end); i++, id_itr++ )
+        for( int i = 0; (i < ids_per_select) && (id_itr != id_end); i++, id_itr++ )
         {
             if( !in_list.empty() )
             {
@@ -449,7 +463,11 @@ void CtiPointManager::refreshListByIDs(const vector<long> &id_list, bool paoids)
 
             in_list += CtiNumStr(*id_itr);
 
-            _paoids_loaded.insert(*id_itr);
+            if( paoids )
+            {
+                //  this is presumptive - we could run into trouble here with a select that went wrong
+                _paoids_loaded.insert(*id_itr);
+            }
         }
 
         in_list = "(" + in_list + ")";
@@ -469,6 +487,8 @@ void CtiPointManager::refreshListByIDs(const vector<long> &id_list, bool paoids)
             dout << selector_status.asString() << endl;
             dout << selector_system.asString() << endl;
         }
+
+        bool rowFound;  //  placeholder
 
         refreshPoints(rowFound, selector_accum .reader(conn));
         refreshPoints(rowFound, selector_analog.reader(conn));
