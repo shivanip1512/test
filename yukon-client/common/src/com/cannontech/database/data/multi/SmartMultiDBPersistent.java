@@ -1,14 +1,12 @@
 package com.cannontech.database.data.multi;
 
-/**
- * This type was created in VisualAge.
- */
 import com.cannontech.database.db.DBPersistent;
 
 public class SmartMultiDBPersistent extends CommonMulti implements com.cannontech.database.db.CTIDbChange
 {
 	//this is the object that is considered to be the owner of all the Objects
 	private DBPersistent ownerDBPersistent = null;
+
 /**
  * DeviceBase constructor comment.
  */
@@ -30,7 +28,7 @@ public synchronized boolean addDBPersistent( DBPersistent value )
 }
 
 /**
- * A convience methodly to add and set the Owner DBPersistent
+ * A convenience method to add and set the Owner DBPersistent
  */
 public synchronized boolean addOwnerDBPersistent( DBPersistent value )
 {
@@ -41,8 +39,6 @@ public synchronized boolean addOwnerDBPersistent( DBPersistent value )
 }
 
 /**
- * Insert the method's description here.
- * Creation date: (4/4/2002 4:30:34 PM)
  * @return boolean
  * @param obj java.lang.Object
  */
@@ -56,60 +52,42 @@ private int findReference(Object obj)
 
 	return -1;
 }
+
 /**
- * Insert the method's description here.
- * Creation date: (10/25/2001 4:18:09 PM)
  * @return DBPersistent
  */
 public DBPersistent getDBPersistent( int index )
 {
-	return (DBPersistent)getDBPersistentVector().get(index);
+	return getDBPersistentVector().get(index);
 }
+
 /**
- * Insert the method's description here.
- * Creation date: (12/27/2001 1:07:21 PM)
  * @return com.cannontech.database.db.DBPersistent
  */
 public com.cannontech.database.db.DBPersistent getOwnerDBPersistent() {
 	return ownerDBPersistent;
 }
-/**
- * Insert the method's description here.
- * Creation date: (10/25/2001 4:18:09 PM)
- * @return boolean
- */
+
 public synchronized void insertDBPersistentAt( DBPersistent value, int loc )
 {
 	getDBPersistentVector().insertElementAt( value, loc );
 }
+
 /**
  * retrieve method comment.
  */
 public void retrieve() throws java.sql.SQLException 
 {
-	for(int i = 0; i < getDBPersistentVector().size(); i++)
-		((DBPersistent)getDBPersistentVector().elementAt(i)).retrieve();
+	for(int i = 0; i < getDBPersistentVector().size(); i++) {
+        getDBPersistentVector().elementAt(i).retrieve();
+    }
 	
 }
 
 /**
- * update method comment.
- */
-public void update() throws java.sql.SQLException 
-{
-	for(int i = 0; i < getDBPersistentVector().size(); i++)
-	{			
-		((DBPersistent)getDBPersistentVector().elementAt(i)).update();
-	}
-}
-
-/**
- * Insert the method's description here.
- * Creation date: (12/27/2001 1:07:21 PM)
+ * This method sets the current ownerDBPersistent to the one given.
+ * It then places that owner in the zeroth position of our Vector.
  * @param newOwnerDBPersistent com.cannontech.database.db.DBPersistent
- 
-   This method set the current ownerDBPersistent to the one given.
-   It then places that owner in the zeroth position of our Vector.
  */
 public synchronized void setOwnerDBPersistent(com.cannontech.database.db.DBPersistent newOwnerDBPersistent) 
 {
@@ -129,9 +107,8 @@ public synchronized void setOwnerDBPersistent(com.cannontech.database.db.DBPersi
 	else
 		throw new IllegalArgumentException("New SmartMutliDBPersistent owner reference was not found in the DBPersistent Vector()");
 }
+
 /**
- * Insert the method's description here.
- * Creation date: (10/25/2001 4:18:09 PM)
  * @return int 
  */
 
@@ -139,8 +116,8 @@ public int size()
 {
 	return getDBPersistentVector().size();
 }
+
 /**
- * This method was created in VisualAge.
  * @return java.lang.String
  */
 public String toString() {

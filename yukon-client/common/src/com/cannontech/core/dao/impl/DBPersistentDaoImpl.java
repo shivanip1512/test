@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
@@ -22,7 +23,6 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
-import com.cannontech.database.data.multi.MultiDBPersistent;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.dbchange.ChangeSequenceDecoder;
@@ -199,14 +199,11 @@ public class DBPersistentDaoImpl implements DBPersistentDao
     }
 
     @Override
+    @Transactional
     public void performDBChangeWithNoMsg(List<DBPersistent> items, int transactionType) {
-        
-        MultiDBPersistent multiDBPersistent = new MultiDBPersistent();
-        
         for (DBPersistent dbPersistentObj : items) {
-            multiDBPersistent.getDBPersistentVector().add(dbPersistentObj);
+            performDBChangeWithNoMsg(dbPersistentObj, transactionType);
         }
-        performDBChangeWithNoMsg(multiDBPersistent, transactionType);
     }
 
 

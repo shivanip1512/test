@@ -177,7 +177,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         int deviceId = device.getPAObjectID();
         
         MultiDBPersistent pointsToAdd = new MultiDBPersistent();
-        Vector<DBPersistent> newPoints = new Vector<DBPersistent>(points.size());
+        Vector<DBPersistent> newPoints = pointsToAdd.getDBPersistentVector();
 
         for (PointBase point : points) {
         
@@ -189,7 +189,6 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         }
         
         // insert
-        pointsToAdd.setDBPersistentVector(newPoints);
         dbPersistentDao.performDBChangeWithNoMsg(pointsToAdd, Transaction.INSERT);
     }
     

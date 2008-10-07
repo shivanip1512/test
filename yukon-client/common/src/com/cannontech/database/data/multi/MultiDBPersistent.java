@@ -1,53 +1,29 @@
 package com.cannontech.database.data.multi;
 
+import java.util.Vector;
+
+import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 
-/**
- * This type was created in VisualAge.
- */
+public class MultiDBPersistent extends CommonMulti implements CTIDbChange {
 
-public class MultiDBPersistent extends CommonMulti implements com.cannontech.database.db.CTIDbChange
-{
-/**
- * DeviceBase constructor comment.
- */
-public MultiDBPersistent() {
-	super();
-}
-/**
- * This method was created in VisualAge.
- */
-public java.util.Vector<DBPersistent> getDBPersistentVector() 
-{
-	return super.getDBPersistentVector();
-}
-/**
- * retrieve method comment.
- */
-public void retrieve() throws java.sql.SQLException {
-	/* retrieve(): Don't do this, MultiDBPersistent's
-		 are used for coping multiple Objects at one time */
-		 
-	com.cannontech.clientutils.CTILogger.info("************************************************");
-	com.cannontech.clientutils.CTILogger.info("retrieve(): Don't do this; MultiDBPersistents");
-	com.cannontech.clientutils.CTILogger.info("are used for copying multiple objects at one time");
-	com.cannontech.clientutils.CTILogger.info("************************************************");
-}
-/**
- * This method was created in VisualAge.
- */
-public void setDBPersistentVector(java.util.Vector<DBPersistent> newValue)
-{
-	super.setDBPersistentVector(newValue);
-}
-
-/**
- * update method comment.
- */
-public void update() throws java.sql.SQLException 
-{
-    for (DBPersistent dbPersistent: getDBPersistentVector()) {
-        dbPersistent.update();
+    /**
+     * DeviceBase constructor comment.
+     */
+    public MultiDBPersistent() {
+        super();
     }
-}
+    
+    // raise visibility to public
+    public Vector<DBPersistent> getDBPersistentVector() {
+        return super.getDBPersistentVector();
+    }
+
+    /**
+     * Supposedly, MultiDBPersistents should not be used for this.
+     */
+    public void retrieve() throws java.sql.SQLException {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
 }
