@@ -15,14 +15,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_tbl_three_three.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/12/20 17:20:01 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2008/10/07 18:16:46 $
 
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
 
 #include "dlldefs.h"
-#include "dsm2.h"
 #include "ctitypes.h"
 #include "types.h"
 #include "std_ansi_tbl_base.h"
@@ -48,7 +47,7 @@ struct DISP_LIST_DESC_RCD
     DISP_SCROLL1_BFLD  dispScroll1;
     DISP_SCROLL2_BFLD  dispScroll2;
     UINT8  nbrListItems;
-    
+
 };
 
 struct PRI_DISP_LIST_RCD
@@ -63,7 +62,7 @@ class IM_EX_PROT CtiAnsiTableThreeThree : public CtiAnsiTableBase
 {
 protected:
 
-  
+
     PRI_DISP_LIST_RCD  _priDispListTable;
 
 
@@ -71,7 +70,7 @@ private:
 
     UINT16 _nbrPriDispListItems;
     UINT8 _nbrPriDispLists;
-    
+
 public:
 
    CtiAnsiTableThreeThree( );
@@ -82,7 +81,7 @@ public:
 
   // UINT8 getDisplaySources(int sourceIndex, int widthIndex);
 
-   
+
 };
 
 #endif // #ifndef __STD_ANSI_TBL_THREE_THREE_H__

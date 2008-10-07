@@ -14,10 +14,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_six_three.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2005/12/20 17:20:01 $
-*    History: 
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2008/10/07 18:16:46 $
+*    History:
       $Log: std_ansi_tbl_six_three.h,v $
+      Revision 1.4  2008/10/07 18:16:46  mfisher
+      YUK-6504 Server-side point management is naive
+      cleaned up a few dsm2.h dependencies
+
       Revision 1.3  2005/12/20 17:20:01  tspar
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
@@ -39,7 +43,6 @@
 
 
 #include "dlldefs.h"
-#include "dsm2.h"
 #include "ctitypes.h"
 #include "types.h"
 #include "std_ansi_tbl_base.h"
@@ -87,7 +90,7 @@ protected:
 
    LP_STATUS_RCD      _lp_status_tbl;
 
-private:  
+private:
 
     bool _lpCtrlDataSetUsed[4];
 
@@ -95,7 +98,7 @@ public:
 
    CtiAnsiTableSixThree( bool *dataSetUsedFlag  );
    CtiAnsiTableSixThree( BYTE *dataBlob, bool *dataSetUsedFlag );
-   
+
    virtual ~CtiAnsiTableSixThree();
 
    CtiAnsiTableSixThree& operator=(const CtiAnsiTableSixThree& aRef);

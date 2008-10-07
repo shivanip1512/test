@@ -15,10 +15,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_five_two.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2005/12/20 17:20:00 $
-*    History: 
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2008/10/07 18:16:45 $
+*    History:
       $Log: std_ansi_tbl_five_one.h,v $
+      Revision 1.4  2008/10/07 18:16:45  mfisher
+      YUK-6504 Server-side point management is naive
+      cleaned up a few dsm2.h dependencies
+
       Revision 1.3  2005/12/20 17:20:00  tspar
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
@@ -40,7 +44,6 @@
 
 
 #include "dlldefs.h"
-#include "dsm2.h"
 #include "ctitypes.h"
 #include "types.h"
 #include "std_ansi_tbl_base.h"
@@ -79,7 +82,7 @@ struct TIME_TOU_RCD
    TIME_FUNC_FLAG1_BFLD  time_func_flag1;
    TIME_FUNC_FLAG2_BFLD  time_func_flag2;
    CALENDAR_BFLD         calendar_func;
-   
+
    unsigned char         nbr_non_recurr_dates;
    unsigned char         nbr_recurr_dates;
    unsigned short        nbr_tier_switches;
@@ -100,7 +103,7 @@ public:
 
    CtiAnsiTableFiveOne(  );
    CtiAnsiTableFiveOne( BYTE *dataBlob );
-   
+
    virtual ~CtiAnsiTableFiveOne();
 
    CtiAnsiTableFiveOne& operator=(const CtiAnsiTableFiveOne& aRef);

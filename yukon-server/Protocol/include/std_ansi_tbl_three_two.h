@@ -14,14 +14,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_tbl_three_two.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/12/20 17:20:01 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2008/10/07 18:16:46 $
 
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
 
 #include "dlldefs.h"
-#include "dsm2.h"
 #include "ctitypes.h"
 #include "types.h"
 #include "std_ansi_tbl_base.h"
@@ -55,7 +54,7 @@ private:
 
     UINT16 _nbrDispSources;
     UINT8 _widthDispSources;
-    
+
 public:
 
    CtiAnsiTableThreeTwo( );
@@ -66,7 +65,7 @@ public:
 
    UINT8 getDisplaySources(int sourceIndex, int widthIndex);
 
-   
+
 };
 
 #endif // #ifndef __STD_ANSI_TBL_TWO_EIGHT_H__

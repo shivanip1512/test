@@ -9,10 +9,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/ansi_kv2_mtable_seventy.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/12/20 17:19:53 $
-*    History: 
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2008/10/07 18:16:45 $
+*    History:
       $Log: ansi_kv2_mtable_seventy.cpp,v $
+      Revision 1.5  2008/10/07 18:16:45  mfisher
+      YUK-6504 Server-side point management is naive
+      cleaned up a few dsm2.h dependencies
+
       Revision 1.4  2005/12/20 17:19:53  tspar
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
@@ -30,7 +34,7 @@
 
 *----------------------------------------------------------------------------------*/
 #include "yukon.h"
-
+#include "dsm2.h"
 #include "logger.h"
 #include "ansi_kv2_mtable_seventy.h"
 
@@ -101,7 +105,7 @@ void CtiAnsiKV2ManufacturerTableSeventy::decodeResultPiece( BYTE **dataBlob )
 //=========================================================================================================================================
 void CtiAnsiKV2ManufacturerTableSeventy::printResult(  )
 {
- 
+
     /**************************************************************
     * its been discovered that if a method goes wrong while having the logger locked
     * unpleasant consquences may happen (application lockup for instance)  Because
@@ -149,7 +153,7 @@ int CtiAnsiKV2ManufacturerTableSeventy::getRawDateFormat( void )
 string CtiAnsiKV2ManufacturerTableSeventy::getResolvedDateFormat( void )
 {
     string ret;
-    switch (getRawDateFormat()) 
+    switch (getRawDateFormat())
     {
         case 0:
             {
@@ -170,9 +174,9 @@ string CtiAnsiKV2ManufacturerTableSeventy::getResolvedDateFormat( void )
             {
                 ret = string ("Invalid _dateFormat Value");
                 break;
-            }        
+            }
     }
-        
+
    return ret;
 }
 
@@ -195,7 +199,7 @@ int CtiAnsiKV2ManufacturerTableSeventy::getRawDisplayScalar( void )
 string CtiAnsiKV2ManufacturerTableSeventy::getResolvedDisplayScalar( void )
 {
     string ret;
-    switch (getRawDisplayScalar()) 
+    switch (getRawDisplayScalar())
     {
         case 0:
             {
@@ -221,9 +225,9 @@ string CtiAnsiKV2ManufacturerTableSeventy::getResolvedDisplayScalar( void )
             {
                 ret = string ("Invalid _displayScalar Value");
                 break;
-            }        
+            }
     }
-        
+
    return ret;
 }
 //=========================================================================================================================================
@@ -237,7 +241,7 @@ int CtiAnsiKV2ManufacturerTableSeventy::getRawDemandDispUnits( void )
 string CtiAnsiKV2ManufacturerTableSeventy::getResolvedDemandDispUnits( void )
 {
     string ret;
-    switch (getRawDemandDispUnits()) 
+    switch (getRawDemandDispUnits())
     {
         case 0:
             {
@@ -253,9 +257,9 @@ string CtiAnsiKV2ManufacturerTableSeventy::getResolvedDemandDispUnits( void )
             {
                 ret = string ("Invalid _demandDispUnits Value");
                 break;
-            }        
+            }
     }
-        
+
    return ret;
 }
 
@@ -282,29 +286,29 @@ int CtiAnsiKV2ManufacturerTableSeventy::getNbrLeftDigits( Digits_Bfld_t bitfield
    return ((int)bitfield._numberLeftDigits);
 }
 void CtiAnsiKV2ManufacturerTableSeventy::displayDigitPlaces( Digits_Bfld_t bitfield )
-{  
+{
     int x;
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << " ("; 
+        dout << " (";
     }
-    for ( x = 0; x < (int)bitfield._numberLeftDigits; x++) 
+    for ( x = 0; x < (int)bitfield._numberLeftDigits; x++)
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "x"; 
-    }
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "."; 
-    }
-    for ( x = 0; x < (int)bitfield._numberRightDigits; x++) 
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "x"; 
+        dout << "x";
     }
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout <<" )"<< endl; 
+        dout << ".";
+    }
+    for ( x = 0; x < (int)bitfield._numberRightDigits; x++)
+    {
+        CtiLockGuard< CtiLogger > doubt_guard( dout );
+        dout << "x";
+    }
+    {
+        CtiLockGuard< CtiLogger > doubt_guard( dout );
+        dout <<" )"<< endl;
     }
 }
 

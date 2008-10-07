@@ -14,10 +14,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_tbl_two_three.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/12/20 17:20:01 $
-*    History: 
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2008/10/07 18:16:46 $
+*    History:
       $Log: std_ansi_tbl_two_three.h,v $
+      Revision 1.9  2008/10/07 18:16:46  mfisher
+      YUK-6504 Server-side point management is naive
+      cleaned up a few dsm2.h dependencies
+
       Revision 1.8  2005/12/20 17:20:01  tspar
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
@@ -43,7 +47,6 @@
 *----------------------------------------------------------------------------------*/
 
 #include "dlldefs.h"
-#include "dsm2.h"
 #include "ctitypes.h"
 #include "types.h"
 #include "std_ansi_tbl_base.h"
@@ -129,7 +132,7 @@ public:
    void printSummations( DATA_BLK_RCD data_block );
    void printDemands( DATA_BLK_RCD data_block );
    void printCoincidents( DATA_BLK_RCD data_block );
-   
+
    void decodeResultPiece( BYTE **dataBlob );
    void generateResultPiece( BYTE **dataBlob );
    void populateSummations( BYTE *dataBlob, DATA_BLK_RCD *data_block, int &offset );

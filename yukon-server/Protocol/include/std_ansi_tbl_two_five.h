@@ -15,10 +15,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_tbl_two_five.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/12/20 17:20:01 $
-*    History: 
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2008/10/07 18:16:46 $
+*    History:
       $Log: std_ansi_tbl_two_five.h,v $
+      Revision 1.5  2008/10/07 18:16:46  mfisher
+      YUK-6504 Server-side point management is naive
+      cleaned up a few dsm2.h dependencies
+
       Revision 1.4  2005/12/20 17:20:01  tspar
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
@@ -34,12 +38,11 @@
       Revision 1.1.2.1  2005/08/01 17:08:07  jrichter
       added frozen register retreival functionality.  cleanup.
 
-      
+
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
 
 #include "dlldefs.h"
-#include "dsm2.h"
 #include "ctitypes.h"
 #include "types.h"
 #include "std_ansi_tbl_base.h"
@@ -83,7 +86,7 @@ public:
    unsigned char getSeason();
 
    void printResult( const string& deviceName );
-   
+
 
 
 };

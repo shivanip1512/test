@@ -9,10 +9,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/ansi_kv2_mtable_zero.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2005/02/10 23:23:56 $
-*    History: 
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2008/10/07 18:16:45 $
+*    History:
       $Log: ansi_kv2_mtable_zero.cpp,v $
+      Revision 1.4  2008/10/07 18:16:45  mfisher
+      YUK-6504 Server-side point management is naive
+      cleaned up a few dsm2.h dependencies
+
       Revision 1.3  2005/02/10 23:23:56  alauinger
       Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 
@@ -25,7 +29,7 @@
 
 *----------------------------------------------------------------------------------*/
 #include "yukon.h"
-
+#include "dsm2.h"
 #include "ansi_kv2_mtable_zero.h"
 #include "logger.h"
 
@@ -51,7 +55,7 @@ CtiAnsiKV2ManufacturerTableZero::CtiAnsiKV2ManufacturerTableZero( BYTE *dataBlob
     _mfgTestVector[1]       =   *ptr++;
     _mfgTestVector[2]       =   *ptr++;
     _mfgTestVector[3]       =   *ptr++;
-                                     
+
     _meterType              =   *ptr++;
     _meterMode              =   *ptr++;
     _registerFunction       =   *ptr++;
@@ -179,7 +183,7 @@ CtiAnsiKV2ManufacturerTableZero::RegisterFunction_e CtiAnsiKV2ManufacturerTableZ
 }
 void CtiAnsiKV2ManufacturerTableZero::printResult(  )
 {
- 
+
     /**************************************************************
     * its been discovered that if a method goes wrong while having the logger locked
     * unpleasant consquences may happen (application lockup for instance)  Because

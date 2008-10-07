@@ -13,14 +13,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_tbl_two_eight.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/12/20 17:20:01 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2008/10/07 18:16:46 $
 
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
 
 #include "dlldefs.h"
-#include "dsm2.h"
 #include "ctitypes.h"
 #include "types.h"
 #include "std_ansi_tbl_base.h"
@@ -78,7 +77,7 @@ public:
    bool  getOffTimeFlag( );
    bool  getHoldTimeFlag( );
 
-   
+
 };
 
 #endif // #ifndef __STD_ANSI_TBL_THREE_ONE_H__

@@ -18,7 +18,6 @@
 *----------------------------------------------------------------------------------*/
 
 #include "dlldefs.h"
-#include "dsm2.h"
 #include "ctitypes.h"
 #include "types.h"
 #include "std_ansi_tbl_base.h"
@@ -34,7 +33,7 @@ struct RSP_DATA_RCD
     union PARMS
     {
       struct PARM0
-      {  
+      {
           //no parms
       }p0;
       struct PARM1
@@ -91,14 +90,14 @@ class IM_EX_PROT CtiAnsiTableZeroEight : public CtiAnsiTableBase
 {
 protected:
 
-   
+
 private:
     struct TBL_IDB_BFLD
     {
        unsigned short   tbl_proc_nbr:11;
        unsigned short   std_vs_mfg_flag:1;
        unsigned short   selector:4;
-    }; 
+    };
 
     struct PROC_RESP_RCD
     {

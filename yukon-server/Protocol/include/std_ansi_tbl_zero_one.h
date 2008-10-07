@@ -14,10 +14,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_zero_one.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/12/20 17:20:01 $
-*    History: 
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2008/10/07 18:16:46 $
+*    History:
       $Log: std_ansi_tbl_zero_one.h,v $
+      Revision 1.7  2008/10/07 18:16:46  mfisher
+      YUK-6504 Server-side point management is naive
+      cleaned up a few dsm2.h dependencies
+
       Revision 1.6  2005/12/20 17:20:01  tspar
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
@@ -48,7 +52,6 @@
 *----------------------------------------------------------------------------------*/
 
 #include "dlldefs.h"
-#include "dsm2.h"
 #include "ctitypes.h"
 #include "types.h"
 #include "std_ansi_tbl_base.h"

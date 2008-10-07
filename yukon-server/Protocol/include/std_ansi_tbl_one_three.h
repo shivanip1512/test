@@ -14,10 +14,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_one_three.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/12/20 17:20:00 $
-*    History: 
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2008/10/07 18:16:45 $
+*    History:
       $Log: std_ansi_tbl_one_three.h,v $
+      Revision 1.8  2008/10/07 18:16:45  mfisher
+      YUK-6504 Server-side point management is naive
+      cleaned up a few dsm2.h dependencies
+
       Revision 1.7  2005/12/20 17:20:00  tspar
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
@@ -41,7 +45,6 @@
 *----------------------------------------------------------------------------------*/
 
 #include "dlldefs.h"
-#include "dsm2.h"
 #include "ctitypes.h"
 #include "types.h"
 #include "std_ansi_tbl_base.h"
@@ -86,7 +89,7 @@ public:
    virtual ~CtiAnsiTableOneThree();
    CtiAnsiTableOneThree& operator=(const CtiAnsiTableOneThree& aRef);
    void printResult( const string& deviceName );
-   
+
    void decodeResultPiece( BYTE **dataBlob );
    void generateResultPiece( BYTE **dataBlob );
 
@@ -107,7 +110,7 @@ private:
 
     int                  _numberDemandCtrlEntries;
     bool                 _pfExcludeFlag;
-    bool                 _slidingDemandFlag; 
+    bool                 _slidingDemandFlag;
     bool                 _resetExcludeFlag;
 
     DEMAND_CONTROL_RCD   _demand_control_record;

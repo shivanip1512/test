@@ -15,10 +15,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_six_four.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2006/05/03 17:19:33 $
-*    History: 
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2008/10/07 18:16:46 $
+*    History:
       $Log: std_ansi_tbl_six_four.h,v $
+      Revision 1.7  2008/10/07 18:16:46  mfisher
+      YUK-6504 Server-side point management is naive
+      cleaned up a few dsm2.h dependencies
+
       Revision 1.6  2006/05/03 17:19:33  jrichter
       BUG FIX:  correct DST adjustment for columbia flags.  added check for _nbrFullBlocks > 0 so it wouldn't set lastLPTime to 2036
 
@@ -49,7 +53,6 @@
 
 
 #include "dlldefs.h"
-#include "dsm2.h"
 #include "ctitypes.h"
 #include "types.h"
 #include "std_ansi_tbl_base.h"
@@ -115,7 +118,7 @@ struct CLOSURE_STATUS_BFLD
     unsigned char status:4;
     unsigned short nbr_valid_interval:12;
 };
-struct READINGS_RCD 
+struct READINGS_RCD
 {
     double block_end_read;
     UINT32 block_end_pulse;
@@ -163,19 +166,19 @@ private:
 
 public:
 
-   CtiAnsiTableSixFour( int numberBlocksSet, int numberChansSet, 
+   CtiAnsiTableSixFour( int numberBlocksSet, int numberChansSet,
                         bool closureStatusFlag, bool simpleIntervalStatusFlag,
                         int numberBlockIntervalsSet, bool blockEndReadFlag,
-                        bool blockEndPulseFlag, bool extendedIntervalStatusFlag, int maxIntvlTime, 
-                        int intervalFmtCde, int nbrValidInts, int niFmt1, int niFmt2, 
+                        bool blockEndPulseFlag, bool extendedIntervalStatusFlag, int maxIntvlTime,
+                        int intervalFmtCde, int nbrValidInts, int niFmt1, int niFmt2,
                         int timeFmt, int meterHour  );
-   CtiAnsiTableSixFour( BYTE *dataBlob, int numberBlocksSet, int numberChansSet, 
+   CtiAnsiTableSixFour( BYTE *dataBlob, int numberBlocksSet, int numberChansSet,
                         bool closureStatusFlag, bool simpleIntervalStatusFlag,
                         int numberBlockIntervalsSet, bool blockEndReadFlag,
-                        bool blockEndPulseFlag, bool extendedIntervalStatusFlag, int maxIntvlTime, 
-                        int intervalFmtCde, int nbrValidInts, int niFmt1, int niFmt2, 
+                        bool blockEndPulseFlag, bool extendedIntervalStatusFlag, int maxIntvlTime,
+                        int intervalFmtCde, int nbrValidInts, int niFmt1, int niFmt2,
                         int timeFmt, int meterHour );
-   
+
    virtual ~CtiAnsiTableSixFour();
 
    CtiAnsiTableSixFour& operator=(const CtiAnsiTableSixFour& aRef);
@@ -184,7 +187,7 @@ public:
    void decodeResultPiece( BYTE **dataBlob );
    int populateIntData(INT_FMT1_RCD *intData, BYTE *dataBlob);
    void printIntervalFmtRecord(INT_FMT1_RCD intData);
-   
+
    bool getBlkIntvlTime(int blkSet, int blkIntvl, ULONG &blkIntvlTime);
    bool getBlkEndTime(int blkSet, ULONG &blkEndTime);
 

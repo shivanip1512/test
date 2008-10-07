@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/trx_info.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2007/04/24 18:04:36 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2008/10/07 18:17:35 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,7 +21,6 @@
 #include <windows.h>
 
 #include "logger.h"
-#include "dsm2.h"
 #include "queues.h"
 #include "mutex.h"
 #include "porter.h"
@@ -112,7 +111,7 @@ public:
 
         if( mask == INRCOLQ )   _inrcolq_expiration = CtiTime::now().seconds() + INRCOLQ_Timeout;
         if( mask == INLGRPQ )
-        {   
+        {
             _inlgrpq_expiration = CtiTime::now().seconds() + INLGRPQ_Timeout;
             _inlgrpq_warning    = CtiTime::now().seconds() + INLGRPQ_Warning;
         }
