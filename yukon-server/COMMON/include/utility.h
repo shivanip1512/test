@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/utility.h-arc  $
-* REVISION     :  $Revision: 1.51 $
-* DATE         :  $Date: 2008/09/15 21:14:45 $
+* REVISION     :  $Revision: 1.52 $
+* DATE         :  $Date: 2008/10/07 18:19:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -227,6 +227,8 @@ IM_EX_CTIBASE void testSA305CRC(char* testData);
 IM_EX_CTIBASE LONG GetPAOIdOfEnergyPro(long devicesn);
 
 IM_EX_CTIBASE vector<int> getPointIdsOnPao(long paoid);
+
+IM_EX_CTIBASE long getPaoIdForPoint(long pointid);
 
 //String Functions
 inline void CtiToLower( std::string& str)

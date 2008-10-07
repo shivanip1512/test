@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/DSM2.H-arc  $
-* REVISION     :  $Revision: 1.45 $
-* DATE         :  $Date: 2008/10/07 15:03:46 $
+* REVISION     :  $Revision: 1.46 $
+* DATE         :  $Date: 2008/10/07 18:19:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -987,6 +987,16 @@ public:
        return Priority < rhs.Priority;
     }
 };
+
+struct collect_inmess_target_device
+{
+    std::set<long> &c;
+
+    collect_inmess_target_device(std::set<long> &c_) : c(c_)  { };
+
+    operator()(INMESS *im)  {  if( im ) c.insert(im->TargetID?im->TargetID:im->DeviceID);  };
+};
+
 
 #define PEXEC_DEVID        -1;
 #define PORTERSU_DEVID     -2;

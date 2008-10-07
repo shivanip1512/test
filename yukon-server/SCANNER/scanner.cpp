@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.76 $
-* DATE         :  $Date: 2008/10/02 18:27:30 $
+* REVISION     :  $Revision: 1.77 $
+* DATE         :  $Date: 2008/10/07 18:19:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -686,50 +686,11 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
 /* The following thread handles results coming back from field devices */
 VOID ResultThread (VOID *Arg)
 {
-    DWORD       dwWait;
-    /* Define the return Pipe handle */
-    IM_EX_CTIBASE extern CTINEXUS PorterNexus;
-
-    /* Misc. definitions */
-    ULONG       i;
-    FLOAT       PValue;
-    USHORT      DoAccums;
-
-    CtiMessage  *pResponseMsg = NULL;
-    /* Define the various records */
-    CtiDeviceSPtr pBase;
-    CtiDeviceSingle   *DeviceRecord;
-
-    /* Define the various time variable */
-    CtiTime      TimeNow;
-
-    /* Define the pipe variables */
-    ULONG       BytesRead;
-    INMESS      *InMessage = 0;
-
-    HANDLE      evShutdown;
-
-    list< OUTMESS* > outList;
-    list< CtiMessage* > retList;
-    list< CtiMessage* > vgList;
-
-
     // I want an attitude!
     CTISetPriority(PRTYC_TIMECRITICAL, THREAD_PRIORITY_HIGHEST);
 
-    int TracePrint (PBYTE, INT);
-
-    if(NULL == (evShutdown = CreateEvent(NULL, TRUE, FALSE, SCANNER_SHUTDOWN_EVENT)))
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "ResultThread is unable to open the shutdown event" << endl;
-        }
-        Sleep(2500);
-    }
-
     /* Wait until main program is in loop */
-    dwWait = WaitForMultipleObjects(2, hLockArray, FALSE, INFINITE);
+    DWORD dwWait = WaitForMultipleObjects(2, hLockArray, FALSE, INFINITE);
 
     switch(dwWait - WAIT_OBJECT_0)
     {
@@ -750,86 +711,119 @@ VOID ResultThread (VOID *Arg)
         if(dwWait == 1) ReleaseMutex(hScannerSyncs[S_LOCK_MUTEX]);
         dwWait = 0;
 
-        do
+        deque<INMESS *> pendingInQueue;
+
+        const unsigned int inQueueBlockSize =  50;
+        const unsigned int inQueueMaxWait   = 500;  //  500 ms
+
+        unsigned long start = GetTickCount();
+
+        try
         {
-            // Let's go look at the inbound sList, if we can!
-            while( inmessList.empty() && !ScannerQuit)
+            while( (GetTickCount() - start) < inQueueMaxWait )
             {
-                Sleep( 500 );
+                {
+                    CtiLockGuard< CtiMutex > ilguard( inmessMux, 500 );
+
+                    if( ilguard.isAcquired() )
+                    {
+                        if( inmessList.size() >= inQueueBlockSize )
+                        {
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " Unable to lock SCANNERS's INMESS list. You should not see this much." << endl;
+                    }
+                }
+
+                CTISleep(50);
             }
 
-            if( !ScannerQuit && !inmessList.empty() )
             {
-                CtiLockGuard< CtiMutex > ilguard( inmessMux, 15000 );
-                if(ilguard.isAcquired())
+                CtiLockGuard< CtiMutex > ilguard( inmessMux, 500 );
+
+                if( ilguard.isAcquired() )
                 {
-                    InMessage = inmessList.front();inmessList.pop_front();
+                    while( !inmessList.empty() )
+                    {
+                        pendingInQueue.push_back(inmessList.front());
+                        inmessList.pop_front();
+                    }
                 }
-                else
+            }
+
+            if( !pendingInQueue.empty() )
+            {
+                set<long> paoids;
+
+                for_each(pendingInQueue.begin(),
+                         pendingInQueue.end(),
+                         collect_inmess_target_device(paoids));
+
+                ScannerPointManager.refreshListByPAOIDs(paoids);
+            }
+
+            /* Wait on the request thread if neccessary */
+            dwWait = WaitForMultipleObjects(2, hLockArray, FALSE, INFINITE);
+
+            dwWait -= WAIT_OBJECT_0;
+
+            switch(dwWait)
+            {
+            case 0:  // Quit
+                {
+                    ScannerQuit = TRUE;
+                    break;
+                }
+            case 1:  // Lock.. We expected this though!
+                {
+                    break;
+                }
+            }
+
+            while( !ScannerQuit && !pendingInQueue.empty() )
+            {
+                INMESS *InMessage = pendingInQueue.front();
+                pendingInQueue.pop_front();
+
+                if( !InMessage )  continue;
+
+                LastPorterInTime = LastPorterInTime.now();
+
+                CtiDeviceManager::coll_type::reader_lock_guard_t guard(ScannerDeviceManager.getLock());
+
+                // Find the device..
+                LONG id = InMessage->TargetID;
+
+                if(id == 0)
+                {
+                    id = InMessage->DeviceID;
+                }
+
+                CtiDeviceSPtr pBase = (CtiDeviceSPtr )ScannerDeviceManager.getEqual(id);
+
+                if(ScannerDebugLevel & SCANNER_DEBUG_INREPLIES)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Unable to lock SCANNERS's INMESS list. You should not see this much." << endl;
+                    dout << CtiTime() << " InMessage from " << pBase->getName() << " " << FormatError(InMessage->EventCode & 0x3fff) << endl;
                 }
-            }
-        }
-        while (InMessage == 0 && !ScannerQuit);
 
-        if(ScannerQuit || InMessage == 0)
-        {
-            continue;
-        }
-
-        /* Wait on the request thread if neccessary */
-        dwWait = WaitForMultipleObjects(2, hLockArray, FALSE, INFINITE);
-
-        dwWait -= WAIT_OBJECT_0;
-
-        switch(dwWait)
-        {
-        case 0:  // Quit
-            {
-                ScannerQuit = TRUE;
-                break;
-            }
-        case 1:  // Lock.. We expected this though!
-            {
-                break;
-            }
-        }
-
-        if(!ScannerQuit)
-        {
-            LastPorterInTime = LastPorterInTime.now();
-
-            CtiDeviceManager::coll_type::reader_lock_guard_t guard(ScannerDeviceManager.getLock());
-
-            // Find the device..
-            LONG id = InMessage->TargetID;
-
-            if(id == 0)
-            {
-                id = InMessage->DeviceID;
-            }
-
-            pBase = (CtiDeviceSPtr )ScannerDeviceManager.getEqual(id);
-
-            if(ScannerDebugLevel & SCANNER_DEBUG_INREPLIES)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " InMessage from " << pBase->getName() << " " << FormatError(InMessage->EventCode & 0x3fff) << endl;
-            }
-
-            if(pBase && pBase->isSingle())
-            {
-                try
+                if(pBase && pBase->isSingle())
                 {
-                    DeviceRecord = (CtiDeviceSingle*)pBase.get();
+                    CtiDeviceSingleSPtr pSingle = boost::static_pointer_cast<CtiDeviceSingle>(pBase);
 
                     /* get the time for use in the decodes */
-                    TimeNow = CtiTime();
+                    CtiTime TimeNow;
+
+                    list< OUTMESS* >    outList;
+                    list< CtiMessage* > retList;
+                    list< CtiMessage* > vgList;
 
                     // Do some device dependent work on this Inbound message!
-                    DeviceRecord->ProcessResult(InMessage, TimeNow, vgList, retList, outList);
+                    pSingle->ProcessResult(InMessage, TimeNow, vgList, retList, outList);
 
                     // Send any new porter requests to porter
                     if((ScannerDebugLevel & SCANNER_DEBUG_OUTLIST) && outList.size() > 0)
@@ -843,7 +837,7 @@ VOID ResultThread (VOID *Arg)
                     MakePorterRequests(outList);
 
                     // Write any results generated back to VanGogh
-                    while(retList.size())
+                    while(!retList.empty())
                     {
                         //  add protection here for CtiRequestMsgs going to Dispatch
                         VanGoghConnection.WriteConnQue(retList.front());   // I no longer manage this, the queue cleans up!
@@ -851,47 +845,43 @@ VOID ResultThread (VOID *Arg)
                     }
 
                     // Write any signals or misc. messages back to VanGogh!
-                    while(vgList.size())
+                    while(!vgList.empty())
                     {
-                        VanGoghConnection.WriteConnQue((CtiMessage*)vgList.front());   // I no longer manage this, the queue cleans up!
+                        VanGoghConnection.WriteConnQue(vgList.front());   // I no longer manage this, the queue cleans up!
                         vgList.pop_front();
                     }
 
                     /* Check if we should kick other thread in the pants */
-                    if(DeviceRecord->getScanRate(ScanRateGeneral) == 0)
+                    if(pSingle->getScanRate(ScanRateGeneral) == 0)
                     {
                         // FIX FIX FIX This needs a new IPC with PORTER.. No DB connection anymore!
-                        DeviceRecord->setNextScan(ScanRateGeneral, TimeNow.now());
+                        pSingle->setNextScan(ScanRateGeneral, TimeNow.now());
                         SetEvent(hScannerSyncs[S_SCAN_EVENT]);
                     }
                 }
-                catch(...)
+                else if(pBase && !pBase->isSingle())
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << "Device \"" << pBase->getName() <<"\" is not \"Single\" " << endl;
                 }
-            }
-            else if(pBase && !pBase->isSingle())
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Device \"" << pBase->getName() <<"\" is not \"Single\" " << endl;
-            }
-            else
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Unknown device scanned.  Device ID: " << InMessage->DeviceID << endl;
-                dout << " Port listed as                   : " << InMessage->Port     << endl;
-                dout << " Remote listed as                 : " << InMessage->Remote   << endl;
-                dout << " Target Remote                    : " << InMessage->TargetID   << endl;
+                else
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << "Unknown device scanned.  Device ID: " << InMessage->DeviceID << endl;
+                    dout << " Port listed as                   : " << InMessage->Port     << endl;
+                    dout << " Remote listed as                 : " << InMessage->Remote   << endl;
+                    dout << " Target Remote                    : " << InMessage->TargetID   << endl;
+                }
+
+                delete InMessage;
             }
         }
-
-        if(InMessage)
+        catch(...)
         {
-            delete InMessage;
-            InMessage = 0;
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
         }
 
     } /* End of for */
@@ -1274,11 +1264,9 @@ void LoadScannableDevices(void *ptr)
     {
         if( (pChg->getTypeOfChange() == ChangeTypeAdd) || (pChg->getTypeOfChange() == ChangeTypeUpdate) )
         {
-            ScannerPointManager.refreshList(pChg->getId(), 0);
+            LONG paoDeviceID = getPaoIdForPoint(pChg->getId());
 
-            LONG paoDeviceID = ScannerPointManager.getPAOIdForPointId(pChg->getId());
-
-            if( paoDeviceID >= 0 )
+            if( paoDeviceID != numeric_limits<long>::min() )
             {
                 CtiDeviceSPtr pBase = ScannerDeviceManager.getEqual(paoDeviceID);
 

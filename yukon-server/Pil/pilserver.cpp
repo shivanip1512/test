@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.116 $
-* DATE         :  $Date: 2008/10/07 15:03:46 $
+* REVISION     :  $Revision: 1.117 $
+* DATE         :  $Date: 2008/10/07 18:19:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -497,49 +497,9 @@ void CtiPILServer::connectionThread()
     return;
 }
 
-struct get_target_device
-{
-    set<long> &c;
-
-    get_target_device(set<long> &c_) :
-        c(c_)
-    {
-    };
-
-    operator()(INMESS *im)
-    {
-        if( im )
-        {
-            c.insert(im->TargetID?im->TargetID:im->DeviceID);
-        }
-    };
-};
 
 void CtiPILServer::resultThread()
 {
-    INT i;
-    INT status = NORMAL;
-    INT x = 0;
-
-    CtiConnection  *Conn = NULL;
-    CtiMessage     *pVg  = NULL;
-    OUTMESS        *OutMessage;
-
-
-    /* Define the various records */
-    CtiDeviceSPtr DeviceRecord;
-
-    /* Time variable for decode */
-    CtiTime      TimeNow;
-
-    ULONG       BytesRead;
-    INMESS      *InMessage = 0;
-
-    list<OUTMESS*   > outList;
-    list<CtiMessage*> retList;
-    list<CtiMessage*> vgList;
-    deque<INMESS*>    pendingInQueue;
-
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " ResThread      : Started as TID " << rwThreadId() << endl;
@@ -551,30 +511,22 @@ void CtiPILServer::resultThread()
     /* perform the wait loop forever */
     for( ; !bServerClosing ; )
     {
-        const unsigned int inQueueBlockSize =  50;
-        const unsigned int inQueueMaxWait   = 500;  //  500 ms
-
-        unsigned long start, now;
-
         try
         {
-            start = GetTickCount();
-            unsigned int timeWaited = 0;
+            const unsigned int inQueueBlockSize =  50;
+            const unsigned int inQueueMaxWait   = 500;  //  500 ms
 
-            while( pendingInQueue.size() < inQueueBlockSize && timeWaited < inQueueMaxWait )
+            unsigned long start = GetTickCount();
+
+            deque<INMESS*> pendingInQueue;
+
+            while( pendingInQueue.size() < inQueueBlockSize && (GetTickCount() - start) < inQueueMaxWait )
             {
-                if( !_inQueue.isEmpty() )
-                {
-                    //  can get data immediately...
-                    pendingInQueue.push_back(_inQueue.getQueue(0));
-                }
-                else
-                {
-                    pendingInQueue.push_back(_inQueue.getQueue(inQueueMaxWait - timeWaited));
+                INMESS *im = _inQueue.getQueue(inQueueMaxWait - (GetTickCount() - start));
 
-                    now = GetTickCount();
-
-                    timeWaited = (now > start)?(now - start):(numeric_limits<unsigned long>::max() - start + now);
+                if( im )
+                {
+                    pendingInQueue.push_back(im);
                 }
             }
 
@@ -584,7 +536,7 @@ void CtiPILServer::resultThread()
 
                 for_each(pendingInQueue.begin(),
                          pendingInQueue.end(),
-                         get_target_device(paoids));
+                         collect_inmess_target_device(paoids));
 
                 PointManager->refreshListByPAOIDs(paoids);
             }
@@ -603,7 +555,7 @@ void CtiPILServer::resultThread()
 
             while( !bServerClosing && !pendingInQueue.empty() )
             {
-                InMessage = pendingInQueue.front();
+                INMESS *InMessage = pendingInQueue.front();
                 pendingInQueue.pop_front();
 
                 if( InMessage )
@@ -616,7 +568,11 @@ void CtiPILServer::resultThread()
                     }
 
                     // Find the device..
-                    DeviceRecord = DeviceManager->getEqual(id);
+                    CtiDeviceSPtr DeviceRecord = DeviceManager->getEqual(id);
+
+                    list<OUTMESS*   > outList;
+                    list<CtiMessage*> retList;
+                    list<CtiMessage*> vgList;
 
                     if(DeviceRecord && !(InMessage->MessageFlags & MessageFlag_RouteToPorterGatewayThread))
                     {
@@ -628,7 +584,7 @@ void CtiPILServer::resultThread()
                         }
 
                         /* get the time for use in the decodes */
-                        TimeNow = CtiTime();
+                        CtiTime TimeNow;
 
                         try
                         {
@@ -674,12 +630,11 @@ void CtiPILServer::resultThread()
                     {
                         if(outList.size())
                         {
-                            for( i = outList.size() ; i > 0; i-- )
+                            while( !outList.empty() )
                             {
-                                OutMessage = outList.front();outList.pop_front();
+                                OUTMESS *OutMessage = outList.front();outList.pop_front();
                                 OutMessage->MessageFlags |= MessageFlag_ApplyExclusionLogic;
                                 _porterOMQueue.putQueue(OutMessage);
-                                OutMessage = 0;
                             }
                         }
 
@@ -687,36 +642,35 @@ void CtiPILServer::resultThread()
                         {
                             if((DebugLevel & DEBUGLEVEL_PIL_RESULTTHREAD) && vgList.size())
                             {
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " **** Info **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                    dout << "   Device " << (DeviceRecord ? DeviceRecord->getName() : "UNKNOWN") << " has generated a dispatch return message.  Data may be duplicated." << endl;
-                                }
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " **** Info **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << "   Device " << (DeviceRecord ? DeviceRecord->getName() : "UNKNOWN") << " has generated a dispatch return message.  Data may be duplicated." << endl;
                             }
 
                             string cmdstr(InMessage->Return.CommandStr);
                             CtiCommandParser parse( cmdstr );
                             if(parse.getFlags() & CMD_FLAG_UPDATE)
                             {
-                                std::list< CtiMessage* >::iterator itr = retList.begin();
-                                while ( itr != retList.end() )
-                                //for(i = 0; i < retList.size(); i++)
+                                std::list< CtiMessage* >::iterator retlist_itr = retList.begin(),
+                                                                   retlist_end = retList.end();
+
+                                for( ; retlist_itr != retlist_end; ++retlist_itr )
                                 {
-                                    CtiMessage *&pMsg = *itr;
+                                    CtiMessage *&pMsg = *retlist_itr;
 
                                     if(pMsg->isA() == MSG_PCRETURN || pMsg->isA() == MSG_POINTDATA)
                                     {
                                         vgList.push_back(pMsg->replicateMessage());       // Mash it in ther if we said to do so.
                                     }
-                                    ++itr;
                                 }
                             }
                         }
 
 
-                        while( (i = retList.size()) > 0 )
+                        while( !retList.empty() )
                         {
                             CtiMessage *pRet = retList.front();retList.pop_front();
+                            CtiConnection  *Conn = NULL;
 
                             if( pRet->isA() == MSG_PCREQUEST )
                             {
@@ -743,10 +697,10 @@ void CtiPILServer::resultThread()
                             }
                         }
 
-                        while( (i = vgList.size()) > 0 )
+                        while( !vgList.empty() )
                         {
-                            pVg = vgList.front();vgList.pop_front();
-                            VanGoghConnection.WriteConnQue(pVg);
+                            VanGoghConnection.WriteConnQue(vgList.front());
+                            vgList.pop_front();
                         }
                     }
                     catch(...)

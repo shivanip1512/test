@@ -2592,8 +2592,37 @@ vector<int> getPointIdsOnPao(long paoid)
             dout << " " << sql << endl;
         }
     }
-    
+
     return ids;
+}
+
+long getPaoIdForPoint(long pointid)
+{
+    string sql("SELECT paobjectid FROM point WHERE pointid = ");
+    sql += CtiNumStr(pointid);
+
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
+
+    RWDBReader rdr = ExecuteQuery(conn, sql.c_str());
+
+    if(rdr.isValid() && rdr())
+    {
+        long paoid;
+
+        rdr["pointid"] >> paoid;
+
+        return paoid;
+    }
+
+    if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << " " << sql << endl;
+    }
+
+    return numeric_limits<long>::min();
 }
 
 double limitValue(double input, double min, double max)
