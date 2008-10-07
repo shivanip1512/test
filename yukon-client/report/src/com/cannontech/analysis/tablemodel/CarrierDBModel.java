@@ -2,16 +2,11 @@ package com.cannontech.analysis.tablemodel;
 
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.analysis.ColumnProperties;
-import com.cannontech.analysis.data.group.SimpleReportGroup;
-import com.cannontech.analysis.service.ReportGroupService;
-import com.cannontech.analysis.service.impl.ReportGroupServiceImpl;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.spring.YukonSpringHook;
 
 /**
  * Created on Dec 15, 2003
@@ -26,7 +21,7 @@ import com.cannontech.spring.YukonSpringHook;
 public class CarrierDBModel extends ReportModelBase<Meter>
 {
 	/** Number of columns */
-	protected final int NUMBER_COLUMNS = 8;
+	protected final int NUMBER_COLUMNS = 6;
 	
 	/** Enum values for column representation */
 	public final static int PAO_NAME_COLUMN = 0;
@@ -35,8 +30,6 @@ public class CarrierDBModel extends ReportModelBase<Meter>
 	public final static int METER_NUMBER_COLUMN = 3;
 	public final static int ADDRESS_COLUMN = 4;
 	public final static int ROUTE_NAME_COLUMN = 5;
-	public final static int COLL_GROUP_NAME_COLUMN = 6;
-	public final static int TEST_COLL_GROUP_NAME_COLUMN = 7;
 	
 	
 	/** String values for column representation */
@@ -46,13 +39,10 @@ public class CarrierDBModel extends ReportModelBase<Meter>
 	public final static String METER_NUMBER_STRING = "Meter #";
 	public final static String ADDRESS_STRING  = "Address";
 	public final static String ROUTE_NAME_STRING = "Route Name";
-	public final static String COLL_GROUP_NAME_STRING = "Collection Group";
-	public final static String TEST_COLL_GROUP_NAME_STRING = "Alternate Group";
 	
 	/** A string for the title of the data */
 	protected static String title = "Database Report";
 		
-	protected ReportGroupService reportGroupService = YukonSpringHook.getBean("reportGroupService", ReportGroupServiceImpl.class);
 	/**
 	 * Default Constructor
 	 */
@@ -100,7 +90,6 @@ public class CarrierDBModel extends ReportModelBase<Meter>
 		//Reset all objects, new data being collected!
 		setData(null);
 		
-		int rowCount = 0;
 		StringBuffer sql = buildSQLStatement();
 		CTILogger.info(sql.toString());	
 		
@@ -195,17 +184,6 @@ public class CarrierDBModel extends ReportModelBase<Meter>
 	
 				case ROUTE_NAME_COLUMN:
 					return meter.getRoute();
-					
-				case COLL_GROUP_NAME_COLUMN: {
-				    SystemGroupEnum systemGroupEnum = SystemGroupEnum.COLLECTION;
-				    SimpleReportGroup group = reportGroupService.getSimpleGroupMembership(systemGroupEnum, meter);
-				    return group.getDisplayName();
-				}
-				case TEST_COLL_GROUP_NAME_COLUMN: {
-				    SystemGroupEnum systemGroupEnum = SystemGroupEnum.ALTERNATE;
-                    SimpleReportGroup group = reportGroupService.getSimpleGroupMembership(systemGroupEnum, meter);
-                    return group.getDisplayName();
-				}
 			}
 		}
 		return null;
@@ -224,9 +202,7 @@ public class CarrierDBModel extends ReportModelBase<Meter>
 				PAO_TYPE_STRING,
 				METER_NUMBER_STRING,
 				ADDRESS_STRING,
-				ROUTE_NAME_STRING,
-				COLL_GROUP_NAME_STRING,
-				TEST_COLL_GROUP_NAME_STRING
+				ROUTE_NAME_STRING
 			};
 		}
 		return columnNames;
@@ -240,8 +216,6 @@ public class CarrierDBModel extends ReportModelBase<Meter>
 		if( columnTypes == null)
 		{
 			columnTypes = new Class[]{
-				String.class,
-				String.class,
 				String.class,
 				String.class,
 				String.class,
@@ -261,14 +235,12 @@ public class CarrierDBModel extends ReportModelBase<Meter>
 		if(columnProperties == null)
 		{
 			columnProperties = new ColumnProperties[]{
-				new ColumnProperties(0, 1, 200, null),
-				new ColumnProperties(200, 1, 40, null),
-				new ColumnProperties(240, 1, 60, null),
-				new ColumnProperties(300, 1, 60, null),
-				new ColumnProperties(360, 1, 60, null),
-				new ColumnProperties(420, 1, 100, null),
-				new ColumnProperties(520, 1, 100, null),
-				new ColumnProperties(620, 1, 100, null)
+				new ColumnProperties(0, 1, 260, null),
+				new ColumnProperties(260, 1, 70, null),
+				new ColumnProperties(330, 1, 80, null),
+				new ColumnProperties(410, 1, 80, null),
+				new ColumnProperties(490, 1, 80, null),
+				new ColumnProperties(570, 1, 150, null)
 			};
 		}
 		return columnProperties;

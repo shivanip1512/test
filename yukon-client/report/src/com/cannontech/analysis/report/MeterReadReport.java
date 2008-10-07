@@ -1,10 +1,8 @@
 package com.cannontech.analysis.report;
 
 import java.awt.BasicStroke;
-import java.awt.geom.Point2D;
 import java.util.Date;
 
-import org.jfree.report.ElementAlignment;
 import org.jfree.report.Group;
 import org.jfree.report.GroupFooter;
 import org.jfree.report.GroupHeader;
@@ -12,7 +10,6 @@ import org.jfree.report.GroupList;
 import org.jfree.report.ItemBand;
 import org.jfree.report.JFreeReport;
 import org.jfree.report.JFreeReportBoot;
-import org.jfree.report.PageFooter;
 import org.jfree.report.elementfactory.LabelElementFactory;
 import org.jfree.report.elementfactory.StaticShapeElementFactory;
 import org.jfree.report.elementfactory.TextFieldElementFactory;
@@ -196,20 +193,4 @@ public class MeterReadReport extends YukonReportBase
 		return items;
 	}
 	
-	@Override
-    protected PageFooter createPageFooter() {
-        PageFooter footer = super.createPageFooter();
-        if ( ((MeterReadModel)getModel()).getMeterReadType() == MeterReadModel.MISSED_METER_READ_TYPE) {
-            final LabelElementFactory factory = new LabelElementFactory();
-            factory.setAbsolutePosition(new Point2D.Float(0, 8));
-            factory.setMinimumSize(new FloatDimension(-100, 0));
-            factory.setDynamicHeight(new Boolean(true));
-            factory.setHorizontalAlignment(ElementAlignment.LEFT);
-            factory.setVerticalAlignment(ElementAlignment.BOTTOM);
-            factory.setItalic(true);
-            factory.setText("* Device is member of more than one group");
-            footer.addElement(factory.createElement());
-        }
-        return footer;
-    }
 }

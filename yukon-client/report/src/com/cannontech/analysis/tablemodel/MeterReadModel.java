@@ -16,17 +16,12 @@ import org.springframework.dao.DataRetrievalFailureException;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.MeterAndPointData;
-import com.cannontech.analysis.data.group.SimpleReportGroup;
-import com.cannontech.analysis.service.ReportGroupService;
-import com.cannontech.analysis.service.impl.ReportGroupServiceImpl;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.NaturalOrderComparator;
 
 /**
@@ -50,8 +45,7 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
     public final static int METER_NUMBER_COLUMN = 3;
 	public final static int PHYSICAL_ADDRESS_COLUMN = 4;
 	public final static int ROUTE_NAME_COLUMN = 5;
-    public final static int COLL_GROUP_NAME_OR_TIMESTAMP_COLUMN = 6;    //CollGroup for Missed, Timestamp for Success
-    public final static int TEST_COLL_GROUP_NAME_COLUMN = 7;
+	public final static int COLL_GROUP_NAME_OR_TIMESTAMP_COLUMN = 6;
 
 	/** String values for column representation */
 	public final static String DEVICE_NAME_STRING = "Device Name";
@@ -61,8 +55,6 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
 	public final static String PHYSICAL_ADDRESS_STRING = "Address";
 	public final static String ROUTE_NAME_STRING = "Route Name";
 	public final static String TIMESTAMP_STRING= "Timestamp";
-    public final static String COLL_GROUP_NAME_STRING = "Collection Group";
-    public final static String TEST_COLL_GROUP_NAME_STRING = "Alternate Group";
     
 	/** Class fields */
 	public final static int MISSED_METER_READ_TYPE = 2;
@@ -80,11 +72,8 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
 
 	//servlet attributes/parameter strings
 	private static String ATT_METER_READ_TYPE = "meterReadType";
-	private static String ATT_POINT_TYPE = "pointType";
 	private static final String ATT_ORDER_BY = "orderBy";
 	
-    private ReportGroupService reportGroupService = YukonSpringHook.getBean("reportGroupService", ReportGroupServiceImpl.class);
-
 	/**
 	 * 
 	 */
@@ -151,7 +140,6 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
             meter.setRoute(routeName);
             
 			Date ts = null;
-			Double value = null;
 			if (getMeterReadType()== SUCCESS_METER_READ_TYPE)
 			{
 			    Timestamp timestamp = rset.getTimestamp("timestamp");
@@ -304,21 +292,6 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
     
                 case ROUTE_NAME_COLUMN:
                     return mpData.getMeter().getRoute();
-                    
-                case COLL_GROUP_NAME_OR_TIMESTAMP_COLUMN: {
-                    if( getMeterReadType() == SUCCESS_METER_READ_TYPE) {
-                        return mpData.getTimeStamp();                        
-                    } else {
-                        SystemGroupEnum systemGroupEnum = SystemGroupEnum.COLLECTION;
-                        SimpleReportGroup group = reportGroupService.getSimpleGroupMembership(systemGroupEnum, mpData.getMeter());
-                        return group.getDisplayName();
-                    }
-                }
-                case TEST_COLL_GROUP_NAME_COLUMN: {
-                    SystemGroupEnum systemGroupEnum = SystemGroupEnum.ALTERNATE;
-                    SimpleReportGroup group = reportGroupService.getSimpleGroupMembership(systemGroupEnum, mpData.getMeter());
-                    return group.getDisplayName();
-                }
 			}
 		}
 		return null;
@@ -350,9 +323,7 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
                         PAO_TYPE_STRING,
                         METER_NUMBER_STRING,
                         PHYSICAL_ADDRESS_STRING,
-                        ROUTE_NAME_STRING,
-                        COLL_GROUP_NAME_STRING,
-                        TEST_COLL_GROUP_NAME_STRING
+                        ROUTE_NAME_STRING
                     };      
             }
 
@@ -387,8 +358,6 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
 						String.class,
 						String.class,
 						String.class,
-                        String.class,
-                        String.class,
                         String.class
 					};
 		    }
@@ -407,27 +376,25 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
 		    {
 				columnProperties = new ColumnProperties[]{
 					//posX, posY, width, height, numberFormatString
-                    new ColumnProperties(0, 1, 200, null),
-                    new ColumnProperties(200, 1, 40, null),
-                    new ColumnProperties(240, 1, 60, null),
-                    new ColumnProperties(300, 1, 60, null),
-                    new ColumnProperties(360, 1, 60, null),
-                    new ColumnProperties(420, 1, 100, null),
-					new ColumnProperties(520, 1, 100, "MM/dd/yyyy HH:mm:ss"),
+                    new ColumnProperties(0, 1, 220, null),
+                    new ColumnProperties(220, 1, 60, null),
+                    new ColumnProperties(280, 1, 70, null),
+                    new ColumnProperties(350, 1, 70, null),
+                    new ColumnProperties(420, 1, 70, null),
+                    new ColumnProperties(490, 1, 120, null),
+					new ColumnProperties(610, 1, 110, "MM/dd/yyyy HH:mm:ss"),
 				};
 		    }
 		    else
 		    {
 		    	columnProperties = new ColumnProperties[]{
 					//posX, posY, width, height, numberFormatString
-	                new ColumnProperties(0, 1, 200, null),
-	                new ColumnProperties(200, 1, 40, null),
-	                new ColumnProperties(240, 1, 60, null),
-	                new ColumnProperties(300, 1, 60, null),
-	                new ColumnProperties(360, 1, 60, null),
-	                new ColumnProperties(420, 1, 100, null),
-	                new ColumnProperties(520, 1, 100, null),
-	                new ColumnProperties(620, 1, 100, null)
+	                new ColumnProperties(0, 1, 260, null),
+	                new ColumnProperties(260, 1, 70, null),
+	                new ColumnProperties(330, 1, 80, null),
+	                new ColumnProperties(410, 1, 80, null),
+	                new ColumnProperties(490, 1, 80, null),
+	                new ColumnProperties(570, 1, 150, null)
 				};
 			}
 		}

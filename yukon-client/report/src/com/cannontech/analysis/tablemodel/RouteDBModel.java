@@ -7,8 +7,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.analysis.ColumnProperties;
-import com.cannontech.analysis.data.group.SimpleReportGroup;
-import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.util.NaturalOrderComparator;
 
 public class RouteDBModel extends CarrierDBModel 
@@ -20,9 +18,6 @@ public class RouteDBModel extends CarrierDBModel
     public final static int ROUTEDB_METER_TYPE_COLUMN = 3;
 	public final static int ROUTEDB_METER_NUMBER_COLUMN = 4;
 	public final static int ROUTEDB_ADDRESS_COLUMN = 5;
-    public final static int ROUTEDB_COLL_GROUP_NAME_COLUMN = 6;
-    public final static int ROUTEDB_TEST_COLL_GROUP_NAME_COLUMN = 7;
-    public final static int ROUTEDB_BILL_GROUP_NAME_COLUMN = 8;
 	
 	/** String values for column representation */
 	public final static String ROUTEDB_ROUTE_NAME_STRING = "Route Name";
@@ -31,9 +26,6 @@ public class RouteDBModel extends CarrierDBModel
 	public final static String ROUTEDB_METER_TYPE_STRING = "Type";
 	public final static String ROUTEDB_METER_NUMBER_STRING = "Meter #";
 	public final static String ROUTEDB_ADDRESS_STRING  = "Address";
-    public final static String ROUTEDB_COLL_GROUP_NAME_STRING = "Collection Group";
-    public final static String ROUTEDB_TEST_COLL_GROUP_NAME_STRING = "Alternate Group";
-    public final static String ROUTEDB_BILL_GROUP_NAME_STRING = "Billing Group";
 
 	
 	public static final int ORDER_BY_METER_NAME = 0;
@@ -93,22 +85,6 @@ public class RouteDBModel extends CarrierDBModel
                     
                 case ROUTEDB_ADDRESS_COLUMN:
                     return meter.getAddress();
-
-                case ROUTEDB_COLL_GROUP_NAME_COLUMN: {
-                    SystemGroupEnum systemGroupEnum = SystemGroupEnum.COLLECTION;
-                    SimpleReportGroup group = reportGroupService.getSimpleGroupMembership(systemGroupEnum, meter);
-                    return group.getDisplayName();
-                }
-                case ROUTEDB_TEST_COLL_GROUP_NAME_COLUMN: {
-                    SystemGroupEnum systemGroupEnum = SystemGroupEnum.ALTERNATE;
-                    SimpleReportGroup group = reportGroupService.getSimpleGroupMembership(systemGroupEnum, meter);
-                    return group.getDisplayName();
-                }
-                case ROUTEDB_BILL_GROUP_NAME_COLUMN: {
-                    SystemGroupEnum systemGroupEnum = SystemGroupEnum.BILLING;
-                    SimpleReportGroup group = reportGroupService.getSimpleGroupMembership(systemGroupEnum, meter);
-                    return group.getDisplayName();
-                }
             }
         }
         return null;
@@ -137,10 +113,7 @@ public class RouteDBModel extends CarrierDBModel
 			    ROUTEDB_ENABLED_STRING,
 			    ROUTEDB_METER_TYPE_STRING,
 			    ROUTEDB_METER_NUMBER_STRING,
-			    ROUTEDB_ADDRESS_STRING,
-			    ROUTEDB_COLL_GROUP_NAME_STRING,
-			    ROUTEDB_TEST_COLL_GROUP_NAME_STRING,
-			    ROUTEDB_BILL_GROUP_NAME_STRING
+			    ROUTEDB_ADDRESS_STRING
 			};
 		}
 		return columnNames;
@@ -151,15 +124,12 @@ public class RouteDBModel extends CarrierDBModel
 		if(columnProperties == null)
 		{
 			columnProperties = new ColumnProperties[]{
-				new ColumnProperties(0, 1, 200, null),
-				new ColumnProperties(0, 1, 200, null),
-                new ColumnProperties(200, 1, 40, null),
-                new ColumnProperties(240, 1, 60, null),
-                new ColumnProperties(300, 1, 60, null),
-                new ColumnProperties(360, 1, 60, null),
-                new ColumnProperties(420, 1, 100, null),
-                new ColumnProperties(520, 1, 100, null),
-                new ColumnProperties(620, 1, 100, null)
+				new ColumnProperties(0, 1, 280, null),
+				new ColumnProperties(0, 1, 280, null),
+                new ColumnProperties(280, 1, 100, null),
+                new ColumnProperties(380, 1, 110, null),
+                new ColumnProperties(490, 1, 110, null),
+                new ColumnProperties(600, 1, 110, null)
 			};
 		}
 		return columnProperties;
@@ -170,9 +140,6 @@ public class RouteDBModel extends CarrierDBModel
         if( columnTypes == null)
         {
             columnTypes = new Class[]{
-                String.class,
-                String.class,
-                String.class,
                 String.class,
                 String.class,
                 String.class,
