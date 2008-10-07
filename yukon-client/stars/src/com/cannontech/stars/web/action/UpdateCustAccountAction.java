@@ -441,7 +441,7 @@ public class UpdateCustAccountAction implements ActionBase {
                     
                     /*Have I mentioned how much I hate cache and random STARS session variables?*/
                     liteAcctInfo.setCustomer(liteCustomer);
-                    StarsCustAccountInformation starsCust = energyCompany.getStarsCustAccountInformation(updateAccount.getAccountID(), true);
+                    StarsCustAccountInformation starsCust = energyCompany.getStarsCustAccountInformation(liteAccount.getAccountID(), true);
                     starsCust.getStarsCustomerAccount().setCICustomerType(0);
                     starsCust.getStarsCustomerAccount().setCompany("");
                     starsCust.getStarsCustomerAccount().setIsCommercial(false);
@@ -464,7 +464,7 @@ public class UpdateCustAccountAction implements ActionBase {
 					ciCustChanged = true;
                     
                     /*Have I mentioned how much I hate cache and random STARS session variables?*/
-                    StarsCustAccountInformation starsCust = energyCompany.getStarsCustAccountInformation(updateAccount.getAccountID(), true);
+                    StarsCustAccountInformation starsCust = energyCompany.getStarsCustAccountInformation(liteAccount.getAccountID(), true);
                     starsCust.getStarsCustomerAccount().setCICustomerType(ciDB.getCICustType());
                     starsCust.getStarsCustomerAccount().setCompany(ciDB.getCompanyName());
                     starsCust.getStarsCustomerAccount().setIsCommercial(true);
@@ -501,7 +501,7 @@ public class UpdateCustAccountAction implements ActionBase {
                 liteCICustomer.setCompanyName(ciDB.getCompanyName());
                 liteAcctInfo.setCustomer(liteCICustomer);
                 /*Have I mentioned how much I hate cache and random STARS session variables?*/
-                StarsCustAccountInformation starsCust = energyCompany.getStarsCustAccountInformation(updateAccount.getAccountID(), true);
+                StarsCustAccountInformation starsCust = energyCompany.getStarsCustAccountInformation(liteAccount.getAccountID(), true);
                 starsCust.getStarsCustomerAccount().setCICustomerType(ciDB.getCICustType());
                 starsCust.getStarsCustomerAccount().setCompany(ciDB.getCompanyName());
                 starsCust.getStarsCustomerAccount().setIsCommercial(true);
