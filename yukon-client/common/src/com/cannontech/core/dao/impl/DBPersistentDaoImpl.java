@@ -22,7 +22,7 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
-import com.cannontech.database.data.multi.SmartMultiDBPersistent;
+import com.cannontech.database.data.multi.MultiDBPersistent;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.dbchange.ChangeSequenceDecoder;
@@ -201,12 +201,12 @@ public class DBPersistentDaoImpl implements DBPersistentDao
     @Override
     public void performDBChangeWithNoMsg(List<DBPersistent> items, int transactionType) {
         
-        SmartMultiDBPersistent smartMultiDBPersistent = new SmartMultiDBPersistent();
+        MultiDBPersistent multiDBPersistent = new MultiDBPersistent();
         
         for (DBPersistent dbPersistentObj : items) {
-            smartMultiDBPersistent.addDBPersistent(dbPersistentObj);
+            multiDBPersistent.getDBPersistentVector().add(dbPersistentObj);
         }
-        performDBChangeWithNoMsg(smartMultiDBPersistent, transactionType);
+        performDBChangeWithNoMsg(multiDBPersistent, transactionType);
     }
 
 

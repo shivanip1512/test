@@ -40,4 +40,14 @@ public void setDBPersistentVector(java.util.Vector<DBPersistent> newValue)
 {
 	super.setDBPersistentVector(newValue);
 }
+
+/**
+ * update method comment.
+ */
+public void update() throws java.sql.SQLException 
+{
+    for (DBPersistent dbPersistent: getDBPersistentVector()) {
+        dbPersistent.update();
+    }
+}
 }
