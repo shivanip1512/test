@@ -78,10 +78,9 @@ public synchronized void insertDBPersistentAt( DBPersistent value, int loc )
  */
 public void retrieve() throws java.sql.SQLException 
 {
-	for(int i = 0; i < getDBPersistentVector().size(); i++) {
-        getDBPersistentVector().elementAt(i).retrieve();
+    for(DBPersistent dbPersistent : getDBPersistentVector()) {
+        dbPersistent.retrieve();
     }
-	
 }
 
 /**

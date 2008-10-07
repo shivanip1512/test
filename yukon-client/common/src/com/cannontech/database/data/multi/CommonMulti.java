@@ -152,8 +152,8 @@ public String toString() {
  * update method comment.
  */
 public void update() throws java.sql.SQLException {
-    for (int i = 0; i < getDBPersistentVector().size(); i++) {
-        getDBPersistentVector().elementAt(i).update();
+    for (DBPersistent dbPersistent : getDBPersistentVector()) {
+        dbPersistent.update();
     }
 }
 }
