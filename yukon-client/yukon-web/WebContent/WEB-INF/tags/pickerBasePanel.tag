@@ -2,7 +2,10 @@
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
-<div id="itemPicker_popup" class="titledContainer boxContainer">
+<div id="itemPicker_popup" class="titledContainer boxContainer popUpDiv">
+
+    <!--  fix for IE6 bug (see ".popUpDiv iframe" in YukonGeneralStyles.css for more info) -->
+    <!--[if lte IE 6.5]><iframe></iframe><![endif]-->
 
     <div id="itemPicker_popup_titleBar" class="titleBar boxContainer_titleBar">
             
