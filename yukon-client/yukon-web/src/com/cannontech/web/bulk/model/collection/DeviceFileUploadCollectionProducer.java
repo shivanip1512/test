@@ -1,6 +1,5 @@
 package com.cannontech.web.bulk.model.collection;
 
-import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -94,8 +93,7 @@ public class DeviceFileUploadCollectionProducer extends DeviceCollectionProducer
                                                     final FileMapperEnum uploadType) throws IOException {
         // Create an iterator to iterate through the file line by line
         InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-        BufferedReader reader = new BufferedReader(inputStreamReader);
-        CSVReader csvReader = new CSVReader(reader);
+        CSVReader csvReader = new CSVReader(inputStreamReader);
         CsvColumnReaderIterator iterator = new CsvColumnReaderIterator(csvReader, 0);
         
         if (uploadType.isHasHeader()) {
