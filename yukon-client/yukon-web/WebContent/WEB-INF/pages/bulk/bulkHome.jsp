@@ -80,20 +80,7 @@
     
     
     <%-- BULK UPDATE RESULTS --%>
-    <c:if test="${not empty bulkUpdateOperationResultsList}">
-    
-        <%-- control access to 'details' links --%>
-        <cti:checkRole role="DeviceActionsRole.ROLEID">
-            <cti:checkProperty property="DeviceActionsRole.BULK_IMPORT_OPERATION">
-                <c:set var="hasBulkImportRP" value="true"/>
-            </cti:checkProperty>
-            <cti:checkProperty property="DeviceActionsRole.BULK_UPDATE_OPERATION">
-                <c:set var="hasBulkUpdateRP" value="true"/>
-            </cti:checkProperty>
-            <cti:checkProperty property="DeviceActionsRole.MASS_CHANGE">
-                <c:set var="hasMassChangeRP" value="true"/>
-            </cti:checkProperty>
-        </cti:checkRole>
+    <c:if test="${not empty resultsList}">
     
         <br>
         <cti:msg var="recentBulkOperationsHeaderTitle" key="yukon.common.device.bulk.bulkHome.recentBulkOperations.header"/>
@@ -118,8 +105,11 @@
                     <th style="text-align:right;"><cti:msg key="yukon.common.device.bulk.bulkHome.recentBulkOperations.status"/></th>
                 </tr>
             
-                <c:forEach var="b" items="${bulkUpdateOperationResultsList}" varStatus="resultStatus">
+                <c:forEach var="result" items="${resultsList}" varStatus="resultStatus">
                 
+                    <c:set var="b" value="${result.result}" />
+                    <c:set var="detailViewable" value="${result.detailViewable}" />
+                    
                     <tr valign="bottom">
                     
                         <%-- TYPE --%>
@@ -214,7 +204,7 @@
                         
                         <%-- DEATIL LINK --%>
                         <c:choose>
-                            <c:when test="${(hasBulkImportRP && b.import) || (hasBulkUpdateRP && b.update) || (hasMassChangeRP && (b.massChange || b.massDelete || b.changeDeviceType))}">
+                            <c:when test="${detailViewable}">
                                 <c:url var="resultDetailUrl" value="/spring/bulk/${b.bulkOperationType.name}/${b.bulkOperationType.name}Results">
                                     <c:param name="resultsId" value="${b.resultsId}" />
                                 </c:url>
@@ -222,7 +212,7 @@
                                     <a href="${resultDetailUrl}"><cti:msg key="yukon.common.device.bulk.bulkHome.recentBulkOperations.detailLink"/></a>
                                 </td>
                             </c:when>
-                            <c:when test="${hasBulkImportRP || hasBulkUpdateRP || hasMassChangeRP}">
+                            <c:when test="${hasBulkImportRP || hasBulkUpdateRP || hasMassChangeRP || hasMassDeleteRP}">
                                 <td></td>
                             </c:when>
                             <c:otherwise>

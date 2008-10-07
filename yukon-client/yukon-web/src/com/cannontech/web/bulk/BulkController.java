@@ -26,13 +26,18 @@ import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.bulk.service.BulkOperationCallbackResults;
+import com.cannontech.common.bulk.service.BulkOperationTypeEnum;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.util.MappingList;
+import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.common.util.ReverseList;
+import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.roles.operator.DeviceActionsRole;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.simplereport.ColumnInfo;
 import com.cannontech.tools.csv.CSVReader;
@@ -52,6 +57,7 @@ public class BulkController extends BulkControllerBase {
     private RecentResultsCache<BulkOperationCallbackResults<?>> recentResultsCache = null;
     private MeterDao meterDao = null;
     private YukonUserContextMessageSourceResolver messageSourceResolver = null;
+    private AuthDao authDao;
     
     // BULK HOME
     public ModelAndView bulkHome(HttpServletRequest request, HttpServletResponse response) throws ServletException {
@@ -62,21 +68,38 @@ public class BulkController extends BulkControllerBase {
         //------------------------------------------------------------------------------------------
         
         // bulk update operations (add both completed and pending to same list)
-        List<BulkOperationCallbackResults<?>> bulkUpdateOperationResultsList = new ArrayList<BulkOperationCallbackResults<?>>();
+        List<BulkOperationCallbackResults<?>> rawResultsList = new ArrayList<BulkOperationCallbackResults<?>>();
         
         // ADD RESULTS TO LISTS
         // -----------------------------------------------------------------------------------------
         
-        // results
-        bulkUpdateOperationResultsList.addAll(new ReverseList<BulkOperationCallbackResults<?>>(recentResultsCache.getPending()));
-        bulkUpdateOperationResultsList.addAll(new ReverseList<BulkOperationCallbackResults<?>>(recentResultsCache.getCompleted()));
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+        boolean hasBulkImportRP = authDao.checkRoleProperty(userContext.getYukonUser(), DeviceActionsRole.BULK_IMPORT_OPERATION);
+        boolean hasBulkUpdateRP = authDao.checkRoleProperty(userContext.getYukonUser(), DeviceActionsRole.BULK_UPDATE_OPERATION);
+        boolean hasMassChangeRP = authDao.checkRoleProperty(userContext.getYukonUser(), DeviceActionsRole.MASS_CHANGE);
+        boolean hasMassDeleteRP = authDao.checkRoleProperty(userContext.getYukonUser(), DeviceActionsRole.MASS_DELETE);
         
-        // add lists to mav
-        mav.addObject("bulkUpdateOperationResultsList", bulkUpdateOperationResultsList);
-
+        // results
+        rawResultsList.addAll(new ReverseList<BulkOperationCallbackResults<?>>(recentResultsCache.getPending()));
+        rawResultsList.addAll(new ReverseList<BulkOperationCallbackResults<?>>(recentResultsCache.getCompleted()));
+        
+        BulkOpToViewableBulkOpMapper bulkOpToViewableBulkOpMapper = new BulkOpToViewableBulkOpMapper(hasBulkImportRP,
+                                                                                                     hasBulkUpdateRP,
+                                                                                                     hasMassChangeRP,
+                                                                                                     hasMassDeleteRP);
+        MappingList<BulkOperationCallbackResults<?>, BulkOperationDisplayableResult> resultsList = new MappingList<BulkOperationCallbackResults<?>, BulkOperationDisplayableResult>(rawResultsList,
+                                                                                                                                                                    bulkOpToViewableBulkOpMapper);
+        
+        mav.addObject("hasBulkImportRP", hasBulkImportRP);
+        mav.addObject("hasBulkUpdateRP", hasBulkUpdateRP);
+        mav.addObject("hasMassChangeRP", hasMassChangeRP);
+        mav.addObject("hasMassDeleteRP", hasMassDeleteRP);
+        mav.addObject("resultsList", resultsList);
+        
         return mav;
     }
     
+
     // COLLECTION ACTIONS
     public ModelAndView collectionActions(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 
@@ -241,6 +264,68 @@ public class BulkController extends BulkControllerBase {
         return null;
     }
     
+    // HELPER MAPPER TO CREATE RESULTS THAT HAVE A "DETAIL VIEWABLE" PROPERTY BASED ON USER ROLE PROP
+    // Used for display on main bulk ops page to display/hide the "view" link.
+    private class BulkOpToViewableBulkOpMapper
+            implements
+            ObjectMapper<BulkOperationCallbackResults<?>, BulkOperationDisplayableResult> {
+
+        private boolean hasBulkImportRP = false;
+        private boolean hasBulkUpdateRP = false;
+        private boolean hasMassChangeRP = false;
+        private boolean hasMassDeleteRP = false;
+
+        public BulkOpToViewableBulkOpMapper(boolean hasBulkImportRP,
+                boolean hasBulkUpdateRP, boolean hasMassChangeRP,
+                boolean hasMassDeleteRP) {
+            this.hasBulkImportRP = hasBulkImportRP;
+            this.hasBulkUpdateRP = hasBulkUpdateRP;
+            this.hasMassChangeRP = hasMassChangeRP;
+            this.hasMassDeleteRP = hasMassDeleteRP;
+        }
+
+        public BulkOperationDisplayableResult map(
+                BulkOperationCallbackResults<?> from)
+                throws ObjectMappingException {
+            return new BulkOperationDisplayableResult(from,
+                                                      this.hasBulkImportRP,
+                                                      this.hasBulkUpdateRP,
+                                                      this.hasMassChangeRP,
+                                                      this.hasMassDeleteRP);
+        }
+    }
+    
+    public class BulkOperationDisplayableResult {
+
+        private BulkOperationCallbackResults<?> result;
+        private boolean hasBulkImportRP = false;
+        private boolean hasBulkUpdateRP = false;
+        private boolean hasMassChangeRP = false;
+        private boolean hasMassDeleteRP = false;
+
+        public BulkOperationDisplayableResult(
+                BulkOperationCallbackResults<?> result,
+                boolean hasBulkImportRP, boolean hasBulkUpdateRP,
+                boolean hasMassChangeRP, boolean hasMassDeleteRP) {
+            this.result = result;
+            this.hasBulkImportRP = hasBulkImportRP;
+            this.hasBulkUpdateRP = hasBulkUpdateRP;
+            this.hasMassChangeRP = hasMassChangeRP;
+            this.hasMassDeleteRP = hasMassDeleteRP;
+        }
+
+        public BulkOperationCallbackResults<?> getResult() {
+            return result;
+        }
+
+        public boolean isDetailViewable() {
+
+            BulkOperationTypeEnum opType = this.result.getBulkOperationType();
+            boolean detailViewable = (this.hasBulkImportRP && opType.equals(BulkOperationTypeEnum.IMPORT)) || (this.hasBulkUpdateRP && opType.equals(BulkOperationTypeEnum.UPDATE)) || (this.hasMassChangeRP && (opType.equals(BulkOperationTypeEnum.MASS_CHANGE) || opType.equals(BulkOperationTypeEnum.CHANGE_DEVICE_TYPE))) || (this.hasMassDeleteRP && opType.equals(BulkOperationTypeEnum.MASS_DELETE));
+            return detailViewable;
+        }
+    }
+    
     @Required
     public void setPaoDao(PaoDao paoDao) {
         this.paoDao = paoDao;
@@ -260,5 +345,10 @@ public class BulkController extends BulkControllerBase {
     public void setMessageSourceResolver(
             YukonUserContextMessageSourceResolver messageSourceResolver) {
         this.messageSourceResolver = messageSourceResolver;
+    }
+    
+    @Autowired
+    public void setAuthDao(AuthDao authDao) {
+        this.authDao = authDao;
     }
 }
