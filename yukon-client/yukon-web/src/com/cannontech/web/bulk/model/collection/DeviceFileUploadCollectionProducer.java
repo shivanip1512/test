@@ -1,8 +1,10 @@
 package com.cannontech.web.bulk.model.collection;
 
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Iterator;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,7 +21,7 @@ import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.iterator.CloseableIterator;
 import com.cannontech.common.bulk.iterator.CloseableIteratorWrapper;
-import com.cannontech.common.bulk.iterator.InputStreamIterator;
+import com.cannontech.common.bulk.iterator.CsvColumnReaderIterator;
 import com.cannontech.common.bulk.mapper.ObjectMapperFactory;
 import com.cannontech.common.bulk.mapper.ObjectMapperFactory.FileMapperEnum;
 import com.cannontech.common.device.YukonDevice;
@@ -27,6 +29,7 @@ import com.cannontech.common.device.groups.util.YukonDeviceToIdMapper;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.MappingIterator;
 import com.cannontech.common.util.ObjectMapper;
+import com.cannontech.tools.csv.CSVReader;
 
 public class DeviceFileUploadCollectionProducer extends DeviceCollectionProducerBase {
     private ObjectMapperFactory objectMapperFactory = null;
@@ -90,7 +93,11 @@ public class DeviceFileUploadCollectionProducer extends DeviceCollectionProducer
     private CloseableIterator<YukonDevice> getDeviceIterator(InputStream inputStream,
                                                     final FileMapperEnum uploadType) throws IOException {
         // Create an iterator to iterate through the file line by line
-        CloseableIterator<String> iterator = new InputStreamIterator(inputStream);
+        InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+        BufferedReader reader = new BufferedReader(inputStreamReader);
+        CSVReader csvReader = new CSVReader(reader);
+        CsvColumnReaderIterator iterator = new CsvColumnReaderIterator(csvReader, 0);
+        
         if (uploadType.isHasHeader()) {
             iterator.next();
         }

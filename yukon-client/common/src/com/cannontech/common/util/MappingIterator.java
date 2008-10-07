@@ -1,8 +1,10 @@
 package com.cannontech.common.util;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.Iterator;
 
-public class MappingIterator<J,K> implements Iterator<K> {
+public class MappingIterator<J,K> implements Iterator<K>, Closeable {
     private final Iterator<? extends J> base;
     private final ObjectMapper<J, K> objectMapper;
 
@@ -26,6 +28,15 @@ public class MappingIterator<J,K> implements Iterator<K> {
     @Override
     public void remove() {
         base.remove();
+    }
+    
+    @Override
+    public void close() throws IOException {
+        
+        if (this.base instanceof Closeable) {
+            Closeable closeable = (Closeable) this.base;
+            closeable.close();
+        }
     }
 
 }

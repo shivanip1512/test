@@ -66,7 +66,7 @@ public class CSVWriter {
    public static final char NO_QUOTE_CHARACTER = '\u0000';
    
    /** Default line terminator uses platform encoding. */
-   public static final String DEFAULT_LINE_END = "\n";
+   public static final String DEFAULT_LINE_END = "\r\n";
 
    private static final SimpleDateFormat
     TIMESTAMP_FORMATTER = 
@@ -109,7 +109,7 @@ public class CSVWriter {
     *            the character to use for quoted elements
     */
    public CSVWriter(Writer writer, char separator, char quotechar) {
-    this(writer, separator, quotechar, "\n");
+    this(writer, separator, quotechar, DEFAULT_LINE_END);
    }
 
    /**
