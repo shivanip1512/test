@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_limit.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2008/10/02 18:27:30 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2008/10/07 20:30:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -39,7 +39,7 @@ DOUBLE CtiTablePointLimit::getLowLimit()      const  {  return _lowLimit;       
 INT    CtiTablePointLimit::getLimitDuration() const  {  return _limitDuration;  }
 
 
-void CtiTablePointLimit::getSQL(string &sql, LONG pointID, LONG paoID)
+void CtiTablePointLimit::getSQL(string &sql, LONG pointID, LONG paoID, const std::vector<long> &pointIds)
 {
    sql = "select pointid, limitnumber, highlimit, lowlimit, limitduration from pointlimits";
 
@@ -50,6 +50,18 @@ void CtiTablePointLimit::getSQL(string &sql, LONG pointID, LONG paoID)
    else if(paoID != 0)
    {
        sql += " where pointid in (select pointid from point where paobjectid = " + CtiNumStr(paoID) + ")";
+   }
+   else if(!pointIds.empty())
+   {
+       sql += " where pointid in (";
+       std::vector<long>::const_iterator iter = pointIds.begin();
+       sql += CtiNumStr(*iter);
+       iter++;
+       for(; iter != pointIds.end(); iter++)
+       {
+           sql += ", " + CtiNumStr(*iter);
+       }
+       sql += ")";
    }
 }
 

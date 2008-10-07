@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_alarm.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2008/10/02 18:27:30 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2008/10/07 20:30:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -187,7 +187,7 @@ bool CtiTablePointAlarming::operator<(const CtiTablePointAlarming &rhs) const
 
 
 //This SQL is only proper when we assume some things about alarmstates
-void CtiTablePointAlarming::getSQL(string &sql, LONG pointID, LONG paoID)
+void CtiTablePointAlarming::getSQL(string &sql, LONG pointID, LONG paoID, const std::vector<long> &pointIds)
 {
 
    sql = "select pointid, alarmstates, excludenotifystates, notifyonacknowledge,"
@@ -205,6 +205,18 @@ void CtiTablePointAlarming::getSQL(string &sql, LONG pointID, LONG paoID)
    if(paoID != 0)
    {
        sql += " AND pointid in (select pointid from point where paobjectid = " + CtiNumStr(paoID) + ")";
+   }
+   else if(!pointIds.empty())
+   {
+       sql += " AND pointid in (";
+       std::vector<long>::const_iterator iter = pointIds.begin();
+       sql += CtiNumStr(*iter);
+       iter++;
+       for(; iter != pointIds.end(); iter++)
+       {
+           sql += ", " + CtiNumStr(*iter);
+       }
+       sql += ")";
    }
 }
 

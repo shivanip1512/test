@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.195 $
-* DATE         :  $Date: 2008/10/02 18:27:29 $
+* REVISION     :  $Revision: 1.196 $
+* DATE         :  $Date: 2008/10/07 20:30:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -36,6 +36,7 @@
 #include "monitor.h"
 #include "cparms.h"
 #include "guard.h"
+#include <list>
 
 #include "netports.h"
 #include "queent.h"
@@ -360,6 +361,9 @@ void CtiVanGogh::VGMainThread()
         _appMonitorThread  = rwMakeThreadFunction(*this, &CtiVanGogh::VGAppMonitorThread);
         _appMonitorThread.start();
 
+        _cacheHandlerThread = rwMakeThreadFunction(*this, &CtiVanGogh::VGCacheHandlerThread);
+        _cacheHandlerThread.start();
+
          // Prime the connection to the notification server
          getNotificationConnection();
 
@@ -373,7 +377,19 @@ void CtiVanGogh::VGMainThread()
         for(;!bQuit;)
         {
             QueryPerformanceCounter(&getQTime);
-            MsgPtr = MainQueue_.getQueue( 1000 );
+            if((MsgPtr = DeferredQueue_.getQueue(0)) == NULL)
+            {
+                MsgPtr = MainQueue_.getQueue( 1000 );
+
+                if(MsgPtr != NULL)
+                {
+                    if(checkMessageForPreLoad(MsgPtr))
+                    {
+                        CacheQueue_.putQueue(MsgPtr);
+                        MsgPtr = NULL;
+                    }
+                }
+            }
 
             if(MsgPtr != NULL)
             {
@@ -1714,6 +1730,130 @@ void CtiVanGogh::VGTimedOperationThread()
         dout << CtiTime() << " Dispatch Timed Operation Thread shutting down" << endl;
     }
     ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "Timed Operation Thread", CtiThreadRegData::LogOut, CtiThreadMonitor::StandardMonitorTime ));
+
+    return;
+}
+
+void CtiVanGogh::VGCacheHandlerThread()
+{
+    UINT sanity = 0;
+    CtiMultiMsg *pMulti = 0;
+    CtiTime lastTickleTime((unsigned long) 0);
+    CtiTime lastReportTime((unsigned long) 0);
+    CtiMessage *MsgPtr, *MsgBasePtr;
+    CtiTime start, stop;
+    std::list<CtiMessage *>  msgList;
+    std::vector<long>        ptIdList;
+    CtiPointDataMsg         *pDataMsg;
+    CtiCommandMsg           *pCmdMsg;
+    CtiPointRegistrationMsg *pRegMsg;
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Cache Handler Thread starting as TID " << rwThreadId() << " (0x" << hex << rwThreadId() << dec << ")" << endl;
+    }
+
+    try
+    {
+        for(;!bGCtrlC;)
+        {
+            if(lastTickleTime.seconds() < (lastTickleTime.now().seconds() - CtiThreadMonitor::StandardTickleTime))
+            {
+                if(lastReportTime.seconds() < (lastReportTime.now().seconds() - CtiThreadMonitor::StandardMonitorTime))
+                {
+                    lastReportTime = lastReportTime.now();
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " Dispatch Cache Handler Thread Active. TID:  " << rwThreadId() << endl;
+                }
+                CtiThreadRegData *data;
+                if( ShutdownOnThreadTimeout )
+                {
+                    data = CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "Cache Handler Thread", CtiThreadRegData::Action,
+                                                        CtiThreadMonitor::StandardMonitorTime, &CtiVanGogh::sendbGCtrlC, CTIDBG_new string("Timed Operation Thread") );
+                }
+                else
+                {
+                    data = CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "Cache Handler Thread", CtiThreadRegData::None, CtiThreadMonitor::StandardMonitorTime );
+                }
+                ThreadMonitor.tickle( data );
+                lastTickleTime = lastTickleTime.now();
+
+            }
+
+            MsgPtr = CacheQueue_.getQueue(5000);
+            start = start.now();
+            while(MsgPtr != NULL)
+            {
+                //This loads the point id list.
+                findPreLoadPointId(MsgPtr, ptIdList);
+
+                //We have gotten the data we need from the message, put the message on the outgoing list
+                msgList.push_back(MsgPtr);
+                MsgPtr = NULL;
+
+                if(ptIdList.size() < 256) //Note that it is very possible to go over this number.
+                {
+                    MsgPtr = CacheQueue_.getQueue(10);
+                }
+            }
+
+            if(ptIdList.size() > 0)
+            {
+                SYSTEMTIME startTime, endTime;
+                GetLocalTime(&startTime);
+
+                PointMgr.refreshListByPointIDs(ptIdList);
+
+                if(gDispatchDebugLevel & DISPATCH_DEBUG_PERFORMANCE)
+                {
+                    GetLocalTime(&endTime);
+                    int ms = (endTime.wMinute - startTime.wMinute) * 60000 +
+                             (endTime.wSecond - startTime.wSecond) * 1000  +
+                             (endTime.wMilliseconds - startTime.wMilliseconds);
+        
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** PERFORMANCE CHECK **** " << endl;
+                    dout << "RefreshListByPointIDs took " << ms << "ms to do " << ptIdList.size() << " points" << endl;
+                }
+
+                ptIdList.clear();
+            }
+
+            if(msgList.size() > 0)
+            {
+                for(std::list<CtiMessage *>::iterator iter = msgList.begin(); iter != msgList.end(); iter++)
+                {
+                    DeferredQueue_.putQueue(*iter);
+                }
+                msgList.clear();
+            }
+
+            stop = stop.now();
+
+            if( stop.seconds() - start.seconds() > 1 )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << "Cache Handler took " << stop.seconds() - start.seconds() << " seconds to run." << endl;
+            }
+        }
+    }
+    catch(RWxmsg& msg )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << "Error: " << msg.why() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+    catch( ... )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    // And let'em know were A.D.
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Dispatch Cache Handler Thread shutting down" << endl;
+    }
+    ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "Cache Handler Thread", CtiThreadRegData::LogOut, CtiThreadMonitor::StandardMonitorTime ));
 
     return;
 }
@@ -4836,8 +4976,8 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
             }
 
             // This loads up the points that VanGogh will manage.
-            if( pChg == NULL || (pChg->getDatabase() == ChangePointDb) ||
-               (pChg->getDatabase() == ChangePAODb && pChg->getTypeOfChange() == ChangeTypeAdd) )
+            if( pChg != NULL && ((pChg->getDatabase() == ChangePointDb) ||
+               (pChg->getDatabase() == ChangePAODb && pChg->getTypeOfChange() == ChangeTypeAdd)) )
             {
                 CtiServerExclusion pmguard(_server_exclusion, 10000);
                 if(pmguard.isAcquired())
@@ -8597,3 +8737,171 @@ bool CtiVanGogh::limitStateCheck( const int alarm, const CtiTablePointLimit &lim
    return (direction != LIMIT_IN_RANGE);
 }
 
+//Returns true if this message needs pre-loading
+bool CtiVanGogh::checkMessageForPreLoad(CtiMessage *MsgPtr)
+{
+    SYSTEMTIME startTime, endTime;
+    GetLocalTime(&startTime);
+    
+    bool retVal = false;
+    if(MsgPtr != NULL)
+    {
+        if(MsgPtr->isA() == MSG_SERVER_REQUEST)
+        {
+            CtiServerRequestMsg *pSvrReq = (CtiServerRequestMsg*)MsgPtr;
+            MsgPtr = (CtiMessage*)pSvrReq->getPayload();
+        }
+    
+        if(MsgPtr->isA() == MSG_POINTDATA)
+        {
+            CtiPointDataMsg *pDataMsg = (CtiPointDataMsg*)MsgPtr;
+            if(!PointMgr.checkEqual(pDataMsg->getId()))
+            {
+                retVal = true;
+            }
+        }
+        else if(MsgPtr->isA() == MSG_SIGNAL)
+        {
+            CtiSignalMsg *pSigMsg = (CtiSignalMsg*)MsgPtr;
+            if(!PointMgr.checkEqual(pSigMsg->getId()))
+            {
+                retVal = true;
+            }
+        }
+        else if(MsgPtr->isA() == MSG_POINTREGISTRATION)
+        {
+            CtiPointRegistrationMsg *pRegMsg = (CtiPointRegistrationMsg*)MsgPtr;
+            for(int i = 0; i< pRegMsg->getCount(); i++)
+            {
+                if(!PointMgr.checkEqual((*pRegMsg)[i]))
+                {
+                    retVal = true;
+                    break;
+                }
+            }
+        }
+        else if(MsgPtr->isA() == MSG_COMMAND)
+        {
+            CtiCommandMsg *pCmdMsg = (CtiCommandMsg*)MsgPtr;
+            if(pCmdMsg->getOperation() == CtiCommandMsg::PointDataRequest)
+            {
+                for(int i = 0; i < pCmdMsg->getOpArgList().size(); i++ )
+                {
+                    if(!PointMgr.checkEqual(pCmdMsg->getOpArgList()[i]))
+                    {
+                        retVal = true;
+                        break;
+                    }
+                }
+                
+            }
+        }
+        else if(MsgPtr->isA() == MSG_MULTI || MsgPtr->isA() == MSG_PCRETURN)
+        {
+            CtiMultiMsg *pMulti = (CtiMultiMsg*)MsgPtr;
+            for(int i = 0; i < pMulti->getData().size(); i++)
+            {
+                retVal = checkMessageForPreLoad((CtiMessage*)pMulti->getData()[i]);
+                if(retVal == true)
+                {
+                    break;
+                }
+            }
+        }
+
+        if(gDispatchDebugLevel & DISPATCH_DEBUG_PERFORMANCE)
+        {
+            GetLocalTime(&endTime);
+            int ms = (endTime.wMinute - startTime.wMinute) * 60000 +
+                     (endTime.wSecond - startTime.wSecond) * 1000  +
+                     (endTime.wMilliseconds - startTime.wMilliseconds);
+
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** PERFORMANCE CHECK **** " << endl;
+            dout << "CheckMessageForPreLoad took " << ms << "ms" << endl;
+        }
+        
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** CHECKPOINT **** INVALID POINTER " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+    return retVal;
+}
+
+void CtiVanGogh::findPreLoadPointId(CtiMessage *MsgPtr, std::vector<long> &ptIdList)
+{
+    SYSTEMTIME startTime, endTime;
+    GetLocalTime(&startTime);
+
+    if(MsgPtr != NULL)
+    {
+        if(MsgPtr->isA() == MSG_SERVER_REQUEST)
+        {
+            CtiServerRequestMsg *pSvrReq = (CtiServerRequestMsg*)MsgPtr;
+            MsgPtr = (CtiMessage*)pSvrReq->getPayload();
+        }
+        
+        if(MsgPtr->isA() == MSG_POINTDATA)
+        {
+            CtiPointDataMsg *pDataMsg = (CtiPointDataMsg*)MsgPtr;
+            ptIdList.push_back(pDataMsg->getId());
+        }
+        else if(MsgPtr->isA() == MSG_SIGNAL)
+        {
+            CtiSignalMsg *pSigMsg = (CtiSignalMsg*)MsgPtr;
+            ptIdList.push_back(pSigMsg->getId());
+        }
+        else if(MsgPtr->isA() == MSG_POINTREGISTRATION)
+        {
+            CtiPointRegistrationMsg *pRegMsg = (CtiPointRegistrationMsg*)MsgPtr;
+            for(int i = 0; i< pRegMsg->getCount(); i++)
+            {
+                if(!PointMgr.checkEqual((*pRegMsg)[i]))
+                {
+                    ptIdList.push_back((*pRegMsg)[i]);
+                }
+            }
+        }
+        else if(MsgPtr->isA() == MSG_COMMAND)
+        {
+            CtiCommandMsg *pCmdMsg = (CtiCommandMsg*)MsgPtr;
+            if(pCmdMsg->getOperation() == CtiCommandMsg::PointDataRequest)
+            {
+                for(int i = 0; i < pCmdMsg->getOpArgList().size(); i++ )
+                {
+                    if(!PointMgr.checkEqual(pCmdMsg->getOpArgList()[i]))
+                    {
+                        ptIdList.push_back(pCmdMsg->getOpArgList()[i]);
+                    }
+                }
+            }
+        }
+        else if(MsgPtr->isA() == MSG_MULTI || MsgPtr->isA() == MSG_PCRETURN)
+        {
+            CtiMultiMsg *pMulti = (CtiMultiMsg*)MsgPtr;
+            for(int i = 0; i < pMulti->getData().size(); i++)
+            {
+                findPreLoadPointId((CtiMessage*)pMulti->getData()[i], ptIdList);
+            }
+        }
+
+        if(gDispatchDebugLevel & DISPATCH_DEBUG_PERFORMANCE)
+        {
+            GetLocalTime(&endTime);
+            int ms = (endTime.wMinute - startTime.wMinute) * 60000 +
+                     (endTime.wSecond - startTime.wSecond) * 1000  +
+                     (endTime.wMilliseconds - startTime.wMilliseconds);
+
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** PERFORMANCE CHECK **** " << endl;
+            dout << "FindPreLoadPointId took " << ms << "ms" << endl;
+        }
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** CHECKPOINT **** INVALID POINTER " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+}

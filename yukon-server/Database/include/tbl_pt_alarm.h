@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_pt_alarm.h-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2008/10/02 18:27:30 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2008/10/07 20:30:51 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -128,7 +128,7 @@ public:
 
    bool operator<(const CtiTablePointAlarming &rhs) const;
 
-   static void getSQL(string &sql, LONG pointID = 0, LONG paoID = 0);
+   static void getSQL(string &sql, LONG pointID = 0, LONG paoID = 0, const std::vector<long> &pointIds = std::vector<long>());
    static string getTableName();
 
    LONG getPointID()                        const;

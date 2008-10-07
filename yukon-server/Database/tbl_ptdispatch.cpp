@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_ptdispatch.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2008/08/25 19:47:32 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2008/10/07 20:30:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,7 +31,7 @@ _quality(UnintializedQuality),
 _value(0),
 _tags(0),
 //_staleCount(0),
-_lastAlarmLogID(0),
+//_lastAlarmLogID(0),
 _nextArchiveTime(CtiTime(YUKONEOT+86400))
 {
     setTimeStampMillis(0);
@@ -48,7 +48,7 @@ _quality(quality),
 _value(value),
 _tags(0),
 //_staleCount(0),
-_lastAlarmLogID(0),
+//_lastAlarmLogID(0),
 _nextArchiveTime(CtiTime(YUKONEOT - 86400))
 {
     setTimeStampMillis(millis);
@@ -83,7 +83,7 @@ CtiTablePointDispatch& CtiTablePointDispatch::operator=(const CtiTablePointDispa
         setTags( right.getTags() );
         setNextArchiveTime( right.getNextArchiveTime() );
         //setStaleCount( right.getStaleCount() );
-        setLastAlarmLogID( right.getLastAlarmLogID() );
+        //setLastAlarmLogID( right.getLastAlarmLogID() );
     }
 
     return *this;
@@ -111,7 +111,7 @@ void CtiTablePointDispatch::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBS
     keyTable["tags"]        <<
     keyTable["nextarchive"] <<
     //keyTable["stalecount"]  <<
-    keyTable["lastalarmlogid"] <<
+    //keyTable["lastalarmlogid"] <<
     keyTable["millis"];
 
     selector.from(keyTable);
@@ -133,7 +133,7 @@ RWDBStatus CtiTablePointDispatch::Restore()
     table["tags"] <<
     table["nextarchive"] <<
     //table["stalecount"]  <<
-    table["lastalarmlogid"] <<
+    //table["lastalarmlogid"] <<
     table["millis"];
 
     selector.where( table["pointid"] == getPointID() );
@@ -180,7 +180,7 @@ RWDBStatus CtiTablePointDispatch::Update(RWDBConnection &conn)
         table["tags"].assign(getTags()) <<
         table["nextarchive"].assign(toRWDBDT(getNextArchiveTime())) <<
         table["stalecount"].assign(getStaleCount())  <<
-        table["lastalarmlogid"].assign(getLastAlarmLogID()) <<
+        //table["lastalarmlogid"].assign(getLastAlarmLogID()) <<
         table["millis"].assign(getTimeStampMillis());
     
         ExecuteUpdater(conn,updater,__FILE__,__LINE__);
@@ -273,7 +273,7 @@ void CtiTablePointDispatch::DecodeDatabaseReader(RWDBReader& rdr )
     rdr >> _tags;
     rdr >> _nextArchiveTime;
     //rdr >> _staleCount;
-    rdr >> _lastAlarmLogID;
+    //rdr >> _lastAlarmLogID;
     rdr >> millis;
 
     setTimeStampMillis(millis);
@@ -389,18 +389,18 @@ UINT CtiTablePointDispatch::resetTags(UINT mask)
     return _tags;
 }
 
-
+//THIS IS UNUSED
 UINT CtiTablePointDispatch::getStaleCount() const
 {
     return 0; //_stalecount
 }
 
-CtiTablePointDispatch& CtiTablePointDispatch::setStaleCount(UINT stalecount)
+/*CtiTablePointDispatch& CtiTablePointDispatch::setStaleCount(UINT stalecount)
 {
     //setDirty(TRUE);
    // _staleCount = stalecount;
     return *this;
-}
+}*/
 
 const CtiTime& CtiTablePointDispatch::getNextArchiveTime() const
 {
@@ -474,15 +474,16 @@ void CtiTablePointDispatch::dump()
 
 }
 
+//THIS IS UNUSED!
 ULONG CtiTablePointDispatch::getLastAlarmLogID() const
 {
-    return _lastAlarmLogID;
+    return 0;
 }
 
-CtiTablePointDispatch& CtiTablePointDispatch::setLastAlarmLogID(ULONG logID)
+/*CtiTablePointDispatch& CtiTablePointDispatch::setLastAlarmLogID(ULONG logID)
 {
     setDirty(TRUE);
     _lastAlarmLogID = logID;
     return *this;
-}
+}*/
 

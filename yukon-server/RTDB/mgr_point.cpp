@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.56 $
-* DATE         :  $Date: 2008/10/07 15:03:46 $
+* REVISION     :  $Revision: 1.57 $
+* DATE         :  $Date: 2008/10/07 20:30:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -717,9 +717,14 @@ void CtiPointManager::addPoint( CtiPointBase *point )
 
 CtiPointManager::ptr_type CtiPointManager::getEqual (LONG Pt)
 {
-    updateAccess(Pt);
+    CtiPointManager::ptr_type retVal = _smartMap.find(Pt);
 
-    return _smartMap.find(Pt);
+    if(retVal)
+    {
+        updateAccess(Pt);
+    }
+
+    return retVal;
 }
 
 CtiPointManager::ptr_type CtiPointManager::getEqualByName(LONG pao, string pname)
@@ -940,7 +945,7 @@ void CtiPointManager::apply(void (*applyFun)(const long, ptr_type, void*), void*
         int trycount = 0;
 
         #if 1
-        coll_type::reader_lock_guard_t guard(getLock());
+        coll_type::writer_lock_guard_t guard(getLock());
 
         while(!guard.isAcquired())
         {

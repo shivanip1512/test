@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/mgr_ptclients.h-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2008/10/02 18:27:29 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2008/10/07 20:30:51 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -60,11 +60,12 @@ private:
 
    typedef CtiPointManager Inherited;
 
-   void refreshAlarming           (LONG pntID, LONG paoID);
-   void refreshProperties         (LONG pntID, LONG paoID);
-   void refreshReasonabilityLimits(LONG pntID, LONG paoID);
-   void refreshPointLimits        (LONG pntID, LONG paoID);
-   void processPointDynamicData   (LONG pntID, LONG paoID);
+   void refreshAlarming           (LONG pntID, LONG paoID, const std::vector<long> &ids = std::vector<long>());
+   void refreshProperties         (LONG pntID, LONG paoID, const std::vector<long> &ids = std::vector<long>());
+   void refreshReasonabilityLimits(LONG pntID, LONG paoID, const std::vector<long> &ids = std::vector<long>());
+   void refreshPointLimits        (LONG pntID, LONG paoID, const std::vector<long> &ids = std::vector<long>());
+   void RefreshDynamicData        (LONG pntID = 0,         const std::vector<long> &ids = std::vector<long>());
+   void processPointDynamicData   (LONG pntID, LONG paoID, const std::vector<long> &ids = std::vector<long>());
 
 protected:
 
@@ -76,6 +77,10 @@ public:
 
    virtual ~CtiPointClientManager();
    virtual void refreshList(LONG pntID = 0, LONG paoID = 0, CtiPointType_t pntType = InvalidPointType);
+   virtual void refreshListByPointIDs(const std::vector<long> &ids);
+
+   virtual Inherited::ptr_type getEqual(LONG Pt);
+   bool                      checkEqual(LONG Pt);
 
    void DumpList(void);
    virtual void DeleteList(void);
@@ -89,13 +94,13 @@ public:
 
    void validateConnections();
    void storeDirtyRecords();
-   void RefreshDynamicData(LONG id = 0);
 
    bool hasReasonabilityLimits(LONG pointid);
    ReasonabilityLimitStruct getReasonabilityLimits(LONG pointID);
    CtiTablePointLimit       getPointLimit(LONG pointID, LONG limitNum);  //  is copying the table cheap/fast enough?
    CtiTablePointAlarming    getAlarming  (LONG pointID);                 //    if not, we'll need to return smart pointers
    CtiDynamicPointDispatch *getDynamic   (LONG pointID);    //  I have the feeling that dynamic data and point properties should
+   bool                     setDynamic   (long pointID, CtiDynamicPointDispatch *point);
    int  getProperty (LONG pointID, unsigned int property);  //    be smart pointers, since we're playing fast and loose with
    bool hasProperty (LONG pointID, unsigned int property);  //    deletions and reloads
 

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ctivangogh.h-arc  $
-* REVISION     :  $Revision: 1.55 $
-* DATE         :  $Date: 2008/10/02 18:27:29 $
+* REVISION     :  $Revision: 1.56 $
+* DATE         :  $Date: 2008/10/07 20:30:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -108,6 +108,7 @@ private:
     RWThreadFunction  _dbSigThread;
     RWThreadFunction  _dbSigEmailThread;
     RWThreadFunction  _appMonitorThread;
+    RWThreadFunction  _cacheHandlerThread;
 
     CtiFIFOQueue< CtiSignalMsg > _signalMsgPostQueue;   // Messages are processed out of this queue for emailing.
 
@@ -157,6 +158,8 @@ private:
     void sendPointTriggers( const CtiPointDataMsg &aPD , CtiPointSPtr point );
     void sendPendingControlRequest(const CtiPointDataMsg &aPD, CtiPointSPtr point, PtVerifyTriggerSPtr verificationPtr);
     bool limitStateCheck( const int alarm, const CtiTablePointLimit &limit, double val, int &direction);
+    bool checkMessageForPreLoad(CtiMessage *MsgPtr);
+    void findPreLoadPointId(CtiMessage *MsgPtr, std::vector<long> &ptIdList);
 
     CtiPointDataMsg* createPointDataMsg(const CtiDynamicPointDispatch& pDyn);
 
@@ -203,6 +206,7 @@ public:
     void  VGDBSignalEmailThread();
     void  VGRPHWriterThread();
     void  VGAppMonitorThread();
+    void  VGCacheHandlerThread();
 
     INT   archivePointDataMessage(const CtiPointDataMsg &aPD);
     INT   archiveSignalMessage(const CtiSignalMsg& aSig);

@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_point.h-arc  $
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2008/10/07 15:03:46 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2008/10/07 20:30:51 $
 *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
  * All Rights Reserved
@@ -121,9 +121,9 @@ public:
 
     void     apply(void (*applyFun)(const long, ptr_type, void*), void* d);
 
+    virtual ptr_type getEqual(LONG Pt);
     ptr_type getControlOffsetEqual(LONG pao, INT Offset);
     ptr_type getOffsetTypeEqual(LONG pao, INT Offset, CtiPointType_t Type);
-    ptr_type getEqual(LONG Pt);
     ptr_type getEqualByName(LONG pao, string pname);
     void     getEqualByPAO(long pao, std::vector<ptr_type> &points);
     long     getPAOIdForPointId(long pointid);

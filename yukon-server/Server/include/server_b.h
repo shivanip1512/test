@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/INCLUDE/server_b.h-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2007/04/20 19:48:24 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2008/10/07 20:30:51 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -82,7 +82,9 @@ protected:
     */
    CtiSmartMap< CtiConnectionManager > mConnectionTable;
 
-   CtiConnection::Que_t          MainQueue_;    // Main queue (Message is the base class) Priority queue)
+   CtiConnection::Que_t          MainQueue_;        // Main queue (Message is the base class) Priority queue)
+   CtiConnection::Que_t          DeferredQueue_;    // Deferred queue (Message is the base class) Priority queue)
+   CtiFIFOQueue<CtiMessage>      CacheQueue_;       // Cache queue, holds points we need to load.
 
    RWInetPort                    NetPort;
    RWInetAddr                    NetAddr;    // This one for this server!

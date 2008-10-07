@@ -45,7 +45,7 @@ protected:
     UINT           _tags;
     //UINT           _staleCount;
 
-    ULONG          _lastAlarmLogID;
+    //ULONG          _lastAlarmLogID;
 
 private:
 
@@ -101,14 +101,14 @@ private:
     CtiTablePointDispatch& setNextArchiveTime(const CtiTime& timestamp);
 
     ULONG getLastAlarmLogID() const;
-    CtiTablePointDispatch& setLastAlarmLogID(ULONG logID);
+    //CtiTablePointDispatch& setLastAlarmLogID(ULONG logID);
 
     UINT getTags() const;
     UINT setTags(UINT tags);
     UINT resetTags(UINT mask = 0xffffffff);
 
     UINT getStaleCount() const;
-    CtiTablePointDispatch& setStaleCount(UINT tags);
+    //CtiTablePointDispatch& setStaleCount(UINT tags);
 
     virtual void dump();
 
