@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/mgr_ptclients.cpp-arc  $
-* REVISION     :  $Revision: 1.44 $
-* DATE         :  $Date: 2008/10/08 15:13:02 $
+* REVISION     :  $Revision: 1.45 $
+* DATE         :  $Date: 2008/10/08 16:46:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -784,13 +784,14 @@ void CtiPointClientManager::refreshReasonabilityLimits(LONG pntID, LONG paoID, c
     else if(!pointIds.empty())
     {
         sql += " AND pointid in (";
-        set<long>::const_iterator pointid_itr = pointIds.begin(),
-                                  pointid_end = pointIds.end();
 
-        for( ; pointid_itr != pointid_end; ++pointid_itr )
-        {
-           sql += ", " + CtiNumStr(*pointid_itr);
-        }
+        ostringstream in_list;
+        csv_output_iterator<long, ostringstream> csv_out(in_list);
+
+        copy(pointIds.begin(), pointIds.end(), csv_out);
+
+        sql += in_list.str();
+
         sql += ")";
     }
     else
