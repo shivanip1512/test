@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/mgr_ptclients.h-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2008/10/08 14:17:03 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2008/10/08 20:44:58 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -48,6 +48,7 @@ private:
    typedef std::set<CtiTablePointAlarming>          PointAlarmingSet;
    typedef std::multimap<long, CtiTablePointProperty *> PointPropertyMap;
    typedef std::map<long, CtiDynamicPointDispatch *>    DynamicPointDispatchMap;
+   typedef std::map<long, CtiDynamicPointDispatch *>::iterator DynamicPointDispatchIterator;
    typedef std::map<long, CtiPointConnection>           PointConnectionMap;
 
    ConnectionMgrPointMap    _conMgrPointMap;
@@ -55,8 +56,11 @@ private:
    PointLimitSet            _limits;
    PointAlarmingSet         _alarming;
    PointPropertyMap         _properties;
-   DynamicPointDispatchMap  _dynamic;
    PointConnectionMap       _pointConnectionMap;
+
+   // Store for the dynamic data on a point. It reflects dynamic database data.
+   // This should be is removed from on point deletion but not expiration.
+   DynamicPointDispatchMap  _dynamic; 
 
    typedef CtiPointManager Inherited;
 
@@ -67,9 +71,13 @@ private:
    void RefreshDynamicData        (LONG pntID = 0,         const std::set<long> &ids = std::set<long>());
    void processPointDynamicData   (LONG pntID, LONG paoID, const std::set<long> &ids = std::set<long>());
 
+   void getDirtyRecordList(list<CtiTablePointDispatch> &updateList);
+   void writeRecordsToDB  (list<CtiTablePointDispatch> &updateList);
+   void removeOldDynamicData();
+
 protected:
 
-   virtual void removePoint(Inherited::ptr_type pTempCtiPoint);
+   virtual void removePoint(Inherited::ptr_type pTempCtiPoint, bool isExpiration = false);
 
 public:
 

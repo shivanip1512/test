@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/mgr_ptclients.cpp-arc  $
-* REVISION     :  $Revision: 1.45 $
-* DATE         :  $Date: 2008/10/08 16:46:31 $
+* REVISION     :  $Revision: 1.46 $
+* DATE         :  $Date: 2008/10/08 20:44:58 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -150,6 +150,7 @@ void CtiPointClientManager::refreshList(LONG pntID, LONG paoID, CtiPointType_t p
     refreshAlarming(pntID, paoID);
     refreshReasonabilityLimits(pntID, paoID);
     refreshPointLimits(pntID, paoID);
+    refreshProperties(pntID, paoID);
 
     if(pntID != 0 || paoID != 0)
     {
@@ -173,6 +174,7 @@ void CtiPointClientManager::refreshListByPointIDs(const set<long> &ids)
     refreshAlarming(0, 0, ids);
     refreshReasonabilityLimits(0, 0, ids);
     refreshPointLimits(0, 0, ids);
+    refreshProperties(0, 0, ids);
 
     processPointDynamicData(0, 0, ids);
 }
@@ -565,70 +567,131 @@ void CtiPointClientManager::scanForArchival(const CtiTime &Now, CtiFIFOQueue<Cti
     return;
 }
 
-void CtiPointClientManager::storeDirtyRecords()
+void CtiPointClientManager::getDirtyRecordList(list<CtiTablePointDispatch> &updateList)
 {
-    int count = 0;
-    list<CtiTablePointDispatch>           updateList;
-    list<CtiTablePointDispatch>::iterator updateListIter;
+    ptr_type pPt;
+    coll_type::writer_lock_guard_t guard(getLock());
+    spiterator itr = Inherited::begin();
+    spiterator end = Inherited::end();
 
+    for( ;itr != end; itr++)
     {
-        coll_type::writer_lock_guard_t guard(getLock());
-        spiterator itr = Inherited::begin();
-        spiterator end = Inherited::end();
-
-        for( ;itr != end; itr++)
+        try
         {
-            CtiPointSPtr pPt = itr->second;
-
-            try
+            pPt = itr->second;
+            if(pPt)
             {
                 CtiDynamicPointDispatch *pDyn = getDynamic(pPt->getPointID());
-
+    
                 if(pDyn != NULL && (pDyn->getDispatch().isDirty() || !pDyn->getDispatch().getUpdatedFlag()) )
                 {
                     UINT statictags = pDyn->getDispatch().getTags();
                     pDyn->getDispatch().resetTags();                    // clear them all!
                     pDyn->getDispatch().setTags(pPt->adjustStaticTags(statictags));   // make the static tags match...
-
+    
                     updateList.push_back(pDyn->getDispatch());
                     pDyn->getDispatch().resetDirty();
                     pDyn->getDispatch().setUpdatedFlag();
-
-                    count++;
                 }
             }
-            catch(...)
+        }
+        catch(...)
+        {
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
+        }
+    }
+}
+
+void CtiPointClientManager::writeRecordsToDB(list<CtiTablePointDispatch> &updateList)
+{
+    int count = 0;
+    string dyndisp("dyndisp");
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
+    list<CtiTablePointDispatch>::iterator updateListIter;
+
+    conn.beginTransaction(dyndisp.c_str());
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " WRITING " << updateList.size() << " dynamic dispatch records. " << endl;
+    }
+
+    for(updateListIter = updateList.begin(); updateListIter != updateList.end(); updateListIter++)
+    {
+        count ++;
+        if(!updateListIter->getUpdatedFlag())
+        {
+            updateListIter->Insert(conn);
+        }
+        else
+        {
+            updateListIter->Update(conn);
+        }
+
+        if(count % 1000 == 0)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " WRITING dynamic dispatch records to DB, " << count << " records written. " << endl;
+        }
+    }
+    updateList.clear();
+
+    conn.commitTransaction(dyndisp.c_str());
+}
+
+void CtiPointClientManager::removeOldDynamicData()
+{
+    int count;
+    coll_type::writer_lock_guard_t guard(getLock());
+    DynamicPointDispatchIterator itr = _dynamic.begin();
+    DynamicPointDispatchIterator end = _dynamic.end();
+
+    for( ;itr != end;)
+    {
+        try
+        {
+            if(!getEqual(itr->first))
+            {
+                itr = _dynamic.erase(itr);
+                count ++;
+            }
+            else
+            {
+                itr++;
+            }
+        }
+        catch(...)
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+            break;
         }
     }
 
     {
-        string dyndisp("dyndisp");
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection();
-
-        conn.beginTransaction(dyndisp.c_str());
-
-        for(updateListIter = updateList.begin(); updateListIter != updateList.end(); updateListIter++)
-        {
-            if(!updateListIter->getUpdatedFlag())
-            {
-                updateListIter->Insert(conn);
-            }
-            else
-            {
-                updateListIter->Update(conn);
-            }
-        }
-        updateList.clear();
-
-        conn.commitTransaction(dyndisp.c_str());
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " PURGED " << count << " records from memory." << endl;
     }
+}
+
+void CtiPointClientManager::storeDirtyRecords()
+{
+    int count = 0;
+    list<CtiTablePointDispatch> updateList;
+
+    getDirtyRecordList(updateList);
+
+    count = updateList.size();
+
+    writeRecordsToDB(updateList);
+
+    removeOldDynamicData();
 
     if(count > 0 && gDispatchDebugLevel & DISPATCH_DEBUG_VERBOSE)
     {
@@ -882,15 +945,29 @@ void CtiPointClientManager::refreshPointLimits(LONG pntID, LONG paoID, const set
 
 
 
-//Virtual function, removes all internal references to a single point
-void CtiPointClientManager::removePoint(Inherited::ptr_type pTempCtiPoint)
+//Virtual function, removes almost all internal references to a single point
+//If this is an expiration, the dynamic data is not erased.
+void CtiPointClientManager::removePoint(Inherited::ptr_type pTempCtiPoint, bool isExpiration)
 {
     if( pTempCtiPoint )
     {
+        long pointID = pTempCtiPoint->getID();
         for( ConnectionMgrPointMap::iterator iter = _conMgrPointMap.begin(); iter != _conMgrPointMap.end(); iter++ )
         {
-            iter->second.erase(pTempCtiPoint->getPointID());
+            iter->second.erase(pointID);
         }
+
+        if(!isExpiration)
+        {
+            _dynamic.erase(pointID);
+        }
+
+        _reasonabilityLimits.erase(pointID);
+        _limits.erase(CtiTablePointLimit(pointID, 0));
+        _limits.erase(CtiTablePointLimit(pointID, 1));
+        _alarming.erase(pointID);
+        _properties.erase(pointID);
+        _pointConnectionMap.erase(pointID);
     }
 
     Inherited::removePoint(pTempCtiPoint);
@@ -898,9 +975,7 @@ void CtiPointClientManager::removePoint(Inherited::ptr_type pTempCtiPoint)
 
 bool CtiPointClientManager::checkEqual(LONG Pt)
 {
-    Inherited::ptr_type retVal = Inherited::getEqual(Pt);
-
-    return retVal ? true : false;
+    return Inherited::getEqual(Pt);
 }
 
 CtiPointManager::ptr_type CtiPointClientManager::getEqual(LONG Pt)

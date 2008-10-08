@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_ptdispatch.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2008/10/07 20:30:50 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2008/10/08 20:44:58 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -272,8 +272,6 @@ void CtiTablePointDispatch::DecodeDatabaseReader(RWDBReader& rdr )
     rdr >> _value;
     rdr >> _tags;
     rdr >> _nextArchiveTime;
-    //rdr >> _staleCount;
-    //rdr >> _lastAlarmLogID;
     rdr >> millis;
 
     setTimeStampMillis(millis);
@@ -389,18 +387,11 @@ UINT CtiTablePointDispatch::resetTags(UINT mask)
     return _tags;
 }
 
-//THIS IS UNUSED
+// getStaleCount always returns 0
 UINT CtiTablePointDispatch::getStaleCount() const
 {
     return 0; //_stalecount
 }
-
-/*CtiTablePointDispatch& CtiTablePointDispatch::setStaleCount(UINT stalecount)
-{
-    //setDirty(TRUE);
-   // _staleCount = stalecount;
-    return *this;
-}*/
 
 const CtiTime& CtiTablePointDispatch::getNextArchiveTime() const
 {
@@ -433,7 +424,6 @@ CtiTablePointDispatch& CtiTablePointDispatch::applyNewReading(const CtiTime& tim
 
         setTags( tags );
         setNextArchiveTime( archivetime );
-        //setStaleCount( count );
 
         setDirty(TRUE);
     }
@@ -446,7 +436,6 @@ CtiTablePointDispatch& CtiTablePointDispatch::applyNewReading(const CtiTime& tim
 
         setTags( tags );
         setNextArchiveTime( archivetime );
-        //setStaleCount( count );
 
         setDirty(TRUE);
     }
@@ -467,23 +456,14 @@ void CtiTablePointDispatch::dump()
         dout << " Quality                                  : " << _quality << endl;
         dout << " Next Archive Time                        : " << _nextArchiveTime << endl;
         dout << " Tags                                     : 0x" << hex << setw(8) << _tags << dec << endl;
-        //dout << " Stale Count                              : " << _staleCount << endl;
 
         dout.fill(oldFill);
     }
 
 }
 
-//THIS IS UNUSED!
+// getLastAlarmLogID always returns 0
 ULONG CtiTablePointDispatch::getLastAlarmLogID() const
 {
     return 0;
 }
-
-/*CtiTablePointDispatch& CtiTablePointDispatch::setLastAlarmLogID(ULONG logID)
-{
-    setDirty(TRUE);
-    _lastAlarmLogID = logID;
-    return *this;
-}*/
-

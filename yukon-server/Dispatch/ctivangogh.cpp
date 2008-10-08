@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.197 $
-* DATE         :  $Date: 2008/10/08 14:17:03 $
+* REVISION     :  $Revision: 1.198 $
+* DATE         :  $Date: 2008/10/08 20:44:58 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -99,6 +99,8 @@ using namespace std;
 #define CONFRONT_RATE            300            // Ask every client to post once per 5 minutes or be terminated
 #define UPDATERTDB_RATE          3600           // Save all dirty point records once per n seconds
 #define SANITY_RATE              300
+#define POINT_EXPIRE_CHECK_RATE  60
+#define DYNAMIC_LOAD_SIZE        256
 
 #define PERF_TO_MS(b,a,p) (UINT)(((b).QuadPart - (a).QuadPart) / ((p).QuadPart / 1000L))
 
@@ -1740,6 +1742,7 @@ void CtiVanGogh::VGCacheHandlerThread()
     CtiMultiMsg *pMulti = 0;
     CtiTime lastTickleTime((unsigned long) 0);
     CtiTime lastReportTime((unsigned long) 0);
+    CtiTime lastPointExpireTime; //No need to do this on start up.
     CtiMessage *MsgPtr, *MsgBasePtr;
     CtiTime start, stop;
     list<CtiMessage *>       msgList;
@@ -1780,6 +1783,11 @@ void CtiVanGogh::VGCacheHandlerThread()
 
             }
 
+            if(lastPointExpireTime.seconds() < (lastPointExpireTime.now().seconds() - POINT_EXPIRE_CHECK_RATE))
+            {
+                PointMgr.processExpired();
+            }
+
             MsgPtr = CacheQueue_.getQueue(5000);
             start = start.now();
             while(MsgPtr != NULL)
@@ -1791,7 +1799,7 @@ void CtiVanGogh::VGCacheHandlerThread()
                 msgList.push_back(MsgPtr);
                 MsgPtr = NULL;
 
-                if(ptIdList.size() < 256) //Note that it is very possible to go over this number.
+                if(ptIdList.size() < DYNAMIC_LOAD_SIZE) //Note that it is very possible to go over this number.
                 {
                     MsgPtr = CacheQueue_.getQueue(10);
                 }

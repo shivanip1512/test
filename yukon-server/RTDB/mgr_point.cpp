@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.58 $
-* DATE         :  $Date: 2008/10/08 19:57:26 $
+* REVISION     :  $Revision: 1.59 $
+* DATE         :  $Date: 2008/10/08 20:44:58 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1085,14 +1085,14 @@ void CtiPointManager::processExpired()
     //  erase all expired points
     for( ; pointid_itr != pointid_end; ++pointid_itr )
     {
-        erase(*pointid_itr);
+        erase(*pointid_itr, true);
 
         _lru_points.erase(*pointid_itr);
     }
 }
 
 
-void CtiPointManager::erase(long pid)
+void CtiPointManager::erase(long pid, bool isExpiration)
 {
     ptr_type deleted = _smartMap.remove(pid);
 
@@ -1102,7 +1102,7 @@ void CtiPointManager::erase(long pid)
 }
 
 
-void CtiPointManager::removePoint(ptr_type pTempCtiPoint)
+void CtiPointManager::removePoint(ptr_type pTempCtiPoint, bool isExpiration)
 {
     if( pTempCtiPoint )
     {
