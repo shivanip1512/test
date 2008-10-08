@@ -3182,7 +3182,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                                     currentCapBank->setReportedCBCStateTime(timestamp);
 
                                     if ( currentCapBank->getControlStatus() != value &&
-                                        (!currentFeeder->getRecentlyControlledFlag() && 
+                                        (//!currentFeeder->getRecentlyControlledFlag() && 
                                          !currentCapBank->getControlRecentlySentFlag() &&
                                          !currentCapBank->getVerificationFlag() &&
                                          !currentCapBank->getInsertDynamicDataFlag() ) &&
@@ -3231,7 +3231,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                             if( _CC_DEBUG & CC_DEBUG_OPTIONALPOINT )
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Set a cbc 2 way status point..."<< endl;
+                                dout << CtiTime() << " - Set a cbc 2 way status point... pointID ("<<pointID<<") = "<<value<< endl;
                             }
                             if (twoWayPts->getAutoVoltControl()) 
                             {
@@ -3304,7 +3304,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                             if( _CC_DEBUG & CC_DEBUG_OPTIONALPOINT )
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Set a cbc 2 way Analog point..."<< endl;
+                                dout << CtiTime() << " - Set a cbc 2 way Analog point... pointID ("<<pointID<<") = "<<value<< endl;
                             }
                         }
                         else if (twoWayPts->setTwoWayPulseAccumulatorPointValue(pointID, value))
@@ -3312,7 +3312,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                             if( _CC_DEBUG & CC_DEBUG_OPTIONALPOINT )
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Set a cbc 2 way Pulse Accumulator point..."<< endl;
+                                dout << CtiTime() << " - Set a cbc 2 way Pulse Accumulator point... pointID ("<<pointID<<") = "<<value<< endl;
                             }
                         }
 

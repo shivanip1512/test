@@ -611,7 +611,7 @@ LONG CtiCCCapBank::getControlStatus() const
 ---------------------------------------------------------------------------*/
 string CtiCCCapBank::getControlStatusText() const
 {
-    string retVal = "";
+    string retVal = "Undefined";
      if (_controlstatus == CtiCCCapBank::Open )
          retVal = "Open";
      else if (_controlstatus == CtiCCCapBank::OpenQuestionable )
