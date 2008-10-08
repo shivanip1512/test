@@ -10,18 +10,18 @@ public enum BulkOperationTypeEnum {
     ;
     
     private String title;
-    private String name;
+    private String pathValue;
     
-    BulkOperationTypeEnum (String title, String name) {
+    BulkOperationTypeEnum (String title, String pathValue) {
         this.title = title;
-        this.name = name;
+        this.pathValue = pathValue;
     }
     
     public String getTitle() {
         return title;
     }
     
-    public String getName() {
-        return this.name;
+    public String getPathValue() {
+        return this.pathValue;
     }
 }

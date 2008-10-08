@@ -205,7 +205,7 @@
                         <%-- DEATIL LINK --%>
                         <c:choose>
                             <c:when test="${detailViewable}">
-                                <c:url var="resultDetailUrl" value="/spring/bulk/${b.bulkOperationType.name}/${b.bulkOperationType.name}Results">
+                                <c:url var="resultDetailUrl" value="/spring/bulk/${b.bulkOperationType.pathValue}/${b.bulkOperationType.pathValue}Results">
                                     <c:param name="resultsId" value="${b.resultsId}" />
                                 </c:url>
                                 <td>
