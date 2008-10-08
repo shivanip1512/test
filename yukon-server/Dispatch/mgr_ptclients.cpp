@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/mgr_ptclients.cpp-arc  $
-* REVISION     :  $Revision: 1.40 $
-* DATE         :  $Date: 2008/10/08 14:17:03 $
+* REVISION     :  $Revision: 1.41 $
+* DATE         :  $Date: 2008/10/08 14:35:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -260,7 +260,7 @@ void CtiPointClientManager::refreshProperties(LONG pntID, LONG paoID, const set<
     {
         ostringstream in_list;
 
-        csv_output_iterator csv_out(&in_list);
+        csv_output_iterator<long> csv_out(&in_list);
 
         in_list << "(";
 
@@ -690,23 +690,16 @@ void CtiPointClientManager::RefreshDynamicData(LONG id, const set<long> &pointId
 
     if(!pointIds.empty())
     {
-        string in_list;
-        set<long>::const_iterator pointid_itr = pointIds.begin(),
-                                  pointid_end = pointIds.end();
+        ostringstream in_list;
+        csv_output_iterator<long> csv_itr(&in_list);
 
-        for( ; pointid_itr != pointid_end; ++pointid_itr )
-        {
-            if( !in_list.empty() )
-            {
-                in_list += ",";
-            }
+        in_list << "(";
 
-            in_list += CtiNumStr(*pointid_itr);
-        }
+        copy(pointIds.begin(), pointIds.end(), csv_itr(in_list));
 
-        in_list = "(" + in_list + ")";
+        in_list << ")";
 
-        selector.where(selector.where() && keyTable["pointid"].in(RWDBExpr(in_list.c_str(), false)));
+        selector.where(selector.where() && keyTable["pointid"].in(RWDBExpr(in_list.str().c_str(), false)));
     }
 
     RWDBReader rdr = selector.reader(conn);
