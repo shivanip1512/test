@@ -113,6 +113,11 @@ public class JnlpController extends AbstractController {
             resourcesElem.addContent(userPropElem);
         }
         
+        Element userPropElem = new Element("property");
+        userPropElem.setAttribute("name", "yukon.jws.server.base");
+        userPropElem.setAttribute("value", CtiUtilities.getYukonBase());
+        resourcesElem.addContent(userPropElem);
+        
         // add server info
         URL hostUrl = ServletUtil.getHostURL(request);
         Element hostPropElem = new Element("property");

@@ -80,16 +80,41 @@ public class ScriptTemplate {
     // build safe filepath to yukon dir to use as default location for script/billing file
     // TODO Push the file path of the macs server to build this string. Hard coded until then.
     //String yukonPath = StringUtils.replace(CtiUtilities.getYukonBase(), "\\", "/");  
-    private String yukonPath = "C:/Yukon";
-    private final String[] exportBaseFilePathParts = {yukonPath, "server", "export"};
-    private final String exportBaseFilePath = StringUtils.join(exportBaseFilePathParts, "/") + "/";
+    private String exportBaseFilePath;
 
     //Map of Param<String> to VALUE<String>, param Strings are listed below
     private Map<ScriptParameters, String> paramToValueMap = null;
     //Map of Param<String> to DESCRIPTION<String>, param Strings are listed below
     private Map<ScriptParameters, String> paramToDescMap = null;
     
-    {            
+    public ScriptTemplate(){
+        init();
+    }
+    
+    private void init(){
+        String yukonPath = "";
+        String jwsYukonBase = System.getProperty("yukon.jws.server.base");
+        if (jwsYukonBase != null) {
+            yukonPath = jwsYukonBase;
+        } else {
+            String yukonBaseProperty = System.getProperty("yukon.base");
+            if(yukonBaseProperty != null) {
+                yukonPath = yukonBaseProperty;
+            }else {
+                String envYukonBase = System.getenv("YUKON_BASE");
+                if (envYukonBase != null) {
+                    envYukonBase = StringUtils.remove(envYukonBase, "\"");
+                    yukonPath = envYukonBase;
+                }else {
+                    yukonPath = "C:/Yukon";
+                }
+            }
+        }
+        
+        String path = StringUtils.replace(yukonPath, "\\", "/"); 
+        String[] exportBaseFilePathParts = {path, "server", "export"};
+        exportBaseFilePath = StringUtils.join(exportBaseFilePathParts, "/") + "/";
+        
         paramToValueMap = new HashMap<ScriptParameters, String>(30);
         //give it some default values!
         paramToValueMap.put(SCHEDULE_NAME_PARAM, "");
@@ -125,9 +150,7 @@ public class ScriptTemplate {
         paramToValueMap.put(RESET_COUNT_PARAM, "0");
         paramToValueMap.put(READ_FROZEN_PARAM, "");
         paramToValueMap.put(IED_TYPE_PARAM, "");
-    }
-
-    {
+        
         paramToDescMap = new HashMap<ScriptParameters, String>(30);
         //Set the values, a map is used cause they are easier to find this way!
         paramToDescMap.put(SCHEDULE_NAME_PARAM, "The name of the schedule.");
@@ -165,7 +188,6 @@ public class ScriptTemplate {
         paramToDescMap.put(IED_TYPE_PARAM, "The IED type of meter (Alpha/S4/kV/kV2/Sentinel)");
     }
     
-
     /**
      * value is used...but MACS doesn't know how to react to an empty paramter:  Therefore, we must know its value...
      * @param template
