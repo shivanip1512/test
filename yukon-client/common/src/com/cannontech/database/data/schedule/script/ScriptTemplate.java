@@ -97,17 +97,11 @@ public class ScriptTemplate {
         if (jwsYukonBase != null) {
             yukonPath = jwsYukonBase;
         } else {
-            String yukonBaseProperty = System.getProperty("yukon.base");
+            String yukonBaseProperty = CtiUtilities.getYukonBase();
             if(yukonBaseProperty != null) {
                 yukonPath = yukonBaseProperty;
             }else {
-                String envYukonBase = System.getenv("YUKON_BASE");
-                if (envYukonBase != null) {
-                    envYukonBase = StringUtils.remove(envYukonBase, "\"");
-                    yukonPath = envYukonBase;
-                }else {
-                    yukonPath = "C:/Yukon";
-                }
+                yukonPath = "C:/Yukon";
             }
         }
         
