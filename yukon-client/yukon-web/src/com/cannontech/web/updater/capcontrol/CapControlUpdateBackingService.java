@@ -59,9 +59,8 @@ public class CapControlUpdateBackingService implements UpdateBackingService {
     }
     
     private boolean updatedInCache(int areaId, long afterDate) {
-        String areaIdToString = Integer.toString(areaId);
         WebUpdatedDAO<Integer> updatedObjMap = capControlCache.getUpdatedObjMap();
-        List<Integer> updatedIds = updatedObjMap.getUpdatedIdsSince(new Date(afterDate), Integer.valueOf(areaIdToString));
+        List<Integer> updatedIds = updatedObjMap.getUpdatedIdsSince(new Date(afterDate), areaId);
         
         boolean result = updatedIds.contains(areaId);
         return result;

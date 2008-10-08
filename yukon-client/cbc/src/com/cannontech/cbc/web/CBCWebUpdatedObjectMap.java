@@ -1,6 +1,5 @@
 package com.cannontech.cbc.web;
 
-import java.util.Date;
 import java.util.List;
 
 import com.cannontech.cbc.cache.CapControlCache;
@@ -19,48 +18,48 @@ public class CBCWebUpdatedObjectMap extends WebUpdatedPAObjectMap<Integer>{
 	public CBCWebUpdatedObjectMap() {
 	}
 	
-	public void handleCBCChangeEvent(CCArea area, Date date) {
+	public void handleCBCChangeEvent(CCArea area) {
 	    List<SubStation> subList = capControlCache.getSubstationsByArea(area.getPaoID());
 	    for (final SubStation substation : subList) {
-	        handleCBCChangeEvent(substation, date);
+	        handleCBCChangeEvent(substation);
 	    }
-	    updateMap(area.getPaoID(), date);
+	    updateMap(area.getPaoID());
 	}
 	
-	public void handleCBCChangeEvent(CCSpecialArea specialArea, Date date) {
+	public void handleCBCChangeEvent(CCSpecialArea specialArea) {
 	    List<SubStation> substationList = capControlCache.getSubstationsBySpecialArea(specialArea.getPaoID());
 	    for (final SubStation subStation : substationList) {
-	        handleCBCChangeEvent(subStation, date);
+	        handleCBCChangeEvent(subStation);
 	    }
-	    updateMap(specialArea.getPaoID(), date);
+	    updateMap(specialArea.getPaoID());
 	}
 	
-	public void handleCBCChangeEvent(SubStation subStation, Date date) {
+	public void handleCBCChangeEvent(SubStation subStation) {
 	    List<SubBus> subBusList = capControlCache.getSubBusesBySubStation(subStation);
 	    for (final SubBus sub : subBusList) {
-            handleCBCChangeEvent(sub, date);
+            handleCBCChangeEvent(sub);
         }
-	    updateMap(subStation.getCcId(), date);
+	    updateMap(subStation.getCcId());
 	}
 	
-	public void handleCBCChangeEvent(SubBus subBus, Date date) {
+	public void handleCBCChangeEvent(SubBus subBus) {
 	    List<Feeder> feederList = capControlCache.getFeedersBySubBus(subBus.getCcId());
 	    for (final Feeder feeder : feederList) {
-	        handleCBCChangeEvent(feeder, date);
+	        handleCBCChangeEvent(feeder);
 	    }
-	    updateMap(subBus.getCcId(), date);
+	    updateMap(subBus.getCcId());
 	}
 	
-	public void handleCBCChangeEvent(Feeder feeder, Date date) {
+	public void handleCBCChangeEvent(Feeder feeder) {
 	    CapBankDevice[] capList = capControlCache.getCapBanksByFeeder(feeder.getCcId());
 	    for (final CapBankDevice cap : capList) {
-	        handleCBCChangeEvent(cap, date);
+	        handleCBCChangeEvent(cap);
 	    }
-	    updateMap(feeder.getCcId(), date);
+	    updateMap(feeder.getCcId());
 	}
 	
-    public void handleCBCChangeEvent(CapBankDevice capBankDevice, Date date) {
-        updateMap(capBankDevice.getCcId(), date);
+    public void handleCBCChangeEvent(CapBankDevice capBankDevice) {
+        updateMap(capBankDevice.getCcId());
     }
 
 }

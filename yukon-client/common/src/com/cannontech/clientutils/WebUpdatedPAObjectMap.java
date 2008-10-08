@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class WebUpdatedPAObjectMap<E> implements WebUpdatedDAO<E> {
-	private Map<E,Date> timestampMap = Collections.synchronizedMap(new HashMap<E,Date>());
+	private Map<E,Long> timestampMap = new HashMap<E,Long>();
 
 	public WebUpdatedPAObjectMap() {
 	}
@@ -29,9 +29,7 @@ public abstract class WebUpdatedPAObjectMap<E> implements WebUpdatedDAO<E> {
 	
 	@Override
 	public synchronized void remove(Collection<E> ids) {
-	    for (final E e : ids) {
-	        remove(e);
-	    }
+	    timestampMap.keySet().removeAll(ids);
 	}
 	
 	@Override
@@ -42,34 +40,37 @@ public abstract class WebUpdatedPAObjectMap<E> implements WebUpdatedDAO<E> {
 	
     @Override
     public synchronized List<E> getUpdatedIdsSince(Date timeStamp, E... keyList) {
-        final List<E> updatedIds = new ArrayList<E>();
+        final List<E> updatedIds = new ArrayList<E>(keyList.length);
         for (final E key : keyList) {
-            if (hasObjectBeenUpdatedSince(key, timeStamp)) updatedIds.add(key);
+            if (hasObjectBeenUpdatedSince(timeStamp, key)) {
+                updatedIds.add(key);
+            }
         }
         return updatedIds;
     }
 
     @Override
-    public synchronized void manualUpdate(Date timeStamp, E... ids) {
+    public synchronized void manualUpdate(Iterable<E> ids) {
+        long currentTimeMillis = System.currentTimeMillis();
         for (final E e : ids) {
-            updateMap(e, timeStamp);
+            timestampMap.put(e, currentTimeMillis);                                     
         }    
     }
 
-	private synchronized boolean hasObjectBeenUpdatedSince(E e, Date timeStamp) {
+	private synchronized boolean hasObjectBeenUpdatedSince(Date timeStamp, E e) {
 	    if (e == null) return false;
 	    
-	    Date date = timestampMap.get(e);
-	    if (date != null) {
-	        boolean result = date.after(timeStamp);
-	        return result;
+	    Long date = timestampMap.get(e);
+	    if (date == null) {
+	        return false;
 	    }
 	    
-		return false;
+	    boolean result = date >= timeStamp.getTime();
+	    return result;
 	}
 
-    protected synchronized void updateMap(E e, Date date) {
-        timestampMap.put(e, date);                                     
+    protected synchronized void updateMap(E e) {
+        manualUpdate(Collections.singleton(e));
     }
 
 }

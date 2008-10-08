@@ -45,14 +45,14 @@ import com.cannontech.message.util.MessageListener;
 import com.cannontech.web.lite.LiteWrapper;
 import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.cbc.CCArea;
-import com.cannontech.yukon.cbc.CapControlClientConnection;
-import com.cannontech.yukon.cbc.CapControlCommand;
 import com.cannontech.yukon.cbc.CCSpecialArea;
 import com.cannontech.yukon.cbc.CCSubAreas;
 import com.cannontech.yukon.cbc.CCSubSpecialAreas;
 import com.cannontech.yukon.cbc.CCSubStations;
 import com.cannontech.yukon.cbc.CCSubstationBuses;
 import com.cannontech.yukon.cbc.CapBankDevice;
+import com.cannontech.yukon.cbc.CapControlClientConnection;
+import com.cannontech.yukon.cbc.CapControlCommand;
 import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.StreamableCapObject;
 import com.cannontech.yukon.cbc.SubBus;
@@ -590,13 +590,11 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     private synchronized void handleSpecialAreaList(CCSubSpecialAreas areas) {
         clearCacheMap(cbcSpecialAreaMap);
         
-        final Date date = new Date();
-        
         List<CCSpecialArea> list = areas.getAreas();
         for (final CCSpecialArea area : list) {
         	int areaId = area.getPaoID();
             cbcSpecialAreaMap.put(areaId, area);
-            getUpdatedObjMap().handleCBCChangeEvent(area, date);
+            getUpdatedObjMap().handleCBCChangeEvent(area);
         }
     }
     
@@ -606,13 +604,11 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     private synchronized void handleAreaList(CCSubAreas areas) {
         clearCacheMap(cbcAreaMap);
         
-        final Date date = new Date();
-        
         List<CCArea> list = areas.getAreas();
         for (final CCArea area : list) {
             Integer areaId = area.getPaoID();
             cbcAreaMap.put(areaId, area);
-            getUpdatedObjMap().handleCBCChangeEvent(area, date);
+            getUpdatedObjMap().handleCBCChangeEvent(area);
         }
     }
     
@@ -818,7 +814,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         
         removeFromCacheMap(subToBankMap, subBusId);
         subToBankMap.put(subBusId, capBankIDs.toArray());
-        getUpdatedObjMap().handleCBCChangeEvent(subBus, new Date());
+        getUpdatedObjMap().handleCBCChangeEvent(subBus);
     }
     
     /**
@@ -835,7 +831,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     
         //not linking to sub busses, feeders, and capbanks.
         
-        getUpdatedObjMap().handleCBCChangeEvent(sub, new Date());
+        getUpdatedObjMap().handleCBCChangeEvent(sub);
     }
     
     /**
