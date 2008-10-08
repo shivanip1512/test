@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/mgr_ptclients.cpp-arc  $
-* REVISION     :  $Revision: 1.41 $
-* DATE         :  $Date: 2008/10/08 14:35:53 $
+* REVISION     :  $Revision: 1.42 $
+* DATE         :  $Date: 2008/10/08 14:38:25 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -695,7 +695,7 @@ void CtiPointClientManager::RefreshDynamicData(LONG id, const set<long> &pointId
 
         in_list << "(";
 
-        copy(pointIds.begin(), pointIds.end(), csv_itr(in_list));
+        copy(pointIds.begin(), pointIds.end(), csv_itr);
 
         in_list << ")";
 
