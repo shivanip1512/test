@@ -106,7 +106,7 @@ public class ScriptTemplate {
         }
         
         String path = StringUtils.replace(yukonPath, "\\", "/"); 
-        String[] exportBaseFilePathParts = {path, "server", "export"};
+        String[] exportBaseFilePathParts = {path, "Server", "Export"};
         exportBaseFilePath = StringUtils.join(exportBaseFilePathParts, "/") + "/";
         
         paramToValueMap = new HashMap<ScriptParameters, String>(30);
