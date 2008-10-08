@@ -45,7 +45,7 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
     public final static int METER_NUMBER_COLUMN = 3;
 	public final static int PHYSICAL_ADDRESS_COLUMN = 4;
 	public final static int ROUTE_NAME_COLUMN = 5;
-	public final static int COLL_GROUP_NAME_OR_TIMESTAMP_COLUMN = 6;
+	public final static int TIMESTAMP_COLUMN = 6;
 
 	/** String values for column representation */
 	public final static String DEVICE_NAME_STRING = "Device Name";
@@ -292,6 +292,9 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
     
                 case ROUTE_NAME_COLUMN:
                     return mpData.getMeter().getRoute();
+                    
+                case TIMESTAMP_COLUMN:
+                    return mpData.getTimeStamp();
 			}
 		}
 		return null;
