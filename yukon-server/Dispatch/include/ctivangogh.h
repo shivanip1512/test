@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ctivangogh.h-arc  $
-* REVISION     :  $Revision: 1.56 $
-* DATE         :  $Date: 2008/10/07 20:30:50 $
+* REVISION     :  $Revision: 1.57 $
+* DATE         :  $Date: 2008/10/08 14:17:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -159,7 +159,7 @@ private:
     void sendPendingControlRequest(const CtiPointDataMsg &aPD, CtiPointSPtr point, PtVerifyTriggerSPtr verificationPtr);
     bool limitStateCheck( const int alarm, const CtiTablePointLimit &limit, double val, int &direction);
     bool checkMessageForPreLoad(CtiMessage *MsgPtr);
-    void findPreLoadPointId(CtiMessage *MsgPtr, std::vector<long> &ptIdList);
+    void findPreLoadPointId(CtiMessage *MsgPtr, std::set<long> &ptIdList);
 
     CtiPointDataMsg* createPointDataMsg(const CtiDynamicPointDispatch& pDyn);
 

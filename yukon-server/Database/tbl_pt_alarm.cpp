@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_alarm.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2008/10/07 20:30:50 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2008/10/08 14:17:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,12 +19,15 @@
 #include <rw/db/table.h>
 #include <rw/db/reader.h>
 
+#include <strstream>
 
 #include "dbaccess.h"
 #include "logger.h"
 #include "tbl_pt_alarm.h"
 
 #include "rwutil.h"
+
+using namespace std;
 
 CtiTablePointAlarming& CtiTablePointAlarming::operator=(const CtiTablePointAlarming& aRef)
 {
@@ -187,37 +190,37 @@ bool CtiTablePointAlarming::operator<(const CtiTablePointAlarming &rhs) const
 
 
 //This SQL is only proper when we assume some things about alarmstates
-void CtiTablePointAlarming::getSQL(string &sql, LONG pointID, LONG paoID, const std::vector<long> &pointIds)
+void CtiTablePointAlarming::getSQL(string &sql, LONG pointID, LONG paoID, const std::set<long> &pointIds)
 {
+    ostringstream sql_stream;
 
-   sql = "select pointid, alarmstates, excludenotifystates, notifyonacknowledge,"
-         " recipientid, notificationgroupid from pointalarming";
+    sql_stream << "select pointid, alarmstates, excludenotifystates, notifyonacknowledge,";
+    sql_stream << " recipientid, notificationgroupid from pointalarming";
 
-   if(pointID != 0)
-   {
-      sql += " where pointid = " + CtiNumStr(pointID);
-   }
-   else
-   {
-       sql += " where alarmstates != '\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001'";
-   }
+    if( pointID )
+    {
+        sql_stream << " where pointid = " << pointID;
+    }
+    else
+    {
+        sql_stream << " where alarmstates != '\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001'";
+    }
 
-   if(paoID != 0)
-   {
-       sql += " AND pointid in (select pointid from point where paobjectid = " + CtiNumStr(paoID) + ")";
-   }
-   else if(!pointIds.empty())
-   {
-       sql += " AND pointid in (";
-       std::vector<long>::const_iterator iter = pointIds.begin();
-       sql += CtiNumStr(*iter);
-       iter++;
-       for(; iter != pointIds.end(); iter++)
-       {
-           sql += ", " + CtiNumStr(*iter);
-       }
-       sql += ")";
-   }
+    if( paoID )
+    {
+        sql_stream << " AND pointid in (select pointid from point where paobjectid = " + CtiNumStr(paoID) + ")";
+    }
+    else if( !pointIds.empty() )
+    {
+        sql_stream << " AND pointid in (";
+
+        csv_output_iterator<long> csv_out(&sql_stream);
+        copy(pointIds.begin(), pointIds.end(), csv_out);
+
+        sql_stream << ")";
+    }
+
+    sql = sql_stream.str();
 }
 
 CtiTablePointAlarming::~CtiTablePointAlarming()

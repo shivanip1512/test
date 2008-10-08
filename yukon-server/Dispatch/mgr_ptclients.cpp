@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/mgr_ptclients.cpp-arc  $
-* REVISION     :  $Revision: 1.39 $
-* DATE         :  $Date: 2008/10/07 20:30:50 $
+* REVISION     :  $Revision: 1.40 $
+* DATE         :  $Date: 2008/10/08 14:17:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -79,7 +79,7 @@ void ApplyInitialDynamicConditions(const long key, CtiPointSPtr pTempPoint, void
 
 //This gives the point its initial data. We should not need a mutex for this.
 //If loading by pao, it is assumed we are ADDING a point.
-void CtiPointClientManager::processPointDynamicData(LONG pntID, LONG paoID, const std::vector<long> &pointIds)
+void CtiPointClientManager::processPointDynamicData(LONG pntID, LONG paoID, const set<long> &pointIds)
 {
     CtiPointSPtr pTempPoint;
     if(pntID)
@@ -102,8 +102,8 @@ void CtiPointClientManager::processPointDynamicData(LONG pntID, LONG paoID, cons
     }
     else if(paoID)
     {
-        std::vector<Inherited::ptr_type>           pointVec;
-        std::vector<Inherited::ptr_type>::iterator iter;
+        vector<Inherited::ptr_type>           pointVec;
+        vector<Inherited::ptr_type>::iterator iter;
         getEqualByPAO(paoID, pointVec);
 
         for(iter = pointVec.begin(); iter != pointVec.end(); iter++)
@@ -118,15 +118,17 @@ void CtiPointClientManager::processPointDynamicData(LONG pntID, LONG paoID, cons
     }
     else if(!pointIds.empty())
     {
-        std::vector<long>::const_iterator iter = pointIds.begin();
-        for(; iter != pointIds.end(); iter++)
+        set<long>::const_iterator pointid_itr = pointIds.begin(),
+                                  pointid_end = pointIds.end();
+
+        for( ; pointid_itr != pointid_end; ++pointid_itr )
         {
-            pTempPoint = getEqual(*iter);
-            if(pTempPoint)
+            if( pTempPoint = getEqual(*pointid_itr) )
             {
                 ApplyInitialDynamicConditions(0, pTempPoint, this);
             }
         }
+
         RefreshDynamicData(0, pointIds);
     }
 }
@@ -134,7 +136,7 @@ void CtiPointClientManager::processPointDynamicData(LONG pntID, LONG paoID, cons
 
 struct non_updated_check
 {
-    bool operator()(std::pair<long, CtiDynamicPointDispatch *> dynamic)
+    bool operator()(pair<long, CtiDynamicPointDispatch *> dynamic)
     {
         return dynamic.second && !dynamic.second->getDispatch().getUpdatedFlag();
     }
@@ -158,14 +160,14 @@ void CtiPointClientManager::refreshList(LONG pntID, LONG paoID, CtiPointType_t p
         CtiPointSPtr pTempPoint;
         Inherited::apply(ApplyInitialDynamicConditions, this);     // Make sure everyone has been initialized with Dynamic data.
 
-        if( std::find_if(_dynamic.begin(), _dynamic.end(), non_updated_check()) != _dynamic.end() )
+        if( find_if(_dynamic.begin(), _dynamic.end(), non_updated_check()) != _dynamic.end() )
         {
             RefreshDynamicData();
         }
     }
 }
 
-void CtiPointClientManager::refreshListByPointIDs(const std::vector<long> &ids)
+void CtiPointClientManager::refreshListByPointIDs(const set<long> &ids)
 {
     Inherited::refreshListByPointIDs(ids);
     refreshAlarming(0, 0, ids);
@@ -176,7 +178,7 @@ void CtiPointClientManager::refreshListByPointIDs(const std::vector<long> &ids)
 }
 
 //Load based on PAO assumes it is in add!
-void CtiPointClientManager::refreshAlarming(LONG pntID, LONG paoID, const std::vector<long> &pointIds)
+void CtiPointClientManager::refreshAlarming(LONG pntID, LONG paoID, const set<long> &pointIds)
 {
     coll_type::writer_lock_guard_t guard(getLock());
 
@@ -218,7 +220,7 @@ void CtiPointClientManager::refreshAlarming(LONG pntID, LONG paoID, const std::v
 }
 
 
-void CtiPointClientManager::refreshProperties(LONG pntID, LONG paoID, const std::vector<long> &pointIds)
+void CtiPointClientManager::refreshProperties(LONG pntID, LONG paoID, const set<long> &pointIds)
 {
     coll_type::writer_lock_guard_t guard(getLock());
 
@@ -256,22 +258,17 @@ void CtiPointClientManager::refreshProperties(LONG pntID, LONG paoID, const std:
 
     if(!pointIds.empty())
     {
-        string in_list;
-        std::vector<long>::const_iterator iter = pointIds.begin();
+        ostringstream in_list;
 
-        for( ; iter != pointIds.end(); iter++ )
-        {
-            if( !in_list.empty() )
-            {
-                in_list += ",";
-            }
+        csv_output_iterator csv_out(&in_list);
 
-            in_list += CtiNumStr(*iter);
-        }
+        in_list << "(";
 
-        in_list = "(" + in_list + ")";
+        for_each(pointIds.begin(), pointIds.end(), csv_out);
 
-        selector.where(selector.where() && keyTable["pointid"].in(RWDBExpr(in_list.c_str(), false)));
+        in_list << ")";
+
+        selector.where(selector.where() && keyTable["pointid"].in(RWDBExpr(in_list.str().c_str(), false)));
     }
 
     rdr = attributeSelector.reader( conn );
@@ -315,14 +312,14 @@ void CtiPointClientManager::DumpList(void)
 
                 if(p->isValid() && pDyn != NULL)
                 {
-                    std::cout << "MemoryPoint \"" << p->getID( ) << "\" defined and initialized" << endl;
-                    std::cout << " Point Value         : " << pDyn->getValue() << endl;
-                    std::cout << " Point Quality       : 0x" << hex << pDyn->getQuality() << dec << endl;
-                    std::cout << " Point Time          : " << pDyn->getTimeStamp() << endl;
+                    cout << "MemoryPoint \"" << p->getID( ) << "\" defined and initialized" << endl;
+                    cout << " Point Value         : " << pDyn->getValue() << endl;
+                    cout << " Point Quality       : 0x" << hex << pDyn->getQuality() << dec << endl;
+                    cout << " Point Time          : " << pDyn->getTimeStamp() << endl;
                 }
                 else
                 {
-                    std::cout << " Point \"" << p->getID( ) << "\" has been deleted from the database... cleaning up is recommended" << endl;
+                    cout << " Point \"" << p->getID( ) << "\" has been deleted from the database... cleaning up is recommended" << endl;
                 }
             }
         }
@@ -334,11 +331,11 @@ void CtiPointClientManager::DumpList(void)
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
-        std::cout << "Attempting to clear point list..." << endl;
+        cout << "Attempting to clear point list..." << endl;
 
         DeleteList();
 
-        std::cout << "DumpMemoryPoints:  " << e.why() << endl;
+        cout << "DumpMemoryPoints:  " << e.why() << endl;
         RWTHROW(e);
 
     }
@@ -571,8 +568,8 @@ void CtiPointClientManager::scanForArchival(const CtiTime &Now, CtiFIFOQueue<Cti
 void CtiPointClientManager::storeDirtyRecords()
 {
     int count = 0;
-    std::list<CtiTablePointDispatch>           updateList;
-    std::list<CtiTablePointDispatch>::iterator updateListIter;
+    list<CtiTablePointDispatch>           updateList;
+    list<CtiTablePointDispatch>::iterator updateListIter;
 
     {
         coll_type::writer_lock_guard_t guard(getLock());
@@ -666,7 +663,7 @@ void CtiPointClientManager::DeleteList(void)
  *  This method reloads all dynamic point data into memory.  It will only update the memory image if
  *  this point has never previously been loaded (updated).
  */
-void CtiPointClientManager::RefreshDynamicData(LONG id, const std::vector<long> &pointIds)
+void CtiPointClientManager::RefreshDynamicData(LONG id, const set<long> &pointIds)
 {
     coll_type::writer_lock_guard_t guard(getLock());
 
@@ -694,16 +691,17 @@ void CtiPointClientManager::RefreshDynamicData(LONG id, const std::vector<long> 
     if(!pointIds.empty())
     {
         string in_list;
-        std::vector<long>::const_iterator iter = pointIds.begin();
+        set<long>::const_iterator pointid_itr = pointIds.begin(),
+                                  pointid_end = pointIds.end();
 
-        for( ; iter != pointIds.end(); iter++ )
+        for( ; pointid_itr != pointid_end; ++pointid_itr )
         {
             if( !in_list.empty() )
             {
                 in_list += ",";
             }
 
-            in_list += CtiNumStr(*iter);
+            in_list += CtiNumStr(*pointid_itr);
         }
 
         in_list = "(" + in_list + ")";
@@ -763,7 +761,7 @@ void CtiPointClientManager::RefreshDynamicData(LONG id, const std::vector<long> 
 }
 
 //Grab reasonability limits from TBL_UOM
-void CtiPointClientManager::refreshReasonabilityLimits(LONG pntID, LONG paoID, const std::vector<long> &pointIds)
+void CtiPointClientManager::refreshReasonabilityLimits(LONG pntID, LONG paoID, const set<long> &pointIds)
 {
     coll_type::writer_lock_guard_t guard(getLock());
 
@@ -793,12 +791,12 @@ void CtiPointClientManager::refreshReasonabilityLimits(LONG pntID, LONG paoID, c
     else if(!pointIds.empty())
     {
         sql += " AND pointid in (";
-        std::vector<long>::const_iterator iter = pointIds.begin();
-        sql += CtiNumStr(*iter);
-        iter++;
-        for(; iter != pointIds.end(); iter++)
+        set<long>::const_iterator pointid_itr = pointIds.begin(),
+                                  pointid_end = pointIds.end();
+
+        for( ; pointid_itr != pointid_end; ++pointid_itr )
         {
-           sql += ", " + CtiNumStr(*iter);
+           sql += ", " + CtiNumStr(*pointid_itr);
         }
         sql += ")";
     }
@@ -821,7 +819,7 @@ void CtiPointClientManager::refreshReasonabilityLimits(LONG pntID, LONG paoID, c
     {
         rdr >> pointid >> limitValues.highLimit >> limitValues.lowLimit;
 
-        _reasonabilityLimits.insert(std::make_pair(pointid, limitValues));
+        _reasonabilityLimits.insert(make_pair(pointid, limitValues));
     }
 
     if((stop = stop.now()).seconds() - start.seconds() > 5 )
@@ -837,7 +835,7 @@ void CtiPointClientManager::refreshReasonabilityLimits(LONG pntID, LONG paoID, c
 }
 
 
-void CtiPointClientManager::refreshPointLimits(LONG pntID, LONG paoID, const std::vector<long> &pointIds)
+void CtiPointClientManager::refreshPointLimits(LONG pntID, LONG paoID, const set<long> &pointIds)
 {
     LONG   lTemp = 0;
     string sql;

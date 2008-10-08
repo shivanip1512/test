@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/mgr_ptclients.h-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2008/10/07 20:30:51 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2008/10/08 14:17:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -60,12 +60,12 @@ private:
 
    typedef CtiPointManager Inherited;
 
-   void refreshAlarming           (LONG pntID, LONG paoID, const std::vector<long> &ids = std::vector<long>());
-   void refreshProperties         (LONG pntID, LONG paoID, const std::vector<long> &ids = std::vector<long>());
-   void refreshReasonabilityLimits(LONG pntID, LONG paoID, const std::vector<long> &ids = std::vector<long>());
-   void refreshPointLimits        (LONG pntID, LONG paoID, const std::vector<long> &ids = std::vector<long>());
-   void RefreshDynamicData        (LONG pntID = 0,         const std::vector<long> &ids = std::vector<long>());
-   void processPointDynamicData   (LONG pntID, LONG paoID, const std::vector<long> &ids = std::vector<long>());
+   void refreshAlarming           (LONG pntID, LONG paoID, const std::set<long> &ids = std::set<long>());
+   void refreshProperties         (LONG pntID, LONG paoID, const std::set<long> &ids = std::set<long>());
+   void refreshReasonabilityLimits(LONG pntID, LONG paoID, const std::set<long> &ids = std::set<long>());
+   void refreshPointLimits        (LONG pntID, LONG paoID, const std::set<long> &ids = std::set<long>());
+   void RefreshDynamicData        (LONG pntID = 0,         const std::set<long> &ids = std::set<long>());
+   void processPointDynamicData   (LONG pntID, LONG paoID, const std::set<long> &ids = std::set<long>());
 
 protected:
 
@@ -77,7 +77,7 @@ public:
 
    virtual ~CtiPointClientManager();
    virtual void refreshList(LONG pntID = 0, LONG paoID = 0, CtiPointType_t pntType = InvalidPointType);
-   virtual void refreshListByPointIDs(const std::vector<long> &ids);
+   virtual void refreshListByPointIDs(const std::set<long> &ids);
 
    virtual Inherited::ptr_type getEqual(LONG Pt);
    bool                      checkEqual(LONG Pt);

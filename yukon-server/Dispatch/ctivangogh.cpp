@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.196 $
-* DATE         :  $Date: 2008/10/07 20:30:50 $
+* REVISION     :  $Revision: 1.197 $
+* DATE         :  $Date: 2008/10/08 14:17:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1742,8 +1742,8 @@ void CtiVanGogh::VGCacheHandlerThread()
     CtiTime lastReportTime((unsigned long) 0);
     CtiMessage *MsgPtr, *MsgBasePtr;
     CtiTime start, stop;
-    std::list<CtiMessage *>  msgList;
-    std::vector<long>        ptIdList;
+    list<CtiMessage *>       msgList;
+    set<long>                ptIdList;
     CtiPointDataMsg         *pDataMsg;
     CtiCommandMsg           *pCmdMsg;
     CtiPointRegistrationMsg *pRegMsg;
@@ -1810,7 +1810,7 @@ void CtiVanGogh::VGCacheHandlerThread()
                     int ms = (endTime.wMinute - startTime.wMinute) * 60000 +
                              (endTime.wSecond - startTime.wSecond) * 1000  +
                              (endTime.wMilliseconds - startTime.wMilliseconds);
-        
+
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " **** PERFORMANCE CHECK **** " << endl;
                     dout << "RefreshListByPointIDs took " << ms << "ms to do " << ptIdList.size() << " points" << endl;
@@ -8742,7 +8742,7 @@ bool CtiVanGogh::checkMessageForPreLoad(CtiMessage *MsgPtr)
 {
     SYSTEMTIME startTime, endTime;
     GetLocalTime(&startTime);
-    
+
     bool retVal = false;
     if(MsgPtr != NULL)
     {
@@ -8751,7 +8751,7 @@ bool CtiVanGogh::checkMessageForPreLoad(CtiMessage *MsgPtr)
             CtiServerRequestMsg *pSvrReq = (CtiServerRequestMsg*)MsgPtr;
             MsgPtr = (CtiMessage*)pSvrReq->getPayload();
         }
-    
+
         if(MsgPtr->isA() == MSG_POINTDATA)
         {
             CtiPointDataMsg *pDataMsg = (CtiPointDataMsg*)MsgPtr;
@@ -8793,7 +8793,7 @@ bool CtiVanGogh::checkMessageForPreLoad(CtiMessage *MsgPtr)
                         break;
                     }
                 }
-                
+
             }
         }
         else if(MsgPtr->isA() == MSG_MULTI || MsgPtr->isA() == MSG_PCRETURN)
@@ -8820,7 +8820,7 @@ bool CtiVanGogh::checkMessageForPreLoad(CtiMessage *MsgPtr)
             dout << CtiTime() << " **** PERFORMANCE CHECK **** " << endl;
             dout << "CheckMessageForPreLoad took " << ms << "ms" << endl;
         }
-        
+
     }
     else
     {
@@ -8830,7 +8830,7 @@ bool CtiVanGogh::checkMessageForPreLoad(CtiMessage *MsgPtr)
     return retVal;
 }
 
-void CtiVanGogh::findPreLoadPointId(CtiMessage *MsgPtr, std::vector<long> &ptIdList)
+void CtiVanGogh::findPreLoadPointId(CtiMessage *MsgPtr, std::set<long> &ptIdList)
 {
     SYSTEMTIME startTime, endTime;
     GetLocalTime(&startTime);
@@ -8842,16 +8842,16 @@ void CtiVanGogh::findPreLoadPointId(CtiMessage *MsgPtr, std::vector<long> &ptIdL
             CtiServerRequestMsg *pSvrReq = (CtiServerRequestMsg*)MsgPtr;
             MsgPtr = (CtiMessage*)pSvrReq->getPayload();
         }
-        
+
         if(MsgPtr->isA() == MSG_POINTDATA)
         {
             CtiPointDataMsg *pDataMsg = (CtiPointDataMsg*)MsgPtr;
-            ptIdList.push_back(pDataMsg->getId());
+            ptIdList.insert(pDataMsg->getId());
         }
         else if(MsgPtr->isA() == MSG_SIGNAL)
         {
             CtiSignalMsg *pSigMsg = (CtiSignalMsg*)MsgPtr;
-            ptIdList.push_back(pSigMsg->getId());
+            ptIdList.insert(pSigMsg->getId());
         }
         else if(MsgPtr->isA() == MSG_POINTREGISTRATION)
         {
@@ -8860,7 +8860,7 @@ void CtiVanGogh::findPreLoadPointId(CtiMessage *MsgPtr, std::vector<long> &ptIdL
             {
                 if(!PointMgr.checkEqual((*pRegMsg)[i]))
                 {
-                    ptIdList.push_back((*pRegMsg)[i]);
+                    ptIdList.insert((*pRegMsg)[i]);
                 }
             }
         }
@@ -8873,7 +8873,7 @@ void CtiVanGogh::findPreLoadPointId(CtiMessage *MsgPtr, std::vector<long> &ptIdL
                 {
                     if(!PointMgr.checkEqual(pCmdMsg->getOpArgList()[i]))
                     {
-                        ptIdList.push_back(pCmdMsg->getOpArgList()[i]);
+                        ptIdList.insert(pCmdMsg->getOpArgList()[i]);
                     }
                 }
             }

@@ -1,6 +1,3 @@
-#include "yukon.h"
-#include "tbl_pt_limit.h"
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   tbl_pt_limit
@@ -9,14 +6,21 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_limit.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2008/10/07 20:30:50 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2008/10/08 14:17:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
+
+#include <strstream>
+
+#include "tbl_pt_limit.h"
 
 #include "resolvers.h"
 #include "logger.h"
+
+using namespace std;
 
 CtiTablePointLimit&   CtiTablePointLimit::operator=(const CtiTablePointLimit& aRef)
 {
@@ -39,30 +43,31 @@ DOUBLE CtiTablePointLimit::getLowLimit()      const  {  return _lowLimit;       
 INT    CtiTablePointLimit::getLimitDuration() const  {  return _limitDuration;  }
 
 
-void CtiTablePointLimit::getSQL(string &sql, LONG pointID, LONG paoID, const std::vector<long> &pointIds)
+void CtiTablePointLimit::getSQL(string &sql, LONG pointID, LONG paoID, const std::set<long> &pointIds)
 {
-   sql = "select pointid, limitnumber, highlimit, lowlimit, limitduration from pointlimits";
+    ostringstream sql_stream;
 
-   if(pointID != 0)
-   {
-      sql += " where pointid = " + CtiNumStr(pointID);
-   }
-   else if(paoID != 0)
-   {
-       sql += " where pointid in (select pointid from point where paobjectid = " + CtiNumStr(paoID) + ")";
-   }
-   else if(!pointIds.empty())
-   {
-       sql += " where pointid in (";
-       std::vector<long>::const_iterator iter = pointIds.begin();
-       sql += CtiNumStr(*iter);
-       iter++;
-       for(; iter != pointIds.end(); iter++)
-       {
-           sql += ", " + CtiNumStr(*iter);
-       }
-       sql += ")";
-   }
+    sql_stream << "select pointid, limitnumber, highlimit, lowlimit, limitduration from pointlimits";
+
+    if( pointID )
+    {
+        sql_stream << " where pointid = " << pointID;
+    }
+    else if( paoID )
+    {
+        sql_stream << " where pointid in (select pointid from point where paobjectid = " << paoID << ")";
+    }
+    else if( !pointIds.empty() )
+    {
+        sql_stream << " where pointid in (";
+
+        csv_output_iterator<long> csv_out(&sql_stream);
+        copy(pointIds.begin(), pointIds.end(), csv_out);
+
+        sql_stream << ")";
+    }
+
+    sql = sql_stream.str();
 }
 
 void CtiTablePointLimit::dump() const

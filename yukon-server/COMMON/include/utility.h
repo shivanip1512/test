@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/utility.h-arc  $
-* REVISION     :  $Revision: 1.52 $
-* DATE         :  $Date: 2008/10/07 18:19:13 $
+* REVISION     :  $Revision: 1.53 $
+* DATE         :  $Date: 2008/10/08 14:17:03 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -350,5 +350,21 @@ inline bool list_contains( const std::list<T> &V, T x )
 
    return false;
 }
+
+
+template <class Numeric>
+struct csv_output_iterator
+{
+    std::ostream *o;
+    bool first;
+    Numeric num;
+
+    csv_output_iterator(std::ostream *o_) : o(o_), first(true) {};
+
+    csv_output_iterator &operator*()  {  return *this;  };
+    csv_output_iterator &operator=(Numeric num_)  {  num = num_;  return *this;  };
+    csv_output_iterator &operator++()  { (first?(first = false, *o):(*o << ",")) << num;  return *this;  };
+};
+
 
 #endif // #ifndef __UTILITY_H__
