@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.117 $
-* DATE         :  $Date: 2008/10/07 18:19:13 $
+* REVISION     :  $Revision: 1.118 $
+* DATE         :  $Date: 2008/10/08 19:57:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -516,13 +516,13 @@ void CtiPILServer::resultThread()
             const unsigned int inQueueBlockSize =  50;
             const unsigned int inQueueMaxWait   = 500;  //  500 ms
 
-            unsigned long start = GetTickCount();
+            unsigned long start = GetTickCount(), elapsed;
 
             deque<INMESS*> pendingInQueue;
 
-            while( pendingInQueue.size() < inQueueBlockSize && (GetTickCount() - start) < inQueueMaxWait )
+            while( pendingInQueue.size() < inQueueBlockSize && (elapsed = (GetTickCount() - start)) < inQueueMaxWait )
             {
-                INMESS *im = _inQueue.getQueue(inQueueMaxWait - (GetTickCount() - start));
+                INMESS *im = _inQueue.getQueue(inQueueMaxWait - elapsed);
 
                 if( im )
                 {

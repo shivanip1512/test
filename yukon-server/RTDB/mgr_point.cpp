@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.57 $
-* DATE         :  $Date: 2008/10/07 20:30:50 $
+* REVISION     :  $Revision: 1.58 $
+* DATE         :  $Date: 2008/10/08 19:57:26 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -433,7 +433,7 @@ void CtiPointManager::refreshListByIDs(const set<long> &id_list, bool paoids)
                        id_list.end(),
                        _paoids_loaded.begin(),
                        _paoids_loaded.end(),
-                       ids_to_load.begin());
+                       inserter(ids_to_load, ids_to_load.begin()));
     }
     else
     {
@@ -668,7 +668,7 @@ void CtiPointManager::updatePointMaps( const CtiPointBase &point, long old_pao, 
 
 void CtiPointManager::updateAccess(long pointid, time_t time_now)
 {
-    lru_guard_t guard(_lru_mux);
+    lru_guard_t lru_guard(_lru_mux);
 
     time_t time_index = time_now / 10;
 
@@ -1036,7 +1036,9 @@ void CtiPointManager::ClearList(void)
 
 void CtiPointManager::processExpired()
 {
-    lru_guard_t guard(_lru_mux);
+    coll_type::writer_lock_guard_t guard(getLock());
+
+    lru_guard_t lru_guard(_lru_mux);
 
     lru_timeslice_map::iterator timeslice_itr = _lru_timeslices.begin(),
                                 timeslice_end = _lru_timeslices.end();

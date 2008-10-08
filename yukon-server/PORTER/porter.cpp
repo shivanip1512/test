@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.130 $
-* DATE         :  $Date: 2008/10/02 18:27:30 $
+* REVISION     :  $Revision: 1.131 $
+* DATE         :  $Date: 2008/10/08 19:57:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1147,6 +1147,7 @@ INT PorterMainFunction (INT argc, CHAR **argv)
         {
             last_flush = ::time(0);
             DeviceManager.writeDynamicPaoInfo();
+            PorterPointManager.processExpired();
         }
 
         if( lastWorkReportTime.seconds() < (lastWorkReportTime.now().seconds()) )
@@ -1489,7 +1490,7 @@ INT RefreshPorterRTDB(void *ptr)
     // Reload the globals used by the porter app too.
     InitYukonBaseGlobals();
     LoadPorterGlobals();
-
+/*
     if(!PorterQuit && (pChg == NULL || pChg->getDatabase() == ChangePointDb))
     {
         if(pChg == NULL)
@@ -1501,7 +1502,7 @@ INT RefreshPorterRTDB(void *ptr)
             LoadCommFailPoints(pChg->getId());
         }
     }
-
+*/
     if( !PorterQuit && (pChg == NULL || (pChg->getDatabase() == ChangeStateGroupDb)) )
     {
         ReloadStateNames();
@@ -1699,6 +1700,7 @@ INT RefreshPorterRTDB(void *ptr)
 
     /* see if we need to start process's for queuing */
     {
+        //  This will be a problem when we run into a large system with no 711s.
         if(!(_queueCCU711Thread.isValid()) && DeviceManager.contains(findCCU711, NULL))
         {
             _queueCCU711Thread = rwMakeThreadFunction( QueueThread, (void*)NULL );
