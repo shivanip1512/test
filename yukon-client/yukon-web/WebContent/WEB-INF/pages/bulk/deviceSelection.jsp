@@ -30,6 +30,7 @@
             <span class="ErrorMsg">${errorMsg}</span>
         </c:if>
     
+        <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="groupDataJson"/>
         <tags:deviceSelection action="/spring/bulk/collectionActions" groupDataJson="${groupDataJson}" pickerConstraint="com.cannontech.common.search.criteria.MeterCriteria"/>
     
     </tags:boxContainer>

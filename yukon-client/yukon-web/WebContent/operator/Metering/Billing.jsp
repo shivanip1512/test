@@ -6,6 +6,7 @@
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="ext" tagdir="/WEB-INF/tags/ext" %>
 
 <cti:standardPage module="amr" title="Billing">
 	<cti:standardMenu menuSelection="billing|generation"/>
@@ -18,16 +19,18 @@
 	<cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
 	
 	<h2>Billing</h2>
-	<br><br>
+	<br>
 	
 	<c:set var="formatMap" value="<%=FileFormatTypes.getValidFormats()%>"></c:set>
 	<c:set var="origEndDate" value="<%= datePart.format(billingBean.getEndDate()) %>"></c:set>
 	<c:set var="systemTimezone" value="<%= tzFormat.format(billingBean.getEndDate()) %>"></c:set>
+    
+    <tags:boxContainer title="Settings:" id="billingContainer" hideEnabled="false">
 
 	<form name = "MForm" action="<c:url value="/servlet/BillingServlet" />" method="post">
 	
 			<tags:nameValueContainer>
-				<tags:nameValue name="File Format">
+				<tags:nameValue name="File Format" nameColumnWidth="250px">
 		            <select name="fileFormat">
 		            	<c:forEach var="format" items="${formatMap}">
 		            		<option value="${format.value}" ${(format.value == BILLING_BEAN.fileFormat)?'selected':''}>${format.key}</option>
@@ -48,24 +51,24 @@
 		        	<input type="checkbox" name="removeMultiplier" ${(BILLING_BEAN.removeMult)? 'checked':''} >
 				</tags:nameValue>
 				<tags:nameValue name="Billing Group">
-		        	<c:set value="${true}" var="isFirst"/>
-			        <select name="billGroup" size="10" multiple>
-			        	<c:forEach items="${BILLING_BEAN.availableGroups}" var="item">
-			           		<c:choose>
-				           		<c:when test="${isFirst}">
-				            		<option selected>${item}</option>
-				           		</c:when>
-				           		<c:otherwise>
-				            		<option>${item}</option>
-				           		</c:otherwise>
-			           		</c:choose>
-			           		<c:set value="${false}" var="isFirst"/>
-			         	</c:forEach>
-			        </select>
+                
+                    <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="dataJson" />
+                    <ext:nodeValueSelectingInlineTree   fieldId="billGroup"
+                                                        fieldName="billGroup"
+                                                        nodeValueName="groupName"
+                                                        multiSelect="true"
+                                                        
+                                                        id="billingTree"
+                                                        dataJson="${dataJson}"
+                                                        width="500"
+                                                        height="400"
+                                                        treeAttributes="{'border':true}" />
 				</tags:nameValue>
 				
 			</tags:nameValueContainer>
 			<input type="submit" name="generate" value="Generate">
 
 	</form>
+    
+    </tags:boxContainer>
 </cti:standardPage>

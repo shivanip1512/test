@@ -1201,6 +1201,42 @@
         </attribute>
     </tag>
     
+    <tag>
+        <description>
+            Outputs a device group hierarchy as a Json string. Used to feed the 'dataJson' attribute
+            of any of the cannon Ext tree tags (such as nodeValueSelectingInlineTree).
+        </description>
+        <name>deviceGroupHierarchyJson</name>
+        <tag-class>com.cannontech.web.taglib.DeviceGroupHierarchyJsonTag</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <description>
+                Comma seperated list of predicates to apply to the default all-groups hierarchy.
+                Can be any of the Enum values defined in DeviceGroupPredicateEnum.
+                Example: predicates="MODIFIABLE, NON_HIDDEN"
+            </description>
+            <name>predicates</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue> 
+        </attribute>
+        <attribute>
+            <description>
+                The name given to the root node. Defaults to "Groups".
+            </description>
+            <name>rootName</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <description>
+                Outputs the Json string into a context variable with name supplied to the 'var' attribute.
+            </description>
+            <name>var</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+    
       <tag>
     <description>
         Adds a parameter to a containing 'import' tag's URL.

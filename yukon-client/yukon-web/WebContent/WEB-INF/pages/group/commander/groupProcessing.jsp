@@ -77,6 +77,7 @@
             <br><br>
             <div class="largeBoldLabel">Group:</div>
             
+            <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="dataJson" />
             <ext:nodeValueSelectingInlineTree   fieldId="groupName" 
                                                 fieldName="groupName"
                                                 nodeValueName="groupName" 

@@ -601,6 +601,10 @@
         <property name="reportDefinitionFactory" ref="yukonReportModelDefinitionFactory"/>
     </bean>
     
+    <bean id="deviceGroupHierarchyJsonPrototype" class="com.cannontech.web.taglib.DeviceGroupHierarchyJsonTag">
+        <property name="deviceGroupService" ref="deviceGroupService"/>
+    </bean>
+    
     <bean id="verifyRolesAndPropertiesTagPrototype" class="com.cannontech.web.util.VerifyRolesAndPropertiesTag">
         <property name="descriptionService" ref="roleAndPropertyDescriptionService"/>
     </bean>

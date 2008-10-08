@@ -72,9 +72,11 @@
             <cti:deviceCollection deviceCollection="${deviceCollection}" /> 
                                 
             <%-- SELECT DEVICE GROUP TREE INPUT --%>
+            <cti:deviceGroupHierarchyJson predicates="MODIFIABLE" var="dataJson" />
             <ext:nodeValueSelectingInlineTree   fieldId="groupName"
                                                 fieldName="groupName"
                                                 nodeValueName="groupName"
+                                                multiSelect="false"
                                                 
                                                 id="selectGroupTree"
                                                 dataJson="${dataJson}"

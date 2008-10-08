@@ -1,11 +1,18 @@
 package com.cannontech.web.group;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroupHierarchy;
+import com.cannontech.common.device.groups.service.DeviceGroupPredicateEnum;
+import com.cannontech.common.util.predicate.AggregateAndPredicate;
+import com.cannontech.common.util.predicate.Predicate;
 import com.cannontech.web.util.ExtTreeNode;
 
 public class DeviceGroupTreeUtils {
@@ -70,5 +77,20 @@ public class DeviceGroupTreeUtils {
         info.put(key, data);
         node.setAttribute("info", info);
     }
+    
+    public static AggregateAndPredicate<DeviceGroup> getAggregratePredicateFromString(String predicatesStr) {
+        
+        String[] predicateStrs = StringUtils.split(predicatesStr, ",");
+        List<Predicate<DeviceGroup>> predicates = new ArrayList<Predicate<DeviceGroup>>();
+        for (String predicateStr : predicateStrs) {
+            Predicate<DeviceGroup> predicate = DeviceGroupPredicateEnum.valueOf(predicateStr.trim()).getPredicate();
+            predicates.add(predicate);
+        }
+        AggregateAndPredicate<DeviceGroup> aggregatePredicate = new AggregateAndPredicate<DeviceGroup>(predicates);
+        
+        return aggregatePredicate;
+    }
+    
+    
     
 }

@@ -14,8 +14,6 @@ import javax.mail.util.ByteArrayDataSource;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
-import net.sf.json.JSONObject;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
@@ -34,9 +32,7 @@ import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
 import com.cannontech.common.device.commands.GroupCommandExecutor;
 import com.cannontech.common.device.commands.GroupCommandResult;
 import com.cannontech.common.device.groups.model.DeviceGroup;
-import com.cannontech.common.device.groups.model.DeviceGroupHierarchy;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
-import com.cannontech.common.device.groups.service.NonHiddenDeviceGroupPredicate;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.ResolvableTemplate;
 import com.cannontech.common.util.SimpleCallback;
@@ -57,7 +53,6 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.cannontech.web.util.ExtTreeNode;
 import com.cannontech.web.util.JsonView;
 
 @Controller
@@ -147,16 +142,6 @@ public class GroupCommanderController implements InitializingBean {
 
         List<LiteCommand> commands = commandDao.getAuthorizedCommands(meterCommands, user);
         model.addAttribute("commands", commands);
-        
-        // make a device group hierarchy starting at root, only modifiable groups
-        DeviceGroup rootGroup = deviceGroupService.getRootGroup();
-        DeviceGroupHierarchy groupHierarchy = deviceGroupService.getDeviceGroupHierarchy(rootGroup, new NonHiddenDeviceGroupPredicate());
-        
-        ExtTreeNode root = DeviceGroupTreeUtils.makeDeviceGroupExtTree(groupHierarchy, "Groups", null);
-        
-        JSONObject jsonObj = new JSONObject(root.toMap());
-        String dataJson = jsonObj.toString();
-        model.addAttribute("dataJson", dataJson);
     }
     
     @RequestMapping

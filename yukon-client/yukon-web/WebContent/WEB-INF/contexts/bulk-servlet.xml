@@ -119,7 +119,6 @@
     <!-- ADD/REMOVE FROM GROUP CONTROLLER -->
     <bean id="AddRemoveCollectionToGroupController" class="com.cannontech.web.bulk.AddRemoveCollectionToGroupController" >
         
-        <property name="deviceGroupService" ref="deviceGroupService" />
         <property name="deviceCollectionDeviceGroupHelper" ref="deviceCollectionDeviceGroupHelper" />
         <property name="deviceCollectionFactory" ref="deviceCollectionFactory" />
         
