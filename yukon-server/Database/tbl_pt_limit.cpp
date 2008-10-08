@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_limit.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2008/10/08 14:17:03 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2008/10/08 15:13:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -61,7 +61,7 @@ void CtiTablePointLimit::getSQL(string &sql, LONG pointID, LONG paoID, const std
     {
         sql_stream << " where pointid in (";
 
-        csv_output_iterator<long> csv_out(&sql_stream);
+        csv_output_iterator<long, ostringstream> csv_out(sql_stream);
         copy(pointIds.begin(), pointIds.end(), csv_out);
 
         sql_stream << ")";

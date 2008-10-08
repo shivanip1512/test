@@ -7,6 +7,7 @@ using boost::unit_test_framework::test_suite;
 
 #include <vector>
 #include <map>
+#include <strstream>
 #include "utility.h"
 #include "dsm2.h"
 #include "queues.h"
@@ -169,3 +170,24 @@ BOOST_AUTO_UNIT_TEST(test_find_expired_om)
     BOOST_CHECK(findExpiredOutMessage((void *)&futureTime, queEnt));
     BOOST_CHECK(!findExpiredOutMessage((void *)&historicalTime, queEnt));
 }
+
+BOOST_AUTO_UNIT_TEST(test_csv_output_iterator)
+{
+    std::ostringstream ostr;
+    std::vector<long> source;
+
+    source.push_back(1);
+    source.push_back(1);
+    source.push_back(2);
+    source.push_back(3);
+    source.push_back(5);
+    source.push_back(8);
+
+    csv_output_iterator<long, std::ostringstream> csv_itr(ostr);
+
+    std::copy(source.begin(), source.end(), csv_itr);
+
+    BOOST_CHECK_EQUAL(ostr.str(), "1,1,2,3,5,8");
+}
+
+

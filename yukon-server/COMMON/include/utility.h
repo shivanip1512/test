@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/utility.h-arc  $
-* REVISION     :  $Revision: 1.53 $
-* DATE         :  $Date: 2008/10/08 14:17:03 $
+* REVISION     :  $Revision: 1.54 $
+* DATE         :  $Date: 2008/10/08 15:13:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -352,18 +352,24 @@ inline bool list_contains( const std::list<T> &V, T x )
 }
 
 
-template <class Numeric>
+//  usage is as an output iterator - e.g.
+//  vector<long> source;
+//  ostringstream output;
+//  csv_output_iterator<long, ostringstream> csv_itr(output);  //  OR csv_itr<long, CtiLogger>(dout)
+//    ...
+//  std::copy(source.begin(), source.end(), csv_itr);
+template <class Numeric, class Stream>
 struct csv_output_iterator
 {
-    std::ostream *o;
+    Stream &s;
     bool first;
     Numeric num;
 
-    csv_output_iterator(std::ostream *o_) : o(o_), first(true) {};
+    csv_output_iterator(Stream &s_) : s(s_), first(true) {};
 
     csv_output_iterator &operator*()  {  return *this;  };
     csv_output_iterator &operator=(Numeric num_)  {  num = num_;  return *this;  };
-    csv_output_iterator &operator++()  { (first?(first = false, *o):(*o << ",")) << num;  return *this;  };
+    csv_output_iterator &operator++()  { (first?(first = false, s):(s << ",")) << num;  return *this;  };
 };
 
 

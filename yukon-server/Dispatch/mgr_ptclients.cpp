@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/mgr_ptclients.cpp-arc  $
-* REVISION     :  $Revision: 1.43 $
-* DATE         :  $Date: 2008/10/08 14:40:57 $
+* REVISION     :  $Revision: 1.44 $
+* DATE         :  $Date: 2008/10/08 15:13:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -260,7 +260,7 @@ void CtiPointClientManager::refreshProperties(LONG pntID, LONG paoID, const set<
     {
         ostringstream in_list;
 
-        csv_output_iterator<long> csv_out(&in_list);
+        csv_output_iterator<long, ostringstream> csv_out(in_list);
 
         in_list << "(";
 
@@ -691,7 +691,7 @@ void CtiPointClientManager::RefreshDynamicData(LONG id, const set<long> &pointId
     if(!pointIds.empty())
     {
         ostringstream in_list;
-        csv_output_iterator<long> csv_itr(&in_list);
+        csv_output_iterator<long, ostringstream> csv_itr(in_list);
 
         in_list << "(";
 
