@@ -138,17 +138,6 @@ public class GroupEditorController extends MultiActionController {
         // all groups
         List<DeviceGroup> groups = deviceGroupDao.getAllGroups();
 
-        // move to groups
-        // Create a list of groups the current group could move to excluding the
-        // current group itself, any descendant groups of the current group and
-        // any groups that are not modifiable
-        final List<DeviceGroup> moveGroups = getMoveGroups(groups, group);
-        mav.addObject("moveGroups", moveGroups);
-        
-        // copy to groups
-        List<DeviceGroup> copyToGroups = getCopyToGroups(groups, group);
-        mav.addObject("copyToGroups", copyToGroups);
-
         // sub groups (child groups)
         MapQueue<DeviceGroup, DeviceGroup> childList = getChildList(groups);
         List<DeviceGroup> childGroups = childList.get(group);
@@ -191,30 +180,15 @@ public class GroupEditorController extends MultiActionController {
         String allGroupsDataJson = allGroupsJsonObj.toString();
         mav.addObject("allGroupsDataJson", allGroupsDataJson);
         
+        // MOVE GROUPS TREE JSON
+        List<DeviceGroup> moveGroups = getMoveGroups(groups, group);
+        String moveGroupDataJson = makeMoveCopyJson(allGroupsGroupHierarchy, moveGroups);
+        mav.addObject("moveGroupDataJson", moveGroupDataJson); 
         
-        // MODIFIABLE NO-CHILDREN HIERARCHY
-        Predicate<DeviceGroup> noChildrenPredicate = new Predicate<DeviceGroup>() {
-            
-            @Override
-            public boolean evaluate(DeviceGroup deviceGroup) {
-                
-                return moveGroups.contains(deviceGroup);
-            };
-        };
-        
-        List<Predicate<DeviceGroup>> predicatesToCheck = new ArrayList<Predicate<DeviceGroup>>();
-        predicatesToCheck.add(new ModifiableDeviceGroupPredicate());
-        predicatesToCheck.add(noChildrenPredicate);
-        
-        AggregateAndPredicate<DeviceGroup> modifiableNoChildrenPredicate = new AggregateAndPredicate<DeviceGroup>(predicatesToCheck);
-        DeviceGroupHierarchy modifiableNoChildrenGroupHierarchy = deviceGroupService.getFilteredDeviceGroupHierarchy(allGroupsGroupHierarchy, modifiableNoChildrenPredicate);
-        
-        // MODIFIABLE NO-CHILDREN GROUPS TREE JSON
-        ExtTreeNode modifiableNoChildrenGroupsRoot = DeviceGroupTreeUtils.makeDeviceGroupExtTree(modifiableNoChildrenGroupHierarchy, "Groups", null);
-        
-        JSONObject modifiableNoChildrenGroupsJsonObj = new JSONObject(modifiableNoChildrenGroupsRoot.toMap());
-        String modifiableNoChildrenGroupsDataJson = modifiableNoChildrenGroupsJsonObj.toString();
-        mav.addObject("modifiableNoChildrenGroupsDataJson", modifiableNoChildrenGroupsDataJson);
+        // COPY GROUPS TREE JSON
+        List<DeviceGroup> copyToGroups = getCopyToGroups(groups, group);
+        String copyGroupDataJson = makeMoveCopyJson(allGroupsGroupHierarchy, copyToGroups);
+        mav.addObject("copyGroupDataJson", copyGroupDataJson); 
         
         // DEVICE COLLECTION
         DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(selectedDeviceGroup);
@@ -222,6 +196,27 @@ public class GroupEditorController extends MultiActionController {
         
         return mav;
 
+    }
+    
+    private String makeMoveCopyJson(DeviceGroupHierarchy allGroupsGroupHierarchy, final List<DeviceGroup> groups) {
+        
+        Predicate<DeviceGroup> noChildrenPredicate = new Predicate<DeviceGroup>() {
+            @Override
+            public boolean evaluate(DeviceGroup deviceGroup) {
+                return groups.contains(deviceGroup);
+            };
+        };
+        
+        List<Predicate<DeviceGroup>> predicates = new ArrayList<Predicate<DeviceGroup>>();
+        predicates.add(new ModifiableDeviceGroupPredicate());
+        predicates.add(noChildrenPredicate);
+        
+        AggregateAndPredicate<DeviceGroup> aggregatePredicate = new AggregateAndPredicate<DeviceGroup>(predicates);
+        DeviceGroupHierarchy groupHierarchy = deviceGroupService.getFilteredDeviceGroupHierarchy(allGroupsGroupHierarchy, aggregatePredicate);
+        ExtTreeNode groupRoot = DeviceGroupTreeUtils.makeDeviceGroupExtTree(groupHierarchy, "Groups", null);
+        
+        JSONObject groupJsonObj = new JSONObject(groupRoot.toMap());
+        return groupJsonObj.toString();
     }
     
     private MapQueue<DeviceGroup, DeviceGroup> getChildList(List<DeviceGroup> groups) {
