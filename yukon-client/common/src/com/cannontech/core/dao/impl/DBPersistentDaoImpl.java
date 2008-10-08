@@ -64,40 +64,28 @@ public class DBPersistentDaoImpl implements DBPersistentDao
 
     @Override
     public void performDBChange(DBPersistent item, int transactionType) throws PersistenceException {
-        int dbChangeType = -1;
-        
-        switch(transactionType) {
-            case Transaction.INSERT:
-                dbChangeType = DBChangeMsg.CHANGE_TYPE_ADD;
-                break;
-            case Transaction.DELETE:
-                dbChangeType = DBChangeMsg.CHANGE_TYPE_DELETE;
-                break;
-            case Transaction.UPDATE:
-                dbChangeType = DBChangeMsg.CHANGE_TYPE_UPDATE;
-                break;
-            default:
-                dbChangeType = DBChangeMsg.CHANGE_TYPE_NONE;
-        }
 
         try {
-            
-            // get dbChangeMsgs BEFORE execute
-            // this may be a delete and the dbChangeMsgs may not be retrievable after execute
             DBChangeMsg[] dbChangeMsgs = null;
-            if (dbChangeType != DBChangeMsg.CHANGE_TYPE_NONE) {
-                if(item instanceof CTIDbChange){
-                    dbChangeMsgs = ((CTIDbChange)item).getDBChangeMsgs(dbChangeType);
-                }
+            switch(transactionType) {
+                case Transaction.INSERT:
+                    executeTransaction(item, transactionType);
+                    dbChangeMsgs = getDBChangeMsgs(item, DBChangeMsg.CHANGE_TYPE_ADD);
+                    break;
+                case Transaction.DELETE:
+                    dbChangeMsgs = getDBChangeMsgs(item, DBChangeMsg.CHANGE_TYPE_DELETE);
+                    executeTransaction(item, transactionType);
+                    break;
+                case Transaction.UPDATE:
+                    executeTransaction(item, transactionType);
+                    dbChangeMsgs = getDBChangeMsgs(item, DBChangeMsg.CHANGE_TYPE_UPDATE);
+                    break;
+                default:
+                    executeTransaction(item, transactionType);
             }
-            
-            // execute
-            Transaction<DBPersistent> t = Transaction.createTransaction( transactionType, item);
-            item = t.execute();
-            
+
             //write the DBChangeMessage out to Dispatch since it was a Successful UPDATE
             if (dbChangeMsgs != null) {
-                
                 for (DBChangeMsg changeMsg : dbChangeMsgs) {
                     processDBChange(changeMsg);
                 }
@@ -106,6 +94,22 @@ public class DBPersistentDaoImpl implements DBPersistentDao
             throw new PersistenceException("Unable to save DBPersistent (item=" + 
                                            item + ", transactionType=" + transactionType + ")", e);
         }
+    }
+
+    private void executeTransaction(DBPersistent item,
+            int transactionType) throws TransactionException {
+        Transaction<DBPersistent> t = Transaction.createTransaction( transactionType, item);
+        t.execute();
+    }
+
+    private DBChangeMsg[] getDBChangeMsgs(DBPersistent item, int dbChangeType) {
+        DBChangeMsg[] dbChangeMsgs = null;
+        if (dbChangeType != DBChangeMsg.CHANGE_TYPE_NONE) {
+            if(item instanceof CTIDbChange){
+                dbChangeMsgs = ((CTIDbChange)item).getDBChangeMsgs(dbChangeType);
+            }
+        }
+        return dbChangeMsgs;
     }
     
     @Override
