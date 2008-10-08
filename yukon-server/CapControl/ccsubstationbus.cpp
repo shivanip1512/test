@@ -4450,8 +4450,7 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
                                                currentFeeder->getVarValueBeforeControl(), currentFeeder->getCurrentVarLoadPointValue(), currentFeeder->getRegression(),
                                                currentFeeder->getRegressionA(), currentFeeder->getRegressionB(), currentFeeder->getRegressionC(),
                                                currentFeeder->getUsePhaseData(), currentFeeder->getTotalizedControlFlag() )
-                        || currentFeeder->isPastMaxConfirmTime(CtiTime(),maxConfirmTime,sendRetries)
-                      )
+                        || (currentFeeder->getLastOperationTime().seconds() + maxConfirmTime <= CtiTime().seconds() ) )
                     {
 
                         if (currentFeeder->getUsePhaseData() && !currentFeeder->getTotalizedControlFlag())
