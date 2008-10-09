@@ -482,7 +482,7 @@ WHERE (X.ServiceProviderId = S.AddressId AND
 
 /* Start YUK-5419 */
 UPDATE YukonRole SET RoleDescription = 'Administrator privileges.' 
-WHERE RoleDescription = 'Administrator privilages.' 
+WHERE RoleDescription = 'Administrator privilages.';
 /* End YUK-5419 */
 
 /* Start YUK-5630 */
