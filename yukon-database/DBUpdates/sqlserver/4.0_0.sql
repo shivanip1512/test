@@ -2439,20 +2439,25 @@ if exists (select 1
    drop table CCOperationLogCache;
 go
 
+/* @start-block */
 CREATE VIEW CCOperationsASent_View
 as
 SELECT logid, pointid, datetime, text, feederid, subid, additionalinfo
 FROM CCEventLog
 WHERE text LIKE '%Close sent,%' OR text LIKE '%Open sent,%'
 go
+/* @end-block */
 
+/* @start-block */
 CREATE VIEW CCOperationsBConfirmed_view
 as
 SELECT logid, pointid, datetime, text, kvarbefore, kvarafter, kvarchange
 FROM CCEventLog
 WHERE text LIKE 'Var: %'
 go
+/* @end-block */
 
+/* @start-block */
 CREATE VIEW CCOperationsCOrphanedConf_view
 as
 SELECT EL.LogId AS OpId, MIN(el2.LogID) AS ConfId 
@@ -2465,7 +2470,9 @@ LEFT JOIN (SELECT A.LogId AS AId, MIN(b.LogID) AS NextAId
 WHERE EL3.NextAId IS NULL
 GROUP BY EL.LogId
 go
+/* @end-block */
 
+/* @start-block */
 CREATE VIEW CCOperationsDSentAndValid_view
 as
 SELECT EL.LogId AS OpId, MIN(el2.LogID) AS ConfId 
@@ -2478,7 +2485,9 @@ LEFT JOIN (SELECT A.LogId AS AId, MIN(b.LogID) AS NextAId
 WHERE EL2.LogId < EL3.NextAId OR EL3.NextAId IS NULL
 GROUP BY EL.LogId
 go 
+/* @end-block */
 
+/* @start-block */
 CREATE VIEW CCOperationsESentAndAll_view
 as
 SELECT OP.LogId AS OId, MIN(aaa.confid) AS CId 
@@ -2486,6 +2495,7 @@ FROM CCOperationsASent_View OP
 LEFT JOIN CCOperationsDSentAndValid_view AAA ON OP.LogId = AAA.OpId
 GROUP BY OP.LogId
 go
+/* @end-block */
 
 CREATE TABLE CCOperationLogCache 
 (OperationLogId numeric(18,0) not null,
