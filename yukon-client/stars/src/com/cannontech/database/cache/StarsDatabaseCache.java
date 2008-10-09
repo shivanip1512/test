@@ -321,7 +321,6 @@ public class StarsDatabaseCache implements DBChangeListener {
 		synchronized (starsUsers) {
 			StarsYukonUser user = starsUsers.get( userID );
 			if (user != null) {
-				if (user.getYukonUser() == yukonUser)
 					return user;
 			}
 		}
