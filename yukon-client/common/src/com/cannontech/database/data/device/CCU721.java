@@ -40,7 +40,9 @@ public class CCU721 extends RemoteBase {
     public DeviceAddress getDeviceAddress() 
     {
     	if( deviceAddress == null)
+    	{
     		deviceAddress = new DeviceAddress();
+    	}
     		
     	return deviceAddress;
     }
