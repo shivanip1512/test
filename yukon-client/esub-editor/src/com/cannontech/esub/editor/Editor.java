@@ -541,50 +541,57 @@ public class Editor extends JPanel {
 	 * @param args java.lang.String[]
 	 */
 	public static void main(String[] args) {
-	    ClientStartupHelper clientStartupHelper = new ClientStartupHelper();
-		clientStartupHelper.setAppName(APPLICATION_NAME);
-		clientStartupHelper.setRequiredRole(EsubEditorRole.ROLEID);
-		frame = new JFrame() {};
-		clientStartupHelper.setParentFrame(frame);
+	    try {
+            ClientStartupHelper clientStartupHelper = new ClientStartupHelper();
+            clientStartupHelper.setAppName(APPLICATION_NAME);
+            clientStartupHelper.setRequiredRole(EsubEditorRole.ROLEID);
+            frame = new JFrame() {};
+            clientStartupHelper.setParentFrame(frame);
+            clientStartupHelper.doStartup();
 
-		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-			@Override
-            public void windowClosing(java.awt.event.WindowEvent e) {
-                // Make sure to shutdown properly so dispatch is not left with a vagrant connect for a while.
-                // Ugly cast.  We want to call disconnect though so that our shutdown message gets
-                // written out.
-                ClientConnection conn = (ClientConnection) ConnPool.getInstance().getDefDispatchConn();
-                if ( conn != null && conn.isValid() ) {  // free up Dispatchs resources     
-                    Command comm = new Command();
-                    comm.setPriority(15);               
-                    comm.setOperation( Command.CLIENT_APP_SHUTDOWN );
-                    conn.write( comm );
-                    conn.disconnect();
+            frame.addWindowListener(new java.awt.event.WindowAdapter() {
+                @Override
+                public void windowClosing(java.awt.event.WindowEvent e) {
+                    // Make sure to shutdown properly so dispatch is not left
+                    // with a vagrant connect for a while.
+                    // Ugly cast. We want to call disconnect though so that our
+                    // shutdown message gets
+                    // written out.
+                    ClientConnection conn = (ClientConnection) ConnPool.getInstance()
+                                                                       .getDefDispatchConn();
+                    if (conn != null && conn.isValid()) { // free up Dispatchs
+                                                          // resources
+                        Command comm = new Command();
+                        comm.setPriority(15);
+                        comm.setOperation(Command.CLIENT_APP_SHUTDOWN);
+                        conn.write(comm);
+                        conn.disconnect();
+                    }
+
+                    System.exit(0);
                 }
-            
-                System.exit(0);
-            }
-		});
-		
-		frame.setIconImages(getIconsImages());
+            });
 
-				
-		Editor editor = new Editor();
+            frame.setIconImages(getIconsImages());
 
-		frame.getContentPane().add(editor);
-		editor.setFrameTitle("Untitled");
-        
-        javax.swing.SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                frame.pack();
-                frame.setVisible(true);        
-            }
-        });
-		
-		
-		//get this stuff loaded into the cache asap
-		DefaultDatabaseCache.getInstance().getAllDevices();
-		DefaultDatabaseCache.getInstance().getAllStateGroupMap();
+            Editor editor = new Editor();
+
+            frame.getContentPane().add(editor);
+            editor.setFrameTitle("Untitled");
+
+            javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    frame.pack();
+                    frame.setVisible(true);
+                }
+            });
+
+            // get this stuff loaded into the cache asap
+            DefaultDatabaseCache.getInstance().getAllDevices();
+            DefaultDatabaseCache.getInstance().getAllStateGroupMap();
+        } catch (Exception e) {
+            CTILogger.error(e);
+        }
 	}
     
 	/**
