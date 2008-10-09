@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_point.h-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2008/10/08 20:44:58 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2008/10/09 16:11:36 $
 *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
  * All Rights Reserved
@@ -65,8 +65,6 @@ private:
     CtiCriticalSection   _lru_mux;
     lru_timeslice_map    _lru_timeslices;
     lru_point_lookup_map _lru_points;
-
-    WeakPointMap _pendingDeletions;
 
     void refreshPoints(bool &rowFound, RWDBReader& rdr);
 

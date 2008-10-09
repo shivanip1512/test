@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.225 $
-* DATE         :  $Date: 2008/09/19 11:40:41 $
+* REVISION     :  $Revision: 1.226 $
+* DATE         :  $Date: 2008/10/09 16:11:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -167,6 +167,7 @@ INT LogonToDevice( CtiPortSPtr aPortRecord, CtiDeviceSPtr aIED, INMESS *aInMessa
 
 void ShuffleVTUMessage( CtiPortSPtr &Port, CtiDeviceSPtr &Device, CtiOutMessage *OutMessage );
 INT GetPreferredProtocolWrap( CtiPortSPtr Port, CtiDeviceSPtr &Device );
+BOOL findNonExclusionOutMessage(void *data, void* d);
 BOOL findExclusionFreeOutMessage(void *data, void* d);
 bool ShuffleQueue( CtiPortSPtr shPort, OUTMESS *&OutMessage, CtiDeviceSPtr &device );
 static INT CheckIfOutMessageIsExpired(OUTMESS *&OutMessage);
@@ -4031,6 +4032,18 @@ bool ShuffleQueue( CtiPortSPtr shPort, OUTMESS *&OutMessage, CtiDeviceSPtr &devi
 }
 
 
+BOOL findNonExclusionOutMessage(void *data, void* d)
+{
+    OUTMESS  *OutMessage = (OUTMESS *)d;
+
+    if(OutMessage)
+    {
+        return (OutMessage->MessageFlags & MessageFlag_ApplyExclusionLogic);
+    }
+
+    return false;
+}
+
 /*
  *  Used by SearchQueue.  Must be protected appropriately.
  */
@@ -4044,7 +4057,6 @@ BOOL findExclusionFreeOutMessage(void *data, void* d)
     try
     {
         if(OutMessage &&
-           OutMessage->MessageFlags & MessageFlag_ApplyExclusionLogic  ||
            !stringCompareIgnoreCase(gConfigParms.getValueAsString("PORTER_EXCLUSION_TEST"),"true") )     // Indicates an excludable message!
         {
             CtiDeviceSPtr Device = DeviceManager.getEqual( OutMessage->DeviceID );
@@ -4261,8 +4273,6 @@ INT IdentifyDeviceFromOutMessage(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevi
 {
     INT status = NORMAL;
 
-    Device.reset();
-
     if(OutMessage != 0)
     {
         if(OutMessage->DeviceID == 0 && OutMessage->Remote != 0 && OutMessage->Port != 0)
@@ -4297,7 +4307,7 @@ INT IdentifyDeviceFromOutMessage(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevi
                 status = CONTINUE_LOOP;
             }
         }
-        else
+        else if( !Device || Device->getID() != OutMessage->DeviceID )
         {
             /* get the device record for this id */
             Device = DeviceManager.RemoteGetEqual(OutMessage->DeviceID);
@@ -4331,6 +4341,8 @@ INT IdentifyDeviceFromOutMessage(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevi
     }
     else
     {
+        Device.reset();
+
         status = CONTINUE_LOOP;
     }
 
@@ -4350,7 +4362,7 @@ INT GetWork(CtiPortSPtr Port, CtiOutMessage *&OutMessage, ULONG &QueEntries)
      *  Search for the first queue entry which is ok to send.  In the general case, this should be the zeroeth entry and
      *  this call is relatively inexpensive.
      */
-    if( Port->getQueueSlot() == 0 )
+    if( Port->getQueueSlot() == 0 && Port->searchQueue(NULL, findNonExclusionOutMessage, false) != 0 )
     {
         CtiDeviceManager::coll_type::reader_lock_guard_t find_dev_guard(DeviceManager.getLock());
         Port->setQueueSlot( Port->searchQueue( NULL, findExclusionFreeOutMessage, false ) );

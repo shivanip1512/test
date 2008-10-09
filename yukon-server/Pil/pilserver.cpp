@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.118 $
-* DATE         :  $Date: 2008/10/08 19:57:27 $
+* REVISION     :  $Revision: 1.119 $
+* DATE         :  $Date: 2008/10/09 16:11:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -513,7 +513,7 @@ void CtiPILServer::resultThread()
     {
         try
         {
-            const unsigned int inQueueBlockSize =  50;
+            const unsigned int inQueueBlockSize = 255;
             const unsigned int inQueueMaxWait   = 500;  //  500 ms
 
             unsigned long start = GetTickCount(), elapsed;
