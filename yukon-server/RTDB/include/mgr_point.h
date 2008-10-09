@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_point.h-arc  $
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2008/10/09 16:11:36 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2008/10/09 18:10:19 $
 *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
  * All Rights Reserved
@@ -71,7 +71,6 @@ private:
     void updateAccess(long pointid, time_t time_now=time(0));
 
     void addPoint(CtiPointBase *point);  //  also used by the unit test
-    void updatePointMaps(const CtiPointBase &point, long old_pao, CtiPointType_t old_type, int old_offset, int old_control_offset );
 
     struct pao_offset_t
     {
@@ -138,7 +137,6 @@ class Test_CtiPointManager : public CtiPointManager
 {
 public:
     void addPoint(CtiPointBase *point)  {  ((CtiPointManager *)this)->addPoint(point);  }
-    void updatePointMaps(const CtiPointBase &point, long old_pao, CtiPointType_t old_type, int old_offset, int old_control_offset )  {  ((CtiPointManager *)this)->updatePointMaps(point, old_pao, old_type, old_offset, old_control_offset);  }
 };
 
 #endif                  // #ifndef __MGR_POINT_H__

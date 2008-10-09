@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.60 $
-* DATE         :  $Date: 2008/10/09 16:11:36 $
+* REVISION     :  $Revision: 1.61 $
+* DATE         :  $Date: 2008/10/09 18:10:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -119,8 +119,6 @@ void CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType_t pntType
 
     try
     {
-        coll_type::writer_lock_guard_t guard(getLock());
-
         {   // Make sure all objects that that store results
             CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
             RWDBConnection conn = getConnection();
@@ -129,6 +127,8 @@ void CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType_t pntType
             start = start.now();
             if(pntID == 0 && paoID == 0)
             {
+                coll_type::writer_lock_guard_t guard(getLock());
+
                 // Reset everyone's Updated flag.
                 _smartMap.apply(ApplyPointResetUpdated, NULL);
 
@@ -325,6 +325,8 @@ void CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType_t pntType
 
             if(pntID == 0 && paoID == 0 && rowFound)
             {
+                coll_type::writer_lock_guard_t guard(getLock());
+
                 while( pTempCtiPoint = _smartMap.find(isPointNotUpdated, NULL) )
                 {
                     {
@@ -340,10 +342,14 @@ void CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType_t pntType
 
         if( paoID )
         {
+            coll_type::writer_lock_guard_t guard(getLock());
+
             _paoids_loaded.insert(paoID);
         }
         else if( !pntID )
         {
+            coll_type::writer_lock_guard_t guard(getLock());
+
             //  paoid == 0 and pntid == 0 means all points were loaded
             _all_paoids_loaded = true;
         }
@@ -374,9 +380,6 @@ void CtiPointManager::refreshListByPointIDs(const set<long> &id_list)
 
 void CtiPointManager::refreshListByIDs(const set<long> &id_list, bool paoids)
 {
-    //  first thing we do before we grab any other locks
-    coll_type::writer_lock_guard_t guard(_smartMap.getLock());
-
     // Make sure all objects that that store results
     // are out of scope when the release is called
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
@@ -429,6 +432,8 @@ void CtiPointManager::refreshListByIDs(const set<long> &id_list, bool paoids)
 
     if( paoids )
     {
+        coll_type::reader_lock_guard_t guard(_smartMap.getLock());
+
         set_difference(id_list.begin(),
                        id_list.end(),
                        _paoids_loaded.begin(),
@@ -462,12 +467,6 @@ void CtiPointManager::refreshListByIDs(const set<long> &id_list, bool paoids)
             }
 
             in_list += CtiNumStr(*id_itr);
-
-            if( paoids )
-            {
-                //  this is presumptive - we could run into trouble here with a select that went wrong
-                _paoids_loaded.insert(*id_itr);
-            }
         }
 
         in_list = "(" + in_list + ")";
@@ -495,6 +494,14 @@ void CtiPointManager::refreshListByIDs(const set<long> &id_list, bool paoids)
         refreshPoints(rowFound, selector_calc  .reader(conn));
         refreshPoints(rowFound, selector_status.reader(conn));
         refreshPoints(rowFound, selector_system.reader(conn));
+    }
+
+    if( paoids )
+    {
+        coll_type::reader_lock_guard_t guard(_smartMap.getLock());
+
+        //  this is presumptive - we could run into trouble here with a select that went wrong
+        copy(ids_to_load.begin(), ids_to_load.end(), inserter(_paoids_loaded, _paoids_loaded.begin()));
     }
 }
 
@@ -581,86 +588,28 @@ CtiPointBase* PointFactory(RWDBReader &rdr)
 
 void CtiPointManager::refreshPoints(bool &rowFound, RWDBReader& rdr)
 {
-    LONG     lTemp = 0;
-    ptr_type Point;
-
-    coll_type::writer_lock_guard_t guard(getLock());
+    vector<CtiPoint *> newPoints;
 
     while( rdr() )
     {
-        rowFound = true;
+        CtiPoint *newPoint = PointFactory(rdr);    // Use the reader to get me an object of the proper type
+        newPoint->DecodeDatabaseReader(rdr);       // Fills himself in from the reader
 
-        rdr["pointid"] >> lTemp;            // get the PointID
+        // Add it to my list....
+        newPoint->setUpdatedFlag();            // Mark it updated
 
-        if( !_smartMap.empty() && (Point = _smartMap.find(lTemp)) )
-        {
-            /*
-             *  The point just returned from the rdr already was in my list.  We need to
-             *  update my list entry to the new settings!
-             */
-
-            long           old_pao            = Point->getDeviceID();
-            CtiPointType_t old_type           = Point->getType();
-            int            old_offset         = Point->getPointOffset();
-            int            old_control_offset = Point->getControlOffset();
-
-            Point->DecodeDatabaseReader(rdr);  // Fills himself in from the reader
-            Point->setUpdatedFlag();           // Mark it updated
-
-            updatePointMaps(*Point, old_pao, old_type, old_offset, old_control_offset);  // update the type and offset maps
-        }
-        else
-        {
-            CtiPoint *pTempCtiPoint = PointFactory(rdr);    // Use the reader to get me an object of the proper type
-            pTempCtiPoint->DecodeDatabaseReader(rdr);       // Fills himself in from the reader
-
-            // Add it to my list....
-            pTempCtiPoint->setUpdatedFlag();            // Mark it updated
-
-            addPoint(pTempCtiPoint);                    // add the point to the maps
-        }
+        newPoints.push_back(newPoint);
     }
-}
 
-
-void CtiPointManager::updatePointMaps( const CtiPointBase &point, long old_pao, CtiPointType_t old_type, int old_offset, int old_control_offset )
-{
-    long point_id = point.getPointID();
-
-    long           new_pao            = point.getDeviceID();
-    CtiPointType_t new_type           = point.getType();
-    int            new_offset         = point.getPointOffset();
-    int            new_control_offset = point.getControlOffset();
-
-    bool pao_change            = new_pao            != old_pao,
-         type_change           = new_type           != old_type,
-         offset_change         = new_offset         != old_offset,
-         control_offset_change = new_control_offset != old_control_offset;
-
-    if( pao_change || type_change || offset_change || control_offset_change )
     {
-        //  refresh the control offset if necessary
-        if( old_type == StatusPointType && old_control_offset && (pao_change || type_change || control_offset_change) )
-        {
-            _control_offsets.erase(pao_offset_t(old_pao, old_control_offset));
+        coll_type::writer_lock_guard_t guard(getLock());
 
-            if( new_type == StatusPointType &&
-                new_control_offset )
-            {
-                _control_offsets.insert(std::make_pair(pao_offset_t(new_pao, new_control_offset), point_id));
-            }
-        }
+        vector<CtiPoint *>::iterator point_itr = newPoints.begin(),
+                                     point_end = newPoints.end();
 
-        if( pao_change || type_change || offset_change )
+        while( point_itr != point_end )
         {
-            erase_from_multimap(_type_offsets, pao_offset_t(old_pao, old_offset), point_id);
-            _type_offsets.insert(std::make_pair(pao_offset_t(new_pao, new_offset), point_id));
-        }
-
-        if( pao_change )
-        {
-            erase_from_multimap(_pao_pointids, old_pao, point_id);
-            _pao_pointids.insert(std::make_pair(new_pao, point_id));
+            addPoint(*point_itr++);
         }
     }
 }
@@ -698,6 +647,11 @@ void CtiPointManager::addPoint( CtiPointBase *point )
 {
     if( point )
     {
+        if( _smartMap.find(point->getID()) )
+        {
+            erase(point->getID());
+        }
+
         _smartMap.insert(point->getID(), point); // Stuff it in the list
 
         updateAccess(point->getID());
