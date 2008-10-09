@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     9/30/2008 2:07:46 PM                         */
+/* Created on:     10/9/2008 2:54:29 PM                         */
 /*==============================================================*/
 
 
@@ -10653,16 +10653,6 @@ insert into YukonGroupRole values (-1097,-2, -108, -10808, '(none)');
 insert into YukonGroupRole values (-10990,-2, -108, -10810, '(none)');
 insert into YukonGroupRole values (-10991,-2, -108, -10811, '(none)');
 
-/* Device Actions role */ 
-INSERT INTO YukonGroupRole VALUES (-1150, -2, -213, -21300, '(none)'); 
-INSERT INTO YukonGroupRole VALUES (-1151, -2, -213, -21301, '(none)'); 
-INSERT INTO YukonGroupRole VALUES (-1152, -2, -213, -21302, '(none)'); 
-INSERT INTO YukonGroupRole VALUES (-1153, -2, -213, -21303, '(none)'); 
-INSERT INTO YukonGroupRole VALUES (-1154, -2, -213, -21304, '(none)'); 
-INSERT INTO YukonGroupRole VALUES (-1155, -2, -213, -21305, '(none)'); 
-INSERT INTO YukonGroupRole VALUES (-1156, -2, -213, -21306, '(none)'); 
-INSERT INTO YukonGroupRole VALUES (-1157, -2, -213, -21307, '(none)'); 
-
 /* Give yukon login access to View Logs, */
 insert into YukonGroupRole values (-4000, -2, -200, -20009, '(none)');
 
@@ -10853,6 +10843,16 @@ insert into yukongrouprole values (-2393,-304,-400,-40193,'(none)');
 insert into yukongrouprole values (-2394,-304,-400,-40194,'(none)');
 insert into yukongrouprole values (-2395,-304,-400,-40195,'(none)');
 insert into yukongrouprole values (-2396,-304,-400,-40196,'(none)');
+
+/* Device Actions role */ 
+INSERT INTO YukonGroupRole VALUES (-2500, -2, -213, -21300, '(none)'); 
+INSERT INTO YukonGroupRole VALUES (-2501, -2, -213, -21301, '(none)'); 
+INSERT INTO YukonGroupRole VALUES (-2502, -2, -213, -21302, '(none)'); 
+INSERT INTO YukonGroupRole VALUES (-2503, -2, -213, -21303, '(none)'); 
+INSERT INTO YukonGroupRole VALUES (-2504, -2, -213, -21304, '(none)'); 
+INSERT INTO YukonGroupRole VALUES (-2505, -2, -213, -21305, '(none)'); 
+INSERT INTO YukonGroupRole VALUES (-2506, -2, -213, -21306, '(none)'); 
+INSERT INTO YukonGroupRole VALUES (-2507, -2, -213, -21307, '(none)'); 
 
 /*==============================================================*/
 /* Table: YukonImage                                            */

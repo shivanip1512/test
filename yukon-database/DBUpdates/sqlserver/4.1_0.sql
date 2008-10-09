@@ -1245,17 +1245,17 @@ DELETE FROM YukonRoleProperty
 WHERE RolePropertyId = -20105;
 /* End YUK-6409 */
 
-/* Start YUK-6289 */
+/* Start YUK-6289, YUK-6549 */
 /* Device Actions role */ 
-INSERT INTO YukonGroupRole VALUES (-1150, -2, -213, -21300, '(none)'); 
-INSERT INTO YukonGroupRole VALUES (-1151, -2, -213, -21301, '(none)'); 
-INSERT INTO YukonGroupRole VALUES (-1152, -2, -213, -21302, '(none)'); 
-INSERT INTO YukonGroupRole VALUES (-1153, -2, -213, -21303, '(none)'); 
-INSERT INTO YukonGroupRole VALUES (-1154, -2, -213, -21304, '(none)'); 
-INSERT INTO YukonGroupRole VALUES (-1155, -2, -213, -21305, '(none)'); 
-INSERT INTO YukonGroupRole VALUES (-1156, -2, -213, -21306, '(none)'); 
-INSERT INTO YukonGroupRole VALUES (-1157, -2, -213, -21307, '(none)');
-/* End YUK-6289 */
+INSERT INTO YukonGroupRole VALUES (-2500, -2, -213, -21300, '(none)'); 
+INSERT INTO YukonGroupRole VALUES (-2501, -2, -213, -21301, '(none)'); 
+INSERT INTO YukonGroupRole VALUES (-2502, -2, -213, -21302, '(none)'); 
+INSERT INTO YukonGroupRole VALUES (-2503, -2, -213, -21303, '(none)'); 
+INSERT INTO YukonGroupRole VALUES (-2504, -2, -213, -21304, '(none)'); 
+INSERT INTO YukonGroupRole VALUES (-2505, -2, -213, -21305, '(none)'); 
+INSERT INTO YukonGroupRole VALUES (-2506, -2, -213, -21306, '(none)'); 
+INSERT INTO YukonGroupRole VALUES (-2507, -2, -213, -21307, '(none)'); 
+/* End YUK-6289, YUK-6549 */
 
 /* Start YUK-6426 */
 /* Versacom */ 
