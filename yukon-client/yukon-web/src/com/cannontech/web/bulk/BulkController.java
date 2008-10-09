@@ -16,6 +16,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -125,6 +126,17 @@ public class BulkController extends BulkControllerBase {
         return mav;
     }
     
+    public ModelAndView deviceSelection(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+
+        ModelAndView mav = new ModelAndView("deviceSelection.jsp");
+        
+        String errorMsg = ServletRequestUtils.getStringParameter(request, "errorMsg", null);
+        if (!StringUtils.isBlank(errorMsg)) {
+            mav.addObject("errorMsg", errorMsg);
+        }
+        
+        return mav;
+    }
     
     // SELECTED DEVICES POPUP TBALE
     public ModelAndView selectedDevicesTable(HttpServletRequest request, HttpServletResponse response) throws ServletException {

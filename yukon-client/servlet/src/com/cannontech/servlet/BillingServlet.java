@@ -9,7 +9,6 @@ import java.util.Arrays;
 
 import javax.servlet.http.HttpServlet;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 
 import com.cannontech.billing.FileFormatTypes;
@@ -60,8 +59,7 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
 		}
 		
 		String fileFormat = req.getParameter("fileFormat");
-		String billGroupStr = req.getParameter("billGroup");
-		String[] billGroupArray = StringUtils.split(billGroupStr, ",");
+		String[] billGroupArray = req.getParameterValues("billGroup");
         Validate.notNull(billGroupArray, "a billing group must be selected");
 		String removeMultiplier = req.getParameter("removeMultiplier");
 		String demandDays = req.getParameter("demandDays");

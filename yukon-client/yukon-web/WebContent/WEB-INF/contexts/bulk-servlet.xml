@@ -44,9 +44,6 @@
         <property name="prefix" value="/WEB-INF/pages/bulk/"/>
     </bean>
     
-    <bean class="com.cannontech.web.bulk.DeviceSelectionController" />
-    <bean class="com.cannontech.web.bulk.AddRemoveCollectionToGroupController" />
-
     <!-- BASIC BULK CONTROLLER -->
 	<bean id="BulkController" class="com.cannontech.web.bulk.BulkController" >
         
@@ -118,10 +115,7 @@
     
     <!-- ADD/REMOVE FROM GROUP CONTROLLER -->
     <bean id="AddRemoveCollectionToGroupController" class="com.cannontech.web.bulk.AddRemoveCollectionToGroupController" >
-        
-        <property name="deviceCollectionDeviceGroupHelper" ref="deviceCollectionDeviceGroupHelper" />
         <property name="deviceCollectionFactory" ref="deviceCollectionFactory" />
-        
     </bean>
     
     

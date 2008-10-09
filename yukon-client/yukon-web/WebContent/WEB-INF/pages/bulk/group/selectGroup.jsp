@@ -48,14 +48,14 @@
     <script type="text/javascript">
     
         function validateGroupIsSelected(btn, alertText) {
-    
+        
             if ($('groupName').value == '') {
                 alert(alertText);
                 return false;
             }
             
-            btn.disable();
-            return true;
+            btn.disabled = true;
+            $('selectGroupForm').submit();
         }
     
     </script>
@@ -66,7 +66,7 @@
     <tags:bulkActionContainer   key="${containerKey}" 
                                 deviceCollection="${deviceCollection}">
     
-        <form action="${formAction}" method="post">
+        <form id="selectGroupForm" action="${formAction}" method="post">
             
              <%-- DEVICE COLLECTION --%>
             <cti:deviceCollection deviceCollection="${deviceCollection}" /> 
@@ -85,7 +85,7 @@
                                                 treeAttributes="{'border':true}" />
                             
             <%-- ADD/REMOVE BUTTON --%>
-            <input type="submit" name="addRemoveButton" value="${buttonText}" onclick="return validateGroupIsSelected(this, '${noDeviceGroupSelectedAlertText}');">
+            <input type="button" name="addRemoveButton" value="${buttonText}" onclick="return validateGroupIsSelected(this, '${noDeviceGroupSelectedAlertText}');">
     
         </form>
     

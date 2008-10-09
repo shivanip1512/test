@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
@@ -72,7 +73,7 @@ public class AddRemoveCollectionToGroupController extends MultiActionController 
         this.deviceCollectionDeviceGroupHelper = deviceCollectionDeviceGroupHelper;
     }
     
-    @Autowired
+    @Required
     public void setDeviceCollectionFactory(
             DeviceCollectionFactory deviceCollectionFactory) {
         this.deviceCollectionFactory = deviceCollectionFactory;

@@ -1,9 +1,10 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="ext" tagdir="/WEB-INF/tags/ext" %>
 
 <%-- name of key in the selected node's info attribute --%>
 <%-- also will be the name of the hidden field on which the value is set --%>
 <%-- multiSelect allows multiple node to be selected, 'fieldId' is set to node values --%>
-<%-- concatinated with ',' --%>
+<%-- values will be returned as a list the same way a <select multiple> element does --%>
 <%@ attribute name="fieldId" required="true" type="java.lang.String"%>
 <%@ attribute name="fieldName" required="true" type="java.lang.String"%>
 <%@ attribute name="nodeValueName" required="true" type="java.lang.String"%>
@@ -25,6 +26,26 @@
     var nodeValues_${id} = $A();
     
     var multiSelect = ${multiSelect};
+    
+    function refreshMultiNodeElements() {
+    
+        // remove all
+        var sel = $('${fieldId}');
+        $A(sel.options).each(function(opt) {
+            sel.remove(opt);
+        });
+        
+        // add selected
+        nodeValues_${id}.each(function(n) {
+        
+                var newOpt = document.createElement('option');
+                $('${fieldId}').appendChild(newOpt);
+                newOpt.value = n;
+                newOpt.text = n;
+                newOpt.selected = true;
+            }
+        );
+    }
 
     function recordNameValue_${id}(node, event) {
     
@@ -54,8 +75,7 @@
             }
             
             // set field
-            $('${fieldId}').value = nodeValues_${id}.join(',');
-            
+            refreshMultiNodeElements();
             return false;
         
         }
@@ -83,7 +103,15 @@
 </script>
 
 <%-- VALUE HIDDEN FIELD --%>
-<input type="hidden" name="${fieldName}" id="${fieldId}" value="">
+<%-- the most straigtforward way to manage multiple add/remove of DOM elements, use the <select multiple> tag --%>
+<c:choose>
+    <c:when test="${multiSelect}">
+        <select name="${fieldName}" id="${fieldId}" style="display:none;" multiple></select>
+    </c:when>
+    <c:otherwise>
+        <input type="hidden" name="${fieldName}" id="${fieldId}" value="">
+    </c:otherwise>
+</c:choose>
 
 <%-- INLINE TREE --%>
 <ext:inlineTree  id="${id}"
