@@ -18,7 +18,7 @@
 	StarsThermostatProgram dftThermoProgram = null;
 	if (!isRecommended) {
 		for (int i = 0; i < dftThermoSchedules.getStarsThermostatProgramCount(); i++) {
-			if (dftThermoSchedules.getStarsThermostatProgram(i).getThermostatType().getType() == StarsThermostatTypes.EXPRESSSTAT_HEATPUMP_TYPE) {
+			if (dftThermoSchedules.getStarsThermostatProgram(i).getThermostatType().getType() == StarsThermostatTypes.UTILITYPRO_TYPE) {
 				dftThermoProgram = dftThermoSchedules.getStarsThermostatProgram(i);
 				break;
 			}
@@ -217,7 +217,7 @@ function init() {
 <% for (int i = 0; i < invIDs.length; i++) { %>
 			  <input type="hidden" name="InvIDs" value="<%= invIDs[i] %>">
 <% } %>
-			  <input type="hidden" name="type" value="<%= StarsThermostatTypes.EXPRESSSTAT_HEATPUMP.toString() %>">
+			  <input type="hidden" name="type" value="<%= StarsThermostatTypes.UTILITYPRO.toString() %>">
 			  <input type="hidden" name="day" value="<%= daySetting.toString() %>">
 			  <input type="hidden" name="mode" value="<%= modeSetting.toString() %>">
 			  <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?<%= thermNoStr %>&day=<%= daySetting.toString() %>&mode=<%= modeSetting.toString() %>&type=<%=thermType %>">

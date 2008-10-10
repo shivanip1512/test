@@ -698,6 +698,8 @@ function deleteWarehouse(form, warehouseId) {
 				typeName = "EnergyPro";
 			else if (type.getType() == StarsThermostatTypes.EXPRESSSTAT_HEATPUMP_TYPE)
 				typeName = "ExpressStat Heat Pump";
+            else if (type.getType() == StarsThermostatTypes.UTILITYPRO_TYPE)
+                typeName = "UtilityPRO";
 %>
                                 <tr> 
                                   <td width="5%">&nbsp;</td>
