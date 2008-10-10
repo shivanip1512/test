@@ -3,6 +3,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 
 <cti:standardPage title="Commander Results" module="amr">
 <cti:standardMenu menuSelection="devicegroups|commander"/>
@@ -27,14 +28,14 @@
     <tags:bulkActionContainer key="yukon.common.device.group" deviceCollection="${deviceCollection}">
   
 	
-	<c:if test="${errorMsg != null}">
-		<div style="color: red;margin: 10px 0px;">Error: ${errorMsg}</div>
+	<c:if test="${param.errorMsg != null}">
+    		<div style="color: red;margin: 10px 0px;">Error2: <spring:escapeBody htmlEscape="true">${param.errorMsg}</spring:escapeBody></div>
 		<c:set var="errorMsg" value="" scope="request"/>
 	</c:if>
 	
 	<br>
 	<div style="width: 700px;">
-		<form action="<c:url value="/spring/group/commander/executeCollectionCommand" />">
+		<form action="<c:url value="/spring/group/commander/executeCollectionCommand" />" method="post">
         
 			<cti:deviceCollection deviceCollection="${deviceCollection}" />
       

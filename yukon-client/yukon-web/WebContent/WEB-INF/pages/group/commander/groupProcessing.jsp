@@ -3,6 +3,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="ext" tagdir="/WEB-INF/tags/ext" %>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 
 <cti:standardPage title="Commander Results" module="amr">
 
@@ -36,15 +37,15 @@
         
         </script>
 	
-    	<c:if test="${errorMsg != null}">
-    		<div style="color: red;margin: 10px 0px;">Error: ${errorMsg}</div>
+    	<c:if test="${param.errorMsg != null}">
+    		<div style="color: red;margin: 10px 0px;">Error: <spring:escapeBody htmlEscape="true">${param.errorMsg}</spring:escapeBody></div>
     		<c:set var="errorMsg" value="" scope="request"/>
     	</c:if>
 	
     	<br>
     	<div style="width: 700px;">
         
-            <form id="groupCommanderForm" action="<c:url value="/spring/group/commander/executeGroupCommand" />">
+            <form id="groupCommanderForm" action="<c:url value="/spring/group/commander/executeGroupCommand" />" method="post">
         
             <%-- SELECT COMMAND --%>
             <div class="largeBoldLabel">Select Command:</div>
@@ -94,7 +95,7 @@
                   
             <%-- EXECUTE BUTTON --%>
             <cti:msg var="noGroupSelectedAlertText" key="yukon.common.device.bulk.deviceSelection.selectDevicesByGroupTree.noGroupSelectedAlertText" />
-            <input type="submit" name="submitGroupCommanderForm" value="Execute" onclick="return validateGroupIsSelected(this, '${noGroupSelectedAlertText}');">
+            <input type="submit" name="submitGroupCommanderForm" value="Execute" onclick="return validateGroupIsSelected(this, '${cti:escapeJavaScript(noGroupSelectedAlertText)}');">
             
             <br><br>
             <span class="largeBoldLabel">Recent Results: </span> 

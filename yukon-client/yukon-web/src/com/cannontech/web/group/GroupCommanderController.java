@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.analysis.tablemodel.GroupCommanderFailureResultsModel;
@@ -29,21 +30,27 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
+import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.device.commands.GroupCommandExecutor;
 import com.cannontech.common.device.commands.GroupCommandResult;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.util.MappingList;
+import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.ResolvableTemplate;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
+import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.CommandDao;
 import com.cannontech.database.data.lite.LiteCommand;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.roles.application.CommanderRole;
 import com.cannontech.roles.operator.DeviceActionsRole;
 import com.cannontech.simplereport.SimpleReportOutputter;
 import com.cannontech.simplereport.SimpleYukonReportDefinition;
@@ -63,6 +70,7 @@ public class GroupCommanderController implements InitializingBean {
 
     private Logger log = YukonLogManager.getLogger(GroupCommanderController.class);
 
+    private AuthDao authDao;
     private CommandDao commandDao;
     private GroupCommandExecutor groupCommandExecutor;
     private AlertService alertService;
@@ -144,15 +152,37 @@ public class GroupCommanderController implements InitializingBean {
         model.addAttribute("commands", commands);
     }
     
-    @RequestMapping
+    @RequestMapping(method=RequestMethod.POST)
     public String executeGroupCommand(HttpServletRequest request, String groupName, String commandString, String emailAddress, YukonUserContext userContext, ModelMap map) throws ServletException {
         DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
         DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(group);
-        return executeCollectionCommand(request, deviceCollection, commandString, emailAddress, userContext, map);
+        boolean success = doCollectionCommand(request, deviceCollection, commandString, emailAddress, userContext, map);
+        if (success) {
+            return "redirect:resultDetail";
+        } else {
+            return "redirect:groupProcessing";
+        }
     }
 
-    @RequestMapping
+    @RequestMapping(method=RequestMethod.POST)
     public String executeCollectionCommand(HttpServletRequest request, DeviceCollection deviceCollection, String commandString, final String emailAddress, final YukonUserContext userContext, ModelMap map)
+    throws ServletException {
+        boolean success = doCollectionCommand(request, deviceCollection, commandString, emailAddress, userContext, map);
+        if (success) {
+            return "redirect:resultDetail";
+        } else {
+            map.addAllAttributes(deviceCollection.getCollectionParameters());
+            return "redirect:collectionProcessing";
+        }
+
+    }
+
+    public boolean doCollectionCommand(HttpServletRequest request, 
+            DeviceCollection deviceCollection, 
+            String commandString, 
+            final String emailAddress, 
+            final YukonUserContext userContext, 
+            ModelMap map)
             throws ServletException {
         
         // get host string
@@ -162,13 +192,29 @@ public class GroupCommanderController implements InitializingBean {
         if (StringUtils.isBlank(commandString)) {
             error = true;
             map.addAttribute("errorMsg", "You must enter a valid command");
-        } else if (!commandAuthorizationService.isAuthorized(userContext.getYukonUser(), commandString)) {
-        	error = true;
-            map.addAttribute("errorMsg", "User is not authorized to execute this command.");
+        } else if (authDao.checkRoleProperty(userContext.getYukonUser(), CommanderRole.EXECUTE_MANUAL_COMMAND)) {
+            // check that it is authorized
+            if (!commandAuthorizationService.isAuthorized(userContext.getYukonUser(), commandString)) {
+                error = true;
+                map.addAttribute("errorMsg", "You are not authorized to execute that command.");
+            }
+        } else {
+            // check that the command is in the authorized list (implies that it is authorized)
+            List<LiteCommand> commands = commandDao.getAuthorizedCommands(meterCommands, userContext.getYukonUser());
+            List<String> commandStrings = new MappingList<LiteCommand, String>(commands, new ObjectMapper<LiteCommand, String>() {
+                @Override
+                public String map(LiteCommand from)
+                        throws ObjectMappingException {
+                    return from.getCommand();
+                }
+            });
+            if (!commandStrings.contains(commandString)) {
+                throw NotAuthorizedException.trueProperty(userContext.getYukonUser(), CommanderRole.EXECUTE_MANUAL_COMMAND);
+            }
         }
         
         if (error) {
-            return "redirect:/spring/group/commander/groupProcessing";
+            return false;
         }
         
         SimpleCallback<GroupCommandResult> callback = new SimpleCallback<GroupCommandResult>() {
@@ -198,7 +244,7 @@ public class GroupCommanderController implements InitializingBean {
             String key = 
                 groupCommandExecutor.execute(deviceCollection, commandString, callback, userContext.getYukonUser());
             map.addAttribute("resultKey", key);
-            return "redirect:/spring/group/commander/resultDetail";
+            return true;
         } catch (PaoAuthorizationException e) {
             log.warn("Unable to execute, putting error in model", e);
             map.addAttribute("error", "Unable to execute specified commands");
@@ -206,7 +252,7 @@ public class GroupCommanderController implements InitializingBean {
 
         // must have been an error, try again
         map.addAttribute("command", commandString);
-        return "redirect:/spring/group/commander/groupProcessing";
+        return false;
     }
 
     private void sendEmail(String emailAddress, URL hostUrl, GroupCommandResult result, YukonUserContext userContext) {
@@ -338,5 +384,10 @@ public class GroupCommanderController implements InitializingBean {
     @Autowired
     public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
         this.messageSourceResolver = messageSourceResolver;
+    }
+    
+    @Autowired
+    public void setAuthDao(AuthDao authDao) {
+        this.authDao = authDao;
     }
 }
