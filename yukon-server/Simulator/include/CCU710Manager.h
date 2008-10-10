@@ -8,10 +8,10 @@
 class CCU710Manager : public SimulatedCCU
 {
     public:
-        CCU710Manager(CTINEXUS* s=NULL);
+        CCU710Manager(CTINEXUS *socket, int strategy);
 
-        virtual void processRequest(unsigned long addressFound);
-        virtual bool validateRequest(unsigned char req); 
+        virtual void processRequest (unsigned long ccu_address);
+        virtual bool validateRequest(unsigned char req);
 
     private:
         CCU710 ccu;

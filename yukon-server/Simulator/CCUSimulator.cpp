@@ -194,7 +194,7 @@ void CCUThread(int portNumber, int strategy)
         unsigned char peek_buffer[2];
         unsigned long bytes_read = 0;
 
-        SimulatedCCU *ccu;
+        SimulatedCCU *ccu_manager;
 
         //  Peek at first bytes to determine which CCU this is supposed to be.
         while( bytes_read != 2 && !globalCtrlCFlag )
@@ -205,20 +205,18 @@ void CCUThread(int portNumber, int strategy)
 
         if( peek_buffer[type_index] == 0x7e )
         {
-            ccu = new CCU711Manager(newSocket);
+            ccu_manager = new CCU711Manager(newSocket, strategy);
         }
         else
         {
-            ccu = new CCU710Manager(newSocket);
+            ccu_manager = new CCU710Manager(newSocket, strategy);
         }
-
-        ccu->setStrategy(strategy);
 
         while( !globalCtrlCFlag )
         {
-            if( ccu->validateRequest(peek_buffer[type_index]) )
+            if( ccu_manager->validateRequest(peek_buffer[type_index]) )
             {
-                ccu->processRequest(peek_buffer[addr_index]);
+                ccu_manager->processRequest(peek_buffer[addr_index]);
             }
             else
             {

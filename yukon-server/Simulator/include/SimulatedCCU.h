@@ -1,5 +1,5 @@
-/* 
-Put the base class here. This class will hold the socket and 
+/*
+Put the base class here. This class will hold the socket and
 set up the virual functions to be extended by each class. processRequest()?
 */
 
@@ -12,22 +12,22 @@ set up the virual functions to be extended by each class. processRequest()?
 
 class SimulatedCCU
 {
+public:
 
-    public:
-        static boost::mutex io_mutex;
-        SimulatedCCU(CTINEXUS* s=NULL);
+    static boost::mutex io_mutex;
+    SimulatedCCU(CTINEXUS *socket, int strategy);
 
-        virtual void processRequest(unsigned long addressFound)=0;
-        virtual bool validateRequest(unsigned char req)=0;
+    virtual void processRequest(unsigned long addressFound)=0;
+    virtual bool validateRequest(unsigned char req)=0;
 
-        CTINEXUS* getSocket();
-        void setSocket(CTINEXUS* s);
+protected:
 
-        void setStrategy(int strategy);
-        int getStrategy();
+    CTINEXUS *getSocket()   const;
+    int       getStrategy() const;
 
-    private:
-        CTINEXUS* _socket;
-        int _strategy;
+private:
+
+    CTINEXUS* _socket;
+    int _strategy;
 };
 #endif

@@ -7,13 +7,16 @@
 
 class CCU711Manager : public SimulatedCCU
 {
-    public:
-        CCU711Manager(CTINEXUS* s = NULL);
+public:
 
-        virtual void processRequest(unsigned long addressFound);
-        virtual bool validateRequest(unsigned char req); 
+    CCU711Manager(CTINEXUS *socket, int strategy);
 
-    private:
-        std::map <int, CCU711*> ccuList;
+    virtual void processRequest (unsigned long ccu_address);
+    virtual bool validateRequest(unsigned char req);
+
+private:
+
+    std::map <int, CCU711*> ccuList;
 };
+
 #endif

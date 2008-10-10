@@ -3,33 +3,34 @@
 #include "CCU711Manager.h"
 #include "logger.h"
 
+using namespace std;
+
 DLLIMPORT extern CtiLogger   dout;
 
-CCU711Manager::CCU711Manager(CTINEXUS* s) : SimulatedCCU(s)
-{}
+CCU711Manager::CCU711Manager(CTINEXUS* socket, int strategy) :
+    SimulatedCCU(socket, strategy)
+{
+}
 
-bool CCU711Manager::validateRequest(unsigned char req) {
+bool CCU711Manager::validateRequest(unsigned char req)
+{
     return req == 0x7e;
 }
 
-void CCU711Manager::processRequest(unsigned long addressFound)
+void CCU711Manager::processRequest(unsigned long ccu_address)
 {
-    CCU711* ccuPtr;
+    if( ccuList.find(ccu_address) == ccuList.end() )
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << ccu_address << " is not in the map!";
+        }
 
-    if( ccuList.find(addressFound) == ccuList.end() )
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);  
-        dout << '\n' << addressFound << " is not in the map!";
-        ccuPtr = new CCU711(addressFound);
-        ccuList[addressFound] = ccuPtr;
-        ccuPtr->setStrategy(getStrategy());
-    }
-    else
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);  
-        dout << addressFound << " is in the map";
-        ccuPtr = ccuList[addressFound];
+        CCU711 *new_ccu = new CCU711(ccu_address);
+        new_ccu->setStrategy(getStrategy());
+
+        ccuList.insert(make_pair(ccu_address, new_ccu));
     }
 
-    ccuPtr->handleRequest(getSocket());
+    ccuList[ccu_address]->handleRequest(getSocket());
 }

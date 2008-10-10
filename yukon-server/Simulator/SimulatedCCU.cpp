@@ -4,28 +4,20 @@
 
 boost::mutex SimulatedCCU::io_mutex;
 
-SimulatedCCU::SimulatedCCU(CTINEXUS* s) 
+SimulatedCCU::SimulatedCCU(CTINEXUS *socket, int strategy) :
+    _socket(socket),
+    _strategy(strategy)
 {
-    _strategy = 0;
-    _socket = s;
 }
 
-CTINEXUS* SimulatedCCU::getSocket()
+CTINEXUS *SimulatedCCU::getSocket() const
 {
     return _socket;
 }
 
-void SimulatedCCU::setSocket(CTINEXUS* s)
-{
-    _socket = s;
-}
-
-void SimulatedCCU::setStrategy(int strategy)
-{
-    _strategy = strategy;
-}
-
-int SimulatedCCU::getStrategy()
+int SimulatedCCU::getStrategy() const
 {
     return _strategy;
 }
+
+
