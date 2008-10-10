@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2008/09/25 15:54:02 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2008/10/10 14:40:16 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -46,6 +46,8 @@ private:
         InMessage_StringOffset = 96  //  hopefully enough to stay out of the way of the DSTRUCT
     };
 
+protected:
+
     typedef std::vector<unsigned char> byte_buffer_t;
 
     static void writeDLCMessage (byte_buffer_t &buf, const OUTMESS *om);
@@ -54,8 +56,6 @@ private:
     static void writeBWord      (byte_buffer_t &buf, const BSTRUCT &BSt);
 
     int decodeDWords(const unsigned char *input, unsigned input_length, unsigned Remote, DSTRUCT *DSt) const;
-
-protected:
 
     Protocol::Klondike _klondike;
     Protocol::Interface *getProtocol();

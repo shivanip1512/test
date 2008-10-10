@@ -54,6 +54,7 @@ $(COMPILEBASE)\lib\clrdump.lib \
 TEST_OBJS=\
 test_dev_grp.obj \
 test_mgr_point.obj \
+test_dev_ccu721.obj \
 test_dev_mct4xx.obj \
 test_dev_mct410.obj \
 

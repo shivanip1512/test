@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2008/09/25 15:54:02 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2008/10/10 14:40:16 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -579,27 +579,29 @@ void CCU721::writeAWord( byte_buffer_t &buf, const ASTRUCT &ASt )
 
 void CCU721::writeBWord( byte_buffer_t &buf, const BSTRUCT &BSt )
 {
-    buf.push_back(BWORDLEN);
-    buf.insert(buf.end(), BWORDLEN, 0);
-
     int words;
 
     if( BSt.IO == Emetcon::IO_Write ||
         BSt.IO == Emetcon::IO_Function_Write )
     {
         words = (BSt.Length + 4) / 5;
+
+        buf.push_back(BWORDLEN + CWORDLEN * words);
     }
     else
     {
         words = Emetcon::determineDWordCount(BSt.Length);
+
+        buf.push_back(BWORDLEN);
     }
 
+    //  we insert relative to the end so that we can append to any buffer given to us
+    buf.insert(buf.end(), BWORDLEN, 0);
     B_Word(buf.end() - BWORDLEN, BSt, words);
 
     if( BSt.IO == Emetcon::IO_Write ||
         BSt.IO == Emetcon::IO_Function_Write )
     {
-        buf.push_back(CWORDLEN * words);
         buf.insert(buf.end(), CWORDLEN * words, 0);
 
         //  I really don't know why C_Words takes a const pointer to unsigned char instead of a pointer to const unsigned char...
