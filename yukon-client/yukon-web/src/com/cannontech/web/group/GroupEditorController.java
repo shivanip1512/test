@@ -35,7 +35,6 @@ import com.cannontech.common.device.groups.service.ModifiableDeviceGroupPredicat
 import com.cannontech.common.device.groups.service.NonHiddenDeviceGroupPredicate;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.MapQueue;
 import com.cannontech.common.util.predicate.AggregateAndPredicate;
 import com.cannontech.common.util.predicate.Predicate;
 import com.cannontech.core.dao.AuthDao;
@@ -135,12 +134,8 @@ public class GroupEditorController extends MultiActionController {
         }
         mav.addObject("group", group);
         
-        // all groups
-        List<DeviceGroup> groups = deviceGroupDao.getAllGroups();
-
         // sub groups (child groups)
-        MapQueue<DeviceGroup, DeviceGroup> childList = getChildList(groups);
-        List<DeviceGroup> childGroups = childList.get(group);
+        List<DeviceGroup> childGroups = deviceGroupDao.getChildGroups(group);
         mav.addObject("subGroups", childGroups);
 
         Boolean showDevices = ServletRequestUtils.getBooleanParameter(request, "showDevices", false);
@@ -181,13 +176,27 @@ public class GroupEditorController extends MultiActionController {
         mav.addObject("allGroupsDataJson", allGroupsDataJson);
         
         // MOVE GROUPS TREE JSON
-        List<DeviceGroup> moveGroups = getMoveGroups(groups, group);
-        String moveGroupDataJson = makeMoveCopyJson(allGroupsGroupHierarchy, moveGroups);
+        final DeviceGroup selectedGroup = group;
+        Predicate<DeviceGroup> moveGroupPredicate = new Predicate<DeviceGroup>(){
+            @Override
+            public boolean evaluate(DeviceGroup deviceGroup) {
+                return !deviceGroup.equals(selectedGroup) 
+                        && !deviceGroup.isDescendantOf(selectedGroup)
+                        && !deviceGroup.equals(selectedGroup.getParent());
+            }
+        };
+        String moveGroupDataJson = makeMoveCopyJson(allGroupsGroupHierarchy, moveGroupPredicate);
         mav.addObject("moveGroupDataJson", moveGroupDataJson); 
         
         // COPY GROUPS TREE JSON
-        List<DeviceGroup> copyToGroups = getCopyToGroups(groups, group);
-        String copyGroupDataJson = makeMoveCopyJson(allGroupsGroupHierarchy, copyToGroups);
+        Predicate<DeviceGroup> copyGroupPredicate = new Predicate<DeviceGroup>(){
+            @Override
+            public boolean evaluate(DeviceGroup deviceGroup) {
+                return !deviceGroup.equals(selectedGroup) 
+                        && !deviceGroup.isDescendantOf(selectedGroup);
+            }
+        };
+        String copyGroupDataJson = makeMoveCopyJson(allGroupsGroupHierarchy, copyGroupPredicate);
         mav.addObject("copyGroupDataJson", copyGroupDataJson); 
         
         // DEVICE COLLECTION
@@ -198,18 +207,11 @@ public class GroupEditorController extends MultiActionController {
 
     }
     
-    private String makeMoveCopyJson(DeviceGroupHierarchy allGroupsGroupHierarchy, final List<DeviceGroup> groups) {
-        
-        Predicate<DeviceGroup> noChildrenPredicate = new Predicate<DeviceGroup>() {
-            @Override
-            public boolean evaluate(DeviceGroup deviceGroup) {
-                return groups.contains(deviceGroup);
-            };
-        };
+    private String makeMoveCopyJson(DeviceGroupHierarchy allGroupsGroupHierarchy, Predicate<DeviceGroup> moveOrCopyPredicate) {
         
         List<Predicate<DeviceGroup>> predicates = new ArrayList<Predicate<DeviceGroup>>();
         predicates.add(new ModifiableDeviceGroupPredicate());
-        predicates.add(noChildrenPredicate);
+        predicates.add(moveOrCopyPredicate);
         
         AggregateAndPredicate<DeviceGroup> aggregatePredicate = new AggregateAndPredicate<DeviceGroup>(predicates);
         DeviceGroupHierarchy groupHierarchy = deviceGroupService.getFilteredDeviceGroupHierarchy(allGroupsGroupHierarchy, aggregatePredicate);
@@ -217,58 +219,6 @@ public class GroupEditorController extends MultiActionController {
         
         JSONObject groupJsonObj = new JSONObject(groupRoot.toMap());
         return groupJsonObj.toString();
-    }
-    
-    private MapQueue<DeviceGroup, DeviceGroup> getChildList(List<DeviceGroup> groups) {
-        
-        MapQueue<DeviceGroup, DeviceGroup> childList = new MapQueue<DeviceGroup, DeviceGroup>();
-        for (DeviceGroup deviceGroup : groups) {
-            if (deviceGroup.getParent() != null) {
-                childList.add(deviceGroup.getParent(), deviceGroup);
-            }
-        }
-        
-        return childList;
-    }
-    
-    /**
-     * Narrow list of all groups to those that are eligible to have the current group moved to.
-     * Can't move to self.
-     * Can't move to a decendant.
-     * Can't move to parent.
-     * @param groups All available groups
-     * @param group The current group (the one to be moved)
-     * @return
-     */
-    private List<DeviceGroup> getMoveGroups(List<DeviceGroup> groups, DeviceGroup group) {
-        
-        List<DeviceGroup> moveGroups = new ArrayList<DeviceGroup>();
-        for (DeviceGroup deviceGroup : groups) {
-            if (deviceGroup.isModifiable() 
-                && !deviceGroup.equals(group) 
-                && !deviceGroup.isDescendantOf(group)
-                && !deviceGroup.equals(group.getParent())) {
-                moveGroups.add(deviceGroup);
-            }
-        }
-        
-        return moveGroups;
-    }
-    
-    private List<DeviceGroup> getCopyToGroups(List<DeviceGroup> allGroups, DeviceGroup fromGroup) {
-        
-        List<DeviceGroup> okCopyToGroups = new ArrayList<DeviceGroup>();
-        
-        for (DeviceGroup possibleCopyToGroup : allGroups) {
-            if (possibleCopyToGroup.isModifiable() 
-                && !possibleCopyToGroup.equals(fromGroup) 
-                && !possibleCopyToGroup.isDescendantOf(fromGroup)
-                ) {
-                
-                okCopyToGroups.add(possibleCopyToGroup);
-            }
-        }
-        return okCopyToGroups; 
     }
     
     public ModelAndView getDevicesForGroup(HttpServletRequest request, HttpServletResponse response)
