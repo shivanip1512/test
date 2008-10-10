@@ -1,4 +1,4 @@
-/* 4.1_0fc3 to 4.1_0rc1 changes.  These are changes to 4.1 that have been made since 4.0_0fc3*/
+/* 4.1_0fc3 to 4.1_0rc1 changes.  These are changes to 4.1 that have been made since 4.1_0fc3*/
 /* This script must be run manually using the SQL tool and not the DBToolsFrame tool. */
 
 /* START SPECIAL BLOCK */
