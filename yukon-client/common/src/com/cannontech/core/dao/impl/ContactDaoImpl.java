@@ -28,6 +28,7 @@ import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.dynamic.impl.AsyncDynamicDataSourceImpl;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
@@ -553,8 +554,8 @@ public final class ContactDaoImpl implements ContactDao {
 
         }
 
-        String firstName = contact.getContFirstName();
-        String lastName = contact.getContLastName();
+        String firstName = SqlUtils.convertStringToDbValue(contact.getContFirstName());
+        String lastName = SqlUtils.convertStringToDbValue(contact.getContLastName());
         int loginId = contact.getLoginID();
         int addressId = contact.getAddressID();
         simpleJdbcTemplate.update(sql.toString(),

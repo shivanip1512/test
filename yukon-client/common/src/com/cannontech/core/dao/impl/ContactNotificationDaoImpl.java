@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.core.dao.ContactNotificationDao;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.incrementer.NextValueHelper;
@@ -170,7 +171,7 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao
 
         int notificationCategoryId = notification.getNotificationCategoryID();
         String disableFlag = notification.getDisableFlag();
-        String notificationText = notification.getNotification();
+        String notificationText = SqlUtils.convertStringToDbValue(notification.getNotification());
         simpleJdbcTemplate.update(sql.toString(),
                                   contactId,
                                   notificationCategoryId,
