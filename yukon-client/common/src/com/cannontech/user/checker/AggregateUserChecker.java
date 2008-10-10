@@ -33,5 +33,10 @@ public class AggregateUserChecker extends UserCheckerBase {
             Collection<UserChecker> checkerList) {
         this.checkerList = checkerList;
     }
+    
+    @Override
+    public String toString() {
+        return "aggregate " + checkerList + " checker";
+    }
 
 }

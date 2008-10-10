@@ -18,5 +18,10 @@ public class SingleUserChecker extends UserCheckerBase{
         }
         return user.equals(singleUser);
     };
+    
+    @Override
+    public String toString() {
+        return singleUser + " checker";
+    }
 
 }

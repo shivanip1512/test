@@ -19,5 +19,10 @@ public class PaoPermissionAuthorization implements PaoAuthorization {
         return paoPermissionService.hasPermission(user, pao, permission);
 
     }
+    
+    @Override
+    public String toString() {
+        return "pao permission service authorization";
+    }
 
 }

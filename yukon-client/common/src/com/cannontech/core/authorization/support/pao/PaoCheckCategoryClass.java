@@ -57,5 +57,15 @@ public class PaoCheckCategoryClass implements Checker<LiteYukonPAObject> {
         public boolean matches(LiteYukonPAObject pao) {
             return pao.getCategory() == this.category && pao.getPaoClass() == paoClass;
         }
+        
+        @Override
+        public String toString() {
+            return "(category=" + category + ", class=" + paoClass + ")";
+        }
+    }
+    
+    @Override
+    public String toString() {
+        return "pao " + paoCategoryClassList + " category checker";
     }
 }

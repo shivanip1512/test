@@ -36,5 +36,10 @@ public class PaoCheckDefault implements Checker<LiteYukonPAObject> {
         }
         return true;
     }
+    
+    @Override
+    public String toString() {
+        return "all but " + excludeList + " checker";
+    }
 
 }

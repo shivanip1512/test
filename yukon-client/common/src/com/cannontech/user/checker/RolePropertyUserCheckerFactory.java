@@ -41,6 +41,11 @@ public class RolePropertyUserCheckerFactory {
                     descriptionService.checkIfAtLeaseOneExists(descriptions, user);
                 return isValidCheck;
             }
+            
+            @Override
+            public String toString() {
+                return descriptions + " checker";
+            }
         };
         return checker;
     }
@@ -58,6 +63,11 @@ public class RolePropertyUserCheckerFactory {
             public boolean check(LiteYukonUser user) {
                 return getBooleanForRoleProperty(propertyId, user);
             };
+            
+            @Override
+            public String toString() {
+                return "property id " + propertyId + " checker";
+            }
         };
         return checker;
     }

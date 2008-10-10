@@ -7,5 +7,10 @@ public class NullUserChecker extends UserCheckerBase {
     public boolean check(LiteYukonUser user) {
         return true;
     }
+    
+    @Override
+    public String toString() {
+        return "any user checker";
+    }
 
 }

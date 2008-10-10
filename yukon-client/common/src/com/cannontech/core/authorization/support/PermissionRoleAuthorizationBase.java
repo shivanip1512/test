@@ -15,6 +15,10 @@ public class PermissionRoleAuthorizationBase<T> implements Authorization<T> {
         public boolean check(T object) {
             return true;
         }
+        @Override
+        public String toString() {
+            return "any object";
+        }
         
     };
     UserChecker roleChecker = new NullUserChecker();
@@ -50,6 +54,11 @@ public class PermissionRoleAuthorizationBase<T> implements Authorization<T> {
             // authorized or not
             return AuthorizationResponse.UNKNOWN;
         }
+    }
+    
+    @Override
+    public String toString() {
+        return permission + " and " + roleChecker + " and " + objectChecker + " authorization";
     }
 
 }

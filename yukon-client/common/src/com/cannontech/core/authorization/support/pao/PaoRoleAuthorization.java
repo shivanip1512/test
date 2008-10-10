@@ -28,5 +28,10 @@ public class PaoRoleAuthorization implements PaoAuthorization {
             return AuthorizationResponse.UNAUTHORIZED;
         }
     }
+    
+    @Override
+    public String toString() {
+        return roleChecker + " authorization";
+    }
 
 }

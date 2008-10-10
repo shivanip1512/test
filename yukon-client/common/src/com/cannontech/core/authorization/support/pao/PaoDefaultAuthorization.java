@@ -15,4 +15,8 @@ public class PaoDefaultAuthorization implements PaoAuthorization {
             return AuthorizationResponse.UNAUTHORIZED;
     }
 
+    @Override
+    public String toString() {
+        return "default permission authorization";
+    }
 }
