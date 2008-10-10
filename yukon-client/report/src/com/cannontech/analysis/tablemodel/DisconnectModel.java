@@ -386,17 +386,16 @@ public class DisconnectModel extends ReportModelBase<DisconnectMeterAndPointData
     {
         if(columnProperties == null)
         {
-            int offset = 0;
             columnProperties = new ColumnProperties[]{
                     //posX, posY, width, height, numberFormatString
-                    new ColumnProperties(offset, 1, offset+=150, null),	//Device Name
-                    new ColumnProperties(offset, 1, offset+=65, null), //meternumber
-                    new ColumnProperties(offset, 1, offset+=65, null), //address
-                    new ColumnProperties(offset, 1, offset+=70, null), //type
-                    new ColumnProperties(offset, 1, offset+=100, null), //routeName
-                    new ColumnProperties(offset, 1, offset+=65, null), //discAddress 
-                    new ColumnProperties(offset, 1, offset+=90, "MM/dd/yyyy HH:mm:ss"),   //Timestamp
-                    new ColumnProperties(offset, 1, offset+=65, null) //state
+                    new ColumnProperties(0, 1, 150, null),	//Device Name
+                    new ColumnProperties(150, 1, 65, null), //meternumber
+                    new ColumnProperties(215, 1, 65, null), //address
+                    new ColumnProperties(280, 1, 70, null), //type
+                    new ColumnProperties(350, 1, 100, null), //routeName
+                    new ColumnProperties(450, 1, 65, null), //discAddress 
+                    new ColumnProperties(515, 1, 90, "MM/dd/yyyy HH:mm:ss"),   //Timestamp
+                    new ColumnProperties(605, 1, 65, null) //state
             };
         }
         return columnProperties;

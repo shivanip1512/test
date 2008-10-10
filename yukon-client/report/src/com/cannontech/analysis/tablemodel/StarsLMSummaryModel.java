@@ -355,15 +355,14 @@ public class StarsLMSummaryModel extends ReportModelBase<StarsLMSummary>
 	{
 		if(columnProperties == null)
 		{
-		    int offset = 0;
 			columnProperties = new ColumnProperties[]{
 				//posX, posY, width, height, numberFormatString
-				new ColumnProperties(offset, 1, offset+=200, null),
-				new ColumnProperties(offset, 1, offset+=100, "0"),
-				new ColumnProperties(offset, 1, offset+=100, "0"),
-				new ColumnProperties(offset, 1, offset+=100, "0"),
-				new ColumnProperties(offset, 1, offset+=100, "0"),
-				new ColumnProperties(offset, 1, offset+=100, "0")
+				new ColumnProperties(0, 1, 200, null),
+				new ColumnProperties(200, 1, 100, "0"),
+				new ColumnProperties(300, 1, 100, "0"),
+				new ColumnProperties(400, 1, 100, "0"),
+				new ColumnProperties(500, 1, 100, "0"),
+				new ColumnProperties(600, 1, 100, "0")
 			};
 		}
 		return columnProperties;

@@ -288,14 +288,13 @@ public class ProgramDetailModel extends ReportModelBase
 	{
 		if(columnProperties == null)
 		{
-			int offset = 0;
 			columnProperties = new ColumnProperties[]{
 				//posX, posY, width, height, numberFormatString
-				new ColumnProperties(offset, 1, 150, null),
-				new ColumnProperties(offset, 1, offset+=250, null),
-				new ColumnProperties(offset, 1, offset+=150, null),
-				new ColumnProperties(offset, 1, offset+=90, null),
-				new ColumnProperties(offset, 1, offset+=110, null)
+				new ColumnProperties(0, 1, 150, null),
+				new ColumnProperties(0, 1, 250, null),
+				new ColumnProperties(250, 1, 150, null),
+				new ColumnProperties(400, 1, 90, null),
+				new ColumnProperties(490, 1, 110, null)
 			};				
 		}
 		return columnProperties;

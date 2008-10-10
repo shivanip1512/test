@@ -350,20 +350,19 @@ public class StarsLMDetailModel extends ReportModelBase<StarsLMDetail>
 	{
 		if(columnProperties == null)
 		{
-		    int offset = 0;
 			columnProperties = new ColumnProperties[]{
 				//posX, posY, width, height, numberFormatString
 				new ColumnProperties(80, 1, 150, null),
 				new ColumnProperties(80, 1, 150, "0 kW"),
-				new ColumnProperties(offset, 1, offset+=80, null),
-				new ColumnProperties(offset, 1, offset+=80, null),
-				new ColumnProperties(offset, 1, offset+=80, null),
-				new ColumnProperties(offset, 1, offset+=80, null),
-				new ColumnProperties(offset, 1, offset+=80, null),
-				new ColumnProperties(offset, 1, offset+=80, null),
-				new ColumnProperties(offset, 1, offset+=80, null),
-				new ColumnProperties(offset, 1, offset+=60, "0"),
-				new ColumnProperties(offset, 1, offset+=80, null)
+				new ColumnProperties(0, 1, 80, null),
+				new ColumnProperties(80, 1, 80, null),
+				new ColumnProperties(160, 1, 80, null),
+				new ColumnProperties(240, 1, 80, null),
+				new ColumnProperties(320, 1, 80, null),
+				new ColumnProperties(400, 1, 80, null),
+				new ColumnProperties(480, 1, 80, null),
+				new ColumnProperties(560, 1, 60, "0"),
+				new ColumnProperties(620, 1, 80, null)
 			};
 		}
 		return columnProperties;

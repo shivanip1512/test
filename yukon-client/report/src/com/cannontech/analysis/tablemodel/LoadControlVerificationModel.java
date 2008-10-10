@@ -347,17 +347,16 @@ public class LoadControlVerificationModel extends ReportModelBase
 	{
 		if(columnProperties == null)
 		{
-			int offset = 0;
 			columnProperties = new ColumnProperties[]{
 				//posX, posY, width, height, numberFormatString  552w 732h viewable
 				new ColumnProperties(0, 1, 100, "MMMMM dd, yyyy"),
-				new ColumnProperties(offset, 1, offset+=50, "HH:mm:ss"),
-				new ColumnProperties(offset, 1, offset+=200, null),
-				new ColumnProperties(offset, 1, offset+=200, null),
-				new ColumnProperties(offset, 1, offset+=50, "#"),
-				new ColumnProperties(offset, 1, offset+=50, null),
-				new ColumnProperties(offset, 1, offset+=50, null),
-				new ColumnProperties(offset, 1, offset+=130, null),
+				new ColumnProperties(0, 1, 50, "HH:mm:ss"),
+				new ColumnProperties(50, 1, 200, null),
+				new ColumnProperties(250, 1, 200, null),
+				new ColumnProperties(450, 1, 50, "#"),
+				new ColumnProperties(500, 1, 50, null),
+				new ColumnProperties(550, 1, 50, null),
+				new ColumnProperties(600, 1, 130, null),
 				new ColumnProperties(50, 12, 450, null)		
 			};				
 		}

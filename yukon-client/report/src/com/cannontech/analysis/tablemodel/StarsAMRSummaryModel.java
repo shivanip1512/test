@@ -329,19 +329,18 @@ public class StarsAMRSummaryModel extends ReportModelBase<StarsAMRDetail> implem
 	{
 		if(columnProperties == null)
 		{
-		    int offset = 0;
 			columnProperties = new ColumnProperties[]{
 				//posX, posY, width, height, numberFormatString
-				new ColumnProperties(offset, 1, offset+=60, null),
-				new ColumnProperties(offset, 1, offset+=95, null),
-				new ColumnProperties(offset, 1, offset+=70, null),
-				new ColumnProperties(offset, 1, offset+=110, null),
-				new ColumnProperties(offset, 1, offset+=60, null),
-				new ColumnProperties(offset, 1, offset+=53, null),
-				new ColumnProperties(offset, 1, offset+=53, null),
-				new ColumnProperties(offset, 1, offset+=80, null),
-				new ColumnProperties(offset, 1, offset+=66, columnValueFormat),
-				new ColumnProperties(offset, 1, offset+=85, columnDateTimeFormat)
+				new ColumnProperties(0, 1, 500, null),
+				new ColumnProperties(60, 1, 95, null),
+				new ColumnProperties(155, 1, 70, null),
+				new ColumnProperties(225, 1, 110, null),
+				new ColumnProperties(335, 1, 60, null),
+				new ColumnProperties(395, 1, 53, null),
+				new ColumnProperties(448, 1, 53, null),
+				new ColumnProperties(501, 1, 80, null),
+				new ColumnProperties(581, 1, 66, columnValueFormat),
+				new ColumnProperties(647, 1, 85, columnDateTimeFormat)
 			};
 		}
 		return columnProperties;
