@@ -81,6 +81,7 @@
             <ext:nodeValueSelectingInlineTree   fieldId="groupName" 
                                                 fieldName="groupName"
                                                 nodeValueName="groupName" 
+                                                multiSelect="false"
                                                 id="selectGroupTree" 
                                                 dataJson="${dataJson}" 
                                                 width="500"
