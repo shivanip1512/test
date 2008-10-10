@@ -29,7 +29,7 @@
   
 	
 	<c:if test="${param.errorMsg != null}">
-    		<div style="color: red;margin: 10px 0px;">Error2: <spring:escapeBody htmlEscape="true">${param.errorMsg}</spring:escapeBody></div>
+    		<div style="color: red;margin: 10px 0px;">Error: <spring:escapeBody htmlEscape="true">${param.errorMsg}</spring:escapeBody></div>
 		<c:set var="errorMsg" value="" scope="request"/>
 	</c:if>
 	
