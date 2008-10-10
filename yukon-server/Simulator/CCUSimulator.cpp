@@ -20,6 +20,7 @@
 
 #include <boost/thread/thread.hpp>
 #include <boost/thread/mutex.hpp>
+#include <boost/bind.hpp>
 #include <rw/db/datetime.h>
 
 #include "cticalls.h"
@@ -41,13 +42,14 @@
 bool globalCtrlCFlag = false;
 
 using namespace std;
+using namespace boost;
 
-void CCUThread(const int s, const int strtgy);
+void CCUThread(int portNumber, int strategy);
 
 DLLIMPORT extern CtiLogger dout;
 
 /* CtrlHandler handles is used to catch ctrl-c when run in a console */
-BOOL CtrlHandler(DWORD fdwCtrlType)
+BOOL WINAPI CtrlHandler(DWORD fdwCtrlType)
 {
     switch( fdwCtrlType )
     {
@@ -95,182 +97,153 @@ struct Adapter
 
 int main(int argc, char *argv[])
 {
-    vector<boost::thread *> threadVector;
+    int strategy = 0,
+        port_min = 0,
+        port_max = 0;
+
+    switch( argc )
+    {
+        case 4:  strategy = atoi(argv[3]);
+        case 3:  port_max = atoi(argv[2]);
+        case 2:  port_min = atoi(argv[1]);  break;
+
+        default:
+        {
+            cout << "Usage:  ccu_simulator.exe <min_port> [max_port] [strategy #]" << endl;
+
+            exit(-1);
+        }
+    }
+
+    if( port_max && port_min > port_max )
+    {
+        cout << "Invalid port range [" << port_min << " - " << port_max << "]" << endl;
+
+        exit(-1);
+    }
+
+    port_max = max(port_max, port_min);
 
     dout.start();     // fire up the logger thread
-    //dout.setOwnerInfo(CompileInfo);
     dout.setOutputPath(gLogDirectory);
-    dout.setOutputFile("Simulator");
+    dout.setOutputFile("ccu_simulator");
     dout.setToStdOut(true);
     dout.setWriteInterval(0);
 
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        if( argc==4 )
-        {   // Specify port number
-            dout << "Port range " << argv[1] << " - " << argv[2] << endl;
-            dout << "Strategy selected: " << argv[3] << endl;
-        }
-        else if( argc==3 )
-        {
-            dout << "Port range " << argv[1] << " - " << argv[2] << endl;
-        }
-        else
-        {
-            dout << "Invalid port range entry.  Format is:  ccu_simulator 00001 99999" << endl;
-            return 0;
-        }
-    }
+        CtiLockGuard<CtiLogger> dout_guard(dout);
 
-    int portNum = atoi(argv[1]);
-    int portMax = atoi(argv[2]);
-    int strategy = 0;
-    if( argc==4 )
-    {
-        strategy = atoi(argv[3]);
-    }
+        dout << "=== CCU Simulator startup ===" << endl;
 
-    boost::thread_group threadGroup;
-    while( portNum != (portMax+1) )
-    {
-        boost::thread *thr1 = new boost::thread(Adapter<CCUThreadFunPtr, int, int>(CCUThread, portNum, strategy));
-        //threadVector.push_back(thr1);
-        threadGroup.add_thread(thr1);
-        CTISleep(50);
-        portNum++;
+        dout << "Port range [" << port_min << " - " << port_max << "], strategy " << strategy << endl;
     }
 
     //  We need to catch ctrl-c so we can stop
-    if( !SetConsoleCtrlHandler((PHANDLER_ROUTINE) CtrlHandler,  TRUE) )
+    if( !SetConsoleCtrlHandler(CtrlHandler,  TRUE) )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << "Could not install control handler" << endl;
     }
 
+    //  start up Windows Sockets
+    WSADATA wsaData;
+    WSAStartup(MAKEWORD (1,1), &wsaData);
+
+    boost::thread_group threadGroup;
+
+    for( ; port_min <= port_max; ++port_min )
+    {
+        threadGroup.add_thread(new boost::thread(boost::bind(CCUThread, port_min, strategy)));
+    }
+
     threadGroup.join_all();
 
-    if( globalCtrlCFlag )
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Main function closing..." << endl;
-        exit(0);
-    }
-
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Returning from main function..." << endl;
-    }
-
-    Sleep(1000);
     return 0;
 }
 
-void CCUThread(const int portNumber, const int strategy)
+void CCUThread(int portNumber, int strategy)
 {
+    CTINEXUS *listenSocket, *newSocket;
+
     try
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Port: " << portNumber << endl;
-        }
-    
-        //InitYukonBaseGlobals();                            // Load up the config file.
-    
-        // Set default database connection params
-        //setDatabaseParams(0, "msq15d.dll", "mn1db02\\server2005", "erooney", "erooney");   // *** THIS NEEDS TO BE CHANGED FOR ALL USERS !!!!!!!!
-    
-        WSADATA wsaData;
-    
-        std::map <int, CCU711 *> ccuList;
-    
-        WSAStartup(MAKEWORD (1,1), &wsaData);
-    
-        CTINEXUS * listenSocket;
         listenSocket = new CTINEXUS();
-        listenSocket->CTINexusCreate(portNumber);   //12345 or 11234 for example
-    
-        CTINEXUS * newSocket;
+        listenSocket->CTINexusCreate(portNumber);
+
         newSocket = new CTINEXUS();
-    
-        while( !(newSocket->CTINexusValid()) )
+
+        for( int i = 0; !(newSocket->CTINexusValid()) && !globalCtrlCFlag; ++i )
         {
-            if( globalCtrlCFlag )
+            if( !(i % 10) )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Listening thread closing..." << endl;
-                exit(0);
+                dout << CtiTime() <<" Port " << setw(4) << portNumber << " listening" << endl;
             }
-    
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() <<" Listening on " << portNumber << endl;
-            }
-    
-            listenSocket->CTINexusConnect(newSocket, NULL, 10000, CTINEXUS_FLAG_READEXACTLY);
-            Sleep(1000);
+
+            //  wait to connect for 1 second
+            listenSocket->CTINexusConnect(newSocket, NULL, 999);
         }
-    
-        // Grab address to determine type.
-        // Create the CCU Manager.
-        // From now on we can all the processRequest() and it will find the right CCU type.
-    
-        unsigned char type = 0x00;
-        unsigned char tsbuf[2];
-        tsbuf[0] = 0x00;
-        tsbuf[1] = 0x00;
-        unsigned long br=0;
-        unsigned long addr = 0x00;
-    
-        SimulatedCCU* ccu; 
+
+        //  done with the listener
+        listenSocket->CTINexusClose();
+        delete listenSocket;
+
+        const unsigned char type_index = 0,
+                            addr_index = 1;
+
+        unsigned char peek_buffer[2];
+        unsigned long bytes_read = 0;
+
+        SimulatedCCU *ccu;
+
         //  Peek at first bytes to determine which CCU this is supposed to be.
-        do {
+        while( bytes_read != 2 && !globalCtrlCFlag )
+        {
             Sleep(500);
-            newSocket->CTINexusPeek(tsbuf,2, &br);
-        } while (br != 2 && !globalCtrlCFlag);
-    
-        addr = tsbuf[1];
-        type = tsbuf[0];
-        if (tsbuf[0] == 0x7e)
+            newSocket->CTINexusPeek(peek_buffer, 2, &bytes_read);
+        }
+
+        if( peek_buffer[type_index] == 0x7e )
         {
             ccu = new CCU711Manager(newSocket);
         }
-        else if (tsbuf[0] != 0x00)
+        else
         {
             ccu = new CCU710Manager(newSocket);
         }
-    
+
         ccu->setStrategy(strategy);
-        
+
         while( !globalCtrlCFlag )
         {
-            //Add request validator. instead of this condition
-            if (ccu->validateRequest(type)) {
-                ccu->processRequest(addr);
-            }// else is now unhandled. we are set up for a ccu type.
-            CTISleep(250);
-    
-            tsbuf[0] = 0x00;
-            tsbuf[1] = 0x00;
-            addr = 0x00;
-    
-            do {
+            if( ccu->validateRequest(peek_buffer[type_index]) )
+            {
+                ccu->processRequest(peek_buffer[addr_index]);
+            }
+            else
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Port " << portNumber << " - Unhandled request ";
+                dout << hex << "(" << peek_buffer[0] << " " << peek_buffer[addr_index] << ")" << endl;
+            }
+
+            bytes_read = 0;
+
+            while( bytes_read != 2 && !globalCtrlCFlag )
+            {
                 Sleep(500);
-                br = 0;
-                newSocket->CTINexusPeek(tsbuf,2, &br);
-            } while (br != 2 && !globalCtrlCFlag);
-    
-            addr = tsbuf[1];
-            type = tsbuf[0];
+
+                newSocket->CTINexusPeek(peek_buffer, 2, &bytes_read);
+            }
         }
-    
+
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << "Active thread closing..." << endl;
         }
-    
-        listenSocket->CTINexusClose();
+
         newSocket->CTINexusClose();
-        return;
+        delete newSocket;
     }
     catch(...)
     {
