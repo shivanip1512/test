@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.61 $
-* DATE         :  $Date: 2008/10/09 18:10:18 $
+* REVISION     :  $Revision: 1.62 $
+* DATE         :  $Date: 2008/10/10 14:24:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1036,9 +1036,10 @@ void CtiPointManager::processExpired()
     set<long>::iterator pointid_itr = expired_pointids.begin(),
                         pointid_end = expired_pointids.end();
 
+    if( !expired_pointids.empty() )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " CtiPointManager::processExpired() - purging " << expired_pointids.size() << " points" << endl;
+        dout << CtiTime() << " CtiPointManager::processExpired() - expiring " << expired_pointids.size() << " points" << endl;
     }
 
     //  erase all expired points
