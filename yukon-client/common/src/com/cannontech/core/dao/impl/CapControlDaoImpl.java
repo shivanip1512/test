@@ -236,7 +236,7 @@ public class CapControlDaoImpl  implements CapControlDao{
 			String stateText = currentState.getStateText();
 			pointTimestamp.setValue(stateText);
 		} else {
-			if (point.getPointOffset() != 20001) {
+			if (point.getPointOffset() != 20001 && point.getPointOffset() != 10010) {
 				Double analogVal = new Double(pointData.getValue());
 
 				ScalarPoint persPoint = (ScalarPoint) LiteFactory
@@ -248,14 +248,22 @@ public class CapControlDaoImpl  implements CapControlDao{
 				formater.setMaximumFractionDigits(decimalPlaces);
 				String format = formater.format(analogVal.doubleValue());
 				pointTimestamp.setValue(format);
-			} else {
+			} else if (point.getPointOffset() == 20001 ){
 				// handle ip address differently
 				Double pvalue = new Double(pointData.getValue());
 				Long plong = 0l;
 				plong = new Long(pvalue.longValue());
 				String ipaddress = convertToOctalIp(plong);
 				pointTimestamp.setValue(ipaddress);
-			}
+			}  else if (point.getPointOffset() == 10010 ){
+                // handle neutral current differently
+                Integer pvalue = (int) pointData.getValue();
+                String neutralCurrent = "No";
+                if ((pvalue & 0x08) == 0x08){
+                    neutralCurrent = "Yes";
+                }
+                pointTimestamp.setValue(neutralCurrent);
+            }
 		}
 
 		if (!pointData.getPointDataTimeStamp().equals(
