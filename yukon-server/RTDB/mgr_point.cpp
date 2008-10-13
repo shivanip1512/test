@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.62 $
-* DATE         :  $Date: 2008/10/10 14:24:57 $
+* REVISION     :  $Revision: 1.63 $
+* DATE         :  $Date: 2008/10/13 16:25:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -669,7 +669,7 @@ void CtiPointManager::addPoint( CtiPointBase *point )
     }
 }
 
-CtiPointManager::ptr_type CtiPointManager::getEqual (LONG Pt)
+CtiPointManager::ptr_type CtiPointManager::getPoint (LONG Pt)
 {
     CtiPointManager::ptr_type retVal = _smartMap.find(Pt);
 
@@ -769,7 +769,7 @@ void CtiPointManager::getEqualByPAO(long pao, vector<ptr_type> &points)
 
         for( ; itr != lower_bound; itr++ )
         {
-            ptr_type p = getEqual(itr->second);
+            ptr_type p = getPoint(itr->second);
 
             if( p )
             {
@@ -816,7 +816,7 @@ CtiPointManager::ptr_type CtiPointManager::getOffsetTypeEqual(LONG pao, INT Offs
 
         for( ; type_itr != upper_bound; type_itr++ )
         {
-            if( (p = getEqual(type_itr->second)) && (p->getType() == Type) /* && p->getDeviceID() == pao */ )
+            if( (p = getPoint(type_itr->second)) && (p->getType() == Type) /* && p->getDeviceID() == pao */ )
             {
                 //  make sure we don't return any pseudo status points
                 if( !(p->getType() == StatusPointType && p->isPseudoPoint()) )
@@ -865,7 +865,7 @@ CtiPointManager::ptr_type CtiPointManager::getControlOffsetEqual(LONG pao, INT O
 
         if( control_itr != _control_offsets.end() )
         {
-            if( p = getEqual(control_itr->second) )
+            if( p = getPoint(control_itr->second) )
             {
                 if( p->getUpdatedFlag() )
                 {
@@ -933,7 +933,7 @@ void CtiPointManager::apply(void (*applyFun)(const long, ptr_type, void*), void*
 
 long CtiPointManager::getPAOIdForPointId(long pointid)
 {
-    ptr_type p = getEqual(pointid);
+    ptr_type p = getPoint(pointid);
 
     if( p )  return p->getDeviceID();
 

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/test.cpp-arc  $
-* REVISION     :  $Revision: 1.48 $
-* DATE         :  $Date: 2008/10/02 18:27:29 $
+* REVISION     :  $Revision: 1.49 $
+* DATE         :  $Date: 2008/10/13 16:25:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1235,7 +1235,7 @@ void lmExecute(int argc, char **argv)
             CtiPointDataMsg  *pData = NULL;
             CtiMultiMsg   *pChg  = CTIDBG_new CtiMultiMsg();
 
-            CtiPointSPtr pPoint = PointMgr.getEqual( pt );
+            CtiPointSPtr pPoint = PointMgr.getPoint( pt );
 
 
             for(i = 1; i <= steps && !bQuit; i++ )

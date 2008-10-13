@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/mgr_ptclients.cpp-arc  $
-* REVISION     :  $Revision: 1.47 $
-* DATE         :  $Date: 2008/10/13 15:36:23 $
+* REVISION     :  $Revision: 1.48 $
+* DATE         :  $Date: 2008/10/13 16:25:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -85,7 +85,7 @@ void CtiPointClientManager::processPointDynamicData(LONG pntID, LONG paoID, cons
     if(pntID)
     {
         //Lets be smart about handling a single point.
-        pTempPoint = getEqualWithoutLoad(pntID);
+        pTempPoint = getCachedPoint(pntID);
         if(pTempPoint)
         {
             ApplyInitialDynamicConditions(0,pTempPoint,this);
@@ -123,7 +123,7 @@ void CtiPointClientManager::processPointDynamicData(LONG pntID, LONG paoID, cons
 
         for( ; pointid_itr != pointid_end; ++pointid_itr )
         {
-            if( pTempPoint = getEqualWithoutLoad(*pointid_itr) )
+            if( pTempPoint = getCachedPoint(*pointid_itr) )
             {
                 ApplyInitialDynamicConditions(0, pTempPoint, this);
             }
@@ -396,7 +396,7 @@ int CtiPointClientManager::InsertConnectionManager(CtiServer::ptr_type CM, const
          */
 
         {
-            CtiPointSPtr temp = getEqual(aReg[i]);
+            CtiPointSPtr temp = getPoint(aReg[i]);
             if(temp)
             {
                 if(!((const CtiVanGoghConnectionManager *)CM.get())->isRegForChangeType(temp->getType())) // Make sure we didn't already register for ALL points of this type.
@@ -791,7 +791,7 @@ void CtiPointClientManager::RefreshDynamicData(LONG id, const set<long> &pointId
     while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
     {
         rdr["pointid"] >> lTemp;                        // get the point id
-        pTempPoint = getEqualWithoutLoad( lTemp );
+        pTempPoint = getCachedPoint( lTemp );
 
         if(pTempPoint)
         {
@@ -985,6 +985,8 @@ void CtiPointClientManager::removePoint(Inherited::ptr_type pTempCtiPoint, bool 
             iter->second.erase(pointID);
         }
 
+        //Either this is an expiration and the dynamic values need to be written to the DB, or
+        //this is a deletion, and the values cannot be written to the db.
         if(!isExpiration)
         {
             _dynamic.erase(pointID);
@@ -1003,23 +1005,23 @@ void CtiPointClientManager::removePoint(Inherited::ptr_type pTempCtiPoint, bool 
 
 bool CtiPointClientManager::checkEqual(LONG Pt)
 {
-    return Inherited::getEqual(Pt);
+    return Inherited::getPoint(Pt);
 }
 
-CtiPointManager::ptr_type CtiPointClientManager::getEqualWithoutLoad(LONG Pt)
+CtiPointManager::ptr_type CtiPointClientManager::getCachedPoint(LONG Pt)
 {
-    return Inherited::getEqual(Pt);
+    return Inherited::getPoint(Pt);
 }
 
 // This must never be called by refreshList!
-CtiPointManager::ptr_type CtiPointClientManager::getEqual(LONG Pt)
+CtiPointManager::ptr_type CtiPointClientManager::getPoint(LONG Pt)
 {
-    Inherited::ptr_type retVal = Inherited::getEqual(Pt);
+    Inherited::ptr_type retVal = Inherited::getPoint(Pt);
 
     if(!retVal)
     {
         refreshList(Pt);
-        retVal = Inherited::getEqual(Pt);
+        retVal = Inherited::getPoint(Pt);
     }
     return retVal;
 }

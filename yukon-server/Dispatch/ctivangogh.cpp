@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.199 $
-* DATE         :  $Date: 2008/10/13 15:36:22 $
+* REVISION     :  $Revision: 1.200 $
+* DATE         :  $Date: 2008/10/13 16:25:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -927,7 +927,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                 pid = Cmd->getOpArgList()[i];
                 int alarmcondition = Cmd->getOpArgList()[i+1];
 
-                pPt = PointMgr.getEqual(pid);
+                pPt = PointMgr.getPoint(pid);
 
                 if(pPt )      // I know about the point...
                 {
@@ -982,7 +982,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                         }
                         else
                         {
-                            pPoint = PointMgr.getEqual(pid);
+                            pPoint = PointMgr.getPoint(pid);
                         }
 
                         if(pPoint)
@@ -1149,7 +1149,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                             {
                                 bool devicedifferent;
 
-                                pPt = PointMgr.getEqual(id);
+                                pPt = PointMgr.getPoint(id);
                                 ablementPoint(pPt, devicedifferent, setmask, tagmask, Cmd->getUser(), *pMulti);
 
                                 if(devicedifferent)     // The device became interesting because of this change.
@@ -1208,7 +1208,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                 LONG tagstoreset= Cmd->getOpArgList()[3];
 
                 {
-                    CtiPointSPtr pPt = PointMgr.getEqual( pointid );
+                    CtiPointSPtr pPt = PointMgr.getPoint( pointid );
                     CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(pPt->getPointID());
                     pDyn->getDispatch().setTags( tagstoset );
                     pDyn->getDispatch().resetTags( tagstoreset );
@@ -1317,7 +1317,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                 for(i = 0; i < Cmd->getOpArgList().size(); i++ )
                 {
                     long pid = Cmd->getOpArgList()[i];
-                    CtiPointSPtr pPt = PointMgr.getEqual( pid );
+                    CtiPointSPtr pPt = PointMgr.getPoint( pid );
                     if(pPt)
                     {
                         const CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(pPt->getPointID());
@@ -1795,12 +1795,6 @@ void CtiVanGogh::VGCacheHandlerThread(int threadNumber)
 
             MsgPtr = CacheQueue_.getQueue(10000);
 
-            //Due to there being multiple copies of this thread, there needs to be a sleep here.
-            //The above getQueue call only blocks for 1 thread at a time!
-            if(MsgPtr == NULL)
-            {
-                Sleep(500);
-            }
             start = start.now();
             while(MsgPtr != NULL)
             {
@@ -1885,7 +1879,7 @@ INT CtiVanGogh::archivePointDataMessage(const CtiPointDataMsg &aPD)
     try
     {
         // See if I know about this point ID
-        CtiPointSPtr TempPoint = PointMgr.getEqual(aPD.getId());
+        CtiPointSPtr TempPoint = PointMgr.getPoint(aPD.getId());
 
         if(TempPoint)      // We do know this point..
         {
@@ -2001,7 +1995,7 @@ INT CtiVanGogh::archiveSignalMessage(const CtiSignalMsg& aSig)
         {
             // See if I know about this point ID
             CtiServerExclusion pmguard(_server_exclusion);
-            CtiPointSPtr TempPoint = PointMgr.getEqual(aSig.getId());
+            CtiPointSPtr TempPoint = PointMgr.getPoint(aSig.getId());
 
             if(TempPoint)
             {
@@ -2436,7 +2430,7 @@ INT CtiVanGogh::assembleMultiFromSignalForConnection(const CtiServer::ptr_type &
             if(isSignalForConnection(Conn, *pSig))
             {
                 // FIX FIX FIX ... Do I need this point code here???
-                CtiPointSPtr pPoint = PointMgr.getEqual(pSig->getId());
+                CtiPointSPtr pPoint = PointMgr.getPoint(pSig->getId());
 
                 if(pPoint)
                 {
@@ -2503,7 +2497,7 @@ INT CtiVanGogh::assembleMultiFromPointDataForConnection(const CtiServer::ptr_typ
         {
             if(!(pDat->getTags() & TAG_POINT_DELAYED_UPDATE))   // We will propagate this one later!
             {
-                CtiPointSPtr pTempPoint = PointMgr.getEqual(pDat->getId());
+                CtiPointSPtr pTempPoint = PointMgr.getPoint(pDat->getId());
 
                 if(pTempPoint)
                 {
@@ -2596,7 +2590,7 @@ BOOL CtiVanGogh::isTagForConnection(const CtiServer::ptr_type &Conn, const CtiTa
 {
     BOOL bStatus = FALSE;
 
-    CtiPointSPtr pPoint = PointMgr.getEqual(Msg.getPointID());
+    CtiPointSPtr pPoint = PointMgr.getPoint(Msg.getPointID());
 
     if( pPoint && ((const CtiVanGoghConnectionManager *)Conn.get())->isRegForChangeType(pPoint->getType()) )
     {
@@ -2767,7 +2761,7 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
         QueryPerformanceCounter(&startTime);
         CtiPointSPtr pPoint;
         CtiServerExclusion pmguard(_server_exclusion);
-        pPoint = PointMgr.getEqual(pMsg->getPointId());
+        pPoint = PointMgr.getPoint(pMsg->getPointId());
         QueryPerformanceCounter(&t1Time);
 
         if(pPoint)
@@ -3992,7 +3986,7 @@ INT CtiVanGogh::checkPointDataStateQuality(CtiPointDataMsg  *pData, CtiMultiWrap
 
     if(pData != NULL)
     {
-        CtiPointSPtr pPoint = PointMgr.getEqual(pData->getId());
+        CtiPointSPtr pPoint = PointMgr.getPoint(pData->getId());
 
         if(pPoint)      // We do know this point..
         {
@@ -4087,7 +4081,7 @@ INT CtiVanGogh::checkPointDataStateQuality(CtiPointDataMsg  *pData, CtiMultiWrap
                                 if( verificationPtr = TriggerMgr.getPointTriggerFromVerificationID(pPoint->getID()) )
                                 {
                                     // This call will probably hit the database!
-                                    CtiPointSPtr pCtrlPt = PointMgr.getEqual(verificationPtr->dbTriggerData.getPointID());
+                                    CtiPointSPtr pCtrlPt = PointMgr.getPoint(verificationPtr->dbTriggerData.getPointID());
 
                                     if(pCtrlPt)      // We do know this point..
                                     {
@@ -4185,7 +4179,7 @@ INT CtiVanGogh::commandMsgUpdateFailedHandler(CtiCommandMsg *pCmd, CtiMultiWrapp
     else if( Op[(size_t)1] == RWInteger(OP_POINTID) )
     {
         CtiServerExclusion pmguard(_server_exclusion);
-        CtiPointSPtr pPoint = PointMgr.getEqual(Op[(size_t)2]);
+        CtiPointSPtr pPoint = PointMgr.getPoint(Op[(size_t)2]);
 
         if(pPoint)      // We know this point..
         {
@@ -4335,7 +4329,7 @@ void CtiVanGogh::postSignalAsEmail( CtiSignalMsg &sig )
             CtiPointSPtr pPoint;
             {
                 CtiServerExclusion pmguard(_server_exclusion);
-                pPoint = PointMgr.getEqual(sig.getId());
+                pPoint = PointMgr.getPoint(sig.getId());
 
                 if(pPoint)
                 {
@@ -6017,7 +6011,7 @@ void CtiVanGogh::VGAppMonitorThread()
                 if(*pointListWalker !=0)
                 {
                     // This call probably hits the database.
-                    if( pPt = PointMgr.getEqual(*pointListWalker) )
+                    if( pPt = PointMgr.getPoint(*pointListWalker) )
                     {
                         if(pDynPt = PointMgr.getDynamic(pPt->getPointID()))
                         {
@@ -7461,7 +7455,7 @@ int CtiVanGogh::processTagMessage(CtiTagMsg &tagMsg)
                 {
                     bool devicedifferent;
 
-                    CtiPointSPtr pPt = PointMgr.getEqual(id);
+                    CtiPointSPtr pPt = PointMgr.getPoint(id);
                     ablementPoint(pPt, devicedifferent, setmask, tagmask, tagMsg.getUser(), *pMulti);
 
                     if(devicedifferent)     // The device became interesting because of this change.
@@ -8122,7 +8116,7 @@ void CtiVanGogh::checkStatusCommandFail(int alarm, CtiPointDataMsg *pData, CtiMu
                 pendable->_pointID = verificationPtr->dbTriggerData.getPointID();
 
                 //This may hit the database.
-                CtiPointSPtr pCtrlPt = PointMgr.getEqual(verificationPtr->dbTriggerData.getPointID());
+                CtiPointSPtr pCtrlPt = PointMgr.getPoint(verificationPtr->dbTriggerData.getPointID());
 
                 if( pCtrlPt )      // We do know this point..
                 {
@@ -8404,7 +8398,7 @@ void CtiVanGogh::sendPointTriggers( const CtiPointDataMsg &aPD , CtiPointSPtr po
 
                         //Should we worry about a point that references itself (could be infinite loop if set to deadband == 0)
                         //This call probably hits the database
-                        CtiPointSPtr controlPoint = PointMgr.getEqual(iter->second->dbTriggerData.getPointID());
+                        CtiPointSPtr controlPoint = PointMgr.getPoint(iter->second->dbTriggerData.getPointID());
                         if( controlPoint )
                         {
                             switch( controlPoint->getType() )
@@ -8553,7 +8547,7 @@ void CtiVanGogh::loadStalePointMaps(int pointID)
     }
     else
     {
-        CtiPointSPtr tempPoint = PointMgr.getEqual(pointID);
+        CtiPointSPtr tempPoint = PointMgr.getPoint(pointID);
         if( tempPoint )
         {
             if( PointMgr.hasProperty(pointID, CtiTablePointProperty::STALE_ALARM_TIME) )
@@ -8618,7 +8612,7 @@ void CtiVanGogh::checkForStalePoints(CtiMultiWrapper &aWrap)
                         if( checkTimeIter->time < CtiTime::now() )
                         {
                             //If we have one to check, get the point expiration data, and the points last updated time
-                            CtiPointSPtr point = PointMgr.getEqual(checkTimeIter->pointID);
+                            CtiPointSPtr point = PointMgr.getPoint(checkTimeIter->pointID);
                             updatedIter = _pointUpdatedTime.find(checkTimeIter->pointID);
 
                             if( point && PointMgr.hasProperty(checkTimeIter->pointID, CtiTablePointProperty::STALE_ALARM_TIME) && updatedIter != _pointUpdatedTime.end() )

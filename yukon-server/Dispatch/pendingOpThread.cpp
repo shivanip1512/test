@@ -7,11 +7,17 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2008/10/02 18:27:29 $
+* REVISION     :  $Revision: 1.38 $
+* DATE         :  $Date: 2008/10/13 16:25:18 $
 *
 * HISTORY      :
 * $Log: pendingOpThread.cpp,v $
+* Revision 1.38  2008/10/13 16:25:18  jotteson
+* YUK-6504 Server processes should not load all points
+* Re-factor of CtiPointManager::getEqual to getPoint.
+* Changed getEqualWithoutLoad to getCachedPoint.
+* Removed un-necessary sleep in Dispatch's point loading threads.
+*
 * Revision 1.37  2008/10/02 18:27:29  mfisher
 * YUK-6504 Server-side point management is naive
 * Implemented first draft of LRU (least recently used) point expirations
@@ -2008,7 +2014,7 @@ CtiPointNumericSPtr CtiPendingOpThread::getPointOffset(CtiPendingPointOperations
 
     if(fpid)
     {
-        pPoint = boost::static_pointer_cast<CtiPointNumeric>(PointMgr.getEqual(fpid));
+        pPoint = boost::static_pointer_cast<CtiPointNumeric>(PointMgr.getPoint(fpid));
         if(pPoint->getPointOffset() != poff) pPoint.reset();
     }
 

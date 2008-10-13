@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/pttrigger.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2008/10/02 18:27:29 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2008/10/13 16:25:18 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -166,7 +166,7 @@ void CtiPointTriggerManager::refreshTriggerData(long pointID, RWDBReader& rdr, C
             {
                 // The trigger ID for this point has changed (or gone away?)
                 trig_coll_type::iterator triggerIter = _triggerIDMap.find(origTrigID);
-                CtiPointSPtr oldTriggerPoint = pointMgr.getEqual(origTrigID);
+                CtiPointSPtr oldTriggerPoint = pointMgr.getPoint(origTrigID);
 
                 if( triggerIter != _triggerIDMap.end() )
                 {
@@ -193,7 +193,7 @@ void CtiPointTriggerManager::refreshTriggerData(long pointID, RWDBReader& rdr, C
                     tempPointMap.insert(coll_type::value_type(ptID, tempIter->second));
                     _triggerIDMap.insert(trig_coll_type::value_type(tempIter->second->dbTriggerData.getTriggerID(), tempPointMap));
 
-                    CtiPointSPtr newTriggerPoint = pointMgr.getEqual(tempIter->second->dbTriggerData.getTriggerID());
+                    CtiPointSPtr newTriggerPoint = pointMgr.getPoint(tempIter->second->dbTriggerData.getTriggerID());
                 }
             }
         }

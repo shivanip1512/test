@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.73 $
-* DATE         :  $Date: 2008/08/14 15:57:39 $
+* REVISION     :  $Revision: 1.74 $
+* DATE         :  $Date: 2008/10/13 16:25:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -187,7 +187,7 @@ CtiPointSPtr CtiDeviceBase::getDevicePointEqual(INT id)
 
     if(_pointMgr != NULL)
     {
-        pPoint = _pointMgr->getEqual( id );
+        pPoint = _pointMgr->getPoint( id );
     }
 
     return pPoint;
