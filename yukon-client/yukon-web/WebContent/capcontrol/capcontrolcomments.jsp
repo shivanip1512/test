@@ -126,6 +126,21 @@ function unHighlightAllRows(){
 </script>
 
 <div>
+    <div id="addCommentDiv" style="width: auto; display: none;">
+        <cti:titledContainer title="Add Comment">
+            <input id="addCommentInput" type="text" value=""></input>
+            <input type="button" value="Add Comment" onclick="addComment($('addCommentInput').value);"></input>
+        </cti:titledContainer>  
+        <br>  
+    </div>
+    <div id="updateCommentDiv" style="width: auto; display: none;">
+        <cti:titledContainer title="Update Comment">
+            <input id="updateCommentInput" type="text" value=""></input>
+            <input id="updateCommentId" type="hidden" value=""></input>
+            <input type="button" value="Update Comment" onclick="updateComment($('updateCommentId').value, $('updateCommentInput').value);"></input>
+        </cti:titledContainer> 
+        <br>        
+    </div>
     <cti:titledContainer title="<%=name%>" >
         <table id="innerTable" width="98%" border="0" cellspacing="0" cellpadding="0">
             <tr class="columnHeader lAlign">
@@ -187,19 +202,5 @@ function unHighlightAllRows(){
     </cti:titledContainer>
             
     <br>
-            
-    <div id="addCommentDiv" style="width: auto; display: none;">
-        <cti:titledContainer title="Add Comment">
-            <input id="addCommentInput" type="text" value=""></input>
-            <input type="button" value="Add Comment" onclick="addComment($('addCommentInput').value);"></input>
-        </cti:titledContainer>    
-    </div>
-            
-    <div id="updateCommentDiv" style="width: auto; display: none;">
-        <cti:titledContainer title="Update Comment">
-            <input id="updateCommentInput" type="text" value=""></input>
-            <input id="updateCommentId" type="hidden" value=""></input>
-            <input type="button" value="Update Comment" onclick="updateComment($('updateCommentId').value, $('updateCommentInput').value);"></input>
-        </cti:titledContainer>         
-    </div>
+    
 </div>
