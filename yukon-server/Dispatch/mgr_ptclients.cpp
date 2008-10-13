@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/mgr_ptclients.cpp-arc  $
-* REVISION     :  $Revision: 1.46 $
-* DATE         :  $Date: 2008/10/08 20:44:58 $
+* REVISION     :  $Revision: 1.47 $
+* DATE         :  $Date: 2008/10/13 15:36:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -85,7 +85,7 @@ void CtiPointClientManager::processPointDynamicData(LONG pntID, LONG paoID, cons
     if(pntID)
     {
         //Lets be smart about handling a single point.
-        pTempPoint = getEqual(pntID);
+        pTempPoint = getEqualWithoutLoad(pntID);
         if(pTempPoint)
         {
             ApplyInitialDynamicConditions(0,pTempPoint,this);
@@ -123,7 +123,7 @@ void CtiPointClientManager::processPointDynamicData(LONG pntID, LONG paoID, cons
 
         for( ; pointid_itr != pointid_end; ++pointid_itr )
         {
-            if( pTempPoint = getEqual(*pointid_itr) )
+            if( pTempPoint = getEqualWithoutLoad(*pointid_itr) )
             {
                 ApplyInitialDynamicConditions(0, pTempPoint, this);
             }
@@ -182,8 +182,6 @@ void CtiPointClientManager::refreshListByPointIDs(const set<long> &ids)
 //Load based on PAO assumes it is in add!
 void CtiPointClientManager::refreshAlarming(LONG pntID, LONG paoID, const set<long> &pointIds)
 {
-    coll_type::writer_lock_guard_t guard(getLock());
-
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
@@ -208,10 +206,18 @@ void CtiPointClientManager::refreshAlarming(LONG pntID, LONG paoID, const set<lo
 
     LONG pID;
     ptr_type pPt;
-
+    std::list<CtiTablePointAlarming> tempList;
     while( rdr() )
     {
-        _alarming.insert(CtiTablePointAlarming(rdr));
+        tempList.push_back(CtiTablePointAlarming(rdr));
+    }
+
+    {
+        coll_type::writer_lock_guard_t guard(getLock());
+        for( std::list<CtiTablePointAlarming>::iterator iter = tempList.begin(); iter != tempList.end(); iter++ )
+        {
+            _alarming.insert(*iter);
+        }
     }
 
     if((stop = stop.now()).seconds() - start.seconds() > 5 )
@@ -224,8 +230,6 @@ void CtiPointClientManager::refreshAlarming(LONG pntID, LONG paoID, const set<lo
 
 void CtiPointClientManager::refreshProperties(LONG pntID, LONG paoID, const set<long> &pointIds)
 {
-    coll_type::writer_lock_guard_t guard(getLock());
-
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
@@ -282,10 +286,19 @@ void CtiPointClientManager::refreshProperties(LONG pntID, LONG paoID, const set<
         dout << attributeSelector.asString() << endl;
     }
 
+    std::list<CtiTablePointProperty*> tempList;
     while( rdr() )
     {
         CtiTablePointProperty *p = CTIDBG_new CtiTablePointProperty(rdr);
-        _properties.insert(make_pair(p->getPointID(), p));
+        tempList.push_back(p);
+    }
+
+    {
+        coll_type::writer_lock_guard_t guard(getLock());
+        for( std::list<CtiTablePointProperty *>::iterator iter = tempList.begin(); iter != tempList.end(); iter++ )
+        {
+            _properties.insert(make_pair((*iter)->getPointID(), *iter));
+        }
     }
 
     if((stop = stop.now()).seconds() - start.seconds() > 5 )
@@ -654,7 +667,7 @@ void CtiPointClientManager::removeOldDynamicData()
     {
         try
         {
-            if(!getEqual(itr->first))
+            if(!checkEqual(itr->first))
             {
                 itr = _dynamic.erase(itr);
                 count ++;
@@ -728,7 +741,9 @@ void CtiPointClientManager::DeleteList(void)
  */
 void CtiPointClientManager::RefreshDynamicData(LONG id, const set<long> &pointIds)
 {
-    coll_type::writer_lock_guard_t guard(getLock());
+    //I think this does not need to be locked as the piece of data in question already exists.
+    // This function only updates existing data.
+    //coll_type::writer_lock_guard_t guard(getLock());
 
     LONG lTemp = 0;
     CtiPointSPtr pTempPoint;
@@ -776,7 +791,7 @@ void CtiPointClientManager::RefreshDynamicData(LONG id, const set<long> &pointId
     while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
     {
         rdr["pointid"] >> lTemp;                        // get the point id
-        pTempPoint = Inherited::getEqual( lTemp );
+        pTempPoint = getEqualWithoutLoad( lTemp );
 
         if(pTempPoint)
         {
@@ -819,8 +834,6 @@ void CtiPointClientManager::RefreshDynamicData(LONG id, const set<long> &pointId
 //Grab reasonability limits from TBL_UOM
 void CtiPointClientManager::refreshReasonabilityLimits(LONG pntID, LONG paoID, const set<long> &pointIds)
 {
-    coll_type::writer_lock_guard_t guard(getLock());
-
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
     CtiTime start, stop;
@@ -872,11 +885,19 @@ void CtiPointClientManager::refreshReasonabilityLimits(LONG pntID, LONG paoID, c
 
     int pointid;
     ReasonabilityLimitStruct limitValues;
+    std::list<pair<long, ReasonabilityLimitStruct> > tempList;
     while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
     {
         rdr >> pointid >> limitValues.highLimit >> limitValues.lowLimit;
+        tempList.push_back(make_pair(pointid, limitValues));
+    }
 
-        _reasonabilityLimits.insert(make_pair(pointid, limitValues));
+    {
+        coll_type::writer_lock_guard_t guard(getLock());
+        for( std::list<pair<long, ReasonabilityLimitStruct> >::iterator iter = tempList.begin(); iter != tempList.end(); iter++ )
+        {
+            _reasonabilityLimits.insert(*iter);
+        }
     }
 
     if((stop = stop.now()).seconds() - start.seconds() > 5 )
@@ -897,8 +918,6 @@ void CtiPointClientManager::refreshPointLimits(LONG pntID, LONG paoID, const set
     LONG   lTemp = 0;
     string sql;
 
-    coll_type::writer_lock_guard_t guard(getLock());
-
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
     RWDBDatabase   db       = conn.database();
@@ -915,7 +934,7 @@ void CtiPointClientManager::refreshPointLimits(LONG pntID, LONG paoID, const set
     else if(paoID != 0)
     {
         //  is this right?  If we refresh limits by pao, we clear all limits for all points?
-        _limits.clear();
+        // _limits.clear();
     }
     if(DebugLevel & 0x00010000)
     {
@@ -931,9 +950,18 @@ void CtiPointClientManager::refreshPointLimits(LONG pntID, LONG paoID, const set
         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << sql << endl;
     }
 
+    std::list<CtiTablePointLimit> tempList;
     while( rdr() )
     {
-        _limits.insert(CtiTablePointLimit(rdr));
+        tempList.push_back(CtiTablePointLimit(rdr));
+    }
+
+    {
+        coll_type::writer_lock_guard_t guard(getLock());
+        for( std::list<CtiTablePointLimit>::iterator iter = tempList.begin(); iter != tempList.end(); iter++ )
+        {
+            _limits.insert(CtiTablePointLimit(*iter));
+        }
     }
 
     if((stop = stop.now()).seconds() - start.seconds() > 5 )
@@ -978,6 +1006,12 @@ bool CtiPointClientManager::checkEqual(LONG Pt)
     return Inherited::getEqual(Pt);
 }
 
+CtiPointManager::ptr_type CtiPointClientManager::getEqualWithoutLoad(LONG Pt)
+{
+    return Inherited::getEqual(Pt);
+}
+
+// This must never be called by refreshList!
 CtiPointManager::ptr_type CtiPointClientManager::getEqual(LONG Pt)
 {
     Inherited::ptr_type retVal = Inherited::getEqual(Pt);

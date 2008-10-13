@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/dllbase.cpp-arc  $
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2007/07/10 20:59:13 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2008/10/13 15:36:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -72,7 +72,7 @@ IM_EX_CTIBASE INT           DebugLevel = 0;
 IM_EX_CTIBASE INT           Double = {FALSE};
 IM_EX_CTIBASE INT           useVersacomTypeFourControl = 0;  // Jeesh if you can't figure this out...
 IM_EX_CTIBASE INT           ModemConnectionTimeout = 60;     // Modem Connection Timeout in seconds (60 def.)
-IM_EX_CTIBASE int           gMaxDBConnectionCount = 5;       // Maximum number of DB connections to allow to remain open.
+IM_EX_CTIBASE int           gMaxDBConnectionCount = 10;      // Maximum number of DB connections to allow to remain open.
 IM_EX_CTIBASE bool          gIDLCEchoSuppression  = false;   // Eat up IDLC echoes on the comm channel (usually from satellite, etc)
 IM_EX_CTIBASE bool          gDNPVerbose = false;
 IM_EX_CTIBASE UINT          gDNPInternalRetries = 2;
@@ -263,6 +263,8 @@ DLLEXPORT void InitYukonBaseGlobals(void)
         }
     }
 
+    // NOTE this does not currently work! The semaphore used to enforce this rule is a global variable
+    // and is initialized before this function can set it's value.
     if( !(str = gConfigParms.getValueAsString("MAX_DBCONNECTION_COUNT")).empty() )
     {
         gMaxDBConnectionCount = atoi(str.c_str());
@@ -270,7 +272,7 @@ DLLEXPORT void InitYukonBaseGlobals(void)
     }
     else
     {
-        gMaxDBConnectionCount = 5;
+        gMaxDBConnectionCount = 10;
         if(DebugLevel & 0x0001) cout << "Max of " << gMaxDBConnectionCount << " RWDB connections allowed" << endl;
     }
 

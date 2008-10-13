@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/mgr_ptclients.h-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2008/10/08 20:44:58 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2008/10/13 15:36:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -88,7 +88,8 @@ public:
    virtual void refreshListByPointIDs(const std::set<long> &ids);
 
    virtual Inherited::ptr_type getEqual(LONG Pt);
-   bool                      checkEqual(LONG Pt);
+   Inherited::ptr_type         getEqualWithoutLoad(LONG Pt);
+   bool                        checkEqual(LONG Pt);
 
    void DumpList(void);
    virtual void DeleteList(void);

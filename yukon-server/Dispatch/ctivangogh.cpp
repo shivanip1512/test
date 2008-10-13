@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.198 $
-* DATE         :  $Date: 2008/10/08 20:44:58 $
+* REVISION     :  $Revision: 1.199 $
+* DATE         :  $Date: 2008/10/13 15:36:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -363,8 +363,14 @@ void CtiVanGogh::VGMainThread()
         _appMonitorThread  = rwMakeThreadFunction(*this, &CtiVanGogh::VGAppMonitorThread);
         _appMonitorThread.start();
 
-        _cacheHandlerThread = rwMakeThreadFunction(*this, &CtiVanGogh::VGCacheHandlerThread);
-        _cacheHandlerThread.start();
+        _cacheHandlerThread1 = rwMakeThreadFunction(*this, &CtiVanGogh::VGCacheHandlerThread,1);
+        _cacheHandlerThread1.start();
+
+        _cacheHandlerThread2 = rwMakeThreadFunction(*this, &CtiVanGogh::VGCacheHandlerThread,2);
+        _cacheHandlerThread2.start();
+
+        _cacheHandlerThread3 = rwMakeThreadFunction(*this, &CtiVanGogh::VGCacheHandlerThread,3);
+        _cacheHandlerThread3.start();
 
          // Prime the connection to the notification server
          getNotificationConnection();
@@ -1482,11 +1488,7 @@ int CtiVanGogh::postDBChange(const CtiDBChangeMsg &Msg)
             }
             else if(Msg.getDatabase() == ChangePointDb)
             {
-                CtiPointSPtr pt = PointMgr.getEqual(Msg.getId());
-                if(pt)
-                {
-                    desc += " " + resolveDeviceNameByPaoId(pt->getDeviceID()) + " / " + pt->getName();
-                }
+                desc += " POINT " + CtiNumStr(Msg.getId());
             }
 
             CtiSignalMsg *pSig = CTIDBG_new CtiSignalMsg(0, 0, desc, "DATABASE CHANGE");
@@ -1736,7 +1738,8 @@ void CtiVanGogh::VGTimedOperationThread()
     return;
 }
 
-void CtiVanGogh::VGCacheHandlerThread()
+//The thread with ID of 1 must always exist! Only this thread checks for point clearing.
+void CtiVanGogh::VGCacheHandlerThread(int threadNumber)
 {
     UINT sanity = 0;
     CtiMultiMsg *pMulti = 0;
@@ -1750,10 +1753,11 @@ void CtiVanGogh::VGCacheHandlerThread()
     CtiPointDataMsg         *pDataMsg;
     CtiCommandMsg           *pCmdMsg;
     CtiPointRegistrationMsg *pRegMsg;
+    string threadName = "Cache Handler Thread " + CtiNumStr(threadNumber);
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Cache Handler Thread starting as TID " << rwThreadId() << " (0x" << hex << rwThreadId() << dec << ")" << endl;
+        dout << CtiTime() << threadName << " starting as TID " << rwThreadId() << " (0x" << hex << rwThreadId() << dec << ")" << endl;
     }
 
     try
@@ -1766,29 +1770,37 @@ void CtiVanGogh::VGCacheHandlerThread()
                 {
                     lastReportTime = lastReportTime.now();
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Dispatch Cache Handler Thread Active. TID:  " << rwThreadId() << endl;
+                    dout << CtiTime() << " Dispatch " << threadName << " Active. TID:  " << rwThreadId() << endl;
                 }
                 CtiThreadRegData *data;
                 if( ShutdownOnThreadTimeout )
                 {
-                    data = CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "Cache Handler Thread", CtiThreadRegData::Action,
+                    data = CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), threadName, CtiThreadRegData::Action,
                                                         CtiThreadMonitor::StandardMonitorTime, &CtiVanGogh::sendbGCtrlC, CTIDBG_new string("Timed Operation Thread") );
                 }
                 else
                 {
-                    data = CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "Cache Handler Thread", CtiThreadRegData::None, CtiThreadMonitor::StandardMonitorTime );
+                    data = CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), threadName, CtiThreadRegData::None, CtiThreadMonitor::StandardMonitorTime );
                 }
                 ThreadMonitor.tickle( data );
                 lastTickleTime = lastTickleTime.now();
 
             }
 
-            if(lastPointExpireTime.seconds() < (lastPointExpireTime.now().seconds() - POINT_EXPIRE_CHECK_RATE))
+            if(threadNumber == 1 && lastPointExpireTime.seconds() < (lastPointExpireTime.now().seconds() - POINT_EXPIRE_CHECK_RATE))
             {
                 PointMgr.processExpired();
+                lastPointExpireTime = lastPointExpireTime.now();
             }
 
-            MsgPtr = CacheQueue_.getQueue(5000);
+            MsgPtr = CacheQueue_.getQueue(10000);
+
+            //Due to there being multiple copies of this thread, there needs to be a sleep here.
+            //The above getQueue call only blocks for 1 thread at a time!
+            if(MsgPtr == NULL)
+            {
+                Sleep(500);
+            }
             start = start.now();
             while(MsgPtr != NULL)
             {
@@ -1841,7 +1853,7 @@ void CtiVanGogh::VGCacheHandlerThread()
             if( stop.seconds() - start.seconds() > 1 )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Cache Handler took " << stop.seconds() - start.seconds() << " seconds to run." << endl;
+                dout << CtiTime() << threadName << " took " << stop.seconds() - start.seconds() << " seconds to run." << endl;
             }
         }
     }
@@ -1859,9 +1871,9 @@ void CtiVanGogh::VGCacheHandlerThread()
     // And let'em know were A.D.
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Dispatch Cache Handler Thread shutting down" << endl;
+        dout << CtiTime() << " Dispatch " << threadName << " shutting down" << endl;
     }
-    ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "Cache Handler Thread", CtiThreadRegData::LogOut, CtiThreadMonitor::StandardMonitorTime ));
+    ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), threadName, CtiThreadRegData::LogOut, CtiThreadMonitor::StandardMonitorTime ));
 
     return;
 }
@@ -2690,7 +2702,7 @@ BOOL CtiVanGogh::isPointDataNewInformation(const CtiPointDataMsg &Msg, const Cti
 
 BOOL CtiVanGogh::isConnectionAttachedToMsgPoint(const CtiServer::ptr_type &Conn, const LONG pID)
 {
-    return PointMgr.pointHasConnection(pID, Conn);;
+    return PointMgr.pointHasConnection(pID, Conn);
 }
 
 int CtiVanGogh::processCommErrorMessage(CtiCommErrorHistoryMsg *pMsg)
@@ -4074,6 +4086,7 @@ INT CtiVanGogh::checkPointDataStateQuality(CtiPointDataMsg  *pData, CtiMultiWrap
                                 PtVerifyTriggerSPtr verificationPtr;
                                 if( verificationPtr = TriggerMgr.getPointTriggerFromVerificationID(pPoint->getID()) )
                                 {
+                                    // This call will probably hit the database!
                                     CtiPointSPtr pCtrlPt = PointMgr.getEqual(verificationPtr->dbTriggerData.getPointID());
 
                                     if(pCtrlPt)      // We do know this point..
@@ -6003,6 +6016,7 @@ void CtiVanGogh::VGAppMonitorThread()
             {
                 if(*pointListWalker !=0)
                 {
+                    // This call probably hits the database.
                     if( pPt = PointMgr.getEqual(*pointListWalker) )
                     {
                         if(pDynPt = PointMgr.getDynamic(pPt->getPointID()))
@@ -8107,6 +8121,7 @@ void CtiVanGogh::checkStatusCommandFail(int alarm, CtiPointDataMsg *pData, CtiMu
             {
                 pendable->_pointID = verificationPtr->dbTriggerData.getPointID();
 
+                //This may hit the database.
                 CtiPointSPtr pCtrlPt = PointMgr.getEqual(verificationPtr->dbTriggerData.getPointID());
 
                 if( pCtrlPt )      // We do know this point..
@@ -8388,6 +8403,7 @@ void CtiVanGogh::sendPointTriggers( const CtiPointDataMsg &aPD , CtiPointSPtr po
                         string cmdstr;
 
                         //Should we worry about a point that references itself (could be infinite loop if set to deadband == 0)
+                        //This call probably hits the database
                         CtiPointSPtr controlPoint = PointMgr.getEqual(iter->second->dbTriggerData.getPointID());
                         if( controlPoint )
                         {
@@ -8801,7 +8817,49 @@ bool CtiVanGogh::checkMessageForPreLoad(CtiMessage *MsgPtr)
                         break;
                     }
                 }
+            }
+            else if(pCmdMsg->getOperation() == CtiCommandMsg::AcknowledgeAlarm)
+            {
+                for(int i = 1; i + 1 < pCmdMsg->getOpArgList().size(); i += 2)
+                {
+                    if(!PointMgr.checkEqual(pCmdMsg->getOpArgList()[i]))
+                    {
+                        retVal = true;
+                        break;
+                    }
+                }
+            }
+            else if(pCmdMsg->getOperation() == CtiCommandMsg::PointTagAdjust)
+            {
+                if(pCmdMsg->getOpArgList().size() >= 4 && !PointMgr.checkEqual(pCmdMsg->getOpArgList()[1]))
+                {    
+                    retVal = true;
+                }
+            }
+            else if(pCmdMsg->getOperation() == CtiCommandMsg::UpdateFailed)
+            {
+                CtiCommandMsg::CtiOpArgList_t &Op = pCmdMsg->getOpArgList();
 
+                if( Op[1] == OP_DEVICEID )    // All points on a device must be marked as nonUpdated
+                {
+                    vector<int> points = getPointIdsOnPao(Op[2]);
+
+                    for(vector<int>::iterator iter = points.begin(); iter != points.end(); iter++)
+                    {
+                        if(!PointMgr.checkEqual(*iter))
+                        {
+                            retVal = true;
+                            break;
+                        }
+                    }
+                }
+                else if( Op[1] == OP_POINTID )
+                {
+                    if(!PointMgr.checkEqual(Op[2]))
+                    {
+                        retVal = true;
+                    }
+                }
             }
         }
         else if(MsgPtr->isA() == MSG_MULTI || MsgPtr->isA() == MSG_PCRETURN)
@@ -8816,8 +8874,24 @@ bool CtiVanGogh::checkMessageForPreLoad(CtiMessage *MsgPtr)
                 }
             }
         }
+        else if(MsgPtr->isA() == MSG_TAG)
+        {
+            CtiTagMsg *pTagMsg = (CtiTagMsg*)MsgPtr;
+            if(!PointMgr.checkEqual(pTagMsg->getPointID()))
+            {
+                retVal = true;
+            }
+        }
+        else if(MsgPtr->isA() == MSG_LMCONTROLHISTORY)
+        {
+            CtiLMControlHistoryMsg *pLMMsg = (CtiLMControlHistoryMsg*)MsgPtr;
+            if(!PointMgr.checkEqual(pLMMsg->getPointId()))
+            {
+                retVal = true;
+            }
+        }
 
-        if(gDispatchDebugLevel & DISPATCH_DEBUG_PERFORMANCE)
+        /*if(gDispatchDebugLevel & DISPATCH_DEBUG_PERFORMANCE)
         {
             GetLocalTime(&endTime);
             int ms = (endTime.wMinute - startTime.wMinute) * 60000 +
@@ -8827,7 +8901,7 @@ bool CtiVanGogh::checkMessageForPreLoad(CtiMessage *MsgPtr)
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** PERFORMANCE CHECK **** " << endl;
             dout << "CheckMessageForPreLoad took " << ms << "ms" << endl;
-        }
+        }*/
 
     }
     else
@@ -8885,6 +8959,45 @@ void CtiVanGogh::findPreLoadPointId(CtiMessage *MsgPtr, std::set<long> &ptIdList
                     }
                 }
             }
+            else if(pCmdMsg->getOperation() == CtiCommandMsg::AcknowledgeAlarm)
+            {
+                for(int i = 1; i + 1 < pCmdMsg->getOpArgList().size(); i += 2)
+                {
+                    if(!PointMgr.checkEqual(pCmdMsg->getOpArgList()[i]))
+                    {
+                        ptIdList.insert(pCmdMsg->getOpArgList()[i]);
+                    }
+                }
+            }
+            else if(pCmdMsg->getOperation() == CtiCommandMsg::PointTagAdjust)
+            {
+                if(pCmdMsg->getOpArgList().size() >= 4)
+                {    
+                    ptIdList.insert(pCmdMsg->getOpArgList()[1]);
+                }
+            }
+            else if(pCmdMsg->getOperation() == CtiCommandMsg::UpdateFailed)
+            {
+                CtiCommandMsg::CtiOpArgList_t &Op = pCmdMsg->getOpArgList();
+
+                if( Op[1] == OP_DEVICEID )    // All points on a device must be marked as nonUpdated
+                {
+                    vector<int> points = getPointIdsOnPao(Op[2]);
+
+                    for(vector<int>::iterator iter = points.begin(); iter != points.end(); iter++)
+                    {
+                        if(!PointMgr.checkEqual(*iter))
+                        {
+                            ptIdList.insert(*iter);
+                        }
+                    }
+                }
+                else if( Op[1] == OP_POINTID )
+                {
+                    ptIdList.insert(Op[2]);
+                }
+            }
+            
         }
         else if(MsgPtr->isA() == MSG_MULTI || MsgPtr->isA() == MSG_PCRETURN)
         {
@@ -8894,8 +9007,18 @@ void CtiVanGogh::findPreLoadPointId(CtiMessage *MsgPtr, std::set<long> &ptIdList
                 findPreLoadPointId((CtiMessage*)pMulti->getData()[i], ptIdList);
             }
         }
+        else if(MsgPtr->isA() == MSG_TAG)
+        {
+            CtiTagMsg *pTagMsg = (CtiTagMsg*)MsgPtr;
+            ptIdList.insert(pTagMsg->getPointID());
+        }
+        else if(MsgPtr->isA() == MSG_LMCONTROLHISTORY)
+        {
+            CtiLMControlHistoryMsg *pLMMsg = (CtiLMControlHistoryMsg*)MsgPtr;
+            ptIdList.insert(pLMMsg->getPointId());
+        }
 
-        if(gDispatchDebugLevel & DISPATCH_DEBUG_PERFORMANCE)
+        /*if(gDispatchDebugLevel & DISPATCH_DEBUG_PERFORMANCE)
         {
             GetLocalTime(&endTime);
             int ms = (endTime.wMinute - startTime.wMinute) * 60000 +
@@ -8905,7 +9028,7 @@ void CtiVanGogh::findPreLoadPointId(CtiMessage *MsgPtr, std::set<long> &ptIdList
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** PERFORMANCE CHECK **** " << endl;
             dout << "FindPreLoadPointId took " << ms << "ms" << endl;
-        }
+        }*/
     }
     else
     {
