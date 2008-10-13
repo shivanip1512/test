@@ -71,30 +71,6 @@ BOOL WINAPI CtrlHandler(DWORD fdwCtrlType)
     }
 }
 
-typedef void (*CCUThreadFunPtr)(const int, const int);
-
-
-template<typename FunT,
-typename ParamT,
-typename ParamU>
-struct Adapter
-{
-    Adapter(FunT f, ParamT p, ParamU q) :
-    f_(f), p_(p) , q_(q)
-    {
-    }
-
-    void operator()()
-    {
-        f_(p_,q_);
-    }
-    private:
-    FunT f_;
-    ParamT p_;
-    ParamU q_;
-};
-
-
 int main(int argc, char *argv[])
 {
     int strategy = 0,
