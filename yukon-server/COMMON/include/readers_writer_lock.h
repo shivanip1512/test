@@ -13,21 +13,25 @@ namespace Cti {
 
 class IM_EX_CTIBASE readers_writer_lock_t
 {
+public:
+
+    typedef DWORD thread_id_t;
+
 private:
 
-    typedef std::vector<unsigned long> id_coll_t;
+    typedef std::map<thread_id_t, unsigned> id_coll_t;
     typedef RWReadersWriterLock::ReadLockGuard  bookkeeping_reader_guard_t;
     typedef RWReadersWriterLock::WriteLockGuard bookkeeping_writer_guard_t;
 
     RWReadersWriterLock _lock;
 
-    RWReadersWriterLock _bookkeeping_lock;
+    mutable RWReadersWriterLock _bookkeeping_lock;
 
     //RWSemaphore _write_signal, _upgrade_signal;
 
-    id_coll_t _reader_ids;
-    long      _writer_id;
-    long      _writer_recursion;
+    id_coll_t   _reader_ids;
+    thread_id_t _writer_id;
+    unsigned    _writer_recursion;
 
     enum LockType_t
     {
@@ -68,9 +72,9 @@ public:
 
     void release();
 
-    int lastAcquiredByTID();
-
     operator std::string();
+
+    thread_id_t lastAcquiredByTID() const;
 };
 
 };

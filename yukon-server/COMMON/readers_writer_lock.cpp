@@ -7,7 +7,6 @@
 namespace Cti {
 
 readers_writer_lock_t::readers_writer_lock_t() :
-    //_writer_signal(1),
     _writer_id(0),
     _writer_recursion(0)
 {
@@ -19,226 +18,107 @@ inline bool readers_writer_lock_t::tryAcquire()               {  return tryAcqui
 
 void readers_writer_lock_t::acquireRead()
 {
-    bool recursive = false;
-
-    {
-        bookkeeping_reader_guard_t guard(_bookkeeping_lock);
-        recursive = current_thread_owns_any();
-    }
-
-    if( !recursive )
+    if( !current_thread_owns_any() )
     {
         _lock.acquireRead();
     }
 
-    {
-        bookkeeping_writer_guard_t guard(_bookkeeping_lock);
-        set_tid(LockType_Reader);
-    }
+    set_tid(LockType_Reader);
 }
 
 void readers_writer_lock_t::acquireWrite()
 {
-    bool recursive       = false;
-    bool upgrade         = false;
-
+    if( !current_thread_owns_writer() )
     {
-        bookkeeping_reader_guard_t guard(_bookkeeping_lock);
-
-        recursive = current_thread_owns_writer();
-        upgrade   = current_thread_owns_reader();
-    }
-
-    if( !recursive )
-    {
-        if( upgrade )
+        if( current_thread_owns_reader() )
         {
             //  upgrades not currently allowed
             autopsy(__FILE__, __LINE__);
             throw;
         }
 
-        /*if( upgrade )
-        {
-            //  if we're an upgrade, we don't acquire the semaphore;
-            //    this effectively moves all upgrades to the head of the write queue
-            _lock.release();
-        }
-        else
-        {
-            _upgrade_signal.acquire();
-        }*/
-
         _lock.acquireWrite();
     }
 
-    //  we must have the writer lock, so no need to acquire the bookkeeping lock
     set_tid(LockType_Writer);
 }
 
 bool readers_writer_lock_t::acquireRead(unsigned long milliseconds)
 {
-    bool acquired  = true;
-    bool recursive = false;
-
+    if( !current_thread_owns_any() )
     {
-        bookkeeping_reader_guard_t guard(_bookkeeping_lock);
-        recursive = current_thread_owns_any();
+        if( !_lock.acquireRead(milliseconds) )
+        {
+            return false;
+        }
     }
 
-    if( !recursive )
-    {
-        acquired = _lock.acquireRead(milliseconds);
-    }
+    set_tid(LockType_Reader);
 
-    if( acquired )
-    {
-        bookkeeping_writer_guard_t guard(_bookkeeping_lock);
-        set_tid(LockType_Reader);
-    }
-
-    return acquired;
+    return true;
 }
 
 bool readers_writer_lock_t::acquireWrite(unsigned long milliseconds)
 {
-    bool acquired  = true;
-    bool recursive = false;
-    bool upgrade   = false;
-
+    if( !current_thread_owns_writer() )
     {
-        bookkeeping_reader_guard_t guard(_bookkeeping_lock);
-        recursive = current_thread_owns_writer();
-        upgrade   = current_thread_owns_reader();
-    }
-
-    if( !recursive )
-    {
-        if( upgrade )
+        if( current_thread_owns_reader() )
         {
             //  upgrades not currently allowed
             autopsy(__FILE__, __LINE__);
             throw;
         }
 
-        /*if( upgrade )
+        if( !_lock.acquireWrite(milliseconds) )
         {
-            _lock.release();
-
-            if( !(acquired = _lock.acquireWrite(milliseconds)) )
-            {
-                do
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Thread " << GetCurrentThreadId() << " attempting to acquire read mux after failed upgrade; owned by " << operator string() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
-
-                } while( !_lock.acquireRead(30000) );
-            }
+            return false;
         }
-        else if( _write_signal.acquire(milliseconds) != RW_THR_TIMEOUT )
-        {
-            acquired = _lock.acquireWrite();
-        }*/
-
-        acquired = _lock.acquireWrite(milliseconds);
     }
 
-    if( acquired )
-    {
-        set_tid(LockType_Writer);
-    }
+    set_tid(LockType_Writer);
 
-    return acquired;
+    return true;
 }
 
 bool readers_writer_lock_t::tryAcquireRead()
 {
-    bool acquired  = false;
-    bool recursive = false;
-
+    if( !current_thread_owns_any() && !_lock.tryAcquireRead() )
     {
-        bookkeeping_reader_guard_t guard(_bookkeeping_lock);
-        recursive = current_thread_owns_any();
+        return false;
     }
 
-    if( recursive )
-    {
-        acquired = true;
-    }
-    else
-    {
-        acquired = _lock.tryAcquireRead();
-    }
+    set_tid(LockType_Reader);
 
-    if( acquired )
-    {
-        bookkeeping_writer_guard_t guard(_bookkeeping_lock);
-        set_tid(LockType_Reader);
-    }
-
-    return acquired;
+    return true;
 }
 
 bool readers_writer_lock_t::tryAcquireWrite()
 {
-    bool recursive = false;
-    bool acquired  = false;
-    bool upgrade   = false;
-    //bool write_owned = false;
-
+    if( !current_thread_owns_writer() )
     {
-        bookkeeping_reader_guard_t guard(_bookkeeping_lock);
-
-        recursive = current_thread_owns_writer();
-        upgrade   = current_thread_owns_reader();
-
-        //write_owned = _writer_id;
-
-        if( !recursive )
+        if( current_thread_owns_reader() )
         {
-            if( upgrade )
-            {
-                //  upgrades not currently allowed
-                autopsy(__FILE__, __LINE__);
-                throw;
-            }
+            //  upgrades not currently allowed
+            autopsy(__FILE__, __LINE__);
+            throw;
+        }
 
-            /*if( upgrade )
-            {
-                if( !write_owned )
-                {
-                    _lock.release();
-
-                    _lock.acquireWrite();
-                }
-            }
-            else if( _write_signal.tryAcquire() )
-            {
-                acquired = _lock.acquireWrite();
-            }*/
+        if( !_lock.tryAcquireWrite() )
+        {
+            return false;
         }
     }
 
-    if( !recursive )
-    {
-        acquired = _lock.tryAcquireWrite();
-    }
+    set_tid(LockType_Writer);
 
-    if( acquired )
-    {
-        set_tid(LockType_Writer);
-    }
-
-    return acquired;
+    return true;
 }
 
 void readers_writer_lock_t::release()
 {
-    bookkeeping_writer_guard_t guard(_bookkeeping_lock);
-
-    //  if it's the last reader OR it's the last writer
     clear_tid();
 
+    //  if it's the last reader OR it's the last writer, release the lock
     if( !current_thread_owns_any() )
     {
         _lock.release();
@@ -254,16 +134,23 @@ void readers_writer_lock_t::set_tid(LockType_t lock_type)
     }
     else if( lock_type == LockType_Reader )
     {
-        //  try to re-use a zeroed out entry to prevent us from deleting from the vector
-        id_coll_t::iterator itr = std::find(_reader_ids.begin(), _reader_ids.end(), 0);
+        thread_id_t thread_id = GetCurrentThreadId();
+        bool found;
 
-        if( itr != _reader_ids.end() )
         {
-            *itr = GetCurrentThreadId();
+            bookkeeping_reader_guard_t guard(_bookkeeping_lock);
+
+            if( found = (_reader_ids.find(thread_id) != _reader_ids.end()) )
+            {
+                ++_reader_ids[thread_id];
+            }
         }
-        else
+
+        if( !found )
         {
-            _reader_ids.push_back(GetCurrentThreadId());
+            bookkeeping_writer_guard_t guard(_bookkeeping_lock);
+
+            _reader_ids[thread_id] = 1;
         }
     }
     else if( lock_type == LockType_Writer )
@@ -287,27 +174,39 @@ void readers_writer_lock_t::clear_tid()
     }
     else
     {
-        id_coll_t::iterator itr = std::find(_reader_ids.begin(), _reader_ids.end(), GetCurrentThreadId());
+        thread_id_t thread_id = GetCurrentThreadId();
 
-        if( itr == _reader_ids.end() )
         {
-            //  clear_tid() called one too many times
-            autopsy(__FILE__, __LINE__);
-            throw;
-        }
+            bookkeeping_reader_guard_t guard(_bookkeeping_lock);
 
-        *itr = 0;
+            if( _reader_ids.find(thread_id) == _reader_ids.end() ||
+                !_reader_ids[thread_id] )
+            {
+                //  clear_tid() called one too many times
+                autopsy(__FILE__, __LINE__);
+                throw;
+            }
+
+            _reader_ids[thread_id]--;
+        }
     }
 }
 
 bool readers_writer_lock_t::current_thread_owns_writer() const
 {
+    //  threadsafe, since _writer_id is written atomically
     return _writer_id && (_writer_id == GetCurrentThreadId());
 }
 
 bool readers_writer_lock_t::current_thread_owns_reader() const
 {
-    return std::find(_reader_ids.begin(), _reader_ids.end(), GetCurrentThreadId()) != _reader_ids.end();
+    thread_id_t thread_id = GetCurrentThreadId();
+
+    {
+        bookkeeping_reader_guard_t guard(_bookkeeping_lock);
+
+        return (_reader_ids.find(thread_id) != _reader_ids.end()) && _reader_ids.find(thread_id)->second;
+    }
 }
 
 bool readers_writer_lock_t::current_thread_owns_both() const
@@ -320,16 +219,14 @@ bool readers_writer_lock_t::current_thread_owns_any() const
     return current_thread_owns_writer() || current_thread_owns_reader();
 }
 
-int readers_writer_lock_t::lastAcquiredByTID()
+readers_writer_lock_t::thread_id_t readers_writer_lock_t::lastAcquiredByTID() const
 {
-    bookkeeping_reader_guard_t guard(_bookkeeping_lock);
-
     return _writer_id;
 }
 
 readers_writer_lock_t::operator std::string()
 {
-    bookkeeping_reader_guard_t guard(_bookkeeping_lock);
+    bookkeeping_writer_guard_t guard(_bookkeeping_lock);
 
     std::string str;
 
@@ -353,9 +250,11 @@ readers_writer_lock_t::operator std::string()
 
             str = "r:";
 
-            for( ; itr != itr_end && *itr; itr++ )
+            for( ; itr != itr_end && itr->second; itr++ )
             {
-                str += CtiNumStr(*itr).hex();
+                str += CtiNumStr(itr->first).hex();
+                str += "/";
+                str += CtiNumStr(itr->second);
                 str += ",";
             }
         }
