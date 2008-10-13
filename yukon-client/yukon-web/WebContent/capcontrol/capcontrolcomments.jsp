@@ -58,7 +58,7 @@
     String name = capObject.getCcName();
     List<CapControlComment> comments = commentDao.getAllCommentsByPao(paoId);
     
-    SimpleDateFormat formatter = new SimpleDateFormat ("dd/MM/yyyy HH:mm:ss");
+    SimpleDateFormat formatter = new SimpleDateFormat ("MM/dd/yyyy HH:mm:ss");
     
     //role property   'database editing' determines this.
     LiteYukonRoleProperty modifyProp = roleDao.getRoleProperty(CBCSettingsRole.MODIFY_COMMENTS);
