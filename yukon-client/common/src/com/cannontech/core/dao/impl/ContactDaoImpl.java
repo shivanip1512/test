@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
@@ -35,6 +36,7 @@ import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.contact.Contact;
+import com.cannontech.database.db.customer.Customer;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.yukon.IDatabaseCache;
@@ -439,6 +441,19 @@ public final class ContactDaoImpl implements ContactDao {
         {
 			return databaseCache.getACustomerByContactID(contactID);
 		}
+	}
+	
+	/* (non-Javadoc)
+     * @see com.cannontech.core.dao.ContactDao#isPrimaryContact(int)
+     */
+	public boolean isPrimaryContact(int contactId) {
+	    String sql = "SELECT PrimaryContactId FROM " + Customer.TABLE_NAME + " WHERE PrimaryContactId = " + contactId;
+	    try {
+	        simpleJdbcTemplate.queryForInt(sql);
+	        return true;
+	    } catch(IncorrectResultSizeDataAccessException e) {
+	        return false;
+	    }
 	}
 	
 	/* (non-Javadoc)

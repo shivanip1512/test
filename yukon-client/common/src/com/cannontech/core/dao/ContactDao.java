@@ -126,6 +126,14 @@ public interface ContactDao {
      * @return LiteCICustomer
      */
     public LiteCICustomer getPrimaryContactCICustomer(int primaryContactID_);
+    
+    /**
+     * Returns true if the provided contactid is found in the Customer table, 
+     * PrimaryContactId column.
+     * @param contactId
+     * @return
+     */
+    public boolean isPrimaryContact(int contactId);
 
     /**
      * Returns the LiteCICustomer for contactID_.

@@ -1,6 +1,7 @@
 package com.cannontech.web.stars.dr.consumer;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -14,21 +15,38 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.authentication.service.AuthType;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.CustomerDao;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.YukonListDao;
+import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteCustomer;
+import com.cannontech.database.data.lite.LiteFactory;
+import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.user.YukonGroup;
+import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.i18n.MessageCodeGenerator;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
+import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
+import com.cannontech.stars.util.ServerUtils;
+import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.web.StarsYukonUser;
+import com.cannontech.user.UserUtils;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -93,10 +111,10 @@ public class ContactController extends AbstractConsumerController {
         LiteContact contact = new LiteContact(-1);
         contact.setContFirstName("");
         contact.setContLastName("");
-        contact.setLoginID(userId);
+        contact.setLoginID(-1);
 
         contactDao.addAdditionalContact(contact, customer);
-
+        
         return "redirect:/spring/stars/consumer/contacts";
     }
 
@@ -118,13 +136,49 @@ public class ContactController extends AbstractConsumerController {
             
         } else {
             
+            
             List<LiteContactNotification> notificationList = this.getNotifications(request,
                                                                                    contactId);
     
             this.addNewNotification(request, contactId, notificationList);
     
             contact.setNotifications(notificationList);
-    
+            
+            if(DaoFactory.getAuthDao().checkRoleProperty(user.getUserID(), ConsumerInfoRole.CREATE_LOGIN_FOR_ACCOUNT) || 
+                    DaoFactory.getAuthDao().checkRoleProperty(user.getUserID(), ResidentialCustomerRole.CREATE_LOGIN_FOR_ACCOUNT)) {
+            
+                StarsYukonUser starsUser = (StarsYukonUser) request.getSession().getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
+                
+                if(!contactDao.isPrimaryContact(contactId) && contact.getLoginID() < 0) {
+               
+                    YukonUser login = new YukonUser();
+                    LiteStarsEnergyCompany liteEC = StarsDatabaseCache.getInstance().getEnergyCompany( starsUser.getEnergyCompanyID() );
+                    LiteYukonGroup[] custGroups = liteEC.getResidentialCustomerGroups();
+                    String time = new Long(Calendar.getInstance().getTimeInMillis()).toString();
+                    String firstInitial= "";
+                    if(firstName != null) {
+                        firstInitial = firstName.toLowerCase().substring(0,1);
+                    }
+                    String newUserName = firstInitial + lastName.toLowerCase();
+                    if (DaoFactory.getYukonUserDao().getLiteYukonUser( newUserName ) != null) {
+                        newUserName = lastName.toLowerCase() + time.substring(time.length() - 2);
+                    }
+                    login.getYukonUser().setUsername(newUserName);
+                    login.getYukonUser().setAuthType(AuthType.NONE);
+                    login.getYukonGroups().addElement(((YukonGroup)LiteFactory.convertLiteToDBPers(custGroups[0])).getYukonGroup());
+                    login.getYukonUser().setStatus(UserUtils.STATUS_ENABLED);
+                    try {
+                        login = Transaction.createTransaction(Transaction.INSERT, login).execute();
+                    } catch (TransactionException e) {
+                        CTILogger.error(e);
+                    }
+                    LiteYukonUser liteUser = new LiteYukonUser( login.getUserID().intValue() );
+                    ServerUtils.handleDBChange(liteUser, DBChangeMsg.CHANGE_TYPE_ADD);
+                    contact.setLoginID(login.getUserID().intValue());
+                }
+                // end hack
+            }
+            
             contactDao.saveContact(contact);
         }
         
