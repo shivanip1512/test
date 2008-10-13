@@ -74,6 +74,10 @@ public class CapControlCommandController extends MultiActionController {
                 LiteState state = stateDao.getLiteState(ccStateGroup, rawState.intValue());
                 commandName = state.getStateText() + " " + controlTypeString;
             }
+	        else if ( cmdId == 34 && !controlType.equals(CapControlType.CAPBANK)) {
+	            commandName = commandName.substring(0,4) + " All " + commandName.substring(5,commandName.length());  
+	            commandName += " to " + controlTypeString.substring(0,1).toUpperCase() + controlTypeString.substring(1).toLowerCase();
+            }
 	        insertComment(paoId, user.getUserID(), commandName, cmdId);
 	    }
 	    
