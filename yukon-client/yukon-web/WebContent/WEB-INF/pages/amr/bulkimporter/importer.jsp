@@ -3,8 +3,8 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <%-- MODULE, MENU --%>
-<cti:standardPage title="Bulk Importer" module="amr">
-<cti:standardMenu menuSelection="deviceselection" />
+<cti:standardPage title="Bulk Importer" module="blank">
+<cti:standardMenu menuSelection="" />
 
 <cti:breadCrumbs>
     <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
