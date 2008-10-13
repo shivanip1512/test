@@ -17,18 +17,23 @@
 var dftEntryTexts = new Array();
 var dftEntryYukDefIDs = new Array();
 <%
-	boolean showAddtlProtocols = ECUtils.hasRight(liteEC, ECUtils.RIGHT_SHOW_ADDTL_PROTOCOLS);
-	for (int i = 0; i < dftList.getYukonListEntries().size(); i++) {
-		YukonListEntry entry = (YukonListEntry) dftList.getYukonListEntries().get(i);
-		// Show SA switches only when allowed
-		if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE)
-			&& InventoryUtils.isAdditionalProtocol(entry.getYukonDefID())
-			&& !showAddtlProtocols)
-			continue;
+    boolean showAddtlProtocols = ECUtils.hasRight(liteEC, ECUtils.RIGHT_SHOW_ADDTL_PROTOCOLS);
+    List<YukonListEntry> entryDefList = dftList.getYukonListEntries();
+    int validEntryCounter = 0;
+    for (YukonListEntry entry : entryDefList) {
+        // Show SA switches only when allowed
+        if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE)
+            && InventoryUtils.isAdditionalProtocol(entry.getYukonDefID())
+            && !showAddtlProtocols){
+            continue;
+        }
 %>
-	dftEntryTexts[<%= i %>] = "<%= entry.getEntryText().replaceAll("\"", "&quot;") %>";
-	dftEntryYukDefIDs[<%= i %>] = <%= entry.getYukonDefID() %>;
-<%	} %>
+        dftEntryTexts[<%= validEntryCounter %>] = "<%= entry.getEntryText().replaceAll("\"", "&quot;") %>";
+        dftEntryYukDefIDs[<%= validEntryCounter %>] = <%= entry.getYukonDefID() %>;
+<%	
+        validEntryCounter++;
+    } 
+%>
 
 var entryIDs = new Array();
 var entryTexts = new Array();
@@ -345,12 +350,20 @@ function init() {
                               <td width="50%">
 							    <select name="ListEntries" size="7" style="width:200" onclick="showEntry(this.form)">
 <%
-	for (int i = 0; i < list.getYukonListEntries().size(); i++) {
-		YukonListEntry entry = (YukonListEntry) list.getYukonListEntries().get(i);
+    List<YukonListEntry> entryList = list.getYukonListEntries();
+    validEntryCounter = 0;
+    for (YukonListEntry entry : entryList) {
+        // Show SA switches only when allowed
+        if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE)
+            && InventoryUtils.isAdditionalProtocol(entry.getYukonDefID())
+            && !showAddtlProtocols){
+            continue;
+        }
 %>
-                                  <option value="<%= i %>"><%= entry.getEntryText() %></option>
+                                  <option value="<%= validEntryCounter %>"><%= entry.getEntryText() %></option>
 <%
-	}
+        validEntryCounter++;
+    }
 %>
                                   <option value="-1">&lt;New List Entry&gt;</option>
                                 </select>
