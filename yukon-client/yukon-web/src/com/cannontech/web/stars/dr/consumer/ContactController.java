@@ -176,7 +176,6 @@ public class ContactController extends AbstractConsumerController {
                     ServerUtils.handleDBChange(liteUser, DBChangeMsg.CHANGE_TYPE_ADD);
                     contact.setLoginID(login.getUserID().intValue());
                 }
-                // end hack
             }
             
             contactDao.saveContact(contact);
