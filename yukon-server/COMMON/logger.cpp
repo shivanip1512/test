@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/logger.cpp-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2008/07/17 20:52:15 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2008/10/13 21:23:23 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,23 +29,20 @@ IM_EX_CTIBASE CtiLogger   blog;           // Global instance. Statistics
 
 
 CtiLogger::CtiLogger(const string& file, bool to_stdout) :
-    _new_day(true),
     _first_output(true),
     _base_filename(file),
-    _day_of_month(-1),
     _std_out(to_stdout),
     _path("..\\log"),
-    _fillChar(' '),
+    _fill(' '),
     _write_interval(5000)
 {
     _current_stream = new strstream;
-    _current_stream->fill(_fillChar);
+    _current_stream->fill(_fill);
 }
 
 CtiLogger::~CtiLogger()
 {
-    if( _current_stream != NULL )
-        delete _current_stream;
+    delete _current_stream;
 }
 
 CtiLogger& CtiLogger::setOutputPath(const string& path)
@@ -53,6 +50,7 @@ CtiLogger& CtiLogger::setOutputPath(const string& path)
     CtiLockGuard<CtiMutex> guard(_log_mux);
 
     _path = path;
+
     return *this;
 }
 
@@ -61,6 +59,7 @@ CtiLogger& CtiLogger::setOutputFile(const string& file)
     CtiLockGuard<CtiMutex> guard(_log_mux);
 
     _base_filename = scrub(file);
+
     return *this;
 }
 
@@ -76,7 +75,19 @@ CtiLogger& CtiLogger::setOwnerInfo(const compileinfo_t &ownerinfo)
 
 CtiLogger& CtiLogger::setWriteInterval(long millis)
 {
+    CtiLockGuard<CtiMutex> guard(_log_mux);
+
     _write_interval = millis;
+
+    return *this;
+}
+
+CtiLogger& CtiLogger::setToStdOut(bool to_stdout)
+{
+    CtiLockGuard<CtiMutex> guard(_log_mux);
+
+    _std_out = to_stdout;
+
     return *this;
 }
 
@@ -108,19 +119,6 @@ CtiLogger& CtiLogger::write()
 
 void CtiLogger::run()
 {
-    if( gConfigParms.isOpt("LOG_MAXPRIORITY") && !stricmp(gConfigParms.getValueAsString("LOG_MAXPRIORITY").data(), "TRUE") )
-    {
-        {
-            CtiLockGuard<CtiMutex> guard(_log_mux);
-            *this << "*********************" << endl;
-            *this << "Logging is occuring at max priority.  May affect port operations."  << endl;
-            *this << "   Use cparm LOG_MAXPRIORITY : TRUE/FALSE" << endl;
-            *this << "*********************" << endl << endl;
-        }
-
-        CTISetPriority(PRTYC_TIMECRITICAL, THREAD_PRIORITY_HIGHEST);
-    }
-
     SetThreadName(-1, "Logger   ");
 
     while( !isSet(SHUTDOWN) )
@@ -141,18 +139,16 @@ void CtiLogger::run()
             sleep(_write_interval);
         }
 
-        if( _queue.entries() > 0 )
+        if( !_queue.empty() )
+        {
             doOutput();
+        }
     }
 
-    if( _queue.entries() > 0 )
+    if( !_queue.empty() )
+    {
         doOutput();
-}
-
-CtiLogger& CtiLogger::setToStdOut(bool to_stdout)
-{
-    _std_out = to_stdout;
-    return *this;
+    }
 }
 
 CtiLogger& CtiLogger::acquire()
@@ -189,72 +185,75 @@ bool CtiLogger::acquire(unsigned long millis)
     return _log_mux.acquire(millis);
 }
 
-ostream& CtiLogger::operator<<(ostream& (*pf)(ostream&))
-{
-    if( _current_stream == NULL )
-    {
-        _current_stream = new strstream;
-        _current_stream->fill(_fillChar);
-    }
-    *_current_stream << pf;
-    return *_current_stream;
-}
-
-ostream& CtiLogger::operator<<(ios_base& (*pf)(ios_base&))
-{
-    if( _current_stream == NULL )
-    {
-        _current_stream = new strstream;
-        _current_stream->fill(_fillChar);
-    }
-    *_current_stream << pf;
-    return *_current_stream;
-}
-
 
 void CtiLogger::doOutput()
 {
-    static bool nag = false;
     ofstream outfile;
-    string todays_file_name;
 
     try
     {
         if( !_base_filename.empty() )
         {
+            bool append = isExistingLogFileCurrent();
+
+            if( !tryOpenOutputFile(outfile, append) )
             {
-                CtiLockGuard<CtiMutex> guard(_log_mux);
+                static bool nag = false;
 
-                _new_day = verifyTodayFileName();
-
-                if( _today_filename.length() > 0 && !tryOpenOutputFile( outfile, _path + "\\" + _today_filename) )
+                if(!nag)
                 {
-                    if(!nag)
-                    {
-                        nag = true;
-                        RWMutexLock::LockGuard  guard(coutMux);
-                        cout << endl << "*********************" << endl;
-                        cout << "ERROR!  Unable to open output file " << _path + "\\" + _today_filename << endl;
-                        cout << "   Use cparm LOG_DIRECTORY to alter the logfile path" << endl;
-                        cout << "*********************" << endl << endl;
-                    }
+                    nag = true;
+                    RWMutexLock::LockGuard  guard(coutMux);
+                    cout << endl << "*********************" << endl;
+                    cout << "ERROR!  Unable to open output file " << _today_filename << endl;
+                    cout << "   Use cparm LOG_DIRECTORY to alter the logfile path" << endl;
+                    cout << "*********************" << endl << endl;
                 }
             }
+
+            //  first time we've written to this file - write the headers
+            if( outfile && (_first_output || !append) )
+            {
+                strstream s;
+                CtiTime now;
+
+                if( !_project.empty() && !_version.empty() )
+                {
+                    s << now << " --------  " << "(" << _project << " [Version " << _version << "])  --------" << endl;
+                }
+
+                if( _first_output )
+                {
+                    _first_output = false;
+
+                    s << now << " --------  LOG BEGINS  --------" << endl;
+                }
+                else
+                {
+                    s << now << " --------  LOG CONTINUES (Running since " << _running_since << ")  --------" << endl;
+                }
+
+                outfile.write(s.str(), s.pcount());
+            }
+
             strstream* to_write;
             while( _queue.tryRead(to_write) )
             {
-                int n;
-                if( (n=to_write->pcount()) > 0 )
+                int n = to_write->pcount();
+
+                if( n > 0 )
                 {
                     if( _std_out )
                     {
                         int acquireloops = 0;
 
                         RWMutexLock::TryLockGuard guard(coutMux);
+
                         while( !guard.isAcquired() && acquireloops++ < 60)
                         {
-                            if(guard.tryAcquire()) break;
                             Sleep(500L);
+
+                            guard.tryAcquire();
                         }
 
                         cout.write( to_write->str(), n );
@@ -262,32 +261,6 @@ void CtiLogger::doOutput()
 
                     if( outfile )
                     {
-                        if( _new_day )
-                        {
-                            _new_day = false;
-
-                            strstream s;
-                            CtiTime now;
-
-                            if( !_project.empty() && !_version.empty() )
-                            {
-                                s << now << " --------  " << "(" << _project << " [Version " << _version << "])  --------" << endl;
-                            }
-
-                            if( _first_output )
-                            {
-                                _first_output = false;
-
-                                s << now << " --------  LOG BEGINS  --------\n";
-                            }
-                            else
-                            {
-                                s << now << " --------  LOG CONTINUES (Running since " << _running_since << ")  --------\n";
-                            }
-
-                            outfile.write(s.str(), s.pcount());
-                        }
-
                         outfile.write( to_write->str(), n );
                     }
                 }
@@ -314,247 +287,121 @@ void CtiLogger::doOutput()
     }
 }
 
-bool CtiLogger::verifyTodayFileName()
+
+string CtiLogger::scrub(string filename)
 {
-    bool new_day = false;
-
-    time_t ltime;
-    // convert the day of the month into a string
-    ::time(&ltime);
-
-    ostringstream itos_buffer;
-
-    int daynum = CtiTime::localtime_r(&ltime)->tm_mday;
-
-    if( _day_of_month != daynum )
-    {
-        new_day = true;
-
-        _day_of_month = daynum;
-
-        if( daynum < 10 )  itos_buffer << "0";
-
-        itos_buffer << daynum;
-
-        _today_filename = _base_filename + itos_buffer.str() + ".log";
-    }
-
-    return new_day;
-}
-
-
-string CtiLogger::scrub(const string& filename)
-{
-    string tmp = filename;
-
     //  this only gets called once per file per day, so it's not too expensive
-    for(int i = 0; i < tmp.length(); i++)
+    for(int i = 0; i < filename.length(); i++)
     {
         //  if the character is not a-z, A-Z, 0-9, '-', or '_', scrub it to an underscore
-        if( !(tmp[i] >= 'a' && tmp[i] <= 'z') && !(tmp[i] >= 'A' && tmp[i] <= 'Z') &&
-            !(tmp[i] >= '0' && tmp[i] <= '9') &&
-            !(tmp[i] == '-') && !(tmp[i] == '_') && !(tmp[i] == ' ') )
+        if( !(isalnum(filename[i]) || filename[i] == '-' || filename[i] == '_') )
         {
-            tmp[i] = '_';
+            filename[i] = '_';
         }
     }
 
-    return tmp;
+    return filename;
 }
 
 
-bool CtiLogger::tryOpenOutputFile(ofstream& strm, const string& file)
+void CtiLogger::setTodayFilename(unsigned day_of_month)
 {
-    int cur_month;
-    time_t ltime;
-    struct _stat file_stat;
+    ostringstream stream;
 
-    ::time( &ltime );
-    cur_month = CtiTime::localtime_r(&ltime)->tm_mon;
+    stream << _path << "\\" << _base_filename;
 
-    if( _stat(file.c_str(), &file_stat) != -1 &&
-        CtiTime::localtime_r(&file_stat.st_mtime)->tm_mon == cur_month )
+    ((day_of_month < 10)?(stream << "0"):(stream)) << day_of_month;
+
+    stream << ".log";
+
+    _today_filename = stream.str();
+}
+
+
+bool CtiLogger::isExistingLogFileCurrent()
+{
+    time_t now = ::time(0);
+
+    if( _next_filetime_check.seconds() <= now )
     {
-        //the file exists and was last modified this month
-        //open to append
-        strm.open( file.c_str(), ios::app );
+        tm tm_now = *(CtiTime::localtime_r(&now));
+
+        unsigned seconds_to_midnight = 0;
+        seconds_to_midnight += 24 - tm_now.tm_hour;
+        seconds_to_midnight *= 60;
+        seconds_to_midnight -= tm_now.tm_min;
+        seconds_to_midnight *= 60;
+        seconds_to_midnight -= tm_now.tm_sec;
+
+        //  check at midnight or after 12 hours, whichever is closer...  this accomodates DST
+        _next_filetime_check = now + min(seconds_to_midnight, 12U * 60U * 60U);
+
+        setTodayFilename(tm_now.tm_mday);
+
+        struct _stat file_stat;
+
+        //  if the file doesn't exist or the month doesn't match, overwrite it
+        if( _stat(_today_filename.c_str(), &file_stat) == -1 ||
+            CtiTime::localtime_r(&file_stat.st_mtime)->tm_mon != tm_now.tm_mon )
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+
+bool CtiLogger::tryOpenOutputFile(ofstream& stream, bool append)
+{
+    if( append )
+    {
+        stream.open( _today_filename.c_str(), ios::app );
     }
     else
     {
         //file either doesn't exist or hasn't been modified this month
         //open with default to truncate
-        strm.open( file.c_str() );
+        stream.open( _today_filename.c_str() );
     }
 
-    return(bool) strm;
+    return stream;
 }
 
-ostream& CtiLogger::operator<<(const char *s)
+void CtiLogger::initStream()
 {
     if( _current_stream == NULL )
     {
         _current_stream = new strstream;
-        _current_stream->fill(_fillChar);
+        _current_stream->fill(_fill);
     }
-    *_current_stream << s;
-    return *_current_stream;
 }
 
-ostream& CtiLogger::operator<<(char c)
-{
-    if( _current_stream == NULL )
-    {
-        _current_stream = new strstream;
-        _current_stream->fill(_fillChar);
-    }
-    *_current_stream << c;
-    return *_current_stream;
-}
-ostream& CtiLogger::operator<<(bool n)
-{
-    if( _current_stream == NULL )
-    {
-        _current_stream = new strstream;
-        _current_stream->fill(_fillChar);
-    }
-    *_current_stream << n;
-    return *_current_stream;
-}
-ostream& CtiLogger::operator<<(short n)
-{
-    if( _current_stream == NULL )
-    {
-        _current_stream = new strstream;
-        _current_stream->fill(_fillChar);
-    }
-    *_current_stream << n;
-    return *_current_stream;
-}
+ostream& CtiLogger::operator<<(ostream& (*pf)(ostream&))  {  initStream();  *_current_stream << pf;  return *_current_stream;  }
+ostream& CtiLogger::operator<<(ios_base& (*pf)(ios_base&)){  initStream();  *_current_stream << pf;  return *_current_stream;  }
 
-ostream& CtiLogger::operator<<(unsigned short n)
-{
-    if( _current_stream == NULL )
-    {
-        _current_stream = new strstream;
-        _current_stream->fill(_fillChar);
-    }
-    *_current_stream << n;
-    return *_current_stream;
-}
+ostream& CtiLogger::operator<<(const char *s)   {  initStream();  *_current_stream << s;  return *_current_stream;  }
+ostream& CtiLogger::operator<<(char c)          {  initStream();  *_current_stream << c;  return *_current_stream;  }
+ostream& CtiLogger::operator<<(bool n)          {  initStream();  *_current_stream << n;  return *_current_stream;  }
+ostream& CtiLogger::operator<<(short n)         {  initStream();  *_current_stream << n;  return *_current_stream;  }
+ostream& CtiLogger::operator<<(unsigned short n){  initStream();  *_current_stream << n;  return *_current_stream;  }
+ostream& CtiLogger::operator<<(int n)           {  initStream();  *_current_stream << n;  return *_current_stream;  }
+ostream& CtiLogger::operator<<(unsigned int n)  {  initStream();  *_current_stream << n;  return *_current_stream;  }
+ostream& CtiLogger::operator<<(long n)          {  initStream();  *_current_stream << n;  return *_current_stream;  }
+ostream& CtiLogger::operator<<(unsigned long n) {  initStream();  *_current_stream << n;  return *_current_stream;  }
+ostream& CtiLogger::operator<<(float n)         {  initStream();  *_current_stream << n;  return *_current_stream;  }
+ostream& CtiLogger::operator<<(double n)        {  initStream();  *_current_stream << n;  return *_current_stream;  }
+ostream& CtiLogger::operator<<(long double n)   {  initStream();  *_current_stream << n;  return *_current_stream;  }
+ostream& CtiLogger::operator<<(void * n)        {  initStream();  *_current_stream << n;  return *_current_stream;  }
+ostream& CtiLogger::operator<<(const string& s) {  initStream();  *_current_stream << s;  return *_current_stream;  }
 
-ostream& CtiLogger::operator<<(int n)
-{
-    if( _current_stream == NULL )
-    {
-        _current_stream = new strstream;
-        _current_stream->fill(_fillChar);
-    }
-    *_current_stream << n;
-    return *_current_stream;
-}
-
-ostream& CtiLogger::operator<<(unsigned int n)
-{
-    if( _current_stream == NULL )
-    {
-        _current_stream = new strstream;
-        _current_stream->fill(_fillChar);
-    }
-    *_current_stream << n;
-    return *_current_stream;
-}
-
-ostream& CtiLogger::operator<<(long n)
-{
-    if( _current_stream == NULL )
-    {
-        _current_stream = new strstream;
-        _current_stream->fill(_fillChar);
-    }
-    *_current_stream << n;
-    return *_current_stream;
-}
-
-ostream& CtiLogger::operator<<(unsigned long n)
-{
-    if( _current_stream == NULL )
-    {
-        _current_stream = new strstream;
-        _current_stream->fill(_fillChar);
-    }
-    *_current_stream << n;
-    return *_current_stream;
-}
-
-ostream& CtiLogger::operator<<(float n)
-{
-    if( _current_stream == NULL )
-    {
-        _current_stream = new strstream;
-        _current_stream->fill(_fillChar);
-    }
-    *_current_stream << n;
-    return *_current_stream;
-}
-
-ostream& CtiLogger::operator<<(double n)
-{
-    if( _current_stream == NULL )
-    {
-        _current_stream = new strstream;
-        _current_stream->fill(_fillChar);
-    }
-    *_current_stream << n;
-    return *_current_stream;
-}
-
-ostream& CtiLogger::operator<<(long double n)
-{
-    if( _current_stream == NULL )
-    {
-        _current_stream = new strstream;
-        _current_stream->fill(_fillChar);
-    }
-    *_current_stream << n;
-    return *_current_stream;
-}
-
-ostream& CtiLogger::operator<<(void * n)
-{
-    if( _current_stream == NULL )
-    {
-        _current_stream = new strstream;
-        _current_stream->fill(_fillChar);
-    }
-    *_current_stream << n;
-    return *_current_stream;
-}
-
-ostream& CtiLogger::operator<<(const string& s)
-{
-    if( _current_stream == NULL )
-    {
-        _current_stream = new strstream;
-        _current_stream->fill(_fillChar);
-    }
-    *_current_stream << s;
-    return *_current_stream;
-}
-
-ostream& CtiLogger::operator<<(const CtiTime &r)
-{
-    return operator<<(r.asString());
-}
+ostream& CtiLogger::operator<<(const CtiTime &r){  return operator<<(r.asString());  }
 
 char CtiLogger::fill(char cfill)
 {
-    _fillChar = cfill;
-    if( _current_stream == NULL )
-    {
-        _current_stream = new strstream;
-        _current_stream->fill(_fillChar);
-    }
-    return _current_stream->fill(cfill);
+    _fill = cfill;
+    initStream();
+    return _current_stream->fill(_fill);
 }
 char CtiLogger::fill() const
 {
@@ -564,7 +411,7 @@ char CtiLogger::fill() const
     }
     else
     {
-        return _fillChar;
+        return _fill;
     }
 }
 

@@ -2,10 +2,10 @@
 // Thain Spar
 
 
-/* Ctipcptrqueue is designed to pass pointers to memory between threads. Once 
+/* Ctipcptrqueue is designed to pass pointers to memory between threads. Once
  * something is 'written' to the queue it is considered property of the queue.
  * Altering the memory after inserting it could result in undefined behavior.
- * Same goes for when you read something off the queue, once you read it off, the 
+ * Same goes for when you read something off the queue, once you read it off, the
  * queue will no longer do anything with the object.
  */
 
@@ -27,7 +27,7 @@ template < class T >
 class CtiPCPtrQueue{
 
     private:
-		std::list < T* > q;
+        std::list < T* > q;
         bool closed;
         boost::condition wait;
         mutable boost::mutex mux;
@@ -41,17 +41,17 @@ class CtiPCPtrQueue{
             close();
             T* item;
             while( tryRead(item) )
-                delete item;            
+                delete item;
         };
 
-        /* read() will return and remove the next element from the queue. 
+        /* read() will return and remove the next element from the queue.
          * The element will be considered beloning to whomever read it off.
          */
         T* read(){
             T* temp = NULL;
             std::numeric_limits<long> lim;
             read( temp, lim.max() );
-            
+
             return temp;
         }
 
@@ -59,13 +59,13 @@ class CtiPCPtrQueue{
             boost::mutex::scoped_lock scoped_lock(mux);
             bool success = true;
             struct boost::xtime xt;
-            boost::xtime_get(&xt, boost::TIME_UTC); 
+            boost::xtime_get(&xt, boost::TIME_UTC);
             xt.sec  += milli/1000;
             xt.nsec += (milli%1000)*1000000;
 
-            if ( !(q.size() > 0) ) {
+            if ( q.empty() ) {
                 success = wait.timed_wait( scoped_lock, xt );
-                if (success && q.size() > 0) {
+                if (success && !q.empty()) {
                     result = q.front();
                     q.pop_front();
                     return true;
@@ -75,7 +75,7 @@ class CtiPCPtrQueue{
                 }
             }else{
                 result = q.front();
-    			q.pop_front();
+                q.pop_front();
                 return true;
             }
         }
@@ -85,7 +85,7 @@ class CtiPCPtrQueue{
          */
         bool tryRead(T*& result){
             boost::mutex::scoped_lock scoped_lock(mux);
-            if ( !(q.size() > 0) ) {
+            if ( q.empty() ) {
                 result = NULL;
                 return false;
             }
@@ -100,10 +100,8 @@ class CtiPCPtrQueue{
          */
         bool canRead(){
             boost::mutex::scoped_lock scoped_lock(mux);
-            if ( !(q.size() > 0) )
-                return false;
-            else
-                return true;
+
+            return !q.empty();
         };
 
         /* write() will add an element to the end of the queue.
@@ -116,7 +114,7 @@ class CtiPCPtrQueue{
             if (closed == true)
                 return false;
             q.push_back( elem );
-			wait.notify_one();
+            wait.notify_one();
             return true;
         };
         /* entries() calls size */
@@ -127,7 +125,7 @@ class CtiPCPtrQueue{
         /* empty() will return true if the queue is empty, false if the queue is full */
         bool empty(){
             boost::mutex::scoped_lock scoped_lock(mux);
-            return (q.size() > 0);
+            return q.empty();
         };
         /*  will mark the queue so as to not accept more writes.
         *   Reads will still work, until the queue is empty.

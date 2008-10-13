@@ -117,18 +117,17 @@ protected:
     void run();
 
 private:
-    char    _fillChar;
-    string  _base_filename, _today_filename;
+    char    _fill;
 
-    int     _day_of_month;
-    bool    _new_day, _first_output;
+    string  _path, _base_filename, _today_filename;
+
+    bool    _first_output;
+
     CtiTime _running_since;
-
-    string  _path;
+    CtiTime _next_filetime_check;
 
     string  _project, _version;
 
-    compileinfo_t _owner_info;
     volatile long _write_interval;
     volatile bool _std_out;
 
@@ -138,10 +137,13 @@ private:
 
     std::strstream* _current_stream;
 
-    void   doOutput();
-    string scrub(const string& filename);
-    bool   tryOpenOutputFile(std::ofstream& strm, const string& file);
-    bool   verifyTodayFileName();
+    void doOutput();
+    void initStream();
+    bool tryOpenOutputFile(std::ofstream& stream, bool append);
+    bool isExistingLogFileCurrent();
+    void setTodayFilename(unsigned day_of_month);
+
+    static string scrub(string filename);
 };
 
 

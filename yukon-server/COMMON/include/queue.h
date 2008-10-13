@@ -426,7 +426,7 @@ class IM_EX_CTIBASE CtiFIFOQueue
 {
 private:
 
-    std::list<T*> *_col;
+    std::list<T*> _col;
     boost::condition           dataAvailable;
     mutable boost::timed_mutex mux;
 
@@ -436,51 +436,23 @@ private:
 
     struct boost::xtime xt_eot;
 
-
-    std::list<T*> & getCollection()
-    {
-        if(!_col)
-            _col = new std::list<T*>;
-
-        return *_col;
-    }
-
     /* must have the mux */
     void resetCollection()
     {
         try
         {
-            if(_col)
-            {
-                try
-                {
-                    deleteCollection();
-                    _col->clear();
-                }
-                catch(...)
-                {
-                    {
-                        cerr << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-                }
-
-                delete _col;
-            }
+            delete_container(_col);
+            _col.clear();
         }
         catch(...)
         {
-            {
-                cerr << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            std::cerr << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
-
-        _col = 0;     // No matter what, I exit leaving the old one behind!
     }
 
 public:
 
     CtiFIFOQueue() :
-    _col(0),
     _name("Unnamed Queue")
     {
         xt_eot.sec  = INT_MAX;
@@ -490,8 +462,7 @@ public:
     virtual ~CtiFIFOQueue()
     {
         lock_t scoped_lock(mux, xt_eot);
-        deleteCollection();
-        getCollection().clear();
+        resetCollection();
     }
 
     void putQueue(T *pt)
@@ -500,17 +471,15 @@ public:
         {
             if(pt != NULL)
             {
-                {
-                    lock_t scoped_lock(mux, xt_eot);
-                    getCollection().push_back(pt);
-                    dataAvailable.notify_one();
-                    // mutex automatically released in LockGuard destructor
-                }
+                lock_t scoped_lock(mux, xt_eot);
+                _col.push_back(pt);
+                dataAvailable.notify_one();
+                // mutex automatically released in LockGuard destructor
             }
         }
         catch(...)
         {
-            {   CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << __FILE__ << " (" << __LINE__ << ")" << endl;}
+            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -520,17 +489,17 @@ public:
         try
         {
             lock_t scoped_lock(mux, xt_eot);
-            while( getCollection().empty() )
+            while( _col.empty() )
             {
                 dataAvailable.wait(scoped_lock);
             }
-            pval = getCollection().front();
-            getCollection().pop_front();
+            pval = _col.front();
+            _col.pop_front();
 
         }
         catch(...)
         {
-            {   CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << __FILE__ << " (" << __LINE__ << ")" << endl;}
+            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         return pval;
@@ -552,27 +521,27 @@ public:
             if(scoped_lock.locked())
             {
 
-                if(getCollection().empty())
+                if(_col.empty())
                 {
                     wRes = dataAvailable.timed_wait(scoped_lock,xt); // monitor mutex released automatically
                     // thread must have been signalled AND mutex reacquired to reach here OR RW_THR_TIMEOUT
-                    if(wRes == true && !getCollection().empty())
+                    if(wRes == true && !_col.empty())
                     {
-                        pval = getCollection().front();
-                        getCollection().pop_front();
+                        pval = _col.front();
+                        _col.pop_front();
                     }
                 }
                 else
                 {
-                    pval = getCollection().front();
-                    getCollection().pop_front();
+                    pval = _col.front();
+                    _col.pop_front();
                 }
             }
             // mutex automatically released in LockGuard destructor
         }
         catch(...)
         {
-            {   CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << __FILE__ << " (" << __LINE__ << ")" << endl;}
+            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
         return pval;
     }
@@ -584,31 +553,20 @@ public:
         {
             if(pt != NULL)
             {
-                {
-                    lock_t scoped_lock(mux, xt_eot);
-                    getCollection().push_back(pt);
-                    dataAvailable.notify_one();
-                    // mutex automatically released in LockGuard destructor
-                    putWasDone = true;
-                }
+                lock_t scoped_lock(mux, xt_eot);
+                _col.push_back(pt);
+                dataAvailable.notify_one();
+                // mutex automatically released in LockGuard destructor
+                putWasDone = true;
             }
         }
         catch(...)
         {
-            {   CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << __FILE__ << " (" << __LINE__ << ")" << endl;}
+            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         return putWasDone;
     }
-
-    /*
-     *  Allows us to shrink or grow the queue in question..
-     */
-    size_t   resize(size_t addition = 1)
-    {
-        return size();
-    }
-
 
     size_t   entries(void) const       // QueryQue.
     {
@@ -618,24 +576,13 @@ public:
     size_t   size(void) const        // how big may it be?
     {
         lock_t scoped_lock(mux, xt_eot);
-        size_t sz = 0;
-        if(_col)
-        {
-            sz = _col->size();
-        }
-        return sz;
-    }
-
-    BOOL  isFull(void)
-    {
-        return(FALSE);
+        return _col.size();
     }
 
     void clearAndDestroy(void)      // Destroys pointed to objects as well.
     {
         lock_t scoped_lock(mux, xt_eot);
-        deleteCollection();
-        getCollection().clear();
+        resetCollection();
     }
 
     string getName() const
@@ -648,33 +595,11 @@ public:
         _name = str;
         return *this;
     }
-    template<class _II, class _Fn> inline
-    void ts_for_each(_II _F, _II _L, _Fn _Op, void* d)
-    {
-        for(; _F != _L; ++_F)
-            _Op(*_F, d);
 
-    }
     void apply(void (*fn)(T*&,void*), void* d)
     {
-        {
-            lock_t scoped_lock(mux, xt_eot);
-            //getCollection().apply(fn,d);
-            ts_for_each(getCollection().begin(),getCollection().end(),fn,d);
-        }
-    }
-
-    inline void deleteCollection( )
-    {
-        if(_col)
-        {
-            while(!_col->empty())
-            {
-                T *pval = _col->front();
-                _col->pop_front();
-                delete pval;
-            }
-        }
+        lock_t scoped_lock(mux, xt_eot);
+        for_each(_col.begin(), _col.end(),bind2nd(fn,d));
     }
 };
 

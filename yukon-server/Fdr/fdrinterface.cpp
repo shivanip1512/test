@@ -15,10 +15,14 @@
  *    Copyright (C) 2005 Cannon Technologies, Inc.  All rights reserved.
  *
  *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinterface.cpp-arc  $
- *    REVISION     :  $Revision: 1.32 $
- *    DATE         :  $Date: 2008/10/02 23:57:15 $
+ *    REVISION     :  $Revision: 1.33 $
+ *    DATE         :  $Date: 2008/10/13 21:23:30 $
  *    History:
  *     $Log: fdrinterface.cpp,v $
+ *     Revision 1.33  2008/10/13 21:23:30  mfisher
+ *     YUK-6574 Server-side logging is slow
+ *     Limited localtime()/fstat() checks to twice per day instead of on each write
+ *
  *     Revision 1.32  2008/10/02 23:57:15  tspar
  *     YUK-5013 Full FDR reload should not happen with every point
  *
@@ -264,7 +268,7 @@ long CtiFDRInterface::getClientLinkStatusID(string &aClientName)
                                 if (!stringCompareIgnoreCase(tempString2,aClientName))
                                 {
                                     retID = translationPoint->getPointID();
-    
+
                                     if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -984,7 +988,7 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
                         // db change message reload if type if point
                         int changeId = ((CtiDBChangeMsg*)incomingMsg)->getId();
                         bool changeType = ((CtiDBChangeMsg*)incomingMsg)->getTypeOfChange();
-    
+
                         if ( ((CtiDBChangeMsg*)incomingMsg)->getDatabase() == ChangePointDb)
                         {
                             processFDRPointChange(changeId, changeType == ChangeTypeDelete);
@@ -997,7 +1001,7 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
                             {
                                 // get all points on device and make a message for each
                                 std::vector<int> ids = getPointIdsOnPao(changeId);
-    
+
                                 for (std::vector<int>::iterator itr = ids.begin(); itr != ids.end(); itr++)
                                 {
                                     // Only have to setId to id in list and setTypeOfChange to match original message.
@@ -1009,7 +1013,7 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
                             }
                         }
                         break;
-    
+
                     }
                 case MSG_COMMAND:
                     {
@@ -1125,8 +1129,6 @@ void CtiFDRInterface::threadFunctionSendToDispatch( void )
         }
 
         // create the muli
-        iDispatchQueue.resize(1000);
-
         checkTime = CtiTime() + getQueueFlushRate();
 
         for ( ; ; )
@@ -1620,12 +1622,12 @@ bool CtiFDRInterface::findTranslationNameInList(string aTranslationName,
     return foundFlag;
 }
 
-/*** 
+/***
 * Process a change to the FDR point list
 */
 void CtiFDRInterface::processFDRPointChange(int pointId, bool deleteType)
 {
-    // Remove it from our list if we have it. 
+    // Remove it from our list if we have it.
     // Then re-insert it if the db query finds something. (It will not find anything if is a delete)
 
     removeTranslationPoint(pointId);
@@ -1646,7 +1648,7 @@ bool CtiFDRInterface::loadTranslationPoint(long pointId)
     bool inSend = false;
 
     CtiLockGuard<CtiMutex> receiveGuard(iReceiveFromList.getMutex());
-    CtiLockGuard<CtiMutex> sendGuard(iSendToList.getMutex());  
+    CtiLockGuard<CtiMutex> sendGuard(iSendToList.getMutex());
 
     CtiFDRManager* recvMgr = iReceiveFromList.getPointList();
     CtiFDRManager* sendMgr = iSendToList.getPointList();
@@ -1693,7 +1695,7 @@ void CtiFDRInterface::removeTranslationPoint(long pointId)
     printLists(" Before remove of point ", pointId);
     {
         CtiLockGuard<CtiMutex> receiveGuard(iReceiveFromList.getMutex());
-        CtiLockGuard<CtiMutex> sendGuard(iSendToList.getMutex());  
+        CtiLockGuard<CtiMutex> sendGuard(iSendToList.getMutex());
 
         CtiFDRManager* recvMgr = iReceiveFromList.getPointList();
         CtiFDRManager* sendMgr = iSendToList.getPointList();
@@ -1703,7 +1705,7 @@ void CtiFDRInterface::removeTranslationPoint(long pointId)
             inRecv = recvMgr->removeFDRPointID(pointId);
             cleanupTranslationPoint(inRecv,true);
         }
-        if (sendMgr != NULL) 
+        if (sendMgr != NULL)
         {
             inSend = sendMgr->removeFDRPointID(pointId);
             cleanupTranslationPoint(inSend,false);
@@ -1719,7 +1721,7 @@ void CtiFDRInterface::printLists(string title, int pid)
     if (getDebugLevel() & MAJOR_DETAIL_FDR_DEBUGLEVEL)
     {
         CtiLockGuard<CtiMutex> receiveGuard(iReceiveFromList.getMutex());
-        CtiLockGuard<CtiMutex> sendGuard(iSendToList.getMutex());  
+        CtiLockGuard<CtiMutex> sendGuard(iSendToList.getMutex());
 
         CtiFDRManager* recvMgr = iReceiveFromList.getPointList();
         CtiFDRManager* sendMgr = iSendToList.getPointList();
@@ -1728,12 +1730,12 @@ void CtiFDRInterface::printLists(string title, int pid)
         dout << CtiTime() << title << " " << pid << endl << "Recv: ";
         if (recvMgr != NULL)
         {
-            recvMgr->printIds(dout);            
+            recvMgr->printIds(dout);
         }
         dout << "\nSend: ";
         if (sendMgr != NULL)
         {
-            sendMgr->printIds(dout);            
+            sendMgr->printIds(dout);
         }
         dout << endl;
     }
