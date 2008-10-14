@@ -1,6 +1,3 @@
-
-#pragma warning( disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   tbl_metergrp
@@ -9,11 +6,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_metergrp.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/12/20 17:16:08 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2008/10/14 21:25:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#pragma warning( disable : 4786)
 
 #ifndef __TBL_METERGRP_H__
 #define __TBL_METERGRP_H__
@@ -45,11 +43,11 @@ class IM_EX_CTIYUKONDB CtiTableDeviceMeterGroup : public CtiMemDBObject
 {
 protected:
 
-   LONG        _deviceID;
-   string   _collectionGroup;
-   string   _testCollectionGroup;
-   string   _meterNumber;     //did Ryan add this to his schtuff?
-   string   _billingGroup;
+   LONG     _deviceID;
+   string   _meterNumber;
+
+   static string getTableName();
+   long getDeviceID() const;
 
 public:
 
@@ -61,15 +59,6 @@ public:
 
    CtiTableDeviceMeterGroup& operator=(const CtiTableDeviceMeterGroup& aRef);
 
-   string getCollectionGroup() const;
-   CtiTableDeviceMeterGroup& setCollectionGroup( const string &aCycleGroup );
-
-   string getTestCollectionGroup() const;
-   CtiTableDeviceMeterGroup& setTestCollectionGroup( const string &aAreaCodeGroup );
-
-   string getBillingGroup() const;
-   CtiTableDeviceMeterGroup& setBillingGroup( const string &cGroup );
-
    string getMeterNumber() const;
    CtiTableDeviceMeterGroup& setMeterNumber( const string &mNum );
 
@@ -77,14 +66,10 @@ public:
 
    virtual void DecodeDatabaseReader(RWDBReader &rdr);
 
-   LONG getDeviceID() const;
-   CtiTableDeviceMeterGroup& setDeviceID( const LONG did );
-   static string getTableName();
-
    virtual RWDBStatus Restore();
    virtual RWDBStatus Update();
    virtual RWDBStatus Insert();
    virtual RWDBStatus Delete();
-
 };
+
 #endif // #ifndef __TBL_METERGRP_H__

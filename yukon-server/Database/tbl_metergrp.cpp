@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_metergrp.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2007/07/09 21:50:43 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2008/10/14 21:25:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -39,6 +39,11 @@ CtiTableDeviceMeterGroup& CtiTableDeviceMeterGroup::operator=(const CtiTableDevi
         _meterNumber         = aRef.getMeterNumber();
     }
     return *this;
+}
+
+LONG CtiTableDeviceMeterGroup::getDeviceID() const
+{
+    return _deviceID;
 }
 
 string CtiTableDeviceMeterGroup::getMeterNumber() const
@@ -74,18 +79,6 @@ void CtiTableDeviceMeterGroup::DecodeDatabaseReader(RWDBReader &rdr)
 
     rdr["deviceid"] >> _deviceID;
     rdr["meternumber"] >> _meterNumber;
-}
-
-LONG CtiTableDeviceMeterGroup::getDeviceID() const
-{
-    return _deviceID;
-}
-
-CtiTableDeviceMeterGroup& CtiTableDeviceMeterGroup::setDeviceID( const LONG deviceID )
-{
-    _deviceID = deviceID;
-
-    return *this;
 }
 
 string CtiTableDeviceMeterGroup::getTableName()
