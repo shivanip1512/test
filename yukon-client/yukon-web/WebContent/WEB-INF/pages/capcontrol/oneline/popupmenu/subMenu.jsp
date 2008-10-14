@@ -41,7 +41,7 @@
 						    <option  value="${verifyFQ}" style="color:white;">Verify Failed and Questionable</option>
 						    <option  value="${verifyFailed}" style="color:white;">Verify Failed</option>
 						    <option  value="${verifyQuestion}" style="color:white;">Verify Questionable</option>
-						    <option  value="${verifyStandalone}" style="color:white;">Verify All</option>
+						    <option  value="${verifyStandalone}" style="color:white;">Verify Standalone</option>
 					    </c:when>
     					<c:otherwise>
 	       					<option  value="${verifyStop}" style="color:white;">Verify Stop</option>
