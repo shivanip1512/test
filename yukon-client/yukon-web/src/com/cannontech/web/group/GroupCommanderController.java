@@ -355,9 +355,9 @@ public class GroupCommanderController implements InitializingBean {
             groupCommandExecutor.cancelExecution(resultId, userContext.getYukonUser());
         } catch (Exception e) {
             errorMsg = e.getMessage();
+            mav.addObject("errorMsg", errorMsg);
         }
-            
-        mav.addObject("errorMsg", errorMsg);
+        
         return mav;
     }
 

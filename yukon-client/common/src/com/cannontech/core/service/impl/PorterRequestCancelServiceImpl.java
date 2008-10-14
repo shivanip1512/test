@@ -18,7 +18,7 @@ public class PorterRequestCancelServiceImpl implements PorterRequestCancelServic
     private Logger log = YukonLogManager.getLogger(PorterRequestCancelServiceImpl.class);
 
     private final String commandString = "system message request cancel";
-    private final long timeout = 30000;
+    private final long timeout = 60000;
     
     public long cancelRequests(int groupMessageId) {
         

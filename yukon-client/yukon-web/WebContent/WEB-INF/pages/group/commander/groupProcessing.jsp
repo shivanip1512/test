@@ -31,8 +31,9 @@
                     return false;
                 }
                 
-                btn.disable();
-                return true;
+                $('submitGroupCommanderButton').disable();
+                $('waitImg').show();
+                $('groupCommanderForm').submit();
             }
         
         </script>
@@ -95,7 +96,10 @@
                   
             <%-- EXECUTE BUTTON --%>
             <cti:msg var="noGroupSelectedAlertText" key="yukon.common.device.bulk.deviceSelection.selectDevicesByGroupTree.noGroupSelectedAlertText" />
-            <input type="submit" name="submitGroupCommanderForm" value="Execute" onclick="return validateGroupIsSelected(this, '${cti:escapeJavaScript(noGroupSelectedAlertText)}');">
+            <c:url var="waitImgUrl" value="/WebConfig/yukon/Icons/indicator_arrows.gif" />
+            
+            <input type="button" id="submitGroupCommanderButton" value="Execute" onclick="return validateGroupIsSelected(this, '${cti:escapeJavaScript(noGroupSelectedAlertText)}');">
+            <img id="waitImg" src="${waitImgUrl}" style="display:none;">
             
             <br><br>
             <span class="largeBoldLabel">Recent Results: </span> 

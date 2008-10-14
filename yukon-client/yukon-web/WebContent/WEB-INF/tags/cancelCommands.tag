@@ -9,25 +9,49 @@
 
     function cancelCommands(resultId, url, ccid, cancelingText, finishedText) {
         
-        // swap to wait img
+        // save button text for restore on error
+        var orgCancelButtonText = $F('cancelButton' + ccid);
+        
+        // swap to wait img, disable button
         $('waitImg' + ccid).show();
         $('cancelButton' + ccid).disable();
         $('cancelButton' + ccid).value = cancelingText;
         
         // setup callbacks
         var onComplete = function(transport, json) {
-            $('waitImg' + ccid).hide();
-            $('cancelArea' + ccid).innerHTML = finishedText;
+            
+            var errorMsg = json['errorMsg'];
+            if (errorMsg != null) {
+                handleError(ccid, errorMsg, orgCancelButtonText);
+                return;
+            } else {
+                showCancelResult(ccid, finishedText);
+                $('cancelButton' + ccid).hide();
+            }
         };
         
         var onFailure = function(transport, json) {
-            alert(json['errorMsg']);
+            handleError(ccid, transport.responseText, orgCancelButtonText);
         };
 
         // run cancel    
         var args = {};
         args.resultId = resultId;
         new Ajax.Request(url, {'method': 'post', 'evalScripts': true, 'onComplete': onComplete, 'onFailure': onFailure, 'onException': onFailure, 'parameters': args});
+    }
+    
+    function handleError(ccid, errorMsg, orgCancelButtonText) {
+    
+        showCancelResult(ccid, errorMsg);
+        $('cancelButton' + ccid).value = orgCancelButtonText;
+        $('cancelButton' + ccid).enable();
+    }
+    
+    function showCancelResult(ccid, msg) {
+    
+        $('waitImg' + ccid).hide();
+        $('cancelArea' + ccid).innerHTML = msg;
+        $('cancelArea' + ccid).show();
     }
     
 
@@ -39,13 +63,14 @@
 <cti:msg var="cancelingText" key="yukon.common.device.commander.results.cancelingCommands" />
 <cti:msg var="finishedText" key="yukon.common.device.commander.results.finishedCancelingCommands" />
 
-<div id="cancelArea${ccid}">
+<span>
     <input type="button" 
-           value="${cancelText}"
-           id="cancelButton${ccid}" 
-           onclick="cancelCommands('${resultId}','${cancelUrl}','${ccid}','${cancelingText}','${finishedText}');">
-    
+               value="${cancelText}"
+               id="cancelButton${ccid}" 
+               onclick="cancelCommands('${resultId}','${cancelUrl}','${ccid}','${cancelingText}','${finishedText}');">
     <img id="waitImg${ccid}" src="${waitImgUrl}" style="display:none;">
-</div>
+</span>
+           
+<div id="cancelArea${ccid}" style="display:none;padding-top:5px;"></div>
 
 

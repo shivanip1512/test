@@ -35,7 +35,7 @@
 	
 	<br>
 	<div style="width: 700px;">
-		<form action="<c:url value="/spring/group/commander/executeCollectionCommand" />" method="post">
+		<form id="collectionProcessingForm" action="<c:url value="/spring/group/commander/executeCollectionCommand" />" method="post">
         
 			<cti:deviceCollection deviceCollection="${deviceCollection}" />
       
@@ -75,7 +75,7 @@
 	
 			</tags:nameValueContainer>
 			<br>
-			<input type="submit" name="execute" value="Execute" />
+            <tags:slowInput myFormId="collectionProcessingForm" labelBusy="Execute" label="Execute"></tags:slowInput>
 			
 		</form>
 	</div>

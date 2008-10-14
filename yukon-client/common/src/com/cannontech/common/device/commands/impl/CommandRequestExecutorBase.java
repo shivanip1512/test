@@ -27,6 +27,7 @@ import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestExecutor;
 import com.cannontech.common.device.commands.CommandResultHolder;
+import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.core.authorization.support.CommandPermissionConverter;
 import com.cannontech.core.authorization.support.Permission;
@@ -55,6 +56,7 @@ public abstract class CommandRequestExecutorBase<T> implements
     private PorterRequestCancelService porterRequestCancelService;
     private Set<Permission> loggableCommandPermissions = new HashSet<Permission>();
     private ConfigurationSource configurationSource;
+    private ScheduledExecutor scheduledExecutor;
     
     private int defaultForegroundPriority = 14;
     private int defaultBackgroundPriority = 8;
@@ -173,7 +175,7 @@ public abstract class CommandRequestExecutorBase<T> implements
             }
         }
 
-        private void handleUnknownReturn(long userMessageID, Object aResult) {
+        private synchronized void handleUnknownReturn(long userMessageID, Object aResult) {
             // figure out what the command was
             String origCommand = "unknown-command";
             T command = pendingUserMessageIds.get(userMessageID);
@@ -193,19 +195,25 @@ public abstract class CommandRequestExecutorBase<T> implements
             msgListeners.remove(this.callback);
         }
         
-        public void cancelCommands(LiteYukonUser user) {
+        public synchronized void cancelCommands(final LiteYukonUser user) {
 
-            // log remaining commands as cacneled
-            for (T cmd : pendingUserMessageIds.values()) {
-                log.info("Command canceled by user '" + user.getUsername() + "':" + cmd.toString());
-            }
+            // log remaining commands as canceled
+            scheduledExecutor.execute(new Runnable() {
+                
+                @Override
+                public void run() {
+                    for (T cmd : pendingUserMessageIds.values()) {
+                        log.info("Command canceled by user '" + user.getUsername() + "':" + cmd.toString());
+                    }
+                }
+            });
             
             // remove listener
             removeListener();
         }
 
         @Override
-        public String toString() {
+        public synchronized String toString() {
             ToStringCreator tsc = new ToStringCreator(this);
             tsc.append("groupMessageId", groupMessageId);
             tsc.append("callback", callback);
@@ -370,6 +378,11 @@ public abstract class CommandRequestExecutorBase<T> implements
     @Autowired
     public void setConfigurationSource(ConfigurationSource configurationSource) {
         this.configurationSource = configurationSource;
+    }
+    
+    @Autowired
+    public void setScheduledExecutor(ScheduledExecutor scheduledExecutor) {
+        this.scheduledExecutor = scheduledExecutor;
     }
 
     @ManagedAttribute
