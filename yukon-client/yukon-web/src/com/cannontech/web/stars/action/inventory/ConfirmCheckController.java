@@ -82,7 +82,13 @@ public class ConfirmCheckController extends StarsInventoryActionController {
                 session.removeAttribute( ServletUtils.ATT_REDIRECT );
                 StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteInv, energyCompany );
                 CreateLMHardwareAction.parseResponse( createHw, starsInv, starsAcctInfo, session );
-                
+
+                /* New hardware has been added to the customer.  
+                Refreshing the customer account info in the session.
+                */
+                session.removeAttribute(ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
+                session.setAttribute(ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo);
+
                 // REDIRECT set in the CreateLMHardwareAction.parseResponse() method above
                 redirect = (String) session.getAttribute( ServletUtils.ATT_REDIRECT );
             }
@@ -130,6 +136,12 @@ public class ConfirmCheckController extends StarsInventoryActionController {
                 StarsInventory starsInv = StarsLiteFactory.createStarsInventory(liteInv, energyCompany);
                 UpdateLMHardwareAction.parseResponse(origInvID, starsInv, starsAcctInfo, session);
                 
+                /* New hardware has been added to the customer.  
+                Refreshing the customer account info in the session.
+                */
+                session.removeAttribute(ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
+                session.setAttribute(ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo);
+
                 // REDIRECT set in the UpdateLMHardwareAction.parseResponse() method above
                 redirect = (String) session.getAttribute( ServletUtils.ATT_REDIRECT );
             }
