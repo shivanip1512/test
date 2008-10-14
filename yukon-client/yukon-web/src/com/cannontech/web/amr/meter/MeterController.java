@@ -121,7 +121,7 @@ public class MeterController extends MultiActionController {
 
         ModelAndView mav;
         // Redirect to device home page if only one result is found
-        if (results.getResultCount() == 1) {
+        if (results.getHitCount() == 1) {
             mav = new ModelAndView("redirect:/spring/meter/home");
 
             Meter meter = results.getResultList().get(0);
