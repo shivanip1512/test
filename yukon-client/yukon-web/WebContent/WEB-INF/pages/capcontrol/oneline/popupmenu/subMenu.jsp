@@ -26,7 +26,7 @@
 	       	<td colspan="2">
                 <span style="color: gray;">Sub-Level CBC Commands:</span>
                 <select id="selectId" style="background-color=gray;">
-    				<option value="" style="color: white"><option>
+    				<option value="" style="color: white"></option>
 	       			<option value="${openAllSub}" style="color:white;">Open All CapBanks</option>
 			     	<option value="${closeAllSub}" style="color:white;">Close All CapBanks</option>
 				    <cti:checkProperty property="CBCSettingsRole.CBC_ALLOW_OVUV">
