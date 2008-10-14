@@ -10,6 +10,8 @@ readers_writer_lock_t::readers_writer_lock_t() :
     _writer_id(0),
     _writer_recursion(0)
 {
+    std::fill(_reader_ids,       _reader_ids       + MaxThreadCount, 0);
+    std::fill(_reader_recursion, _reader_recursion + MaxThreadCount, 0);
 }
 
 inline void readers_writer_lock_t::acquire()                  {  acquireWrite();  }
@@ -134,24 +136,7 @@ void readers_writer_lock_t::set_tid(LockType_t lock_type)
     }
     else if( lock_type == LockType_Reader )
     {
-        thread_id_t thread_id = GetCurrentThreadId();
-        bool found;
-
-        {
-            bookkeeping_reader_guard_t guard(_bookkeeping_lock);
-
-            if( found = (_reader_ids.find(thread_id) != _reader_ids.end()) )
-            {
-                ++_reader_ids[thread_id];
-            }
-        }
-
-        if( !found )
-        {
-            bookkeeping_writer_guard_t guard(_bookkeeping_lock);
-
-            _reader_ids[thread_id] = 1;
-        }
+        set_reader_id(GetCurrentThreadId());
     }
     else if( lock_type == LockType_Writer )
     {
@@ -174,23 +159,79 @@ void readers_writer_lock_t::clear_tid()
     }
     else
     {
-        thread_id_t thread_id = GetCurrentThreadId();
-
-        {
-            bookkeeping_reader_guard_t guard(_bookkeeping_lock);
-
-            if( _reader_ids.find(thread_id) == _reader_ids.end() ||
-                !_reader_ids[thread_id] )
-            {
-                //  clear_tid() called one too many times
-                autopsy(__FILE__, __LINE__);
-                throw;
-            }
-
-            _reader_ids[thread_id]--;
-        }
+        clear_reader_id(GetCurrentThreadId());
     }
 }
+
+
+int readers_writer_lock_t::find_reader_id(thread_id_t tid) const
+{
+    int i = 0;
+
+    for( ; i < MaxThreadCount; ++i )
+    {
+        if( !_reader_ids[i] || _reader_ids[i] == tid )
+        {
+            break;
+        }
+    }
+
+    return i;
+}
+
+
+void readers_writer_lock_t::set_reader_id(thread_id_t tid)
+{
+    int i = find_reader_id(tid);
+
+    //  wasn't in the list
+    if( _reader_ids[i] != tid )
+    {
+        //  find the first available entry
+        for( ; i < MaxThreadCount; ++i )
+        {
+            //  try to exchange - if someone else got there first, the exchange will fail and the return will be nonzero
+            if( !InterlockedCompareExchange(reinterpret_cast<PVOID *>(_reader_ids + i),
+                                            reinterpret_cast<PVOID>(tid),
+                                            reinterpret_cast<PVOID>(0)) )
+            {
+                break;
+            }
+        }
+    }
+
+    if( i == MaxThreadCount )
+    {
+        //  out of threads
+        autopsy(__FILE__, __LINE__);
+        throw;
+    }
+
+    ++_reader_recursion[i];
+}
+
+
+void readers_writer_lock_t::clear_reader_id(thread_id_t tid)
+{
+    int i = find_reader_id(tid);
+
+    if( i == MaxThreadCount )
+    {
+        //  It wasn't in the list - never inserted?
+        autopsy(__FILE__, __LINE__);
+        throw;
+    }
+
+    if( !_reader_recursion[i] )
+    {
+        //  clear_tid() called one too many times
+        autopsy(__FILE__, __LINE__);
+        throw;
+    }
+
+    --_reader_recursion[i];
+}
+
 
 bool readers_writer_lock_t::current_thread_owns_writer() const
 {
@@ -200,13 +241,16 @@ bool readers_writer_lock_t::current_thread_owns_writer() const
 
 bool readers_writer_lock_t::current_thread_owns_reader() const
 {
-    thread_id_t thread_id = GetCurrentThreadId();
+    thread_id_t tid = GetCurrentThreadId();
 
+    int i = find_reader_id(tid);
+
+    if( i < MaxThreadCount && _reader_ids[i] == tid && _reader_recursion[i] )
     {
-        bookkeeping_reader_guard_t guard(_bookkeeping_lock);
-
-        return (_reader_ids.find(thread_id) != _reader_ids.end()) && _reader_ids.find(thread_id)->second;
+        return true;
     }
+
+    return false;
 }
 
 bool readers_writer_lock_t::current_thread_owns_both() const
@@ -226,8 +270,6 @@ readers_writer_lock_t::thread_id_t readers_writer_lock_t::lastAcquiredByTID() co
 
 readers_writer_lock_t::operator std::string()
 {
-    bookkeeping_writer_guard_t guard(_bookkeeping_lock);
-
     std::string str;
 
     if( _writer_id )
@@ -243,22 +285,22 @@ readers_writer_lock_t::operator std::string()
     }
     else
     {
-        if( !_reader_ids.empty() )
+        int i = 0;
+
+        str = "r:";
+
+        for( ; i < MaxThreadCount && _reader_ids[i]; ++i )
         {
-            id_coll_t::const_iterator itr     = _reader_ids.begin(),
-                                      itr_end = _reader_ids.end();
-
-            str = "r:";
-
-            for( ; itr != itr_end && itr->second; itr++ )
+            if( _reader_recursion[i] )
             {
-                str += CtiNumStr(itr->first).hex();
+                str += CtiNumStr(_reader_ids[i]).hex();
                 str += "/";
-                str += CtiNumStr(itr->second);
+                str += CtiNumStr(_reader_recursion[i]);
                 str += ",";
             }
         }
-        else
+
+        if( !i )
         {
             str = "(no reader thread ids!)";
         }

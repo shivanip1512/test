@@ -19,17 +19,17 @@ public:
 
 private:
 
+    enum
+    {
+        MaxThreadCount = 1024
+    };
+
     typedef std::map<thread_id_t, unsigned> id_coll_t;
-    typedef RWReadersWriterLock::ReadLockGuard  bookkeeping_reader_guard_t;
-    typedef RWReadersWriterLock::WriteLockGuard bookkeeping_writer_guard_t;
 
     RWReadersWriterLock _lock;
 
-    mutable RWReadersWriterLock _bookkeeping_lock;
-
-    //RWSemaphore _write_signal, _upgrade_signal;
-
-    id_coll_t   _reader_ids;
+    thread_id_t _reader_ids[MaxThreadCount];
+    unsigned    _reader_recursion[MaxThreadCount];
     thread_id_t _writer_id;
     unsigned    _writer_recursion;
 
@@ -44,10 +44,14 @@ private:
     void set_tid(LockType_t lock_type);
     void clear_tid();
 
+    void set_reader_id  (thread_id_t tid);
+    void clear_reader_id(thread_id_t tid);
+    int  find_reader_id (thread_id_t tid) const;
+
     bool current_thread_owns_writer() const;
     bool current_thread_owns_reader() const;
-    bool current_thread_owns_both() const;
-    bool current_thread_owns_any() const;
+    bool current_thread_owns_both  () const;
+    bool current_thread_owns_any   () const;
 
 public:
 
