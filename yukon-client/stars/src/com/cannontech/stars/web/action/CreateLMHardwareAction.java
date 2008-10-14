@@ -594,7 +594,10 @@ public class CreateLMHardwareAction implements ActionBase {
 				}
 				
 				StarsLiteFactory.extendLiteInventoryBase( liteInv, energyCompany );
-				liteAcctInfo.getInventories().add( invDB.getInventoryID() );
+                List<Integer> inventories = liteAcctInfo.getInventories();
+                if (!inventories.contains(invDB.getInventoryID())){
+                    inventories.add( invDB.getInventoryID() );
+                }
 			}
 			
 			return liteInv;
