@@ -40,7 +40,7 @@ YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(pageCon
               <tr>
                 <td id="header" colspan="4" height="74" background="../WebConfig/<cti:getProperty propertyid="<%= WebClientRole.HEADER_LOGO%>" defaultvalue="images/Header.gif"/>">&nbsp;</td>
               </tr>
-              <tr bgcolor="#0066CC"> 
+              <tr> 
                 
                 <td width="353" height = "28" class="PageHeader">&nbsp;&nbsp;&nbsp; 
                   Load Management
