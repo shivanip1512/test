@@ -682,7 +682,7 @@ for( int i = 0; i < capBanks.size(); i++ ) {
 		                    class="warning" 
 		                    <%=popupEvent%>="getCapBankTempMoveBack('${thisCapBankId}');" 
 	                    <% } else { %>
-	                        onmouseover="statusMsg(this, 'Click here to temporarily move this CapBank from it\'s current parent feeder');"
+	                        onmouseover="statusMsg(this, 'Click here to temporarily move this CapBank from its current parent feeder');"
 	                        onmouseout="nd();"
 	                        onclick="return GB_show('CapBank Temp Move for <%=capBank.getCcName()%> (Pick feeder by clicking on name)',
 	                            'tempmove.jsp?bankid=<%=capBank.getCcId()%>', 500, 710, onGreyBoxClose);"
