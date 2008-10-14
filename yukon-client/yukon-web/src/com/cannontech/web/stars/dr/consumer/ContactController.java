@@ -25,6 +25,7 @@ import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.YukonListDao;
+import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.StarsDatabaseCache;
@@ -59,6 +60,7 @@ public class ContactController extends AbstractConsumerController {
     private ContactDao contactDao;
     private CustomerDao customerDao;
     private YukonListDao yukonListDao;
+    private YukonUserDao yukonUserDao;
 
     @RequestMapping(value = "/consumer/contacts", method = RequestMethod.GET)
     public String view(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
@@ -111,7 +113,7 @@ public class ContactController extends AbstractConsumerController {
         LiteContact contact = new LiteContact(-1);
         contact.setContFirstName("");
         contact.setContLastName("");
-        contact.setLoginID(-1);
+        contact.setLoginID(-9999);
 
         contactDao.addAdditionalContact(contact, customer);
         
@@ -148,8 +150,8 @@ public class ContactController extends AbstractConsumerController {
                     DaoFactory.getAuthDao().checkRoleProperty(user.getUserID(), ResidentialCustomerRole.CREATE_LOGIN_FOR_ACCOUNT)) {
             
                 StarsYukonUser starsUser = (StarsYukonUser) request.getSession().getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-                
-                if(!contactDao.isPrimaryContact(contactId) && contact.getLoginID() < 0) {
+                // If not primary contact and no login exists, create it.
+                if(!contactDao.isPrimaryContact(contactId) && contact.getLoginID() == -9999) {
                
                     YukonUser login = new YukonUser();
                     LiteStarsEnergyCompany liteEC = StarsDatabaseCache.getInstance().getEnergyCompany( starsUser.getEnergyCompanyID() );
@@ -160,7 +162,7 @@ public class ContactController extends AbstractConsumerController {
                         firstInitial = firstName.toLowerCase().substring(0,1);
                     }
                     String newUserName = firstInitial + lastName.toLowerCase();
-                    if (DaoFactory.getYukonUserDao().getLiteYukonUser( newUserName ) != null) {
+                    if (yukonUserDao.getLiteYukonUser( newUserName ) != null) {
                         newUserName = lastName.toLowerCase() + time.substring(time.length() - 2);
                     }
                     login.getYukonUser().setUsername(newUserName);
@@ -269,5 +271,9 @@ public class ContactController extends AbstractConsumerController {
     public void setYukonListDao(YukonListDao yukonListDao) {
         this.yukonListDao = yukonListDao;
     }
-
+    
+    @Autowired
+    public void setYukonUserDao(YukonUserDao yukonUserDao) {
+        this.yukonUserDao = yukonUserDao;
+    }
 }
