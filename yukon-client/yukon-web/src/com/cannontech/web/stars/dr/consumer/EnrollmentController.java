@@ -49,9 +49,6 @@ public class EnrollmentController extends AbstractConsumerController {
             displayableEnrollmentDao.getDisplayableEnrollments(customerAccount, yukonUserContext);
         map.addAttribute("enrollments", enrollments);
         
-        boolean disableCheckBox = authDao.checkRoleProperty(yukonUserContext.getYukonUser(), ResidentialCustomerRole.DISABLE_PROGRAM_SIGNUP);
-        map.addAttribute("disableCheckBox", disableCheckBox);
-        
         return "consumer/enrollment/enrollment.jsp";
     }
     
@@ -63,9 +60,6 @@ public class EnrollmentController extends AbstractConsumerController {
     	List<DisplayableEnrollment> enrollments = 
     		displayableEnrollmentDao.getDisplayableEnrollments(customerAccount, yukonUserContext);
     	map.addAttribute("enrollments", enrollments);
-    	
-    	boolean disableCheckBox = authDao.checkRoleProperty(yukonUserContext.getYukonUser(), ResidentialCustomerRole.DISABLE_PROGRAM_SIGNUP);
-    	map.addAttribute("disableCheckBox", disableCheckBox);
     	
     	return "consumer/enrollment/enrollmentDetail.jsp";
     }
