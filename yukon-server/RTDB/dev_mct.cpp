@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.133 $
-* DATE         :  $Date: 2008/08/21 15:58:42 $
+* REVISION     :  $Revision: 1.134 $
+* DATE         :  $Date: 2008/10/15 16:58:24 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -51,7 +51,7 @@ using std::set;
 using CtiTableDynamicPaoInfo::Keys;
 
 const CtiDeviceMCT::CommandSet CtiDeviceMCT::_commandStore = CtiDeviceMCT::initCommandStore();
-
+const CtiDeviceMCT::read_key_store_t CtiDeviceMCT::_emptyReadKeyStore;
 
 CtiDeviceMCT::CtiDeviceMCT() :
     _lpIntervalSent(false),

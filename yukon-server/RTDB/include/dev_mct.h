@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct.h-arc  $
-* REVISION     :  $Revision: 1.66 $
-* DATE         :  $Date: 2008/08/21 15:58:43 $
+* REVISION     :  $Revision: 1.67 $
+* DATE         :  $Date: 2008/10/15 16:58:24 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -113,7 +113,7 @@ protected:
 
     typedef set<read_key_info_t> read_key_store_t;
 
-    const read_key_store_t _emptyReadKeyStore;
+    static const read_key_store_t _emptyReadKeyStore;
     virtual const read_key_store_t &getReadKeyStore(void) const;
 
     void extractDynamicPaoInfo(const INMESS &InMessage);
