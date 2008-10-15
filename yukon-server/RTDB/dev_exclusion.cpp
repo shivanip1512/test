@@ -7,11 +7,16 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2006/04/24 20:47:30 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2008/10/15 19:54:04 $
 *
 * HISTORY      :
 * $Log: dev_exclusion.cpp,v $
+* Revision 1.17  2008/10/15 19:54:04  jotteson
+* YUK-6588 Porter's memory use needs to be trimmed
+* Removed unused table.
+* Changed exclusion to be a pointer when unused.
+*
 * Revision 1.16  2006/04/24 20:47:30  tspar
 * Rogue Wave: more odds and ends in the RWreplacement
 *
@@ -77,7 +82,8 @@ using std::make_pair;
 
 CtiDeviceExclusion::CtiDeviceExclusion(LONG id) :
 _deviceId(id),
-_minTimeInSec(0)
+_minTimeInSec(0),
+_cycleTimeExclusion(NULL)
 {
 }
 
@@ -88,6 +94,11 @@ CtiDeviceExclusion::CtiDeviceExclusion(const CtiDeviceExclusion& aRef)
 
 CtiDeviceExclusion::~CtiDeviceExclusion()
 {
+    if(_cycleTimeExclusion != NULL)
+    {
+        delete _cycleTimeExclusion;
+        _cycleTimeExclusion = NULL;
+    }
 }
 
 CtiDeviceExclusion& CtiDeviceExclusion::operator=(const CtiDeviceExclusion& aRef)
@@ -123,7 +134,7 @@ bool CtiDeviceExclusion::hasExclusions() const
 
         if(ex_guard.isAcquired())
         {
-            bstatus = _exclusionRecords.size() != 0 || (_cycleTimeExclusion.getFunctionId() == CtiTablePaoExclusion::ExFunctionCycleTime);
+            bstatus = _exclusionRecords.size() != 0 || (_cycleTimeExclusion != NULL);
         }
         else
         {
@@ -158,7 +169,12 @@ void CtiDeviceExclusion::addExclusion(CtiTablePaoExclusion &paox)
         {
             if(paox.getFunctionId() == CtiTablePaoExclusion::ExFunctionCycleTime)
             {
-                _cycleTimeExclusion = paox;                     // Store this in a special slot to make it quicker to discover.  Only one of these.
+                if(_cycleTimeExclusion != NULL)
+                {
+                    delete _cycleTimeExclusion;
+                    _cycleTimeExclusion = NULL;
+                }
+                _cycleTimeExclusion = CTIDBG_new CtiTablePaoExclusion(paox); // Store this in a special slot to make it quicker to discover.  Only one of these.
             }
             else
             {
@@ -188,7 +204,11 @@ void CtiDeviceExclusion::clearExclusions()
 
         if(guard.isAcquired())
         {
-            _cycleTimeExclusion.setFunctionId( CtiTablePaoExclusion::ExFunctionInvalid );
+            if(_cycleTimeExclusion != NULL)
+            {
+                delete _cycleTimeExclusion;
+                _cycleTimeExclusion = NULL;
+            }
             _exclusionRecords.clear();
         }
         else
@@ -518,7 +538,7 @@ bool CtiDeviceExclusion::hasTimeExclusion() const
 {
     bool b = false;
 
-    if(_cycleTimeExclusion.getFunctionId() == CtiTablePaoExclusion::ExFunctionCycleTime && _cycleTimeExclusion.getCycleTime() > 0)
+    if(_cycleTimeExclusion != NULL && _cycleTimeExclusion->getCycleTime() > 0)
     {
         b = true;
     }
@@ -582,15 +602,15 @@ bool CtiDeviceExclusion::isTimeExclusionOpen() const          // This device has
 {
     bool bstatus = false;
 
-    if( _cycleTimeExclusion.getFunctionId() == CtiTablePaoExclusion::ExFunctionCycleTime && _cycleTimeExclusion.getCycleTime() > 0)
+    if( _cycleTimeExclusion != NULL && _cycleTimeExclusion->getCycleTime() > 0)
     {
-        if(_cycleTimeExclusion.getFunctionId() == (CtiTablePaoExclusion::ExFunctionCycleTime))
+        if(_cycleTimeExclusion->getFunctionId() == (CtiTablePaoExclusion::ExFunctionCycleTime))
         {
             CtiTime now;
-            CtiTime nextOpen = nextScheduledTimeAlignedOnRate( now, _cycleTimeExclusion.getCycleTime() );
+            CtiTime nextOpen = nextScheduledTimeAlignedOnRate( now, _cycleTimeExclusion->getCycleTime() );
 
-            CtiTime open = nextOpen - _cycleTimeExclusion.getCycleTime() + _cycleTimeExclusion.getCycleOffset();               // Back up one position.
-            CtiTime close = open + _cycleTimeExclusion.getTransmitTime() - getMinTimeInSec();
+            CtiTime open = nextOpen - _cycleTimeExclusion->getCycleTime() + _cycleTimeExclusion->getCycleOffset();               // Back up one position.
+            CtiTime close = open + _cycleTimeExclusion->getTransmitTime() - getMinTimeInSec();
 
             bstatus = (open <= now && now < close);
         }
@@ -603,11 +623,11 @@ CtiTime CtiDeviceExclusion::getTimeSlotOpen() const
 {
     CtiTime tm;
 
-    if( _cycleTimeExclusion.getFunctionId() == CtiTablePaoExclusion::ExFunctionCycleTime )
+    if( _cycleTimeExclusion != NULL )
     {
         CtiTime now;
-        CtiTime nextOpen = nextScheduledTimeAlignedOnRate( now, _cycleTimeExclusion.getCycleTime() );
-        CtiTime open = nextOpen - _cycleTimeExclusion.getCycleTime() + _cycleTimeExclusion.getCycleOffset();
+        CtiTime nextOpen = nextScheduledTimeAlignedOnRate( now, _cycleTimeExclusion->getCycleTime() );
+        CtiTime open = nextOpen - _cycleTimeExclusion->getCycleTime() + _cycleTimeExclusion->getCycleOffset();
         tm = open;
     }
 
@@ -618,11 +638,11 @@ CtiTime CtiDeviceExclusion::getNextTimeSlotOpen() const
 {
     CtiTime tm;
 
-    if( _cycleTimeExclusion.getFunctionId() == CtiTablePaoExclusion::ExFunctionCycleTime && _cycleTimeExclusion.getCycleTime() > 0 )
+    if( _cycleTimeExclusion != NULL && _cycleTimeExclusion->getCycleTime() > 0 )
     {
         CtiTime now;
-        CtiTime nextOpen = nextScheduledTimeAlignedOnRate( now, _cycleTimeExclusion.getCycleTime() );
-        tm = nextOpen + _cycleTimeExclusion.getCycleOffset();
+        CtiTime nextOpen = nextScheduledTimeAlignedOnRate( now, _cycleTimeExclusion->getCycleTime() );
+        tm = nextOpen + _cycleTimeExclusion->getCycleOffset();
     }
     else
     {
@@ -636,12 +656,12 @@ CtiTime CtiDeviceExclusion::getTimeSlotClose() const
 {
     CtiTime tm;
 
-    if( _cycleTimeExclusion.getFunctionId() == CtiTablePaoExclusion::ExFunctionCycleTime )
+    if( _cycleTimeExclusion != NULL )
     {
         CtiTime now;
-        CtiTime nextOpen = nextScheduledTimeAlignedOnRate( now, _cycleTimeExclusion.getCycleTime() );
-        CtiTime open = nextOpen - _cycleTimeExclusion.getCycleTime() + _cycleTimeExclusion.getCycleOffset();
-        CtiTime close = open + _cycleTimeExclusion.getTransmitTime();
+        CtiTime nextOpen = nextScheduledTimeAlignedOnRate( now, _cycleTimeExclusion->getCycleTime() );
+        CtiTime open = nextOpen - _cycleTimeExclusion->getCycleTime() + _cycleTimeExclusion->getCycleOffset();
+        CtiTime close = open + _cycleTimeExclusion->getTransmitTime();
         tm = close;
     }
 
@@ -675,7 +695,15 @@ bool CtiDeviceExclusion::proximityExcludes(LONG id) const
 
 CtiTablePaoExclusion CtiDeviceExclusion::getCycleTimeExclusion() const
 {
-    return _cycleTimeExclusion;
+    if(_cycleTimeExclusion != NULL)
+    {
+        return *_cycleTimeExclusion;
+    }
+    else
+    {
+        return CtiTablePaoExclusion();
+    }
+    
 }
 
 unsigned int CtiDeviceExclusion::getMinTimeInSec() const

@@ -5,8 +5,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.67 $
-* DATE         :  $Date: 2008/09/19 11:40:41 $
+* REVISION     :  $Revision: 1.68 $
+* DATE         :  $Date: 2008/10/15 19:54:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1227,8 +1227,6 @@ CtiDeviceSingle& CtiDeviceSingle::operator=(const CtiDeviceSingle& aRef)
         Inherited::operator=(aRef);
         LockGuard guard(monitor());
 
-        _twoWay = aRef.getTwoWay();
-
         for(i = 0; i < ScanRateInvalid; i++)
         {
             if(aRef.isRateValid(i))
@@ -1246,23 +1244,6 @@ CtiDeviceSingle& CtiDeviceSingle::operator=(const CtiDeviceSingle& aRef)
             _scanData = (const)aRef.getScanData();
         }
     }
-    return *this;
-}
-
-CtiTableDevice2Way    CtiDeviceSingle::getTwoWay() const
-{
-    return _twoWay;
-}
-CtiTableDevice2Way&   CtiDeviceSingle::getTwoWay()
-{
-    LockGuard guard(monitor());
-    return _twoWay;
-}
-
-CtiDeviceSingle& CtiDeviceSingle::setTwoWay( const CtiTableDevice2Way & aTwoWay )
-{
-    LockGuard guard(monitor());
-    _twoWay = aTwoWay;
     return *this;
 }
 
@@ -1557,7 +1538,6 @@ void CtiDeviceSingle::applySignaledRateChange(LONG aOpen, LONG aDuration)
 void CtiDeviceSingle::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
     Inherited::getSQL(db, keyTable, selector);
-    CtiTableDevice2Way::getSQL(db, keyTable, selector);
 }
 
 void CtiDeviceSingle::DecodeDatabaseReader(RWDBReader &rdr)
@@ -1572,7 +1552,6 @@ void CtiDeviceSingle::DecodeDatabaseReader(RWDBReader &rdr)
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
-    _twoWay.DecodeDatabaseReader(rdr);
 }
 
 void CtiDeviceSingle::DecodeScanRateDatabaseReader(RWDBReader &rdr)

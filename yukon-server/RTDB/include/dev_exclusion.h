@@ -8,10 +8,15 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2008/09/15 17:59:18 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2008/10/15 19:54:04 $
 * HISTORY      :
 * $Log: dev_exclusion.h,v $
+* Revision 1.13  2008/10/15 19:54:04  jotteson
+* YUK-6588 Porter's memory use needs to be trimmed
+* Removed unused table.
+* Changed exclusion to be a pointer when unused.
+*
 * Revision 1.12  2008/09/15 17:59:18  jotteson
 * YUK-6456 Change Boost Assert behavior to print stack trace instead of asserting
 * Added boostutil.h to define boost functions necessary to override boost_assert
@@ -91,7 +96,7 @@ protected:
 
     LONG _deviceId;
 
-    CtiTablePaoExclusion _cycleTimeExclusion;          // Used if this device has a time exclusion?
+    CtiTablePaoExclusion *_cycleTimeExclusion;          // Used if this device has a time exclusion?
 
     mutable CtiMutex    _exclusionMux;            // Used when processing the exclusion logic
     exclusions          _exclusionRecords;        // This is the list of database records identifying the exclusions on or against this pao.
