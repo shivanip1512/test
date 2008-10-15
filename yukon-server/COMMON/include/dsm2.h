@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/DSM2.H-arc  $
-* REVISION     :  $Revision: 1.46 $
-* DATE         :  $Date: 2008/10/07 18:19:13 $
+* REVISION     :  $Revision: 1.47 $
+* DATE         :  $Date: 2008/10/15 17:06:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,12 +27,11 @@
 
 class CTINEXUS;
 
-extern CtiMutex gOutMessageMux;
-extern ULONG gOutMessageCounter;
+extern LONG gOutMessageCounter;
 
 IM_EX_CTIBASE void incrementCount();
 IM_EX_CTIBASE void decrementCount();
-IM_EX_CTIBASE ULONG OutMessageCount();
+IM_EX_CTIBASE LONG OutMessageCount();
 
 
 #define STANDNAMLEN           20

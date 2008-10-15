@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_ccu.cpp-arc  $
-* REVISION     :  $Revision: 1.42 $
-* DATE         :  $Date: 2008/08/14 15:57:40 $
+* REVISION     :  $Revision: 1.43 $
+* DATE         :  $Date: 2008/10/15 17:06:42 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -318,12 +318,8 @@ INT CtiRouteCCU::assembleDLCRequest(CtiCommandParser     &parse,
     INT           status = NORMAL;
     bool          xmore = true;
     string        resultString;
-    CtiDeviceCCU *trxDev;
 
     CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), string(), status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
-
-    BSTRUCT old_bstruct;
-    ASTRUCT old_astruct;
 
     Cti::Protocol::Emetcon prot;
 
@@ -385,11 +381,11 @@ INT CtiRouteCCU::assembleDLCRequest(CtiCommandParser     &parse,
         {
             if(OutMessage->EventCode & DTRAN)
             {
-                if( OutMessage->EventCode & BWORD )  
+                if( OutMessage->EventCode & BWORD )
                 {
                     prot.buildBWordMessage(OutMessage);
                 }
-                else if( OutMessage->EventCode & AWORD )  
+                else if( OutMessage->EventCode & AWORD )
                 {
                     prot.buildAWordMessage(OutMessage);
                 }
@@ -436,10 +432,6 @@ INT CtiRouteCCU::assembleDLCRequest(CtiCommandParser     &parse,
         if(parse.isDisconnect()) retReturn->setExpectMore(xmore);  //  we scan afterwards, so you'd best expect another message even though it's not technically two-way
 
         retList.push_back(retReturn);
-    }
-    else
-    {
-        delete retReturn;
     }
 
     return status;

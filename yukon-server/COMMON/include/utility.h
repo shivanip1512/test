@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/utility.h-arc  $
-* REVISION     :  $Revision: 1.54 $
-* DATE         :  $Date: 2008/10/08 15:13:02 $
+* REVISION     :  $Revision: 1.55 $
+* DATE         :  $Date: 2008/10/15 17:06:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -175,12 +175,11 @@ public:
 
 IM_EX_CTIBASE void SetThreadName( DWORD dwThreadID, LPCSTR szThreadName);
 
-extern CtiMutex gOutMessageMux;
-extern ULONG gOutMessageCounter;
+extern LONG gOutMessageCounter;
 
 IM_EX_CTIBASE void  incrementCount();
 IM_EX_CTIBASE void  decrementCount();
-IM_EX_CTIBASE ULONG OutMessageCount();
+IM_EX_CTIBASE LONG  OutMessageCount();
 
 IM_EX_CTIBASE bool  isLCU(INT type);
 IM_EX_CTIBASE bool  isION(INT type);

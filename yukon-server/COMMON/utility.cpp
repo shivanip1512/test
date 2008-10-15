@@ -662,23 +662,19 @@ bool setConsoleTitle(const compileinfo_t &Info)
 
 
 
-
-CtiMutex gOutMessageMux;
-ULONG gOutMessageCounter = 0;
+LONG gOutMessageCounter = 0;
 
 void incrementCount()
 {
-    CtiLockGuard<CtiMutex> guard(gOutMessageMux);
-    gOutMessageCounter++;
+    InterlockedIncrement(&gOutMessageCounter);
 }
 void decrementCount()
 {
-    CtiLockGuard<CtiMutex> guard(gOutMessageMux);
-    gOutMessageCounter--;
+    InterlockedDecrement(&gOutMessageCounter);
 }
-ULONG OutMessageCount()
+LONG OutMessageCount()
 {
-    CtiLockGuard<CtiMutex> guard(gOutMessageMux);
+    //  this is just for reporting - no need to lock down allocations while we print out a report
     return gOutMessageCounter;
 }
 

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/disp_thd.cpp-arc  $
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2008/07/14 14:49:55 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2008/10/15 17:07:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -112,7 +112,7 @@ void DispatchMsgHandlerThread(VOID *Arg)
 
     CtiTime nowTime;
     CtiTime nextTime = nowTime + 30;
-    ULONG omc;
+    LONG omc;
     /* perform the wait loop forever */
     for( ; !bServerClosing ; )
     {
