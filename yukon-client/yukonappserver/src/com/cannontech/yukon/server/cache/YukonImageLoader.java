@@ -57,7 +57,7 @@ public class YukonImageLoader implements Runnable
             int imgID = rset.getInt(1);            
             String imgCat = rset.getString(2).trim();
             String imgName = rset.getString(3).trim();
-            byte[] bStream = (byte[])rset.getObject(4);
+            byte[] bStream = rset.getBytes(4);
             
             com.cannontech.database.data.lite.LiteYukonImage lsi =
                new com.cannontech.database.data.lite.LiteYukonImage(
