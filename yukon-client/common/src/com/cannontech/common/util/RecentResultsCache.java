@@ -2,6 +2,7 @@ package com.cannontech.common.util;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ public class RecentResultsCache<T extends Completable> {
 
     private Map<String, Wrapper<T>> completedMap = new LinkedHashMap<String, Wrapper<T>>();
     private Map<String, Wrapper<T>> pendingMap = new LinkedHashMap<String, Wrapper<T>>();
+    private Set<String> expiredKeys = new HashSet<String>();
     
     // 10080 = 7 days
     private int minimumHoldMinutes = 10080;
@@ -30,15 +32,26 @@ public class RecentResultsCache<T extends Completable> {
     };
 
     // GET RESULT
-    synchronized public T getResult(String id) {
+    synchronized public T getResult(String id) throws ResultResultExpiredException {
+        
+        T result = null;
+        
+        processLists();
         
         if (this.completedMap.containsKey(id)) {
-            return this.completedMap.get(id).object;
+            result =  this.completedMap.get(id).object;
         }
         else if (this.pendingMap.containsKey(id)) {
-            return this.pendingMap.get(id).object;
+            result =  this.pendingMap.get(id).object;
         }
-        return null;
+        
+        // maybe null is a valid result object, only throw error
+        // if this key was indeed removed at some point
+        if (result == null && expiredKeys.contains(id)) {
+            throw new ResultResultExpiredException(id);
+        }
+        
+        return result;
     }
     
     // GET COMPLETED/PENDING LISTS
@@ -119,6 +132,7 @@ public class RecentResultsCache<T extends Completable> {
         }
         for (String key : removeCompletedKeys) {
             completedMap.remove(key);
+            expiredKeys.add(key);
         }
     }
 

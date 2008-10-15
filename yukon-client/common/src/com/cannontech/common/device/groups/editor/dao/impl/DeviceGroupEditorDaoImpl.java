@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.groups.TemporaryDeviceGroupNotFoundException;
 import com.cannontech.common.device.groups.dao.DeviceGroupPermission;
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
@@ -216,8 +217,17 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
                 StoredDeviceGroup addedGroup = addGroup(parent, DeviceGroupType.STATIC, groupName);
                 return addedGroup;
             }
-            else
-                throw new NotFoundException(parent.getFullName()+"/"+groupName);
+            else {
+                
+                String fullName = parent.getFullName()+"/"+groupName;
+                
+                // throw special exception if the grup is child of Hidden group (temp group)
+                if (parent.isHidden()) {
+                    throw new TemporaryDeviceGroupNotFoundException(fullName);
+                }
+                
+                throw new NotFoundException(fullName);
+            }
         }
         PartialGroupResolver resolver = new PartialGroupResolver(this);
         resolver.addKnownGroups(parent);

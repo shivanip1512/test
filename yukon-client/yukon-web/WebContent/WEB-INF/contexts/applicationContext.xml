@@ -723,6 +723,7 @@
         <property name="phoneNumberFormattingService" ref="phoneNumberFormattingService"/>
     </bean>     
     
+    <!-- Remember to add friendlyExceptionPropertyKey key to friendlyException.properties file -->
     <bean id="friendlyExceptionResolver" class="com.cannontech.common.util.FriendlyExceptionResolver">
         
         <property name="exceptionStrings" ref="friendlyExceptionsProperties" />
@@ -756,6 +757,14 @@
                 <bean class="com.cannontech.common.util.KnownExceptionType">
                     <property name="exceptionClass" value="com.cannontech.common.exception.NotAuthorizedException" />
                     <property name="friendlyExceptionPropertyKey" value="NotAuthorizedException" />
+                </bean>
+                <bean class="com.cannontech.common.util.KnownExceptionType">
+                    <property name="exceptionClass" value="com.cannontech.common.device.groups.TemporaryDeviceGroupNotFoundException" />
+                    <property name="friendlyExceptionPropertyKey" value="TemporaryDeviceGroupNotFoundException" />
+                </bean>
+                <bean class="com.cannontech.common.util.KnownExceptionType">
+                    <property name="exceptionClass" value="com.cannontech.common.util.ResultResultExpiredException" />
+                    <property name="friendlyExceptionPropertyKey" value="ResultResultExpiredException" />
                 </bean>
             </list>
         </property>
