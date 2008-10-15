@@ -15,10 +15,13 @@
  *    Copyright (C) 2005 Cannon Technologies, Inc.  All rights reserved.
  *
  *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinterface.cpp-arc  $
- *    REVISION     :  $Revision: 1.33 $
- *    DATE         :  $Date: 2008/10/13 21:23:30 $
+ *    REVISION     :  $Revision: 1.34 $
+ *    DATE         :  $Date: 2008/10/15 14:38:23 $
  *    History:
  *     $Log: fdrinterface.cpp,v $
+ *     Revision 1.34  2008/10/15 14:38:23  jotteson
+ *     Fixing problems found by static analysis tools.
+ *
  *     Revision 1.33  2008/10/13 21:23:30  mfisher
  *     YUK-6574 Server-side logging is slow
  *     Limited localtime()/fstat() checks to twice per day instead of on each write
@@ -1506,6 +1509,8 @@ INT CtiFDRInterface::reRegisterWithDispatch(  )
     else
     {
         retVal = !NORMAL;
+        delete tmpList;
+        tmpList = NULL;
     }
 
     sendPointRegistration();

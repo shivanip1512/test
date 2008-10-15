@@ -170,7 +170,7 @@ void CCUThread(int portNumber, int strategy)
         unsigned char peek_buffer[2];
         unsigned long bytes_read = 0;
 
-        SimulatedCCU *ccu_manager;
+        SimulatedCCU *ccu_manager = NULL;
 
         //  Peek at first bytes to determine which CCU this is supposed to be.
         while( bytes_read != 2 && !globalCtrlCFlag )
@@ -214,6 +214,12 @@ void CCUThread(int portNumber, int strategy)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << "Active thread closing..." << endl;
+        }
+
+        if( ccu_manager != NULL )
+        {
+            delete ccu_manager;
+            ccu_manager = NULL;
         }
 
         newSocket->CTINexusClose();

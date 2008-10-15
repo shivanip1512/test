@@ -39,6 +39,7 @@ int main()
 
 	CTISleep(5000);
 
+    delete clientSocket;
 	return 0;
 }
 

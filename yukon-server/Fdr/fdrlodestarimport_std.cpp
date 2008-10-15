@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.13 $
-*    DATE         :  $Date: 2006/06/07 22:34:04 $
+*    REVISION     :  $Revision: 1.14 $
+*    DATE         :  $Date: 2008/10/15 14:38:23 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -19,6 +19,9 @@
 *    ---------------------------------------------------
 *    History:
       $Log: fdrlodestarimport_std.cpp,v $
+      Revision 1.14  2008/10/15 14:38:23  jotteson
+      Fixing problems found by static analysis tools.
+
       Revision 1.13  2006/06/07 22:34:04  tspar
       _snprintf  adding .c_str() to all strings. Not having this does not cause compiler errors, but does cause runtime errors. Also tweaks and fixes to FDR due to some differences in STL / RW
 
@@ -784,7 +787,7 @@ bool CtiFDR_StandardLodeStar::decodeThirdHeaderRecord(string& aLine)
                 case 2:
                     {
                         strncpy(tempTest, tempCharPtr, 40);
-                        tempTest[40] = '\0';
+                        tempTest[39] = '\0';
                         _stdLsDescriptor = (string) tempTest;
                         tempCharPtr += 40;
                         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)

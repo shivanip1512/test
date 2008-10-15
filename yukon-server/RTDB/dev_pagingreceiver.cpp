@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_pagerreceive.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2006/02/27 23:58:31 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2008/10/15 14:38:23 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -398,7 +398,7 @@ int CtiDevicePagingReceiver::decode(CtiXfer &xfer, int commReturnValue)
                                 _messageString = _messageString.substr(headLocation+4);
                             }
                             else
-                            if(_hadHeader = true)
+                            if(_hadHeader == true)
                             {
                                 //Strip off the header, let function re-run. Any more junk will be cleaned off in next function run.
                                 _messageString = _messageString.substr(headLocation+4);//header with no footer for a full loop, no footer is coming.

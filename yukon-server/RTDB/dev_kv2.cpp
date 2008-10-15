@@ -1149,7 +1149,7 @@ void CtiDeviceKV2::processDispatchReturnMessage( list< CtiReturnMsg* > &retList,
                     }
                     if (pData != NULL)
                     {
-                        delete []pData;
+                        delete pData;
                         pData = NULL;
                     }
                 }
