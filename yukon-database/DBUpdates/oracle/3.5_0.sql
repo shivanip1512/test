@@ -231,7 +231,6 @@ insert into YukonGroupRole values(-20,-1,-1,-1019,'(none)');
 /* End YUK-6364 */
 /* @error ignore-end */
 insert into YukonGroupRole values(-21,-1,-1,-1020,'(none)');
-go
 
 update YukonGroupRole set RoleID=-102, RolePropertyID=-10206 where RoleID= -304 and RolePropertyID = -30403;
 update YukonGroupRole set RoleID=-102, RolePropertyID=-10205 where RoleID= -304 and RolePropertyID = -30402;

@@ -530,9 +530,7 @@ WHERE DeviceGroupId < 100;
 /* Start YUK-5923 */
 DELETE FROM YukonGroupRole WHERE rolePropertyId = -1102;
 DELETE FROM YukonUserRole WHERE rolePropertyId = -1102;
-go
 DELETE FROM YukonRoleProperty WHERE rolePropertyId = -1102;
-go
 
 INSERT INTO YukonRoleProperty VALUES(-10819, -108, 'Default TimeZone',' ','Default TimeZone (e.g. America/Denver, America/Chicago, America/Los_Angeles, or America/New_York)'); 
 INSERT INTO YukonRoleProperty VALUES(-1703, -8, 'System Default TimeZone', ' ', 'System Default TimeZone (e.g. America/Denver, America/Chicago, America/Los_Angeles, or America/New_York)'); 
@@ -562,12 +560,10 @@ WHERE rolePropertyId = -1600;
 ALTER TABLE State DROP CONSTRAINT SYS_C0013342; 
 
 ALTER TABLE Point DROP CONSTRAINT Ref_STATGRP_PT;
-go
 
 UPDATE StateGroup 
 SET stateGroupId = -9 
 WHERE stateGroupId = 2;
-go
 
 UPDATE Point 
 SET stateGroupId = -9 
@@ -576,7 +572,6 @@ WHERE stateGroupId = 2;
 UPDATE State 
 SET stateGroupId = -9 
 WHERE stateGroupId = 2; 
-go
 
 ALTER TABLE Point 
     ADD CONSTRAINT Ref_STATGRP_PT FOREIGN KEY (stateGroupId) 
@@ -585,7 +580,6 @@ ALTER TABLE Point
 ALTER TABLE State 
     ADD CONSTRAINT SYS_C0013342 FOREIGN KEY (stateGroupId) 
         REFERENCES StateGroup (stateGroupId); 
-go
 /* End YUK-5960 */ 
 
 /* Start YUK-6004 */
