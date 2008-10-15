@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct.h-arc  $
-* REVISION     :  $Revision: 1.67 $
-* DATE         :  $Date: 2008/10/15 16:58:24 $
+* REVISION     :  $Revision: 1.68 $
+* DATE         :  $Date: 2008/10/15 17:13:34 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -68,8 +68,6 @@ protected:
         Config2XX     = 2,
         Config3XX     = 3
     } _configType;
-
-    string _configName;
 
     bool          _lpIntervalSent;
     CtiTime       _lastLPRequest;

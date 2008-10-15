@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.134 $
-* DATE         :  $Date: 2008/10/15 16:58:24 $
+* REVISION     :  $Revision: 1.135 $
+* DATE         :  $Date: 2008/10/15 17:13:34 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3673,7 +3673,7 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< Cti
                                 delete pReq;
                             }
 
-                            resultString += getName() + " / Sent config \"" + _configName + "\" to MCT\n";
+                            resultString += getName() + " / Sent config to MCT\n";
                         }
                         else
                         {
@@ -3744,7 +3744,7 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< Cti
                             }
                         }
 
-                        resultString += getName() + " / Sent config \"" + _configName + "\" to MCT \"" + getName() + "\"\n";
+                        resultString += getName() + " / Sent config to MCT \"" + getName() + "\"\n";
                     }
 
                     if( OutTemplate != NULL )
@@ -3981,8 +3981,6 @@ bool CtiDeviceMCT::calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS
 
 void CtiDeviceMCT::setConfigData( const string &configName, int configType, const string &configMode, const int mctwire[MCTConfig_ChannelCount], const double mpkh[MCTConfig_ChannelCount] )
 {
-    _configName = configName;
-
     switch( getType() )
     {
         case TYPELMT2:
