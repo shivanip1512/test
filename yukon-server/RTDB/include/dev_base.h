@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.69 $
-* DATE         :  $Date: 2008/09/15 17:59:18 $
+* REVISION     :  $Revision: 1.70 $
+* DATE         :  $Date: 2008/10/15 14:57:19 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -35,7 +35,7 @@ using boost::shared_ptr;
 #include "tbl_2way.h"
 #include "tbl_stats.h"
 #include "tbl_scanrate.h"
-#include "tbl_pao.h"
+#include "tbl_pao_lite.h"
 #include "tbl_paoexclusion.h"
 #include "tbl_dyn_paoinfo.h"
 #include "pt_base.h"
@@ -68,7 +68,7 @@ using CtiTableDynamicPaoInfo::Keys;  //  Allows us to refer to the keys by Key::
  *  into CtiDeviceSingle and CtiDeviceGroup.. This guy is destinied to have MANY
  *  virtual functions.
  */
-class IM_EX_DEVDB CtiDeviceBase : public CtiTblPAO, public RWMonitor< RWRecursiveLock< RWMutexLock > >
+class IM_EX_DEVDB CtiDeviceBase : public CtiTblPAOLite, public RWMonitor< RWRecursiveLock< RWMutexLock > >
 {
 public:
 
@@ -79,7 +79,7 @@ public:
 
 private:
 
-    typedef CtiTblPAO Inherited;
+    typedef CtiTblPAOLite Inherited;
 
     int _currTrxID;
     int _responsesOnTrxID;

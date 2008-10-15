@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/rte_base.h-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2008/09/15 17:59:18 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2008/10/15 14:57:19 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,7 +29,7 @@ using boost::shared_ptr;
 #include "cmdparse.h"
 #include "ctibase.h"
 #include "message.h"
-#include "tbl_pao.h"
+#include "tbl_pao_lite.h"
 #include "tbl_rtcomm.h"
 #include "msg_signal.h"
 #include "yukon.h"
@@ -45,7 +45,7 @@ class IM_EX_DEVDB CtiRouteBase : public CtiMemDBObject, public RWMonitor< RWRecu
 {
 protected:
 
-    CtiTblPAO _tblPAO;
+    CtiTblPAOLite _tblPAO;
     CtiTableCommRoute _tblComm;
 
 private:

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.47 $
-* DATE         :  $Date: 2008/09/15 17:59:18 $
+* REVISION     :  $Revision: 1.48 $
+* DATE         :  $Date: 2008/10/15 14:57:19 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -34,6 +34,7 @@ using std::iostream;
 #include "dlldefs.h"
 #include "logger.h"
 #include "tbl_port_base.h"
+#include "tbl_pao_lite.h"
 #include "tbl_paoexclusion.h"
 #include "xfer.h"
 #include "critical_section.h"
@@ -272,7 +273,7 @@ protected:
     CtiCounter          _processed;
     CtiCounter          _orphaned;
 
-    CtiTblPAO           _tblPAO;
+    CtiTblPAOLite       _tblPAO;
     CtiTablePortBase    _tblPortBase;
 
     RWThreadFunction  _portThread;
