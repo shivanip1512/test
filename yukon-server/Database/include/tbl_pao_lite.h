@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pao.cpp-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2008/10/15 14:57:14 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2008/10/15 15:16:37 $
 *
 * Copyright (c) 2008 Cooper Industries. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -69,10 +69,10 @@ public:
 
     string getName() const;
     string& getName();
-    CtiTblPAOLite& setName(const string &nmStr);
+    CtiTblPAOLite& setName(const string &name);
 
     INT getType() const;
-    CtiTblPAOLite& setType(const INT &tpStr);
+    CtiTblPAOLite& setType(const INT &type);
 
     bool getDisableFlag() const;
     string getDisableFlagStr() const;

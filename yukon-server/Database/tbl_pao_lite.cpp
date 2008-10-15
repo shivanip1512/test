@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pao.cpp-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2008/10/15 14:57:14 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2008/10/15 15:16:37 $
 *
 * Copyright (c) 2008 Cooper Industries. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -104,9 +104,9 @@ INT CtiTblPAOLite::getType() const
     return _type;
 }
 
-CtiTblPAOLite& CtiTblPAOLite::setType( const INT &aint )
+CtiTblPAOLite& CtiTblPAOLite::setType( const INT &type )
 {
-    _type = aint;
+    _type = type;
     return *this;
 }
 
@@ -117,12 +117,8 @@ string CtiTblPAOLite::getDisableFlagStr() const
 
 CtiTblPAOLite& CtiTblPAOLite::setDisableFlagStr(const string& flag)
 {
-    assert( flag == "Y" || flag == "y" ||
-            flag == "N" || flag == "n" );
-
     _disableFlag = ( flag == "y" || flag == "Y" );
     return *this;
-
 }
 
 CtiTblPAOLite& CtiTblPAOLite::setDisableFlag( const bool disableFlag )

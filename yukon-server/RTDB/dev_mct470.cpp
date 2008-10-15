@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.126 $
-* DATE         :  $Date: 2008/10/15 14:57:18 $
+* REVISION     :  $Revision: 1.127 $
+* DATE         :  $Date: 2008/10/15 15:16:42 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -98,8 +98,7 @@ CtiDeviceMCT470::ConfigPartsList CtiDeviceMCT470::getBasicPartsList()
     tempList.push_back(CtiDeviceMCT4xx::PutConfigPart_timezone);
     tempList.push_back(CtiDeviceMCT4xx::PutConfigPart_demand_lp);
     tempList.push_back(CtiDeviceMCT4xx::PutConfigPart_lpchannel);
-    INT type = getType();
-    if( type == TYPEMCT470 )
+    if( getType() == TYPEMCT470 )
     {
         tempList.push_back(CtiDeviceMCT4xx::PutConfigPart_configbyte);
     }
