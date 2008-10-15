@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.131 $
-* DATE         :  $Date: 2008/10/08 19:57:27 $
+* REVISION     :  $Revision: 1.132 $
+* DATE         :  $Date: 2008/10/15 17:41:58 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -591,36 +591,6 @@ void applyDeviceQueueReport(const long unusedid, CtiDeviceSPtr RemoteDevice, voi
                     dout << " " << setw(8) << QueWorkCnt  << " queued commands. Evaluate next at " << ent << ". Transmitter: " << RemoteDevice->getName() << (ent < ent.now() ? ". *** PAST DUE *** " + CtiNumStr(ent.now().seconds() - ent.seconds()) : " seconds.") << endl;
                 }
             }
-        }
-    }
-}
-
-void applyDeviceLoadReport(const long unusedid, CtiDeviceSPtr RemoteDevice, void *lprtid)
-{
-    string printStr;
-
-    bool yep = false;
-    int sub, proc, orph;
-    LONG PortID = (LONG)lprtid;
-
-    if(lprtid == NULL || PortID == RemoteDevice->getPortID())
-    {
-        printStr = CtiTime().asString() + string(" Device: ") + CtiNumStr(RemoteDevice->getID()).spad(2) + " / " + RemoteDevice->getName() + "\n";
-
-        for(int i = 0; i < 288; i++)
-        {
-            RemoteDevice->getQueueMetrics(i, sub, proc, orph);
-            if(sub > 0)
-            {
-                yep = true;
-                printStr += CtiNumStr(i).spad(2) + string(", ") + CtiNumStr(sub).spad(5) + ", " + CtiNumStr(proc).spad(5) + ", " + CtiNumStr(orph).spad(5) + "\n";
-            }
-        }
-
-        if(yep)
-        {
-            CtiLockGuard<CtiLogger> bguard(blog);
-            blog << printStr << endl;
         }
     }
 }
@@ -2345,7 +2315,6 @@ bool processInputFunction(CHAR Char)
     case 0x79:              // alt-y
         {
             PortManager.apply( applyPortLoadReport, (void*)1 );
-            DeviceManager.apply( applyDeviceLoadReport, NULL );
 
             break;
         }

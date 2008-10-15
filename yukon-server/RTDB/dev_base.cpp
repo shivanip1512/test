@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.74 $
-* DATE         :  $Date: 2008/10/13 16:25:18 $
+* REVISION     :  $Revision: 1.75 $
+* DATE         :  $Date: 2008/10/15 17:41:58 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -424,16 +424,6 @@ void CtiDeviceBase::DecodeDatabaseReader(RWDBReader &rdr)
     Inherited::DecodeDatabaseReader(rdr);
     _singleDevice = resolveIsDeviceTypeSingle(getType());
     _deviceBase.DecodeDatabaseReader(rdr);
-
-    if(hasExclusions())
-    {
-        for(int i = 0; i < 288; i++)
-        {
-            _submittal.reset(i);
-            _processed.reset(i);
-            _orphaned.reset(i);;
-        }
-    }
 
     //  Not sure if this is the proper place to do this - perhaps it should be done in the device manager
     resetDirty();
@@ -1094,34 +1084,6 @@ inline LONG CtiDeviceBase::getMaxConnectTime() const
 inline ULONG CtiDeviceBase::getUniqueIdentifier() const
 {
     return getPortID();
-}
-
-INT CtiDeviceBase::incQueueSubmittal(int bumpCnt, CtiTime &rwt)    // Bumps the count of submitted deviceQ entries for this 5 minute window.
-{
-    int index = (rwt.hour()*60 + rwt.minute()) / 5;
-    _submittal.inc(index,bumpCnt);
-    _submittal.reset((index+1)%288);                        // Zero out the "next" bin in case we've run for a day already... NOT PERFECT!
-    return _submittal.get(index);
-}
-INT CtiDeviceBase::incQueueProcessed(int bumpCnt, CtiTime & rwt)   // Bumps the count of processed deviceQ entries for this 5 minute window.
-{
-    int index = (rwt.hour()*60 + rwt.minute()) / 5;
-    _processed.inc(index,bumpCnt);
-    _processed.reset((index+1)%288);                        // Zero out the "next" bin in case we've run for a day already... NOT PERFECT!
-    return _processed.get(index);
-}
-INT CtiDeviceBase::setQueueOrphans(int num, CtiTime &rwt)          // Number of queue entries remaining on device following this pass.
-{
-    int index = (rwt.hour()*60 + rwt.minute()) / 5;
-    _orphaned.set(index,num);
-    return _orphaned.get(index);
-}
-void CtiDeviceBase::getQueueMetrics(int index, int &submit, int &processed, int &orphan) // Return the metrics above.
-{
-    submit = _submittal.get(index);
-    processed = _processed.get(index);
-    orphan = _orphaned.get(index);
-
 }
 
 void CtiDeviceBase::setDeviceConfig(Cti::Config::CtiConfigDeviceSPtr config)

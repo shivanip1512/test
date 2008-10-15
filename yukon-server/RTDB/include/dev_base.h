@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.70 $
-* DATE         :  $Date: 2008/10/15 14:57:19 $
+* REVISION     :  $Revision: 1.71 $
+* DATE         :  $Date: 2008/10/15 17:41:58 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -90,10 +90,6 @@ private:
 protected:
 
     CtiDeviceExclusion  _exclusion;
-
-    CtiCounter          _submittal;
-    CtiCounter          _processed;
-    CtiCounter          _orphaned;
 
     INT                  _commFailCount;          //  Consecutive failures to this device.
     INT                  _attemptCount;           //  Cumulative. Attempts to communicate with the device
@@ -325,11 +321,6 @@ public:
     virtual INT queuedWorkCount() const;                        // Number of queued commnads on the device.
 
     virtual void setExpectedFreeze(int freeze);  //  for frozen reads
-
-    INT incQueueSubmittal(int bumpcnt, CtiTime &rwt);    // Bumps the count of submitted deviceQ entries for this 5 minute window.
-    INT incQueueProcessed(int bumpCnt, CtiTime & rwt);   // Bumps the count of processed deviceQ entries for this 5 minute window.
-    INT setQueueOrphans(int num, CtiTime &rwt);          // Number of queue entries remaining on device following this pass.
-    void getQueueMetrics(int index, int &submit, int &processed, int &orphan); // Return the metrics above.
 
     /*
      *  The rsvpToDispatch method allows the device object to produce a message to dispatch.

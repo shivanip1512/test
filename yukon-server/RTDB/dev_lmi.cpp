@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2008/08/14 15:57:40 $
+* REVISION     :  $Revision: 1.37 $
+* DATE         :  $Date: 2008/10/15 17:47:44 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -630,11 +630,6 @@ bool CtiDeviceLMI::getOutMessage(CtiOutMessage *&OutMessage)
         }
     }
     */
-
-    if(OutMessage)
-    {
-        incQueueProcessed(1, CtiTime());
-    }
 
     return retval;
 }

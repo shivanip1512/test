@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2008/10/10 14:40:16 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2008/10/15 17:46:00 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -494,11 +494,6 @@ int CCU721::sendCommResult(INMESS *InMessage)
                         {
                             status = socket_error;
                         }
-                    }
-
-                    if( _klondike.getCommand() == Command_ReadQueue )
-                    {
-                        incQueueProcessed(1, CtiTime());
                     }
 
                     delete om;

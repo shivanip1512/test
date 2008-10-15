@@ -7,11 +7,15 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.49 $
-* DATE         :  $Date: 2008/08/14 15:57:40 $
+* REVISION     :  $Revision: 1.50 $
+* DATE         :  $Date: 2008/10/15 17:49:56 $
 *
 * HISTORY      :
 * $Log: dev_rtc.cpp,v $
+* Revision 1.50  2008/10/15 17:49:56  jotteson
+* YUK-6588 Porter's memory use needs to be trimmed
+* Removed unused counters.
+*
 * Revision 1.49  2008/08/14 15:57:40  jotteson
 * YUK-6333  Change naming in request message and change cancellation to use this new named field instead of user ID
 * Cancellation now uses the new group message ID.
@@ -654,11 +658,6 @@ bool CtiDeviceRTC::getOutMessage(CtiOutMessage *&OutMessage)
         _millis -= messageDuration(OutMessage->Buffer.SASt._groupType);
 
         if(_millis < 0) _millis = 0;
-    }
-
-    if(OutMessage)
-    {
-        incQueueProcessed(1, CtiTime());
     }
 
     return stat;
