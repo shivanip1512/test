@@ -2621,6 +2621,64 @@ long getPaoIdForPoint(long pointid)
     return numeric_limits<long>::min();
 }
 
+string getEncodingTypeForPort(long portId)
+{
+    string sql("SELECT encodingtype FROM portterminalserver WHERE portid = ");
+    sql += CtiNumStr(portId);
+
+    string type = "";
+
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
+
+    RWDBReader rdr = ExecuteQuery( conn, sql.c_str() );
+
+    if(rdr.isValid() && rdr() )
+    {
+        rdr["pointid"] >> type;
+    }
+    else 
+    {
+        if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << " " << sql << endl;
+        }
+    }
+    
+    return type;
+}
+
+string getEncodeStringForPort(long portId)
+{
+    string sql("SELECT encodingkey FROM portterminalserver WHERE portid = ");
+    sql += CtiNumStr(portId);
+
+    string type = "";
+
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
+
+    RWDBReader rdr = ExecuteQuery( conn, sql.c_str() );
+
+    if(rdr.isValid() && rdr() )
+    {
+        rdr["pointid"] >> type;
+    }
+    else 
+    {
+        if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << " " << sql << endl;
+        }
+    }
+    
+    return type;
+}
+
 double limitValue(double input, double min, double max)
 {
     if(input < min)

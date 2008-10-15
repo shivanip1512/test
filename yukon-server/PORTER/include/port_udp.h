@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2008/08/06 18:26:49 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2008/10/15 19:20:22 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,7 +22,7 @@
 #include "queue.h"
 #include "dev_single.h"
 #include "port_tcpip.h"
-
+#include "EncodingFilterFactory.h"
 
 namespace Cti
 {
@@ -35,6 +35,7 @@ class UDPInterface
 private:
 
     CtiPortTCPIPDirectSPtr _port;
+    EncodingFilterFactory::EncodingFilterSPtr _encodingFilter;
 
 protected:
 
@@ -43,7 +44,7 @@ protected:
         unsigned char *data;
         int len;
         int used;
-
+    
         u_long  ip;
         u_short port;
     };

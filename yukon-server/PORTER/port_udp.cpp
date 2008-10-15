@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2008/09/15 17:59:17 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2008/10/15 19:20:21 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -70,6 +70,8 @@ UDPInterface::UDPInterface( CtiPortTCPIPDirectSPtr &port ) :
     _port(port)
 {
     UDPInterfaceQueue.addClient(this);
+    /*Db hit*/
+    _encodingFilter = EncodingFilterFactory().getEncodingFilter(_port->getPortID());
 }
 
 
@@ -484,6 +486,16 @@ bool UDPInterface::getPackets( int wait )
             {
                 const int DNPHeaderLength   = 10,
                           GPUFFHeaderLength = 13;
+                
+                /* This is not tested until I get a Lantronix device. */
+                unsigned char* pText = NULL;
+                int pTextSize = _encodingFilter->decode(p->data,p->len,pText);
+                if (pTextSize > 0)
+                {   //There will be space for this, the decrypted text will always be smaller.
+                    memcpy(p->data,pText,pTextSize);
+                    p->len = pTextSize;
+                    delete [] pText;
+                }
 
                 if( p->len >= DNPHeaderLength && p->data[0] == 0x05
                     && p->data[1] == 0x64 )
@@ -1398,8 +1410,24 @@ void UDPInterface::generateOutbounds( void )
                     to.sin_family           = AF_INET;
                     to.sin_addr.S_un.S_addr = htonl(dr->ip);
                     to.sin_port             = htons(dr->port);
+                    
+                    /* This is not tested until I get a Lantronix device. */
+                    unsigned char* cipher = NULL;
+                    int cipherSize = _encodingFilter->encode((unsigned char *)dr->work.xfer.getOutBuffer(),dr->work.xfer.getOutCount(),cipher);
+                    int err;
 
-                    if( SOCKET_ERROR == sendto(_udp_socket, (char *)dr->work.xfer.getOutBuffer(), dr->work.xfer.getOutCount(), 0, (sockaddr *)&to, sizeof(to)) )
+                    if( cipher != NULL && cipherSize == 0 )
+                    {
+                        err = sendto(_udp_socket, (char*)cipher, cipherSize, 0, (sockaddr *)&to, sizeof(to));
+                        delete [] cipher;
+                        cipher = NULL;
+                    }
+                    else
+                    {
+                        err = sendto(_udp_socket, (char*)dr->work.xfer.getOutBuffer(), dr->work.xfer.getOutCount(), 0, (sockaddr *)&to, sizeof(to));
+                    }
+
+                    if( SOCKET_ERROR == err )
                     {
                         if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
                         {

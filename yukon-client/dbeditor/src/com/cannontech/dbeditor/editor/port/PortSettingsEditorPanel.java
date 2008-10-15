@@ -12,6 +12,7 @@ import com.cannontech.database.data.port.TerminalServerDirectPort;
 import com.cannontech.database.db.port.CommPort;
 import com.cannontech.database.db.port.PortSettings;
 import com.cannontech.database.db.port.PortTerminalServer;
+import com.cannontech.database.db.port.PortTerminalServer.EncodingType;
  
 public class PortSettingsEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
 	private javax.swing.JComboBox ivjCommonProtocolComboBox = null;
@@ -35,6 +36,9 @@ public class PortSettingsEditorPanel extends com.cannontech.common.gui.util.Data
 	private javax.swing.JTextField ivjIPAddressTextField = null;
 	private javax.swing.JLabel ivjPortNumberLabel = null;
 	private javax.swing.JTextField ivjPortNumberTextField = null;
+	private javax.swing.JCheckBox encodingCheckBox = null;
+	private javax.swing.JTextField encodingTextField = null;
+	private javax.swing.JLabel encodingLabel = null;
 /**
  * Constructor
  */
@@ -59,6 +63,8 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 		connEtoC2(e);
 	if (e.getSource() == getCarrierDetectCheckBox()) 
 		connEtoC6(e);
+    if (e.getSource() == getEncodingCheckBox()) 
+        encryptionClicked(e);
 	if (e.getSource() == getPhysicalPortComboBox()) 
 		connEtoC3(e);
 	// user code begin {2}
@@ -80,6 +86,8 @@ public void caretUpdate(javax.swing.event.CaretEvent e) {
 		connEtoC8(e);
 	if (e.getSource() == getPortNumberTextField()) 
 		connEtoC9(e);
+    if (e.getSource() == getEncodingTextField()) 
+        connEtoC7(e);//reused connEtoC7 on purpose
 	// user code begin {2}
 	// user code end
 }
@@ -205,6 +213,33 @@ private void connEtoC6(java.awt.event.ActionEvent arg1) {
 		handleException(ivjExc);
 	}
 }
+
+private void encryptionClicked(java.awt.event.ActionEvent arg1) {
+    try {
+        // user code begin {1}
+        // user code end
+        this.fireInputUpdate();
+        // user code begin {2}
+
+        if( getEncodingCheckBox().isSelected() )
+        {
+            getEncryptionLabel().setEnabled(true);
+            getEncodingTextField().setEnabled(true);
+        }
+        else
+        {
+            getEncryptionLabel().setEnabled(false);
+            getEncodingTextField().setEnabled(false);
+        }
+    
+        // user code end
+    } catch (java.lang.Throwable ivjExc) {
+        // user code begin {3}
+        // user code end
+        handleException(ivjExc);
+    }
+}
+
 /**
  * connEtoC7:  (CarrierDetectWaitTextField.caret.caretUpdate(javax.swing.event.CaretEvent) --> PortSettingsEditorPanel.fireInputUpdate()V)
  * @param arg1 javax.swing.event.CaretEvent
@@ -535,6 +570,32 @@ private javax.swing.JPanel getConfigurationPanel() {
 			constraintsCarrierDetectCheckBox.insets = new java.awt.Insets(5, 31, 1, 13);
 			getConfigurationPanel().add(getCarrierDetectCheckBox(), constraintsCarrierDetectCheckBox);
 
+	        java.awt.GridBagConstraints constraintsEncryptionCheckBox = new java.awt.GridBagConstraints();
+	        constraintsEncryptionCheckBox.gridx = 1; constraintsEncryptionCheckBox.gridy = 8;
+	        constraintsEncryptionCheckBox.gridwidth = 2;
+	        constraintsEncryptionCheckBox.anchor = java.awt.GridBagConstraints.WEST;
+	        constraintsEncryptionCheckBox.ipadx = 74;
+	        constraintsEncryptionCheckBox.insets = new java.awt.Insets(5, 31, 1, 13);
+            getConfigurationPanel().add(getEncodingCheckBox(), constraintsEncryptionCheckBox);
+			
+            java.awt.GridBagConstraints constraintsEncryptionTextField = new java.awt.GridBagConstraints();
+            constraintsEncryptionTextField.gridx = 2; constraintsEncryptionTextField.gridy = 9;
+            constraintsEncryptionTextField.fill = java.awt.GridBagConstraints.HORIZONTAL;
+            constraintsEncryptionTextField.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsEncryptionTextField.weightx = 1.0;
+            constraintsEncryptionTextField.ipadx = 1;
+            constraintsEncryptionTextField.insets = new java.awt.Insets(3, 1, 14, 3);
+            getConfigurationPanel().add(getEncodingTextField(), constraintsEncryptionTextField);
+            
+            java.awt.GridBagConstraints constraintsEncryptionLabel = new java.awt.GridBagConstraints();
+            constraintsEncryptionLabel.gridx = 1; constraintsEncryptionLabel.gridy = 9;
+            constraintsEncryptionLabel.gridwidth = 2;
+            constraintsEncryptionLabel.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsEncryptionLabel.ipadx = 3;
+            constraintsEncryptionLabel.ipady = 3;
+            constraintsEncryptionLabel.insets = new java.awt.Insets(3, 32, 15, 1);
+            getConfigurationPanel().add(getEncryptionLabel(), constraintsEncryptionLabel);
+            
 			java.awt.GridBagConstraints constraintsCommonProtocolComboBox = new java.awt.GridBagConstraints();
 			constraintsCommonProtocolComboBox.gridx = 2; constraintsCommonProtocolComboBox.gridy = 5;
 			constraintsCommonProtocolComboBox.gridwidth = 3;
@@ -908,6 +969,74 @@ private javax.swing.JTextField getPortNumberTextField() {
 	}
 	return ivjPortNumberTextField;
 }
+
+private javax.swing.JTextField getEncodingTextField() {
+    if (encodingTextField == null) {
+        try {
+            encodingTextField = new javax.swing.JTextField();
+            encodingTextField.setName("PortNumberTextField");
+            encodingTextField.setMaximumSize(new java.awt.Dimension(100, 20));
+            encodingTextField.setColumns(25);
+            encodingTextField.setPreferredSize(new java.awt.Dimension(100, 20));
+            encodingTextField.setFont(new java.awt.Font("sansserif", 0, 14));
+            encodingTextField.setMinimumSize(new java.awt.Dimension(100, 20));
+            // user code begin {1}
+
+            //encryptionTextField.setDocument( new StringRangeDocument() );
+            
+            // user code end
+        } catch (java.lang.Throwable ivjExc) {
+            // user code begin {2}
+            // user code end
+            handleException(ivjExc);
+        }
+    }
+    return encodingTextField;
+}
+
+private javax.swing.JCheckBox getEncodingCheckBox() {
+    if (encodingCheckBox == null) {
+        try {
+            encodingCheckBox = new javax.swing.JCheckBox();
+            encodingCheckBox.setName("EncryptionCheckBox");
+            encodingCheckBox.setFont(new java.awt.Font("dialog", 0, 14));
+            encodingCheckBox.setText("Enable Encryption");
+            // user code begin {1}
+            // user code end
+        } catch (java.lang.Throwable ivjExc) {
+            // user code begin {2}
+            // user code end
+            handleException(ivjExc);
+        }
+    }
+    return encodingCheckBox;
+}
+
+private javax.swing.JLabel getEncryptionLabel() {
+    if (encodingLabel == null) {
+        try {
+            encodingLabel = new javax.swing.JLabel();
+            encodingLabel.setName("EncryptionLabel");
+            encodingLabel.setText("Key");
+            encodingLabel.setMaximumSize(new java.awt.Dimension(50, 16));
+            encodingLabel.setVisible(true);
+            encodingLabel.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+            encodingLabel.setPreferredSize(new java.awt.Dimension(50, 16));
+            encodingLabel.setFont(new java.awt.Font("dialog", 0, 14));
+            encodingLabel.setEnabled(false);
+            encodingLabel.setMinimumSize(new java.awt.Dimension(185, 16));
+            encodingLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+            // user code begin {1}
+            // user code end
+        } catch (java.lang.Throwable ivjExc) {
+            // user code begin {2}
+            // user code end
+            handleException(ivjExc);
+        }
+    }
+    return encodingLabel;
+}
+
 /**
  * Return the TypeLabel property value.
  * @return javax.swing.JLabel
@@ -989,9 +1118,18 @@ public Object getValue(Object val)
 	{
 		String ipAddress = getIPAddressTextField().getText();
 		Integer portNumber = new Integer(getPortNumberTextField().getText());
+		String encryptionKey = getEncodingTextField().getText();
+		boolean encryptionEnabled = getEncodingCheckBox().isSelected();
+		
 		PortTerminalServer pts = ((TerminalServerDirectPort)dp).getPortTerminalServer();
 		pts.setIpAddress(ipAddress);
 		pts.setSocketPortNumber(portNumber);
+		if(encryptionEnabled) {
+		    pts.setEncodingType(EncodingType.AES);
+		} else {
+		    pts.setEncodingType(EncodingType.NONE);
+		}
+		pts.setEncodingKey(encryptionKey);
 	}
 	
 	dp.setPortName( name );
@@ -1038,6 +1176,8 @@ private void initConnections() throws java.lang.Exception {
 	getPhysicalPortComboBox().addActionListener(this);
 	getIPAddressTextField().addCaretListener(this);
 	getPortNumberTextField().addCaretListener(this);
+	getEncodingCheckBox().addActionListener(this);
+	getEncodingTextField().addCaretListener(this);
 }
 /**
  * Initialize the class.
@@ -1157,6 +1297,11 @@ public void setValue(Object val)
 		PortTerminalServer pts = ((TerminalServerDirectPort) dp).getPortTerminalServer();
 		getIPAddressTextField().setText(pts.getIpAddress());
 		getPortNumberTextField().setText(pts.getSocketPortNumber().toString());
+		
+		getEncodingCheckBox().setSelected(pts.getEncodingType() != EncodingType.NONE);
+		getEncodingTextField().setText(pts.getEncodingKey());
+		
+		//TS set new fields here
 	}
 	else if( val instanceof PooledPort )
 	{

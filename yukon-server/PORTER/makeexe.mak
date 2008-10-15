@@ -72,6 +72,8 @@ portverify.obj \
 ptprint.obj \
 ripple.obj \
 systemmsgthread.obj \
+LantronixEncryptionImpl.obj \
+EncodingFilterFactory.obj \
 
 #fisherp.obj \
 #dialup.obj \
@@ -103,6 +105,8 @@ $(COMPILEBASE)\lib\ctipntdb.lib \
 $(COMPILEBASE)\lib\ctiprot.lib \
 $(COMPILEBASE)\lib\cticparms.lib \
 $(COMPILEBASE)\lib\cticonfig.lib \
+$(COMPILEBASE)\lib\libeay32.lib \
+$(COMPILEBASE)\lib\ssleay32.lib \
 
 EXECS=\
 porter.exe \

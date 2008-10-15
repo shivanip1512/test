@@ -8,15 +8,33 @@ package com.cannontech.database.db.port;
  
 public class PortTerminalServer extends DBPersistent {
 	
+    public enum EncodingType {
+        NONE(0),
+        AES(1);
+
+        private final int pos;
+        
+        EncodingType(int pos) {
+            this.pos = pos;
+        }
+        
+        public int getValue() {
+            return pos;
+        }
+    }
+    
 	private String ipAddress = null;
 	private Integer socketPortNumber = null;
 	private Integer portID = null;
+	private EncodingType encodingType = EncodingType.NONE;
+	private String encodingKey = "";
+	
 /**
  * PortTerminalServer constructor comment.
  */
 public PortTerminalServer() {
 	super();
-	initialize( null, null, null );
+	initialize( null, null, null, null, null );
 }
 /**
  * This method was created in VisualAge.
@@ -24,7 +42,7 @@ public PortTerminalServer() {
  */
 public PortTerminalServer( Integer portNumber) {
 	super();
-	initialize( portNumber, null, null );
+	initialize( portNumber, null, null, null, null );
 }
 /**
  * This method was created in VisualAge.
@@ -34,8 +52,14 @@ public PortTerminalServer( Integer portNumber) {
  */
 public PortTerminalServer( Integer portNumber, String ipAddress, Integer socketPortNumber) {
 	super();
-	initialize( portNumber, ipAddress, socketPortNumber );
+	initialize( portNumber, ipAddress, socketPortNumber, null, null );
 }
+
+public PortTerminalServer( Integer portNumber, String ipAddress, Integer socketPortNumber, EncodingType type, String key) {
+    super();
+    initialize( portNumber, ipAddress, socketPortNumber, type, key );
+}
+
 /**
  * add method comment.
  */
@@ -79,18 +103,20 @@ public Integer getSocketPortNumber() {
  * @param ipAddress java.lang.String
  * @param socketPortNumber java.lang.Integer
  */
-public void initialize( Integer portID, String ipAddress, Integer socketPortNumber ) {
+public void initialize( Integer portID, String ipAddress, Integer socketPortNumber, EncodingType type, String newKey ) {
 
 	setPortID( portID );
 	setIpAddress( ipAddress );
 	setSocketPortNumber( socketPortNumber );
+	setEncodingType(type);
+	setEncodingKey(newKey);
 }
 /**
  * retrieve method comment.
  */
 public void retrieve() throws java.sql.SQLException {
 	
-	String selectColumns[] = { "IPAddress", "SocketPortNumber" };
+	String selectColumns[] = { "IPAddress", "SocketPortNumber", "EncodingType", "EncodingKey" };
 	String constraintColumns[] = { "PortID" };
 	Object constraintValues[] = { getPortID() };
 	
@@ -99,6 +125,8 @@ public void retrieve() throws java.sql.SQLException {
 	{
 		setIpAddress( (String) results[0] );
 		setSocketPortNumber( (Integer) results[1] );
+		setEncodingType(EncodingType.valueOf((String) results[2]));
+		setEncodingKey((String)results[3]);
 	}
 
 }
@@ -128,12 +156,24 @@ public void setSocketPortNumber(Integer newValue) {
  */
 public void update() throws java.sql.SQLException {
 	
-	String setColumns[] = { "IPAddress", "SocketPortNumber" };
-	Object setValues[] = { getIpAddress(), getSocketPortNumber() };
+	String setColumns[] = { "IPAddress", "SocketPortNumber", "EncodingType", "EncodingKey" };
+	Object setValues[] = { getIpAddress(), getSocketPortNumber(), getEncodingType().toString(), getEncodingKey()  };
 
 	String constraintColumns[] = { "PortID" };
 	Object constraintValues[] = { getPortID() };
 	
 	update( "PortTerminalServer", setColumns, setValues, constraintColumns, constraintValues );
+}
+public EncodingType getEncodingType() {
+    return encodingType;
+}
+public void setEncodingType(EncodingType type) {
+    this.encodingType = type;
+}
+public String getEncodingKey() {
+    return encodingKey;
+}
+public void setEncodingKey(String key) {
+    this.encodingKey = key;
 }
 }
