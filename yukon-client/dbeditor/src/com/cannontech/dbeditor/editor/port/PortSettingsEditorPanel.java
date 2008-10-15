@@ -1300,8 +1300,6 @@ public void setValue(Object val)
 		
 		getEncodingCheckBox().setSelected(pts.getEncodingType() != EncodingType.NONE);
 		getEncodingTextField().setText(pts.getEncodingKey());
-		
-		//TS set new fields here
 	}
 	else if( val instanceof PooledPort )
 	{
