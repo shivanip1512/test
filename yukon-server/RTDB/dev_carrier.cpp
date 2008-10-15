@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2007/07/10 16:59:07 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2008/10/15 17:03:44 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -37,28 +37,9 @@ CtiDeviceCarrier &CtiDeviceCarrier::operator=(const CtiDeviceCarrier &aRef)
 
         LockGuard guard(monitor());
 
-        MeterGroup        = aRef.getMeterGroup();
         CarrierSettings   = aRef.getCarrierSettings();
     }
 
-    return *this;
-}
-
-CtiTableDeviceMeterGroup CtiDeviceCarrier::getMeterGroup() const
-{
-    return MeterGroup;
-}
-
-CtiTableDeviceMeterGroup &CtiDeviceCarrier::getMeterGroup()
-{
-    LockGuard guard(monitor());
-    return MeterGroup;
-}
-
-CtiDeviceCarrier &CtiDeviceCarrier::setMeterGroup( const CtiTableDeviceMeterGroup &aMeterGroup )
-{
-    LockGuard guard(monitor());
-    MeterGroup = aMeterGroup;
     return *this;
 }
 
@@ -84,7 +65,6 @@ void CtiDeviceCarrier::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelect
 {
     Inherited::getSQL(db, keyTable, selector);
     CtiTableDeviceLoadProfile::getSQL(db, keyTable, selector);
-    CtiTableDeviceMeterGroup::getSQL(db, keyTable, selector);
     //  only used/decoded in the MCT 360/370/470 - so left outer joined
     CtiTableDeviceMCTIEDPort::getSQL(db, keyTable, selector);
 }
@@ -101,7 +81,6 @@ void CtiDeviceCarrier::DecodeDatabaseReader(RWDBReader &rdr)
         dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
     LoadProfile.DecodeDatabaseReader(rdr);
-    MeterGroup.DecodeDatabaseReader(rdr);
 }
 
 LONG CtiDeviceCarrier::getLastIntervalDemandRate() const
