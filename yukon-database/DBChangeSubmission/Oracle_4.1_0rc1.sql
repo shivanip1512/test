@@ -3,6 +3,7 @@
 
 /* START SPECIAL BLOCK */
 
+/* Start YUK-6549 */
 UPDATE YukonGroupRole 
 SET GroupRoleId = -2500 
 WHERE GroupRoleId = -1150 
@@ -50,3 +51,10 @@ SET GroupRoleId = -2507
 WHERE GroupRoleId = -1157
 AND GroupId = -2 
 AND RolePropertyId = -21307;
+/* End YUK-6549 */
+
+/* Start YUK-6587 */
+UPDATE YukonRoleProperty 
+SET Description = 'Controls access to mass change collection actions. Includes all Mass Change actions.'
+WHERE rolePropertyId = -21305;
+/* End YUK-6587 */

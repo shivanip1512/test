@@ -723,7 +723,7 @@ INSERT INTO YukonRoleProperty VALUES (-21301,-213,'Bulk Update Operation','true'
 INSERT INTO YukonRoleProperty VALUES (-21302,-213,'Device Group Edit','true','Controls editing of Device Groups (Add/Remove Group, update name, etc.)'); 
 INSERT INTO YukonRoleProperty VALUES (-21303,-213,'Device Group Modify','true','Controls modifying contents of a Device Group (Add to/Remove from group, etc.)'); 
 INSERT INTO YukonRoleProperty VALUES (-21304,-213,'Group Commander','true','Controls access to group command actions'); 
-INSERT INTO YukonRoleProperty VALUES (-21305,-213,'Mass Change','true','Controls access mass change collection actions. Includes all Mass Change actions.to bulk update operations'); 
+INSERT INTO YukonRoleProperty VALUES (-21305,-213,'Mass Change','true','Controls access to mass change collection actions. Includes all Mass Change actions.');
 INSERT INTO YukonRoleProperty VALUES (-21306,-213,'Locate Route','true','Controls access to locate route action'); 
 INSERT INTO YukonRoleProperty VALUES (-21307,-213,'Mass Delete','true','Controls access to mass delete devices action'); 
 /* End YUK-6220 */
