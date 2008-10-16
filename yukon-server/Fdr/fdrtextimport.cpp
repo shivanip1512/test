@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrtextimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.29 $
-*    DATE         :  $Date: 2008/10/02 23:57:15 $
+*    REVISION     :  $Revision: 1.30 $
+*    DATE         :  $Date: 2008/10/16 22:16:01 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,11 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrtextimport.cpp,v $
+      Revision 1.30  2008/10/16 22:16:01  tspar
+      YUK-4691 FDR Text Import UTC conversion broken after fall DST change
+
+      Removed. To be re added if needed, and using boost timezones
+
       Revision 1.29  2008/10/02 23:57:15  tspar
       YUK-5013 Full FDR reload should not happen with every point
 
@@ -186,8 +191,6 @@
 using std::vector;
 using std::list;
 
-int calcUTCOffset();
-
 CtiFDR_TextImport * textImportInterface;
 
 const CHAR * CtiFDR_TextImport::KEY_INTERVAL = "FDR_TEXTIMPORT_INTERVAL";
@@ -331,13 +334,8 @@ CtiTime CtiFDR_TextImport::ForeignToYukonTime (string& aTime, CHAR aDstFlag)
 
             try
             {
-                if( ts.tm_isdst == -1 ){//utc time, gotta convert to local time
-                    time_t tt = mktime(&ts);
-                    retVal = CtiTime(&ts);
-                    retVal.addSeconds(-1*3600*calcUTCOffset());
-                }else{
-                    retVal = CtiTime(&ts);
-                }
+                retVal = CtiTime(&ts);
+
                 // if CtiTime can't make a time ???
                 if (!retVal.isValid())
                 {
@@ -355,21 +353,6 @@ CtiTime CtiFDR_TextImport::ForeignToYukonTime (string& aTime, CHAR aDstFlag)
         retVal = PASTDATE;
     }
     return retVal;
-}
-
-int calcUTCOffset(){
-    //calculate UTC difference and add(or subtract) the hours.
-    //Warning: this will only work properly for time zones which - from UTC.
-    // This should be replaced fast when we get a better Time library such as Boost 1.33.1
-    struct tm *loc= new struct tm();
-    struct tm *utc;
-    time_t tt;
-    CtiTime time = CtiTime(CtiDate(10,5,2007),1,0,0);
-    time.extract(loc);
-    tt = mktime(loc);
-    utc = gmtime(&tt);
-
-    return (utc->tm_hour - loc->tm_hour);
 }
 
 USHORT CtiFDR_TextImport::ForeignToYukonQuality (char aQuality)
