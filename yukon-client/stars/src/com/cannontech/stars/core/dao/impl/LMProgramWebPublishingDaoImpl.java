@@ -22,14 +22,16 @@ public class LMProgramWebPublishingDaoImpl implements LMProgramWebPublishingDao 
     
     @Override
     @Transactional(readOnly = true)
-    public List<LiteLMProgramEvent> getProgramHistory(final int accountId, final int energyCompanyId) {
+    public List<LiteLMProgramEvent> getProgramHistory(final int accountId, List<Integer> energyCompanyIds) {
         
-        final com.cannontech.database.data.stars.event.LMProgramEvent[] events =
-                com.cannontech.database.data.stars.event.LMProgramEvent.getAllLMProgramEvents(accountId);
-
+        final LMProgramEvent[] events = LMProgramEvent.getAllLMProgramEvents(accountId);
         if (events == null) return Collections.emptyList();
         
-        final List<LiteLMProgramWebPublishing> allProgs = getAllWebPublishing(energyCompanyId);
+        final List<LiteLMProgramWebPublishing> allProgs = new ArrayList<LiteLMProgramWebPublishing>();
+        for (Integer energyCompanyId : energyCompanyIds) {
+            allProgs.addAll(getAllWebPublishing(energyCompanyId));
+        }
+
         final Map<Integer, LiteLMProgramWebPublishing> programIdMap = toProgramIdMap(allProgs);
         final Set<Integer> programIdKeySet = programIdMap.keySet();
 
@@ -48,38 +50,42 @@ public class LMProgramWebPublishingDaoImpl implements LMProgramWebPublishingDao 
     
     @Override
     @Transactional(readOnly = true)
-    public List<LiteStarsLMProgram> getPrograms(final LiteStarsCustAccountInformation account,
-            final int energyCompanyId) {
-
-        final List<LiteLMProgramWebPublishing> allPrograms = getAllWebPublishing(energyCompanyId);
-        final Map<Integer, LiteLMProgramWebPublishing> allProgramsMap = toProgramIdMap(allPrograms);
+    public List<LiteStarsLMProgram> getPrograms(
+            LiteStarsCustAccountInformation account,
+            List<Integer> energyCompanyIds) {
         
-        final List<LiteLMProgramEvent> progHist = getProgramHistory(account.getAccountID(), energyCompanyId);
-        final List<LiteStarsLMProgram> programs = new ArrayList<LiteStarsLMProgram>();
-        
-        //TODO Refactor - this can be simplified.
-        for (final LiteStarsAppliance appliance : account.getAppliances()) {
-            int progID = appliance.getProgramID();
-            if (progID == 0) continue;
-            
-            boolean progExists = false;
-            for (int j = 0; j < programs.size(); j++) {
-                if ((programs.get(j)).getProgramID() == progID) {
-                    progExists = true;
-                    break;
-                }
-            }
-            if (progExists) continue;
-            
-            LiteLMProgramWebPublishing liteProg = allProgramsMap.get(progID);
-            LiteStarsLMProgram prog = new LiteStarsLMProgram( liteProg );
-            
-            prog.setGroupID( appliance.getAddressingGroupID() );
-            prog.updateProgramStatus( progHist );
-            
-            programs.add( prog );
+        final List<LiteLMProgramWebPublishing> allPrograms = new ArrayList<LiteLMProgramWebPublishing>();
+        for (Integer energyCompanyId : energyCompanyIds) {
+            allPrograms.addAll(getAllWebPublishing(energyCompanyId));
         }
+        final Map<Integer, LiteLMProgramWebPublishing> allProgramsMap = toProgramIdMap(allPrograms);
+
+        final List<LiteLMProgramEvent> progHist = getProgramHistory(account.getAccountID(), energyCompanyIds);
         
+        final List<LiteStarsLMProgram> programs = new ArrayList<LiteStarsLMProgram>();
+                
+            //TODO Refactor - this can be simplified.
+            for (final LiteStarsAppliance appliance : account.getAppliances()) {
+                int progID = appliance.getProgramID();
+                if (progID == 0) continue;
+                    
+                boolean progExists = false;
+                for (int j = 0; j < programs.size(); j++) {
+                    if ((programs.get(j)).getProgramID() == progID) {
+                         progExists = true;
+                         break;
+                    }
+                }
+                if (progExists) continue;
+                    
+                LiteLMProgramWebPublishing liteProg = allProgramsMap.get(progID);
+                LiteStarsLMProgram prog = new LiteStarsLMProgram( liteProg );
+                    
+                prog.setGroupID( appliance.getAddressingGroupID() );
+                prog.updateProgramStatus( progHist );
+                    
+                programs.add( prog );
+        }
         return programs;
     }
     
@@ -99,7 +105,9 @@ public class LMProgramWebPublishingDaoImpl implements LMProgramWebPublishingDao 
             
             for (int j = 0; j < pubProgs.length; j++) {
                 LiteLMProgramWebPublishing program = (LiteLMProgramWebPublishing) StarsLiteFactory.createLite(pubProgs[j]);
-                pubPrograms.add( program );
+                if (program != null){
+                    pubPrograms.add( program );
+                }
             }
         }
         

@@ -2,7 +2,6 @@ package com.cannontech.stars.core.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -190,16 +189,8 @@ public class StarsCustAccountInformationDaoImpl implements StarsCustAccountInfor
     private List<Integer> getEnergyCompanyIdList(int energyCompanyId) {
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
         List<LiteStarsEnergyCompany> energyCompanyList = ECUtils.getAllDescendants(energyCompany);
-        List<Integer> energyCompanyIdList = toIdList(energyCompanyList);
+        List<Integer> energyCompanyIdList = ECUtils.toIdList(energyCompanyList);
         return energyCompanyIdList;
-    }
-    
-    private List<Integer> toIdList(List<LiteStarsEnergyCompany> energyCompanyList) {
-        List<Integer> idList = new ArrayList<Integer>(energyCompanyList.size());
-        for (final LiteStarsEnergyCompany energyCompany : energyCompanyList) {
-            idList.add(energyCompany.getEnergyCompanyID());
-        }
-        return idList;
     }
     
     @Autowired

@@ -8,6 +8,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteTypes;
@@ -18,6 +19,7 @@ import com.cannontech.stars.core.dao.LMProgramWebPublishingDao;
 import com.cannontech.stars.core.dao.StarsApplianceDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryBaseDao;
+import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsCallReport;
 
@@ -131,9 +133,13 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	 */
 	public synchronized List<LiteStarsLMProgram> getPrograms() {
 		if (programs == null) {
+                LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany(energyCompanyId);
+	        List<LiteStarsEnergyCompany> allAscendants = ECUtils.getAllAscendants(energyCompany);
+	        List<Integer> energyCompanyIds = ECUtils.toIdList(allAscendants);
+		
 		    LMProgramWebPublishingDao lmProgramWebPublishingDao =
 		        YukonSpringHook.getBean("lmProgramWebPublishingDao", LMProgramWebPublishingDao.class);
-			programs = lmProgramWebPublishingDao.getPrograms(this, energyCompanyId);
+			programs = lmProgramWebPublishingDao.getPrograms(this, energyCompanyIds);
 		}	
 		return programs;
 	}
@@ -286,11 +292,15 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	 * @return
 	 */
 	public synchronized List<LiteLMProgramEvent> getProgramHistory() {
-		if (programHistory == null) {
+        if (programHistory == null) {
+            LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany(energyCompanyId);
+            List<LiteStarsEnergyCompany> allAscendants = ECUtils.getAllAscendants(energyCompany);
+            List<Integer> energyCompanyIds = ECUtils.toIdList(allAscendants);
+
 		    LMProgramWebPublishingDao lmProgramWebPublishingDao =
 		        YukonSpringHook.getBean("lmProgramWebPublishingDao", LMProgramWebPublishingDao.class);
-		    programHistory = lmProgramWebPublishingDao.getProgramHistory(getAccountID(), energyCompanyId);
-		}    
+			programHistory = lmProgramWebPublishingDao.getProgramHistory(getAccountID(), energyCompanyIds);
+		}	
 		return programHistory;
 	}
 

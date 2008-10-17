@@ -9,9 +9,9 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 
 public interface LMProgramWebPublishingDao {
 
-    public List<LiteLMProgramEvent> getProgramHistory(int accountId, int energyCompanyId);
-    
-    public List<LiteStarsLMProgram> getPrograms(LiteStarsCustAccountInformation account, int energyCompanyId);
+    public List<LiteLMProgramEvent> getProgramHistory(int accountId, List<Integer> energyCompanyIds);
+
+    public List<LiteStarsLMProgram> getPrograms(LiteStarsCustAccountInformation account, List<Integer> energyCompanyIds);
     
     public List<LiteLMProgramWebPublishing> getAllWebPublishing(int energyCompanyId);
     

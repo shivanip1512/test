@@ -38,7 +38,26 @@ public class ECUtils {
 		return descendants;
 	}
 	
-	/**
+    /**
+     * Get all the energy companies that the energy company 
+     * belongs to (directly or indirectly), including itself
+     *
+     * @param childEC
+     * @return
+     */	
+    public static List<LiteStarsEnergyCompany> getAllAscendants(LiteStarsEnergyCompany childEC) {
+        List<LiteStarsEnergyCompany> ascendants = new ArrayList<LiteStarsEnergyCompany>();
+        ascendants.add( childEC );
+        
+        while(childEC.getParent() != null) {
+            ascendants.add(childEC.getParent());
+            childEC = childEC.getParent();
+        }
+        
+        return ascendants;
+    }
+
+    /**
 	 * @return Whether company1 is a descendant of company2
 	 */
 	public static boolean isDescendantOf(LiteStarsEnergyCompany company1, LiteStarsEnergyCompany company2) {
@@ -56,6 +75,19 @@ public class ECUtils {
 		return (value == null) || Boolean.valueOf(value).booleanValue();
 	}
 
+    /**
+     * 
+     * @param energyCompanyList
+     * @return
+     */
+    public static List<Integer> toIdList(List<LiteStarsEnergyCompany> energyCompanyList) {
+        List<Integer> idList = new ArrayList<Integer>(energyCompanyList.size());
+        for (final LiteStarsEnergyCompany energyCompany : energyCompanyList) {
+            idList.add(energyCompany.getEnergyCompanyID());
+        }
+        return idList;
+    }
+	
 	public static boolean hasRight(LiteStarsEnergyCompany energyCompany, int rightCode) {
 		String value = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.OPTIONAL_PRODUCT_DEV );
 		if (value == null) return false;
