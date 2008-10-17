@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/INCLUDE/test_queue.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2008/07/08 22:47:06 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2008/10/17 14:03:17 $
 *
 * Copyright (c) 2007 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,272 +17,266 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/test/auto_unit_test.hpp>
 #include <boost/test/floating_point_comparison.hpp>
+#include <boost/bind.hpp>
+#include <iostream>
+
 #include "queue.h"
 
 using namespace std;
-
 using boost::unit_test_framework::test_suite;
 
-inline double xtime_to_double(boost::xtime xt)
+
+inline double xtime_duration(boost::xtime &begin, boost::xtime &end)
 {
-    return (double)xt.sec + ((double)xt.nsec * 1e-9);
+    return static_cast<double>(end.sec  - begin.sec) +
+           static_cast<double>(end.nsec - begin.nsec) * 1e-9;
 }
 
-BOOST_AUTO_UNIT_TEST(test_cti_queue_timing)
+struct instance_counter
+{
+    int instance;
+    static int counter;  //  keeps a counter instance to track construction and destruction
+
+    instance_counter()  { instance = ++counter; };
+    ~instance_counter() { counter--; };
+};
+
+int instance_counter::counter;
+
+
+BOOST_AUTO_UNIT_TEST(test_queue_timing)
 {
     CtiQueue<int, std::less<int> > testQueue;
 
-    boost::xtime start_xtime,   end_xtime;
-    double       start_seconds, end_seconds;
+    boost::xtime start_xtime, end_xtime;
 
-    //Test reading off an empty queue
+    //  Test reading off an empty queue
     boost::xtime_get(&start_xtime, boost::TIME_UTC);
-    testQueue.getQueue(1000);
+    testQueue.getQueue(500);
     boost::xtime_get(&end_xtime,   boost::TIME_UTC);
 
-    //For the purposes of this test, the stop time is not so important.
-    //The stop time is set a way out because we wont want busy system false positives.
-
-    start_seconds = xtime_to_double(start_xtime);
-    end_seconds   = xtime_to_double(end_xtime);
-
-    //  The end time must be between 1.0 and 1.2 seconds past the start time
-    BOOST_CHECK( (start_seconds + 1.0) <= end_seconds );
-    BOOST_CHECK( (start_seconds + 1.2) >  end_seconds );
+    //  The end time must be between 0.49 and 0.55 seconds past the start time (10ms fuzz-factor)
+    BOOST_CHECK( xtime_duration(start_xtime, end_xtime) > 0.49 );
+    BOOST_CHECK( xtime_duration(start_xtime, end_xtime) < 0.55 );
 
     boost::xtime_get(&start_xtime, boost::TIME_UTC);
     testQueue.getQueue(100);
     boost::xtime_get(&end_xtime,   boost::TIME_UTC);
 
-    start_seconds = xtime_to_double(start_xtime);
-    end_seconds   = xtime_to_double(end_xtime);
-
-    //  The end time must be between 0.10 and 0.15 seconds past the start time
-    BOOST_CHECK( (start_seconds + 0.10) <= end_seconds );
-    BOOST_CHECK( (start_seconds + 0.15) >  end_seconds );
+    //  The end time must be between 0.09 and 0.15 seconds past the start time (10ms fuzz-factor)
+    BOOST_CHECK( xtime_duration(start_xtime, end_xtime) > 0.09 );
+    BOOST_CHECK( xtime_duration(start_xtime, end_xtime) < 0.15 );
 }
+
+struct test_element
+{
+    long value, insertOrder;
+
+    test_element(long value_, long insertOrder_) : value(value_), insertOrder(insertOrder_) { }
+
+    bool operator>(const test_element& rhs) const  {  return value > rhs.value;  }
+    bool operator<(const test_element& rhs) const  {  return value < rhs.value;  }
+};
+
+void setInsertOrder(test_element *&dataStruct, void* d)
+{
+    dataStruct->insertOrder = (int)d;
+}
+
+BOOST_AUTO_UNIT_TEST(test_queue_sort)
+{
+    CtiQueue<test_element, greater<test_element> > greaterQueue;
+    CtiQueue<test_element, less<test_element> > lessQueue;
+
+    test_element *element;
+
+    //  greaterQueue
+
+    greaterQueue.putQueue(new test_element(1, 1));
+    greaterQueue.putQueue(new test_element(1, 2));
+    greaterQueue.putQueue(new test_element(1, 3));
+    greaterQueue.putQueue(new test_element(2, 1));
+    greaterQueue.putQueue(new test_element(1, 4));
+
+    //  sorted greater by value, fifo if equal
+    element = greaterQueue.getQueue();  BOOST_CHECK_EQUAL(element->value, 2);                                               delete element;
+    element = greaterQueue.getQueue();  BOOST_CHECK_EQUAL(element->value, 1);  BOOST_CHECK_EQUAL(element->insertOrder, 1);  delete element;
+    element = greaterQueue.getQueue();  BOOST_CHECK_EQUAL(element->value, 1);  BOOST_CHECK_EQUAL(element->insertOrder, 2);  delete element;
+    element = greaterQueue.getQueue();  BOOST_CHECK_EQUAL(element->value, 1);  BOOST_CHECK_EQUAL(element->insertOrder, 3);  delete element;
+    element = greaterQueue.getQueue();  BOOST_CHECK_EQUAL(element->value, 1);  BOOST_CHECK_EQUAL(element->insertOrder, 4);  delete element;
+
+
+    //  lessQueue
+
+    lessQueue.putQueue(new test_element(1, 1));
+    lessQueue.putQueue(new test_element(1, 2));
+    lessQueue.putQueue(new test_element(1, 3));
+    lessQueue.putQueue(new test_element(2, 1));
+    lessQueue.putQueue(new test_element(1, 4));
+
+    element = lessQueue.getQueue();  BOOST_CHECK_EQUAL(element->value, 1);  BOOST_CHECK_EQUAL(element->insertOrder, 1);  delete element;
+    element = lessQueue.getQueue();  BOOST_CHECK_EQUAL(element->value, 1);  BOOST_CHECK_EQUAL(element->insertOrder, 2);  delete element;
+    element = lessQueue.getQueue();  BOOST_CHECK_EQUAL(element->value, 1);  BOOST_CHECK_EQUAL(element->insertOrder, 3);  delete element;
+    element = lessQueue.getQueue();  BOOST_CHECK_EQUAL(element->value, 1);  BOOST_CHECK_EQUAL(element->insertOrder, 4);  delete element;
+    element = lessQueue.getQueue();  BOOST_CHECK_EQUAL(element->value, 2);                                               delete element;
+}
+
+BOOST_AUTO_UNIT_TEST(test_queue_apply)
+{
+    CtiQueue<test_element, greater<test_element> > greaterQueue;
+
+    test_element *element;
+
+    greaterQueue.putQueue(new test_element(1, 1));
+    greaterQueue.putQueue(new test_element(1, 2));
+    greaterQueue.putQueue(new test_element(1, 3));
+    greaterQueue.putQueue(new test_element(1, 4));
+
+    greaterQueue.apply(setInsertOrder, (void *)5);
+
+    element = greaterQueue.getQueue();  BOOST_CHECK_EQUAL(element->insertOrder, 5);  delete element;
+    element = greaterQueue.getQueue();  BOOST_CHECK_EQUAL(element->insertOrder, 5);  delete element;
+    element = greaterQueue.getQueue();  BOOST_CHECK_EQUAL(element->insertOrder, 5);  delete element;
+    element = greaterQueue.getQueue();  BOOST_CHECK_EQUAL(element->insertOrder, 5);  delete element;
+}
+
+
+//  This inserts 100,000 objects into a queue and makes sure it does not take
+//  an unreasonable amount of time
+BOOST_AUTO_UNIT_TEST(test_queue_sort_speed)
+{
+    CtiQueue<test_element, greater<test_element> > greaterQueue;
+
+    greaterQueue.putQueue(new test_element(1, 1));
+
+    time_t start = ::time(0);
+
+    for( int i = 0; i < 100 * 1000; ++i )
+    {
+        //  i % 1000 gives a sort key that should
+        //    stress the insert a little
+        greaterQueue.putQueue(new test_element(i % 1000, i));
+    }
+
+    BOOST_CHECK(::time(0) < (start + 2));  //  2 seconds is quite a while, actually.
+
+    greaterQueue.clearAndDestroy();
+}
+
 
 BOOST_AUTO_UNIT_TEST(test_fifo_queue_timing)
 {
     CtiFIFOQueue<int> testQueue;
 
-    boost::xtime start_xtime,   end_xtime;
-    double       start_seconds, end_seconds;
+    boost::xtime start_xtime, end_xtime;
 
-    //Test reading off an empty queue
+    //  Test reading off an empty queue
     boost::xtime_get(&start_xtime, boost::TIME_UTC);
-    testQueue.getQueue(1000);
+    testQueue.getQueue(500);
     boost::xtime_get(&end_xtime,   boost::TIME_UTC);
 
-    //For the purposes of this test, the stop time is not so important.
-    //The stop time is set a way out because we wont want busy system false positives.
-
-    start_seconds = xtime_to_double(start_xtime);
-    end_seconds   = xtime_to_double(end_xtime);
-
-    //  The end time must be between 1.0 and 1.2 seconds past the start time
-    BOOST_CHECK( (start_seconds + 1.0) <= end_seconds );
-    BOOST_CHECK( (start_seconds + 1.2) >  end_seconds );
+    //  The end time must be between 0.49 and 0.55 seconds past the start time (10ms fuzz-factor)
+    BOOST_CHECK( xtime_duration(start_xtime, end_xtime) > 0.490 );
+    BOOST_CHECK( xtime_duration(start_xtime, end_xtime) < 0.550 );
 
     boost::xtime_get(&start_xtime, boost::TIME_UTC);
     testQueue.getQueue(100);
     boost::xtime_get(&end_xtime,   boost::TIME_UTC);
 
-    start_seconds = xtime_to_double(start_xtime);
-    end_seconds   = xtime_to_double(end_xtime);
-
-    //  The end time must be between 0.10 and 0.15 seconds past the start time
-    BOOST_CHECK( (start_seconds + 0.10) <= end_seconds );
-    BOOST_CHECK( (start_seconds + 0.15) >  end_seconds );
+    //  The end time must be between 0.09 and 0.15 seconds past the start time (10ms fuzz-factor)
+    BOOST_CHECK( xtime_duration(start_xtime, end_xtime) > 0.090 );
+    BOOST_CHECK( xtime_duration(start_xtime, end_xtime) < 0.150 );
 }
 
-struct queueTestStruct
-{
-    long value, insertOrder;
 
-    bool operator>(const queueTestStruct& rhs) const  {  return value > rhs.value;  }
-    bool operator<(const queueTestStruct& rhs) const  {  return value < rhs.value;  }
-};
-
-void applySetInsertOrderToInt(queueTestStruct *&dataStruct, void* d)
+BOOST_AUTO_UNIT_TEST(test_fifoqueue_single_threaded)
 {
-    dataStruct->insertOrder = (int)d;
+    CtiFIFOQueue<instance_counter> q;
+
+    instance_counter::counter = 0;
+
+    instance_counter *element;
+
+    BOOST_CHECK_EQUAL(q.entries(), instance_counter::counter);
+    BOOST_CHECK_EQUAL(q.size(),    instance_counter::counter);
+
+    BOOST_CHECK_EQUAL(q.getQueue(50), reinterpret_cast<instance_counter *>(0));
+
+    q.putQueue(new instance_counter);
+
+    BOOST_CHECK_EQUAL(q.entries(), instance_counter::counter);
+    BOOST_CHECK_EQUAL(q.size(),    instance_counter::counter);
+
+    q.putQueue(new instance_counter);
+    q.putQueue(new instance_counter);
+    q.putQueue(new instance_counter);
+
+    BOOST_CHECK_EQUAL(q.entries(), instance_counter::counter);
+    BOOST_CHECK_EQUAL(q.size(),    instance_counter::counter);
+
+    q.putQueue(new instance_counter, 50);
+
+    BOOST_CHECK_EQUAL(q.entries(), instance_counter::counter);
+    BOOST_CHECK_EQUAL(q.size(),    instance_counter::counter);
+
+    element = q.getQueue();
+
+    BOOST_CHECK_EQUAL(q.entries(), instance_counter::counter - 1);
+    BOOST_CHECK_EQUAL(q.size(),    instance_counter::counter - 1);
+
+    delete element;
+
+    delete q.getQueue(50);
+
+    BOOST_CHECK_EQUAL(q.entries(), instance_counter::counter);
+    BOOST_CHECK_EQUAL(q.size(),    instance_counter::counter);
+
+    q.clearAndDestroy();
+
+    BOOST_CHECK_EQUAL(q.entries(), 0);
+    BOOST_CHECK_EQUAL(q.size(),    0);
+    BOOST_CHECK_EQUAL(q.entries(), instance_counter::counter);
+    BOOST_CHECK_EQUAL(q.size(),    instance_counter::counter);
+
+    BOOST_CHECK_EQUAL(q.getName(), "Unnamed Queue");
+
+    q.setName("Henrietta");
+
+    BOOST_CHECK_EQUAL(q.getName(), "Henrietta");
 }
 
-BOOST_AUTO_UNIT_TEST(test_cti_queue_sort)
+template <class T>
+void read_success(CtiFIFOQueue<T> &q, T compare)
 {
-    CtiQueue<queueTestStruct, greater<queueTestStruct> > greaterQueue;
-    CtiQueue<queueTestStruct, less<queueTestStruct> > lessQueue;
+    T *element = q.getQueue(50);
 
-    queueTestStruct *tempMsg = CTIDBG_new queueTestStruct();
-    tempMsg->value = 1;
-    tempMsg->insertOrder = 1;
-    greaterQueue.putQueue(tempMsg);
-
-    tempMsg = CTIDBG_new queueTestStruct();
-    tempMsg->value = 1;
-    tempMsg->insertOrder = 2;
-    greaterQueue.putQueue(tempMsg);
-
-    tempMsg = CTIDBG_new queueTestStruct();
-    tempMsg->value = 1;
-    tempMsg->insertOrder = 3;
-    greaterQueue.putQueue(tempMsg);
-
-    tempMsg = CTIDBG_new queueTestStruct();
-    tempMsg->value = 2;
-    tempMsg->insertOrder = 1;
-    greaterQueue.putQueue(tempMsg);
-
-    tempMsg = CTIDBG_new queueTestStruct();
-    tempMsg->value = 1;
-    tempMsg->insertOrder = 4;
-    greaterQueue.putQueue(tempMsg);
-
-    //  This object is meant to sort by >, so 3's should come off first.
-    tempMsg = greaterQueue.getQueue();
-    BOOST_CHECK_EQUAL(tempMsg->value, 2);
-    //std::cout << "value, insertorder: " << tempMsg->value << " " << tempMsg->insertOrder << "\n";
-    delete tempMsg;
-    tempMsg = greaterQueue.getQueue();
-    BOOST_CHECK_EQUAL(tempMsg->value, 1);
-    BOOST_CHECK_EQUAL(tempMsg->insertOrder, 1);
-    //std::cout << "value, insertorder: " << tempMsg->value << " " << tempMsg->insertOrder << "\n";
-    delete tempMsg;
-    tempMsg = greaterQueue.getQueue();
-    BOOST_CHECK_EQUAL(tempMsg->value, 1);
-    BOOST_CHECK_EQUAL(tempMsg->insertOrder, 2);
-    //std::cout << "value, insertorder: " << tempMsg->value << " " << tempMsg->insertOrder << "\n";
-    delete tempMsg;
-    tempMsg = greaterQueue.getQueue();
-    BOOST_CHECK_EQUAL(tempMsg->value, 1);
-    BOOST_CHECK_EQUAL(tempMsg->insertOrder, 3);
-    //std::cout << "value, insertorder: " << tempMsg->value << " " << tempMsg->insertOrder << "\n";
-    delete tempMsg;
-    tempMsg = greaterQueue.getQueue();
-    BOOST_CHECK_EQUAL(tempMsg->value, 1);
-    BOOST_CHECK_EQUAL(tempMsg->insertOrder, 4);
-    //std::cout << "value, insertorder: " << tempMsg->value << " " << tempMsg->insertOrder << "\n";
-    delete tempMsg;
-
-
-    // Do the lessQueue
-
-    tempMsg = CTIDBG_new queueTestStruct();
-    tempMsg->value = 1;
-    tempMsg->insertOrder = 1;
-    lessQueue.putQueue(tempMsg);
-
-    tempMsg = CTIDBG_new queueTestStruct();
-    tempMsg->value = 1;
-    tempMsg->insertOrder = 2;
-    lessQueue.putQueue(tempMsg);
-
-    tempMsg = CTIDBG_new queueTestStruct();
-    tempMsg->value = 1;
-    tempMsg->insertOrder = 3;
-    lessQueue.putQueue(tempMsg);
-
-    tempMsg = CTIDBG_new queueTestStruct();
-    tempMsg->value = 2;
-    tempMsg->insertOrder = 1;
-    lessQueue.putQueue(tempMsg);
-
-    tempMsg = CTIDBG_new queueTestStruct();
-    tempMsg->value = 1;
-    tempMsg->insertOrder = 4;
-    lessQueue.putQueue(tempMsg);
-
-    //  This object is meant to sort by <, so 1's should come off first.
-    tempMsg = lessQueue.getQueue();
-    BOOST_CHECK_EQUAL(tempMsg->value, 1);
-    BOOST_CHECK_EQUAL(tempMsg->insertOrder, 1);
-    //std::cout << "value, insertorder: " << tempMsg->value << " " << tempMsg->insertOrder << "\n";
-    delete tempMsg;
-    tempMsg = lessQueue.getQueue();
-    BOOST_CHECK_EQUAL(tempMsg->value, 1);
-    BOOST_CHECK_EQUAL(tempMsg->insertOrder, 2);
-    //std::cout << "value, insertorder: " << tempMsg->value << " " << tempMsg->insertOrder << "\n";
-    delete tempMsg;
-    tempMsg = lessQueue.getQueue();
-    BOOST_CHECK_EQUAL(tempMsg->value, 1);
-    BOOST_CHECK_EQUAL(tempMsg->insertOrder, 3);
-    //std::cout << "value, insertorder: " << tempMsg->value << " " << tempMsg->insertOrder << "\n";
-    delete tempMsg;
-    tempMsg = lessQueue.getQueue();
-    BOOST_CHECK_EQUAL(tempMsg->value, 1);
-    BOOST_CHECK_EQUAL(tempMsg->insertOrder, 4);
-    //std::cout << "value, insertorder: " << tempMsg->value << " " << tempMsg->insertOrder << "\n";
-    delete tempMsg;
-    tempMsg = lessQueue.getQueue();
-    BOOST_CHECK_EQUAL(tempMsg->value, 2);
-    //std::cout << "value, insertorder: " << tempMsg->value << " " << tempMsg->insertOrder << "\n";
-    delete tempMsg;
+    BOOST_CHECK_EQUAL(*element, compare);
 }
 
-BOOST_AUTO_UNIT_TEST(test_cti_queue_apply)
+template <class T>
+void read_fail(CtiFIFOQueue<T> &q)
 {
-    CtiQueue<queueTestStruct, greater<queueTestStruct> > greaterQueue;
+    T *element = q.getQueue(50);
 
-    queueTestStruct *tempMsg = CTIDBG_new queueTestStruct();
-    tempMsg->value = 1;
-    tempMsg->insertOrder = 1;
-    greaterQueue.putQueue(tempMsg);
-
-    tempMsg = CTIDBG_new queueTestStruct();
-    tempMsg->value = 1;
-    tempMsg->insertOrder = 2;
-    greaterQueue.putQueue(tempMsg);
-
-    tempMsg = CTIDBG_new queueTestStruct();
-    tempMsg->value = 1;
-    tempMsg->insertOrder = 3;
-    greaterQueue.putQueue(tempMsg);
-
-    tempMsg = CTIDBG_new queueTestStruct();
-    tempMsg->value = 1;
-    tempMsg->insertOrder = 4;
-    greaterQueue.putQueue(tempMsg);
-
-    greaterQueue.apply(applySetInsertOrderToInt, (void *)5);
-
-    tempMsg = greaterQueue.getQueue();
-    BOOST_CHECK_EQUAL(tempMsg->insertOrder, 5);
-    delete tempMsg;
-    tempMsg = greaterQueue.getQueue();
-    BOOST_CHECK_EQUAL(tempMsg->insertOrder, 5);
-    delete tempMsg;
-    tempMsg = greaterQueue.getQueue();
-    BOOST_CHECK_EQUAL(tempMsg->insertOrder, 5);
-    delete tempMsg;
-    tempMsg = greaterQueue.getQueue();
-    BOOST_CHECK_EQUAL(tempMsg->insertOrder, 5);
-    delete tempMsg;
+    BOOST_CHECK_EQUAL(element, 0);
 }
 
-//This inserts many many objects into a queue and makes sure it does not take
-//an unreasonable amount of time
-BOOST_AUTO_UNIT_TEST(test_cti_queue_sort_speed)
+BOOST_AUTO_UNIT_TEST(test_fifoqueue_multi_threaded)
 {
-    CtiQueue<queueTestStruct, greater<queueTestStruct> > greaterQueue;
+    CtiFIFOQueue<int> q;
+    boost::thread_group threads;
 
-    queueTestStruct *tempMsg = CTIDBG_new queueTestStruct();
-    tempMsg->value = 1;
-    tempMsg->insertOrder = 1;
-    greaterQueue.putQueue(tempMsg);
+    q.putQueue(new int(3));
 
-    CtiTime start;
-    for( int a = 1; a<=100;a++ )
-    {
-        for( int i=0; i<1000; i++ )
-        {
-            tempMsg = CTIDBG_new queueTestStruct();
-            tempMsg->value = 1;
-            tempMsg->insertOrder = 1;
-            greaterQueue.putQueue(tempMsg);
-        }
-    }
-    CtiTime stop;
-    BOOST_CHECK(stop.seconds() < (start.seconds() + 4));//4 is quite a while actually.
+    threads.create_thread(boost::bind(read_success<int>, boost::ref(q), 3));
+    threads.create_thread(boost::bind(read_success<int>, boost::ref(q), 4));
+    threads.create_thread(boost::bind(read_success<int>, boost::ref(q), 5));
 
+    q.putQueue(new int(4));
+    q.putQueue(new int(5));
+
+    threads.create_thread(boost::bind(read_fail<int>, boost::ref(q)));
+
+    threads.join_all();
 }
+

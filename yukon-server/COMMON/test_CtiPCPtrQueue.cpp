@@ -1,9 +1,9 @@
 /*
  * File test_CtiPCPtrQueue.cpp
- *  
+ *
  * Author: Thain Spar
- * Date: 03/15/2006 16:55:13 
- * 
+ * Date: 03/15/2006 16:55:13
+ *
  * Testing the Cti Producer Consumer Pointer Queue
  *
  */
@@ -29,7 +29,11 @@ BOOST_AUTO_UNIT_TEST(test_writeread)
     itemOne = new int(1);
     itemTwo = new int(2);
     bool tester;
-    //Testing canRead on an empyt queue.
+
+    //Testing empty on an empty queue.
+    BOOST_CHECK_EQUAL( q->empty(), true );
+
+    //Testing canRead on an empty queue.
     BOOST_CHECK_EQUAL( q->canRead(), false );
     q->close();
 
@@ -41,7 +45,10 @@ BOOST_AUTO_UNIT_TEST(test_writeread)
     BOOST_CHECK_EQUAL( q->write(itemOne), true);
     BOOST_CHECK_EQUAL( q->write(itemTwo), true);
 
-    //Testing canRead when something is onthe queue.
+    //Testing empty when something is on the queue.
+    BOOST_CHECK_EQUAL( q->empty(), false );
+
+    //Testing canRead when something is on the queue.
     BOOST_CHECK_EQUAL( q->canRead(), true );
     q->close();
 
@@ -85,7 +92,7 @@ BOOST_AUTO_UNIT_TEST(test_writeread)
         unsigned int startMS = startTime.nsec/1000000;
         unsigned int stopMS = endTime.nsec/1000000 + 1000;
         BOOST_CHECK( startMS + 75 < stopMS );
-        BOOST_CHECK( startMS + 300 > stopMS ); 
+        BOOST_CHECK( startMS + 300 > stopMS );
     }
 
     //Test reading off a closed empty queue
@@ -152,8 +159,8 @@ void readOne()//for MultiThread Test
 BOOST_AUTO_UNIT_TEST(test_timeOutMultiThread)
 {//first three should read fine, Last should time out.
     boost::thread_group threads;
-    int *one   = new int(1), 
-        *two   = new int(2), 
+    int *one   = new int(1),
+        *two   = new int(2),
         *three = new int(3);
     threadQ.write     (one);
     threadQ.write     (two);

@@ -595,12 +595,6 @@ public:
         _name = str;
         return *this;
     }
-
-    void apply(void (*fn)(T*&,void*), void* d)
-    {
-        lock_t scoped_lock(mux, xt_eot);
-        for_each(_col.begin(), _col.end(),bind2nd(fn,d));
-    }
 };
 
 #endif //#ifndef __CtiQUE_H__

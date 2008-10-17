@@ -12,38 +12,38 @@ using boost::unit_test_framework::test_suite;
 #include "dsm2.h"
 #include "queues.h"
 
-struct test_wrapper
+struct instance_counter
 {
     static int counter;  //  keeps a counter instance to track construction and destruction
 
-    test_wrapper()  { counter++; };
-    ~test_wrapper() { counter--; };
+    instance_counter()  { counter++; };
+    ~instance_counter() { counter--; };
 };
 
-int test_wrapper::counter;
+int instance_counter::counter;
 
 BOOST_AUTO_UNIT_TEST(test_delete_container)
 {
-    std::vector<test_wrapper *> test_vector;
+    std::vector<instance_counter *> test_vector;
     const int max_size = 4;
     int i;
 
-    test_wrapper::counter = 0;
+    instance_counter::counter = 0;
 
-    BOOST_CHECK_EQUAL(test_vector.size(), test_wrapper::counter);
+    BOOST_CHECK_EQUAL(test_vector.size(), instance_counter::counter);
 
     for( i = max_size; i; i-- )
     {
-        test_vector.push_back(new test_wrapper);
-        BOOST_CHECK_EQUAL(test_vector.size(), test_wrapper::counter);
+        test_vector.push_back(new instance_counter);
+        BOOST_CHECK_EQUAL(test_vector.size(), instance_counter::counter);
     }
 
     delete_container(test_vector);
 
     BOOST_CHECK_EQUAL(test_vector.size(), max_size);  //  verify the elements are still there...
-    BOOST_CHECK_EQUAL(test_wrapper::counter, 0);      //  ... but that they've all been deleted
+    BOOST_CHECK_EQUAL(instance_counter::counter, 0);      //  ... but that they've all been deleted
 
-    std::vector<test_wrapper *>::iterator itr = test_vector.begin();
+    std::vector<instance_counter *>::iterator itr = test_vector.begin();
 
     //  verify the elements have been zeroed out
     for( i = max_size; i; i-- )
@@ -55,26 +55,26 @@ BOOST_AUTO_UNIT_TEST(test_delete_container)
 
 BOOST_AUTO_UNIT_TEST(test_delete_assoc_container)
 {
-    std::map<int, test_wrapper *> test_map;
+    std::map<int, instance_counter *> test_map;
     const int max_size = 4;
     int i;
 
-    test_wrapper::counter = 0;
+    instance_counter::counter = 0;
 
-    BOOST_CHECK_EQUAL(test_map.size(), test_wrapper::counter);
+    BOOST_CHECK_EQUAL(test_map.size(), instance_counter::counter);
 
     for( i = max_size; i; i-- )
     {
-        test_map.insert(std::make_pair(i, new test_wrapper));
-        BOOST_CHECK_EQUAL(test_map.size(), test_wrapper::counter);
+        test_map.insert(std::make_pair(i, new instance_counter));
+        BOOST_CHECK_EQUAL(test_map.size(), instance_counter::counter);
     }
 
     delete_assoc_container(test_map);
 
     BOOST_CHECK_EQUAL(test_map.size(), max_size);  //  verify the elements are still there...
-    BOOST_CHECK_EQUAL(test_wrapper::counter, 0);   //  ... but that they've all been deleted
+    BOOST_CHECK_EQUAL(instance_counter::counter, 0);   //  ... but that they've all been deleted
 
-    std::map<int, test_wrapper *>::iterator itr = test_map.begin();
+    std::map<int, instance_counter *>::iterator itr = test_map.begin();
 
     //  verify the elements have been zeroed out
     for( i = max_size; i; i-- )
