@@ -237,7 +237,7 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao
             int categoryId = rs.getInt("NotificationCategoryId");
             int order = rs.getInt("Ordering");
             String disableFlag = rs.getString("DisableFlag");
-            String notificationString = rs.getString("Notification");
+            String notificationString = SqlUtils.convertDbValueToString(rs.getString("Notification"));
 
             LiteContactNotification notification = new LiteContactNotification(id);
             notification.setContactID(contactId);

@@ -663,8 +663,8 @@ public final class ContactDaoImpl implements ContactDao {
             int id = rs.getInt("ContactId");
             int loginId = rs.getInt("LoginId");
             int addressId = rs.getInt("AddressId");
-            String firstName = rs.getString("ContFirstName");
-            String lastName = rs.getString("ContLastName");
+            String firstName = SqlUtils.convertDbValueToString(rs.getString("ContFirstName"));
+            String lastName = SqlUtils.convertDbValueToString(rs.getString("ContLastName"));
 
             LiteContact contact = new LiteContact(id);
             contact.setLoginID(loginId);
