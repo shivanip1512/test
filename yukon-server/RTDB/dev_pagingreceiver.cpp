@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_pagerreceive.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2008/10/15 14:38:23 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2008/10/17 11:14:38 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -77,9 +77,9 @@ INT CtiDevicePagingReceiver::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, l
 
 int CtiDevicePagingReceiver::sendCommResult(INMESS *InMessage)
 {
-    InMessage->EventCode = NORMAL;
+    InMessage->EventCode = NoError;
     InMessage->DeviceID = getID();
-    return NORMAL;
+    return NoError;
 }
 
 INT CtiDevicePagingReceiver::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  list< CtiMessage* > &vgList,list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority)
@@ -195,7 +195,7 @@ int CtiDevicePagingReceiver::generate(CtiXfer &xfer)
                     {
                         setPreviousState(SendCapcodeNumber);// ADD_CODE_HERE
                         break;
-                    }                  
+                    }
                     break;
                 }
             case SendCapcodeNumber:
@@ -261,10 +261,10 @@ int CtiDevicePagingReceiver::generate(CtiXfer &xfer)
                 }
             case ReadAndCheck:
                 {
-					xfer.setInBuffer(_inBuffer);
+                    xfer.setInBuffer(_inBuffer);
                     xfer.setOutBuffer(_outBuffer);
                     xfer.setBufferSize(DEV_PAGERRECEIVE_IN_BUFFER_SIZE);
-					xfer.setOutCount(0);
+                    xfer.setOutCount(0);
                     xfer.setInCountActual(&_inCountActual);
                     xfer.setNonBlockingReads(true);//reads dont block
                     xfer.setInCountExpected(0);//no delay.

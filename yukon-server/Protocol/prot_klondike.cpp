@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2008/09/25 15:54:02 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2008/10/17 11:14:38 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -30,7 +30,7 @@ const Klondike::command_state_map_t Klondike::_command_states;
 Klondike::Klondike() :
     _wrap(&_idlc_wrap),
     _io_state(IO_Invalid),
-    _error(NoError),
+    _error(Error_None),
     _loading_device_queue(false),
     _reading_device_queue(false),
     _device_queue_sequence(numeric_limits<unsigned int>::max()),
@@ -120,7 +120,7 @@ bool Klondike::commandStateValid()
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - Cti::Protocol::Klondike::commandStateValid() : (Command_LoadQueue/CommandCode_CheckStatus) : _waiting_requests.empty() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - Cti::Protocol::Klondike::commandStateValid() : Command_LoadQueue/CommandCode_CheckStatus : _waiting_requests.empty() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             command_valid = false;
@@ -131,7 +131,7 @@ bool Klondike::commandStateValid()
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - Cti::Protocol::Klondike::commandStateValid() : (Command_LoadQueue/CommandCode_CheckStatus) : _device_queue_entries_available == 0 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - Cti::Protocol::Klondike::commandStateValid() : Command_LoadQueue/CommandCode_CheckStatus : _device_queue_entries_available == 0 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             command_valid = false;
@@ -145,7 +145,7 @@ bool Klondike::commandStateValid()
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - Cti::Protocol::Klondike::commandStateValid() : (Command_ReadQueue/CommandCode_ReplyQueueRead) : _remote_requests.empty() && !_device_status.response_buffer_has_data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - Cti::Protocol::Klondike::commandStateValid() : Command_ReadQueue/CommandCode_ReplyQueueRead : _remote_requests.empty() && !_device_status.response_buffer_has_data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             command_valid = false;
@@ -159,7 +159,7 @@ bool Klondike::commandStateValid()
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - Cti::Protocol::Klondike::commandStateValid() : (Command_LoadRoutes/CommandCode_RoutingTableWrite) : _routes.empty() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - Cti::Protocol::Klondike::commandStateValid() : Command_LoadRoutes/CommandCode_RoutingTableWrite : _routes.empty() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             command_valid = false;
@@ -190,21 +190,6 @@ void Klondike::setAddresses( unsigned short slaveAddress, unsigned short masterA
     _idlc_wrap.setAddress(_slaveAddress);
 }
 
-/*
-void Klondike::setWrap( ProtocolWrap w )
-{
-    switch( w )
-    {
-        default:
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - invalid wrap protocol (" << w << ") specified in Cti::Protocol::Klondike::Klondike, defaulting to IDLC **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-        case ProtocolWrap_IDLC:     _wrap = &_idlc_wrap;    break;
-        //case ProtocolWrap_DNP:      _wrap = &_dnp_wrap;     break;
-    }
-}
-*/
 
 //  this is only called from recvCommRequest, so only one thread should be able to call this at once
 int Klondike::setCommand( int command, byte_buffer_t payload, unsigned in_expected, unsigned priority, unsigned char stages, unsigned char dlc_parms )
@@ -259,7 +244,7 @@ int Klondike::setCommand( int command, byte_buffer_t payload, unsigned in_expect
     {
         _io_state = IO_Output;
         _error    = Error_None;
-        _protocol_errors = 0;
+        _wrap_errors = 0;
 
         _wrap->init();
 
@@ -330,7 +315,7 @@ int Klondike::generate( CtiXfer &xfer )
             default:
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - Cti::Protocol::Klondike::commandStateValid() : (Command_LoadQueue/CommandCode_CheckStatus) : _waiting_requests.empty() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - Cti::Protocol::Klondike::generate() : unknown _io_state (" << _io_state << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
     }
@@ -341,8 +326,6 @@ int Klondike::generate( CtiXfer &xfer )
 
 void Klondike::doOutput(CommandCode command_code)
 {
-    int pos = 0, length_pos, dlc_length = 0;
-
     byte_buffer_t outbound;
 
     if( _current_command.command == Command_Raw )
@@ -385,28 +368,26 @@ void Klondike::doOutput(CommandCode command_code)
             int queue_count_pos = outbound.size();
             outbound.push_back(0);
 
-            local_work_t::iterator itr     = _waiting_requests.begin(),
-                                   itr_end = _waiting_requests.end();
+            local_work_t::iterator waiting_itr = _waiting_requests.begin(),
+                                   waiting_end = _waiting_requests.end();
 
-            int processed = 0,
-                limit     = _wrap->getMaximumPayload();
+            int processed = 0;
 
-            bool full = false;
-
-            for( ; itr != itr_end && !full && processed < _device_queue_entries_available; itr++ )
+            for( ; waiting_itr != waiting_end && processed < _device_queue_entries_available; waiting_itr++ )
             {
-                if( pos + QueueEntryHeaderLength + itr->outbound.size() > limit )
+                if( outbound.size() + QueueEntryHeaderLength + waiting_itr->outbound.size() > _wrap->getMaximumPayload() )
                 {
-                    full = true;
+                    break;
                 }
                 else
                 {
-                    outbound.insert(outbound.end(), itr->priority);
-                    outbound.insert(outbound.end(), itr->dlc_parms);
-                    outbound.insert(outbound.end(), itr->stages);
-                    outbound.insert(outbound.end(), itr->outbound.begin(), itr->outbound.end());
+                    outbound.insert(outbound.end(), waiting_itr->priority);
+                    outbound.insert(outbound.end(), waiting_itr->dlc_parms);
+                    outbound.insert(outbound.end(), waiting_itr->stages);
+                    outbound.insert(outbound.end(), waiting_itr->outbound.begin(),
+                                                    waiting_itr->outbound.end());
 
-                    _pending_requests.insert(make_pair(_device_queue_sequence, itr));
+                    _pending_requests.insert(make_pair(_device_queue_sequence, waiting_itr));
 
                     processed++;
                 }
@@ -438,7 +419,7 @@ void Klondike::doOutput(CommandCode command_code)
             route_list_t::iterator itr = _routes.begin();
             int route = 0;
 
-            while( itr != _routes.end() && route <= MaximumRoutes )
+            while( itr != _routes.end() && route <= RoutesMaximum )
             {
                 outbound.push_back(route);
                 outbound.push_back((itr->fixed  << 5) | itr->variable);
@@ -545,7 +526,7 @@ int Klondike::decode( CtiXfer &xfer, int status )
     {
         if( _wrap->errorCondition() )
         {
-            if( ++_protocol_errors > ProtocolErrorsMaximum )
+            if( ++_wrap_errors > WrapErrorsMaximum )
             {
                 _io_state = IO_Failed;
             }
@@ -628,10 +609,10 @@ void Klondike::processResponse(const byte_buffer_t &inbound)
     {
         case CommandCode_TimeSyncCCU:
         {
-            //  if success, the CCU should queue a timesync to us
+            //  if we succeed, the CCU-721 device code should queue a timesync to us
             if( response_command != CommandCode_ACK_NoData )
             {
-                _error = NOTNORMAL;  //  Error_TimesyncFailed;
+                _error = Error_Unknown;  //  Error_TimesyncFailed;
             }
 
             break;
@@ -641,7 +622,7 @@ void Klondike::processResponse(const byte_buffer_t &inbound)
         {
             if( response_command != CommandCode_ACK_NoData )
             {
-                _error = NOTNORMAL;
+                _error = Error_Unknown;
             }
 
             break;
@@ -653,11 +634,11 @@ void Klondike::processResponse(const byte_buffer_t &inbound)
             {
                 unsigned char nak_code = *inbound_itr++;
 
-                _error = NOTNORMAL;
+                _error = Error_Unknown;
             }
             else if( response_command == CommandCode_ACK_NoData )
             {
-                _error = NOTNORMAL;
+                _error = Error_Unknown;
             }
             else if( response_command == CommandCode_ACK_Data )
             {
@@ -667,7 +648,7 @@ void Klondike::processResponse(const byte_buffer_t &inbound)
             }
             else
             {
-                _error = NOTNORMAL;
+                _error = Error_Unknown;
             }
 
             break;
@@ -684,42 +665,39 @@ void Klondike::processResponse(const byte_buffer_t &inbound)
                 switch( nak_code )
                 {
                     //  return Klondike error codes and let the CCU do the translation
-                    case 0x00:
-                    {
-                        _error = BADROUTE;
+                    case NAK_DirectTransmission_BusDisabled:            _error = Error_BusDisabled;           break;
+                    case NAK_DirectTransmission_DTranBusy:              _error = Error_DTranBusy;             break;
+                    case NAK_DirectTransmission_InvalidBus:             _error = Error_InvalidBus;            break;
+                    case NAK_DirectTransmission_InvalidDLCType:         _error = Error_InvalidDLCType;        break;
+                    case NAK_DirectTransmission_InvalidMessageLength:   _error = Error_InvalidMessageLength;  break;
+                    case NAK_DirectTransmission_NoRoutes:               _error = Error_NoRoutes;              break;
 
-                        break;
-                    }
-                    case 0x01:
-                    {
-                        _error = RTNF;
-
-                        break;
-                    }
-                    case 0x02:
+                    case NAK_DirectTransmission_InvalidSequence:
                     {
                         _device_queue_sequence  = *inbound_itr++;
                         _device_queue_sequence |= *inbound_itr++ << 8;
 
                         //  could do some trickery here and reset the command so it goes out again...
 
-                        //  this isn't quite accurate - we've been interpreting this as an IDLC error code for years, can we co-opt it?
-                        _error = BADSEQUENCE;
+                        _error = Error_InvalidSequence;
 
                         break;
                     }
-                    case 0x03:
-                    case 0x04:
-                    {
-                        _error = BADBUSS;
 
-                        break;
+                    default:
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " **** Checkpoint - Cti::Protocol::Klondike::processResponse() : CommandCode_DirectMessageRequest : unhandled NAK code (" << nak_code << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+
+                        _error = Error_Unknown;
                     }
                 }
             }
             else if( response_command == CommandCode_ACK_NoData )
             {
-                _error = NOTNORMAL;
+                _error = Error_Unknown;
             }
             else
             {
@@ -744,52 +722,84 @@ void Klondike::processResponse(const byte_buffer_t &inbound)
         {
             if( response_command == CommandCode_NAK )
             {
-                unsigned char nak_code = *inbound_itr++;
-
-                switch( nak_code )
+                switch( *inbound_itr++ )
                 {
-                    case 0x00:
+                    case NAK_LoadBuffer_QueueEntries:
                     {
                         //  capture the expected sequence
                         _device_queue_sequence  = *inbound_itr++;
                         _device_queue_sequence |= *inbound_itr++ << 8;
 
-                        unsigned char  rejected = *inbound_itr++,
-                                       rejected_nak_code;
-                        unsigned short rejected_sequence;
+                        unsigned char number_rejected = *inbound_itr++;
 
-                        while( rejected > 0 )
+                        while( number_rejected-- > 0 )
                         {
-                            rejected--;
+                            unsigned short rejected_sequence;
 
                             rejected_sequence  = *inbound_itr++;
                             rejected_sequence |= *inbound_itr++ << 8;
 
-                            pending_work_t::iterator pending_itr = _pending_requests.find(rejected_sequence),
-                                                     pending_end = _pending_requests.end();
+                            unsigned char rejected_nak_code = *inbound_itr++;
 
-                            if( pending_itr != pending_end )
+                            pending_work_t::iterator pending_itr = _pending_requests.find(rejected_sequence);
+
+                            if( pending_itr == _pending_requests.end() )
                             {
-                                //  keep this request in the local work list - don't forget it
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " **** Checkpoint - Cti::Protocol::Klondike::processResponse() : CommandCode_WaitingQueueWrite : could not find rejected queue entry (" << rejected_nak_code << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            }
+                            else
+                            {
+                                queue_entry_t &rejected_entry = *(pending_itr->second);
+
+                                if( rejected_entry.resubmissions++ > QueueEntryResubmissionsMaximum
+                                    || (rejected_nak_code != NAK_LoadBuffer_QueueFull &&
+                                        rejected_nak_code != NAK_LoadBuffer_InvalidSequence) )
+                                {
+                                    if( rejected_entry.om )
+                                    {
+                                        Errors error = Error_Unknown;
+
+                                        switch( rejected_nak_code )
+                                        {
+                                            case NAK_LoadBuffer_BusDisabled:           error = Error_BusDisabled;           break;
+                                            case NAK_LoadBuffer_InvalidBus:            error = Error_InvalidBus;            break;
+                                            case NAK_LoadBuffer_InvalidDLCType:        error = Error_InvalidDLCType;        break;
+                                            case NAK_LoadBuffer_InvalidMessageLength:  error = Error_InvalidMessageLength;  break;
+                                            case NAK_LoadBuffer_NoRoutes:              error = Error_NoRoutes;              break;
+                                            default:
+                                            {
+                                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                dout << CtiTime() << " **** Checkpoint - Cti::Protocol::Klondike::processResponse() : CommandCode_WaitingQueueWrite : unhandled NAK code (" << rejected_nak_code << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                            }
+                                        }
+
+                                        _plc_results.push(queue_result_t(rejected_entry.om, error, ::time(0), byte_buffer_t()));
+                                    }
+                                    else
+                                    {
+                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                        dout << CtiTime() << " **** Checkpoint - Cti::Protocol::Klondike::processResponse() : CommandCode_WaitingQueueWrite : system queue entry rejected (" << rejected_nak_code << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    }
+
+                                    _waiting_requests.erase(pending_itr->second);
+                                }
+
                                 _pending_requests.erase(pending_itr);
                             }
-
-                            rejected_nak_code  = *inbound_itr++;
                         }
                     }
-                    case 0x01:
-                    case 0x02:
+                    default:
                     {
+
                         break;
                     }
                 }
             }
             else if( response_command == CommandCode_ACK_NoData )
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - ACK/No data in Cti::Protocol::Klondike::decode() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint - Cti::Protocol::Klondike::processResponse() : CommandCode_WaitingQueueWrite : CommandCode_ACK_NoData **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
             else if( response_command == CommandCode_ACK_Data )
             {
@@ -811,7 +821,7 @@ void Klondike::processResponse(const byte_buffer_t &inbound)
                 if( accepted )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - accept > _pending_requests.size() in Cti::Protocol::Klondike::decode() (" << accepted << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint - Cti::Protocol::Klondike::processResponse() : CommandCode_WaitingQueueWrite : accept > _pending_requests.size() in Cti::Protocol::Klondike::decode() (" << accepted << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 _pending_requests.clear();
@@ -831,14 +841,19 @@ void Klondike::processResponse(const byte_buffer_t &inbound)
         {
             if( response_command == CommandCode_NAK )
             {
-                //  error handling - we got nacked
+                unsigned char nak_code = *inbound_itr++;
+
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - Cti::Protocol::Klondike::processResponse() : CommandCode_ReplyQueueRead : CommandCode_NAK (" << nak_code << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                _error = Error_Unknown;
             }
             else if( response_command == CommandCode_ACK_NoData )
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - ACK/No data in Cti::Protocol::Klondike::decode() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint - Cti::Protocol::Klondike::processResponse() : CommandCode_ReplyQueueRead : CommandCode_ACK_NoData **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
             else if( response_command == CommandCode_ACK_Data )
             {
@@ -846,41 +861,10 @@ void Klondike::processResponse(const byte_buffer_t &inbound)
 
                 unsigned queue_entries_read = *inbound_itr++;
 
-                struct queue_response
-                {
-                    unsigned short sequence;
-                    unsigned long  timestamp;
-                    unsigned short signal_strength;
-                    unsigned char  result;
-                    byte_buffer_t  message;
-
-                    queue_response(const unsigned char *&buf)
-                    {
-                        sequence         = *buf++;
-                        sequence        |= *buf++ <<  8;
-
-                        timestamp        = *buf++;
-                        timestamp       |= *buf++ <<  8;
-                        timestamp       |= *buf++ << 16;
-                        timestamp       |= *buf++ << 32;
-
-                        signal_strength  = *buf++;
-                        signal_strength |= *buf++ <<  8;
-
-                        result           = *buf++;
-
-                        unsigned char message_length = *buf++;
-
-                        message.reserve(message_length);
-
-                        copy(buf, buf + message_length, message.end());
-                        buf += message_length;
-                    }
-                };
-
                 for( int entry = 0; entry < queue_entries_read; entry++ )
                 {
-                    queue_response q(inbound_itr);
+                    //  queue_response_t's constructor increments the inbound iterator
+                    queue_response_t q(inbound_itr);
 
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -895,8 +879,10 @@ void Klondike::processResponse(const byte_buffer_t &inbound)
 
                         while( message_itr != q.message.end() )
                         {
-                            dout << hex << setw(2) << (unsigned)*message_itr;
+                            dout << hex << setw(2) << (unsigned)*message_itr++;
                         }
+
+                        dout << dec;
 
                         dout <<  ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
@@ -906,15 +892,15 @@ void Klondike::processResponse(const byte_buffer_t &inbound)
                     if( remote_itr == _remote_requests.end() )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - unknown sequence (" << hex << setw(4) <<  q.sequence << ") received **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint - unknown sequence (" << hex << setw(4) <<  q.sequence << ") received **** " << dec << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
                     else
                     {
                         if( remote_itr->second.om )
                         {
                             _plc_results.push(queue_result_t(remote_itr->second.om,
-                                                             q.result,
-                                                             q.timestamp,
+                                                             Error_None,  //  we'll eventually need to plug an error code in here,
+                                                             q.timestamp, //    but right now, q.result is poorly defined
                                                              q.message));
                         }
 
@@ -970,7 +956,7 @@ bool Klondike::errorCondition( void ) const
 
 
 
-int Klondike::errorCode() const
+Klondike::Errors Klondike::errorCode() const
 {
     return _error;
 }
@@ -1246,6 +1232,11 @@ void Klondike::clearRoutes()
     _routes.clear();
 }
 
+
+void Klondike::setWrap(Wrap *wrap)
+{
+    _wrap = wrap;
+}
 
 }
 }

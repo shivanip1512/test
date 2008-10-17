@@ -515,8 +515,8 @@ INT CtiDeviceSentinel::sendCommResult( INMESS *InMessage)
         }
 
     }
-   return( InMessage->EventCode ); //just a val
-   //return( 0 ); //just a val
+
+    return( InMessage->EventCode ); //just a val
 }
 
 
@@ -603,7 +603,7 @@ int CtiDeviceSentinel::buildScannerTableRequest (BYTE *aMsg, UINT flags)
     {
         header.lastLoadProfileTime = 0;
     }
-    
+
 
     if (useScanFlags())
     {
@@ -911,11 +911,11 @@ void CtiDeviceSentinel::processDispatchReturnMessage( list< CtiReturnMsg* > &ret
                         case OFFSET_LAST_INTERVAL_OR_INSTANTANEOUS_KW:
                         case OFFSET_LAST_INTERVAL_OR_INSTANTANEOUS_KVAR:
                         case OFFSET_LAST_INTERVAL_OR_INSTANTANEOUS_KVA:
-                        case OFFSET_QUADRANT1_LAST_INTERVAL_KVAR: 
-                        case OFFSET_QUADRANT2_LAST_INTERVAL_KVAR: 
-                        case OFFSET_QUADRANT3_LAST_INTERVAL_KVAR: 
+                        case OFFSET_QUADRANT1_LAST_INTERVAL_KVAR:
+                        case OFFSET_QUADRANT2_LAST_INTERVAL_KVAR:
+                        case OFFSET_QUADRANT3_LAST_INTERVAL_KVAR:
                         case OFFSET_QUADRANT4_LAST_INTERVAL_KVAR:
-                        {   
+                        {
                             gotValue = getSentinelProtocol().retreivePresentDemand(x, &value);
                             break;
                         }
@@ -1062,8 +1062,8 @@ void CtiDeviceSentinel::processDispatchReturnMessage( list< CtiReturnMsg* > &ret
                         {
                             delete []pData;
                             pData = NULL;
-                        }  
-                         
+                        }
+
                         if (msgPtr != NULL)
                         {
                             //delete msgPtr;

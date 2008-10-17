@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2008/08/14 15:57:40 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2008/10/17 11:14:38 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -387,8 +387,6 @@ int Modbus::recvCommRequest( OUTMESS *OutMessage )
 
 int Modbus::sendCommResult(INMESS *InMessage)
 {
-    int retval = NoError;
-
     char *buf;
     int offset;
     string result_string;
@@ -454,7 +452,7 @@ int Modbus::sendCommResult(INMESS *InMessage)
     //  and mark the end with a null, again, just to be sure
     InMessage->Buffer.InMessage[sizeof(InMessage->Buffer.InMessage) - 1] = 0;
 
-    return retval;
+    return NoError;
 }
 
 

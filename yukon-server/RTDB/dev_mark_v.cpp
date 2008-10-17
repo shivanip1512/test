@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.40 $
-* DATE         :  $Date: 2008/08/14 15:57:40 $
+* REVISION     :  $Revision: 1.41 $
+* DATE         :  $Date: 2008/10/17 11:14:38 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -952,7 +952,7 @@ int CtiDeviceMarkV::sendCommResult( INMESS *InMessage )
       lLP = NULL;
    }
 
-   return( 1 );
+   return NoError;
 }
 
 //=====================================================================================================================

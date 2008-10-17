@@ -541,7 +541,6 @@ INT CtiDeviceKV2::sendCommResult( INMESS *InMessage)
 
     }
    return( InMessage->EventCode ); //just a val
-   //return( 0 ); //just a val
 }
 
 

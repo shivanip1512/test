@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.226 $
-* DATE         :  $Date: 2008/10/09 16:11:36 $
+* REVISION     :  $Revision: 1.227 $
+* DATE         :  $Date: 2008/10/17 11:14:37 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1436,7 +1436,12 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             ds->sendDispatchResults(VanGoghConnection);
 
                             //  send text results to Commander here via return string
-                            ds->sendCommResult(InMessage);
+                            int commResult_status = ds->sendCommResult(InMessage);
+
+                            if( commResult_status )
+                            {
+                                status = commResult_status;
+                            }
 
                             vector<OUTMESS> om_statistics;
                             ds->getTargetDeviceStatistics(om_statistics);
@@ -3042,7 +3047,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                     (OutMessage->Buffer.BSt.IO & Cti::Protocol::Emetcon::IO_Read ) )
                 {
                     CtiDeviceSPtr tempDevice;
-                    if( !CommResult && !status && (tempDevice = DeviceManager.RemoteGetEqual(InMessage->TargetID)) )
+                    if( !CommResult && (tempDevice = DeviceManager.RemoteGetEqual(InMessage->TargetID)) )
                     {
                         if( InMessage->Buffer.DSt.Length && //  make sure it's not just an ACK
                             tempDevice->getAddress() != CtiDeviceMCT::TestAddress1 &&  //  also, make sure we're not sending to an FCT-jumpered MCT,

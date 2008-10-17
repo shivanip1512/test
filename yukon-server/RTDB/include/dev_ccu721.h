@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2008/10/10 14:40:16 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2008/10/17 11:14:38 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -46,6 +46,8 @@ private:
         InMessage_StringOffset = 96  //  hopefully enough to stay out of the way of the DSTRUCT
     };
 
+    static int translateKlondikeError(Protocol::Klondike::Errors error);
+
 protected:
 
     typedef std::vector<unsigned char> byte_buffer_t;
@@ -58,6 +60,8 @@ protected:
     int decodeDWords(const unsigned char *input, unsigned input_length, unsigned Remote, DSTRUCT *DSt) const;
 
     Protocol::Klondike _klondike;
+    Protocol::IDLC     _idlc_wrap;
+
     Protocol::Interface *getProtocol();
 
 public:
@@ -106,7 +110,7 @@ public:
 
     void getTargetDeviceStatistics(vector< OUTMESS > &om_statistics);
 
-    void processInbound(const OUTMESS *om, INMESS *im);
+    int processInbound(const OUTMESS *om, INMESS *im);
 };
 
 typedef boost::shared_ptr<CCU721> CCU721SPtr;

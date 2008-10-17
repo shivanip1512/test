@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.63 $
-* DATE         :  $Date: 2008/08/14 15:57:39 $
+* REVISION     :  $Revision: 1.64 $
+* DATE         :  $Date: 2008/10/17 11:14:38 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -678,8 +678,6 @@ void DNP::initUnsolicited()
 
 int DNP::sendCommResult(INMESS *InMessage)
 {
-    int retval = NoError;
-
     char *buf;
     string result_string;
     Protocol::DNPInterface::stringlist_t strings;
@@ -740,7 +738,7 @@ int DNP::sendCommResult(INMESS *InMessage)
     //  and mark the end with a null, again, just to be sure
     InMessage->Buffer.InMessage[sizeof(InMessage->Buffer.InMessage) - 1] = 0;
 
-    return retval;
+    return NoError;
 }
 
 

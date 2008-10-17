@@ -7,11 +7,15 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2008/08/14 15:57:40 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2008/10/17 11:14:38 $
 *
 * HISTORY      :
 * $Log: dev_rtm.cpp,v $
+* Revision 1.25  2008/10/17 11:14:38  mfisher
+* YUK-2869 Add CCU-721
+* Miscellaneous fixes/updates to get the test plan working
+*
 * Revision 1.24  2008/08/14 15:57:40  jotteson
 * YUK-6333  Change naming in request message and change cancellation to use this new named field instead of user ID
 * Cancellation now uses the new group message ID.
@@ -487,7 +491,7 @@ int CtiDeviceRTM::sendCommResult(INMESS *InMessage)
 {
     InMessage->Buffer.InMessage[0] = _codes_received;
 
-    return 0;
+    return NoError;
 }
 
 

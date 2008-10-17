@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2008/09/24 19:15:57 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2008/10/17 11:14:38 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -41,14 +41,19 @@ public:
 
     typedef std::vector<unsigned char> byte_buffer_t;
 
+    enum Errors;
+    enum Command;
+    enum PLCProtocols;
+    //enum ProtocolWrap;
+
     struct queue_result_t
     {
         const OUTMESS *om;
-        int error;
+        Errors error;
         unsigned long timestamp;
         byte_buffer_t message;
 
-        queue_result_t(const OUTMESS *om_, int error_, unsigned long timestamp_, const byte_buffer_t &message_) :
+        queue_result_t(const OUTMESS *om_, Errors error_, unsigned long timestamp_, const byte_buffer_t &message_) :
             om       (om_),
             error    (error_),
             timestamp(timestamp_),
@@ -58,16 +63,11 @@ public:
 
         queue_result_t() :
             om(0),
-            error(0),
+            error(Error_None),
             timestamp(0)
         {
         };
     };
-
-    enum Errors;
-    enum Command;
-    enum PLCProtocols;
-    //enum ProtocolWrap;
 
 private:
 
@@ -97,8 +97,9 @@ private:
 
     byte_buffer_t _raw_command;
 
-    int _error;  //  eventually to be enum Errors
-    int _protocol_errors;
+    Errors _error;
+
+    int _wrap_errors;
     int _read_toggle;
 
     struct queue_entry_t
@@ -108,12 +109,12 @@ private:
         unsigned char dlc_parms;
         unsigned char stages;
         byte_buffer_t outbound;
-        int result;  //  eventually to be enum Errors
+        unsigned resubmissions;
         const OUTMESS *om;
 
         queue_entry_t() :
-            protocol (PLCProtocol_Invalid),
-            result   (NoError)
+            protocol(PLCProtocol_Invalid),
+            resubmissions(0)
         {
             om = 0;
             priority = dlc_parms = stages = 0;
@@ -125,7 +126,7 @@ private:
             priority (priority_),
             dlc_parms(dlc_parms_),
             stages   (stages_),
-            result   (NoError),
+            resubmissions(0),
             om(om_)
         { };
 
@@ -133,7 +134,7 @@ private:
     };
 
     typedef fifo_multiset<queue_entry_t, std::greater<queue_entry_t> > local_work_t;
-    typedef std::map<unsigned, local_work_t::const_iterator>           pending_work_t;
+    typedef std::map<unsigned, local_work_t::iterator>                 pending_work_t;
     typedef std::map<unsigned, queue_entry_t>                          remote_work_t;
 
     mutable CtiCriticalSection _sync;
@@ -142,6 +143,37 @@ private:
     local_work_t   _waiting_requests;
     pending_work_t _pending_requests;
     remote_work_t  _remote_requests;
+
+    struct queue_response_t
+    {
+        unsigned short sequence;
+        unsigned long  timestamp;
+        unsigned short signal_strength;
+        unsigned char  result;
+        byte_buffer_t  message;
+
+        queue_response_t(const unsigned char *&buf)
+        {
+            sequence         = *buf++;
+            sequence        |= *buf++ <<  8;
+
+            timestamp        = *buf++;
+            timestamp       |= *buf++ <<  8;
+            timestamp       |= *buf++ << 16;
+            timestamp       |= *buf++ << 32;
+
+            signal_strength  = *buf++;
+            signal_strength |= *buf++ <<  8;
+
+            result           = *buf++;
+
+            unsigned char message_length = *buf++;
+
+            message.assign(buf, buf + message_length);
+
+            buf += message_length;
+        }
+    };
 
     std::queue<queue_result_t> _plc_results;
 
@@ -209,24 +241,46 @@ private:
         CommandCode_NAK                  = 0xc1,
     };
 
-    enum NAK_Errors
+    enum NAK_Codes
     {
-        NAK_DTran_DTranBusy = 0x00,
-        NAK_DTran_NoRoutes,
-        NAK_DTran_InvalidSEQ,
-        NAK_DTran_InvalidBUS,
-        NAK_DTran_BUSDisabled,
-        NAK_DTran_InvalidDLCType,
+        NAK_DirectTransmission_DTranBusy = 0x00,
+        NAK_DirectTransmission_NoRoutes,
+        NAK_DirectTransmission_InvalidSequence,
+        NAK_DirectTransmission_InvalidBus,
+        NAK_DirectTransmission_BusDisabled,
+        NAK_DirectTransmission_InvalidDLCType,
+        NAK_DirectTransmission_InvalidMessageLength,
+
+        NAK_LoadBuffer_QueueEntries = 0x00,
+        NAK_LoadBuffer_NoRoutes,
+        NAK_LoadBuffer_InvalidSequence,
+        NAK_LoadBuffer_InvalidBus,
+        NAK_LoadBuffer_BusDisabled,
+        NAK_LoadBuffer_InvalidDLCType,
+        NAK_LoadBuffer_InvalidMessageLength,
+        NAK_LoadBuffer_QueueFull,
+
+        NAK_ReadACKReplyBuffer_InvalidRTI = 0x00,
+        NAK_ReadACKReplyBuffer_InvalidRTIReset,
+        NAK_ReadACKReplyBuffer_InvalidBufferData,
+
+        NAK_TimeSyncCCU_TimeSyncFailed = 0x00,
+
+        NAK_Memory_InvalidAddress = 0x00,
+        NAK_Memory_AccessFailed,
+        NAK_Memory_InvalidType,
+        NAK_Memory_InvalidNumberOfBytes
     };
 
     enum MiscNumeric
     {
-        ProtocolErrorsMaximum  =   1,
+        WrapErrorsMaximum      =   1,
         WrapLengthMaximum      = 255,
         QueueWriteBasePriority =  11,
         QueueReadBasePriority  =  11,
         QueueEntryHeaderLength =   4,  //  CCU-721 Master Station Interface section 2.3.4.4: bytes 5-8 (assume bus is always nonzero)
-        MaximumRoutes          =  32
+        RoutesMaximum          =  32,
+        QueueEntryResubmissionsMaximum = 3
     };
 
     enum IO_State
@@ -274,13 +328,14 @@ private:
 
 protected:
 
+    void setWrap(Wrap *wrap);  //  unit test access
+
 public:
 
     Klondike();
     virtual ~Klondike();
 
     void setAddresses(unsigned short slaveAddress, unsigned short masterAddress);
-    //void setWrap(ProtocolWrap w);
 
     int setCommand(int command, const byte_buffer_t payload=byte_buffer_t(), unsigned in_expected=0, unsigned priority=0, unsigned char stages=0, unsigned char dlc_parms=0);
 
@@ -294,8 +349,8 @@ public:
 
     bool isTransactionComplete(void) const;
 
-    bool errorCondition() const;
-    int  errorCode() const;
+    bool   errorCondition() const;
+    Errors errorCode() const;
 
     // --  these functions may be called at any time by another thread, meaning that their data must be muxed
     string describeCurrentStatus(void) const;
@@ -356,6 +411,16 @@ public:
     {
         Error_None,
 
+        Error_NoRoutes,
+        Error_DTranBusy,
+        Error_InvalidSequence,
+        Error_InvalidBus,
+        Error_BusDisabled,
+        Error_InvalidDLCType,
+        Error_InvalidMessageLength,
+        Error_QueueFull,
+
+        Error_Unknown
     };
 
     enum

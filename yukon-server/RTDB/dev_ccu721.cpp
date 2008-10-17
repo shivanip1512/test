@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2008/10/15 17:46:00 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2008/10/17 11:14:38 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -229,7 +229,7 @@ INT CCU721::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
         _klondike.addQueuedWork(OutMessage,
                                 queued_message,
                                 OutMessage->Priority,
-                                Klondike::DLCParms_None,
+                                Klondike::DLCParms_None | OutMessage->Buffer.BSt.DlcRoute.Bus + 1,
                                 OutMessage->Buffer.BSt.DlcRoute.Stages);
 
         OutMessage = 0;  //  we control the horizontal and the vertical
@@ -352,7 +352,15 @@ int CCU721::recvCommRequest(OUTMESS *OutMessage)
                                     dtran_message,
                                     (_current_om->InLength)?(Cti::Protocol::Emetcon::determineDWordCount(_current_om->InLength) * DWORDLEN):(0),
                                     _current_om->Priority,
-                                    _current_om->Buffer.BSt.DlcRoute.Stages);
+                                    _current_om->Buffer.BSt.DlcRoute.Stages,
+                                    Klondike::DLCParms_None | _current_om->Buffer.BSt.DlcRoute.Bus + 1);
+    }
+    else if( _current_om->Sequence == Klondike::Command_Raw )
+    {
+        byte_buffer_t raw_message;
+
+        return _klondike.setCommand(Klondike::Command_DirectTransmission,
+                                    raw_message);
     }
     else
     {
@@ -363,7 +371,7 @@ int CCU721::recvCommRequest(OUTMESS *OutMessage)
 
 int CCU721::sendCommResult(INMESS *InMessage)
 {
-    int status = NoError;
+    int status = translateKlondikeError(_klondike.errorCode());
 
     //  if the CCU owns the InMessage - we don't end up owning the DTRAN InMessage, the MCT does...
     //    so there's no use in putting a string in there, since we won't decode it anyway
@@ -376,10 +384,9 @@ int CCU721::sendCommResult(INMESS *InMessage)
                 4096 - InMessage_StringOffset);
     }
 
+
     if( _klondike.errorCondition() )
     {
-        InMessage->EventCode = _klondike.errorCode();
-
         switch( _klondike.getCommand() )
         {
             case Klondike::Command_DirectTransmission:
@@ -419,33 +426,26 @@ int CCU721::sendCommResult(INMESS *InMessage)
 
                 InMessage->Time   = CtiTime::now().seconds();
 
-                InMessage->EventCode = _klondike.errorCode();
                 InMessage->InLength  = dtran_result.size();
-                copy(dtran_result.begin(),
-                     dtran_result.end(),
-                     InMessage->Buffer.InMessage);
 
-                if( !InMessage->EventCode )
+                copy(dtran_result.begin(), dtran_result.end(), InMessage->Buffer.InMessage);
+
+                //  unlike in Command_LoadQueue/Command_ReadQueue, the InMessage->EventCode is set by
+                //    the CommResult/status later on in CtiDeviceSingle::ProcessResult
+                if( !status )
                 {
-                    processInbound(_current_om, InMessage);
+                    status = processInbound(_current_om, InMessage);
                 }
 
                 break;
             }
+            case Klondike::Command_LoadQueue:
             case Klondike::Command_ReadQueue:
             {
                 std::queue<Klondike::queue_result_t> queued_results;
 
                 _klondike.getQueuedResults(queued_results);
 
-                status = _klondike.errorCode();
-                /*
-                if( queued_results.empty() )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Cti::Device::CCU721::sendCommResult() : results.empty() : \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-                */
                 while( !queued_results.empty() )
                 {
                     Klondike::queue_result_t result = queued_results.front();
@@ -459,13 +459,16 @@ int CCU721::sendCommResult(INMESS *InMessage)
                     im->Port      = om->Port;
                     im->Remote    = om->Remote;
 
-                    im->Buffer.DSt.Address = om->Buffer.BSt.Address;
-
-                    im->EventCode = result.error;
+                    im->EventCode = translateKlondikeError(result.error);
                     im->Time      = result.timestamp;
                     im->InLength  = result.message.size();
 
-                    processInbound(om, im);
+                    copy(result.message.begin(), result.message.end(), im->Buffer.InMessage);
+
+                    if( !im->EventCode )
+                    {
+                        im->EventCode = processInbound(om, im);
+                    }
 
                     int socket_error;
                     unsigned long bytes_written;
@@ -480,7 +483,7 @@ int CCU721::sendCommResult(INMESS *InMessage)
 
                     _statistics.push_back(statistics_report);
 
-                    /* this is a completed result so send it to originating process */
+                    //  I don't think this is needed - investigate and remove at a later date
                     im->EventCode |= DECODED;
                     if( (socket_error = im->ReturnNexus->CTINexusWrite(im, sizeof(INMESS), &bytes_written, 60L)) != NORMAL )
                     {
@@ -505,6 +508,25 @@ int CCU721::sendCommResult(INMESS *InMessage)
     }
 
     return status;
+}
+
+
+int CCU721::translateKlondikeError(Klondike::Errors error)
+{
+    switch( error )
+    {
+        case Klondike::Error_None:                      return NoError;
+
+        case Klondike::Error_BusDisabled:               return BADBUSS;
+        case Klondike::Error_InvalidBus:                return BADBUSS;
+        case Klondike::Error_InvalidDLCType:            return NOTNORMAL;
+        case Klondike::Error_InvalidMessageLength:      return BADLENGTH;
+        case Klondike::Error_InvalidSequence:           return BADSEQUENCE;
+        case Klondike::Error_NoRoutes:                  return RTNF;
+
+        default:
+        case Klondike::Error_Unknown:                   return NOTNORMAL;
+    }
 }
 
 
@@ -606,7 +628,7 @@ void CCU721::writeBWord( byte_buffer_t &buf, const BSTRUCT &BSt )
 }
 
 
-void CCU721::processInbound(const OUTMESS *om, INMESS *im)
+int CCU721::processInbound(const OUTMESS *om, INMESS *im)
 {
     if( (om->EventCode & BWORD) &&
         (om->Buffer.BSt.IO & Protocol::Emetcon::IO_Read ) )
@@ -614,18 +636,28 @@ void CCU721::processInbound(const OUTMESS *om, INMESS *im)
         DSTRUCT tmp_d_struct;
 
         //  inbound command - decode the D words
-        im->EventCode  = decodeDWords(im->Buffer.InMessage, im->InLength, om->Remote, &tmp_d_struct);
-        im->Buffer.DSt = tmp_d_struct;
-        im->InLength   = (im->InLength / DWORDLEN) * 5 - 2;  //  calculate the number of bytes we get back
-        im->Buffer.DSt.Length = im->InLength;
+        int dword_status = decodeDWords(im->Buffer.InMessage, im->InLength, om->Remote, &tmp_d_struct);
+
+        if( !dword_status )
+        {
+            im->Buffer.DSt = tmp_d_struct;
+
+            im->InLength = im->Buffer.DSt.Length = (im->InLength / DWORDLEN) * 5 - 2;  //  calculate the number of bytes we get back
+        }
+        else
+        {
+            im->InLength = 0;
+        }
 
         im->Buffer.DSt.Time    = im->Time;
         im->Buffer.DSt.DSTFlag = im->MilliTime & DSTACTIVE;
+
+        return dword_status;
     }
-    else
-    {
-        im->InLength = 0;
-    }
+
+    im->InLength = 0;
+
+    return NoError;
 }
 
 

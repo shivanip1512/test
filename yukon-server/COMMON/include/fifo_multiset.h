@@ -57,10 +57,10 @@ public:
 
         //  bool() returns the implicit bool conversion of the Element - for pointers, this is a NULL check
         operator bool()        {  return (*(static_cast<set_itr *>(this)))->first;  }
-        Element &operator*()   {  return (*(static_cast<set_itr *>(this)))->first;  }
 
+        Element &operator*()  const  {  return (*(static_cast<const set_itr *>(this)))->first;  }
         //  operator->() requires an address as a return value in order to work properly
-        Element *operator->()  {  return &((*(static_cast<set_itr *>(this)))->first);  }
+        Element *operator->() const  {  return &((*(static_cast<const set_itr *>(this)))->first);  }
 
         iterator &operator++()     {  ++(*(static_cast<set_itr *>(this)));  return *this; }
         iterator  operator++(int)  {  return (*(static_cast<set_itr *>(this)))++; }

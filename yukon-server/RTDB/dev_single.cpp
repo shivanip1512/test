@@ -5,8 +5,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.68 $
-* DATE         :  $Date: 2008/10/15 19:54:04 $
+* REVISION     :  $Revision: 1.69 $
+* DATE         :  $Date: 2008/10/17 11:14:38 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -692,7 +692,7 @@ int CtiDeviceSingle::recvCommRequest(OUTMESS *OutMessage)
 
 int CtiDeviceSingle::sendCommResult(INMESS *InMessage)
 {
-    int retval = -1;
+    int retval = NOTNORMAL;
     Protocol::Interface *prot = getProtocol();
 
     if( prot )  retval = prot->sendCommResult(InMessage);
