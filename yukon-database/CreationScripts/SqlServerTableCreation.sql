@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     10/15/2008 11:29:00 AM                       */
+/* Created on:     10/17/2008 1:40:22 PM                        */
 /*==============================================================*/
 
 
@@ -10403,7 +10403,6 @@ insert into yukongrouprole values (-530,-300,-400,-40010,'true');
 
 insert into yukongrouprole values (-551,-300,-400,-40051,'false');
 insert into yukongrouprole values (-552,-300,-400,-40052,'false');
-insert into yukongrouprole values (-554,-300,-400,-40054,'false');
 insert into yukongrouprole values (-555,-300,-400,-40055,'(none)');
 
 insert into yukongrouprole values (-600,-300,-400,-40100,'(none)');
@@ -10795,7 +10794,6 @@ insert into yukongrouprole values (-2230,-304,-400,-40010,'(none)');
 
 insert into yukongrouprole values (-2251,-304,-400,-40051,'(none)');
 insert into yukongrouprole values (-2252,-304,-400,-40052,'(none)');
-insert into yukongrouprole values (-2254,-304,-400,-40054,'(none)');
 insert into yukongrouprole values (-2255,-304,-400,-40055,'(none)');
 
 insert into yukongrouprole values (-2300,-304,-400,-40100,'(none)');

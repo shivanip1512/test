@@ -58,3 +58,9 @@ UPDATE YukonRoleProperty
 SET Description = 'Controls access to mass change collection actions. Includes all Mass Change actions.'
 WHERE rolePropertyId = -21305;
 /* End YUK-6587 */
+
+/* Start YUK-6586 */
+DELETE FROM YukonUserRole WHERE rolePropertyId = -40054; 
+DELETE FROM YukonGroupRole WHERE rolePropertyId = -40054 ;
+DELETE FROM YukonRoleProperty WHERE rolePropertyId = -40054; 
+/* End YUK-6586 */
