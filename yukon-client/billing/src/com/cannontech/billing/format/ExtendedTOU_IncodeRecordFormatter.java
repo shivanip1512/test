@@ -160,7 +160,7 @@ public class ExtendedTOU_IncodeRecordFormatter extends ExtendedTOURecordFormatte
 				String line = readBuffer.readLine();
 				while(line != null) {
 					StringTokenizer tokenizer = new StringTokenizer(line.trim(), ",");					
-					if (tokenizer.countTokens() == 3) {
+					if (tokenizer.countTokens() >= 3) {
 						String readingCode = tokenizer.nextToken().trim();
 						String address = tokenizer.nextToken().trim();
 						String key = buildKey(readingCode, address);
