@@ -61,6 +61,6 @@ WHERE rolePropertyId = -21305;
 
 /* Start YUK-6586 */
 DELETE FROM YukonUserRole WHERE rolePropertyId = -40054; 
-DELETE FROM YukonGroupRole WHERE rolePropertyId = -40054 ;
+DELETE FROM YukonGroupRole WHERE rolePropertyId = -40054;
 DELETE FROM YukonRoleProperty WHERE rolePropertyId = -40054; 
 /* End YUK-6586 */

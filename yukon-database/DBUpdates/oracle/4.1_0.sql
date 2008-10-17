@@ -1119,7 +1119,7 @@ INSERT INTO BillingFileFormats VALUES( 33, 'NISC Interval Readings', 1);
 
 /* Start YUK-6586 */
 DELETE FROM YukonUserRole WHERE rolePropertyId = -40054; 
-DELETE FROM YukonGroupRole WHERE rolePropertyId = -40054 ;
+DELETE FROM YukonGroupRole WHERE rolePropertyId = -40054;
 DELETE FROM YukonRoleProperty WHERE rolePropertyId = -40054; 
 /* End YUK-6586 */
 

@@ -1,7 +1,6 @@
 /* 4.1_0fc2 changes.  These are changes to 4.1 that have been made since 4.1_0fc1*/
 /* This script must be run manually using the SQL tool and not the DBToolsFrame tool. */
 
-
 /* Start YUK-6139 */
 if exists (select 1 
            from sysobjects 
