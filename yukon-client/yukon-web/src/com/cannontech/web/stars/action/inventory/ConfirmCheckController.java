@@ -86,7 +86,6 @@ public class ConfirmCheckController extends StarsInventoryActionController {
                 /* New hardware has been added to the customer.  
                 Refreshing the customer account info in the session.
                 */
-                session.removeAttribute(ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
                 session.setAttribute(ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo);
 
                 // REDIRECT set in the CreateLMHardwareAction.parseResponse() method above
@@ -139,7 +138,6 @@ public class ConfirmCheckController extends StarsInventoryActionController {
                 /* New hardware has been added to the customer.  
                 Refreshing the customer account info in the session.
                 */
-                session.removeAttribute(ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
                 session.setAttribute(ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo);
 
                 // REDIRECT set in the UpdateLMHardwareAction.parseResponse() method above
