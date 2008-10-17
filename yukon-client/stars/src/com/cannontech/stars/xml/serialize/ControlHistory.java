@@ -6,6 +6,7 @@ public class ControlHistory {
     private Date startDateTime;
     private int controlDuration;
     private boolean hasControlDuration;
+    private boolean isCurrentlyControlling = true;
 
     public ControlHistory() {
     
@@ -31,5 +32,13 @@ public class ControlHistory {
     public void setStartDateTime(Date startDateTime) {
         this.startDateTime = startDateTime;
     } 
+    
+    public boolean isCurrentlyControlling() {
+        return isCurrentlyControlling;
+    } 
+    
+    public void setIsCurrentlyControlling(boolean isCurrentlyControlling) {
+        this.isCurrentlyControlling = isCurrentlyControlling;
+    }
 
 }

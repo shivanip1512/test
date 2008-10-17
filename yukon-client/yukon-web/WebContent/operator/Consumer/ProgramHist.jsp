@@ -135,7 +135,11 @@
 %>
                       <tr> 
                         <td width="61" class="TableCell"><%= timePart.format(hist.getStartDateTime()) %></td>
-                        <td width="61" class="TableCell"><%= timePart.format(stopTime) %></td>
+                        <%if(hist.isCurrentlyControlling()) { %>
+                        <td width="61" class="TableCell">---</td>
+                        <%} else { %>
+                            <td width="61" class="TableCell"><%= timePart.format(stopTime) %></td>
+                        <%} %>
                         <td width="60" class="TableCell"><%= ServletUtils.getDurationFromSeconds(durationSec) %></td>
                       </tr>
                       <%

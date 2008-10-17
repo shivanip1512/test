@@ -713,6 +713,7 @@ public class LMControlHistoryUtil {
                 else {  // This is the continuation of the last control
                     lastStopTime = new Date( lmCtrlHist.getStopDateTime() );
                 }
+                hist.setIsCurrentlyControlling(true);
             }
             else if (lmCtrlHist.getActiveRestore().equals("C")
                     || lmCtrlHist.getActiveRestore().equals("L"))
@@ -737,10 +738,12 @@ public class LMControlHistoryUtil {
                     || lmCtrlHist.getActiveRestore().equals("T")
                     || lmCtrlHist.getActiveRestore().equals("O"))
             {
+                hist.setIsCurrentlyControlling(false);
                 if (StarsUtils.isDateEqual(date, lastStartTime)) {
                     lastStopTime = new Date(lmCtrlHist.getStopDateTime());
-                    if (hist != null)
+                    if (hist != null) {
                         hist.setControlDuration( (int)((lmCtrlHist.getStopDateTime() - histStartDate.getTime()) * 0.001) );
+                    }
                 }
                 //remember, this is a reference to what is already in starsCtrlHist's list.  he's just nulling out the reference
                 hist = null;
