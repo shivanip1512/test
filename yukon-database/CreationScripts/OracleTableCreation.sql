@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/17/2008 1:42:08 PM                        */
+/* Created on:     10/17/2008 1:50:02 PM                        */
 /*==============================================================*/
 
 
@@ -9160,7 +9160,6 @@ insert into YukonRoleProperty values(-40010,-400,'Thermostats All','false','Cont
 
 insert into YukonRoleProperty values(-40051,-400,'Hide Opt Out Box','false','Controls whether to show the opt out box on the programs opt out page');
 insert into YukonRoleProperty values(-40052,-400,'Automatic Configuration','false','Controls whether to automatically send out config command when changing program enrollment');
-insert into YukonRoleProperty values(-40054,-400,'Disable Program Signup','false','Controls whether to prevent the customers from enrolling in or out of the programs');
 insert into YukonRoleProperty values(-40055,-400,'Opt Out Rules','(none)','Defines the rules for opting out.');
 
 insert into YukonRoleProperty values(-40100,-400,'Link FAQ','(none)','The customized FAQ link');
