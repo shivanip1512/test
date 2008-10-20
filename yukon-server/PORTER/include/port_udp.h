@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2008/10/15 19:20:22 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2008/10/20 18:48:01 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,10 +32,13 @@ namespace Porter
 
 class UDPInterface
 {
+public:
+    typedef EncodingFilterFactory::EncodingFilterSPtr EncodingFilterSPtr;
+
 private:
 
     CtiPortTCPIPDirectSPtr _port;
-    EncodingFilterFactory::EncodingFilterSPtr _encodingFilter;
+    EncodingFilterSPtr _encodingFilter;
 
 protected:
 
@@ -55,6 +58,7 @@ protected:
 
         CtiFIFOQueue< packet > &_packet_queue;
         SOCKET &_udp_socket;
+        EncodingFilterSPtr _encFilter;
 
         enum ProtocolInfo
         {
@@ -65,7 +69,7 @@ protected:
 
     public:
 
-        Inbound( SOCKET &s, CtiFIFOQueue< packet > &packet_queue );
+        Inbound( SOCKET &s, CtiFIFOQueue< packet > &packet_queue, EncodingFilterSPtr & filter );
 
     };
 

@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2008/10/15 19:20:21 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2008/10/20 18:47:52 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -65,7 +65,12 @@ void UDPInterface::delete_dr_id_map_value( dr_id_map::value_type map_entry )
     delete map_entry.second;
 }
 
-
+/**
+ * This constructor will hit the database to determine any 
+ * encoding filters on the UDP port. 
+ * 
+ * @param port 
+ */
 UDPInterface::UDPInterface( CtiPortTCPIPDirectSPtr &port ) :
     _port(port)
 {
@@ -110,7 +115,7 @@ void UDPInterface::run( void )
     DeviceManager.apply(applyGetUDPInfo, (void *)&uli);
 
     //  this is where all of the incoming packets come from
-    Inbound inbound(_udp_socket, _packet_queue);
+    Inbound inbound(_udp_socket, _packet_queue, _encodingFilter);
     inbound.start();
 
 
@@ -487,16 +492,6 @@ bool UDPInterface::getPackets( int wait )
                 const int DNPHeaderLength   = 10,
                           GPUFFHeaderLength = 13;
                 
-                /* This is not tested until I get a Lantronix device. */
-                unsigned char* pText = NULL;
-                int pTextSize = _encodingFilter->decode(p->data,p->len,pText);
-                if (pTextSize > 0)
-                {   //There will be space for this, the decrypted text will always be smaller.
-                    memcpy(p->data,pText,pTextSize);
-                    p->len = pTextSize;
-                    delete [] pText;
-                }
-
                 if( p->len >= DNPHeaderLength && p->data[0] == 0x05
                     && p->data[1] == 0x64 )
                 {
@@ -1412,20 +1407,10 @@ void UDPInterface::generateOutbounds( void )
                     to.sin_port             = htons(dr->port);
                     
                     /* This is not tested until I get a Lantronix device. */
-                    unsigned char* cipher = NULL;
-                    int cipherSize = _encodingFilter->encode((unsigned char *)dr->work.xfer.getOutBuffer(),dr->work.xfer.getOutCount(),cipher);
-                    int err;
+                    vector<unsigned char> cipher;
+                    _encodingFilter->encode((unsigned char *)dr->work.xfer.getOutBuffer(),dr->work.xfer.getOutCount(),cipher);
 
-                    if( cipher != NULL && cipherSize == 0 )
-                    {
-                        err = sendto(_udp_socket, (char*)cipher, cipherSize, 0, (sockaddr *)&to, sizeof(to));
-                        delete [] cipher;
-                        cipher = NULL;
-                    }
-                    else
-                    {
-                        err = sendto(_udp_socket, (char*)dr->work.xfer.getOutBuffer(), dr->work.xfer.getOutCount(), 0, (sockaddr *)&to, sizeof(to));
-                    }
+                    int err = sendto(_udp_socket, (char*)cipher.begin(), cipher.size(), 0, (sockaddr *)&to, sizeof(to));
 
                     if( SOCKET_ERROR == err )
                     {
@@ -2363,9 +2348,10 @@ void UDPInterface::tickleSelf( void )
 }
 
 
-UDPInterface::Inbound::Inbound( SOCKET &s, CtiFIFOQueue< UDPInterface::packet > &packet_queue ) :
+UDPInterface::Inbound::Inbound( SOCKET &s, CtiFIFOQueue< UDPInterface::packet > &packet_queue, EncodingFilterSPtr & filter ) :
     _udp_socket(s),
-    _packet_queue(packet_queue)
+    _packet_queue(packet_queue),
+    _encFilter(filter)
 {
 }
 
@@ -2434,8 +2420,12 @@ void UDPInterface::Inbound::run()
             p->len  = recv_len;
             p->used = 0;
 
-            p->data = CTIDBG_new unsigned char[recv_len];
-            memcpy(p->data, recv_buf, recv_len);
+            /* This is not tested until I get a Lantronix device. */
+            vector<unsigned char> pText;
+            _encFilter->decode(recv_buf,recv_len,pText);
+
+            p->data = CTIDBG_new unsigned char[pText.size()];
+            memcpy(p->data,pText.begin(),pText.size());
 
             if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
             {

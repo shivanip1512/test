@@ -72,21 +72,9 @@ portverify.obj \
 ptprint.obj \
 ripple.obj \
 systemmsgthread.obj \
-LantronixEncryptionImpl.obj \
+encryption_lantronix.obj \
 EncodingFilterFactory.obj \
-
-#fisherp.obj \
-#dialup.obj \
-#versacom.obj \
-#tapterm.obj \
-#dupaplus.obj \
-#dupschl.obj \
-#pport.obj \
-#portport.obj \
-#portpipe.obj \
-#porttcp.obj \
-#tdmarkv.obj \
-
+encryption_noOp.obj \
 
 PORTERLIBS=\
 advapi32.lib \
@@ -105,8 +93,8 @@ $(COMPILEBASE)\lib\ctipntdb.lib \
 $(COMPILEBASE)\lib\ctiprot.lib \
 $(COMPILEBASE)\lib\cticparms.lib \
 $(COMPILEBASE)\lib\cticonfig.lib \
-$(COMPILEBASE)\lib\libeay32.lib \
-$(COMPILEBASE)\lib\ssleay32.lib \
+$(COMPILEBASE)\porter\lib\libeay32.lib \
+$(COMPILEBASE)\porter\lib\ssleay32.lib \
 
 EXECS=\
 porter.exe \
@@ -115,6 +103,8 @@ contest.exe
 
 
 ALL:            $(EXECS)
+                -@if exist $(COMPILEBASE)\porter\lib\libeay32.dll copy $(COMPILEBASE)\porter\lib\libeay32.dll $(YUKONOUTPUT)
+                -@if exist $(COMPILEBASE)\porter\lib\ssleay32.dll copy $(COMPILEBASE)\porter\lib\ssleay32.dll $(YUKONOUTPUT)
 
 porter.exe:     $(BASEOBJS) Makefile
                 @$(MAKE) -nologo -f $(_InputFile) id

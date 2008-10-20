@@ -41,14 +41,14 @@ $(COMPILEBASE)\lib\ctimsg.lib \
 $(COMPILEBASE)\lib\ctibase.lib \
 $(COMPILEBASE)\lib\clrdump.lib \
 $(COMPILEBASE)\lib\ctiholidaydb.lib \
-$(COMPILEBASE)\lib\libeay32.lib \
-$(COMPILEBASE)\lib\ssleay32.lib \
+$(COMPILEBASE)\porter\lib\libeay32.lib \
+$(COMPILEBASE)\porter\lib\ssleay32.lib \
 
 PORTERTESTOBJS= \
 test_LantronixEncryption.obj
 
 PORTERBASEOBJS= \
-$(OBJ)\LantronixEncryptionImpl.obj 
+$(OBJ)\encryption_lantronix.obj 
 
 ALL: porter
 

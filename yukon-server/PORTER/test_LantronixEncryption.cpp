@@ -18,16 +18,10 @@
 #include <string>
 
 #include "yukon.h"
-#include "LantronixEncryptionImpl.h"
+#include "encryption_lantronix.h"
 
 using boost::unit_test_framework::test_suite;
 using namespace std;
-
-/*
-	virtual void decode(char *buf, long bufLen);
-	virtual void encode(char *buf, long bufLen);
-	void setKey(string key);
-*/
 
 BOOST_AUTO_UNIT_TEST(test_decode_pre_encoded)
 {
@@ -46,6 +40,7 @@ BOOST_AUTO_UNIT_TEST(test_decode_pre_encoded)
 										  180,243,180,128,242,
 										  113,152,160,155,47,
 										  252,163,145};
+
 	unsigned char key[] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
 	string sKey((char*)key,16);
 
@@ -53,15 +48,18 @@ BOOST_AUTO_UNIT_TEST(test_decode_pre_encoded)
 	LantronixEncryptionImpl* filter = new LantronixEncryptionImpl();
 	filter->setKey(sKey);
 
-	unsigned char* plainText = NULL;
+	vector<unsigned char> plainText;
 	/* decode will change the passed array, and return the new size. */
-	int newSize = filter->decode(cEncoded, eSize, plainText);
+	bool ret = filter->decode(cEncoded, eSize, plainText);
 
-	string decodedPlaintext((char*)(plainText),newSize);
+	string decodedPlaintext((char*)plainText.begin(),plainText.size());
 
-	delete [] plainText; 
+	//std::cout << "Size: " << plainText.size() << std::endl;
+	//std::cout << "Size: " << decodedPlaintext.length() << std::endl;
+	//std::cout << decodedPlaintext << std::endl;
 
     BOOST_CHECK_EQUAL(plaintext.compare(decodedPlaintext), 0);
+	BOOST_CHECK_EQUAL(ret, true);
 }
 
 BOOST_AUTO_UNIT_TEST(test_encode_pre_encoded)
@@ -89,18 +87,17 @@ BOOST_AUTO_UNIT_TEST(test_encode_pre_encoded)
 	filter->setKey(sKey);
 	filter->setIV(cEncoded);
 
-	unsigned char* cText = NULL;
+	vector<unsigned char> cText;
 
-	int cTextSize = filter->encode((unsigned char*)plaintext.c_str(),plaintext.size(),cText);
+	bool ret = filter->encode((unsigned char*)plaintext.c_str(),plaintext.size(),cText);
 
-	BOOST_CHECK_EQUAL(eSize, cTextSize);
+	BOOST_CHECK_EQUAL(eSize, cText.size());
 
-	for (int i = 0; i < cTextSize; i++)
+	for (int i = 0; i < cText.size(); i++)
 	{
 		BOOST_CHECK_EQUAL(cText[i], cEncoded[i]);
 	}
-
-	delete [] cText;
+	BOOST_CHECK_EQUAL(ret, true);
 }
 
 

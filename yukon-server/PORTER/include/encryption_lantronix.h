@@ -12,20 +12,20 @@ class LantronixEncryptionImpl : public EncodingFilter
 {
 	public:
 		enum{
-			UPDHEADERSIZE=18//header is 16(IV) + 2(len)
+			UDPHEADERSIZE=18//header is 16(IV) + 2(len)
 		};
 
 		LantronixEncryptionImpl();
 
-		virtual int decode(const unsigned char* const cipher, long bufLen, unsigned char *& plainText);
-		virtual int encode(const unsigned char* const plainText, long bufLen, unsigned char *& cipher);
+		virtual bool decode(const unsigned char* const cipher, long bufLen, vector<unsigned char>& pText);
+		virtual bool encode(const unsigned char* const plainText, long bufLen, vector<unsigned char>& cipher);
 
 		void setKey (string key);
 		void setIV (unsigned char iv[]);
 
 	private:
 
-		void generateNewIV();
+		void generateNewIV(char seed);
 
 		bool _staticIv;
 		unsigned char _iv[16];
