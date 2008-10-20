@@ -210,3 +210,9 @@ UPDATE Display
 SET description = 'This display is used to show what a user created display looks like. You may edit this display to fit your own needs.'
 WHERE displayNum = 99;
 /* End YUK-6241 */
+
+/* Start YUK-6240 */
+UPDATE Command
+SET label = 'Read freeze config from meter and enable scheduled freeze processing in Yukon.'
+WHERE commandId = -142;
+/* End YUK-6240 */

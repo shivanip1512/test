@@ -1269,6 +1269,12 @@ SET description = 'This display is used to show what a user created display look
 WHERE displayNum = 99;
 /* End YUK-6241 */
 
+/* Start YUK-6240 */
+UPDATE Command
+SET label = 'Read freeze config from meter and enable scheduled freeze processing in Yukon.'
+WHERE commandId = -142;
+/* End YUK-6240 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
