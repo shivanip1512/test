@@ -116,25 +116,27 @@ ccu710manager.obj:	yukon.h precompiled.h ctidbgmem.h CCU710Manager.h \
 		mutex.h guard.h numstr.h clrdump.h CtiPCPtrQueue.h utility.h \
 		queues.h cticalls.h os2_2w32.h types.h sorted_vector.h
 ccu711.obj:	yukon.h precompiled.h ctidbgmem.h CCU711.h CCU710.h \
-		EmetconWord.h ctitime.h dlldefs.h mctStruct.h \
-		EmetconWordBase.h ctinexus.h netports.h cticonnect.h numstr.h \
-		cticalls.h os2_2w32.h types.h cti_asmc.h color.h logger.h \
-		thread.h mutex.h guard.h clrdump.h CtiPCPtrQueue.h utility.h \
-		queues.h sorted_vector.h SharedFunctions.h \
-		EmetconWordFactory.h
+		EmetconWord.h ctitime.h dlldefs.h ctiDate.h logger.h thread.h \
+		mutex.h guard.h numstr.h clrdump.h CtiPCPtrQueue.h utility.h \
+		queues.h cticalls.h os2_2w32.h types.h sorted_vector.h \
+		mctStruct.h EmetconWordB.h EmetconWordBase.h Mct410Sim.h \
+		cti_asmc.h ctinexus.h netports.h cticonnect.h color.h \
+		SharedFunctions.h EmetconWordC.h EmetconWordFactory.h
 ccu711manager.obj:	yukon.h precompiled.h ctidbgmem.h CCU711Manager.h \
 		ctinexus.h dlldefs.h netports.h cticonnect.h SimulatedCCU.h \
-		ctiTime.h CCU711.h CCU710.h EmetconWord.h mctStruct.h \
-		EmetconWordBase.h logger.h thread.h mutex.h guard.h numstr.h \
-		clrdump.h CtiPCPtrQueue.h utility.h queues.h cticalls.h \
-		os2_2w32.h types.h sorted_vector.h
+		ctiTime.h CCU711.h CCU710.h EmetconWord.h ctiDate.h logger.h \
+		thread.h mutex.h guard.h numstr.h clrdump.h CtiPCPtrQueue.h \
+		utility.h queues.h cticalls.h os2_2w32.h types.h \
+		sorted_vector.h mctStruct.h EmetconWordB.h EmetconWordBase.h \
+		Mct410Sim.h cti_asmc.h
 ccusimulator.obj:	yukon.h precompiled.h ctidbgmem.h cticalls.h \
 		os2_2w32.h dlldefs.h types.h ctinexus.h netports.h \
 		cticonnect.h dsm2.h mutex.h guard.h numstr.h clrdump.h \
 		color.h ctiTime.h dbaccess.h dllbase.h sema.h mctStruct.h \
 		SimulatedCCU.h CCU711Manager.h CCU711.h CCU710.h \
-		EmetconWord.h EmetconWordBase.h CCU710Manager.h logger.h \
-		thread.h CtiPCPtrQueue.h utility.h queues.h sorted_vector.h
+		EmetconWord.h ctiDate.h logger.h thread.h CtiPCPtrQueue.h \
+		utility.h queues.h sorted_vector.h EmetconWordB.h \
+		EmetconWordBase.h Mct410Sim.h cti_asmc.h CCU710Manager.h
 clientnexus.obj:	yukon.h precompiled.h ctidbgmem.h clientNexus.h \
 		ctinexus.h dlldefs.h netports.h cticonnect.h numstr.h \
 		cticalls.h os2_2w32.h types.h
@@ -145,11 +147,20 @@ emetconwordb.obj:	yukon.h precompiled.h ctidbgmem.h EmetconWordB.h \
 		EmetconWordBase.h SharedFunctions.h ctitime.h dlldefs.h
 emetconwordbase.obj:	yukon.h precompiled.h ctidbgmem.h \
 		EmetconWordBase.h
-emetconwordd1.obj:	yukon.h precompiled.h ctidbgmem.h EmetconWordD1.h \
+emetconwordc.obj:	yukon.h precompiled.h ctidbgmem.h EmetconWordC.h \
 		EmetconWordBase.h
+emetconwordd1.obj:	yukon.h precompiled.h ctidbgmem.h EmetconWordD1.h \
+		EmetconWordBase.h dlldefs.h cti_asmc.h
+emetconworddn.obj:	yukon.h precompiled.h ctidbgmem.h EmetconWordDn.h \
+		EmetconWordBase.h dlldefs.h cti_asmc.h
 emetconwordfactory.obj:	yukon.h precompiled.h ctidbgmem.h \
 		EmetconWordFactory.h EmetconWordBase.h EmetconWordD1.h \
-		EmetconWordB.h
+		EmetconWordB.h EmetconWordC.h
+mct410sim.obj:	yukon.h precompiled.h ctidbgmem.h Mct410Sim.h ctitime.h \
+		dlldefs.h cti_asmc.h SharedFunctions.h logger.h thread.h \
+		mutex.h guard.h numstr.h clrdump.h CtiPCPtrQueue.h utility.h \
+		queues.h cticalls.h os2_2w32.h types.h sorted_vector.h \
+		EmetconWordDn.h EmetconWordBase.h EmetconWordD1.h
 precompiled.obj:	yukon.h precompiled.h ctidbgmem.h
 sharedfunctions.obj:	yukon.h precompiled.h ctidbgmem.h \
 		SharedFunctions.h ctitime.h dlldefs.h logger.h thread.h \
@@ -160,6 +171,8 @@ simulatedccu.obj:	yukon.h precompiled.h ctidbgmem.h SimulatedCCU.h \
 test_ccusim.obj:	ctitime.h dlldefs.h ctidate.h logger.h thread.h \
 		mutex.h guard.h numstr.h clrdump.h CtiPCPtrQueue.h utility.h \
 		queues.h cticalls.h os2_2w32.h types.h sorted_vector.h \
-		CCU711.h CCU710.h EmetconWord.h mctStruct.h EmetconWordBase.h \
-		yukon.h precompiled.h ctidbgmem.h rwutil.h boost_time.h
+		CCU711.h CCU710.h EmetconWord.h mctStruct.h EmetconWordB.h \
+		EmetconWordBase.h Mct410Sim.h cti_asmc.h yukon.h \
+		precompiled.h ctidbgmem.h rwutil.h boost_time.h boostutil.h \
+		SharedFunctions.h
 #ENDUPDATE#

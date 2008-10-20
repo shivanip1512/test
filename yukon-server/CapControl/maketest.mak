@@ -112,9 +112,17 @@ deps:
 
 ######################################################################################
 #UPDATE#
-test_ccsubstationbus.obj:	ccsubstationbus.h ccfeeder.h \
-		ccmonitorpoint.h cccapbank.h ccpointresponse.h \
-		cctwowaycbcpoints.h ccoperationstats.h ccConfirmationStats.h \
-		ccstrategy.h
+test_ccsubstationbus.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h \
+		dlldefs.h ccsubstationbus.h dbaccess.h dllbase.h os2_2w32.h \
+		types.h cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h \
+		cticonnect.h netports.h sema.h connection.h exchange.h \
+		logger.h thread.h CtiPCPtrQueue.h utility.h queues.h \
+		sorted_vector.h message.h collectable.h rwutil.h boost_time.h \
+		boostutil.h msg_multi.h msg_pdata.h pointdefs.h pointtypes.h \
+		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
+		configval.h observe.h ccfeeder.h ccmonitorpoint.h msg_cmd.h \
+		ctidate.h cccapbank.h ccpointresponse.h cctwowaycbcpoints.h \
+		ccoperationstats.h ccConfirmationStats.h msg_pcrequest.h \
+		ccstrategy.h regression.h
 #ENDUPDATE#
 

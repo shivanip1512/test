@@ -115,8 +115,8 @@ test_scheduletime.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h \
 		guard.h numstr.h clrdump.h CtiPCPtrQueue.h utility.h queues.h \
 		cticalls.h os2_2w32.h types.h sorted_vector.h mc_sched.h \
 		dbmemobject.h tbl_pao.h tbl_mcsched.h tbl_mcsimpsched.h \
-		message.h collectable.h rwutil.h boost_time.h mgr_mcsched.h \
-		rtdb.h hashkey.h hash_functions.h dllbase.h dsm2.h \
-		cticonnect.h netports.h mgr_holiday.h ctidate.h
+		message.h collectable.h rwutil.h boost_time.h boostutil.h \
+		mgr_mcsched.h rtdb.h hashkey.h hash_functions.h dllbase.h \
+		dsm2.h cticonnect.h netports.h mgr_holiday.h ctidate.h
 #ENDUPDATE#
 

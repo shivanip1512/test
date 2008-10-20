@@ -510,6 +510,13 @@ tbl_paoexclusion.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		sema.h logger.h thread.h ctitime.h CtiPCPtrQueue.h utility.h \
 		queues.h sorted_vector.h tbl_paoexclusion.h rwutil.h \
 		boost_time.h boostutil.h
+tbl_pao_lite.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
+		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
+		mutex.h guard.h numstr.h clrdump.h cticonnect.h netports.h \
+		sema.h logger.h thread.h ctitime.h CtiPCPtrQueue.h utility.h \
+		queues.h sorted_vector.h resolvers.h pointtypes.h \
+		db_entry_defines.h tbl_pao_lite.h dbmemobject.h rwutil.h \
+		boost_time.h boostutil.h
 tbl_port_base.obj:	yukon.h precompiled.h ctidbgmem.h tbl_port_base.h \
 		dbmemobject.h dbaccess.h dlldefs.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h \

@@ -120,6 +120,7 @@ test_signalmanager.obj:	yukon.h precompiled.h ctidbgmem.h \
 		cticonnect.h netports.h dbmemobject.h dbaccess.h sema.h \
 		resolvers.h pointtypes.h db_entry_defines.h desolvers.h \
 		signalmanager.h msg_signal.h message.h collectable.h rwutil.h \
-		ctitime.h boost_time.h msg_multi.h msg_pdata.h pointdefs.h
+		ctitime.h boost_time.h boostutil.h utility.h queues.h \
+		sorted_vector.h msg_multi.h msg_pdata.h pointdefs.h
 #ENDUPDATE#
 
