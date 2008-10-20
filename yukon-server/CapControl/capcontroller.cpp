@@ -731,32 +731,31 @@ void CtiCapController::controlLoop()
                                     dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                                 }
                             }
-                        }
-                    }
-                    catch(...)
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                    }
-
-                    try
-                    {
-                        //accumulate all buses with any changes into msg for all clients
-                        if( currentSubstationBus->getBusUpdatedFlag() )
-                        {
-                            currentStation->checkAndUpdateRecentlyControlledFlag();
-                            if (currentStation->getStationUpdatedFlag())
+                            try
                             {
-                                store->updateSubstationObjectList(currentStation->getPAOId(), stationChanges);
-                                currentStation->setStationUpdatedFlag(FALSE);
-                            }                
-                            if (currentArea->getAreaUpdatedFlag())
-                            {
-                                store->updateAreaObjectList(currentArea->getPAOId(), areaChanges);
-                                currentArea->setAreaUpdatedFlag(FALSE);
+                                //accumulate all buses with any changes into msg for all clients
+                                if( currentSubstationBus->getBusUpdatedFlag() )
+                                {
+                                    currentStation->checkAndUpdateRecentlyControlledFlag();
+                                    if (currentStation->getStationUpdatedFlag())
+                                    {
+                                        store->updateSubstationObjectList(currentStation->getPAOId(), stationChanges);
+                                        currentStation->setStationUpdatedFlag(FALSE);
+                                    }                
+                                    if (currentArea->getAreaUpdatedFlag())
+                                    {
+                                        store->updateAreaObjectList(currentArea->getPAOId(), areaChanges);
+                                        currentArea->setAreaUpdatedFlag(FALSE);
+                                    }
+                                    substationBusChanges.push_back(currentSubstationBus);
+                                    currentSubstationBus->setBusUpdatedFlag(FALSE);
+                                }
                             }
-                            substationBusChanges.push_back(currentSubstationBus);
-                            currentSubstationBus->setBusUpdatedFlag(FALSE);
+                            catch(...)
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                            }
                         }
                     }
                     catch(...)
