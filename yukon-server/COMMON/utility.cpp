@@ -2635,7 +2635,7 @@ string getEncodingTypeForPort(long portId)
 
     if(rdr.isValid() && rdr() )
     {
-        rdr["pointid"] >> type;
+        rdr["encodingtype"] >> type;
     }
     else 
     {
@@ -2650,7 +2650,7 @@ string getEncodingTypeForPort(long portId)
     return type;
 }
 
-string getEncodeStringForPort(long portId)
+string getEncodingKeyForPort(long portId)
 {
     string sql("SELECT encodingkey FROM portterminalserver WHERE portid = ");
     sql += CtiNumStr(portId);
@@ -2664,7 +2664,7 @@ string getEncodeStringForPort(long portId)
 
     if(rdr.isValid() && rdr() )
     {
-        rdr["pointid"] >> type;
+        rdr["encodingkey"] >> type;
     }
     else 
     {

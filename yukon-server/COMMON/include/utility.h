@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/utility.h-arc  $
-* REVISION     :  $Revision: 1.56 $
-* DATE         :  $Date: 2008/10/15 19:20:12 $
+* REVISION     :  $Revision: 1.57 $
+* DATE         :  $Date: 2008/10/20 19:05:20 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -226,8 +226,8 @@ IM_EX_CTIBASE void testSA305CRC(char* testData);
 IM_EX_CTIBASE LONG GetPAOIdOfEnergyPro(long devicesn);
 
 IM_EX_CTIBASE vector<int> getPointIdsOnPao(long paoid);
-IM_EX_CTIBASE string getFilterTypeForPort(long portId);
-IM_EX_CTIBASE string getEncodeStringForPort(long portId);
+IM_EX_CTIBASE string getEncodingTypeForPort(long portId);
+IM_EX_CTIBASE string getEncodingKeyForPort(long portId);
 
 IM_EX_CTIBASE long getPaoIdForPoint(long pointid);
 
