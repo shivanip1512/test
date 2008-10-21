@@ -1,38 +1,27 @@
-#include "yukon.h"
-
-
 /*-----------------------------------------------------------------------------*
 *
-* File:   std_ansi_tbl_one_one
+* File:   std_ansi_tbl_11
 *
 * Date:   9/16/2002
 *
 * Author: Eric Schmit
 *
 * PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_one_one.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/12/20 17:19:57 $
-*    History: 
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_11.cpp-arc  $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2008/10/21 16:30:31 $
+*    History:
       $Log: std_ansi_tbl_one_one.cpp,v $
+      Revision 1.8  2008/10/21 16:30:31  mfisher
+      YUK-6615 ANSI table class names and filenames are difficult to read
+      Renamed classes and filenames
+
       Revision 1.7  2005/12/20 17:19:57  tspar
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
-<<<<<<< std_ansi_tbl_one_one.cpp
-      Revision 1.5.2.2  2005/07/14 22:27:02  jliu
-      RWCStringRemoved
-
-      Revision 1.5.2.1  2005/07/12 21:08:42  jliu
-      rpStringWithoutCmpParser
-
-=======
       Revision 1.6  2005/12/12 20:34:29  jrichter
       BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
 
-      Revision 1.5.4.1  2005/12/12 19:50:39  jrichter
-      BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
-
->>>>>>> 1.6
       Revision 1.5  2005/02/10 23:23:57  alauinger
       Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 
@@ -44,21 +33,22 @@
 
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
 #include "logger.h"
-#include "std_ansi_tbl_one_one.h"
+#include "std_ansi_tbl_11.h"
 
 using std::endl;
 
-const CHAR * CtiAnsiTableOneOne::SELECTOR_CONSTANTS_GAS_AGA3 = "GAS_CONSTANTS_AGA3";
-const CHAR * CtiAnsiTableOneOne::SELECTOR_CONSTANTS_GAS_AGA7 = "GAS_CONSTANTS_AGA7";
-const CHAR * CtiAnsiTableOneOne::SELECTOR_CONSTANTS_ELECTRIC = "ELECTRIC_CONSTANTS";
-const CHAR * CtiAnsiTableOneOne::SELECTOR_CONSTANTS_RESERVED = "CONSTANT_RESERVED_FOR_FUTURE_USE";
+const CHAR * CtiAnsiTable11::SELECTOR_CONSTANTS_GAS_AGA3 = "GAS_CONSTANTS_AGA3";
+const CHAR * CtiAnsiTable11::SELECTOR_CONSTANTS_GAS_AGA7 = "GAS_CONSTANTS_AGA7";
+const CHAR * CtiAnsiTable11::SELECTOR_CONSTANTS_ELECTRIC = "ELECTRIC_CONSTANTS";
+const CHAR * CtiAnsiTable11::SELECTOR_CONSTANTS_RESERVED = "CONSTANT_RESERVED_FOR_FUTURE_USE";
 
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTableOneOne::CtiAnsiTableOneOne( BYTE *dataBlob )
+CtiAnsiTable11::CtiAnsiTable11( BYTE *dataBlob )
 {
    int temp = sizeof( SOURCE_RCD );
 
@@ -69,7 +59,7 @@ CtiAnsiTableOneOne::CtiAnsiTableOneOne( BYTE *dataBlob )
 }
 
 
-CtiAnsiTableOneOne::CtiAnsiTableOneOne( )
+CtiAnsiTable11::CtiAnsiTable11( )
 {
     _source_record = new SOURCE_RCD;
 }
@@ -77,7 +67,7 @@ CtiAnsiTableOneOne::CtiAnsiTableOneOne( )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTableOneOne::~CtiAnsiTableOneOne()
+CtiAnsiTable11::~CtiAnsiTable11()
 {
     if (_source_record != NULL)
     {
@@ -89,7 +79,7 @@ CtiAnsiTableOneOne::~CtiAnsiTableOneOne()
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTableOneOne& CtiAnsiTableOneOne::operator=(const CtiAnsiTableOneOne& aRef)
+CtiAnsiTable11& CtiAnsiTable11::operator=(const CtiAnsiTable11& aRef)
 {
    if(this != &aRef)
    {
@@ -98,14 +88,14 @@ CtiAnsiTableOneOne& CtiAnsiTableOneOne::operator=(const CtiAnsiTableOneOne& aRef
 }
 
 
-void CtiAnsiTableOneOne::generateResultPiece( BYTE **dataBlob )
+void CtiAnsiTable11::generateResultPiece( BYTE **dataBlob )
 {
     memcpy(*dataBlob, _source_record, sizeof( SOURCE_RCD ));
     *dataBlob += sizeof (SOURCE_RCD);
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableOneOne::decodeResultPiece( BYTE **dataBlob )
+void CtiAnsiTable11::decodeResultPiece( BYTE **dataBlob )
 {
     memcpy( _source_record, *dataBlob, sizeof( SOURCE_RCD ));
     *dataBlob += sizeof (SOURCE_RCD);
@@ -113,7 +103,7 @@ void CtiAnsiTableOneOne::decodeResultPiece( BYTE **dataBlob )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableOneOne::printResult( const string& deviceName )
+void CtiAnsiTable11::printResult( const string& deviceName )
 {
     int integer;
     string string1,string2;
@@ -230,7 +220,7 @@ void CtiAnsiTableOneOne::printResult( const string& deviceName )
 //device
 //=========================================================================================================================================
 
-int CtiAnsiTableOneOne::getNumberUOMEntries( void )
+int CtiAnsiTable11::getNumberUOMEntries( void )
 {
    return ((int)_source_record->nbr_uom_entries);
 }
@@ -238,7 +228,7 @@ int CtiAnsiTableOneOne::getNumberUOMEntries( void )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-int CtiAnsiTableOneOne::getNumberDemandControlEntries( void )
+int CtiAnsiTable11::getNumberDemandControlEntries( void )
 {
    return ((int)_source_record->nbr_demand_ctrl_entries);
 }
@@ -246,7 +236,7 @@ int CtiAnsiTableOneOne::getNumberDemandControlEntries( void )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-int CtiAnsiTableOneOne::getDataControlLength( void )
+int CtiAnsiTable11::getDataControlLength( void )
 {
    return ((int)_source_record->data_ctrl_length);
 }
@@ -254,7 +244,7 @@ int CtiAnsiTableOneOne::getDataControlLength( void )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-int CtiAnsiTableOneOne::getNumberDataControlEntries( void )
+int CtiAnsiTable11::getNumberDataControlEntries( void )
 {
    return ((int)_source_record->nbr_data_ctrl_entries);
 }
@@ -262,7 +252,7 @@ int CtiAnsiTableOneOne::getNumberDataControlEntries( void )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-int CtiAnsiTableOneOne::getNumberConstantsEntries( void )
+int CtiAnsiTable11::getNumberConstantsEntries( void )
 {
    return ((int)_source_record->nbr_constants_entries);
 }
@@ -270,7 +260,7 @@ int CtiAnsiTableOneOne::getNumberConstantsEntries( void )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-int CtiAnsiTableOneOne::getNumberSources( void )
+int CtiAnsiTable11::getNumberSources( void )
 {
    return ((int)_source_record->nbr_sources);
 }
@@ -279,13 +269,13 @@ int CtiAnsiTableOneOne::getNumberSources( void )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-int CtiAnsiTableOneOne::getRawConstantsSelector( void )
+int CtiAnsiTable11::getRawConstantsSelector( void )
 {
    return ((int)_source_record->constants_selector);
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-string CtiAnsiTableOneOne::getResolvedConstantsSelector( void )
+string CtiAnsiTable11::getResolvedConstantsSelector( void )
 {
     string ret;
     if ((int)_source_record->constants_selector == gasConstantsAGA3)
@@ -301,14 +291,14 @@ string CtiAnsiTableOneOne::getResolvedConstantsSelector( void )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-bool CtiAnsiTableOneOne::getRawNoOffsetFlag( void )
+bool CtiAnsiTable11::getRawNoOffsetFlag( void )
 {
    return ((bool)_source_record->source_flags.no_offset_flag);
 }
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-string CtiAnsiTableOneOne::getResolvedNoOffsetFlag( void )
+string CtiAnsiTable11::getResolvedNoOffsetFlag( void )
 {
     string ret;
     if ((bool)_source_record->source_flags.no_offset_flag == 0)
@@ -322,13 +312,13 @@ string CtiAnsiTableOneOne::getResolvedNoOffsetFlag( void )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-bool CtiAnsiTableOneOne::getRawSetOnePresentFlag( void )
+bool CtiAnsiTable11::getRawSetOnePresentFlag( void )
 {
    return ((bool)_source_record->source_flags.set1_preset_flag);
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-string CtiAnsiTableOneOne::getResolvedSetOnePresentFlag( void )
+string CtiAnsiTable11::getResolvedSetOnePresentFlag( void )
 {
     string ret;
     if ((bool)_source_record->source_flags.set1_preset_flag == 0)
@@ -342,13 +332,13 @@ string CtiAnsiTableOneOne::getResolvedSetOnePresentFlag( void )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-bool CtiAnsiTableOneOne::getRawSetTwoPresentFlag( void )
+bool CtiAnsiTable11::getRawSetTwoPresentFlag( void )
 {
    return ((bool)_source_record->source_flags.set2_preset_flag);
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-string CtiAnsiTableOneOne::getResolvedSetTwoPresentFlag( void )
+string CtiAnsiTable11::getResolvedSetTwoPresentFlag( void )
 {
     string ret;
     if ((bool)_source_record->source_flags.set2_preset_flag == 0)
@@ -363,14 +353,14 @@ string CtiAnsiTableOneOne::getResolvedSetTwoPresentFlag( void )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-bool CtiAnsiTableOneOne::getRawPFExcludeFlag( void )
+bool CtiAnsiTable11::getRawPFExcludeFlag( void )
 {
    return ((bool)_source_record->source_flags.pf_exclude_flag);
 }
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-string CtiAnsiTableOneOne::getResolvedPFExcludeFlag( void )
+string CtiAnsiTable11::getResolvedPFExcludeFlag( void )
 {
     string ret;
     if ((bool)_source_record->source_flags.pf_exclude_flag == 0)
@@ -384,13 +374,13 @@ string CtiAnsiTableOneOne::getResolvedPFExcludeFlag( void )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-bool CtiAnsiTableOneOne::getRawResetExcludeFlag( void )
+bool CtiAnsiTable11::getRawResetExcludeFlag( void )
 {
    return ((bool)_source_record->source_flags.reset_exclude_flag);
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-string CtiAnsiTableOneOne::getResolvedResetExcludeFlag( void )
+string CtiAnsiTable11::getResolvedResetExcludeFlag( void )
 {
     string ret;
     if ((bool)_source_record->source_flags.reset_exclude_flag == 0)
@@ -404,13 +394,13 @@ string CtiAnsiTableOneOne::getResolvedResetExcludeFlag( void )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-bool CtiAnsiTableOneOne::getRawBlockDemandFlag( void )
+bool CtiAnsiTable11::getRawBlockDemandFlag( void )
 {
    return ((bool)_source_record->source_flags.block_demand_flag);
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-string CtiAnsiTableOneOne::getResolvedBlockDemandFlag( void )
+string CtiAnsiTable11::getResolvedBlockDemandFlag( void )
 {
     string ret;
     if ((bool)_source_record->source_flags.block_demand_flag == 0)
@@ -423,13 +413,13 @@ string CtiAnsiTableOneOne::getResolvedBlockDemandFlag( void )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-bool CtiAnsiTableOneOne::getRawSlidingDemandFlag( void )
+bool CtiAnsiTable11::getRawSlidingDemandFlag( void )
 {
    return ((bool)_source_record->source_flags.sliding_demand_flag);
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-string CtiAnsiTableOneOne::getResolvedSlidingDemandFlag( void )
+string CtiAnsiTable11::getResolvedSlidingDemandFlag( void )
 {
     string ret;
     if ((bool)_source_record->source_flags.sliding_demand_flag == 0)
@@ -442,13 +432,13 @@ string CtiAnsiTableOneOne::getResolvedSlidingDemandFlag( void )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-bool CtiAnsiTableOneOne::getRawThermalDemandFlag( void )
+bool CtiAnsiTable11::getRawThermalDemandFlag( void )
 {
    return ((bool)_source_record->source_flags.thermal_demand_flag);
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-string CtiAnsiTableOneOne::getResolvedThermalDemandFlag( void )
+string CtiAnsiTable11::getResolvedThermalDemandFlag( void )
 {
     string ret;
     if ((bool)_source_record->source_flags.thermal_demand_flag == 0)

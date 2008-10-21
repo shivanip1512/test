@@ -1,39 +1,27 @@
-#include "yukon.h"
-
-
-
 /*-----------------------------------------------------------------------------*
 *
-* File:   std_ansi_tbl_zero_eight
+* File:   std_ansi_tbl_08
 *
 * Date:   9/13/2002
 *
 * Author: Eric Schmit
 *
 * PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_zero_eight.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/12/20 17:19:57 $
-*    History: 
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_08.cpp-arc  $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2008/10/21 16:30:31 $
+*    History:
       $Log: std_ansi_tbl_zero_eight.cpp,v $
+      Revision 1.5  2008/10/21 16:30:31  mfisher
+      YUK-6615 ANSI table class names and filenames are difficult to read
+      Renamed classes and filenames
+
       Revision 1.4  2005/12/20 17:19:57  tspar
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
-<<<<<<< std_ansi_tbl_zero_eight.cpp
-      Revision 1.2.2.2  2005/07/14 22:27:02  jliu
-      RWCStringRemoved
-
-      Revision 1.2.2.1  2005/07/12 21:08:42  jliu
-      rpStringWithoutCmpParser
-
-=======
       Revision 1.3  2005/12/12 20:34:30  jrichter
       BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
 
-      Revision 1.2.4.1  2005/12/12 19:50:39  jrichter
-      BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
-
->>>>>>> 1.3
       Revision 1.2  2005/02/10 23:23:58  alauinger
       Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 
@@ -45,8 +33,9 @@
 
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
-#include "std_ansi_tbl_zero_eight.h"
+#include "std_ansi_tbl_08.h"
 #include "logger.h"
 using std::endl;
 //=========================================================================================================================================
@@ -55,11 +44,11 @@ using std::endl;
 //
 //This will feel.... a little weird....
 //=========================================================================================================================================
-CtiAnsiTableZeroEight::CtiAnsiTableZeroEight( )
+CtiAnsiTable08::CtiAnsiTable08( )
 {
 }
 
-CtiAnsiTableZeroEight::CtiAnsiTableZeroEight( BYTE *dataBlob )
+CtiAnsiTable08::CtiAnsiTable08( BYTE *dataBlob )
 {
     int dummy = 0;
 
@@ -74,20 +63,20 @@ CtiAnsiTableZeroEight::CtiAnsiTableZeroEight( BYTE *dataBlob )
 
     populateRespDataRcd(dataBlob, &_proc_resp_tbl.resp_data, dummy);
     dataBlob += dummy;
-    
+
 }
 
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTableZeroEight::~CtiAnsiTableZeroEight()
+CtiAnsiTable08::~CtiAnsiTable08()
 {
 }
 
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTableZeroEight& CtiAnsiTableZeroEight::operator=(const CtiAnsiTableZeroEight& aRef)
+CtiAnsiTable08& CtiAnsiTable08::operator=(const CtiAnsiTable08& aRef)
 {
   if(this != &aRef)
   {
@@ -97,17 +86,17 @@ CtiAnsiTableZeroEight& CtiAnsiTableZeroEight::operator=(const CtiAnsiTableZeroEi
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableZeroEight::generateResultPiece( BYTE **dataBlob )
+void CtiAnsiTable08::generateResultPiece( BYTE **dataBlob )
 {
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableZeroEight::decodeResultPiece( BYTE **dataBlob )
+void CtiAnsiTable08::decodeResultPiece( BYTE **dataBlob )
 {
 
 }
 
-void CtiAnsiTableZeroEight::populateRespDataRcd( BYTE *dataBlob, RSP_DATA_RCD *data_rcd, int &offset )
+void CtiAnsiTable08::populateRespDataRcd( BYTE *dataBlob, RSP_DATA_RCD *data_rcd, int &offset )
 {
 
     switch((int)_proc_resp_tbl.proc.tbl_proc_nbr)
@@ -115,7 +104,7 @@ void CtiAnsiTableZeroEight::populateRespDataRcd( BYTE *dataBlob, RSP_DATA_RCD *d
         case 0:
             {
                 break;
-            } 
+            }
         case 1:
         {
             break;
@@ -160,7 +149,7 @@ void CtiAnsiTableZeroEight::populateRespDataRcd( BYTE *dataBlob, RSP_DATA_RCD *d
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableZeroEight::printResult( const string& deviceName )
+void CtiAnsiTable08::printResult( const string& deviceName )
 {
     int integer;
     string string;
@@ -189,7 +178,7 @@ void CtiAnsiTableZeroEight::printResult( const string& deviceName )
         dout << " Sequence Nbr:     " <<getSeqNbr()<< endl;
         dout << " Result Code:      " <<getResultCode()<< endl;
     }
-    if (getTblProcNbr() == 22) 
+    if (getTblProcNbr() == 22)
     {
         {
             CtiLockGuard< CtiLogger > doubt_guard( dout );
@@ -199,32 +188,32 @@ void CtiAnsiTableZeroEight::printResult( const string& deviceName )
 
 }
 
-int CtiAnsiTableZeroEight::getTblProcNbr(void)
+int CtiAnsiTable08::getTblProcNbr(void)
 {
     return (int) _proc_resp_tbl.proc.tbl_proc_nbr;
 }
 
-bool CtiAnsiTableZeroEight::getStdMfgFlg(void)
+bool CtiAnsiTable08::getStdMfgFlg(void)
 {
     return (bool) _proc_resp_tbl.proc.std_vs_mfg_flag;
 }
 
-int CtiAnsiTableZeroEight::getSelector(void)
+int CtiAnsiTable08::getSelector(void)
 {
     return (int) _proc_resp_tbl.proc.selector;
 }
 
-int CtiAnsiTableZeroEight::getSeqNbr(void)
+int CtiAnsiTable08::getSeqNbr(void)
 {
     return (int)_proc_resp_tbl.seq_nbr;
 }
-int CtiAnsiTableZeroEight::getResultCode(void)
+int CtiAnsiTable08::getResultCode(void)
 {
     return (int)_proc_resp_tbl.result_code;
 }
-int CtiAnsiTableZeroEight::getLPOffset(void)
+int CtiAnsiTable08::getLPOffset(void)
 {
-    if (getTblProcNbr() == 22) 
+    if (getTblProcNbr() == 22)
     {
         return  (int)_proc_resp_tbl.resp_data.u.pm22.lpOffset;
     }

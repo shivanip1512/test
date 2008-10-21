@@ -1,21 +1,22 @@
-#include "yukon.h"
-
-
 /*-----------------------------------------------------------------------------*
 *
-* File:   std_ansi_tbl_five_five
+* File:   std_ansi_tbl_55
 *
 * Date:   10/24/2002
 *
 * Author: Eric Schmit
 *
 * PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_five_five.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/12/20 17:19:56 $
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_55.cpp-arc  $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2008/10/21 16:30:31 $
 *
-*    History: 
+*    History:
       $Log: std_ansi_tbl_five_five.cpp,v $
+      Revision 1.8  2008/10/21 16:30:31  mfisher
+      YUK-6615 ANSI table class names and filenames are difficult to read
+      Renamed classes and filenames
+
       Revision 1.7  2005/12/20 17:19:56  tspar
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
@@ -37,14 +38,15 @@
 
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
 #include "logger.h"
-#include "std_ansi_tbl_five_five.h"
+#include "std_ansi_table_55.h"
 
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTableFiveFive::CtiAnsiTableFiveFive( BYTE *dataBlob )
+CtiAnsiTable055::CtiAnsiTable055( BYTE *dataBlob )
 {
    memcpy( (void *)&_clockStateTbl, dataBlob, sizeof( CLOCK_55_STATE_RCD ));
    dataBlob +=  sizeof( CLOCK_55_STATE_RCD );
@@ -53,14 +55,14 @@ CtiAnsiTableFiveFive::CtiAnsiTableFiveFive( BYTE *dataBlob )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTableFiveFive::~CtiAnsiTableFiveFive()
+CtiAnsiTable55::~CtiAnsiTable55()
 {
 }
 
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTableFiveFive& CtiAnsiTableFiveFive::operator=(const CtiAnsiTableFiveFive& aRef)
+CtiAnsiTable55& CtiAnsiTable55::operator=(const CtiAnsiTable55& aRef)
 {
    if(this != &aRef)
    {
@@ -70,7 +72,7 @@ CtiAnsiTableFiveFive& CtiAnsiTableFiveFive::operator=(const CtiAnsiTableFiveFive
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableFiveFive::generateResultPiece( BYTE **dataBlob )
+void CtiAnsiTable55::generateResultPiece( BYTE **dataBlob )
 {
     memcpy( *dataBlob, (void *)&_clockStateTbl, sizeof( CLOCK_55_STATE_RCD ));
     *dataBlob +=  sizeof( CLOCK_55_STATE_RCD );
@@ -79,7 +81,7 @@ void CtiAnsiTableFiveFive::generateResultPiece( BYTE **dataBlob )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableFiveFive::decodeResultPiece( BYTE **dataBlob )
+void CtiAnsiTable55::decodeResultPiece( BYTE **dataBlob )
 {
     memcpy( (void *)&_clockStateTbl, *dataBlob, sizeof( CLOCK_55_STATE_RCD ));
     *dataBlob +=  sizeof( CLOCK_55_STATE_RCD );
@@ -87,9 +89,9 @@ void CtiAnsiTableFiveFive::decodeResultPiece( BYTE **dataBlob )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableFiveFive::printResult( const string& deviceName )
+void CtiAnsiTable55::printResult( const string& deviceName )
 {
- 
+
     /**************************************************************
     * its been discovered that if a method goes wrong while having the logger locked
     * unpleasant consquences may happen (application lockup for instance)  Because
@@ -118,7 +120,7 @@ void CtiAnsiTableFiveFive::printResult( const string& deviceName )
 
 
 
-        /* switch (_timefmt) 
+        /* switch (_timefmt)
         {
         case 1:
             {

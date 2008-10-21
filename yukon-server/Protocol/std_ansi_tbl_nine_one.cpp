@@ -1,8 +1,6 @@
-
-#include "yukon.h"
 /*-----------------------------------------------------------------------------*
 *
-* File:   std_ansi_tbl_ninety_one
+* File:   std_ansi_tbl_91
 *
 * Date:   05/21/2004
 *
@@ -11,37 +9,38 @@
 
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
 #include "logger.h"
-#include "std_ansi_tbl_nine_one.h"
+#include "std_ansi_tbl_91.h"
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-CtiAnsiTableNineOne::CtiAnsiTableNineOne(  )
-{  
-    
+CtiAnsiTable91::CtiAnsiTable91(  )
+{
+
 }
 
 
 
 
-CtiAnsiTableNineOne::CtiAnsiTableNineOne( BYTE *dataBlob )
+CtiAnsiTable91::CtiAnsiTable91( BYTE *dataBlob )
 {
 
     memcpy( (void *)&_telephoneTbl, dataBlob, sizeof( TELEPHONE_RCD ));
-    dataBlob += sizeof( TELEPHONE_RCD ); 
+    dataBlob += sizeof( TELEPHONE_RCD );
 }
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-CtiAnsiTableNineOne::~CtiAnsiTableNineOne()
+CtiAnsiTable91::~CtiAnsiTable91()
 {
-    
+
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTableNineOne& CtiAnsiTableNineOne::operator=(const CtiAnsiTableNineOne& aRef)
+CtiAnsiTable91& CtiAnsiTable91::operator=(const CtiAnsiTable91& aRef)
 {
    if(this != &aRef)
    {
@@ -51,21 +50,21 @@ CtiAnsiTableNineOne& CtiAnsiTableNineOne::operator=(const CtiAnsiTableNineOne& a
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableNineOne::generateResultPiece( BYTE **dataBlob )
+void CtiAnsiTable91::generateResultPiece( BYTE **dataBlob )
 {
 
 }
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableNineOne::decodeResultPiece( BYTE **dataBlob )
+void CtiAnsiTable91::decodeResultPiece( BYTE **dataBlob )
 {
-    
+
 }
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableNineOne::printResult( const string& deviceName )
+void CtiAnsiTable91::printResult( const string& deviceName )
 {
     int index, i, j;
     int nbrBlkInts;
@@ -95,17 +94,17 @@ void CtiAnsiTableNineOne::printResult( const string& deviceName )
 
 }
 
-int CtiAnsiTableNineOne::getBitRate()
+int CtiAnsiTable91::getBitRate()
 {
     return  (int) _telephoneTbl.telephoneFlags.bit_rate;
 }
 
-int CtiAnsiTableNineOne::getNbrSetupStrings()
+int CtiAnsiTable91::getNbrSetupStrings()
 {
     return  (int) _telephoneTbl.nbr_setup_strings;
 }
 
-int CtiAnsiTableNineOne::getSetupStringLength()
+int CtiAnsiTable91::getSetupStringLength()
 {
     return  (int) _telephoneTbl.setup_string_length;
 }

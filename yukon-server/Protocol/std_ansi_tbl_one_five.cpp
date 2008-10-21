@@ -1,27 +1,25 @@
-#include "yukon.h"
-
-
 /*-----------------------------------------------------------------------------*
 *
-* File:   std_ansi_tbl_one_five
+* File:   std_ansi_tbl_15
 *
 * Date:   9/17/2002
 *
 * Author: Eric Schmit
 *
 * PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_tbl_one_five.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/12/20 17:19:57 $
-*    History: 
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_tbl_15.cpp-arc  $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2008/10/21 16:30:31 $
+*    History:
       $Log: std_ansi_tbl_one_five.cpp,v $
+      Revision 1.9  2008/10/21 16:30:31  mfisher
+      YUK-6615 ANSI table class names and filenames are difficult to read
+      Renamed classes and filenames
+
       Revision 1.8  2005/12/20 17:19:57  tspar
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
       Revision 1.7  2005/12/12 20:34:29  jrichter
-      BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
-
-      Revision 1.6.2.1  2005/12/12 19:50:39  jrichter
       BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
 
       Revision 1.6  2005/09/29 21:18:24  jrichter
@@ -38,13 +36,14 @@
 
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
 #include "logger.h"
-#include "std_ansi_tbl_one_five.h"
+#include "std_ansi_tbl_15.h"
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-CtiAnsiTableOneFive::CtiAnsiTableOneFive( int selector, int constants_entries, bool noOffset, bool useSet1, bool useSet2,
+CtiAnsiTable15::CtiAnsiTable15( int selector, int constants_entries, bool noOffset, bool useSet1, bool useSet2,
                                           int format1, int format2 )
 {
     _RawConstantsSelector = selector;
@@ -56,7 +55,7 @@ CtiAnsiTableOneFive::CtiAnsiTableOneFive( int selector, int constants_entries, b
     _NIFormat2 = format2;
 
 }
-CtiAnsiTableOneFive::CtiAnsiTableOneFive( BYTE *dataBlob, int selector, int constants_entries, bool noOffset, bool useSet1, bool useSet2,
+CtiAnsiTable15::CtiAnsiTable15( BYTE *dataBlob, int selector, int constants_entries, bool noOffset, bool useSet1, bool useSet2,
                                           int format1, int format2 )
 {
    int      index;
@@ -70,7 +69,7 @@ CtiAnsiTableOneFive::CtiAnsiTableOneFive( BYTE *dataBlob, int selector, int cons
     _NIFormat1 = format1;
     _NIFormat2 = format2;
 
-   
+
    _constants_table = new CONSTANTS_SELECT[_NumberConstantsEntries];
 
    switch( _RawConstantsSelector )
@@ -159,10 +158,10 @@ CtiAnsiTableOneFive::CtiAnsiTableOneFive( BYTE *dataBlob, int selector, int cons
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTableOneFive::~CtiAnsiTableOneFive()
+CtiAnsiTable15::~CtiAnsiTable15()
 {
     if (_constants_table != NULL)
-    {                           
+    {
         delete[] _constants_table;
         _constants_table = NULL;
     }
@@ -171,7 +170,7 @@ CtiAnsiTableOneFive::~CtiAnsiTableOneFive()
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTableOneFive& CtiAnsiTableOneFive::operator=(const CtiAnsiTableOneFive& aRef)
+CtiAnsiTable15& CtiAnsiTable15::operator=(const CtiAnsiTable15& aRef)
 {
    if(this != &aRef)
    {
@@ -183,7 +182,7 @@ CtiAnsiTableOneFive& CtiAnsiTableOneFive::operator=(const CtiAnsiTableOneFive& a
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-double CtiAnsiTableOneFive::getElecMultiplier( int index )
+double CtiAnsiTable15::getElecMultiplier( int index )
 {
    return _constants_table[index].electric_constants.multiplier;
 }
@@ -191,7 +190,7 @@ double CtiAnsiTableOneFive::getElecMultiplier( int index )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-double CtiAnsiTableOneFive::getElecOffset( int index )
+double CtiAnsiTable15::getElecOffset( int index )
 {
    return _constants_table[index].electric_constants.offset;
 }
@@ -199,7 +198,7 @@ double CtiAnsiTableOneFive::getElecOffset( int index )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-SET_APPLIED CtiAnsiTableOneFive::getElecSetOneConstants( void )
+SET_APPLIED CtiAnsiTable15::getElecSetOneConstants( void )
 {
    return _constants_table->electric_constants.set1_constants;
 }
@@ -207,7 +206,7 @@ SET_APPLIED CtiAnsiTableOneFive::getElecSetOneConstants( void )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-SET_APPLIED CtiAnsiTableOneFive::getElecSetTwoConstants( void )
+SET_APPLIED CtiAnsiTable15::getElecSetTwoConstants( void )
 {
    return _constants_table->electric_constants.set2_constants;
 }
@@ -215,7 +214,7 @@ SET_APPLIED CtiAnsiTableOneFive::getElecSetTwoConstants( void )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-bool CtiAnsiTableOneFive::getUseControl( void )
+bool CtiAnsiTable15::getUseControl( void )
 {
    if( 1 )
       return _constants_table->electric_constants.set1_constants.set_flags.set_applied_flag;
@@ -226,7 +225,7 @@ bool CtiAnsiTableOneFive::getUseControl( void )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-double CtiAnsiTableOneFive::getRatioF1( void )
+double CtiAnsiTable15::getRatioF1( void )
 {
    return(1);
 }
@@ -234,7 +233,7 @@ double CtiAnsiTableOneFive::getRatioF1( void )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-double CtiAnsiTableOneFive::getRatioP1( void )
+double CtiAnsiTable15::getRatioP1( void )
 {
    return(1);
 }
@@ -242,7 +241,7 @@ double CtiAnsiTableOneFive::getRatioP1( void )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-ELECTRIC_CONSTANTS CtiAnsiTableOneFive::getElecConstants( void )
+ELECTRIC_CONSTANTS CtiAnsiTable15::getElecConstants( void )
 {
    return _constants_table->electric_constants;
 }
@@ -250,11 +249,11 @@ ELECTRIC_CONSTANTS CtiAnsiTableOneFive::getElecConstants( void )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-bool CtiAnsiTableOneFive::getSet1AppliedFlag(int index )
+bool CtiAnsiTable15::getSet1AppliedFlag(int index )
 {
    return ((bool)_constants_table[index].electric_constants.set1_constants.set_flags.set_applied_flag);
 }
-bool CtiAnsiTableOneFive::getSet2AppliedFlag(int index )
+bool CtiAnsiTable15::getSet2AppliedFlag(int index )
 {
    return ((bool)_constants_table[index].electric_constants.set2_constants.set_flags.set_applied_flag);
 }
@@ -262,7 +261,7 @@ bool CtiAnsiTableOneFive::getSet2AppliedFlag(int index )
 //=========================================================================================================================================
 
 
-void CtiAnsiTableOneFive::decodeResultPiece( BYTE **dataBlob )
+void CtiAnsiTable15::decodeResultPiece( BYTE **dataBlob )
 {
     int      index;
     int      bytes;
@@ -358,7 +357,7 @@ void CtiAnsiTableOneFive::decodeResultPiece( BYTE **dataBlob )
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableOneFive::generateResultPiece( BYTE **dataBlob )
+void CtiAnsiTable15::generateResultPiece( BYTE **dataBlob )
 {
     int      index;
      int      bytes;
@@ -427,7 +426,7 @@ void CtiAnsiTableOneFive::generateResultPiece( BYTE **dataBlob )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableOneFive::printResult( const string& deviceName )
+void CtiAnsiTable15::printResult( const string& deviceName )
 {
     int integer;
     /**************************************************************
@@ -457,7 +456,7 @@ void CtiAnsiTableOneFive::printResult( const string& deviceName )
       break;
 
    case 2:
-      {      
+      {
           {
               CtiLockGuard< CtiLogger > doubt_guard( dout );
               dout << "       Multiplier Offset ";
@@ -509,6 +508,6 @@ void CtiAnsiTableOneFive::printResult( const string& deviceName )
       break;
    }
 
-    
+
 }
 

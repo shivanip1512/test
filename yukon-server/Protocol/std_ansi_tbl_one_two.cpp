@@ -1,38 +1,27 @@
-#include "yukon.h"
-
-
 /*-----------------------------------------------------------------------------*
 *
-* File:   std_ansi_tbl_one_two
+* File:   std_ansi_tbl_12
 *
 * Date:   9/16/2002
 *
 * Author: Eric Schmit
 *
 * PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_one_two.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/12/20 17:19:57 $
-*    History: 
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_12.cpp-arc  $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2008/10/21 16:30:31 $
+*    History:
       $Log: std_ansi_tbl_one_two.cpp,v $
+      Revision 1.10  2008/10/21 16:30:31  mfisher
+      YUK-6615 ANSI table class names and filenames are difficult to read
+      Renamed classes and filenames
+
       Revision 1.9  2005/12/20 17:19:57  tspar
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
-<<<<<<< std_ansi_tbl_one_two.cpp
-      Revision 1.7.2.2  2005/07/14 22:27:02  jliu
-      RWCStringRemoved
-
-      Revision 1.7.2.1  2005/07/12 21:08:42  jliu
-      rpStringWithoutCmpParser
-
-=======
       Revision 1.8  2005/12/12 20:34:29  jrichter
       BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
 
-      Revision 1.7.4.1  2005/12/12 19:50:39  jrichter
-      BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
-
->>>>>>> 1.8
       Revision 1.7  2005/03/14 21:44:16  jrichter
       updated with present value regs, batterylife info, corrected quals, multipliers/offsets, corrected single precision float define, modifed for commander commands, added demand reset
 
@@ -51,43 +40,44 @@
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
 #include "logger.h"
-#include "std_ansi_tbl_one_two.h"
+#include "std_ansi_tbl_12.h"
 using std::endl;
 
 
-const CHAR * CtiAnsiTableOneTwo::ANSI_UOM_WATTS = "Watts";
-const CHAR * CtiAnsiTableOneTwo::ANSI_UOM_VARS = "Vars";
-const CHAR * CtiAnsiTableOneTwo::ANSI_UOM_VA = "VA";
-const CHAR * CtiAnsiTableOneTwo::ANSI_UOM_RMS_VOLTAGE = "RMS Voltage";
-const CHAR * CtiAnsiTableOneTwo::ANSI_UOM_RMS_VOLTAGE_SQUARED = "RMS Voltage Squared";
-const CHAR * CtiAnsiTableOneTwo::ANSI_UOM_INSTANTANEOUS_VOLTAGE = "Instantaneous Voltage";
-const CHAR * CtiAnsiTableOneTwo::ANSI_UOM_RMS_CURRENT = "RMS Current";
-const CHAR * CtiAnsiTableOneTwo::ANSI_UOM_RMS_CURRENT_SQUARED= "RMS Current Squared";
-const CHAR * CtiAnsiTableOneTwo::ANSI_UOM_INSTANTANEOUS_CURRENT = "Instantaneous Current";
-const CHAR * CtiAnsiTableOneTwo::ANSI_UOM_NOT_SUPPORTED = "UOM Not Supported";
+const CHAR * CtiAnsiTable12::ANSI_UOM_WATTS = "Watts";
+const CHAR * CtiAnsiTable12::ANSI_UOM_VARS = "Vars";
+const CHAR * CtiAnsiTable12::ANSI_UOM_VA = "VA";
+const CHAR * CtiAnsiTable12::ANSI_UOM_RMS_VOLTAGE = "RMS Voltage";
+const CHAR * CtiAnsiTable12::ANSI_UOM_RMS_VOLTAGE_SQUARED = "RMS Voltage Squared";
+const CHAR * CtiAnsiTable12::ANSI_UOM_INSTANTANEOUS_VOLTAGE = "Instantaneous Voltage";
+const CHAR * CtiAnsiTable12::ANSI_UOM_RMS_CURRENT = "RMS Current";
+const CHAR * CtiAnsiTable12::ANSI_UOM_RMS_CURRENT_SQUARED= "RMS Current Squared";
+const CHAR * CtiAnsiTable12::ANSI_UOM_INSTANTANEOUS_CURRENT = "Instantaneous Current";
+const CHAR * CtiAnsiTable12::ANSI_UOM_NOT_SUPPORTED = "UOM Not Supported";
 
-const CHAR * CtiAnsiTableOneTwo::ANSI_TIMEBASE_DIAL_READING = "Dial reading (Energy)";
-const CHAR * CtiAnsiTableOneTwo::ANSI_TIMEBASE_INSTANTANEOUS = "Instantaneous";
-const CHAR * CtiAnsiTableOneTwo::ANSI_TIMEBASE_PERIOD_BASED = "Period based (Power,RMS)";
-const CHAR * CtiAnsiTableOneTwo::ANSI_TIMEBASE_SUB_BLOCK_AVERAGE = "Sub-block average (Demand)";
-const CHAR * CtiAnsiTableOneTwo::ANSI_TIMEBASE_BLOCK_AVERAGE = "Block average (Demand)";
-const CHAR * CtiAnsiTableOneTwo::ANSI_TIMEBASE_RELATIVE_DIAL_READING = "Relative dial reading (Energy)";
-const CHAR * CtiAnsiTableOneTwo::ANSI_TIMEBASE_THERMAL = "Thermal quantity (Demand)";
-const CHAR * CtiAnsiTableOneTwo::ANSI_TIMEBASE_EVENT = "Event quantity (# of occurrences)";
-const CHAR * CtiAnsiTableOneTwo::ANSI_TIMEBASE_UNKNOWN = "Timebase not supported";
+const CHAR * CtiAnsiTable12::ANSI_TIMEBASE_DIAL_READING = "Dial reading (Energy)";
+const CHAR * CtiAnsiTable12::ANSI_TIMEBASE_INSTANTANEOUS = "Instantaneous";
+const CHAR * CtiAnsiTable12::ANSI_TIMEBASE_PERIOD_BASED = "Period based (Power,RMS)";
+const CHAR * CtiAnsiTable12::ANSI_TIMEBASE_SUB_BLOCK_AVERAGE = "Sub-block average (Demand)";
+const CHAR * CtiAnsiTable12::ANSI_TIMEBASE_BLOCK_AVERAGE = "Block average (Demand)";
+const CHAR * CtiAnsiTable12::ANSI_TIMEBASE_RELATIVE_DIAL_READING = "Relative dial reading (Energy)";
+const CHAR * CtiAnsiTable12::ANSI_TIMEBASE_THERMAL = "Thermal quantity (Demand)";
+const CHAR * CtiAnsiTable12::ANSI_TIMEBASE_EVENT = "Event quantity (# of occurrences)";
+const CHAR * CtiAnsiTable12::ANSI_TIMEBASE_UNKNOWN = "Timebase not supported";
 
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTableOneTwo::CtiAnsiTableOneTwo( int num_uom_entries )
+CtiAnsiTable12::CtiAnsiTable12( int num_uom_entries )
 {
    _numUomEntries = num_uom_entries;
    _uom_entries = new UOM_ENTRY_BFLD[num_uom_entries];
 }
 
-CtiAnsiTableOneTwo::CtiAnsiTableOneTwo( BYTE *dataBlob, int num_uom_entries )
+CtiAnsiTable12::CtiAnsiTable12( BYTE *dataBlob, int num_uom_entries )
 {
    int index;
 
@@ -105,7 +95,7 @@ CtiAnsiTableOneTwo::CtiAnsiTableOneTwo( BYTE *dataBlob, int num_uom_entries )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTableOneTwo::~CtiAnsiTableOneTwo()
+CtiAnsiTable12::~CtiAnsiTable12()
 {
     if (_uom_entries != NULL)
     {
@@ -117,7 +107,7 @@ CtiAnsiTableOneTwo::~CtiAnsiTableOneTwo()
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTableOneTwo& CtiAnsiTableOneTwo::operator=(const CtiAnsiTableOneTwo& aRef)
+CtiAnsiTable12& CtiAnsiTable12::operator=(const CtiAnsiTable12& aRef)
 {
    if(this != &aRef)
    {
@@ -127,7 +117,7 @@ CtiAnsiTableOneTwo& CtiAnsiTableOneTwo::operator=(const CtiAnsiTableOneTwo& aRef
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableOneTwo::generateResultPiece( BYTE **dataBlob )
+void CtiAnsiTable12::generateResultPiece( BYTE **dataBlob )
 {
     memcpy(*dataBlob, (void*)_uom_entries, sizeof( UOM_ENTRY_BFLD ) * _numUomEntries);
     //memcpy(*dataBlob, _uom_entries, sizeof( UOM_ENTRY_BFLD ) * _numUomEntries);
@@ -137,7 +127,7 @@ void CtiAnsiTableOneTwo::generateResultPiece( BYTE **dataBlob )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableOneTwo::decodeResultPiece( BYTE **dataBlob )
+void CtiAnsiTable12::decodeResultPiece( BYTE **dataBlob )
 {
     memcpy( (void*)_uom_entries, *dataBlob, sizeof( UOM_ENTRY_BFLD ) * _numUomEntries);
     *dataBlob += (sizeof( UOM_ENTRY_BFLD ) * _numUomEntries);
@@ -146,7 +136,7 @@ void CtiAnsiTableOneTwo::decodeResultPiece( BYTE **dataBlob )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-int CtiAnsiTableOneTwo::getRawIDCode( int aOffset )
+int CtiAnsiTable12::getRawIDCode( int aOffset )
 {
     int ret;
 
@@ -164,7 +154,7 @@ int CtiAnsiTableOneTwo::getRawIDCode( int aOffset )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-bool CtiAnsiTableOneTwo::isCorrectData( int aOffset, int aUOM)
+bool CtiAnsiTable12::isCorrectData( int aOffset, int aUOM)
 {
     bool ret=false;
 
@@ -178,7 +168,7 @@ bool CtiAnsiTableOneTwo::isCorrectData( int aOffset, int aUOM)
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-string CtiAnsiTableOneTwo::getResolvedIDCode( int aOffset )
+string CtiAnsiTable12::getResolvedIDCode( int aOffset )
 {
     string ret=string (ANSI_UOM_NOT_SUPPORTED);
     if (aOffset < _numUomEntries)
@@ -222,7 +212,7 @@ string CtiAnsiTableOneTwo::getResolvedIDCode( int aOffset )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-int CtiAnsiTableOneTwo::getRawTimeBase( int aOffset )
+int CtiAnsiTable12::getRawTimeBase( int aOffset )
 {
     int ret;
 
@@ -239,7 +229,7 @@ int CtiAnsiTableOneTwo::getRawTimeBase( int aOffset )
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-string CtiAnsiTableOneTwo::getResolvedTimeBase( int aOffset )
+string CtiAnsiTable12::getResolvedTimeBase( int aOffset )
 {
     string ret=string (ANSI_TIMEBASE_UNKNOWN);
     if (aOffset < _numUomEntries)
@@ -277,7 +267,7 @@ string CtiAnsiTableOneTwo::getResolvedTimeBase( int aOffset )
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-int CtiAnsiTableOneTwo::getRawMultiplier( int aOffset )
+int CtiAnsiTable12::getRawMultiplier( int aOffset )
 {
     int ret;
 
@@ -294,7 +284,7 @@ int CtiAnsiTableOneTwo::getRawMultiplier( int aOffset )
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-DOUBLE CtiAnsiTableOneTwo::getResolvedMultiplier( int aOffset )
+DOUBLE CtiAnsiTable12::getResolvedMultiplier( int aOffset )
 {
     DOUBLE ret=1;
     if (aOffset < _numUomEntries)
@@ -337,7 +327,7 @@ DOUBLE CtiAnsiTableOneTwo::getResolvedMultiplier( int aOffset )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableOneTwo::printResult( const string& deviceName )
+void CtiAnsiTable12::printResult( const string& deviceName )
 {
     int integer;
     string string1,string2;
@@ -378,9 +368,9 @@ void CtiAnsiTableOneTwo::printResult( const string& deviceName )
             CtiLockGuard< CtiLogger > doubt_guard( dout );
             dout << double1 << " (" << integer <<")" ;
         }
-        for (int q = 1; q <= 4; q++) 
+        for (int q = 1; q <= 4; q++)
         {
-            if (getQuadrantAccountabilityFlag(q, x)) 
+            if (getQuadrantAccountabilityFlag(q, x))
             {
                 CtiLockGuard< CtiLogger > doubt_guard( dout );
                 dout <<" Q" <<q;
@@ -397,10 +387,10 @@ void CtiAnsiTableOneTwo::printResult( const string& deviceName )
     }
 }
 
-bool  CtiAnsiTableOneTwo::getQuadrantAccountabilityFlag(int quadrant, int index)
+bool  CtiAnsiTable12::getQuadrantAccountabilityFlag(int quadrant, int index)
 {
     bool retVal = false;
-    switch (quadrant) 
+    switch (quadrant)
     {
         case 1:
         {
@@ -408,7 +398,7 @@ bool  CtiAnsiTableOneTwo::getQuadrantAccountabilityFlag(int quadrant, int index)
             break;
         }
         case 2:
-        {   
+        {
             retVal = (bool) _uom_entries[index].q2_accountablility;
             break;
         }
@@ -428,16 +418,16 @@ bool  CtiAnsiTableOneTwo::getQuadrantAccountabilityFlag(int quadrant, int index)
     return retVal;
 }
 
-bool CtiAnsiTableOneTwo::getNetFlowAccountabilityFlag(int index)
+bool CtiAnsiTable12::getNetFlowAccountabilityFlag(int index)
 {
     return (bool) _uom_entries[index].net_flow_accountablility;
 }
 
-int CtiAnsiTableOneTwo::getSegmentation(int index)
+int CtiAnsiTable12::getSegmentation(int index)
 {
     return (int) _uom_entries[index].segmentation;
 }
-bool CtiAnsiTableOneTwo::getHarmonicFlag(int index)
+bool CtiAnsiTable12::getHarmonicFlag(int index)
 {
     return (bool) _uom_entries[index].harmonic;
 }

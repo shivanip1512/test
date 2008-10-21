@@ -1,35 +1,34 @@
-#include "yukon.h"
-
 /*-----------------------------------------------------------------------------*
 *
-* File:   std_ansi_tbl_three_two
+* File:   std_ansi_tbl_32
 *
 * Date:   2/1/2005
 *
 * Author: Julie Richter
 *
 * PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_three_two.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/12/20 17:19:57 $
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_32.cpp-arc  $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2008/10/21 16:30:31 $
 
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
 #include "logger.h"
-#include "std_ansi_tbl_three_two.h"
+#include "std_ansi_tbl_32.h"
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-CtiAnsiTableThreeTwo::CtiAnsiTableThreeTwo()
+CtiAnsiTable32::CtiAnsiTable32()
 {
 }
-CtiAnsiTableThreeTwo::CtiAnsiTableThreeTwo( BYTE *dataBlob, UINT16 nbrDispSources, UINT8 widthDispSources  )
+CtiAnsiTable32::CtiAnsiTable32( BYTE *dataBlob, UINT16 nbrDispSources, UINT8 widthDispSources  )
 {
     _nbrDispSources = nbrDispSources;
     _widthDispSources = widthDispSources;
-    
+
     _displaySources = new DISP_SOURCE_DESC_RCD[_nbrDispSources];
     for (int i = 0; i < _nbrDispSources; i++)
     {
@@ -40,14 +39,14 @@ CtiAnsiTableThreeTwo::CtiAnsiTableThreeTwo( BYTE *dataBlob, UINT16 nbrDispSource
              dataBlob += sizeof(UINT8);
          }
     }
-    
+
 
 }
 
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTableThreeTwo::~CtiAnsiTableThreeTwo()
+CtiAnsiTable32::~CtiAnsiTable32()
 {
     if (_displaySources != NULL)
     {
@@ -67,7 +66,7 @@ CtiAnsiTableThreeTwo::~CtiAnsiTableThreeTwo()
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTableThreeTwo& CtiAnsiTableThreeTwo::operator=(const CtiAnsiTableThreeTwo& aRef)
+CtiAnsiTable32& CtiAnsiTable32::operator=(const CtiAnsiTable32& aRef)
 {
    if(this != &aRef)
    {
@@ -81,7 +80,7 @@ CtiAnsiTableThreeTwo& CtiAnsiTableThreeTwo::operator=(const CtiAnsiTableThreeTwo
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-UINT8 CtiAnsiTableThreeTwo::getDisplaySources(int sourceIndex, int widthIndex)
+UINT8 CtiAnsiTable32::getDisplaySources(int sourceIndex, int widthIndex)
 {
     if (_displaySources[sourceIndex].displaySource[widthIndex] != NULL)
     {
@@ -94,7 +93,7 @@ UINT8 CtiAnsiTableThreeTwo::getDisplaySources(int sourceIndex, int widthIndex)
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableThreeTwo::printResult( const string& deviceName )
+void CtiAnsiTable32::printResult( const string& deviceName )
 {
     /**************************************************************
     * its been discovered that if a method goes wrong while having the logger locked
@@ -131,7 +130,7 @@ void CtiAnsiTableThreeTwo::printResult( const string& deviceName )
 
 
     }
-    
+
 
 }
 

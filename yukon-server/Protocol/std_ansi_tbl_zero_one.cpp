@@ -1,42 +1,27 @@
-#include "yukon.h"
-
-
 /*-----------------------------------------------------------------------------*
 *
-* File:   std_ansi_tbl_zero_one
+* File:   std_ansi_tbl_01
 *
 * Date:   9/16/2002
 *
 * Author: Eric Schmit
 *
 * PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_zero_one.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/12/20 17:19:57 $
-*    History: 
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_01.cpp-arc  $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2008/10/21 16:30:31 $
+*    History:
       $Log: std_ansi_tbl_zero_one.cpp,v $
+      Revision 1.8  2008/10/21 16:30:31  mfisher
+      YUK-6615 ANSI table class names and filenames are difficult to read
+      Renamed classes and filenames
+
       Revision 1.7  2005/12/20 17:19:57  tspar
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
-<<<<<<< std_ansi_tbl_zero_one.cpp
-      Revision 1.4.2.3  2005/07/27 19:28:01  alauinger
-      merged from the head 20050720
-
-
-      Revision 1.4.2.2  2005/07/14 22:27:02  jliu
-      RWCStringRemoved
-
-      Revision 1.4.2.1  2005/07/12 21:08:42  jliu
-      rpStringWithoutCmpParser
-
-=======
       Revision 1.6  2005/12/12 20:34:30  jrichter
       BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
 
-      Revision 1.5.2.1  2005/12/12 19:50:40  jrichter
-      BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
-
->>>>>>> 1.6
       Revision 1.5  2005/06/16 19:17:59  jrichter
       Sync ANSI code with 3.1 branch!
 
@@ -49,21 +34,22 @@
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
 #include "logger.h"
-#include "std_ansi_tbl_zero_one.h"
+#include "std_ansi_tbl_01.h"
 
 using std::endl;
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-CtiAnsiTableZeroOne::CtiAnsiTableZeroOne( bool sn_flag, bool id_form )
+CtiAnsiTable01::CtiAnsiTable01( bool sn_flag, bool id_form )
 {
     _serialNumberFlag = sn_flag;
     _idForm = id_form;
 }
 
-CtiAnsiTableZeroOne::CtiAnsiTableZeroOne( BYTE *dataBlob, bool sn_flag, bool id_form )
+CtiAnsiTable01::CtiAnsiTable01( BYTE *dataBlob, bool sn_flag, bool id_form )
 {
     _serialNumberFlag = sn_flag;
     _idForm = id_form;
@@ -107,14 +93,14 @@ CtiAnsiTableZeroOne::CtiAnsiTableZeroOne( BYTE *dataBlob, bool sn_flag, bool id_
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTableZeroOne::~CtiAnsiTableZeroOne()
+CtiAnsiTable01::~CtiAnsiTable01()
 {
 
 }
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableZeroOne::printResult(const string& deviceName )
+void CtiAnsiTable01::printResult(const string& deviceName )
 {
     int integer;
     string string1,string2;
@@ -159,7 +145,7 @@ void CtiAnsiTableZeroOne::printResult(const string& deviceName )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTableZeroOne& CtiAnsiTableZeroOne::operator=(const CtiAnsiTableZeroOne& aRef)
+CtiAnsiTable01& CtiAnsiTable01::operator=(const CtiAnsiTable01& aRef)
 {
    if(this != &aRef)
    {
@@ -169,7 +155,7 @@ CtiAnsiTableZeroOne& CtiAnsiTableZeroOne::operator=(const CtiAnsiTableZeroOne& a
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-string CtiAnsiTableZeroOne::getRawManufacturer( void )
+string CtiAnsiTable01::getRawManufacturer( void )
 {
     CHAR temp[5];
     memset (temp,'\0',5);
@@ -178,7 +164,7 @@ string CtiAnsiTableZeroOne::getRawManufacturer( void )
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-string CtiAnsiTableZeroOne::getResolvedManufacturer( void )
+string CtiAnsiTable01::getResolvedManufacturer( void )
 {
     CHAR temp[5];
     memset (temp,'\0',5);
@@ -187,7 +173,7 @@ string CtiAnsiTableZeroOne::getResolvedManufacturer( void )
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-string CtiAnsiTableZeroOne::getRawModel( void )
+string CtiAnsiTable01::getRawModel( void )
 {
     CHAR temp[9];
     memset (temp,'\0',9);
@@ -196,7 +182,7 @@ string CtiAnsiTableZeroOne::getRawModel( void )
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-string CtiAnsiTableZeroOne::getResolvedModel( void )
+string CtiAnsiTable01::getResolvedModel( void )
 {
     // need to take data format into account !!
     CHAR temp[9];
@@ -207,7 +193,7 @@ string CtiAnsiTableZeroOne::getResolvedModel( void )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-string CtiAnsiTableZeroOne::getRawSerialNumber( void )
+string CtiAnsiTable01::getRawSerialNumber( void )
 {
     string ret;
 
@@ -238,7 +224,7 @@ string CtiAnsiTableZeroOne::getRawSerialNumber( void )
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-string CtiAnsiTableZeroOne::getResolvedSerialNumber( void )
+string CtiAnsiTable01::getResolvedSerialNumber( void )
 {
     string ret;
 
@@ -284,7 +270,7 @@ string CtiAnsiTableZeroOne::getResolvedSerialNumber( void )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableZeroOne::generateResultPiece( BYTE **dataBlob )
+void CtiAnsiTable01::generateResultPiece( BYTE **dataBlob )
 {
     memcpy(*dataBlob, (void *)&_manufacturer, sizeof( _manufacturer ));
     *dataBlob += sizeof( _manufacturer );
@@ -312,7 +298,7 @@ void CtiAnsiTableZeroOne::generateResultPiece( BYTE **dataBlob )
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableZeroOne::decodeResultPiece( BYTE **dataBlob )
+void CtiAnsiTable01::decodeResultPiece( BYTE **dataBlob )
 {
     memcpy( (void *)&_manufacturer, *dataBlob, 4 * sizeof( unsigned char ));
     *dataBlob += 4 * sizeof( unsigned char );
@@ -342,11 +328,11 @@ void CtiAnsiTableZeroOne::decodeResultPiece( BYTE **dataBlob )
 }
 
 
-int CtiAnsiTableZeroOne::getFWVersionNumber()
+int CtiAnsiTable01::getFWVersionNumber()
 {
     return (int)_fw_version_number;
 }
-int CtiAnsiTableZeroOne::getFWRevisionNumber()
+int CtiAnsiTable01::getFWRevisionNumber()
 {
     return (int) _fw_revision_number;
 }

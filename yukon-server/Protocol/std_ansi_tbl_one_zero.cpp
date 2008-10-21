@@ -1,20 +1,21 @@
-#include "yukon.h"
-
-
 /*-----------------------------------------------------------------------------*
 *
-* File:   std_ansi_tbl_one_zero
+* File:   std_ansi_tbl_10
 *
 * Date:   9/16/2002
 *
 * Author: Eric Schmit
 *
 * PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_one_zero.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/02/10 23:23:58 $
-*    History: 
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_10.cpp-arc  $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2008/10/21 16:30:31 $
+*    History:
       $Log: std_ansi_tbl_one_zero.cpp,v $
+      Revision 1.5  2008/10/21 16:30:31  mfisher
+      YUK-6615 ANSI table class names and filenames are difficult to read
+      Renamed classes and filenames
+
       Revision 1.4  2005/02/10 23:23:58  alauinger
       Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 
@@ -24,27 +25,28 @@
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
-#include "std_ansi_tbl_one_zero.h"
+#include "std_ansi_tbl_10.h"
 
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTableOneZero::CtiAnsiTableOneZero( BYTE *dataBlob )
+CtiAnsiTable10::CtiAnsiTable10( BYTE *dataBlob )
 {
 }
 
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTableOneZero::~CtiAnsiTableOneZero()
+CtiAnsiTable10::~CtiAnsiTable10()
 {
 }
 
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTableOneZero& CtiAnsiTableOneZero::operator=(const CtiAnsiTableOneZero& aRef)
+CtiAnsiTable10& CtiAnsiTable10::operator=(const CtiAnsiTable10& aRef)
 {
   if(this != &aRef)
   {
@@ -57,7 +59,7 @@ CtiAnsiTableOneZero& CtiAnsiTableOneZero::operator=(const CtiAnsiTableOneZero& a
 //device
 //=========================================================================================================================================
 
-int CtiAnsiTableOneZero::getNumberUOMEntries( void )
+int CtiAnsiTable10::getNumberUOMEntries( void )
 {
    return 1;
 }

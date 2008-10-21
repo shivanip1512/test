@@ -1,12 +1,6 @@
-
-
-#pragma warning( disable : 4786)
-#ifndef __STD_ANSI_TBL_SIX_FOUR_H__
-#define __STD_ANSI_TBL_SIX_FOUR_H__
-
 /*---------------------------------------------------------------------------------*
 *
-* File:   std_ansi_tbl_six_four
+* File:   std_ansi_tbl_64
 *
 * Class:
 * Date:   10/24/2002
@@ -14,11 +8,15 @@
 * Author: Eric Schmit
 *
 * PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_six_four.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2008/10/07 18:16:46 $
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_64.h-arc  $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2008/10/21 16:30:32 $
 *    History:
       $Log: std_ansi_tbl_six_four.h,v $
+      Revision 1.8  2008/10/21 16:30:32  mfisher
+      YUK-6615 ANSI table class names and filenames are difficult to read
+      Renamed classes and filenames
+
       Revision 1.7  2008/10/07 18:16:46  mfisher
       YUK-6504 Server-side point management is naive
       cleaned up a few dsm2.h dependencies
@@ -35,9 +33,6 @@
       Revision 1.3  2005/12/12 20:34:47  jrichter
       BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
 
-      Revision 1.2.4.1  2005/12/12 19:51:02  jrichter
-      BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
-
       Revision 1.2  2005/01/25 18:33:51  jrichter
       added present value tables for kv2 and sentinel for voltage, current, freq, pf, etc..meter info
 
@@ -50,7 +45,9 @@
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
-
+#ifndef __STD_ANSI_TBL_64_H__
+#define __STD_ANSI_TBL_64_H__
+#pragma warning( disable : 4786)
 
 #include "dlldefs.h"
 #include "ctitypes.h"
@@ -140,7 +137,7 @@ struct LP_DATA_SET1_RCD
 
 #pragma pack( pop )
 
-class IM_EX_PROT CtiAnsiTableSixFour : public CtiAnsiTableBase
+class IM_EX_PROT CtiAnsiTable64 : public CtiAnsiTableBase
 {
 protected:
 
@@ -166,22 +163,22 @@ private:
 
 public:
 
-   CtiAnsiTableSixFour( int numberBlocksSet, int numberChansSet,
+   CtiAnsiTable64( int numberBlocksSet, int numberChansSet,
                         bool closureStatusFlag, bool simpleIntervalStatusFlag,
                         int numberBlockIntervalsSet, bool blockEndReadFlag,
                         bool blockEndPulseFlag, bool extendedIntervalStatusFlag, int maxIntvlTime,
                         int intervalFmtCde, int nbrValidInts, int niFmt1, int niFmt2,
                         int timeFmt, int meterHour  );
-   CtiAnsiTableSixFour( BYTE *dataBlob, int numberBlocksSet, int numberChansSet,
+   CtiAnsiTable64( BYTE *dataBlob, int numberBlocksSet, int numberChansSet,
                         bool closureStatusFlag, bool simpleIntervalStatusFlag,
                         int numberBlockIntervalsSet, bool blockEndReadFlag,
                         bool blockEndPulseFlag, bool extendedIntervalStatusFlag, int maxIntvlTime,
                         int intervalFmtCde, int nbrValidInts, int niFmt1, int niFmt2,
                         int timeFmt, int meterHour );
 
-   virtual ~CtiAnsiTableSixFour();
+   virtual ~CtiAnsiTable64();
 
-   CtiAnsiTableSixFour& operator=(const CtiAnsiTableSixFour& aRef);
+   CtiAnsiTable64& operator=(const CtiAnsiTable64& aRef);
    void generateResultPiece( BYTE **dataBlob );
    void printResult( const string& deviceName);
    void decodeResultPiece( BYTE **dataBlob );
@@ -201,4 +198,4 @@ public:
    bool getClockResetBackwardsFlag(int blkSet, int blkIntvl) const;
 
 };
-#endif // #ifndef __STD_ANSI_TBL_SIX_FOUR_H__
+#endif // #ifndef __STD_ANSI_TBL_64_H__

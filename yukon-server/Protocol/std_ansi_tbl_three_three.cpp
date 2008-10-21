@@ -1,31 +1,30 @@
-#include "yukon.h"
-
 /*-----------------------------------------------------------------------------*
 *
-* File:   std_ansi_tbl_three_three
+* File:   std_ansi_tbl_33
 *
 * Date:   2/1/2005
 *
 * Author: Julie Richter
 *
 * PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_three_three.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/12/20 17:19:57 $
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_33.cpp-arc  $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2008/10/21 16:30:31 $
 
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
 #include "logger.h"
-#include "std_ansi_tbl_three_three.h"
+#include "std_ansi_tbl_33.h"
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-CtiAnsiTableThreeThree::CtiAnsiTableThreeThree()
+CtiAnsiTable33::CtiAnsiTable33()
 {
 }
-CtiAnsiTableThreeThree::CtiAnsiTableThreeThree( BYTE *dataBlob, UINT8 nbrPriDispLists, UINT16 nbrPriDispListItems  )
+CtiAnsiTable33::CtiAnsiTable33( BYTE *dataBlob, UINT8 nbrPriDispLists, UINT16 nbrPriDispListItems  )
 {
     _nbrPriDispLists = nbrPriDispLists;
     _nbrPriDispListItems = nbrPriDispListItems;
@@ -43,14 +42,14 @@ CtiAnsiTableThreeThree::CtiAnsiTableThreeThree( BYTE *dataBlob, UINT8 nbrPriDisp
          memcpy((void *)&_priDispListTable.priDispSources[i], dataBlob, sizeof(UINT16));
          dataBlob += sizeof(UINT16);    //2 bytes
     }
-    
+
 
 }
 
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTableThreeThree::~CtiAnsiTableThreeThree()
+CtiAnsiTable33::~CtiAnsiTable33()
 {
     if (_priDispListTable.priDispList != NULL)
     {
@@ -68,7 +67,7 @@ CtiAnsiTableThreeThree::~CtiAnsiTableThreeThree()
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTableThreeThree& CtiAnsiTableThreeThree::operator=(const CtiAnsiTableThreeThree& aRef)
+CtiAnsiTable33& CtiAnsiTable33::operator=(const CtiAnsiTable33& aRef)
 {
    if(this != &aRef)
    {
@@ -85,7 +84,7 @@ CtiAnsiTableThreeThree& CtiAnsiTableThreeThree::operator=(const CtiAnsiTableThre
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableThreeThree::printResult( const string& deviceName )
+void CtiAnsiTable33::printResult( const string& deviceName )
 {
     /**************************************************************
     * its been discovered that if a method goes wrong while having the logger locked
@@ -105,9 +104,9 @@ void CtiAnsiTableThreeThree::printResult( const string& deviceName )
     }
     for (int i = 0; i < _nbrPriDispLists; i++)
     {
-       
+
     }
-    
+
 
 }
 

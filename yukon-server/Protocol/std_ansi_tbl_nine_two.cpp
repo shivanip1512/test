@@ -1,9 +1,6 @@
-
-
-#include "yukon.h"
 /*-----------------------------------------------------------------------------*
 *
-* File:   std_ansi_tbl_nine_two
+* File:   std_ansi_tbl_92
 *
 * Date:   05/21/2004
 *
@@ -12,23 +9,24 @@
 
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
 #include "logger.h"
-#include "std_ansi_tbl_nine_two.h"
+#include "std_ansi_tbl_92.h"
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-CtiAnsiTableNineTwo::CtiAnsiTableNineTwo( int bitRate, int nbrSetupStrings, int setupStringLength )
-{  
-    
+CtiAnsiTable92::CtiAnsiTable92( int bitRate, int nbrSetupStrings, int setupStringLength )
+{
+
 }
 
 
 
 
-CtiAnsiTableNineTwo::CtiAnsiTableNineTwo( BYTE *dataBlob, int bitRate, int nbrSetupStrings, int setupStringLength )
+CtiAnsiTable92::CtiAnsiTable92( BYTE *dataBlob, int bitRate, int nbrSetupStrings, int setupStringLength )
 {
-    
+
     _bitRate = bitRate;
     _nbrSetupStrings = nbrSetupStrings;
     _setupStringLength = setupStringLength;
@@ -41,7 +39,7 @@ CtiAnsiTableNineTwo::CtiAnsiTableNineTwo( BYTE *dataBlob, int bitRate, int nbrSe
         memcpy( (void *)&_global_parms_tbl.bit_rate, dataBlob, sizeof(UINT32));
         dataBlob += sizeof(UINT32);
     }
-    else 
+    else
        _global_parms_tbl.bit_rate = 0;
 
 
@@ -53,18 +51,18 @@ CtiAnsiTableNineTwo::CtiAnsiTableNineTwo( BYTE *dataBlob, int bitRate, int nbrSe
         {
             memcpy( (void *)&_global_parms_tbl.modem_setup_strings[x].setup_string[xx], dataBlob, sizeof(unsigned char));
             dataBlob += sizeof(unsigned char);
-        }             
+        }
     }
 
  }
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-CtiAnsiTableNineTwo::~CtiAnsiTableNineTwo()
+CtiAnsiTable92::~CtiAnsiTable92()
 {
     int i;
 
-    if (_global_parms_tbl.modem_setup_strings != NULL) 
+    if (_global_parms_tbl.modem_setup_strings != NULL)
     {
         for (i = 0; i < _nbrSetupStrings; i++)
         {
@@ -81,7 +79,7 @@ CtiAnsiTableNineTwo::~CtiAnsiTableNineTwo()
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTableNineTwo& CtiAnsiTableNineTwo::operator=(const CtiAnsiTableNineTwo& aRef)
+CtiAnsiTable92& CtiAnsiTable92::operator=(const CtiAnsiTable92& aRef)
 {
    if(this != &aRef)
    {
@@ -91,21 +89,21 @@ CtiAnsiTableNineTwo& CtiAnsiTableNineTwo::operator=(const CtiAnsiTableNineTwo& a
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableNineTwo::generateResultPiece( BYTE **dataBlob )
+void CtiAnsiTable92::generateResultPiece( BYTE **dataBlob )
 {
 
 }
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableNineTwo::decodeResultPiece( BYTE **dataBlob )
+void CtiAnsiTable92::decodeResultPiece( BYTE **dataBlob )
 {
-    
+
 }
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableNineTwo::printResult( const string& deviceName )
+void CtiAnsiTable92::printResult( const string& deviceName )
 {
     int index, i, j;
 
@@ -141,7 +139,7 @@ void CtiAnsiTableNineTwo::printResult( const string& deviceName )
                 CtiLockGuard< CtiLogger > doubt_guard( dout );
                 dout << " "<<_global_parms_tbl.modem_setup_strings[x].setup_string[xx];
             }
-        } 
+        }
         {
             CtiLockGuard< CtiLogger > doubt_guard( dout );
             dout << endl;

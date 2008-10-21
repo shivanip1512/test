@@ -1,42 +1,41 @@
 /*-----------------------------------------------------------------------------*
 *
-* File:   std_ansi_tbl_six_two
+* File:   std_ansi_tbl_62
 *
 * Date:   05/21/2004
 *
 * Author: Julie Richter
 *
-
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include "logger.h"
 #include "math.h"
-#include "std_ansi_tbl_six_two.h"
+#include "std_ansi_tbl_62.h"
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-CtiAnsiTableSixTwo::CtiAnsiTableSixTwo( bool *dataSetUsedFlag, LP_DATA_SET *lp_data_set_info, bool scalarDivisorFlag1, 
-                                        bool scalarDivisorFlag2, bool scalarDivisorFlag3, bool scalarDivisorFlag4, 
+CtiAnsiTable62::CtiAnsiTable62( bool *dataSetUsedFlag, LP_DATA_SET *lp_data_set_info, bool scalarDivisorFlag1,
+                                        bool scalarDivisorFlag2, bool scalarDivisorFlag3, bool scalarDivisorFlag4,
                                         int stdVersionNumber  )
-{  
+{
 
     _lp_ctrl_tbl.lp_sel_set1 = NULL;
     _lp_ctrl_tbl.scalars_set1 = NULL;
     _lp_ctrl_tbl.divisor_set1 = NULL;
 
-    _lp_ctrl_tbl.lp_sel_set2 = NULL;  
-    _lp_ctrl_tbl.scalars_set2 = NULL; 
-    _lp_ctrl_tbl.divisor_set2 = NULL; 
+    _lp_ctrl_tbl.lp_sel_set2 = NULL;
+    _lp_ctrl_tbl.scalars_set2 = NULL;
+    _lp_ctrl_tbl.divisor_set2 = NULL;
 
-    _lp_ctrl_tbl.lp_sel_set3 = NULL;  
-    _lp_ctrl_tbl.scalars_set3 = NULL; 
-    _lp_ctrl_tbl.divisor_set3 = NULL; 
+    _lp_ctrl_tbl.lp_sel_set3 = NULL;
+    _lp_ctrl_tbl.scalars_set3 = NULL;
+    _lp_ctrl_tbl.divisor_set3 = NULL;
 
-    _lp_ctrl_tbl.lp_sel_set4 = NULL;  
-    _lp_ctrl_tbl.scalars_set4 = NULL; 
-    _lp_ctrl_tbl.divisor_set4 = NULL;          
+    _lp_ctrl_tbl.lp_sel_set4 = NULL;
+    _lp_ctrl_tbl.scalars_set4 = NULL;
+    _lp_ctrl_tbl.divisor_set4 = NULL;
 
     int offset = 0;
     for (int x = 0; x < 4; x++)
@@ -64,25 +63,25 @@ CtiAnsiTableSixTwo::CtiAnsiTableSixTwo( bool *dataSetUsedFlag, LP_DATA_SET *lp_d
 
 
 
-CtiAnsiTableSixTwo::CtiAnsiTableSixTwo( BYTE *dataBlob, bool *dataSetUsedFlag, LP_DATA_SET *lp_data_set_info, 
-                                        bool scalarDivisorFlag1, bool scalarDivisorFlag2, bool scalarDivisorFlag3, 
+CtiAnsiTable62::CtiAnsiTable62( BYTE *dataBlob, bool *dataSetUsedFlag, LP_DATA_SET *lp_data_set_info,
+                                        bool scalarDivisorFlag1, bool scalarDivisorFlag2, bool scalarDivisorFlag3,
                                         bool scalarDivisorFlag4, int stdVersionNumber)
 {
     _lp_ctrl_tbl.lp_sel_set1 = NULL;
     _lp_ctrl_tbl.scalars_set1 = NULL;
     _lp_ctrl_tbl.divisor_set1 = NULL;
 
-    _lp_ctrl_tbl.lp_sel_set2 = NULL;  
-    _lp_ctrl_tbl.scalars_set2 = NULL; 
-    _lp_ctrl_tbl.divisor_set2 = NULL; 
+    _lp_ctrl_tbl.lp_sel_set2 = NULL;
+    _lp_ctrl_tbl.scalars_set2 = NULL;
+    _lp_ctrl_tbl.divisor_set2 = NULL;
 
-    _lp_ctrl_tbl.lp_sel_set3 = NULL;  
-    _lp_ctrl_tbl.scalars_set3 = NULL; 
-    _lp_ctrl_tbl.divisor_set3 = NULL; 
+    _lp_ctrl_tbl.lp_sel_set3 = NULL;
+    _lp_ctrl_tbl.scalars_set3 = NULL;
+    _lp_ctrl_tbl.divisor_set3 = NULL;
 
-    _lp_ctrl_tbl.lp_sel_set4 = NULL;  
-    _lp_ctrl_tbl.scalars_set4 = NULL; 
-    _lp_ctrl_tbl.divisor_set4 = NULL; 
+    _lp_ctrl_tbl.lp_sel_set4 = NULL;
+    _lp_ctrl_tbl.scalars_set4 = NULL;
+    _lp_ctrl_tbl.divisor_set4 = NULL;
 
     int index;
     int offset = 0;
@@ -109,7 +108,7 @@ CtiAnsiTableSixTwo::CtiAnsiTableSixTwo( BYTE *dataBlob, bool *dataSetUsedFlag, L
 
     if (_lpCtrlDataSetUsed[0])
     {
-        _lp_ctrl_tbl.lp_sel_set1 = new LP_SOURCE_SEL_RCD[_numChansSet[0]];           
+        _lp_ctrl_tbl.lp_sel_set1 = new LP_SOURCE_SEL_RCD[_numChansSet[0]];
 
         for ( index = 0; index < _numChansSet[0]; index++ )
         {
@@ -121,8 +120,8 @@ CtiAnsiTableSixTwo::CtiAnsiTableSixTwo( BYTE *dataBlob, bool *dataSetUsedFlag, L
 
         if (_scalarDivisorFlagSet[0])
         {
-            _lp_ctrl_tbl.scalars_set1 = new UINT16[_numChansSet[0]];                     
-            _lp_ctrl_tbl.divisor_set1 = new UINT16[_numChansSet[0]];                     
+            _lp_ctrl_tbl.scalars_set1 = new UINT16[_numChansSet[0]];
+            _lp_ctrl_tbl.divisor_set1 = new UINT16[_numChansSet[0]];
 
             for ( index = 0; index < _numChansSet[0]; index++ )
             {
@@ -138,7 +137,7 @@ CtiAnsiTableSixTwo::CtiAnsiTableSixTwo( BYTE *dataBlob, bool *dataSetUsedFlag, L
     }
     if (_lpCtrlDataSetUsed[1])
     {
-        _lp_ctrl_tbl.lp_sel_set2 = new LP_SOURCE_SEL_RCD[_numChansSet[1]];           
+        _lp_ctrl_tbl.lp_sel_set2 = new LP_SOURCE_SEL_RCD[_numChansSet[1]];
 
         for ( index = 0; index < _numChansSet[1]; index++ )
         {
@@ -150,8 +149,8 @@ CtiAnsiTableSixTwo::CtiAnsiTableSixTwo( BYTE *dataBlob, bool *dataSetUsedFlag, L
 
         if (_scalarDivisorFlagSet[1])
         {
-            _lp_ctrl_tbl.scalars_set2 = new UINT16[_numChansSet[1]];                     
-            _lp_ctrl_tbl.divisor_set2 = new UINT16[_numChansSet[1]];                     
+            _lp_ctrl_tbl.scalars_set2 = new UINT16[_numChansSet[1]];
+            _lp_ctrl_tbl.divisor_set2 = new UINT16[_numChansSet[1]];
 
             for ( index = 0; index < _numChansSet[1]; index++ )
             {
@@ -167,7 +166,7 @@ CtiAnsiTableSixTwo::CtiAnsiTableSixTwo( BYTE *dataBlob, bool *dataSetUsedFlag, L
     }
     if (_lpCtrlDataSetUsed[2])
     {
-        _lp_ctrl_tbl.lp_sel_set3 = new LP_SOURCE_SEL_RCD[_numChansSet[2]];           
+        _lp_ctrl_tbl.lp_sel_set3 = new LP_SOURCE_SEL_RCD[_numChansSet[2]];
 
         for ( index = 0; index < _numChansSet[2]; index++ )
         {
@@ -179,8 +178,8 @@ CtiAnsiTableSixTwo::CtiAnsiTableSixTwo( BYTE *dataBlob, bool *dataSetUsedFlag, L
 
         if (_scalarDivisorFlagSet[2])
         {
-            _lp_ctrl_tbl.scalars_set3 = new UINT16[_numChansSet[2]];                     
-            _lp_ctrl_tbl.divisor_set3 = new UINT16[_numChansSet[2]];                     
+            _lp_ctrl_tbl.scalars_set3 = new UINT16[_numChansSet[2]];
+            _lp_ctrl_tbl.divisor_set3 = new UINT16[_numChansSet[2]];
 
             for ( index = 0; index < _numChansSet[2]; index++ )
             {
@@ -196,7 +195,7 @@ CtiAnsiTableSixTwo::CtiAnsiTableSixTwo( BYTE *dataBlob, bool *dataSetUsedFlag, L
     }
     if (_lpCtrlDataSetUsed[3])
     {
-        _lp_ctrl_tbl.lp_sel_set4 = new LP_SOURCE_SEL_RCD[_numChansSet[3]];           
+        _lp_ctrl_tbl.lp_sel_set4 = new LP_SOURCE_SEL_RCD[_numChansSet[3]];
 
         for ( index = 0; index < _numChansSet[3]; index++ )
         {
@@ -208,8 +207,8 @@ CtiAnsiTableSixTwo::CtiAnsiTableSixTwo( BYTE *dataBlob, bool *dataSetUsedFlag, L
 
         if (_scalarDivisorFlagSet[3])
         {
-            _lp_ctrl_tbl.scalars_set4 = new UINT16[_numChansSet[3]];                     
-            _lp_ctrl_tbl.divisor_set4 = new UINT16[_numChansSet[3]];                     
+            _lp_ctrl_tbl.scalars_set4 = new UINT16[_numChansSet[3]];
+            _lp_ctrl_tbl.divisor_set4 = new UINT16[_numChansSet[3]];
 
             for ( index = 0; index < _numChansSet[3]; index++ )
             {
@@ -229,7 +228,7 @@ CtiAnsiTableSixTwo::CtiAnsiTableSixTwo( BYTE *dataBlob, bool *dataSetUsedFlag, L
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTableSixTwo::~CtiAnsiTableSixTwo()
+CtiAnsiTable62::~CtiAnsiTable62()
 {
     if (_lp_ctrl_tbl.lp_sel_set1 != NULL)
     {
@@ -299,7 +298,7 @@ CtiAnsiTableSixTwo::~CtiAnsiTableSixTwo()
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTableSixTwo& CtiAnsiTableSixTwo::operator=(const CtiAnsiTableSixTwo& aRef)
+CtiAnsiTable62& CtiAnsiTable62::operator=(const CtiAnsiTable62& aRef)
 {
     if (this != &aRef)
     {
@@ -309,7 +308,7 @@ CtiAnsiTableSixTwo& CtiAnsiTableSixTwo::operator=(const CtiAnsiTableSixTwo& aRef
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableSixTwo::generateResultPiece( BYTE **dataBlob )
+void CtiAnsiTable62::generateResultPiece( BYTE **dataBlob )
 {
     int index;
     if (_lpCtrlDataSetUsed[0])
@@ -412,12 +411,12 @@ void CtiAnsiTableSixTwo::generateResultPiece( BYTE **dataBlob )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableSixTwo::decodeResultPiece( BYTE **dataBlob )
+void CtiAnsiTable62::decodeResultPiece( BYTE **dataBlob )
 {
     int index;
     if (_lpCtrlDataSetUsed[0])
     {
-        _lp_ctrl_tbl.lp_sel_set1 = new LP_SOURCE_SEL_RCD[_numChansSet[0]];           
+        _lp_ctrl_tbl.lp_sel_set1 = new LP_SOURCE_SEL_RCD[_numChansSet[0]];
 
         for ( index = 0; index < _numChansSet[0]; index++ )
         {
@@ -429,8 +428,8 @@ void CtiAnsiTableSixTwo::decodeResultPiece( BYTE **dataBlob )
 
         if (_scalarDivisorFlagSet[0])
         {
-            _lp_ctrl_tbl.scalars_set1 = new UINT16[_numChansSet[0]];                     
-            _lp_ctrl_tbl.divisor_set1 = new UINT16[_numChansSet[0]];                     
+            _lp_ctrl_tbl.scalars_set1 = new UINT16[_numChansSet[0]];
+            _lp_ctrl_tbl.divisor_set1 = new UINT16[_numChansSet[0]];
 
             for ( index = 0; index < _numChansSet[0]; index++ )
             {
@@ -446,7 +445,7 @@ void CtiAnsiTableSixTwo::decodeResultPiece( BYTE **dataBlob )
     }
     if (_lpCtrlDataSetUsed[1])
     {
-        _lp_ctrl_tbl.lp_sel_set2 = new LP_SOURCE_SEL_RCD[_numChansSet[1]];           
+        _lp_ctrl_tbl.lp_sel_set2 = new LP_SOURCE_SEL_RCD[_numChansSet[1]];
 
         for ( index = 0; index < _numChansSet[1]; index++ )
         {
@@ -458,8 +457,8 @@ void CtiAnsiTableSixTwo::decodeResultPiece( BYTE **dataBlob )
 
         if (_scalarDivisorFlagSet[1])
         {
-            _lp_ctrl_tbl.scalars_set2 = new UINT16[_numChansSet[1]];                     
-            _lp_ctrl_tbl.divisor_set2 = new UINT16[_numChansSet[1]];                     
+            _lp_ctrl_tbl.scalars_set2 = new UINT16[_numChansSet[1]];
+            _lp_ctrl_tbl.divisor_set2 = new UINT16[_numChansSet[1]];
 
             for ( index = 0; index < _numChansSet[1]; index++ )
             {
@@ -475,7 +474,7 @@ void CtiAnsiTableSixTwo::decodeResultPiece( BYTE **dataBlob )
     }
     if (_lpCtrlDataSetUsed[2])
     {
-        _lp_ctrl_tbl.lp_sel_set3 = new LP_SOURCE_SEL_RCD[_numChansSet[2]];           
+        _lp_ctrl_tbl.lp_sel_set3 = new LP_SOURCE_SEL_RCD[_numChansSet[2]];
 
         for ( index = 0; index < _numChansSet[2]; index++ )
         {
@@ -487,8 +486,8 @@ void CtiAnsiTableSixTwo::decodeResultPiece( BYTE **dataBlob )
 
         if (_scalarDivisorFlagSet[2])
         {
-            _lp_ctrl_tbl.scalars_set3 = new UINT16[_numChansSet[2]];                     
-            _lp_ctrl_tbl.divisor_set3 = new UINT16[_numChansSet[2]];                     
+            _lp_ctrl_tbl.scalars_set3 = new UINT16[_numChansSet[2]];
+            _lp_ctrl_tbl.divisor_set3 = new UINT16[_numChansSet[2]];
 
             for ( index = 0; index < _numChansSet[2]; index++ )
             {
@@ -504,7 +503,7 @@ void CtiAnsiTableSixTwo::decodeResultPiece( BYTE **dataBlob )
     }
     if (_lpCtrlDataSetUsed[3])
     {
-        _lp_ctrl_tbl.lp_sel_set4 = new LP_SOURCE_SEL_RCD[_numChansSet[3]];           
+        _lp_ctrl_tbl.lp_sel_set4 = new LP_SOURCE_SEL_RCD[_numChansSet[3]];
 
         for ( index = 0; index < _numChansSet[3]; index++ )
         {
@@ -516,8 +515,8 @@ void CtiAnsiTableSixTwo::decodeResultPiece( BYTE **dataBlob )
 
         if (_scalarDivisorFlagSet[3])
         {
-            _lp_ctrl_tbl.scalars_set4 = new UINT16[_numChansSet[3]];                     
-            _lp_ctrl_tbl.divisor_set4 = new UINT16[_numChansSet[3]];                     
+            _lp_ctrl_tbl.scalars_set4 = new UINT16[_numChansSet[3]];
+            _lp_ctrl_tbl.divisor_set4 = new UINT16[_numChansSet[3]];
 
             for ( index = 0; index < _numChansSet[3]; index++ )
             {
@@ -535,7 +534,7 @@ void CtiAnsiTableSixTwo::decodeResultPiece( BYTE **dataBlob )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableSixTwo::printResult( const string& deviceName )
+void CtiAnsiTable62::printResult( const string& deviceName )
 {
     int index;
     /**************************************************************
@@ -568,7 +567,7 @@ void CtiAnsiTableSixTwo::printResult( const string& deviceName )
     }
 }
 
-void CtiAnsiTableSixTwo::printLPSelSet(int set, int numChans)
+void CtiAnsiTable62::printLPSelSet(int set, int numChans)
 {
     LP_SOURCE_SEL_RCD *tempSourceSelRcd;
     UINT8 tempIntSel;
@@ -654,7 +653,7 @@ void CtiAnsiTableSixTwo::printLPSelSet(int set, int numChans)
         dout <<endl<< "       IntFmtCde: "<<tempIntSel<<endl;
     }
 }
-void CtiAnsiTableSixTwo::printScalarsDivisorSet(int set, int numChans)
+void CtiAnsiTable62::printScalarsDivisorSet(int set, int numChans)
 {
     UINT16 *tempScalarsSet;
     UINT16 *tempDivisorSet;
@@ -715,7 +714,7 @@ void CtiAnsiTableSixTwo::printScalarsDivisorSet(int set, int numChans)
 
 }
 
-bool  CtiAnsiTableSixTwo::getNoMultiplierFlag(int setNbr)
+bool  CtiAnsiTable62::getNoMultiplierFlag(int setNbr)
 {
     bool retVal = false;
     switch (setNbr)
@@ -747,7 +746,7 @@ bool  CtiAnsiTableSixTwo::getNoMultiplierFlag(int setNbr)
 
     return retVal;
 }
-UINT8 CtiAnsiTableSixTwo::getIntervalFmtCde(int setNbr)
+UINT8 CtiAnsiTable62::getIntervalFmtCde(int setNbr)
 {
     UINT8 retVal = 0;
     switch (setNbr)
@@ -780,7 +779,7 @@ UINT8 CtiAnsiTableSixTwo::getIntervalFmtCde(int setNbr)
     return retVal;
 }
 
-UINT8* CtiAnsiTableSixTwo::getLPDemandSelect(int setNbr)
+UINT8* CtiAnsiTable62::getLPDemandSelect(int setNbr)
 {
     UINT8 *lpSrcSel = NULL;
     LP_SOURCE_SEL_RCD *tempSourceSelRcd;
@@ -790,22 +789,22 @@ UINT8* CtiAnsiTableSixTwo::getLPDemandSelect(int setNbr)
     {
     case 1:
         {
-            tempSourceSelRcd = _lp_ctrl_tbl.lp_sel_set1; 
+            tempSourceSelRcd = _lp_ctrl_tbl.lp_sel_set1;
         }
         break;
     case 2:
         {
-            tempSourceSelRcd = _lp_ctrl_tbl.lp_sel_set2; 
+            tempSourceSelRcd = _lp_ctrl_tbl.lp_sel_set2;
         }
         break;
     case 3:
         {
-            tempSourceSelRcd = _lp_ctrl_tbl.lp_sel_set3; 
+            tempSourceSelRcd = _lp_ctrl_tbl.lp_sel_set3;
         }
         break;
-    case 4: 
+    case 4:
         {
-            tempSourceSelRcd = _lp_ctrl_tbl.lp_sel_set4; 
+            tempSourceSelRcd = _lp_ctrl_tbl.lp_sel_set4;
         }
         break;
     default:

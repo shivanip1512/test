@@ -1,13 +1,8 @@
-
-#pragma warning( disable : 4786)
-#ifndef __STD_ANSI_TBL_ZERO_EIGHT_H__
-#define __STD_ANSI_TBL_ZERO_EIGHT_H__
-
 /*---------------------------------------------------------------------------------*
 *
-* File:   std_ansi_tbl_zero_eight
+* File:   std_ansi_tbl_08
 *
-* Class:  CtiAnsiTableZeroEight
+* Class:  CtiAnsiTable08
 * Date:   9/13/2002
 *
 * Author: Eric Schmit
@@ -16,6 +11,9 @@
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
+#ifndef __STD_ANSI_TBL_08_H__
+#define __STD_ANSI_TBL_08_H__
+#pragma warning( disable : 4786)
 
 #include "dlldefs.h"
 #include "ctitypes.h"
@@ -86,7 +84,7 @@ struct RSP_DATA_RCD
 
 #pragma pack( pop )
 
-class IM_EX_PROT CtiAnsiTableZeroEight : public CtiAnsiTableBase
+class IM_EX_PROT CtiAnsiTable08 : public CtiAnsiTableBase
 {
 protected:
 
@@ -113,12 +111,12 @@ public:
     void decodeResultPiece( BYTE **dataBlob );
     void printResult( const string& deviceName );
 
-    CtiAnsiTableZeroEight( );
-    CtiAnsiTableZeroEight( BYTE *dataBlob );
+    CtiAnsiTable08( );
+    CtiAnsiTable08( BYTE *dataBlob );
 
-    virtual ~CtiAnsiTableZeroEight();
+    virtual ~CtiAnsiTable08();
 
-    CtiAnsiTableZeroEight& operator=(const CtiAnsiTableZeroEight& aRef);
+    CtiAnsiTable08& operator=(const CtiAnsiTable08& aRef);
 
 
     void populateRespDataRcd( BYTE *dataBlob, RSP_DATA_RCD *data_rcd, int &offset );
@@ -130,5 +128,5 @@ public:
     int getLPOffset(void);
 
 };
-#endif // #ifndef __STD_ANSI_TBL_ZERO_EIGHT_H__
+#endif // #ifndef __STD_ANSI_TBL_08_H__
 

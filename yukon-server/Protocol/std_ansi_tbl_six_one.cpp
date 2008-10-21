@@ -1,6 +1,6 @@
 /*-----------------------------------------------------------------------------*
 *
-* File:   std_ansi_tbl_six_one
+* File:   std_ansi_tbl_61
 *
 * Date:   05/21/2004
 *
@@ -13,22 +13,22 @@
 
 #include "logger.h"
 #include "math.h"
-#include "std_ansi_tbl_six_one.h"
+#include "std_ansi_tbl_61.h"
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-CtiAnsiTableSixOne::CtiAnsiTableSixOne( unsigned char *stdTblsUsed, int dimStdTblsUsed )
+CtiAnsiTable61::CtiAnsiTable61( unsigned char *stdTblsUsed, int dimStdTblsUsed )
 {
     int x = 0;
     int lpTbl[] = {64, 65, 66, 67};
-    
+
     _lpDataSetUsed[0] = false;
     _lpDataSetUsed[1] = false;
     _lpDataSetUsed[2] = false;
     _lpDataSetUsed[3] = false;
 
-    if (dimStdTblsUsed > 8) 
-    {   
+    if (dimStdTblsUsed > 8)
+    {
         int y, yy;
         while (x < 4)
         {
@@ -37,7 +37,7 @@ CtiAnsiTableSixOne::CtiAnsiTableSixOne( unsigned char *stdTblsUsed, int dimStdTb
             {
                 y = y*2;
             }
-            if (stdTblsUsed[(lpTbl[x]/8)] & y) 
+            if (stdTblsUsed[(lpTbl[x]/8)] & y)
             {
                 _lpDataSetUsed[x] = true;
             }
@@ -50,19 +50,19 @@ CtiAnsiTableSixOne::CtiAnsiTableSixOne( unsigned char *stdTblsUsed, int dimStdTb
 }
 
 
-CtiAnsiTableSixOne::CtiAnsiTableSixOne( BYTE *dataBlob,  unsigned char *stdTblsUsed, int dimStdTblsUsed )
+CtiAnsiTable61::CtiAnsiTable61( BYTE *dataBlob,  unsigned char *stdTblsUsed, int dimStdTblsUsed )
 {
     int x = 0;
     int offset = 0;
     int lpTbl[] = {64, 65, 66, 67};
-    
+
     _lpDataSetUsed[0] = false;
     _lpDataSetUsed[1] = false;
     _lpDataSetUsed[2] = false;
     _lpDataSetUsed[3] = false;
 
-    if (dimStdTblsUsed > 8) 
-    {   
+    if (dimStdTblsUsed > 8)
+    {
         x=0;
         int y, yy;
         while (x < 4)
@@ -72,7 +72,7 @@ CtiAnsiTableSixOne::CtiAnsiTableSixOne( BYTE *dataBlob,  unsigned char *stdTblsU
             {
                 y = y*2;
             }
-            if (stdTblsUsed[(lpTbl[x]/8)] & y) 
+            if (stdTblsUsed[(lpTbl[x]/8)] & y)
             {
                 _lpDataSetUsed[x] = true;
             }
@@ -86,25 +86,25 @@ CtiAnsiTableSixOne::CtiAnsiTableSixOne( BYTE *dataBlob,  unsigned char *stdTblsU
     dataBlob +=   sizeof( unsigned char ) * 7;
     _lp_tbl.lp_data_set_info = new LP_DATA_SET[4];
     int xx = 0;
-    for (x = 0; x < 4; x++) 
+    for (x = 0; x < 4; x++)
     {
-        if (_lpDataSetUsed[x]) 
+        if (_lpDataSetUsed[x])
         {
             memcpy( (void *)&_lp_tbl.lp_data_set_info[xx], dataBlob, sizeof( LP_DATA_SET ));
             dataBlob +=   sizeof( LP_DATA_SET );
             xx++;
         }
-    } 
+    }
 }
 
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTableSixOne::~CtiAnsiTableSixOne()
+CtiAnsiTable61::~CtiAnsiTable61()
 {
    //delete clock_table;
    if (_lp_tbl.lp_data_set_info != NULL)
-   {                                   
+   {
        delete []_lp_tbl.lp_data_set_info;
        _lp_tbl.lp_data_set_info = NULL;
    }
@@ -113,7 +113,7 @@ CtiAnsiTableSixOne::~CtiAnsiTableSixOne()
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTableSixOne& CtiAnsiTableSixOne::operator=(const CtiAnsiTableSixOne& aRef)
+CtiAnsiTable61& CtiAnsiTable61::operator=(const CtiAnsiTable61& aRef)
 {
    if(this != &aRef)
    {
@@ -123,15 +123,15 @@ CtiAnsiTableSixOne& CtiAnsiTableSixOne::operator=(const CtiAnsiTableSixOne& aRef
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableSixOne::generateResultPiece( BYTE **dataBlob )
+void CtiAnsiTable61::generateResultPiece( BYTE **dataBlob )
 {
     int xx = 0;
 
     memcpy( *dataBlob, (void *)&_lp_tbl, sizeof( unsigned char ) * 7);
     *dataBlob +=   sizeof( unsigned char ) * 7;
-    for (int x = 0; x < 4; x++) 
+    for (int x = 0; x < 4; x++)
     {
-        if (_lpDataSetUsed[x]) 
+        if (_lpDataSetUsed[x])
         {
             memcpy( *dataBlob, (void *)&_lp_tbl.lp_data_set_info[xx], sizeof( LP_DATA_SET ));
             *dataBlob +=   sizeof( LP_DATA_SET );
@@ -142,15 +142,15 @@ void CtiAnsiTableSixOne::generateResultPiece( BYTE **dataBlob )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableSixOne::decodeResultPiece( BYTE **dataBlob )
+void CtiAnsiTable61::decodeResultPiece( BYTE **dataBlob )
 {
     int xx = 0;
 
     memcpy( (void *)&_lp_tbl, *dataBlob, sizeof( unsigned char ) * 7);
     *dataBlob +=   sizeof( unsigned char ) * 7;
-    for (int x = 0; x < 4; x++) 
+    for (int x = 0; x < 4; x++)
     {
-        if (_lpDataSetUsed[x]) 
+        if (_lpDataSetUsed[x])
         {
             memcpy( (void *)&_lp_tbl.lp_data_set_info[xx], *dataBlob, sizeof( LP_DATA_SET ));
             *dataBlob +=   sizeof( LP_DATA_SET );
@@ -162,9 +162,9 @@ void CtiAnsiTableSixOne::decodeResultPiece( BYTE **dataBlob )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableSixOne::printResult( const string& deviceName )
+void CtiAnsiTable61::printResult( const string& deviceName )
 {
- 
+
     /**************************************************************
     * its been discovered that if a method goes wrong while having the logger locked
     * unpleasant consquences may happen (application lockup for instance)  Because
@@ -202,7 +202,7 @@ void CtiAnsiTableSixOne::printResult( const string& deviceName )
         dout << "                   inv_ni_fmat2_flag    "<<(bool)_lp_tbl.lp_fmats.inv_ni_fmat2_flag<<endl;
     }
     int offset = 0;
-    for (int x = 0; x < 4; x++) 
+    for (int x = 0; x < 4; x++)
     {
         if (_lpDataSetUsed[x])
         {
@@ -211,7 +211,7 @@ void CtiAnsiTableSixOne::printResult( const string& deviceName )
         }
     }
 }
-void CtiAnsiTableSixOne::printLPDataSetInfo(int set, int offset )
+void CtiAnsiTable61::printLPDataSetInfo(int set, int offset )
 {
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
@@ -224,24 +224,24 @@ void CtiAnsiTableSixOne::printLPDataSetInfo(int set, int offset )
 
 }
 
-UINT32 CtiAnsiTableSixOne::getLPMemoryLength()
+UINT32 CtiAnsiTable61::getLPMemoryLength()
 {
     return _lp_tbl.lp_memory_len;
 }
-LP_DATA_SET * CtiAnsiTableSixOne::getLPDataSetInfo()
+LP_DATA_SET * CtiAnsiTable61::getLPDataSetInfo()
 {
     return _lp_tbl.lp_data_set_info;
 }
 
-bool * CtiAnsiTableSixOne::getLPDataSetUsedFlags()
+bool * CtiAnsiTable61::getLPDataSetUsedFlags()
 {
     return _lpDataSetUsed;
 }
 
-bool CtiAnsiTableSixOne::getLPScalarDivisorFlag( int setNo )
+bool CtiAnsiTable61::getLPScalarDivisorFlag( int setNo )
 {
     bool retVal = false;
-    switch (setNo) 
+    switch (setNo)
     {
         case 1:
             retVal = (bool)_lp_tbl.lp_flags.scalar_divisor_flag_set1;
@@ -261,14 +261,14 @@ bool CtiAnsiTableSixOne::getLPScalarDivisorFlag( int setNo )
     return retVal;
 }
 
-int CtiAnsiTableSixOne::getNbrBlksSet (int setNbr )
+int CtiAnsiTable61::getNbrBlksSet (int setNbr )
 {
     int retVal = 0;
     int offset[4] = {0xff, 0xff, 0xff, 0xff};
     int setIndex = 0;
 
     for (int x = 0; x < 4; x++)
-    { 
+    {
         if (_lpDataSetUsed[x])
         {
             offset[x] = setIndex;
@@ -283,14 +283,14 @@ int CtiAnsiTableSixOne::getNbrBlksSet (int setNbr )
     return retVal;
 
 }
-int CtiAnsiTableSixOne::getNbrChansSet(int setNbr)
+int CtiAnsiTable61::getNbrChansSet(int setNbr)
 {
     int retVal = 0;
     int offset[4] = {0xff, 0xff, 0xff, 0xff};
     int setIndex = 0;
 
     for (int x = 0; x < 4; x++)
-    { 
+    {
         if (_lpDataSetUsed[x])
         {
             offset[x] = setIndex;
@@ -304,14 +304,14 @@ int CtiAnsiTableSixOne::getNbrChansSet(int setNbr)
     }
     return retVal;
 }
-int CtiAnsiTableSixOne::getNbrBlkIntsSet( int setNbr)
+int CtiAnsiTable61::getNbrBlkIntsSet( int setNbr)
 {
     int retVal = 0;
     int offset[4] = {0xff, 0xff, 0xff, 0xff};
     int setIndex = 0;
 
     for (int x = 0; x < 4; x++)
-    { 
+    {
         if (_lpDataSetUsed[x])
         {
             offset[x] = setIndex;
@@ -325,14 +325,14 @@ int CtiAnsiTableSixOne::getNbrBlkIntsSet( int setNbr)
     }
     return retVal;
 }
-int CtiAnsiTableSixOne::getMaxIntTimeSet( int setNbr)
+int CtiAnsiTable61::getMaxIntTimeSet( int setNbr)
 {
     int retVal = 0;
     int offset[4] = {0xff, 0xff, 0xff, 0xff};
     int setIndex = 0;
 
     for (int x = 0; x < 4; x++)
-    { 
+    {
         if (_lpDataSetUsed[x])
         {
             offset[x] = setIndex;
@@ -346,23 +346,23 @@ int CtiAnsiTableSixOne::getMaxIntTimeSet( int setNbr)
     }
     return retVal;
 }
-bool CtiAnsiTableSixOne::getClosureStatusFlag()
+bool CtiAnsiTable61::getClosureStatusFlag()
 {
     return (bool)_lp_tbl.lp_flags.closure_status_flag;
 }
-bool CtiAnsiTableSixOne::getSimpleIntStatusFlag()
+bool CtiAnsiTable61::getSimpleIntStatusFlag()
 {
     return (bool)_lp_tbl.lp_flags.simple_int_status_flag;
 }
-bool CtiAnsiTableSixOne::getBlkEndReadFlag()
+bool CtiAnsiTable61::getBlkEndReadFlag()
 {
     return (bool)_lp_tbl.lp_flags.blk_end_read_flag;
 }
-bool CtiAnsiTableSixOne::getBlkEndPulseFlag()
+bool CtiAnsiTable61::getBlkEndPulseFlag()
 {
     return (bool)_lp_tbl.lp_flags.blk_end_pulse_flag;
 }
-bool CtiAnsiTableSixOne::getExtendedIntStatusFlag()
+bool CtiAnsiTable61::getExtendedIntStatusFlag()
 {
     return (bool)_lp_tbl.lp_flags.extended_int_status_flag;
 }

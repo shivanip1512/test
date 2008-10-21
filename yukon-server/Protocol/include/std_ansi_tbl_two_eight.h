@@ -1,13 +1,6 @@
-
-
-
-#pragma warning( disable : 4786)
-#ifndef __STD_ANSI_TBL_TWO_EIGHT_H__
-#define __STD_ANSI_TBL_TWO_EIGHT_H__
-
 /*---------------------------------------------------------------------------------*
 *
-* File:   std_ansi_tbl_two_eight
+* File:   std_ansi_tbl_28
 *
 * Class:
 * Date:   9/20/2002
@@ -15,12 +8,15 @@
 * Author: Eric Schmit
 *
 * PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_tbl_two_eight.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2008/10/07 18:16:46 $
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_tbl_28.h-arc  $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2008/10/21 16:30:32 $
 
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
+#ifndef __STD_ANSI_TBL_28_H__
+#define __STD_ANSI_TBL_28_H__
+#pragma warning( disable : 4786)
 
 #include "dlldefs.h"
 #include "ctitypes.h"
@@ -41,7 +37,7 @@ struct PRESENT_DEMAND_RCD
 
 #pragma pack( pop )
 
-class IM_EX_PROT CtiAnsiTableTwoEight : public CtiAnsiTableBase
+class IM_EX_PROT CtiAnsiTable28 : public CtiAnsiTableBase
 {
 protected:
 
@@ -59,11 +55,11 @@ private:
 
 public:
 
-   CtiAnsiTableTwoEight( );
-   CtiAnsiTableTwoEight( BYTE *dataBlob, UINT8 nbrPresentDemands, UINT8 nbrPresentValues,
+   CtiAnsiTable28( );
+   CtiAnsiTable28( BYTE *dataBlob, UINT8 nbrPresentDemands, UINT8 nbrPresentValues,
                          bool timeRemainingFlag, int format1, int format2, int timefmt );
-   virtual ~CtiAnsiTableTwoEight();
-   CtiAnsiTableTwoEight& operator=(const CtiAnsiTableTwoEight& aRef);
+   virtual ~CtiAnsiTable28();
+   CtiAnsiTable28& operator=(const CtiAnsiTable28& aRef);
    void printResult( const string& deviceName );
 
    double getPresentDemand(int index );
@@ -72,4 +68,4 @@ public:
 
 };
 
-#endif // #ifndef __STD_ANSI_TBL_TWO_EIGHT_H__
+#endif // #ifndef __STD_ANSI_TBL_28_H__

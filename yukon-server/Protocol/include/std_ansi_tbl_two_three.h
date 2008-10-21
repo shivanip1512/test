@@ -1,11 +1,6 @@
-
-#pragma warning( disable : 4786)
-#ifndef __STD_ANSI_TBL_TWO_THREE_H__
-#define __STD_ANSI_TBL_TWO_THREE_H__
-
 /*---------------------------------------------------------------------------------*
 *
-* File:   std_ansi_tbl_two_three
+* File:   std_ansi_tbl_23
 *
 * Class:
 * Date:   9/20/2002
@@ -13,11 +8,15 @@
 * Author: Eric Schmit
 *
 * PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_tbl_two_three.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2008/10/07 18:16:46 $
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_tbl_23.h-arc  $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2008/10/21 16:30:32 $
 *    History:
       $Log: std_ansi_tbl_two_three.h,v $
+      Revision 1.10  2008/10/21 16:30:32  mfisher
+      YUK-6615 ANSI table class names and filenames are difficult to read
+      Renamed classes and filenames
+
       Revision 1.9  2008/10/07 18:16:46  mfisher
       YUK-6504 Server-side point management is naive
       cleaned up a few dsm2.h dependencies
@@ -26,9 +25,6 @@
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
       Revision 1.7  2005/12/12 20:34:48  jrichter
-      BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
-
-      Revision 1.6.2.1  2005/12/12 19:51:02  jrichter
       BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
 
       Revision 1.6  2005/09/29 21:19:24  jrichter
@@ -45,6 +41,9 @@
 
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
+#ifndef __STD_ANSI_TBL_23_H__
+#define __STD_ANSI_TBL_23_H__
+#pragma warning( disable : 4786)
 
 #include "dlldefs.h"
 #include "ctitypes.h"
@@ -79,7 +78,7 @@ struct DATA_BLK_RCD
 
 #pragma pack( pop )
 
-class IM_EX_PROT CtiAnsiTableTwoThree : public CtiAnsiTableBase
+class IM_EX_PROT CtiAnsiTable23 : public CtiAnsiTableBase
 {
 protected:
 
@@ -122,12 +121,12 @@ public:
    bool getTime( void );
    bool getCumd( void );
    bool getCumcont( void );
-   CtiAnsiTableTwoThree( int oc, int sum, int demnd, int coin, int tier, bool reset, bool time, bool cumd, bool cumcont,
+   CtiAnsiTable23( int oc, int sum, int demnd, int coin, int tier, bool reset, bool time, bool cumd, bool cumcont,
                          int f1, int f2, int timeformat, int tableNbr );
-   CtiAnsiTableTwoThree( BYTE *dataBlob, int oc, int sum, int demnd, int coin, int tier, bool reset, bool time, bool cumd, bool cumcont,
+   CtiAnsiTable23( BYTE *dataBlob, int oc, int sum, int demnd, int coin, int tier, bool reset, bool time, bool cumd, bool cumcont,
                          int f1, int f2, int timeformat, int tableNbr );
-   virtual ~CtiAnsiTableTwoThree();
-   CtiAnsiTableTwoThree& operator=(const CtiAnsiTableTwoThree& aRef);
+   virtual ~CtiAnsiTable23();
+   CtiAnsiTable23& operator=(const CtiAnsiTable23& aRef);
    void printResult( const string& deviceName );
    void printSummations( DATA_BLK_RCD data_block );
    void printDemands( DATA_BLK_RCD data_block );
@@ -149,4 +148,4 @@ double getDemandEventTime( int index, int dataBlock );
 
 };
 
-#endif // #ifndef __STD_ANSI_TBL_TWO_THREE_H__
+#endif // #ifndef __STD_ANSI_TBL_23_H__

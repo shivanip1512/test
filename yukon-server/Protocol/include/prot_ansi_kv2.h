@@ -1,7 +1,3 @@
-#pragma warning( disable : 4786)
-#ifndef __PROT_ANSI_KV2_H__
-#define __PROT_ANSI_KV2_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   prot_ansi_kv2.h
@@ -13,15 +9,16 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_ansi_kv2.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/12/20 17:19:58 $
-*    History: 
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2008/10/21 16:30:31 $
+*    History:
       $Log: prot_ansi_kv2.h,v $
+      Revision 1.7  2008/10/21 16:30:31  mfisher
+      YUK-6615 ANSI table class names and filenames are difficult to read
+      Renamed classes and filenames
+
       Revision 1.6  2005/12/20 17:19:58  tspar
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
-
-      Revision 1.5.2.1  2005/07/14 22:27:02  jliu
-      RWCStringRemoved
 
       Revision 1.5  2005/03/14 21:44:16  jrichter
       updated with present value regs, batterylife info, corrected quals, multipliers/offsets, corrected single precision float define, modifed for commander commands, added demand reset
@@ -42,14 +39,16 @@
 
 
 *-----------------------------------------------------------------------------*/
+#ifndef __PROT_ANSI_KV2_H__
+#define __PROT_ANSI_KV2_H__
+#pragma warning( disable : 4786)
 
 #include <windows.h>
 #include "prot_ansi.h"
 #include "pointdefs.h"
-#include "ansi_kv2_mtable_zero.h"
-#include "ansi_kv2_mtable_seventy.h"
-#include "ansi_kv2_mtable_onehundredten.h"
-//#include "kv2_ansi_table_oneten.h"
+#include "ansi_kv2_mtable_000.h"
+#include "ansi_kv2_mtable_070.h"
+#include "ansi_kv2_mtable_110.h"
 
 class IM_EX_PROT CtiProtocolANSI_kv2:public CtiProtocolANSI
 {
@@ -73,13 +72,13 @@ class IM_EX_PROT CtiProtocolANSI_kv2:public CtiProtocolANSI
         virtual int getGoodBatteryReading();
         virtual int getCurrentBatteryReading();
         virtual int getDaysOnBatteryReading();
-                            
+
 
    private:
 
-      CtiAnsiKV2ManufacturerTableZero                   *_tableZero;
-      CtiAnsiKV2ManufacturerTableSeventy                *_tableSeventy;
-      CtiAnsiKV2ManufacturerTableOnehundredten          *_tableOneHundredTen;
+      CtiAnsiKV2ManufacturerTable000  *_table000;
+      CtiAnsiKV2ManufacturerTable070  *_table070;
+      CtiAnsiKV2ManufacturerTable110  *_table110;
 
 
 };

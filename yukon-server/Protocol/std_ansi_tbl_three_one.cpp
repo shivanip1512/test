@@ -1,31 +1,30 @@
-#include "yukon.h"
-
 /*-----------------------------------------------------------------------------*
 *
-* File:   std_ansi_tbl_three_one
+* File:   std_ansi_tbl_31
 *
 * Date:   2/1/2005
 *
 * Author: Julie Richter
 *
 * PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_three_one.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/12/20 17:19:57 $
-*    History: 
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_31.cpp-arc  $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2008/10/21 16:30:31 $
+*    History:
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
 #include "logger.h"
-#include "std_ansi_tbl_three_one.h"
+#include "std_ansi_tbl_31.h"
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-CtiAnsiTableThreeOne::CtiAnsiTableThreeOne()
+CtiAnsiTable31::CtiAnsiTable31()
 {
 }
-CtiAnsiTableThreeOne::CtiAnsiTableThreeOne( BYTE *dataBlob )
+CtiAnsiTable31::CtiAnsiTable31( BYTE *dataBlob )
 {
 
     memcpy( (void *)&_displayTable, dataBlob, sizeof( DISP_RCD ));
@@ -35,15 +34,15 @@ CtiAnsiTableThreeOne::CtiAnsiTableThreeOne( BYTE *dataBlob )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTableThreeOne::~CtiAnsiTableThreeOne()
+CtiAnsiTable31::~CtiAnsiTable31()
 {
-    
+
 }
 
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTableThreeOne& CtiAnsiTableThreeOne::operator=(const CtiAnsiTableThreeOne& aRef)
+CtiAnsiTable31& CtiAnsiTable31::operator=(const CtiAnsiTable31& aRef)
 {
    if(this != &aRef)
    {
@@ -57,41 +56,41 @@ CtiAnsiTableThreeOne& CtiAnsiTableThreeOne::operator=(const CtiAnsiTableThreeOne
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-UINT16 CtiAnsiTableThreeOne::getNbrDispSources( )
+UINT16 CtiAnsiTable31::getNbrDispSources( )
 {
     return _displayTable.nbrDispSources;
 }
 
-UINT8  CtiAnsiTableThreeOne::getWidthDispSources( )
+UINT8  CtiAnsiTable31::getWidthDispSources( )
 {
     return _displayTable.widthDispSources;
 }
-UINT16 CtiAnsiTableThreeOne::getNbrPriDispListItems( )
+UINT16 CtiAnsiTable31::getNbrPriDispListItems( )
 {
     return _displayTable.nbrPriDispListItems;
 }
-UINT8 CtiAnsiTableThreeOne::getNbrPriDispLists( )
+UINT8 CtiAnsiTable31::getNbrPriDispLists( )
 {
     return _displayTable.nbrPriDispLists;
 }
-UINT16 CtiAnsiTableThreeOne::getNbrSecDispListItems( )
+UINT16 CtiAnsiTable31::getNbrSecDispListItems( )
 {
     return _displayTable.nbrSecDispListItems;
 }
-UINT8  CtiAnsiTableThreeOne::getNbrSecDispLists( )
+UINT8  CtiAnsiTable31::getNbrSecDispLists( )
 {
     return _displayTable.nbrSecDispLists;
 }
 
-bool CtiAnsiTableThreeOne::getOnTimeFlag( )
+bool CtiAnsiTable31::getOnTimeFlag( )
 {
     return (bool) _displayTable.displayCtrl.onTimeFlag;
 }
-bool CtiAnsiTableThreeOne::getOffTimeFlag( )
+bool CtiAnsiTable31::getOffTimeFlag( )
 {
     return (bool) _displayTable.displayCtrl.offTimeFlag;
 }
-bool CtiAnsiTableThreeOne::getHoldTimeFlag( )
+bool CtiAnsiTable31::getHoldTimeFlag( )
 {
     return (bool) _displayTable.displayCtrl.holdTimeFlag;
 }
@@ -99,7 +98,7 @@ bool CtiAnsiTableThreeOne::getHoldTimeFlag( )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableThreeOne::printResult( const string& deviceName )
+void CtiAnsiTable31::printResult( const string& deviceName )
 {
     /**************************************************************
     * its been discovered that if a method goes wrong while having the logger locked

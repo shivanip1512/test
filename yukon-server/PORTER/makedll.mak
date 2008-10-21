@@ -354,33 +354,28 @@ portfield.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		tbl_metergrp.h vcomdefs.h device_queue_interface.h dev_kv2.h \
 		prot_ansi_kv2.h prot_ansi.h ansi_application.h \
 		ansi_datalink.h ansi_billing_table.h std_ansi_tbl_base.h \
-		std_ansi_tbl_zero_zero.h std_ansi_tbl_zero_one.h \
-		std_ansi_tbl_zero_eight.h std_ansi_tbl_one_zero.h \
-		std_ansi_tbl_one_one.h std_ansi_tbl_one_two.h \
-		std_ansi_tbl_one_three.h std_ansi_tbl_one_four.h \
-		std_ansi_tbl_one_five.h std_ansi_tbl_one_six.h \
-		std_ansi_tbl_two_one.h std_ansi_tbl_two_two.h \
-		std_ansi_tbl_two_three.h std_ansi_tbl_two_five.h \
-		std_ansi_tbl_two_seven.h std_ansi_tbl_two_eight.h \
-		std_ansi_tbl_three_one.h std_ansi_tbl_three_two.h \
-		std_ansi_tbl_three_three.h std_ansi_tbl_five_one.h \
-		std_ansi_tbl_five_two.h std_ansi_tbl_six_one.h \
-		std_ansi_tbl_six_two.h std_ansi_tbl_six_three.h \
-		std_ansi_tbl_six_four.h ansi_kv2_mtable_zero.h \
-		ansi_kv2_mtable_seventy.h ansi_kv2_mtable_onehundredten.h \
-		dllyukon.h dev_mct.h dev_carrier.h dev_dlcbase.h tbl_route.h \
-		tbl_carrier.h prot_emetcon.h tbl_loadprofile.h \
-		tbl_dv_mctiedport.h pt_numeric.h tbl_pt_unit.h \
-		tbl_unitmeasure.h dev_sentinel.h prot_ansi_sentinel.h \
-		dev_mark_v.h prot_transdata.h transdata_application.h \
-		transdata_tracker.h transdata_datalink.h prot_ymodem.h \
-		transdata_data.h msg_cmd.h msg_trace.h pilserver.h server_b.h \
-		con_mgr.h cmdopts.h argkey.h argval.h mgr_point.h mgr_route.h \
-		repeaterrole.h mgr_config.h port_udp.h port_tcpip.h \
-		port_serial.h tbl_port_settings.h tbl_port_timing.h \
-		port_dialable.h port_modem.h tbl_port_dialup.h \
-		tbl_port_tcpip.h EncodingFilterFactory.h EncodingFilter.h \
-		prot_711.h
+		std_ansi_tbl_00.h std_ansi_tbl_01.h std_ansi_tbl_08.h \
+		std_ansi_tbl_10.h std_ansi_tbl_11.h std_ansi_tbl_12.h \
+		std_ansi_tbl_13.h std_ansi_tbl_14.h std_ansi_tbl_15.h \
+		std_ansi_tbl_16.h std_ansi_tbl_21.h std_ansi_tbl_22.h \
+		std_ansi_tbl_23.h std_ansi_tbl_25.h std_ansi_tbl_27.h \
+		std_ansi_tbl_28.h std_ansi_tbl_31.h std_ansi_tbl_32.h \
+		std_ansi_tbl_33.h std_ansi_tbl_51.h std_ansi_tbl_52.h \
+		std_ansi_tbl_61.h std_ansi_tbl_62.h std_ansi_tbl_63.h \
+		std_ansi_tbl_64.h ansi_kv2_mtable_000.h ansi_kv2_mtable_070.h \
+		ansi_kv2_mtable_110.h dllyukon.h dev_mct.h dev_carrier.h \
+		dev_dlcbase.h tbl_route.h tbl_carrier.h prot_emetcon.h \
+		tbl_loadprofile.h tbl_dv_mctiedport.h pt_numeric.h \
+		tbl_pt_unit.h tbl_unitmeasure.h dev_sentinel.h \
+		prot_ansi_sentinel.h dev_mark_v.h prot_transdata.h \
+		transdata_application.h transdata_tracker.h \
+		transdata_datalink.h prot_ymodem.h transdata_data.h msg_cmd.h \
+		msg_trace.h pilserver.h server_b.h con_mgr.h cmdopts.h \
+		argkey.h argval.h mgr_point.h mgr_route.h repeaterrole.h \
+		mgr_config.h port_udp.h port_tcpip.h port_serial.h \
+		tbl_port_settings.h tbl_port_timing.h port_dialable.h \
+		port_modem.h tbl_port_dialup.h tbl_port_tcpip.h \
+		EncodingFilterFactory.h EncodingFilter.h prot_711.h
 portfill.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		types.h cticalls.h cparms.h rwutil.h ctitime.h boost_time.h \
 		boostutil.h utility.h queues.h numstr.h sorted_vector.h \

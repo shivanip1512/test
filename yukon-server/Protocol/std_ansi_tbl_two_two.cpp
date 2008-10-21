@@ -1,28 +1,26 @@
-#include "yukon.h"
-
-
 /*-----------------------------------------------------------------------------*
 *
-* File:   std_ansi_tbl_two_two
+* File:   std_ansi_tbl_22
 *
 * Date:   9/20/2002
 *
 * Author: Eric Schmit
 *
 * PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_two_two.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/12/20 17:19:57 $
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_22.cpp-arc  $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2008/10/21 16:30:31 $
 *
-*    History: 
+*    History:
       $Log: std_ansi_tbl_two_two.cpp,v $
+      Revision 1.10  2008/10/21 16:30:31  mfisher
+      YUK-6615 ANSI table class names and filenames are difficult to read
+      Renamed classes and filenames
+
       Revision 1.9  2005/12/20 17:19:57  tspar
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
       Revision 1.8  2005/12/12 20:34:30  jrichter
-      BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
-
-      Revision 1.7.2.1  2005/12/12 19:50:39  jrichter
       BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
 
       Revision 1.7  2005/09/29 21:18:24  jrichter
@@ -43,20 +41,21 @@
 
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
 #include "logger.h"
-#include "std_ansi_tbl_two_two.h"
+#include "std_ansi_tbl_22.h"
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-CtiAnsiTableTwoTwo::CtiAnsiTableTwoTwo( int num_sums, int num_demands, int num_coins )
+CtiAnsiTable22::CtiAnsiTable22( int num_sums, int num_demands, int num_coins )
 {
     _numSums = num_sums;
     _numDemands = num_demands;
     _numCoins = num_coins;
 
 }
-CtiAnsiTableTwoTwo::CtiAnsiTableTwoTwo( BYTE *dataBlob, int num_sums, int num_demands, int num_coins )
+CtiAnsiTable22::CtiAnsiTable22( BYTE *dataBlob, int num_sums, int num_demands, int num_coins )
 {
     int index;
 
@@ -116,7 +115,7 @@ CtiAnsiTableTwoTwo::CtiAnsiTableTwoTwo( BYTE *dataBlob, int num_sums, int num_de
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTableTwoTwo::~CtiAnsiTableTwoTwo()
+CtiAnsiTable22::~CtiAnsiTable22()
 {
     if (_summation_select != NULL)
     {
@@ -124,7 +123,7 @@ CtiAnsiTableTwoTwo::~CtiAnsiTableTwoTwo()
         _summation_select = NULL;
     }
     if (_demand_select != NULL)
-    {                         
+    {
         delete []_demand_select;
         _demand_select = NULL;
     }
@@ -134,12 +133,12 @@ CtiAnsiTableTwoTwo::~CtiAnsiTableTwoTwo()
         _set = NULL;
     }
     if (_coincident_select != NULL)
-    {                             
+    {
         delete []_coincident_select;
         _coincident_select = NULL;
     }
     if (_coin_demand_assoc)
-    {                     
+    {
         delete []_coin_demand_assoc;
         _coin_demand_assoc = NULL;
     }
@@ -148,7 +147,7 @@ CtiAnsiTableTwoTwo::~CtiAnsiTableTwoTwo()
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTableTwoTwo& CtiAnsiTableTwoTwo::operator=(const CtiAnsiTableTwoTwo& aRef)
+CtiAnsiTable22& CtiAnsiTable22::operator=(const CtiAnsiTable22& aRef)
 {
    if(this != &aRef)
    {
@@ -159,7 +158,7 @@ CtiAnsiTableTwoTwo& CtiAnsiTableTwoTwo::operator=(const CtiAnsiTableTwoTwo& aRef
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-int CtiAnsiTableTwoTwo::copyDemandSelect( BYTE *ptr )
+int CtiAnsiTable22::copyDemandSelect( BYTE *ptr )
 {
    memcpy( ptr, _demand_select, _demandSelectSize );
    return _demandSelectSize;
@@ -168,7 +167,7 @@ int CtiAnsiTableTwoTwo::copyDemandSelect( BYTE *ptr )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-int CtiAnsiTableTwoTwo::getDemandSelectSize( void )
+int CtiAnsiTable22::getDemandSelectSize( void )
 {
    return _demandSelectSize;
 }
@@ -176,14 +175,14 @@ int CtiAnsiTableTwoTwo::getDemandSelectSize( void )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-unsigned char* CtiAnsiTableTwoTwo::getDemandSelect( void )
+unsigned char* CtiAnsiTable22::getDemandSelect( void )
 {
    return _demand_select;
 }
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-unsigned char* CtiAnsiTableTwoTwo::getSummationSelect( void )
+unsigned char* CtiAnsiTable22::getSummationSelect( void )
 {
    return _summation_select;
 }
@@ -192,7 +191,7 @@ unsigned char* CtiAnsiTableTwoTwo::getSummationSelect( void )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-int CtiAnsiTableTwoTwo::getTotalTableSize( void )
+int CtiAnsiTable22::getTotalTableSize( void )
 {
    return _totalTableSize;
 }
@@ -200,9 +199,9 @@ int CtiAnsiTableTwoTwo::getTotalTableSize( void )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableTwoTwo::generateResultPiece( BYTE **dataBlob )
+void CtiAnsiTable22::generateResultPiece( BYTE **dataBlob )
 {
-    
+
     int index;
 
    for( index = 0; index < _numSums; index++ )
@@ -225,7 +224,7 @@ void CtiAnsiTableTwoTwo::generateResultPiece( BYTE **dataBlob )
       memcpy( *dataBlob, (void *)&_coincident_select[index], sizeof( unsigned char ));
       *dataBlob += sizeof( unsigned char );
    }
-  
+
    for( index = 0; index < _numCoins; index++ )
    {
       memcpy( *dataBlob, (void *)&_coin_demand_assoc[index], sizeof( unsigned char ));
@@ -235,7 +234,7 @@ void CtiAnsiTableTwoTwo::generateResultPiece( BYTE **dataBlob )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableTwoTwo::decodeResultPiece( BYTE **dataBlob )
+void CtiAnsiTable22::decodeResultPiece( BYTE **dataBlob )
 {
     int index;
 
@@ -279,7 +278,7 @@ void CtiAnsiTableTwoTwo::decodeResultPiece( BYTE **dataBlob )
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableTwoTwo::printResult( const string& deviceName )
+void CtiAnsiTable22::printResult( const string& deviceName )
 {
     int index;
     /**************************************************************
@@ -339,7 +338,7 @@ void CtiAnsiTableTwoTwo::printResult( const string& deviceName )
         CtiLockGuard< CtiLogger > doubt_guard( dout );
         dout << " "<< (int)_coin_demand_assoc[index];
     }
-    
+
 }
 
 

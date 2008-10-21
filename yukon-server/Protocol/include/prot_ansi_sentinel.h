@@ -1,8 +1,3 @@
-
-#pragma warning( disable : 4786)
-#ifndef __PROT_ANSI_SENTINEL_H__
-#define __PROT_ANSI_SENTINEL_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   prot_ansi_sentinel.h
@@ -13,16 +8,13 @@
 * Author: Julie Richter
 *
 *
-
-
 *-----------------------------------------------------------------------------*/
+#ifndef __PROT_ANSI_SENTINEL_H__
+#define __PROT_ANSI_SENTINEL_H__
+#pragma warning( disable : 4786)
 
 #include <windows.h>
 #include "prot_ansi.h"
-
-//#include "ansi_kv2_mtable_zero.h"
-//#include "ansi_kv2_mtable_seventy.h"
-//#include "kv2_ansi_table_oneten.h"
 
 
 #define DAYS_SINCE_DEMAND_RESET    0x1c030008
@@ -59,14 +51,8 @@ class IM_EX_PROT CtiProtocolANSI_sentinel:public CtiProtocolANSI
         virtual bool retreiveKV2PresentValue( int offset, double *value );
 
         int calculateLPLastDataBlockSize(int numChans, int numIntvlsLastDataBlock);
-                                
+
    private:
-
-      //CtiAnsiKV2ManufacturerTableZero                   *_tableZero;
-      //CtiAnsiKV2ManufacturerTableSeventy                *_tableSeventy;
-//      CtiKV2AnsiTable_110               *_table_110;
-
-     // BYTE               *_table_110;
 
        UINT16 _daysSinceDemandReset;
        UINT16 _daysSinceLastTest;

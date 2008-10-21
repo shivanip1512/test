@@ -1,6 +1,6 @@
 /*-----------------------------------------------------------------------------*
 *
-* File:   std_ansi_tbl_six_four
+* File:   std_ansi_tbl_64
 *
 * Date:   05/21/2004
 *
@@ -12,16 +12,16 @@
 #include "yukon.h"
 
 #include "logger.h"
-#include "std_ansi_tbl_six_four.h"
+#include "std_ansi_tbl_64.h"
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-CtiAnsiTableSixFour::CtiAnsiTableSixFour( int numberBlocksSet, int numberChansSet, 
-                                          bool closureStatusFlag, bool simpleIntervalStatusFlag,
-                                          int numberBlockIntervalsSet, bool blockEndReadFlag,
-                                          bool blockEndPulseFlag, bool extendedIntervalStatusFlag, int maxIntvlTime,
-                                          int intervalFmtCde, int nbrValidInts, int niFmt1, int niFmt2, int timeFmt, int meterHour )
-{  
+CtiAnsiTable64::CtiAnsiTable64( int numberBlocksSet, int numberChansSet,
+                                bool closureStatusFlag, bool simpleIntervalStatusFlag,
+                                int numberBlockIntervalsSet, bool blockEndReadFlag,
+                                bool blockEndPulseFlag, bool extendedIntervalStatusFlag, int maxIntvlTime,
+                                int intervalFmtCde, int nbrValidInts, int niFmt1, int niFmt2, int timeFmt, int meterHour )
+{
     _nbrBlksSet1 = numberBlocksSet;
     _nbrChnsSet1 = numberChansSet;
     _closureStatusFlag = closureStatusFlag;
@@ -43,7 +43,7 @@ CtiAnsiTableSixFour::CtiAnsiTableSixFour( int numberBlocksSet, int numberChansSe
 
 
 
-CtiAnsiTableSixFour::CtiAnsiTableSixFour( BYTE *dataBlob, int numberBlocksSet, int numberChansSet, 
+CtiAnsiTable64::CtiAnsiTable64( BYTE *dataBlob, int numberBlocksSet, int numberChansSet,
                                           bool closureStatusFlag, bool simpleIntervalStatusFlag,
                                           int numberBlockIntervalsSet, bool blockEndReadFlag,
                                           bool blockEndPulseFlag, bool extendedIntervalStatusFlag, int maxIntvlTime,
@@ -65,12 +65,12 @@ CtiAnsiTableSixFour::CtiAnsiTableSixFour( BYTE *dataBlob, int numberBlocksSet, i
     _nbrValidInts = nbrValidInts;
     _timeFmt = timeFmt;
     _niFmt1 = niFmt1;
-    _niFmt2 = niFmt2;   
+    _niFmt2 = niFmt2;
     _meterHour = meterHour;
-   
+
     _lp_data_set1_tbl.lp_data_sets1 = new LP_BLK1_DAT_RCD[_nbrBlksSet1];
 
-    for (index = 0; index < _nbrBlksSet1; index++) 
+    for (index = 0; index < _nbrBlksSet1; index++)
     {
 
         // Block End Time - STIME_DATE
@@ -78,51 +78,51 @@ CtiAnsiTableSixFour::CtiAnsiTableSixFour( BYTE *dataBlob, int numberBlocksSet, i
         dataBlob += bytes;
 
         _lp_data_set1_tbl.lp_data_sets1[index].end_readings = new READINGS_RCD[_nbrChnsSet1];
-        for (i = 0; i < _nbrChnsSet1; i++) 
+        for (i = 0; i < _nbrChnsSet1; i++)
         {
-            if (_blkEndReadFlag) 
+            if (_blkEndReadFlag)
             {
                 // END READINGS - block end reading
                 bytes = toDoubleParser( dataBlob, _lp_data_set1_tbl.lp_data_sets1[index].end_readings[i].block_end_read, _niFmt1 );
                 dataBlob += bytes;
             }
-            if (_blkEndPulseFlag) 
+            if (_blkEndPulseFlag)
             {
                 // END READINGS - block end pulse
                 memcpy( (void *)&_lp_data_set1_tbl.lp_data_sets1[index].end_readings[i].block_end_pulse, dataBlob, sizeof( UINT32 ));
-                dataBlob += sizeof( UINT32 ); 
+                dataBlob += sizeof( UINT32 );
             }
         }
-        if (_closureStatusFlag) 
+        if (_closureStatusFlag)
         {
             _lp_data_set1_tbl.lp_data_sets1[index].closure_status = new CLOSURE_STATUS_BFLD[_nbrChnsSet1];
-            for (i = 0; i < _nbrChnsSet1; i++) 
+            for (i = 0; i < _nbrChnsSet1; i++)
             {
                 // CLOSURE STATUS - status, nbr_valid_interval
                 memcpy( (void *)&_lp_data_set1_tbl.lp_data_sets1[index].closure_status[i], dataBlob, sizeof( unsigned short ));
-                dataBlob += sizeof( unsigned short ); 
+                dataBlob += sizeof( unsigned short );
             }
 
         }
-        if (_simpleIntStatusFlag) 
+        if (_simpleIntStatusFlag)
         {
             _lp_data_set1_tbl.lp_data_sets1[index].set_simple_int_status = new unsigned char [_nbrBlkIntsSet1+7/8];
-            // Simple Interval Status 
+            // Simple Interval Status
             memcpy( (void *)&_lp_data_set1_tbl.lp_data_sets1[index].set_simple_int_status, dataBlob, (_nbrBlkIntsSet1+7/8));
-            dataBlob += _nbrBlkIntsSet1+7/8; 
+            dataBlob += _nbrBlkIntsSet1+7/8;
         }
 
 
         _lp_data_set1_tbl.lp_data_sets1[index].lp_int = new INT_SET1_RCD[_nbrBlkIntsSet1];
-        for (i = 0; i < _nbrBlkIntsSet1; i++) 
+        for (i = 0; i < _nbrBlkIntsSet1; i++)
         {
-            if (_extendedIntStatusFlag) 
+            if (_extendedIntStatusFlag)
             {
                 _lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].extended_int_status = new UINT8[(_nbrChnsSet1/2)+1];
-                for (j = 0; j < (_nbrChnsSet1/2)+1; j++ ) 
+                for (j = 0; j < (_nbrChnsSet1/2)+1; j++ )
                 {
                     memcpy( (void *)&_lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].extended_int_status[j], dataBlob, sizeof (UINT8));
-                    dataBlob += sizeof (UINT8); 
+                    dataBlob += sizeof (UINT8);
                 }
 
                 if ((UINT8)_lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].extended_int_status[0] & 0x10)
@@ -134,14 +134,14 @@ CtiAnsiTableSixFour::CtiAnsiTableSixFour( BYTE *dataBlob, int numberBlocksSet, i
                 else
                     _lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].powerFailFlag = false;
                 if ((UINT8)_lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].extended_int_status[0] & 0x40)
-                    _lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].clockResetForwardFlag = true;           
+                    _lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].clockResetForwardFlag = true;
                 else
                     _lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].clockResetForwardFlag = false;
                 if ((UINT8)_lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].extended_int_status[0] & 0x80)
-                    _lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].clockResetBackwardsFlag = true;           
+                    _lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].clockResetBackwardsFlag = true;
                 else
                     _lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].clockResetBackwardsFlag = false;
-                                          
+
                 _lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].extendedStatus = new int[_nbrChnsSet1];
                 int mask = 0x0F;
                 for (j = 0; j < _nbrChnsSet1; j++)
@@ -155,10 +155,10 @@ CtiAnsiTableSixFour::CtiAnsiTableSixFour( BYTE *dataBlob, int numberBlocksSet, i
 
             }
             _lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].int_data = new INT_FMT1_RCD[_nbrChnsSet1];
-            for (j = 0; j < _nbrChnsSet1; j++ ) 
+            for (j = 0; j < _nbrChnsSet1; j++ )
             {
-                bytes = populateIntData( &_lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].int_data[j], dataBlob ); 
-                dataBlob += bytes; 
+                bytes = populateIntData( &_lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].int_data[j], dataBlob );
+                dataBlob += bytes;
             }
         }
     }
@@ -166,40 +166,40 @@ CtiAnsiTableSixFour::CtiAnsiTableSixFour( BYTE *dataBlob, int numberBlocksSet, i
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-CtiAnsiTableSixFour::~CtiAnsiTableSixFour()
+CtiAnsiTable64::~CtiAnsiTable64()
 {
     int i, j;
 
-    if (_lp_data_set1_tbl.lp_data_sets1 != NULL) 
+    if (_lp_data_set1_tbl.lp_data_sets1 != NULL)
     {
-       for (i = 0; i < _nbrBlksSet1; i++) 
+       for (i = 0; i < _nbrBlksSet1; i++)
        {
-           if (_lp_data_set1_tbl.lp_data_sets1[i].end_readings != NULL) 
+           if (_lp_data_set1_tbl.lp_data_sets1[i].end_readings != NULL)
            {
                delete []_lp_data_set1_tbl.lp_data_sets1[i].end_readings;
                _lp_data_set1_tbl.lp_data_sets1[i].end_readings = NULL;
            }
-           if (_closureStatusFlag) 
+           if (_closureStatusFlag)
            {
-               if (_lp_data_set1_tbl.lp_data_sets1[i].closure_status != NULL) 
+               if (_lp_data_set1_tbl.lp_data_sets1[i].closure_status != NULL)
                {
                    delete []_lp_data_set1_tbl.lp_data_sets1[i].closure_status;
                    _lp_data_set1_tbl.lp_data_sets1[i].closure_status = NULL;
                }
            }
-           if (_simpleIntStatusFlag) 
+           if (_simpleIntStatusFlag)
            {
-               if (_lp_data_set1_tbl.lp_data_sets1[i].set_simple_int_status != NULL) 
+               if (_lp_data_set1_tbl.lp_data_sets1[i].set_simple_int_status != NULL)
                {
                    delete _lp_data_set1_tbl.lp_data_sets1[i].set_simple_int_status;
                    _lp_data_set1_tbl.lp_data_sets1[i].set_simple_int_status = NULL;
                }
            }
-           if (_lp_data_set1_tbl.lp_data_sets1[i].lp_int != NULL) 
+           if (_lp_data_set1_tbl.lp_data_sets1[i].lp_int != NULL)
            {
-               for (j = 0; j < _nbrBlkIntsSet1; j++) 
+               for (j = 0; j < _nbrBlkIntsSet1; j++)
                {
-                   if (_extendedIntStatusFlag) 
+                   if (_extendedIntStatusFlag)
                    {
                        if (_lp_data_set1_tbl.lp_data_sets1[i].lp_int[j].extended_int_status != NULL)
                        {
@@ -230,7 +230,7 @@ CtiAnsiTableSixFour::~CtiAnsiTableSixFour()
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-int CtiAnsiTableSixFour::populateIntData(INT_FMT1_RCD *intData, BYTE *dataBlob)
+int CtiAnsiTable64::populateIntData(INT_FMT1_RCD *intData, BYTE *dataBlob)
 {
     int retVal = 0;
 
@@ -296,7 +296,7 @@ int CtiAnsiTableSixFour::populateIntData(INT_FMT1_RCD *intData, BYTE *dataBlob)
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTableSixFour& CtiAnsiTableSixFour::operator=(const CtiAnsiTableSixFour& aRef)
+CtiAnsiTable64& CtiAnsiTable64::operator=(const CtiAnsiTable64& aRef)
 {
    if(this != &aRef)
    {
@@ -306,21 +306,21 @@ CtiAnsiTableSixFour& CtiAnsiTableSixFour::operator=(const CtiAnsiTableSixFour& a
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableSixFour::generateResultPiece( BYTE **dataBlob )
+void CtiAnsiTable64::generateResultPiece( BYTE **dataBlob )
 {
 
 }
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableSixFour::decodeResultPiece( BYTE **dataBlob )
+void CtiAnsiTable64::decodeResultPiece( BYTE **dataBlob )
 {
-    
+
 }
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableSixFour::printResult( const string& deviceName )
+void CtiAnsiTable64::printResult( const string& deviceName )
 {
     int index, i, j;
     int nbrBlkInts;
@@ -337,16 +337,16 @@ void CtiAnsiTableSixFour::printResult( const string& deviceName )
         dout << endl << "================== "<<deviceName<<"  Std Table 64  ========================" << endl;
     }
 
-    for (index = 0; index < _nbrBlksSet1; index++) 
+    for (index = 0; index < _nbrBlksSet1; index++)
     {
-        if (index == (_nbrBlksSet1-1)) 
+        if (index == (_nbrBlksSet1-1))
         {
             nbrBlkInts = _nbrValidInts;
         }
         else
         {
             nbrBlkInts = _nbrBlkIntsSet1;
-        } 
+        }
         //printStime(_lp_data_set1_tbl.lp_data_sets1[index].blk_end_time);
         //CtiTime = temp
         {
@@ -357,13 +357,13 @@ void CtiAnsiTableSixFour::printResult( const string& deviceName )
                 CtiLockGuard< CtiLogger > doubt_guard( dout );
                 dout << "  **Block End Time: "<<CtiTime(_lp_data_set1_tbl.lp_data_sets1[index].blk_end_time)<<endl;
         }
-        if (_blkEndReadFlag) 
+        if (_blkEndReadFlag)
         {
             {
                 CtiLockGuard< CtiLogger > doubt_guard( dout );
                 dout << "  **Block End Reads: ";
             }
-            for (i = 0; i < _nbrChnsSet1; i++) 
+            for (i = 0; i < _nbrChnsSet1; i++)
             {
                 CtiLockGuard< CtiLogger > doubt_guard( dout );
                 dout << "  "<<_lp_data_set1_tbl.lp_data_sets1[index].end_readings[i].block_end_read;
@@ -373,13 +373,13 @@ void CtiAnsiTableSixFour::printResult( const string& deviceName )
                 dout << endl;
             }
         }
-        if (_blkEndPulseFlag) 
+        if (_blkEndPulseFlag)
         {
             {
                 CtiLockGuard< CtiLogger > doubt_guard( dout );
                 dout << "  **Block End Pulse: ";
             }
-            for (i = 0; i < _nbrChnsSet1; i++) 
+            for (i = 0; i < _nbrChnsSet1; i++)
             {
                 CtiLockGuard< CtiLogger > doubt_guard( dout );
                 dout << "  "<< _lp_data_set1_tbl.lp_data_sets1[index].end_readings[i].block_end_pulse;
@@ -389,14 +389,14 @@ void CtiAnsiTableSixFour::printResult( const string& deviceName )
                 dout << endl;
             }
         }
-        if (_closureStatusFlag) 
+        if (_closureStatusFlag)
         {
             {
                 CtiLockGuard< CtiLogger > doubt_guard( dout );
                 dout << "  **Closure Status BitField: ";
                 dout << "             Status -  ";
             }
-            for (i = 0; i < _nbrChnsSet1; i++) 
+            for (i = 0; i < _nbrChnsSet1; i++)
             {
                 CtiLockGuard< CtiLogger > doubt_guard( dout );
                 dout << "  "<<_lp_data_set1_tbl.lp_data_sets1[index].closure_status[i].status;
@@ -405,7 +405,7 @@ void CtiAnsiTableSixFour::printResult( const string& deviceName )
                 CtiLockGuard< CtiLogger > doubt_guard( dout );
                 dout <<endl<< "             Nbr Valid Interval -  ";
             }
-            for (i = 0; i < _nbrChnsSet1; i++) 
+            for (i = 0; i < _nbrChnsSet1; i++)
             {
                 CtiLockGuard< CtiLogger > doubt_guard( dout );
                 dout << "  "<<_lp_data_set1_tbl.lp_data_sets1[index].closure_status[i].nbr_valid_interval;
@@ -416,14 +416,14 @@ void CtiAnsiTableSixFour::printResult( const string& deviceName )
             }
             nbrBlkInts = _lp_data_set1_tbl.lp_data_sets1[index].closure_status[0].nbr_valid_interval;
         }
-        if (_simpleIntStatusFlag) 
+        if (_simpleIntStatusFlag)
         {
             {
                 CtiLockGuard< CtiLogger > doubt_guard( dout );
                 dout << "  **Simple Interval Status: "<<_lp_data_set1_tbl.lp_data_sets1[index].set_simple_int_status<<endl;
             }
         }
-        /*if (index == (_nbrBlksSet1-1)) 
+        /*if (index == (_nbrBlksSet1-1))
         {
             nbrBlkInts = _nbrValidInts;
         }
@@ -431,19 +431,19 @@ void CtiAnsiTableSixFour::printResult( const string& deviceName )
         {
             nbrBlkInts = _nbrBlkIntsSet1;
         } */
-        for (i = 0; i < nbrBlkInts; i++) 
+        for (i = 0; i < nbrBlkInts; i++)
         {
             {
                     CtiLockGuard< CtiLogger > doubt_guard( dout );
                     dout << "  **BLOCK INTERVAL: "<<i+1<<endl;
             }
-            if (_extendedIntStatusFlag) 
+            if (_extendedIntStatusFlag)
             {
                 {
                     CtiLockGuard< CtiLogger > doubt_guard( dout );
                     dout << "    **Extended Interval Status: ";
                 }
-                for (j = 0; j < (_nbrChnsSet1/2)+1; j++ ) 
+                for (j = 0; j < (_nbrChnsSet1/2)+1; j++ )
                 {
                     {
                         CtiLockGuard< CtiLogger > doubt_guard( dout );
@@ -463,7 +463,7 @@ void CtiAnsiTableSixFour::printResult( const string& deviceName )
                 CtiLockGuard< CtiLogger > doubt_guard( dout );
                 dout << "    **Interval Data: ";
             }
-            for (j = 0; j < _nbrChnsSet1; j++ ) 
+            for (j = 0; j < _nbrChnsSet1; j++ )
             {
                 {
                     CtiLockGuard< CtiLogger > doubt_guard( dout );
@@ -478,7 +478,7 @@ void CtiAnsiTableSixFour::printResult( const string& deviceName )
         }
     }
 }
-void CtiAnsiTableSixFour::printIntervalFmtRecord(INT_FMT1_RCD intData)
+void CtiAnsiTable64::printIntervalFmtRecord(INT_FMT1_RCD intData)
 {
     switch(_intFmtCde1)
     {
@@ -547,8 +547,8 @@ void CtiAnsiTableSixFour::printIntervalFmtRecord(INT_FMT1_RCD intData)
     }
 }
 
-/*bool CtiAnsiTableSixFour::getIntervalFmtRecord(ULONG intvlTime, )
-{   
+/*bool CtiAnsiTable64::getIntervalFmtRecord(ULONG intvlTime, )
+{
     bool retVal = false;
     if (intvlTime > ) {
     }
@@ -557,13 +557,13 @@ void CtiAnsiTableSixFour::printIntervalFmtRecord(INT_FMT1_RCD intData)
     return retVal;
 } */
 
-bool CtiAnsiTableSixFour::getBlkIntvlTime(int blkSet, int blkIntvl, ULONG &blkIntvlTime)
-{   
+bool CtiAnsiTable64::getBlkIntvlTime(int blkSet, int blkIntvl, ULONG &blkIntvlTime)
+{
     bool retVal = false;
-    ULONG blkEndTime = 0; 
+    ULONG blkEndTime = 0;
     if (getBlkEndTime(blkSet,blkEndTime))
-    {   
-        if (_closureStatusFlag) 
+    {
+        if (_closureStatusFlag)
         {
             int totIntvls = _lp_data_set1_tbl.lp_data_sets1[blkSet].closure_status[0].nbr_valid_interval;
             if (blkIntvl <= totIntvls)
@@ -582,15 +582,15 @@ bool CtiAnsiTableSixFour::getBlkIntvlTime(int blkSet, int blkIntvl, ULONG &blkIn
                 } */
                 retVal = true;
             }
-            else 
+            else
             {
                 blkIntvlTime = 0;
             }
         }
         else
         {
-            //if (blkSet == (_nbrBlksSet1-1) && blkIntvl < _nbrValidInts) 
-            if (blkSet == (_nbrBlksSet1 -1) && blkIntvl < _nbrValidInts) 
+            //if (blkSet == (_nbrBlksSet1-1) && blkIntvl < _nbrValidInts)
+            if (blkSet == (_nbrBlksSet1 -1) && blkIntvl < _nbrValidInts)
             {
                 blkIntvlTime = blkEndTime - ((_nbrValidInts - (blkIntvl+1)) * _maxIntvlTime * 60);
                /* if (CtiTime(blkEndTime) > CtiTime().beginDST(RWDate(CtiTime(blkEndTime)).year()) && ((CtiTime(blkEndTime).seconds() - CtiTime().beginDST(RWDate(CtiTime(blkEndTime)).year()).seconds())/(_maxIntvlTime) <= _nbrValidInts ))
@@ -628,14 +628,14 @@ bool CtiAnsiTableSixFour::getBlkIntvlTime(int blkSet, int blkIntvl, ULONG &blkIn
                 {
                     blkIntvlTime = 0;
                 }
-            } 
+            }
         }
     }
     return retVal;
 }
 
-bool CtiAnsiTableSixFour::getBlkEndTime(int blkSet, ULONG &blkEndTime)
-{   
+bool CtiAnsiTable64::getBlkEndTime(int blkSet, ULONG &blkEndTime)
+{
     bool retVal = false;
     if (blkSet <= _nbrBlksSet1)
     {
@@ -649,7 +649,7 @@ bool CtiAnsiTableSixFour::getBlkEndTime(int blkSet, ULONG &blkEndTime)
     return retVal;
 }
 
-ULONG CtiAnsiTableSixFour::getLPDemandTime (int blkSet, int blkIntvl)
+ULONG CtiAnsiTable64::getLPDemandTime (int blkSet, int blkIntvl)
 {
     ULONG blkEndTime = 0;
     if (getBlkIntvlTime(blkSet, blkIntvl, blkEndTime))
@@ -658,8 +658,8 @@ ULONG CtiAnsiTableSixFour::getLPDemandTime (int blkSet, int blkIntvl)
 
     }
     return blkEndTime;
-}  
-double CtiAnsiTableSixFour::getLPDemandValue ( int channel, int blkSet, int blkIntvl )
+}
+double CtiAnsiTable64::getLPDemandValue ( int channel, int blkSet, int blkIntvl )
 {
     double retVal = 0;
     switch(_intFmtCde1)
@@ -723,24 +723,24 @@ double CtiAnsiTableSixFour::getLPDemandValue ( int channel, int blkSet, int blkI
     return retVal;
 }
 
-int CtiAnsiTableSixFour::getExtendedIntervalStatus(int channel, int blkSet, int blkIntvl)
+int CtiAnsiTable64::getExtendedIntervalStatus(int channel, int blkSet, int blkIntvl)
 {
-    if (_extendedIntStatusFlag) 
+    if (_extendedIntStatusFlag)
     {
         return _lp_data_set1_tbl.lp_data_sets1[blkSet].lp_int[blkIntvl].extendedStatus[channel];
     }
-    else 
+    else
         return 0;
 }
 
-bool CtiAnsiTableSixFour::getDayLightSavingsFlag(int blkSet, int blkIntvl) const
+bool CtiAnsiTable64::getDayLightSavingsFlag(int blkSet, int blkIntvl) const
 {
-    if (_extendedIntStatusFlag) 
+    if (_extendedIntStatusFlag)
         return _lp_data_set1_tbl.lp_data_sets1[blkSet].lp_int[blkIntvl].dayLightSavingsFlag;
     else
         return false;
 }
-bool CtiAnsiTableSixFour::getPowerFailFlag(int blkSet, int blkIntvl) const
+bool CtiAnsiTable64::getPowerFailFlag(int blkSet, int blkIntvl) const
 {
     if (_extendedIntStatusFlag)
         return _lp_data_set1_tbl.lp_data_sets1[blkSet].lp_int[blkIntvl].powerFailFlag;
@@ -748,7 +748,7 @@ bool CtiAnsiTableSixFour::getPowerFailFlag(int blkSet, int blkIntvl) const
         return false;
 }
 
-bool CtiAnsiTableSixFour::getClockResetForwardFlag(int blkSet, int blkIntvl) const
+bool CtiAnsiTable64::getClockResetForwardFlag(int blkSet, int blkIntvl) const
 {
     if (_extendedIntStatusFlag)
         return _lp_data_set1_tbl.lp_data_sets1[blkSet].lp_int[blkIntvl].clockResetForwardFlag;
@@ -756,7 +756,7 @@ bool CtiAnsiTableSixFour::getClockResetForwardFlag(int blkSet, int blkIntvl) con
         return false;
 }
 
-bool CtiAnsiTableSixFour::getClockResetBackwardsFlag(int blkSet, int blkIntvl) const
+bool CtiAnsiTable64::getClockResetBackwardsFlag(int blkSet, int blkIntvl) const
 {
     if (_extendedIntStatusFlag)
         return _lp_data_set1_tbl.lp_data_sets1[blkSet].lp_int[blkIntvl].clockResetBackwardsFlag;

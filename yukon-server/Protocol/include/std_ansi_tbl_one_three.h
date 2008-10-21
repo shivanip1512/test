@@ -1,11 +1,6 @@
-
-#pragma warning( disable : 4786)
-#ifndef __STD_ANSI_TBL_ONE_THREE_H__
-#define __STD_ANSI_TBL_ONE_THREE_H__
-
 /*---------------------------------------------------------------------------------*
 *
-* File:   std_ansi_tbl_one_three
+* File:   std_ansi_tbl_13
 *
 * Class:
 * Date:   9/17/2002
@@ -13,11 +8,15 @@
 * Author: Eric Schmit
 *
 * PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_one_three.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2008/10/07 18:16:45 $
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_13.h-arc  $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2008/10/21 16:30:31 $
 *    History:
       $Log: std_ansi_tbl_one_three.h,v $
+      Revision 1.9  2008/10/21 16:30:31  mfisher
+      YUK-6615 ANSI table class names and filenames are difficult to read
+      Renamed classes and filenames
+
       Revision 1.8  2008/10/07 18:16:45  mfisher
       YUK-6504 Server-side point management is naive
       cleaned up a few dsm2.h dependencies
@@ -43,6 +42,9 @@
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
+#ifndef __STD_ANSI_TBL_13_H__
+#define __STD_ANSI_TBL_13_H__
+#pragma warning( disable : 4786)
 
 #include "dlldefs.h"
 #include "ctitypes.h"
@@ -79,15 +81,15 @@ struct DEMAND_CONTROL_RCD
 #pragma pack( pop )
 
 
-class IM_EX_PROT CtiAnsiTableOneThree : public CtiAnsiTableBase
+class IM_EX_PROT CtiAnsiTable13 : public CtiAnsiTableBase
 {
 
 public:
 
-   CtiAnsiTableOneThree( int num_entries, bool pf_exclude, bool sliding_demand, bool reset_exclude );
-   CtiAnsiTableOneThree( BYTE *dataBlob, int num_entries, bool pf_exclude, bool sliding_demand, bool reset_exclude );
-   virtual ~CtiAnsiTableOneThree();
-   CtiAnsiTableOneThree& operator=(const CtiAnsiTableOneThree& aRef);
+   CtiAnsiTable13( int num_entries, bool pf_exclude, bool sliding_demand, bool reset_exclude );
+   CtiAnsiTable13( BYTE *dataBlob, int num_entries, bool pf_exclude, bool sliding_demand, bool reset_exclude );
+   virtual ~CtiAnsiTable13();
+   CtiAnsiTable13& operator=(const CtiAnsiTable13& aRef);
    void printResult( const string& deviceName );
 
    void decodeResultPiece( BYTE **dataBlob );
@@ -118,4 +120,4 @@ private:
 
 };
 
-#endif // #ifndef __STD_ANSI_TBL_ONE_THREE_H__
+#endif // #ifndef __STD_ANSI_TBL_13_H__

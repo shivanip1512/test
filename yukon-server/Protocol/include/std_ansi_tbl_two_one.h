@@ -1,11 +1,6 @@
-
-#pragma warning( disable : 4786)
-#ifndef __STD_ANSI_TBL_TWO_ONE_H__
-#define __STD_ANSI_TBL_TWO_ONE_H__
-
 /*---------------------------------------------------------------------------------*
 *
-* File:   std_ansi_tbl_two_one
+* File:   std_ansi_tbl_21
 *
 * Class:
 * Date:   9/19/2002
@@ -13,11 +8,15 @@
 * Author: Eric Schmit
 *
 * PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_two_one.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2008/10/07 18:16:46 $
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_21.h-arc  $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2008/10/21 16:30:32 $
 *    History:
       $Log: std_ansi_tbl_two_one.h,v $
+      Revision 1.10  2008/10/21 16:30:32  mfisher
+      YUK-6615 ANSI table class names and filenames are difficult to read
+      Renamed classes and filenames
+
       Revision 1.9  2008/10/07 18:16:46  mfisher
       YUK-6504 Server-side point management is naive
       cleaned up a few dsm2.h dependencies
@@ -26,9 +25,6 @@
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
       Revision 1.7  2005/12/12 20:34:48  jrichter
-      BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
-
-      Revision 1.6.2.1  2005/12/12 19:51:02  jrichter
       BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
 
       Revision 1.6  2005/09/29 21:19:24  jrichter
@@ -46,6 +42,9 @@
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
+#ifndef __STD_ANSI_TBL_21_H__
+#define __STD_ANSI_TBL_21_H__
+#pragma warning( disable : 4786)
 
 #include "dlldefs.h"
 #include "ctitypes.h"
@@ -78,7 +77,7 @@ struct REG_FUNC2_BFLD
 
 #pragma pack( pop )
 
-class IM_EX_PROT CtiAnsiTableTwoOne : public CtiAnsiTableBase
+class IM_EX_PROT CtiAnsiTable21 : public CtiAnsiTableBase
 {
 protected:
 
@@ -113,10 +112,10 @@ public:
    bool getCumDemandFlag( void );
    bool getContCumDemandFlag( void );
 
-   CtiAnsiTableTwoOne( );
-   CtiAnsiTableTwoOne( BYTE *dataBlob );
-   virtual ~CtiAnsiTableTwoOne();
-   CtiAnsiTableTwoOne& operator=(const CtiAnsiTableTwoOne& aRef);
+   CtiAnsiTable21( );
+   CtiAnsiTable21( BYTE *dataBlob );
+   virtual ~CtiAnsiTable21();
+   CtiAnsiTable21& operator=(const CtiAnsiTable21& aRef);
 
    void generateResultPiece( BYTE **dataBlob );
    void printResult( const string& deviceName);
@@ -125,4 +124,4 @@ public:
 
 };
 
-#endif // #ifndef __STD_ANSI_TBL_TWO_ONE_H__
+#endif // #ifndef __STD_ANSI_TBL_21_H__

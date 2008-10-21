@@ -1,11 +1,6 @@
-
-#pragma warning( disable : 4786)
-#ifndef __STD_ANSI_TBL_ONE_SIX_H__
-#define __STD_ANSI_TBL_ONE_SIX_H__
-
 /*---------------------------------------------------------------------------------*
 *
-* File:   std_ansi_tbl_one_six
+* File:   std_ansi_tbl_16
 *
 * Class:
 * Date:   9/19/2002
@@ -13,11 +8,15 @@
 * Author: Eric Schmit
 *
 * PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_one_six.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2008/10/07 18:16:45 $
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_16.h-arc  $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2008/10/21 16:30:32 $
 *    History:
       $Log: std_ansi_tbl_one_six.h,v $
+      Revision 1.9  2008/10/21 16:30:32  mfisher
+      YUK-6615 ANSI table class names and filenames are difficult to read
+      Renamed classes and filenames
+
       Revision 1.8  2008/10/07 18:16:45  mfisher
       YUK-6504 Server-side point management is naive
       cleaned up a few dsm2.h dependencies
@@ -43,6 +42,9 @@
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
+#ifndef __STD_ANSI_TBL_16_H__
+#define __STD_ANSI_TBL_16_H__
+#pragma warning( disable : 4786)
 
 #include "dlldefs.h"
 #include "ctitypes.h"
@@ -74,14 +76,14 @@ struct SOURCE_LINK_BFLD
 #pragma pack( pop )
 
 
-class IM_EX_PROT CtiAnsiTableOneSix : public CtiAnsiTableBase
+class IM_EX_PROT CtiAnsiTable16 : public CtiAnsiTableBase
 {
 public:
 
-   CtiAnsiTableOneSix( int num_sources );
-   CtiAnsiTableOneSix( BYTE *dataBlob, int num_sources );
-   virtual ~CtiAnsiTableOneSix();
-   CtiAnsiTableOneSix& operator=(const CtiAnsiTableOneSix& aRef);
+   CtiAnsiTable16( int num_sources );
+   CtiAnsiTable16( BYTE *dataBlob, int num_sources );
+   virtual ~CtiAnsiTable16();
+   CtiAnsiTable16& operator=(const CtiAnsiTable16& aRef);
 
 
    SOURCE_LINK_BFLD getSourceLink ( int aOffset );
@@ -103,4 +105,4 @@ private:
 
 };
 
-#endif // #ifndef __STD_ANSI_TBL_ONE_SIX_H__
+#endif // #ifndef __STD_ANSI_TBL_16_H__

@@ -1,38 +1,27 @@
-#include "yukon.h"
-
-
 /*-----------------------------------------------------------------------------*
 *
-* File:   std_ansi_tbl_zero_zero
+* File:   std_ansi_tbl_00
 *
 * Date:   9/13/2002
 *
 * Author: Eric Schmit
 *
 * PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_zero_zero.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/12/20 17:19:58 $
-*    History: 
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_00.cpp-arc  $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2008/10/21 16:30:31 $
+*    History:
       $Log: std_ansi_tbl_zero_zero.cpp,v $
+      Revision 1.9  2008/10/21 16:30:31  mfisher
+      YUK-6615 ANSI table class names and filenames are difficult to read
+      Renamed classes and filenames
+
       Revision 1.8  2005/12/20 17:19:58  tspar
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
-<<<<<<< std_ansi_tbl_zero_zero.cpp
-      Revision 1.6.2.2  2005/07/14 22:27:02  jliu
-      RWCStringRemoved
-
-      Revision 1.6.2.1  2005/07/12 21:08:42  jliu
-      rpStringWithoutCmpParser
-
-=======
       Revision 1.7  2005/12/12 20:34:30  jrichter
       BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
 
-      Revision 1.6.4.1  2005/12/12 19:50:40  jrichter
-      BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
-
->>>>>>> 1.7
       Revision 1.6  2005/02/10 23:23:58  alauinger
       Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 
@@ -47,8 +36,9 @@
 
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
-#include "std_ansi_tbl_zero_zero.h"
+#include "std_ansi_tbl_00.h"
 #include "logger.h"
 using namespace std;
 
@@ -58,7 +48,7 @@ using namespace std;
 //
 //This will feel.... a little weird....
 //=========================================================================================================================================
-CtiAnsiTableZeroZero::CtiAnsiTableZeroZero( )
+CtiAnsiTable00::CtiAnsiTable00( )
 {
     _std_tbls_used = NULL;
     _mfg_tbls_used = NULL;
@@ -68,7 +58,7 @@ CtiAnsiTableZeroZero::CtiAnsiTableZeroZero( )
     _mfg_tbls_write = NULL;
 }
 
-CtiAnsiTableZeroZero::CtiAnsiTableZeroZero( BYTE *dataBlob )
+CtiAnsiTable00::CtiAnsiTable00( BYTE *dataBlob )
 {
    int   byteCount;
 
@@ -105,7 +95,7 @@ CtiAnsiTableZeroZero::CtiAnsiTableZeroZero( BYTE *dataBlob )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTableZeroZero::~CtiAnsiTableZeroZero()
+CtiAnsiTable00::~CtiAnsiTable00()
 {
     if (_std_tbls_used != NULL)
     {
@@ -142,7 +132,7 @@ CtiAnsiTableZeroZero::~CtiAnsiTableZeroZero()
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTableZeroZero& CtiAnsiTableZeroZero::operator=(const CtiAnsiTableZeroZero& aRef)
+CtiAnsiTable00& CtiAnsiTable00::operator=(const CtiAnsiTable00& aRef)
 {
   if(this != &aRef)
   {
@@ -152,7 +142,7 @@ CtiAnsiTableZeroZero& CtiAnsiTableZeroZero::operator=(const CtiAnsiTableZeroZero
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableZeroZero::generateResultPiece( BYTE **dataBlob )
+void CtiAnsiTable00::generateResultPiece( BYTE **dataBlob )
 {
     //printResult();
     memcpy (*dataBlob, ( void *)&_control_1, sizeof (FORMAT_CONTROL_1));
@@ -185,7 +175,7 @@ void CtiAnsiTableZeroZero::generateResultPiece( BYTE **dataBlob )
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableZeroZero::decodeResultPiece( BYTE **dataBlob )
+void CtiAnsiTable00::decodeResultPiece( BYTE **dataBlob )
 {
     memcpy (( void *)&_control_1, *dataBlob, sizeof (FORMAT_CONTROL_1));
     *dataBlob += sizeof (FORMAT_CONTROL_1);
@@ -196,7 +186,7 @@ void CtiAnsiTableZeroZero::decodeResultPiece( BYTE **dataBlob )
 
     memcpy(( void *)&_device_class[0], *dataBlob, sizeof (unsigned char) * 16 );
     *dataBlob += sizeof (unsigned char) * 16;
-   
+
     _std_tbls_used = new unsigned char[_dim_std_tbls_used];
     memcpy( _std_tbls_used, *dataBlob, _dim_std_tbls_used );
     *dataBlob += _dim_std_tbls_used;
@@ -224,7 +214,7 @@ void CtiAnsiTableZeroZero::decodeResultPiece( BYTE **dataBlob )
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableZeroZero::printResult(const string& deviceName)
+void CtiAnsiTable00::printResult(const string& deviceName)
 {
     int integer;
     string string;
@@ -293,7 +283,7 @@ void CtiAnsiTableZeroZero::printResult(const string& deviceName)
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
         dout << "   Non integer format 2: " << string << " (" << integer <<")" << endl;
-    } 
+    }
 
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
@@ -343,14 +333,14 @@ void CtiAnsiTableZeroZero::printResult(const string& deviceName)
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-bool CtiAnsiTableZeroZero::getRawMfgSerialNumberFlag( void )
+bool CtiAnsiTable00::getRawMfgSerialNumberFlag( void )
 {
    return (bool)_control_1.mfg_sn_flag;
 }
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-string CtiAnsiTableZeroZero::getResolvedMfgSerialNumberFlag( void )
+string CtiAnsiTable00::getResolvedMfgSerialNumberFlag( void )
 {
     string ret;
     if ((int)_control_1.mfg_sn_flag == 0)
@@ -365,13 +355,13 @@ string CtiAnsiTableZeroZero::getResolvedMfgSerialNumberFlag( void )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-bool CtiAnsiTableZeroZero::getRawIdFormat( void )
+bool CtiAnsiTable00::getRawIdFormat( void )
 {
    return (bool)_control_2.id_format;
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-string CtiAnsiTableZeroZero::getResolvedIdFormat( void )
+string CtiAnsiTable00::getResolvedIdFormat( void )
 {
     string ret;
     if ((int)_control_2.id_format == 0)
@@ -384,38 +374,38 @@ string CtiAnsiTableZeroZero::getResolvedIdFormat( void )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-int CtiAnsiTableZeroZero::getRawNIFormat1( void )
+int CtiAnsiTable00::getRawNIFormat1( void )
 {
    return (int)_control_3.ni_format1;
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-string CtiAnsiTableZeroZero::getResolvedNIFormat1( void )
+string CtiAnsiTable00::getResolvedNIFormat1( void )
 {
    return getNonIntegerFormat((int)_control_3.ni_format1);
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-int CtiAnsiTableZeroZero::getRawNIFormat2( void )
+int CtiAnsiTable00::getRawNIFormat2( void )
 {
    return (int)_control_3.ni_format2;
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-string CtiAnsiTableZeroZero::getResolvedNIFormat2( void )
+string CtiAnsiTable00::getResolvedNIFormat2( void )
 {
    return getNonIntegerFormat((int)_control_3.ni_format2);
 }
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-int CtiAnsiTableZeroZero::getRawTimeFormat( void )
+int CtiAnsiTable00::getRawTimeFormat( void )
 {
    return (int)_control_2.tm_format;
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-string CtiAnsiTableZeroZero::getResolvedTimeFormat( void )
+string CtiAnsiTable00::getResolvedTimeFormat( void )
 {
     string ret;
     if ((int)_control_2.tm_format == 0)
@@ -436,13 +426,13 @@ string CtiAnsiTableZeroZero::getResolvedTimeFormat( void )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-int CtiAnsiTableZeroZero::getRawDataAccess( void )
+int CtiAnsiTable00::getRawDataAccess( void )
 {
    return (int)_control_2.data_access_method;
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-string CtiAnsiTableZeroZero::getResolvedDataAccess( void )
+string CtiAnsiTable00::getResolvedDataAccess( void )
 {
     string ret;
     if ((int)_control_2.data_access_method == 0)
@@ -461,13 +451,13 @@ string CtiAnsiTableZeroZero::getResolvedDataAccess( void )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-int CtiAnsiTableZeroZero::getRawIntFormat( void )
+int CtiAnsiTable00::getRawIntFormat( void )
 {
    return (int)_control_2.int_format;
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-string CtiAnsiTableZeroZero::getResolvedIntFormat( void )
+string CtiAnsiTable00::getResolvedIntFormat( void )
 {
     string ret;
     if ((int)_control_2.int_format == 0)
@@ -486,13 +476,13 @@ string CtiAnsiTableZeroZero::getResolvedIntFormat( void )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-int CtiAnsiTableZeroZero::getRawDataOrder( void )
+int CtiAnsiTable00::getRawDataOrder( void )
 {
    return (int)_control_1.data_order;
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-string CtiAnsiTableZeroZero::getResolvedDataOrder( void )
+string CtiAnsiTable00::getResolvedDataOrder( void )
 {
     string ret;
     if ((int)_control_1.data_order == 0)
@@ -505,13 +495,13 @@ string CtiAnsiTableZeroZero::getResolvedDataOrder( void )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-int CtiAnsiTableZeroZero::getRawCharFormat( void )
+int CtiAnsiTable00::getRawCharFormat( void )
 {
    return (int)_control_1.char_format;
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-string CtiAnsiTableZeroZero::getResolvedCharFormat( void )
+string CtiAnsiTable00::getResolvedCharFormat( void )
 {
     string ret;
     if ((int)_control_1.char_format == 0)
@@ -528,12 +518,12 @@ string CtiAnsiTableZeroZero::getResolvedCharFormat( void )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-/*int CtiAnsiTableZeroZero::getRawStdTablesUsed( void )
+/*int CtiAnsiTable00::getRawStdTablesUsed( void )
 {
    return (int)_control_1.char_format;
 } */
 
-string CtiAnsiTableZeroZero::getNonIntegerFormat( int aFormat )
+string CtiAnsiTable00::getNonIntegerFormat( int aFormat )
 {
     string retVal;
 
@@ -599,19 +589,19 @@ unsigned char     _device_class[4];
    unsigned char     _dim_mfg_status_used;
    unsigned char     _nbr_pending;
 **************/
-int CtiAnsiTableZeroZero::getRawDeviceClass( void )
+int CtiAnsiTable00::getRawDeviceClass( void )
 {
     return (int) _device_class[4];
 }
-/*string CtiAnsiTableZeroZero::getResolvedDeviceClass( void )
+/*string CtiAnsiTable00::getResolvedDeviceClass( void )
 {
 
 } */
-int CtiAnsiTableZeroZero::getRawNameplateType( void )
+int CtiAnsiTable00::getRawNameplateType( void )
 {
     return (int) _nameplate_type;
 }
-string CtiAnsiTableZeroZero::getResolvedNameplateType( void )
+string CtiAnsiTable00::getResolvedNameplateType( void )
 {
     string ret;
     if ((int)_nameplate_type == 0)
@@ -625,11 +615,11 @@ string CtiAnsiTableZeroZero::getResolvedNameplateType( void )
 
    return ret;
 }
-int CtiAnsiTableZeroZero::getRawDefaultSetUsed( void )
+int CtiAnsiTable00::getRawDefaultSetUsed( void )
 {
     return (int) _default_set_used;
 }
-string CtiAnsiTableZeroZero::getResolvedDefaultSetUsed( void )
+string CtiAnsiTable00::getResolvedDefaultSetUsed( void )
 {
     string ret;
     if ((int)_default_set_used == 0)
@@ -647,57 +637,57 @@ string CtiAnsiTableZeroZero::getResolvedDefaultSetUsed( void )
 
    return ret;
 }
-int CtiAnsiTableZeroZero::getRawMaxProcParmLength( void )
+int CtiAnsiTable00::getRawMaxProcParmLength( void )
 {
     return (int) _max_proc_parm_len;
 }
-/*string CtiAnsiTableZeroZero::getResolvedMaxProcParmLength( void ) 
+/*string CtiAnsiTable00::getResolvedMaxProcParmLength( void )
 {
-} int CtiAnsiTableZeroZero::getRawMaxRespDataLen( void )
+} int CtiAnsiTable00::getRawMaxRespDataLen( void )
 {
     return (int)  _max_resp_data_len;
 
 }
-string CtiAnsiTableZeroZero::getResolvedMaxRespDataLen( void )
+string CtiAnsiTable00::getResolvedMaxRespDataLen( void )
 {
 }
-int CtiAnsiTableZeroZero::getRawStdVersionNo( void )
+int CtiAnsiTable00::getRawStdVersionNo( void )
 {
     return (int) _std_version_no;
 }
-string CtiAnsiTableZeroZero::getResolvedStdVersionNo( void )
+string CtiAnsiTable00::getResolvedStdVersionNo( void )
 {
 }
-int CtiAnsiTableZeroZero::getRawStdRevisionNo( void )
+int CtiAnsiTable00::getRawStdRevisionNo( void )
 {
     return (int) _std_revision_no;
 }
-string CtiAnsiTableZeroZero::getResolvedStdRevisionNo( void )
+string CtiAnsiTable00::getResolvedStdRevisionNo( void )
 {
 }
 */
 
-int CtiAnsiTableZeroZero::getRawStdRevisionNo( void )
+int CtiAnsiTable00::getRawStdRevisionNo( void )
 {
     return (int) _std_revision_no;
 }
 
-unsigned char * CtiAnsiTableZeroZero::getStdTblsUsed(void)
+unsigned char * CtiAnsiTable00::getStdTblsUsed(void)
 {
     return _std_tbls_used;
 }
 
-int CtiAnsiTableZeroZero::getDimStdTblsUsed(void)
+int CtiAnsiTable00::getDimStdTblsUsed(void)
 {
     return _dim_std_tbls_used;
 }
 
-unsigned char * CtiAnsiTableZeroZero::getMfgTblsUsed(void)
+unsigned char * CtiAnsiTable00::getMfgTblsUsed(void)
 {
     return _mfg_tbls_used;
 }
 
-int CtiAnsiTableZeroZero::getDimMfgTblsUsed(void)
+int CtiAnsiTable00::getDimMfgTblsUsed(void)
 {
     return _dim_mfg_tbls_used;
 }

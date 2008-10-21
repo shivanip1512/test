@@ -1,11 +1,6 @@
-
-#pragma warning( disable : 4786)
-#ifndef __STD_ANSI_TBL_TWO_TWO_H__
-#define __STD_ANSI_TBL_TWO_TWO_H__
-
 /*---------------------------------------------------------------------------------*
 *
-* File:   std_ansi_tbl_two_two
+* File:   std_ansi_tbl_22
 *
 * Class:
 * Date:   9/20/2002
@@ -13,11 +8,15 @@
 * Author: Eric Schmit
 *
 * PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_two_two.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2008/10/07 18:16:46 $
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_22.h-arc  $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2008/10/21 16:30:32 $
 *    History:
       $Log: std_ansi_tbl_two_two.h,v $
+      Revision 1.9  2008/10/21 16:30:32  mfisher
+      YUK-6615 ANSI table class names and filenames are difficult to read
+      Renamed classes and filenames
+
       Revision 1.8  2008/10/07 18:16:46  mfisher
       YUK-6504 Server-side point management is naive
       cleaned up a few dsm2.h dependencies
@@ -26,9 +25,6 @@
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
       Revision 1.6  2005/12/12 20:34:48  jrichter
-      BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
-
-      Revision 1.5.6.1  2005/12/12 19:51:02  jrichter
       BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
 
       Revision 1.5  2004/09/30 21:37:21  jrichter
@@ -43,6 +39,9 @@
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
+#ifndef __STD_ANSI_TBL_22_H__
+#define __STD_ANSI_TBL_22_H__
+#pragma warning( disable : 4786)
 
 #include "dlldefs.h"
 #include "ctitypes.h"
@@ -54,7 +53,7 @@
 
 #pragma pack( pop )
 
-class IM_EX_PROT CtiAnsiTableTwoTwo : public CtiAnsiTableBase
+class IM_EX_PROT CtiAnsiTable22 : public CtiAnsiTableBase
 {
 protected:
 
@@ -81,10 +80,10 @@ public:
    unsigned char* getDemandSelect( void );
    unsigned char* getSummationSelect( void );
 
-   CtiAnsiTableTwoTwo(int num_sums, int num_demands, int num_coins );
-   CtiAnsiTableTwoTwo( BYTE *dataBlob, int num_sums, int num_demands, int num_coins );
-   virtual ~CtiAnsiTableTwoTwo();
-   CtiAnsiTableTwoTwo& operator=(const CtiAnsiTableTwoTwo& aRef);
+   CtiAnsiTable22(int num_sums, int num_demands, int num_coins );
+   CtiAnsiTable22( BYTE *dataBlob, int num_sums, int num_demands, int num_coins );
+   virtual ~CtiAnsiTable22();
+   CtiAnsiTable22& operator=(const CtiAnsiTable22& aRef);
 
    void generateResultPiece( BYTE **dataBlob );
    void printResult( const string& deviceName);
@@ -93,4 +92,4 @@ public:
 
 };
 
-#endif // #ifndef __STD_ANSI_TBL_TWO_TWO_H__
+#endif // #ifndef __STD_ANSI_TBL_22_H__

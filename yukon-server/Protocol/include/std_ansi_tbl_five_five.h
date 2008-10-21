@@ -1,11 +1,6 @@
-
-#pragma warning( disable : 4786)
-#ifndef __STD_ANSI_TBL_FIVE_FIVE_H__
-#define __STD_ANSI_TBL_FIVE_FIVE_H__
-
 /*---------------------------------------------------------------------------------*
 *
-* File:   std_ansi_tbl_five_five
+* File:   std_ansi_tbl_55
 *
 * Class:
 * Date:   10/24/2002
@@ -13,12 +8,16 @@
 * Author: Eric Schmit
 *
 * PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_five_five.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2008/10/07 18:16:45 $
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_55.h-arc  $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2008/10/21 16:30:32 $
 *
 *    History:
       $Log: std_ansi_tbl_five_five.h,v $
+      Revision 1.8  2008/10/21 16:30:32  mfisher
+      YUK-6615 ANSI table class names and filenames are difficult to read
+      Renamed classes and filenames
+
       Revision 1.7  2008/10/07 18:16:45  mfisher
       YUK-6504 Server-side point management is naive
       cleaned up a few dsm2.h dependencies
@@ -27,9 +26,6 @@
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
       Revision 1.5  2005/12/12 20:34:47  jrichter
-      BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
-
-      Revision 1.4.6.1  2005/12/12 19:51:02  jrichter
       BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
 
       Revision 1.4  2004/09/30 21:37:20  jrichter
@@ -41,6 +37,9 @@
 
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
+#ifndef __STD_ANSI_TBL_55_H__
+#define __STD_ANSI_TBL_55_H__
+#pragma warning( disable : 4786)
 
 #include "dlldefs.h"
 #include "ctitypes.h"
@@ -130,7 +129,7 @@ struct CLOCK_55_STATE_RCD
 
 #pragma pack( pop )
 
-class IM_EX_PROT CtiAnsiTableFiveFive : public CtiAnsiTableBase
+class IM_EX_PROT CtiAnsiTable055 : public CtiAnsiTableBase
 {
 protected:
 
@@ -140,15 +139,15 @@ private:
 
 public:
 
-   CtiAnsiTableFiveFive( BYTE *dataBlob );
+   CtiAnsiTable055( BYTE *dataBlob );
 
-   virtual ~CtiAnsiTableFiveFive();
+   virtual ~CtiAnsiTable055();
 
-   CtiAnsiTableFiveFive& operator=(const CtiAnsiTableFiveFive& aRef);
+   CtiAnsiTable055& operator=(const CtiAnsiTable055& aRef);
    void generateResultPiece( BYTE **dataBlob );
    void printResult( const string& deviceName);
    void decodeResultPiece( BYTE **dataBlob );
 
 };
 
-#endif // #ifndef __STD_ANSI_TBL_FIVE_FIVE_H__
+#endif // #ifndef __STD_ANSI_TBL_55_H__

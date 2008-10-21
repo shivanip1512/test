@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------*
 *
-* File:   ansi_kv2_mtable_zero.cpp
+* File:   ansi_kv2_mtable_000.cpp
 *
 * Class:
 * Date:   2/20/2003
@@ -8,11 +8,15 @@
 * Author: Eric Schmit
 *
 * PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/ansi_kv2_mtable_zero.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2008/10/07 18:16:45 $
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/ansi_kv2_mtable_000.cpp-arc  $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2008/10/21 16:30:30 $
 *    History:
       $Log: ansi_kv2_mtable_zero.cpp,v $
+      Revision 1.5  2008/10/21 16:30:30  mfisher
+      YUK-6615 ANSI table class names and filenames are difficult to read
+      Renamed classes and filenames
+
       Revision 1.4  2008/10/07 18:16:45  mfisher
       YUK-6504 Server-side point management is naive
       cleaned up a few dsm2.h dependencies
@@ -30,13 +34,13 @@
 *----------------------------------------------------------------------------------*/
 #include "yukon.h"
 #include "dsm2.h"
-#include "ansi_kv2_mtable_zero.h"
+#include "ansi_kv2_mtable_000.h"
 #include "logger.h"
 
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiKV2ManufacturerTableZero::CtiAnsiKV2ManufacturerTableZero( BYTE *dataBlob )
+CtiAnsiKV2ManufacturerTable000::CtiAnsiKV2ManufacturerTable000( BYTE *dataBlob )
 {
     BYTE *ptr=dataBlob;
 
@@ -108,14 +112,14 @@ CtiAnsiKV2ManufacturerTableZero::CtiAnsiKV2ManufacturerTableZero( BYTE *dataBlob
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiKV2ManufacturerTableZero::~CtiAnsiKV2ManufacturerTableZero()
+CtiAnsiKV2ManufacturerTable000::~CtiAnsiKV2ManufacturerTable000()
 {
 }
 
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiKV2ManufacturerTableZero::MeterMode_e CtiAnsiKV2ManufacturerTableZero::getMeterMode()
+CtiAnsiKV2ManufacturerTable000::MeterMode_e CtiAnsiKV2ManufacturerTable000::getMeterMode()
 {
     BYTEUSHORT mode;
     MeterMode_e retMode;
@@ -137,7 +141,7 @@ CtiAnsiKV2ManufacturerTableZero::MeterMode_e CtiAnsiKV2ManufacturerTableZero::ge
 }
 
 
-CtiAnsiKV2ManufacturerTableZero::MeterType_e CtiAnsiKV2ManufacturerTableZero::getMeterType()
+CtiAnsiKV2ManufacturerTable000::MeterType_e CtiAnsiKV2ManufacturerTable000::getMeterType()
 {
     BYTEUSHORT type;
     MeterType_e retType;
@@ -161,7 +165,7 @@ CtiAnsiKV2ManufacturerTableZero::MeterType_e CtiAnsiKV2ManufacturerTableZero::ge
     return retType;
 }
 
-CtiAnsiKV2ManufacturerTableZero::RegisterFunction_e CtiAnsiKV2ManufacturerTableZero::getRegisterFunction()
+CtiAnsiKV2ManufacturerTable000::RegisterFunction_e CtiAnsiKV2ManufacturerTable000::getRegisterFunction()
 {
     BYTEUSHORT rf;
     RegisterFunction_e ret=Filler1;
@@ -181,7 +185,7 @@ CtiAnsiKV2ManufacturerTableZero::RegisterFunction_e CtiAnsiKV2ManufacturerTableZ
     }
     return ret;
 }
-void CtiAnsiKV2ManufacturerTableZero::printResult(  )
+void CtiAnsiKV2ManufacturerTable000::printResult(  )
 {
 
     /**************************************************************

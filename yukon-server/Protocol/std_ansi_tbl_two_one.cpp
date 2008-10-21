@@ -1,27 +1,25 @@
-#include "yukon.h"
-
-
 /*-----------------------------------------------------------------------------*
 *
-* File:   std_ansi_tbl_two_one
+* File:   std_ansi_tbl_21
 *
 * Date:   9/19/2002
 *
 * Author: Eric Schmit
 *
 * PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_two_one.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/12/20 17:19:57 $
-*    History: 
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_21.cpp-arc  $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2008/10/21 16:30:31 $
+*    History:
       $Log: std_ansi_tbl_two_one.cpp,v $
+      Revision 1.10  2008/10/21 16:30:31  mfisher
+      YUK-6615 ANSI table class names and filenames are difficult to read
+      Renamed classes and filenames
+
       Revision 1.9  2005/12/20 17:19:57  tspar
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
       Revision 1.8  2005/12/12 20:34:29  jrichter
-      BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
-
-      Revision 1.7.2.1  2005/12/12 19:50:39  jrichter
       BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
 
       Revision 1.7  2005/09/29 21:18:24  jrichter
@@ -42,16 +40,17 @@
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
 #include "logger.h"
-#include "std_ansi_tbl_two_one.h"
+#include "std_ansi_tbl_21.h"
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-CtiAnsiTableTwoOne::CtiAnsiTableTwoOne()
+CtiAnsiTable21::CtiAnsiTable21()
 {
 }
-CtiAnsiTableTwoOne::CtiAnsiTableTwoOne( BYTE *dataBlob )
+CtiAnsiTable21::CtiAnsiTable21( BYTE *dataBlob )
 {
    memcpy(( void *)&_reg_func1_flags, dataBlob, sizeof( unsigned char ));
    dataBlob += sizeof( unsigned char);
@@ -87,7 +86,7 @@ CtiAnsiTableTwoOne::CtiAnsiTableTwoOne( BYTE *dataBlob )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTableTwoOne::~CtiAnsiTableTwoOne()
+CtiAnsiTable21::~CtiAnsiTable21()
 {
 
 }
@@ -95,7 +94,7 @@ CtiAnsiTableTwoOne::~CtiAnsiTableTwoOne()
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTableTwoOne& CtiAnsiTableTwoOne::operator=(const CtiAnsiTableTwoOne& aRef)
+CtiAnsiTable21& CtiAnsiTable21::operator=(const CtiAnsiTable21& aRef)
 {
    if(this != &aRef)
    {
@@ -108,7 +107,7 @@ CtiAnsiTableTwoOne& CtiAnsiTableTwoOne::operator=(const CtiAnsiTableTwoOne& aRef
 //used in table 22
 //=========================================================================================================================================
 
-int CtiAnsiTableTwoOne::getNumberSummations( void )
+int CtiAnsiTable21::getNumberSummations( void )
 {
    return _nbr_summations;
 }
@@ -117,7 +116,7 @@ int CtiAnsiTableTwoOne::getNumberSummations( void )
 //used in table 22
 //=========================================================================================================================================
 
-int CtiAnsiTableTwoOne::getNumberDemands( void )
+int CtiAnsiTable21::getNumberDemands( void )
 {
    return _nbr_demands;
 }
@@ -126,7 +125,7 @@ int CtiAnsiTableTwoOne::getNumberDemands( void )
 //used in table 22
 //=========================================================================================================================================
 
-int CtiAnsiTableTwoOne::getCoinValues( void )
+int CtiAnsiTable21::getCoinValues( void )
 {
    return _nbr_coin_values;
 }
@@ -134,7 +133,7 @@ int CtiAnsiTableTwoOne::getCoinValues( void )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-int CtiAnsiTableTwoOne::getOccur( void )
+int CtiAnsiTable21::getOccur( void )
 {
    return _occur;
 }
@@ -142,22 +141,22 @@ int CtiAnsiTableTwoOne::getOccur( void )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-int CtiAnsiTableTwoOne::getTiers( void )
+int CtiAnsiTable21::getTiers( void )
 {
    return _tiers;
 }
 
-int CtiAnsiTableTwoOne::getNbrPresentDemands(void)
+int CtiAnsiTable21::getNbrPresentDemands(void)
 {
     return _nbr_present_demands;
 }
 
-int CtiAnsiTableTwoOne::getNbrPresentValues(void)
+int CtiAnsiTable21::getNbrPresentValues(void)
 {
     return _nbr_present_values;
 }
 
-bool CtiAnsiTableTwoOne::getTimeRemainingFlag(void)
+bool CtiAnsiTable21::getTimeRemainingFlag(void)
 {
     if( _reg_func1_flags.time_remaining_flag  & 0x01 )
       return true;
@@ -170,7 +169,7 @@ bool CtiAnsiTableTwoOne::getTimeRemainingFlag(void)
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-bool CtiAnsiTableTwoOne::getDemandResetCtrFlag( void )
+bool CtiAnsiTable21::getDemandResetCtrFlag( void )
 {
    if( _reg_func1_flags.demand_reset_ctr_flag & 0x01 )
       return true;
@@ -181,7 +180,7 @@ bool CtiAnsiTableTwoOne::getDemandResetCtrFlag( void )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-bool CtiAnsiTableTwoOne::getTimeDateFieldFlag( void )
+bool CtiAnsiTable21::getTimeDateFieldFlag( void )
 {
    if( _reg_func1_flags.date_time_field_flag & 0x01 )
       return true;
@@ -192,7 +191,7 @@ bool CtiAnsiTableTwoOne::getTimeDateFieldFlag( void )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-bool CtiAnsiTableTwoOne::getSeasonInfoFieldFlag( void )
+bool CtiAnsiTable21::getSeasonInfoFieldFlag( void )
 {
    if( _reg_func1_flags.season_info_field_flag & 0x01 )
       return true;
@@ -204,7 +203,7 @@ bool CtiAnsiTableTwoOne::getSeasonInfoFieldFlag( void )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-bool CtiAnsiTableTwoOne::getCumDemandFlag( void )
+bool CtiAnsiTable21::getCumDemandFlag( void )
 {
    if( _reg_func1_flags.cum_demand_flag & 0x01 )
       return true;
@@ -215,7 +214,7 @@ bool CtiAnsiTableTwoOne::getCumDemandFlag( void )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-bool CtiAnsiTableTwoOne::getContCumDemandFlag( void )
+bool CtiAnsiTable21::getContCumDemandFlag( void )
 {
    if( _reg_func1_flags.cont_cum_demand_flag & 0x01 )
       return true;
@@ -227,7 +226,7 @@ bool CtiAnsiTableTwoOne::getContCumDemandFlag( void )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableTwoOne::generateResultPiece( BYTE **dataBlob )
+void CtiAnsiTable21::generateResultPiece( BYTE **dataBlob )
 {
     memcpy(*dataBlob, ( void *)&_reg_func1_flags, sizeof( unsigned char ));
     *dataBlob += sizeof( unsigned char);
@@ -263,7 +262,7 @@ void CtiAnsiTableTwoOne::generateResultPiece( BYTE **dataBlob )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableTwoOne::decodeResultPiece( BYTE **dataBlob )
+void CtiAnsiTable21::decodeResultPiece( BYTE **dataBlob )
 {
     memcpy(( void *)&_reg_func1_flags, *dataBlob, sizeof( unsigned char ));
     *dataBlob += sizeof( unsigned char);
@@ -297,7 +296,7 @@ void CtiAnsiTableTwoOne::decodeResultPiece( BYTE **dataBlob )
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableTwoOne::printResult( const string& deviceName )
+void CtiAnsiTable21::printResult( const string& deviceName )
 {
     int integer;
     /**************************************************************

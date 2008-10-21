@@ -1,6 +1,6 @@
 /*-----------------------------------------------------------------------------*
 *
-* File:   std_ansi_tbl_six_three
+* File:   std_ansi_tbl_63
 *
 * Date:   05/21/2004
 *
@@ -12,12 +12,12 @@
 #include "yukon.h"
 
 #include "logger.h"
-#include "std_ansi_tbl_six_three.h"
+#include "std_ansi_tbl_63.h"
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-CtiAnsiTableSixThree::CtiAnsiTableSixThree( bool *dataSetUsedFlag )
-{  
+CtiAnsiTable63::CtiAnsiTable63( bool *dataSetUsedFlag )
+{
     for (int x = 0; x < 4; x++)
     {
         _lpCtrlDataSetUsed[x] = dataSetUsedFlag[x];
@@ -27,7 +27,7 @@ CtiAnsiTableSixThree::CtiAnsiTableSixThree( bool *dataSetUsedFlag )
 
 
 
-CtiAnsiTableSixThree::CtiAnsiTableSixThree( BYTE *dataBlob, bool *dataSetUsedFlag)
+CtiAnsiTable63::CtiAnsiTable63( BYTE *dataBlob, bool *dataSetUsedFlag)
 {
     int x;
     int cnt = 0;
@@ -47,17 +47,17 @@ CtiAnsiTableSixThree::CtiAnsiTableSixThree( BYTE *dataBlob, bool *dataSetUsedFla
         if (_lpCtrlDataSetUsed[x])
         {
             memcpy( (void *)&_lp_status_tbl.lp_status_set[index].lp_set_status_flags, dataBlob, sizeof( LP_SET_STATUS_BFLD ));
-            dataBlob += sizeof( LP_SET_STATUS_BFLD ); 
+            dataBlob += sizeof( LP_SET_STATUS_BFLD );
             memcpy( (void *)&_lp_status_tbl.lp_status_set[index].nbr_valid_blocks, dataBlob, sizeof( UINT16 ));
-            dataBlob += sizeof( UINT16 ); 
+            dataBlob += sizeof( UINT16 );
             memcpy( (void *)&_lp_status_tbl.lp_status_set[index].last_block_element, dataBlob, sizeof( UINT16 ));
-            dataBlob += sizeof( UINT16 ); 
+            dataBlob += sizeof( UINT16 );
             memcpy( (void *)&_lp_status_tbl.lp_status_set[index].last_block_seq_nbr, dataBlob, sizeof( UINT32 ));
             dataBlob += sizeof( UINT32 );
             memcpy( (void *)&_lp_status_tbl.lp_status_set[index].nbr_unread_blocks, dataBlob, sizeof( UINT16 ));
-            dataBlob += sizeof( UINT16 ); 
+            dataBlob += sizeof( UINT16 );
             memcpy( (void *)&_lp_status_tbl.lp_status_set[index].nbr_valid_int, dataBlob, sizeof( UINT16 ));
-            dataBlob += sizeof( UINT16 ); 
+            dataBlob += sizeof( UINT16 );
 
             index+=1;
         }
@@ -68,7 +68,7 @@ CtiAnsiTableSixThree::CtiAnsiTableSixThree( BYTE *dataBlob, bool *dataSetUsedFla
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTableSixThree::~CtiAnsiTableSixThree()
+CtiAnsiTable63::~CtiAnsiTable63()
 {
     if (_lp_status_tbl.lp_status_set != NULL)
     {
@@ -80,7 +80,7 @@ CtiAnsiTableSixThree::~CtiAnsiTableSixThree()
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTableSixThree& CtiAnsiTableSixThree::operator=(const CtiAnsiTableSixThree& aRef)
+CtiAnsiTable63& CtiAnsiTable63::operator=(const CtiAnsiTable63& aRef)
 {
     if (this != &aRef)
     {
@@ -90,7 +90,7 @@ CtiAnsiTableSixThree& CtiAnsiTableSixThree::operator=(const CtiAnsiTableSixThree
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableSixThree::generateResultPiece( BYTE **dataBlob )
+void CtiAnsiTable63::generateResultPiece( BYTE **dataBlob )
 {
     int x;
     int index = 0;
@@ -100,15 +100,15 @@ void CtiAnsiTableSixThree::generateResultPiece( BYTE **dataBlob )
         if (_lpCtrlDataSetUsed[x])
         {
             memcpy( *dataBlob, (void *)&_lp_status_tbl.lp_status_set[index].lp_set_status_flags, sizeof( LP_SET_STATUS_BFLD ));
-            *dataBlob += sizeof( LP_SET_STATUS_BFLD ); 
+            *dataBlob += sizeof( LP_SET_STATUS_BFLD );
             memcpy( *dataBlob, (void *)&_lp_status_tbl.lp_status_set[index].nbr_valid_blocks, sizeof( UINT16 ));
-            *dataBlob += sizeof( UINT16 ); 
+            *dataBlob += sizeof( UINT16 );
             memcpy( *dataBlob, (void *)&_lp_status_tbl.lp_status_set[index].last_block_element, sizeof( UINT16 ));
-            *dataBlob += sizeof( UINT16 ); 
+            *dataBlob += sizeof( UINT16 );
             memcpy( *dataBlob, (void *)&_lp_status_tbl.lp_status_set[index].last_block_seq_nbr, sizeof( UINT32 ));
             *dataBlob += sizeof( UINT32 );
             memcpy( *dataBlob, (void *)&_lp_status_tbl.lp_status_set[index].nbr_unread_blocks, sizeof( UINT16 ));
-            *dataBlob += sizeof( UINT16 ); 
+            *dataBlob += sizeof( UINT16 );
             memcpy( *dataBlob, (void *)&_lp_status_tbl.lp_status_set[index].nbr_valid_int, sizeof( UINT16 ));
             *dataBlob += sizeof( UINT16 );
             index+=1;
@@ -119,7 +119,7 @@ void CtiAnsiTableSixThree::generateResultPiece( BYTE **dataBlob )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableSixThree::decodeResultPiece( BYTE **dataBlob )
+void CtiAnsiTable63::decodeResultPiece( BYTE **dataBlob )
 {
     int x;
     int cnt = 0;
@@ -138,17 +138,17 @@ void CtiAnsiTableSixThree::decodeResultPiece( BYTE **dataBlob )
         if (_lpCtrlDataSetUsed[x])
         {
             memcpy( (void *)&_lp_status_tbl.lp_status_set[index].lp_set_status_flags, *dataBlob, sizeof( LP_SET_STATUS_BFLD ));
-            *dataBlob += sizeof( LP_SET_STATUS_BFLD ); 
+            *dataBlob += sizeof( LP_SET_STATUS_BFLD );
             memcpy( (void *)&_lp_status_tbl.lp_status_set[index].nbr_valid_blocks, *dataBlob, sizeof( UINT16 ));
-            *dataBlob += sizeof( UINT16 ); 
+            *dataBlob += sizeof( UINT16 );
             memcpy( (void *)&_lp_status_tbl.lp_status_set[index].last_block_element, *dataBlob, sizeof( UINT16 ));
-            *dataBlob += sizeof( UINT16 ); 
+            *dataBlob += sizeof( UINT16 );
             memcpy( (void *)&_lp_status_tbl.lp_status_set[index].last_block_seq_nbr, *dataBlob, sizeof( UINT32 ));
             *dataBlob += sizeof( UINT32 );
             memcpy( (void *)&_lp_status_tbl.lp_status_set[index].nbr_unread_blocks, *dataBlob, sizeof( UINT16 ));
-            *dataBlob += sizeof( UINT16 ); 
+            *dataBlob += sizeof( UINT16 );
             memcpy( (void *)&_lp_status_tbl.lp_status_set[index].nbr_valid_int, *dataBlob, sizeof( UINT16 ));
-            *dataBlob += sizeof( UINT16 ); 
+            *dataBlob += sizeof( UINT16 );
 
             index+=1;
         }
@@ -158,7 +158,7 @@ void CtiAnsiTableSixThree::decodeResultPiece( BYTE **dataBlob )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableSixThree::printResult( const string& deviceName )
+void CtiAnsiTable63::printResult( const string& deviceName )
 {
     int index= 0;
     /**************************************************************
@@ -198,23 +198,23 @@ void CtiAnsiTableSixThree::printResult( const string& deviceName )
     }
 }
 
-UINT16 CtiAnsiTableSixThree::getNbrValidBlocks(int setNbr)
+UINT16 CtiAnsiTable63::getNbrValidBlocks(int setNbr)
 {
     return _lp_status_tbl.lp_status_set[setNbr-1].nbr_valid_blocks;
 }
-UINT16 CtiAnsiTableSixThree::getLastBlkElmt(int setNbr)
+UINT16 CtiAnsiTable63::getLastBlkElmt(int setNbr)
 {
     return _lp_status_tbl.lp_status_set[setNbr-1].last_block_element;
 }
-UINT16 CtiAnsiTableSixThree::getLastBlkSeqNbr(int setNbr)
+UINT16 CtiAnsiTable63::getLastBlkSeqNbr(int setNbr)
 {
     return _lp_status_tbl.lp_status_set[setNbr-1].last_block_seq_nbr;
 }
-UINT16 CtiAnsiTableSixThree::getNbrUnreadBlks(int setNbr)
+UINT16 CtiAnsiTable63::getNbrUnreadBlks(int setNbr)
 {
     return _lp_status_tbl.lp_status_set[setNbr-1].nbr_unread_blocks;
 }
-UINT16 CtiAnsiTableSixThree::getNbrValidIntvls(int setNbr)
+UINT16 CtiAnsiTable63::getNbrValidIntvls(int setNbr)
 {
     return _lp_status_tbl.lp_status_set[setNbr-1].nbr_valid_int;
 }

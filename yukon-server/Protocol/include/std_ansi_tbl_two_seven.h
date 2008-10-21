@@ -1,12 +1,6 @@
-
-
-#pragma warning( disable : 4786)
-#ifndef __STD_ANSI_TBL_TWO_SEVEN_H__
-#define __STD_ANSI_TBL_TWO_SEVEN_H__
-
 /*---------------------------------------------------------------------------------*
 *
-* File:   std_ansi_tbl_two_seven
+* File:   std_ansi_tbl_27
 *
 * Class:
 * Date:   9/20/2002
@@ -14,12 +8,15 @@
 * Author: Eric Schmit
 *
 * PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_tbl_two_seven.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2008/10/07 18:16:46 $
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_tbl_27.h-arc  $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2008/10/21 16:30:32 $
 
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
+#ifndef __STD_ANSI_TBL_27_H__
+#define __STD_ANSI_TBL_27_H__
+#pragma warning( disable : 4786)
 
 #include "dlldefs.h"
 #include "ctitypes.h"
@@ -29,7 +26,7 @@
 
 #define UINT16             __int16
 #define UINT8               __int8
-class IM_EX_PROT CtiAnsiTableTwoSeven : public CtiAnsiTableBase
+class IM_EX_PROT CtiAnsiTable27 : public CtiAnsiTableBase
 {
 protected:
 
@@ -43,10 +40,10 @@ private:
 
 public:
 
-   CtiAnsiTableTwoSeven(  );
-   CtiAnsiTableTwoSeven( BYTE *dataBlob, UINT8 nbrPresentDemands, UINT8 nbrPresentValues );
-   virtual ~CtiAnsiTableTwoSeven();
-   CtiAnsiTableTwoSeven& operator=(const CtiAnsiTableTwoSeven& aRef);
+   CtiAnsiTable27(  );
+   CtiAnsiTable27( BYTE *dataBlob, UINT8 nbrPresentDemands, UINT8 nbrPresentValues );
+   virtual ~CtiAnsiTable27();
+   CtiAnsiTable27& operator=(const CtiAnsiTable27& aRef);
    void printResult( const string& deviceName );
 
    UINT8* getDemandSelect( );

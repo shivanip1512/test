@@ -1,11 +1,6 @@
-
-#pragma warning( disable : 4786)
-#ifndef __STD_ANSI_TBL_FIVE_TWO_H__
-#define __STD_ANSI_TBL_FIVE_TWO_H__
-
 /*---------------------------------------------------------------------------------*
 *
-* File:   std_ansi_tbl_five_two
+* File:   std_ansi_tbl_52
 *
 * Class:
 * Date:   10/24/2002
@@ -13,11 +8,15 @@
 * Author: Eric Schmit
 *
 * PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_five_two.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2008/10/07 18:16:45 $
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_52.h-arc  $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2008/10/21 16:30:32 $
 *    History:
       $Log: std_ansi_tbl_five_two.h,v $
+      Revision 1.9  2008/10/21 16:30:32  mfisher
+      YUK-6615 ANSI table class names and filenames are difficult to read
+      Renamed classes and filenames
+
       Revision 1.8  2008/10/07 18:16:45  mfisher
       YUK-6504 Server-side point management is naive
       cleaned up a few dsm2.h dependencies
@@ -25,18 +24,9 @@
       Revision 1.7  2005/12/20 17:20:00  tspar
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
-<<<<<<< std_ansi_tbl_five_two.h
-      Revision 1.4.4.1  2005/07/27 19:28:01  alauinger
-      merged from the head 20050720
-
-=======
       Revision 1.6  2005/12/12 20:34:47  jrichter
       BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
 
-      Revision 1.5.2.1  2005/12/12 19:51:02  jrichter
-      BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
-
->>>>>>> 1.6
       Revision 1.5  2005/06/16 19:18:00  jrichter
       Sync ANSI code with 3.1 branch!
 
@@ -49,7 +39,9 @@
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
-
+#ifndef __STD_ANSI_TBL_52_H__
+#define __STD_ANSI_TBL_52_H__
+#pragma warning( disable : 4786)
 
 #include "dlldefs.h"
 #include "ctitypes.h"
@@ -116,7 +108,7 @@
 
 #pragma pack( pop )
 
-class IM_EX_PROT CtiAnsiTableFiveTwo : public CtiAnsiTableBase
+class IM_EX_PROT CtiAnsiTable52 : public CtiAnsiTableBase
 {
 protected:
 
@@ -129,12 +121,12 @@ private:
     ULONG _meterServerTimeDifference;
 public:
 
-   CtiAnsiTableFiveTwo(int timefmat  );
-   CtiAnsiTableFiveTwo( BYTE *dataBlob, int timefmat );
+   CtiAnsiTable52(int timefmat  );
+   CtiAnsiTable52( BYTE *dataBlob, int timefmat );
 
-   virtual ~CtiAnsiTableFiveTwo();
+   virtual ~CtiAnsiTable52();
 
-   CtiAnsiTableFiveTwo& operator=(const CtiAnsiTableFiveTwo& aRef);
+   CtiAnsiTable52& operator=(const CtiAnsiTable52& aRef);
    void generateResultPiece( BYTE **dataBlob );
    void printResult( const string& deviceName);
    void decodeResultPiece( BYTE **dataBlob );
@@ -150,4 +142,4 @@ public:
    bool adjustTimeForDST();
 
 };
-#endif // #ifndef __STD_ANSI_TBL_FIVE_TWO_H__
+#endif // #ifndef __STD_ANSI_TBL_52_H__

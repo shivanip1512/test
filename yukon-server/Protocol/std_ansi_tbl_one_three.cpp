@@ -1,27 +1,25 @@
-#include "yukon.h"
-
-
 /*-----------------------------------------------------------------------------*
 *
-* File:   std_ansi_tbl_one_three
+* File:   std_ansi_tbl_13
 *
 * Date:   9/17/2002
 *
 * Author: Eric Schmit
 *
 * PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_one_three.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/12/20 17:19:57 $
-*    History: 
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_13.cpp-arc  $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2008/10/21 16:30:31 $
+*    History:
       $Log: std_ansi_tbl_one_three.cpp,v $
+      Revision 1.9  2008/10/21 16:30:31  mfisher
+      YUK-6615 ANSI table class names and filenames are difficult to read
+      Renamed classes and filenames
+
       Revision 1.8  2005/12/20 17:19:57  tspar
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
       Revision 1.7  2005/12/12 20:34:29  jrichter
-      BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
-
-      Revision 1.6.2.1  2005/12/12 19:50:39  jrichter
       BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
 
       Revision 1.6  2005/09/29 21:18:24  jrichter
@@ -39,24 +37,25 @@
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
 #include "logger.h"
-#include "std_ansi_tbl_one_three.h"
+#include "std_ansi_tbl_13.h"
 
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTableOneThree::CtiAnsiTableOneThree( int nbr_demand_cntl_entries, bool pf_exclude, bool sliding_demand, bool reset_exclude )
+CtiAnsiTable13::CtiAnsiTable13( int nbr_demand_cntl_entries, bool pf_exclude, bool sliding_demand, bool reset_exclude )
 {
    _numberDemandCtrlEntries = nbr_demand_cntl_entries;
    _pfExcludeFlag = pf_exclude;
-   _slidingDemandFlag = sliding_demand; 
+   _slidingDemandFlag = sliding_demand;
    _resetExcludeFlag = reset_exclude;
-   /*if (reset_exclude) 
+   /*if (reset_exclude)
    {
        _demand_control_record->reset_exclusion = 1;
    }
-   if (pf_exclude) 
+   if (pf_exclude)
    {
        _demand_control_record->excludes.p_fail_recogntn_tm = 1;
        _demand_control_record->excludes.p_fail_exclusion = 1;
@@ -82,12 +81,12 @@ CtiAnsiTableOneThree::CtiAnsiTableOneThree( int nbr_demand_cntl_entries, bool pf
 
 } */
 
-CtiAnsiTableOneThree::CtiAnsiTableOneThree( BYTE *dataBlob, int nbr_demand_cntl_entries, bool pf_exclude, bool sliding_demand, bool reset_exclude )
+CtiAnsiTable13::CtiAnsiTable13( BYTE *dataBlob, int nbr_demand_cntl_entries, bool pf_exclude, bool sliding_demand, bool reset_exclude )
 {
    int      index;
 
    _pfExcludeFlag = pf_exclude;
-   _slidingDemandFlag = sliding_demand; 
+   _slidingDemandFlag = sliding_demand;
    _resetExcludeFlag = reset_exclude;
 
    if( reset_exclude != false )
@@ -128,13 +127,13 @@ CtiAnsiTableOneThree::CtiAnsiTableOneThree( BYTE *dataBlob, int nbr_demand_cntl_
          memcpy( (void *)&_demand_control_record._int_control_rec[index].int_length, dataBlob, sizeof( unsigned char) *2 );
          dataBlob += ( sizeof( unsigned char) *2 );
       }
-   } 
+   }
 }
 
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTableOneThree::~CtiAnsiTableOneThree()
+CtiAnsiTable13::~CtiAnsiTable13()
 {
     if (_demand_control_record._int_control_rec != NULL)
     {
@@ -146,7 +145,7 @@ CtiAnsiTableOneThree::~CtiAnsiTableOneThree()
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTableOneThree& CtiAnsiTableOneThree::operator=(const CtiAnsiTableOneThree& aRef)
+CtiAnsiTable13& CtiAnsiTable13::operator=(const CtiAnsiTable13& aRef)
 {
    if(this != &aRef)
    {
@@ -154,7 +153,7 @@ CtiAnsiTableOneThree& CtiAnsiTableOneThree::operator=(const CtiAnsiTableOneThree
    return *this;
 }
 
-void CtiAnsiTableOneThree::decodeResultPiece( BYTE **dataBlob )
+void CtiAnsiTable13::decodeResultPiece( BYTE **dataBlob )
 {
    if( _resetExcludeFlag != false )
    {
@@ -209,7 +208,7 @@ void CtiAnsiTableOneThree::decodeResultPiece( BYTE **dataBlob )
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableOneThree::generateResultPiece( BYTE **dataBlob )
+void CtiAnsiTable13::generateResultPiece( BYTE **dataBlob )
 {
    if( _resetExcludeFlag != false )
    {
@@ -260,21 +259,21 @@ void CtiAnsiTableOneThree::generateResultPiece( BYTE **dataBlob )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-bool CtiAnsiTableOneThree::getPFExcludeFlag() 
+bool CtiAnsiTable13::getPFExcludeFlag()
 {
     return _pfExcludeFlag;
 }
-bool CtiAnsiTableOneThree::getSlidingDemandFlag() 
+bool CtiAnsiTable13::getSlidingDemandFlag()
 {
-    return _slidingDemandFlag; 
+    return _slidingDemandFlag;
 }
-bool CtiAnsiTableOneThree::getResetExcludeFlag()
+bool CtiAnsiTable13::getResetExcludeFlag()
 {
     return _resetExcludeFlag;
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableOneThree::printResult( const string& deviceName )
+void CtiAnsiTable13::printResult( const string& deviceName )
 {
     int integer;
     string string1,string2;
@@ -292,12 +291,12 @@ void CtiAnsiTableOneThree::printResult( const string& deviceName )
         dout << endl << "==================== "<<deviceName<<" Std Table 13 ========================" << endl;
     }
 
-    if (_resetExcludeFlag) 
+    if (_resetExcludeFlag)
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
         dout << "   RESET_EXCLUSION:  " << _demand_control_record.reset_exclusion << endl;
     }
-    if (_pfExcludeFlag) 
+    if (_pfExcludeFlag)
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
         dout << "   P_FAIL_RECOGNTN_TM:  " <<(int)_demand_control_record.excludes.p_fail_recogntn_tm << endl;
@@ -308,13 +307,13 @@ void CtiAnsiTableOneThree::printResult( const string& deviceName )
         CtiLockGuard< CtiLogger > doubt_guard( dout );
         dout << "   INTERVAL_VALUE:  " << endl;
     }
-    if (_slidingDemandFlag) 
+    if (_slidingDemandFlag)
     {
         {
             CtiLockGuard< CtiLogger > doubt_guard( dout );
             dout << "       INDEX       SUB_INT     INT_MULTIPLIER" << endl;
         }
-        for (int x = 0; x < _numberDemandCtrlEntries; x++) 
+        for (int x = 0; x < _numberDemandCtrlEntries; x++)
         {
             CtiLockGuard< CtiLogger > doubt_guard( dout );
             dout << "         "<<x<<"       "<<(int)_demand_control_record._int_control_rec[x].cntl_rec.sub_int<<"        "<<(int)_demand_control_record._int_control_rec[x].cntl_rec.int_mulitplier<< endl;
@@ -326,7 +325,7 @@ void CtiAnsiTableOneThree::printResult( const string& deviceName )
             CtiLockGuard< CtiLogger > doubt_guard( dout );
             dout << "       INDEX       INT_LENGTH  " << endl;
         }
-        for (int x = 0; x < _numberDemandCtrlEntries; x++) 
+        for (int x = 0; x < _numberDemandCtrlEntries; x++)
         {
             CtiLockGuard< CtiLogger > doubt_guard( dout );
             dout << "         "<<x<<"       "<<(int)_demand_control_record._int_control_rec[x].int_length<< endl;

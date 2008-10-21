@@ -1,12 +1,6 @@
-
-
-#pragma warning( disable : 4786)
-#ifndef __STD_ANSI_TBL_THREE_THREE_H__
-#define __STD_ANSI_TBL_THREE_THREE_H__
-
 /*---------------------------------------------------------------------------------*
 *
-* File:   std_ansi_tbl_three_three
+* File:   std_ansi_tbl_33
 *
 * Class:
 * Date:   2/1/2005
@@ -14,12 +8,15 @@
 * Author: Julie Richter
 *
 * PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_tbl_three_three.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2008/10/07 18:16:46 $
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_tbl_33.h-arc  $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2008/10/21 16:30:32 $
 
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
+#ifndef __STD_ANSI_TBL_33_H__
+#define __STD_ANSI_TBL_33_H__
+#pragma warning( disable : 4786)
 
 #include "dlldefs.h"
 #include "ctitypes.h"
@@ -58,7 +55,7 @@ struct PRI_DISP_LIST_RCD
 
 #pragma pack( pop )
 
-class IM_EX_PROT CtiAnsiTableThreeThree : public CtiAnsiTableBase
+class IM_EX_PROT CtiAnsiTable33 : public CtiAnsiTableBase
 {
 protected:
 
@@ -73,10 +70,10 @@ private:
 
 public:
 
-   CtiAnsiTableThreeThree( );
-   CtiAnsiTableThreeThree( BYTE *dataBlob, UINT8 nbrPriDispLists, UINT16 nbrPriDispListItems );
-   virtual ~CtiAnsiTableThreeThree();
-   CtiAnsiTableThreeThree& operator=(const CtiAnsiTableThreeThree& aRef);
+   CtiAnsiTable33( );
+   CtiAnsiTable33( BYTE *dataBlob, UINT8 nbrPriDispLists, UINT16 nbrPriDispListItems );
+   virtual ~CtiAnsiTable33();
+   CtiAnsiTable33& operator=(const CtiAnsiTable33& aRef);
    void printResult( const string& deviceName );
 
   // UINT8 getDisplaySources(int sourceIndex, int widthIndex);
@@ -84,4 +81,4 @@ public:
 
 };
 
-#endif // #ifndef __STD_ANSI_TBL_THREE_THREE_H__
+#endif // #ifndef __STD_ANSI_TBL_33_H__

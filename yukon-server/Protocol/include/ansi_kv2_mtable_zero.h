@@ -1,10 +1,6 @@
-#pragma warning( disable : 4786)
-#ifndef __ANSI_KV2_MTABLE_ZERO_H__
-#define __ANSI_KV2_MTABLE_ZERO_H__
-
 /*---------------------------------------------------------------------------------*
 *
-* File:   
+* File:  ansi_kv2_mtable_000.h
 *
 * Class:
 * Date:   2/20/2003
@@ -12,28 +8,35 @@
 * Author: Eric Schmit
 *
 * PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/ansi_kv2_mtable_zero.h-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2004/09/30 21:37:19 $
-*    History: 
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/ansi_kv2_mtable_000.h-arc  $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2008/10/21 16:30:31 $
+*    History:
       $Log: ansi_kv2_mtable_zero.h,v $
+      Revision 1.3  2008/10/21 16:30:31  mfisher
+      YUK-6615 ANSI table class names and filenames are difficult to read
+      Renamed classes and filenames
+
       Revision 1.2  2004/09/30 21:37:19  jrichter
       Ansi protocol checkpoint.  Good point to check in as a base point.
 
       Revision 1.1  2003/04/25 14:54:54  dsutton
       Ansi protocol tables specific to the implementation of the KV2
 
-         
+
 *----------------------------------------------------------------------------------*/
+#ifndef __ANSI_KV2_MTABLE_000_H__
+#define __ANSI_KV2_MTABLE_000_H__
+#pragma warning( disable : 4786)
+
 #include "dlldefs.h"
 #include "std_ansi_tbl_base.h"
 
-
-class IM_EX_PROT CtiAnsiKV2ManufacturerTableZero : public CtiAnsiTableBase
+class IM_EX_PROT CtiAnsiKV2ManufacturerTable000 : public CtiAnsiTableBase
 {
 
 public:
-    typedef enum 
+    typedef enum
     {
         CM21P,
         kV,
@@ -61,8 +64,8 @@ public:
     } RegisterFunction_e;
 
 
-    CtiAnsiKV2ManufacturerTableZero( BYTE *dataBlob );
-    virtual ~CtiAnsiKV2ManufacturerTableZero();
+    CtiAnsiKV2ManufacturerTable000( BYTE *dataBlob );
+    virtual ~CtiAnsiKV2ManufacturerTable000();
 
     // only things needed at this time
     MeterType_e getMeterType (void);
@@ -140,4 +143,4 @@ private:
 
 };
 
-#endif // #ifndef ANSI_KV2_MTABLE_ZERO_H
+#endif // #ifndef ANSI_KV2_MTABLE_000_H

@@ -1,8 +1,3 @@
-
-#pragma warning( disable : 4786)
-#ifndef __PROT_ANSI_H__
-#define __PROT_ANSI_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   prot_ansi
@@ -14,10 +9,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_ansi.h-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2008/08/13 22:40:57 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2008/10/21 16:30:31 $
 *    History:
       $Log: prot_ansi.h,v $
+      Revision 1.19  2008/10/21 16:30:31  mfisher
+      YUK-6615 ANSI table class names and filenames are difficult to read
+      Renamed classes and filenames
+
       Revision 1.18  2008/08/13 22:40:57  jrichter
       YUK-6310
       Sentinel dial up meter reads causing exceptions when scanner reads in future or year(S) old lastLpTime dates.
@@ -38,17 +37,8 @@
       Revision 1.13  2005/12/12 20:34:30  jrichter
       BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
 
-      Revision 1.12.2.1  2005/12/12 19:51:02  jrichter
-      BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
-
       Revision 1.12  2005/09/29 21:19:24  jrichter
       Merged latest 3.1 changes to head.
-      Revision 1.10.2.2  2005/07/27 19:28:01  alauinger
-      merged from the head 20050720
-
-
-      Revision 1.10.2.1  2005/07/14 22:27:02  jliu
-      RWCStringRemoved
 
       Revision 1.11  2005/06/16 19:18:00  jrichter
       Sync ANSI code with 3.1 branch!
@@ -76,6 +66,9 @@
 
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __PROT_ANSI_H__
+#define __PROT_ANSI_H__
+#pragma warning( disable : 4786)
 
 #include <windows.h>
 #include <rw/ordcltn.h>
@@ -86,32 +79,32 @@
 #include "ansi_datalink.h"
 #include "ansi_billing_table.h"
 #include "std_ansi_tbl_base.h"
-#include "std_ansi_tbl_zero_zero.h"
-#include "std_ansi_tbl_zero_one.h"
-#include "std_ansi_tbl_zero_eight.h"
-#include "std_ansi_tbl_one_zero.h"
-#include "std_ansi_tbl_one_one.h"
-#include "std_ansi_tbl_one_two.h"
-#include "std_ansi_tbl_one_three.h"
-#include "std_ansi_tbl_one_four.h"
-#include "std_ansi_tbl_one_five.h"
-#include "std_ansi_tbl_one_six.h"
-#include "std_ansi_tbl_two_one.h"
-#include "std_ansi_tbl_two_two.h"
-#include "std_ansi_tbl_two_three.h"
-#include "std_ansi_tbl_two_five.h"
-#include "std_ansi_tbl_two_seven.h"
-#include "std_ansi_tbl_two_eight.h"
-#include "std_ansi_tbl_three_one.h"
-#include "std_ansi_tbl_three_two.h"
-#include "std_ansi_tbl_three_three.h"
-#include "std_ansi_tbl_five_one.h"
-#include "std_ansi_tbl_five_two.h"
-#include "std_ansi_tbl_six_one.h"
-#include "std_ansi_tbl_six_two.h"
-#include "std_ansi_tbl_six_three.h"
-#include "std_ansi_tbl_six_four.h"
-//#include "std_ansi_tbl_five_five.h"
+#include "std_ansi_tbl_00.h"
+#include "std_ansi_tbl_01.h"
+#include "std_ansi_tbl_08.h"
+#include "std_ansi_tbl_10.h"
+#include "std_ansi_tbl_11.h"
+#include "std_ansi_tbl_12.h"
+#include "std_ansi_tbl_13.h"
+#include "std_ansi_tbl_14.h"
+#include "std_ansi_tbl_15.h"
+#include "std_ansi_tbl_16.h"
+#include "std_ansi_tbl_21.h"
+#include "std_ansi_tbl_22.h"
+#include "std_ansi_tbl_23.h"
+#include "std_ansi_tbl_25.h"
+#include "std_ansi_tbl_27.h"
+#include "std_ansi_tbl_28.h"
+#include "std_ansi_tbl_31.h"
+#include "std_ansi_tbl_32.h"
+#include "std_ansi_tbl_33.h"
+#include "std_ansi_tbl_51.h"
+#include "std_ansi_tbl_52.h"
+#include "std_ansi_tbl_61.h"
+#include "std_ansi_tbl_62.h"
+#include "std_ansi_tbl_63.h"
+#include "std_ansi_tbl_64.h"
+//#include "std_ansi_tbl_55.h"
 
 #define UINT64             __int64 //FIXME - figure out how to get a uint64
 #define BCD                unsigned char
@@ -444,33 +437,33 @@ class IM_EX_PROT CtiProtocolANSI
 
       CtiAnsiBillingTable              *_billingTable;
 
-      CtiAnsiTableZeroZero             *_tableZeroZero;
-      CtiAnsiTableZeroOne              *_tableZeroOne;
-      CtiAnsiTableZeroEight            *_tableZeroEight;
-      CtiAnsiTableOneZero              *_tableOneZero;
-      CtiAnsiTableOneOne               *_tableOneOne;
-      CtiAnsiTableOneTwo               *_tableOneTwo;
-      CtiAnsiTableOneThree             *_tableOneThree;
-      CtiAnsiTableOneFour              *_tableOneFour;
-      CtiAnsiTableOneFive              *_tableOneFive;
-      CtiAnsiTableOneSix               *_tableOneSix;
-      CtiAnsiTableTwoOne               *_tableTwoOne;
-      CtiAnsiTableTwoTwo               *_tableTwoTwo;
-      CtiAnsiTableTwoThree             *_tableTwoThree;
-      CtiAnsiTableTwoSeven             *_tableTwoSeven;
-      CtiAnsiTableTwoEight             *_tableTwoEight;
-      CtiAnsiTableThreeOne             *_tableThreeOne;
-      CtiAnsiTableThreeTwo             *_tableThreeTwo;
-      CtiAnsiTableThreeThree           *_tableThreeThree;
-      CtiAnsiTableFiveOne              *_tableFiveOne;
-      CtiAnsiTableFiveTwo              *_tableFiveTwo;
-      CtiAnsiTableSixOne               *_tableSixOne;
-      CtiAnsiTableSixTwo               *_tableSixTwo;
-      CtiAnsiTableSixThree             *_tableSixThree;
-      CtiAnsiTableSixFour              *_tableSixFour;
-    //  CtiAnsiTableFiveFive             *_tableFiveFive;
+      CtiAnsiTable00  *_table00;
+      CtiAnsiTable01  *_table01;
+      CtiAnsiTable08  *_table08;
+      CtiAnsiTable10  *_table10;
+      CtiAnsiTable11  *_table11;
+      CtiAnsiTable12  *_table12;
+      CtiAnsiTable13  *_table13;
+      CtiAnsiTable14  *_table14;
+      CtiAnsiTable15  *_table15;
+      CtiAnsiTable16  *_table16;
+      CtiAnsiTable21  *_table21;
+      CtiAnsiTable22  *_table22;
+      CtiAnsiTable23  *_table23;
+      CtiAnsiTable27  *_table27;
+      CtiAnsiTable28  *_table28;
+      CtiAnsiTable31  *_table31;
+      CtiAnsiTable32  *_table32;
+      CtiAnsiTable33  *_table33;
+      CtiAnsiTable51  *_table51;
+      CtiAnsiTable52  *_table52;
+      CtiAnsiTable61  *_table61;
+      CtiAnsiTable62  *_table62;
+      CtiAnsiTable63  *_table63;
+      CtiAnsiTable64  *_table64;
+      //  CtiAnsiTable55             *_table55;
 
-      CtiAnsiTableTwoFive             *_frozenRegTable;
+      CtiAnsiTable25  *_frozenRegTable;
 
       bool _validFlag;
       bool _previewTable64;

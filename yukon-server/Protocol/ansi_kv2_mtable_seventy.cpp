@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------*
 *
-* File:   ansi_kv2_mtable_seventy.cpp
+* File:   ansi_kv2_mtable_070.cpp
 *
 * Class:
 * Date:   2/20/2003
@@ -8,20 +8,21 @@
 * Author: Eric Schmit
 *
 * PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/ansi_kv2_mtable_seventy.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2008/10/07 18:16:45 $
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/ansi_kv2_mtable_070.cpp-arc  $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2008/10/21 16:30:30 $
 *    History:
       $Log: ansi_kv2_mtable_seventy.cpp,v $
+      Revision 1.6  2008/10/21 16:30:30  mfisher
+      YUK-6615 ANSI table class names and filenames are difficult to read
+      Renamed classes and filenames
+
       Revision 1.5  2008/10/07 18:16:45  mfisher
       YUK-6504 Server-side point management is naive
       cleaned up a few dsm2.h dependencies
 
       Revision 1.4  2005/12/20 17:19:53  tspar
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
-
-      Revision 1.3.2.1  2005/07/12 21:08:42  jliu
-      rpStringWithoutCmpParser
 
       Revision 1.3  2005/02/10 23:23:56  alauinger
       Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
@@ -36,12 +37,12 @@
 #include "yukon.h"
 #include "dsm2.h"
 #include "logger.h"
-#include "ansi_kv2_mtable_seventy.h"
+#include "ansi_kv2_mtable_070.h"
 
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiKV2ManufacturerTableSeventy::CtiAnsiKV2ManufacturerTableSeventy( BYTE *dataBlob )
+CtiAnsiKV2ManufacturerTable070::CtiAnsiKV2ManufacturerTable070( BYTE *dataBlob )
 {
     memcpy( (void *)&_displayConfigTable, dataBlob, sizeof( unsigned char ) * 46);
     dataBlob +=  (sizeof( unsigned char ) * 46);
@@ -50,14 +51,14 @@ CtiAnsiKV2ManufacturerTableSeventy::CtiAnsiKV2ManufacturerTableSeventy( BYTE *da
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiKV2ManufacturerTableSeventy::~CtiAnsiKV2ManufacturerTableSeventy()
+CtiAnsiKV2ManufacturerTable070::~CtiAnsiKV2ManufacturerTable070()
 {
 }
 
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiKV2ManufacturerTableSeventy::DisplayUnits_e CtiAnsiKV2ManufacturerTableSeventy::getDemandDisplayUnits()
+CtiAnsiKV2ManufacturerTable070::DisplayUnits_e CtiAnsiKV2ManufacturerTable070::getDemandDisplayUnits()
 {
     BYTEUSHORT tmp;
     DisplayUnits_e ret;
@@ -76,7 +77,7 @@ CtiAnsiKV2ManufacturerTableSeventy::DisplayUnits_e CtiAnsiKV2ManufacturerTableSe
 }
 
 
-USHORT CtiAnsiKV2ManufacturerTableSeventy::getDisplayScalar()
+USHORT CtiAnsiKV2ManufacturerTable070::getDisplayScalar()
 {
     BYTEUSHORT tmp;
 
@@ -86,7 +87,7 @@ USHORT CtiAnsiKV2ManufacturerTableSeventy::getDisplayScalar()
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiKV2ManufacturerTableSeventy::generateResultPiece( BYTE **dataBlob )
+void CtiAnsiKV2ManufacturerTable070::generateResultPiece( BYTE **dataBlob )
 {
     memcpy( *dataBlob, (void *)&_displayConfigTable, sizeof( unsigned char ) * 46);
     *dataBlob +=  (sizeof( unsigned char ) * 46);
@@ -95,7 +96,7 @@ void CtiAnsiKV2ManufacturerTableSeventy::generateResultPiece( BYTE **dataBlob )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiKV2ManufacturerTableSeventy::decodeResultPiece( BYTE **dataBlob )
+void CtiAnsiKV2ManufacturerTable070::decodeResultPiece( BYTE **dataBlob )
 {
     memcpy( (void *)&_displayConfigTable, *dataBlob, sizeof( unsigned char ) * 46);
     *dataBlob +=  (sizeof( unsigned char ) * 46);
@@ -103,7 +104,7 @@ void CtiAnsiKV2ManufacturerTableSeventy::decodeResultPiece( BYTE **dataBlob )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiKV2ManufacturerTableSeventy::printResult(  )
+void CtiAnsiKV2ManufacturerTable070::printResult(  )
 {
 
     /**************************************************************
@@ -144,13 +145,13 @@ void CtiAnsiKV2ManufacturerTableSeventy::printResult(  )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-int CtiAnsiKV2ManufacturerTableSeventy::getRawDateFormat( void )
+int CtiAnsiKV2ManufacturerTable070::getRawDateFormat( void )
 {
    return ((int)_displayConfigTable._dateFormat);
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-string CtiAnsiKV2ManufacturerTableSeventy::getResolvedDateFormat( void )
+string CtiAnsiKV2ManufacturerTable070::getResolvedDateFormat( void )
 {
     string ret;
     switch (getRawDateFormat())
@@ -183,20 +184,20 @@ string CtiAnsiKV2ManufacturerTableSeventy::getResolvedDateFormat( void )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-int CtiAnsiKV2ManufacturerTableSeventy::getRawSuppressLeadingZeros( void )
+int CtiAnsiKV2ManufacturerTable070::getRawSuppressLeadingZeros( void )
 {
    return ((int)_displayConfigTable._suppressLeadingZeros);
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-int CtiAnsiKV2ManufacturerTableSeventy::getRawDisplayScalar( void )
+int CtiAnsiKV2ManufacturerTable070::getRawDisplayScalar( void )
 {
    return ((int)_displayConfigTable._displayScalar);
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-string CtiAnsiKV2ManufacturerTableSeventy::getResolvedDisplayScalar( void )
+string CtiAnsiKV2ManufacturerTable070::getResolvedDisplayScalar( void )
 {
     string ret;
     switch (getRawDisplayScalar())
@@ -232,13 +233,13 @@ string CtiAnsiKV2ManufacturerTableSeventy::getResolvedDisplayScalar( void )
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-int CtiAnsiKV2ManufacturerTableSeventy::getRawDemandDispUnits( void )
+int CtiAnsiKV2ManufacturerTable070::getRawDemandDispUnits( void )
 {
    return ((int)_displayConfigTable._demandDisplayUnits);
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-string CtiAnsiKV2ManufacturerTableSeventy::getResolvedDemandDispUnits( void )
+string CtiAnsiKV2ManufacturerTable070::getResolvedDemandDispUnits( void )
 {
     string ret;
     switch (getRawDemandDispUnits())
@@ -266,26 +267,26 @@ string CtiAnsiKV2ManufacturerTableSeventy::getResolvedDemandDispUnits( void )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-int CtiAnsiKV2ManufacturerTableSeventy::getRawPrimaryDisplay( void )
+int CtiAnsiKV2ManufacturerTable070::getRawPrimaryDisplay( void )
 {
    return ((int)_displayConfigTable._primaryDisplay);
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-int CtiAnsiKV2ManufacturerTableSeventy::getNbrRightDigits( Digits_Bfld_t bitfield )
+int CtiAnsiKV2ManufacturerTable070::getNbrRightDigits( Digits_Bfld_t bitfield )
 {
    return ((int)bitfield._numberRightDigits);
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-int CtiAnsiKV2ManufacturerTableSeventy::getNbrLeftDigits( Digits_Bfld_t bitfield )
+int CtiAnsiKV2ManufacturerTable070::getNbrLeftDigits( Digits_Bfld_t bitfield )
 {
 
    return ((int)bitfield._numberLeftDigits);
 }
-void CtiAnsiKV2ManufacturerTableSeventy::displayDigitPlaces( Digits_Bfld_t bitfield )
+void CtiAnsiKV2ManufacturerTable070::displayDigitPlaces( Digits_Bfld_t bitfield )
 {
     int x;
     {

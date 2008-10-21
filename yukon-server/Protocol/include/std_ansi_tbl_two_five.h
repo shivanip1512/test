@@ -1,12 +1,6 @@
-
-
-#pragma warning( disable : 4786)
-#ifndef __STD_ANSI_TBL_TWO_FIVE_H__
-#define __STD_ANSI_TBL_TWO_FIVE_H__
-
 /*---------------------------------------------------------------------------------*
 *
-* File:   std_ansi_tbl_two_five
+* File:   std_ansi_tbl_25
 *
 * Class:
 * Date:   7/28/2005
@@ -14,11 +8,15 @@
 * Author: Julie Richter
 *
 * PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_tbl_two_five.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2008/10/07 18:16:46 $
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_tbl_25.h-arc  $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2008/10/21 16:30:32 $
 *    History:
       $Log: std_ansi_tbl_two_five.h,v $
+      Revision 1.6  2008/10/21 16:30:32  mfisher
+      YUK-6615 ANSI table class names and filenames are difficult to read
+      Renamed classes and filenames
+
       Revision 1.5  2008/10/07 18:16:46  mfisher
       YUK-6504 Server-side point management is naive
       cleaned up a few dsm2.h dependencies
@@ -27,9 +25,6 @@
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
       Revision 1.3  2005/12/12 20:34:48  jrichter
-      BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
-
-      Revision 1.2.2.1  2005/12/12 19:51:02  jrichter
       BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
 
       Revision 1.2  2005/09/29 21:19:47  jrichter
@@ -41,12 +36,15 @@
 
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
+#ifndef __STD_ANSI_TBL_25_H__
+#define __STD_ANSI_TBL_25_H__
+#pragma warning( disable : 4786)
 
 #include "dlldefs.h"
 #include "ctitypes.h"
 #include "types.h"
 #include "std_ansi_tbl_base.h"
-#include "std_ansi_tbl_two_three.h"
+#include "std_ansi_tbl_23.h"
 
 #define BCD   unsigned char
 
@@ -54,7 +52,7 @@
 
 #pragma pack( pop )
 
-class IM_EX_PROT CtiAnsiTableTwoFive : public CtiAnsiTableBase
+class IM_EX_PROT CtiAnsiTable25 : public CtiAnsiTableBase
 {
 protected:
 
@@ -67,21 +65,21 @@ private:
     ULONG _endDateTime;
     unsigned char _season;
 
-    CtiAnsiTableTwoThree *_prevDemandResetData;
+    CtiAnsiTable23 *_prevDemandResetData;
 
 public:
 
-   //CtiAnsiTableTwoFive( BOOL dateTimeFieldFlag, BOOL seasonInfoFieldFlag );
-   //CtiAnsiTableTwoFive( BYTE *dataBlob, BOOL dateTimeFieldFlag, BOOL seasonInfoFieldFlag );
-   CtiAnsiTableTwoFive( int oc, int sum, int demnd, int coin, int tier, bool reset, bool time, bool cumd, bool cumcont,
+   //CtiAnsiTable25( BOOL dateTimeFieldFlag, BOOL seasonInfoFieldFlag );
+   //CtiAnsiTable25( BYTE *dataBlob, BOOL dateTimeFieldFlag, BOOL seasonInfoFieldFlag );
+   CtiAnsiTable25( int oc, int sum, int demnd, int coin, int tier, bool reset, bool time, bool cumd, bool cumcont,
                          int f1, int f2, int timeformat, bool season );
-   CtiAnsiTableTwoFive( BYTE *dataBlob, int oc, int sum, int demnd, int coin, int tier, bool reset, bool time, bool cumd, bool cumcont,
+   CtiAnsiTable25( BYTE *dataBlob, int oc, int sum, int demnd, int coin, int tier, bool reset, bool time, bool cumd, bool cumcont,
                          int f1, int f2, int timeformat, bool season );
 
-   virtual ~CtiAnsiTableTwoFive();
-   CtiAnsiTableTwoFive& operator=(const CtiAnsiTableTwoFive& aRef);
+   virtual ~CtiAnsiTable25();
+   CtiAnsiTable25& operator=(const CtiAnsiTable25& aRef);
 
-   CtiAnsiTableTwoThree *getDemandResetDataTable( );
+   CtiAnsiTable23 *getDemandResetDataTable( );
    double getEndDateTime();
    unsigned char getSeason();
 
@@ -91,4 +89,4 @@ public:
 
 };
 
-#endif // #ifndef __STD_ANSI_TBL_TWO_FIVE_H__
+#endif // #ifndef __STD_ANSI_TBL_25_H__

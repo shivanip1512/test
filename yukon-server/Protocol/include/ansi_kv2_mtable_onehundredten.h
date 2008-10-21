@@ -1,11 +1,6 @@
-
-#pragma warning( disable : 4786)
-#ifndef __ANSI_KV2_MTABLE_ONEHUNDREDTEN_H__
-#define __ANSI_KV2_MTABLE_ONEHUNDREDTEN_H__
-
 /*---------------------------------------------------------------------------------*
 *
-* File:   
+* File:
 *
 * Class:
 * Date:   2/20/2003
@@ -13,11 +8,15 @@
 * Author: Eric Schmit
 *
 * PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/ansi_kv2_mtable_onehundredten.h-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2005/01/25 18:33:51 $
-    History         
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/ansi_kv2_mtable_110.h-arc  $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2008/10/21 16:30:31 $
+    History
       $Log: ansi_kv2_mtable_onehundredten.h,v $
+      Revision 1.2  2008/10/21 16:30:31  mfisher
+      YUK-6615 ANSI table class names and filenames are difficult to read
+      Renamed classes and filenames
+
       Revision 1.1  2005/01/25 18:33:51  jrichter
       added present value tables for kv2 and sentinel for voltage, current, freq, pf, etc..meter info
 
@@ -27,8 +26,12 @@
       Revision 1.1  2003/04/25 14:54:54  dsutton
       Ansi protocol tables specific to the implementation of the KV2
 
-         
+
 *----------------------------------------------------------------------------------*/
+#ifndef __ANSI_KV2_MTABLE_110_H__
+#define __ANSI_KV2_MTABLE_110_H__
+#pragma warning( disable : 4786)
+
 #include "dlldefs.h"
 #include "std_ansi_tbl_base.h"
 
@@ -66,12 +69,12 @@ struct PRESENT_REG_RCD
 
 #pragma pack( pop )
 
-class IM_EX_PROT CtiAnsiKV2ManufacturerTableOnehundredten : public CtiAnsiTableBase
+class IM_EX_PROT CtiAnsiKV2ManufacturerTable110 : public CtiAnsiTableBase
 {
 
 public:
-    CtiAnsiKV2ManufacturerTableOnehundredten( BYTE *dataBlob );
-    virtual ~CtiAnsiKV2ManufacturerTableOnehundredten();
+    CtiAnsiKV2ManufacturerTable110( BYTE *dataBlob );
+    virtual ~CtiAnsiKV2ManufacturerTable110();
 
     void printResult(  );
 
@@ -97,11 +100,11 @@ public:
     UINT8* getVTHD();
     UINT8* getDistortionPF();
 
-protected:    
+protected:
 private:
 
     PRESENT_REG_RCD  _presentRegTbl;
 };
 
-#endif // #ifndef ANSI_KV2_MTABLE_ONEHUNDREDTEN_H
+#endif // #ifndef ANSI_KV2_MTABLE_110_H
 

@@ -1,26 +1,25 @@
-#include "yukon.h"
-
 /*-----------------------------------------------------------------------------*
 *
-* File:   std_ansi_tbl_two_five
+* File:   std_ansi_tbl_25
 *
 * Date:   7/28/2005
 *
 * Author: Julie Richter
 *
 * PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_tbl_two_five.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/12/20 17:19:57 $
-*    History: 
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_tbl_25.cpp-arc  $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2008/10/21 16:30:31 $
+*    History:
       $Log: std_ansi_tbl_two_five.cpp,v $
+      Revision 1.5  2008/10/21 16:30:31  mfisher
+      YUK-6615 ANSI table class names and filenames are difficult to read
+      Renamed classes and filenames
+
       Revision 1.4  2005/12/20 17:19:57  tspar
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
       Revision 1.3  2005/12/12 20:34:29  jrichter
-      BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
-
-      Revision 1.2.2.1  2005/12/12 19:50:39  jrichter
       BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
 
       Revision 1.2  2005/09/29 21:18:54  jrichter
@@ -29,23 +28,24 @@
       Revision 1.1.2.1  2005/08/01 17:08:26  jrichter
       added frozen register retreival functionality.  cleanup.
 
-      
+
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
 #include "logger.h"
-#include "std_ansi_tbl_two_five.h"
+#include "std_ansi_tbl_25.h"
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-CtiAnsiTableTwoFive::CtiAnsiTableTwoFive( int oc, int sum, int demnd, int coin, int tier, bool reset, bool time, bool cumd, bool cumcont,
-                         int f1, int f2, int timeformat, bool season )
+CtiAnsiTable25::CtiAnsiTable25( int oc, int sum, int demnd, int coin, int tier, bool reset, bool time, bool cumd, bool cumcont,
+                                int f1, int f2, int timeformat, bool season )
 {
     _prevDemandResetData = NULL;
 }
-CtiAnsiTableTwoFive::CtiAnsiTableTwoFive( BYTE *dataBlob, int oc, int sum, int demnd, int coin, int tier, bool reset, bool time, bool cumd, bool cumcont,
-                         int f1, int f2, int timeformat, bool season )
+CtiAnsiTable25::CtiAnsiTable25( BYTE *dataBlob, int oc, int sum, int demnd, int coin, int tier, bool reset, bool time, bool cumd, bool cumcont,
+                                int f1, int f2, int timeformat, bool season )
 {
     int bytes;
     _dateTimeFieldFlag = time;
@@ -60,14 +60,14 @@ CtiAnsiTableTwoFive::CtiAnsiTableTwoFive( BYTE *dataBlob, int oc, int sum, int d
     {
         memcpy( (void *)&_season, dataBlob, sizeof(unsigned char));
         dataBlob += sizeof (unsigned char);
-    } 
+    }
 
-    _prevDemandResetData = new CtiAnsiTableTwoThree ( dataBlob, oc, sum, demnd, coin, tier, reset, time, cumd, cumcont, 
-                                                      f1, f2, timeformat, 25 );
+    _prevDemandResetData = new CtiAnsiTable23( dataBlob, oc, sum, demnd, coin, tier, reset, time, cumd, cumcont,
+                                               f1, f2, timeformat, 25 );
 }
 
-CtiAnsiTableTwoFive::~CtiAnsiTableTwoFive()
-{ 
+CtiAnsiTable25::~CtiAnsiTable25()
+{
     if (_prevDemandResetData != NULL)
     {
         delete _prevDemandResetData;
@@ -75,14 +75,14 @@ CtiAnsiTableTwoFive::~CtiAnsiTableTwoFive()
     }
 
 }
-CtiAnsiTableTwoFive& CtiAnsiTableTwoFive::operator=(const CtiAnsiTableTwoFive& aRef)
+CtiAnsiTable25& CtiAnsiTable25::operator=(const CtiAnsiTable25& aRef)
 {
    if(this != &aRef)
    {
    }
    return *this;
 }
-void CtiAnsiTableTwoFive::printResult( const string& deviceName)
+void CtiAnsiTable25::printResult( const string& deviceName)
 {
 
     /**************************************************************
@@ -98,12 +98,12 @@ void CtiAnsiTableTwoFive::printResult( const string& deviceName)
     }
 
     if (_dateTimeFieldFlag)
-    {                     
+    {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
         dout << "**End Date Time:  "<< CtiTime(_endDateTime).asString()<<endl;
     }
     if (_seasonInfoFieldFlag)
-    {                     
+    {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
         dout << "**Season:  "<< (int)_season<<endl;
     }
@@ -111,16 +111,16 @@ void CtiAnsiTableTwoFive::printResult( const string& deviceName)
 }
 
 
-CtiAnsiTableTwoThree *CtiAnsiTableTwoFive::getDemandResetDataTable( )
+CtiAnsiTable23 *CtiAnsiTable25::getDemandResetDataTable( )
 {
     return _prevDemandResetData;
 }
 
-double CtiAnsiTableTwoFive::getEndDateTime()
+double CtiAnsiTable25::getEndDateTime()
 {
     return (double)_endDateTime;
 }
-unsigned char CtiAnsiTableTwoFive::getSeason()
+unsigned char CtiAnsiTable25::getSeason()
 {
     return _season;
 }

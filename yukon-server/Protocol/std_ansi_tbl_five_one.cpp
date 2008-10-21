@@ -1,30 +1,26 @@
-#include "yukon.h"
-
-
-
 /*-----------------------------------------------------------------------------*
 *
-* File:   std_ansi_tbl_five_one
+* File:   std_ansi_tbl_51
 *
 * Date:   05/21/2004
 *
 * Author: Julie Richter
 *
-
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
 #include "logger.h"
-#include "std_ansi_tbl_five_one.h"
+#include "std_ansi_tbl_51.h"
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-CtiAnsiTableFiveOne::CtiAnsiTableFiveOne( )
+CtiAnsiTable51::CtiAnsiTable51( )
 {
 }
 
 
-CtiAnsiTableFiveOne::CtiAnsiTableFiveOne( BYTE *dataBlob )
+CtiAnsiTable51::CtiAnsiTable51( BYTE *dataBlob )
 {
     memcpy( (void *)&_time_tou, dataBlob, sizeof( TIME_TOU_RCD ));
     dataBlob +=  sizeof( TIME_TOU_RCD );
@@ -33,7 +29,7 @@ CtiAnsiTableFiveOne::CtiAnsiTableFiveOne( BYTE *dataBlob )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTableFiveOne::~CtiAnsiTableFiveOne()
+CtiAnsiTable51::~CtiAnsiTable51()
 {
    //delete clock_table;
 }
@@ -41,7 +37,7 @@ CtiAnsiTableFiveOne::~CtiAnsiTableFiveOne()
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTableFiveOne& CtiAnsiTableFiveOne::operator=(const CtiAnsiTableFiveOne& aRef)
+CtiAnsiTable51& CtiAnsiTable51::operator=(const CtiAnsiTable51& aRef)
 {
    if(this != &aRef)
    {
@@ -51,7 +47,7 @@ CtiAnsiTableFiveOne& CtiAnsiTableFiveOne::operator=(const CtiAnsiTableFiveOne& a
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableFiveOne::generateResultPiece( BYTE **dataBlob )
+void CtiAnsiTable51::generateResultPiece( BYTE **dataBlob )
 {
     memcpy( *dataBlob, (void *)&_time_tou, sizeof( TIME_TOU_RCD ));
     *dataBlob +=  sizeof( TIME_TOU_RCD );
@@ -60,7 +56,7 @@ void CtiAnsiTableFiveOne::generateResultPiece( BYTE **dataBlob )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableFiveOne::decodeResultPiece( BYTE **dataBlob )
+void CtiAnsiTable51::decodeResultPiece( BYTE **dataBlob )
 {
     memcpy( (void *)&_time_tou, *dataBlob, sizeof( TIME_TOU_RCD ));
     *dataBlob +=  sizeof( TIME_TOU_RCD );
@@ -68,9 +64,9 @@ void CtiAnsiTableFiveOne::decodeResultPiece( BYTE **dataBlob )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableFiveOne::printResult( const string& deviceName )
+void CtiAnsiTable51::printResult( const string& deviceName )
 {
- 
+
     /**************************************************************
     * its been discovered that if a method goes wrong while having the logger locked
     * unpleasant consquences may happen (application lockup for instance)  Because
@@ -101,7 +97,7 @@ void CtiAnsiTableFiveOne::printResult( const string& deviceName )
         dout << "           nbr_tier_switches          "<<(int)_time_tou.nbr_tier_switches<<endl;
         dout << "           calendar_tbl_size          "<<(int)_time_tou.calendar_tbl_size<<endl;
     }
-    
+
 }
 
 

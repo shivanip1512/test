@@ -1,10 +1,6 @@
-#pragma warning( disable : 4786)
-#ifndef __STD_ANSI_TBL_THREE_ONE_H__
-#define __STD_ANSI_TBL_THREE_ONE_H__
-
 /*---------------------------------------------------------------------------------*
 *
-* File:   std_ansi_tbl_three_one
+* File:   std_ansi_tbl_31
 *
 * Class:
 * Date:   2/1/2005
@@ -12,12 +8,15 @@
 * Author: Julie Richter
 *
 * PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_tbl_two_eight.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2008/10/07 18:16:46 $
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_tbl_31.h-arc  $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2008/10/21 16:30:32 $
 
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
+#ifndef __STD_ANSI_TBL_31_H__
+#define __STD_ANSI_TBL_31_H__
+#pragma warning( disable : 4786)
 
 #include "dlldefs.h"
 #include "ctitypes.h"
@@ -50,7 +49,7 @@ struct DISP_RCD
 
 #pragma pack( pop )
 
-class IM_EX_PROT CtiAnsiTableThreeOne : public CtiAnsiTableBase
+class IM_EX_PROT CtiAnsiTable31 : public CtiAnsiTableBase
 {
 protected:
 
@@ -60,10 +59,10 @@ private:
 
 public:
 
-   CtiAnsiTableThreeOne( );
-   CtiAnsiTableThreeOne( BYTE *dataBlob );
-   virtual ~CtiAnsiTableThreeOne();
-   CtiAnsiTableThreeOne& operator=(const CtiAnsiTableThreeOne& aRef);
+   CtiAnsiTable31( );
+   CtiAnsiTable31( BYTE *dataBlob );
+   virtual ~CtiAnsiTable31();
+   CtiAnsiTable31& operator=(const CtiAnsiTable31& aRef);
    void printResult( const string& deviceName );
 
    UINT16 getNbrDispSources( );
@@ -80,4 +79,4 @@ public:
 
 };
 
-#endif // #ifndef __STD_ANSI_TBL_THREE_ONE_H__
+#endif // #ifndef __STD_ANSI_TBL_31_H__

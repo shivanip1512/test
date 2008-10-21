@@ -1,10 +1,6 @@
-#pragma warning( disable : 4786)
-#ifndef __STD_ANSI_TBL_SIX_TWO_H__
-#define __STD_ANSI_TBL_SIX_TWO_H__
-
 /*---------------------------------------------------------------------------------*
 *
-* File:   std_ansi_tbl_six_two
+* File:   std_ansi_tbl_62
 *
 * Class:
 * Date:   10/24/2002
@@ -12,11 +8,15 @@
 * Author: Eric Schmit
 *
 * PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_six_two.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2008/10/07 18:16:46 $
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_62.h-arc  $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2008/10/21 16:30:32 $
 *    History:
       $Log: std_ansi_tbl_six_two.h,v $
+      Revision 1.6  2008/10/21 16:30:32  mfisher
+      YUK-6615 ANSI table class names and filenames are difficult to read
+      Renamed classes and filenames
+
       Revision 1.5  2008/10/07 18:16:46  mfisher
       YUK-6504 Server-side point management is naive
       cleaned up a few dsm2.h dependencies
@@ -25,9 +25,6 @@
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
       Revision 1.3  2005/12/12 20:34:47  jrichter
-      BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
-
-      Revision 1.2.6.1  2005/12/12 19:51:02  jrichter
       BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
 
       Revision 1.2  2005/01/03 23:07:15  jrichter
@@ -42,6 +39,9 @@
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
+#ifndef __STD_ANSI_TBL_62_H__
+#define __STD_ANSI_TBL_62_H__
+#pragma warning( disable : 4786)
 
 
 #include "dlldefs.h"
@@ -49,7 +49,7 @@
 #include "types.h"
 #include "std_ansi_tbl_base.h"
 
-#include "std_ansi_tbl_six_one.h"
+#include "std_ansi_tbl_61.h"
 
 #pragma pack( push, 1)
 
@@ -93,7 +93,7 @@ struct LP_DATA_SELECTION_RCD
 
 #pragma pack( pop )
 
-class IM_EX_PROT CtiAnsiTableSixTwo : public CtiAnsiTableBase
+class IM_EX_PROT CtiAnsiTable62 : public CtiAnsiTableBase
 {
 protected:
 
@@ -107,16 +107,16 @@ private:
 
 public:
 
-   CtiAnsiTableSixTwo(bool *dataSetUsedFlag, LP_DATA_SET *lp_data_set_info, bool scalarDivisorFlag1,
+   CtiAnsiTable62(bool *dataSetUsedFlag, LP_DATA_SET *lp_data_set_info, bool scalarDivisorFlag1,
                     bool scalarDivisorFlag2, bool scalarDivisorFlag3, bool scalarDivisorFlag4,
                     int stdVersionNumber   );
-   CtiAnsiTableSixTwo( BYTE *dataBlob, bool *dataSetUsedFlag, LP_DATA_SET *lp_data_set_info, bool scalarDivisorFlag1,
+   CtiAnsiTable62( BYTE *dataBlob, bool *dataSetUsedFlag, LP_DATA_SET *lp_data_set_info, bool scalarDivisorFlag1,
                     bool scalarDivisorFlag2, bool scalarDivisorFlag3, bool scalarDivisorFlag4,
                     int stdVersionNumber  );
 
-   virtual ~CtiAnsiTableSixTwo();
+   virtual ~CtiAnsiTable62();
 
-   CtiAnsiTableSixTwo& operator=(const CtiAnsiTableSixTwo& aRef);
+   CtiAnsiTable62& operator=(const CtiAnsiTable62& aRef);
    void generateResultPiece( BYTE **dataBlob );
    void printResult( const string& deviceName);
    void decodeResultPiece( BYTE **dataBlob );
@@ -130,4 +130,4 @@ public:
     UINT8* getLPDemandSelect(int setNbr);
 
 };
-#endif // #ifndef __STD_ANSI_TBL_SIX_TWO_H__
+#endif // #ifndef __STD_ANSI_TBL_62_H__

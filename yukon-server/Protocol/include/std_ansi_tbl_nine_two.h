@@ -1,14 +1,6 @@
-
-
-
-
-#pragma warning( disable : 4786)
-#ifndef __STD_ANSI_TBL_NINE_TWO_H__
-#define __STD_ANSI_TBL_NINE_TWO_H__
-
 /*---------------------------------------------------------------------------------*
 *
-* File:   std_ansi_tbl_nine_two
+* File:   std_ansi_tbl_92
 *
 * Class:
 * Date:   10/24/2002
@@ -16,13 +8,16 @@
 * Author: Eric Schmit
 *
 * PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_nine_two.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2008/10/07 18:16:45 $
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_92.h-arc  $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2008/10/21 16:30:32 $
 *    History:
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
+#ifndef __STD_ANSI_TBL_92_H__
+#define __STD_ANSI_TBL_92_H__
+#pragma warning( disable : 4786)
 
 
 #include "dlldefs.h"
@@ -51,7 +46,7 @@ struct GLOBAL_PARMS_RCD
 
 #pragma pack( pop )
 
-class IM_EX_PROT CtiAnsiTableNineTwo : public CtiAnsiTableBase
+class IM_EX_PROT CtiAnsiTable92 : public CtiAnsiTableBase
 {
 protected:
 
@@ -62,14 +57,14 @@ private:
 
 public:
 
-   CtiAnsiTableNineTwo(  );
-   CtiAnsiTableNineTwo( BYTE *dataBlob );
+   CtiAnsiTable92(  );
+   CtiAnsiTable92( BYTE *dataBlob );
 
-   virtual ~CtiAnsiTableNineTwo();
+   virtual ~CtiAnsiTable92();
 
-   CtiAnsiTableNineTwo& operator=(const CtiAnsiTableNineTwo& aRef);
+   CtiAnsiTable92& operator=(const CtiAnsiTable92& aRef);
    void generateResultPiece( BYTE **dataBlob );
    void printResult( const string& deviceName);
    void decodeResultPiece( BYTE **dataBlob );
 };
-#endif // #ifndef __STD_ANSI_TBL_NINE_TWO_H__
+#endif // #ifndef __STD_ANSI_TBL_92_H__

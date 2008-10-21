@@ -1,27 +1,25 @@
-#include "yukon.h"
-
-
 /*-----------------------------------------------------------------------------*
 *
-* File:   std_ansi_tbl_two_three
+* File:   std_ansi_tbl_23
 *
 * Date:   9/20/2002
 *
 * Author: Eric Schmit
 *
 * PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_tbl_two_three.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/12/20 17:19:57 $
-*    History: 
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_tbl_23.cpp-arc  $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2008/10/21 16:30:31 $
+*    History:
       $Log: std_ansi_tbl_two_three.cpp,v $
+      Revision 1.13  2008/10/21 16:30:31  mfisher
+      YUK-6615 ANSI table class names and filenames are difficult to read
+      Renamed classes and filenames
+
       Revision 1.12  2005/12/20 17:19:57  tspar
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
       Revision 1.11  2005/12/12 20:34:29  jrichter
-      BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
-
-      Revision 1.10.2.1  2005/12/12 19:50:39  jrichter
       BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
 
       Revision 1.10  2005/09/29 21:18:24  jrichter
@@ -51,13 +49,14 @@
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
 #include "logger.h"
-#include "std_ansi_tbl_two_three.h"
+#include "std_ansi_tbl_23.h"
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-CtiAnsiTableTwoThree::CtiAnsiTableTwoThree( int occur, int summations, int demands, int coinValues, int tier, bool reset_flag,
+CtiAnsiTable23::CtiAnsiTable23( int occur, int summations, int demands, int coinValues, int tier, bool reset_flag,
                                             bool time_flag, bool cum_demand_flag, bool cum_cont_flag, int format1, int format2, int timefmat, int tableNbr )
 {
    _ocNums = occur;
@@ -73,11 +72,11 @@ CtiAnsiTableTwoThree::CtiAnsiTableTwoThree( int occur, int summations, int deman
    _format2 = format2;
    _timefmt = timefmat;
 
-   
+
     //timefmat;
 }
 
-CtiAnsiTableTwoThree::CtiAnsiTableTwoThree( BYTE *dataBlob, int occur, int summations, int demands, int coinValues, int tier, bool reset_flag,
+CtiAnsiTable23::CtiAnsiTable23( BYTE *dataBlob, int occur, int summations, int demands, int coinValues, int tier, bool reset_flag,
                                             bool time_flag, bool cum_demand_flag, bool cum_cont_flag, int format1, int format2, int timefmat, int tableNbr )
 {
    int      index;
@@ -127,18 +126,18 @@ CtiAnsiTableTwoThree::CtiAnsiTableTwoThree( BYTE *dataBlob, int occur, int summa
    populateDemandsRecord(dataBlob, &_tot_data_block, offset);
    dataBlob += offset;
    _totSize += offset;
-   
-   
+
+
    _tot_data_block.coincidents = new COINCIDENTS_RCD[_coinNums];
    populateCoincidentsRecord(dataBlob, &_tot_data_block, offset);
    dataBlob += offset;
    _totSize += offset;
-   
+
    _tier_data_block = new DATA_BLK_RCD[_tierNums];
 
-   for (int tierIndex = 0; tierIndex < _tierNums; tierIndex++) 
+   for (int tierIndex = 0; tierIndex < _tierNums; tierIndex++)
    {
-       
+
        _tier_data_block[tierIndex].summations = new double[_sumNums];
 
        populateSummations(dataBlob, &_tier_data_block[tierIndex], offset);
@@ -160,26 +159,26 @@ CtiAnsiTableTwoThree::CtiAnsiTableTwoThree( BYTE *dataBlob, int occur, int summa
            dataBlob += offset;
            _totSize += offset;
 
-   }      
+   }
 }
 
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTableTwoThree::~CtiAnsiTableTwoThree()
+CtiAnsiTable23::~CtiAnsiTable23()
 {
    int index;
    //if( getReset() == true )
    //   delete _nbr_demand_resets;
 
    //part 2
-   if (_tot_data_block.summations != NULL) 
+   if (_tot_data_block.summations != NULL)
    {
        delete []_tot_data_block.summations;
        _tot_data_block.summations = NULL;
    }
    //demands record
-   if (_tot_data_block.demands != NULL) 
+   if (_tot_data_block.demands != NULL)
    {
        for( index = 0; index < getDemands(); index++ )
        {
@@ -188,7 +187,7 @@ CtiAnsiTableTwoThree::~CtiAnsiTableTwoThree()
               delete []_tot_data_block.demands[index].event_time;
               _tot_data_block.demands[index].event_time = NULL;
           }
-          if (_tot_data_block.demands[index].demand != NULL) 
+          if (_tot_data_block.demands[index].demand != NULL)
           {
               delete []_tot_data_block.demands[index].demand;
               _tot_data_block.demands[index].demand = NULL;
@@ -198,11 +197,11 @@ CtiAnsiTableTwoThree::~CtiAnsiTableTwoThree()
        _tot_data_block.demands = NULL;
    }
 
-   if (_tot_data_block.coincidents != NULL) 
+   if (_tot_data_block.coincidents != NULL)
    {
        for( index = 0; index < getCoins(); index++ )
        {
-           if (_tot_data_block.coincidents[index].coincident_values != NULL) 
+           if (_tot_data_block.coincidents[index].coincident_values != NULL)
            {
                delete []_tot_data_block.coincidents[index].coincident_values;
                _tot_data_block.coincidents[index].coincident_values = NULL;
@@ -212,16 +211,16 @@ CtiAnsiTableTwoThree::~CtiAnsiTableTwoThree()
        _tot_data_block.coincidents = NULL;
    }
       //part 3
-   if (_tier_data_block != NULL) 
+   if (_tier_data_block != NULL)
    {
-       for (int tierIndex = 0; tierIndex < _tierNums; tierIndex++) 
+       for (int tierIndex = 0; tierIndex < _tierNums; tierIndex++)
        {
-           if (_tier_data_block[tierIndex].summations != NULL) 
+           if (_tier_data_block[tierIndex].summations != NULL)
            {
                delete []_tier_data_block[tierIndex].summations;
                _tier_data_block[tierIndex].summations = NULL;
            }
-           if (_tier_data_block[tierIndex].demands != NULL) 
+           if (_tier_data_block[tierIndex].demands != NULL)
            {
                for( index = 0; index < getDemands(); index++ )
                {
@@ -231,27 +230,27 @@ CtiAnsiTableTwoThree::~CtiAnsiTableTwoThree()
                       _tier_data_block[tierIndex].demands[index].event_time = NULL;
                   }
 
-                  if (_tier_data_block[tierIndex].demands[index].demand != NULL) 
+                  if (_tier_data_block[tierIndex].demands[index].demand != NULL)
                   {
                       delete []_tier_data_block[tierIndex].demands[index].demand;
                       _tier_data_block[tierIndex].demands[index].demand = NULL;
                   }
-                  
+
                }
                delete []_tier_data_block[tierIndex].demands;
                _tier_data_block[tierIndex].demands = NULL;
            }
 
-           if (_tier_data_block[tierIndex].coincidents != NULL) 
+           if (_tier_data_block[tierIndex].coincidents != NULL)
            {
                for( index = 0; index < getCoins(); index++ )
                {
-                   if (_tier_data_block[tierIndex].coincidents[index].coincident_values != NULL) 
+                   if (_tier_data_block[tierIndex].coincidents[index].coincident_values != NULL)
                    {
                        delete []_tier_data_block[tierIndex].coincidents[index].coincident_values;
                        _tier_data_block[tierIndex].coincidents[index].coincident_values = NULL;
                    }
-                   
+
                }
                delete []_tier_data_block[tierIndex].coincidents;
                _tier_data_block[tierIndex].coincidents = NULL;
@@ -267,7 +266,7 @@ CtiAnsiTableTwoThree::~CtiAnsiTableTwoThree()
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTableTwoThree& CtiAnsiTableTwoThree::operator=(const CtiAnsiTableTwoThree& aRef)
+CtiAnsiTable23& CtiAnsiTable23::operator=(const CtiAnsiTable23& aRef)
 {
    if(this != &aRef)
    {
@@ -278,7 +277,7 @@ CtiAnsiTableTwoThree& CtiAnsiTableTwoThree::operator=(const CtiAnsiTableTwoThree
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-DATA_BLK_RCD CtiAnsiTableTwoThree::getTotDataBlock( void )
+DATA_BLK_RCD CtiAnsiTable23::getTotDataBlock( void )
 {
    return _tot_data_block;
 }
@@ -286,7 +285,7 @@ DATA_BLK_RCD CtiAnsiTableTwoThree::getTotDataBlock( void )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-int CtiAnsiTableTwoThree::copyTotDataBlock( BYTE *ptr )
+int CtiAnsiTable23::copyTotDataBlock( BYTE *ptr )
 {
    memcpy( ptr, &_tot_data_block, _totSize );
 
@@ -296,7 +295,7 @@ int CtiAnsiTableTwoThree::copyTotDataBlock( BYTE *ptr )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-int CtiAnsiTableTwoThree::getOccurs( void )
+int CtiAnsiTable23::getOccurs( void )
 {
    return _ocNums;
 }
@@ -304,7 +303,7 @@ int CtiAnsiTableTwoThree::getOccurs( void )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-int CtiAnsiTableTwoThree::getSums( void )
+int CtiAnsiTable23::getSums( void )
 {
    return _sumNums;
 }
@@ -312,7 +311,7 @@ int CtiAnsiTableTwoThree::getSums( void )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-int CtiAnsiTableTwoThree::getDemands( void )
+int CtiAnsiTable23::getDemands( void )
 {
    return _demandNums;
 }
@@ -320,7 +319,7 @@ int CtiAnsiTableTwoThree::getDemands( void )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-int CtiAnsiTableTwoThree::getCoins( void )
+int CtiAnsiTable23::getCoins( void )
 {
    return _coinNums;
 }
@@ -328,7 +327,7 @@ int CtiAnsiTableTwoThree::getCoins( void )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-int CtiAnsiTableTwoThree::getTier( void )
+int CtiAnsiTable23::getTier( void )
 {
    return _tierNums;
 }
@@ -336,7 +335,7 @@ int CtiAnsiTableTwoThree::getTier( void )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-bool CtiAnsiTableTwoThree::getReset( void )
+bool CtiAnsiTable23::getReset( void )
 {
    return _reset;
 }
@@ -344,7 +343,7 @@ bool CtiAnsiTableTwoThree::getReset( void )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-bool CtiAnsiTableTwoThree::getTime( void )
+bool CtiAnsiTable23::getTime( void )
 {
    return _time;
 }
@@ -352,7 +351,7 @@ bool CtiAnsiTableTwoThree::getTime( void )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-bool CtiAnsiTableTwoThree::getCumd( void )
+bool CtiAnsiTable23::getCumd( void )
 {
    return _cumd;
 }
@@ -360,7 +359,7 @@ bool CtiAnsiTableTwoThree::getCumd( void )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-bool CtiAnsiTableTwoThree::getCumcont( void )
+bool CtiAnsiTable23::getCumcont( void )
 {
    return _cumcont;
 }
@@ -368,13 +367,13 @@ bool CtiAnsiTableTwoThree::getCumcont( void )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-int CtiAnsiTableTwoThree::getTotSize( void )
+int CtiAnsiTable23::getTotSize( void )
 {
    return _totSize;
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableTwoThree::generateResultPiece( BYTE **dataBlob )
+void CtiAnsiTable23::generateResultPiece( BYTE **dataBlob )
 {
     int dummy = 0;
 
@@ -394,8 +393,8 @@ void CtiAnsiTableTwoThree::generateResultPiece( BYTE **dataBlob )
 
     retrieveCoincidentsRecord(*dataBlob, _tot_data_block, dummy);
     *dataBlob += dummy;
-    
-    for (int tierIndex = 0; tierIndex < _tierNums; tierIndex++) 
+
+    for (int tierIndex = 0; tierIndex < _tierNums; tierIndex++)
     {
         retrieveSummations(*dataBlob, _tier_data_block[tierIndex], dummy);
         *dataBlob += dummy;
@@ -410,7 +409,7 @@ void CtiAnsiTableTwoThree::generateResultPiece( BYTE **dataBlob )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableTwoThree::decodeResultPiece( BYTE **dataBlob )
+void CtiAnsiTable23::decodeResultPiece( BYTE **dataBlob )
 {
    int dummy = 0;
 
@@ -440,7 +439,7 @@ void CtiAnsiTableTwoThree::decodeResultPiece( BYTE **dataBlob )
    *dataBlob += dummy;
 
    _tier_data_block = new DATA_BLK_RCD[_tierNums];
-   for (int tierIndex = 0; tierIndex < _tierNums; tierIndex++) 
+   for (int tierIndex = 0; tierIndex < _tierNums; tierIndex++)
    {
        _tier_data_block[tierIndex].summations = new double[_sumNums];
        populateSummations(*dataBlob, &_tier_data_block[tierIndex], dummy);
@@ -457,26 +456,26 @@ void CtiAnsiTableTwoThree::decodeResultPiece( BYTE **dataBlob )
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableTwoThree::populateSummations( BYTE *dataBlob, DATA_BLK_RCD *data_block, int &offset )
+void CtiAnsiTable23::populateSummations( BYTE *dataBlob, DATA_BLK_RCD *data_block, int &offset )
 {
     int index, bytes;
     offset = 0;
-    
+
     for( index = 0; index < _sumNums; index++ )
     {
        bytes = toDoubleParser( dataBlob, data_block->summations[index], _format1 );
        dataBlob += bytes;
        offset += bytes;
     }
-    
+
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableTwoThree::populateDemandsRecord( BYTE *dataBlob, DATA_BLK_RCD *data_block, int &offset )
+void CtiAnsiTable23::populateDemandsRecord( BYTE *dataBlob, DATA_BLK_RCD *data_block, int &offset )
 {
     int index, cnt, bytes;
     offset = 0;
-    
+
     for( index = 0; index < _demandNums; index++ )
     {
       if( _time == true )
@@ -503,7 +502,7 @@ void CtiAnsiTableTwoThree::populateDemandsRecord( BYTE *dataBlob, DATA_BLK_RCD *
       }
       else
          data_block->demands[index].cum_demand = 0;
-      
+
       if( _cumcont == true )
       {
          //_tot_data_block.demands[index].cont_cum_demand = new double;
@@ -521,13 +520,13 @@ void CtiAnsiTableTwoThree::populateDemandsRecord( BYTE *dataBlob, DATA_BLK_RCD *
          bytes = toDoubleParser( dataBlob, data_block->demands[index].demand[cnt], _format2 );
          dataBlob += bytes;
          offset += bytes;
-      }   
-   }    
+      }
+   }
 
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableTwoThree::populateCoincidentsRecord( BYTE *dataBlob, DATA_BLK_RCD *data_block, int &offset )
+void CtiAnsiTable23::populateCoincidentsRecord( BYTE *dataBlob, DATA_BLK_RCD *data_block, int &offset )
 {
     int index, cnt, bytes;
     offset = 0;
@@ -547,11 +546,11 @@ void CtiAnsiTableTwoThree::populateCoincidentsRecord( BYTE *dataBlob, DATA_BLK_R
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableTwoThree::retrieveSummations( BYTE *dataBlob, DATA_BLK_RCD data_block, int &offset )
+void CtiAnsiTable23::retrieveSummations( BYTE *dataBlob, DATA_BLK_RCD data_block, int &offset )
 {
     int index, bytes;
     offset = 0;
-    
+
     for( index = 0; index < _sumNums; index++ )
     {
        bytes = fromDoubleParser( data_block.summations[index], dataBlob, _format1 );
@@ -561,7 +560,7 @@ void CtiAnsiTableTwoThree::retrieveSummations( BYTE *dataBlob, DATA_BLK_RCD data
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableTwoThree::retrieveDemandsRecord( BYTE *dataBlob, DATA_BLK_RCD data_block, int &offset )
+void CtiAnsiTable23::retrieveDemandsRecord( BYTE *dataBlob, DATA_BLK_RCD data_block, int &offset )
 {
     int index, cnt, bytes;
     offset = 0;
@@ -581,7 +580,7 @@ void CtiAnsiTableTwoThree::retrieveDemandsRecord( BYTE *dataBlob, DATA_BLK_RCD d
               }
           }
        }
-       
+
        if( _cumd == true )
        {
           //_tot_data_block.demands[index].cum_demand = new double;
@@ -590,7 +589,7 @@ void CtiAnsiTableTwoThree::retrieveDemandsRecord( BYTE *dataBlob, DATA_BLK_RCD d
           dataBlob += bytes;
           offset += bytes;
        }
-       
+
        if( _cumcont == true )
        {
           //_tot_data_block.demands[index].cont_cum_demand = new double;
@@ -599,7 +598,7 @@ void CtiAnsiTableTwoThree::retrieveDemandsRecord( BYTE *dataBlob, DATA_BLK_RCD d
           dataBlob += bytes;
           offset += bytes;
        }
-       
+
        for( cnt = 0; cnt < _ocNums; cnt++ )
        {
           bytes = fromDoubleParser( data_block.demands[index].demand[cnt], dataBlob, _format2 );
@@ -611,7 +610,7 @@ void CtiAnsiTableTwoThree::retrieveDemandsRecord( BYTE *dataBlob, DATA_BLK_RCD d
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableTwoThree::retrieveCoincidentsRecord( BYTE *dataBlob, DATA_BLK_RCD data_block, int &offset )
+void CtiAnsiTable23::retrieveCoincidentsRecord( BYTE *dataBlob, DATA_BLK_RCD data_block, int &offset )
 {
     int index, cnt, bytes;
     offset = 0;
@@ -629,7 +628,7 @@ void CtiAnsiTableTwoThree::retrieveCoincidentsRecord( BYTE *dataBlob, DATA_BLK_R
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableTwoThree::printResult( const string& deviceName )
+void CtiAnsiTable23::printResult( const string& deviceName )
 {
     int index, cnt;
     string string1,string2;
@@ -652,7 +651,7 @@ void CtiAnsiTableTwoThree::printResult( const string& deviceName )
         CtiLockGuard< CtiLogger > doubt_guard( dout );
         dout << "**Register Data Record**   " ;
     }
-    if ( _reset == true ) 
+    if ( _reset == true )
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
         dout <<endl<< "    Number Demand Resets : " <<(int)_nbr_demand_resets;
@@ -668,7 +667,7 @@ void CtiAnsiTableTwoThree::printResult( const string& deviceName )
     printDemands(_tot_data_block);
     ////////  COINCIDENTS  //////////
     printCoincidents(_tot_data_block);
-    for (int tierIndex = 0; tierIndex < _tierNums; tierIndex++) 
+    for (int tierIndex = 0; tierIndex < _tierNums; tierIndex++)
     {
         {
             CtiLockGuard< CtiLogger > doubt_guard( dout );
@@ -682,7 +681,7 @@ void CtiAnsiTableTwoThree::printResult( const string& deviceName )
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableTwoThree::printSummations( DATA_BLK_RCD data_block )
+void CtiAnsiTable23::printSummations( DATA_BLK_RCD data_block )
 {
     int index;
     {
@@ -703,7 +702,7 @@ void CtiAnsiTableTwoThree::printSummations( DATA_BLK_RCD data_block )
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableTwoThree::printDemands( DATA_BLK_RCD data_block )
+void CtiAnsiTable23::printDemands( DATA_BLK_RCD data_block )
 {
     int index, cnt;
     string timeString;
@@ -733,7 +732,7 @@ void CtiAnsiTableTwoThree::printDemands( DATA_BLK_RCD data_block )
               }
           }
        }
-       
+
        if( _cumd == true )
        {
           {
@@ -741,7 +740,7 @@ void CtiAnsiTableTwoThree::printDemands( DATA_BLK_RCD data_block )
               dout <<endl<< "          Cum Demand: " << data_block.demands[index].cum_demand;
           }
        }
-       
+
        if( _cumcont == true )
        {
           {
@@ -760,7 +759,7 @@ void CtiAnsiTableTwoThree::printDemands( DATA_BLK_RCD data_block )
               dout << "  " << data_block.demands[index].demand[cnt];
            }
        }
-   }    
+   }
    {
               CtiLockGuard< CtiLogger > doubt_guard( dout );
               dout <<endl;
@@ -769,10 +768,10 @@ void CtiAnsiTableTwoThree::printDemands( DATA_BLK_RCD data_block )
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableTwoThree::printCoincidents( DATA_BLK_RCD data_block )
+void CtiAnsiTable23::printCoincidents( DATA_BLK_RCD data_block )
 {
     int index, cnt;
-    
+
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
         dout << "       ***Coincidents: " ;
@@ -799,7 +798,7 @@ void CtiAnsiTableTwoThree::printCoincidents( DATA_BLK_RCD data_block )
 }
 
 
-double CtiAnsiTableTwoThree::getDemandValue ( int index, int dataBlock )
+double CtiAnsiTable23::getDemandValue ( int index, int dataBlock )
 {
     switch (dataBlock)
     {
@@ -830,11 +829,11 @@ double CtiAnsiTableTwoThree::getDemandValue ( int index, int dataBlock )
         }
         default:
             return  *(_tot_data_block.demands[index].demand);
-            break; 
+            break;
     }
     return *(_tot_data_block.demands[index].demand);
 }
-double CtiAnsiTableTwoThree::getSummationsValue ( int index, int dataBlock )
+double CtiAnsiTable23::getSummationsValue ( int index, int dataBlock )
 {
 
     switch (dataBlock)
@@ -854,13 +853,13 @@ double CtiAnsiTableTwoThree::getSummationsValue ( int index, int dataBlock )
         }
         default:
             return  _tot_data_block.summations[index];
-            break; 
+            break;
     }
 
     return _tot_data_block.summations[index];
 }
 
-double CtiAnsiTableTwoThree::getDemandEventTime( int index, int dataBlock )
+double CtiAnsiTable23::getDemandEventTime( int index, int dataBlock )
 {
     if( _time == true )
     {

@@ -1,8 +1,6 @@
-#include "yukon.h"
-
 /*---------------------------------------------------------------------------------*
 *
-* File:   ansi_kv2_mtable_onehundredten.cpp
+* File:   ansi_kv2_mtable_110.cpp
 *
 * Class:
 * Date:   2/20/2003
@@ -10,11 +8,15 @@
 * Author: Eric Schmit
 *
 * PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/ansi_kv2_mtable_onehundredten.cpp-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2005/02/10 23:23:56 $
-*    History: 
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/ansi_kv2_mtable_110.cpp-arc  $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2008/10/21 16:30:30 $
+*    History:
       $Log: ansi_kv2_mtable_onehundredten.cpp,v $
+      Revision 1.3  2008/10/21 16:30:30  mfisher
+      YUK-6615 ANSI table class names and filenames are difficult to read
+      Renamed classes and filenames
+
       Revision 1.2  2005/02/10 23:23:56  alauinger
       Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
 
@@ -28,14 +30,15 @@
       Ansi protocol tables specific to the implementation of the KV2
 
 *----------------------------------------------------------------------------------*/
+#include "yukon.h"
 
 #include "logger.h"
-#include "ansi_kv2_mtable_onehundredten.h"
+#include "ansi_kv2_mtable_110.h"
 
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiKV2ManufacturerTableOnehundredten::CtiAnsiKV2ManufacturerTableOnehundredten( BYTE *dataBlob )
+CtiAnsiKV2ManufacturerTable110::CtiAnsiKV2ManufacturerTable110( BYTE *dataBlob )
 {
     memcpy( (void *)&_presentRegTbl, dataBlob, sizeof( unsigned char ) * 166);
     dataBlob +=  (sizeof( unsigned char ) * 166);
@@ -44,13 +47,13 @@ CtiAnsiKV2ManufacturerTableOnehundredten::CtiAnsiKV2ManufacturerTableOnehundredt
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiKV2ManufacturerTableOnehundredten::~CtiAnsiKV2ManufacturerTableOnehundredten()
+CtiAnsiKV2ManufacturerTable110::~CtiAnsiKV2ManufacturerTable110()
 {
 }
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiKV2ManufacturerTableOnehundredten::printResult(  )
+void CtiAnsiKV2ManufacturerTable110::printResult(  )
 {
     UINT32 *value32;
     UINT16 *value16;
@@ -279,107 +282,107 @@ void CtiAnsiKV2ManufacturerTableOnehundredten::printResult(  )
     }
 }
 
-UINT32* CtiAnsiKV2ManufacturerTableOnehundredten::getPreviousIntvlDemands()
+UINT32* CtiAnsiKV2ManufacturerTable110::getPreviousIntvlDemands()
 {
     return (UINT32 *)_presentRegTbl.previousIntvlDemand;
 }
 
-UINT32* CtiAnsiKV2ManufacturerTableOnehundredten::getDemands()
+UINT32* CtiAnsiKV2ManufacturerTable110::getDemands()
 {
     return (UINT32 *)_presentRegTbl.demands;
 }
 
-UINT32* CtiAnsiKV2ManufacturerTableOnehundredten::getKWDmdFundPlus()
+UINT32* CtiAnsiKV2ManufacturerTable110::getKWDmdFundPlus()
 {
     return (UINT32 *)_presentRegTbl.kwDmdFundPlus;
 }
 
-UINT32* CtiAnsiKV2ManufacturerTableOnehundredten::getKWDmdFundOnly()
+UINT32* CtiAnsiKV2ManufacturerTable110::getKWDmdFundOnly()
 {
     return (UINT32 *)_presentRegTbl.kwDmdFundOnly;
 }
 
-UINT32* CtiAnsiKV2ManufacturerTableOnehundredten::getKVARDmdFundPlus()
+UINT32* CtiAnsiKV2ManufacturerTable110::getKVARDmdFundPlus()
 {
     return (UINT32 *)_presentRegTbl.kvarDmdFundPlus;
 }
 
-UINT32* CtiAnsiKV2ManufacturerTableOnehundredten::getKVARDmdFundOnly()
+UINT32* CtiAnsiKV2ManufacturerTable110::getKVARDmdFundOnly()
 {
     return (UINT32 *)_presentRegTbl.kvarDmdFundOnly;
 }
 
-UINT32* CtiAnsiKV2ManufacturerTableOnehundredten::getDistortionKVADmd()
+UINT32* CtiAnsiKV2ManufacturerTable110::getDistortionKVADmd()
 {
     return (UINT32 *)_presentRegTbl.distortionKVADmd;
 }
 
-UINT32* CtiAnsiKV2ManufacturerTableOnehundredten::getApparentKVADmd()
+UINT32* CtiAnsiKV2ManufacturerTable110::getApparentKVADmd()
 {
     return (UINT32 *)_presentRegTbl.apparentKVADmd;
 }
 
-UINT16* CtiAnsiKV2ManufacturerTableOnehundredten::getVlnFundPlus()
+UINT16* CtiAnsiKV2ManufacturerTable110::getVlnFundPlus()
 {
     return (UINT16 *)_presentRegTbl.vlnFundPlus;
 }
 
-UINT16* CtiAnsiKV2ManufacturerTableOnehundredten::getVlnFundOnly()
+UINT16* CtiAnsiKV2ManufacturerTable110::getVlnFundOnly()
 {
     return (UINT16 *)_presentRegTbl.vlnFundOnly;
 }
 
-UINT16* CtiAnsiKV2ManufacturerTableOnehundredten::getVllFundPlus()
+UINT16* CtiAnsiKV2ManufacturerTable110::getVllFundPlus()
 {
     return (UINT16 *)_presentRegTbl.vllFundPlus;
 }
 
-UINT16* CtiAnsiKV2ManufacturerTableOnehundredten::getVllFundOnly()
+UINT16* CtiAnsiKV2ManufacturerTable110::getVllFundOnly()
 {
     return (UINT16 *)_presentRegTbl.vllFundOnly;
 }
 
-UINT16* CtiAnsiKV2ManufacturerTableOnehundredten::getCurrFundPlus()
+UINT16* CtiAnsiKV2ManufacturerTable110::getCurrFundPlus()
 {
     return (UINT16 *)_presentRegTbl.currFundPlus;
 }
 
-UINT16* CtiAnsiKV2ManufacturerTableOnehundredten::getCurrFundOnly()
+UINT16* CtiAnsiKV2ManufacturerTable110::getCurrFundOnly()
 {
     return (UINT16 *)_presentRegTbl.currFundOnly;
 }
 
-UINT16 CtiAnsiKV2ManufacturerTableOnehundredten::getImputedNeutralCurr()
+UINT16 CtiAnsiKV2ManufacturerTable110::getImputedNeutralCurr()
 {
     return _presentRegTbl.imputedNeutralCurr;
 }
 
-UINT8 CtiAnsiKV2ManufacturerTableOnehundredten::getPowerFactor()
+UINT8 CtiAnsiKV2ManufacturerTable110::getPowerFactor()
 {
     return _presentRegTbl.powerFactor;
 }
 
-UINT16 CtiAnsiKV2ManufacturerTableOnehundredten::getFrequency()
+UINT16 CtiAnsiKV2ManufacturerTable110::getFrequency()
 {
     return _presentRegTbl.frequency;
 }
 
-UINT8* CtiAnsiKV2ManufacturerTableOnehundredten::getTDD()
+UINT8* CtiAnsiKV2ManufacturerTable110::getTDD()
 {
     return (UINT8*)_presentRegTbl.tdd;
 }
 
-UINT8* CtiAnsiKV2ManufacturerTableOnehundredten::getITHD()
+UINT8* CtiAnsiKV2ManufacturerTable110::getITHD()
 {
     return (UINT8*)_presentRegTbl.ithd;
 }
 
-UINT8* CtiAnsiKV2ManufacturerTableOnehundredten::getVTHD()
+UINT8* CtiAnsiKV2ManufacturerTable110::getVTHD()
 {
     return (UINT8*)_presentRegTbl.vthd;
 }
 
-UINT8* CtiAnsiKV2ManufacturerTableOnehundredten::getDistortionPF()
+UINT8* CtiAnsiKV2ManufacturerTable110::getDistortionPF()
 {
     return (UINT8*)_presentRegTbl.distortionPF;
 }

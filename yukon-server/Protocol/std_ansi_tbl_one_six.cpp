@@ -1,27 +1,25 @@
-#include "yukon.h"
-
-
 /*-----------------------------------------------------------------------------*
 *
-* File:   std_ansi_tbl_one_six
+* File:   std_ansi_tbl_16
 *
 * Date:   9/19/2002
 *
 * Author: Eric Schmit
 *
 * PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_one_six.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/12/20 17:19:57 $
-*    History: 
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_16.cpp-arc  $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2008/10/21 16:30:31 $
+*    History:
       $Log: std_ansi_tbl_one_six.cpp,v $
+      Revision 1.9  2008/10/21 16:30:31  mfisher
+      YUK-6615 ANSI table class names and filenames are difficult to read
+      Renamed classes and filenames
+
       Revision 1.8  2005/12/20 17:19:57  tspar
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
       Revision 1.7  2005/12/12 20:34:29  jrichter
-      BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
-
-      Revision 1.6.4.1  2005/12/12 19:50:39  jrichter
       BUGS&ENHANCEMENTS: sync up with 31branch.  added device name to table debug, update lp data with any valid data received back from device even if it is not complete, report demand reset time for frozen values that are not initialized
 
       Revision 1.6  2005/02/10 23:23:57  alauinger
@@ -39,19 +37,20 @@
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#include "yukon.h"
 
 #include "logger.h"
-#include "std_ansi_tbl_one_six.h"
+#include "std_ansi_tbl_16.h"
 
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTableOneSix::CtiAnsiTableOneSix( int nbr_constants )
+CtiAnsiTable16::CtiAnsiTable16( int nbr_constants )
 {
    _numberOfConstants = nbr_constants;
 }
 
-CtiAnsiTableOneSix::CtiAnsiTableOneSix( BYTE *dataBlob, int nbr_constants )
+CtiAnsiTable16::CtiAnsiTable16( BYTE *dataBlob, int nbr_constants )
 {
    int   index;
    _numberOfConstants = nbr_constants;
@@ -68,7 +67,7 @@ CtiAnsiTableOneSix::CtiAnsiTableOneSix( BYTE *dataBlob, int nbr_constants )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTableOneSix::~CtiAnsiTableOneSix()
+CtiAnsiTable16::~CtiAnsiTable16()
 {
    delete []_source_link;
 }
@@ -76,7 +75,7 @@ CtiAnsiTableOneSix::~CtiAnsiTableOneSix()
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-CtiAnsiTableOneSix& CtiAnsiTableOneSix::operator=(const CtiAnsiTableOneSix& aRef)
+CtiAnsiTable16& CtiAnsiTable16::operator=(const CtiAnsiTable16& aRef)
 {
    if(this != &aRef)
    {
@@ -86,7 +85,7 @@ CtiAnsiTableOneSix& CtiAnsiTableOneSix::operator=(const CtiAnsiTableOneSix& aRef
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-SOURCE_LINK_BFLD CtiAnsiTableOneSix::getSourceLink(int aOffset)
+SOURCE_LINK_BFLD CtiAnsiTable16::getSourceLink(int aOffset)
 {
     SOURCE_LINK_BFLD ret;
 
@@ -102,13 +101,13 @@ SOURCE_LINK_BFLD CtiAnsiTableOneSix::getSourceLink(int aOffset)
     {
         ret = _source_link[aOffset];
     }
-    
+
     return (ret);
 }
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableOneSix::generateResultPiece( BYTE **dataBlob )
+void CtiAnsiTable16::generateResultPiece( BYTE **dataBlob )
 {
     for( int index = 0; index < _numberOfConstants; index++ )
     {
@@ -121,7 +120,7 @@ void CtiAnsiTableOneSix::generateResultPiece( BYTE **dataBlob )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableOneSix::decodeResultPiece( BYTE **dataBlob )
+void CtiAnsiTable16::decodeResultPiece( BYTE **dataBlob )
 {
     _source_link = new SOURCE_LINK_BFLD[_numberOfConstants];
 
@@ -132,27 +131,27 @@ void CtiAnsiTableOneSix::decodeResultPiece( BYTE **dataBlob )
     }
 }
 
-bool CtiAnsiTableOneSix::getUOMEntryFlag( int index )
+bool CtiAnsiTable16::getUOMEntryFlag( int index )
 {
    return (bool)_source_link[index].uom_entry_flag;
 }
-bool CtiAnsiTableOneSix::getDemandCtrlFlag( int index )
+bool CtiAnsiTable16::getDemandCtrlFlag( int index )
 {
    return (bool)_source_link[index].demand_ctrl_flag;
 }
-bool CtiAnsiTableOneSix::getDataCtrlFlag( int index )
+bool CtiAnsiTable16::getDataCtrlFlag( int index )
 {
    return (bool)_source_link[index].data_ctrl_flag;
 }
-bool CtiAnsiTableOneSix::getConstantsFlag( int index )
+bool CtiAnsiTable16::getConstantsFlag( int index )
 {
    return (bool)_source_link[index].constants_flag;
 }
-bool CtiAnsiTableOneSix::getPulseEngrFlag( int index )
+bool CtiAnsiTable16::getPulseEngrFlag( int index )
 {
    return (bool)_source_link[index].pulse_engr_flag;
-} 
-bool CtiAnsiTableOneSix::getConstToBeAppliedFlag( int index )
+}
+bool CtiAnsiTable16::getConstToBeAppliedFlag( int index )
 {
    return (bool)_source_link[index].constant_to_be_applied;
 }
@@ -160,7 +159,7 @@ bool CtiAnsiTableOneSix::getConstToBeAppliedFlag( int index )
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-void CtiAnsiTableOneSix::printResult( const string& deviceName )
+void CtiAnsiTable16::printResult( const string& deviceName )
 {
     int integer;
     /**************************************************************
@@ -188,7 +187,7 @@ void CtiAnsiTableOneSix::printResult( const string& deviceName )
             dout <<"           "<<getConstantsFlag( index )<<"           ";
             dout <<getPulseEngrFlag( index )<<"           "<<getConstToBeAppliedFlag( index )<<endl;
         }
-         
+
     }
 
 }
