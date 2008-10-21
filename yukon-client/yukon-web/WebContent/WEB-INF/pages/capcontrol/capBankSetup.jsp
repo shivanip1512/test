@@ -273,7 +273,7 @@
 					value="#{capBankEditor.capBank.capBank.maxOperationDisabled}" />
 				<x:outputLabel for="disabledOps"
 					value="Disable upon reaching max operations"
-					title="Should we be automatically disabled after reaching our max op counts" />
+					title="Option to disable automatic control on this device upon reaching the max number of operations." />
 	
 				<x:htmlTag value="br" />
 				<x:htmlTag value="br" />

@@ -205,7 +205,7 @@
                         <h:selectBooleanCheckbox id="Disabled_Ops" value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].maxOperationDisabled}"
                             disabled="#{!capControlForm.editingCBCStrategy}" />
                         <x:outputLabel for="Disabled_Ops" value="Disable upon reaching max operations" 
-                            title="Should we be automatically disabled after reaching our max op counts"/>
+                            title="Option to disable automatic control on this device upon reaching the max number of operations."/>
                     </x:htmlTag>
                 </h:column>
             </h:panelGrid>
