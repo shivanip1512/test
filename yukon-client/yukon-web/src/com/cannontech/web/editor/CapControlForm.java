@@ -684,6 +684,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         else if (getDbPersistent() instanceof CapControlStrategy) {
             CapControlStrategy strat = (CapControlStrategy)getDbPersistent();
             itemID = strat.getStrategyID().intValue();
+            editingCBCStrategy = true;
             initPanels(DBEditorTypes.EDITOR_STRATEGY);
             if(strat.getControlMethod().equalsIgnoreCase(CapControlStrategy.CNTRL_TIME_OF_DAY)) {
                 CCStrategyTimeOfDaySet tod = getStrategyTimeOfDay();
