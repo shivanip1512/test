@@ -112,8 +112,7 @@ if (allowCtlVal!=null) {
 					 <cti:checkNoProperty propertyid="<%=CBCSettingsRole.ALLOW_AREA_CONTROLS%>">
 						<a id="area_state_${thisAreaId}"
 	                       name="area_state"
-	                       class="<%=css%>"
-	                       href="javascript:void(0);" >
+	                       class="<%=css%>" >
 							<cti:capControlValue paoId="${thisAreaId}" type="CBCAREA" format="STATE" />
 						</a> 
 					 </cti:checkNoProperty>
