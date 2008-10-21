@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2008/10/17 11:14:38 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2008/10/21 16:09:26 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -328,7 +328,8 @@ private:
 
 protected:
 
-    void setWrap(Wrap *wrap);  //  unit test access
+    void setWrap(Wrap *wrap);    //  unit test access function
+    virtual long currentTime();  //  unit test access function override
 
 public:
 

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2008/10/17 11:14:38 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2008/10/21 16:09:26 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -587,8 +587,6 @@ void CCU721::writeDLCTimesync( byte_buffer_t &buf )
 
 void CCU721::writeAWord( byte_buffer_t &buf, const ASTRUCT &ASt )
 {
-    buf.push_back(AWORDLEN);
-
     buf.insert(buf.end(), AWORDLEN, 0);
 
     A_Word(buf.end() - AWORDLEN, ASt);
@@ -602,14 +600,10 @@ void CCU721::writeBWord( byte_buffer_t &buf, const BSTRUCT &BSt )
         BSt.IO == Emetcon::IO_Function_Write )
     {
         words = (BSt.Length + 4) / 5;
-
-        buf.push_back(BWORDLEN + CWORDLEN * words);
     }
     else
     {
         words = Emetcon::determineDWordCount(BSt.Length);
-
-        buf.push_back(BWORDLEN);
     }
 
     //  we insert relative to the end so that we can append to any buffer given to us

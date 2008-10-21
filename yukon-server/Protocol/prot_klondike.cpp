@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2008/10/17 11:14:38 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2008/10/21 16:09:26 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -354,6 +354,7 @@ void Klondike::doOutput(CommandCode command_code)
             outbound.push_back(_dtran_queue_entry.dlc_parms);
             outbound.push_back(_dtran_queue_entry.stages);
 
+            outbound.push_back(_dtran_queue_entry.outbound.size());
             outbound.insert(outbound.end(), _dtran_queue_entry.outbound.begin(),
                                             _dtran_queue_entry.outbound.end());
 
@@ -381,9 +382,11 @@ void Klondike::doOutput(CommandCode command_code)
                 }
                 else
                 {
-                    outbound.insert(outbound.end(), waiting_itr->priority);
-                    outbound.insert(outbound.end(), waiting_itr->dlc_parms);
-                    outbound.insert(outbound.end(), waiting_itr->stages);
+                    outbound.push_back(waiting_itr->priority);
+                    outbound.push_back(waiting_itr->dlc_parms);
+                    outbound.push_back(waiting_itr->stages);
+                    outbound.push_back(waiting_itr->outbound.size());
+
                     outbound.insert(outbound.end(), waiting_itr->outbound.begin(),
                                                     waiting_itr->outbound.end());
 
@@ -434,7 +437,7 @@ void Klondike::doOutput(CommandCode command_code)
 
         case CommandCode_TimeSyncCCU:
         {
-            unsigned long now = CtiTime::now().seconds();
+            unsigned long now = currentTime();
 
             outbound.push_back(now & 0xff);   now >>= 8;
             outbound.push_back(now & 0xff);   now >>= 8;
@@ -1236,6 +1239,11 @@ void Klondike::clearRoutes()
 void Klondike::setWrap(Wrap *wrap)
 {
     _wrap = wrap;
+}
+
+long Klondike::currentTime()
+{
+    return ::time(0);
 }
 
 }
