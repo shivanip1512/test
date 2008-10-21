@@ -7,11 +7,17 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.38 $
-* DATE         :  $Date: 2008/10/13 16:25:18 $
+* REVISION     :  $Revision: 1.39 $
+* DATE         :  $Date: 2008/10/21 21:51:12 $
 *
 * HISTORY      :
 * $Log: pendingOpThread.cpp,v $
+* Revision 1.39  2008/10/21 21:51:12  jotteson
+* YUK-6504 Server processes should not load all points
+* Changed Dispatch to load points by pao differently than porter handles it.
+* Updated tracking of paoid's loaded.
+* Changed functions to require the point to exist instead of just using a point id.
+*
 * Revision 1.38  2008/10/13 16:25:18  jotteson
 * YUK-6504 Server processes should not load all points
 * Re-factor of CtiPointManager::getEqual to getPoint.
@@ -2005,7 +2011,7 @@ void CtiPendingOpThread::dbWriterThread()
     return;
 }
 
-
+//FIX_ME!!!
 CtiPointNumericSPtr CtiPendingOpThread::getPointOffset(CtiPendingPointOperations &ppc, long pao, int poff)
 {
     CtiPointNumericSPtr pPoint;
@@ -2029,10 +2035,14 @@ CtiPointNumericSPtr CtiPendingOpThread::getPointOffset(CtiPendingPointOperations
 
 CtiPendingOpThread::CtiPendingOpSet_t::iterator CtiPendingOpThread::erasePendingControl(CtiPendingOpThread::CtiPendingOpSet_t::iterator iter)
 {
-    CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(iter->getPointID());
-    if( pDyn != NULL )
+    CtiPointSPtr point = PointMgr.getPoint(iter->getPointID());
+    if( point )
     {
-        pDyn->getDispatch().resetTags( TAG_CONTROL_PENDING );
+        CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(point);
+        if( pDyn != NULL )
+        {
+            pDyn->getDispatch().resetTags( TAG_CONTROL_PENDING );
+        }
     }
     return _pendingControls.erase(iter);
 }

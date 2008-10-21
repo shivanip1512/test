@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.63 $
-* DATE         :  $Date: 2008/10/13 16:25:18 $
+* REVISION     :  $Revision: 1.64 $
+* DATE         :  $Date: 2008/10/21 21:51:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -773,8 +773,6 @@ void CtiPointManager::getEqualByPAO(long pao, vector<ptr_type> &points)
 
             if( p )
             {
-                updateAccess(p->getPointID(), time_now);
-
                 points.push_back(p);
             }
         }
@@ -823,8 +821,6 @@ CtiPointManager::ptr_type CtiPointManager::getOffsetTypeEqual(LONG pao, INT Offs
                 {
                     if( p->getUpdatedFlag() )
                     {
-                        updateAccess(p->getPointID());
-
                         pRet = p;
                     }
                     else
@@ -869,8 +865,6 @@ CtiPointManager::ptr_type CtiPointManager::getControlOffsetEqual(LONG pao, INT O
             {
                 if( p->getUpdatedFlag() )
                 {
-                    updateAccess(p->getPointID());
-
                     pRet = p;
                 }
                 else
@@ -997,7 +991,7 @@ void CtiPointManager::processExpired()
     lru_timeslice_map::iterator timeslice_itr = _lru_timeslices.begin(),
                                 timeslice_end = _lru_timeslices.end();
 
-    const int cache_max = 100 * 1000;
+    const int cache_max = 100000;
     int valid_points = 0;
 
     time_t expiration_time  = 300;  //  only expire points that were created longer than this ago
@@ -1056,7 +1050,12 @@ void CtiPointManager::erase(long pid, bool isExpiration)
 {
     ptr_type deleted = _smartMap.remove(pid);
 
-    removePoint(deleted);
+    removePoint(deleted, isExpiration);
+
+    if(isExpiration)
+    {
+        _paoids_loaded.erase(deleted->getDeviceID());
+    }
 }
 
 

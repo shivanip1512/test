@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/desolvers.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/12/20 17:25:49 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2008/10/21 21:51:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,6 +32,7 @@ IM_EX_CTIBASE string desolveDeviceWindowType( LONG aType );
 IM_EX_CTIBASE string desolvePAOCategory( INT aCategory );
 IM_EX_CTIBASE string desolveDeviceType( INT aType );
 IM_EX_CTIBASE string desolvePortType( INT aType );
+IM_EX_CTIBASE string desolvePointType( INT aType );
 IM_EX_CTIBASE string desolveRouteType( INT aType );
 IM_EX_CTIBASE string desolveLoadManagementType( INT aType );
 IM_EX_CTIBASE string desolveCapControlType( INT aType );

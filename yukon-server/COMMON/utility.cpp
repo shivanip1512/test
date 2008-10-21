@@ -954,6 +954,69 @@ INT GetPIDFromDeviceAndOffset(int device, int offset)
     return id;
 }
 
+INT GetPIDFromDeviceAndControlOffset(int device, int offset)
+{
+    string sql("SELECT POINTID FROM POINTSTATUS WHERE CONTROLOFFSET = ");
+    INT id = 0;
+
+    sql += CtiNumStr(offset);
+    sql += " AND POINTID IN (SELECT POINTID FROM POINT WHERE PAOBJECTID = ";
+    sql += CtiNumStr(device);
+    sql += ")";
+
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
+
+    RWDBReader  rdr = ExecuteQuery( conn, sql );
+
+    if(rdr() && rdr.isValid())
+    {
+        rdr >> id;
+    }
+    else if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << " " << sql << endl;
+        }
+    }
+
+    return id;
+}
+
+INT GetPIDFromDeviceAndOffsetAndType(int device, int offset, string &type)
+{
+    string sql("SELECT POINTID FROM POINT WHERE PAOBJECTID = ");
+    INT id = 0;
+
+    sql += CtiNumStr(device);
+    sql += " AND POINTOFFSET = ";
+    sql += CtiNumStr(offset);
+    sql += " AND POINTTYPE = ";
+    sql += type;
+
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
+
+    RWDBReader  rdr = ExecuteQuery( conn, sql );
+
+    if(rdr() && rdr.isValid())
+    {
+        rdr >> id;
+    }
+    else if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << " " << sql << endl;
+        }
+    }
+
+    return id;
+}
+
 /*
  *  Checks if sockets are available in the system.
  */

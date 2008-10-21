@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.200 $
-* DATE         :  $Date: 2008/10/13 16:25:18 $
+* REVISION     :  $Revision: 1.201 $
+* DATE         :  $Date: 2008/10/21 21:51:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -146,7 +146,7 @@ void ApplyGroupControlStatusVerification(const long key, CtiPointSPtr pPoint, vo
        pVG->isDeviceGroupType(pPoint->getDeviceID()))
     {
         // This is almost certainly a pseudo control indicator that needs to be checked.
-        const CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(pPoint->getPointID());
+        const CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(pPoint);
         if( (INT)(pDyn->getValue()) == CONTROLLED && pDyn->getQuality() != ManualQuality )
         {
             // Our dynamic info thinks this point is controlled.  What does our pending info say?
@@ -987,7 +987,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
 
                         if(pPoint)
                         {
-                            CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(pPoint->getPointID());
+                            CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(pPoint);
 
                             if(pDyn != NULL
                                && pDyn->getDispatch().getTags() & TAG_ATTRIB_CONTROL_AVAILABLE
@@ -1031,7 +1031,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                                 }
                                 else if( is_a_control )
                                 {
-                                    const CtiTablePointAlarming alarming = PointMgr.getAlarming(pPoint->getID());
+                                    const CtiTablePointAlarming alarming = PointMgr.getAlarming(pPoint);
 
                                     CtiSignalMsg *pFailSig = CTIDBG_new CtiSignalMsg(pPoint->getID(), Cmd->getSOE(), devicename + " / " + pPoint->getName() + ": Commanded Control " + ResolveStateName(pPoint->getStateGroupID(), rawstate) + " Failed", getAlarmStateName( alarming.getAlarmCategory(CtiTablePointAlarming::commandFailure) ), GeneralLogType, alarming.getAlarmCategory(CtiTablePointAlarming::commandFailure), Cmd->getUser());
 
@@ -1209,7 +1209,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
 
                 {
                     CtiPointSPtr pPt = PointMgr.getPoint( pointid );
-                    CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(pPt->getPointID());
+                    CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(pPt);
                     pDyn->getDispatch().setTags( tagstoset );
                     pDyn->getDispatch().resetTags( tagstoreset );
                 }
@@ -1320,7 +1320,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                     CtiPointSPtr pPt = PointMgr.getPoint( pid );
                     if(pPt)
                     {
-                        const CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(pPt->getPointID());
+                        const CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(pPt);
 
                         CtiPointDataMsg *pDat = CTIDBG_new CtiPointDataMsg(pPt->getID(),
                                                                            pDyn->getValue(),
@@ -1879,11 +1879,11 @@ INT CtiVanGogh::archivePointDataMessage(const CtiPointDataMsg &aPD)
     try
     {
         // See if I know about this point ID
-        CtiPointSPtr TempPoint = PointMgr.getPoint(aPD.getId());
+        CtiPointSPtr TempPoint = PointMgr.getCachedPoint(aPD.getId());
 
         if(TempPoint)      // We do know this point..
         {
-            CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(TempPoint->getPointID());
+            CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(TempPoint);
 
             if(pDyn != NULL && !(pDyn->getDispatch().getTags() & MASK_ANY_SERVICE_DISABLE))
             {
@@ -2186,7 +2186,6 @@ INT CtiVanGogh::processMessageData( CtiMessage *pMsg )
                 if(aChg.getDatabase() == ChangePAODb)
                 {
                     _deviceLiteSet.erase(aChg.getId());
-                    adjustDeviceDisableTags(aChg.getId(), true, pMsg->getUser());
                 }
 
                 break;
@@ -2434,7 +2433,7 @@ INT CtiVanGogh::assembleMultiFromSignalForConnection(const CtiServer::ptr_type &
 
                 if(pPoint)
                 {
-                    const CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(pPoint->getPointID());
+                    const CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(pPoint);
                     // Only set non-alarm tags.  This signal must indicate if it is an alarm on entry (via checkSignalStateQuality)
                     pSig->setTags( (pDyn->getDispatch().getTags() & ~SIGNAL_MANAGER_MASK) );
                 }
@@ -2501,7 +2500,7 @@ INT CtiVanGogh::assembleMultiFromPointDataForConnection(const CtiServer::ptr_typ
 
                 if(pTempPoint)
                 {
-                    const CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(pTempPoint->getPointID());
+                    const CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(pTempPoint);
 
 
                     // 20041228 CGP.  This is the correct usage for exemptible... No one wants this code right now.
@@ -2766,7 +2765,7 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
 
         if(pPoint)
         {
-            CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(pPoint->getPointID());
+            CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(pPoint);
 
             if(pDyn != NULL
                && pDyn->getDispatch().getTags() & TAG_ATTRIB_CONTROL_AVAILABLE
@@ -2819,7 +2818,7 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
                 pendingControlLMMsg->getControl().setSoeTag( CtiTableLMControlHistory::getNextSOE() );
                 QueryPerformanceCounter(&t4Time);
 
-                const CtiTablePointAlarming alarming = PointMgr.getAlarming(pPoint->getID());
+                const CtiTablePointAlarming alarming = PointMgr.getAlarming(pPoint);
 
                 CtiSignalMsg *pFailSig = CTIDBG_new CtiSignalMsg(pPoint->getID(), 0, "Control " + ResolveStateName(pPoint->getStateGroupID(), pMsg->getRawState()) + " Failed", getAlarmStateName( alarming.getAlarmCategory(CtiTablePointAlarming::commandFailure) ), GeneralLogType, alarming.getAlarmCategory(CtiTablePointAlarming::commandFailure), pMsg->getUser());
 
@@ -3021,7 +3020,7 @@ INT CtiVanGogh::postMOAUploadToConnection(CtiServer::ptr_type &CM, int flags)
         {
             CtiPointSPtr TempPoint = itr->second;
             {
-                const CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(TempPoint->getPointID());
+                const CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(TempPoint);
 
                 if(pDyn != NULL)
                 {
@@ -3096,7 +3095,7 @@ INT CtiVanGogh::postMOAUploadToConnection(CtiServer::ptr_type &CM, int flags)
 
             if( TempPoint )
             {
-                const CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(TempPoint->getPointID());
+                const CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(TempPoint);
 
                 if(pDyn != NULL)
                 {
@@ -3235,7 +3234,7 @@ INT CtiVanGogh::postMOAUploadToConnection(CtiServer::ptr_type &CM, int flags)
 
             if( TempPoint )
             {
-                const CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(TempPoint->getPointID());
+                const CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(TempPoint);
 
                 if(pDyn != NULL)
                 {
@@ -3986,11 +3985,11 @@ INT CtiVanGogh::checkPointDataStateQuality(CtiPointDataMsg  *pData, CtiMultiWrap
 
     if(pData != NULL)
     {
-        CtiPointSPtr pPoint = PointMgr.getPoint(pData->getId());
+        CtiPointSPtr pPoint = PointMgr.getCachedPoint(pData->getId());
 
         if(pPoint)      // We do know this point..
         {
-            CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(pPoint->getPointID());
+            CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(pPoint);
 
             if(pData->getType() == InvalidPointType)
             {
@@ -4085,7 +4084,7 @@ INT CtiVanGogh::checkPointDataStateQuality(CtiPointDataMsg  *pData, CtiMultiWrap
 
                                     if(pCtrlPt)      // We do know this point..
                                     {
-                                        const CtiDynamicPointDispatch *pCtrlDyn = PointMgr.getDynamic(pCtrlPt->getPointID());
+                                        const CtiDynamicPointDispatch *pCtrlDyn = PointMgr.getDynamic(pCtrlPt);
                                         CtiPendable *pendable = CTIDBG_new CtiPendable(verificationPtr->dbTriggerData.getPointID(), CtiPendable::CtiPendableAction_ControlStatusComplete, NULL, pData->getTime() );
                                         pendable->_value = pData->getValue();
                                         pendable->_tags = pCtrlDyn->getDispatch().getTags();
@@ -4130,9 +4129,9 @@ INT CtiVanGogh::checkPointDataStateQuality(CtiPointDataMsg  *pData, CtiMultiWrap
                     }
 
                     //  checked here to avoid calling the point manager inside processStalePoint()
-                    if( PointMgr.hasProperty(pPoint->getPointID(), CtiTablePointProperty::STALE_UPDATE_TYPE) )
+                    if( PointMgr.hasProperty(pPoint, CtiTablePointProperty::STALE_UPDATE_TYPE) )
                     {
-                        int updateType = PointMgr.getProperty(pPoint->getPointID(), CtiTablePointProperty::STALE_UPDATE_TYPE);
+                        int updateType = PointMgr.getProperty(pPoint, CtiTablePointProperty::STALE_UPDATE_TYPE);
                         processStalePoint(pPoint, pDyn, updateType, *pData, aWrap);
                     }
                 }
@@ -4197,7 +4196,7 @@ INT CtiVanGogh::markPointNonUpdated(CtiPointSPtr point, CtiMultiWrapper &aWrap)
 
     if( !(point->getType() == StatusPointType && point->getPointOffset() == 2000) ) // If not a comm status point
     {
-        CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(point->getPointID());
+        CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(point);
 
         // Make sure we use the correct enumeration based upon point type.
         INT alarm = (point->isStatus() ? CtiTablePointAlarming::nonUpdatedStatus : CtiTablePointAlarming::nonUpdatedNumeric);
@@ -4212,7 +4211,7 @@ INT CtiVanGogh::markPointNonUpdated(CtiPointSPtr point, CtiMultiWrapper &aWrap)
 
                 if(!_signalManager.isAlarmed(point->getID(), alarm)  && !pDyn->isConditionActive(alarm))
                 {
-                    const CtiTablePointAlarming alarming = PointMgr.getAlarming(point->getID());
+                    const CtiTablePointAlarming alarming = PointMgr.getAlarming(point);
 
                     CtiSignalMsg *pSig = CTIDBG_new CtiSignalMsg(point->getID(), 0, "Non Updated", getAlarmStateName( alarming.getAlarmCategory(alarm) ), GeneralLogType, alarming.getAlarmCategory(alarm));
                     pSig->setPointValue(pDyn->getDispatch().getValue());
@@ -4333,7 +4332,7 @@ void CtiVanGogh::postSignalAsEmail( CtiSignalMsg &sig )
 
                 if(pPoint)
                 {
-                    ngid = PointMgr.getAlarming(pPoint->getID()).getNotificationGroupID();
+                    ngid = PointMgr.getAlarming(pPoint).getNotificationGroupID();
                 }
             }
 
@@ -4433,7 +4432,7 @@ INT CtiVanGogh::checkForStatusAlarms(CtiPointDataMsg *pData, CtiMultiWrapper &aW
 
     if(point->isStatus())    // OK, we are indeed a status point.
     {
-        CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(point->getPointID());
+        CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(point);
 
         if(pDyn != NULL)     // We must know about the point!
         {
@@ -4444,7 +4443,7 @@ INT CtiVanGogh::checkForStatusAlarms(CtiPointDataMsg *pData, CtiMultiWrapper &aW
                 pSig = NULL;       // There is no alarm for this alarmstate.
 
                 // This prohibits re-alarming on the same problem!
-                if( PointMgr.getAlarming(point->getID()).alarmOn( alarm ) ) // we are set to alarm on this condition (category > SignalEvent).
+                if( PointMgr.getAlarming(point).alarmOn( alarm ) ) // we are set to alarm on this condition (category > SignalEvent).
                 {
                     switch(alarm)
                     {
@@ -4548,7 +4547,7 @@ INT CtiVanGogh::checkForNumericAlarms(CtiPointDataMsg *pData, CtiMultiWrapper &a
     {
         CtiPointNumericSPtr             pNumeric = boost::static_pointer_cast<CtiPointNumeric>(point);
 
-        CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(point->getPointID());
+        CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(point);
 
         if(pDyn != NULL)     // We must know about the point!
         {
@@ -5628,7 +5627,7 @@ bool CtiVanGogh::ablementPoint(CtiPointSPtr &pPoint, bool &devicedifferent, UINT
         CtiSignalMsg *pSig = NULL;
 
         {
-            CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(pPoint->getPointID());
+            CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(pPoint);
 
             if(pDyn != NULL)
             {
@@ -6013,7 +6012,7 @@ void CtiVanGogh::VGAppMonitorThread()
                     // This call probably hits the database.
                     if( pPt = PointMgr.getPoint(*pointListWalker) )
                     {
-                        if(pDynPt = PointMgr.getDynamic(pPt->getPointID()))
+                        if(pDynPt = PointMgr.getDynamic(pPt))
                         {
                             if((pDynPt->getTimeStamp()).seconds()<(compareTime))
                             {
@@ -6697,7 +6696,7 @@ int CtiVanGogh::checkNumericReasonability(CtiPointDataMsg *pData, CtiMultiWrappe
 {
     int alarm = NORMAL;
     string text;
-    CtiPointClientManager::ReasonabilityLimitStruct limits = PointMgr.getReasonabilityLimits(pointNumeric->getPointID());
+    CtiPointClientManager::ReasonabilityLimitStruct limits = PointMgr.getReasonabilityLimits(pointNumeric);
 
     try
     {
@@ -6730,7 +6729,7 @@ int CtiVanGogh::checkNumericReasonability(CtiPointDataMsg *pData, CtiMultiWrappe
                             dout << CtiTime() << " **** HIGH REASONABILITY Violation ****  Point: " << pointNumeric->getName() << " " << text << endl;
                         }
 
-                        const CtiTablePointAlarming alarming = PointMgr.getAlarming(pointNumeric->getID());
+                        const CtiTablePointAlarming alarming = PointMgr.getAlarming(pointNumeric);
 
                         pSig = CTIDBG_new CtiSignalMsg(pointNumeric->getID(), pData->getSOE(), text, getAlarmStateName( alarming.getAlarmCategory(CtiTablePointAlarming::highReasonability) ), GeneralLogType, alarming.getAlarmCategory(CtiTablePointAlarming::highReasonability), pData->getUser());
                     }
@@ -6778,7 +6777,7 @@ int CtiVanGogh::checkNumericReasonability(CtiPointDataMsg *pData, CtiMultiWrappe
                             dout << CtiTime() << " **** LOW REASONABILITY Violation ****  Point: " << pointNumeric->getName() << " " << text << endl;
                         }
 
-                        const CtiTablePointAlarming &alarming = PointMgr.getAlarming(pointNumeric->getID());
+                        const CtiTablePointAlarming &alarming = PointMgr.getAlarming(pointNumeric);
 
                         pSig = CTIDBG_new CtiSignalMsg(pointNumeric->getID(), pData->getSOE(), text, getAlarmStateName( alarming.getAlarmCategory(CtiTablePointAlarming::lowReasonability) ), GeneralLogType, alarming.getAlarmCategory(CtiTablePointAlarming::lowReasonability), pData->getUser());
                         pSig->setPointValue(pData->getValue());
@@ -6848,7 +6847,7 @@ void CtiVanGogh::checkNumericRateOfChange(int alarm, CtiPointDataMsg *pData, Cti
                     dout << CtiTime() << " **** RATE OF CHANGE Violation **** Point: " << pointNumeric->getID() << " " << tstr << endl;
                 }
 
-                const CtiTablePointAlarming &alarming = PointMgr.getAlarming(pointNumeric->getID());
+                const CtiTablePointAlarming &alarming = PointMgr.getAlarming(pointNumeric);
 
                 // OK, we have an actual alarm condition to gripe about!
                 pSig = CTIDBG_new CtiSignalMsg(pointNumeric->getID(), pData->getSOE(), tstr, getAlarmStateName( alarming.getAlarmCategory(alarm) ), GeneralLogType, alarming.getAlarmCategory(alarm), pData->getUser());
@@ -6887,7 +6886,7 @@ void CtiVanGogh::checkNumericLimits(int alarm, CtiPointDataMsg *pData, CtiMultiW
 
     try
     {
-        const CtiTablePointLimit limit = PointMgr.getPointLimit(pointNumeric->getPointID(), limitnumber);
+        const CtiTablePointLimit limit = PointMgr.getPointLimit(pointNumeric, limitnumber);
 
         if(limit.getLowLimit() != -DBL_MAX && limit.getHighLimit() != DBL_MAX && limitStateCheck(alarm, limit, val, exceeds))
         {
@@ -6942,7 +6941,7 @@ void CtiVanGogh::checkNumericLimits(int alarm, CtiPointDataMsg *pData, CtiMultiW
                     dout << CtiTime() << " **** LIMIT Violation ****  Point: " << pointNumeric->getName() << " " << text << endl;
                 }
 
-                const CtiTablePointAlarming &alarming = PointMgr.getAlarming(pointNumeric->getID());
+                const CtiTablePointAlarming &alarming = PointMgr.getAlarming(pointNumeric);
 
                 pSig = CTIDBG_new CtiSignalMsg(pointNumeric->getID(), pData->getSOE(), text, getAlarmStateName( alarming.getAlarmCategory(alarm) ), GeneralLogType, alarming.getAlarmCategory(alarm), pData->getUser());
                 pSig->setPointValue(pData->getValue());
@@ -7053,7 +7052,7 @@ void CtiVanGogh::checkStatusUCOS(int alarm, CtiPointDataMsg *pData, CtiMultiWrap
                 dout << CtiTime() << " **** UNCOMMANDEDSTATECHANGE **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
-            const CtiTablePointAlarming &alarming = PointMgr.getAlarming(point->getID());
+            const CtiTablePointAlarming &alarming = PointMgr.getAlarming(point);
 
             // OK, we have an actual alarm condition to gripe about!
             pSig = CTIDBG_new CtiSignalMsg(point->getID(), pData->getSOE(), string( "UCOS: " + ResolveStateName(point->getStateGroupID(), (int)pData->getValue())), getAlarmStateName( alarming.getAlarmCategory(alarm) ), GeneralLogType, alarming.getAlarmCategory(alarm), pData->getUser());                        // This is an alarm if the alarm state indicates anything other than SignalEvent.
@@ -7086,7 +7085,7 @@ void CtiVanGogh::checkStatusState(int alarm, CtiPointDataMsg *pData, CtiMultiWra
 
         if(CtiTablePointAlarming::state0 <= stateverify && stateverify <= CtiTablePointAlarming::state9)
         {
-            if( PointMgr.getAlarming(point->getID()).getAlarmCategory(stateverify) > SignalEvent)
+            if( PointMgr.getAlarming(point).getAlarmCategory(stateverify) > SignalEvent)
             {
                 signal = ((int)val == stateverify);
             }
@@ -7105,7 +7104,7 @@ void CtiVanGogh::checkStatusState(int alarm, CtiPointDataMsg *pData, CtiMultiWra
 
                 string tstr(ResolveStateName(point->getStateGroupID(), (int)pData->getValue()));
 
-                const CtiTablePointAlarming &alarming = PointMgr.getAlarming(point->getID());
+                const CtiTablePointAlarming &alarming = PointMgr.getAlarming(point);
 
                 // OK, we have an actual alarm condition to gripe about!
                 pSig = CTIDBG_new CtiSignalMsg(point->getID(), pData->getSOE(), tstr, getAlarmStateName( alarming.getAlarmCategory(alarm) ), GeneralLogType, alarming.getAlarmCategory(alarm), pData->getUser());                        // This is an alarm if the alarm state indicates anything other than SignalEvent.
@@ -7150,7 +7149,7 @@ void CtiVanGogh::checkChangeOfState(int alarm, CtiPointDataMsg *pData, CtiMultiW
 
             string tstr(ResolveStateName(point->getStateGroupID(), (int)pData->getValue()));
 
-            const CtiTablePointAlarming &alarming = PointMgr.getAlarming(pPoint->getID());
+            const CtiTablePointAlarming &alarming = PointMgr.getAlarming(pPoint);
 
             // OK, we have an actual alarm condition to gripe about!
             pSig = CTIDBG_new CtiSignalMsg(point->getID(), pData->getSOE(), tstr, getAlarmStateName( alarming.getAlarmCategory(alarm) ), GeneralLogType, alarming.getAlarmCategory(alarm), pData->getUser());                        // This is an alarm if the alarm state indicates anything other than SignalEvent.
@@ -7178,9 +7177,9 @@ void CtiVanGogh::tagSignalAsAlarm( CtiPointSPtr point, CtiSignalMsg *&pSig, int 
     if(pSig != NULL)
     {
         UINT tags = 0;
-        const CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(point->getPointID());
+        const CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(point);
 
-        const CtiTablePointAlarming &alarming = PointMgr.getAlarming(point->getID());
+        const CtiTablePointAlarming &alarming = PointMgr.getAlarming(point);
 
         // We now need to check if this "alarm" is a real alarm ( > SignalEvent level )
         if(alarming.getAlarmCategory(alarm) > SignalEvent)
@@ -7215,7 +7214,7 @@ void CtiVanGogh::updateDynTagsForSignalMsg( CtiPointSPtr point, CtiSignalMsg *&p
         _signalManager.addSignal(*pSig);
     }
 
-    CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(point->getPointID());
+    CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(point);
     if(pDyn)
     {
         pDyn->setConditionActive(alarm_condition, condition_active);                      // Mark this point as in this condition if the signal says the condition IS active.
@@ -7252,7 +7251,7 @@ void CtiVanGogh::activatePointAlarm(int alarm, CtiMultiWrapper &aWrap, CtiPointS
         {
             sigtags = TAG_REPORT_MSG_BLOCK_EXTRA_EMAIL;
         }
-        else if( !activate && ((pDyn->getDispatch().getTags() & SIGNAL_MANAGER_MASK) || !PointMgr.getAlarming(point->getID()).getNotifyOnClear()) )
+        else if( !activate && ((pDyn->getDispatch().getTags() & SIGNAL_MANAGER_MASK) || !PointMgr.getAlarming(point).getNotifyOnClear()) )
         {
             sigtags |= TAG_REPORT_MSG_BLOCK_EXTRA_EMAIL;
         }
@@ -7277,7 +7276,7 @@ void CtiVanGogh::deactivatePointAlarm(int alarm, CtiMultiWrapper &aWrap, CtiPoin
 
         unsigned sigtags = (pDyn->getDispatch().getTags() & ~SIGNAL_MANAGER_MASK) | TAG_REPORT_MSG_TO_ALARM_CLIENTS;
 
-        if( (pDyn->getDispatch().getTags() & SIGNAL_MANAGER_MASK) || !PointMgr.getAlarming(point->getID()).getNotifyOnClear() )
+        if( (pDyn->getDispatch().getTags() & SIGNAL_MANAGER_MASK) || !PointMgr.getAlarming(point).getNotifyOnClear() )
         {
             sigtags |= TAG_REPORT_MSG_BLOCK_EXTRA_EMAIL;
         }
@@ -7338,7 +7337,7 @@ void CtiVanGogh::acknowledgeAlarmCondition( CtiPointSPtr &pPt, const CtiCommandM
 
         if(pSigNew)
         {
-            CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(pPt->getPointID());
+            CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(pPt);
 
             if(pDyn != NULL)
             {
@@ -7348,7 +7347,7 @@ void CtiVanGogh::acknowledgeAlarmCondition( CtiPointSPtr &pPt, const CtiCommandM
 
                 bool almclear = (_signalManager.getTagMask(pPt->getPointID()) & MASK_ANY_ALARM) == 0; // true if no bits are set.
 
-                const CtiTablePointAlarming &alarming = PointMgr.getAlarming(pPt->getID());
+                const CtiTablePointAlarming &alarming = PointMgr.getAlarming(pPt);
 
                 if( ( almclear && alarming.getNotifyOnClear() ) || alarming.getNotifyOnAcknowledge())
                 {
@@ -8120,7 +8119,7 @@ void CtiVanGogh::checkStatusCommandFail(int alarm, CtiPointDataMsg *pData, CtiMu
 
                 if( pCtrlPt )      // We do know this point..
                 {
-                    const CtiDynamicPointDispatch *pCtrlDyn = PointMgr.getDynamic(pCtrlPt->getPointID());
+                    const CtiDynamicPointDispatch *pCtrlDyn = PointMgr.getDynamic(pCtrlPt);
                     tags = pCtrlDyn->getDispatch().getTags();
                 }
             }
@@ -8311,7 +8310,7 @@ CtiMultiMsg* CtiVanGogh::resetControlHours()
                 CtiPointSPtr point = itr->second;
                 if(point && point->isInService() && point->getType() == AnalogPointType && isDeviceGroupType(point->getDeviceID()) )
                 {
-                    const CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(point->getPointID());
+                    const CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(point);
                     CtiDate ptdate = CtiDate(pDyn->getTimeStamp());
 
                     if( ANNUALCONTROLHISTOFFSET == point->getPointOffset() && today.year() != ptdate.year() )
@@ -8374,7 +8373,7 @@ void CtiVanGogh::sendPointTriggers( const CtiPointDataMsg &aPD , CtiPointSPtr po
     {
         CtiLockGuard<CtiMutex> guard(TriggerMgr.getMux());
         CtiPointTriggerManager::coll_type *pointMap = TriggerMgr.getPointIteratorFromTrigger(point->getPointID());
-        const CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(point->getPointID());
+        const CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(point);
 
         double pointValue = aPD.getValue();
 
@@ -8455,7 +8454,7 @@ void CtiVanGogh::sendPointTriggers( const CtiPointDataMsg &aPD , CtiPointSPtr po
 
 void CtiVanGogh::sendPendingControlRequest(const CtiPointDataMsg &aPD, CtiPointSPtr point, PtVerifyTriggerSPtr verificationPtr)
 {
-    CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(point->getPointID());
+    CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(point);
     CtiPointDataMsg *pPseudoValPD = 0;
 
     CtiPendingPointOperations *pendingControlRequest = CTIDBG_new CtiPendingPointOperations(point->getID());
@@ -8475,7 +8474,7 @@ void CtiVanGogh::sendPendingControlRequest(const CtiPointDataMsg &aPD, CtiPointS
 
     if( verificationPtr->dbTriggerData.getVerificationID() != 0 )
     {
-        const CtiTablePointAlarming &alarming = PointMgr.getAlarming(point->getID());
+        const CtiTablePointAlarming &alarming = PointMgr.getAlarming(point);
 
         CtiSignalMsg *pFailSig = CTIDBG_new CtiSignalMsg(point->getID(), aPD.getSOE(), devicename + " / " + point->getName() + ": Triggered Control Failed", getAlarmStateName( alarming.getAlarmCategory(CtiTablePointAlarming::commandFailure) ), GeneralLogType, alarming.getAlarmCategory(CtiTablePointAlarming::commandFailure), aPD.getUser());
 
@@ -8525,10 +8524,10 @@ void CtiVanGogh::loadStalePointMaps(int pointID)
              tempPoint = iter->second;
 
              //  this should turn into a find() function for PointClientManager
-             if( tempPoint && PointMgr.hasProperty(iter->first, CtiTablePointProperty::STALE_ALARM_TIME) )
+             if( tempPoint && PointMgr.hasProperty(tempPoint, CtiTablePointProperty::STALE_ALARM_TIME) )
              {
                  //so we have the alarm time, lets get it and be happy!
-                 int alarmTime = PointMgr.getProperty(iter->first, CtiTablePointProperty::STALE_ALARM_TIME);
+                 int alarmTime = PointMgr.getProperty(tempPoint, CtiTablePointProperty::STALE_ALARM_TIME);
                  if( alarmTime > 0 && _pointUpdatedTime.find(tempPoint->getPointID()) == _pointUpdatedTime.end() )
                  {
                      //If the point is set up properly and the point is not already in our maps.
@@ -8550,7 +8549,7 @@ void CtiVanGogh::loadStalePointMaps(int pointID)
         CtiPointSPtr tempPoint = PointMgr.getPoint(pointID);
         if( tempPoint )
         {
-            if( PointMgr.hasProperty(pointID, CtiTablePointProperty::STALE_ALARM_TIME) )
+            if( PointMgr.hasProperty(tempPoint, CtiTablePointProperty::STALE_ALARM_TIME) )
             {
                 if( gDispatchDebugLevel & DISPATCH_DEBUG_ALARMS )
                 {
@@ -8560,7 +8559,7 @@ void CtiVanGogh::loadStalePointMaps(int pointID)
                 //Only if the point is not in the map already!
                 if( _pointUpdatedTime.find(pointID) == _pointUpdatedTime.end() )
                 {
-                    int alarmTime = PointMgr.getProperty(pointID, CtiTablePointProperty::STALE_ALARM_TIME);
+                    int alarmTime = PointMgr.getProperty(tempPoint, CtiTablePointProperty::STALE_ALARM_TIME);
                     if( alarmTime > 0 )
                     {
                         unsigned int alarmSeconds = alarmTime * 60;
@@ -8615,12 +8614,12 @@ void CtiVanGogh::checkForStalePoints(CtiMultiWrapper &aWrap)
                             CtiPointSPtr point = PointMgr.getPoint(checkTimeIter->pointID);
                             updatedIter = _pointUpdatedTime.find(checkTimeIter->pointID);
 
-                            if( point && PointMgr.hasProperty(checkTimeIter->pointID, CtiTablePointProperty::STALE_ALARM_TIME) && updatedIter != _pointUpdatedTime.end() )
+                            if( point && PointMgr.hasProperty(point, CtiTablePointProperty::STALE_ALARM_TIME) && updatedIter != _pointUpdatedTime.end() )
                             {
-                                unsigned int alarmTime = PointMgr.getProperty(checkTimeIter->pointID, CtiTablePointProperty::STALE_ALARM_TIME);
+                                unsigned int alarmTime = PointMgr.getProperty(point, CtiTablePointProperty::STALE_ALARM_TIME);
                                 if( (updatedIter->second + (alarmTime*60)) >= CtiTime::now() )
                                 {
-                                    CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(point->getPointID());
+                                    CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(point);
                                     int alarm = point->isNumeric() ? CtiTablePointAlarming::staleNumeric : CtiTablePointAlarming::staleStatus;
                                     _expirationSet.erase(checkTimeIter);
                                     StalePointTimeData newTimeData;
@@ -8641,7 +8640,7 @@ void CtiVanGogh::checkForStalePoints(CtiMultiWrapper &aWrap)
                                 else
                                 {
                                     //Alarm!!
-                                    const CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(point->getPointID());
+                                    const CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(point);
                                     int alarm = point->isNumeric() ? CtiTablePointAlarming::staleNumeric : CtiTablePointAlarming::staleStatus;
                                     _expirationSet.erase(checkTimeIter);
                                     StalePointTimeData newTimeData;
@@ -8653,7 +8652,7 @@ void CtiVanGogh::checkForStalePoints(CtiMultiWrapper &aWrap)
                                     {
                                         string text = "Point is stale, it has not been updated since: ";
                                         text += updatedIter->second.asString();
-                                        const CtiTablePointAlarming &alarming = PointMgr.getAlarming(point->getPointID());
+                                        const CtiTablePointAlarming &alarming = PointMgr.getAlarming(point);
                                         CtiSignalMsg *pSig = pSig = CTIDBG_new CtiSignalMsg(point->getPointID(), 0, text, getAlarmStateName( alarming.getAlarmCategory(alarm) ), GeneralLogType, alarming.getAlarmCategory(alarm));
                                         pSig->setPointValue(pDyn->getDispatch().getValue());
                                         tagSignalAsAlarm(point, pSig, alarm, 0);
@@ -8773,7 +8772,7 @@ bool CtiVanGogh::checkMessageForPreLoad(CtiMessage *MsgPtr)
         if(MsgPtr->isA() == MSG_POINTDATA)
         {
             CtiPointDataMsg *pDataMsg = (CtiPointDataMsg*)MsgPtr;
-            if(!PointMgr.checkEqual(pDataMsg->getId()))
+            if(!PointMgr.checkPointCache(pDataMsg->getId()))
             {
                 retVal = true;
             }
@@ -8781,7 +8780,7 @@ bool CtiVanGogh::checkMessageForPreLoad(CtiMessage *MsgPtr)
         else if(MsgPtr->isA() == MSG_SIGNAL)
         {
             CtiSignalMsg *pSigMsg = (CtiSignalMsg*)MsgPtr;
-            if(!PointMgr.checkEqual(pSigMsg->getId()))
+            if(!PointMgr.checkPointCache(pSigMsg->getId()))
             {
                 retVal = true;
             }
@@ -8791,7 +8790,7 @@ bool CtiVanGogh::checkMessageForPreLoad(CtiMessage *MsgPtr)
             CtiPointRegistrationMsg *pRegMsg = (CtiPointRegistrationMsg*)MsgPtr;
             for(int i = 0; i< pRegMsg->getCount(); i++)
             {
-                if(!PointMgr.checkEqual((*pRegMsg)[i]))
+                if(!PointMgr.checkPointCache((*pRegMsg)[i]))
                 {
                     retVal = true;
                     break;
@@ -8805,7 +8804,7 @@ bool CtiVanGogh::checkMessageForPreLoad(CtiMessage *MsgPtr)
             {
                 for(int i = 0; i < pCmdMsg->getOpArgList().size(); i++ )
                 {
-                    if(!PointMgr.checkEqual(pCmdMsg->getOpArgList()[i]))
+                    if(!PointMgr.checkPointCache(pCmdMsg->getOpArgList()[i]))
                     {
                         retVal = true;
                         break;
@@ -8816,7 +8815,7 @@ bool CtiVanGogh::checkMessageForPreLoad(CtiMessage *MsgPtr)
             {
                 for(int i = 1; i + 1 < pCmdMsg->getOpArgList().size(); i += 2)
                 {
-                    if(!PointMgr.checkEqual(pCmdMsg->getOpArgList()[i]))
+                    if(!PointMgr.checkPointCache(pCmdMsg->getOpArgList()[i]))
                     {
                         retVal = true;
                         break;
@@ -8825,7 +8824,7 @@ bool CtiVanGogh::checkMessageForPreLoad(CtiMessage *MsgPtr)
             }
             else if(pCmdMsg->getOperation() == CtiCommandMsg::PointTagAdjust)
             {
-                if(pCmdMsg->getOpArgList().size() >= 4 && !PointMgr.checkEqual(pCmdMsg->getOpArgList()[1]))
+                if(pCmdMsg->getOpArgList().size() >= 4 && !PointMgr.checkPointCache(pCmdMsg->getOpArgList()[1]))
                 {    
                     retVal = true;
                 }
@@ -8840,7 +8839,7 @@ bool CtiVanGogh::checkMessageForPreLoad(CtiMessage *MsgPtr)
 
                     for(vector<int>::iterator iter = points.begin(); iter != points.end(); iter++)
                     {
-                        if(!PointMgr.checkEqual(*iter))
+                        if(!PointMgr.checkPointCache(*iter))
                         {
                             retVal = true;
                             break;
@@ -8849,7 +8848,7 @@ bool CtiVanGogh::checkMessageForPreLoad(CtiMessage *MsgPtr)
                 }
                 else if( Op[1] == OP_POINTID )
                 {
-                    if(!PointMgr.checkEqual(Op[2]))
+                    if(!PointMgr.checkPointCache(Op[2]))
                     {
                         retVal = true;
                     }
@@ -8871,7 +8870,7 @@ bool CtiVanGogh::checkMessageForPreLoad(CtiMessage *MsgPtr)
         else if(MsgPtr->isA() == MSG_TAG)
         {
             CtiTagMsg *pTagMsg = (CtiTagMsg*)MsgPtr;
-            if(!PointMgr.checkEqual(pTagMsg->getPointID()))
+            if(!PointMgr.checkPointCache(pTagMsg->getPointID()))
             {
                 retVal = true;
             }
@@ -8879,7 +8878,7 @@ bool CtiVanGogh::checkMessageForPreLoad(CtiMessage *MsgPtr)
         else if(MsgPtr->isA() == MSG_LMCONTROLHISTORY)
         {
             CtiLMControlHistoryMsg *pLMMsg = (CtiLMControlHistoryMsg*)MsgPtr;
-            if(!PointMgr.checkEqual(pLMMsg->getPointId()))
+            if(!PointMgr.checkPointCache(pLMMsg->getPointId()))
             {
                 retVal = true;
             }
@@ -8934,7 +8933,7 @@ void CtiVanGogh::findPreLoadPointId(CtiMessage *MsgPtr, std::set<long> &ptIdList
             CtiPointRegistrationMsg *pRegMsg = (CtiPointRegistrationMsg*)MsgPtr;
             for(int i = 0; i< pRegMsg->getCount(); i++)
             {
-                if(!PointMgr.checkEqual((*pRegMsg)[i]))
+                if(!PointMgr.checkPointCache((*pRegMsg)[i]))
                 {
                     ptIdList.insert((*pRegMsg)[i]);
                 }
@@ -8947,7 +8946,7 @@ void CtiVanGogh::findPreLoadPointId(CtiMessage *MsgPtr, std::set<long> &ptIdList
             {
                 for(int i = 0; i < pCmdMsg->getOpArgList().size(); i++ )
                 {
-                    if(!PointMgr.checkEqual(pCmdMsg->getOpArgList()[i]))
+                    if(!PointMgr.checkPointCache(pCmdMsg->getOpArgList()[i]))
                     {
                         ptIdList.insert(pCmdMsg->getOpArgList()[i]);
                     }
@@ -8957,7 +8956,7 @@ void CtiVanGogh::findPreLoadPointId(CtiMessage *MsgPtr, std::set<long> &ptIdList
             {
                 for(int i = 1; i + 1 < pCmdMsg->getOpArgList().size(); i += 2)
                 {
-                    if(!PointMgr.checkEqual(pCmdMsg->getOpArgList()[i]))
+                    if(!PointMgr.checkPointCache(pCmdMsg->getOpArgList()[i]))
                     {
                         ptIdList.insert(pCmdMsg->getOpArgList()[i]);
                     }
@@ -8980,7 +8979,7 @@ void CtiVanGogh::findPreLoadPointId(CtiMessage *MsgPtr, std::set<long> &ptIdList
 
                     for(vector<int>::iterator iter = points.begin(); iter != points.end(); iter++)
                     {
-                        if(!PointMgr.checkEqual(*iter))
+                        if(!PointMgr.checkPointCache(*iter))
                         {
                             ptIdList.insert(*iter);
                         }

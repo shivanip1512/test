@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/utility.h-arc  $
-* REVISION     :  $Revision: 1.57 $
-* DATE         :  $Date: 2008/10/20 19:05:20 $
+* REVISION     :  $Revision: 1.58 $
+* DATE         :  $Date: 2008/10/21 21:51:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -188,6 +188,8 @@ IM_EX_CTIBASE int   generateTransmissionID();
 
 IM_EX_CTIBASE LONG  GetPAOIdOfPoint(long pid);
 IM_EX_CTIBASE INT   GetPIDFromDeviceAndOffset(int device, int offset);
+IM_EX_CTIBASE INT   GetPIDFromDeviceAndControlOffset(int device, int offset);
+IM_EX_CTIBASE INT   GetPIDFromDeviceAndOffsetAndType(int device, int offset, string &type);
 
 IM_EX_CTIBASE INT   EstablishOutMessagePriority(CtiOutMessage *Out, INT priority);
 IM_EX_CTIBASE INT   OverrideOutMessagePriority(CtiOutMessage *Out, INT priority);

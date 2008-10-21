@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/desolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.48 $
-* DATE         :  $Date: 2007/11/15 17:50:53 $
+* REVISION     :  $Revision: 1.49 $
+* DATE         :  $Date: 2008/10/21 21:51:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -290,6 +290,37 @@ string desolvePAOCategory( INT aCategory )
     return Ret;
 }
 
+string desolvePointType( INT aPointType )
+{
+    static const string analog = "Analog";
+    static const string status = "Status";
+    static const string pulseaccumulator  = "PulseAccumulator";
+    static const string accumulator       = "Accumulator";
+    static const string demandaccumulator  = "DemandAccumulator";
+    static const string calculated   = "Calculated";
+    static const string calcanalog   = "CalcAnalog";
+    static const string calcstatus   = "CalcStatus";
+    static const string system       = "System";
+    static const string statusoutput = "StatusOutput";
+    static const string analogoutput = "AnalogOutput";
+
+    string Ret;
+
+    switch( aPointType )
+    {
+        case StatusPointType:            Ret = status;            break;
+        case AnalogPointType:            Ret = analog;            break;
+        case PulseAccumulatorPointType:  Ret = pulseaccumulator;  break;
+        case DemandAccumulatorPointType: Ret = demandaccumulator; break;
+        case CalculatedPointType:        Ret = calculated;        break;
+        case StatusOutputPointType:      Ret = statusoutput;      break;
+        case AnalogOutputPointType:      Ret = analogoutput;      break;
+        case SystemPointType:            Ret = system;            break;
+        case CalculatedStatusPointType:  Ret = calcstatus;        break;
+    }
+
+    return Ret;
+}
 
 string desolvePortType( INT aType )
 {

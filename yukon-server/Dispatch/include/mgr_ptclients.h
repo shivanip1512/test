@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/mgr_ptclients.h-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2008/10/13 16:25:19 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2008/10/21 21:51:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -89,7 +89,9 @@ public:
 
    virtual Inherited::ptr_type getPoint(LONG Pt);
    Inherited::ptr_type         getCachedPoint(LONG Pt);
-   bool                        checkEqual(LONG Pt);
+   bool                        checkPointCache(LONG Pt);
+   CtiPointManager::ptr_type   getOffsetTypeEqual(LONG pao, INT offset, CtiPointType_t type);
+   CtiPointManager::ptr_type   getControlOffsetEqual(LONG pao, INT offset);
 
    void DumpList(void);
    virtual void DeleteList(void);
@@ -104,14 +106,14 @@ public:
    void validateConnections();
    void storeDirtyRecords();
 
-   bool hasReasonabilityLimits(LONG pointid);
-   ReasonabilityLimitStruct getReasonabilityLimits(LONG pointID);
-   CtiTablePointLimit       getPointLimit(LONG pointID, LONG limitNum);  //  is copying the table cheap/fast enough?
-   CtiTablePointAlarming    getAlarming  (LONG pointID);                 //    if not, we'll need to return smart pointers
-   CtiDynamicPointDispatch *getDynamic   (LONG pointID);    //  I have the feeling that dynamic data and point properties should
+   bool hasReasonabilityLimits(CtiPointSPtr point);
+   ReasonabilityLimitStruct getReasonabilityLimits(CtiPointSPtr point);
+   CtiTablePointLimit       getPointLimit(CtiPointSPtr point, LONG limitNum);  //  is copying the table cheap/fast enough?
+   CtiTablePointAlarming    getAlarming  (CtiPointSPtr point);                 //    if not, we'll need to return smart pointers
+   CtiDynamicPointDispatch *getDynamic   (CtiPointSPtr point);                 //  I have the feeling that dynamic data and point properties should
    bool                     setDynamic   (long pointID, CtiDynamicPointDispatch *point);
-   int  getProperty (LONG pointID, unsigned int property);  //    be smart pointers, since we're playing fast and loose with
-   bool hasProperty (LONG pointID, unsigned int property);  //    deletions and reloads
+   int  getProperty (CtiPointSPtr point, unsigned int property);  //    be smart pointers, since we're playing fast and loose with
+   bool hasProperty (CtiPointSPtr point, unsigned int property);  //    deletions and reloads
 
    WeakPointMap getRegistrationMap(LONG mgrID);
 
