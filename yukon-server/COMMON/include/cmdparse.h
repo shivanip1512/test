@@ -121,7 +121,6 @@ public:
    UINT   getFlags()   const;
    UINT   getOffset()  const;
    bool   isKeyValid(const string &key) const;
-   UINT   getOffset (const string &key) const;
    INT    getiValue (const string &key, INT valifnotfound = INT_MIN) const;
    DOUBLE getdValue (const string &key, DOUBLE valifnotfound = 0.0) const;
    string getsValue (const string &key) const;

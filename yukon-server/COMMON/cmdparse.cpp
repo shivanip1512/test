@@ -411,7 +411,6 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
 {
     CtiString CmdStr(_CmdStr);
     UINT        flag = 0;
-    UINT        offset = 0;
 
     CtiString   temp;
     CtiString   token;
@@ -592,20 +591,6 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
         {
             flag |= CMD_FLAG_GV_VOLTAGE;
         }
-        else if(!(token = CmdStr.match(re_offset)).empty())      // Sourcing from CmdStr, which is the entire command string.
-        {
-            flag |= CMD_FLAG_OFFSET;
-
-            // What offset is needed now...
-            if(!(temp = token.match(re_num)).empty())
-            {
-                offset = atoi(temp.c_str());
-            }
-            else
-            {
-                offset = 0;
-            }
-        }
         else if(CmdStr.contains(" outage"))
         {
             if(!(token = CmdStr.match(re_outage)).empty())
@@ -722,6 +707,20 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
                 _cmd["channel"] = CtiParseValue(atoi(temp.data()));
             }
         }
+        if(!(token = CmdStr.match(re_offset)).empty())
+        {
+            flag |= CMD_FLAG_OFFSET;
+
+            // What offset is needed now...
+            if(!(temp = token.match(re_num)).empty())
+            {
+                _cmd["offset"] = atoi(temp.c_str());
+            }
+            else
+            {
+                _cmd["offset"] = 0;
+            }
+        }
         if(CmdStr.contains(" ied"))      // Sourcing from CmdStr, which is the entire command string.
         {
             //  Read data from the ied port, not internal counters!
@@ -754,7 +753,6 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
     }
 
     setFlags(flag);
-    _cmd["offset"]    = CtiParseValue( offset );
 }
 
 
@@ -762,7 +760,6 @@ void  CtiCommandParser::doParseGetStatus(const string &_CmdStr)
 {
     CtiString CmdStr(_CmdStr);
     UINT        flag = 0;
-    UINT        offset = 0;
 
     CtiString   temp2;
     CtiString   token;
@@ -797,7 +794,7 @@ void  CtiCommandParser::doParseGetStatus(const string &_CmdStr)
             // What offset is needed now...
             if(!(temp2 = token.match(re_num)).empty())
             {
-                offset = atoi(temp2.c_str());
+                _cmd["offset"] = atoi(temp2.c_str());
             }
         }
         if(!CmdStr.match(re_eventlog).empty())
@@ -856,7 +853,6 @@ void  CtiCommandParser::doParseGetStatus(const string &_CmdStr)
     }
 
     setFlags(flag);
-    _cmd["offset"] = CtiParseValue(offset);
 }
 
 void  CtiCommandParser::doParseControl(const string &_CmdStr)
@@ -864,7 +860,6 @@ void  CtiCommandParser::doParseControl(const string &_CmdStr)
     CtiString CmdStr(_CmdStr);
     INT         _num;
     UINT        flag   = 0;
-    UINT        offset = 0;
     UINT        iValue = 0;
     DOUBLE      dValue = 0.0;
 
@@ -1111,11 +1106,11 @@ void  CtiCommandParser::doParseControl(const string &_CmdStr)
             // What offset is needed now...
             if(!(temp2 = token.match(re_num)).empty())
             {
-                offset = atoi(temp2.c_str());
+                _cmd["offset"] = atoi(temp2.c_str());
             }
             else
             {
-                offset = 0;
+                _cmd["offset"] = 0;
             }
         }
 
@@ -1211,7 +1206,6 @@ void  CtiCommandParser::doParseControl(const string &_CmdStr)
     }
 
     setFlags(flag);
-    _cmd["offset"]    = CtiParseValue( offset );
 
 #if 1
 
@@ -1987,18 +1981,6 @@ bool  CtiCommandParser::isKeyValid(const string &key) const
     return( _cmd.find(key) != _cmd.end() );
 }
 
-UINT     CtiCommandParser::getOffset(const string &key) const
-{
-    CtiParseValue& pv = CtiParseValue(); // = _cmd["command"];
-    map_itr_type itr;
-
-    itr = _cmd.find(key.c_str());
-    if(itr != _cmd.end())
-    {
-        pv = (*itr).second;
-    }
-    return pv.getInt();
-}
 INT      CtiCommandParser::getiValue(const string &key, INT valifnotfound) const
 {
     INT val = valifnotfound;

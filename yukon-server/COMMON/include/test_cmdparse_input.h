@@ -10,6 +10,7 @@ std::string inputString[TEST_SIZE] = {
 "getvalue kwh",
 "getvalue kwh select name \"Test device\"",
 "getvalue kwh select name \" Test  multispace  device     \"",
+"getvalue peak offset 3",
 "control emetcon shed 1hr relay 1,2",
 "control shed ?'NumMins'm",
 "putconfig led yyy",
