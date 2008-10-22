@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.202 $
-* DATE         :  $Date: 2008/10/22 16:58:27 $
+* REVISION     :  $Revision: 1.203 $
+* DATE         :  $Date: 2008/10/22 20:59:26 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -443,7 +443,7 @@ void CtiVanGogh::VGMainThread()
                     }
                 }
 
-                if( MessageLog > 1000  )
+                if( MessageLog >= 1000  )
                 {
                     MessageLog = 0;
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -8825,7 +8825,7 @@ bool CtiVanGogh::checkMessageForPreLoad(CtiMessage *MsgPtr)
             else if(pCmdMsg->getOperation() == CtiCommandMsg::PointTagAdjust)
             {
                 if(pCmdMsg->getOpArgList().size() >= 4 && !PointMgr.isPointLoaded(pCmdMsg->getOpArgList()[1]))
-                {    
+                {
                     retVal = true;
                 }
             }
@@ -8965,7 +8965,7 @@ void CtiVanGogh::findPreLoadPointId(CtiMessage *MsgPtr, std::set<long> &ptIdList
             else if(pCmdMsg->getOperation() == CtiCommandMsg::PointTagAdjust)
             {
                 if(pCmdMsg->getOpArgList().size() >= 4)
-                {    
+                {
                     ptIdList.insert(pCmdMsg->getOpArgList()[1]);
                 }
             }
@@ -8990,7 +8990,7 @@ void CtiVanGogh::findPreLoadPointId(CtiMessage *MsgPtr, std::set<long> &ptIdList
                     ptIdList.insert(Op[2]);
                 }
             }
-            
+
         }
         else if(MsgPtr->isA() == MSG_MULTI || MsgPtr->isA() == MSG_PCRETURN)
         {
