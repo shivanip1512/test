@@ -738,7 +738,9 @@ public class LMControlHistoryUtil {
                     || lmCtrlHist.getActiveRestore().equals("T")
                     || lmCtrlHist.getActiveRestore().equals("O"))
             {
-                hist.setIsCurrentlyControlling(false);
+                if (hist != null) {
+                    hist.setIsCurrentlyControlling(false);
+                }
                 if (StarsUtils.isDateEqual(date, lastStartTime)) {
                     lastStopTime = new Date(lmCtrlHist.getStopDateTime());
                     if (hist != null) {
