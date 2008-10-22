@@ -77,7 +77,8 @@ struct nice_buffer
 {
     vector<char> v;
 
-    nice_buffer &operator,(unsigned char c) {  v.push_back(c);  return *this;  };
+    nice_buffer &operator, (unsigned char c) {  v.push_back(c);  return *this;  };
+    nice_buffer &operator<<(unsigned char c) {  v.push_back(c);  return *this;  };
     operator string()  {  return string(v.begin(), v.end());  }
 };
 
@@ -131,8 +132,8 @@ BOOST_AUTO_UNIT_TEST(test_prot_klondike)
 
     test_klondike.time = 0x456789ab;
 
-    do_xfer(test_klondike, test_wrap, xfer, (nice_buffer(), 0x21, 0xab, 0x89, 0x67, 0x45),
-                                            (nice_buffer(), 0x80, 0x21, 0x00, 0x00));
+    do_xfer(test_klondike, test_wrap, xfer, (nice_buffer() << 0x21, 0xab, 0x89, 0x67, 0x45),
+                                            (nice_buffer() << 0x80, 0x21, 0x00, 0x00));
     cout << "Transaction " << ++transactions << endl;
 
     //  then queue up a queued command
@@ -152,13 +153,13 @@ BOOST_AUTO_UNIT_TEST(test_prot_klondike)
     BOOST_CHECK_EQUAL(test_klondike.setCommand(Klondike::Command_LoadQueue), NoError);
 
     //  verify it grabs the status from the CCU first
-    do_xfer(test_klondike, test_wrap, xfer, (nice_buffer(), 0x11),
-                                            (nice_buffer(), 0x81, 0x11, 0x00, 0x00, 0x04, 0x37, 0x00));
+    do_xfer(test_klondike, test_wrap, xfer, (nice_buffer() << 0x11),
+                                            (nice_buffer() << 0x81, 0x11, 0x00, 0x00, 0x04, 0x37, 0x00));
     cout << "Transaction " << ++transactions << endl;
 
     //  then loads the queued request
-    do_xfer(test_klondike, test_wrap, xfer, (nice_buffer(), 0x13, 0x37, 0x00, 0x01, 0x0f, 0x10, 0x00, 0x03, 0x12, 0x34, 0x56),
-                                            (nice_buffer(), 0x81, 0x13, 0x08, 0x00, 0x01, 0x03));
+    do_xfer(test_klondike, test_wrap, xfer, (nice_buffer() << 0x13, 0x37, 0x00, 0x01, 0x0f, 0x10, 0x00, 0x03, 0x12, 0x34, 0x56),
+                                            (nice_buffer() << 0x81, 0x13, 0x08, 0x00, 0x01, 0x03));
     cout << "Transaction " << ++transactions << endl;
 }
 
