@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.228 $
-* DATE         :  $Date: 2008/10/17 11:29:48 $
+* REVISION     :  $Revision: 1.229 $
+* DATE         :  $Date: 2008/10/22 16:17:49 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -241,7 +241,7 @@ VOID PortThread(void *pid)
         }
     }
     else if( Port->isTCPIPPort() &&
-             boost::static_pointer_cast<CtiPortTCPIPDirect>(Port)->getIPAddress() == "udp" )
+             !stringCompareIgnoreCase(boost::static_pointer_cast<CtiPortTCPIPDirect>(Port)->getIPAddress(), "udp") )
     {
         //  perhaps this should be created by a PortFactory... ?
         UDPInterface udp_interface(boost::static_pointer_cast<CtiPortTCPIPDirect>(Port));
