@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/mgr_ptclients.cpp-arc  $
-* REVISION     :  $Revision: 1.49 $
-* DATE         :  $Date: 2008/10/21 21:51:12 $
+* REVISION     :  $Revision: 1.50 $
+* DATE         :  $Date: 2008/10/22 16:58:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -667,7 +667,7 @@ void CtiPointClientManager::removeOldDynamicData()
     {
         try
         {
-            if(!checkPointCache(itr->first))
+            if(!isPointLoaded(itr->first))
             {
                 itr = _dynamic.erase(itr);
                 count ++;
@@ -1003,7 +1003,7 @@ void CtiPointClientManager::removePoint(Inherited::ptr_type pTempCtiPoint, bool 
     Inherited::removePoint(pTempCtiPoint, isExpiration);
 }
 
-bool CtiPointClientManager::checkPointCache(LONG Pt)
+bool CtiPointClientManager::isPointLoaded(LONG Pt)
 {
     return Inherited::getPoint(Pt);
 }

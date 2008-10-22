@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.201 $
-* DATE         :  $Date: 2008/10/21 21:51:12 $
+* REVISION     :  $Revision: 1.202 $
+* DATE         :  $Date: 2008/10/22 16:58:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -8772,7 +8772,7 @@ bool CtiVanGogh::checkMessageForPreLoad(CtiMessage *MsgPtr)
         if(MsgPtr->isA() == MSG_POINTDATA)
         {
             CtiPointDataMsg *pDataMsg = (CtiPointDataMsg*)MsgPtr;
-            if(!PointMgr.checkPointCache(pDataMsg->getId()))
+            if(!PointMgr.isPointLoaded(pDataMsg->getId()))
             {
                 retVal = true;
             }
@@ -8780,7 +8780,7 @@ bool CtiVanGogh::checkMessageForPreLoad(CtiMessage *MsgPtr)
         else if(MsgPtr->isA() == MSG_SIGNAL)
         {
             CtiSignalMsg *pSigMsg = (CtiSignalMsg*)MsgPtr;
-            if(!PointMgr.checkPointCache(pSigMsg->getId()))
+            if(!PointMgr.isPointLoaded(pSigMsg->getId()))
             {
                 retVal = true;
             }
@@ -8790,7 +8790,7 @@ bool CtiVanGogh::checkMessageForPreLoad(CtiMessage *MsgPtr)
             CtiPointRegistrationMsg *pRegMsg = (CtiPointRegistrationMsg*)MsgPtr;
             for(int i = 0; i< pRegMsg->getCount(); i++)
             {
-                if(!PointMgr.checkPointCache((*pRegMsg)[i]))
+                if(!PointMgr.isPointLoaded((*pRegMsg)[i]))
                 {
                     retVal = true;
                     break;
@@ -8804,7 +8804,7 @@ bool CtiVanGogh::checkMessageForPreLoad(CtiMessage *MsgPtr)
             {
                 for(int i = 0; i < pCmdMsg->getOpArgList().size(); i++ )
                 {
-                    if(!PointMgr.checkPointCache(pCmdMsg->getOpArgList()[i]))
+                    if(!PointMgr.isPointLoaded(pCmdMsg->getOpArgList()[i]))
                     {
                         retVal = true;
                         break;
@@ -8815,7 +8815,7 @@ bool CtiVanGogh::checkMessageForPreLoad(CtiMessage *MsgPtr)
             {
                 for(int i = 1; i + 1 < pCmdMsg->getOpArgList().size(); i += 2)
                 {
-                    if(!PointMgr.checkPointCache(pCmdMsg->getOpArgList()[i]))
+                    if(!PointMgr.isPointLoaded(pCmdMsg->getOpArgList()[i]))
                     {
                         retVal = true;
                         break;
@@ -8824,7 +8824,7 @@ bool CtiVanGogh::checkMessageForPreLoad(CtiMessage *MsgPtr)
             }
             else if(pCmdMsg->getOperation() == CtiCommandMsg::PointTagAdjust)
             {
-                if(pCmdMsg->getOpArgList().size() >= 4 && !PointMgr.checkPointCache(pCmdMsg->getOpArgList()[1]))
+                if(pCmdMsg->getOpArgList().size() >= 4 && !PointMgr.isPointLoaded(pCmdMsg->getOpArgList()[1]))
                 {    
                     retVal = true;
                 }
@@ -8839,7 +8839,7 @@ bool CtiVanGogh::checkMessageForPreLoad(CtiMessage *MsgPtr)
 
                     for(vector<int>::iterator iter = points.begin(); iter != points.end(); iter++)
                     {
-                        if(!PointMgr.checkPointCache(*iter))
+                        if(!PointMgr.isPointLoaded(*iter))
                         {
                             retVal = true;
                             break;
@@ -8848,7 +8848,7 @@ bool CtiVanGogh::checkMessageForPreLoad(CtiMessage *MsgPtr)
                 }
                 else if( Op[1] == OP_POINTID )
                 {
-                    if(!PointMgr.checkPointCache(Op[2]))
+                    if(!PointMgr.isPointLoaded(Op[2]))
                     {
                         retVal = true;
                     }
@@ -8870,7 +8870,7 @@ bool CtiVanGogh::checkMessageForPreLoad(CtiMessage *MsgPtr)
         else if(MsgPtr->isA() == MSG_TAG)
         {
             CtiTagMsg *pTagMsg = (CtiTagMsg*)MsgPtr;
-            if(!PointMgr.checkPointCache(pTagMsg->getPointID()))
+            if(!PointMgr.isPointLoaded(pTagMsg->getPointID()))
             {
                 retVal = true;
             }
@@ -8878,7 +8878,7 @@ bool CtiVanGogh::checkMessageForPreLoad(CtiMessage *MsgPtr)
         else if(MsgPtr->isA() == MSG_LMCONTROLHISTORY)
         {
             CtiLMControlHistoryMsg *pLMMsg = (CtiLMControlHistoryMsg*)MsgPtr;
-            if(!PointMgr.checkPointCache(pLMMsg->getPointId()))
+            if(!PointMgr.isPointLoaded(pLMMsg->getPointId()))
             {
                 retVal = true;
             }
@@ -8933,7 +8933,7 @@ void CtiVanGogh::findPreLoadPointId(CtiMessage *MsgPtr, std::set<long> &ptIdList
             CtiPointRegistrationMsg *pRegMsg = (CtiPointRegistrationMsg*)MsgPtr;
             for(int i = 0; i< pRegMsg->getCount(); i++)
             {
-                if(!PointMgr.checkPointCache((*pRegMsg)[i]))
+                if(!PointMgr.isPointLoaded((*pRegMsg)[i]))
                 {
                     ptIdList.insert((*pRegMsg)[i]);
                 }
@@ -8946,7 +8946,7 @@ void CtiVanGogh::findPreLoadPointId(CtiMessage *MsgPtr, std::set<long> &ptIdList
             {
                 for(int i = 0; i < pCmdMsg->getOpArgList().size(); i++ )
                 {
-                    if(!PointMgr.checkPointCache(pCmdMsg->getOpArgList()[i]))
+                    if(!PointMgr.isPointLoaded(pCmdMsg->getOpArgList()[i]))
                     {
                         ptIdList.insert(pCmdMsg->getOpArgList()[i]);
                     }
@@ -8956,7 +8956,7 @@ void CtiVanGogh::findPreLoadPointId(CtiMessage *MsgPtr, std::set<long> &ptIdList
             {
                 for(int i = 1; i + 1 < pCmdMsg->getOpArgList().size(); i += 2)
                 {
-                    if(!PointMgr.checkPointCache(pCmdMsg->getOpArgList()[i]))
+                    if(!PointMgr.isPointLoaded(pCmdMsg->getOpArgList()[i]))
                     {
                         ptIdList.insert(pCmdMsg->getOpArgList()[i]);
                     }
@@ -8979,7 +8979,7 @@ void CtiVanGogh::findPreLoadPointId(CtiMessage *MsgPtr, std::set<long> &ptIdList
 
                     for(vector<int>::iterator iter = points.begin(); iter != points.end(); iter++)
                     {
-                        if(!PointMgr.checkPointCache(*iter))
+                        if(!PointMgr.isPointLoaded(*iter))
                         {
                             ptIdList.insert(*iter);
                         }

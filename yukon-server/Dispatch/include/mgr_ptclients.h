@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/mgr_ptclients.h-arc  $
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2008/10/21 21:51:13 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2008/10/22 16:58:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -89,7 +89,7 @@ public:
 
    virtual Inherited::ptr_type getPoint(LONG Pt);
    Inherited::ptr_type         getCachedPoint(LONG Pt);
-   bool                        checkPointCache(LONG Pt);
+   bool                        isPointLoaded(LONG Pt);
    CtiPointManager::ptr_type   getOffsetTypeEqual(LONG pao, INT offset, CtiPointType_t type);
    CtiPointManager::ptr_type   getControlOffsetEqual(LONG pao, INT offset);
 

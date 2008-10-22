@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.64 $
-* DATE         :  $Date: 2008/10/21 21:51:13 $
+* REVISION     :  $Revision: 1.65 $
+* DATE         :  $Date: 2008/10/22 16:58:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -991,7 +991,8 @@ void CtiPointManager::processExpired()
     lru_timeslice_map::iterator timeslice_itr = _lru_timeslices.begin(),
                                 timeslice_end = _lru_timeslices.end();
 
-    const int cache_max = 100000;
+    //default cache size is 100k, or 100*1000, or 100000
+    const int cache_max = gConfigParms.getValueAsULong("MAX_POINT_CACHE_SIZE",100000);
     int valid_points = 0;
 
     time_t expiration_time  = 300;  //  only expire points that were created longer than this ago
