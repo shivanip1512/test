@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTCONF.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2008/07/17 20:32:11 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2008/10/22 21:16:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -734,7 +734,7 @@ VSend2 (VSTRUCT *VSt, CtiRouteSPtr RouteRecord)
    CtiDeviceSPtr RemoteRecord;
 
    /* get the remote record for this beast */
-   RemoteRecord = DeviceManager.getEqual(RouteRecord->getTrxDeviceID());
+   RemoteRecord = DeviceManager.getDeviceByID(RouteRecord->getTrxDeviceID());
 
    if(RemoteRecord)
    {

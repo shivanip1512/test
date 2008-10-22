@@ -9,10 +9,17 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2008/07/17 20:26:39 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2008/10/22 21:16:43 $
 * HISTORY      :
 * $Log: mgr_exclusion.h,v $
+* Revision 1.5  2008/10/22 21:16:43  mfisher
+* YUK-6589 Scanner should not load non-scannable devices
+* Major refactoring of refresh() and all associated functions
+* Added DebugTimer
+* Renamed CtiDeviceManager::getEqual to ::getDeviceByID
+* Removed CtiDevice typedef
+*
 * Revision 1.4  2008/07/17 20:26:39  mfisher
 * YUK-6188 PIL to Porter group submission is very slow
 * Added readers/writer lock
@@ -43,7 +50,7 @@ class IM_EX_DEVDB CtiExclusionManager
 public:
 
     typedef CtiLockGuard<CtiMutex>      LockGuard;
-    typedef CtiSmartMap< CtiDevice >    coll_type;              // This is the collection type!
+    typedef CtiSmartMap<CtiDeviceBase>  coll_type;              // This is the collection type!
     typedef coll_type::ptr_type         ptr_type;
     typedef coll_type::spiterator       spiterator;
     typedef coll_type::insert_pair      insert_pair;

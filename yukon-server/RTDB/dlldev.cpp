@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dlldev.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2007/11/02 19:02:30 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2008/10/22 21:16:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -124,7 +124,7 @@ void IM_EX_DEVDB attachTransmitterDeviceToRoutes(CtiDeviceManager *DM, CtiRouteM
 
                     if( dID > 0 )
                     {
-                        pDev = DM->getEqual(dID);
+                        pDev = DM->getDeviceByID(dID);
 
                         if(pDev)
                         {

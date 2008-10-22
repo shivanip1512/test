@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.71 $
-* DATE         :  $Date: 2008/10/15 17:41:58 $
+* REVISION     :  $Revision: 1.72 $
+* DATE         :  $Date: 2008/10/22 21:16:43 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -334,8 +334,6 @@ public:
 
 
 };
-
-typedef CtiDeviceBase CtiDevice;
 
 inline bool   CtiDeviceBase::isDialup() const                   { return false; }
 inline string CtiDeviceBase::getDescription(const CtiCommandParser & parse) const    { return getName();}

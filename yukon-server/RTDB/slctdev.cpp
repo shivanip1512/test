@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/slctdev.cpp-arc  $
-* REVISION     :  $Revision: 1.58 $
-* DATE         :  $Date: 2007/11/15 17:50:53 $
+* REVISION     :  $Revision: 1.59 $
+* DATE         :  $Date: 2008/10/22 21:16:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -369,22 +369,6 @@ DLLEXPORT CtiRouteBase* RouteFactory(RWDBReader &rdr)
     return Route;
 }
 
-DLLEXPORT bool isADevice(CtiDeviceSPtr& pSp, void *arg)
-{
-    bool bRet = true;
-    return bRet;
-}
-
-DLLEXPORT bool isNotADevice(CtiDeviceSPtr& pSp, void *arg)
-{
-    return !isADevice(pSp, arg);
-}
-
-DLLEXPORT bool isNotAScannableDevice(CtiDeviceSPtr& pDevice, void* d)
-{
-    return !isAScannableDevice(pDevice, d);
-}
-
 DLLEXPORT bool isAScannableDevice(CtiDeviceSPtr& pDevice, void* d)
 {
     bool bRet = false;
@@ -453,51 +437,5 @@ DLLEXPORT RWBoolean isCarrierLPDevice(CtiDeviceSPtr &pDevice)
     }
 
     return result;
-}
-
-/*
- *Function Name:isNotScannable
- *
- *Description:
- *
- *  This function is for use in a find() call with a device manager object
- *  it will return TRUE for any device which is not a scannable device,
- *  or for which there is not currently a valid scan rate.
- *
- */
-//  2001-dec-05 addition:  added special case for carrier load profile devices
-
-DLLEXPORT RWBoolean isNotScannable( CtiDeviceSPtr& pDevice, void* d)
-{
-    RWBoolean bRet = TRUE;
-
-    if(pDevice->isSingle())
-    {
-        CtiDeviceSingle* pUnique = (CtiDeviceSingle*)pDevice.get();
-
-        // Return TRUE if it is NOT SET
-        for(INT i = 0; i  < ScanRateInvalid; i++ )
-        {
-            if(pUnique->getScanRate(i) != -1)
-            {
-                bRet = FALSE;              // I found a scan rate...
-                break;
-            }
-        }
-
-        if(bRet && isCarrierLPDevice(pDevice))
-        {
-            for(int i = 0; i < CtiTableDeviceLoadProfile::MaxCollectedChannel; i++)
-            {
-                if(((CtiDeviceCarrier *)pUnique)->getLoadProfile().isChannelValid(i))
-                {
-                    bRet = FALSE;
-                    break;
-                }
-            }
-        }
-    }
-
-    return(bRet);
 }
 

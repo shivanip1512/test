@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTERSU.cpp-arc  $
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2008/08/06 18:24:20 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2008/10/22 21:16:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -151,7 +151,7 @@ SendError (OUTMESS *&OutMessage, USHORT ErrorCode, INMESS *PassedInMessage)
 
         if(PorterDebugLevel & PORTER_DEBUG_SENDERROR)
         {
-            CtiDeviceSPtr tempDev = DeviceManager.getEqual(OutMessage->DeviceID);
+            CtiDeviceSPtr tempDev = DeviceManager.getDeviceByID(OutMessage->DeviceID);
 
             if(tempDev)
             {
@@ -176,7 +176,7 @@ SendError (OUTMESS *&OutMessage, USHORT ErrorCode, INMESS *PassedInMessage)
                 if(writeResult == BADSOCK)
                 {
                     extern void blitzNexusFromCCUQueue(CtiDeviceSPtr Device, CtiConnect *&Nexus);
-                    CtiDeviceSPtr tempDev = DeviceManager.getEqual(OutMessage->DeviceID);
+                    CtiDeviceSPtr tempDev = DeviceManager.getDeviceByID(OutMessage->DeviceID);
                     blitzNexusFromCCUQueue( tempDev, InMessage.ReturnNexus );
                 }
                 // 111901 CGP.  You better not close this.. It is the OutMessage's! // InMessage.ReturnNexus->CTINexusClose();

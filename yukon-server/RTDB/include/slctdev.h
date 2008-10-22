@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/slctdev.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2004/05/05 15:31:41 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2008/10/22 21:16:43 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,12 +28,8 @@
 IM_EX_DEVDB CtiDeviceBase* DeviceFactory(RWDBReader &rdr);
 IM_EX_DEVDB CtiRouteBase*  RouteFactory(RWDBReader &rdr);
 
-IM_EX_DEVDB bool isADevice(CtiDeviceSPtr&,void*);
-IM_EX_DEVDB bool isNotADevice(CtiDeviceSPtr& pSp, void *arg);
-IM_EX_DEVDB bool isAScannableDevice(CtiDeviceSPtr&,void*);
-IM_EX_DEVDB bool isNotAScannableDevice(CtiDeviceSPtr& pDevice, void* d);
+IM_EX_DEVDB bool isAScannableDevice(CtiDeviceSPtr& pDevice, void* d);
 
 IM_EX_DEVDB RWBoolean isCarrierLPDevice(CtiDeviceSPtr& pDevice);
-IM_EX_DEVDB RWBoolean isNotScannable( CtiDeviceSPtr& Dev, void* d);
 
 #endif // #ifndef __SLCTDEV_H__

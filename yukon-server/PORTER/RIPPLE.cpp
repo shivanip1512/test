@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/RIPPLE.cpp-arc  $
-* REVISION     :  $Revision: 1.40 $
-* DATE         :  $Date: 2008/08/14 15:57:41 $
+* REVISION     :  $Revision: 1.41 $
+* DATE         :  $Date: 2008/10/22 21:16:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1579,7 +1579,7 @@ void ProcessRippleGroupTrxID( LONG LMGIDControl, UINT TrxID)
     list< CtiMessage* >  vgList;
 
     // Find the controlling group.
-    CtiDeviceSPtr pGroupDev = DeviceManager.getEqual( LMGIDControl );
+    CtiDeviceSPtr pGroupDev = DeviceManager.getDeviceByID( LMGIDControl );
 
     if(pGroupDev)
     {

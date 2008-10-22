@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2008/08/14 15:57:41 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2008/10/22 21:16:43 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -126,7 +126,7 @@ VOID PortPoolDialoutThread(void *pid)
 
         if(PorterDebugLevel & PORTER_DEBUG_PORTQUEREAD)
         {
-            CtiDeviceSPtr tempDev = DeviceManager.getEqual(OutMessage->TargetID ? OutMessage->TargetID : OutMessage->DeviceID);
+            CtiDeviceSPtr tempDev = DeviceManager.getDeviceByID(OutMessage->TargetID ? OutMessage->TargetID : OutMessage->DeviceID);
 
             if(tempDev)
             {
@@ -188,7 +188,7 @@ VOID PortPoolDialoutThread(void *pid)
         else
         {
             /* get the device record for this id */
-            Device = DeviceManager.getEqual(OutMessage->DeviceID);
+            Device = DeviceManager.getDeviceByID(OutMessage->DeviceID);
 
             if(!Device)
             {

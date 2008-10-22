@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.132 $
-* DATE         :  $Date: 2008/10/15 17:41:58 $
+* REVISION     :  $Revision: 1.133 $
+* DATE         :  $Date: 2008/10/22 21:16:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1035,7 +1035,7 @@ INT PorterMainFunction (INT argc, CHAR **argv)
 
     CtiDeviceManager::ptr_type system;
 
-    if( system = DeviceManager.getEqual(0) )
+    if( system = DeviceManager.getDeviceByID(0) )
     {
         if( system->hasDynamicInfo(CtiTableDynamicPaoInfo::Key_VerificationSequence) )
         {
@@ -1129,7 +1129,7 @@ INT PorterMainFunction (INT argc, CHAR **argv)
         CTISleep(250);
     }
 
-    if( system = DeviceManager.getEqual(0) )
+    if( system = DeviceManager.getDeviceByID(0) )
     {
         system->setDynamicInfo(CtiTableDynamicPaoInfo::Key_VerificationSequence, VerificationSequenceGen());
     }
@@ -1504,7 +1504,7 @@ INT RefreshPorterRTDB(void *ptr)
             devstr = pChg->getObjectType();
         }
 
-        DeviceManager.refresh(DeviceFactory, isNotADevice, NULL, chgid, catstr, devstr);
+        DeviceManager.refresh(NULL, chgid, catstr, devstr);
 
         if(pChg == NULL)
         {
@@ -1516,7 +1516,7 @@ INT RefreshPorterRTDB(void *ptr)
         }
         else
         {
-            CtiDeviceSPtr pDev = DeviceManager.getEqual( chgid );
+            CtiDeviceSPtr pDev = DeviceManager.getDeviceByID( chgid );
             if( pDev )
             {
                 pDev->setRouteManager(&RouteManager);
@@ -2019,7 +2019,7 @@ string GetDeviceName( ULONG id )
 {
     string name;
 
-    CtiDeviceSPtr pDev = DeviceManager.getEqual( id );
+    CtiDeviceSPtr pDev = DeviceManager.getDeviceByID( id );
 
     if(pDev)
     {
@@ -2433,7 +2433,7 @@ bool addCommResult(long deviceID, bool wasFailure, bool retryGtZero)
     bool retVal = false;
     bool isCommFail = !wasFailure; //This is inverted for some reason
 
-    CtiDeviceSPtr device = DeviceManager.getEqual(deviceID);
+    CtiDeviceSPtr device = DeviceManager.getDeviceByID(deviceID);
 
     if( device )
     {

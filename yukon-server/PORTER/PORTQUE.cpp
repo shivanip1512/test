@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.69 $
-* DATE         :  $Date: 2008/08/14 20:12:20 $
+* REVISION     :  $Revision: 1.70 $
+* DATE         :  $Date: 2008/10/22 21:16:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1912,7 +1912,7 @@ DeQueue (INMESS *InMessage)
         return(!NORMAL);
     }
 
-    CtiDeviceSPtr TransmitterDev = DeviceManager.getEqual(InMessage->DeviceID);
+    CtiDeviceSPtr TransmitterDev = DeviceManager.getDeviceByID(InMessage->DeviceID);
 
     if(TransmitterDev)
     {

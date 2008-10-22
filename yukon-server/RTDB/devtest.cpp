@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/devtest.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2008/07/17 20:27:22 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2008/10/22 21:16:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,7 +29,7 @@
 
 void main(int argc, char** argv)
 {
-    CtiDevice *DeviceRecord;
+    CtiDeviceBase *DeviceRecord;
     CtiHashKey *hKey;
 
     int cnt = 1;

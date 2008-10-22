@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTFILL.cpp-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2008/08/14 15:57:41 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2008/10/22 21:16:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -124,7 +124,7 @@ static void applySendFiller(const long unusedid, CtiPortSPtr Port, void *uid)
                     continue;
                 }
 
-                CtiDeviceSPtr TransmitterDevice = DeviceManager.getEqual( Route->getTrxDeviceID() );
+                CtiDeviceSPtr TransmitterDevice = DeviceManager.getDeviceByID( Route->getTrxDeviceID() );
 
 
                 if(TransmitterDevice && Port->getPortID() == TransmitterDevice->getPortID() && !TransmitterDevice->isInhibited())
@@ -222,7 +222,7 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
                     continue;
                 }
 
-                CtiDeviceSPtr TransmitterDevice = DeviceManager.getEqual( Route->getTrxDeviceID() );
+                CtiDeviceSPtr TransmitterDevice = DeviceManager.getDeviceByID( Route->getTrxDeviceID() );
 
                 if(TransmitterDevice && Port->getPortID() == TransmitterDevice->getPortID() && !TransmitterDevice->isInhibited())
                 {

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.61 $
-* DATE         :  $Date: 2008/09/15 15:43:00 $
+* REVISION     :  $Revision: 1.62 $
+* DATE         :  $Date: 2008/10/22 21:16:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -249,7 +249,7 @@ VOID ConnectionThread (VOID *Arg)
 
             if(PorterDebugLevel & PORTER_DEBUG_NEXUSREAD)
             {
-                CtiDeviceSPtr tempDev = DeviceManager.getEqual(OutMessage->TargetID ? OutMessage->TargetID : OutMessage->DeviceID);
+                CtiDeviceSPtr tempDev = DeviceManager.getDeviceByID(OutMessage->TargetID ? OutMessage->TargetID : OutMessage->DeviceID);
 
                 if(tempDev)
                 {
@@ -307,7 +307,7 @@ VOID ConnectionThread (VOID *Arg)
 
         if(PorterDebugLevel & PORTER_DEBUG_NEXUSREAD && !(OutMessage->MessageFlags & MessageFlag_RouteToPorterGatewayThread))
         {
-            CtiDeviceSPtr tempDev = DeviceManager.getEqual(OutMessage->TargetID ? OutMessage->TargetID : OutMessage->DeviceID);
+            CtiDeviceSPtr tempDev = DeviceManager.getDeviceByID(OutMessage->TargetID ? OutMessage->TargetID : OutMessage->DeviceID);
 
             if(tempDev)
             {
@@ -556,7 +556,7 @@ VOID RouterThread (VOID *TPNumber)
             continue;
         }
 
-        RemoteRecord = DeviceManager.getEqual(OutMessage->DeviceID);
+        RemoteRecord = DeviceManager.getDeviceByID(OutMessage->DeviceID);
 
         if(NULL == RemoteRecord)
         {
@@ -1067,7 +1067,7 @@ INT QueueBookkeeping(OUTMESS *&SendOutMessage)
 {
     INT status = NORMAL;
 
-    CtiDeviceSPtr pDev = DeviceManager.getEqual(SendOutMessage->DeviceID);
+    CtiDeviceSPtr pDev = DeviceManager.getDeviceByID(SendOutMessage->DeviceID);
 
     /* Update the number of entries on for this ccu on the port queue */
     if( pDev )
@@ -1145,7 +1145,7 @@ INT RemoteComm(OUTMESS *&OutMessage)
     /* Now check if we know about the remote */
     if(OutMessage->Remote != 0xffff)
     {
-        CtiDeviceSPtr Device = DeviceManager.getEqual(OutMessage->DeviceID);
+        CtiDeviceSPtr Device = DeviceManager.getDeviceByID(OutMessage->DeviceID);
 
         if((status = ValidateRemote(OutMessage, Device)) == NORMAL)
         {
@@ -1181,7 +1181,7 @@ INT GenerateCompleteRequest(list< OUTMESS* > &outList, OUTMESS *&OutMessage)
     {
         CtiCommandParser parse(pReq->CommandString());
 
-        CtiDeviceSPtr Dev = DeviceManager.getEqual(pReq->DeviceId());
+        CtiDeviceSPtr Dev = DeviceManager.getDeviceByID(pReq->DeviceId());
 
         if(Dev)
         {
@@ -1191,14 +1191,14 @@ INT GenerateCompleteRequest(list< OUTMESS* > &outList, OUTMESS *&OutMessage)
 
             // Re-establish the connection on the beastie..
             pReq->setRouteId( OutMessage->Request.RouteID );
-    
+
             if(OutMessage->Request.MacroOffset == 0)
             {
                 OutMessage->Request.MacroOffset = Dev->selectInitialMacroRouteOffset(OutMessage->Request.RouteID);
             }
-    
+
             pReq->setMacroOffset( OutMessage->Request.MacroOffset );
-    
+
             pReq->setMessagePriority(OutMessage->Priority);
 
             /*

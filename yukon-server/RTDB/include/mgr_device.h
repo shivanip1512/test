@@ -11,8 +11,8 @@
  *
  *
  * PVCS KEYWORDS:
- * REVISION     :  $Revision: 1.32 $
- * DATE         :  $Date: 2008/07/17 20:26:39 $
+ * REVISION     :  $Revision: 1.33 $
+ * DATE         :  $Date: 2008/10/22 21:16:43 $
  *
  *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
@@ -41,7 +41,7 @@ class IM_EX_DEVDB CtiDeviceManager
 public:
 
     typedef CtiLockGuard<CtiMutex>      LockGuard;
-    typedef CtiSmartMap< CtiDevice >    coll_type;              // This is the collection type!
+    typedef CtiSmartMap<CtiDeviceBase>  coll_type;              // This is the collection type!
     typedef coll_type::ptr_type         ptr_type;
     typedef coll_type::spiterator       spiterator;
     typedef coll_type::insert_pair      insert_pair;
@@ -59,25 +59,27 @@ private:
                                             //   _exclusionMap, so these need to be retained and reinserted from a seperate list
 private:
 
-    bool (*_removeFunc)(CtiDeviceSPtr&,void*);
     bool _includeScanInfo;
 
-    // Inherit "List" from Parent
-
-    void refreshDevices(bool &rowFound, RWDBReader& rdr, CtiDeviceBase* (*Factory)(RWDBReader &));
+    bool refreshDevices(RWDBReader& rdr);
     // void RefreshDeviceRoute(LONG id = 0);
     void refreshScanRates(LONG id = 0);
     void refreshDeviceWindows(LONG id = 0);
 
-    void refreshList(CtiDeviceBase* (*Factory)(RWDBReader &) = DeviceFactory, bool (*removeFunc)(CtiDeviceSPtr&,void*) = isNotADevice, void *d = NULL, LONG paoID = 0, long deviceType = 0 );
+    bool loadDeviceType(long paoid, const string &device_name, CtiDeviceBase &device, string type=string(), bool include_type=true);
+
+    void refreshList(LONG paoID = 0, long deviceType = 0 );
     bool refreshDeviceByPao(CtiDeviceSPtr pDev, LONG paoID);
     void refreshExclusions(LONG id = 0);
     void refreshIONMeterGroups(LONG paoID = 0);
     void refreshMacroSubdevices(LONG paoID = 0);
-    void refreshDeviceProperties(LONG paoID = 0);
     void refreshMCTConfigs(LONG paoID = 0);
     void refreshMCT400Configs(LONG paoID = 0);
     void refreshDynamicPaoInfo(LONG paoID = 0);
+
+protected:
+
+    virtual void refreshDeviceProperties(LONG paoID = 0);
 
 public:
 
@@ -106,14 +108,15 @@ public:
         return _smartMap.entries();
     }
 
-    void refresh(CtiDeviceBase* (*Factory)(RWDBReader &) = DeviceFactory, bool (*removeFunc)(CtiDeviceSPtr&,void*) = isNotADevice, void *d = NULL, LONG paoID = 0, string category = string(""), string devicetype = string(""));
+    void refresh(void *d = NULL, LONG paoID = 0, string category = string(""), string devicetype = string(""));
     void refreshGroupHierarchy(LONG paoID = 0);
+    bool refreshPointGroups(LONG paoID = 0);
     void writeDynamicPaoInfo(void);
 
     void test_dumpList(void);
     void deleteList(void);
 
-    ptr_type getEqual(LONG Remote);
+    ptr_type getDeviceByID(LONG Remote);
     ptr_type RemoteGetEqual(LONG Remote);
     ptr_type RemoteGetPortRemoteEqual (LONG Port, LONG Remote);
     ptr_type RemoteGetPortRemoteTypeEqual (LONG Port, LONG Remote, INT Type);
@@ -133,7 +136,6 @@ public:
     bool removeInfiniteExclusion(CtiDeviceSPtr anxiousDevice);
     ptr_type chooseExclusionDevice(LONG portid);
     CtiDeviceManager &addPortExclusion(LONG paoID);
-    void refreshPointGroups(LONG paoID = 0, CtiDeviceBase* (*Factory)(RWDBReader &) = DeviceFactory);
 
 };
 

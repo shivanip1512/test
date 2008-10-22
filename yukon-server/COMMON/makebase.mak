@@ -47,6 +47,7 @@ cticalls.obj \
 ctilocalconnect.obj \
 ctinexus.obj \
 dbaccess.obj \
+debug_timer.obj \
 desolvers.obj \
 dllbase.obj \
 exchange.obj \

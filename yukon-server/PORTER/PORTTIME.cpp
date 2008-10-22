@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTTIME.cpp-arc  $
-* REVISION     :  $Revision: 1.53 $
-* DATE         :  $Date: 2008/09/19 11:40:41 $
+* REVISION     :  $Revision: 1.54 $
+* DATE         :  $Date: 2008/10/22 21:16:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -545,7 +545,7 @@ static void applyMCT400TimeSync(const long key, CtiRouteSPtr pRoute, void* d)
 
     try
     {
-        RemoteRecord = DeviceManager.getEqual(pRoute->getTrxDeviceID());
+        RemoteRecord = DeviceManager.getDeviceByID(pRoute->getTrxDeviceID());
 
         //  make sure the route's transmitting device is on this port...  and make sure this is a default route
         if( RemoteRecord &&

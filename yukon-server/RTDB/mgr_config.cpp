@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/mgr_config.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2007/12/03 22:19:41 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2008/10/22 21:16:42 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -153,7 +153,7 @@ void CtiConfigManager::processDBUpdate(LONG identifier, string category, string 
                 }
             case ChangeTypeDelete:
                 {
-                    CtiDeviceSPtr pDev = _devMgr->getEqual(identifier);
+                    CtiDeviceSPtr pDev = _devMgr->getDeviceByID(identifier);
                     if( pDev )
                     {
                         pDev->setDeviceConfig(CtiConfigDeviceSPtr());//set to null
@@ -178,10 +178,10 @@ void CtiConfigManager::loadData(long configID)
     CtiTime start, stop;
 
     start = start.now();
-    {   
+    {
         RWDBConnection conn = getConnection();
         RWDBDatabase db = getDatabase();
-    
+
         RWDBSelector selector = db.selector();
 
         RWDBTable itemValTbl = db.table( string2RWCString(getConfigItemTableName()) );
@@ -248,31 +248,31 @@ void CtiConfigManager::loadConfigs(long configID)
     }
 
     start = start.now();
-    {  
+    {
         RWDBConnection conn = getConnection();
         RWDBDatabase db = getDatabase();
-    
+
         RWDBSelector selector = db.selector();
-    
+
         RWDBTable configTbl = db.table( string2RWCString(getConfigTableName()) );
-    
+
         selector << configTbl["deviceconfigurationid"]
             << configTbl["name"]
             << configTbl["type"];;
-    
+
         selector.from(configTbl);
         if( configID != 0 )
         {
             selector.where( configTbl["deviceconfigurationid"] == configID && selector.where() );
         }
-       
+
         RWDBReader rdr = selector.reader(conn);
 
         while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
         {
             long configID;
             string name, type;
-    
+
             rdr["deviceconfigurationid"] >> configID;
             rdr["name"] >> name;
             rdr["type"] >> type;
@@ -302,17 +302,17 @@ void CtiConfigManager::updateDeviceConfigs(long configID, long deviceID)
     CtiTime start, stop;
 
     start = start.now();
-    {  
+    {
         RWDBConnection conn = getConnection();
         RWDBDatabase db = getDatabase();
-    
+
         RWDBSelector selector = db.selector();
-    
+
         RWDBTable typeTbl = db.table(string2RWCString(getConfigToDeviceMapTableName()) );
-    
+
         selector << typeTbl["deviceid"]
             << typeTbl["deviceconfigurationid"];
-    
+
         selector.from(typeTbl);
         if( configID != 0 )
         {
@@ -322,7 +322,7 @@ void CtiConfigManager::updateDeviceConfigs(long configID, long deviceID)
         {
             selector.where(typeTbl["deviceid"] == deviceID && selector.where());
         }
-       
+
         RWDBReader rdr = selector.reader(conn);
 
         // If we specify a device, this may be the equivalent of a "delete"
@@ -333,47 +333,47 @@ void CtiConfigManager::updateDeviceConfigs(long configID, long deviceID)
             if( rdr() )
             {
                 long devID, configID;
-    
+
                 rdr["deviceconfigurationid"] >>configID;
                 rdr["deviceid"]>>devID;
-    
-                CtiDeviceSPtr pDev = _devMgr->getEqual(devID);
-    
+
+                CtiDeviceSPtr pDev = _devMgr->getDeviceByID(devID);
+
                 CtiConfigDeviceSPtr tempSPtr;
-    
+
                 if( (tempSPtr = _deviceConfig.find(configID)) && pDev )
                 {
                     pDev->setDeviceConfig(tempSPtr);
-                }    
+                }
             }
             else
             {
                 //This is a delete!
-                CtiDeviceSPtr pDev = _devMgr->getEqual(deviceID);
+                CtiDeviceSPtr pDev = _devMgr->getDeviceByID(deviceID);
                 if( pDev )
                 {
                     pDev->setDeviceConfig(CtiConfigDeviceSPtr());
-                }  
+                }
             }
-            
+
         }
         else
         {
             while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
             {
                 long devID, configID;
-        
+
                 rdr["deviceconfigurationid"] >>configID;
                 rdr["deviceid"]>>devID;
-    
-                CtiDeviceSPtr pDev = _devMgr->getEqual(devID);
-    
+
+                CtiDeviceSPtr pDev = _devMgr->getDeviceByID(devID);
+
                 CtiConfigDeviceSPtr tempSPtr;
-    
+
                 if( (tempSPtr = _deviceConfig.find(configID)) && pDev )
                 {
                     pDev->setDeviceConfig(tempSPtr);
-                }    
+                }
             }
         }
     }

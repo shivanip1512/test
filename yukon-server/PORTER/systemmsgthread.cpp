@@ -7,11 +7,18 @@
 * Author: Jess Otteson
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2008/08/14 18:26:11 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2008/10/22 21:16:43 $
 *
 * HISTORY      :
 * $Log: systemmsgthread.cpp,v $
+* Revision 1.11  2008/10/22 21:16:43  mfisher
+* YUK-6589 Scanner should not load non-scannable devices
+* Major refactoring of refresh() and all associated functions
+* Added DebugTimer
+* Renamed CtiDeviceManager::getEqual to ::getDeviceByID
+* Removed CtiDevice typedef
+*
 * Revision 1.10  2008/08/14 18:26:11  jotteson
 * YUKRV-163 YUK-6306 Change porter to not send a error for canceled messages
 * Updated some naming conventions based on code review
@@ -305,7 +312,7 @@ void SystemMsgThread::executeRequestCount(CtiRequestMsg *msg, CtiCommandParser &
                     vector<long>::iterator devIter;
                     for( devIter = queuedDevices.begin(); devIter!= queuedDevices.end(); devIter++ )
                     {
-                        tempDev = _pDevManager->getEqual(*devIter);
+                        tempDev = _pDevManager->getDeviceByID(*devIter);
 
                         if( tempDev )
                         {
@@ -394,7 +401,7 @@ void SystemMsgThread::executeCancelRequest(CtiRequestMsg *msg, CtiCommandParser 
                     vector<long>::iterator devIter;
                     for( devIter = queuedDevices.begin(); devIter!= queuedDevices.end(); devIter++ )
                     {
-                        tempDev = _pDevManager->getEqual(*devIter);
+                        tempDev = _pDevManager->getDeviceByID(*devIter);
 
                         if( tempDev )
                         {

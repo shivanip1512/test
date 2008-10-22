@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/disp_thd.cpp-arc  $
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2008/10/15 17:07:07 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2008/10/22 21:16:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -160,7 +160,7 @@ void DispatchMsgHandlerThread(VOID *Arg)
                         {
                             CtiDeviceSPtr dev;
 
-                            if( dev = DeviceManager.getEqual(dbchg->getId()) )
+                            if( dev = DeviceManager.getDeviceByID(dbchg->getId()) )
                             {
                                 dev->setDirty(true);
                             }

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.229 $
-* DATE         :  $Date: 2008/10/22 16:17:49 $
+* REVISION     :  $Revision: 1.230 $
+* DATE         :  $Date: 2008/10/22 21:16:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -337,7 +337,7 @@ VOID PortThread(void *pid)
 
                 if(PorterDebugLevel & PORTER_DEBUG_PORTQUEREAD)
                 {
-                    CtiDeviceSPtr tempDev = DeviceManager.getEqual(OutMessage->TargetID ? OutMessage->TargetID : OutMessage->DeviceID);
+                    CtiDeviceSPtr tempDev = DeviceManager.getDeviceByID(OutMessage->TargetID ? OutMessage->TargetID : OutMessage->DeviceID);
 
                     if(tempDev)
                     {
@@ -851,7 +851,7 @@ INT EstablishConnection(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage
     if(oldConnUID > 0 && oldConnUID != Device->getUniqueIdentifier())
     {
         CtiDeviceManager::coll_type::reader_lock_guard_t dev_guard(DeviceManager.getLock());       // Protect our iteration!
-        CtiDeviceSPtr pOldConnectedDevice = DeviceManager.getEqual(LastConnectedDevice);
+        CtiDeviceSPtr pOldConnectedDevice = DeviceManager.getDeviceByID(LastConnectedDevice);
         if(pOldConnectedDevice)
         {
             pOldConnectedDevice->setLogOnNeeded(TRUE);
@@ -1215,7 +1215,7 @@ void processPreloads(CtiPortSPtr Port)
 
     for( itr = preloads.begin(); itr != preloads.end(); itr++ )
     {
-        dev = DeviceManager.getEqual(*itr);
+        dev = DeviceManager.getDeviceByID(*itr);
 
         //  do not consider the device if it's inhibited
         if( dev && !dev->isInhibited() )
@@ -1232,7 +1232,7 @@ void processPreloads(CtiPortSPtr Port)
 
     for( r_itr = times.rbegin(); r_itr != times.rend(); r_itr++ )
     {
-        dev = DeviceManager.getEqual(r_itr->deviceid);
+        dev = DeviceManager.getDeviceByID(r_itr->deviceid);
 
         if( dev )
         {
@@ -3046,7 +3046,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                     (OutMessage->Buffer.BSt.IO & Cti::Protocol::Emetcon::IO_Read ) )
                 {
                     CtiDeviceSPtr tempDevice;
-                    if( !CommResult && (tempDevice = DeviceManager.RemoteGetEqual(InMessage->TargetID)) )
+                    if( !CommResult && (tempDevice = DeviceManager.getDeviceByID(InMessage->TargetID)) )
                     {
                         if( InMessage->Buffer.DSt.Length && //  make sure it's not just an ACK
                             tempDevice->getAddress() != CtiDeviceMCT::TestAddress1 &&  //  also, make sure we're not sending to an FCT-jumpered MCT,
@@ -3191,7 +3191,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                     }
 
                     CtiDeviceSPtr tempDevice;
-                    if( !CommResult && !status && (tempDevice = DeviceManager.RemoteGetEqual(InMessage->TargetID)) )
+                    if( !CommResult && !status && (tempDevice = DeviceManager.getDeviceByID(InMessage->TargetID)) )
                     {
                         //  note that if D_Words() had an error, we'll never get here...
 
@@ -4063,7 +4063,7 @@ BOOL findExclusionFreeOutMessage(void *data, void* d)
         if(OutMessage &&
            !stringCompareIgnoreCase(gConfigParms.getValueAsString("PORTER_EXCLUSION_TEST"),"true") )     // Indicates an excludable message!
         {
-            CtiDeviceSPtr Device = DeviceManager.getEqual( OutMessage->DeviceID );
+            CtiDeviceSPtr Device = DeviceManager.getDeviceByID( OutMessage->DeviceID );
 
             if(Device)
             {
@@ -4314,7 +4314,7 @@ INT IdentifyDeviceFromOutMessage(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevi
         else if( !Device || Device->getID() != OutMessage->DeviceID )
         {
             /* get the device record for this id */
-            Device = DeviceManager.RemoteGetEqual(OutMessage->DeviceID);
+            Device = DeviceManager.getDeviceByID(OutMessage->DeviceID);
 
             if(!Device)
             {
@@ -4575,7 +4575,7 @@ bool processCommResult(INT CommResult, LONG DeviceID, LONG TargetID, bool RetryG
     if(TargetID != 0 && TargetID != DeviceID && deviceType != TYPE_CCU700 && deviceType != TYPE_CCU710 && deviceType != TYPE_CCU711 )
     {
         // In this case, we need to account for the fail on the target device too..
-        CtiDeviceSPtr pTarget = DeviceManager.getEqual( TargetID );
+        CtiDeviceSPtr pTarget = DeviceManager.getDeviceByID( TargetID );
 
         if(pTarget)
         {
@@ -4651,7 +4651,7 @@ UINT purgeExpiredQueueEntries(CtiPortSPtr port)
         vector<long>::iterator devIter;
         for( devIter = queuedDevices.begin(); devIter!= queuedDevices.end(); devIter++ )
         {
-            tempDev = DeviceManager.getEqual(*devIter);
+            tempDev = DeviceManager.getDeviceByID(*devIter);
 
             if( tempDev )
             {

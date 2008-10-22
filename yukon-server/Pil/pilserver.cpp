@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.119 $
-* DATE         :  $Date: 2008/10/09 16:11:36 $
+* REVISION     :  $Revision: 1.120 $
+* DATE         :  $Date: 2008/10/22 21:16:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -568,7 +568,7 @@ void CtiPILServer::resultThread()
                     }
 
                     // Find the device..
-                    CtiDeviceSPtr DeviceRecord = DeviceManager->getEqual(id);
+                    CtiDeviceSPtr DeviceRecord = DeviceManager->getDeviceByID(id);
 
                     list<OUTMESS*   > outList;
                     list<CtiMessage*> retList;
@@ -1036,7 +1036,7 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
             Dev.reset();
 
             CtiRequestMsg *&pExecReq = *itr;
-            Dev = DeviceManager->getEqual(pExecReq->DeviceId());
+            Dev = DeviceManager->getDeviceByID(pExecReq->DeviceId());
 
             if(Dev)
             {
@@ -1556,7 +1556,7 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
 
     if(parse.getCommand() != GetValueRequest)
     {
-        CtiDeviceSPtr Dev = DeviceManager->getEqual(pReq->DeviceId());
+        CtiDeviceSPtr Dev = DeviceManager->getDeviceByID(pReq->DeviceId());
 
         if( Dev )
         {
@@ -1681,7 +1681,7 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
              */
             char newparse[256];
 
-            CtiDeviceGroupVersacom *GrpDev = (CtiDeviceGroupVersacom *)DeviceManager->getEqual(pReq->DeviceId()).get();
+            CtiDeviceGroupVersacom *GrpDev = (CtiDeviceGroupVersacom *)DeviceManager->getDeviceByID(pReq->DeviceId()).get();
             // Dev = DeviceManager->getEqual(SYS_DID_SYSTEM);     // This is the guy who does ALL configs.
             if(GrpDev != NULL)
             {
@@ -1739,7 +1739,7 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
 
                 for( itr = members.begin(); itr != members_end; itr++ )
                 {
-                    CtiDeviceManager::ptr_type device = DeviceManager->getEqual(*itr);
+                    CtiDeviceManager::ptr_type device = DeviceManager->getDeviceByID(*itr);
 
                     if( device )
                     {
@@ -1784,7 +1784,7 @@ void ReportMessagePriority( CtiMessage *MsgPtr, CtiDeviceManager *&DeviceManager
 {
     if(MsgPtr->isA() == MSG_PCREQUEST)
     {
-        CtiDeviceSPtr DeviceRecord = DeviceManager->getEqual(((CtiRequestMsg*)MsgPtr)->DeviceId());
+        CtiDeviceSPtr DeviceRecord = DeviceManager->getDeviceByID(((CtiRequestMsg*)MsgPtr)->DeviceId());
         if(DeviceRecord)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1823,7 +1823,7 @@ INT CtiPILServer::analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, l
     CtiDeviceManager::coll_type::reader_lock_guard_t guard(DeviceManager->getLock());  //  I don't think we need this, but I'm leaving it until we prove that out
     // CtiRouteManager::LockGuard rte_guard(RouteManager->getMux());
 
-    CtiDeviceSPtr pRepeaterToRole = DeviceManager->getEqual(Req.DeviceId());    // This is our repeater we are curious about!
+    CtiDeviceSPtr pRepeaterToRole = DeviceManager->getDeviceByID(Req.DeviceId());    // This is our repeater we are curious about!
 
     if(pRepeaterToRole)
     {
@@ -1904,7 +1904,7 @@ INT CtiPILServer::analyzePointGroup(CtiRequestMsg& Req, CtiCommandParser &parse,
     int i;
     CtiDeviceManager::coll_type::reader_lock_guard_t guard(DeviceManager->getLock());  //  I don't think we need this, but I'm leaving it until we prove that out
 
-    CtiDeviceSPtr ptGroup = DeviceManager->getEqual(Req.DeviceId());    // This is our repeater we are curious about!
+    CtiDeviceSPtr ptGroup = DeviceManager->getDeviceByID(Req.DeviceId());    // This is our repeater we are curious about!
 
     if(ptGroup)
     {

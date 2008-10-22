@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.77 $
-* DATE         :  $Date: 2008/10/07 18:19:13 $
+* REVISION     :  $Revision: 1.78 $
+* DATE         :  $Date: 2008/10/22 21:16:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -477,7 +477,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
             ::sprintf(tstr, "At Start of Loop -- Will Sleep %d Seconds", NextScan[NEXT_SCAN].seconds() - TimeNow.seconds()  );
 
             {
-                ULONG omc = OutMessageCount();
+                LONG omc = OutMessageCount();
 
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << TimeNow << " " << tstr;
@@ -803,7 +803,7 @@ VOID ResultThread (VOID *Arg)
                     id = InMessage->DeviceID;
                 }
 
-                CtiDeviceSPtr pBase = (CtiDeviceSPtr )ScannerDeviceManager.getEqual(id);
+                CtiDeviceSPtr pBase = (CtiDeviceSPtr )ScannerDeviceManager.getDeviceByID(id);
 
                 if(ScannerDebugLevel & SCANNER_DEBUG_INREPLIES)
                 {
@@ -1207,7 +1207,7 @@ void LoadScannableDevices(void *ptr)
                 devstr = pChg->getObjectType();
             }
 
-            ScannerDeviceManager.refresh(DeviceFactory, isNotAScannableDevice, NULL, chgid, catstr, devstr);
+            ScannerDeviceManager.refresh(NULL, chgid, catstr, devstr);
 
             stop = stop.now();
 
@@ -1232,7 +1232,7 @@ void LoadScannableDevices(void *ptr)
     {
         if(pChg)
         {
-            CtiDeviceSPtr pBase = ScannerDeviceManager.getEqual(pChg->getId());
+            CtiDeviceSPtr pBase = ScannerDeviceManager.getDeviceByID(pChg->getId());
 
             if(pBase)
             {
@@ -1268,7 +1268,7 @@ void LoadScannableDevices(void *ptr)
 
             if( paoDeviceID != numeric_limits<long>::min() )
             {
-                CtiDeviceSPtr pBase = ScannerDeviceManager.getEqual(paoDeviceID);
+                CtiDeviceSPtr pBase = ScannerDeviceManager.getDeviceByID(paoDeviceID);
 
                 if(pBase && pBase->isSingle())
                 {
@@ -1370,7 +1370,7 @@ void DispatchMsgHandlerThread(VOID *Arg)
                                     //  I don't think we need this here - getEqual() is muxed, and what we really want is a device-level mux
                                     //CtiDeviceManager::LockGuard guard(ScannerDeviceManager.getMux());
 
-                                    if( (device = ScannerDeviceManager.getEqual( deviceId )) )
+                                    if( (device = ScannerDeviceManager.getDeviceByID( deviceId )) )
                                     {
                                         if( device->isSingle() )
                                         {
@@ -1565,9 +1565,9 @@ INT MakePorterRequests(list< OUTMESS* > &outList)
 
             if(ScannerDebugLevel & SCANNER_DEBUG_OUTREQUESTS)
             {
-                if(ScannerDeviceManager.RemoteGetEqual(OutMessage->TargetID))
+                if(ScannerDeviceManager.getDeviceByID(OutMessage->TargetID))
                 {
-                    string name = ScannerDeviceManager.RemoteGetEqual(OutMessage->TargetID)->getName();
+                    string name = ScannerDeviceManager.getDeviceByID(OutMessage->TargetID)->getName();
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " OutMessage to " << name << endl;
