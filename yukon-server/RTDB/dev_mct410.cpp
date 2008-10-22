@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.172 $
-* DATE         :  $Date: 2008/09/17 21:36:26 $
+* REVISION     :  $Revision: 1.173 $
+* DATE         :  $Date: 2008/10/22 16:26:49 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2341,7 +2341,7 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
                 channels = 1;
             }
 
-            for( int i = 0; i < ChannelCount; i++ )
+            for( int i = 0; i < channels; i++ )
             {
                 int offset = (i * 3);
 
