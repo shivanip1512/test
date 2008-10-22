@@ -147,6 +147,9 @@ insert into yukonlistentry values (141, 100, 0, 'Intervals To Value', 0);
 insert into yukonlistentry values (142, 100, 0, 'Linear Slope', 0);
 
 alter table CICUSTOMERPOINTDATA drop constraint PK_CICUSTOMERPOINTDATA;
+/* @error ignore-begin */
+drop index PK_CICUSTOMERPOINTDATA;
+/* @error ignore-end */
 alter table CICUSTOMERPOINTDATA add constraint PK_CICUSTOMERPOINTDATA primary key (CustomerID, Type);
 
 update YukonRoleProperty set DefaultValue = 'Curtailment' where RolePropertyID = -10922;
