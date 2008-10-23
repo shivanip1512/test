@@ -198,15 +198,9 @@ public abstract class CommandRequestExecutorBase<T> implements
         public synchronized void cancelCommands(final LiteYukonUser user) {
 
             // log remaining commands as canceled
-            scheduledExecutor.execute(new Runnable() {
-                
-                @Override
-                public void run() {
-                    for (T cmd : pendingUserMessageIds.values()) {
-                        log.info("Command canceled by user '" + user.getUsername() + "':" + cmd.toString());
-                    }
-                }
-            });
+            for (T cmd : pendingUserMessageIds.values()) {
+                log.info("Command canceled by user '" + user.getUsername() + "':" + cmd.toString());
+            }
             
             // remove listener
             removeListener();
