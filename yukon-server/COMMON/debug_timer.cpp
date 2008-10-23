@@ -49,7 +49,7 @@ double DebugTimer::calculateDuration(const SYSTEMTIME &begin, const SYSTEMTIME &
         swap(fc_begin, fc_end);
     }
 
-    double duration = fc_begin.raw - fc_end.raw;
+    double duration = fc_end.raw - fc_begin.raw;
 
     //  convert from 100 ns units to seconds
     duration *= 100.0 / (1000.0 * 1000.0 * 1000.0);
