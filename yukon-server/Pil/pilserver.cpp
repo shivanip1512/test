@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.120 $
-* DATE         :  $Date: 2008/10/22 21:16:43 $
+* REVISION     :  $Revision: 1.121 $
+* DATE         :  $Date: 2008/10/23 13:35:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1900,8 +1900,6 @@ INT CtiPILServer::analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, l
 
 INT CtiPILServer::analyzePointGroup(CtiRequestMsg& Req, CtiCommandParser &parse, list< CtiRequestMsg* > & execList, list< CtiMessage* > & retList)
 {
-    INT status = NORMAL;
-    int i;
     CtiDeviceManager::coll_type::reader_lock_guard_t guard(DeviceManager->getLock());  //  I don't think we need this, but I'm leaving it until we prove that out
 
     CtiDeviceSPtr ptGroup = DeviceManager->getDeviceByID(Req.DeviceId());    // This is our repeater we are curious about!
@@ -1916,7 +1914,7 @@ INT CtiPILServer::analyzePointGroup(CtiRequestMsg& Req, CtiCommandParser &parse,
         execList.push_back( (CtiRequestMsg*)Req.replicateMessage() );
     }
 
-    return status;
+    return NORMAL;
 }
 
 void CtiPILServer::putQueue(CtiMessage *Msg)
@@ -1927,7 +1925,6 @@ void CtiPILServer::putQueue(CtiMessage *Msg)
 
 void CtiPILServer::indicateControlOnSubGroups(CtiDeviceSPtr &Dev, CtiRequestMsg *&pReq, CtiCommandParser &parse, list< CtiMessage* > &vgList, list< CtiMessage* > &retList)
 {
-    bool shed = false;
     try
     {
         if(findStringIgnoreCase(gConfigParms.getValueAsString("PIL_IDENTIFY_SUBGROUP_CONTROLS"), "true") &&
@@ -1946,12 +1943,10 @@ void CtiPILServer::indicateControlOnSubGroups(CtiDeviceSPtr &Dev, CtiRequestMsg 
 
                 if(parse.getFlags() & (CMD_FLAG_CTL_RESTORE|CMD_FLAG_CTL_TERMINATE|CMD_FLAG_CTL_CLOSE))
                 {
-                    shed = false;
                     DeviceManager->select(findRestoreDeviceGroupControl, (void*)(Dev.get()), match_coll);
                 }
                 else
                 {
-                    shed = true;
                     DeviceManager->select(findShedDeviceGroupControl, (void*)(Dev.get()), match_coll);
                 }
 

@@ -44,15 +44,10 @@ parsetest.obj
 TESTOBJS=\
 piltest.obj
 
-PILOBJS= \
-pilhost.obj
-
-
 WINLIBS=kernel32.lib user32.lib
 SOCKSLIB=wsock32.lib
 
 CTIPROGS=\
-pilhost.exe \
 parsetest.exe \
 piltest.exe
 
@@ -81,17 +76,6 @@ $(COMPILEBASE)\lib\clrdump.lib
 
 
 ALL:            $(CTIPROGS)
-
-pilhost.exe:    $(PILOBJS) Makefile
-                @echo:
-                @echo Compiling $@
-                @%cd $(OBJ)
-                $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) -o ..\$@ \
-$(PILOBJS) -link $(RWLIBS) $(BOOSTLIBS) $(VGLIBS)
-               -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-               -copy ..\$@ $(YUKONOUTPUT)
-               @%cd $(CWD)
-
 
 piltest.exe:    $(TESTOBJS) Makefile
                 @echo:
