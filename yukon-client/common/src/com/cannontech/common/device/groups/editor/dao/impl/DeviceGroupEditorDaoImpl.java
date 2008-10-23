@@ -222,7 +222,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
                 String fullName = parent.getFullName()+"/"+groupName;
                 
                 // throw special exception if the grup is child of Hidden group (temp group)
-                if (parent.isHidden()) {
+                if ((parent.getFullName() + "/").equals(SystemGroupEnum.TEMPORARYGROUPS.getFullPath())) {
                     throw new TemporaryDeviceGroupNotFoundException(fullName);
                 }
                 
