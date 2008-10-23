@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_holiday.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2008/03/11 16:43:17 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2008/10/23 20:34:36 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -88,7 +88,7 @@ void CtiHolidayManager::refresh()
         {
             CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
             RWDBConnection conn = getConnection();
-            RWDBReader rdr = ExecuteQuery(conn, holidaysql.c_str());
+            RWDBReader rdr = ExecuteQuery(conn, holidaysql);
 
             while( rdr() )
             {

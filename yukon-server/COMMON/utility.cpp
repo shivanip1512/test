@@ -62,7 +62,7 @@ LONG GetMaxLMControl(long pao)
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBReader  rdr = ExecuteQuery( conn, sql.c_str() );
+    RWDBReader  rdr = ExecuteQuery(conn, sql);
 
     if(rdr() && rdr.isValid())
     {
@@ -103,7 +103,7 @@ LONG LMControlHistoryIdGen(bool force)
             CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
             RWDBConnection conn = getConnection();
             // are out of scope when the release is called
-            RWDBReader  rdr = ExecuteQuery( conn, sql );
+            RWDBReader  rdr = ExecuteQuery(conn, sql);
 
             if(rdr() && rdr.isValid())
             {
@@ -164,7 +164,7 @@ LONG CommErrorHistoryIdGen(bool force)
                 CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
                 RWDBConnection conn = getConnection();
                 // are out of scope when the release is called
-                RWDBReader  rdr = ExecuteQuery( conn, sql );
+                RWDBReader  rdr = ExecuteQuery(conn, sql);
 
                 if(rdr() && rdr.isValid())
                 {
@@ -254,7 +254,7 @@ LONG VerificationSequenceGen(bool force, int force_value)
                     // Make sure all objects that that store results are out of scope when the release is called
                     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
                     RWDBConnection conn = getConnection();
-                    RWDBReader  rdr = ExecuteQuery( conn, sql );
+                    RWDBReader  rdr = ExecuteQuery(conn, sql);
 
                     if( rdr() && rdr.isValid() )
                     {
@@ -306,7 +306,7 @@ INT ChangeIdGen(bool force)
         CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
         RWDBConnection conn = getConnection();
         // are out of scope when the release is called
-        RWDBReader  rdr = ExecuteQuery( conn, sql );
+        RWDBReader  rdr = ExecuteQuery(conn, sql);
 
         if(rdr() && rdr.isValid())
         {
@@ -342,7 +342,7 @@ INT SystemLogIdGen()
         CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
         RWDBConnection conn = getConnection();
         // are out of scope when the release is called
-        RWDBReader  rdr = ExecuteQuery( conn, sql );
+        RWDBReader  rdr = ExecuteQuery(conn, sql);
 
         if(rdr() && rdr.isValid())
         {
@@ -398,7 +398,7 @@ INT CCEventActionIdGen(LONG capBankPointId)
             CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBReader  rdr = ExecuteQuery( conn, sql.c_str() );
+    RWDBReader  rdr = ExecuteQuery(conn, sql);
 
     if(rdr() && rdr.isValid())
     {
@@ -426,7 +426,7 @@ INT CCEventLogIdGen()
         CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
         RWDBConnection conn = getConnection();
         // are out of scope when the release is called
-        RWDBReader  rdr = ExecuteQuery( conn, sql );
+        RWDBReader  rdr = ExecuteQuery(conn, sql);
 
         if(rdr() && rdr.isValid())
         {
@@ -458,7 +458,7 @@ INT CCEventSeqIdGen()
         CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
         RWDBConnection conn = getConnection();
         // are out of scope when the release is called
-        RWDBReader  rdr = ExecuteQuery( conn, sql );
+        RWDBReader  rdr = ExecuteQuery(conn, sql);
 
         if(rdr() && rdr.isValid())
         {
@@ -906,7 +906,7 @@ LONG GetPAOIdOfPoint(long pid)
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBReader  rdr = ExecuteQuery( conn, sql );
+    RWDBReader  rdr = ExecuteQuery(conn, sql);
 
     if(rdr() && rdr.isValid())
     {
@@ -2604,7 +2604,7 @@ LONG GetPAOIdOfEnergyPro(long devicesn)
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBReader  rdr = ExecuteQuery( conn, sql.c_str() );
+    RWDBReader  rdr = ExecuteQuery( conn, sql );
 
     if(rdr() && rdr.isValid())
     {
@@ -2632,7 +2632,7 @@ vector<int> getPointIdsOnPao(long paoid)
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBReader  rdr = ExecuteQuery( conn, sql.c_str() );
+    RWDBReader  rdr = ExecuteQuery( conn, sql );
 
     if(rdr.isValid())
     {
@@ -2663,7 +2663,7 @@ long getPaoIdForPoint(long pointid)
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBReader rdr = ExecuteQuery(conn, sql.c_str());
+    RWDBReader rdr = ExecuteQuery(conn, sql);
 
     if(rdr.isValid() && rdr())
     {
@@ -2694,13 +2694,13 @@ string getEncodingTypeForPort(long portId)
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBReader rdr = ExecuteQuery( conn, sql.c_str() );
+    RWDBReader rdr = ExecuteQuery( conn, sql );
 
     if(rdr.isValid() && rdr() )
     {
         rdr["encodingtype"] >> type;
     }
-    else 
+    else
     {
         if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
         {
@@ -2709,7 +2709,7 @@ string getEncodingTypeForPort(long portId)
             dout << " " << sql << endl;
         }
     }
-    
+
     return type;
 }
 
@@ -2723,13 +2723,13 @@ string getEncodingKeyForPort(long portId)
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBReader rdr = ExecuteQuery( conn, sql.c_str() );
+    RWDBReader rdr = ExecuteQuery( conn, sql );
 
     if(rdr.isValid() && rdr() )
     {
         rdr["encodingkey"] >> type;
     }
-    else 
+    else
     {
         if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
         {
@@ -2738,7 +2738,7 @@ string getEncodingKeyForPort(long portId)
             dout << " " << sql << endl;
         }
     }
-    
+
     return type;
 }
 

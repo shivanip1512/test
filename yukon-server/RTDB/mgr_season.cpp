@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_season.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/12/20 17:20:28 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2008/10/23 20:34:36 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -37,10 +37,10 @@ bool CtiSeasonManager::isInSeason(const CtiDate& date, long season_sched_id)
 {
     unsigned month_of_year = date.month();
     unsigned day_of_month = date.dayOfMonth();
-    
+
     std::multimap<long, date_of_season>::iterator lower = _season_map.lower_bound(season_sched_id);
     std::multimap<long, date_of_season>::iterator upper = _season_map.upper_bound(season_sched_id);
-    
+
     if(lower != upper)
     {
         for(std::multimap<long, date_of_season>::iterator iter = lower;
@@ -54,7 +54,7 @@ bool CtiSeasonManager::isInSeason(const CtiDate& date, long season_sched_id)
                  (month_of_year == cur_dos.end_month && day_of_month <= cur_dos.end_day)) )
             {
                 return true;
-            }            
+            }
         }
     }
     else
@@ -83,7 +83,7 @@ void CtiSeasonManager::refresh()
         {
             CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
             RWDBConnection conn = getConnection();
-            RWDBReader rdr = ExecuteQuery(conn, _season_sql.c_str());
+            RWDBReader rdr = ExecuteQuery(conn, _season_sql);
 
             while( rdr() )
             {

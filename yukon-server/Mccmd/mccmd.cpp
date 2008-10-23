@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.80 $
-* DATE         :  $Date: 2008/09/19 16:14:44 $
+* REVISION     :  $Revision: 1.81 $
+* DATE         :  $Date: 2008/10/23 20:34:35 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2050,7 +2050,7 @@ long GetNotificationGroupID( const string& name)
             RWDBConnection conn = getConnection();
 
             string sql = "SELECT NotificationGroupID FROM NotificationGroup WHERE GroupName='" + name + "'";
-            RWDBReader rdr = ExecuteQuery( conn, sql.c_str() );
+            RWDBReader rdr = ExecuteQuery(conn, sql);
 
             //Assume there is only one?
             if( rdr() )
@@ -2085,7 +2085,7 @@ static void GetDeviceName(long deviceID, string& name)
 
             string sql = "SELECT PAOName FROM YukonPAObject WHERE YukonPAObject.PAObjectID=";
             sql += devStr;
-            RWDBReader rdr = ExecuteQuery( conn, sql.c_str() );
+            RWDBReader rdr = ExecuteQuery(conn, sql);
 
             if( rdr() )
             {
@@ -2115,7 +2115,7 @@ static long GetDeviceID(const string& name)
     string sql = "SELECT PAOBJECTID FROM YukonPAObject WHERE YukonPAObject.PAOName='";
     sql += name;
     sql += "'";
-    RWDBReader rdr = ExecuteQuery(conn,sql.c_str());
+    RWDBReader rdr = ExecuteQuery(conn, sql);
     if(rdr())
       {
         rdr >> id;
