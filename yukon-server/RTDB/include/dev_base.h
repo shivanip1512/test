@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.72 $
-* DATE         :  $Date: 2008/10/22 21:16:43 $
+* REVISION     :  $Revision: 1.73 $
+* DATE         :  $Date: 2008/10/23 20:38:04 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -380,5 +380,9 @@ inline bool    CtiDeviceBase::operator<(const CtiDeviceBase& rhs) const { return
 
 
 typedef shared_ptr< CtiDeviceBase > CtiDeviceSPtr;
+
+//  helper functions for Porter and Scanner
+void IM_EX_DEVDB attachPointManagerToDevice(const long id, CtiDeviceSPtr device, void *pointManager);
+void IM_EX_DEVDB attachRouteManagerToDevice(const long id, CtiDeviceSPtr device, void *routeManager);
 
 #endif // #ifndef __DEV_BASE_H__

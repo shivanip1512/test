@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.75 $
-* DATE         :  $Date: 2008/10/15 17:41:58 $
+* REVISION     :  $Revision: 1.76 $
+* DATE         :  $Date: 2008/10/23 20:38:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -61,6 +61,22 @@ CtiDeviceBase& CtiDeviceBase::setPointManager(CtiPointManager* aPtr)
 {
     _pointMgr = aPtr;
     return *this;
+}
+
+void IM_EX_DEVDB attachPointManagerToDevice(const long id, CtiDeviceSPtr device, void *pointManager)
+{
+    if( device )
+    {
+        device->setPointManager(static_cast<CtiPointManager *>(pointManager));
+    }
+}
+
+void IM_EX_DEVDB attachRouteManagerToDevice(const long id, CtiDeviceSPtr device, void *routeManager)
+{
+    if( device )
+    {
+        device->setRouteManager(static_cast<CtiRouteManager *>(routeManager));
+    }
 }
 
 

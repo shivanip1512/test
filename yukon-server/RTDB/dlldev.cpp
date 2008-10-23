@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dlldev.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2008/10/22 21:16:42 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2008/10/23 20:38:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -60,32 +60,6 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
     return TRUE;
 }
 
-
-void IM_EX_DEVDB attachRouteManagerToDevices(CtiDeviceManager *DM, CtiRouteManager *RteMgr)
-{
-    CtiDeviceManager::ptr_type pBase;
-
-    CtiDeviceManager::spiterator itr;
-
-    for(itr = DM->begin(); itr != DM->end(); itr++)
-    {
-        pBase = itr->second;
-        pBase->setRouteManager(RteMgr);
-    }
-}
-
-void IM_EX_DEVDB attachPointManagerToDevices(CtiDeviceManager *DM, CtiPointManager *PntMgr)
-{
-    CtiDeviceManager::ptr_type pBase;
-
-    CtiDeviceManager::spiterator itr;
-
-    for(itr = DM->begin(); itr != DM->end(); itr++)
-    {
-        pBase = itr->second;
-        pBase->setPointManager(PntMgr);
-    }
-}
 
 void IM_EX_DEVDB attachTransmitterDeviceToRoutes(CtiDeviceManager *DM, CtiRouteManager *RM)
 {

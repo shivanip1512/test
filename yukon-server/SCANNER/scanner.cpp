@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.78 $
-* DATE         :  $Date: 2008/10/22 21:16:43 $
+* REVISION     :  $Revision: 1.79 $
+* DATE         :  $Date: 2008/10/23 20:38:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -52,7 +52,7 @@
 #include "scansup.h"
 
 #include "rtdb.h"
-#include "mgr_device.h"
+#include "mgr_device_scannable.h"
 #include "mgr_point.h"
 #include "dev_base.h"
 #include "dev_single.h"
@@ -107,8 +107,8 @@ void    InitScannerGlobals(void);
 void    DumpRevision(void);
 INT     MakePorterRequests(list< OUTMESS* > &outList);
 
-CtiDeviceManager  ScannerDeviceManager(Application_Scanner);
-CtiPointManager   ScannerPointManager;
+Cti::ScannableDeviceManager ScannerDeviceManager(Application_Scanner);
+CtiPointManager             ScannerPointManager;
 
 static RWWinSockInfo  winsock;
 
@@ -1183,7 +1183,6 @@ void LoadScannableDevices(void *ptr)
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Starting LoadScannableDevices. " << (bforce ? "Due to DBChange." : "Not due to DBChange." ) << endl;
     }
-    ScannerDeviceManager.setIncludeScanInfo();
 
     if(pChg == NULL || (pChg->getDatabase() == ChangeStateGroupDb) )
     {
@@ -1207,7 +1206,7 @@ void LoadScannableDevices(void *ptr)
                 devstr = pChg->getObjectType();
             }
 
-            ScannerDeviceManager.refresh(NULL, chgid, catstr, devstr);
+            ScannerDeviceManager.refresh(chgid, catstr, devstr);
 
             stop = stop.now();
 
@@ -1247,7 +1246,7 @@ void LoadScannableDevices(void *ptr)
         else
         {
             ScannerDeviceManager.apply(applyValidateScanTimes, (void*)bforce);
-            attachPointManagerToDevices(&ScannerDeviceManager, &ScannerPointManager);
+            ScannerDeviceManager.apply(attachPointManagerToDevice, &ScannerPointManager);
         }
     }
 

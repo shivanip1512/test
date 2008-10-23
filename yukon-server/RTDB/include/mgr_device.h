@@ -11,8 +11,8 @@
  *
  *
  * PVCS KEYWORDS:
- * REVISION     :  $Revision: 1.33 $
- * DATE         :  $Date: 2008/10/22 21:16:43 $
+ * REVISION     :  $Revision: 1.34 $
+ * DATE         :  $Date: 2008/10/23 20:38:04 $
  *
  *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
@@ -59,16 +59,10 @@ private:
                                             //   _exclusionMap, so these need to be retained and reinserted from a seperate list
 private:
 
-    bool _includeScanInfo;
-
-    bool refreshDevices(RWDBReader& rdr);
-    // void RefreshDeviceRoute(LONG id = 0);
-    void refreshScanRates(LONG id = 0);
-    void refreshDeviceWindows(LONG id = 0);
-
-    bool loadDeviceType(long paoid, const string &device_name, CtiDeviceBase &device, string type=string(), bool include_type=true);
-
     void refreshList(LONG paoID = 0, long deviceType = 0 );
+    bool loadDeviceType(long paoid, const string &device_name, CtiDeviceBase &device, string type=string(), bool include_type=true);
+    bool refreshDevices(RWDBReader& rdr);
+
     bool refreshDeviceByPao(CtiDeviceSPtr pDev, LONG paoID);
     void refreshExclusions(LONG id = 0);
     void refreshIONMeterGroups(LONG paoID = 0);
@@ -81,13 +75,13 @@ protected:
 
     virtual void refreshDeviceProperties(LONG paoID = 0);
 
+    spiterator begin();
+    spiterator end();
+
 public:
 
     CtiDeviceManager(CtiApplication_t app_id);
     virtual ~CtiDeviceManager();
-
-    spiterator begin();
-    spiterator end();
 
     coll_type::lock_t &getLock();
 
@@ -108,7 +102,7 @@ public:
         return _smartMap.entries();
     }
 
-    void refresh(void *d = NULL, LONG paoID = 0, string category = string(""), string devicetype = string(""));
+    virtual void refresh(LONG paoID = 0, string category = string(""), string devicetype = string(""));
     void refreshGroupHierarchy(LONG paoID = 0);
     bool refreshPointGroups(LONG paoID = 0);
     void writeDynamicPaoInfo(void);
@@ -117,7 +111,6 @@ public:
     void deleteList(void);
 
     ptr_type getDeviceByID(LONG Remote);
-    ptr_type RemoteGetEqual(LONG Remote);
     ptr_type RemoteGetPortRemoteEqual (LONG Port, LONG Remote);
     ptr_type RemoteGetPortRemoteTypeEqual (LONG Port, LONG Remote, INT Type);
     ptr_type RemoteGetPortMasterSlaveTypeEqual (LONG Port, LONG Master, LONG Slave, INT Type);
@@ -128,9 +121,6 @@ public:
     bool contains (bool (*findFun)(const long, const ptr_type &, void*), void* d);
 
     int select(bool (*selectFun)(const long, ptr_type, void*), void* d, vector< ptr_type > &coll);
-
-    void setIncludeScanInfo();
-    void resetIncludeScanInfo();
 
     bool mayDeviceExecuteExclusionFree(CtiDeviceSPtr anxiousDevice, CtiTablePaoExclusion &deviceexclusion);
     bool removeInfiniteExclusion(CtiDeviceSPtr anxiousDevice);

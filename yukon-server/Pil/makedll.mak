@@ -131,26 +131,6 @@ parsetest.obj:	yukon.h precompiled.h ctidbgmem.h queue.h cparms.h \
 		ctitokenizer.h parsevalue.h
 pilglob.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		types.h
-pilhost.obj:	yukon.h precompiled.h ctidbgmem.h mgr_device.h dlldefs.h \
-		rtdb.h hashkey.h hash_functions.h utility.h ctitime.h \
-		queues.h cticalls.h os2_2w32.h types.h numstr.h \
-		sorted_vector.h dllbase.h dsm2.h mutex.h guard.h clrdump.h \
-		cticonnect.h netports.h dev_base.h boostutil.h cmdparse.h \
-		ctitokenizer.h parsevalue.h counter.h dev_exclusion.h \
-		tbl_paoexclusion.h config_device.h logger.h thread.h \
-		CtiPCPtrQueue.h rte_base.h dbmemobject.h ctibase.h ctinexus.h \
-		message.h collectable.h rwutil.h boost_time.h tbl_pao.h \
-		tbl_rtcomm.h dbaccess.h sema.h resolvers.h pointtypes.h \
-		db_entry_defines.h desolvers.h msg_signal.h tbl_base.h \
-		tbl_2way.h tbl_stats.h tbl_scanrate.h tbl_dyn_paoinfo.h \
-		pointdefs.h pt_base.h pt_dyn_base.h tbl_pt_base.h \
-		tbl_pt_property.h tbl_pt_trigger.h slctdev.h smartmap.h \
-		readers_writer_lock.h critical_section.h mgr_point.h \
-		slctpnt.h mgr_route.h repeaterrole.h pilserver.h server_b.h \
-		con_mgr.h connection.h exchange.h msg_multi.h msg_pdata.h \
-		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
-		configval.h cmdopts.h argkey.h argval.h msg_pcrequest.h \
-		mgr_config.h fifo_multiset.h dlldev.h
 pilserver.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		types.h cticalls.h dev_grp_versacom.h dev_base.h boostutil.h \
 		utility.h ctitime.h queues.h numstr.h sorted_vector.h dsm2.h \

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.99 $
-* DATE         :  $Date: 2008/10/22 21:16:43 $
+* REVISION     :  $Revision: 1.100 $
+* DATE         :  $Date: 2008/10/23 20:38:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -63,26 +63,6 @@
 using namespace Cti;  //  in preparation for moving devices to their own namespace
 using namespace std;
 
-
-bool findExecutingAndExcludedDevice(const long key, CtiDeviceSPtr devsptr, void* d)
-{
-    bool bstatus = false;
-    CtiDeviceBase* Device = devsptr.get();
-    CtiDeviceBase *pAnxiousDevice = (CtiDeviceBase *)d;         // This is the port that wishes to execute!
-
-    if(pAnxiousDevice->getID() != Device->getID())              // And it is not me...
-    {
-        bool excluded = pAnxiousDevice->isDeviceExcluded(Device->getID());
-
-        if(excluded)
-        {
-            // Ok, now decide if that excluded device is currently executing....
-            bstatus = Device->isExecuting();
-        }
-    }
-
-    return bstatus;
-}
 
 bool findAllExpresscomGroups(const long key, CtiDeviceSPtr devsptr, void* d)
 {
@@ -495,8 +475,7 @@ CtiDeviceManager::ptr_type CtiDeviceManager::RemoteGetEqualbyName (const string 
 }
 
 CtiDeviceManager::CtiDeviceManager(CtiApplication_t app_id) :
-_app_id(app_id),
-_includeScanInfo(false)
+_app_id(app_id)
 {
 }
 
@@ -512,192 +491,7 @@ void CtiDeviceManager::deleteList(void)
     _smartMap.removeAll(NULL, 0);
 }
 
-void CtiDeviceManager::setIncludeScanInfo()
-{
-    _includeScanInfo = true;
-}
-
-void CtiDeviceManager::resetIncludeScanInfo()
-{
-    _includeScanInfo = false;
-}
-
-
-
-void CtiDeviceManager::refreshScanRates(LONG id)
-{
-    LONG lTemp = 0;
-    CtiDeviceBase* pTempCtiDevice = NULL;
-
-    coll_type::writer_lock_guard_t guard(getLock());
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-    RWDBDatabase db = getDatabase();
-
-    RWDBTable   keyTable;
-
-    RWDBSelector selector = db.selector();
-
-    if(DebugLevel & 0x00020000)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Looking for ScanRates" << endl;
-    }
-    CtiTableDeviceScanRate::getSQL( db, keyTable, selector );
-
-    if(id > 0)
-    {
-        selector.where(keyTable["deviceid"] == id && selector.where());
-    }
-
-    RWDBReader rdr = selector.reader(conn);
-    if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
-    }
-    if(DebugLevel & 0x00020000)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() <<" Done looking for ScanRates" << endl;
-    }
-
-    if(setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok)
-    {
-        if(id > 0)
-        {
-            CtiDeviceSPtr devsptr = getDeviceByID(id);
-            if(devsptr) pTempCtiDevice = devsptr.get();
-            if(pTempCtiDevice) pTempCtiDevice->invalidateScanRates();     // Mark all Scan Rate elements as needing refresh..
-        }
-        else
-        {
-            spiterator itr, itr_end = end();
-
-            for(itr = begin(); itr != itr_end; itr++)
-            {
-                pTempCtiDevice = (itr->second).get();
-                if(pTempCtiDevice) pTempCtiDevice->invalidateScanRates();     // Mark all Scan Rate elements as needing refresh..
-            }
-        }
-    }
-
-    while( (setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
-    {
-        rdr["deviceid"] >> lTemp;            // get the DeviceID
-
-        CtiDeviceSPtr devsptr = getDeviceByID(lTemp);
-        if(devsptr) pTempCtiDevice = devsptr.get();
-
-        if( pTempCtiDevice )
-        {
-            if( pTempCtiDevice->isSingle() )
-            {
-                /*
-                 *  The point just returned from the rdr already was in my list, and is a
-                 *  scannable device....  We need to
-                 *  update the list entry with the scan rates!
-                 */
-                ((CtiDeviceSingle*)pTempCtiDevice)->DecodeScanRateDatabaseReader(rdr);        // Fills himself in from the reader
-            }
-            else
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " There are scanrates in the scanrate table for a nonscannable device: " << pTempCtiDevice->getName() << endl;
-            }
-        }
-    }
-
-    if(setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok || setErrorCode(rdr.status().errorCode()) == RWDBStatus::endOfFetch)
-    {
-        // Remove any scan rates which were NOT refreshed, but only if we read a few correctly!
-        spiterator itr;
-
-        for(itr = begin(); itr != end(); itr++)
-        {
-            pTempCtiDevice = (itr->second).get();
-            pTempCtiDevice->deleteNonUpdatedScanRates();
-        }
-    }
-}
-
-void CtiDeviceManager::refreshDeviceWindows(LONG id)
-{
-    LONG        lTemp = 0;
-    CtiDeviceBase*   pTempCtiDevice = NULL;
-
-    coll_type::writer_lock_guard_t guard(getLock());
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-    RWDBDatabase db = getDatabase();
-
-    RWDBTable   keyTable;
-
-    RWDBSelector selector = db.selector();
-
-    if(DebugLevel & 0x00020000)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Looking for Device Windows" << endl;
-    }
-    CtiTableDeviceWindow::getSQL( db, keyTable, selector );
-
-    if(id > 0)
-    {
-        selector.where(keyTable["deviceid"] == id && selector.where());
-
-        CtiDeviceSPtr devsptr = getDeviceByID(id);
-        if(devsptr && devsptr->isSingle())
-        {
-            ((CtiDeviceSingle*)devsptr.get())->removeWindowType();  // This should remove ALL windows.  It is needed in case they have deleted the window on the device.
-        }
-    }
-
-    if(DebugLevel & 0x00020000)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << selector.asString() << endl;
-    }
-
-    RWDBReader rdr = selector.reader(conn);
-
-    while( (setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
-    {
-        rdr["deviceid"] >> lTemp;            // get the DeviceID
-
-        CtiDeviceSPtr devsptr = getDeviceByID(lTemp);
-        if(devsptr) pTempCtiDevice = devsptr.get();
-
-        if( pTempCtiDevice )
-        {
-            if( pTempCtiDevice->isSingle() )
-            {
-                /*
-                 *  The point just returned from the rdr already was in my list, and is a
-                 *  scannable device....  We need to
-                 *  update the list entry with the scan rates!
-                 */
-                ((CtiDeviceSingle*)pTempCtiDevice)->DecodeDeviceWindowDatabaseReader(rdr);        // Fills himself in from the reader
-            }
-            else
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " There are scan windows in the device window table for a nonscannable device. " << pTempCtiDevice->getName() << endl;
-                }
-            }
-        }
-    }
-
-    if(DebugLevel & 0x00020000)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Done looking for ScanWindows" << endl;
-    }
-}
-
-void CtiDeviceManager::refresh(void *d, LONG paoID, string category, string devicetype)
+void CtiDeviceManager::refresh(LONG paoID, string category, string devicetype)
 {
     if(paoID != 0)
     {
@@ -749,7 +543,9 @@ void CtiDeviceManager::refresh(void *d, LONG paoID, string category, string devi
 
 bool CtiDeviceManager::loadDeviceType(long paoid, const string &device_name, CtiDeviceBase &device, string type, bool include_type)
 {
-    DebugTimer timer("looking for " + device_name, 5, DebugLevel & 0x00020000, DebugLevel & 0x80000000);
+    bool print_bounds = DebugLevel & 0x00020000;
+
+    DebugTimer timer("looking for " + device_name, print_bounds);
 
     RWDBConnection conn     = getConnection();
     RWDBDatabase   db       = getDatabase();
@@ -889,7 +685,7 @@ void CtiDeviceManager::refreshList(LONG paoID, LONG deviceType)
             // Now I need to check for any Device removals based upon the
             // Updated Flag being NOT set.  I only do this for non-directed loads.  a paoid is directed.!
 
-            DebugTimer timer("applying invalidateNotUpdated ", 5, false, DebugLevel & 0x80000000);
+            DebugTimer timer("applying invalidateNotUpdated ");
 
             while( pTempCtiDevice = _smartMap.remove(isDeviceNotUpdated, NULL) )
             {
@@ -1664,91 +1460,18 @@ void CtiDeviceManager::refreshDynamicPaoInfo(LONG paoID)
 }
 
 
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// This method loads all the device properties/characteristics which must be appended to an already
-// loaded device.
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//  This method loads all the device properties/characteristics which must be appended to an already
+//  loaded device.
 void CtiDeviceManager::refreshDeviceProperties(LONG paoID)
 {
     bool print_duration = DebugLevel & 0x80000000;
 
-    {
-        DebugTimer timer("loading macro subdevices", 5, false, print_duration);
-
-        refreshMacroSubdevices(paoID);
-    }
-
-    {
-        DebugTimer timer("loading ION meter groups", 5, false, print_duration);
-
-        refreshIONMeterGroups(paoID);
-    }
-
-    {
-        DebugTimer timer("loading device exclusions", 5, false, print_duration);
-
-        refreshExclusions(paoID);
-    }
-
-    {
-        DebugTimer timer("loading MCT configs", 5, false, print_duration);
-
-        refreshMCTConfigs(paoID);
-    }
-
-    {
-        DebugTimer timer("loading MCT 400 configs", 5, false, print_duration);
-
-        refreshMCT400Configs(paoID);
-    }
-
-    {
-        DebugTimer timer("loading dynamic device data", 5, false, print_duration);
-
-        refreshDynamicPaoInfo(paoID);
-    }
-
-
-    if(_includeScanInfo)
-    {
-        CtiTime start, stop;
-        if(DebugLevel & 0x00020000)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for scan rates." << endl;
-        }
-        refreshScanRates(paoID);
-
-        if(DebugLevel & 0x00020000)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for scan rates" << endl;
-        }
-        stop = stop.now();
-        if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds to load  scan rates" << endl;
-        }
-
-        start = start.now();
-        if(DebugLevel & 0x00020000)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for scan windows." << endl;
-        }
-        refreshDeviceWindows(paoID);
-
-        if(DebugLevel & 0x00020000)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for scan windows" << endl;
-        }
-        stop = stop.now();
-        if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds to load scan windows" << endl;
-        }
-    }
+    {  DebugTimer timer("loading macro subdevices");     refreshMacroSubdevices(paoID);  }
+    {  DebugTimer timer("loading ION meter groups");     refreshIONMeterGroups (paoID);  }
+    {  DebugTimer timer("loading device exclusions");    refreshExclusions     (paoID);  }
+    {  DebugTimer timer("loading MCT configs");          refreshMCTConfigs     (paoID);  }
+    {  DebugTimer timer("loading MCT 400 configs");      refreshMCT400Configs  (paoID);  }
+    {  DebugTimer timer("loading dynamic device data");  refreshDynamicPaoInfo (paoID);  }
 }
 
 

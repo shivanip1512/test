@@ -1,3 +1,6 @@
+#ifndef __DEBUG_TIMER_H__
+#define __DEBUG_TIMER_H__
+
 #include "logger.h"
 
 namespace Cti {
@@ -6,23 +9,25 @@ class IM_EX_CTIBASE DebugTimer
 {
 private:
 
-    CtiTime   _start;
-    ctitime_t _notice_duration;
+    SYSTEMTIME _start;
 
     const string _action;
 
-    bool _print_start_stop,
-         _print_duration;
+    bool  _print_bounds;
+    float _alert_timeout;
+
+    static string formatSystemTime (const SYSTEMTIME &time);
+    static double calculateDuration(const SYSTEMTIME &begin, const SYSTEMTIME &end);
 
 public:
 
-    DebugTimer(const string &action,
-               ctitime_t print_force_duration,
-               bool print_start_stop_debuglevel,
-               bool print_duration_debuglevel);
+    DebugTimer(const  string &action,
+               bool   print_bounds  = false,  //  always print start/finished lines
+               double alert_timeout = 5.0);   //  print if the total duration exceeds this time
 
     ~DebugTimer();
 };
 
 }
 
+#endif

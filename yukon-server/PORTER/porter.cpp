@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.133 $
-* DATE         :  $Date: 2008/10/22 21:16:43 $
+* REVISION     :  $Revision: 1.134 $
+* DATE         :  $Date: 2008/10/23 20:38:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -280,6 +280,7 @@ bool isTAPTermPort(LONG PortNumber)
 
     return result;
 }
+
 
 /* Routine to load all routes on a system */
 static void applyLoadAllRoutes(const long portid, CtiPortSPtr Port, void *unusedPtr)
@@ -748,11 +749,8 @@ INT PorterMainFunction (INT argc, CHAR **argv)
     INT    i, j;
     int WorkReportFrequencyInSeconds;
     extern USHORT PrintLogEvent;
-    time_t last_print = 0, last_flush = 0;
+    time_t last_flush = 0;
     CtiTime lastWorkReportTime;
-
-    BYTE RefKey[8] = {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
-    BYTE VerKey[8] = {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
 
     /* New stuff for YUKON kbd handling */
     INPUT_RECORD      inRecord;
@@ -858,16 +856,6 @@ INT PorterMainFunction (INT argc, CHAR **argv)
 
     /* make it clear who is just about the boss */
     CTISetPriority(PRTYC_TIMECRITICAL, THREAD_PRIORITY_NORMAL);
-
-    /* LOGON TO HARDLOCK */
-#ifdef HARDLOCK
-    Result = HL_LOGIN (MOD_ADDR, LOCAL_DEVICE, RefKey, VerKey);
-    if(Result != STATUS_OK)
-    {
-        fprintf(stdout, "Required Hardlock Not Detected.\n");
-        CTIExit (EXIT_PROCESS, -1);
-    }
-#endif
 
     /* Open the error message file */
     if((i = InitError ()) != NORMAL)
@@ -1106,12 +1094,6 @@ INT PorterMainFunction (INT argc, CHAR **argv)
                 }
             }
         }
-
-        /*if( last_print + 3600 <= ::time(0) )
-        {
-            last_print = ::time(0);
-            processInputFunction(0x79);  //  do an alt-y every 60 seconds
-        }*/
 
         if( last_flush + 60 <= ::time(0) )
         {
@@ -1504,12 +1486,12 @@ INT RefreshPorterRTDB(void *ptr)
             devstr = pChg->getObjectType();
         }
 
-        DeviceManager.refresh(NULL, chgid, catstr, devstr);
+        DeviceManager.refresh(chgid, catstr, devstr);
 
         if(pChg == NULL)
         {
-            attachRouteManagerToDevices(&DeviceManager, &RouteManager);
-            attachPointManagerToDevices(&DeviceManager, &PorterPointManager);
+            DeviceManager.apply(attachRouteManagerToDevice, &RouteManager);
+            DeviceManager.apply(attachPointManagerToDevice, &PorterPointManager);
             ConfigManager.initialize(DeviceManager);
             DeviceManager.refreshGroupHierarchy();
             DeviceManager.apply(applyQueuedDevicePortMatchup, &PortManager);
@@ -2485,7 +2467,7 @@ void LoadCommFailPoints(LONG ptid)
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    RWDBReader  rdr = ExecuteQuery( conn, sql.c_str() );
+    RWDBReader  rdr = ExecuteQuery(conn, sql);
 
     while(rdr() && rdr.isValid())
     {
