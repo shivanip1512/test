@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.203 $
-* DATE         :  $Date: 2008/10/22 20:59:26 $
+* REVISION     :  $Revision: 1.204 $
+* DATE         :  $Date: 2008/10/23 19:52:08 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -6881,7 +6881,7 @@ void CtiVanGogh::checkNumericLimits(int alarm, CtiPointDataMsg *pData, CtiMultiW
 
     double  val = pData->getValue();
     INT     numericAlarmOffset = (alarm - CtiTablePointAlarming::limit0); // This gives a base 0 (limit0 alarm = 0) for the alarms for later use with pending operations
-    INT     limitnumber = getNumericLimitFromHighLow(numericAlarmOffset, alarm); //Currently returns 0 or 1 for limit 0 or 1
+    INT     limitnumber = getNumericLimitFromHighLow(numericAlarmOffset, alarm) +1; //Currently returns 0 or 1 for limit 0 or 1
     INT     exceeds = LIMIT_IN_RANGE;
 
     try
@@ -6903,7 +6903,7 @@ void CtiVanGogh::checkNumericLimits(int alarm, CtiPointDataMsg *pData, CtiMultiW
                     }
                     else
                     {
-                        _snprintf(tstr, sizeof(tstr), "Limit %d Exceeded Low. %.3f < %.3f", limitnumber+1, val, limit.getLowLimit());
+                        _snprintf(tstr, sizeof(tstr), "Limit %d Exceeded Low. %.3f < %.3f", limitnumber, val, limit.getLowLimit());
                     }
                     text = string(tstr);
                 }
@@ -6916,14 +6916,14 @@ void CtiVanGogh::checkNumericLimits(int alarm, CtiPointDataMsg *pData, CtiMultiW
                     }
                     else
                     {
-                        _snprintf(tstr, sizeof(tstr), "Limit %d Exceeded High. %.3f > %.3f", limitnumber+1, val, limit.getHighLimit());
+                        _snprintf(tstr, sizeof(tstr), "Limit %d Exceeded High. %.3f > %.3f", limitnumber, val, limit.getHighLimit());
                     }
                     text = string(tstr);
                 }
                 else if(exceeds == LIMIT_SETUP_ERROR)
                 {
                     char tstr[120];
-                    _snprintf(tstr, sizeof(tstr), "Limit %d Invalid Setup. Is %.3f < %.3f < %.3f?", limitnumber+1, limit.getLowLimit(), val, limit.getHighLimit());
+                    _snprintf(tstr, sizeof(tstr), "Limit %d Invalid Setup. Is %.3f < %.3f < %.3f?", limitnumber, limit.getLowLimit(), val, limit.getHighLimit());
                     text = string(tstr);
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " **** Checkpoint **** Invalid limit setup" << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -6964,7 +6964,7 @@ void CtiVanGogh::checkNumericLimits(int alarm, CtiPointDataMsg *pData, CtiMultiW
                     addToPendingSet(pendingPointLimit);
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** LIMIT Violation ****  Point: " << pointNumeric->getName() << " delayed (" << duration << ") violation. Limit " << limitnumber+1 << " pending alarm." << endl;
+                        dout << CtiTime() << " **** LIMIT Violation ****  Point: " << pointNumeric->getName() << " delayed (" << duration << ") violation. Limit " << limitnumber << " pending alarm." << endl;
                     }
                 }
                 else
