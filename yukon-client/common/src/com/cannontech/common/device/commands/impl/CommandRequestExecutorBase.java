@@ -27,7 +27,6 @@ import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestExecutor;
 import com.cannontech.common.device.commands.CommandResultHolder;
-import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.core.authorization.support.CommandPermissionConverter;
 import com.cannontech.core.authorization.support.Permission;
@@ -56,7 +55,6 @@ public abstract class CommandRequestExecutorBase<T> implements
     private PorterRequestCancelService porterRequestCancelService;
     private Set<Permission> loggableCommandPermissions = new HashSet<Permission>();
     private ConfigurationSource configurationSource;
-    private ScheduledExecutor scheduledExecutor;
     
     private int defaultForegroundPriority = 14;
     private int defaultBackgroundPriority = 8;
@@ -374,11 +372,6 @@ public abstract class CommandRequestExecutorBase<T> implements
         this.configurationSource = configurationSource;
     }
     
-    @Autowired
-    public void setScheduledExecutor(ScheduledExecutor scheduledExecutor) {
-        this.scheduledExecutor = scheduledExecutor;
-    }
-
     @ManagedAttribute
     public int getBetweenResultsMaxDelay() {
         return betweenResultsMaxDelay;
