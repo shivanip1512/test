@@ -4,7 +4,9 @@ package com.cannontech.database.db.port;
  * This type was created in VisualAge.
  */
 
- import com.cannontech.database.db.DBPersistent;
+ import org.apache.commons.lang.Validate;
+
+import com.cannontech.database.db.DBPersistent;
  
 public class PortTerminalServer extends DBPersistent {
 	
@@ -65,7 +67,7 @@ public PortTerminalServer( Integer portNumber, String ipAddress, Integer socketP
  */
 public void add() throws java.sql.SQLException {
 
-	Object addValues[] = { getPortID(), getIpAddress(), getSocketPortNumber() };
+	Object addValues[] = { getPortID(), getIpAddress(), getSocketPortNumber(), getEncodingType().toString(), getEncodingKey() };
 	
 	add( "PortTerminalServer", addValues );
 }
@@ -174,12 +176,14 @@ public EncodingType getEncodingType() {
     return encodingType;
 }
 public void setEncodingType(EncodingType type) {
+    Validate.notNull(type);
     this.encodingType = type;
 }
 public String getEncodingKey() {
     return encodingKey;
 }
 public void setEncodingKey(String key) {
+    Validate.notNull(key);
     this.encodingKey = key;
 }
 }

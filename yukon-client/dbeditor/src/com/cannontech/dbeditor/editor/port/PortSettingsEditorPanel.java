@@ -1024,7 +1024,7 @@ private javax.swing.JLabel getEncryptionLabel() {
             encodingLabel.setPreferredSize(new java.awt.Dimension(50, 16));
             encodingLabel.setFont(new java.awt.Font("dialog", 0, 14));
             encodingLabel.setEnabled(true);
-            encodingLabel.setMinimumSize(new java.awt.Dimension(185, 16));
+            encodingLabel.setMinimumSize(new java.awt.Dimension(50, 16));
             encodingLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
             // user code begin {1}
             // user code end
@@ -1300,7 +1300,8 @@ public void setValue(Object val)
 		
 		getEncodingCheckBox().setSelected(pts.getEncodingType() != EncodingType.NONE);
 		getEncodingTextField().setText(pts.getEncodingKey());
-		getEncryptionLabel().setVisible(pts.getEncodingType() != EncodingType.NONE);
+		getEncodingTextField().setEnabled(pts.getEncodingType() != EncodingType.NONE);
+		getEncryptionLabel().setEnabled(pts.getEncodingType() != EncodingType.NONE);
 	}
 	else if( val instanceof PooledPort )
 	{
