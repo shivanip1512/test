@@ -124,7 +124,7 @@ std::string parse_asString[TEST_SIZE] = {
 "command=6:flags=0::relaymask=(none),1,1.000:type=expresscom,8,8.000:xcfanstate=(none),1,1.000:xcrunprog=(none),1,1.000:xcsetheattemp=(none),43,43.000:xcsetstate=(none),1,1.000:xcsysstate=(none),12,12.000:xctimeout=(none),40,40.000:xctwosetpoints=(none),1,1.000",
 "command=6:flags=0::relaymask=(none),1,1.000:type=expresscom,8,8.000:xcfanstate=(none),1,1.000:xcrunprog=(none),1,1.000:xcsetcooltemp=(none),33,33.000:xcsetheattemp=(none),43,43.000:xcsetstate=(none),1,1.000:xcsysstate=(none),16,16.000:xctimeout=(none),40,40.000:xctwosetpoints=(none),1,1.000",
 "command=8:flags=0::sa_dlc_mode=(none),0,0.000:sa_f0bit=(none),1,1.000:sa_f1bit=(none),0,0.000:type=expresscom,8,8.000:xcbacklight=(none),1,1.000:xcbacklightcycle=(none),0,0.000:xcbacklightduty=(none),0,0.000:xcbacklightperiod=(none),0,0.000",
-"command=6:flags=0::type=expresscom,8,8.000:xcascii=(none),1,1.000:xcclear=(none),1,1.000:xcdata=Julie rocks!,-2147483648,0.000:xcdataport=(none),2,2.000:xcdatatimeout=(none),30,30.000:xcdeletable=(none),1,1.000:xchour=(none),1,1.000:xcpriority=(none),7,7.000",
+"command=6:flags=0::type=expresscom,8,8.000:xcascii=(none),1,1.000:xcclear=(none),1,1.000:xcdata=Julie rocks!,-2147483648,0.000:xcdataport=(none),2,2.000:xcdatapriority=(none),7,7.000:xcdatatimeout=(none),30,30.000:xcdeletable=(none),1,1.000:xchour=(none),1,1.000",
 "command=6:flags=0::type=expresscom,8,8.000:xccold=(none),1,1.000:xccoldload_r=(none),600,600.000",
 "command=6:flags=0::type=expresscom,8,8.000:xccold=(none),1,1.000:xccoldload_r1=(none),600,600.000",
 "command=6:flags=0::type=expresscom,8,8.000:xccold=(none),1,1.000:xccoldload_r1=(none),600,600.000:xccoldload_r14=(none),600,600.000:xccoldload_r2=(none),7200,7200.000",

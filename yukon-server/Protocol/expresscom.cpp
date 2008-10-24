@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.51 $
-* DATE         :  $Date: 2008/08/08 21:06:50 $
+* REVISION     :  $Revision: 1.52 $
+* DATE         :  $Date: 2008/10/24 14:38:49 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1326,7 +1326,7 @@ INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse, CtiOutMess
     {
         if (parse.isKeyValid("xcascii")) 
         {
-            dataMessageBlock(parse.getiValue("xcpriority", -1),
+            dataMessageBlock(parse.getiValue("xcdatapriority", -1),
                              parse.isKeyValid("xchour"),
                              parse.isKeyValid("xcdeletable"),
                              parse.isKeyValid("xcclear"),

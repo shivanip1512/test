@@ -4663,12 +4663,12 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
                 _cmd["xcdataport"] = CtiParseValue( iValue );
             }
         }
-        if(!(temp = CmdStr.match(" priority " + str_num)).empty())
+        if(!(temp = CmdStr.match(" msgpriority " + str_num)).empty())
         {
             if(!(valStr = temp.match(re_num)).empty())
             {
                 iValue = atoi(valStr.c_str());
-                _cmd["xcpriority"] = CtiParseValue( iValue );
+                _cmd["xcdatapriority"] = CtiParseValue( iValue );
             }
         }
         if(!(temp = CmdStr.match(" deletable")).empty())

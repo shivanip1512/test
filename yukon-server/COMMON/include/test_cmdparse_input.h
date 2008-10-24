@@ -127,7 +127,7 @@ std::string inputString[TEST_SIZE] = {
 "putconfig xcom setstate run timeout 40 heattemp 43 fan circulate system cool",
 "putconfig xcom setstate run timeout 40 heattemp 43 cooltemp 33 fan circulate system emheat",
 "control xcom backlight cycles 23 duty 34 bperiod 45",
-"putconfig xcom data 'Julie rocks!' port 2 deletable priority 7 timeout 30 hour clear",
+"putconfig xcom data 'Julie rocks!' port 2 deletable msgpriority 7 timeout 30 hour clear",
 "putconfig xcom coldl r=10",
 "putconfig xcom coldl r1=10",
 "putconfig xcom coldl r1=10 r2=2h r14=10m",
