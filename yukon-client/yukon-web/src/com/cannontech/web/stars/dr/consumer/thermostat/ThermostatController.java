@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -45,6 +46,10 @@ public class ThermostatController extends AbstractThermostatController {
             @ModelAttribute("customerAccount") CustomerAccount account,
             LiteYukonUser user, HttpServletRequest request, ModelMap map) {
 
+        if(StringUtils.isBlank(thermostatIds.toString())) {
+            return "redirect:/spring/stars/consumer/thermostat/view/all";
+        }
+        
         accountCheckerService.checkInventory(user, 
                                              thermostatIds.toArray(new Integer[thermostatIds.size()]));
         

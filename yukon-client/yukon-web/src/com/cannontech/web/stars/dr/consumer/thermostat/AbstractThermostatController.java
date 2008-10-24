@@ -5,10 +5,12 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.web.stars.dr.consumer.AbstractConsumerController;
 
 /**
@@ -35,11 +37,15 @@ public abstract class AbstractThermostatController extends
         };
 
         // If thermostatIds exists, split and create Integer list
-        if (thermostatIds != null) {
+        if (!StringUtils.isBlank(thermostatIds)) {
             String[] ids = thermostatIds.split(",");
             for (String id : ids) {
-                int idInt = Integer.parseInt(id.trim());
-                idList.add(idInt);
+                try {
+                    int idInt = Integer.parseInt(id.trim());
+                    idList.add(idInt);
+                } catch(NumberFormatException nfe) {
+                    CTILogger.error(nfe);
+                }
             }
         }
 
