@@ -116,7 +116,7 @@ function submitEnrollment() {
                         <c:set var="enrollmentProgramIds" value="${fn:join(enrollment.programIds, ',')}"/>
                         <c:set var="rowspan" value="${enrollmentProgramsSize > 0 ? enrollmentProgramsSize : 1}"/>
                     
-                        <c:set var="applianceCategoryId" value="${enrollment.applianceCategoryId}"/>
+                        <c:set var="applianceCategoryId" value="${enrollment.applianceCategory.applianceCategoryId}"/>
                     
                     
                         <c:choose>
@@ -132,7 +132,7 @@ function submitEnrollment() {
 		                                    <c:if test="${enrollment.enrolled}">checked</c:if>
 		                                    onclick="categoryAction(${applianceCategoryId}, this.checked, '${enrollmentProgramIds}')"
 		                                >
-		                                <b><cti:msg key="${enrollment.applianceType}"/></b>
+		                                <b><c:out value="${enrollment.applianceCategory.categoryLabel}"/></b>
 		                            </td>
 		                            <td colspan="2"></td>
 		                        </tr>

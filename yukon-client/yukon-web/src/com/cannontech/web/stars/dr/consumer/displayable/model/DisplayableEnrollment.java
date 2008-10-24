@@ -5,13 +5,14 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
+import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.dr.appliance.model.ApplianceType;
 import com.cannontech.stars.dr.program.model.Program;
 
 public final class DisplayableEnrollment {
     public static final Comparator<DisplayableEnrollmentProgram> enrollmentProgramComparator;
     public static final Comparator<DisplayableEnrollment> enrollmentComparator;
-    private int applianceCategoryId;
+    private ApplianceCategory applianceCategory;
     private ApplianceType applianceType;
     private String applianceLogo;
     private Set<DisplayableEnrollmentProgram> enrollmentPrograms;
@@ -39,12 +40,12 @@ public final class DisplayableEnrollment {
         
     }
     
-    public int getApplianceCategoryId() {
-        return applianceCategoryId;
+    public ApplianceCategory getApplianceCategory() {
+        return this.applianceCategory;
     }
 
-    public void setApplianceCategoryId(int applianceCategoryId) {
-        this.applianceCategoryId = applianceCategoryId;
+    public void setApplianceCategory(ApplianceCategory applianceCategory) {
+        this.applianceCategory = applianceCategory;
     }
 
 

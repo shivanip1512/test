@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
-import com.cannontech.core.dao.AuthDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -37,7 +36,6 @@ public class EnrollmentController extends AbstractConsumerController {
     private static final String KEY_APPLIANCECATEGORYID = "applianceCategoryId";
     private static final String KEY_ENROLL = "enroll";
     private DisplayableEnrollmentDao displayableEnrollmentDao;
-    private AuthDao authDao;
     private WebSecurityChecker webSecurityChecker;
     
     @RequestMapping(value = "/consumer/enrollment", method = RequestMethod.GET)
@@ -128,11 +126,6 @@ public class EnrollmentController extends AbstractConsumerController {
     public void setDisplayableEnrollmentDao(
             DisplayableEnrollmentDao displayableEnrollmentDao) {
         this.displayableEnrollmentDao = displayableEnrollmentDao;
-    }
-    
-    @Autowired
-    public void setAuthDao(AuthDao authDao) {
-        this.authDao = authDao;
     }
     
     @Autowired

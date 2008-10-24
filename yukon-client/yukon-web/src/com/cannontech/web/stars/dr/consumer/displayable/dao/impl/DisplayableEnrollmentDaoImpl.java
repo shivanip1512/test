@@ -52,8 +52,7 @@ public class DisplayableEnrollmentDaoImpl extends AbstractDisplayableDao impleme
             if (enrollment == null) {
                 enrollment = new DisplayableEnrollment();
                 
-                int applianceCategoryId = applianceCategory.getApplianceCategoryId();
-                enrollment.setApplianceCategoryId(applianceCategoryId);
+                enrollment.setApplianceCategory(applianceCategory);
                 
                 ApplianceType applianceType = applianceCategory.getApplianceType();
                 enrollment.setApplianceType(applianceType);

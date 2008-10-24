@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
@@ -77,31 +78,43 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public ApplianceCategory getById(int applianceCategoryId) {
-        final SqlStatementBuilder sb = new SqlStatementBuilder();
-        sb.append("SELECT EntryText FROM YukonListEntry WHERE YukonListEntry.ListID = (");
-        sb.append("SELECT ListID FROM YukonSelectionList WHERE ListName = ?) ");
-        sb.append("AND EntryID = (SELECT CategoryID FROM ApplianceCategory WHERE ApplianceCategoryID = ?)");
-        String sql = sb.toString();
         
-        final SqlStatementBuilder sqlBuilder2 = new SqlStatementBuilder();
-        sqlBuilder2.append("SELECT LogoLocation");
-        sqlBuilder2.append("FROM YukonWebConfiguration ywc,ApplianceCategory ac");
-        sqlBuilder2.append("WHERE ywc.ConfigurationID = ac.WebConfigurationID");
-        sqlBuilder2.append("AND ac.ApplianceCategoryID = ?");
-        String sql2 = sqlBuilder2.toString();
+        final SqlStatementBuilder entryTextQuery = new SqlStatementBuilder();
+        entryTextQuery.append("SELECT EntryText FROM YukonListEntry WHERE YukonListEntry.ListID = (");
+        entryTextQuery.append("SELECT ListID FROM YukonSelectionList WHERE ListName = ?) ");
+        entryTextQuery.append("AND EntryID = (SELECT CategoryID FROM ApplianceCategory WHERE ApplianceCategoryID = ?)");
+        String sql = entryTextQuery.toString();
+        
+        final SqlStatementBuilder categoryNameAndLogoQuery = new SqlStatementBuilder();
+        categoryNameAndLogoQuery.append("SELECT ac.description, ywc.alternateDisplayName, ywc.logoLocation ");
+        categoryNameAndLogoQuery.append("FROM YukonWebConfiguration ywc,ApplianceCategory ac");
+        categoryNameAndLogoQuery.append("WHERE ywc.ConfigurationID = ac.WebConfigurationID");
+        categoryNameAndLogoQuery.append("AND ac.ApplianceCategoryID = ?");
+        String sql2 = categoryNameAndLogoQuery.toString();
         
         String textValue = simpleJdbcTemplate.queryForObject(sql,
                                                              String.class, 
                                                              YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY,
                                                              applianceCategoryId);
         
-        String logoPath = simpleJdbcTemplate.queryForObject(sql2, 
-                                                        String.class,
-                                                        applianceCategoryId);
-        
+        CategoryNameAndLogoContainer catNameAndLogo = 
+            simpleJdbcTemplate.queryForObject(sql2,
+                                              new CategoryNameAndLogoRowMapper(),
+                                              applianceCategoryId);
+
+
+        String categoryLabel;
+        if(!StringUtils.isBlank(catNameAndLogo.getDisplayName())) {
+            categoryLabel = catNameAndLogo.getDisplayName();
+        } else {
+            categoryLabel = catNameAndLogo.getDefaultDisplayName();
+        }
         ApplianceType applianceType = getApplianceTypeEnumFromTextValue(textValue);
-        ApplianceCategory applianceCategory = new ApplianceCategory(applianceCategoryId, applianceType, logoPath);
-        return applianceCategory;
+        
+        return new ApplianceCategory(applianceCategoryId, 
+                                     categoryLabel, 
+                                     applianceType, 
+                                     catNameAndLogo.getLogoLocation());
     }
     
     private ApplianceType getApplianceTypeEnumFromTextValue(final String textValue) {
@@ -140,5 +153,45 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
     @Autowired
     public void setYukonUserDao(YukonUserDao yukonUserDao) {
         this.yukonUserDao = yukonUserDao;
+    }
+    
+    protected class CategoryNameAndLogoRowMapper implements ParameterizedRowMapper<CategoryNameAndLogoContainer> {
+
+        public CategoryNameAndLogoContainer mapRow(ResultSet rs, int rowNum) throws SQLException {
+            
+            String displayName = rs.getString("alternateDisplayName");
+            String defaultDisplayName = rs.getString("description");
+            String logoLocation = rs.getString("logoLocation");
+            
+            return new CategoryNameAndLogoContainer(displayName,
+                                                    defaultDisplayName,
+                                                    logoLocation);
+        }
+    }
+
+    protected class CategoryNameAndLogoContainer{
+        private String displayName;
+        private String defaultDisplayName;
+        private String logoLocation;
+        
+        public CategoryNameAndLogoContainer(String displayName, 
+                                            String defaultDisplayName,
+                                            String logoLocation){
+            this.displayName = displayName;
+            this.defaultDisplayName = defaultDisplayName;
+            this.logoLocation = logoLocation;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+
+        public String getDefaultDisplayName() {
+            return defaultDisplayName;
+        }
+
+        public String getLogoLocation() {
+            return logoLocation;
+        }
     }
 }

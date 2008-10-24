@@ -2,17 +2,26 @@ package com.cannontech.stars.dr.appliance.model;
 
 public class ApplianceCategory {
     private final int applianceCategoryId;
+    private final String categoryLabel;
     private final ApplianceType applianceType;
     private final String logoPath;
-    
-    public ApplianceCategory(int applianceCategoryId, ApplianceType applianceType, String logoPath) {
+
+    public ApplianceCategory(int applianceCategoryId,
+                             String categoryLabel,
+                             ApplianceType applianceType, 
+                             String logoPath) {
         this.applianceCategoryId = applianceCategoryId;
+        this.categoryLabel = categoryLabel;
         this.applianceType = applianceType;
         this.logoPath = logoPath;
     }
 
     public int getApplianceCategoryId() {
         return applianceCategoryId;
+    }
+
+    public String getCategoryLabel() {
+        return categoryLabel;
     }
 
     public ApplianceType getApplianceType() {
@@ -45,6 +54,9 @@ public class ApplianceCategory {
         final ApplianceCategory other = (ApplianceCategory) obj;
         if (applianceCategoryId != other.applianceCategoryId)
             return false;
+        if (!categoryLabel.equalsIgnoreCase(other.categoryLabel)){
+            return false;
+        }
         if (applianceType == null) {
             if (other.applianceType != null)
                 return false;

@@ -35,7 +35,7 @@ public class EnrollmentDescriptionController extends AbstractConsumerController 
 		// Get enrollment from customer enrollments for the category id
 		DisplayableEnrollment currentEnrollment = null;
 		for(DisplayableEnrollment enrollment : enrollments) {
-			Integer currentCategoryId = enrollment.getApplianceCategoryId();
+			Integer currentCategoryId = enrollment.getApplianceCategory().getApplianceCategoryId();
 			if(currentCategoryId.equals(categoryId)) {
 				currentEnrollment = enrollment;
 				break;
