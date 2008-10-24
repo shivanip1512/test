@@ -1282,7 +1282,11 @@ public void setValue(Object val)
 	}
 	else if (val instanceof TerminalServerDirectPort)
 	{
-		getCarrierDetectWaitTextField().setText("0");
+        PortTerminalServer pts = ((TerminalServerDirectPort) dp).getPortTerminalServer();
+	    
+        boolean udpPort = pts.getIpAddress().equalsIgnoreCase("UDP");
+		
+        getCarrierDetectWaitTextField().setText("0");
 		getIPAddressLabel().setVisible(true);
 		getIPAddressTextField().setVisible(true);
 		getPortNumberLabel().setVisible(true);
@@ -1294,14 +1298,17 @@ public void setValue(Object val)
 		getCommonProtocolComboBox().setVisible(true);
 		CtiUtilities.setSelectedInComboBox(getCommonProtocolComboBox(), cp.getCommonProtocol());
 
-		PortTerminalServer pts = ((TerminalServerDirectPort) dp).getPortTerminalServer();
 		getIPAddressTextField().setText(pts.getIpAddress());
 		getPortNumberTextField().setText(pts.getSocketPortNumber().toString());
 		
 		getEncodingCheckBox().setSelected(pts.getEncodingType() != EncodingType.NONE);
 		getEncodingTextField().setText(pts.getEncodingKey());
-		getEncodingTextField().setEnabled(pts.getEncodingType() != EncodingType.NONE);
-		getEncryptionLabel().setEnabled(pts.getEncodingType() != EncodingType.NONE);
+		getEncodingTextField().setEnabled(pts.getEncodingType() != EncodingType.NONE && udpPort);
+		getEncryptionLabel().setEnabled(pts.getEncodingType() != EncodingType.NONE && udpPort);
+		
+		getEncodingCheckBox().setEnabled(udpPort);
+		getIPAddressTextField().setEnabled(!udpPort);
+		
 	}
 	else if( val instanceof PooledPort )
 	{
