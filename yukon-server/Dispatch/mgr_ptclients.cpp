@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/mgr_ptclients.cpp-arc  $
-* REVISION     :  $Revision: 1.50 $
-* DATE         :  $Date: 2008/10/22 16:58:27 $
+* REVISION     :  $Revision: 1.51 $
+* DATE         :  $Date: 2008/10/24 15:23:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -248,6 +248,15 @@ void CtiPointClientManager::refreshProperties(LONG pntID, LONG paoID, const set<
     {
         attributeSelector.where( keyTable["pointid"] == pntID && attributeSelector.where() );
 
+        pair<PointPropertyMap::const_iterator,
+             PointPropertyMap::const_iterator> range = _properties.equal_range(pntID);
+        for( ; range.first != range.second; ++range.first )
+        {
+            if( range.first->second != NULL )
+            {
+                delete range.first->second;
+            }
+        }
         _properties.erase(pntID);
     }
 
@@ -584,28 +593,27 @@ void CtiPointClientManager::getDirtyRecordList(list<CtiTablePointDispatch> &upda
 {
     ptr_type pPt;
     coll_type::writer_lock_guard_t guard(getLock());
-    spiterator itr = Inherited::begin();
-    spiterator end = Inherited::end();
+    DynamicPointDispatchIterator itr = _dynamic.begin();
+    DynamicPointDispatchIterator end = _dynamic.end();
 
     for( ;itr != end; itr++)
     {
         try
         {
-            pPt = itr->second;
-            if(pPt)
+            CtiDynamicPointDispatch *pDyn = itr->second;
+
+            if(pDyn != NULL && (pDyn->getDispatch().isDirty() || !pDyn->getDispatch().getUpdatedFlag()) )
             {
-                CtiDynamicPointDispatch *pDyn = getDynamic(pPt);
-    
-                if(pDyn != NULL && (pDyn->getDispatch().isDirty() || !pDyn->getDispatch().getUpdatedFlag()) )
+                UINT statictags = pDyn->getDispatch().getTags();
+                pDyn->getDispatch().resetTags();                    // clear them all!
+                if( (pPt = getCachedPoint(itr->first)) )
                 {
-                    UINT statictags = pDyn->getDispatch().getTags();
-                    pDyn->getDispatch().resetTags();                    // clear them all!
                     pDyn->getDispatch().setTags(pPt->adjustStaticTags(statictags));   // make the static tags match...
-    
-                    updateList.push_back(pDyn->getDispatch());
-                    pDyn->getDispatch().resetDirty();
-                    pDyn->getDispatch().setUpdatedFlag();
                 }
+
+                updateList.push_back(pDyn->getDispatch());
+                pDyn->getDispatch().resetDirty();
+                pDyn->getDispatch().setUpdatedFlag();
             }
         }
         catch(...)
@@ -669,6 +677,10 @@ void CtiPointClientManager::removeOldDynamicData()
         {
             if(!isPointLoaded(itr->first))
             {
+                if( itr->second != NULL )
+                {
+                    delete itr->second;
+                }
                 itr = _dynamic.erase(itr);
                 count ++;
             }
@@ -726,10 +738,29 @@ void CtiPointClientManager::DeleteList(void)
 {
     coll_type::writer_lock_guard_t guard(getLock());
 
+    for( DynamicPointDispatchMap::iterator itr = _dynamic.begin(); itr != _dynamic.end(); itr++ )
+    {
+        if( itr->second != NULL )
+        {
+            delete itr->second;
+        }
+    }
+
+    for( PointPropertyMap::iterator iter = _properties.begin(); iter != _properties.end(); iter++ )
+    {
+        if( iter->second != NULL )
+        {
+            delete iter->second;
+        }
+    }
+
     _conMgrPointMap.clear();
     _pointConnectionMap.clear();
     _reasonabilityLimits.clear();
     _limits.clear();
+    _alarming.clear();
+    _properties.clear();
+    _dynamic.clear();
 
     Inherited::ClearList();
 
@@ -989,6 +1020,12 @@ void CtiPointClientManager::removePoint(Inherited::ptr_type pTempCtiPoint, bool 
         //this is a deletion, and the values cannot be written to the db.
         if(!isExpiration)
         {
+            DynamicPointDispatchMap::iterator iter = _dynamic.find(pointID);
+            if( iter != _dynamic.end() && iter->second != NULL)
+            {
+                delete iter->second;
+            }
+
             _dynamic.erase(pointID);
             _pointConnectionMap.erase(pointID);
         }
@@ -997,7 +1034,19 @@ void CtiPointClientManager::removePoint(Inherited::ptr_type pTempCtiPoint, bool 
         _limits.erase(CtiTablePointLimit(pointID, 0));
         _limits.erase(CtiTablePointLimit(pointID, 1));
         _alarming.erase(pointID);
+
+        pair<PointPropertyMap::const_iterator,
+             PointPropertyMap::const_iterator> range = _properties.equal_range(pointID);
+
+        for( ; range.first != range.second; ++range.first )
+        {
+            if( range.first->second != NULL )
+            {
+                delete range.first->second;
+            }
+        }
         _properties.erase(pointID);
+        
     }
 
     Inherited::removePoint(pTempCtiPoint, isExpiration);
@@ -1132,7 +1181,7 @@ bool CtiPointClientManager::setDynamic(long pointID, CtiDynamicPointDispatch *po
 
 CtiDynamicPointDispatch *CtiPointClientManager::getDynamic(CtiPointSPtr point)
 {
-    CtiDynamicPointDispatch *retval = 0;
+    CtiDynamicPointDispatch *retval = NULL;
 
     if( point )
     {
