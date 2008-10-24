@@ -343,14 +343,61 @@ public final class PointDaoImpl implements PointDao {
         return pointList;
     }
     
-    public int getPointDataOffset(int pointId) {
-        String sql = "select dataoffset from pointanalog where pointid=?";
-        return (Integer)jdbcOps.queryForObject(sql, new Object[] {pointId}, Integer.class);
+    public int getPointDataOffset(int pointId, int pointType) {
+        if (pointType == PointTypes.ANALOG_POINT) {
+            return getAnalogPointDataOffset(pointId);
+        } else if (pointType == PointTypes.PULSE_ACCUMULATOR_POINT || pointType == PointTypes.DEMAND_ACCUMULATOR_POINT) {
+            return getAccumulatorPointDataOffset(pointId);
+        } else {
+            throw new NotFoundException( "Point DataOffset not found for Id: " + pointId + " and Type " + pointType + ".");
+        }
     }
     
-    public double getPointMultiplier(int pointId) {
-        String sql = "select multiplier from pointanalog where pointid=?";
-        return (Double)jdbcOps.queryForObject(sql, new Object[] {pointId}, Double.class);
+    private int getAccumulatorPointDataOffset(int pointId) {
+        try {
+            String sql = "select dataoffset from pointaccumulator where pointid=?";
+            return jdbcOps.queryForInt(sql, new Object[] {pointId});
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new NotFoundException( "Accumulator Point DataOffset not found for Id: " + pointId + ".");
+        }
+    }
+    
+    private int getAnalogPointDataOffset(int pointId) {
+        try {
+            String sql = "select dataoffset from pointanalog where pointid=?";
+            return jdbcOps.queryForInt(sql, new Object[] {pointId});
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new NotFoundException( "Analog Point DataOffset not found for Id: " + pointId + ".");
+        }
+    }
+   
+    
+    public double getPointMultiplier(int pointId, int pointType) {
+        if (pointType == PointTypes.ANALOG_POINT) {
+            return getAnalogPointMultiplier(pointId);
+        } else if (pointType == PointTypes.PULSE_ACCUMULATOR_POINT || pointType == PointTypes.DEMAND_ACCUMULATOR_POINT) {
+            return getAccumulatorPointMultiplier(pointId);
+        } else {
+            throw new NotFoundException( "Point DataOffset not found for Id: " + pointId + " and Type " + pointType + ".");
+        }
+    }
+    
+    private double getAccumulatorPointMultiplier(int pointId) {
+        try {
+            String sql = "select multiplier from pointaccumulator where pointid=?";
+            return (Double)jdbcOps.queryForObject(sql, new Object[] {pointId}, Double.class);
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new NotFoundException( "Accumulator Point DataOffset not found for Id: " + pointId + ".");
+        }
+    }
+    
+    private double getAnalogPointMultiplier(int pointId) {
+        try {
+            String sql = "select multiplier from pointanalog where pointid=?";
+            return (Double)jdbcOps.queryForObject(sql, new Object[] {pointId}, Double.class);
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new NotFoundException( "Analog Point DataOffset not found for Id: " + pointId + ".");
+        }
     }
     
 	public void setDatabaseCache(IDatabaseCache databaseCache) {

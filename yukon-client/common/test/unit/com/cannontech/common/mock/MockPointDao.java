@@ -3,7 +3,6 @@ package com.cannontech.common.mock;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
@@ -131,11 +130,11 @@ public class MockPointDao implements PointDao {
         return null;
     }
 
-    public int getPointDataOffset(int pointId) {
+    public int getPointDataOffset(int pointId, int pointType) {
         return 0;
     }
 
-    public double getPointMultiplier(int pointId) {
+    public double getPointMultiplier(int pointId, int pointType) {
         return 0;
     }
 

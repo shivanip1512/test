@@ -138,18 +138,20 @@ public interface PointDao {
     public List<CapBankMonitorPointParams> getCapBankMonitorPoints(CapBank capBank);
 
     /**
-     * Returns the point offset for the given point
+     * Returns the point DataOffset for the given point and point type.
+     * This is not the Point.PointOffset field.  This is the specific point type's DataOffset field.
      * @param pointId
-     * @return
+     * @param pointType
+     * @return the point's data offset
      */
-    public int getPointDataOffset(int pointId);
+    public int getPointDataOffset(int pointId, int pointType) throws NotFoundException;
     
     /**
      * Returns the point multiplier for the given point
      * @param pointId
      * @return
      */
-    public double getPointMultiplier(int pointId);
+    public double getPointMultiplier(int pointId, int pointType) throws NotFoundException;
     
     public List<LitePoint> searchByName(String name, String paoClass);
 }

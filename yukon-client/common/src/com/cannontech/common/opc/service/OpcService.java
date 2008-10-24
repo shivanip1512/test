@@ -4,7 +4,6 @@ import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -190,15 +189,15 @@ public class OpcService implements OpcConnectionListener, DBChangeListener{
         
         if (point.getPointType() == PointTypes.ANALOG_POINT) {
             try {
-                offset = pointDao.getPointDataOffset(pointId);
-            } catch(IncorrectResultSizeDataAccessException e) {
+                offset = pointDao.getPointDataOffset(pointId, point.getPointType());
+            } catch(NotFoundException e) {
                 log.error(" Data Offset for " + itemName + " was not found in the database.");
                 return;
             }
             
             try {
-                multiplier = pointDao.getPointMultiplier(pointId);  
-            } catch(IncorrectResultSizeDataAccessException e) {
+                multiplier = pointDao.getPointMultiplier(pointId, point.getPointType());  
+            } catch(NotFoundException e) {
                 log.error(" Multiplier for " + itemName + " was not found in the database.");
                 return;
             }

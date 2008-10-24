@@ -235,8 +235,9 @@ public class UpdateUtil {
     		if( (displayAttrib & PointAttributes.MULTIPLIER) != 0 ) {
     		    double mult = -1.0;
     		    try {
-    		        mult = DaoFactory.getPointDao().getPointMultiplier(pointID);
-    		    }catch(IncorrectResultSizeDataAccessException e) {
+    		        LitePoint litePoint = DaoFactory.getPointDao().getLitePoint(pointID);
+    		        mult = DaoFactory.getPointDao().getPointMultiplier(pointID, litePoint.getPointType());
+    		    }catch(NotFoundException e) {
     		        CTILogger.error("The point (pointId:"+ pointID + ") might have been deleted!", e);
     		    }
     		    if(mult > -1.0) {
@@ -251,8 +252,9 @@ public class UpdateUtil {
     		if( (displayAttrib & PointAttributes.DATA_OFFSET) != 0 ) {
     		    int offset = -1;
     		    try {
-    		        offset = DaoFactory.getPointDao().getPointDataOffset(pointID);
-    		    }catch(IncorrectResultSizeDataAccessException e ) {
+    		        LitePoint lp = DaoFactory.getPointDao().getLitePoint(pointID);
+    		        offset = DaoFactory.getPointDao().getPointDataOffset(pointID, lp.getPointType());
+    		    }catch(NotFoundException e ) {
     		        CTILogger.error("The point (pointId:"+ pointID + ") might have been deleted!", e);
     		    }
     		    if(offset > -1) {
