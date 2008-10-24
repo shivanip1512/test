@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2008/10/20 18:47:52 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2008/10/24 21:26:05 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2426,6 +2426,7 @@ void UDPInterface::Inbound::run()
 
             p->data = CTIDBG_new unsigned char[pText.size()];
             memcpy(p->data,pText.begin(),pText.size());
+            p->len = pText.size();
 
             if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
             {
@@ -2438,9 +2439,9 @@ void UDPInterface::Inbound::run()
                                   << ((p->ip >>  0) & 0xff) << ":"
                                   << (p->port) << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
 
-                for(int xx = 0; xx < recv_len; xx++)
+                for(int xx = 0; xx < pText.size(); xx++)
                 {
-                    dout << " " << CtiNumStr(recv_buf[xx]).hex().zpad(2).toString();
+                    dout << " " << CtiNumStr(p->data[xx]).hex().zpad(2).toString();
                 }
 
                 dout << endl;

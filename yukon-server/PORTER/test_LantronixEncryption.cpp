@@ -19,6 +19,7 @@
 
 #include "yukon.h"
 #include "encryption_lantronix.h"
+#include "numstr.h"
 
 using boost::unit_test_framework::test_suite;
 using namespace std;
@@ -26,25 +27,23 @@ using namespace std;
 BOOST_AUTO_UNIT_TEST(test_decode_pre_encoded)
 {
 	const int eSize = 66;
-
+	const int size = 42;
 	/*IV is the first 16 bytes. 2 for length. the remaining are the data*/
-  	unsigned char cEncoded[eSize] = {1,2,3,4,5,6,7,8,9,9,9,9,9,9,9,9,
-										 0,35,
-										  51,112,170,0,216,
-										  103,107,85,85,132,
-										  36,142,132,128,36,
-										  43,26,215,194,189,
-										  16,195,44,150,110,
-										  230,71,108,39,50,
-										  212,227,231,35,234,
-										  180,243,180,128,242,
-										  113,152,160,155,47,
-										  252,163,145};
+  	unsigned char cEncoded[eSize] = {0xed, 0x3d, 0x13, 0xc9, 0x39, 0x54, 0x5f, 0xdf, 0x30, 0x08, 0x56, 0x93, 0x7c, 0x1e, 0xa2, 0xa9,
+								     0x00, 0x2a, 
+									 0xee, 0xdc, 0x56, 0x3e, 0x9a, 0xa7, 0x34, 0xeb, 0xab, 0x4f, 0x9b, 0x0d, 0x69, 0xb3, 0xa4, 0xe5, 
+		                             0x17, 0x1a, 0x57, 0xd7, 0xf6, 0xbe, 0xbf, 0xdb, 0x72, 0xb0, 0x85, 0xd5, 0x40, 0xd0, 0x5d, 0x23, 
+									 0x4e, 0x61, 0x2d, 0x3e, 0x71, 0x63, 0xa0, 0xa1, 0xf1, 0x68, 0x78, 0xbf, 0xd1, 0xe8, 0x3b, 0x6f};
+							
+	string sKey("0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e");
+	unsigned char data[] = { 0x05, 0x64, 0x21, 0x44, 0x01, 0x00, 0x62, 0x00, 
+		                     0xf6, 0xea, 0xc0, 0xf3, 0x82, 0x90, 0x00, 0x02, 
+		                     0x01, 0x17, 0x01, 0x04, 0x81, 0x20, 0x02, 0x18, 
+		                     0x03, 0x00, 0x16, 0x2a, 0x04, 0x01, 0x69, 0x04, 
+		                     0x05, 0x01, 0xb5, 0x04, 0x06, 0x01, 0x63, 0x04, 0xef, 0x8c};
 
-	unsigned char key[] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
-	string sKey((char*)key,16);
+	string plaintext((char*)data,size);
 
-	string plaintext = "Some things are better left unread.";
 	LantronixEncryptionImpl* filter = new LantronixEncryptionImpl();
 	filter->setKey(sKey);
 
@@ -54,34 +53,36 @@ BOOST_AUTO_UNIT_TEST(test_decode_pre_encoded)
 
 	string decodedPlaintext((char*)plainText.begin(),plainText.size());
 
-	//std::cout << "Size: " << plainText.size() << std::endl;
-	//std::cout << "Size: " << decodedPlaintext.length() << std::endl;
-	//std::cout << decodedPlaintext << std::endl;
+	BOOST_REQUIRE(ret == true);
 
     BOOST_CHECK_EQUAL(plaintext.compare(decodedPlaintext), 0);
-	BOOST_CHECK_EQUAL(ret, true);
+
+	delete filter;
 }
 
 BOOST_AUTO_UNIT_TEST(test_encode_pre_encoded)
 {
 	/*IV is the first 16 bytes. 2 for length. the remaining are the data*/
 	const int eSize = 66;
-	unsigned char cEncoded[eSize] = {1,2,3,4,5,6,7,8,9,9,9,9,9,9,9,9,
-										 0,35,
-										  51,112,170,0,216,
-										  103,107,85,85,132,
-										  36,142,132,128,36,
-										  43,26,215,194,189,
-										  16,195,44,150,110,
-										  230,71,108,39,50,
-										  212,227,231,35,234,
-										  180,243,180,128,242,
-										  113,152,160,155,47,
-										  252,163,145};
-	unsigned char key[] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
-	string sKey((char*)key,16);
+	const int size = 42;
 
-	string plaintext = "Some things are better left unread.";
+	//Last 16 bytes differ from previous test. This is from the change from EVP to the AES call.
+  	unsigned char cEncoded[eSize] = {0xed, 0x3d, 0x13, 0xc9, 0x39, 0x54, 0x5f, 0xdf, 0x30, 0x08, 0x56, 0x93, 0x7c, 0x1e, 0xa2, 0xa9,
+								     0x00, 0x2a, 
+									 0xee, 0xdc, 0x56, 0x3e, 0x9a, 0xa7, 0x34, 0xeb, 0xab, 0x4f, 0x9b, 0x0d, 0x69, 0xb3, 0xa4, 0xe5, 
+		                             0x17, 0x1a, 0x57, 0xd7, 0xf6, 0xbe, 0xbf, 0xdb, 0x72, 0xb0, 0x85, 0xd5, 0x40, 0xd0, 0x5d, 0x23, 
+									 0x8e, 0x5c, 0x1b, 0xe7, 0x5d, 0x5e, 0x78, 0x2a, 0x90, 0x2f, 0x8c, 0x5d, 0xa4, 0x2f, 0x87, 0x15};
+	//EVP Padded version of last 16 //0x4e, 0x61, 0x2d, 0x3e, 0x71, 0x63, 0xa0, 0xa1, 0xf1, 0x68, 0x78, 0xbf, 0xd1, 0xe8, 0x3b, 0x6f
+
+	string sKey("0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e");
+
+	unsigned char data[] = { 0x05, 0x64, 0x21, 0x44, 0x01, 0x00, 0x62, 0x00, 
+		                     0xf6, 0xea, 0xc0, 0xf3, 0x82, 0x90, 0x00, 0x02, 
+		                     0x01, 0x17, 0x01, 0x04, 0x81, 0x20, 0x02, 0x18, 
+		                     0x03, 0x00, 0x16, 0x2a, 0x04, 0x01, 0x69, 0x04, 
+		                     0x05, 0x01, 0xb5, 0x04, 0x06, 0x01, 0x63, 0x04, 0xef, 0x8c};
+
+	string plaintext((char*)data,size);
 
 	LantronixEncryptionImpl* filter = new LantronixEncryptionImpl();
 	filter->setKey(sKey);
@@ -91,13 +92,48 @@ BOOST_AUTO_UNIT_TEST(test_encode_pre_encoded)
 
 	bool ret = filter->encode((unsigned char*)plaintext.c_str(),plaintext.size(),cText);
 
-	BOOST_CHECK_EQUAL(eSize, cText.size());
+	BOOST_REQUIRE(ret == true);
+	BOOST_REQUIRE(eSize == cText.size());
 
-	for (int i = 0; i < cText.size(); i++)
+	//Stop before the last 16byte block. This data will not be the same
+	for (int i = 0; i < eSize; i++)
 	{
 		BOOST_CHECK_EQUAL(cText[i], cEncoded[i]);
 	}
-	BOOST_CHECK_EQUAL(ret, true);
+
+	delete filter;
 }
 
+BOOST_AUTO_UNIT_TEST(test_setKey)
+{
+	unsigned char* result;
+	string sKey("0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e");
+	
+	LantronixEncryptionImpl* filter = new LantronixEncryptionImpl();
+	filter->setKey(sKey);
 
+	result = filter->getKey();
+	for (int i = 0; i < 16; ++i)
+	{
+		BOOST_CHECK_EQUAL((int)result[i],14);
+	}
+
+	delete filter;
+}
+
+BOOST_AUTO_UNIT_TEST(test_setIV)
+{
+	unsigned char origIV[] = {0xed, 0x3d, 0x13, 0xc9, 0x39, 0x54, 0x5f, 0xdf, 0x30, 0x08, 0x56, 0x93, 0x7c, 0x1e, 0xa2, 0xa9};
+	unsigned char * result;
+
+	LantronixEncryptionImpl* filter = new LantronixEncryptionImpl();
+	filter->setIV(origIV);
+
+	result = filter->getIV();
+	for (int i = 0; i < 16; ++i)
+	{
+		BOOST_CHECK_EQUAL(result[i],origIV[i]);
+	}
+
+	delete filter;
+}

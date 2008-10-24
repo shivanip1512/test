@@ -15,6 +15,12 @@ class LantronixEncryptionImpl : public EncodingFilter
 			UDPHEADERSIZE=18//header is 16(IV) + 2(len)
 		};
 
+		union uint_t
+		{
+			unsigned long ul;
+			unsigned char uc[4];
+		} uint;
+	
 		LantronixEncryptionImpl();
 
 		virtual bool decode(const unsigned char* const cipher, long bufLen, vector<unsigned char>& pText);
@@ -22,6 +28,9 @@ class LantronixEncryptionImpl : public EncodingFilter
 
 		void setKey (string key);
 		void setIV (unsigned char iv[]);
+
+		unsigned char* getKey();
+		unsigned char* getIV();
 
 	private:
 

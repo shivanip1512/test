@@ -108,8 +108,14 @@ public void initialize( Integer portID, String ipAddress, Integer socketPortNumb
 	setPortID( portID );
 	setIpAddress( ipAddress );
 	setSocketPortNumber( socketPortNumber );
-	setEncodingType(type);
-	setEncodingKey(newKey);
+	
+	if(type != null) {
+	    setEncodingType(type);
+	}
+	
+	if (newKey != null) {
+	    setEncodingKey(newKey);
+	}
 }
 /**
  * retrieve method comment.

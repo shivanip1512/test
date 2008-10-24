@@ -975,11 +975,11 @@ private javax.swing.JTextField getEncodingTextField() {
         try {
             encodingTextField = new javax.swing.JTextField();
             encodingTextField.setName("PortNumberTextField");
-            encodingTextField.setMaximumSize(new java.awt.Dimension(100, 20));
-            encodingTextField.setColumns(25);
-            encodingTextField.setPreferredSize(new java.awt.Dimension(100, 20));
-            encodingTextField.setFont(new java.awt.Font("sansserif", 0, 14));
-            encodingTextField.setMinimumSize(new java.awt.Dimension(100, 20));
+            encodingTextField.setMaximumSize(new java.awt.Dimension(225, 20));
+            encodingTextField.setFont(new java.awt.Font("sansserif", 0, 12));
+            encodingTextField.setColumns(42);
+            encodingTextField.setPreferredSize(new java.awt.Dimension(225, 20));
+            encodingTextField.setMinimumSize(new java.awt.Dimension(225, 20));
             // user code begin {1}
 
             //encryptionTextField.setDocument( new StringRangeDocument() );
@@ -1023,7 +1023,7 @@ private javax.swing.JLabel getEncryptionLabel() {
             encodingLabel.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
             encodingLabel.setPreferredSize(new java.awt.Dimension(50, 16));
             encodingLabel.setFont(new java.awt.Font("dialog", 0, 14));
-            encodingLabel.setEnabled(false);
+            encodingLabel.setEnabled(true);
             encodingLabel.setMinimumSize(new java.awt.Dimension(185, 16));
             encodingLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
             // user code begin {1}
@@ -1300,6 +1300,7 @@ public void setValue(Object val)
 		
 		getEncodingCheckBox().setSelected(pts.getEncodingType() != EncodingType.NONE);
 		getEncodingTextField().setText(pts.getEncodingKey());
+		getEncryptionLabel().setVisible(pts.getEncodingType() != EncodingType.NONE);
 	}
 	else if( val instanceof PooledPort )
 	{

@@ -3,7 +3,7 @@
 #include "encryption_lantronix.h"
 #include "openssl\aes.h"
 #include "openssl\evp.h"
-
+#include "logger.h"
 #include <cstdlib>
 
 LantronixEncryptionImpl::LantronixEncryptionImpl()
@@ -26,35 +26,22 @@ LantronixEncryptionImpl::LantronixEncryptionImpl()
 bool LantronixEncryptionImpl::decode(const unsigned char* const cipher, long bufLen, vector<unsigned char>& plainText)
 {	
 	//Grabbing the length of the plaintext from the buffer. Byte 16 and 17
-	int dLen = (cipher[16]<<8)+cipher[17];
+	int dataLength = (cipher[16]<<8)+cipher[17];
 
 	//Allocate enough space for the plaintext plus padding
-	plainText.resize(dLen);
-
-	int inLen = 0;
-	int tmplen = 0;
+	plainText.resize(bufLen);
 
 	//IV is in buf at beginning, Copying it out.
 	unsigned char iv[16];
 	memcpy(iv,cipher,16);
 
-	EVP_CIPHER_CTX ctx;
-	EVP_CIPHER_CTX_init(&ctx);
-	EVP_DecryptInit_ex(&ctx, EVP_aes_128_cbc(), NULL, _key, iv);
-	if (!EVP_DecryptUpdate(&ctx, plainText.begin(), &inLen, cipher+18, bufLen-18))
-	{
-		/* Error */
-		plainText.clear();
-		return 0;
-	}
-
-	if (!EVP_DecryptFinal_ex(&ctx, plainText.begin() + inLen, &tmplen))
-	{
-		/* Error */
-		plainText.clear();
-		return 0;
-	}
+	AES_KEY aeskey;
+	AES_set_decrypt_key(_key,128,&aeskey);
+	AES_cbc_encrypt(cipher+UDPHEADERSIZE,plainText.begin(),bufLen,&aeskey,iv, AES_DECRYPT);
 	
+	//Shrink to fit.
+	plainText.resize(dataLength);
+
 	return true;
 }
 
@@ -70,18 +57,13 @@ bool LantronixEncryptionImpl::decode(const unsigned char* const cipher, long buf
  */
 bool LantronixEncryptionImpl::encode(const unsigned char* const pText, long pTextLen, vector<unsigned char>& cText)
 {
-	
-	int outlen = 0, tmplen = 0;
-	EVP_CIPHER_CTX ctx;
-
 	//Setup a new IV (or use a preset one if set)
 	generateNewIV(pText[1]);
 
-	//Calculate size for ciphertext including padding. AND UDP header
-	cText.resize(((pTextLen+15)/16*16)+UDPHEADERSIZE);
+	int size = ((pTextLen+15)/16*16)+UDPHEADERSIZE;
 
-	EVP_CIPHER_CTX_init(&ctx);
-	EVP_EncryptInit_ex(&ctx, EVP_aes_128_cbc(), NULL, _key, _iv);
+	//Calculate size for ciphertext including padding. AND UDP header
+	cText.resize(size);
 
 	//Copy in IV
 	memcpy(cText.begin(),_iv,16);
@@ -90,43 +72,87 @@ bool LantronixEncryptionImpl::encode(const unsigned char* const pText, long pTex
 	cText[16] = pTextLen >> 8;
 	cText[17] = pTextLen & 0xff;
 
-	if (!EVP_EncryptUpdate(&ctx, cText.begin()+18, &outlen, pText, pTextLen))
-	{
-		cText.clear();
-		return 0;
-	}
-
-	if (!EVP_EncryptFinal_ex(&ctx, cText.begin()+18 + outlen, &tmplen))
-	{
-		cText.clear();
-		return 0;
-	}
-
-	outlen += tmplen;
-	EVP_CIPHER_CTX_cleanup(&ctx);
+	AES_KEY aeskey;
+	AES_set_encrypt_key(_key,128,&aeskey);
+	AES_cbc_encrypt(pText,cText.begin()+UDPHEADERSIZE,size-UDPHEADERSIZE,&aeskey,_iv, AES_ENCRYPT);
 	
 	return true;
 }
-
+/**
+ * The key passed in should be a 32 character long string in 
+ * HEX. This will get boiled down to a 16 byte key, each 2 hex 
+ * characters getting into one char slot. 
+ * 
+ * @param key 
+ */
 void LantronixEncryptionImpl::setKey(string key)
-{
-	memcpy(_key,key.c_str(),16);
+{	
+	char *end;
+	for (int i = 0; i < 16; i+=4)
+	{
+		string tester = key.substr((i/4)*8, 8);
+		//Grabbing 8 bytes from the strong and converting to a long.
+		uint.ul = strtol(key.substr((i/4)*8, 8).c_str() + 0, &end, 16);
+
+		//Passing the bytes into the _key array.
+		_key[i] =   uint.uc[3];
+		_key[i+1] = uint.uc[2];
+		_key[i+2] = uint.uc[1];
+		_key[i+3] = uint.uc[0];
+	}
 }
 
+/**
+ * This is here for unit testing.
+ */
+unsigned char * LantronixEncryptionImpl::getKey()
+{
+	return _key;
+}
+
+/**
+ * This function differ's from the setKey. It will copy the iv 
+ * passed in directly, so it should be 16 bytes long. 
+ *  
+ * Once set is called, generateNewIV will no longer change the 
+ * IV. 
+ *  
+ * @param iv 
+ */
 void LantronixEncryptionImpl::setIV(unsigned char iv[])
 {
 	_staticIv = true;
 	memcpy(_iv,iv,16);
 }
 
+/**
+ * This is here for unit testing.
+ */
+unsigned char * LantronixEncryptionImpl::getIV()
+{
+	return _iv;
+}
+
+/**
+ * Generates a new IV if one has not been set, uses rand() 
+ * seeded by the character passed in. 
+ * 
+ * @param seed 
+ */
 void LantronixEncryptionImpl::generateNewIV(char seed)
 {
 	if (!_staticIv)
 	{
 		srand((int)seed);
-		for(int i = 0; i < 16; i++)
+
+		for(int i = 0; i < 16; i+=4)
 		{
-			_iv[i] = (char)rand();
+			uint.ul = rand();
+
+			_iv[i] =   uint.uc[3];
+			_iv[i+1] = uint.uc[2];
+			_iv[i+2] = uint.uc[1];
+			_iv[i+3] = uint.uc[0];
 		}
 	}
 }
