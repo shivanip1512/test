@@ -106,5 +106,12 @@ public interface CustomerDao {
 	 *             customer.
 	 */
     public LiteCustomer getCustomerForUser(int userId);
-
+    
+    /**
+     * Method to save the temperature unit 'F' or 'C' for this customer.
+     * 
+     * @param customerId
+     * @param temp
+     */
+    public void setTempForCustomer(int customerId, String temp);
 }

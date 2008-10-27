@@ -245,4 +245,13 @@ public final class CustomerDaoImpl implements CustomerDao {
         this.simpleJdbcTemplate = simpleJdbcTemplate;
     }
 
+    @Override
+    public void setTempForCustomer(int customerId, String temp) {
+        StringBuilder sql = new StringBuilder("UPDATE Customer");
+        sql.append(" SET TemperatureUnit = '" + temp + "'");
+        sql.append(" WHERE CustomerID = " + customerId);
+
+        simpleJdbcTemplate.update(sql.toString());
+    }
+
 }
