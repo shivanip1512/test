@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_port.cpp-arc  $
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2008/07/17 20:26:39 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2008/10/27 19:44:15 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -16,15 +16,15 @@
 #include <rw/db/db.h>
 
 #include "mgr_port.h"
+
+#include "dbaccess.h"
+#include "resolvers.h"
+#include "utility.h"
+
 #include "port_direct.h"
 #include "port_dialout.h"
 #include "port_pool_out.h"
-#include "dbaccess.h"
-#include "hashkey.h"
-#include "resolvers.h"
-
 #include "port_tcpip.h"
-#include "utility.h"
 
 
 /* SQL to get every column used */
@@ -520,24 +520,53 @@ CtiPortManager::ptr_type CtiPortManager::PortGetEqual(LONG pid)
 
 void CtiPortManager::RefreshEntries(bool &rowFound, RWDBReader& rdr, CtiPort* (*Factory)(RWDBReader &), BOOL (*testFunc)(CtiPort*,void*), void *arg)
 {
-    LONG     lTemp = 0;
-    ptr_type pTempPort;
+    LONG     portID = 0;
+    ptr_type tempPort;
+
+    boost::shared_ptr<CtiPortTCPIPDirect> tempPortTCP;
+    string oldIP;
+    int    oldPort;
 
     while( (_smartMap.setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
     {
         rowFound = true;
-        rdr["paobjectid"] >> lTemp;            // get the RouteID
+        rdr["paobjectid"] >> portID;            // get the RouteID
 
-        if( !_smartMap.empty() && (pTempPort = _smartMap.find(lTemp)) )
+        if( !_smartMap.empty() && (tempPort = _smartMap.find(portID)) )
         {
             /*
-             *  The point just returned from the rdr already was in my list.  We need to
-             *  update my list entry to the CTIDBG_new settings!
+             *  The port just returned from the rdr already was in my list.  We need to
+             *  update my list entry to the new settings!
              */
 
-            pTempPort->DecodeDatabaseReader(rdr);     // Fills himself in from the reader
-            pTempPort->setUpdatedFlag();              // Mark it updated
-            pTempPort->setValid();
+            //  Save off the TCP settings in case they changed - we may need to reconnect
+            if( tempPort->getType() == PortTypeTServerDirect )
+            {
+                tempPortTCP = boost::static_pointer_cast<CtiPortTCPIPDirect>(tempPort);
+
+                oldIP   = tempPortTCP->getIPAddress();
+                oldPort = tempPortTCP->getIPPort();
+            }
+
+            tempPort->DecodeDatabaseReader(rdr);     // Fills himself in from the reader
+            tempPort->setUpdatedFlag();              // Mark it updated
+            tempPort->setValid();
+
+            if( tempPortTCP )
+            {
+                //  If the IP or port changed, disconnect
+                if( tempPortTCP->getIPAddress().compare(oldIP) || (tempPortTCP->getIPPort() != oldPort) )
+                {
+                    tempPortTCP->shutdownClose();
+
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " Port " << tempPortTCP->getName() << " reconnecting due to DBChange " << __FILE__ << "(" << __LINE__ << ")" << endl;
+                    }
+                }
+
+                tempPortTCP.reset();
+            }
         }
         else
         {
@@ -581,7 +610,7 @@ void CtiPortManager::RefreshDialableEntries(bool &rowFound, RWDBReader& rdr, Cti
         {
             /*
              *  The point just returned from the rdr already was in my list.  We need to
-             *  update my list entry to the CTIDBG_new settings!
+             *  update my list entry to the new settings!
              */
 
             pTempPort->DecodeDialableDatabaseReader(rdr);     // Fills himself in from the reader
