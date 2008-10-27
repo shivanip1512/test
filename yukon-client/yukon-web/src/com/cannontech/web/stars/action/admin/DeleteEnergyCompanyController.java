@@ -10,9 +10,12 @@ import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.task.DeleteEnergyCompanyTask;
 import com.cannontech.stars.util.task.TimeConsumingTask;
 import com.cannontech.stars.web.StarsYukonUser;
+import com.cannontech.web.login.LoginService;
 import com.cannontech.web.stars.action.StarsAdminActionController;
 
 public class DeleteEnergyCompanyController extends StarsAdminActionController {
+    
+    private LoginService loginService;
     
     @Override
     public void doAction(final HttpServletRequest request, final HttpServletResponse response, 
@@ -27,9 +30,10 @@ public class DeleteEnergyCompanyController extends StarsAdminActionController {
         }
 
         TimeConsumingTask task = new DeleteEnergyCompanyTask( user.getEnergyCompanyID() );
+        // addTask starts the task
         long id = ProgressChecker.addTask( task );
 
-        // Wait 5 seconds for the task to finish (or error out), if not, then go to the progress page
+//        // Wait 5 seconds for the task to finish (or error out), if not, then go to the progress page
         for (int i = 0; i < 5; i++) {
             try {
                 Thread.sleep(1000);
@@ -39,6 +43,7 @@ public class DeleteEnergyCompanyController extends StarsAdminActionController {
             task = ProgressChecker.getTask(id);
 
             if (task.getStatus() == TimeConsumingTask.STATUS_FINISHED) {
+                loginService.logout(request, response);
                 ProgressChecker.removeTask( id );
                 return;
             }
@@ -53,6 +58,10 @@ public class DeleteEnergyCompanyController extends StarsAdminActionController {
         session.setAttribute(ServletUtils.ATT_REDIRECT, this.getRedirect(request));
         String redirect = request.getContextPath() + "/operator/Admin/Progress.jsp?id=" + id;
         response.sendRedirect(redirect);
+    }
+    
+    public void setLoginService(LoginService loginService) {
+        this.loginService = loginService;
     }
 
 }

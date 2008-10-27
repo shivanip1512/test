@@ -133,125 +133,126 @@
     	confirmMsg = ServletUtils.removeConfirmMessage(session);
     
     	liteEC = StarsDatabaseCache.getInstance().getEnergyCompany(user.getEnergyCompanyID());
-    	
-        ecSettings = ServletUtils.removeEnergyCompanySettings(session);
-        if (ecSettings != null) { // ensure there is a new instance of StarsEnergyCompanySettings for each request
-            ecSettings = liteEC.getStarsEnergyCompanySettings(user);
-            session.setAttribute(ServletUtils.ATT_ENERGY_COMPANY_SETTINGS, ecSettings);
-        }
-        
-        energyCompany = ecSettings.getStarsEnergyCompany();
-    	categories = ecSettings.getStarsEnrollmentPrograms();
-    	companies = ecSettings.getStarsServiceCompanies();
-    	substations = ecSettings.getStarsSubstations();
-    	exitQuestions = ecSettings.getStarsExitInterviewQuestions();
-    	dftThermoSchedules = ecSettings.getStarsDefaultThermostatSchedules();
-        
-        TimeZone tz = TimeZone.getTimeZone(energyCompany.getTimeZone());
-        datePart.setTimeZone(tz);
-        timePart.setTimeZone(tz);
-        dateFormat.setTimeZone(tz);
-        timeFormat.setTimeZone(tz);
-        dateTimeFormat.setTimeZone(tz);
-        dateTimeExtFormat.setTimeZone(tz);
-        histDateFormat.setTimeZone(tz);
-        ampmTimeFormat.setTimeZone(tz);
-        
-        if (ecSettings.getStarsCustomerSelectionLists() != null) {
-            selectionListTable = new HashMap<String, StarsCustSelectionList>();
-            
-            for (int i = 0; i < ecSettings.getStarsCustomerSelectionLists().getStarsCustSelectionListCount(); i++) {
-                StarsCustSelectionList value = ecSettings.getStarsCustomerSelectionLists().getStarsCustSelectionList(i);
-                String key = value.getListName();
-                selectionListTable.put(key, value);
-            }
-            session.setAttribute(ServletUtils.ATT_CUSTOMER_SELECTION_LISTS, selectionListTable);
-            
-            String value = authDao.getRolePropertyValue(lYukonUser, AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY);
-            if ((StarsAdminUtil.FIRST_TIME.equals(value)) &&
-                 (selectionListTable.get(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE) != null)) {
-                
-                // The default operator login for the first time, edit the device type list first!
-                com.cannontech.database.data.lite.LiteYukonGroup adminGroup = liteEC.getOperatorAdminGroup();
-                if (DaoFactory.getRoleDao().updateGroupRoleProperty(
-                    adminGroup, AdministratorRole.ROLEID, AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY, CtiUtilities.TRUE_STRING))
-                {
-                    com.cannontech.stars.util.ServerUtils.handleDBChange(
-                        adminGroup, com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_UPDATE );
-                }
-                
-                session.setAttribute(ServletUtils.ATT_MSG_PAGE_REDIRECT, request.getContextPath() + "/operator/Admin/SelectionList.jsp?List=DeviceType");
-                session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "This is the first time you have logged in as the default operator. Please edit the device type list and other energy company settings.");
-                
-                String location = ServletUtil.createSafeRedirectUrl(request, "/operator/Admin/Message.jsp?delay=0");
-                response.sendRedirect(location);
-                return;
-            }
-        }
-    	
-
-    		
-        accountInfo = ServletUtils.removeAccountInformation(session);
-        if (accountInfo != null) { // ensure there is a new instance of StarsCustAccountInformation for each request
-            accountInfo = liteEC.getStarsCustAccountInformation(accountInfo.getStarsCustomerAccount().getAccountID(), true);
-            session.setAttribute(ServletUtils.TRANSIENT_ATT_CUSTOMER_ACCOUNT_INFO, accountInfo);
-    			
-            account = accountInfo.getStarsCustomerAccount();
-            propAddr = account.getStreetAddress();
-    		siteInfo = account.getStarsSiteInformation();
-    		billAddr = account.getBillingAddress();
-    		primContact = account.getPrimaryContact();
-    		residence = accountInfo.getStarsResidenceInformation();
-    		appliances = accountInfo.getStarsAppliances();
-    		inventories = accountInfo.getStarsInventories();
-    		programs = accountInfo.getStarsLMPrograms();
-    		programHistory = programs.getStarsLMProgramHistory();
-    		callHist = accountInfo.getStarsCallReportHistory();
-    		serviceHist = accountInfo.getStarsServiceRequestHistory();
-    		thermSchedules = accountInfo.getStarsSavedThermostatSchedules();
-    		userLogin = accountInfo.getStarsUser();
-            
-    		try{
-                Customer cust = (Customer) com.cannontech.database.data.lite.LiteFactory.createDBPersistent(
-                                new LiteCustomer(account.getCustomerID()));
-                
-                Transaction<Customer> t = Transaction.createTransaction(Transaction.RETRIEVE, cust);
-                cust = t.execute();
-    
-                custGraphs = cust.getGraphVector();
-            } catch(TransactionException e){
-                com.cannontech.clientutils.CTILogger.error(e.getMessage(), e);
-            }
-            
-            // New enrollment, opt out, and control history tracking
-            //-------------------------------------------------------------------------------
-            final LMHardwareControlInformationService lmHardwareControlInformationService = YukonSpringHook.getBean("lmHardwareControlInformationService", LMHardwareControlInformationService.class);
-            
-            LiteStarsCustAccountInformation currentLiteAcctInfo = starsCustAccountInformationDao.getById(account.getAccountID(), liteEC.getEnergyCompanyID());
-            List<LiteStarsAppliance> currentAppList = currentLiteAcctInfo.getAppliances();
-            partialOptOutMap = new HashMap<Integer, List<Integer>>();
-            for(int x = 0; x < currentAppList.size(); x++) {
-                LiteStarsAppliance currentApp = currentAppList.get(x);
-                List<Integer> inventoryNotOptedOut = lmHardwareControlInformationService.getInventoryNotOptedOutForThisLoadGroup(currentApp.getAddressingGroupID(), account.getAccountID());
-                for(Integer invenId : inventoryNotOptedOut) {
-                    if(currentApp.getInventoryID() == invenId) {
-                        List<Integer> progInventory = partialOptOutMap.get(currentApp.getProgramID());
-                        if(progInventory == null) {
-                            partialOptOutMap.put(currentApp.getProgramID(), new ArrayList<Integer>());
-                            progInventory = partialOptOutMap.get(currentApp.getProgramID());
-                        }
-                        if(! progInventory.contains(invenId))
-                            progInventory.add(invenId);
-                    }
-                }
-            }
-            //-------------------------------------------------------------------------------
-        }
-    
-    	graphBean = (com.cannontech.graph.GraphBean) session.getAttribute(ServletUtil.ATT_GRAPH_BEAN);
-    	if (graphBean == null) {
-    		session.setAttribute(ServletUtil.ATT_GRAPH_BEAN, new com.cannontech.graph.GraphBean());
-    		graphBean = (com.cannontech.graph.GraphBean)session.getAttribute(ServletUtil.ATT_GRAPH_BEAN);
+    	if(liteEC != null){
+	        ecSettings = ServletUtils.removeEnergyCompanySettings(session);
+	        if (ecSettings != null) { // ensure there is a new instance of StarsEnergyCompanySettings for each request
+	            ecSettings = liteEC.getStarsEnergyCompanySettings(user);
+	            session.setAttribute(ServletUtils.ATT_ENERGY_COMPANY_SETTINGS, ecSettings);
+	        }
+	        
+	        energyCompany = ecSettings.getStarsEnergyCompany();
+	    	categories = ecSettings.getStarsEnrollmentPrograms();
+	    	companies = ecSettings.getStarsServiceCompanies();
+	    	substations = ecSettings.getStarsSubstations();
+	    	exitQuestions = ecSettings.getStarsExitInterviewQuestions();
+	    	dftThermoSchedules = ecSettings.getStarsDefaultThermostatSchedules();
+	        
+	        TimeZone tz = TimeZone.getTimeZone(energyCompany.getTimeZone());
+	        datePart.setTimeZone(tz);
+	        timePart.setTimeZone(tz);
+	        dateFormat.setTimeZone(tz);
+	        timeFormat.setTimeZone(tz);
+	        dateTimeFormat.setTimeZone(tz);
+	        dateTimeExtFormat.setTimeZone(tz);
+	        histDateFormat.setTimeZone(tz);
+	        ampmTimeFormat.setTimeZone(tz);
+	        
+	        if (ecSettings.getStarsCustomerSelectionLists() != null) {
+	            selectionListTable = new HashMap<String, StarsCustSelectionList>();
+	            
+	            for (int i = 0; i < ecSettings.getStarsCustomerSelectionLists().getStarsCustSelectionListCount(); i++) {
+	                StarsCustSelectionList value = ecSettings.getStarsCustomerSelectionLists().getStarsCustSelectionList(i);
+	                String key = value.getListName();
+	                selectionListTable.put(key, value);
+	            }
+	            session.setAttribute(ServletUtils.ATT_CUSTOMER_SELECTION_LISTS, selectionListTable);
+	            
+	            String value = authDao.getRolePropertyValue(lYukonUser, AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY);
+	            if ((StarsAdminUtil.FIRST_TIME.equals(value)) &&
+	                 (selectionListTable.get(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE) != null)) {
+	                
+	                // The default operator login for the first time, edit the device type list first!
+	                com.cannontech.database.data.lite.LiteYukonGroup adminGroup = liteEC.getOperatorAdminGroup();
+	                if (DaoFactory.getRoleDao().updateGroupRoleProperty(
+	                    adminGroup, AdministratorRole.ROLEID, AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY, CtiUtilities.TRUE_STRING))
+	                {
+	                    com.cannontech.stars.util.ServerUtils.handleDBChange(
+	                        adminGroup, com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_UPDATE );
+	                }
+	                
+	                session.setAttribute(ServletUtils.ATT_MSG_PAGE_REDIRECT, request.getContextPath() + "/operator/Admin/SelectionList.jsp?List=DeviceType");
+	                session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "This is the first time you have logged in as the default operator. Please edit the device type list and other energy company settings.");
+	                
+	                String location = ServletUtil.createSafeRedirectUrl(request, "/operator/Admin/Message.jsp?delay=0");
+	                response.sendRedirect(location);
+	                return;
+	            }
+	        }
+	    	
+	
+	    		
+	        accountInfo = ServletUtils.removeAccountInformation(session);
+	        if (accountInfo != null) { // ensure there is a new instance of StarsCustAccountInformation for each request
+	            accountInfo = liteEC.getStarsCustAccountInformation(accountInfo.getStarsCustomerAccount().getAccountID(), true);
+	            session.setAttribute(ServletUtils.TRANSIENT_ATT_CUSTOMER_ACCOUNT_INFO, accountInfo);
+	    			
+	            account = accountInfo.getStarsCustomerAccount();
+	            propAddr = account.getStreetAddress();
+	    		siteInfo = account.getStarsSiteInformation();
+	    		billAddr = account.getBillingAddress();
+	    		primContact = account.getPrimaryContact();
+	    		residence = accountInfo.getStarsResidenceInformation();
+	    		appliances = accountInfo.getStarsAppliances();
+	    		inventories = accountInfo.getStarsInventories();
+	    		programs = accountInfo.getStarsLMPrograms();
+	    		programHistory = programs.getStarsLMProgramHistory();
+	    		callHist = accountInfo.getStarsCallReportHistory();
+	    		serviceHist = accountInfo.getStarsServiceRequestHistory();
+	    		thermSchedules = accountInfo.getStarsSavedThermostatSchedules();
+	    		userLogin = accountInfo.getStarsUser();
+	            
+	    		try{
+	                Customer cust = (Customer) com.cannontech.database.data.lite.LiteFactory.createDBPersistent(
+	                                new LiteCustomer(account.getCustomerID()));
+	                
+	                Transaction<Customer> t = Transaction.createTransaction(Transaction.RETRIEVE, cust);
+	                cust = t.execute();
+	    
+	                custGraphs = cust.getGraphVector();
+	            } catch(TransactionException e){
+	                com.cannontech.clientutils.CTILogger.error(e.getMessage(), e);
+	            }
+	            
+	            // New enrollment, opt out, and control history tracking
+	            //-------------------------------------------------------------------------------
+	            final LMHardwareControlInformationService lmHardwareControlInformationService = YukonSpringHook.getBean("lmHardwareControlInformationService", LMHardwareControlInformationService.class);
+	            
+	            LiteStarsCustAccountInformation currentLiteAcctInfo = starsCustAccountInformationDao.getById(account.getAccountID(), liteEC.getEnergyCompanyID());
+	            List<LiteStarsAppliance> currentAppList = currentLiteAcctInfo.getAppliances();
+	            partialOptOutMap = new HashMap<Integer, List<Integer>>();
+	            for(int x = 0; x < currentAppList.size(); x++) {
+	                LiteStarsAppliance currentApp = currentAppList.get(x);
+	                List<Integer> inventoryNotOptedOut = lmHardwareControlInformationService.getInventoryNotOptedOutForThisLoadGroup(currentApp.getAddressingGroupID(), account.getAccountID());
+	                for(Integer invenId : inventoryNotOptedOut) {
+	                    if(currentApp.getInventoryID() == invenId) {
+	                        List<Integer> progInventory = partialOptOutMap.get(currentApp.getProgramID());
+	                        if(progInventory == null) {
+	                            partialOptOutMap.put(currentApp.getProgramID(), new ArrayList<Integer>());
+	                            progInventory = partialOptOutMap.get(currentApp.getProgramID());
+	                        }
+	                        if(! progInventory.contains(invenId))
+	                            progInventory.add(invenId);
+	                    }
+	                }
+	            }
+	            //-------------------------------------------------------------------------------
+	        }
+	    
+	    	graphBean = (com.cannontech.graph.GraphBean) session.getAttribute(ServletUtil.ATT_GRAPH_BEAN);
+	    	if (graphBean == null) {
+	    		session.setAttribute(ServletUtil.ATT_GRAPH_BEAN, new com.cannontech.graph.GraphBean());
+	    		graphBean = (com.cannontech.graph.GraphBean)session.getAttribute(ServletUtil.ATT_GRAPH_BEAN);
+	    	}
     	}
     
     }

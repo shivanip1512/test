@@ -69,7 +69,9 @@
     </bean>      
 	
 	<bean id="adminDeleteEnergyCompany" class="com.cannontech.web.stars.action.admin.DeleteEnergyCompanyController" 
-          parent="starsAdminActionController"/>
+          parent="starsAdminActionController">
+        <property name="loginService" ref="loginService"/>
+    </bean>
 	
 	<bean id="adminUpdateOperatorLogin" class="com.cannontech.web.stars.action.admin.UpdateOperatorLoginController" 
           parent="starsAdminActionController"/>

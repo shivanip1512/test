@@ -7,6 +7,7 @@
 package com.cannontech.stars.util.task;
 
 import org.apache.log4j.Logger;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.YukonListEntry;
@@ -344,8 +345,10 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 			StarsDatabaseCache.getInstance().deleteEnergyCompany( energyCompany.getLiteID() );
 			ServerUtils.handleDBChange( energyCompany, DBChangeMsg.CHANGE_TYPE_DELETE );
 			if (energyCompany.getPrimaryContactID() != CtiUtilities.NONE_ZERO_ID) {
-				LiteContact liteContact = DaoFactory.getContactDao().getContact( energyCompany.getPrimaryContactID() );
-				ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_DELETE );
+			    try {
+    				LiteContact liteContact = DaoFactory.getContactDao().getContact( energyCompany.getPrimaryContactID() );
+    				ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_DELETE );
+			    }catch(EmptyResultDataAccessException ignore) {}
 			}
 			
 			// Get the privilege group before the default login is deleted
