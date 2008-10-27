@@ -174,15 +174,20 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
      * @return com.cannontech.loadcontrol.LoadControlProgram[]
      * @param lmControlAreaID int
      */
-    public LMProgramBase[] getPrograms(int lmControlAreaID) 
+    public LMProgramBase getProgram(int programId) 
     {
     	synchronized( getControlAreas() ) {
-    		for( int i = 0; i < getControlAreaCount(); i++ ) {
-    			if( lmControlAreaID == getControlAreas().get(i).getYukonID().intValue() )
-    				return (LMProgramBase[])( getControlAreas().get(i).getLmProgramVector().toArray() );
-    		}
-    
-    		return null;
+    	    
+    	    LMProgramBase program = null;
+    	    
+            for (LMControlArea controlArea : getControlAreas().values()) {
+                for(LMProgramBase p : controlArea.getLmProgramVector()) {
+                    if (p.getYukonID() == programId) {
+                        program = p;
+                    }
+                }
+            }
+    		return program;
     	}
     }
     

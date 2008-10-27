@@ -15,6 +15,18 @@
         <property name="loadControlClientConnection" ref="loadControlConnection" />
         <property name="serverRequest" ref="serverRequest" />
    </bean>
+   
+   <bean id="loadControlProgramDao" class="com.cannontech.loadcontrol.dao.impl.LoadControlProgramDaoImpl">
+   </bean>
+    
+   <bean id="LoadControlService" class="com.cannontech.loadcontrol.service.impl.LoadControlServiceImpl">
+   </bean>
+   
+   <bean id="LoadControlCommandService" class="com.cannontech.loadcontrol.service.impl.LoadControlCommandServiceImpl">
+   </bean>
+    
+    
+   
 <!-- 
    <bean id="loadManagementService" class="com.cannontech.loadcontrol.LoadManagementStub" 
          singleton="true">

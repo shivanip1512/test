@@ -2,6 +2,8 @@ package com.cannontech.loadcontrol.messages;
 
 import java.util.GregorianCalendar;
 
+import org.springframework.core.style.ToStringCreator;
+
 import com.cannontech.common.util.CtiUtilities;
 
 /**
@@ -221,6 +223,20 @@ public void setYukonID(int newYukonID) {
 	 */
 	public void setConstraintFlag(int i) {
 		constraintFlag = i;
+	}
+	
+	public String toString() {
+	    ToStringCreator tsc = new ToStringCreator(this);
+	    tsc.append("command", getCommandString(getCommand()));
+	    tsc.append("yukonID", getYukonID());
+	    tsc.append("notifyTime", getNotifyTime().getTime());
+	    tsc.append("startTime", getStartTime().getTime());
+	    tsc.append("stopTime", getStopTime().getTime());
+	    tsc.append("startGear", getStartGear());
+	    tsc.append("startPriority", getStartPriority());
+	    tsc.append("addditionalInfo", getAddditionalInfo());
+	    tsc.append("constraintFlag", CONSTRAINT_FLAG_STRS[getConstraintFlag()]);
+	    return tsc.toString(); 
 	}
 
 }
