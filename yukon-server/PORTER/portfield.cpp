@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.230 $
-* DATE         :  $Date: 2008/10/22 21:16:43 $
+* REVISION     :  $Revision: 1.231 $
+* DATE         :  $Date: 2008/10/27 19:55:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -197,12 +197,11 @@ VOID PortThread(void *pid)
 {
     INT            status;
 
-    CtiTime         nowTime, nextExpireTime;
-    ULONG          i, j;
-    ULONG          BytesWritten;
+    CtiTime        nowTime, nextExpireTime;
+    ULONG          i;
     INMESS         InMessage;
     OUTMESS        *OutMessage = 0;
-    ULONG          MSecs, QueEntries;
+    ULONG          QueEntries;
 
 
     LONG           portid = (LONG)pid;      // NASTY CAST HERE!!!
@@ -3180,8 +3179,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                         if( (OutMessage->EventCode & BWORD) &&
                             (OutMessage->Buffer.BSt.IO & Cti::Protocol::Emetcon::IO_Read ) )
                         {
-                            //  we did get NACKed, but is this technically true?
-                            status = NACK1;
+                            status = NACKPAD1;
                         }
 
                         {
