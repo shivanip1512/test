@@ -32,6 +32,7 @@ test_queue.obj \
 test_resolvers.obj \
 test_rwutil.obj \
 test_utility.obj \
+test_xmlobject.obj \
 
 
 LIBS=\
@@ -167,6 +168,10 @@ dbaccess.obj:	yukon.h precompiled.h ctidbgmem.h types.h dlldefs.h \
 		guard.h numstr.h clrdump.h cticonnect.h netports.h sema.h \
 		logger.h thread.h ctitime.h CtiPCPtrQueue.h utility.h \
 		queues.h sorted_vector.h
+debug_timer.obj:	yukon.h precompiled.h ctidbgmem.h debug_timer.h \
+		logger.h dlldefs.h thread.h mutex.h guard.h numstr.h \
+		clrdump.h ctitime.h CtiPCPtrQueue.h utility.h queues.h \
+		cticalls.h os2_2w32.h types.h sorted_vector.h
 desolvers.obj:	yukon.h precompiled.h ctidbgmem.h desolvers.h \
 		db_entry_defines.h dlldefs.h types.h pointtypes.h dsm2.h \
 		mutex.h guard.h numstr.h clrdump.h cticonnect.h netports.h \
@@ -340,6 +345,7 @@ test_utility.obj:	yukon.h precompiled.h ctidbgmem.h utility.h \
 		ctitime.h dlldefs.h queues.h cticalls.h os2_2w32.h types.h \
 		numstr.h sorted_vector.h dsm2.h mutex.h guard.h clrdump.h \
 		cticonnect.h netports.h
+test_xmlobject.obj:	yukon.h precompiled.h ctidbgmem.h xml_object.h
 tfexec.obj:	yukon.h precompiled.h ctidbgmem.h tfexec.h
 thread.obj:	yukon.h precompiled.h ctidbgmem.h dllbase.h os2_2w32.h \
 		dlldefs.h types.h cticalls.h dsm2.h mutex.h guard.h numstr.h \
@@ -386,4 +392,5 @@ words.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 xfer.obj:	yukon.h precompiled.h ctidbgmem.h xfer.h dsm2.h mutex.h \
 		dlldefs.h guard.h numstr.h clrdump.h cticonnect.h netports.h \
 		dialup.h
+xml_object.obj:	yukon.h precompiled.h ctidbgmem.h xml_object.h
 #ENDUPDATE#
