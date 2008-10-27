@@ -8,7 +8,9 @@ import java.awt.event.MouseListener;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Vector;
 
 import javax.swing.JComboBox;
 import javax.swing.JTextField;
@@ -21,6 +23,10 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
+import org.apache.commons.lang.StringUtils;
+
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.gui.table.JComboCellEditor;
 import com.cannontech.common.gui.tree.CTITreeModel;
 import com.cannontech.common.gui.tree.CheckNode;
@@ -41,6 +47,7 @@ import com.cannontech.database.db.user.YukonGroupRole;
 import com.cannontech.database.db.user.YukonUserRole;
 import com.cannontech.database.model.DBTreeNode;
 import com.cannontech.roles.YukonGroupRoleDefs;
+import com.cannontech.roles.application.WebClientRole;
 import com.cannontech.user.UserUtils;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -56,7 +63,6 @@ public class UserRolePanel extends com.cannontech.common.gui.util.DataInputPanel
 	private javax.swing.JScrollPane ivjJScrollPaneTable = null;
 	private javax.swing.JTable ivjJTableProperties = null;
 	private RolePropertyTableModel propertyModel = null;
-
 
 	private IYukonRoleContainer roleCont = null;
 
@@ -796,16 +802,6 @@ public void setFirstFocus()
 }
 
 /**
- * This method was created in VisualAge.
- * @return boolean
- */
-public boolean isInputValid() 
-{
-	return true;
-}
-
-
-/**
  * main entrypoint - starts the part when it is run as an application
  * @param args java.lang.String[]
  */
@@ -866,6 +862,32 @@ public static void main(java.lang.String[] args) {
 
 	}
 
+	/**
+	 * Returns true if the input for this panel is valid.
+	 * Currently only checks the WebClientRole.DEFAULT_TIMEZONE 
+	 * role property for valid timezones.
+	 * @return boolean
+	 */
+	public boolean isInputValid() {
+	    for(int i = 0; i < getJTablePropertyModel().getRowCount(); i++) {
+	        RolePropertyRow propertyRow = getJTablePropertyModel().getRowAt(i);
+	        if(propertyRow.getLiteProperty().getRolePropertyID() == WebClientRole.DEFAULT_TIMEZONE) {
+	            String value = propertyRow.getValue();
+	            if(StringUtils.isBlank(value)) {
+	                return true;
+	            } else {
+                    try {
+                        CtiUtilities.getValidTimeZone(value);
+                    } catch (BadConfigurationException e) {
+                        setErrorString("Invalid value in WebClientRole Default TimeZone property: " + value 
+                                       + " \nTimezones should be in the form \"America/Chicago\".");
+                        return false;
+                    }
+	            }
+	        }
+	    }
+	    return true;
+	}
 
 	/**
 	 * setValue method comment.
@@ -876,7 +898,7 @@ public static void main(java.lang.String[] args) {
 			return;
 		
 		IYukonRoleContainer rc = (IYukonRoleContainer)o;
-
+		roleCont = rc;
 		//be sure the rest of the panel knows what user we are dealing with
 		setRoleContainer( rc );
 
