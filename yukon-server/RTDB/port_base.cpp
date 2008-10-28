@@ -7,11 +7,19 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.76 $
-* DATE         :  $Date: 2008/08/14 15:57:40 $
+* REVISION     :  $Revision: 1.77 $
+* DATE         :  $Date: 2008/10/28 19:21:43 $
 *
 * HISTORY      :
 * $Log: port_base.cpp,v $
+* Revision 1.77  2008/10/28 19:21:43  mfisher
+* YUK-6589 Scanner should not load non-scannable devices
+* refreshList() now takes a list of paoids, which may be empty if it's a full reload
+* Changed CtiDeviceBase, CtiPointBase, and CtiRouteBase::getSQL() (and all inheritors) to be const
+* Removed a couple unused Porter functions
+* Added logger unit test
+* Simplified DebugTimer's variables
+*
 * Revision 1.76  2008/08/14 15:57:40  jotteson
 * YUK-6333  Change naming in request message and change cancellation to use this new named field instead of user ID
 * Cancellation now uses the new group message ID.
@@ -913,7 +921,7 @@ string CtiPort::getModemInit() const
     return string("");
 }
 
-void CtiPort::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
+void CtiPort::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
 {
     _tblPAO.getSQL(db, keyTable, selector);
     CtiTablePortBase::getSQL(db, keyTable, selector);

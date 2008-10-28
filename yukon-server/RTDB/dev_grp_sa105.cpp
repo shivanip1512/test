@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2008/08/14 15:57:39 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2008/10/28 19:21:42 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -117,7 +117,7 @@ string CtiDeviceGroupSA105::getDescription(const CtiCommandParser & parse) const
 //====================================================================================================================
 //====================================================================================================================
 
-void CtiDeviceGroupSA105::getSQL( RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector )
+void CtiDeviceGroupSA105::getSQL( RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector ) const
 {
     Inherited::getSQL(db, keyTable, selector);
     CtiTableSA205105Group::getSQL(db, keyTable, selector);

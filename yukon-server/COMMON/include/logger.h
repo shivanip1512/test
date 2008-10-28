@@ -116,15 +116,21 @@ public:
 protected:
     void run();
 
+    static string   scrub(string filename);
+    static unsigned secondsUntilMidnight(const tm &tm_now);
+    static bool     fileDateMatches(const string &filename, const unsigned month);
+
+    string dayFilename(const unsigned day_of_month);
+
 private:
     char    _fill;
 
     string  _path, _base_filename, _today_filename;
+    time_t  _next_logfile_check;
 
     bool    _first_output;
 
     CtiTime _running_since;
-    CtiTime _next_filetime_check;
 
     string  _project, _version;
 
@@ -140,10 +146,6 @@ private:
     void doOutput();
     void initStream();
     bool tryOpenOutputFile(std::ofstream& stream, bool append);
-    bool isExistingLogFileCurrent();
-    void setTodayFilename(unsigned day_of_month);
-
-    static string scrub(string filename);
 };
 
 

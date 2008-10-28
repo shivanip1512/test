@@ -43,12 +43,6 @@ double DebugTimer::calculateDuration(const SYSTEMTIME &begin, const SYSTEMTIME &
     SystemTimeToFileTime(&begin, &fc_begin.filetime);
     SystemTimeToFileTime(&end,   &fc_end.filetime);
 
-    //  should never happen, but here for completeness
-    if( fc_begin.raw > fc_end.raw )
-    {
-        swap(fc_begin, fc_end);
-    }
-
     double duration = fc_end.raw - fc_begin.raw;
 
     //  convert from 100 ns units to seconds
@@ -58,14 +52,14 @@ double DebugTimer::calculateDuration(const SYSTEMTIME &begin, const SYSTEMTIME &
 }
 
 
-DebugTimer::DebugTimer(const string &action, bool print_bounds, double alert_timeout) :
+DebugTimer::DebugTimer(const string &action, bool print, double timeout) :
     _action(action),
-    _print_bounds (print_bounds),
-    _alert_timeout(alert_timeout)
+    _print (print),
+    _timeout(timeout)
 {
     GetLocalTime(&_start);
 
-    if( _print_bounds )
+    if( _print )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
 
@@ -82,7 +76,7 @@ DebugTimer::~DebugTimer()
 
     double duration = calculateDuration(_start, end);
 
-    if( _print_bounds || duration >= _alert_timeout )
+    if( _print || duration >= _timeout )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
 

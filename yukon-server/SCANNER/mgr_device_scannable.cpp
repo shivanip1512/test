@@ -15,14 +15,14 @@ using namespace std;
 
 namespace Cti {
 
-void ScannableDeviceManager::refreshDeviceProperties(LONG paoID)
+void ScannableDeviceManager::refreshDeviceProperties(id_range_t &paoids, int type)
 {
-    Inherited::refreshDeviceProperties(paoID);
+    Inherited::refreshDeviceProperties(paoids, type);
 
     bool print_bounds = DebugLevel & 0x00020000;
 
-    {  DebugTimer timer("loading scan rates",   print_bounds);  refreshScanRates    (paoID);  }
-    {  DebugTimer timer("loading scan windows", print_bounds);  refreshDeviceWindows(paoID);  }
+    {  DebugTimer timer("loading scan rates",   print_bounds);  refreshScanRates    (paoids);  }
+    {  DebugTimer timer("loading scan windows", print_bounds);  refreshDeviceWindows(paoids);  }
 }
 
 
@@ -30,7 +30,7 @@ void ScannableDeviceManager::refresh(LONG paoID, string category, string devicet
 {
     if( !paoID )
     {
-        list<pair<long, int> > paoids;
+        map<int, vector<long> > type_paoids;
 
         {
             CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
@@ -69,14 +69,12 @@ void ScannableDeviceManager::refresh(LONG paoID, string category, string devicet
             while( rdr() )
             {
                 long id;
-
-                rdr[0] >> id;
-
                 RWCString temp;
 
+                rdr[0] >> id;
                 rdr[1] >> temp;
 
-                paoids.push_back(make_pair(id, resolveDeviceType(temp.data())));
+                type_paoids[resolveDeviceType(temp.data())].push_back(id);
 
                 if( !(++i % 1000) )
                 {
@@ -93,14 +91,11 @@ void ScannableDeviceManager::refresh(LONG paoID, string category, string devicet
             }
         }
 
-        list<pair<long, int> >::iterator itr, itr_end = paoids.end();
+        map<int, vector<long> >::iterator itr, itr_end = type_paoids.end();
 
-        for( itr = paoids.begin(); itr != itr_end; ++itr )
+        for( itr = type_paoids.begin(); itr != itr_end; ++itr )
         {
-            if( itr->first > 0 )
-            {
-                Inherited::refresh(itr->first);
-            }
+            Inherited::refreshList(id_range_t(itr->second.begin(), itr->second.end()), itr->first);
         }
     }
     else
@@ -109,7 +104,8 @@ void ScannableDeviceManager::refresh(LONG paoID, string category, string devicet
     }
 }
 
-void ScannableDeviceManager::refreshScanRates(LONG id)
+
+void ScannableDeviceManager::refreshScanRates(id_range_t &paoids)
 {
     coll_type::writer_lock_guard_t guard(getLock());
 
@@ -121,10 +117,7 @@ void ScannableDeviceManager::refreshScanRates(LONG id)
 
     CtiTableDeviceScanRate::getSQL(db, keyTable, selector);
 
-    if( id > 0 )
-    {
-        selector.where(keyTable["deviceid"] == id && selector.where());
-    }
+    addIDClause(selector, keyTable["deviceid"], paoids);
 
     RWDBReader rdr = selector.reader(conn);
 
@@ -136,19 +129,26 @@ void ScannableDeviceManager::refreshScanRates(LONG id)
     if( setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok)
     {
         // Mark all Scan Rate elements as needing refresh..
-
-        if( id > 0 )
-        {
-            CtiDeviceSPtr devsptr = getDeviceByID(id);
-            if(devsptr) devsptr->invalidateScanRates();
-        }
-        else
+        if( paoids.empty() )
         {
             spiterator itr, itr_end = end();
 
             for( itr = begin(); itr != itr_end; ++itr )
             {
+                //  VC6 - again, this would be perfect for for_each(begin(), end(), mem_fun(invalidateScanRates));
                 if(itr->second) itr->second->invalidateScanRates();
+            }
+        }
+        else
+        {
+            for( id_itr_t paoid_itr = paoids.begin(); paoid_itr != paoids.end(); ++paoid_itr )
+            {
+                //  is this check necessary?
+                if( *paoid_itr > 0 )
+                {
+                    CtiDeviceSPtr devsptr = getDeviceByID(*paoid_itr);
+                    if(devsptr) devsptr->invalidateScanRates();
+                }
             }
         }
     }
@@ -186,7 +186,7 @@ void ScannableDeviceManager::refreshScanRates(LONG id)
     }
 }
 
-void ScannableDeviceManager::refreshDeviceWindows(LONG id)
+void ScannableDeviceManager::refreshDeviceWindows(id_range_t &paoids)
 {
     coll_type::writer_lock_guard_t guard(getLock());
 
@@ -198,16 +198,19 @@ void ScannableDeviceManager::refreshDeviceWindows(LONG id)
 
     CtiTableDeviceWindow::getSQL(db, keyTable, selector);
 
-    if( id > 0 )
+    addIDClause(selector, keyTable["deviceid"], paoids);
+
+    if( !paoids.empty() )
     {
-        selector.where(keyTable["deviceid"] == id && selector.where());
-
-        CtiDeviceSPtr devsptr = getDeviceByID(id);
-
-        if(devsptr && devsptr->isSingle())
+        for( id_itr_t paoid_itr = paoids.begin(); paoid_itr != paoids.end(); ++paoid_itr )
         {
-            //  Remove ALL windows in case any have been deleted from the device.
-            boost::static_pointer_cast<CtiDeviceSingle>(devsptr)->removeWindowType();
+            CtiDeviceSPtr devsptr = getDeviceByID(*paoid_itr);
+
+            if(devsptr && devsptr->isSingle())
+            {
+                //  Remove ALL windows in case any have been deleted from the device.
+                boost::static_pointer_cast<CtiDeviceSingle>(devsptr)->removeWindowType();
+            }
         }
     }
 

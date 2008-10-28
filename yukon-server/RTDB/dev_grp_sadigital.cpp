@@ -7,11 +7,19 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2008/08/14 15:57:39 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2008/10/28 19:21:42 $
 *
 * HISTORY      :
 * $Log: dev_grp_sadigital.cpp,v $
+* Revision 1.21  2008/10/28 19:21:42  mfisher
+* YUK-6589 Scanner should not load non-scannable devices
+* refreshList() now takes a list of paoids, which may be empty if it's a full reload
+* Changed CtiDeviceBase, CtiPointBase, and CtiRouteBase::getSQL() (and all inheritors) to be const
+* Removed a couple unused Porter functions
+* Added logger unit test
+* Simplified DebugTimer's variables
+*
 * Revision 1.20  2008/08/14 15:57:39  jotteson
 * YUK-6333  Change naming in request message and change cancellation to use this new named field instead of user ID
 * Cancellation now uses the new group message ID.
@@ -180,7 +188,7 @@ string CtiDeviceGroupSADigital::getDescription(const CtiCommandParser & parse) c
 //===================================================================================================================
 //===================================================================================================================
 
-void CtiDeviceGroupSADigital::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
+void CtiDeviceGroupSADigital::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
 {
     Inherited::getSQL(db, keyTable, selector);
     CtiTableSASimpleGroup::getSQL(db, keyTable, selector);

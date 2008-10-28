@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base_lite.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/12/20 17:20:29 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2008/10/28 19:21:43 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -37,7 +37,7 @@ class IM_EX_PNTDB CtiDeviceBaseLite : public CtiMemDBObject
 protected:
 
     LONG        _deviceID;
-    LONG        _portID;    
+    LONG        _portID;
     string   _class;
     string   _name;
     string   _description;
@@ -56,13 +56,13 @@ protected:
 
     CtiDeviceBaseLite& operator=(const CtiDeviceBaseLite& aRef);
     LONG getID() const;
-    LONG getPortID() const;    
+    LONG getPortID() const;
     string getClass() const;
     string getName() const;
     string getDescription() const;
 
     CtiDeviceBaseLite& setID( LONG id );
-    CtiDeviceBaseLite& setPortID( LONG id );    
+    CtiDeviceBaseLite& setPortID( LONG id );
     CtiDeviceBaseLite& setClass( const string &str );
     CtiDeviceBaseLite& setName( const string &str );
     CtiDeviceBaseLite& setDescription( const string &str );
@@ -81,7 +81,7 @@ protected:
 
 
     static string getTableName();
-    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
+    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
     virtual void DecodeDatabaseReader(RWDBReader &rdr);
     virtual RWDBStatus Restore();
 };

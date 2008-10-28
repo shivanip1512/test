@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_xcu.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2008/08/14 15:57:40 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2008/10/28 19:21:42 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -87,7 +87,7 @@ int CtiDeviceMeter::readDSTFile( string &id )
 }
 
 
-void CtiDeviceMeter::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
+void CtiDeviceMeter::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
 {
     Inherited::getSQL(db, keyTable, selector);
     CtiTableDeviceMeterGroup::getSQL(db, keyTable, selector);

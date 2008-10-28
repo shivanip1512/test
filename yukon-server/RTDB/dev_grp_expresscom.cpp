@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2008/08/14 15:57:39 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2008/10/28 19:21:42 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -97,7 +97,7 @@ string CtiDeviceGroupExpresscom::getDescription(const CtiCommandParser & parse) 
     return tmpStr;
 }
 
-void CtiDeviceGroupExpresscom::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
+void CtiDeviceGroupExpresscom::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
 {
     Inherited::getSQL(db, keyTable, selector);
     CtiTableExpresscomLoadGroup::getSQL(db, keyTable, selector);
@@ -492,7 +492,7 @@ bool CtiDeviceGroupExpresscom::compareAddressValues(USHORT addressing, CtiDevice
     bool retVal = true;
     if( expGroup != NULL )
     {
-        if(addressing & CtiProtocolExpresscom::atSpid) 
+        if(addressing & CtiProtocolExpresscom::atSpid)
             retVal &= (getExpresscomGroup().getServiceProvider() == expGroup->getExpresscomGroup().getServiceProvider());
         if(addressing & CtiProtocolExpresscom::atGeo)
             retVal &= (getExpresscomGroup().getGeo() == expGroup->getExpresscomGroup().getGeo());

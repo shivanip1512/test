@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2005/02/10 23:24:02 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2008/10/28 19:21:43 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,7 +17,7 @@
 
 #include "port_serial.h"
 
-void CtiPortSerial::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
+void CtiPortSerial::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
 {
     Inherited::getSQL(db, keyTable, selector);
     CtiTablePortSettings::getSQL(db, keyTable, selector);

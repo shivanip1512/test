@@ -72,7 +72,7 @@ public:
     void setMeterGroupData( const string &meterNumber);
 
     //  getSQL has been modified to left-outer-join the metergroup table so's ION meters can be selected
-    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
+    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
     virtual void DecodeDatabaseReader(RWDBReader &rdr);
 
     virtual string getDescription(const CtiCommandParser & parse) const;
@@ -90,6 +90,8 @@ public:
 
     virtual void processInboundData(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, list<CtiPointDataMsg*> &pointData, list<CtiSignalMsg*> &eventData, string &returnInfo, bool expectMore = false );
 };
+
+typedef boost::shared_ptr<CtiDeviceION> CtiDeviceIONSPtr;
 
 #endif //  #ifndef __DEV_ION_H__
 

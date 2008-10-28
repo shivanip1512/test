@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2008/10/17 11:14:38 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2008/10/28 19:21:42 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -697,7 +697,7 @@ string Modbus::getDescription(const CtiCommandParser &parse) const
 }
 
 
-void Modbus::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
+void Modbus::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
 {
    Inherited::getSQL(db, keyTable, selector);
    CtiTableDeviceAddress::getSQL(db, keyTable, selector);

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/slctdev.cpp-arc  $
-* REVISION     :  $Revision: 1.59 $
-* DATE         :  $Date: 2008/10/22 21:16:43 $
+* REVISION     :  $Revision: 1.60 $
+* DATE         :  $Date: 2008/10/28 19:21:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -118,9 +118,24 @@ DLLEXPORT CtiDeviceBase* DeviceFactory(RWDBReader &rdr)
         dout << "Creating a Device of type " << rwsType << endl;
     }
 
-    DevType = resolveDeviceType(rwsType);
+    NewDevice = createDeviceType(resolveDeviceType(rwsType));
 
-    switch(DevType)
+    if( !NewDevice )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+
+        dout << "Device Factory has failed to produce for type " << rwsType << "!" << endl;
+    }
+
+    return NewDevice;
+}
+
+
+DLLEXPORT CtiDeviceBase *createDeviceType(int type)
+{
+    CtiDeviceBase *NewDevice = NULL;
+
+    switch(type)
     {
         case TYPE_WELCORTU:     NewDevice = CTIDBG_new CtiDeviceWelco;      break;
 
@@ -266,7 +281,7 @@ DLLEXPORT CtiDeviceBase* DeviceFactory(RWDBReader &rdr)
         case TYPE_LCU415:
         case TYPE_LCU415LG:
         case TYPE_LCU415ER:
-        case TYPE_LCUT3026:             NewDevice = CTIDBG_new CtiDeviceLCU(DevType);   break;
+        case TYPE_LCUT3026:             NewDevice = CTIDBG_new CtiDeviceLCU(type);      break;
 
         case TYPEMCTBCAST:              NewDevice = CTIDBG_new CtiDeviceMCTBroadcast;   break;
 
@@ -284,16 +299,12 @@ DLLEXPORT CtiDeviceBase* DeviceFactory(RWDBReader &rdr)
             //  Nothing in here!  These are created by the porter thread which manages them!
             break;
         }
-        default:
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Device Factory has failed to produce for type " << rwsType << "!" << endl;
-            break;
-        }
     }
 
     return NewDevice;
 }
+
+
 
 DLLEXPORT CtiRouteBase* RouteFactory(RWDBReader &rdr)
 {

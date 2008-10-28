@@ -106,7 +106,7 @@ public:
    CtiDeviceWctpTerminal& setWctp(const CtiTableDeviceTapPaging& aWctp);
 
 
-   virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
+   virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
 
    virtual void DecodeDatabaseReader(RWDBReader &rdr);
 

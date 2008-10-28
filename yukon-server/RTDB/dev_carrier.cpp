@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2008/10/15 17:03:44 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2008/10/28 19:21:41 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -61,7 +61,7 @@ CtiDeviceCarrier &CtiDeviceCarrier::setLoadProfile( const CtiTableDeviceLoadProf
     return *this;
 }
 
-void CtiDeviceCarrier::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
+void CtiDeviceCarrier::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
 {
     Inherited::getSQL(db, keyTable, selector);
     CtiTableDeviceLoadProfile::getSQL(db, keyTable, selector);

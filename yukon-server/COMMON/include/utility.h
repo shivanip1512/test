@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/utility.h-arc  $
-* REVISION     :  $Revision: 1.58 $
-* DATE         :  $Date: 2008/10/21 21:51:13 $
+* REVISION     :  $Revision: 1.59 $
+* DATE         :  $Date: 2008/10/28 19:21:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -183,6 +183,7 @@ IM_EX_CTIBASE LONG  OutMessageCount();
 
 IM_EX_CTIBASE bool  isLCU(INT type);
 IM_EX_CTIBASE bool  isION(INT type);
+IM_EX_CTIBASE bool  isMCT(INT type);
 
 IM_EX_CTIBASE int   generateTransmissionID();
 
@@ -355,10 +356,11 @@ inline bool list_contains( const std::list<T> &V, T x )
 }
 
 
+//  generates a comma-separated list of values, i.e. 1,2,3,4,5
 //  usage is as an output iterator - e.g.
 //  vector<long> source;
 //  ostringstream output;
-//  csv_output_iterator<long, ostringstream> csv_itr(output);  //  OR csv_itr<long, CtiLogger>(dout)
+//  csv_output_iterator<long, ostringstream> csv_itr(output);  //  OR csv_itr<long, CtiLogger>(dout)>
 //    ...
 //  std::copy(source.begin(), source.end(), csv_itr);
 template <class Numeric, class Stream>

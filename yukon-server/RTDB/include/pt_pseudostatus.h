@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_pseudostatus.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2006/09/26 14:18:23 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2008/10/28 19:21:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -54,7 +54,7 @@ public:
    CtiTablePointStatus  getPointStatus() const     { return _pointStatus; }
    CtiTablePointStatus& getPointStatus()           { return _pointStatus; }
 
-   virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
+   virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
    {
       Inherited::getSQL(db, keyTable, selector);
       CtiTablePointStatus::getSQL(db, keyTable, selector);

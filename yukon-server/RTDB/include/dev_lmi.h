@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2008/06/06 20:28:44 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2008/10/28 19:21:44 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -45,7 +45,7 @@ public:
     CtiDeviceLMI();
     virtual ~CtiDeviceLMI();
 
-    void getSQL(RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &selector);
+    void getSQL(RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &selector) const;
 
     void DecodeDatabaseReader(RWDBReader &rdr);
 

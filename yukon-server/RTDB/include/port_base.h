@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.48 $
-* DATE         :  $Date: 2008/10/15 14:57:19 $
+* REVISION     :  $Revision: 1.49 $
+* DATE         :  $Date: 2008/10/28 19:21:44 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -130,7 +130,7 @@ public:
     virtual INT waitForPortResponse(PULONG ResponseSize,  PCHAR Response, ULONG Timeout, PCHAR ExpectedResponse = NULL);
 
 
-    void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
+    void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
     virtual void DecodeDatabaseReader(RWDBReader &rdr);
     virtual void DecodeDialableDatabaseReader(RWDBReader &rdr);
     virtual void Dump() const;

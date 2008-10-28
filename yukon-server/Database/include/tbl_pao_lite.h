@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pao.cpp-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2008/10/15 15:16:37 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2008/10/28 19:21:40 $
 *
 * Copyright (c) 2008 Cooper Industries. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -51,7 +51,6 @@ public:
 
     typedef CtiMemDBObject Inherited;
 
-
     CtiTblPAOLite();
 
     CtiTblPAOLite(const CtiTblPAOLite& aRef);
@@ -60,31 +59,18 @@ public:
 
     CtiTblPAOLite& operator=(const CtiTblPAOLite& aRef);
 
-    LONG getID() const;
+    LONG   getID()    const;
+    INT    getClass() const;
+    string getName()  const;
+    INT    getType()  const;
+
     CtiTblPAOLite& setID( LONG paoid );
-
-    INT getClass() const;
-    INT& getClass();
-    CtiTblPAOLite& setClass(const INT &clsStr);
-
-    string getName() const;
-    string& getName();
-    CtiTblPAOLite& setName(const string &name);
-
-    INT getType() const;
     CtiTblPAOLite& setType(const INT &type);
 
-    bool getDisableFlag() const;
-    string getDisableFlagStr() const;
-
     bool isInhibited() const;
-    CtiTblPAOLite& setDisableFlag(const bool flag);
-    CtiTblPAOLite& setDisableFlagStr(const string& flag);
-
-    void resetDisableFlag(bool b = FALSE);
 
     static string getTableName();
-    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
+    static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
 
     virtual RWDBStatus Restore();
     virtual void DecodeDatabaseReader(RWDBReader &rdr);
@@ -92,7 +78,6 @@ public:
     virtual void DumpData();
 };
 
-inline bool CtiTblPAOLite::getDisableFlag() const { return _disableFlag; }
-inline bool CtiTblPAOLite::isInhibited() const { return getDisableFlag(); }
+inline bool CtiTblPAOLite::isInhibited() const { return _disableFlag; }
 
 #endif // #ifndef __TBL_PAO_LITE_H__

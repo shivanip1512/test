@@ -6,15 +6,16 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.100 $
-* DATE         :  $Date: 2008/10/23 20:38:04 $
+* REVISION     :  $Revision: 1.101 $
+* DATE         :  $Date: 2008/10/28 19:21:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-
 #include <rw/db/db.h>
+
+#include "boost/multi_array/algorithm.hpp"
 
 #include "mgr_device.h"
 #include "debug_timer.h"
@@ -59,6 +60,7 @@
 #include "devicetypes.h"
 #include "resolvers.h"
 #include "slctdev.h"
+
 
 using namespace Cti;  //  in preparation for moving devices to their own namespace
 using namespace std;
@@ -122,15 +124,10 @@ static void applyEvaluateNextByExecutingUntil(const long key, CtiDeviceSPtr devB
     }
 }
 
+//  once VC6 is gone, this is a prime candidate for for_each(begin(), end(), mem_fun(clearExclusions));
 static void applyClearExclusions(const long unusedkey, CtiDeviceSPtr Device, void* lptrid)
 {
-    LONG id = (LONG)lptrid;
-
-    if( !id || (id && id == Device->getID()))
-    {
-        Device->clearExclusions();
-    }
-    return;
+    Device->clearExclusions();
 }
 
 static void applyRemoveInfiniteProhibit(const long unusedkey, CtiDeviceSPtr Device, void* d)
@@ -498,50 +495,34 @@ void CtiDeviceManager::refresh(LONG paoID, string category, string devicetype)
         bool rowFound = false;
         CtiDeviceSPtr pDev = getDeviceByID(paoID);
 
-        if(pDev)        // If we have it, we can take a shortcut and do specific selects on the device type in question.
+        int type = resolvePAOType(category, devicetype);
+
+        if(pDev && pDev->getType() != type)
         {
-            /*
-             *  This is the code to handle change type.
-             */
-            if(resolvePAOType(category, devicetype) != pDev->getType())
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << pDev->getName() << " has changed type to " << devicetype << " from " << desolveDeviceType(pDev->getType()) << endl;
-                }
-
-                if( _smartMap.remove(paoID) )
-                {
-                    if(DebugLevel & 0x00020000)
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Old device object has been orphaned " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-
-                    // I don't know who the old guy is anymore!
-                    refreshList(paoID);     // This should accomplish a minimal reload, getting the "new" guy.
-                }
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " " << pDev->getName() << " has changed type to " << devicetype << " from " << desolveDeviceType(pDev->getType()) << endl;
             }
-            else
+
+            if( _smartMap.remove(paoID) && DebugLevel & 0x00020000)
             {
-                refreshDeviceByPao(pDev, paoID);
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Old device object has been orphaned " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
-        else
-        {
-            // We were given an id.  We can use that to reduce our workload.
-            refreshList(paoID, resolvePAOType(category, devicetype));
-        }
+
+        // We were given an id.  We can use that to reduce our workload.
+        refreshList(id_range_t(paoID), type);
     }
     else
     {
         // we were given no id.  There must be no dbchange info.
-        refreshList(paoID);
+        refreshList();
     }
 }
 
 
-bool CtiDeviceManager::loadDeviceType(long paoid, const string &device_name, CtiDeviceBase &device, string type, bool include_type)
+bool CtiDeviceManager::loadDeviceType(id_range_t &paoids, const string &device_name, const CtiDeviceBase &device, string type, const bool include_type)
 {
     bool print_bounds = DebugLevel & 0x00020000;
 
@@ -568,10 +549,7 @@ bool CtiDeviceManager::loadDeviceType(long paoid, const string &device_name, Cti
         }
     }
 
-    if( paoid )
-    {
-        selector.where(keyTable["paobjectid"] == RWDBExpr( paoid ) && selector.where());
-    }
+    addIDClause(selector, keyTable["paobjectid"], paoids);
 
     RWDBReader rdr = selector.reader(conn);
 
@@ -586,118 +564,179 @@ bool CtiDeviceManager::loadDeviceType(long paoid, const string &device_name, Cti
 }
 
 
-void CtiDeviceManager::refreshList(LONG paoID, LONG deviceType)
+void CtiDeviceManager::addIDClause(RWDBSelector &selector, RWDBColumn &id_column, id_range_t &id_range)
+{
+    if( id_range.empty() )
+    {
+        return;
+    }
+
+    if( id_range.size() == 1 )
+    {
+        //  special single id case
+
+        selector.where(selector.where() && id_column == *(id_range.begin()));
+
+        return;
+    }
+
+    ostringstream in_list;
+
+    in_list << "(";
+
+    copy(id_range.begin(), id_range.end(), csv_output_iterator<long, ostringstream>(in_list));
+
+    in_list << ")";
+
+    selector.where(selector.where() && id_column.in(RWDBExpr(in_list.str().c_str(), false)));
+}
+
+
+void CtiDeviceManager::refreshList(id_range_t &paoids, const LONG deviceType)
 {
     CtiDeviceSPtr pTempCtiDevice;
     bool rowFound = false;
 
     try
     {
-        if(paoID == 0)
+        if( paoids.empty() )
         {
-            apply(applyDeviceResetUpdated, NULL); // Reset everyone's Updated flag iff not a directed load.
+            //  Reset everyone's Updated flag if not a directed load - this allows us to purge nonexistent entries later
+            apply(applyDeviceResetUpdated, NULL);
         }
         else
         {
-            pTempCtiDevice = getDeviceByID(paoID);
-            if(pTempCtiDevice) pTempCtiDevice->resetUpdatedFlag();
+            id_itr_t paoid_itr = paoids.begin();
+
+            while( paoid_itr != paoids.end() )
+            {
+                pTempCtiDevice = getDeviceByID(*paoid_itr++);
+                if(pTempCtiDevice) pTempCtiDevice->resetUpdatedFlag();
+            }
         }
 
         resetErrorCode();
 
-        if(pTempCtiDevice)
+        CtiDeviceBase *dev = 0;
+
+        if( deviceType )
         {
-            refreshDeviceByPao(pTempCtiDevice, paoID);
+            dev = createDeviceType(deviceType);
         }
-        else
+
+        int max_ids_per_select = gConfigParms.getValueAsInt("MAX_IDS_PER_DEVICE_SELECT", 256);
+
         {
             CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
 
-            rowFound |= loadDeviceType(paoID, "DLC devices", CtiDeviceCarrier());
+            id_itr_t paoid_itr = paoids.begin();
 
-            if( deviceType != TYPEMCT410 )
+            //  I don't really like the do-while construct, but this loop must happen at least once even if no paoids were passed in
+            do
             {
-                rowFound |= loadDeviceType(paoID, "Grid Advisor devices",   CtiDeviceGridAdvisor());
+                int subset_size = min(distance(paoid_itr, paoids.end()), max_ids_per_select);
 
-                rowFound |= loadDeviceType(paoID, "Sixnet IEDs",            CtiDeviceIED(),         "SIXNET");
-                rowFound |= loadDeviceType(paoID, "Meters and IEDs",        CtiDeviceMeter());
+                //  note the iterator difference/addition - requires a random-access iterator...
+                //    trait tags could be useful here except that VC6 doesn't support template member functions
+                id_range_t paoid_subset(paoid_itr, paoid_itr + subset_size);
 
-                //  prevent the LMI from being loaded twice
-                rowFound |= loadDeviceType(paoID, "DNP/ION devices",        Device::DNP(),          "RTU-LMI", false);
-                rowFound |= loadDeviceType(paoID, "LMI RTUs",               CtiDeviceLMI());
-                rowFound |= loadDeviceType(paoID, "RTM devices",            CtiDeviceRTM(),         "RTM");
+                if( dev )
+                {
+                    //  type-specific directed load
+                    rowFound |= loadDeviceType(paoid_subset, "directed load", *dev);
+                }
+                else
+                {
+                    rowFound |= loadDeviceType(paoid_subset, "DLC devices", CtiDeviceCarrier());
 
-                rowFound |= loadDeviceType(paoID, "TAP devices",            CtiDeviceTapPagingTerminal());
-                rowFound |= loadDeviceType(paoID, "TNPP devices",           CtiDeviceTnppPagingTerminal());
+                    if( deviceType != TYPEMCT410 )
+                    {
+                        rowFound |= loadDeviceType(paoid_subset, "Grid Advisor devices",   CtiDeviceGridAdvisor());
 
-                //  exclude the CCU 721
-                rowFound |= loadDeviceType(paoID, "IDLC target devices",    CtiDeviceIDLC(),        "CCU-721", false);
-                rowFound |= loadDeviceType(paoID, "CCU-721 devices",        Device::CCU721());
+                        rowFound |= loadDeviceType(paoid_subset, "Sixnet IEDs",            CtiDeviceIED(),         "SIXNET");
+                        rowFound |= loadDeviceType(paoid_subset, "Meters and IEDs",        CtiDeviceMeter());
 
-                rowFound |= loadDeviceType(paoID, "MCT broadcast devices",  CtiDeviceMCTBroadcast());
+                        //  prevent the LMI from being loaded twice
+                        rowFound |= loadDeviceType(paoid_subset, "DNP/ION devices",        Device::DNP(),          "RTU-LMI", false);
+                        rowFound |= loadDeviceType(paoid_subset, "LMI RTUs",               CtiDeviceLMI());
+                        rowFound |= loadDeviceType(paoid_subset, "RTM devices",            CtiDeviceRTM(),         "RTM");
 
-                rowFound |= loadDeviceType(paoID, "Repeater 800 devices",   CtiDeviceDLCBase(),     "REPEATER 800");
-                rowFound |= loadDeviceType(paoID, "Repeater 801 devices",   CtiDeviceDLCBase(),     "REPEATER 801");
-                rowFound |= loadDeviceType(paoID, "Repeater 900 devices",   CtiDeviceDLCBase(),     "REPEATER");
-                rowFound |= loadDeviceType(paoID, "Repeater 902 devices",   CtiDeviceDLCBase(),     "REPEATER 902");
-                rowFound |= loadDeviceType(paoID, "Repeater 921 devices",   CtiDeviceDLCBase(),     "REPEATER 921");
+                        rowFound |= loadDeviceType(paoid_subset, "TAP devices",            CtiDeviceTapPagingTerminal());
+                        rowFound |= loadDeviceType(paoid_subset, "TNPP devices",           CtiDeviceTnppPagingTerminal());
 
-                rowFound |= loadDeviceType(paoID, "CBC devices",            CtiDeviceCBC());
-                rowFound |= loadDeviceType(paoID, "FMU devices",            CtiDeviceFMU(),         "FMU");
-                rowFound |= loadDeviceType(paoID, "RTC devices",            CtiDeviceRTC());
+                        //  exclude the CCU 721
+                        rowFound |= loadDeviceType(paoid_subset, "IDLC target devices",    CtiDeviceIDLC(),        "CCU-721", false);
+                        rowFound |= loadDeviceType(paoid_subset, "CCU-721 devices",        Device::CCU721());
 
-                rowFound |= loadDeviceType(paoID, "Emetcon groups",         CtiDeviceGroupEmetcon());
-                rowFound |= loadDeviceType(paoID, "Versacom groups",        CtiDeviceGroupVersacom());
-                rowFound |= loadDeviceType(paoID, "Expresscom groups",      CtiDeviceGroupExpresscom());
-                rowFound |= loadDeviceType(paoID, "EnergyPro groups",       CtiDeviceGroupEnergyPro());
-                rowFound |= loadDeviceType(paoID, "Ripple groups",          CtiDeviceGroupRipple());
+                        rowFound |= loadDeviceType(paoid_subset, "MCT broadcast devices",  CtiDeviceMCTBroadcast());
 
-                rowFound |= loadDeviceType(paoID, "MCT load groups",        CtiDeviceGroupMCT());
+                        rowFound |= loadDeviceType(paoid_subset, "Repeater 800 devices",   CtiDeviceDLCBase(),     "REPEATER 800");
+                        rowFound |= loadDeviceType(paoid_subset, "Repeater 801 devices",   CtiDeviceDLCBase(),     "REPEATER 801");
+                        rowFound |= loadDeviceType(paoid_subset, "Repeater 900 devices",   CtiDeviceDLCBase(),     "REPEATER");
+                        rowFound |= loadDeviceType(paoid_subset, "Repeater 902 devices",   CtiDeviceDLCBase(),     "REPEATER 902");
+                        rowFound |= loadDeviceType(paoid_subset, "Repeater 921 devices",   CtiDeviceDLCBase(),     "REPEATER 921");
 
-                rowFound |= loadDeviceType(paoID, "105 groups",             CtiDeviceGroupSA105());
-                rowFound |= loadDeviceType(paoID, "205 groups",             CtiDeviceGroupSA205());
-                rowFound |= loadDeviceType(paoID, "305 groups",             CtiDeviceGroupSA305());
-                rowFound |= loadDeviceType(paoID, "SA Digital groups",      CtiDeviceGroupSADigital());
-                rowFound |= loadDeviceType(paoID, "Golay groups",           CtiDeviceGroupGolay());
+                        rowFound |= loadDeviceType(paoid_subset, "CBC devices",            CtiDeviceCBC());
+                        rowFound |= loadDeviceType(paoid_subset, "FMU devices",            CtiDeviceFMU(),         "FMU");
+                        rowFound |= loadDeviceType(paoid_subset, "RTC devices",            CtiDeviceRTC());
 
-                rowFound |= loadDeviceType(paoID, "Macro devices",          CtiDeviceMacro());
+                        rowFound |= loadDeviceType(paoid_subset, "Emetcon groups",         CtiDeviceGroupEmetcon());
+                        rowFound |= loadDeviceType(paoid_subset, "Versacom groups",        CtiDeviceGroupVersacom());
+                        rowFound |= loadDeviceType(paoid_subset, "Expresscom groups",      CtiDeviceGroupExpresscom());
+                        rowFound |= loadDeviceType(paoid_subset, "EnergyPro groups",       CtiDeviceGroupEnergyPro());
+                        rowFound |= loadDeviceType(paoid_subset, "Ripple groups",          CtiDeviceGroupRipple());
 
-                //  should not be done in Scanner
-                rowFound |= refreshPointGroups(paoID);
+                        rowFound |= loadDeviceType(paoid_subset, "MCT load groups",        CtiDeviceGroupMCT());
 
-                rowFound |= loadDeviceType(paoID, "System devices",         CtiDeviceBase(),        "SYSTEM");
-            }
+                        rowFound |= loadDeviceType(paoid_subset, "105 groups",             CtiDeviceGroupSA105());
+                        rowFound |= loadDeviceType(paoid_subset, "205 groups",             CtiDeviceGroupSA205());
+                        rowFound |= loadDeviceType(paoid_subset, "305 groups",             CtiDeviceGroupSA305());
+                        rowFound |= loadDeviceType(paoid_subset, "SA Digital groups",      CtiDeviceGroupSADigital());
+                        rowFound |= loadDeviceType(paoid_subset, "Golay groups",           CtiDeviceGroupGolay());
 
-            // Now load the device properties onto the devices
-            refreshDeviceProperties(paoID);
+                        rowFound |= loadDeviceType(paoid_subset, "Macro devices",          CtiDeviceMacro());
+
+                        //  should not be done in Scanner
+                        rowFound |= refreshPointGroups(paoid_subset);
+
+                        rowFound |= loadDeviceType(paoid_subset, "System devices",         CtiDeviceBase(),        "SYSTEM");
+                    }
+                }
+
+                // Now load the device properties onto the devices
+                refreshDeviceProperties(paoid_subset, deviceType);
+
+                paoid_itr += subset_size;
+
+            } while( paoid_itr != paoids.end() );
         }
 
-        if(getErrorCode() != RWDBStatus::ok && getErrorCode() != RWDBStatus::endOfFetch)
+        if( dev )
         {
+            delete dev;
+        }
+
+        // Now I need to check for any Device removals based upon the
+        // Updated Flag being NOT set.  I only do this for non-directed loads.  a paoid is directed.!
+        if( paoids.empty() && rowFound )
+        {
+            DebugTimer timer("removing non-updated devices ");
+
+            // Effectively deletes the memory if there are no other "owners"
+            while( pTempCtiDevice = _smartMap.remove(isDeviceNotUpdated, NULL) )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << " database had a return code of " << getErrorCode() << endl;
+                dout << "  Evicting " << pTempCtiDevice->getName() << " from list" << endl;
             }
         }
-        else if(rowFound)
+
+        if( getErrorCode() != RWDBStatus::ok && getErrorCode() != RWDBStatus::endOfFetch )
         {
-            // Now I need to check for any Device removals based upon the
-            // Updated Flag being NOT set.  I only do this for non-directed loads.  a paoid is directed.!
-
-            DebugTimer timer("applying invalidateNotUpdated ");
-
-            while( pTempCtiDevice = _smartMap.remove(isDeviceNotUpdated, NULL) )
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "  Evicting " << pTempCtiDevice->getName() << " from list" << endl;
-                }
-
-                // Effectively deletes the memory if there are no other "owners"
-            }
-        }   // Temporary results are destroyed to free the connection
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << " database had a return code of " << getErrorCode() << endl;
+        }
     }
     catch(RWExternalErr e )
     {
@@ -717,49 +756,6 @@ void CtiDeviceManager::refreshList(LONG paoID, LONG deviceType)
     }
 }
 
-
-bool CtiDeviceManager::refreshDeviceByPao(CtiDeviceSPtr pDev, LONG paoID)
-{
-    bool status = false;
-
-    // Found it and it has not changed type at all.  Let's reload it based upon its type.
-    if(pDev)
-    {
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection();
-        RWDBDatabase db = getDatabase();
-
-        RWDBTable   keyTable;
-        RWDBSelector selector = db.selector();
-
-        pDev->getSQL( db, keyTable, selector );
-
-        selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
-        RWDBReader rdr = selector.reader(conn);
-
-        if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
-        }
-
-        status = refreshDevices(rdr);
-
-        if(!status)     // It was NOT found in the DB!
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " " << pDev->getName() << " removed from DB." << endl;
-            _smartMap.remove(paoID);
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " Done reloading " << pDev->getName() << endl;
-        }
-    }
-
-    // Now load the device properties onto the device.
-    refreshDeviceProperties(paoID);
-
-    return status;
-}
 
 /*
  * ptr_type anxiousDevice has asked to execute.  We make certain that no other device which is in his exclusion list is executing.
@@ -976,37 +972,28 @@ bool CtiDeviceManager::removeInfiniteExclusion(CtiDeviceSPtr anxiousDevice)
 }
 
 
-void CtiDeviceManager::refreshExclusions(LONG id)
+void CtiDeviceManager::refreshExclusions(id_range_t &paoids)
 {
-    LONG        lTemp = 0;
-    CtiDeviceSPtr   pTempCtiDevice;
-
     coll_type::writer_lock_guard_t guard(getLock());
 
-    spiterator itr;
-
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-    RWDBDatabase db = getDatabase();
-
-    RWDBTable   keyTable;
-
-    RWDBSelector selector = db.selector();
+    RWDBConnection conn     = getConnection();
+    RWDBDatabase   db       = getDatabase();
+    RWDBSelector   selector = db.selector();
+    RWDBTable      keyTable;
 
     if(DebugLevel & 0x00020000)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Looking for Device Exclusions" << endl;
     }
+
     CtiTablePaoExclusion::getSQL( db, keyTable, selector );
 
     // The servers do not care about the LM subordination.
     selector.where(keyTable["functionid"] != CtiTablePaoExclusion::ExFunctionLMSubordination && selector.where());
 
-    if(id > 0)
-    {
-        selector.where(keyTable["paoid"] == id && selector.where());
-    }
+    addIDClause(selector, keyTable["paoid"], paoids);
 
     if(DebugLevel & 0x00020000)
     {
@@ -1018,14 +1005,32 @@ void CtiDeviceManager::refreshExclusions(LONG id)
 
     if(rdr.status().errorCode() == RWDBStatus::ok)
     {
-        // clear the exclusion lists.
-        apply( applyClearExclusions, (void*)id);
-        _exclusionMap.removeAll(removeExclusionDevice, (void*)id);    // no known exclusion devices.
+        // prep the exclusion lists
+        if( paoids.empty() )
+        {
+            apply(applyClearExclusions);
+            _exclusionMap.removeAll(removeExclusionDevice, (void*)0);
+        }
+        else
+        {
+            for( id_itr_t paoid_itr = paoids.begin(); paoid_itr != paoids.end(); ++paoid_itr )
+            {
+                CtiDeviceSPtr dev = getDeviceByID(*paoid_itr);
+
+                if( dev )
+                {
+                    dev->clearExclusions();
+                }
+
+                _exclusionMap.removeAll(removeExclusionDevice, (void*)*paoid_itr);
+            }
+        }
     }
 
     while( (setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
     {
-        CtiDeviceBase* pSp = NULL;
+        LONG lTemp;
+        CtiDeviceSPtr pTempCtiDevice;
 
         rdr["paoid"] >> lTemp;            // get the DeviceID
 
@@ -1039,16 +1044,17 @@ void CtiDeviceManager::refreshExclusions(LONG id)
         }
     }
 
-    for( itr = _portExclusions.getMap().begin(); itr != _portExclusions.getMap().end(); itr++ )
+    //  this will need to be reworked if we ever do exclusion on a large system
+    for( spiterator portx_itr = _portExclusions.getMap().begin(); portx_itr != _portExclusions.getMap().end(); portx_itr++ )
     {
-        if( _smartMap.find(itr->second->getID()) )
+        if( _smartMap.find(portx_itr->second->getID()) )
         {
-            _exclusionMap.insert(itr->second->getID(), itr->second);
+            _exclusionMap.insert(portx_itr->second->getID(), portx_itr->second);
         }
         else
         {
             //  That device doesn't exist any more - delete it
-            _portExclusions.getMap().erase(itr);
+            _portExclusions.getMap().erase(portx_itr);
         }
     }
 
@@ -1060,77 +1066,69 @@ void CtiDeviceManager::refreshExclusions(LONG id)
 }
 
 
-void CtiDeviceManager::refreshIONMeterGroups(LONG paoID)
+void CtiDeviceManager::refreshIONMeterGroups(id_range_t &paoids)
 {
-    CtiDeviceSPtr pTempCtiDevice;
+    RWDBConnection conn = getConnection();
+    RWDBDatabase db = getDatabase();
+    RWDBSelector selector = db.selector();
+    RWDBSelector tmpSelector;
+    RWDBTable tblMeterGroup = db.table("devicemetergroup");
+    RWDBTable tblPAObject = db.table("yukonpaobject");
+    RWDBReader rdr;
+    long tmpDeviceID;
+    string tmpCollectionGroup,
+    tmpTestCollectionGroup,
+    tmpMeterNumber,
+    tmpBillingGroup;
 
+    if(DebugLevel & 0x00020000)
     {
-        RWDBConnection conn = getConnection();
-        RWDBDatabase db = getDatabase();
-        RWDBSelector selector = db.selector();
-        RWDBSelector tmpSelector;
-        RWDBTable tblMeterGroup = db.table("devicemetergroup");
-        RWDBTable tblPAObject = db.table("yukonpaobject");
-        RWDBReader rdr;
-        long tmpDeviceID;
-        string tmpCollectionGroup,
-        tmpTestCollectionGroup,
-        tmpMeterNumber,
-        tmpBillingGroup;
+        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for ION Meter Groups" << endl;
+    }
 
-        if(DebugLevel & 0x00020000)
+    selector << tblMeterGroup["DeviceID"]
+    << tblMeterGroup["MeterNumber"];
+    selector.where((tblMeterGroup["DeviceID"] == tblPAObject["PAObjectID"]) && (tblPAObject["Type"].like("ION%")));
+
+    addIDClause(selector, tblPAObject["PAObjectID"], paoids);
+
+    rdr = selector.reader(conn);
+
+    if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+    }
+
+    if(rdr.status().errorCode() == RWDBStatus::ok)
+    {
+        while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for ION Meter Groups" << endl;
-        }
+            rdr["DeviceID"]            >> tmpDeviceID;
+            rdr["MeterNumber"]         >> tmpMeterNumber;
 
-        selector << tblMeterGroup["DeviceID"]
-        << tblMeterGroup["MeterNumber"];
-        selector.where((tblMeterGroup["DeviceID"] == tblPAObject["PAObjectID"]) && (tblPAObject["Type"].like("ION%")));
+            CtiDeviceSPtr pTempCtiDevice = getDeviceByID(tmpDeviceID);
 
-        if(paoID)
-        {
-            selector.where( selector.where() && tblPAObject["PAObjectID"] == paoID );
-        }
-
-        rdr = selector.reader(conn);
-        if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
-        }
-
-        if(rdr.status().errorCode() == RWDBStatus::ok)
-        {
-            while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
+            if(pTempCtiDevice && isION(pTempCtiDevice->getType()))
             {
-                rdr["DeviceID"]            >> tmpDeviceID;
-                rdr["MeterNumber"]         >> tmpMeterNumber;
-
-                pTempCtiDevice = getDeviceByID(tmpDeviceID);
-
-                if(pTempCtiDevice)
-                {
-                    CtiDeviceION *tmpION = (CtiDeviceION *)(pTempCtiDevice.get());
-
-                    tmpION->setMeterGroupData(tmpMeterNumber);
-                }
+                boost::static_pointer_cast<CtiDeviceION>(pTempCtiDevice)->setMeterGroupData(tmpMeterNumber);
             }
         }
-        else
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "Error reading ION Meter Groups from database: " << rdr.status().errorCode() << endl;
-        }
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << "Error reading ION Meter Groups from database: " << rdr.status().errorCode() << endl;
+    }
 
-        if(DebugLevel & 0x00020000)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for ION Meter Groups" << endl;
-        }
+    if(DebugLevel & 0x00020000)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for ION Meter Groups" << endl;
     }
 }
 
 
-void CtiDeviceManager::refreshMacroSubdevices(LONG paoID)
+void CtiDeviceManager::refreshMacroSubdevices(id_range_t &paoids)
 {
     int childcount = 0;
     CtiDeviceSPtr pTempCtiDevice;
@@ -1151,7 +1149,9 @@ void CtiDeviceManager::refreshMacroSubdevices(LONG paoID)
         selector << rwdbName("childcount",rwdbCount("ChildID"));
         selector.from(tblGenericMacro);
         selector.where(tblGenericMacro["MacroType"] == RWDBExpr("GROUP"));
-        if(paoID != 0) selector.where( tblGenericMacro["OwnerID"] == RWDBExpr( paoID ) && selector.where() );
+
+        addIDClause(selector, tblGenericMacro["OwnerID"], paoids);
+
         rdr = selector.reader(conn);
 
         if(setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok)
@@ -1168,7 +1168,9 @@ void CtiDeviceManager::refreshMacroSubdevices(LONG paoID)
     selector << tblGenericMacro["ChildID"] << tblGenericMacro["OwnerID"];
     selector.from(tblGenericMacro);
     selector.where(tblGenericMacro["MacroType"] == RWDBExpr("GROUP"));
-    if(paoID != 0) selector.where( tblGenericMacro["OwnerID"] == RWDBExpr( paoID ) && selector.where() );
+
+    addIDClause(selector, tblGenericMacro["OwnerID"], paoids);
+
     selector.orderBy(tblGenericMacro["ChildOrder"]);
 
     RWDBResult macroResult = selector.execute(conn);
@@ -1182,7 +1184,22 @@ void CtiDeviceManager::refreshMacroSubdevices(LONG paoID)
     if(childcount != 0 && macroResult.status().errorCode() == RWDBStatus::ok)
     {
         rdr = myMacroTable.reader();
-        apply(applyClearMacroDeviceList, (void*)paoID);
+
+        // prep the exclusion lists
+        if( paoids.empty() )
+        {
+            apply(applyClearMacroDeviceList);
+        }
+        else
+        {
+            for( id_itr_t paoid_itr = paoids.begin(); paoid_itr != paoids.end(); ++paoid_itr )
+            {
+                CtiDeviceSPtr dev = getDeviceByID(*paoid_itr);
+
+                if( dev )  applyClearMacroDeviceList(0, dev, (void *)dev->getID());
+            }
+        }
+
 
         while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
         {
@@ -1208,7 +1225,7 @@ void CtiDeviceManager::refreshMacroSubdevices(LONG paoID)
 }
 
 
-void CtiDeviceManager::refreshMCTConfigs(LONG paoID)
+void CtiDeviceManager::refreshMCTConfigs(id_range_t &paoids)
 {
     CtiDeviceSPtr pTempCtiDevice;
 
@@ -1247,10 +1264,7 @@ void CtiDeviceManager::refreshMCTConfigs(LONG paoID)
         selector.where( mappingTbl["mctid"]    == tblPAObject["paobjectid"] &&
                         mappingTbl["configid"] == configTbl["configid"] );
 
-        if(paoID)
-        {
-            selector.where( selector.where() && tblPAObject["PAObjectID"] == paoID );
-        }
+        addIDClause(selector, tblPAObject["PAObjectID"], paoids);
 
         rdr = selector.reader(conn);
         if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
@@ -1279,9 +1293,7 @@ void CtiDeviceManager::refreshMCTConfigs(LONG paoID)
 
                 if(pTempCtiDevice)
                 {
-                    CtiDeviceMCT *tmpMCT = (CtiDeviceMCT *)(pTempCtiDevice.get());
-
-                    tmpMCT->setConfigData(tmpconfigname, tmpconfigtype, tmpconfigmode, tmpwire, tmpmpkh);
+                    boost::static_pointer_cast<CtiDeviceMCT>(pTempCtiDevice)->setConfigData(tmpconfigname, tmpconfigtype, tmpconfigmode, tmpwire, tmpmpkh);
                 }
             }
         }
@@ -1300,7 +1312,7 @@ void CtiDeviceManager::refreshMCTConfigs(LONG paoID)
 }
 
 
-void CtiDeviceManager::refreshMCT400Configs(LONG paoID)
+void CtiDeviceManager::refreshMCT400Configs(id_range_t &paoids)
 {
     LONG tmpmctid, tmpdisconnectaddress;
     bool row_found = false;
@@ -1320,11 +1332,8 @@ void CtiDeviceManager::refreshMCT400Configs(LONG paoID)
         selector << configTbl["deviceid"];
         selector << configTbl["disconnectaddress"];
 
-        if(paoID)
-        {
-            //  no need to bring yukonpaobject into this yet, we'll just link straight to the config table
-            selector.where( selector.where() && configTbl["deviceid"] == paoID );
-        }
+        //  no need to bring yukonpaobject into this yet, we'll just link straight to the config table
+        addIDClause(selector, configTbl["deviceid"], paoids);
 
         rdr = selector.reader(conn);
         if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
@@ -1366,13 +1375,16 @@ void CtiDeviceManager::refreshMCT400Configs(LONG paoID)
             }
 
             //  if this was targeted at a certain MCT and we didn't find a row, clear out the MCT's address
-            if( paoID && !row_found )
+            if( !paoids.empty() && !row_found )
             {
-                tmpDevice = getDeviceByID(paoID);
-
-                if( tmpDevice && tmpDevice->getType() == TYPEMCT410 )
+                for( id_itr_t paoid_itr = paoids.begin(); paoid_itr != paoids.end(); ++paoid_itr )
                 {
-                    boost::static_pointer_cast<CtiDeviceMCT410>(tmpDevice)->setDisconnectAddress(0);
+                    tmpDevice = getDeviceByID(*paoid_itr);
+
+                    if( tmpDevice && tmpDevice->getType() == TYPEMCT410 )
+                    {
+                        boost::static_pointer_cast<CtiDeviceMCT410>(tmpDevice)->setDisconnectAddress(0);
+                    }
                 }
             }
         }
@@ -1391,7 +1403,7 @@ void CtiDeviceManager::refreshMCT400Configs(LONG paoID)
 }
 
 
-void CtiDeviceManager::refreshDynamicPaoInfo(LONG paoID)
+void CtiDeviceManager::refreshDynamicPaoInfo(id_range_t &paoids)
 {
     CtiDeviceSPtr device;
     long tmp_paobjectid, tmp_entryid;
@@ -1412,10 +1424,7 @@ void CtiDeviceManager::refreshDynamicPaoInfo(LONG paoID)
 
         CtiTableDynamicPaoInfo::getSQL(db, keyTable, selector, _app_id);
 
-        if(paoID)
-        {
-            selector.where( selector.where() && keyTable["paobjectid"] == paoID );
-        }
+        addIDClause(selector, keyTable["paobjectid"], paoids);
 
         rdr = selector.reader(conn);
         if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
@@ -1462,16 +1471,26 @@ void CtiDeviceManager::refreshDynamicPaoInfo(LONG paoID)
 
 //  This method loads all the device properties/characteristics which must be appended to an already
 //  loaded device.
-void CtiDeviceManager::refreshDeviceProperties(LONG paoID)
+void CtiDeviceManager::refreshDeviceProperties(id_range_t &paoids, int type)
 {
-    bool print_duration = DebugLevel & 0x80000000;
+    if( !type || type == TYPE_MACRO )
+    {
+        DebugTimer timer("loading macro subdevices");       refreshMacroSubdevices(paoids);
+    }
 
-    {  DebugTimer timer("loading macro subdevices");     refreshMacroSubdevices(paoID);  }
-    {  DebugTimer timer("loading ION meter groups");     refreshIONMeterGroups (paoID);  }
-    {  DebugTimer timer("loading device exclusions");    refreshExclusions     (paoID);  }
-    {  DebugTimer timer("loading MCT configs");          refreshMCTConfigs     (paoID);  }
-    {  DebugTimer timer("loading MCT 400 configs");      refreshMCT400Configs  (paoID);  }
-    {  DebugTimer timer("loading dynamic device data");  refreshDynamicPaoInfo (paoID);  }
+    if( !type || isION(type) )
+    {
+        DebugTimer timer("loading ION meter groups");       refreshIONMeterGroups (paoids);
+    }
+
+    if( !type || isMCT(type) )
+    {
+        DebugTimer timer("loading MCT configs");            refreshMCTConfigs     (paoids);
+                                                            refreshMCT400Configs  (paoids);
+    }
+
+    {  DebugTimer timer("loading device exclusions");       refreshExclusions     (paoids);  }
+    {  DebugTimer timer("loading dynamic device data");     refreshDynamicPaoInfo (paoids);  }
 }
 
 
@@ -1890,9 +1909,14 @@ CtiDeviceManager &CtiDeviceManager::addPortExclusion( LONG paoID )
 }
 
 
-bool CtiDeviceManager::refreshPointGroups(LONG paoID)
+bool CtiDeviceManager::refreshPointGroups()
 {
-    return loadDeviceType(paoID, "point groups", CtiDeviceGroupPoint());
+    return refreshPointGroups(id_range_t());
+}
+
+bool CtiDeviceManager::refreshPointGroups(id_range_t &paoids)
+{
+    return loadDeviceType(paoids, "point groups", CtiDeviceGroupPoint());
 }
 
 //Currently sets up addressing for expresscom only.

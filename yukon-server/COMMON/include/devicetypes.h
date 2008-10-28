@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/devicetypes.h-arc  $
-* REVISION     :  $Revision: 1.38 $
-* DATE         :  $Date: 2007/11/15 17:50:53 $
+* REVISION     :  $Revision: 1.39 $
+* DATE         :  $Date: 2008/10/28 19:21:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -38,7 +38,6 @@
 #define TYPEMCT310IL                         69
 #define TYPEMCT318L                          70
 #define TYPEMCT310IDL                        71
-/* new MCT devices as of 04-08-97   */
 #define TYPEMCT360                           75
 #define TYPEMCT370                           80
 #define TYPEMCT410                           85
@@ -156,7 +155,7 @@
 #define TYPE_CC_FEEDER                       2301
 #define TYPE_CC_AREA                         2302
 #define TYPE_CC_SUBSTATION                   2303
-#define TYPE_CC_SPECIALAREA                  2304  
+#define TYPE_CC_SPECIALAREA                  2304
 
 // A macro device that can contain other devices - basically a generalized group of devices
 #define TYPE_MACRO                           2900

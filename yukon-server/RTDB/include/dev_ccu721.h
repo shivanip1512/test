@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2008/10/17 11:14:38 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2008/10/28 19:21:43 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -78,7 +78,7 @@ public:
         Command_Timesync
     };
 
-    virtual void getSQL(RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &selector);
+    virtual void getSQL(RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &selector) const;
 
     void DecodeDatabaseReader(RWDBReader &rdr);
 

@@ -799,7 +799,7 @@ CtiPortDirect& CtiPortDirect::operator=(const CtiPortDirect& aRef)
     return *this;
 }
 
-void CtiPortDirect::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
+void CtiPortDirect::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
 {
     Inherited::getSQL(db, keyTable, selector);
     CtiTablePortLocalSerial::getSQL(db, keyTable, selector);

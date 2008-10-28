@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base_lite.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2005/12/20 17:20:20 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2008/10/28 19:21:41 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -128,7 +128,7 @@ bool CtiDeviceBaseLite::operator()(const CtiDeviceBaseLite& aRef) const
     return operator<(aRef);
 }
 
-void CtiDeviceBaseLite::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
+void CtiDeviceBaseLite::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
 {
     keyTable = db.table(getTableName().c_str());
     RWDBTable devtable = getDatabase().table( "Device" );

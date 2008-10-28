@@ -870,6 +870,40 @@ bool isION(INT type)
     return isit;
 }
 
+bool isMCT(INT type)
+{
+    switch(type)
+    {
+        case TYPELMT2:
+        case TYPEDCT501:
+        case TYPEMCT210:
+        case TYPEMCT212:
+        case TYPEMCT213:
+        case TYPEMCT224:
+        case TYPEMCT226:
+        case TYPEMCT240:
+        case TYPEMCT242:
+        case TYPEMCT248:
+        case TYPEMCT250:
+        case TYPEMCT260:
+        case TYPEMCT310:
+        case TYPEMCT310ID:
+        case TYPEMCT318:
+        case TYPEMCT310IL:
+        case TYPEMCT318L:
+        case TYPEMCT310IDL:
+        case TYPEMCT360:
+        case TYPEMCT370:
+        case TYPEMCT410:
+        case TYPEMCT470:
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 bool isLCU(INT type)
 {
     bool isit = false;

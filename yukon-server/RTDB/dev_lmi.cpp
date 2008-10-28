@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2008/10/15 17:47:44 $
+* REVISION     :  $Revision: 1.38 $
+* DATE         :  $Date: 2008/10/28 19:21:42 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -412,7 +412,7 @@ void CtiDeviceLMI::processInboundData(INMESS *InMessage, CtiTime &TimeNow, list<
 }
 
 
-void CtiDeviceLMI::getSQL(RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &selector)
+void CtiDeviceLMI::getSQL(RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &selector) const
 {
     Inherited::getSQL(db, keyTable, selector);
 

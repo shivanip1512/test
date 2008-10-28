@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2006/09/21 21:31:38 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2008/10/28 19:21:44 $
 *
 * Copyright (c) 1999-2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -63,7 +63,7 @@ public:
     virtual LONG getRouteID() { return 0L; }
 
     void DecodeDatabaseReader( RWDBReader &rdr );
-    virtual void getSQL( RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &selector );
+    virtual void getSQL( RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &selector ) const;
     virtual INT ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     virtual INT processTrxID( int trx, list< CtiMessage* >  &vgList );
     virtual INT initTrxID( int trx, CtiCommandParser &parse, list< CtiMessage* >  &vgList );

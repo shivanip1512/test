@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_snpp.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2008/08/14 15:57:40 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2008/10/28 19:21:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -159,7 +159,7 @@ INT CtiDeviceSnppPagingTerminal::decode(CtiXfer &xfer,INT commReturnValue)
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << CtiTime() << " **** Checkpoint - no response from snpp quit command, all others responded" << __FILE__ << " (" << __LINE__ << ")" << endl;
-    
+
                             }
                             status = NORMAL;//quit command failed, all others passed, return normal
                         }
@@ -177,7 +177,7 @@ INT CtiDeviceSnppPagingTerminal::decode(CtiXfer &xfer,INT commReturnValue)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " **** Checkpoint - no response from snpp quit command, all others responded" << __FILE__ << " (" << __LINE__ << ")" << endl;
-    
+
                         }
                         status = NORMAL;//quit command failed, all others passed, return normal
                     }
@@ -568,7 +568,7 @@ INT CtiDeviceSnppPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandP
 
 string CtiDeviceSnppPagingTerminal::getLoginName()
 {
-    if(!_table.getSenderID().empty() && 
+    if(!_table.getSenderID().empty() &&
        _table.getSenderID().find("none") == string::npos && _table.getSenderID() != " ")
     {
         return _table.getSenderID();
@@ -578,7 +578,7 @@ string CtiDeviceSnppPagingTerminal::getLoginName()
 
 string CtiDeviceSnppPagingTerminal::getLoginPass()
 {
-    if(!_table.getSecurityCode().empty() && 
+    if(!_table.getSecurityCode().empty() &&
        _table.getSecurityCode().find("none") == string::npos && _table.getSecurityCode() != " ")
     {
         return _table.getSecurityCode();
@@ -659,7 +659,7 @@ void CtiDeviceSnppPagingTerminal::resetStates()
 }
 
 //Database Functions
-void CtiDeviceSnppPagingTerminal::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
+void CtiDeviceSnppPagingTerminal::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
 {
     Inherited::getSQL(db, keyTable, selector);
     _table.getSQL(db, keyTable, selector);

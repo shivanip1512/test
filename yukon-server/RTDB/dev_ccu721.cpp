@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2008/10/21 16:09:26 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2008/10/28 19:21:41 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -177,7 +177,7 @@ bool CCU721::needsReset() const
     return !_initialized;
 }
 
-void CCU721::getSQL(RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &selector)
+void CCU721::getSQL(RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &selector) const
 {
     Inherited::getSQL(db, keyTable, selector);
 

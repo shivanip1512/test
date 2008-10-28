@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/logger.cpp-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2008/10/13 21:23:23 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2008/10/28 19:21:39 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -194,9 +194,24 @@ void CtiLogger::doOutput()
     {
         if( !_base_filename.empty() )
         {
-            bool append = isExistingLogFileCurrent();
+            bool logfile_current = true;
 
-            if( !tryOpenOutputFile(outfile, append) )
+            time_t now = ::time(0);
+
+            if( now >= _next_logfile_check )
+            {
+                tm tm_now = *(CtiTime::localtime_r(&now));
+
+                //  check at midnight or after 14 hours, whichever is closer...  this accomodates
+                //    DST, since if we go ahead or behind by an hour, we'll still only check twice a day
+                _next_logfile_check = now + min(secondsUntilMidnight(tm_now), 14U * 60U * 60U);
+
+                _today_filename = dayFilename(tm_now.tm_mday);
+
+                logfile_current = fileDateMatches(_today_filename, tm_now.tm_mon);
+            }
+
+            if( !tryOpenOutputFile(outfile, logfile_current) )
             {
                 static bool nag = false;
 
@@ -212,7 +227,7 @@ void CtiLogger::doOutput()
             }
 
             //  first time we've written to this file - write the headers
-            if( outfile && (_first_output || !append) )
+            if( outfile && (_first_output || !logfile_current) )
             {
                 strstream s;
                 CtiTime now;
@@ -304,51 +319,44 @@ string CtiLogger::scrub(string filename)
 }
 
 
-void CtiLogger::setTodayFilename(unsigned day_of_month)
+string CtiLogger::dayFilename(const unsigned day_of_month)
 {
     ostringstream stream;
 
     stream << _path << "\\" << _base_filename;
 
-    ((day_of_month < 10)?(stream << "0"):(stream)) << day_of_month;
+    stream << setfill('0') << setw(2) << day_of_month;
 
     stream << ".log";
 
-    _today_filename = stream.str();
+    return stream.str();
 }
 
 
-bool CtiLogger::isExistingLogFileCurrent()
+unsigned CtiLogger::secondsUntilMidnight(const struct tm &tm_now)
 {
-    time_t now = ::time(0);
+    unsigned seconds_until_midnight = 0;
 
-    if( _next_filetime_check.seconds() <= now )
+    seconds_until_midnight += 24 - tm_now.tm_hour;
+    seconds_until_midnight *= 60;
+    seconds_until_midnight -= tm_now.tm_min;
+    seconds_until_midnight *= 60;
+    seconds_until_midnight -= tm_now.tm_sec;
+
+    return seconds_until_midnight;
+}
+
+
+bool CtiLogger::fileDateMatches(const string &filename, const unsigned month)
+{
+    struct _stat file_stat;
+
+    if( _stat(filename.c_str(), &file_stat) == -1 )
     {
-        tm tm_now = *(CtiTime::localtime_r(&now));
-
-        unsigned seconds_to_midnight = 0;
-        seconds_to_midnight += 24 - tm_now.tm_hour;
-        seconds_to_midnight *= 60;
-        seconds_to_midnight -= tm_now.tm_min;
-        seconds_to_midnight *= 60;
-        seconds_to_midnight -= tm_now.tm_sec;
-
-        //  check at midnight or after 12 hours, whichever is closer...  this accomodates DST
-        _next_filetime_check = now + min(seconds_to_midnight, 12U * 60U * 60U);
-
-        setTodayFilename(tm_now.tm_mday);
-
-        struct _stat file_stat;
-
-        //  if the file doesn't exist or the month doesn't match, overwrite it
-        if( _stat(_today_filename.c_str(), &file_stat) == -1 ||
-            CtiTime::localtime_r(&file_stat.st_mtime)->tm_mon != tm_now.tm_mon )
-        {
-            return false;
-        }
+        return false;
     }
 
-    return true;
+    return CtiTime::localtime_r(&file_stat.st_mtime)->tm_mon == month;
 }
 
 

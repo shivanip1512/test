@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/portdecl.h-arc  $
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2008/08/06 18:24:20 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2008/10/28 19:21:41 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -96,10 +96,6 @@ INT RefreshMCTTimeSync (OUTMESS *);
 INT LoadILEXTimeMessage (PBYTE, USHORT);
 INT LoadWelcoTimeMessage (PBYTE, USHORT);
 INT LoadSES92TimeMessage (PBYTE, USHORT);
-INT WWVReceiversetup (HANDLE *);
-INT WWVClockSync (HANDLE);
-INT WWVBufferRead (HANDLE, char *);
-INT WWVBufferWrite (HANDLE, char *);
 
 /* Prototypes from PORTCONF.C */
 VOID VConfigThread (PVOID);

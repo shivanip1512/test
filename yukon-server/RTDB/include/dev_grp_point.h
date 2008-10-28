@@ -8,10 +8,18 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2006/09/21 21:31:38 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2008/10/28 19:21:43 $
 * HISTORY      :
 * $Log: dev_grp_point.h,v $
+* Revision 1.4  2008/10/28 19:21:43  mfisher
+* YUK-6589 Scanner should not load non-scannable devices
+* refreshList() now takes a list of paoids, which may be empty if it's a full reload
+* Changed CtiDeviceBase, CtiPointBase, and CtiRouteBase::getSQL() (and all inheritors) to be const
+* Removed a couple unused Porter functions
+* Added logger unit test
+* Simplified DebugTimer's variables
+*
 * Revision 1.3  2006/09/21 21:31:38  mfisher
 * privatized Inherited typedef
 *
@@ -52,7 +60,7 @@ public:
     INT generateRequest(CtiRequestMsg *pReq, CtiCommandParser &parse);
     string getDescription(const CtiCommandParser & parse) const;
 
-    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
+    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
     virtual void DecodeDatabaseReader(RWDBReader &rdr);
     virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&tempOut, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
 

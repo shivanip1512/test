@@ -7,11 +7,19 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2007/08/27 18:27:10 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2008/10/28 19:21:42 $
 *
 * HISTORY      :
 * $Log: dev_grp_point.cpp,v $
+* Revision 1.6  2008/10/28 19:21:42  mfisher
+* YUK-6589 Scanner should not load non-scannable devices
+* refreshList() now takes a list of paoids, which may be empty if it's a full reload
+* Changed CtiDeviceBase, CtiPointBase, and CtiRouteBase::getSQL() (and all inheritors) to be const
+* Removed a couple unused Porter functions
+* Added logger unit test
+* Simplified DebugTimer's variables
+*
 * Revision 1.5  2007/08/27 18:27:10  jotteson
 * YUK-4279
 * Added function to remove the dynamic text from control command strings.
@@ -97,7 +105,7 @@ string CtiDeviceGroupPoint::getDescription(const CtiCommandParser & parse) const
 //====================================================================================================================
 //====================================================================================================================
 
-void CtiDeviceGroupPoint::getSQL( RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector )
+void CtiDeviceGroupPoint::getSQL( RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector ) const
 {
     Inherited::getSQL(db, keyTable, selector);
     CtiTablePointGroup::getSQL(db, keyTable, selector);

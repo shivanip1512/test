@@ -2,8 +2,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_status.h-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2008/10/02 18:27:29 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2008/10/28 19:21:44 $
 *
 */
 #ifndef __PT_STATUS_H__
@@ -38,7 +38,7 @@ public:
    CtiTablePointStatus  getPointStatus() const;
    CtiTablePointStatus& getPointStatus();
 
-   virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
+   virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
    virtual void DecodeDatabaseReader(RWDBReader &rdr);
    virtual void DumpData();
    virtual UINT adjustStaticTags(UINT &tag) const;

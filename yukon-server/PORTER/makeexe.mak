@@ -58,7 +58,6 @@ porter.obj \
 portersu.obj \
 portfield.obj \
 portfill.obj \
-portgui.obj \
 portgw.obj \
 port_udp.obj \
 portload.obj \
@@ -364,7 +363,7 @@ porter.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		thread_register_data.h CtiLocalConnect.h fifo_multiset.h \
 		systemmsgthread.h connection.h exchange.h msg_multi.h \
 		msg_pdata.h msg_ptreg.h msg_reg.h mgr_device.h rtdb.h \
-		slctdev.h mgr_port.h slctprt.h perform.h das08.h portgui.h \
+		slctdev.h mgr_port.h slctprt.h perform.h das08.h \
 		portglob.h tcpsup.h statistics.h ctidate.h c_port_interface.h \
 		group.h mgr_route.h repeaterrole.h mgr_config.h mgr_point.h \
 		port_shr.h port_shr_ip.h dlldev.h msg_dbchg.h msg_trace.h \
@@ -493,16 +492,6 @@ portglob.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		devicetypes.h routes.h porter.h das08.h tcpsup.h ctinexus.h \
 		portglob.h logger.h thread.h ctitime.h CtiPCPtrQueue.h \
 		utility.h sorted_vector.h statistics.h counter.h ctidate.h
-portgui.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
-		types.h cticalls.h queues.h dllbase.h dsm2.h mutex.h guard.h \
-		numstr.h clrdump.h cticonnect.h netports.h dsm2err.h device.h \
-		devicetypes.h routes.h porter.h master.h ilex.h perform.h \
-		thread_monitor.h smartmap.h boostutil.h utility.h ctitime.h \
-		sorted_vector.h readers_writer_lock.h critical_section.h \
-		cparms.h rwutil.h boost_time.h configkey.h configval.h \
-		queue.h logger.h thread.h CtiPCPtrQueue.h \
-		thread_register_data.h portglob.h tcpsup.h ctinexus.h \
-		statistics.h counter.h ctidate.h color.h portgui.h
 portgw.obj:	yukon.h precompiled.h ctidbgmem.h connection.h dlldefs.h \
 		exchange.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
 		mutex.h guard.h numstr.h clrdump.h cticonnect.h netports.h \

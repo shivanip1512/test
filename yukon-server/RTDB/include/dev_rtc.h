@@ -8,10 +8,18 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2008/06/06 20:28:44 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2008/10/28 19:21:44 $
 * HISTORY      :
 * $Log: dev_rtc.h,v $
+* Revision 1.16  2008/10/28 19:21:44  mfisher
+* YUK-6589 Scanner should not load non-scannable devices
+* refreshList() now takes a list of paoids, which may be empty if it's a full reload
+* Changed CtiDeviceBase, CtiPointBase, and CtiRouteBase::getSQL() (and all inheritors) to be const
+* Removed a couple unused Porter functions
+* Added logger unit test
+* Simplified DebugTimer's variables
+*
 * Revision 1.15  2008/06/06 20:28:44  jotteson
 * YUK-6005 Porter LLP expect more set incorrectly
 * Added an option to override expect more in the error decode call.
@@ -116,7 +124,7 @@ public:
 
     virtual LONG getAddress() const;
     virtual string getDescription(const CtiCommandParser & parse) const;
-    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
+    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
     virtual void DecodeDatabaseReader(RWDBReader &rdr);
 
     INT queuedWorkCount() const;

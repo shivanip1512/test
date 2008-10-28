@@ -1,8 +1,3 @@
-
-#pragma warning( disable : 4786)
-#ifndef __TBL_PAO_H__
-#define __TBL_PAO_H__
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   tbl_pao
@@ -14,11 +9,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_pao.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/12/20 17:16:08 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2008/10/28 19:21:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+#ifndef __TBL_PAO_H__
+#define __TBL_PAO_H__
+#pragma warning( disable : 4786)
 
 #include <windows.h>
 #include <limits.h>
@@ -41,17 +39,17 @@ class IM_EX_CTIYUKONDB CtiTblPAO : public CtiMemDBObject
 
 protected:
 
-    LONG           _paObjectID;
+    LONG        _paObjectID;
     string      _category;
-    INT            _class;
+    INT         _class;
     string      _classStr;
     string      _name;
-    INT            _type;
+    INT         _type;
     string      _typeStr;
     string      _description;
     string      _paostatistics;
 
-    bool           _disableFlag;
+    bool        _disableFlag;
 
 public:
 
@@ -62,7 +60,7 @@ public:
 
     CtiTblPAO(const CtiTblPAO& aRef);
 
-    virtual ~CtiTblPAO();
+    ~CtiTblPAO();
 
     CtiTblPAO& operator=(const CtiTblPAO& aRef);
 
@@ -94,7 +92,6 @@ public:
     string& getDescription();
     CtiTblPAO& setDescription(const string &desStr);
 
-    bool getDisableFlag() const;
     string getDisableFlagStr() const;
 
     bool isInhibited() const;
@@ -108,18 +105,17 @@ public:
 
 
     static string getTableName();
-    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
+    static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
 
-    virtual RWDBStatus Restore();
-    virtual RWDBStatus Update();
-    virtual RWDBStatus Insert();
-    virtual RWDBStatus Delete();
-    virtual void DecodeDatabaseReader(RWDBReader &rdr);
+    RWDBStatus Restore();
+    RWDBStatus Update();
+    RWDBStatus Insert();
+    RWDBStatus Delete();
+    void DecodeDatabaseReader(RWDBReader &rdr);
 
-    virtual void DumpData();
+    void DumpData();
 };
 
-inline bool CtiTblPAO::getDisableFlag() const { return _disableFlag; }
-inline bool CtiTblPAO::isInhibited() const { return getDisableFlag(); }
+inline bool CtiTblPAO::isInhibited() const { return _disableFlag; }
 
 #endif // #ifndef __TBL_PAO_H__

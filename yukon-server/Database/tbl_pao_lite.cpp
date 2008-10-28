@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pao.cpp-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2008/10/15 15:16:37 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2008/10/28 19:21:40 $
 *
 * Copyright (c) 2008 Cooper Industries. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -72,31 +72,9 @@ INT CtiTblPAOLite::getClass() const
     return _class;
 }
 
-INT& CtiTblPAOLite::getClass()
-{
-    return _class;
-}
-
-CtiTblPAOLite& CtiTblPAOLite::setClass(const INT &aInt)
-{
-    _class = aInt;
-    return *this;
-}
-
 string CtiTblPAOLite::getName() const
 {
     return _name;
-}
-
-string& CtiTblPAOLite::getName()
-{
-    return _name;
-}
-
-CtiTblPAOLite& CtiTblPAOLite::setName(const string &nmStr)
-{
-    _name = nmStr;
-    return *this;
 }
 
 INT CtiTblPAOLite::getType() const
@@ -108,28 +86,6 @@ CtiTblPAOLite& CtiTblPAOLite::setType( const INT &type )
 {
     _type = type;
     return *this;
-}
-
-string CtiTblPAOLite::getDisableFlagStr() const
-{
-    return( _disableFlag ? "Y" : "N" );
-}
-
-CtiTblPAOLite& CtiTblPAOLite::setDisableFlagStr(const string& flag)
-{
-    _disableFlag = ( flag == "y" || flag == "Y" );
-    return *this;
-}
-
-CtiTblPAOLite& CtiTblPAOLite::setDisableFlag( const bool disableFlag )
-{
-    _disableFlag = disableFlag;
-    return *this;
-}
-
-void CtiTblPAOLite::resetDisableFlag(bool b)
-{
-    _disableFlag = b;
 }
 
 string CtiTblPAOLite::getTableName()

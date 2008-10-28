@@ -6,90 +6,17 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.134 $
-* DATE         :  $Date: 2008/10/23 20:38:04 $
+* REVISION     :  $Revision: 1.135 $
+* DATE         :  $Date: 2008/10/28 19:21:41 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-
-/*---------------------------------------------------------------------
-    Copyright (c) 1990-1993 Cannon Technologies, Inc. All rights reserved.
-
-    Programmer:
-        William R. Ockert
-        All bugs added later by Corey Plender
-
-
-    FileName:
-        Porter.cpp
-
-    Purpose:
-        Process to take requests from pipes, prioritize them on the queues,
-        output them to a port, retrieve the result, and if neccessary return
-        that result to the calling program via the pipe.  Simple, eh?
-
-    The following procedures are contained in this module:
-        main                    SendError
-        ReportRemoteError       StartPortThead
-        PorterInputThread       PorterCleanUp
-
-    Initial Date:
-        Unknown
-
-    Revision History:
-        Unknown prior to 8-93
-        8-20-93     3.59 (Arms into portpipe)                     WRO
-        8-24-93     3.5.10 (L Flag, Route Load Race, Queue Write) WRO
-        8-24-93     3.5.10 Traces write direct to screen          WRO
-        9-7-93    Converted to 32 bit                             WRO
-        11-1-93   Modified to keep stats temporarily in memory    TRH
-        7-8-94      4.00a Versacom config timing and queue probs  WRO
-        7-8-94      4.00b Changed to use our queue                WRO
-        7-23-94     Added support for L and G LCU                 WRO
-        8-29-94     Check for Emetcon freq moved to main startup  WRO
-        9-1-94      Added Spark support                           WRO
-        9-6-94      Fixed CCU-711 response bug                    WRO
-        4-21-95     Fixed outmessage timing bug                   WRO
-        5-19-95     Fixed Queue Inhibit, TZ and VCOM DTRAN timing WRO
-        11-20-95    Added Semaphore protection to status flags    WRO
-        12-2-95     Added support for DIO24 Output                WRO
-        12-11-95    Added packed actins and flag                  WRO
-        2-12-96     Added time to queue flush messages            WRO
-        5-8-96      Changed sense of autodst and added -A         WRO
-        5-8-96      Fixed (Hopefully) Errant time in REQACL       WRO
-        6-5-96      4.13a  Added more file handles and inlgrpq check  WRO
-        6-11-96     4.13b  Changed queing priority                WRO
-        6-11-96     4.13b  Fixed remote previous day statistics   WRO
-        6-18-96     4.13c  Fixed Inhibited remote queue problem   WRO
-        8-20-96     4.13d  Fixed Class/Division in VCONFIG        WRO
-        11-19-96    5.0    Initial Version                        WRO
-        09-19-97    5.0a   Modified TCP/IP startup code           WRO
-        11-5-97     5.0b   Allowed controls to VTU's              WRO
-        3-98        5.01   RELEASE
-        3-6-98      5.01a  ESCA/Welco Serial in support           WRO
-        3-9-98      5.01b  Added TAP Protocol Support             WRO
-        6-15-98     5.01c  Fixed dual dial up site bug            WRO
-        7-24-98     5.01d  Fixed bug in CP&L Vax interface        WRO
-        7-24-98     5.02   Release Version                        WRO
-        8-21-98     5.02a  Added changes for MPC-XA21             BDW
-        10-5-98     5.02a  Added support for HARDLOCK             RWN
-
-        -------------------------------------------------------------
-
-        07-07-99    0.90   Converted to Win32                     CGP
-
-
-   -------------------------------------------------------------------- */
-
-
 #include <windows.h>
-
 
 #include <iostream>
 #include <fstream>
-
 
 #include <process.h>
 
@@ -106,14 +33,6 @@
 
 #include <rw/thr/thrfunc.h>
 #include <rw/toolpro/winsock.h>
-
-#ifdef HARDLOCK
-
-// FIX FIX FIX #include "fastapi.h"
-// FIX FIX FIX #include "Hlapi_c.h"
-    #define MOD_ADDR    16393
-    #include <time.h>  /* Used for the check of Hardlock only */
-#endif
 
 #include "color.h"
 #include "cparms.h"
@@ -136,7 +55,6 @@
 #include "perform.h"
 #include "das08.h"
 
-#include "portgui.h"
 #include "logger.h"
 #include "numstr.h"
 
@@ -154,9 +72,10 @@
 #include "port_shr_ip.h"
 #include "rtdb.h"
 #include "dllbase.h"
-#include "dlldev.h"
 #include "msg_dbchg.h"
 #include "msg_trace.h"
+
+#include "rte_macro.h"
 
 #include "eventlog.h"
 #include "cparms.h"
@@ -167,7 +86,6 @@
 
 #include "pilserver.h"
 #include "msg_pcrequest.h"
-#include "numstr.h"
 
 #include "dev_ccu721.h"
 
@@ -175,7 +93,6 @@
 #define DO_PORTERINTERFACETHREAD       1
 #define DO_DISPATCHTHREAD              1
 #define DO_VCONFIGTHREAD               1
-#define DO_PORTERGUICONNECTIONTHREAD   0    // CODE INCOMPLETE AS OF 11/13/02 CGP
 #define DO_PORTERCONNECTIONTHREAD      1
 #define DO_TIMESYNCTHREAD              1
 #define DO_PERFUPDATETHREAD            1
@@ -226,6 +143,7 @@ CtiPointManager    PorterPointManager;
 CtiConfigManager   ConfigManager;
 CtiRouteManager    RouteManager;
 map< long, CtiPortShare * > PortShareManager;
+void attachTransmitterDeviceToRoutes(CtiDeviceManager *DM, CtiRouteManager *RteMgr);
 
 //These form the connection between Pil and Porter
 extern DLLIMPORT CtiLocalConnect<OUTMESS, INMESS> PilToPorter; //Pil handles this one
@@ -281,6 +199,94 @@ bool isTAPTermPort(LONG PortNumber)
     return result;
 }
 
+void attachTransmitterDeviceToRoutes(CtiDeviceManager *DM, CtiRouteManager *RM)
+{
+    int            i;
+    LONG           dID;
+    CtiRouteSPtr   pRte;
+    CtiDeviceManager::ptr_type pDev;
+
+    CtiRouteManager::spiterator itr;
+
+    try
+    {
+        for(itr = RM->begin(); itr != RM->end() ; RM->nextPos(itr))
+        {
+            pRte = itr->second;
+
+            switch(pRte->getType())
+            {
+                case RouteTypeCCU:
+                case RouteTypeTCU:
+                case RouteTypeLCU:
+                case RouteTypeRepeater:
+                case RouteTypeVersacom:
+                case RouteTypeExpresscom:
+                case RouteTypeTap:
+                case RouteTypeWCTP:
+                case RouteTypeSNPP:
+                case RouteTypeRTC:
+                case RouteTypeSeriesVLMI:
+                case RouteTypeForeignPorter:
+                {
+                    CtiRouteXCUSPtr pXCU = boost::static_pointer_cast<CtiRouteXCU>(itr->second);
+
+                    dID = pXCU->getCommRoute().getTrxDeviceID();
+
+                    if( dID > 0 )
+                    {
+                        pDev = DM->getDeviceByID(dID);
+
+                        if(pDev)
+                        {
+                            //cout << "Attaching device " << pDev->getDeviceName() << " to route " << pXCU->getName() << endl;
+                            pXCU->setDevicePointer(pDev);
+                        }
+                        else
+                        {
+                            pXCU->resetDevicePointer();
+                        }
+                    }
+                    break;
+                }
+                case RouteTypeMacro:
+                {
+                    CtiRouteMacroSPtr pMac = boost::static_pointer_cast<CtiRouteMacro>(itr->second);
+
+                    try
+                    {
+                        // Lock it so that it cannot conflict with an ExecuteRequest() on the route!!
+                        CtiLockGuard< CtiMutex > listguard(pMac->getRouteListMux());
+
+                        pMac->getRoutePtrList().clear();
+
+                        for(int i = 0; i < pMac->getRouteList().length(); i++)
+                        {
+                            CtiRouteSPtr pSingleRoute = RM->getEqual(pMac->getRouteList()[i].getSingleRouteID());
+                            pMac->getRoutePtrList().insert( pSingleRoute );
+                        }
+                    }
+                    catch(...)
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+                    }
+                }
+                default:
+                {
+                    break;
+                }
+            }
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+}
 
 /* Routine to load all routes on a system */
 static void applyLoadAllRoutes(const long portid, CtiPortSPtr Port, void *unusedPtr)
@@ -879,16 +885,6 @@ INT PorterMainFunction (INT argc, CHAR **argv)
 
     pfnOldCrtAllocHook = _CrtSetAllocHook(MyAllocHook);
 
-    /* A new guy with Yukon,  start a thread to handle GUI requests.  */
-    /* This is a future project as of 070799, allowing a GUI to interface with Porter
-     * to tweak parameters
-     */
-    if(DO_PORTERGUICONNECTIONTHREAD)
-    {
-        _guiThread = rwMakeThreadFunction( PorterGUIConnectionThread, (void*)NULL );
-        _guiThread.start();
-    }
-
     if(DO_GATEWAYTHREAD && !stringCompareIgnoreCase(gConfigParms.getValueAsString("PORTER_GATEWAY_SUPPORT"),"true"))
     {
         _gwThread = rwMakeThreadFunction( PorterGWThread, (void*)NULL );
@@ -1475,21 +1471,10 @@ INT RefreshPorterRTDB(void *ptr)
     {
         CtiDeviceManager::coll_type::writer_lock_guard_t guard(DeviceManager.getLock());
 
-        LONG chgid = 0;
-        string catstr;
-        string devstr;
-
-        if(pChg)
-        {
-            chgid = pChg->getId();
-            catstr = pChg->getCategory();
-            devstr = pChg->getObjectType();
-        }
-
-        DeviceManager.refresh(chgid, catstr, devstr);
-
         if(pChg == NULL)
         {
+            DeviceManager.refresh();
+
             DeviceManager.apply(attachRouteManagerToDevice, &RouteManager);
             DeviceManager.apply(attachPointManagerToDevice, &PorterPointManager);
             ConfigManager.initialize(DeviceManager);
@@ -1498,6 +1483,10 @@ INT RefreshPorterRTDB(void *ptr)
         }
         else
         {
+            LONG chgid = pChg->getId();
+
+            DeviceManager.refresh(chgid, pChg->getCategory(), pChg->getObjectType());
+
             CtiDeviceSPtr pDev = DeviceManager.getDeviceByID( chgid );
             if( pDev )
             {

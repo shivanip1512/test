@@ -9,14 +9,16 @@ class ScannableDeviceManager : public CtiDeviceManager
 {
 private:
 
-    void refreshScanRates(LONG id = 0);
-    void refreshDeviceWindows(LONG id = 0);
+    ScannableDeviceManager &operator=(const ScannableDeviceManager &);
+
+    void refreshScanRates    (id_range_t &paoids);
+    void refreshDeviceWindows(id_range_t &paoids);
 
 protected:
 
     typedef CtiDeviceManager Inherited;
 
-    virtual void refreshDeviceProperties(LONG paoID = 0);
+    virtual void refreshDeviceProperties(id_range_t &paoids, int type);
 
 public:
 

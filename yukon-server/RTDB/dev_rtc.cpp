@@ -7,11 +7,19 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.50 $
-* DATE         :  $Date: 2008/10/15 17:49:56 $
+* REVISION     :  $Revision: 1.51 $
+* DATE         :  $Date: 2008/10/28 19:21:42 $
 *
 * HISTORY      :
 * $Log: dev_rtc.cpp,v $
+* Revision 1.51  2008/10/28 19:21:42  mfisher
+* YUK-6589 Scanner should not load non-scannable devices
+* refreshList() now takes a list of paoids, which may be empty if it's a full reload
+* Changed CtiDeviceBase, CtiPointBase, and CtiRouteBase::getSQL() (and all inheritors) to be const
+* Removed a couple unused Porter functions
+* Added logger unit test
+* Simplified DebugTimer's variables
+*
 * Revision 1.50  2008/10/15 17:49:56  jotteson
 * YUK-6588 Porter's memory use needs to be trimmed
 * Removed unused counters.
@@ -499,7 +507,7 @@ string CtiDeviceRTC::getDescription(const CtiCommandParser &parse) const
 }
 
 
-void CtiDeviceRTC::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
+void CtiDeviceRTC::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
 {
     Inherited::getSQL(db, keyTable, selector);
     CtiTableDeviceRTC::getSQL(db, keyTable, selector);

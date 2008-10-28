@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tnpp.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2008/09/22 15:35:35 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2008/10/28 19:21:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -389,7 +389,7 @@ INT CtiDeviceTnppPagingTerminal::generate(CtiXfer  &xfer)
 
                         if((char)*_table.getIdentifierFormat()=='B')//This really isnt allowed..
                         {   //ID PAGE
-                            strncat((char*)xfer.getOutBuffer(),_zero_serial,2);                        
+                            strncat((char*)xfer.getOutBuffer(),_zero_serial,2);
                         }
                         strncat((char*)xfer.getOutBuffer(),_zero_serial,2);
                         strncat((char*)xfer.getOutBuffer(),getGolayCapcode().c_str(),6);
@@ -619,7 +619,7 @@ const char* CtiDeviceTnppPagingTerminal::getPagerDataFormat()
 
     Finally, the function code in TNPP may be appropriate for standard Golay,
     but for 2312D it is inverted (function 4 in TNPP = Function 1 in 2312D)
-    
+
 ******************************************************************************/
 string CtiDeviceTnppPagingTerminal::getGolayCapcode()
 {
@@ -635,7 +635,7 @@ string CtiDeviceTnppPagingTerminal::getGolayCapcode()
     //Account for the extended codes that all use AAAAAA instead of BBAABB //FIX_ME JESS
     if(_outMessage.Buffer.SASt._function>4 && a<=_a_capcode_max && a>=_a_capcode_min && a%2!=1)
     {
-        
+
         returnValue = getExtendedFunctionCapcode(a);//takes the "a" portion and returns the capcode
     }
     else
@@ -644,18 +644,18 @@ string CtiDeviceTnppPagingTerminal::getGolayCapcode()
         int bHigh = capcode/10000;
         int bLow = capcode%100;
         int bTotal = bHigh*100 + bLow;
-    
+
         returnValue = a/2;
         if(bHigh % 2)//odd so we need the +100 shift from AA(TNPP)
         {
             returnValue += 50;
         }
         returnValue *= 1000;//shift AA to the appropriate location! AABBB
-    
+
         returnValue += 100*(bTotal/400); //Number of 400's we need * 100 to place the value in the correct location
-    
+
         returnValue += bLow/2;//No shifting for this one!
-        if((bTotal%400-bLow)>=200)//This can only be 100, 200, 300, 0 
+        if((bTotal%400-bLow)>=200)//This can only be 100, 200, 300, 0
         {
             //if there is more than 200 remaining, the AA offset +50 is not enough, we need +200!
             returnValue += 50;//give me a 50 offset, adds 200 to final as noted above!
@@ -746,7 +746,7 @@ int CtiDeviceTnppPagingTerminal::getExtendedFunctionCapcode(int a)
 *   Functions 1,2,3 are shed loads 1,2,3 respectively. Functions
 *   4 cancels cold load pickup(same as restore). Function 8 is shed all loads.
 *   Function 9 Restore all loads. Function 14 blink test LED for 8.5 minutes.
-*   
+*
 *   NOTA = A+1, NOTB = B+1.
 *
 *   Note as always the tnpp function code used here is not the code above. Here,
@@ -896,7 +896,7 @@ const char* CtiDeviceTnppPagingTerminal::getExtendedFunctionCode()
 }
 
 //Database Functions
-void CtiDeviceTnppPagingTerminal::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
+void CtiDeviceTnppPagingTerminal::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
 {
     Inherited::getSQL(db, keyTable, selector);
     _table.getSQL(db, keyTable, selector);
@@ -1080,39 +1080,39 @@ string CtiDeviceTnppPagingTerminal::createEncodedCapcodeFromBaseAndFunction(stri
 
 /* It is possible that a function has the wrong value. If it does, I apologize.
     They are always in sets of 3,1 or 4,2.
-    
-A word	Tnpp Capcode	Functions	
-0	        371	        3	1
-2	        51664	    4	2
-4	        2593	    4	2
-6	        53687	    3	1
-8	        54778	    3	1
-10	        5858	    3	1
-12	        6745	    4	2
-14	        7897	    3	1
-16	        8765	    4	2
-18	        59676	    3	1
-20	        10703	    4	2
-22	        61346	    3	1
-24	        62817	    3	1
-26	        63145	    4	2
-28	        14293	    4	2
-30	        65321	    4	2
-32	        66684	    3	1
-34	        17250	    4	2
-36	        68426	    3	1
-38	        69471	    4	2
-40	        20910	    4	2
-42	        71737	    4	2
-44	        72449	    3	1
-46	        23211	    4	2
-48	        74466	    4	2
-50	        75971	    4	2
-52	        76637	    3	1
-54	        77729	    4	2
-56	        28847	    3	1
-58	        79429	    4	2
-60	        80175	    3	1
-62	        31632	    3	1
+
+A word  Tnpp Capcode    Functions
+0           371         3   1
+2           51664       4   2
+4           2593        4   2
+6           53687       3   1
+8           54778       3   1
+10          5858        3   1
+12          6745        4   2
+14          7897        3   1
+16          8765        4   2
+18          59676       3   1
+20          10703       4   2
+22          61346       3   1
+24          62817       3   1
+26          63145       4   2
+28          14293       4   2
+30          65321       4   2
+32          66684       3   1
+34          17250       4   2
+36          68426       3   1
+38          69471       4   2
+40          20910       4   2
+42          71737       4   2
+44          72449       3   1
+46          23211       4   2
+48          74466       4   2
+50          75971       4   2
+52          76637       3   1
+54          77729       4   2
+56          28847       3   1
+58          79429       4   2
+60          80175       3   1
+62          31632       3   1
 
 */

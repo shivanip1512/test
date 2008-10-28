@@ -13,8 +13,8 @@ private:
 
     const string _action;
 
-    bool  _print_bounds;
-    float _alert_timeout;
+    bool  _print;
+    float _timeout;
 
     static string formatSystemTime (const SYSTEMTIME &time);
     static double calculateDuration(const SYSTEMTIME &begin, const SYSTEMTIME &end);
@@ -22,8 +22,8 @@ private:
 public:
 
     DebugTimer(const  string &action,
-               bool   print_bounds  = false,  //  always print start/finished lines
-               double alert_timeout = 5.0);   //  print if the total duration exceeds this time
+               bool   print   = false,  //  always print start/finished lines
+               double timeout = 5.0);   //  print if the total duration exceeds this time, in seconds
 
     ~DebugTimer();
 };

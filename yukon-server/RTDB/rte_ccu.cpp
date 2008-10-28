@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_ccu.cpp-arc  $
-* REVISION     :  $Revision: 1.43 $
-* DATE         :  $Date: 2008/10/15 17:06:42 $
+* REVISION     :  $Revision: 1.44 $
+* DATE         :  $Date: 2008/10/28 19:21:43 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -825,7 +825,7 @@ INT CtiRouteCCU::getBus()        const  {   return Carrier.getBus();            
 INT CtiRouteCCU::getCCUFixBits() const  {   return Carrier.getCCUFixBits();     }
 INT CtiRouteCCU::getCCUVarBits() const  {   return Carrier.getCCUVarBits();     }
 
-void CtiRouteCCU::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
+void CtiRouteCCU::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
 {
     Inherited::getSQL(db, keyTable, selector);
     CtiTableCarrierRoute::getSQL(db, keyTable, selector);

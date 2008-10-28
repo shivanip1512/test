@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_sched.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2007/08/07 21:04:32 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2008/10/28 19:21:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -138,7 +138,7 @@ CtiMCSchedule::CtiMCSchedule()
     _pao_table.setCategory("Schedule");
     _pao_table.setClassStr("Schedule");
     _pao_table.setStatisticsStr("-");
-     
+
     setScheduleType(DefaultType);
     setCategoryName(DefaultCategory);
     setCurrentState(DefaultState);
@@ -211,9 +211,9 @@ bool CtiMCSchedule::Update()
     {
         ret = ( _pao_table.Update().errorCode() == RWDBStatus::ok );
     }
-    
+
     if( ret )
-    {    
+    {
         ret = _schedule_table.Update();
     }
 
@@ -250,7 +250,7 @@ bool CtiMCSchedule::Insert()
     }
 
     bool ret = ( _pao_table.Insert().errorCode() == RWDBStatus::ok );
-    
+
     if( ret )
     {
         ret = _schedule_table.Insert();
@@ -307,7 +307,7 @@ bool CtiMCSchedule::Delete()
     }
 
     if( ret )
-    {   
+    {
         ret = ( _pao_table.Delete().errorCode() == RWDBStatus::ok );
     }
 
@@ -1080,22 +1080,22 @@ bool CtiMCSchedule::checkSchedule() const
     if( !checkField( getStartTime(), "start time") )
         return false;
 
-    if( !checkField( getStopTime(), "stop time") ) 
+    if( !checkField( getStopTime(), "stop time") )
         return false;
-    
+
     return true;
 }
 
 bool CtiMCSchedule::checkField(const string& fld, const string& val) const
 {
-	   
-    for( int i = 0; i < fld.length(); i++ )               
+
+    for( int i = 0; i < fld.length(); i++ )
         if( fld[i] <= 0 || fld[i] >= 128 )
-        {                       
-            CtiLockGuard< CtiLogger > guard(dout); 
-            dout << CtiTime() << "CORRUPT FIELD: " << fld << " len: " << fld.length() << " value is: " << val << endl;         
+        {
+            CtiLockGuard< CtiLogger > guard(dout);
+            dout << CtiTime() << "CORRUPT FIELD: " << fld << " len: " << fld.length() << " value is: " << val << endl;
             return false;
         }
-    
+
     return true;
 }

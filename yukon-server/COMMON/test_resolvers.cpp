@@ -1,4 +1,3 @@
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   test_resolvers
@@ -7,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2007/11/15 17:50:53 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2008/10/28 19:21:40 $
 *
 * Copyright (c) 2007 Cannon Technologies. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -37,49 +36,21 @@ using namespace std;
 
 BOOST_AUTO_UNIT_TEST(test_resolveRouteType)
 {
-    string tempName = "fakeDevice";
-    CtiRoute_t route = RouteTypeInvalid;
+    BOOST_CHECK_EQUAL(resolveRouteType("fakeDevice"), RouteTypeInvalid);
 
-    BOOST_CHECK_EQUAL(resolveRouteType(tempName), route);
-    tempName = "ccu";
-    route = RouteTypeCCU;
-    BOOST_CHECK_EQUAL(resolveRouteType(tempName), route);
-    tempName = "tcu";
-    route = RouteTypeTCU;
-    BOOST_CHECK_EQUAL(resolveRouteType(tempName), route);
-    tempName = "macrO";
-    route = RouteTypeMacro;
-    BOOST_CHECK_EQUAL(resolveRouteType(tempName), route);
-    tempName = "lcu";
-    route = RouteTypeLCU;
-    BOOST_CHECK_EQUAL(resolveRouteType(tempName), route);
-    tempName = "repeater";
-    route = RouteTypeRepeater;
-    BOOST_CHECK_EQUAL(resolveRouteType(tempName), route);
-    tempName = "versacom";
-    route = RouteTypeVersacom;
-    BOOST_CHECK_EQUAL(resolveRouteType(tempName), route);
-    tempName = "tap paging";
-    route = RouteTypeTap;
-    BOOST_CHECK_EQUAL(resolveRouteType(tempName), route);
-    tempName = "tappaging";
-    route = RouteTypeTap;
-    BOOST_CHECK_EQUAL(resolveRouteType(tempName), route);
-    tempName = "snpp terminal";
-    route = RouteTypeSNPP;
-    BOOST_CHECK_EQUAL(resolveRouteType(tempName), route);
-    tempName = "wctp terminal";
-    route = RouteTypeWCTP;
-    BOOST_CHECK_EQUAL(resolveRouteType(tempName), route);
-    tempName = "rtc";
-    route = RouteTypeRTC;
-    BOOST_CHECK_EQUAL(resolveRouteType(tempName), route);
-    tempName = "series 5 lmi";
-    route = RouteTypeSeriesVLMI;
-    BOOST_CHECK_EQUAL(resolveRouteType(tempName), route);
-    tempName = "foreign porter";
-    route = RouteTypeForeignPorter;
-    BOOST_CHECK_EQUAL(resolveRouteType(tempName), route);
+    BOOST_CHECK_EQUAL(resolveRouteType("ccu"),   RouteTypeCCU);
+    BOOST_CHECK_EQUAL(resolveRouteType("tcu"),   RouteTypeTCU);
+    BOOST_CHECK_EQUAL(resolveRouteType("macrO"), RouteTypeMacro);
+    BOOST_CHECK_EQUAL(resolveRouteType("lcu"),   RouteTypeLCU);
+    BOOST_CHECK_EQUAL(resolveRouteType("repeater"), RouteTypeRepeater);
+    BOOST_CHECK_EQUAL(resolveRouteType("versacom"), RouteTypeVersacom);
+    BOOST_CHECK_EQUAL(resolveRouteType("tap paging"),     RouteTypeTap);
+    BOOST_CHECK_EQUAL(resolveRouteType("tappaging"),      RouteTypeTap);
+    BOOST_CHECK_EQUAL(resolveRouteType("snpp terminal"),  RouteTypeSNPP);
+    BOOST_CHECK_EQUAL(resolveRouteType("wctp terminal"),  RouteTypeWCTP);
+    BOOST_CHECK_EQUAL(resolveRouteType("rtc"),            RouteTypeRTC);
+    BOOST_CHECK_EQUAL(resolveRouteType("series 5 lmi"),   RouteTypeSeriesVLMI);
+    BOOST_CHECK_EQUAL(resolveRouteType("foreign porter"), RouteTypeForeignPorter);
 }
 
 BOOST_AUTO_UNIT_TEST(test_resolveAmpUseType)

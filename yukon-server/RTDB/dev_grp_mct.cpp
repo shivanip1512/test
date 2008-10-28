@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2008/08/14 15:57:39 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2008/10/28 19:21:42 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -60,7 +60,7 @@ string CtiDeviceGroupMCT::getDescription( const CtiCommandParser &parse ) const
 }
 
 
-void CtiDeviceGroupMCT::getSQL( RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector )
+void CtiDeviceGroupMCT::getSQL( RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector ) const
 {
     Inherited::getSQL(db, keyTable, selector);
 

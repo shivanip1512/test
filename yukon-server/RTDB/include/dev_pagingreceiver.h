@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_pagerreceive.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2006/09/21 21:31:39 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2008/10/28 19:21:44 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -64,7 +64,7 @@ public:
     bool isTransactionComplete();
 
     void DecodeDatabaseReader(RWDBReader &rdr);
-    void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
+    void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
 
    int decode(CtiXfer &xfer, int commReturnValue);
    int generate(CtiXfer &xfer);

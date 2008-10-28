@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2007/08/27 18:27:10 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2008/10/28 19:21:42 $
 *
 * Copyright (c) 1999-2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -93,7 +93,7 @@ CtiDeviceMacro &CtiDeviceMacro::addDevice( CtiDeviceSPtr toAdd )
 }
 
 
-void CtiDeviceMacro::getSQL( RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector )
+void CtiDeviceMacro::getSQL( RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector ) const
 {
     Inherited::getSQL( db, keyTable, selector );
 
