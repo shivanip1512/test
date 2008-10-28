@@ -115,7 +115,7 @@ public Component getTableCellRendererComponent(javax.swing.JTable table, Object 
 		setIcon( null );
 	}
 
-	if( value.toString().equalsIgnoreCase("") )
+	if( value == null || value.toString().equalsIgnoreCase("") )
 		((javax.swing.JComponent)this).setToolTipText("FILLER ROW");
 	else
 		((javax.swing.JComponent)this).setToolTipText( value.toString() );
