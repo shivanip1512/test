@@ -9,6 +9,7 @@
 <cti:standardMenu/>
 
 <cti:msg var="twoTypes" key="yukon.dr.consumer.allThermostats.twoTypes" />
+<cti:msg var="mustSelect" key="yukon.dr.consumer.allThermostats.mustSelect" />
 <script>
 
     var currentType = null;
@@ -49,6 +50,15 @@
         $('thermostatIds').value = currentIds.join();
         
     }
+    
+     function checkSelected() {
+        if($F('thermostatIds').blank()) {
+            alert('${mustSelect}');
+            return false;
+        } else {
+            return true;
+        }
+     }
 
 </script>
 
@@ -57,7 +67,7 @@
     </h3>
     
     <div class="message">
-        <form method="post" action="/spring/stars/consumer/thermostat/view/allSelected">
+        <form method="post" action="/spring/stars/consumer/thermostat/view/allSelected" onsubmit="return checkSelected()">
             
             <input type="hidden" id="thermostatIds" name="thermostatIds" value="${param.thermostatIds}">
             

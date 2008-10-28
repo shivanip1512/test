@@ -232,6 +232,7 @@
     <entry key="yukon.dr.consumer.allThermostats.schedule">Schedule</entry>
     <entry key="yukon.dr.consumer.allThermostats.manual">Manual</entry>
     <entry key="yukon.dr.consumer.allThermostats.twoTypes">You can only select multiple devices of the same type.</entry>
+    <entry key="yukon.dr.consumer.allThermostats.mustSelect">You must select at least one device.</entry>
     <entry key="yukon.dr.consumer.allThermostats.select">Select</entry>
     <entry key="yukon.dr.consumer.allThermostats.name">Name</entry>
     <entry key="yukon.dr.consumer.allThermostats.type">Type</entry>
