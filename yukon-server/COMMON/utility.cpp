@@ -1027,8 +1027,9 @@ INT GetPIDFromDeviceAndOffsetAndType(int device, int offset, string &type)
     sql += CtiNumStr(device);
     sql += " AND POINTOFFSET = ";
     sql += CtiNumStr(offset);
-    sql += " AND POINTTYPE = ";
+    sql += " AND POINTTYPE = '";
     sql += type;
+    sql += "'";
 
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
