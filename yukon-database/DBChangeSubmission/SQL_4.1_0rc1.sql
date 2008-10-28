@@ -216,3 +216,9 @@ UPDATE Command
 SET label = 'Read freeze config from meter and enable scheduled freeze processing in Yukon.'
 WHERE commandId = -142;
 /* End YUK-6240 */
+
+/* Start YUK-6628 */
+/* @error ignore-begin */
+INSERT INTO YukonRoleProperty VALUES(-20010,-200,'Auto Process Batch Configs','false','Automatically process batch configs using the DailyTimerTask.');
+/* @error ignore-end */
+/* End YUK-6628 */
