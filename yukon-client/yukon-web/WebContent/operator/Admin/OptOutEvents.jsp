@@ -1,6 +1,8 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteCustomerAccount" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsLMHardware" %>
+<%@ page import="com.cannontech.stars.dr.hardware.dao.impl.LMHardwareBaseDaoImpl" %>
+<%@ page import="com.cannontech.stars.dr.hardware.model.LMHardwareBase" %>
 <%@ page import="com.cannontech.stars.util.OptOutEventQueue" %>
 <%
     boolean showEnergyCompany = liteEC.getChildren().size() > 0 && DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MANAGE_MEMBERS);
@@ -13,6 +15,8 @@
             member = StarsDatabaseCache.getInstance().getEnergyCompany(memberID);
     }
 %>
+<%@page import="com.cannontech.stars.core.dao.StarsInventoryBaseDao"%>
+<%@page import="com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao"%>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -109,6 +113,8 @@ function selectAccount(accountID, memberID) {
         final Map<Integer, LiteStarsCustAccountInformation> accountMap =
             starsCustAccountInformationDao.getByIds(accountIds, company.getEnergyCompanyID());
         
+        LMHardwareBaseDao hardwareBaseDao = (LMHardwareBaseDao)YukonSpringHook.getBean("hardwareBaseDao");
+        
         for (int j = 0; j < events.length; j++) {
             int accountId = events[j].getAccountID();
             LiteStarsCustAccountInformation liteAccountInfo = accountMap.get(accountId);
@@ -116,8 +122,10 @@ function selectAccount(accountID, memberID) {
                 LiteCustomerAccount liteAccount = liteAccountInfo.getCustomerAccount();
                 if(liteAccount != null){
                     String serialNo = "----";
-                    if (events[j].getInventoryID() > 0){
-                        serialNo = ((LiteStarsLMHardware) company.getInventoryBrief(events[j].getInventoryID(), true)).getManufacturerSerialNumber();
+                    int inventoryId = events[j].getInventoryID();
+                    if (inventoryId > 0){
+                    	LMHardwareBase hardwareBase = hardwareBaseDao.getById(inventoryId);
+                    	serialNo = hardwareBase.getManufacturerSerialNumber();
                     } %>
                     <tr> 
                         <td width="22%" class="TableCell"><cti:formatMillis value="<%=events[j].getStartDateTime()%>" type="DATE"/></td>
