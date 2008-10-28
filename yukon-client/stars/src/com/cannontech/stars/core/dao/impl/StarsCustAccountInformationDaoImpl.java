@@ -91,7 +91,7 @@ public class StarsCustAccountInformationDaoImpl implements StarsCustAccountInfor
                     String sql = sqlBuilder.toString();
                     return sql;
                 }
-            }, accountIds, createRowMapper(energyCompanyId), energyCompanyId);
+            }, accountIds, createRowMapper(energyCompanyId));
 
         final Map<Integer, LiteStarsCustAccountInformation> resultMap = 
             new HashMap<Integer, LiteStarsCustAccountInformation>(resultList.size());
