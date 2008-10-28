@@ -1281,9 +1281,15 @@ INSERT INTO YukonRoleProperty VALUES(-20010,-200,'Auto Process Batch Configs','f
 /* @error ignore-end */
 /* End YUK-6628 */
 
+/* Start YUK-6622 */
+UPDATE Command
+SET command = 'putconfig xcom data ''?''Text Message'''' port ?''Port (0 is default)'' deletable msgpriority 7 timeout 30 hour clear'
+WHERE commandId = -134;
+/* End YUK-6622 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
 
-insert into CTIDatabase values('4.1', 'Matt K', '04-Aug-2008', 'Latest Update', 0 );
+insert into CTIDatabase values('4.1', 'Matt K', '31-OCT-2008', 'Latest Update', 0 );
