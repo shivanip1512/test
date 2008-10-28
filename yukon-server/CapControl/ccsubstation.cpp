@@ -928,7 +928,7 @@ CtiCCSubstation& CtiCCSubstation::checkAndUpdateRecentlyControlledFlag()
         currentSubstationBus = store->findSubBusByPAObjectID(*busIter);
         busIter++;
 
-        if (currentSubstationBus->getRecentlyControlledFlag())
+        if (currentSubstationBus->getRecentlyControlledFlag() || currentSubstationBus->getPerformingVerificationFlag())
         {
             setRecentlyControlledFlag(TRUE);
             numberOfSubBusesPending += 1;
