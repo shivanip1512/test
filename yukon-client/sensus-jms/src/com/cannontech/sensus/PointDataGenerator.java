@@ -80,7 +80,7 @@ public class PointDataGenerator implements PointValueUpdater {
         
         holder.point = point;
         try {
-            holder.multiplier = pointDao.getPointMultiplier(pointId);
+            holder.multiplier = pointDao.getPointMultiplier(pointId, point.getPointType());
         } catch (DataAccessException e) {
         }
 
