@@ -4051,6 +4051,10 @@ void CtiCCCommandExecutor::AutoControlOvUvBySubstation(BOOL disableFlag)
         CtiCCExecutorFactory f;
         CtiCCExecutor *executor = NULL;
         
+        executor = f.createExecutor(new CtiCCGeoAreasMsg(ccAreas)); 
+        executor->Execute();
+        delete executor;
+
         executor = f.createExecutor(new CtiCCSubstationsMsg(ccStations));
         executor->Execute();
         delete executor;
@@ -4187,6 +4191,10 @@ void CtiCCCommandExecutor::AutoControlOvUvBySubBus(BOOL disableFlag)
             CtiCCExecutorFactory f;
             CtiCCExecutor *executor = NULL;
             
+            executor = f.createExecutor(new CtiCCGeoAreasMsg(ccAreas)); 
+            executor->Execute();
+            delete executor;
+
             executor = f.createExecutor(new CtiCCSubstationsMsg(ccStations));
             executor->Execute();
             delete executor;
