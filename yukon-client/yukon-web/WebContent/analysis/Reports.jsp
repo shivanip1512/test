@@ -136,9 +136,37 @@ function checkDates(){
 		if(realStartDate < realStopDate){
 			loadTarget(document.reportForm);
 		} else {
-			alert("The start date is later than the stop date. ");
-			$('startCal').focus();
-			return false;
+			if($F('startHourID').visible = true){
+	            if(startDate == stopDate){
+	            	var startHour = $F('startHourID');
+	                var stopHour = $F('stopHourID');
+	                if(startHour < stopHour){
+	                	loadTarget(document.reportForm);
+	                }else if(startHour == stopHour){
+	                	var startMinute = $F('startMinuteID');
+	                	var stopMinute = $F('stopMinuteID');
+	                	if(startMinute >= stopMinute){
+	                		alert("The start time must occur before the stop time. ");
+	                        $('startCal').focus();
+	                        return false;
+	                	}else{
+	                		loadTarget(document.reportForm);
+	                	}
+	                }else {
+	                	alert("The start time must occur before the stop time. ");
+	                    $('startCal').focus();
+	                    return false;
+	                }
+	            }else{
+	            	alert("The start date must occur before the stop date. ");
+	                $('startCal').focus();
+	                return false;
+	            }
+			} else {
+				alert("The start date must occur before the stop date. ");
+				$('startCal').focus();
+				return false;
+			}
 		}
 	} else {
 		alert("One of the dates entered is not a valid date.");
