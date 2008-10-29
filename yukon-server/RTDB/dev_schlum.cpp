@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_schlum.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2008/08/14 15:57:40 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2008/10/29 20:06:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,8 +29,6 @@
 #include "cmdparse.h"
 
 #include "dlldefs.h"
-
-#include "dialup.h"
 
 #include "logger.h"
 #include "guard.h"
@@ -232,7 +230,7 @@ INT CtiDeviceSchlumberger::fillUploadTransferObject (CtiXfer  &aTransfer, ULONG 
     aTransfer.getInCountExpected()   = MeterSt.Length + 3;
 
     // all schlum messages use the crc
-    aTransfer.setCRCFlag( XFER_ADD_CRC | XFER_VERIFY_CRC );
+    aTransfer.setCRCFlag( CtiXfer::XFER_ADD_CRC | CtiXfer::XFER_VERIFY_CRC );
     aTransfer.setInTimeout( 2 );
 
     temp.ul = MeterSt.Start;

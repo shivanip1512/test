@@ -21,7 +21,6 @@
 class CtiDeviceBase;
 
 #include "dsm2.h"
-#include "dialup.h"
 #include "yukon.h"
 
 class IM_EX_CTIBASE CtiXfer
@@ -135,7 +134,11 @@ public:
    bool     getNonBlockingReads() const;
    CtiXfer& setNonBlockingReads(bool tothis = true);        // Only reads available data...
 
-
+   enum CRCFlags
+   {
+      XFER_ADD_CRC    = 0x0001,
+      XFER_VERIFY_CRC = 0x0002
+   };
 
    static ULONG TRACE_DEFAULT;
    static ULONG TRACE_ERROR  ;

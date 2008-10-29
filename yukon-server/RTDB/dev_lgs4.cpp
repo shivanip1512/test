@@ -17,9 +17,6 @@
 
 #include "dlldefs.h"
 
-#include "dupreq.h"
-#include "dialup.h"
-
 #include "logger.h"
 #include "guard.h"
 #include "utility.h"
@@ -363,7 +360,7 @@ INT CtiDeviceLandisGyrS4::generateCommandScan (CtiXfer  &Transfer, list< CtiMess
                 Transfer.setInCountExpected( 1 );
 
                 // the confirmation byte will always come in the front of the message
-                Transfer.setCRCFlag( XFER_ADD_CRC );
+                Transfer.setCRCFlag( CtiXfer::XFER_ADD_CRC );
                 Transfer.setInTimeout( 1 );
 
                 setPreviousState (StateScanValueSet3);
@@ -381,7 +378,7 @@ INT CtiDeviceLandisGyrS4::generateCommandScan (CtiXfer  &Transfer, list< CtiMess
                 Transfer.setOutCount(0);
 
                 // the confirmation byte will always come in the front of the message
-                Transfer.setCRCFlag( XFER_VERIFY_CRC );
+                Transfer.setCRCFlag( CtiXfer::XFER_VERIFY_CRC );
                 Transfer.setInTimeout( 1 );
 
                 setPreviousState (StateScanValueSet4);
@@ -399,7 +396,7 @@ INT CtiDeviceLandisGyrS4::generateCommandScan (CtiXfer  &Transfer, list< CtiMess
                 ****************************
                 */
                 Transfer.setInCountExpected( LGS4Base[getCommandPacket()].totalBytesReturned + 1 + 2);
-                Transfer.setCRCFlag( XFER_VERIFY_CRC );
+                Transfer.setCRCFlag( CtiXfer::XFER_VERIFY_CRC );
                 Transfer.setInTimeout( 1 );
 
                 setPreviousState (StateScanValueSet5);
@@ -527,7 +524,7 @@ INT CtiDeviceLandisGyrS4::generateCommandLoadProfile (CtiXfer  &Transfer, list< 
                 Transfer.setInCountExpected( 1 );
 
                 // the confirmation byte will always come in the front of the message
-                Transfer.setCRCFlag( XFER_ADD_CRC );
+                Transfer.setCRCFlag( CtiXfer::XFER_ADD_CRC );
                 Transfer.setInTimeout( 1 );
 
                 setPreviousState (StateScanValueSet3);
@@ -545,7 +542,7 @@ INT CtiDeviceLandisGyrS4::generateCommandLoadProfile (CtiXfer  &Transfer, list< 
                 Transfer.setOutCount(0);
 
                 // the confirmation byte will always come in the front of the message
-                Transfer.setCRCFlag( XFER_VERIFY_CRC );
+                Transfer.setCRCFlag( CtiXfer::XFER_VERIFY_CRC );
                 Transfer.setInTimeout( 1 );
 
                 setPreviousState (StateScanValueSet4);
@@ -564,7 +561,7 @@ INT CtiDeviceLandisGyrS4::generateCommandLoadProfile (CtiXfer  &Transfer, list< 
                 ****************************
                 */
                 Transfer.setInCountExpected( LGS4LoadProfile[getCommandPacket()].totalBytesReturned+1+ 2);
-                Transfer.setCRCFlag( XFER_VERIFY_CRC );
+                Transfer.setCRCFlag( CtiXfer::XFER_VERIFY_CRC );
                 Transfer.setInTimeout( 1 );
 
                 setPreviousState (StateScanValueSet5);
@@ -1314,8 +1311,6 @@ INT CtiDeviceLandisGyrS4::GeneralScan(CtiRequestMsg *pReq,
 
     if (OutMessage != NULL)
     {
-        OutMessage->Buffer.DUPReq.Identity = IDENT_LANDISGYRS4;
-
         /*************************
          *
          *   setting the current command in hopes that someday we don't have to use the command

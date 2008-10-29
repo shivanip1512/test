@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_vectron.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2008/08/14 15:57:40 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2008/10/29 20:06:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -35,8 +35,6 @@
 #include "cmdparse.h"
 
 #include "dlldefs.h"
-
-#include "dupreq.h"
 
 #include "logger.h"
 #include "guard.h"
@@ -107,7 +105,6 @@ INT CtiDeviceVectron::GeneralScan(CtiRequestMsg *pReq,
 
     if (OutMessage != NULL)
     {
-        OutMessage->Buffer.DUPReq.Identity = IDENT_VECTRON;
         status = Inherited::GeneralScan(pReq, parse, OutMessage, vgList, retList, outList, ScanPriority);
         return status;
     }
@@ -190,7 +187,7 @@ INT CtiDeviceVectron::generateCommandHandshake (CtiXfer  &Transfer, list< CtiMes
                 Transfer.setOutCount(12);
                 Transfer.setInCountExpected(20);
                 Transfer.setInTimeout( 1 );
-                Transfer.setCRCFlag( XFER_ADD_CRC | XFER_VERIFY_CRC );
+                Transfer.setCRCFlag( CtiXfer::XFER_ADD_CRC | CtiXfer::XFER_VERIFY_CRC );
                 setCurrentState (StateHandshakeDecodeIdentify);
                 break;
             }
@@ -234,7 +231,7 @@ INT CtiDeviceVectron::generateCommandHandshake (CtiXfer  &Transfer, list< CtiMes
                 }
 
                 Transfer.setOutCount( 9 );
-                Transfer.setCRCFlag( XFER_ADD_CRC );
+                Transfer.setCRCFlag( CtiXfer::XFER_ADD_CRC );
 
                 Transfer.setInCountExpected( 1 );
                 Transfer.setInTimeout( 1 );

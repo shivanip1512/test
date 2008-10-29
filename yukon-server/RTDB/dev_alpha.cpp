@@ -6,12 +6,17 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_alpha.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2008/08/14 15:57:39 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2008/10/29 20:06:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *    History:
       $Log: dev_alpha.cpp,v $
+      Revision 1.19  2008/10/29 20:06:28  mfisher
+      YUK-6374 Remove unused DSM/2 remnants
+      Removed more unused functions and structure definitions
+      Moved a CtiXfer flag set to xfer.h
+
       Revision 1.18  2008/08/14 15:57:39  jotteson
       YUK-6333  Change naming in request message and change cancellation to use this new named field instead of user ID
       Cancellation now uses the new group message ID.
@@ -71,7 +76,6 @@
 #include "logger.h"
 #include "guard.h"
 
-//#include "dupreq.h"
 #include "dlldefs.h"
 
 #include "utility.h"
@@ -829,7 +833,7 @@ INT CtiDeviceAlpha::generateCommandHandshake (CtiXfer  &Transfer, list< CtiMessa
                 sprintf((CHAR *)Transfer.getOutBuffer(),"%c%c", STX, ALPHA_CMD_TERMINATE);
                 Transfer.setOutCount (2);
                 Transfer.setInCountExpected (0);
-                Transfer.setCRCFlag (XFER_ADD_CRC);
+                Transfer.setCRCFlag (CtiXfer::XFER_ADD_CRC);
                 setCurrentState (StateHandshakeDecodeTerminate);
                 break;
             }
@@ -986,7 +990,7 @@ INT CtiDeviceAlpha::generateCommandTerminate (CtiXfer  &Transfer, list< CtiMessa
     Transfer.setOutCount (2);
     Transfer.setInCountExpected (0);
     Transfer.setInTimeout (1);
-    Transfer.setCRCFlag (XFER_ADD_CRC );
+    Transfer.setCRCFlag (CtiXfer::XFER_ADD_CRC );
 
     // set our states
     setCurrentState (StateScanDecodeTerminate);

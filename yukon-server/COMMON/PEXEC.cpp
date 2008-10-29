@@ -52,7 +52,6 @@ using namespace std;
 #include "dllbase.h"
 #include "porter.h"
 #include "master.h"
-#include "dialup.h"
 #include "c_port_interface.h"
 #include "logger.h"
 

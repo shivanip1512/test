@@ -35,9 +35,6 @@
 
 #include "dlldefs.h"
 
-#include "dupreq.h"
-#include "dialup.h"
-
 #include "logger.h"
 #include "guard.h"
 #include "utility.h"
@@ -206,8 +203,6 @@ INT CtiDeviceQuantum::GeneralScan( CtiRequestMsg *pReq,
 
     if( OutMessage != NULL )
     {
-        OutMessage->Buffer.DUPReq.Identity = IDENT_QUANTUM;
-
         /*************************
          *
          *   setting the current command in hopes that someday we don't have to use the command
@@ -334,7 +329,7 @@ INT CtiDeviceQuantum::generateCommandHandshake( CtiXfer &Transfer, list< CtiMess
                 Transfer.setInCountExpected( 20 );
                 Transfer.setInTimeout( 1 );
                 //  the non-universal 'I' command uses the CRC on both send and receive.
-                Transfer.setCRCFlag( XFER_ADD_CRC | XFER_VERIFY_CRC );
+                Transfer.setCRCFlag( CtiXfer::XFER_ADD_CRC | CtiXfer::XFER_VERIFY_CRC );
                 setCurrentState( StateHandshakeDecodeIdentify );
                 break;
             }
@@ -364,7 +359,7 @@ INT CtiDeviceQuantum::generateCommandHandshake( CtiXfer &Transfer, list< CtiMess
 
                 Transfer.setOutCount( 9 );
                 //  we should just get an ACK back from this, so there'll be no CRC attached
-                Transfer.setCRCFlag( XFER_ADD_CRC );
+                Transfer.setCRCFlag( CtiXfer::XFER_ADD_CRC );
 
                 Transfer.setInCountExpected( 1 );
                 Transfer.setInTimeout( 1 );
@@ -463,7 +458,7 @@ INT CtiDeviceQuantum::generateCommandSelectMeter( CtiXfer &Transfer, list< CtiMe
                 Transfer.setInCountExpected( 20 );
                 Transfer.setInTimeout( 1 );
                 //  the non-universal 'I' command uses the CRC on both send and receive.
-                Transfer.setCRCFlag( XFER_ADD_CRC | XFER_VERIFY_CRC );
+                Transfer.setCRCFlag( CtiXfer::XFER_ADD_CRC | CtiXfer::XFER_VERIFY_CRC );
                 setCurrentState( StateHandshakeDecodeIdentify );
                 break;
             }
@@ -492,7 +487,7 @@ INT CtiDeviceQuantum::generateCommandSelectMeter( CtiXfer &Transfer, list< CtiMe
 
                 Transfer.setOutCount( 9 );
                 //  we should just get an ACK back from this, so there'll be no CRC attached
-                Transfer.setCRCFlag( XFER_ADD_CRC );
+                Transfer.setCRCFlag( CtiXfer::XFER_ADD_CRC );
 
                 Transfer.setInCountExpected( 1 );
                 Transfer.setInTimeout( 1 );
@@ -509,7 +504,7 @@ INT CtiDeviceQuantum::generateCommandSelectMeter( CtiXfer &Transfer, list< CtiMe
                 Transfer.getOutBuffer( )[0]    = 'D';
                 //  we're expecting an ACK, you see
                 Transfer.getInCountExpected( ) = 1;
-                Transfer.setCRCFlag( XFER_ADD_CRC );
+                Transfer.setCRCFlag( CtiXfer::XFER_ADD_CRC );
 
                 setPreviousState( StateScanValueSet1 );
                 setCurrentState( StateScanDecode1 );
@@ -524,7 +519,7 @@ INT CtiDeviceQuantum::generateCommandSelectMeter( CtiXfer &Transfer, list< CtiMe
                 Transfer.setOutCount( 1 );
                 //  an ACK in response
                 Transfer.setInCountExpected( 1 );
-                Transfer.setCRCFlag( XFER_ADD_CRC );
+                Transfer.setCRCFlag( CtiXfer::XFER_ADD_CRC );
 
                 setPreviousState (StateScanValueSet2);
                 setCurrentState (StateScanDecode2);

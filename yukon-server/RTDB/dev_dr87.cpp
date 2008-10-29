@@ -23,9 +23,6 @@
 
 #include "dlldefs.h"
 
-#include "dupreq.h"
-#include "dialup.h"
-
 #include "logger.h"
 #include "guard.h"
 #include "utility.h"
@@ -1363,8 +1360,6 @@ INT CtiDeviceDR87::GeneralScan(CtiRequestMsg *pReq,
 
     if (OutMessage != NULL)
     {
-        OutMessage->Buffer.DUPReq.Identity = IDENT_DR87;
-
         /*************************
          *
          *   setting the current command in hopes that someday we don't have to use the command

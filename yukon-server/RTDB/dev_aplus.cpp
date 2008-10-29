@@ -6,12 +6,17 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_aplus.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2008/08/14 15:57:39 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2008/10/29 20:06:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *    History:
       $Log: dev_aplus.cpp,v $
+      Revision 1.20  2008/10/29 20:06:28  mfisher
+      YUK-6374 Remove unused DSM/2 remnants
+      Removed more unused functions and structure definitions
+      Moved a CtiXfer flag set to xfer.h
+
       Revision 1.19  2008/08/14 15:57:39  jotteson
       YUK-6333  Change naming in request message and change cancellation to use this new named field instead of user ID
       Cancellation now uses the new group message ID.
@@ -84,7 +89,6 @@
 #include "msg_trace.h"
 #include "cmdparse.h"
 
-#include "dupreq.h"
 #include "dlldefs.h"
 
 #include "logger.h"
@@ -212,7 +216,6 @@ INT CtiDeviceAlphaPPlus::GeneralScan(CtiRequestMsg *pReq,
 
     if (OutMessage != NULL)
     {
-        OutMessage->Buffer.DUPReq.Identity = IDENT_ALPHA_PPLUS;
         status = Inherited::GeneralScan(pReq, parse, OutMessage, vgList, retList, outList, ScanPriority);
         return status;
     }
@@ -2527,85 +2530,6 @@ INT CtiDeviceAlphaPPlus::ResultDisplay(INMESS *InMessage)
     }
     return(NORMAL);
 }
-
-
-//  is this ever used?  it uses DIALUP_COMP_*, which are defined in DIALUP.H and therefore undesirable.
-//    i was going to redefine them as an enum inside CtiDeviceAlphaPPlus, but this doesn't look like
-//    it's used, so it gets the axe.
-//    2001-oct-04 mskf
-/*INT  CtiDeviceAlphaPPlus::ResultFailureDisplay(INT FailError)
-{
-    USHORT Mask = 0x8000;
-    USHORT Err  = 0;
-
-    do
-    {
-
-        if (FailError & Mask)
-        {
-            Err = FailError & Mask;
-
-            switch (Err)
-            {
-                case DIALUP_COMP_START:
-                    {
-                        printf("No communication whatsoever with the remote device.\n");
-                        printf("  Verify correct device type and or protocol.\n");
-                        break;
-                    }
-                case DIALUP_COMP_ID:
-                    {
-                        printf("Communication failed during or following the ID sequence.\n");
-                        printf("  Verify correct device type\n");
-                        break;
-                    }
-                case DIALUP_COMP_PWD:
-                    {
-                        printf("Communication failed during or following the password sequence.\n");
-                        printf("  Verify correct password entry in device database.\n");
-                        break;
-                    }
-                case DIALUP_COMP_CLASS0:
-                    {
-                        printf("Communication failed after class 0 read.\n");
-                        printf("  Try communications again, verify rules class is programmed.\n");
-                        break;
-                    }
-                case DIALUP_COMP_SENDCLASS:
-                    {
-                        printf("Communication failed during or following a class request.\n");
-                        printf("  Try communications again.\n");
-                        break;
-                    }
-                case DIALUP_COMP_RECKNOWN:
-                case DIALUP_COMP_RECUNKNOWN:
-                    {
-                        printf("Communication failed during or following receipt of class data.\n");
-                        printf("  Try communications again.\n");
-                        break;
-                    }
-                case DIALUP_COMP_CONTREAD:
-                    {
-                        printf("Communication failed during or following the password sequence.\n");
-                        printf("  Try communications again, verify rules class is programmed.\n");
-                        break;
-                    }
-                case DIALUP_COMP_RCREAD1:
-                case DIALUP_COMP_RCREAD2:
-                    {
-                        printf("Communication failed following a rules class read.\n");
-                        printf("  Try communications again.\n");
-                        break;
-                    }
-            }
-        }
-
-        Mask >>= 1;
-
-    } while (Mask != 0 && Err == 0);
-    return(NORMAL);
-}*/
-
 
 
 INT CtiDeviceAlphaPPlus::getAPlusFuncOffset(UINT Key, VOID *ptr)

@@ -183,9 +183,6 @@ dllbase.obj:	yukon.h precompiled.h ctidbgmem.h dsm2.h mutex.h \
 		smartmap.h boostutil.h readers_writer_lock.h \
 		critical_section.h queue.h thread_register_data.h \
 		boost_time.h
-drpint.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
-		types.h cticalls.h queues.h dsm2.h mutex.h guard.h numstr.h \
-		clrdump.h cticonnect.h netports.h drp.h
 elog_cli.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		types.h cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h \
 		cticonnect.h netports.h elogger.h logger.h thread.h ctitime.h \
@@ -230,14 +227,14 @@ pending_stat_operation.obj:	yukon.h precompiled.h ctidbgmem.h logger.h \
 pexec.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		types.h cticalls.h ctinexus.h netports.h cticonnect.h \
 		queues.h dsm2.h mutex.h guard.h numstr.h clrdump.h dsm2err.h \
-		dllbase.h porter.h devicetypes.h master.h dialup.h \
-		c_port_interface.h elogger.h logger.h thread.h ctitime.h \
-		CtiPCPtrQueue.h utility.h sorted_vector.h
+		dllbase.h porter.h devicetypes.h master.h c_port_interface.h \
+		elogger.h logger.h thread.h ctitime.h CtiPCPtrQueue.h \
+		utility.h sorted_vector.h
 point_change.obj:	yukon.h precompiled.h ctidbgmem.h point_change.h \
 		dlldefs.h
 portsup.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		types.h cticalls.h queues.h dsm2.h mutex.h guard.h numstr.h \
-		clrdump.h cticonnect.h netports.h dllbase.h color.h dupreq.h \
+		clrdump.h cticonnect.h netports.h dllbase.h color.h \
 		devicetypes.h logger.h thread.h ctitime.h CtiPCPtrQueue.h \
 		utility.h sorted_vector.h
 precompiled.obj:	yukon.h precompiled.h ctidbgmem.h
@@ -367,8 +364,7 @@ words.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		devicetypes.h logger.h thread.h ctitime.h CtiPCPtrQueue.h \
 		utility.h sorted_vector.h
 xfer.obj:	yukon.h precompiled.h ctidbgmem.h xfer.h dsm2.h mutex.h \
-		dlldefs.h guard.h numstr.h clrdump.h cticonnect.h netports.h \
-		dialup.h
+		dlldefs.h guard.h numstr.h clrdump.h cticonnect.h netports.h
 xml_object.obj:	yukon.h precompiled.h ctidbgmem.h xml_object.h \
 		dlldefs.h
 #ENDUPDATE#

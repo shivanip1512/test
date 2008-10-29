@@ -6,12 +6,17 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_a1.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2008/08/14 15:57:39 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2008/10/29 20:06:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *    History:
       $Log: dev_a1.cpp,v $
+      Revision 1.21  2008/10/29 20:06:28  mfisher
+      YUK-6374 Remove unused DSM/2 remnants
+      Removed more unused functions and structure definitions
+      Moved a CtiXfer flag set to xfer.h
+
       Revision 1.20  2008/08/14 15:57:39  jotteson
       YUK-6333  Change naming in request message and change cancellation to use this new named field instead of user ID
       Cancellation now uses the new group message ID.
@@ -81,7 +86,6 @@
 #include "msg_trace.h"
 #include "cmdparse.h"
 
-#include "dupreq.h"
 #include "dlldefs.h"
 
 #include "logger.h"
@@ -217,7 +221,6 @@ INT CtiDeviceAlphaA1::GeneralScan(CtiRequestMsg *pReq,
 
     if (OutMessage != NULL)
     {
-        OutMessage->Buffer.DUPReq.Identity = IDENT_ALPHA_A1;
         status = Inherited::GeneralScan (pReq, parse, OutMessage, vgList, retList, outList, ScanPriority);
         return status;
     }

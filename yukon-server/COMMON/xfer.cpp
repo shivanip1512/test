@@ -224,12 +224,12 @@ BOOL     CtiXfer::addCRC() const
 }
 CtiXfer& CtiXfer::setCRCFlag(UINT flg)
 {
-   if(flg & XFER_ADD_CRC)
+   if(flg & CtiXfer::XFER_ADD_CRC)
       _addCRC     = TRUE;
    else
       _addCRC     = FALSE;
 
-   if(flg & XFER_VERIFY_CRC)
+   if(flg & CtiXfer::XFER_VERIFY_CRC)
       _verifyCRC  = TRUE;
    else
       _verifyCRC  = FALSE;

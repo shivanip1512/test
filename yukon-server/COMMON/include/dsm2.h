@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/DSM2.H-arc  $
-* REVISION     :  $Revision: 1.48 $
-* DATE         :  $Date: 2008/10/29 18:16:47 $
+* REVISION     :  $Revision: 1.49 $
+* DATE         :  $Date: 2008/10/29 20:06:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -649,7 +649,6 @@ struct DIALUPREQUEST
    ULONG       Address;
    /* END - Elements from BSTRUCT */
 
-   USHORT      Identity;
    USHORT      Command[5];
    ULONG       Request[5];
    USHORT      ReadCode;

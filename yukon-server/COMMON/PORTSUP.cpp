@@ -48,7 +48,6 @@ using namespace std;
 #include "dsm2.h"
 #include "dllbase.h"
 #include "color.h"
-#include "dupreq.h"
 #include "devicetypes.h"
 #include "logger.h"
 
@@ -899,12 +898,6 @@ void    DumpASCIIString(UCHAR* buffer, ULONG len)
    }
    printf(">\n");
 }
-
-void    ClearBuffer(UCHAR* buffer, ULONG len)
-{
-   memset(buffer, 0x00, len);
-}
-
 
 // known valid modem returns -- Note 0 is the same as OK when not in verbal mode
 static PCHAR ModemResponseText[] = {"OK", "ERROR", "BUSY", "NO CARRIER",
