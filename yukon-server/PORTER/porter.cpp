@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.136 $
-* DATE         :  $Date: 2008/10/29 18:16:47 $
+* REVISION     :  $Revision: 1.137 $
+* DATE         :  $Date: 2008/10/29 19:17:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -828,9 +828,6 @@ INT PorterMainFunction (INT argc, CHAR **argv)
             }
         }
     }
-
-    /* Allow a shitload of files to be open */
-    CTISetMaxFH (200);
 
     /* make it clear who is just about the boss */
     CTISetPriority(PRTYC_TIMECRITICAL, THREAD_PRIORITY_NORMAL);

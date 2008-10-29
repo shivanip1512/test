@@ -1,6 +1,5 @@
 #include "yukon.h"
 #include <windows.h>
-#include <conio.h>      // for _inp & _outp
 #include <iostream>
 #include <iomanip>
 using namespace std;
@@ -12,23 +11,6 @@ using namespace std;
 
 #include "cti_asmc.h"
 #include "os2_2w32.h"
-
-
-INT  IM_EX_CTIBASE RPort_C(USHORT port)
-{
-   fprintf(stderr,"NT hates _inp calls\n");
-   return 0;
-
-   return(_inp(port));
-}
-
-INT  IM_EX_CTIBASE  WPort_C(USHORT port, INT data)
-{
-   fprintf(stderr,"NT hates _outp calls\n");
-   return 0;
-
-   return(_outp(port, data));
-}
 
 
 USHORT  IM_EX_CTIBASE CrcCalc_C(BYTE* pStr, ULONG cnt)

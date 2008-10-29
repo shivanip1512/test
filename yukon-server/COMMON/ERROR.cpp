@@ -37,7 +37,6 @@ using namespace std;
 
 #include <stdlib.h>
 
-// #include "btrieve.h"
 #include <stdio.h>
 #include "dsm2.h"
 #include "dsm2err.h"
@@ -243,13 +242,6 @@ INT InitError (VOID)
     }
 
     beenInitialized = true;
-    return(NORMAL);
-}
-
-
-/* Routine to close the error file */
-INT CloseError(VOID)
-{
     return(NORMAL);
 }
 

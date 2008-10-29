@@ -45,7 +45,6 @@
 #include "dllbase.h"
 #include "os2_2w32.h"
 #include "cticalls.h"
-// #include "btrieve.h"
 #include "dsm2.h"
 #include "elogger.h"
 #include "logger.h"
