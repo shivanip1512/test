@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/dllbase.h-arc  $
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2007/06/25 19:04:28 $
+* REVISION     :  $Revision: 1.37 $
+* DATE         :  $Date: 2008/10/29 20:49:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -62,20 +62,6 @@ using std::set;
 #define DEBUGLEVEL_SIXNET_PROTOCOL  0x20000000
 #define DEBUGLEVEL_WELCO_PROTOCOL   0x40000000
 #define DEBUGLEVEL_WCTP_PROTOCOL    0x80000000
-
-
-// Used in conjunction with "SCANNER_DEBUGLEVEL"
-#define SCANNER_DEBUG_ACCUMSCAN         0x00000002
-#define SCANNER_DEBUG_INTEGRITYSCAN     0x00000004
-#define SCANNER_DEBUG_GENERALSCAN       0x00000008
-#define SCANNER_DEBUG_LPSCAN            0x00000010
-#define SCANNER_DEBUG_DEVICEANALYSIS    0x00000020
-#define SCANNER_DEBUG_DBRELOAD          0x00000040
-#define SCANNER_DEBUG_OUTLIST           0x00000080
-#define SCANNER_DEBUG_NEXTSCAN          0x00000100
-#define SCANNER_DEBUG_OUTREQUESTS       0x00000200
-#define SCANNER_DEBUG_INREPLYS          0x00000400
-#define SCANNER_DEBUG_DYNAMICDATA       0x00001000
 
 
 IM_EX_CTIBASE extern CTINEXUS          PorterNexus;

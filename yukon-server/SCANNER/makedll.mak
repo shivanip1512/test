@@ -90,7 +90,6 @@ id_sgdll.obj:	id_sgdll.h
 mgr_device_scannable.obj:	mgr_device_scannable.h
 scanglob.obj:	scanner.h scanglob.h
 scanmain.obj:	scansvc.h
-scanner.obj:	scanner.h scanglob.h scansup.h mgr_device_scannable.h
-scansup.obj:	scanglob.h scansup.h
+scanner.obj:	scanner.h scanglob.h mgr_device_scannable.h
 scansvc.obj:	scanglob.h scansvc.h
 #ENDUPDATE#

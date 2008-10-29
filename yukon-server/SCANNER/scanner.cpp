@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.81 $
-* DATE         :  $Date: 2008/10/29 19:19:21 $
+* REVISION     :  $Revision: 1.82 $
+* DATE         :  $Date: 2008/10/29 20:49:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -42,7 +42,6 @@
 // Here are the devices for which scannables have been defined
 
 #include "scanglob.h"
-#include "scansup.h"
 
 #include "rtdb.h"
 #include "mgr_device_scannable.h"
