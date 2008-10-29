@@ -26,7 +26,6 @@
 #include "fdrinterface.h"
 #include "fdrpointlist.h"
 #include "fdrinet.h"
-#include "device.h"             // get the raw states
 
 #define RCCSDEVICEPRIMARY "RCCS PRIMARY        "
 #define RCCSDEVICESTANDBY "RCCS STANDBY        "

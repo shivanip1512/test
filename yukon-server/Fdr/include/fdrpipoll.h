@@ -14,8 +14,8 @@
  *
  * PVCS KEYWORDS:
  *    ARCHIVE      :  $Archive:     $
- *    REVISION     :  $Revision: 1.7 $
- *    DATE         :  $Date: 2008/10/02 23:57:15 $
+ *    REVISION     :  $Revision: 1.8 $
+ *    DATE         :  $Date: 2008/10/29 18:16:48 $
  *
  * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
  *    History:
@@ -32,7 +32,6 @@
 #include "fdrpointlist.h"
 #include "fdrdebuglevel.h"
 #include "fdrasciiimportbase.h"
-#include "device.h"             // get the raw states
 
 class IM_EX_FDRPIBASEAPI CtiFDRPiPoll : public CtiFDRPiBase
 {

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.79 $
-* DATE         :  $Date: 2008/10/23 20:38:04 $
+* REVISION     :  $Revision: 1.80 $
+* DATE         :  $Date: 2008/10/29 18:16:47 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,18 +31,12 @@
 
 #include "dbaccess.h"
 #include "dsm2.h"
-#include "device.h"
 #include "drp.h"
 #include "elogger.h"
 #include "dsm2err.h"
-#include "alarmlog.h"
-#include "routes.h"
 #include "queues.h"
 #include "porter.h"
-#include "lm_auto.h"
-#include "perform.h"
 #include "scanner.h"
-#include "ilex.h"
 #include "master.h"
 #include "dllbase.h"
 #include "dlldev.h"

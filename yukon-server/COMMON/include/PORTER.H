@@ -6,8 +6,6 @@
 class CtiPort;
 class CtiDeviceBase;
 class CtiHashKey;
-class DEVICE;
-class ROUTE;
 
 /* Include the btrieve error defines */
 #include "dsm2.h"
@@ -30,20 +28,6 @@ struct PORT
     USHORT Status;
     STATS Stats;           /* Start of dynamic portion of record */
 };
-
-struct REMOTE
-{
-    CHAR RemoteName[STANDNAMLEN];
-    USHORT Port;
-    USHORT Remote;
-    USHORT Type;
-    USHORT Radio;
-    USHORT PostDelay;
-    USHORT Status;
-    ULONG  ResetTime;
-    STATS  Stats;         /* Start of dynamic portion of record */
-};
-
 
 /* Structure used for performance update */
 struct REMOTEPERF

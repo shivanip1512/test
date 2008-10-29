@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTTIME.cpp-arc  $
-* REVISION     :  $Revision: 1.55 $
-* DATE         :  $Date: 2008/10/28 19:21:41 $
+* REVISION     :  $Revision: 1.56 $
+* DATE         :  $Date: 2008/10/29 18:16:46 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -65,11 +65,8 @@
 #include "queues.h"
 #include "dsm2.h"
 #include "dsm2err.h"
-#include "device.h"
-#include "routes.h"
 #include "porter.h"
 #include "portdecl.h"
-#include "ilex.h"
 #include "elogger.h"
 
 #include "portglob.h"
@@ -81,6 +78,7 @@
 #include "dev_base.h"
 #include "dev_ccu.h"
 #include "dev_ccu721.h"
+#include "dev_ilex.h"
 #include "dev_mct4xx.h"
 #include "mgr_route.h"
 
@@ -921,6 +919,25 @@ RefreshMCTTimeSync(OUTMESS *OutMessage)
     return(NORMAL);
 }
 
+
+/* Routine to stuff the two byte header */
+ILEXHeader (PBYTE Header,          /* Pointer to message */
+            USHORT Remote,          /* RTU Remote */
+            USHORT Function,        /* Function code */
+            USHORT SubFunction1,    /* High order sub function code */
+            USHORT SubFunction2)    /* Low order sub function code */
+
+{
+    Header[0] = (Function & 0x0007);
+    Header[0] |= LOBYTE ((Remote << 5) & 0xe0);
+    if (SubFunction1)
+        Header[0] |= 0x10;
+    if (SubFunction2)
+        Header[0] |= 0x08;
+    Header[1] = LOBYTE (Remote >> 3);
+    return (NORMAL);
+
+}
 
 /* Routine to load up time for an ilex rtu */
 LoadILEXTimeMessage (BYTE *Message, USHORT MilliSecsSkew)

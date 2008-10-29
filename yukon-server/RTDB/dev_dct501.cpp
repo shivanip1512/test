@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dct501.cpp-arc  $
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2007/11/12 17:06:18 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2008/10/29 18:16:46 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,7 +18,6 @@
 
 
 #include <windows.h>
-#include "device.h"
 #include "devicetypes.h"
 #include "tbl_ptdispatch.h"
 #include "dev_dct501.h"

@@ -8,15 +8,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.127 $
-* DATE         :  $Date: 2008/10/15 15:16:42 $
+* REVISION     :  $Revision: 1.128 $
+* DATE         :  $Date: 2008/10/29 18:16:45 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include <windows.h>
-#include "device.h"
 #include "devicetypes.h"
 #include "tbl_ptdispatch.h"
 #include "dev_mct470.h"

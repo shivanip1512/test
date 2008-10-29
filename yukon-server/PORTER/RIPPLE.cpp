@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/RIPPLE.cpp-arc  $
-* REVISION     :  $Revision: 1.41 $
-* DATE         :  $Date: 2008/10/22 21:16:43 $
+* REVISION     :  $Revision: 1.42 $
+* DATE         :  $Date: 2008/10/29 18:16:46 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -56,13 +56,9 @@
 #include "queues.h"
 #include "dsm2.h"
 #include "dsm2err.h"
-#include "device.h"
-#include "routes.h"
 #include "porter.h"
 #include "portdecl.h"
 #include "master.h"
-#include "lm_auto.h"
-#include "perform.h"
 #include "scanner.h"
 #include "elogger.h"
 #include "drp.h"

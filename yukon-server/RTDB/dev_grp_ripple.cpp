@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_grp_ripple.cpp-arc  $
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2008/10/28 19:21:42 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2008/10/29 18:16:46 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,7 +29,6 @@
 #include "pt_status.h"
 #include "porter.h"
 #include "cmdparse.h"
-#include "device.h"
 
 CtiDeviceGroupRipple::CtiDeviceGroupRipple() :
 _rsvp(0)

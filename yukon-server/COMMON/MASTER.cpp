@@ -35,8 +35,6 @@
 #include "queues.h"
 #include "dsm2.h"
 #include "dsm2err.h"
-// #include "device.h"
-//#include "routes.h"
 #include "master.h"
 //#include "porter.h"
 

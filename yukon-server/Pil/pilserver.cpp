@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.121 $
-* DATE         :  $Date: 2008/10/23 13:35:07 $
+* REVISION     :  $Revision: 1.122 $
+* DATE         :  $Date: 2008/10/29 18:16:46 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -61,7 +61,6 @@
 #include "dlldefs.h"
 #include "connection.h"
 
-#include "pilglob.h"
 #include "ctibase.h"
 #include "dllbase.h"
 #include "logger.h"

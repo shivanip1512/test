@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTCONF.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2008/10/22 21:16:43 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2008/10/29 18:16:47 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -58,11 +58,8 @@
 #include "queues.h"
 #include "dsm2.h"
 #include "dsm2err.h"
-#include "device.h"
-#include "routes.h"
 #include "porter.h"
 #include "master.h"
-#include "group.h"
 #include "elogger.h"
 
 #include "portglob.h"
@@ -78,8 +75,42 @@
 
 extern CtiRouteManager RouteManager;
 
+#define ROUTESINMACRO 30
+
+/* Type For Route Macro Database */
+typedef struct _ROUTEMACRO {
+    CHAR RouteMacroName[STANDNAMLEN];   // user given macro route name
+    CHAR RouteName[ROUTESINMACRO][STANDNAMLEN];    // user given logical route name
+} ROUTEMACRO;
+
 /* Prototype of function to get strings from file */
 int GetString (FILE *, PCHAR, ULONG);
+
+/*  Definition for VERSACOM Configuration DB */
+/* VersaCom Load Config Structure */
+typedef struct _VERSALOAD {
+    USHORT CycleCount;
+    USHORT ScramTime;
+    USHORT ColdLoadTime;
+    USHORT EnableDiscrOffset;
+} VERSALOAD;
+
+
+
+/* VersaCom Configuration Structure */
+typedef struct _VERSACONFIG {
+    CHAR VConfigName[STANDNAMLEN];
+    USHORT UtilityID;
+    USHORT Section;
+    USHORT Class;
+    USHORT Division;
+    USHORT CyclePeriod;
+    USHORT PropDispTime;
+    VERSALOAD LoadConfig[3];
+} VERSACONFIG;
+
+
+IM_EX_CTIBASE INT VConfigGetEqual (VERSACONFIG *);
 
 
 VOID VConfigThread (VOID *Arg)

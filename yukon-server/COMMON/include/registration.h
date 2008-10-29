@@ -1,8 +1,0 @@
-class CtiRegistration
-{
-public:
-
-private:
-
-
-};

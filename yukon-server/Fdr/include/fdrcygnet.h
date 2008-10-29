@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2008/10/02 23:57:15 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2008/10/29 18:16:48 $
 *    DESCRIPTION: This class implements an interface that retrieves point data
 *                 from a Foreign System.  The data is status and Analog data.
 *                 This interface only receives at this time.  It links with
@@ -27,7 +27,6 @@
 #include "dlldefs.h"
 #include "fdrinterface.h"
 #include "fdrpointlist.h"
-#include "device.h"             // get the raw states
 
 class IM_EX_FDRCYGNET CtiFDRCygnet : public CtiFDRInterface
 {

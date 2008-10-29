@@ -10,8 +10,8 @@
  * Author: Tom Mack
  *
  * PVCS KEYWORDS:
- *    REVISION     :  $Revision: 1.6 $
- *    DATE         :  $Date: 2008/10/02 23:57:15 $
+ *    REVISION     :  $Revision: 1.7 $
+ *    DATE         :  $Date: 2008/10/29 18:16:48 $
  *    History:
  *      $History:$
  */
@@ -28,7 +28,6 @@
 #include "fdrpointlist.h"
 #include "fdrdebuglevel.h"
 #include "fdrasciiimportbase.h"
-#include "device.h"             // get the raw states
 
 #include "livedata_rtp_api.h"
 //#include "iccp_types.h"

@@ -26,7 +26,6 @@
 #include "queues.h"
 #include "fdrinterface.h"
 #include "fdrpointlist.h"
-#include "device.h"             // get the raw states
 
 // global defines
 #define INET_PORTNUMBER         1000
@@ -163,7 +162,7 @@ class IM_EX_FDRINET CtiFDR_Inet : public CtiFDRSocketInterface
         virtual bool loadTranslationLists(void);
         virtual bool loadClientList(void);
         bool loadList(string &aDirection, CtiFDRPointList &aList);
-        
+
         virtual int   readConfig( void );
         virtual void setCurrentClientLinkStates();
         int   findConnectionByNameInList(string aName);

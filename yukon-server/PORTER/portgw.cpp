@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2007/12/10 23:02:57 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2008/10/29 18:16:47 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,15 +25,14 @@
 #include "dllyukon.h"
 #include "dllbase.h"
 #include "mgr_device.h"
+#include "mgr_port.h"
+#include "mgr_route.h"
 #include "dev_gateway.h"
 #include "dev_gwstat.h"
 #include "dev_grp_energypro.h"
 #include "gateway.h"
 #include "guard.h"
 #include "logger.h"
-#include "mgr_device.h"
-#include "mgr_port.h"
-#include "mgr_route.h"
 #include "numstr.h"
 #include "portdecl.h"
 #include "portglob.h"
@@ -90,13 +89,13 @@ void GWTimeSyncThread (void *Dummy)
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " Porter GW Time Sync Thread active. TID:  " << rwThreadId() << endl;
             }
-        
+
             CtiThreadRegData *data;
             data = CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "Porter GW Time Sync Thread", CtiThreadRegData::None, CtiThreadMonitor::StandardMonitorTime );
             ThreadMonitor.tickle( data );
             lastTickleTime = lastTickleTime.now();
         }
-        
+
         if(now > querynext && gwMap.size() > 0)
         {
             CtiLockGuard< CtiMutex > guard(gwmux, 15000);
@@ -182,13 +181,13 @@ void KeepAliveThread (void *Dummy)
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " Porter GW Keepalive Thread active. TID:  " << rwThreadId() << endl;
             }
-        
+
             CtiThreadRegData *data;
             data = CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "Porter GW Keepalive Thread", CtiThreadRegData::None, CtiThreadMonitor::StandardMonitorTime );
             ThreadMonitor.tickle( data );
             lastTickleTime = lastTickleTime.now();
         }
-        
+
         now = now.now();
 
         if(!(now.seconds() % 60))
@@ -427,7 +426,7 @@ VOID PorterGWThread(void *pid)
 
         boost::char_separator<char> sep(", ");
         Boost_char_tokenizer porttok(portstr, sep);
-        Boost_char_tokenizer::iterator tok_iter = porttok.begin(); 
+        Boost_char_tokenizer::iterator tok_iter = porttok.begin();
 
         while( tok_iter != porttok.end() )
         {
@@ -459,13 +458,13 @@ VOID PorterGWThread(void *pid)
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " Porter GW Thread active. TID:  " << rwThreadId() << endl;
                 }
-            
+
                 CtiThreadRegData *data;
                 data = CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "Porter GW Thread", CtiThreadRegData::None, CtiThreadMonitor::StandardMonitorTime );
                 ThreadMonitor.tickle( data );
                 lastTickleTime = lastTickleTime.now();
             }
-             
+
             OutMessage = GatewayOutMessageQueue.getQueue( 2500 );
 
             if(OutMessage)
@@ -626,13 +625,13 @@ void GWResultThread (void *Dummy)
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " Porter GW Result Thread active. TID:  " << rwThreadId() << endl;
             }
-        
+
             CtiThreadRegData *data;
             data = CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "Porter GW Result Thread", CtiThreadRegData::None, CtiThreadMonitor::StandardMonitorTime );
             ThreadMonitor.tickle( data );
             lastTickleTime = lastTickleTime.now();
         }
-            
+
         DWORD dwWait = WaitForMultipleObjects(sizeof(hArray) / sizeof(HANDLE), hArray, FALSE, dwSleepTime);
 
         if(dwWait != WAIT_TIMEOUT)

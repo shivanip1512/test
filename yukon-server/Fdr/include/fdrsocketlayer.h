@@ -10,7 +10,6 @@
 
 #include "dlldefs.h"
 #include "queues.h"
-#include "device.h"             // get the raw states
 #include "fdrsocketconnection.h"
 
 class CtiFDRInterface;

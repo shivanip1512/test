@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.135 $
-* DATE         :  $Date: 2008/10/28 19:21:41 $
+* REVISION     :  $Revision: 1.136 $
+* DATE         :  $Date: 2008/10/29 18:16:47 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -39,21 +39,15 @@
 #include "queues.h"
 #include "dsm2.h"
 #include "dsm2err.h"
-#include "device.h"
-#include "routes.h"
 #include "porter.h"
 #include "portdecl.h"
 #include "portverify.h"
 #include "master.h"
 #include "elogger.h"
-#include "alarmlog.h"
 #include "drp.h"
 #include "thread_monitor.h"
 #include "CtiLocalConnect.h"
 #include "systemmsgthread.h"
-
-#include "perform.h"
-#include "das08.h"
 
 #include "logger.h"
 #include "numstr.h"
@@ -754,7 +748,6 @@ INT PorterMainFunction (INT argc, CHAR **argv)
     /* Misc Definitions */
     INT    i, j;
     int WorkReportFrequencyInSeconds;
-    extern USHORT PrintLogEvent;
     time_t last_flush = 0;
     CtiTime lastWorkReportTime;
 
@@ -800,16 +793,6 @@ INT PorterMainFunction (INT argc, CHAR **argv)
                 LoadRoutes = TRUE;
                 continue;
             }
-            if(!(stricmp (argv[i], "/A")))
-            {
-                AutoDSTChange = TRUE;
-                continue;
-            }
-            if(!(stricmp (argv[i], "-A")))
-            {
-                AutoDSTChange = FALSE;
-                continue;
-            }
 
             if(!(stricmp (argv[i], "/N")))
             {
@@ -831,22 +814,11 @@ INT PorterMainFunction (INT argc, CHAR **argv)
                 AmpFailOver |= AMP_SWAPPING;
                 continue;
             }
-            if(!(stricmp (argv[i], "/L")))
-            {
-                PrintLogEvent = FALSE;
-                continue;
-            }
-            if(!(stricmp (argv[i], "/P")))
-            {
-                PackActins = TRUE;
-                continue;
-            }
             if(!(::strcmp (argv[i], "/?")))
             {
                 cout << "/C       Reset (Cold Start) all 711's in system" << endl;
                 cout << "/D       Emetcon Double - CCU's Double feild transmissions" << endl;
                 cout << "/E       Trace Communication for failed communications (errors) only" << endl;
-                cout << "/L       Logging to printer on any event" << endl;
                 cout << "/N       No queueing to CCU 711's" << endl;
                 cout << "/R       Download emetcon routes" << endl;
                 cout << "/T       Trace Communication for all ports / remotes" << endl;
@@ -1666,46 +1638,11 @@ INT RefreshPorterRTDB(void *ptr)
 
 void LoadPorterGlobals(void)
 {
-    INT  j;
-    char temp[80];
     string Temp;
-    /* Definitions to get environment variables */
-    CHAR Info[50] = {'\0'};
-    PCHAR PInfo;
-
-
-    // Causes all normal error and dout traffic to be routed to the porter.logxx files
-    cParmPorterServiceLog = FALSE;
-    if(!(Temp = gConfigParms.getValueAsString("PORTER_SERVICE_LOG")).empty())
-    {
-        if(!stricmp("TRUE", Temp.c_str()))
-        {
-            cParmPorterServiceLog = TRUE;
-        }
-    }
 
     if(!(Temp = gConfigParms.getValueAsString("PORTER_RELOAD_RATE")).empty())
     {
         PorterRefreshRate = std::max((unsigned long)gConfigParms.getValueAsULong("PORTER_RELOAD_RATE"), (unsigned long)86400);
-    }
-
-    if( !(Temp = gConfigParms.getValueAsString("PIL_QUEUE_SIZE")).empty())
-    {
-        PILMaxQueueSize = atoi(Temp.c_str());
-    }
-    else
-    {
-        PILMaxQueueSize = 1000;
-    }
-
-    /* Check the extra delay flag */
-    if( !(Temp = gConfigParms.getValueAsString("PORTER_EXTRATIMEOUT")).empty())
-    {
-        ExtraTimeOut = atoi(Temp.c_str());
-    }
-    else
-    {
-        ExtraTimeOut = 0;
     }
 
     /* Check the number of queue octets allowed */
@@ -1725,53 +1662,6 @@ void LoadPorterGlobals(void)
     {
         MaxOcts = 261;
     }
-
-    /* Resolve the stuff that we need for DIO24 Output */
-    if(!(Temp = gConfigParms.getValueAsString("DIO24")).empty())
-    {
-        strncpy (Info, Temp.c_str(), 49);
-        /* Start the parcing process */
-        if(sscanf (strtok (Info, ",;"), "%x", &DIO24Base) != 1)
-        {
-            DIO24Base = DAS08BASE;
-            Info[0] = '\0';
-        }
-    }
-    else if(!(Temp = gConfigParms.getValueAsString("DAS08")).empty())
-    {
-        strncpy (Info, Temp.c_str(), 49);
-        /* Start the tokenizing */
-        if(sscanf (strtok (Info, ",;"), "%x", &DIO24Base) != 1)
-        {
-            Info[0] = '\0';
-        }
-        else
-        {
-            DIO24Base += DIO24OFFSET;
-        }
-    }
-    else
-    {
-        Info[0] = '\0';
-    }
-
-    /* Unravel the mode flags */
-    if(Info[0] == '\0')
-    {
-        DIO24Mode[0] = 0xffff;
-    }
-    else
-    {
-        j = 0;
-        while((PInfo = strtok (NULL, ";,")) != NULL && j < 9)
-        {
-            if(sscanf (PInfo, "%hx", &DIO24Mode[j++]) != 1)
-            {
-                break;
-            }
-        }
-    }
-
 
     /* Check if we are using L and G LCU's */
     if(!(Temp = gConfigParms.getValueAsString("PORTER_LANDGLCUS")).empty() && (!(stricmp ("YES", Temp.c_str()))))
@@ -1890,8 +1780,6 @@ void LoadPorterGlobals(void)
     }
 
 
-
-
     if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1905,8 +1793,6 @@ void LoadPorterGlobals(void)
 
         dout << "Loading porter globals: " << endl;
         dout << "PORTER_RELOAD_RATE      " << PorterRefreshRate << endl;
-        dout << "PIL_QUEUE_SIZE          " << PILMaxQueueSize << endl;
-        dout << "PORTER_EXTRATIMEOUT     " << ExtraTimeOut << endl;
         dout << "PORTER_MAXOCTS          " << MaxOcts << endl;
         dout << "PORTER_MCT400SERIESSPID " << (int)gMCT400SeriesSPID << endl;
     }
@@ -2202,24 +2088,6 @@ bool processInputFunction(CHAR Char)
 #endif
 
             break;
-        }
-
-    case 0x6c:              // alt-l
-        {
-            PrintLogEvent = !PrintLogEvent;
-            if(PrintLogEvent)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Communications events will be logged" << endl;
-            }
-            else
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Communications events will not be logged" << endl;
-            }
-
-            break;
-
         }
     case 0x63:              // alt-c
         {

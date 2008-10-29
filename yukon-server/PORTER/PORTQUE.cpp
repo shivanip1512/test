@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.70 $
-* DATE         :  $Date: 2008/10/22 21:16:43 $
+* REVISION     :  $Revision: 1.71 $
+* DATE         :  $Date: 2008/10/29 18:16:46 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -57,8 +57,6 @@
 #include "queues.h"
 #include "dsm2.h"
 #include "dsm2err.h"
-#include "device.h"
-#include "routes.h"
 #include "porter.h"
 #include "elogger.h"
 #include "thread_monitor.h"
@@ -1357,49 +1355,6 @@ VOID KickerThread (VOID *Arg)
             lastTickleTime = lastTickleTime.now();
         }
     }
-}
-
-
-/* Routine to flush outstanding 711 queue's for a given CCU */
-/* Dequeues only those entries marked as having been successfully queued and INCCU */
-CCUQueueFlush (CtiDeviceSPtr Dev)
-{
-    USHORT QueTabEnt;
-
-    CtiTransmitter711Info *pInfo = (CtiTransmitter711Info *)Dev->getTrxInfo();
-
-    if(pInfo->FreeSlots < MAXQUEENTRIES)
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Flushing " << Dev->getName() << "'s INCCU Porter Queue Table" << endl;
-        }
-
-        /* walk through the entry table for this ccu */
-        for(QueTabEnt = 0; QueTabEnt < MAXQUEENTRIES; QueTabEnt++)
-        {
-            if(pInfo->QueTable[QueTabEnt].InUse & INCCU)
-            {
-                /* send a message to the calling process */
-                if(pInfo->QueTable[QueTabEnt].EventCode & RESULT)
-                {
-                    ReturnQueuedResult(Dev, pInfo, QueTabEnt);
-                }
-
-                if(pInfo->QueTable[QueTabEnt].InUse) InterlockedIncrement( &(pInfo->FreeSlots) );
-                if(pInfo->FreeSlots > MAXQUEENTRIES)
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-                }
-                pInfo->QueTable[QueTabEnt].InUse = 0;
-                pInfo->QueTable[QueTabEnt].TimeSent = -1L;
-            }
-        }
-    }
-    return(NORMAL);
 }
 
 

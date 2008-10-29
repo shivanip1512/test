@@ -1,9 +1,6 @@
 #ifndef MASTER_H
 #define MASTER_H
 
-class REMOTE;
-class DEVICE;
-
 /* Include file for various mastercomm devices */
 
 /* MasterComm Commands */
@@ -37,7 +34,7 @@ class DEVICE;
 #define LCUWASTRANSMITTING  0x00000002
 #define LCUNEVERRETRY       0x00000010
 #define LCUACTIVE           0x00000020      // 20051011 CGP: LCU state bit set when an LCU has been setup/scheduled to transmit. Cleared when the LCU has no ongoing work.
-#define LCUWASGLOBAL        0x00000040      // This bit is set when the command originated from a global message 
+#define LCUWASGLOBAL        0x00000040      // This bit is set when the command originated from a global message
 
 #define LCUBUSYTRANSMITTING 0x04
 #define LCUCHECKBITALARM    0x02
@@ -91,22 +88,7 @@ class DEVICE;
 #define VCONFIG_AUXID       0x30
 #define VCONFIG_UTILID      0x29
 
-#define VCONFIG_PHYSICALRELAY1 0x43
-#define VCONFIG_PHYSICALRELAY2 0x44
-#define VCONFIG_PHYSICALRELAY3 0x45
-
 #define VCONFIG_SCD 0x63
-
-#define VCONFIG_RELAYOUT 0x00
-#define VCONFIG_RELAY1IN 0x01
-#define VCONFIG_RELAY2IN 0x02
-#define VCONFIG_RELAY3IN 0x03
-
-
-    /* cold load pickup */
-#define VCONFIG_RELAY1COLDLOAD 0x20
-#define VCONFIG_RELAY2COLDLOAD 0x21
-#define VCONFIG_RELAY3COLDLOAD 0x22
 
 /* Versacom Service Masks */
 #define VSERVICE_CONTIN     0x08
@@ -114,27 +96,10 @@ class DEVICE;
 #define VSERVICE_TEMPIN     0x02
 #define VSERVICE_TEMPOUT    0x01
 
-/* Prototypes from LCU.C */
-IM_EX_CTIBASE INT LCUScanAll (REMOTE *, DEVICE *, USHORT, USHORT);
-IM_EX_CTIBASE INT LCUFreeze (REMOTE *, DEVICE *, USHORT, USHORT);
-IM_EX_CTIBASE INT LCUReset (REMOTE *, DEVICE *, USHORT, USHORT);
-IM_EX_CTIBASE INT LCUDecode (INMESS *, DEVICE *, REMOTE *, struct timeb *);
-
-/* Prototypes from TCU.C */
-IM_EX_CTIBASE INT TCUScanAll (REMOTE *, DEVICE *, USHORT, USHORT);
-IM_EX_CTIBASE INT TCUDecode (INMESS *, DEVICE *, REMOTE *, struct timeb *);
-
-/* Prototypes from VCU.C */
-IM_EX_CTIBASE INT VCUScanAll (REMOTE *, DEVICE *, USHORT, USHORT);
-IM_EX_CTIBASE INT VCUScanInt (REMOTE *, DEVICE *, USHORT, USHORT);
-IM_EX_CTIBASE INT VCUScanExt (REMOTE *, DEVICE *, USHORT, USHORT);
-IM_EX_CTIBASE INT VCUDecode (INMESS *, DEVICE *, REMOTE *, struct timeb *);
-
 /* Prototypes from MASTER.C */
 IM_EX_CTIBASE INT MasterHeader (PBYTE, USHORT, USHORT, USHORT);
 IM_EX_CTIBASE INT PreMaster (PBYTE, USHORT);
 IM_EX_CTIBASE INT PostMaster (PBYTE, USHORT, PULONG);
 IM_EX_CTIBASE INT MasterReply (PBYTE, USHORT);
+
 #endif
-
-

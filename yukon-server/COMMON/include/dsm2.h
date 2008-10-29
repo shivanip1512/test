@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/DSM2.H-arc  $
-* REVISION     :  $Revision: 1.47 $
-* DATE         :  $Date: 2008/10/15 17:06:42 $
+* REVISION     :  $Revision: 1.48 $
+* DATE         :  $Date: 2008/10/29 18:16:47 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1031,23 +1031,14 @@ typedef struct _STATS
 IM_EX_CTIBASE int            UCTFTime (struct timeb *);
 IM_EX_CTIBASE struct tm *    UCTLocalTime (time_t, USHORT);               //
 IM_EX_CTIBASE time_t         UCTMakeTime (struct tm *);
-IM_EX_CTIBASE int            Holiday (struct timeb *);
 IM_EX_CTIBASE ULONG          LongTime (VOID);
 IM_EX_CTIBASE ULONG          DSTFlag (VOID);
 IM_EX_CTIBASE void           UCTLocoTime (time_t, USHORT, struct tm *);
 IM_EX_CTIBASE void           UCTAsciiTime (time_t, USHORT, PCHAR);
-IM_EX_CTIBASE PCHAR          UCTAscTime (time_t, USHORT);
 IM_EX_CTIBASE ULONG          setNextInterval(time_t, ULONG);
 IM_EX_CTIBASE int            FindMidNight (time_t *, USHORT, time_t *);
 IM_EX_CTIBASE time_t         MidNight (time_t, USHORT);
 IM_EX_CTIBASE time_t         MidNightWas (time_t, USHORT);
-IM_EX_CTIBASE int            MakeDailyTime (ULONG, PCHAR);
-IM_EX_CTIBASE int            MakeCtrlHours (ULONG, PCHAR);
-IM_EX_CTIBASE int            MakeAsciiDate (ULONG TimeStamp, USHORT DstFlag, PCHAR MyDate);
-IM_EX_CTIBASE int            MakeAsciiTime (ULONG TimeStamp, USHORT DstFlag, PCHAR MyDate);
-IM_EX_CTIBASE int            GetCurrentSeason (void);
-IM_EX_CTIBASE int            PutDSTTime (ULONG);
-IM_EX_CTIBASE int            GetDSTTime (VOID);
 
 /* load control season defines for UCTTime function */
 #define SEASON_SUMMER  1
@@ -1102,11 +1093,6 @@ int   IM_EX_CTIBASE SwitchControl (CSTRUCT *);
 int   IM_EX_CTIBASE LCULockOutset (USHORT, USHORT);
 int   IM_EX_CTIBASE LCULockOutReset (USHORT, USHORT);
 int   IM_EX_CTIBASE DecodeDialupData(INMESS *InMessage, DIALUPSTRUCT *DUPst);
-
-/* Prototypes from PSUP.C */
-int   IM_EX_CTIBASE Float2CharFormat (FLOAT, PCHAR, USHORT, USHORT);
-int   IM_EX_CTIBASE Long2CharFormat (LONG, PCHAR, USHORT);
-int   IM_EX_CTIBASE Short2CharFormat (SHORT, PCHAR, USHORT);
 
 /* Prototypes for WORDS.C */
 int   IM_EX_CTIBASE A_Word  (PBYTE, const ASTRUCT &, BOOL Double = FALSE);

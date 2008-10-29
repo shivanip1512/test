@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PLIDLC.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2007/07/23 15:36:40 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2008/10/29 18:16:47 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -58,8 +58,6 @@
 #include "queues.h"
 #include "dsm2.h"
 #include "dsm2err.h"
-#include "device.h"
-#include "routes.h"
 #include "porter.h"
 #include "portglob.h"
 #include "dev_base.h"
@@ -195,50 +193,6 @@ PreUnSequenced (PBYTE  Message,        /* resulting command string */
       Message[6] = (UCHAR)Length;
       break;
    }
-
-   return(NORMAL);
-}
-
-
-/* PPU IDLC preamble builder */
-PreVTU (PBYTE  Message,        /* resulting command string */
-        USHORT Length,         /* length of message to follow */
-        USHORT Remote,         /* PPU address */
-        USHORT PPUPort,
-        USHORT ReturnLength,
-        USHORT TimeOut)
-
-{
-   /* flag */
-   Message[0] = 0x7e;
-
-   /* PPU address */
-   Message[1] = Remote << 1 | 0x01;
-
-   /* control flag */
-   Message[2] = HDLC_UD;
-
-   /* length */
-   Message[3] = Length + 6;
-
-   /* Flag */
-   Message[4] = 0;
-
-   /* sectn */
-   Message[5] = SECTN_PROTWRAP | 0X80;
-
-   /* Length Again */
-   Message[6] = Length + 3;
-
-   /* Now move the message up a few bytes */
-   ::memmove (Message + 10, Message + 7, Length);
-
-   /* And load the rest of the info */
-   Message[7] = (UCHAR)PPUPort;
-
-   Message[8] = (UCHAR)ReturnLength;
-
-   Message[9] = (UCHAR)TimeOut;
 
    return(NORMAL);
 }

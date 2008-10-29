@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.44 $
-* DATE         :  $Date: 2008/09/17 21:47:59 $
+* REVISION     :  $Revision: 1.45 $
+* DATE         :  $Date: 2008/10/29 18:16:45 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,7 +20,6 @@
 #include <windows.h>
 #include <rw\ctoken.h>
 
-#include "device.h"
 #include "devicetypes.h"
 #include "dev_repeater.h"
 #include "logger.h"
@@ -789,7 +788,7 @@ INT CtiDeviceRepeater900::decodePutConfigRole(INMESS *InMessage, CtiTime &TimeNo
       CtiString cmdStr = InMessage->Return.CommandStr;
       //This should look like "putconfig emetcon mrole 1 2 3 4.... : 6 3 4 5 5 .... : 12 3 4 1 4...
       //We want to grab the numbers after the leading : then remove the leading :
-      
+
       if( cmdStr.contains(": ") )
       {
           cmdStr.replace("( [0-9]+)+ *:", "");

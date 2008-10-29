@@ -16,7 +16,6 @@
 #include "fdrpointlist.h"
 #include "fdrdebuglevel.h"
 #include "fdrasciiimportbase.h"
-#include "device.h"             // get the raw states
 #include "telegyrgroup.h"
 #include "telegyrcontrolcenter.h"
 #include "rtdb.h"                   //not too sure about needing this.................

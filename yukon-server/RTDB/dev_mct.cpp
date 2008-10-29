@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.135 $
-* DATE         :  $Date: 2008/10/15 17:13:34 $
+* REVISION     :  $Revision: 1.136 $
+* DATE         :  $Date: 2008/10/29 18:16:45 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,7 +24,6 @@
 #include "numstr.h"
 
 #include "devicetypes.h"
-#include "device.h"
 #include "dev_mct.h"
 #include "dev_mct210.h"
 #include "dev_mct31x.h"  //  for IED scanning capability

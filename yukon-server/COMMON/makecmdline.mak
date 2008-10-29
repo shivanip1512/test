@@ -129,8 +129,7 @@ cti_asmc.obj:	yukon.h precompiled.h ctidbgmem.h cticalls.h os2_2w32.h \
 c_port_interface.obj:	yukon.h precompiled.h ctidbgmem.h dlldefs.h \
 		os2_2w32.h types.h dsm2.h mutex.h guard.h numstr.h clrdump.h \
 		cticonnect.h netports.h queues.h cticalls.h porter.h \
-		dsm2err.h devicetypes.h c_port_interface.h group.h elogger.h \
-		alarmlog.h
+		dsm2err.h devicetypes.h c_port_interface.h elogger.h
 dbaccess.obj:	yukon.h precompiled.h ctidbgmem.h types.h dlldefs.h \
 		dbaccess.h dllbase.h os2_2w32.h cticalls.h dsm2.h mutex.h \
 		guard.h numstr.h clrdump.h cticonnect.h netports.h sema.h \
@@ -180,10 +179,6 @@ hash_functions.obj:	yukon.h precompiled.h ctidbgmem.h hash_functions.h \
 id_ctibase.obj:	yukon.h precompiled.h ctidbgmem.h utility.h ctitime.h \
 		dlldefs.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
 		sorted_vector.h id_ctibase.h id_vinfo.h
-ilexprot.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
-		types.h cticalls.h queues.h dsm2.h mutex.h guard.h numstr.h \
-		clrdump.h cticonnect.h netports.h dsm2err.h device.h \
-		devicetypes.h routes.h porter.h ilex.h
 logger.obj:	yukon.h precompiled.h ctidbgmem.h utility.h ctitime.h \
 		dlldefs.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
 		sorted_vector.h dllbase.h dsm2.h mutex.h guard.h clrdump.h \
@@ -202,18 +197,12 @@ pending_stat_operation.obj:	yukon.h precompiled.h ctidbgmem.h logger.h \
 		ctitime.h CtiPCPtrQueue.h utility.h queues.h cticalls.h \
 		os2_2w32.h types.h sorted_vector.h pending_stat_operation.h \
 		ctitypes.h dsm2.h cticonnect.h netports.h
-perform.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
-		types.h cticalls.h queues.h dsm2.h mutex.h guard.h numstr.h \
-		clrdump.h cticonnect.h netports.h dsm2err.h device.h \
-		devicetypes.h routes.h drp.h elogger.h alarmlog.h porter.h \
-		perform.h
 pexec.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		types.h cticalls.h ctinexus.h netports.h cticonnect.h \
 		queues.h dsm2.h mutex.h guard.h numstr.h clrdump.h dsm2err.h \
-		dllbase.h routes.h porter.h devicetypes.h master.h lm_auto.h \
-		perform.h dialup.h c_port_interface.h group.h elogger.h \
-		alarmlog.h logger.h thread.h ctitime.h CtiPCPtrQueue.h \
-		utility.h sorted_vector.h
+		dllbase.h porter.h devicetypes.h master.h dialup.h \
+		c_port_interface.h elogger.h logger.h thread.h ctitime.h \
+		CtiPCPtrQueue.h utility.h sorted_vector.h
 point_change.obj:	yukon.h precompiled.h ctidbgmem.h point_change.h \
 		dlldefs.h
 portsup.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
@@ -222,12 +211,6 @@ portsup.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		devicetypes.h logger.h thread.h ctitime.h CtiPCPtrQueue.h \
 		utility.h sorted_vector.h
 precompiled.obj:	yukon.h precompiled.h ctidbgmem.h
-psup.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
-		types.h cticalls.h queues.h dllbase.h dsm2.h mutex.h guard.h \
-		numstr.h clrdump.h cticonnect.h netports.h dsm2err.h drp.h \
-		device.h devicetypes.h elogger.h alarmlog.h lm_auto.h group.h \
-		routes.h porter.h master.h logger.h thread.h ctitime.h \
-		CtiPCPtrQueue.h utility.h sorted_vector.h c_port_interface.h
 queent.obj:	yukon.h precompiled.h ctidbgmem.h queent.h dlldefs.h
 quetest.obj:	yukon.h precompiled.h ctidbgmem.h queue.h dlldefs.h \
 		logger.h thread.h mutex.h guard.h numstr.h clrdump.h \
@@ -350,9 +333,9 @@ verification_objects.obj:	yukon.h precompiled.h ctidbgmem.h \
 wordbuilder.obj:	yukon.h precompiled.h ctidbgmem.h wordbuilder.h
 words.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		types.h cticalls.h cti_asmc.h queues.h dsm2.h mutex.h guard.h \
-		numstr.h clrdump.h cticonnect.h netports.h dsm2err.h device.h \
-		devicetypes.h routes.h porter.h logger.h thread.h ctitime.h \
-		CtiPCPtrQueue.h utility.h sorted_vector.h
+		numstr.h clrdump.h cticonnect.h netports.h dsm2err.h porter.h \
+		devicetypes.h logger.h thread.h ctitime.h CtiPCPtrQueue.h \
+		utility.h sorted_vector.h
 xfer.obj:	yukon.h precompiled.h ctidbgmem.h xfer.h dsm2.h mutex.h \
 		dlldefs.h guard.h numstr.h clrdump.h cticonnect.h netports.h \
 		dialup.h

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.65 $
-* DATE         :  $Date: 2008/10/28 19:21:41 $
+* REVISION     :  $Revision: 1.66 $
+* DATE         :  $Date: 2008/10/29 18:16:46 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -40,7 +40,6 @@
 #include "msg_lmcontrolhistory.h"
 #include "cmdparse.h"
 #include "dev_dnp.h"
-#include "device.h"
 #include "logger.h"
 #include "numstr.h"
 #include "cparms.h"

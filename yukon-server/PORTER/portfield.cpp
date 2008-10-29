@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.231 $
-* DATE         :  $Date: 2008/10/27 19:55:12 $
+* REVISION     :  $Revision: 1.232 $
+* DATE         :  $Date: 2008/10/29 18:16:47 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -71,7 +71,6 @@
 #include "queues.h"
 #include "dsm2.h"
 #include "dsm2err.h"
-#include "device.h"
 #include "dev_lcu.h"
 #include "dev_tap.h"
 #include "dev_snpp.h"
@@ -82,12 +81,10 @@
 #include "dev_rtm.h"
 #include "dev_fmu.h"
 #include "dev_wctp.h"
-#include "routes.h"
 #include "porter.h"
 #include "master.h"
 #include "portdecl.h"
 #include "tcpsup.h"
-#include "perform.h"
 #include "tapterm.h"
 
 #include "portglob.h"

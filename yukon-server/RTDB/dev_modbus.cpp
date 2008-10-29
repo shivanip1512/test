@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2008/10/28 19:21:42 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2008/10/29 18:16:45 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -43,7 +43,6 @@
 #include "cmdparse.h"
 #include "dev_modbus.h"
 #include "prot_modbus.h"
-#include "device.h"
 #include "logger.h"
 #include "numstr.h"
 #include "cparms.h"

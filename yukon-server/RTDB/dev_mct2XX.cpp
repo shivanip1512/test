@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.43 $
-* DATE         :  $Date: 2007/11/12 17:07:26 $
+* REVISION     :  $Revision: 1.44 $
+* DATE         :  $Date: 2008/10/29 18:16:45 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,7 +18,6 @@
 
 
 #include <windows.h>
-#include "device.h"
 #include "devicetypes.h"
 #include "dev_mct2XX.h"
 #include "logger.h"

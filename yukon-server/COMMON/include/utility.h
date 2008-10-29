@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/utility.h-arc  $
-* REVISION     :  $Revision: 1.59 $
-* DATE         :  $Date: 2008/10/28 19:21:40 $
+* REVISION     :  $Revision: 1.60 $
+* DATE         :  $Date: 2008/10/29 18:16:47 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -194,8 +194,6 @@ IM_EX_CTIBASE INT   GetPIDFromDeviceAndOffsetAndType(int device, int offset, str
 
 IM_EX_CTIBASE INT   EstablishOutMessagePriority(CtiOutMessage *Out, INT priority);
 IM_EX_CTIBASE INT   OverrideOutMessagePriority(CtiOutMessage *Out, INT priority);
-
-IM_EX_CTIBASE bool  CheckSocketSubsystem();
 
 IM_EX_CTIBASE ULONG   BCDtoBase10(UCHAR* buffer, ULONG len);
 IM_EX_CTIBASE ULONG   StrToUlong(UCHAR* buffer, ULONG len);

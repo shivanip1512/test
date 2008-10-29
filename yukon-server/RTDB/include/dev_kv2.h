@@ -9,11 +9,16 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_kv2.h-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2008/06/06 20:28:44 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2008/10/29 18:16:48 $
 *
 *    History:
       $Log: dev_kv2.h,v $
+      Revision 1.17  2008/10/29 18:16:48  mfisher
+      YUK-6374 Remove unused DSM/2 remnants
+      Removed many orphaned function headers and structure definitions
+      Moved ILEX items closer to point of use in TimeSyncThread()
+
       Revision 1.16  2008/06/06 20:28:44  jotteson
       YUK-6005 Porter LLP expect more set incorrectly
       Added an option to override expect more in the error decode call.
@@ -68,7 +73,6 @@
 #include "dsm2.h"
 #include "ctitypes.h"
 #include "types.h"
-#include "device.h"
 #include "dllyukon.h"
 
 using std::string;

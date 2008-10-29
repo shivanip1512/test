@@ -31,7 +31,6 @@
 #include "queues.h"
 #include "fdrinterface.h"
 #include "fdrpointlist.h"
-#include "device.h"             // get the raw states
 #include "fdrsinglesocket.h"
 #include "critical_section.h"
 #include "guard.h"
@@ -108,10 +107,6 @@ NOTE:  All data limit violations will be handled by the receiving system
 #define REPORTTIMESCHED                 10200
 
 #define MPCMAXGROUPS                    300
-
-#define MAXTYPES    30
-#define MAXHOURS    24
-#define MAXTOWERS   30
 
 /* Masks for MPC Group Status */
 #define MPCSHED                  0x0001      // SHED

@@ -23,8 +23,6 @@
 #include "os2_2w32.h"
 #include "dsm2.h"
 #include "dev_meter.h"
-//#include "dupreq.h"
-#include "device.h"
 
 
 // possible load profile mappings

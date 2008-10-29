@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scansup.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2007/05/31 21:41:20 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2008/10/29 18:16:47 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,16 +28,11 @@ using namespace std;
 #include "os2_2w32.h"
 #include "cticalls.h"
 #include "dsm2.h"
-//#include "device.h"
 //#include "drp.h"
 //#include "elogger.h"
 //#include "dsm2err.h"
-//#include "alarmlog.h"
-//#include "routes.h"
 //#include "queues.h"
 //#include "porter.h"
-//#include "lm_auto.h"
-//#include "perform.h"
 //#include "scanner.h"
 
 #include "scanglob.h"

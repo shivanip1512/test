@@ -16,6 +16,11 @@
 *                 design document for more information
 *    History:
       $Log: fdrvalmet.h,v $
+      Revision 1.10  2008/10/29 18:16:47  mfisher
+      YUK-6374 Remove unused DSM/2 remnants
+      Removed many orphaned function headers and structure definitions
+      Moved ILEX items closer to point of use in TimeSyncThread()
+
       Revision 1.9  2008/10/02 23:57:16  tspar
       YUK-5013 Full FDR reload should not happen with every point
 
@@ -102,7 +107,6 @@
 #include "queues.h"
 #include "fdrinterface.h"
 #include "fdrpointlist.h"
-#include "device.h"             // get the raw states
 #include "fdrsinglesocket.h"
 
 // global defines

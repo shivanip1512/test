@@ -45,8 +45,6 @@
 #include "queues.h"
 #include "dsm2.h"
 #include "dsm2err.h"
-#include "device.h"
-#include "routes.h"
 #include "porter.h"
 #include "logger.h"
 
@@ -256,8 +254,8 @@ INT IM_EX_CTIBASE D_Words (PBYTE DWords,     /* D words to decode */
    }
 
    /* if it's not a D word, and it's not a NACK, we got garbage */
-   if( ((DWords[0] & 0xf0) != 0xd0) && 
-       ((DWords[0] & 0xf0) != 0xe0) && 
+   if( ((DWords[0] & 0xf0) != 0xd0) &&
+       ((DWords[0] & 0xf0) != 0xe0) &&
        !PadTst(DWords, 1, CCU) )
    {
        return BADTYPE;

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTERSU.cpp-arc  $
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2008/10/22 21:16:43 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2008/10/29 18:16:47 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -33,15 +33,10 @@
 #include "queues.h"
 #include "dsm2.h"
 #include "dsm2err.h"
-#include "device.h"
-#include "routes.h"
 #include "porter.h"
 #include "master.h"
 #include "elogger.h"
-#include "alarmlog.h"
 #include "drp.h"
-#include "perform.h"
-#include "das08.h"
 
 /* define the global area */
 #include "portglob.h"
@@ -205,51 +200,6 @@ SendError (OUTMESS *&OutMessage, USHORT ErrorCode, INMESS *PassedInMessage)
 }
 
 
-/* Add Remote error to the comm error log */
-ReportRemoteError (CtiDeviceSPtr RemoteRecord, ERRSTRUCT *ErrorRecord)
-{
-    COMM_ERROR_LOG_STRUCT ComErrorRecord;
-    CtiPortSPtr PortRecord;
-
-    if(!(ErrorRecord->Error) || ErrorRecord->Type == ERRTYPEPROTOCOL)
-    {
-        return(NORMAL);
-    }
-
-    /* get the port record */
-    if(PortRecord = PortManager.PortGetEqual (RemoteRecord->getPortID()))
-    {
-        /* Now load up the Comm error record */
-        ComErrorRecord.TimeStamp = LongTime ();
-        ComErrorRecord.StatusFlag = DSTFlag();
-
-        ::memcpy (ComErrorRecord.DeviceName, RemoteRecord->getName().c_str(), STANDNAMLEN);
-
-        /* Figure out what to use for a port name */
-        ::strcpy (ComErrorRecord.RouteName, "$_");
-
-        if((PortRecord->getName())[0] = ' ')
-        {
-            ::memcpy (ComErrorRecord.RouteName + 2, PortRecord->getName().c_str(), STANDNAMLEN - 2);
-        }
-        else
-        {
-            ::memcpy (ComErrorRecord.RouteName + 2, PortRecord->getName().c_str(), STANDNAMLEN - 2);
-        }
-
-        // cout << __FILE__ << " " << __LINE__ << endl;
-        ComErrorLogAdd (&ComErrorRecord,  ErrorRecord, FALSE);
-    }
-    else
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could not find portid = " << RemoteRecord->getPortID() << " in the database.  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-    }
-
-    return(NORMAL);
-}
 
 
 HCTIQUEUE*   QueueHandle(LONG pid)

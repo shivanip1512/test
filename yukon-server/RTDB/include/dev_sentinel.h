@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_kv2.h-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2008/06/06 20:28:44 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2008/10/29 18:16:48 $
 *
 
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
@@ -26,7 +26,6 @@
 #include "dsm2.h"
 #include "ctitypes.h"
 #include "types.h"
-#include "device.h"
 #include "dllyukon.h"
 
 class IM_EX_DEVDB CtiDeviceSentinel : public CtiDeviceMeter
