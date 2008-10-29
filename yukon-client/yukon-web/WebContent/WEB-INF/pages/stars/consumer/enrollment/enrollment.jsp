@@ -145,7 +145,7 @@ function submitEnrollment() {
 		                                <img src="../../../WebConfig/${enrollment.applianceLogo}">
 		                            </td>
 		                            <td valign="top" class="${tableDataClass}" rowspan="${rowspan + 1}" width="20%">
-		                                <b><cti:msg key="${enrollment.applianceType}"/></b>
+		                                <b><c:out value="${enrollment.applianceCategory.categoryLabel}"/></b>
 		                            </td>
 		                            <td colspan="2"></td>
 		                        </tr>
