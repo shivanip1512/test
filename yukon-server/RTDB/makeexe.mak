@@ -27,7 +27,6 @@ INCLPATHS+= \
 ;$(SERVER)\include \
 ;$(PIL)\include \
 ;$(PROT)\include \
-;$(PROCLOG)\include \
 ;$(DISPATCH)\include \
 ;$(MSG)\include \
 ;$(RW)
@@ -93,7 +92,7 @@ pointtest.exe:  $(PTTESTOBJS) makeexe.mak
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) -o ..\$@ $(PTTESTOBJS) \
--link $(COMPILEBASE)\lib\cticparms.lib $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\clrdump.lib $(COMPILEBASE)\lib\ctisvr.lib $(COMPILEBASE)\lib\ctidbsrc.lib $(COMPILEBASE)\lib\ctipntdb.lib  $(RWLIBS) $(BOOSTLIBS) 
+-link $(COMPILEBASE)\lib\cticparms.lib $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\clrdump.lib $(COMPILEBASE)\lib\ctisvr.lib $(COMPILEBASE)\lib\ctidbsrc.lib $(COMPILEBASE)\lib\ctipntdb.lib  $(RWLIBS) $(BOOSTLIBS)
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -@copy ..\$@ $(YUKONOUTPUT)
                 @echo:
@@ -106,7 +105,7 @@ devtest.exe:    $(DEVTESTOBJS) makeexe.mak
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) -o ..\$@ $(DEVTESTOBJS) \
--link $(COMPILEBASE)\lib\cticparms.lib $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\clrdump.lib $(COMPILEBASE)\lib\ctisvr.lib $(COMPILEBASE)\lib\ctidbsrc.lib $(COMPILEBASE)\lib\ctidevdb.lib  $(RWLIBS) $(BOOSTLIBS) 
+-link $(COMPILEBASE)\lib\cticparms.lib $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\clrdump.lib $(COMPILEBASE)\lib\ctisvr.lib $(COMPILEBASE)\lib\ctidbsrc.lib $(COMPILEBASE)\lib\ctidevdb.lib  $(RWLIBS) $(BOOSTLIBS)
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -@copy ..\$@ $(YUKONOUTPUT)
                 @echo:
@@ -119,7 +118,7 @@ memtest.exe:    memtest.obj makeexe.mak
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) -o ..\$@ memtest.obj \
--link $(COMPILEBASE)\lib\cticparms.lib $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\clrdump.lib  $(RWLIBS) $(BOOSTLIBS) 
+-link $(COMPILEBASE)\lib\cticparms.lib $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\clrdump.lib  $(RWLIBS) $(BOOSTLIBS)
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -@copy ..\$@ $(YUKONOUTPUT)
                 @echo:
@@ -132,7 +131,7 @@ routetest.exe:   $(RTESTOBJS) makeexe.mak
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) -o ..\$@ $(RTESTOBJS) \
--link $(COMPILEBASE)\lib\cticparms.lib $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\clrdump.lib $(COMPILEBASE)\lib\ctisvr.lib $(COMPILEBASE)\lib\ctidbsrc.lib $(COMPILEBASE)\lib\ctidevdb.lib  $(RWLIBS) $(BOOSTLIBS) 
+-link $(COMPILEBASE)\lib\cticparms.lib $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\clrdump.lib $(COMPILEBASE)\lib\ctisvr.lib $(COMPILEBASE)\lib\ctidbsrc.lib $(COMPILEBASE)\lib\ctidevdb.lib  $(RWLIBS) $(BOOSTLIBS)
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -@copy ..\$@ $(YUKONOUTPUT)
                 @echo:

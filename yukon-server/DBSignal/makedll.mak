@@ -24,7 +24,6 @@ INCLPATHS+= \
 ;$(SERVER)\include \
 ;$(PIL)\include \
 ;$(PROT)\include \
-;$(PROCLOG)\include \
 ;$(DISPATCH)\include \
 ;$(MSG)\include \
 ;$(R_CPARMS)\include \
@@ -36,7 +35,6 @@ INCLPATHS+= \
 ;$(R_PIL)\include \
 ;$(R_SERVER)\include \
 ;$(R_PROT)\include \
-;$(R_PROCLOG)\include \
 ;$(R_DISPATCH)\include \
 ;$(R_MSG)\include \
 ;$(TCLINC) \

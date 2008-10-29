@@ -29,7 +29,6 @@ INCLPATHS+= \
 ;$(SERVER)\include \
 ;$(PIL)\include \
 ;$(PROT)\include \
-;$(PROCLOG)\include \
 ;$(DISPATCH)\include \
 ;$(MSG)\include \
 ;$(RW)
@@ -61,7 +60,7 @@ $(COMPILEBASE)\lib\ctisvr.lib \
 $(COMPILEBASE)\lib\clrdump.lib \
 $(COMPILEBASE)\lib\ctimsg.lib \
 $(COMPILEBASE)\lib\ctidevdb.lib \
-$(COMPILEBASE)\lib\ctidbsrc.lib 
+$(COMPILEBASE)\lib\ctidbsrc.lib
 
 
 CTIPROGS=\
@@ -74,7 +73,7 @@ ccu_simulator.exe:      $(CCU_SIMULATOR_OBJS) makeexe.mak
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(CFLAGS) $(RWLINKFLAGS) $(INCLPATHS) -o ..\$@ $(CCU_SIMULATOR_OBJS) -link $(CCU_SIMULATOR_LIBS) $(RWLIBS) $(BOOSTLIBS) 
+                $(RWCPPINVOKE) $(CFLAGS) $(RWLINKFLAGS) $(INCLPATHS) -o ..\$@ $(CCU_SIMULATOR_OBJS) -link $(CCU_SIMULATOR_LIBS) $(RWLIBS) $(BOOSTLIBS)
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 -@copy ..\$@ $(YUKONOUTPUT)
                 @echo:

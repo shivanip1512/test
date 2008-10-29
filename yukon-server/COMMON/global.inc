@@ -2,8 +2,8 @@
 #                                                         #
 #       Makefile Template for CTI Apps                    #
 #                                                         #
-#       $Revision: 1.17 $                               #
-#       $Date: 2008/09/15 17:59:17 $                  #
+#       $Revision: 1.18 $                               #
+#       $Date: 2008/10/29 21:59:25 $                  #
 #                                                         #
 # Definitions                                             #
 ###########################################################
@@ -68,7 +68,6 @@ R_DATABASE       = $(REFPATH)\Database
 R_PIL            = $(REFPATH)\Pil
 R_PORTER         = $(REFPATH)\Porter
 R_SCANNER        = $(REFPATH)\Scanner
-R_PROCLOG        = $(REFPATH)\Proclog
 R_SERVER         = $(REFPATH)\Server
 R_CPARMS         = $(REFPATH)\Cparms
 R_MACS           = $(REFPATH)\Macs
@@ -96,7 +95,6 @@ DATABASE        = $(COMPILEBASE)\database
 PIL             = $(COMPILEBASE)\pil
 PORTER          = $(COMPILEBASE)\porter
 SCANNER         = $(COMPILEBASE)\scanner
-PROCLOG         = $(COMPILEBASE)\proclog
 SERVER          = $(COMPILEBASE)\server
 CPARMS          = $(COMPILEBASE)\cparms
 MACS            = $(COMPILEBASE)\macs

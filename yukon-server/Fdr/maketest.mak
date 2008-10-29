@@ -11,7 +11,6 @@ INCLPATHS+= \
 -I$(MSG)\include \
 -I$(COMMON)\include \
 -I$(CPARMS)\include \
--I$(PROCLOG)\include \
 -I$(RW) \
 -I$(BOOST) \
 -I$(FDR)\Telegyr\inc \
@@ -32,7 +31,6 @@ INCLPATHS+= \
 ;$(SERVER)\include \
 ;$(PIL)\include \
 ;$(PROT)\include \
-;$(PROCLOG)\include \
 ;$(DISPATCH)\include \
 ;$(MSG)\include \
 ;$(SIGNAL)\include \
@@ -41,7 +39,7 @@ INCLPATHS+= \
 
 FDRTESTOBJS=\
 test_fdrTextImport.obj \
-test_fdrTristateSub.obj 
+test_fdrTristateSub.obj
 
 CTIFDRLIBS=\
 $(COMPILEBASE)\lib\cticparms.lib \
@@ -50,7 +48,6 @@ $(COMPILEBASE)\lib\clrdump.lib \
 $(COMPILEBASE)\lib\ctimsg.lib \
 $(COMPILEBASE)\lib\ctivg.lib \
 $(COMPILEBASE)\lib\ctisvr.lib \
-$(COMPILEBASE)\lib\proclog.lib \
 $(COMPILEBASE)\lib\cmdline.lib \
 wininet.lib
 
@@ -84,7 +81,7 @@ $(BIN)\fdrtelegyr.lib \
 $(BIN)\fdrxa21lm.lib \
 $(BIN)\fdrlivedata.lib \
 $(BIN)\fdrwabash.lib \
-$(BIN)\fdrtristatesub.lib 
+$(BIN)\fdrtristatesub.lib
 
 
 ALL:      fdrtest
@@ -115,7 +112,7 @@ deps:
 	@echo Creating Executable $(OBJ)\$(@B).exe
         @echo:
 	$(CC) $(CFLAGS) $(INCLPATHS) $(PCHFLAGS) $(RWCPPFLAGS) $(RWLINKFLAGS)  /Fe$(BIN)\$(@B).exe \
-	.\obj\$(@B).obj -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOSTLIBS) $(CTIFDRDLL) $(BOOSTTESTLIBS) $(RWLIBS) $(CTIFDRLIBS) $(FDRLIBS) $(LINKFLAGS) 
+	.\obj\$(@B).obj -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOSTLIBS) $(CTIFDRDLL) $(BOOSTTESTLIBS) $(RWLIBS) $(CTIFDRLIBS) $(FDRLIBS) $(LINKFLAGS)
 
 	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
 	-copy $(BIN)\$(@B).exe $(YUKONOUTPUT)

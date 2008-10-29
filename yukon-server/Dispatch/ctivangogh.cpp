@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.204 $
-* DATE         :  $Date: 2008/10/23 19:52:08 $
+* REVISION     :  $Revision: 1.205 $
+* DATE         :  $Date: 2008/10/29 21:59:25 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -104,8 +104,7 @@ using namespace std;
 
 #define PERF_TO_MS(b,a,p) (UINT)(((b).QuadPart - (a).QuadPart) / ((p).QuadPart / 1000L))
 
-  //removed for Boost compat
-DLLIMPORT extern CtiLogger   dout;              // From proclog.dll
+DLLIMPORT extern CtiLogger   dout;
 
 DLLEXPORT BOOL  bGCtrlC = FALSE;
 

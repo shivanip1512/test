@@ -1,1 +1,0 @@
-This file keeps this directory from being removed from CVS

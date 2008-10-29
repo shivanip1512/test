@@ -9,7 +9,6 @@ INCLPATHS+= \
 -I$(DEVICECONFIGURATION)\include \
 -I$(RTDB)\include \
 -I$(COMMON)\include \
--I$(PROCLOG)\include \
 -I$(PROT)\include \
 -I$(BOOST) \
 -I$(RW) \
@@ -30,7 +29,6 @@ INCLPATHS+= \
 ;$(SERVER)\include \
 ;$(PIL)\include \
 ;$(PROT)\include \
-;$(PROCLOG)\include \
 ;$(DISPATCH)\include \
 ;$(MSG)\include \
 ;$(BOOST) \

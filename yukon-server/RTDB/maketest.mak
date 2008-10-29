@@ -12,7 +12,6 @@ INCLPATHS+= \
 -I$(MSG)\include \
 -I$(PROT)\include \
 -I$(CPARMS)\include \
--I$(PROCLOG)\include \
 -I$(RW) \
 -I$(BOOST) \
 -I$(XERCESINC) \
@@ -31,7 +30,6 @@ INCLPATHS+= \
 ;$(SERVER)\include \
 ;$(PIL)\include \
 ;$(PROT)\include \
-;$(PROCLOG)\include \
 ;$(DISPATCH)\include \
 ;$(MSG)\include \
 ;$(TCLINC) \

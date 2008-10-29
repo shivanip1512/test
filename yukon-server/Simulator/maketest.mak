@@ -29,7 +29,6 @@ INCLPATHS+= \
 ;$(SERVER)\include \
 ;$(PIL)\include \
 ;$(PROT)\include \
-;$(PROCLOG)\include \
 ;$(DISPATCH)\include \
 ;$(MSG)\include \
 ;$(RW)
@@ -58,7 +57,7 @@ $(OBJ)\Mct410Sim.obj \
 LIBS=\
 kernel32.lib user32.lib advapi32.lib wsock32.lib \
 $(COMPILEBASE)\lib\ctidevdb.lib \
-$(COMPILEBASE)\lib\ctidbsrc.lib 
+$(COMPILEBASE)\lib\ctidbsrc.lib
 
 ALL:            ctibasetest
 

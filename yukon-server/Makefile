@@ -24,12 +24,6 @@ all:
         @echo Building in $(COMPILEBASE)\common
         @echo:
         @$(MAKE) -nologo
-        @%cd $(COMPILEBASE)\proclog
-        @echo:
-        @title Building in $(COMPILEBASE)\proclog
-        @echo Building in $(COMPILEBASE)\proclog
-        @echo:
-        @$(MAKE) -nologo
         @%cd $(COMPILEBASE)\message
         @echo:
         @title Building in $(COMPILEBASE)\message
@@ -173,8 +167,6 @@ clean:
         @$(MAKE) -nologo  $@
         @%cd $(COMPILEBASE)\protocol
         @$(MAKE) -nologo  $@
-        @%cd $(COMPILEBASE)\proclog
-        @$(MAKE) -nologo  $@
         @%cd $(COMPILEBASE)\server
         @$(MAKE) -nologo  $@
         @%cd $(COMPILEBASE)\database
@@ -222,9 +214,6 @@ clean:
 
 deps:
         %cd $(COMPILEBASE)\protocol
-        title %cd%
-        $(MAKE) -nologo  $@
-        %cd $(COMPILEBASE)\proclog
         title %cd%
         $(MAKE) -nologo  $@
         %cd $(COMPILEBASE)\server
@@ -290,8 +279,6 @@ deps:
 
 copy:
         @%cd cparms
-        @$(MAKE) -nologo  $@
-        @%cd $(COMPILEBASE)\proclog
         @$(MAKE) -nologo  $@
         @%cd $(COMPILEBASE)\server
         @$(MAKE) -nologo  $@

@@ -204,7 +204,7 @@
     #define IM_EX_DLL_HOLIDAYMGR
 #else
     #define IM_EX_DLL_HOLIDAYMGR __declspec(dllimport)
-#endif    
+#endif
 
 #ifdef _DLL_SEASONMGR
     #define IM_EX_DLL_SEASONMGR __declspec(dllexport)
@@ -212,7 +212,7 @@
     #define IM_EX_DLL_SEASONMGR
 #else
     #define IM_EX_DLL_SEASONMGR __declspec(dllimport)
-#endif    
+#endif
 
 #ifdef ROUTEDB                // The ctibase.dll
    #define IM_EX_ROUTEDB      __declspec(dllexport)
@@ -252,14 +252,6 @@
    #define IM_EX_DEVICEDB
 #else
    #define IM_EX_DEVICEDB      __declspec(dllimport)
-#endif
-
-#ifdef _DLL_PROCLOG                 // The ctisvr.dll
-   #define IM_EX_PROCLOG      __declspec(dllexport)
-#elif defined( STI_UNDERSTAND )
-   #define IM_EX_PROCLOG
-#else
-   #define IM_EX_PROCLOG      __declspec(dllimport)
 #endif
 
 #ifdef _DLL_TCPSUP                  // The ctisvr.dll
@@ -454,7 +446,7 @@
    #define IM_EX_ENH_FDRLODESTARIMPORT
 #else
    #define IM_EX_ENH_FDRLODESTARIMPORT       __declspec(dllimport)
-#endif 
+#endif
 #ifdef _DLL_STD_FDRLODESTARIMPORT
    #define IM_EX_STD_FDRLODESTARIMPORT       __declspec(dllexport)
 #elif defined( STI_UNDERSTAND )

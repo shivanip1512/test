@@ -7,7 +7,6 @@ INCLPATHS+= \
 -I$(MACS)\include \
 -I$(COMMON)\include \
 -I$(MCCMD)\include \
--I$(PROCLOG)\include \
 -I$(SERVICE)\include \
 -I$(CPARMS)\include \
 -I$(DATABASE)\include \
@@ -33,7 +32,6 @@ INCLPATHS+= \
 ;$(SERVER)\include \
 ;$(PIL)\include \
 ;$(PROTOCOL)\include \
-;$(PROCLOG)\include \
 ;$(RTDB)\include \
 ;$(DISPATCH)\include \
 ;$(MSG)\include \
@@ -50,7 +48,6 @@ $(COMPILEBASE)\lib\cticparms.lib \
 $(COMPILEBASE)\lib\ctimsg.lib \
 $(COMPILEBASE)\lib\ctibase.lib \
 $(COMPILEBASE)\lib\clrdump.lib \
-$(COMPILEBASE)\lib\proclog.lib \
 $(COMPILEBASE)\lib\mccmd.lib \
 $(COMPILEBASE)\lib\ctidbsrc.lib \
 $(COMPILEBASE)\lib\ctiholidaydb.lib \

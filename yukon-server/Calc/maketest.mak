@@ -29,7 +29,6 @@ INCLPATHS+= \
 ;$(SERVER)\include \
 ;$(PIL)\include \
 ;$(PROT)\include \
-;$(PROCLOG)\include \
 ;$(DISPATCH)\include \
 ;$(MSG)\include \
 ;$(SIGNAL)\include \
@@ -101,7 +100,7 @@ clean:
 	@echo Creating Executable $(OBJ)\$(@B).exe
         @echo:
 	$(CC) $(CFLAGS) $(INCLPATHS) $(PCHFLAGS) $(RWCPPFLAGS) $(RWLINKFLAGS)  /Fe$(BIN)\$(@B).exe \
-	.\obj\$(@B).obj -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOSTLIBS) $(CALCOBJS) $(BOOSTTESTLIBS) $(RWLIBS) $(CALCLIBS) $(LINKFLAGS) 
+	.\obj\$(@B).obj -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOSTLIBS) $(CALCOBJS) $(BOOSTTESTLIBS) $(RWLIBS) $(CALCLIBS) $(LINKFLAGS)
 
 	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
 	-copy $(BIN)\$(@B).exe $(YUKONOUTPUT)

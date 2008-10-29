@@ -9,7 +9,6 @@ INCLPATHS+= \
 -I$(MSG)\include \
 -I$(COMMON)\include \
 -I$(CPARMS)\include \
--I$(PROCLOG)\include \
 -I$(SERVICE)\include \
 -I$(RW) \
 -I$(BOOST) \
@@ -28,7 +27,6 @@ INCLPATHS+= \
 ;$(SERVER)\include \
 ;$(PIL)\include \
 ;$(PROT)\include \
-;$(PROCLOG)\include \
 ;$(DISPATCH)\include \
 ;$(MSG)\include \
 ;$(SIGNAL)\include \
@@ -51,7 +49,6 @@ CTIPROGS=fdr.exe
 FDRLIBS=\
 advapi32.lib \
 $(COMPILEBASE)\lib\cticparms.lib \
-$(COMPILEBASE)\lib\proclog.lib \
 $(COMPILEBASE)\lib\ctibase.lib \
 $(COMPILEBASE)\lib\clrdump.lib \
 $(COMPILEBASE)\lib\ctimsg.lib \

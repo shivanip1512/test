@@ -9,7 +9,6 @@
 #define  VANGOGHNEXUS                                       (NEXUSBASE + 10 )
 #define  NOTIFICATIONNEXUS                                     (NEXUSBASE + 15 )
 
-#define  PROCLOGNEXUS                                       (NEXUSBASE + 20)
 #define  PORTERINTERFACENEXUS                               (NEXUSBASE + 40)
 
 #define  SES92NEXUS                                         (NEXUSBASE + 120)

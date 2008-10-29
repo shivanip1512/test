@@ -12,7 +12,6 @@ INCLPATHS+= \
 -I$(MSG)\include \
 -I$(COMMON)\include \
 -I$(CPARMS)\include \
--I$(PROCLOG)\include \
 -I$(RW) \
 
 
@@ -29,7 +28,6 @@ INCLPATHS+= \
 ;$(SERVER)\include \
 ;$(PIL)\include \
 ;$(PROT)\include \
-;$(PROCLOG)\include \
 ;$(DISPATCH)\include \
 ;$(MSG)\include \
 ;$(SIGNAL)\include \
@@ -48,7 +46,6 @@ $(COMPILEBASE)\lib\ctimsg.lib \
 $(COMPILEBASE)\lib\ctivg.lib \
 $(COMPILEBASE)\lib\ctisvr.lib \
 $(COMPILEBASE)\lib\cti_fdr.lib \
-$(COMPILEBASE)\lib\proclog.lib \
 $(COMPILEBASE)\lib\cmdline.lib \
 $(COMPILEBASE)\lib\fdrinet.lib
 

@@ -11,7 +11,6 @@ INCLPATHS+= \
 -I$(MSG)\include \
 -I$(COMMON)\include \
 -I$(CPARMS)\include \
--I$(PROCLOG)\include \
 -I$(RW) \
 -I$(BOOST) \
 -I$(FDR)\Telegyr\inc \
@@ -32,7 +31,6 @@ INCLPATHS+= \
 ;$(SERVER)\include \
 ;$(PIL)\include \
 ;$(PROT)\include \
-;$(PROCLOG)\include \
 ;$(DISPATCH)\include \
 ;$(MSG)\include \
 ;$(SIGNAL)\include \
@@ -77,10 +75,6 @@ fdrpibase.obj \
 fdrpipoll.obj \
 fdrpinotify.obj
 
-# socketinterface.obj \
-#fdrpointidmap.obj \
-#fdrprotectedmaplist.obj \
-
 CTIFDRLIBS=\
 $(COMPILEBASE)\lib\cticparms.lib \
 $(COMPILEBASE)\lib\ctibase.lib \
@@ -88,7 +82,6 @@ $(COMPILEBASE)\lib\clrdump.lib \
 $(COMPILEBASE)\lib\ctimsg.lib \
 $(COMPILEBASE)\lib\ctivg.lib \
 $(COMPILEBASE)\lib\ctisvr.lib \
-$(COMPILEBASE)\lib\proclog.lib \
 $(COMPILEBASE)\lib\cmdline.lib \
 wininet.lib
 
@@ -128,7 +121,7 @@ fdrpi.dll \
 fdrxa21lm.dll \
 fdrlivedata.dll \
 fdrwabash.dll \
-fdrtristatesub.dll 
+fdrtristatesub.dll
 
 #  commented out because of bigtime Microsoft compiler problems.  i'm compiling
 #    all of the code into one .obj, because it can't handle the code being contained

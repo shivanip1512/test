@@ -7,7 +7,6 @@ INCLPATHS+= \
 -I$(LOADMANAGEMENT)\include \
 -I$(COMMON)\include \
 -I$(DATABASE)\include \
--I$(PROCLOG)\include \
 -I$(MSG)\include \
 -I$(RTDB)\include \
 -I$(SERVICE)\include \
@@ -27,7 +26,6 @@ INCLPATHS+= \
 ;$(RTDB)\include \
 ;$(SERVICE)\include \
 ;$(SERVER)\include \
-;$(PROCLOG)\include \
 ;$(MSG)\include \
 ;$(BOOST) \
 ;$(RW)
@@ -41,7 +39,6 @@ $(COMPILEBASE)\lib\cticparms.lib \
 $(COMPILEBASE)\lib\ctimsg.lib \
 $(COMPILEBASE)\lib\ctibase.lib \
 $(COMPILEBASE)\lib\clrdump.lib \
-$(COMPILEBASE)\lib\proclog.lib \
 $(COMPILEBASE)\lib\ctiholidaydb.lib \
 $(COMPILEBASE)\lib\ctiseasondb.lib
 
@@ -96,7 +93,7 @@ loadmanagement.exe:     $(BASEOBJS) Makefile
               @echo Compiling $@
               @%cd $(OBJ)
               $(RWCPPINVOKE) $(CFLAGS) -D_DEBUG_MEMORY $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
-$(BASEOBJS) -link $(LIBS) $(RWLIBS) $(BOOSTLIBS) $(LINKFLAGS) 
+$(BASEOBJS) -link $(LIBS) $(RWLIBS) $(BOOSTLIBS) $(LINKFLAGS)
               @echo:
               -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
               -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)

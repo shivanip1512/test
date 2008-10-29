@@ -28,7 +28,6 @@ INCLPATHS+= \
 ;$(SERVER)\include \
 ;$(PIL)\include \
 ;$(PROTOCOL)\include \
-;$(PROCLOG)\include \
 ;$(RTDB)\include \
 ;$(DISPATCH)\include \
 ;$(MSG)\include \

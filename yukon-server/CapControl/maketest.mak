@@ -7,7 +7,6 @@ INCLPATHS+= \
 -I$(CAPCONTROL)\include \
 -I$(COMMON)\include \
 -I$(DATABASE)\include \
--I$(PROCLOG)\include \
 -I$(MSG)\include \
 -I$(RTDB)\include \
 -I$(SERVICE)\include \
@@ -27,7 +26,6 @@ INCLPATHS+= \
 ;$(SERVICE)\include \
 ;$(RTDB)\include \
 ;$(SERVER)\include \
-;$(PROCLOG)\include \
 ;$(MSG)\include \
 ;$(RW)
 
@@ -68,7 +66,7 @@ $(OBJ)\ccarea.obj \
 $(OBJ)\ccsparea.obj \
 $(OBJ)\ccsubstation.obj \
 $(OBJ)\ccoperationstats.obj \
-$(OBJ)\ccconfirmationstats.obj 
+$(OBJ)\ccconfirmationstats.obj
 
 TARGS = capcontrol.exe
 

@@ -26,7 +26,6 @@ INCLPATHS+= \
 ;$(SERVICE)\include \
 ;$(SERVER)\include \
 ;$(PIL)\include \
-;$(PROCLOG)\include \
 ;$(DISPATCH)\include \
 ;$(MSG)\include \
 ;$(PROT)\include \
