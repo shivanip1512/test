@@ -18,6 +18,7 @@ import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 import com.cannontech.loadcontrol.service.LoadControlCommandService;
 import com.cannontech.loadcontrol.service.LoadControlService;
 import com.cannontech.loadcontrol.service.ProgramChangeBlocker;
+import com.cannontech.loadcontrol.service.data.ProgramControlHistory;
 import com.cannontech.loadcontrol.service.data.ProgramStartingGear;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
 import com.cannontech.loadcontrol.service.data.ScenarioProgramStartingGears;
@@ -139,6 +140,7 @@ public class LoadControlServiceImpl implements LoadControlService, InitializingB
         return new ScenarioStatus(scenarioName, programStatii);
     }
     
+    // PROGRAM STARTING GEARS BY SCENARIO NAME
     public ScenarioProgramStartingGears getScenarioProgramStartingGearsByScenarioName(String scenarioName) throws IllegalArgumentException {
         
         int scenarioId = loadControlProgramDao.getScenarioIdForScenarioName(scenarioName);
@@ -147,8 +149,14 @@ public class LoadControlServiceImpl implements LoadControlService, InitializingB
         return new ScenarioProgramStartingGears(scenarioName, programStartingGears);
     }
     
-    
-    
+    // CONTROL HISTORY BY PROGRAM NAME
+    public List<ProgramControlHistory> getControlHistoryByProgramName(String programName, Date fromTime, Date throughTime) throws IllegalArgumentException {
+        
+        //TODO everything
+        List<ProgramControlHistory> programControlHistory = new ArrayList<ProgramControlHistory>();
+     
+        return programControlHistory;
+    }
     
     //==============================================================================================
     // PRIVATE HELPER METHODS

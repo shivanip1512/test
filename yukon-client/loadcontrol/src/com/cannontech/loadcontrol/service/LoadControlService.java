@@ -3,6 +3,7 @@ package com.cannontech.loadcontrol.service;
 import java.util.Date;
 import java.util.List;
 
+import com.cannontech.loadcontrol.service.data.ProgramControlHistory;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
 import com.cannontech.loadcontrol.service.data.ScenarioProgramStartingGears;
 import com.cannontech.loadcontrol.service.data.ScenarioStatus;
@@ -115,4 +116,14 @@ public interface LoadControlService {
      */
     public ScenarioProgramStartingGears getScenarioProgramStartingGearsByScenarioName(String scenarioName) throws IllegalArgumentException;
     
+    /**
+     * Returns a list of ProgramControlHistory objects for the given programName, within the given
+     * time period.
+     * @param programName
+     * @param fromTime inclusive
+     * @param throughTime inclusive
+     * @return
+     * @throws IllegalArgumentException if no program exists for given programName
+     */
+    public List<ProgramControlHistory> getControlHistoryByProgramName(String programName, Date fromTime, Date throughTime) throws IllegalArgumentException;
 }

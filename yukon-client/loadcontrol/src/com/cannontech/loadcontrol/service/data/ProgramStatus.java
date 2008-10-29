@@ -31,6 +31,10 @@ public class ProgramStatus {
         this.program = program;
     }
     
+    public int getProgramId() {
+        return ProgramUtils.getProgramId(program);
+    }
+    
     public String getProgramName() {
         return ProgramUtils.getProgramName(program);
     }
@@ -57,6 +61,7 @@ public class ProgramStatus {
     
     public String toString() {
         ToStringCreator tsc = new ToStringCreator(this);
+        tsc.append("programId", getProgramId());
         tsc.append("programName", getProgramName());
         tsc.append("active", isActive());
         tsc.append("startTime", getStartTime());

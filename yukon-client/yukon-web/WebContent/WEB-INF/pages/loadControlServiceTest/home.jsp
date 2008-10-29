@@ -58,10 +58,6 @@
                             <input type="text" name="programName" value="${programName}">
                         </tags:nameValue>
                         
-                        <tags:nameValue name="User Name">
-                            <input type="text" name="userName" value="${userName}">
-                        </tags:nameValue>
-                        
                         <tags:nameValue name="RUN">
                             <input type="submit" value="TEST">
                         </tags:nameValue>
