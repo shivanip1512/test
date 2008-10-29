@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.137 $
-* DATE         :  $Date: 2008/10/29 19:17:02 $
+* REVISION     :  $Revision: 1.138 $
+* DATE         :  $Date: 2008/10/29 19:17:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -44,7 +44,6 @@
 #include "portverify.h"
 #include "master.h"
 #include "elogger.h"
-#include "drp.h"
 #include "thread_monitor.h"
 #include "CtiLocalConnect.h"
 #include "systemmsgthread.h"

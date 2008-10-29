@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/RIPPLE.cpp-arc  $
-* REVISION     :  $Revision: 1.43 $
-* DATE         :  $Date: 2008/10/29 19:17:02 $
+* REVISION     :  $Revision: 1.44 $
+* DATE         :  $Date: 2008/10/29 19:18:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -60,7 +60,6 @@
 #include "master.h"
 #include "scanner.h"
 #include "elogger.h"
-#include "drp.h"
 
 #include "portglob.h"
 #include "c_port_interface.h"

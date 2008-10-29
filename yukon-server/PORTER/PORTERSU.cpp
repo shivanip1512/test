@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTERSU.cpp-arc  $
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2008/10/29 18:16:47 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2008/10/29 19:19:21 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -36,7 +36,6 @@
 #include "porter.h"
 #include "master.h"
 #include "elogger.h"
-#include "drp.h"
 
 /* define the global area */
 #include "portglob.h"
