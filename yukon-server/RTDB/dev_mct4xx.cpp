@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.93 $
-* DATE         :  $Date: 2008/09/17 21:36:26 $
+* REVISION     :  $Revision: 1.94 $
+* DATE         :  $Date: 2008/10/30 21:20:38 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,6 +24,7 @@
 #include "dev_mct470.h"  //  for sspec information
 #include "dev_mct410.h"  //  for sspec information
 
+#include "devicetypes.h"
 #include "ctistring.h"
 #include "numstr.h"
 #include "pt_status.h"   //  for valueReport()'s use of CtiPointStatus
@@ -801,73 +802,7 @@ INT CtiDeviceMCT4xx::executeGetValue( CtiRequestMsg        *pReq,
                             //  this is the number of seconds from the current pointer
                             relative_time = request_time - _llpInterest.time;
 
-                            if( (request_channel == _llpInterest.channel) &&  //  correct channel
-                                (relative_time < (16 * block_len))        &&  //  within 16 blocks
-                                !(relative_time % block_len) )                //  aligned
-                            {
-                                //  it's aligned (and close enough) to the block we're pointing at
-                                function  = 0x40;
-                                function += relative_time / block_len;
-
-                                _llpInterest.offset = relative_time;
-                            }
-                            else
-                            {
-                                //  just read the first block - it'll be the one we're pointing at
-                                function  = 0x40;
-
-                                //  we need to set it to the requested interval
-                                CtiOutMessage *interest_om = new CtiOutMessage(*OutMessage);
-
-                                if( interest_om )
-                                {
-                                    _llpInterest.time    = request_time;
-                                    _llpInterest.offset  = 0;
-                                    _llpInterest.channel = request_channel;
-
-                                    interest_om->Sequence = Emetcon::PutConfig_LoadProfileInterest;
-
-                                    interest_om->Buffer.BSt.Function = FuncWrite_LLPInterestPos;
-                                    interest_om->Buffer.BSt.IO       = Emetcon::IO_Function_Write;
-                                    interest_om->Buffer.BSt.Length   = FuncWrite_LLPInterestLen;
-                                    interest_om->MessageFlags |= MessageFlag_ExpectMore;
-
-                                    unsigned long utc_time = request_time;
-
-                                    interest_om->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
-
-                                    interest_om->Buffer.BSt.Message[1] = request_channel + 1  & 0x000000ff;
-
-                                    interest_om->Buffer.BSt.Message[2] = (utc_time >> 24) & 0x000000ff;
-                                    interest_om->Buffer.BSt.Message[3] = (utc_time >> 16) & 0x000000ff;
-                                    interest_om->Buffer.BSt.Message[4] = (utc_time >>  8) & 0x000000ff;
-                                    interest_om->Buffer.BSt.Message[5] = (utc_time)       & 0x000000ff;
-
-                                    outList.push_back(interest_om);
-                                    interest_om = 0;
-                                }
-                                else
-                                {
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " **** Checkpoint - unable to create outmessage, cannot set interval **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                    }
-                                }
-                            }
-
-                            OutMessage->Buffer.BSt.Function = function;
-                            OutMessage->Buffer.BSt.IO       = Emetcon::IO_Function_Read;
-                            OutMessage->Buffer.BSt.Length   = 13;
-
-                            function = Emetcon::GetValue_LoadProfile;
-
-                            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_Time,         _llpInterest.time);
-                            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_Channel,      _llpInterest.channel + 1);
-                            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestBegin, _llpInterest.time +
-                                                                                                     _llpInterest.offset);
-                            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestEnd,   _llpInterest.time_end);
-
-                            if( strstr(OutMessage->Request.CommandStr, " background") )
+                            if( OutMessage->Request.Connection && strstr(OutMessage->Request.CommandStr, " background") )
                             {
                                 CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
 
@@ -882,7 +817,71 @@ INT CtiDeviceMCT4xx::executeGetValue( CtiRequestMsg        *pReq,
                                 OutMessage->Request.Connection = 0;
                             }
 
-                            nRet = NoError;
+                            if( (request_channel == _llpInterest.channel) &&  //  correct channel
+                                (relative_time < (16 * block_len))        &&  //  within 16 blocks
+                                !(relative_time % block_len) )                //  aligned
+                            {
+                                //  it's aligned (and close enough) to the block we're pointing at
+                                function  = 0x40;
+                                function += relative_time / block_len;
+
+                                _llpInterest.offset = relative_time;
+
+                                OutMessage->Buffer.BSt.Function = function;
+                                OutMessage->Buffer.BSt.IO       = Emetcon::IO_Function_Read;
+                                OutMessage->Buffer.BSt.Length   = 13;
+
+                                function = Emetcon::GetValue_LoadProfile;
+                            }
+                            else if( !strstr(OutMessage->Request.CommandStr, " read") )
+                            {
+                                //  we need to set it to the requested interval
+                                _llpInterest.time    = request_time;
+                                _llpInterest.offset  = 0;
+                                _llpInterest.channel = request_channel;
+
+                                function = Emetcon::PutConfig_LoadProfileInterest;
+
+                                OutMessage->Buffer.BSt.Function = FuncWrite_LLPInterestPos;
+                                OutMessage->Buffer.BSt.IO       = Emetcon::IO_Function_Write;
+                                OutMessage->Buffer.BSt.Length   = FuncWrite_LLPInterestLen;
+                                OutMessage->MessageFlags |= MessageFlag_ExpectMore;
+
+                                OutMessage->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
+
+                                OutMessage->Buffer.BSt.Message[1] = _llpInterest.channel + 1  & 0x000000ff;
+
+                                OutMessage->Buffer.BSt.Message[2] = (_llpInterest.time >> 24) & 0x000000ff;
+                                OutMessage->Buffer.BSt.Message[3] = (_llpInterest.time >> 16) & 0x000000ff;
+                                OutMessage->Buffer.BSt.Message[4] = (_llpInterest.time >>  8) & 0x000000ff;
+                                OutMessage->Buffer.BSt.Message[5] = (_llpInterest.time)       & 0x000000ff;
+                            }
+                            else
+                            {
+                                //  trying to read, but we're not aligned - something must've gone wrong
+                                CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
+
+                                ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
+                                ReturnMsg->setConnectionHandle(OutMessage->Request.Connection);
+                                ReturnMsg->setResultString(getName() + " / Long load profile read setup error");
+
+                                retMsgHandler( OutMessage->Request.CommandStr, NoError, ReturnMsg, vgList, retList, true );
+
+                                _llpInterest.time     = 0;
+                                _llpInterest.time_end = 0;
+                                _llpInterest.offset   = 0;
+                                _llpInterest.channel  = 0;
+
+                                InterlockedExchange(&_llpInterest.in_progress, false);
+
+                                found = false;
+                            }
+
+                            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_Time,         _llpInterest.time);
+                            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_Channel,      _llpInterest.channel + 1);
+                            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestBegin, _llpInterest.time +
+                                                                                                     _llpInterest.offset);
+                            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestEnd,   _llpInterest.time_end);
                         }
                     }
                 }
@@ -2019,6 +2018,51 @@ INT CtiDeviceMCT4xx::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< 
 
                 //  set it to execute in the future
                 newReq->setMessageTime(CtiTime::now().seconds() + ((fixed_delay + variable_delay) / 1000));
+
+                retList.push_back(newReq);
+
+                break;
+            }
+
+            case Emetcon::PutConfig_LoadProfileInterest:
+            {
+                //  now do the actual read
+                CtiRequestMsg *newReq = new CtiRequestMsg(getID(),
+                                                          InMessage->Return.CommandStr,
+                                                          InMessage->Return.UserID,
+                                                          InMessage->Return.GrpMsgID,
+                                                          InMessage->Return.RouteID,
+                                                          0,  //  PIL will recalculate this;  if we include it, we will potentially be bypassing the initial macro routes
+                                                          0,
+                                                          0,
+                                                          InMessage->Priority);
+
+                newReq->setConnectionHandle((void *)InMessage->Return.Connection);
+                newReq->setCommandString(newReq->CommandString() + " read");
+
+                if( getType() == TYPEMCT470 )
+                {
+                    unsigned fixed_delay = gConfigParms.getValueAsULong("PORTER_MCT470_LLP_READ_DELAY", 25);
+
+                    //  set it to execute in the future
+                    if( !strstr(InMessage->Return.CommandStr, " noqueue") )
+                    {
+                        //  take two seconds off if it's queued
+                        newReq->setMessageTime(CtiTime::now().seconds() + fixed_delay - 2);
+                    }
+                    else
+                    {
+                        newReq->setMessageTime(CtiTime::now().seconds() + fixed_delay);
+                    }
+
+                    CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+
+                    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+                    ReturnMsg->setConnectionHandle(InMessage->Return.Connection);
+                    ReturnMsg->setResultString(getName() + " / delaying " + CtiNumStr(fixed_delay) + " seconds for IED LP scan");
+
+                    retMsgHandler(InMessage->Return.CommandStr, NoError, ReturnMsg, vgList, retList, true);
+                }
 
                 retList.push_back(newReq);
 
