@@ -351,25 +351,12 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 			    }catch(EmptyResultDataAccessException ignore) {}
 			}
 			
-			// Get the privilege group before the default login is deleted
-			LiteYukonGroup liteGroup = energyCompany.getOperatorAdminGroup();
-			
 			// Delete the default operator login
 			if (energyCompany.getUserID() != com.cannontech.user.UserUtils.USER_ADMIN_ID &&
 				energyCompany.getUserID() != com.cannontech.user.UserUtils.USER_DEFAULT_ID)
 			{
 				com.cannontech.database.data.user.YukonUser.deleteOperatorLogin( new Integer(energyCompany.getUserID()) );
 				ServerUtils.handleDBChange( DaoFactory.getYukonUserDao().getLiteYukonUser(energyCompany.getUserID()), DBChangeMsg.CHANGE_TYPE_DELETE );
-			}
-			
-			// Delete the privilege group of the default operator login
-			if (liteGroup != null) {
-				com.cannontech.database.data.user.YukonGroup dftGroup =
-						new com.cannontech.database.data.user.YukonGroup();
-				dftGroup.setGroupID( new Integer(liteGroup.getGroupID()) );
-				
-				Transaction.createTransaction( Transaction.DELETE, dftGroup ).execute();
-				ServerUtils.handleDBChange( liteGroup, DBChangeMsg.CHANGE_TYPE_DELETE );
 			}
 			
 			status = STATUS_FINISHED;
