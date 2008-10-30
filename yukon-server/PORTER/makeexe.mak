@@ -95,9 +95,7 @@ $(COMPILEBASE)\porter\lib\ssleay32.lib \
 
 EXECS=\
 porter.exe \
-traceset.exe \
-contest.exe
-
+traceset.exe
 
 ALL:            $(EXECS)
                 -@if exist $(COMPILEBASE)\porter\lib\libeay32.dll copy $(COMPILEBASE)\porter\lib\libeay32.dll $(YUKONOUTPUT)
@@ -120,14 +118,6 @@ traceset.exe:   traceset.obj
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
 traceset.obj -link $(LIBS) $(COMPILEBASE)\lib\portglob.lib
-               -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-               -@copy ..\$@ $(YUKONOUTPUT)
-                @%cd $(CWD)
-
-contest.exe:    contest.obj
-                @%cd $(OBJ)
-                $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
-contest.obj -link $(LIBS) $(RWLIBS) $(BOOSTLIBS) $(COMPILEBASE)\lib\ctibase.lib
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -@copy ..\$@ $(YUKONOUTPUT)
                 @%cd $(CWD)

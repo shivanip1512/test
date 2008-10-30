@@ -5,6 +5,7 @@ INCLPATHS+= \
 -I$(COMMON)\include \
 -I$(DATABASE)\include \
 -I$(DEVICECONFIGURATION)\include \
+-I$(SCANNER)\include \
 -I$(PORTER)\include \
 -I$(MSG)\include \
 -I$(PROT)\include \

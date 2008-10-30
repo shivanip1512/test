@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.49 $
-* DATE         :  $Date: 2008/10/28 19:21:44 $
+* REVISION     :  $Revision: 1.50 $
+* DATE         :  $Date: 2008/10/30 15:44:16 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -45,6 +45,7 @@ using std::iostream;
 
 #define DEFAULT_QUEUE_GRIPE_POINT 50
 
+class CtiPort;
 typedef shared_ptr< CtiPort > CtiPortSPtr;
 
 

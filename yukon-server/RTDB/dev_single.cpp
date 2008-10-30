@@ -5,8 +5,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.70 $
-* DATE         :  $Date: 2008/10/28 19:21:42 $
+* REVISION     :  $Revision: 1.71 $
+* DATE         :  $Date: 2008/10/30 15:44:16 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,6 +23,7 @@
 #include "utility.h"
 #include "ctidate.h"
 #include "ctitime.h"
+#include "scanglob.h"
 
 using namespace std;
 
@@ -207,7 +208,7 @@ INT CtiDeviceSingle::initiateAccumulatorScan(list< OUTMESS* > &outList, INT Scan
         }
         else
         {
-            if(  SCANNER_DEBUG_ACCUMSCAN & gConfigParms.getValueAsULong("SCANNER_DEBUGLEVEL",0,16) )
+            if( SCANNER_DEBUG_ACCUMSCAN & gConfigParms.getValueAsULong("SCANNER_DEBUGLEVEL",0,16) )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " Accumulator Scan aborted due to scan in progress, device \"" << getName() << "\"" << endl;
