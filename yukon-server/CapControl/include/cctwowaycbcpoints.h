@@ -25,6 +25,7 @@
 
 
 #include "msg_cmd.h"
+#include "msg_ptreg.h"
 #include "dbaccess.h"
 #include "observe.h"
 #include "types.h"
@@ -234,7 +235,8 @@ public:
 
 
 
-    CtiCCTwoWayPoints& addAllCBCPointsToMsg(CtiCommandMsg *pointAddMsg);
+    CtiCCTwoWayPoints& addAllCBCPointsToCmdMsg(CtiCommandMsg *pointAddMsg);
+    CtiCCTwoWayPoints& addAllCBCPointsToRegMsg(CtiPointRegistrationMsg *pointAddMsg);
     BOOL isDirty();
     void dumpDynamicData();
     void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);

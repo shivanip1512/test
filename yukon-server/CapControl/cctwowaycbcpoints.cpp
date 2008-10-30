@@ -20,6 +20,7 @@
 #include "pointdefs.h"
 #include "logger.h"
 #include "resolvers.h"
+#include "msg_ptreg.h"
 
 extern ULONG _CC_DEBUG;
 
@@ -2033,8 +2034,179 @@ BOOL CtiCCTwoWayPoints::setTwoWayPulseAccumulatorPointValue(LONG pointID, LONG v
 
 
 
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::addAllCBCPointsToRegMsg(CtiPointRegistrationMsg *pointAddMsg)
+{
 
-CtiCCTwoWayPoints& CtiCCTwoWayPoints::addAllCBCPointsToMsg(CtiCommandMsg *pointAddMsg)
+    if( getCapacitorBankStateId()  > 0 )
+    {
+        pointAddMsg->insert( getCapacitorBankStateId());
+    }
+    if ( getReCloseBlockedId()  > 0 )
+    {
+        pointAddMsg->insert(getReCloseBlockedId());
+    }
+    if ( getControlModeId()  > 0 )
+    {
+        pointAddMsg->insert(getControlModeId());
+    }
+    if ( getAutoVoltControlId()  > 0 )
+    {
+        pointAddMsg->insert(getAutoVoltControlId());
+    }
+    if ( getLastControlLocalId()  > 0 )
+    {
+        pointAddMsg->insert(getLastControlLocalId());
+    }
+    if ( getLastControlRemoteId()  > 0 )
+    {
+        pointAddMsg->insert(getLastControlRemoteId());
+    }
+    if ( getLastControlOvUvId() > 0 )
+    {
+        pointAddMsg->insert(getLastControlOvUvId());
+    }
+    if ( getLastControlNeutralFaultId()  > 0 )
+    {
+        pointAddMsg->insert(getLastControlNeutralFaultId());
+    }
+    if ( getLastControlScheduledId()  > 0 )
+    {
+        pointAddMsg->insert(getLastControlScheduledId());
+    }
+    if ( getLastControlDigitalId()  > 0 )
+    {
+        pointAddMsg->insert(getLastControlDigitalId());
+    }
+    if ( getLastControlAnalogId()  > 0 )
+    {
+        pointAddMsg->insert(getLastControlAnalogId());
+    }
+    if ( getLastControlTemperatureId()  > 0 )
+    {
+        pointAddMsg->insert(getLastControlTemperatureId());
+    }
+    if ( getOvConditionId()  > 0 )
+    {
+        pointAddMsg->insert(getOvConditionId());
+    }
+    if ( getUvConditionId()  > 0 )
+    {
+        pointAddMsg->insert(getUvConditionId());
+    }
+    if ( getOpFailedNeutralCurrentId()  > 0 )
+    {
+        pointAddMsg->insert(getOpFailedNeutralCurrentId());
+    }
+    if ( getNeutralCurrentFaultId()  > 0 )
+    {
+        pointAddMsg->insert(getNeutralCurrentFaultId());
+    }
+    if ( getBadRelayId()  > 0 )
+    {
+        pointAddMsg->insert(getBadRelayId());
+    }
+    if ( getDailyMaxOpsId()  > 0 )
+    {
+        pointAddMsg->insert(getDailyMaxOpsId());
+    }
+    if ( getVoltageDeltaAbnormalId()  > 0 )
+    {
+        pointAddMsg->insert(getVoltageDeltaAbnormalId());
+    }
+    if ( getTempAlarmId()  > 0 )
+    {
+        pointAddMsg->insert(getTempAlarmId());
+    }
+    if ( getDSTActiveId()  > 0 )
+    {
+        pointAddMsg->insert(getDSTActiveId());
+    }
+    if ( getNeutralLockoutId() > 0 )
+    {
+        pointAddMsg->insert(getNeutralLockoutId());
+    }
+    if ( getIgnoredIndicatorId()  > 0 )
+    {
+        pointAddMsg->insert(getIgnoredIndicatorId());
+    }
+    if ( getRSSIId()  > 0 )
+    {
+        pointAddMsg->insert(getRSSIId());
+    }
+    if ( getIgnoredReasonId()  > 0 )
+    {
+        pointAddMsg->insert(getIgnoredReasonId());
+    }
+    if ( getUvSetPointId()  > 0 )
+    {
+        pointAddMsg->insert(getUvSetPointId());
+    }
+    if ( getOvSetPointId() > 0 )
+    {
+        pointAddMsg->insert(getOvSetPointId());
+    }
+    if ( getOVUVTrackTimeId() > 0 )
+    {
+        pointAddMsg->insert(getOVUVTrackTimeId());
+    }
+    if ( getNeutralCurrentSensorId() > 0 )
+    {
+        pointAddMsg->insert(getNeutralCurrentSensorId());
+    }
+    if ( getNeutralCurrentAlarmSetPointId() > 0 )
+    {
+        pointAddMsg->insert(getNeutralCurrentAlarmSetPointId());
+    }
+    if ( getUDPIpAddressId() > 0 )
+    {
+        pointAddMsg->insert(getUDPIpAddressId());
+    }
+    if ( getUDPPortNumberId() > 0 )
+    {
+        pointAddMsg->insert(getUDPPortNumberId());
+    }
+    if ( getVoltageId()  > 0 )
+    {
+        pointAddMsg->insert(getVoltageId());
+    }
+    if ( getHighVoltageId()  > 0 )
+    {
+        pointAddMsg->insert(getHighVoltageId());
+    }
+    if ( getLowVoltageId()  > 0 )
+    {
+        pointAddMsg->insert(getLowVoltageId());
+    }
+    if ( getDeltaVoltageId()  > 0 )
+    {
+        pointAddMsg->insert(getDeltaVoltageId());
+    }
+    if ( getAnalogInput1Id()  > 0 )
+    {
+        pointAddMsg->insert(getAnalogInput1Id());
+    }
+    if ( getTemperatureId() > 0 )
+    {
+        pointAddMsg->insert(getTemperatureId());
+    }
+
+    if ( getTotalOpCountId()  > 0 )
+    {
+        pointAddMsg->insert(getTotalOpCountId());
+    }
+    if ( getOvCountId()  > 0 )
+    {
+        pointAddMsg->insert(getOvCountId());
+    }
+    if ( getUvCountId() > 0 )
+    {
+        pointAddMsg->insert(getUvCountId());
+    }
+
+    return *this;
+}
+
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::addAllCBCPointsToCmdMsg(CtiCommandMsg *pointAddMsg)
 {
 
     if( getCapacitorBankStateId()  > 0 )

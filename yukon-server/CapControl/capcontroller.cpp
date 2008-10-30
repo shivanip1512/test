@@ -1717,6 +1717,12 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
                         {
                             regMsg->insert( currentCapBank->getOperationStats().getMonthlyOpSuccessPercentId());
                     }
+                        if (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 702") ) 
+                        {   
+                            CtiCCTwoWayPoints* twoWayPts = (CtiCCTwoWayPoints*)currentCapBank->getTwoWayPoints();
+                            twoWayPts->addAllCBCPointsToRegMsg(regMsg);
+                        }
+                        
                     }
                 }
             }
