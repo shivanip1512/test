@@ -5,8 +5,8 @@
 * Date:   2/12/2008
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2008/10/02 18:27:30 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2008/10/30 19:54:27 $
 *
 * Copyright (c) 2008 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -48,6 +48,7 @@ private:
 public:
 
     CtiTablePointProperty(RWDBReader &rdr);
+    CtiTablePointProperty(long pointID, unsigned int propertyID, float attributeValue);
     virtual ~CtiTablePointProperty();
 
     bool operator<(const CtiTablePointProperty &rhs) const;
@@ -66,6 +67,8 @@ public:
     {
         STALE_ALARM_TIME = 1,
         STALE_UPDATE_TYPE,
+
+        ARCHIVE_ON_TIMER, //The number of this does not matter as this is not stored in the database
     };
 
     enum

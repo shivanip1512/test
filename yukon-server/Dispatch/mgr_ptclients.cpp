@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/mgr_ptclients.cpp-arc  $
-* REVISION     :  $Revision: 1.51 $
-* DATE         :  $Date: 2008/10/24 15:23:59 $
+* REVISION     :  $Revision: 1.52 $
+* DATE         :  $Date: 2008/10/30 19:54:26 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -30,6 +30,7 @@
 #include "pt_analog.h"
 #include "pt_accum.h"
 #include "pt_status.h"
+#include "debug_timer.h"
 
 
 #include "con_mgr_vg.h"
@@ -39,6 +40,8 @@
 #include <list>
 
 using namespace std;
+
+#define POINT_REFRESH_SIZE 1024 //This is overriden by cparm.
 
 /*
  *  This method initializes each point's dynamic data to it's default/initial values.
@@ -142,15 +145,70 @@ struct non_updated_check
     }
 };
 
+/**
+ * If the store needs to be updated when this pointID or paoid 
+ * changes, it will be updated by this function call. This 
+ * probably means a dbchange has been received. 
+ * 
+ * @param pntID LONG 
+ * @param pntType CtiPointType_t 
+ */
+void CtiPointClientManager::updatePoints(LONG pntID, LONG paoID, CtiPointType_t pntType)
+{
+    if( pntID != 0 )
+    {
+        if( isPointLoaded(pntID) )
+        {
+            refreshList(pntID, 0, pntType);
+            refreshProperties(pntID,0);
+            refreshArchivalList(pntID, 0);
+        }
+        else
+        {
+            refreshProperties(pntID);
+            refreshArchivalList(pntID);
+        }
+    }
+    else if( paoID != 0 )
+    {
+        //As always, this assumes pao's are only used on add.
+        refreshProperties(0, paoID);
+        refreshArchivalList(0, paoID);
+    }
+    else
+    {
+        loadAllStaticData();
+    }
+}
 
-//Points can be loaded by pao, not updated!
+/**
+ * Loads all of the data that is kept for every point. This
+ * should be called on startup.
+ * 
+ */
+void CtiPointClientManager::loadAllStaticData()
+{
+    refreshProperties(0);
+    refreshArchivalList(0);
+}
+
+
+/**
+ * This loads the specified points. In Dispatch, this should be 
+ * called sparingly. This is not to be called when db changes 
+ * occur. 
+ * 
+ * @param pntID LONG 
+ * @param paoID LONG 
+ * @param pntType CtiPointType_t 
+ */
 void CtiPointClientManager::refreshList(LONG pntID, LONG paoID, CtiPointType_t pntType)
 {
-    Inherited::refreshList(pntID, paoID, pntType);                // Load all points in the system
+    Inherited::refreshList(pntID, paoID, pntType);
     refreshAlarming(pntID, paoID);
     refreshReasonabilityLimits(pntID, paoID);
     refreshPointLimits(pntID, paoID);
-    refreshProperties(pntID, paoID);
+    //refreshProperties(pntID, paoID); Properties are currently loaded seperately
 
     if(pntID != 0 || paoID != 0)
     {
@@ -168,15 +226,43 @@ void CtiPointClientManager::refreshList(LONG pntID, LONG paoID, CtiPointType_t p
     }
 }
 
+/**
+ * Loads the data from the database for all point id's 
+ * requested. Recursively calls itself if more id's are 
+ * requested than the max number allowed. 
+ * 
+ * @param ids const set<long>& 
+ */
 void CtiPointClientManager::refreshListByPointIDs(const set<long> &ids)
 {
-    Inherited::refreshListByPointIDs(ids);
-    refreshAlarming(0, 0, ids);
-    refreshReasonabilityLimits(0, 0, ids);
-    refreshPointLimits(0, 0, ids);
-    refreshProperties(0, 0, ids);
+    unsigned long max_size = gConfigParms.getValueAsULong("MAX_IDS_PER_POINT_SELECT", POINT_REFRESH_SIZE);
 
-    processPointDynamicData(0, 0, ids);
+    if( ids.size() > max_size )
+    {
+        set<long> tempIds;
+
+        for( set<long>::iterator iter = ids.begin(); iter != ids.end(); )
+        {
+            tempIds.insert(*iter);
+            iter++;
+            if( tempIds.size() == max_size || iter == ids.end() )
+            {
+                refreshListByPointIDs(tempIds);
+                tempIds.clear();
+            }
+        }
+    }
+    else
+    {
+        Inherited::refreshListByPointIDs(ids);
+        refreshAlarming(0, 0, ids);
+        refreshReasonabilityLimits(0, 0, ids);
+        refreshPointLimits(0, 0, ids);
+        processPointDynamicData(0, 0, ids);
+        //refreshProperties(0, 0, ids);
+    }
+
+    
 }
 
 //Load based on PAO assumes it is in add!
@@ -214,6 +300,10 @@ void CtiPointClientManager::refreshAlarming(LONG pntID, LONG paoID, const set<lo
 
     {
         coll_type::writer_lock_guard_t guard(getLock());
+        if( pntID )
+        {
+            _alarming.erase(pntID);
+        }
         for( std::list<CtiTablePointAlarming>::iterator iter = tempList.begin(); iter != tempList.end(); iter++ )
         {
             _alarming.insert(*iter);
@@ -240,24 +330,12 @@ void CtiPointClientManager::refreshProperties(LONG pntID, LONG paoID, const set<
     string         sql;
     CtiTime start, stop;
 
-    RWDBSelector attributeSelector = conn.database().selector();
     start = start.now();
-    CtiTablePointProperty::getSQL( db, keyTable, attributeSelector );
+    CtiTablePointProperty::getSQL( db, keyTable, selector );
 
     if(pntID)
     {
-        attributeSelector.where( keyTable["pointid"] == pntID && attributeSelector.where() );
-
-        pair<PointPropertyMap::const_iterator,
-             PointPropertyMap::const_iterator> range = _properties.equal_range(pntID);
-        for( ; range.first != range.second; ++range.first )
-        {
-            if( range.first->second != NULL )
-            {
-                delete range.first->second;
-            }
-        }
-        _properties.erase(pntID);
+        selector.where( keyTable["pointid"] == pntID && selector.where() );
     }
 
     //  pao is assumed to be an add
@@ -286,13 +364,13 @@ void CtiPointClientManager::refreshProperties(LONG pntID, LONG paoID, const set<
         selector.where(selector.where() && keyTable["pointid"].in(RWDBExpr(in_list.str().c_str(), false)));
     }
 
-    rdr = attributeSelector.reader( conn );
+    rdr = selector.reader( conn );
 
     if( rdr.status().errorCode() != RWDBStatus::ok)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << attributeSelector.asString() << endl;
+        dout << selector.asString() << endl;
     }
 
     std::list<CtiTablePointProperty*> tempList;
@@ -304,6 +382,21 @@ void CtiPointClientManager::refreshProperties(LONG pntID, LONG paoID, const set<
 
     {
         coll_type::writer_lock_guard_t guard(getLock());
+        if( pntID )
+        {
+            pair<PointPropertyMap::iterator,
+            PointPropertyMap::iterator> range = _properties.equal_range(pntID);
+            for( ; range.first != range.second; ++range.first )
+            {
+                if( range.first->second != NULL )
+                {
+                    delete range.first->second;
+                    range.first->second = NULL;
+                }
+            }
+    
+            _properties.erase(pntID);
+        }
         for( std::list<CtiTablePointProperty *>::iterator iter = tempList.begin(); iter != tempList.end(); iter++ )
         {
             _properties.insert(make_pair((*iter)->getPointID(), *iter));
@@ -314,6 +407,101 @@ void CtiPointClientManager::refreshProperties(LONG pntID, LONG paoID, const set<
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds for Properties " << endl;
+    }
+}
+
+//This loads the points that have archival on timer and sets the archive on timer point property
+void CtiPointClientManager::refreshArchivalList(LONG pntID, LONG paoID, const set<long> &pointIds)
+{
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
+
+    RWDBDatabase   db       = conn.database();
+    RWDBSelector   selector = conn.database().selector();
+    RWDBTable      keyTable;
+    RWDBReader     rdr;
+    string         sql;
+    CtiTime start, stop;
+
+    start = start.now();
+    sql = "select pointid from point WHERE ("
+          "archivetype = 'on timer' OR "
+          "archivetype = 'time&update' OR "
+          "archivetype = 'timer|update')";
+
+    if(pntID)
+    {
+        sql += " AND point.pointid == ";
+        sql += CtiNumStr(pntID);
+    }
+
+    //  pao is assumed to be an add
+    if(paoID)
+    {
+        sql += " AND point.paobjectid == ";
+        sql += CtiNumStr(paoID);
+    }
+
+    if(!pointIds.empty())
+    {
+        ostringstream in_list;
+
+        csv_output_iterator<long, ostringstream> csv_out(in_list);
+
+        in_list << "(";
+
+        copy(pointIds.begin(), pointIds.end(), csv_out);
+
+        in_list << ")";
+
+        sql += " AND point.pointid in ";
+        sql += in_list.str();
+    }
+
+    rdr = selector.reader( conn );
+
+    if( rdr.status().errorCode() != RWDBStatus::ok)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << selector.asString() << endl;
+    }
+
+    std::list<CtiTablePointProperty*> tempList;
+    long pointid;
+    while( rdr() )
+    {
+        rdr >> pointid;
+        CtiTablePointProperty *p = CTIDBG_new CtiTablePointProperty(pointid, CtiTablePointProperty::ARCHIVE_ON_TIMER, 1);
+        tempList.push_back(p);
+    }
+
+    {
+        coll_type::writer_lock_guard_t guard(getLock());
+        if( pntID )
+        {
+            pair<PointPropertyMap::iterator,
+            PointPropertyMap::iterator> range = _properties.equal_range(pntID);
+            for( ; range.first != range.second; ++range.first )
+            {
+                if( range.first->second != NULL && range.first->second->getPropertyID() == CtiTablePointProperty::ARCHIVE_ON_TIMER)
+                {
+                    delete range.first->second;
+                    range.first->second = NULL;
+                    _properties.erase(range.first);
+                }
+            }
+        }
+        for( std::list<CtiTablePointProperty *>::iterator iter = tempList.begin(); iter != tempList.end(); iter++ )
+        {
+            _properties.insert(make_pair((*iter)->getPointID(), *iter));
+        }
+    }
+
+    if((stop = stop.now()).seconds() - start.seconds() > 5 )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds for Archival List " << endl;
     }
 }
 
@@ -475,20 +663,18 @@ int CtiPointClientManager::RemoveConnectionManager(CtiServer::ptr_type CM)
 
         if( conIter != _conMgrPointMap.end() && conIter->second.size() > 0 )
         {
+            long pointID;
             for(WeakPointMap::iterator pointIter = conIter->second.begin(); pointIter != conIter->second.end(); pointIter++)
             {
-                CtiPointSPtr temp = pointIter->second.lock();
+                pointID = pointIter->first;
 
-                if( temp )
+                PointConnectionMap::iterator iter = _pointConnectionMap.find(pointID);
+                if(iter != _pointConnectionMap.end())
                 {
-                    PointConnectionMap::iterator iter = _pointConnectionMap.find(temp->getPointID());
-                    if(iter != _pointConnectionMap.end())
+                    iter->second.RemoveConnectionManager(CM);
+                    if(iter->second.IsEmpty())
                     {
-                        iter->second.RemoveConnectionManager(CM);
-                        if(iter->second.IsEmpty())
-                        {
-                            _pointConnectionMap.erase(iter);
-                        }
+                        _pointConnectionMap.erase(iter);
                     }
                 }
             }
@@ -505,12 +691,16 @@ CtiTime CtiPointClientManager::findNextNearestArchivalTime()
 
     {
         coll_type::reader_lock_guard_t guard(getLock());
-        spiterator itr = Inherited::begin();
-        spiterator end = Inherited::end();
+        vector<long> points;
+        getPointsWithProperty(CtiTablePointProperty::ARCHIVE_ON_TIMER, points);
+        vector<long>::iterator itr = points.begin();
+        vector<long>::iterator end = points.end();
 
         for( ;itr != end; itr++)
         {
-            CtiPointSPtr pPt = itr->second;
+            CtiPointSPtr pPt = getPoint(*itr);
+
+            if( pPt )
             {
                 const CtiDynamicPointDispatch *pDyn = getDynamic(pPt);
 
@@ -531,13 +721,16 @@ CtiTime CtiPointClientManager::findNextNearestArchivalTime()
 void CtiPointClientManager::scanForArchival(const CtiTime &Now, CtiFIFOQueue<CtiTableRawPointHistory> &Que)
 {
     {
+        Cti::DebugTimer debugTime("Scanning For Archival", false, 1);
         coll_type::writer_lock_guard_t guard(getLock());
-        spiterator itr = Inherited::begin();
-        spiterator end = Inherited::end();
+        vector<long> points;
+        getPointsWithProperty(CtiTablePointProperty::ARCHIVE_ON_TIMER, points);
+        vector<long>::iterator itr = points.begin();
+        vector<long>::iterator end = points.end();
 
         for( ;itr != end; itr++)
         {
-            CtiPointSPtr pPt = itr->second;
+            CtiPointSPtr pPt = getPoint(*itr);
 
             {
                 CtiDynamicPointDispatch *pDyn = getDynamic(pPt);
@@ -881,7 +1074,6 @@ void CtiPointClientManager::refreshReasonabilityLimits(LONG pntID, LONG paoID, c
     if(pntID)
     {
         sql += " AND pointid = " + CtiNumStr(pntID);
-        _reasonabilityLimits.erase(pntID);
     }
     else if(paoID)
     {
@@ -925,6 +1117,10 @@ void CtiPointClientManager::refreshReasonabilityLimits(LONG pntID, LONG paoID, c
 
     {
         coll_type::writer_lock_guard_t guard(getLock());
+        if( pntID != 0 )
+        {
+            _reasonabilityLimits.erase(pntID);
+        }
         for( std::list<pair<long, ReasonabilityLimitStruct> >::iterator iter = tempList.begin(); iter != tempList.end(); iter++ )
         {
             _reasonabilityLimits.insert(*iter);
@@ -957,16 +1153,6 @@ void CtiPointClientManager::refreshPointLimits(LONG pntID, LONG paoID, const set
 
     start = start.now();
 
-    if(pntID != 0)
-    {
-        _limits.erase(CtiTablePointLimit(pntID, 0));
-        _limits.erase(CtiTablePointLimit(pntID, 1));
-    }
-    else if(paoID != 0)
-    {
-        //  is this right?  If we refresh limits by pao, we clear all limits for all points?
-        // _limits.clear();
-    }
     if(DebugLevel & 0x00010000)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Limits" << endl;
@@ -989,6 +1175,11 @@ void CtiPointClientManager::refreshPointLimits(LONG pntID, LONG paoID, const set
 
     {
         coll_type::writer_lock_guard_t guard(getLock());
+        if(pntID != 0)
+        {
+            _limits.erase(CtiTablePointLimit(pntID, 0));
+            _limits.erase(CtiTablePointLimit(pntID, 1));
+        }
         for( std::list<CtiTablePointLimit>::iterator iter = tempList.begin(); iter != tempList.end(); iter++ )
         {
             _limits.insert(CtiTablePointLimit(*iter));
@@ -1020,33 +1211,38 @@ void CtiPointClientManager::removePoint(Inherited::ptr_type pTempCtiPoint, bool 
         //this is a deletion, and the values cannot be written to the db.
         if(!isExpiration)
         {
+            //Delete entries with the given point id, set to null in case delete does not remove them!
             DynamicPointDispatchMap::iterator iter = _dynamic.find(pointID);
             if( iter != _dynamic.end() && iter->second != NULL)
             {
                 delete iter->second;
+                iter->second = NULL;
+            }
+
+            pair<PointPropertyMap::iterator,
+             PointPropertyMap::iterator> range = _properties.equal_range(pointID);
+    
+            //Delete entries with the given point id, set to null in case delete does not remove them!
+            for( ; range.first != range.second; ++range.first )
+            {
+                if( range.first->second != NULL )
+                {
+                    delete range.first->second;
+                    range.first->second = NULL;
+                }
             }
 
             _dynamic.erase(pointID);
             _pointConnectionMap.erase(pointID);
+
+            //Properties are always loaded!
+            _properties.erase(pointID);
         }
 
+        _alarming.erase(pointID);
         _reasonabilityLimits.erase(pointID);
         _limits.erase(CtiTablePointLimit(pointID, 0));
         _limits.erase(CtiTablePointLimit(pointID, 1));
-        _alarming.erase(pointID);
-
-        pair<PointPropertyMap::const_iterator,
-             PointPropertyMap::const_iterator> range = _properties.equal_range(pointID);
-
-        for( ; range.first != range.second; ++range.first )
-        {
-            if( range.first->second != NULL )
-            {
-                delete range.first->second;
-            }
-        }
-        _properties.erase(pointID);
-        
     }
 
     Inherited::removePoint(pTempCtiPoint, isExpiration);
@@ -1054,7 +1250,10 @@ void CtiPointClientManager::removePoint(Inherited::ptr_type pTempCtiPoint, bool 
 
 bool CtiPointClientManager::isPointLoaded(LONG Pt)
 {
-    return Inherited::getPoint(Pt);
+    // The point must be loaded in both locations to exist. If it is loaded
+    // in just the inherited container, the dynamic may not yet be loaded.
+    // The point will be in only dynamic for a time when the point expires.
+    return (Inherited::getPoint(Pt) && getDynamic(Pt) != NULL);
 }
 
 CtiPointManager::ptr_type CtiPointClientManager::getCachedPoint(LONG Pt)
@@ -1196,48 +1395,81 @@ CtiDynamicPointDispatch *CtiPointClientManager::getDynamic(CtiPointSPtr point)
     return retval;
 }
 
-int CtiPointClientManager::getProperty(CtiPointSPtr point, unsigned int propertyID)
+/**
+ * Private function, allows the use of a point id instead of 
+ * requiring a pointer.
+ * 
+ * @param pointID long 
+ * 
+ * @return CtiDynamicPointDispatch* 
+ */
+CtiDynamicPointDispatch* CtiPointClientManager::getDynamic(unsigned long pointID)
 {
-    if( point )
+    CtiDynamicPointDispatch *retval = NULL;
+
+    coll_type::reader_lock_guard_t guard(getLock());
+    DynamicPointDispatchMap::iterator iter = _dynamic.find(pointID);
+    if(iter != _dynamic.end())
     {
-        coll_type::reader_lock_guard_t guard(getLock());
-    
-        pair<PointPropertyMap::const_iterator,
-             PointPropertyMap::const_iterator> range = _properties.equal_range(point->getPointID());
-    
-        for( ; range.first != range.second; ++range.first )
+        retval = iter->second;
+    }
+
+    return retval;
+}
+
+int CtiPointClientManager::getProperty(LONG point, unsigned int propertyID)
+{
+    coll_type::reader_lock_guard_t guard(getLock());
+
+    pair<PointPropertyMap::const_iterator,
+         PointPropertyMap::const_iterator> range = _properties.equal_range(point);
+
+    for( ; range.first != range.second; ++range.first )
+    {
+        const CtiTablePointProperty *property_ptr = range.first->second;
+        if( property_ptr && property_ptr->getPropertyID() == propertyID )
         {
-            const CtiTablePointProperty *property_ptr = range.first->second;
-            if( property_ptr && property_ptr->getPropertyID() == propertyID )
-            {
-                return property_ptr->getIntProperty();
-            }
+            return property_ptr->getIntProperty();
         }
     }
 
     return numeric_limits<int>::min();
 }
 
-bool CtiPointClientManager::hasProperty(CtiPointSPtr point, unsigned int propertyID)
+bool CtiPointClientManager::hasProperty(LONG point, unsigned int propertyID)
 {
-    if( point )
+    coll_type::reader_lock_guard_t guard(getLock());
+
+    pair<PointPropertyMap::const_iterator,
+         PointPropertyMap::const_iterator> range = _properties.equal_range(point);
+
+    for( ; range.first != range.second; ++range.first )
     {
-        coll_type::reader_lock_guard_t guard(getLock());
-    
-        pair<PointPropertyMap::const_iterator,
-             PointPropertyMap::const_iterator> range = _properties.equal_range(point->getPointID());
-    
-        for( ; range.first != range.second; ++range.first )
+        const CtiTablePointProperty *property_ptr = range.first->second;
+        if( property_ptr && property_ptr->getPropertyID() == propertyID )
         {
-            const CtiTablePointProperty *property_ptr = range.first->second;
-            if( property_ptr && property_ptr->getPropertyID() == propertyID )
-            {
-                return true;
-            }
+            return true;
         }
     }
 
     return false;
+}
+
+void CtiPointClientManager::getPointsWithProperty(unsigned int propertyID, vector<long> &points)
+{
+    coll_type::reader_lock_guard_t guard(getLock());
+
+    pair<PointPropertyMap::const_iterator,
+         PointPropertyMap::const_iterator> range = make_pair(_properties.begin(), _properties.end());
+
+    for( ; range.first != range.second; ++range.first )
+    {
+        const CtiTablePointProperty *property_ptr = range.first->second;
+        if( property_ptr && property_ptr->getPropertyID() == propertyID )
+        {
+            points.push_back(property_ptr->getPointID());
+        }
+    }
 }
 
 bool CtiPointClientManager::pointHasConnection(LONG pointID, const CtiServer::ptr_type &Conn)
@@ -1271,6 +1503,16 @@ CtiPointManager::ptr_type CtiPointClientManager::getOffsetTypeEqual(LONG pao, IN
     return retVal;
 }
 
+/**
+ * This looks up the point id from the database, then loads the 
+ * point from the cache or the database. This can result in 
+ * several database hits. 
+ * 
+ * @param pao LONG 
+ * @param offset INT 
+ * 
+ * @return CtiPointManager::ptr_type 
+ */
 CtiPointManager::ptr_type CtiPointClientManager::getControlOffsetEqual(LONG pao, INT offset)
 {
     Inherited::ptr_type retVal;

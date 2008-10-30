@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/msg_cmd.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2006/08/03 20:14:52 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2008/10/30 19:54:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -98,6 +98,7 @@ public:
       ResetControlHours = 190,         // By default resets the Seasonal control history, could add to the op arg list to allow for resets of other control histories; Vector contains token
       PointDataRequest = 200,          // Vector of point ids to be reported if known.
       AlarmCategoryRequest = 210,      // Vector of alarm categories to return to the requestor.
+      ControlStatusVerification,       // Internal Message used by Dispatch, value does not matter.
 
       LastCommand = 10000              //this is to be the last entry in the enum, so add new entries above here, otay
    };

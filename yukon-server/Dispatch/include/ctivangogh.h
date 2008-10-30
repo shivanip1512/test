@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ctivangogh.h-arc  $
-* REVISION     :  $Revision: 1.58 $
-* DATE         :  $Date: 2008/10/13 15:36:23 $
+* REVISION     :  $Revision: 1.59 $
+* DATE         :  $Date: 2008/10/30 19:54:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -160,6 +160,7 @@ private:
     bool limitStateCheck( const int alarm, const CtiTablePointLimit &limit, double val, int &direction);
     bool checkMessageForPreLoad(CtiMessage *MsgPtr);
     void findPreLoadPointId(CtiMessage *MsgPtr, std::set<long> &ptIdList);
+    void groupControlStatusVerification(unsigned long pointID);
 
     CtiPointDataMsg* createPointDataMsg(const CtiDynamicPointDispatch& pDyn);
 
@@ -281,6 +282,7 @@ public:
     string resolveDeviceDescription(LONG PAO);
     bool isDeviceIdValid(const LONG devid);
     bool isDeviceGroupType(const LONG devid);
+    bool isDeviceGroupType(const CtiDeviceBaseLite *device);
     CtiTableContactNotification* getContactNotification(LONG notifID);
     CtiTableCICustomerBase* getCustomer( LONG custid );
     void sendSignalToGroup(LONG ngid, const CtiSignalMsg& sig);

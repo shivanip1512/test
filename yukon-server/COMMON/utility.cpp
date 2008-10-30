@@ -2660,6 +2660,34 @@ vector<int> getPointIdsOnPao(long paoid)
     return ids;
 }
 
+void GetPseudoPointIDs(std::vector<unsigned long> &pointIDs)
+{
+    string sql("SELECT pointid FROM point WHERE pseudoflag = 'P'");
+
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
+
+    RWDBReader  rdr = ExecuteQuery( conn, sql );
+
+    if(rdr.isValid())
+    {
+        int id;
+        while (rdr())
+        {
+            rdr["pointid"] >> id;
+            pointIDs.push_back(id);
+        }
+    }
+    else if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << " " << sql << endl;
+        }
+    }
+}
+
 long getPaoIdForPoint(long pointid)
 {
     string sql("SELECT paobjectid FROM point WHERE pointid = ");

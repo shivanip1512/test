@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/mgr_ptclients.h-arc  $
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2008/10/22 16:58:27 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2008/10/30 19:54:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -51,10 +51,14 @@ private:
    typedef std::map<long, CtiDynamicPointDispatch *>::iterator DynamicPointDispatchIterator;
    typedef std::map<long, CtiPointConnection>           PointConnectionMap;
 
+   // The weak pointers contained in this map are no longer guaranteed to exist.
+   // They should be assumed to exist only immediatelly after being entered, then never used again!
    ConnectionMgrPointMap    _conMgrPointMap;
    ReasonabilityLimitMap    _reasonabilityLimits;
    PointLimitSet            _limits;
    PointAlarmingSet         _alarming;
+   //Properties are always loaded for all points
+   //Properties should be reserved for things that are not frequently used and need to be always loaded
    PointPropertyMap         _properties;
    PointConnectionMap       _pointConnectionMap;
 
@@ -64,16 +68,19 @@ private:
 
    typedef CtiPointManager Inherited;
 
-   void refreshAlarming           (LONG pntID, LONG paoID, const std::set<long> &ids = std::set<long>());
-   void refreshProperties         (LONG pntID, LONG paoID, const std::set<long> &ids = std::set<long>());
-   void refreshReasonabilityLimits(LONG pntID, LONG paoID, const std::set<long> &ids = std::set<long>());
-   void refreshPointLimits        (LONG pntID, LONG paoID, const std::set<long> &ids = std::set<long>());
-   void RefreshDynamicData        (LONG pntID = 0,         const std::set<long> &ids = std::set<long>());
-   void processPointDynamicData   (LONG pntID, LONG paoID, const std::set<long> &ids = std::set<long>());
+   void refreshAlarming           (LONG pntID, LONG paoID = 0, const std::set<long> &ids = std::set<long>());
+   void refreshProperties         (LONG pntID, LONG paoID = 0, const std::set<long> &ids = std::set<long>());
+   void refreshReasonabilityLimits(LONG pntID, LONG paoID = 0, const std::set<long> &ids = std::set<long>());
+   void refreshPointLimits        (LONG pntID, LONG paoID = 0, const std::set<long> &ids = std::set<long>());
+   void RefreshDynamicData        (LONG pntID = 0,             const std::set<long> &ids = std::set<long>());
+   void processPointDynamicData   (LONG pntID, LONG paoID = 0, const std::set<long> &ids = std::set<long>());
+   void refreshArchivalList       (LONG pntID, LONG paoID = 0, const std::set<long> &ids = std::set<long>());
 
    void getDirtyRecordList(list<CtiTablePointDispatch> &updateList);
    void writeRecordsToDB  (list<CtiTablePointDispatch> &updateList);
    void removeOldDynamicData();
+
+   CtiDynamicPointDispatch *getDynamic(unsigned long pointID);
 
 protected:
 
@@ -86,6 +93,9 @@ public:
    virtual ~CtiPointClientManager();
    virtual void refreshList(LONG pntID = 0, LONG paoID = 0, CtiPointType_t pntType = InvalidPointType);
    virtual void refreshListByPointIDs(const std::set<long> &ids);
+
+   void updatePoints(LONG pntID, LONG paoID, CtiPointType_t pntType = InvalidPointType);
+   void loadAllStaticData();
 
    virtual Inherited::ptr_type getPoint(LONG Pt);
    Inherited::ptr_type         getCachedPoint(LONG Pt);
@@ -110,11 +120,14 @@ public:
    ReasonabilityLimitStruct getReasonabilityLimits(CtiPointSPtr point);
    CtiTablePointLimit       getPointLimit(CtiPointSPtr point, LONG limitNum);  //  is copying the table cheap/fast enough?
    CtiTablePointAlarming    getAlarming  (CtiPointSPtr point);                 //    if not, we'll need to return smart pointers
-   CtiDynamicPointDispatch *getDynamic   (CtiPointSPtr point);                 //  I have the feeling that dynamic data and point properties should
+   CtiDynamicPointDispatch *getDynamic   (CtiPointSPtr point);
    bool                     setDynamic   (long pointID, CtiDynamicPointDispatch *point);
-   int  getProperty (CtiPointSPtr point, unsigned int property);  //    be smart pointers, since we're playing fast and loose with
-   bool hasProperty (CtiPointSPtr point, unsigned int property);  //    deletions and reloads
-
+   int  getProperty (LONG point, unsigned int property);
+   bool hasProperty (LONG point, unsigned int property);
+   void getPointsWithProperty(unsigned int propertyID, vector<long> &points);
+   //  I have the feeling that dynamic data and point properties should
+   //    be smart pointers, since we're playing fast and loose with
+   //    deletions and reloads
    WeakPointMap getRegistrationMap(LONG mgrID);
 
 };

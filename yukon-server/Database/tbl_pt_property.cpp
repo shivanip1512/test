@@ -6,8 +6,8 @@
 * Date:   2/13/08
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2008/10/02 18:27:30 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2008/10/30 19:54:26 $
 *
 * Copyright (c) 2008 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,6 +32,13 @@ CtiTablePointProperty::CtiTablePointProperty(RWDBReader &rdr)
     rdr["pointid"]  >> _pointID;
     rdr   >> _propertyID;
     rdr   >> _floatAttributeValue;
+}
+
+CtiTablePointProperty::CtiTablePointProperty(long pointID, unsigned int propertyID, float attributeValue) :
+_pointID(pointID),
+_propertyID(propertyID),
+_floatAttributeValue(attributeValue)
+{
 }
 
 void CtiTablePointProperty::dump() const

@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/utility.h-arc  $
-* REVISION     :  $Revision: 1.60 $
-* DATE         :  $Date: 2008/10/29 18:16:47 $
+* REVISION     :  $Revision: 1.61 $
+* DATE         :  $Date: 2008/10/30 19:54:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -191,6 +191,7 @@ IM_EX_CTIBASE LONG  GetPAOIdOfPoint(long pid);
 IM_EX_CTIBASE INT   GetPIDFromDeviceAndOffset(int device, int offset);
 IM_EX_CTIBASE INT   GetPIDFromDeviceAndControlOffset(int device, int offset);
 IM_EX_CTIBASE INT   GetPIDFromDeviceAndOffsetAndType(int device, int offset, string &type);
+IM_EX_CTIBASE void  GetPseudoPointIDs(std::vector<unsigned long> &pointIDs);
 
 IM_EX_CTIBASE INT   EstablishOutMessagePriority(CtiOutMessage *Out, INT priority);
 IM_EX_CTIBASE INT   OverrideOutMessagePriority(CtiOutMessage *Out, INT priority);
