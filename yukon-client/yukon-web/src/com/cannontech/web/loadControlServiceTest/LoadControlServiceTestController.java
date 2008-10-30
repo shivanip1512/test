@@ -1,5 +1,6 @@
 package com.cannontech.web.loadControlServiceTest;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -10,12 +11,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
+import org.jdom.JDOMException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.loadcontrol.service.BGEIntegrationLoadControlXMLService;
 import com.cannontech.loadcontrol.service.LoadControlService;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
 import com.cannontech.loadcontrol.service.data.ScenarioProgramStartingGears;
@@ -29,17 +32,16 @@ public class LoadControlServiceTestController extends MultiActionController {
     
     private DateFormattingService dateformattingService;
     private LoadControlService loadControlService;
+    private BGEIntegrationLoadControlXMLService bgeIntegrationLoadControlXMLService;
 
     public ModelAndView home(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-        
-        ModelAndView mav = new ModelAndView("home.jsp");
-        return mav;
+        return returnMav(request, new ArrayList<String>(0), new ArrayList<String>(0));
     }
     
+    //====================================================================================================================================
     // PROGRAM STATUS BY PROGRAM NAME
-    public ModelAndView getProgramStatusByProgramName(HttpServletRequest request, HttpServletResponse response) throws ServletException, java.text.ParseException {
-
-        ModelAndView mav = new ModelAndView("home.jsp");
+    //====================================================================================================================================
+    public ModelAndView getProgramStatusByProgramName(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 
         List<String> results = new ArrayList<String>();
         List<String> errorReasons = new ArrayList<String>();
@@ -53,19 +55,35 @@ public class LoadControlServiceTestController extends MultiActionController {
             errorReasons.add(e.getMessage());
         }
         
-        // re-populate fields
-        mav.addAllObjects(ServletUtil.getParameterMap(request));
-        mav.addObject("results", results);
-        mav.addObject("errorReasons", errorReasons);
-        
-        return mav;
-        
+        return returnMav(request, results, errorReasons);
     }
     
-    // ALL CURRENTLY ACTIVE PROGRAMS 
-    public ModelAndView getAllCurrentlyActivePrograms(HttpServletRequest request, HttpServletResponse response) throws ServletException, java.text.ParseException {
+    // XML
+    public ModelAndView getProgramStatusByProgramName_xml(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 
-        ModelAndView mav = new ModelAndView("home.jsp");
+        List<String> results = new ArrayList<String>();
+        List<String> errorReasons = new ArrayList<String>();
+        
+        String xml = ServletRequestUtils.getRequiredStringParameter(request, "xml");
+        
+        try {
+            ProgramStatus programStatus = bgeIntegrationLoadControlXMLService.getProgramStatusByProgramName(xml);
+            results.add(programStatus.toString());
+        } catch (IllegalArgumentException e) {
+            errorReasons.add(e.getMessage());
+        } catch (IOException e) {
+            errorReasons.add(e.getMessage());
+        } catch (JDOMException e) {
+            errorReasons.add(e.getMessage());
+        }
+        
+        return returnMav(request, results, errorReasons);
+    }
+    
+    //====================================================================================================================================
+    // ALL CURRENTLY ACTIVE PROGRAMS 
+    //====================================================================================================================================
+    public ModelAndView getAllCurrentlyActivePrograms(HttpServletRequest request, HttpServletResponse response) throws ServletException, java.text.ParseException {
 
         List<String> results = new ArrayList<String>();
         List<String> errorReasons = new ArrayList<String>();
@@ -80,19 +98,43 @@ public class LoadControlServiceTestController extends MultiActionController {
             errorReasons.add("No Currrently Active Programs");
         }
         
-        // re-populate fields
-        mav.addAllObjects(ServletUtil.getParameterMap(request));
-        mav.addObject("results", results);
-        mav.addObject("errorReasons", errorReasons);
-        
-        return mav;
-        
+        return returnMav(request, results, errorReasons);
     }
     
+    // XML
+    public ModelAndView getAllCurrentlyActivePrograms_xml(HttpServletRequest request, HttpServletResponse response) throws ServletException, java.text.ParseException {
+
+        List<String> results = new ArrayList<String>();
+        List<String> errorReasons = new ArrayList<String>();
+        
+        String xml = ServletRequestUtils.getRequiredStringParameter(request, "xml");
+        
+        try {
+            List<ProgramStatus> programStatii = bgeIntegrationLoadControlXMLService.getAllCurrentlyActivePrograms(xml);
+        
+            for (ProgramStatus programStatus : programStatii) {
+                results.add(programStatus.toString());
+            }
+        } catch (IllegalArgumentException e) {
+            errorReasons.add(e.getMessage());
+        } catch (IOException e) {
+            errorReasons.add(e.getMessage());
+        } catch (JDOMException e) {
+            errorReasons.add(e.getMessage());
+        }
+        
+        if (results.size() < 1) {
+            errorReasons.add("No Currrently Active Programs");
+        }
+        
+        return returnMav(request, results, errorReasons);
+    }
+    
+    //====================================================================================================================================
     // START CONTROL BY SCENARIO NAME
+    //====================================================================================================================================
     public ModelAndView startControlByScenarioName(HttpServletRequest request, HttpServletResponse response) throws ServletException, java.text.ParseException {
 
-        ModelAndView mav = new ModelAndView("home.jsp");
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 
         List<String> results = new ArrayList<String>();
@@ -123,20 +165,49 @@ public class LoadControlServiceTestController extends MultiActionController {
             errorReasons.add(e.getMessage());
         }
         
-        // re-populate fields
-        mav.addAllObjects(ServletUtil.getParameterMap(request));
-        mav.addObject("results", results);
-        mav.addObject("errorReasons", errorReasons);
+        return returnMav(request, results, errorReasons);
+    }
+    
+    //XML
+    public ModelAndView startControlByScenarioName_xml(HttpServletRequest request, HttpServletResponse response) throws ServletException, java.text.ParseException {
+
+        List<String> results = new ArrayList<String>();
+        List<String> errorReasons = new ArrayList<String>();
         
-        return mav;
+        String xml = ServletRequestUtils.getRequiredStringParameter(request, "xml");
+        ScenarioStatus scenarioStatus = null;
+        try {
+            
+            scenarioStatus = bgeIntegrationLoadControlXMLService.startControlByScenarioName(xml);
+            
+            for (ProgramStatus programStatus : scenarioStatus.getProgramStatii()) {
+                
+                results.add(programStatus.toString());
+                
+                if (programStatus.getConstraintViolations().size() > 0) {
+                    errorReasons.add("Contains Constraint Violations");
+                }
+            }
+            
+        } catch (TimeoutException e) {
+            errorReasons.add("Timeout Exception");
+        } catch (IllegalArgumentException e) {
+            errorReasons.add(e.getMessage());
+        } catch (IOException e) {
+            errorReasons.add(e.getMessage());
+        } catch (JDOMException e) {
+            errorReasons.add(e.getMessage());
+        }
         
+        return returnMav(request, results, errorReasons);
     }
     
     
+    //====================================================================================================================================
     // START CONTROL BY PROGRAM NAME
+    //====================================================================================================================================
     public ModelAndView startControlByProgramName(HttpServletRequest request, HttpServletResponse response) throws ServletException, java.text.ParseException {
 
-        ModelAndView mav = new ModelAndView("home.jsp");
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 
         List<String> results = new ArrayList<String>();
@@ -163,20 +234,15 @@ public class LoadControlServiceTestController extends MultiActionController {
             errorReasons.add(e.getMessage());
         }
         
-        // re-populate fields
-        mav.addAllObjects(ServletUtil.getParameterMap(request));
-        mav.addObject("results", results);
-        mav.addObject("errorReasons", errorReasons);
-        
-        return mav;
-        
+        return returnMav(request, results, errorReasons);
     }
     
     
+    //====================================================================================================================================
     // STOP CONTROL BY SCENARIO NAME
+    //====================================================================================================================================
     public ModelAndView stopControlByScenarioName(HttpServletRequest request, HttpServletResponse response) throws ServletException, java.text.ParseException {
 
-        ModelAndView mav = new ModelAndView("home.jsp");
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 
         List<String> results = new ArrayList<String>();
@@ -206,20 +272,15 @@ public class LoadControlServiceTestController extends MultiActionController {
             errorReasons.add(e.getMessage());
         }
         
-        // re-populate fields
-        mav.addAllObjects(ServletUtil.getParameterMap(request));
-        mav.addObject("results", results);
-        mav.addObject("errorReasons", errorReasons);
-        
-        return mav;
-        
+        return returnMav(request, results, errorReasons);
     }
     
     
+    //====================================================================================================================================
     // STOP CONTROL BY PROGRAM NAME
+    //====================================================================================================================================
     public ModelAndView stopControlByProgramName(HttpServletRequest request, HttpServletResponse response) throws ServletException, java.text.ParseException {
 
-        ModelAndView mav = new ModelAndView("home.jsp");
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 
         List<String> results = new ArrayList<String>();
@@ -245,19 +306,13 @@ public class LoadControlServiceTestController extends MultiActionController {
             errorReasons.add(e.getMessage());
         }
         
-        // re-populate fields
-        mav.addAllObjects(ServletUtil.getParameterMap(request));
-        mav.addObject("results", results);
-        mav.addObject("errorReasons", errorReasons);
-        
-        return mav;
-        
+        return returnMav(request, results, errorReasons);
     }
     
+    //====================================================================================================================================
     // SCENARIOS LIST OF PROGRAM STARTING GEARS
+    //====================================================================================================================================
     public ModelAndView getScenarioProgramStartGears(HttpServletRequest request, HttpServletResponse response) throws ServletException, java.text.ParseException {
-
-        ModelAndView mav = new ModelAndView("home.jsp");
 
         List<String> results = new ArrayList<String>();
         List<String> errorReasons = new ArrayList<String>();
@@ -271,16 +326,22 @@ public class LoadControlServiceTestController extends MultiActionController {
             errorReasons.add(e.getMessage());
         }
         
+        return returnMav(request, results, errorReasons);
+    }
+    
+    // HELPERS
+    private ModelAndView returnMav(HttpServletRequest request, List<String> results, List<String> errorReasons) {
+        
+        ModelAndView mav = new ModelAndView("home.jsp");
+     
         // re-populate fields
         mav.addAllObjects(ServletUtil.getParameterMap(request));
         mav.addObject("results", results);
         mav.addObject("errorReasons", errorReasons);
         
         return mav;
-        
     }
     
-    // HELPERS
     private Date parseStartStopDateTime(HttpServletRequest request, String startOrStop, YukonUserContext userContext) throws ServletException, java.text.ParseException {
         
         String dateStr = ServletRequestUtils.getRequiredStringParameter(request, startOrStop + "Date");
@@ -307,5 +368,11 @@ public class LoadControlServiceTestController extends MultiActionController {
     @Autowired
     public void setLoadControlService(LoadControlService loadControlService) {
         this.loadControlService = loadControlService;
+    }
+    
+    @Autowired
+    public void setBgeIntegrationLoadControlXMLService(
+            BGEIntegrationLoadControlXMLService bgeIntegrationLoadControlXMLService) {
+        this.bgeIntegrationLoadControlXMLService = bgeIntegrationLoadControlXMLService;
     }
 }

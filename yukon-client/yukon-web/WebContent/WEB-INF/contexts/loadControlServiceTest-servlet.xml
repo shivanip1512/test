@@ -37,7 +37,9 @@
     </bean>
     
     <bean id="loadControlServiceTestController" class="com.cannontech.web.loadControlServiceTest.LoadControlServiceTestController" >
-        
+    </bean>
+    
+    <bean id="bgeIntegrationLoadControlXMLService" class="com.cannontech.loadcontrol.service.impl.BGEIntegrationLoadControlXMLServiceImpl" >
     </bean>
    
     

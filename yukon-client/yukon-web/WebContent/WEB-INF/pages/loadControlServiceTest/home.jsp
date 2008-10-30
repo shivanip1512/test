@@ -11,6 +11,14 @@
       table.resultsTable td.functionality {vertical-align: top;text-align:center;}
       table.resultsTable th.doc {width:200px;}
       table.resultsTable td.doc {vertical-align: top;text-align:center;}
+      table.resultsTable td.xmlTest {}
+      table.resultsTable td.inputTest {vertical-align: top;}
+      textarea.xml {
+            width: 600px;
+            height: 150px;
+            border: 3px solid #cccccc;
+            padding: 2px;
+        }
     </style>
     
     
@@ -44,14 +52,25 @@
         <tr>
             <th class="functionality">Functionality</th>
             <th class="doc">BGE Integration<br>Requirements Doc Ref</th>
-            <th>Test</th>
+            <th>XML Test</th>
+            <th>Input Test</th>
         </tr>
         
         <%-- PROGRAM STATUS BY PROGRAM NAME --%>
         <tr>
             <td class="functionality">Program Status By Program Name</td>
             <td class="doc">Section 2, #1</td>
-            <td>
+            <td class="xmlTest">
+                <form action="/spring/loadControlServiceTest/getProgramStatusByProgramName_xml" method="post">
+                <textarea name="xml" class="xml">
+<programStatusRequest xmlns="http://yukon.cannontech.com/api" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://yukon.cannontech.com/api ../ProgramStatusRequest.xsd">
+  <programName>AC</programName> 
+</programStatusRequest>
+                </textarea>
+                <input type="submit" value="TEST">
+                </form>
+            </td>
+            <td class="inputTest">
                 <form action="/spring/loadControlServiceTest/getProgramStatusByProgramName" method="post">
                     <tags:nameValueContainer>
                         <tags:nameValue name="Program Name" nameColumnWidth="200px">
@@ -71,7 +90,15 @@
         <tr>
             <td class="functionality">All Currently Active Programs</td>
             <td class="doc">Section 2, #2</td>
-            <td>
+            <td class="xmlTest">
+                <form action="/spring/loadControlServiceTest/getAllCurrentlyActivePrograms_xml" method="post">
+                <textarea name="xml" class="xml">
+<currentlyActiveProgramsRequest xmlns="http://yukon.cannontech.com/api" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://yukon.cannontech.com/api ../CurrentlyActiveProgramsRequest.xsd" /> 
+                </textarea>
+                <input type="submit" value="TEST">
+                </form>
+            </td>
+            <td class="inputTest">
                 <form action="/spring/loadControlServiceTest/getAllCurrentlyActivePrograms" method="post">
                     <tags:nameValueContainer>
                         <tags:nameValue name="RUN" nameColumnWidth="200px">
@@ -87,7 +114,19 @@
         <tr>
             <td class="functionality">Start By Scenario Name</td>
             <td class="doc">Section 2, #3</td>
-            <td>
+            <td class="xmlTest">
+                <form action="/spring/loadControlServiceTest/startControlByScenarioName_xml" method="post">
+                <textarea name="xml" class="xml">
+<scenarioStartRequest xmlns="http://yukon.cannontech.com/api" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://yukon.cannontech.com/api ../ScenarioStartRequest.xsd">
+  <scenarioName>AC</scenarioName> 
+  <startDateTime>2008-10-28T15:07:40</startDateTime> 
+  <stopDateTime>2008-10-28T17:07:40</stopDateTime> 
+</scenarioStartRequest>
+                </textarea>
+                <input type="submit" value="TEST">
+                </form>
+            </td>
+            <td class="inputTest">
                 <form action="/spring/loadControlServiceTest/startControlByScenarioName" method="post">
                     <tags:nameValueContainer>
                         <tags:nameValue name="Scenario Name" nameColumnWidth="200px">
@@ -120,7 +159,15 @@
         <tr>
             <td class="functionality">Start By Program Name</td>
             <td class="doc">Section 2, #4</td>
-            <td>
+            <td class="xmlTest">
+                <form action="/spring/loadControlServiceTest/startControlByProgramName_xml" method="post">
+                <textarea name="xml" class="xml">
+NOT IMPLEMENTED
+                </textarea>
+                <input type="submit" value="TEST">
+                </form>
+            </td>
+            <td class="inputTest">
                 <form action="/spring/loadControlServiceTest/startControlByProgramName" method="post">
                     <tags:nameValueContainer>
                         <tags:nameValue name="Program Name" nameColumnWidth="200px">
@@ -153,7 +200,15 @@
         <tr>
             <td class="functionality">Stop By Scenario Name</td>
             <td class="doc">Section 2, #5</td>
-            <td>
+            <td class="xmlTest">
+                <form action="/spring/loadControlServiceTest/stopControlByScenarioName_xml" method="post">
+                <textarea name="xml" class="xml">
+NOT IMPLEMENTED
+                </textarea>
+                <input type="submit" value="TEST">
+                </form>
+            </td>
+            <td class="inputTest">
                 <form action="/spring/loadControlServiceTest/stopControlByScenarioName" method="post">
                     <tags:nameValueContainer>
                         <tags:nameValue name="Scenario Name" nameColumnWidth="200px">
@@ -181,7 +236,15 @@
         <tr>
             <td class="functionality">Stop By Program Name</td>
             <td class="doc">Section 2, #6</td>
-            <td>
+            <td class="xmlTest">
+                <form action="/spring/loadControlServiceTest/stopControlByProgramName_xml" method="post">
+                <textarea name="xml" class="xml">
+NOT IMPLEMENTED
+                </textarea>
+                <input type="submit" value="TEST">
+                </form>
+            </td>
+            <td class="inputTest">
                 <form action="/spring/loadControlServiceTest/stopControlByProgramName" method="post">
                     <tags:nameValueContainer>
                         <tags:nameValue name="Program Name" nameColumnWidth="200px">
@@ -209,7 +272,15 @@
         <tr>
             <td class="functionality">Scenario List O' Programs (Starting Gears)</td>
             <td class="doc">Section 2, #7</td>
-            <td>
+            <td class="xmlTest">
+                <form action="/spring/loadControlServiceTest/getScenarioProgramStartGears_xml" method="post">
+                <textarea name="xml" class="xml">
+NOT IMPLEMENTED
+                </textarea>
+                <input type="submit" value="TEST">
+                </form>
+            </td>
+            <td class="inputTest">
                 <form action="/spring/loadControlServiceTest/getScenarioProgramStartGears" method="post">
                     <tags:nameValueContainer>
                         <tags:nameValue name="Scenario Name" nameColumnWidth="200px">
