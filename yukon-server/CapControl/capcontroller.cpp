@@ -235,7 +235,6 @@ void CtiCapController::controlLoop()
         CtiMultiMsg* multiCapMsg = new CtiMultiMsg();
         CtiMultiMsg* multiCCEventMsg = new CtiMultiMsg();
         LONG lastThreadPulse = 0;
-        LONG lastOpStatsThreadPulse = 0;
         LONG lastDailyReset = 0;
         BOOL waitToBroadCastEverything = FALSE; 
         BOOL startUpSendStats = TRUE;
@@ -244,10 +243,7 @@ void CtiCapController::controlLoop()
         CtiTime announceTime((unsigned long) 0);
         CtiTime tickleTime((unsigned long) 0);
         CtiTime fifteenMinCheck = nextScheduledTimeAlignedOnRate( currentDateTime,  900);
-        CtiTime opStatRefreshRate =  nextScheduledTimeAlignedOnRate( currentDateTime,  _OP_STATS_REFRESH_RATE );
-
-
-
+        
         while(TRUE)
         {
             long main_wait = control_loop_delay;
@@ -286,29 +282,6 @@ void CtiCapController::controlLoop()
                         store->resetDailyOperations();
 
                         lastDailyReset = secondsFrom1901;
-                    }
-
-                    if( (currentDateTime.seconds() > opStatRefreshRate.seconds() && secondsFrom1901 != lastOpStatsThreadPulse) ||
-                        startUpSendStats )
-                    {
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Controller refreshing OP STATS" << endl;
-                        }
-                        store->resetAllOperationStats();
-                        store->resetAllConfirmationStats();
-                        store->reCalculateOperationStatsFromDatabase( );
-                        store->reCalculateConfirmationStatsFromDatabase( );
-                        lastOpStatsThreadPulse = secondsFrom1901;
-                        opStatRefreshRate =  nextScheduledTimeAlignedOnRate( currentDateTime,  _OP_STATS_REFRESH_RATE );
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Next OP STATS CHECKTIME : "<<opStatRefreshRate << endl;
-                        }
-
-                        store->createAllStatsPointDataMsgs(pointChanges);
-
-                        startUpSendStats = FALSE;
                     }
                 }
 
@@ -734,7 +707,7 @@ void CtiCapController::controlLoop()
                             try
                             {
                                 //accumulate all buses with any changes into msg for all clients
-                                if( currentSubstationBus->getBusUpdatedFlag() )
+                                if( currentSubstationBus->getBusUpdatedFlag())
                                 {
                                     currentStation->checkAndUpdateRecentlyControlledFlag();
                                     if (currentStation->getStationUpdatedFlag())
@@ -763,6 +736,8 @@ void CtiCapController::controlLoop()
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                     }
+
+                    
                 }
                 
                 try

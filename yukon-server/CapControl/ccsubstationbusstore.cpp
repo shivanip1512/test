@@ -116,6 +116,10 @@ CtiCCSubstationBusStore::CtiCCSubstationBusStore() : _isvalid(FALSE), _reregiste
     RWThreadFunction func2 = rwMakeThreadFunction( *this, &CtiCCSubstationBusStore::doAMFMThr );
     _amfmthr = func2;
     func2.start();
+    //Start the opstats thread
+    RWThreadFunction func3 = rwMakeThreadFunction( *this, &CtiCCSubstationBusStore::doOpStatsThr );
+    _opstatsthr = func3;
+    func3.start();
 }
 
 /*--------------------------------------------------------------------------
@@ -133,6 +137,11 @@ CtiCCSubstationBusStore::~CtiCCSubstationBusStore()
     {
         _amfmthr.requestCancellation();
         _amfmthr.join();
+    }
+    if( _opstatsthr.isValid() )
+    {
+        _opstatsthr.requestCancellation();
+        _opstatsthr.join();
     }
 
     shutdown();
@@ -911,7 +920,7 @@ void CtiCCSubstationBusStore::reset()
                 dout << CtiTime() << " - Resetting substation buses from database..." << endl;
             }
             RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
-            {
+
             wasAlreadyRunning = deleteCapControlMaps();
 
             //reCalculateCapBankOperationStatsFromDatabase( );
@@ -1150,7 +1159,6 @@ void CtiCCSubstationBusStore::reset()
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - Done Loading values into capcontrol - " << endl;
             }
-        }
         }
 
         _isvalid = TRUE;
@@ -2145,6 +2153,115 @@ void CtiCCSubstationBusStore::shutdown()
     delete _ccSpecialAreas;
 
 }
+
+/*---------------------------------------------------------------------------
+    doOpStatsThr
+
+    Starts on construction and simply forces a call to reset every 60 minutes
+---------------------------------------------------------------------------*/
+void CtiCCSubstationBusStore::doOpStatsThr()
+{
+    string str;
+    char var[128];
+    int refreshrate = 3600;
+
+    std::strcpy(var, "CAP_CONTROL_OP_STATS_REFRESH_RATE");
+    if( !(str = gConfigParms.getValueAsString(var)).empty() )
+    {
+        refreshrate = atoi(str.c_str());
+        if( _CC_DEBUG & CC_DEBUG_STANDARD )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - " << var << ":  " << refreshrate << endl;
+        }
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+    }
+
+    ThreadMonitor.start(); 
+    BOOL startUpSendStats = TRUE;
+    LONG lastOpStatsThreadPulse = 0;
+    CtiTime rwnow;
+    CtiTime announceTime((unsigned long) 0);
+    CtiTime tickleTime((unsigned long) 0);
+    CtiTime currentTime;
+    CtiTime opStatRefreshRate =  nextScheduledTimeAlignedOnRate( currentTime,  _OP_STATS_REFRESH_RATE );
+
+    ULONG secondsFrom1901 = 0;
+    CtiMultiMsg* multiDispatchMsg = new CtiMultiMsg();
+    CtiMultiMsg_vec& pointChanges = multiDispatchMsg->getData();
+
+    while(TRUE)
+    {
+        rwRunnable().serviceCancellation();
+
+        currentTime = CtiTime();
+        secondsFrom1901 = currentTime.seconds();
+
+        if( (currentTime.seconds() > opStatRefreshRate.seconds() && secondsFrom1901 != lastOpStatsThreadPulse) ||
+            startUpSendStats )
+        {
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Controller refreshing OP STATS" << endl;
+            }
+            //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+            {
+                
+                multiDispatchMsg = new CtiMultiMsg();
+                pointChanges = multiDispatchMsg->getData();        
+                resetAllOperationStats();
+                resetAllConfirmationStats();
+                reCalculateOperationStatsFromDatabase( );
+                reCalculateConfirmationStatsFromDatabase( );
+                lastOpStatsThreadPulse = secondsFrom1901;
+                opStatRefreshRate =  nextScheduledTimeAlignedOnRate( currentTime,  _OP_STATS_REFRESH_RATE );
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - Next OP STATS CHECKTIME : "<<opStatRefreshRate << endl;
+                }
+               
+                createAllStatsPointDataMsgs(pointChanges);
+                try
+                {
+                    //send point changes to dispatch
+                    if( pointChanges.size() > 0 )
+                    {
+                        multiDispatchMsg->resetTime(); // CGP 5/21/04 Update its time to current time.
+                        CtiCapController::getInstance()->sendMessageToDispatch(multiDispatchMsg);
+                        //CtiCapController::getInstance()->getDispatchConnection()->WriteConnQue(multiDispatchMsg);
+                    }
+                    else
+                        delete multiDispatchMsg;
+                }
+                catch(...)
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                }
+            }
+
+            
+
+
+            startUpSendStats = FALSE;
+        }
+        {
+            rwRunnable().sleep(500);
+        }
+           
+
+    }
+
+    {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - SHUT DOWN!!!!!!!!!!!!!! " << __LINE__ << endl;
+   }
+}
+
 
 /*---------------------------------------------------------------------------
     doResetThr

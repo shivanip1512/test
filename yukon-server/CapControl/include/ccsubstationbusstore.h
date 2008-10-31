@@ -376,6 +376,7 @@ private:
 
     void doResetThr();
     void doAMFMThr();
+    void doOpStatsThr();
     BOOL deleteCapControlMaps();
 
     CtiCCSubstationBus_vec  *_ccSubstationBuses;
@@ -386,6 +387,7 @@ private:
 
     RWThread _resetthr;
     RWThread _amfmthr;
+    RWThread _opstatsthr;
 
     BOOL _isvalid;
     BOOL _reregisterforpoints;
