@@ -343,7 +343,10 @@ public final class PointDaoImpl implements PointDao {
         return pointList;
     }
     
-    public int getPointDataOffset(int pointId, int pointType) {
+    public int getPointDataOffset(LitePoint litePoint) {
+        int pointId = litePoint.getPointID();
+        int pointType = litePoint.getPointType();
+
         if (pointType == PointTypes.ANALOG_POINT) {
             return getAnalogPointDataOffset(pointId);
         } else if (pointType == PointTypes.PULSE_ACCUMULATOR_POINT || pointType == PointTypes.DEMAND_ACCUMULATOR_POINT) {
@@ -372,7 +375,10 @@ public final class PointDaoImpl implements PointDao {
     }
    
     
-    public double getPointMultiplier(int pointId, int pointType) {
+    public double getPointMultiplier(LitePoint litePoint) {
+        int pointId = litePoint.getPointID();
+        int pointType = litePoint.getPointType();
+
         if (pointType == PointTypes.ANALOG_POINT) {
             return getAnalogPointMultiplier(pointId);
         } else if (pointType == PointTypes.PULSE_ACCUMULATOR_POINT || pointType == PointTypes.DEMAND_ACCUMULATOR_POINT) {

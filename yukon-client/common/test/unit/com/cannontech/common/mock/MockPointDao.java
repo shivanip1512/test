@@ -130,11 +130,11 @@ public class MockPointDao implements PointDao {
         return null;
     }
 
-    public int getPointDataOffset(int pointId, int pointType) {
+    public int getPointDataOffset(LitePoint litePoint) {
         return 0;
     }
 
-    public double getPointMultiplier(int pointId, int pointType) {
+    public double getPointMultiplier(LitePoint litePoint) {
         return 0;
     }
 

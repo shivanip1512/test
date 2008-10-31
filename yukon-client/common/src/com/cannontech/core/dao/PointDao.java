@@ -140,18 +140,17 @@ public interface PointDao {
     /**
      * Returns the point DataOffset for the given point and point type.
      * This is not the Point.PointOffset field.  This is the specific point type's DataOffset field.
-     * @param pointId
-     * @param pointType
+     * @param litePoint
      * @return the point's data offset
      */
-    public int getPointDataOffset(int pointId, int pointType) throws NotFoundException;
+    public int getPointDataOffset(LitePoint litePoint) throws NotFoundException;
     
     /**
      * Returns the point multiplier for the given point
-     * @param pointId
+     * @param litePoint
      * @return
      */
-    public double getPointMultiplier(int pointId, int pointType) throws NotFoundException;
+    public double getPointMultiplier(LitePoint litePoint) throws NotFoundException;
     
     public List<LitePoint> searchByName(String name, String paoClass);
 }

@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import org.springframework.dao.DataAccessException;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -69,19 +70,18 @@ public class PointDataGenerator implements PointValueUpdater {
         holder = new PointHolder();
         // find status point
         
-        int pointId = pointDao.getPointIDByDeviceID_Offset_PointType(lpao.getLiteID(), offset, type);
-        LitePoint point = pointDao.getLitePoint(pointId);
-        if (point == null) {
+        LitePoint litePoint = pointDao.getLitePointIdByDeviceId_Offset_PointType(lpao.getLiteID(), offset, type);
+        if (litePoint == null) {
             log.warn("Unable to find point. DeviceId=" + lpao.getLiteID() 
                      + ", offset=" + offset + ", type=" + type);
             return null;
         }
-        log.debug("Got point " + point.getPointID() + " from dao for device=" + lpao + ", offset=" + offset + ", type=" + type);
+        log.debug("Got point " + litePoint.getPointID() + " from dao for device=" + lpao + ", offset=" + offset + ", type=" + type);
         
-        holder.point = point;
+        holder.point = litePoint;
         try {
-            holder.multiplier = pointDao.getPointMultiplier(pointId, point.getPointType());
-        } catch (DataAccessException e) {
+            holder.multiplier = pointDao.getPointMultiplier(litePoint);
+        } catch (NotFoundException e) {
         }
 
         if (cachePoints) {
