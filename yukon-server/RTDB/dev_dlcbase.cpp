@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dlcbase.cpp-arc  $
-* REVISION     :  $Revision: 1.51 $
-* DATE         :  $Date: 2008/10/28 19:21:41 $
+* REVISION     :  $Revision: 1.52 $
+* DATE         :  $Date: 2008/10/31 14:47:43 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -488,17 +488,20 @@ int CtiDeviceDLCBase::executeOnDLCRoute( CtiRequestMsg              *pReq,
                         }
 
                         arm_req->setMessagePriority(pReq->getMessagePriority());
-                        arm_req->setConnectionHandle(0);  //  this should disappear into the aether - we don't want the CSR stuff to get confused by the expectMore
 
                         CtiCommandParser arm_parse(arm_req->CommandString());
 
-                        if( CtiDeviceBase::ExecuteRequest(arm_req, arm_parse, vgList, retList, outList, pOut) )
+                        //  we must trap any return messages to the client that this creates...
+                        list<CtiMessage *> tmp_retlist;
+
+                        if( CtiDeviceBase::ExecuteRequest(arm_req, arm_parse, vgList, tmp_retlist, outList, pOut) )
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint - error sending ARM to device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " **** Checkpoint - error sending ARM to device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
+
+                        //  ... and erase them
+                        delete_container(tmp_retlist);
 
                         delete arm_req;
                     }
