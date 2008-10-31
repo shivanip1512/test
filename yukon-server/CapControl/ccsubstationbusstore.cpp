@@ -2208,9 +2208,7 @@ void CtiCCSubstationBusStore::doOpStatsThr()
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - Controller refreshing OP STATS" << endl;
             }
-            //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
             {
-                
                 multiDispatchMsg = new CtiMultiMsg();
                 pointChanges = multiDispatchMsg->getData();        
                 resetAllOperationStats();
@@ -2232,7 +2230,6 @@ void CtiCCSubstationBusStore::doOpStatsThr()
                     {
                         multiDispatchMsg->resetTime(); // CGP 5/21/04 Update its time to current time.
                         CtiCapController::getInstance()->sendMessageToDispatch(multiDispatchMsg);
-                        //CtiCapController::getInstance()->getDispatchConnection()->WriteConnQue(multiDispatchMsg);
                     }
                     else
                         delete multiDispatchMsg;
@@ -2252,14 +2249,7 @@ void CtiCCSubstationBusStore::doOpStatsThr()
         {
             rwRunnable().sleep(500);
         }
-           
-
     }
-
-    {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - SHUT DOWN!!!!!!!!!!!!!! " << __LINE__ << endl;
-   }
 }
 
 
