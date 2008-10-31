@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrrccs.cpp-arc  $
-*    REVISION     :  $Revision: 1.14 $
-*    DATE         :  $Date: 2006/06/07 22:34:04 $
+*    REVISION     :  $Revision: 1.15 $
+*    DATE         :  $Date: 2008/10/31 15:36:33 $
 *
 *
 *    AUTHOR: David Sutton
@@ -22,6 +22,13 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrrccs.cpp,v $
+      Revision 1.15  2008/10/31 15:36:33  tspar
+      YUK-6649 - Yukon is throwing away point updates from RCCS
+
+      String resize call was putting in nulls when expanding the string. RW strings used a space. String compares were failing because of this.
+
+      Changed resize calls to use space as the padding.
+
       Revision 1.14  2006/06/07 22:34:04  tspar
       _snprintf  adding .c_str() to all strings. Not having this does not cause compiler errors, but does cause runtime errors. Also tweaks and fixes to FDR due to some differences in STL / RW
 
@@ -389,7 +396,7 @@ bool CtiFDR_Rccs::buildAndWriteToForeignSystem (CtiFDRPoint &aPoint )
                     {
                         // put everything in the message
                         ptr->Type = INETTYPEVALUE;
-                        getSourceName().resize(INETDESTSIZE);
+                        getSourceName().resize(INETDESTSIZE,' ');
                         strncpy (ptr->SourceName, getSourceName().c_str(), INETDESTSIZE);
 
                         CtiTime timestamp(aPoint.getLastTimeStamp());
@@ -406,7 +413,7 @@ bool CtiFDR_Rccs::buildAndWriteToForeignSystem (CtiFDRPoint &aPoint )
                         memset (tempStr,'\0',21);
                         memcpy (tempStr,ptr->msgUnion.value.PointName,20);
                         string point_name (tempStr);
-                        point_name.resize(20);
+                        point_name.resize(20,' ');
                         string small_point (trim(point_name));
                         if (small_point == iBatchMarkerName)
                         {
@@ -465,9 +472,9 @@ bool CtiFDR_Rccs::buildAndWriteToForeignSystem (CtiFDRPoint &aPoint )
                         // memory is consumed no matter what
                         if (!getConnectionList()[connectionIndex]->write (foreignSys))
                         {
-                            clientName.resize(INETDESTSIZE);
-                            deviceName.resize(20);
-                            pointName.resize(20);
+                            clientName.resize(INETDESTSIZE,' ');
+                            deviceName.resize(20,' ');
+                            pointName.resize(20,' ');
 
 
                             if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
@@ -793,9 +800,9 @@ int CtiFDR_Rccs::processMessageFromForeignSystem(CHAR *aBuffer)
     string deviceName(data->msgUnion.value.DeviceName);
     string pointName(data->msgUnion.value.PointName);
 
-    clientName.resize(INETDESTSIZE);
-    deviceName.resize(20);
-    pointName.resize(20);
+    clientName.resize(INETDESTSIZE,' ');
+    deviceName.resize(20,' ');
+    pointName.resize(20,' ');
     
     switch (data->Type)
     {
@@ -867,9 +874,9 @@ int CtiFDR_Rccs::processValueMessage(InetInterface_t *data)
 
     string deviceName (data->msgUnion.value.DeviceName);
     string pointName (data->msgUnion.value.PointName);
-    translationName.resize(20);
-    deviceName.resize(20);
-    pointName.resize(20);
+    translationName.resize(20,' ');
+    deviceName.resize(20,' ');
+    pointName.resize(20,' ');
 
     // check for our special device names
     if (!(stringCompareIgnoreCase(deviceName,string (RCCSDEVICEPRIMARY)))
@@ -907,7 +914,7 @@ int CtiFDR_Rccs::processValueMessage(InetInterface_t *data)
         if (isAMaster (atoi(temp.c_str())))
         {
             string tmp = string (data->msgUnion.value.PointName);
-            tmp.resize(20);
+            tmp.resize(20,' ');
 
             // convert to our name
             translationName += tmp;

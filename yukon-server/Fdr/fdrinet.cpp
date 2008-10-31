@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinet.cpp-arc  $
-*    REVISION     :  $Revision: 1.25 $
-*    DATE         :  $Date: 2008/10/02 23:57:15 $
+*    REVISION     :  $Revision: 1.26 $
+*    DATE         :  $Date: 2008/10/31 15:36:33 $
 *
 *
 *    AUTHOR: David Sutton
@@ -22,6 +22,13 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrinet.cpp,v $
+      Revision 1.26  2008/10/31 15:36:33  tspar
+      YUK-6649 - Yukon is throwing away point updates from RCCS
+
+      String resize call was putting in nulls when expanding the string. RW strings used a space. String compares were failing because of this.
+
+      Changed resize calls to use space as the padding.
+
       Revision 1.25  2008/10/02 23:57:15  tspar
       YUK-5013 Full FDR reload should not happen with every point
 
@@ -616,7 +623,7 @@ bool CtiFDR_Inet::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool 
                 if ( !tempString2.empty() )
                 {
                     // blank pad device
-                    tempString2.resize(20);
+                    tempString2.resize(20,' ');
                     translationName = tempString2;
 
                     // next token is the point name
@@ -635,7 +642,7 @@ bool CtiFDR_Inet::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool 
                             // now we have a point name:
                             if ( !tempString2.empty() )
                             {
-                                tempString2.resize(20);
+                                tempString2.resize(20,' ');
                                 translationName += tempString2;
                                 std::transform(translationName.begin(), translationName.end(), translationName.begin(), ::toupper);
 
@@ -943,7 +950,7 @@ bool CtiFDR_Inet::buildAndWriteToForeignSystem (CtiFDRPoint &aPoint )
             {
                 // put everything in the message
                 ptr->Type = INETTYPEVALUE;
-                iSourceName.resize(INETDESTSIZE);
+                iSourceName.resize(INETDESTSIZE,' ');
                 strncpy (ptr->SourceName, iSourceName.c_str(), INETDESTSIZE);
 
                 CtiTime timestamp(aPoint.getLastTimeStamp());
@@ -994,9 +1001,9 @@ bool CtiFDR_Inet::buildAndWriteToForeignSystem (CtiFDRPoint &aPoint )
                 // memory is consumed no matter what
                 if (!iConnectionList[connectionIndex]->write (foreignSys))
                 {
-                    clientName.resize(INETDESTSIZE);
-                    deviceName.resize(20);
-                    pointName.resize(20);
+                    clientName.resize(INETDESTSIZE,' ');
+                    deviceName.resize(20,' ');
+                    pointName.resize(20,' ');
 
 
                     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
@@ -1672,7 +1679,7 @@ CHAR *CtiFDR_Inet::buildForeignSystemHeartbeatMsg ()
     if (foreignSys != NULL)
     {
         ptr->Type = INETTYPENULL;
-        iSourceName.resize(10);
+        iSourceName.resize(10,' ');
         strncpy (ptr->SourceName, iSourceName.c_str(),10);
     }
     return foreignSys;
@@ -1705,7 +1712,7 @@ string CtiFDR_Inet::decodeClientName(CHAR * aBuffer)
     InetInterface_t *data = (InetInterface_t*)aBuffer;
     string tmpName(data->SourceName);
 
-    tmpName.resize(INETDESTSIZE);
+    tmpName.resize(INETDESTSIZE,' ');
     string clientName (trim(tmpName));
 
     return clientName;
@@ -1720,9 +1727,9 @@ int CtiFDR_Inet::processMessageFromForeignSystem(CHAR *aBuffer)
     string deviceName(data->msgUnion.value.DeviceName);
     string pointName(data->msgUnion.value.PointName);
 
-    clientName.resize(INETDESTSIZE);
-    deviceName.resize(20);
-    pointName.resize(20);
+    clientName.resize(INETDESTSIZE,' ');
+    deviceName.resize(20,' ');
+    pointName.resize(20,' ');
     
     switch (data->Type)
     {
@@ -1787,14 +1794,14 @@ int CtiFDR_Inet::processValueMessage(InetInterface_t *data)
     string           desc;
 
     string tmp = string (data->msgUnion.value.PointName);
-    translationName.resize(20);
-    tmp.resize(20);
+    translationName.resize(20,' ');
+    tmp.resize(20,' ');
 
     // convert to our name
     translationName += tmp;
 
     // chops off the rest of the message
-//    translationName.resize(40);
+//    translationName.resize(40,' ');
     flag = findTranslationNameInList (translationName, getReceiveFromList(), point);
 
     if (flag == true)
