@@ -4,6 +4,7 @@ import javax.naming.Context;
 import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
+import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.authentication.service.AuthenticationProvider;
@@ -16,7 +17,7 @@ public abstract class LDAPLogin implements AuthenticationProvider {
     protected LDAPService ldapService;
     
     public boolean login(final LiteYukonUser user, final String password) {
-        if (user == null || password == null) return false;
+        if (user == null || StringUtils.isBlank(password)) return false;
         boolean result = doLoginAction(user.getUsername(), password);
         return result;
     }
