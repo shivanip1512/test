@@ -105,13 +105,11 @@ class CtiStack{
 
     private:
         stack<T> s;
-        int size;
     public:
         CtiStack(){
-            size = 0;
         }
         int entries(){
-            return size;
+            return s.size();
         }
         bool isEmpty(){
             return s.empty();
@@ -123,12 +121,10 @@ class CtiStack{
         }
         void push( T a ){
             s.push(a);
-            ++size;
         }
         T pop(){
             T temp = s.top();
             s.pop();
-            --size;
             return ( temp );
         }
         T top(){
