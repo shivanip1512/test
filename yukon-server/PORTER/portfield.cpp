@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.232 $
-* DATE         :  $Date: 2008/10/29 18:16:47 $
+* REVISION     :  $Revision: 1.233 $
+* DATE         :  $Date: 2008/10/31 19:42:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1296,6 +1296,8 @@ struct statistics_handler
 {
     operator()(OUTMESS &om)
     {
+        om.MessageFlags |= MessageFlag_StatisticsRequested;
+
         statisticsNewCompletion( om.Port, om.DeviceID, om.TargetID, om.EventCode, om.MessageFlags );
 
         //  We had a comm error and need to report it.

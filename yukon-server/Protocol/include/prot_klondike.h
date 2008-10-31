@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2008/10/21 16:09:26 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2008/10/31 19:42:34 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -160,7 +160,7 @@ private:
             timestamp        = *buf++;
             timestamp       |= *buf++ <<  8;
             timestamp       |= *buf++ << 16;
-            timestamp       |= *buf++ << 32;
+            timestamp       |= *buf++ << 24;
 
             signal_strength  = *buf++;
             signal_strength |= *buf++ <<  8;
@@ -420,6 +420,7 @@ public:
         Error_InvalidDLCType,
         Error_InvalidMessageLength,
         Error_QueueFull,
+        Error_QueueEntryLost,
 
         Error_Unknown
     };

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2008/10/31 15:55:35 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2008/10/31 19:42:34 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -523,6 +523,7 @@ int CCU721::translateKlondikeError(Klondike::Errors error)
         case Klondike::Error_InvalidMessageLength:      return BADLENGTH;
         case Klondike::Error_InvalidSequence:           return BADSEQUENCE;
         case Klondike::Error_NoRoutes:                  return RTNF;
+        case Klondike::Error_QueueEntryLost:            return QUEUEFLUSHED;
 
         default:
         case Klondike::Error_Unknown:                   return NOTNORMAL;

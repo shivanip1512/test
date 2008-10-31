@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2008/10/31 15:55:35 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2008/10/31 19:42:34 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -142,11 +142,28 @@ bool Klondike::commandStateValid()
     if( _current_command.command      == Command_ReadQueue &&
         _current_command.command_code == CommandCode_ReplyQueueRead )
     {
-        if( _remote_requests.empty() && !_device_status.response_buffer_has_data )
+        if( !_device_status.response_buffer_has_data && !_device_status.transmit_buffer_has_data && !_device_status.plc_transmitting_buffer_message )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - Cti::Protocol::Klondike::commandStateValid() : Command_ReadQueue/CommandCode_ReplyQueueRead : _remote_requests.empty() && !_device_status.response_buffer_has_data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - Cti::Protocol::Klondike::commandStateValid() : Command_ReadQueue/CommandCode_ReplyQueueRead : !_device_status.response_buffer_has_data && !_device_status.transmit_buffer_has_data && !_device_status.plc_transmitting_buffer_message - purging _remote_requests **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            remote_work_t::iterator remote_itr = _remote_requests.begin(),
+                                    remote_end = _remote_requests.end();
+
+            while( remote_itr != remote_end )
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - Cti::Protocol::Klondike::commandStateValid() : Command_LoadRoutes/CommandCode_RoutingTableWrite : lost queue entry " << remote_itr->first << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                queue_entry_t &failed_entry = remote_itr->second;
+
+                _plc_results.push(queue_result_t(failed_entry.om, Error_QueueEntryLost, ::time(0), byte_buffer_t()));
+
+                remote_itr = _remote_requests.erase(remote_itr);
             }
 
             command_valid = false;
