@@ -13,6 +13,7 @@ import javax.swing.ImageIcon;
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.gui.util.SortTableModelWrapper;
 import com.cannontech.tdc.custom.CustomDisplay;
+import org.apache.commons.lang.StringUtils;
 
 public class DisplayTableCellRenderer extends javax.swing.JLabel implements javax.swing.table.TableCellRenderer
 {
@@ -115,7 +116,7 @@ public Component getTableCellRendererComponent(javax.swing.JTable table, Object 
 		setIcon( null );
 	}
 
-	if( value == null || value.toString().equalsIgnoreCase("") )
+	if(value == null || StringUtils.isBlank(value.toString()))
 		((javax.swing.JComponent)this).setToolTipText("FILLER ROW");
 	else
 		((javax.swing.JComponent)this).setToolTipText( value.toString() );
