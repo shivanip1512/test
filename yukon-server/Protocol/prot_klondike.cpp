@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2008/10/21 16:09:26 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2008/10/31 15:55:35 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -34,6 +34,7 @@ Klondike::Klondike() :
     _loading_device_queue(false),
     _reading_device_queue(false),
     _device_queue_sequence(numeric_limits<unsigned int>::max()),
+    _device_queue_entries_available(numeric_limits<unsigned int>::max()),
     _read_toggle(0x00)
 {
     _device_status.as_ushort = 0;
@@ -66,7 +67,7 @@ Klondike::command_state_map_t::command_state_map_t()
 {
     //  this should be rewritten to allow command codes to be repeated within a command's state machine
 
-    (*this)[Command_Raw ];  //  No command codes needed
+    (*this)[Command_Raw      ].push_back(CommandCode_Null);  //  unused
 
     (*this)[Command_Loopback ].push_back(CommandCode_CheckStatus);
 
@@ -282,9 +283,10 @@ string Klondike::describeCurrentStatus( void ) const
 
     sync_guard_t guard(_sync);
 
-    stream << "_device_queue_entries_available = " << _device_queue_entries_available << "\n";
-    stream << "_device_queue_sequence          = " << hex << setw(4) << _device_queue_sequence << endl;
-    stream << "_device_status.as_ushort        = " << hex << setw(4) << _device_status.as_ushort        << "\n";
+    if( _device_queue_entries_available != numeric_limits<unsigned int>::max() )  stream << "_device_queue_entries_available = " << _device_queue_entries_available << endl;
+    if( _device_queue_sequence          != numeric_limits<unsigned int>::max() )  stream << "_device_queue_sequence          = " << hex << setw(4) << _device_queue_sequence << endl;
+
+    stream << "_device_status.as_ushort        = " << hex << setw(4) << _device_status.as_ushort        << endl;
 
     if( _device_status.response_buffer_has_data        ) stream << "_device_status.response_buffer_has_data        " << endl;
     if( _device_status.response_buffer_has_marked_data ) stream << "_device_status.response_buffer_has_marked_data " << endl;
@@ -610,6 +612,10 @@ void Klondike::processResponse(const byte_buffer_t &inbound)
 
     switch( _current_command.command_code )
     {
+        case CommandCode_Null:
+        {
+            break;  //  used for raw commands - we don't know or care what the response is beyond the status bytes
+        }
         case CommandCode_TimeSyncCCU:
         {
             //  if we succeed, the CCU-721 device code should queue a timesync to us

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2008/10/28 19:21:41 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2008/10/31 15:55:35 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -357,9 +357,9 @@ int CCU721::recvCommRequest(OUTMESS *OutMessage)
     }
     else if( _current_om->Sequence == Klondike::Command_Raw )
     {
-        byte_buffer_t raw_message;
+        byte_buffer_t raw_message(OutMessage->Buffer.OutMessage, OutMessage->Buffer.OutMessage + OutMessage->OutLength);
 
-        return _klondike.setCommand(Klondike::Command_DirectTransmission,
+        return _klondike.setCommand(Klondike::Command_Raw,
                                     raw_message);
     }
     else
