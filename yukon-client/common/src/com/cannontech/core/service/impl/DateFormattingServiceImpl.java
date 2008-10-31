@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.user.SystemUserContext;
 import com.cannontech.user.YukonUserContext;
 
 public class DateFormattingServiceImpl implements DateFormattingService {
@@ -68,6 +69,15 @@ public class DateFormattingServiceImpl implements DateFormattingService {
         return flexibleDateParser(dateStr, DateOnlyMode.START_OF_DAY, userContext);
     }
 
+    public synchronized Date flexibleDateParserWithSystemTimeZone(String dateStr,
+            DateOnlyMode mode, YukonUserContext userContext) throws ParseException {
+
+        String parserName = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage("yukon.common.dateFormatting.parserImplementation");
+        FlexibleDateParser flexibleDateParser = dateParserLookup.get(parserName);
+        Date result = flexibleDateParser.parseDate(dateStr, mode, userContext.getLocale(), new SystemUserContext().getTimeZone());
+        return result;
+    }
+    
     public Calendar getCalendar(YukonUserContext userContext) {
         return Calendar.getInstance(userContext.getTimeZone(), userContext.getLocale());
     }

@@ -30,7 +30,6 @@ import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.servlet.YukonUserContextUtils;
-import com.cannontech.user.SystemUserContext;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 
@@ -101,9 +100,9 @@ public class MoveInMoveOutController extends MultiActionController {
         Date moveInDate = null;
         if (moveInDateStr != null) {
             try {
-                moveInDate = dateFormattingService.flexibleDateParser(moveInDateStr,
+                moveInDate = dateFormattingService.flexibleDateParserWithSystemTimeZone(moveInDateStr,
                                                                       DateFormattingService.DateOnlyMode.START_OF_DAY,
-                                                                      new SystemUserContext());
+                                                                      userContext);
             } catch (ParseException pe) {
                 moveInDate = null;
             }
@@ -204,9 +203,9 @@ public class MoveInMoveOutController extends MultiActionController {
         Date moveOutDate = null;
         if (moveOutDateStr != null) {
             try {
-                moveOutDate = dateFormattingService.flexibleDateParser(moveOutDateStr,
+                moveOutDate = dateFormattingService.flexibleDateParserWithSystemTimeZone(moveOutDateStr,
                                                                        DateFormattingService.DateOnlyMode.END_OF_DAY,
-                                                                       new SystemUserContext());
+                                                                       userContext);
             } catch (ParseException pe) {
                 moveOutDate = null;
             }

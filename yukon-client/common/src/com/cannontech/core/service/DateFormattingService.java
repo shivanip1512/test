@@ -82,6 +82,20 @@ public interface DateFormattingService {
     public Date flexibleDateParser(String dateStr, YukonUserContext userContext)
             throws ParseException;
 
-    public Calendar getCalendar(YukonUserContext userContext);
+    /**
+     * This method returns a date formatted using the userContext's information with the exception 
+     *  of the TimeZone.  The TimeZone is taken from the SystemUserContext.
+     * TODO This method should be reevaluated soon (more specifically, how we parse dates that 
+     *  are to be used by the server needs to be looked at.  Are the dates to be parsed per the CSR, 
+     *  per the server, or per the device/customer? 
+     * @param dateStr
+     * @param mode
+     * @param userContext
+     * @return
+     * @throws ParseException
+     */
+    public Date flexibleDateParserWithSystemTimeZone(String dateStr, DateOnlyMode mode,
+            YukonUserContext userContext) throws ParseException;
 
+    public Calendar getCalendar(YukonUserContext userContext);
 }
