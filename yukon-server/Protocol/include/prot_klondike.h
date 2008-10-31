@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2008/10/31 19:42:34 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2008/10/31 20:31:22 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -210,6 +210,7 @@ private:
 #pragma pack( pop )
 
     void processResponse(const byte_buffer_t &inbound);
+    void processFailed();
 
     enum CommandCode
     {

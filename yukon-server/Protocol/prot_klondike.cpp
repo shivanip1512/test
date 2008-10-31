@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2008/10/31 19:42:34 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2008/10/31 20:31:22 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -409,7 +409,7 @@ void Klondike::doOutput(CommandCode command_code)
                     outbound.insert(outbound.end(), waiting_itr->outbound.begin(),
                                                     waiting_itr->outbound.end());
 
-                    _pending_requests.insert(make_pair(_device_queue_sequence, waiting_itr));
+                    _pending_requests.insert(make_pair(_device_queue_sequence + processed, waiting_itr));
 
                     processed++;
                 }
@@ -551,6 +551,8 @@ int Klondike::decode( CtiXfer &xfer, int status )
             if( ++_wrap_errors > WrapErrorsMaximum )
             {
                 _io_state = IO_Failed;
+
+                processFailed();
             }
         }
         else
@@ -964,6 +966,20 @@ void Klondike::processResponse(const byte_buffer_t &inbound)
     }
 }
 
+
+//  This command undoes anything we were just attempting to do - the wrap failed, we have to try again
+void Klondike::processFailed()
+{
+    switch( _current_command.command_code )
+    {
+        case CommandCode_WaitingQueueWrite:
+        {
+            //  these entries are still in _waiting_requests and will be tried again
+            _pending_requests.clear();
+            break;
+        }
+    }
+}
 
 
 bool Klondike::isTransactionComplete( void ) const
