@@ -173,7 +173,7 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
     private ModelAndView getControlModelAndView(HttpServletRequest request, CommandResultHolder result) throws Exception {
         Meter meter = getMeter(request);
         
-        ModelAndView mav = getReadModelAndView(meter, false);
+        ModelAndView mav = getReadModelAndView(meter, true);
         
         LiteYukonUser user = ServletUtil.getYukonUser(request);
         
