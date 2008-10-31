@@ -12,16 +12,23 @@ import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.SystemDateFormattingService;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.user.SystemUserContext;
 import com.cannontech.user.YukonUserContext;
 
 public class DateFormattingServiceImpl implements DateFormattingService {
     private YukonUserContextMessageSourceResolver messageSourceResolver;
+    private SystemDateFormattingService systemDateFormattingService;
 
     @Autowired
     public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
         this.messageSourceResolver = messageSourceResolver;
+    }
+    
+    @Autowired
+    public void setSystemDateFormattingService(
+            SystemDateFormattingService systemDateFormattingService) {
+        this.systemDateFormattingService = systemDateFormattingService;
     }
     
     private Map<String, FlexibleDateParser> dateParserLookup = new HashMap<String, FlexibleDateParser>();
@@ -74,7 +81,7 @@ public class DateFormattingServiceImpl implements DateFormattingService {
 
         String parserName = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage("yukon.common.dateFormatting.parserImplementation");
         FlexibleDateParser flexibleDateParser = dateParserLookup.get(parserName);
-        Date result = flexibleDateParser.parseDate(dateStr, mode, userContext.getLocale(), new SystemUserContext().getTimeZone());
+        Date result = flexibleDateParser.parseDate(dateStr, mode, userContext.getLocale(), systemDateFormattingService.getSystemTimeZone());
         return result;
     }
     
