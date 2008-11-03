@@ -35,6 +35,7 @@ import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationService;
 import com.cannontech.stars.util.EventUtils;
@@ -171,11 +172,18 @@ public class ProgramSignUpAction implements ActionBase {
             
 			LiteStarsCustAccountInformation liteAcctInfo = null;
 			if (progSignUp.getAccountNumber() != null) {
-				liteAcctInfo = energyCompany.searchAccountByAccountNo( progSignUp.getAccountNumber() );
+                            liteAcctInfo = energyCompany.searchAccountByAccountNo( progSignUp.getAccountNumber() );
+			} else {
+			    LiteStarsCustAccountInformation tempAcctInfo = (LiteStarsCustAccountInformation) session.getAttribute(ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
+	                    int accountID = tempAcctInfo.getAccountID();
+	                    if (accountID > 0) {
+			        StarsCustAccountInformationDao starsCustAccountInformationDao = 
+			            YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
+			        liteAcctInfo = starsCustAccountInformationDao.getById(accountID, energyCompanyID);
+			    }
+                            session.setAttribute(ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo);
 			}
-			else
-				liteAcctInfo = (LiteStarsCustAccountInformation) session.getAttribute(ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
-            
+			
 			if (progSignUp.getStarsSULMPrograms() == null) {
 				// Resend the not enrolled command
 				respOper.setStarsProgramSignUpResponse( resendNotEnrolled(energyCompany, liteAcctInfo) );

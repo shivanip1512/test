@@ -31,6 +31,7 @@ public class ProgramDaoImpl implements ProgramDao {
     private static final String selectSql;
     private final ParameterizedRowMapper<Program> rowMapper = createRowMapper();
     private final ParameterizedRowMapper<Integer> groupIdRowMapper = createGroupIdRowMapper();
+    private final ParameterizedRowMapper<Integer> programIdRowMapper = createProgramIdRowMapper();
     private SimpleJdbcTemplate simpleJdbcTemplate;
     
     static {
@@ -145,6 +146,22 @@ public class ProgramDaoImpl implements ProgramDao {
     
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public List<Integer> getDistinctProgramIdsByGroupIds(final Set<Integer> groupIds) {
+        try {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append(" SELECT Distinct LMPDG.DeviceId"); 
+            sql.append(" FROM LMProgramDirectGroup LMPDG ");
+            sql.append(" WHERE LMPDG.LMGroupDeviceId in (", groupIds, ") ");
+            
+            List<Integer> list = simpleJdbcTemplate.query(sql.toString(), programIdRowMapper);
+            return list;
+        } catch (DataAccessException e) {
+            return Collections.emptyList();
+        } 
+    }
+    
+    @Override
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<Integer> getGroupIdsByProgramId(final int programId) {
         final SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
         sqlBuilder.append("SELECT lmpdg.LMGroupDeviceId");
@@ -196,6 +213,17 @@ public class ProgramDaoImpl implements ProgramDao {
             @Override
             public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
                 Integer groupId = rs.getInt("LMGroupDeviceId");
+                return groupId;
+            }
+        };
+        return mapper;
+    }
+    
+    private ParameterizedRowMapper<Integer> createProgramIdRowMapper() {
+        final ParameterizedRowMapper<Integer> mapper = new ParameterizedRowMapper<Integer>() {
+            @Override
+            public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Integer groupId = rs.getInt("DeviceId");
                 return groupId;
             }
         };

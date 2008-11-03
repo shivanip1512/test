@@ -108,6 +108,7 @@
 
 	<bean id="lmHardwareControlInformationService" class="com.cannontech.stars.dr.hardware.service.impl.LMHardwareControlInformationServiceImpl">
 		<property name="lmHardwareControlGroupDao" ref="lmHardwareControlGroupDao"/>
+        <property name="programDao" ref="starsProgramDao"/>
 	</bean>
 	
 	<bean id="lmHardwareControlGroupDao"

@@ -29,9 +29,12 @@ import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
+import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
+import com.cannontech.stars.dr.appliance.model.Appliance;
 import com.cannontech.stars.dr.controlhistory.model.ControlHistory;
 import com.cannontech.stars.dr.controlhistory.service.ControlHistoryService;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
+import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.dr.program.model.Program;
@@ -56,6 +59,7 @@ import com.cannontech.user.YukonUserContext;
 public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
     private static final Logger log = YukonLogManager.getLogger(ProgramEnrollmentServiceImpl.class);
     private ProgramDao programDao;
+    private ApplianceDao applianceDao;
     private LMHardwareControlGroupDao lmHardwareControlGroupDao;
     private ControlHistoryService controlHistoryService;
     private ECMappingDao ecMappingDao;
@@ -176,7 +180,18 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
             if (groupId == ServerUtils.ADDRESSING_GROUP_NOT_FOUND) {
                 int programId = program.getProgramID();
                 LiteLMProgramWebPublishing webProg = energyCompany.getProgram(programId);
+                List<LMHardwareConfiguration> lmHardwareConfiguration = 
+                    lmHardwareControlGroupDao.getOldConfigDataByInventoryId(program.getInventoryID());
+                
                 int grpID = webProg.getGroupIDs()[0];
+                for (LMHardwareConfiguration hardwareConfiguration : lmHardwareConfiguration) {
+                    int applianceId = hardwareConfiguration.getApplianceId();
+                    Appliance appliance = applianceDao.getById(applianceId);
+                    if(appliance.getApplianceCategory().getApplianceCategoryId() == webProg.getApplianceCategoryID()){
+                        grpID = hardwareConfiguration.getAddressingGroupId();
+                    }
+                }
+                
                 if (grpID > 0) {
                     programSignUp.getStarsSULMPrograms().getSULMProgram(j).setAddressingGroupID(grpID);
                 } else {
@@ -240,6 +255,11 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
     @Autowired
     public void setProgramDao(ProgramDao programDao) {
         this.programDao = programDao;
+    }
+
+    @Autowired
+    public void setApplianceDao(ApplianceDao applianceDao) {
+        this.applianceDao = applianceDao;
     }
 
     @Autowired

@@ -1,6 +1,7 @@
 package com.cannontech.stars.dr.hardware.service.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -12,27 +13,37 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationService;
-
+import com.cannontech.stars.dr.program.dao.ProgramDao;
+       
 public class LMHardwareControlInformationServiceImpl implements LMHardwareControlInformationService {
     
     private Logger logger = YukonLogManager.getLogger(LMHardwareControlInformationServiceImpl.class);
     private LMHardwareControlGroupDao lmHardwareControlGroupDao;
-
+    private ProgramDao programDao;
+    
     /*@SuppressWarnings("unused")*/
     public boolean startEnrollment(int inventoryId, int loadGroupId, int accountId, int relay, LiteYukonUser currentUser) {
         Validate.notNull(currentUser, "CurrentUser cannot be null");
         List<LMHardwareControlGroup> controlInformationList;
         /*Shouldn't already be an entry, but this might be a repeat enrollment.  Check for existence*/
         try {
-            controlInformationList = lmHardwareControlGroupDao.getByInventoryIdAndGroupIdAndAccountIdAndType(inventoryId, loadGroupId, accountId, LMHardwareControlGroup.ENROLLMENT_ENTRY);
+            controlInformationList = lmHardwareControlGroupDao.getByInventoryIdAndAccountId(inventoryId, accountId);
             Date now = new Date();
+
             /*If there is an existing enrollment that is using this same device, load group, and potentially, the same relay
              * we need to then stop enrollment for that before starting the existing.
              * We need to allow this method to do stops as well as starts to help migrate from legacy STARS systems and to
              * properly log repetitive enrollments.
              */
             for(LMHardwareControlGroup existingEnrollment : controlInformationList) {
-                if(existingEnrollment.getRelay() == relay && existingEnrollment.getGroupEnrollStop() == null) {
+                
+                List<Integer> existingProgramIds = programDao.getDistinctProgramIdsByGroupIds(Collections.singleton(existingEnrollment.getLmGroupId()));
+                List<Integer> newProgramIds = programDao.getDistinctProgramIdsByGroupIds(Collections.singleton(loadGroupId));
+                
+                if(existingProgramIds.contains(newProgramIds.get(0)) &&
+                   existingEnrollment.getLmGroupId() != loadGroupId &&
+                   existingEnrollment.getRelay() == relay && 
+                   existingEnrollment.getGroupEnrollStop() == null) {
                     /*This entry already has a start date, has no stop date, and is on the same relay: better register a stop.*/
                     existingEnrollment.setGroupEnrollStop(now);
                     existingEnrollment.setUserIdSecondAction(currentUser.getUserID());
@@ -42,6 +53,7 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
                     stopOptOut(inventoryId, loadGroupId, accountId, currentUser);
                 }
             }
+
             /*Do the start*/
             LMHardwareControlGroup controlInformation = new LMHardwareControlGroup(inventoryId, loadGroupId, accountId, LMHardwareControlGroup.ENROLLMENT_ENTRY, relay, currentUser.getUserID());
             controlInformation.setGroupEnrollStart(now);
@@ -172,6 +184,10 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
     public void setLmHardwareControlGroupDao(
             LMHardwareControlGroupDao lmHardwareControlGroupDao) {
         this.lmHardwareControlGroupDao = lmHardwareControlGroupDao;
+    }
+    
+    public void setProgramDao(ProgramDao programDao) {
+        this.programDao = programDao;
     }
 
 }
