@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        xmlns:yukon="http://yukon.cannontech.com/api"
+        elementFormDefault="qualified"
+        targetNamespace="http://yukon.cannontech.com/api">
+        
+        
+    <xs:complexType name="PointDataRequest">
+        <xs:sequence maxOccurs="1" minOccurs="1">
+            <xs:element name="newSince" type="xs:long" minOccurs="0">
+            <xs:annotation>
+                <xs:documentation>
+                    Although this represents a java.util.Date.getTime(), this should not be interpreted as a date.
+                    It simply be the token that was received in the PointDataResponses's validThrough element.
+                </xs:documentation>
+            </xs:annotation>
+            </xs:element>
+            <xs:element name="pointIds">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded" minOccurs="1">
+                        <xs:element name="id" type="xs:long"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    
+    
+    <xs:element name="pointDataRequestCmd" type="yukon:PointDataRequest"/>
+
+</xs:schema>

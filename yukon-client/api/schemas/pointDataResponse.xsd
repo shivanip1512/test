@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        xmlns:yukon="http://yukon.cannontech.com/api"
+        elementFormDefault="qualified"
+        targetNamespace="http://yukon.cannontech.com/api" >
+        
+    <xs:complexType name="PointData">
+        <xs:all>
+            <xs:element name="pointId" type="xs:long" minOccurs="1" />
+            <xs:element name="value" type="xs:double" minOccurs="1" />
+            <xs:element name="time" type="xs:dateTime" minOccurs="1" />
+            <xs:element name="quality" type="yukon:PointQuality" minOccurs="1" />
+        </xs:all>
+    </xs:complexType>
+    
+    
+    <xs:complexType name="PointDataResponse">
+        <xs:sequence maxOccurs="1">
+            <xs:element name="pointValues">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="pointData" type="yukon:PointData" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="validThrough" type="xs:long">
+            <xs:annotation>
+                <xs:documentation>
+                    Although this represents a java.util.Date.getTime(), this should not be interpreted as a date.
+                    It is simply a token to be passed back in the PointDataRequest's newSince element.
+                </xs:documentation>
+            </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    
+    
+    
+    
+    <xs:element name="pointDataResponseMsg" type="yukon:PointDataResponse"/>
+    
+    <xs:simpleType name="PointQuality">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Unintialized"/>
+            <xs:enumeration value="InitDefault"/>
+            <xs:enumeration value="InitLastKnown"/>
+            <xs:enumeration value="NonUpdated"/>
+            <xs:enumeration value="Manual"/>
+            <xs:enumeration value="Normal"/>
+            <xs:enumeration value="ExceedsLow"/>
+            <xs:enumeration value="ExceedsHigh"/>
+            <xs:enumeration value="Abnormal"/>
+            <xs:enumeration value="Unknown"/>
+            <xs:enumeration value="Invalid"/>
+            <xs:enumeration value="PartialInterval"/>
+            <xs:enumeration value="DeviceFiller"/>
+            <xs:enumeration value="Questionable"/>
+            <xs:enumeration value="Overflow"/>
+            <xs:enumeration value="Powerfail"/>
+            <xs:enumeration value="Unreasonable"/>
+            <xs:enumeration value="Constant"/>
+        </xs:restriction>
+    </xs:simpleType>
+</xs:schema>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pointDataResponseMsg xmlns="http://yukon.cannontech.com/api"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://yukon.cannontech.com/api ../pointDataResponse.xsd">
+    <pointValues>
+        <pointData>
+            <pointId>123</pointId>
+            <time>2002-12-23T17:08:30.245Z</time>
+            <value>3.1415292</value>
+            <quality>Normal</quality>
+        </pointData>
+        <pointData>
+            <pointId>123</pointId>
+            <time>2002-12-23T17:08:30.245Z</time>
+            <value>3.1415292</value>
+            <quality>Normal</quality>
+        </pointData>
+    </pointValues>
+    
+    <validThrough>65468431</validThrough>
+</pointDataResponseMsg>
+ 
