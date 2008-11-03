@@ -27,7 +27,7 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
         List<LMHardwareControlGroup> controlInformationList;
         /*Shouldn't already be an entry, but this might be a repeat enrollment.  Check for existence*/
         try {
-            controlInformationList = lmHardwareControlGroupDao.getByInventoryIdAndAccountId(inventoryId, accountId);
+            controlInformationList = lmHardwareControlGroupDao.getByInventoryIdAndAccountIdAndType(inventoryId, accountId, LMHardwareControlGroup.ENROLLMENT_ENTRY);
             Date now = new Date();
 
             /*If there is an existing enrollment that is using this same device, load group, and potentially, the same relay

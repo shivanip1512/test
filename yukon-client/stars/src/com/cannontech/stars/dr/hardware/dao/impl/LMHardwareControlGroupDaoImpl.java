@@ -36,7 +36,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
     private static final String selectByOptOutStartRange;
     private static final String selectByOptOutStopRange;
     private static final String selectCurrentOptOutsByInventoryIdAndGroupIdAndAccountId;
-    private static final String selectByInventoryIdAndAccountId;
+    private static final String selectByInventoryIdAndAccountIdAndType;
     private static final String selectByInventoryIdAndGroupIdAndAccountId;
     private static final String selectByInventoryIdAndGroupIdAndAccountIdAndType;
     private static final String selectAllByEnergyCompanyId;
@@ -82,7 +82,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
         
         selectCurrentOptOutsByInventoryIdAndGroupIdAndAccountId = selectAllSql + " WHERE LMGroupId = ? AND AccountId = ? AND OptOutStop IS NULL AND NOT OptOutStart IS NULL";
         
-        selectByInventoryIdAndAccountId = selectAllSql + " WHERE InventoryId = ? AND AccountId = ?";
+        selectByInventoryIdAndAccountIdAndType = selectAllSql + " WHERE InventoryId = ? AND AccountId = ? AND Type = ?";
         
         selectByInventoryIdAndGroupIdAndAccountId = selectAllSql + " WHERE InventoryId = ? AND LMGroupId = ? AND AccountId = ?";
         
@@ -229,9 +229,9 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public List<LMHardwareControlGroup> getByInventoryIdAndAccountId(int inventoryId,int accountId) {
+    public List<LMHardwareControlGroup> getByInventoryIdAndAccountIdAndType(int inventoryId, int accountId, int type) {
         try {
-            List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectByInventoryIdAndAccountId, rowMapper, inventoryId, accountId);
+            List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectByInventoryIdAndAccountIdAndType, rowMapper, inventoryId, accountId, type);
             return list;
         } catch (DataAccessException e) {
             return Collections.emptyList();
