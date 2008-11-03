@@ -15,6 +15,8 @@ public interface LMHardwareControlGroupDao {
     
     public void update(LMHardwareControlGroup hardwareControlGroup) throws Exception;
     
+    public void unenrollHardware(int inventoryId) throws DataAccessException;
+    
     public LMHardwareControlGroup getById(int controlEntryId) throws DataAccessException;
     
     public List<LMHardwareControlGroup> getByLMGroupId(int groupId);

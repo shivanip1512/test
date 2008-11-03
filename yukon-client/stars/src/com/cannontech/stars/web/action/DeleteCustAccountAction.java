@@ -1,6 +1,7 @@
 package com.cannontech.stars.web.action;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
@@ -19,15 +20,18 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.database.db.stars.appliance.ApplianceBase;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsDeleteCustomerAccount;
+import com.cannontech.stars.xml.serialize.StarsDeleteLMHardware;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsSuccess;
@@ -167,8 +171,25 @@ public class DeleteCustAccountAction implements ActionBase {
 	}
 	
 	public static void deleteCustomerAccount(LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany)
-		throws TransactionException
+		throws TransactionException, WebClientException
 	{
+	    
+	     /* Remove all the inventory from the account and move it to the warehouse.  This
+	      * also includes any unenrolling that is needed.
+	      */
+	    List<Integer> inventories = new ArrayList<Integer>(); 
+	    inventories.addAll(liteAcctInfo.getInventories());
+	    for (int inventoryId : inventories) {
+	        
+	        StarsDeleteLMHardware deleteHw = new StarsDeleteLMHardware();
+	        deleteHw.setInventoryID(inventoryId);
+	        deleteHw.setRemoveDate(new Date());
+	        
+	        DeleteLMHardwareAction.removeInventory(deleteHw, liteAcctInfo, energyCompany);
+	    }
+	    
+	    ApplianceBase.deleteAppliancesByAccountId(liteAcctInfo.getAccountID());
+
 		com.cannontech.database.data.stars.customer.CustomerAccount account =
 				StarsLiteFactory.createCustomerAccount(liteAcctInfo, energyCompany);
 		Transaction.createTransaction( Transaction.DELETE, account ).execute();

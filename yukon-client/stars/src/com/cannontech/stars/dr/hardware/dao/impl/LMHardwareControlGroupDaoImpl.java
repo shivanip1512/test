@@ -15,6 +15,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
@@ -113,6 +114,19 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public void update(final LMHardwareControlGroup hardwareControlGroup) throws Exception {
         template.update(hardwareControlGroup);
+    }
+    
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+    public void unenrollHardware(int inventoryId) throws DataAccessException{
+        
+        SqlStatementBuilder unenrollHardwareSQL = new SqlStatementBuilder();
+        unenrollHardwareSQL.append("UPDATE LMHardwareControlGroup");
+        unenrollHardwareSQL.append("SET groupEnrollStop = ?");
+        unenrollHardwareSQL.append("WHERE InventoryId = ?");
+        unenrollHardwareSQL.append("AND NOT groupEnrollStart IS NULL");
+        unenrollHardwareSQL.append("AND groupEnrollStop IS NULL");
+        Date now = new Date();
+        simpleJdbcTemplate.update(unenrollHardwareSQL.toString(), now, inventoryId);
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)

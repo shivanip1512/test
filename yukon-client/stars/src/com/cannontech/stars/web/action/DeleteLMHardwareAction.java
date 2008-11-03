@@ -18,8 +18,10 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.database.db.stars.appliance.ApplianceBase;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
@@ -177,10 +179,13 @@ public class DeleteLMHardwareAction implements ActionBase {
 	 * Remove a hardware from a customer account. If liteAcctInfo is null,
 	 * it means the account this hardware belongs to has also been deleted.
 	 */
-	public static void removeInventory(StarsDeleteLMHardware deleteHw, LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany)
+	public static void removeInventory(StarsDeleteLMHardware deleteHw, 
+	                                   LiteStarsCustAccountInformation liteAcctInfo, 
+	                                   LiteStarsEnergyCompany energyCompany)
 		throws WebClientException
 	{
 		try {
+		    LMHardwareControlGroupDao lmHardwareControlGroupDao = YukonSpringHook.getBean("lmHardwareControlGroupDao", LMHardwareControlGroupDao.class);
 			StarsInventoryBaseDao starsInventoryBaseDao = 
 				YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
 			LiteInventoryBase liteInv = starsInventoryBaseDao.getById(deleteHw.getInventoryID());
@@ -210,9 +215,13 @@ public class DeleteLMHardwareAction implements ActionBase {
 				
 				event = Transaction.createTransaction( Transaction.INSERT, event ).execute();
 				
-				if (liteInv instanceof LiteStarsLMHardware)
-					com.cannontech.database.data.stars.hardware.LMHardwareBase.clearLMHardware( liteInv.getInventoryID() );
+				// Unenrolls the inventory from all its programs
+				lmHardwareControlGroupDao.unenrollHardware(liteInv.getInventoryID());
 				
+				if (liteInv instanceof LiteStarsLMHardware)
+					ApplianceBase.deleteAppliancesByAccountIdAndInventoryId(liteAcctInfo.getAccountID(), liteInv.getInventoryID());
+				
+				// Removes any entries found in the inventoryBase Table
 				com.cannontech.database.db.stars.hardware.InventoryBase invDB =
 						new com.cannontech.database.db.stars.hardware.InventoryBase();
 				StarsLiteFactory.setInventoryBase( invDB, liteInv );
