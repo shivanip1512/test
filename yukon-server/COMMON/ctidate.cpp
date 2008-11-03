@@ -23,7 +23,9 @@ CtiDate::CtiDate(unsigned int day, unsigned int month, unsigned int year) :
     catch( ... )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - exception in CtiDate(day,month,year) (" << day << "," << month << "," << year << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint - exception in CtiDate(day,month,year) (" << day << "," << month << "," << year << ") - setting date to 1/1/1970 " << __FILE__ << " (" << __LINE__ << ")" << endl;
+
+        bdate = date(1970, 1, 1);
     }
 }
 
@@ -37,7 +39,9 @@ CtiDate::CtiDate(unsigned int days, unsigned int year) :
     catch( ... )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - exception in CtiDate(days,year) (" << days << "," << year << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint - exception in CtiDate(days,year) (" << days << "," << year << ") - setting date to 1/1/1970 " << __FILE__ << " (" << __LINE__ << ")" << endl;
+
+        bdate = date(1970, 1, 1);
     }
 }
 
@@ -49,11 +53,13 @@ CtiDate::CtiDate(const CtiTime& ct) :
     {
         if( ct.is_neg_infinity() )
         {
-            bdate = date(boost::date_time::neg_infin);
+            //bdate = date(boost::date_time::neg_infin);
+            bdate = date(1970, 1, 1);
         }
         else if(ct.is_pos_infinity())
         {
-            bdate = date(boost::date_time::pos_infin);
+            //bdate = date(boost::date_time::pos_infin);
+            bdate = date(2036, 1, 1);
         }
         else
         {
@@ -68,7 +74,9 @@ CtiDate::CtiDate(const CtiTime& ct) :
             catch( ... )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - exception in CtiDate(ct) (" << ct << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - exception in CtiDate(ct) (" << ct << ") - setting date to 1/1/1970 " << __FILE__ << " (" << __LINE__ << ")" << endl;
+
+                bdate = date(1970, 1, 1);
             }
         }
     }

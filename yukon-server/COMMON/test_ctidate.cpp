@@ -107,7 +107,8 @@ BOOST_AUTO_UNIT_TEST(test_ctidate_methods)
     CtiDate ct5(cd2);
 
     BOOST_CHECK_EQUAL( ct4.isValid(), false );
-    BOOST_CHECK_EQUAL( ct5.is_pos_infinity(), true );
+    //  will need to be re-added when special value constructors are handled as special values again
+    //BOOST_CHECK_EQUAL( ct5.is_pos_infinity(), true );
     BOOST_CHECK_EQUAL( ct5.isValid(), true );
 
     string expectedResult = "11/02/2008";
@@ -129,6 +130,28 @@ BOOST_AUTO_UNIT_TEST(test_ctidate_methods)
     result = CtiDate(8,3,2008);
     BOOST_CHECK_EQUAL(expectedResult, result.asStringUSFormat());
 
+}
+
+
+BOOST_AUTO_UNIT_TEST(test_ctidate_constructors)
+{
+    CtiDate epoch(1, 1, 1970);
+
+    BOOST_CHECK_EQUAL(CtiDate(  0,  0,    0), epoch);
+
+    //  test cases from YUK-4620
+    BOOST_CHECK_EQUAL(CtiDate( 47,  9, 2006), epoch);
+    BOOST_CHECK_EQUAL(CtiDate(126, 13, 2006), epoch);
+    BOOST_CHECK_EQUAL(CtiDate(148, 10, 2006), epoch);
+    BOOST_CHECK_EQUAL(CtiDate( 42, 14, 2006), epoch);
+    BOOST_CHECK_EQUAL(CtiDate(129,  6, 2006), epoch);
+
+    /*
+    CtiDate::CtiDate(unsigned int days, unsigned int year);
+    CtiDate::CtiDate(const CtiTime& ct);
+    CtiDate::CtiDate(const CtiDate& cd);
+    CtiDate& CtiDate::operator=(const CtiDate& cd);
+    */
 }
 
 
@@ -212,15 +235,5 @@ BOOST_AUTO_UNIT_TEST(test_ctidate_daysfrom1970)
     BOOST_CHECK_EQUAL( endDayBeforeTest.daysFrom1970() + 1, endDayOfTest.daysFrom1970() );
     BOOST_CHECK_EQUAL( endDayBeforeTest.daysFrom1970() + 2, endDayAfterTest.daysFrom1970() );
 }
-
-
-//test_suite
-//init_unit_test_suite( int /*argc*/, char* /*argv*/[] ) {
-//    test_suite* test= BOOST_TEST_SUITE( "Test CtiDate" );
-//    test->add( BOOST_TEST_CASE( &test_ctidate_methods )) ;
-//    test->add( BOOST_TEST_CASE( &test_ctidate_operators ));
-//
-//    return test;
-//}
 
 
