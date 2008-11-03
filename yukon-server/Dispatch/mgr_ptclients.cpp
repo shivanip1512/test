@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/mgr_ptclients.cpp-arc  $
-* REVISION     :  $Revision: 1.52 $
-* DATE         :  $Date: 2008/10/30 19:54:26 $
+* REVISION     :  $Revision: 1.53 $
+* DATE         :  $Date: 2008/11/03 18:40:56 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -384,8 +384,7 @@ void CtiPointClientManager::refreshProperties(LONG pntID, LONG paoID, const set<
         coll_type::writer_lock_guard_t guard(getLock());
         if( pntID )
         {
-            pair<PointPropertyMap::iterator,
-            PointPropertyMap::iterator> range = _properties.equal_range(pntID);
+            PointPropertyRange range = _properties.equal_range(pntID);
             for( ; range.first != range.second; ++range.first )
             {
                 if( range.first->second != NULL )
@@ -424,21 +423,21 @@ void CtiPointClientManager::refreshArchivalList(LONG pntID, LONG paoID, const se
     CtiTime start, stop;
 
     start = start.now();
-    sql = "select pointid from point WHERE ("
+    sql = "SELECT pointid from point WHERE ("
           "archivetype = 'on timer' OR "
           "archivetype = 'time&update' OR "
           "archivetype = 'timer|update')";
 
     if(pntID)
     {
-        sql += " AND point.pointid == ";
+        sql += " AND point.pointid = ";
         sql += CtiNumStr(pntID);
     }
 
     //  pao is assumed to be an add
     if(paoID)
     {
-        sql += " AND point.paobjectid == ";
+        sql += " AND point.paobjectid = ";
         sql += CtiNumStr(paoID);
     }
 
@@ -458,7 +457,7 @@ void CtiPointClientManager::refreshArchivalList(LONG pntID, LONG paoID, const se
         sql += in_list.str();
     }
 
-    rdr = selector.reader( conn );
+    rdr = ExecuteQuery( conn, sql );
 
     if( rdr.status().errorCode() != RWDBStatus::ok)
     {
@@ -480,8 +479,7 @@ void CtiPointClientManager::refreshArchivalList(LONG pntID, LONG paoID, const se
         coll_type::writer_lock_guard_t guard(getLock());
         if( pntID )
         {
-            pair<PointPropertyMap::iterator,
-            PointPropertyMap::iterator> range = _properties.equal_range(pntID);
+            PointPropertyRange range = _properties.equal_range(pntID);
             for( ; range.first != range.second; ++range.first )
             {
                 if( range.first->second != NULL && range.first->second->getPropertyID() == CtiTablePointProperty::ARCHIVE_ON_TIMER)
@@ -1219,8 +1217,7 @@ void CtiPointClientManager::removePoint(Inherited::ptr_type pTempCtiPoint, bool 
                 iter->second = NULL;
             }
 
-            pair<PointPropertyMap::iterator,
-             PointPropertyMap::iterator> range = _properties.equal_range(pointID);
+            PointPropertyRange range = _properties.equal_range(pointID);
     
             //Delete entries with the given point id, set to null in case delete does not remove them!
             for( ; range.first != range.second; ++range.first )
@@ -1311,7 +1308,7 @@ bool CtiPointClientManager::hasReasonabilityLimits(CtiPointSPtr point)
 
 //Returns pair<HighLimit, LowLimit>
 //returns pair<0, 0> if the limit is invalid.
-CtiPointClientManager::ReasonabilityLimitStruct CtiPointClientManager::getReasonabilityLimits(CtiPointSPtr point)
+CtiPointClientManager::ReasonabilityLimitStruct CtiPointClientManager::getReasonabilityLimits(CtiPointSPtr point) const
 {
     ReasonabilityLimitStruct retVal;
     retVal.highLimit = 0;
@@ -1335,7 +1332,7 @@ CtiPointClientManager::ReasonabilityLimitStruct CtiPointClientManager::getReason
     return retVal;
 }
 
-CtiTablePointLimit CtiPointClientManager::getPointLimit(CtiPointSPtr point, LONG limitNum)
+CtiTablePointLimit CtiPointClientManager::getPointLimit(CtiPointSPtr point, LONG limitNum) const
 {
     CtiTablePointLimit retVal(point->getPointID(), limitNum);
 
@@ -1353,7 +1350,7 @@ CtiTablePointLimit CtiPointClientManager::getPointLimit(CtiPointSPtr point, LONG
     return retVal;
 }
 
-CtiTablePointAlarming CtiPointClientManager::getAlarming(CtiPointSPtr point)
+CtiTablePointAlarming CtiPointClientManager::getAlarming(CtiPointSPtr point) const
 {
     CtiTablePointAlarming retVal(point->getPointID());
 
@@ -1378,7 +1375,7 @@ bool CtiPointClientManager::setDynamic(long pointID, CtiDynamicPointDispatch *po
     return (_dynamic.insert(make_pair(pointID, point))).second;
 }
 
-CtiDynamicPointDispatch *CtiPointClientManager::getDynamic(CtiPointSPtr point)
+CtiDynamicPointDispatch *CtiPointClientManager::getDynamic(CtiPointSPtr point) const
 {
     CtiDynamicPointDispatch *retval = NULL;
 
@@ -1403,7 +1400,7 @@ CtiDynamicPointDispatch *CtiPointClientManager::getDynamic(CtiPointSPtr point)
  * 
  * @return CtiDynamicPointDispatch* 
  */
-CtiDynamicPointDispatch* CtiPointClientManager::getDynamic(unsigned long pointID)
+CtiDynamicPointDispatch* CtiPointClientManager::getDynamic(unsigned long pointID) const
 {
     CtiDynamicPointDispatch *retval = NULL;
 
@@ -1417,12 +1414,11 @@ CtiDynamicPointDispatch* CtiPointClientManager::getDynamic(unsigned long pointID
     return retval;
 }
 
-int CtiPointClientManager::getProperty(LONG point, unsigned int propertyID)
+int CtiPointClientManager::getProperty(LONG point, unsigned int propertyID) const
 {
     coll_type::reader_lock_guard_t guard(getLock());
 
-    pair<PointPropertyMap::const_iterator,
-         PointPropertyMap::const_iterator> range = _properties.equal_range(point);
+    PointPropertyRange range = _properties.equal_range(point);
 
     for( ; range.first != range.second; ++range.first )
     {
@@ -1436,12 +1432,11 @@ int CtiPointClientManager::getProperty(LONG point, unsigned int propertyID)
     return numeric_limits<int>::min();
 }
 
-bool CtiPointClientManager::hasProperty(LONG point, unsigned int propertyID)
+bool CtiPointClientManager::hasProperty(LONG point, unsigned int propertyID) const
 {
     coll_type::reader_lock_guard_t guard(getLock());
 
-    pair<PointPropertyMap::const_iterator,
-         PointPropertyMap::const_iterator> range = _properties.equal_range(point);
+    PointPropertyRange range = _properties.equal_range(point);
 
     for( ; range.first != range.second; ++range.first )
     {

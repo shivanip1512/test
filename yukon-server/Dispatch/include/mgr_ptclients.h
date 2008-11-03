@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/mgr_ptclients.h-arc  $
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2008/10/30 19:54:27 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2008/11/03 18:40:56 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -62,6 +62,8 @@ private:
    PointPropertyMap         _properties;
    PointConnectionMap       _pointConnectionMap;
 
+   typedef std::pair<PointPropertyMap::iterator, PointPropertyMap::iterator> PointPropertyRange;
+
    // Store for the dynamic data on a point. It reflects dynamic database data.
    // This should be is removed from on point deletion but not expiration.
    DynamicPointDispatchMap  _dynamic; 
@@ -80,7 +82,7 @@ private:
    void writeRecordsToDB  (list<CtiTablePointDispatch> &updateList);
    void removeOldDynamicData();
 
-   CtiDynamicPointDispatch *getDynamic(unsigned long pointID);
+   CtiDynamicPointDispatch *getDynamic(unsigned long pointID) const;
 
 protected:
 
@@ -117,13 +119,13 @@ public:
    void storeDirtyRecords();
 
    bool hasReasonabilityLimits(CtiPointSPtr point);
-   ReasonabilityLimitStruct getReasonabilityLimits(CtiPointSPtr point);
-   CtiTablePointLimit       getPointLimit(CtiPointSPtr point, LONG limitNum);  //  is copying the table cheap/fast enough?
-   CtiTablePointAlarming    getAlarming  (CtiPointSPtr point);                 //    if not, we'll need to return smart pointers
-   CtiDynamicPointDispatch *getDynamic   (CtiPointSPtr point);
+   ReasonabilityLimitStruct getReasonabilityLimits(CtiPointSPtr point) const;
+   CtiTablePointLimit       getPointLimit(CtiPointSPtr point, LONG limitNum) const;  //  is copying the table cheap/fast enough?
+   CtiTablePointAlarming    getAlarming  (CtiPointSPtr point) const;                 //    if not, we'll need to return smart pointers
+   CtiDynamicPointDispatch *getDynamic   (CtiPointSPtr point) const;
    bool                     setDynamic   (long pointID, CtiDynamicPointDispatch *point);
-   int  getProperty (LONG point, unsigned int property);
-   bool hasProperty (LONG point, unsigned int property);
+   int  getProperty (LONG point, unsigned int property) const;
+   bool hasProperty (LONG point, unsigned int property) const;
    void getPointsWithProperty(unsigned int propertyID, vector<long> &points);
    //  I have the feeling that dynamic data and point properties should
    //    be smart pointers, since we're playing fast and loose with

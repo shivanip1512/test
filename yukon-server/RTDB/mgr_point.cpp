@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.65 $
-* DATE         :  $Date: 2008/10/22 16:58:27 $
+* REVISION     :  $Revision: 1.66 $
+* DATE         :  $Date: 2008/11/03 18:40:56 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -884,6 +884,7 @@ CtiPointManager::spiterator         CtiPointManager::begin()    {  return _smart
 CtiPointManager::spiterator         CtiPointManager::end()      {  return _smartMap.getMap().end();    }
 size_t                              CtiPointManager::entries()  {  return _smartMap.entries();         }
 CtiPointManager::coll_type::lock_t &CtiPointManager::getLock()  {  return _smartMap.getLock();         }
+CtiPointManager::coll_type::lock_t &CtiPointManager::getLock() const  {  return _smartMap.getLock();         }
 
 
 void CtiPointManager::apply(void (*applyFun)(const long, ptr_type, void*), void* d)

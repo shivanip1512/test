@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_point.h-arc  $
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2008/10/13 16:25:19 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2008/11/03 18:40:56 $
 *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
  * All Rights Reserved
@@ -101,6 +101,7 @@ protected:
     virtual void removePoint(ptr_type pTempCtiPoint, bool isExpiration = false);
 
     coll_type::lock_t &getLock();
+    coll_type::lock_t &getLock() const;
 
 public:
 

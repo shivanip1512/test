@@ -274,6 +274,11 @@ public:
     {
         return _lock;
     }
+
+    lock_t &getLock() const
+    {
+        return _lock;
+    }
 };
 
 #endif      // #ifndef __SMARTMAP_H__
