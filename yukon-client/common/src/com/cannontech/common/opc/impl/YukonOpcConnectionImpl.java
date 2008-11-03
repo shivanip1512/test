@@ -378,7 +378,7 @@ public class YukonOpcConnectionImpl implements YukonOpcConnection, Runnable, Poi
 			log.debug(" POINT DATA RECEIVED, Point Id: " + id + " Value: " + pointData.getValue());
 			
 			if (item != null) {
-				PointQuality quality = PointQuality.getPointQuality((int)pointData.getQuality());
+				PointQuality quality = pointData.getQualityEnum();
 				boolean good = goodQualitiesSet.contains(quality);
 				if (good) { //Do not send if it is a bad quality
 					OpcGroup group = groupMap.get(item.getGroupName());

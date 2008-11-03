@@ -2,6 +2,7 @@ package com.cannontech.message.dispatch.message;
 
 import org.springframework.core.style.ToStringCreator;
 
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 
 /**
@@ -125,6 +126,11 @@ public int getType() {
 public double getValue() {
 	return value;
 }
+
+public PointQuality getQualityEnum() {
+    return PointQuality.getPointQuality((int)getQuality());
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (1/28/00 11:18:00 AM)
