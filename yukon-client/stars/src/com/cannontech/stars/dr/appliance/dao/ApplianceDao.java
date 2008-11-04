@@ -6,6 +6,10 @@ import com.cannontech.stars.dr.appliance.model.Appliance;
 
 public interface ApplianceDao {
 
+    public void deleteAppliancesByAccountId(int accountId);
+    
+    public void deleteAppliancesByAccountIdAndInventoryId(int accountId, int inventoryId);
+    
     public Appliance getById(int applianceId);
     
     public List<Appliance> getByAccountId(int accountId);

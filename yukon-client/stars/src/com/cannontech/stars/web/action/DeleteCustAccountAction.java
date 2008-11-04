@@ -20,10 +20,10 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
-import com.cannontech.database.db.stars.appliance.ApplianceBase;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
@@ -173,6 +173,8 @@ public class DeleteCustAccountAction implements ActionBase {
 	public static void deleteCustomerAccount(LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany)
 		throws TransactionException, WebClientException
 	{
+	    ApplianceDao applianceDao = YukonSpringHook.getBean("applianceDao", ApplianceDao.class);
+	    
 	    
 	     /* Remove all the inventory from the account and move it to the warehouse.  This
 	      * also includes any unenrolling that is needed.
@@ -188,7 +190,7 @@ public class DeleteCustAccountAction implements ActionBase {
 	        DeleteLMHardwareAction.removeInventory(deleteHw, liteAcctInfo, energyCompany);
 	    }
 	    
-	    ApplianceBase.deleteAppliancesByAccountId(liteAcctInfo.getAccountID());
+	    applianceDao.deleteAppliancesByAccountId(liteAcctInfo.getAccountID());
 
 		com.cannontech.database.data.stars.customer.CustomerAccount account =
 				StarsLiteFactory.createCustomerAccount(liteAcctInfo, energyCompany);

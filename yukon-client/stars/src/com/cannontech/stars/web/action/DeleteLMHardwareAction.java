@@ -18,9 +18,9 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
-import com.cannontech.database.db.stars.appliance.ApplianceBase;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServletUtils;
@@ -184,6 +184,8 @@ public class DeleteLMHardwareAction implements ActionBase {
 	                                   LiteStarsEnergyCompany energyCompany)
 		throws WebClientException
 	{
+        ApplianceDao applianceDao = YukonSpringHook.getBean("applianceDao", ApplianceDao.class);
+	    
 		try {
 		    LMHardwareControlGroupDao lmHardwareControlGroupDao = YukonSpringHook.getBean("lmHardwareControlGroupDao", LMHardwareControlGroupDao.class);
 			StarsInventoryBaseDao starsInventoryBaseDao = 
@@ -219,7 +221,7 @@ public class DeleteLMHardwareAction implements ActionBase {
 				lmHardwareControlGroupDao.unenrollHardware(liteInv.getInventoryID());
 				
 				if (liteInv instanceof LiteStarsLMHardware)
-					ApplianceBase.deleteAppliancesByAccountIdAndInventoryId(liteAcctInfo.getAccountID(), liteInv.getInventoryID());
+					applianceDao.deleteAppliancesByAccountIdAndInventoryId(liteAcctInfo.getAccountID(), liteInv.getInventoryID());
 				
 				// Removes any entries found in the inventoryBase Table
 				com.cannontech.database.db.stars.hardware.InventoryBase invDB =

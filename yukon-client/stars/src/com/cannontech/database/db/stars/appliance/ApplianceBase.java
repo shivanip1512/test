@@ -6,11 +6,9 @@ import java.util.Vector;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.SqlUtils;
@@ -169,65 +167,6 @@ public class ApplianceBase extends DBPersistent {
 			CTILogger.error( e.getMessage(), e );
 		}
 	}
-
-	public static void deleteAppliancesByAccountId(int accountId) {
-        String cond = "FROM " + TABLE_NAME + " WHERE accountId = " + accountId;
-        SqlStatement stmt = new SqlStatement( "", CtiUtilities.getDatabaseAlias() );
-        
-        try {
-            for (int i = 0; i < DEPENDENT_TABLES.length; i++) {
-                String sql = "DELETE FROM " + DEPENDENT_TABLES[i] + " WHERE ApplianceID IN (SELECT ApplianceID " + cond + ")";
-                stmt.setSQLString( sql );
-                stmt.execute();
-            }
-            
-            String sql = "DELETE FROM LMHardwareConfiguration WHERE ApplianceID IN (SELECT ApplianceID " + cond + ")";
-            stmt.setSQLString( sql );
-            stmt.execute();
-            
-            stmt.setSQLString( "DELETE " + cond );
-            stmt.execute();
-        }
-        catch (Exception e) {
-            CTILogger.error( e.getMessage(), e );
-        }
-    }
-	
-    @SuppressWarnings("unchecked")
-    public static void deleteAppliancesByAccountIdAndInventoryId(int accountId, int inventoryId) {
-	    SimpleJdbcTemplate simpleJdbcTemplate = YukonSpringHook.getBean("simpleJdbcTemplate", SimpleJdbcTemplate.class);
-	    
-	    String applianceIdsSQL = "Select AB.applianceId " + 
-                                 "From ApplianceBase AB, LMHardwareConfiguration LMHC " + 
-                                 "Where LMHC.inventoryId = " + inventoryId + " "+
-                                 "AND AB.accountId = " + accountId + " "+ 
-                                 "AND AB.applianceId = LMHC.applianceId";
-        
-        SqlStatement stmt = new SqlStatement( "", CtiUtilities.getDatabaseAlias() );
-        
-        try {
-            List<Integer> applianceIds = simpleJdbcTemplate.getJdbcOperations().queryForList(applianceIdsSQL, Integer.class);
-                
-            for (int i = 0; i < DEPENDENT_TABLES.length; i++) {
-                SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append("DELETE FROM " + DEPENDENT_TABLES[i] + " WHERE applianceId IN (",applianceIds,")");
-                stmt.setSQLString( sql.toString() );
-                stmt.execute();
-            }
-            SqlStatementBuilder lmHardwareConfigurationSQL = new SqlStatementBuilder();
-            lmHardwareConfigurationSQL.append("DELETE FROM LMHardwareConfiguration WHERE applianceId IN (",applianceIds,")");
-            stmt.setSQLString( lmHardwareConfigurationSQL.toString() );
-            stmt.execute();
-            
-            SqlStatementBuilder applianceBaseSQL = new SqlStatementBuilder();
-            applianceBaseSQL.append("DELETE FROM "+TABLE_NAME+" WHERE applianceId IN (",applianceIds,")" );
-            stmt.setSQLString(applianceBaseSQL.toString());
-            stmt.execute();
-        }
-        catch (Exception e) {
-            CTILogger.error( e.getMessage(), e );
-        }
-    }
 	
 	public static void resetAppliancesByProgram(int programID) {
 		String cond = " WHERE ProgramID = " + programID;
