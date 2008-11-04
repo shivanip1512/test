@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
@@ -233,7 +234,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
         try {
             List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectByInventoryIdAndAccountIdAndType, rowMapper, inventoryId, accountId, type);
             return list;
-        } catch (DataAccessException e) {
+        } catch (IncorrectResultSizeDataAccessException e) {
             return Collections.emptyList();
         }
     }

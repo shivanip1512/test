@@ -11,7 +11,7 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
@@ -139,7 +139,7 @@ public class ProgramDaoImpl implements ProgramDao {
             
             List<Integer> list = simpleJdbcTemplate.query(sql.toString(), groupIdRowMapper);
             return list;
-        } catch (DataAccessException e) {
+        } catch (IncorrectResultSizeDataAccessException e) {
             return Collections.emptyList();
         } 
     }
@@ -155,7 +155,7 @@ public class ProgramDaoImpl implements ProgramDao {
             
             List<Integer> list = simpleJdbcTemplate.query(sql.toString(), programIdRowMapper);
             return list;
-        } catch (DataAccessException e) {
+        } catch (IncorrectResultSizeDataAccessException e) {
             return Collections.emptyList();
         } 
     }
