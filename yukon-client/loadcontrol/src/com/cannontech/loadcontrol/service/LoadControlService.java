@@ -3,6 +3,7 @@ package com.cannontech.loadcontrol.service;
 import java.util.Date;
 import java.util.List;
 
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.loadcontrol.service.data.ProgramControlHistory;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
 import com.cannontech.loadcontrol.service.data.ScenarioProgramStartingGears;
@@ -17,9 +18,9 @@ public interface LoadControlService {
      * null.
      * @param programName
      * @return A ProgramStatus object based on the Program
-     * @throws IllegalArgumentException if no program exists in database for given programName
+     * @throws NotFoundException if no program exists in database for given programName
      */
-    public ProgramStatus getProgramStatusByProgramName(String programName) throws IllegalArgumentException;
+    public ProgramStatus getProgramStatusByProgramName(String programName) throws NotFoundException;
 
     /**
      * Returns a list of ProgramStatus where the program is active.
@@ -38,13 +39,39 @@ public interface LoadControlService {
      * @param gearNumber
      * @param forceStart should normally always be set to false, set to true only if
      * you're sure you really need want to ignore contraint violations.
+     * @param observeConstraintsAndExecute If false, do not execute if there are constraint violations.
+     * If true, allow the server to alter our request to abide by the constraints and execute (i.e. "Observe") 
+     * Note: This value only matters when using forceStart=false. 
      * @return
-     * @throws IllegalArgumentException if no program exists for given programName
+     * @throws NotFoundException if no program exists for given programName
      * @throws TimeoutException if server fails to send an update response for the control start
      */
     public ProgramStatus startControlByProgramName(String programName,
-            Date startTime, Date stopTime, int gearNumber, boolean forceStart)
-            throws IllegalArgumentException, TimeoutException;
+            Date startTime, Date stopTime, int gearNumber, boolean forceStart, boolean observeConstraintsAndExecute)
+            throws NotFoundException, TimeoutException;
+    
+    /**
+     * Starts control of program of given programName. Returns a ProgramStatus
+     * object containing the updated program status info if successful, if
+     * program has constraint violations will contain current program status
+     * info and the list of violations in the ProgramStatus.
+     * Does not take a gearNumber parameter, uses program's current gear always.
+     * @param programName
+     * @param startTime
+     * @param stopTime
+     * @param gearNumber
+     * @param forceStart should normally always be set to false, set to true only if
+     * you're sure you really need want to ignore contraint violations.
+     * @param observeConstraintsAndExecute If false, do not execute if there are constraint violations.
+     * If true, allow the server to alter our request to abide by the constraints and execute (i.e. "Observe") 
+     * Note: This value only matters when using forceStart=false. 
+     * @return
+     * @throws NotFoundException if no program exists for given programName
+     * @throws TimeoutException if server fails to send an update response for the control start
+     */
+    public ProgramStatus startControlByProgramName(String programName,
+            Date startTime, Date stopTime, boolean forceStart, boolean observeConstraintsAndExecute)
+            throws NotFoundException, TimeoutException;
 
     /**
      * Stops control of program of given programName. Returns a ProgramStatus
@@ -54,15 +81,18 @@ public interface LoadControlService {
      * @param programName
      * @param stopTime
      * @param gearNumber
-     * @param forceStop should normally always be set to false, set to true only if
+     * @param forceStop Should normally always be set to false, set to true only if
      * you're sure you really need want to ignore contraint violations.
+     * @param observeConstraintsAndExecute If false, do not execute if there are constraint violations.
+     * If true, allow the server to alter our request to abide by the constraints and execute (i.e. "Observe") 
+     * Note: This value only matters when using forceStop=false.
      * @return
-     * @throws IllegalArgumentException if no program exists for given programName
+     * @throws NotFoundException if no program exists for given programName
      * @throws TimeoutException if server fails to send an update response for the control stop
      */
     public ProgramStatus stopControlByProgramName(String programName,
-            Date stopTime, int gearNumber, boolean forceStop)
-            throws IllegalArgumentException, TimeoutException;
+            Date stopTime, boolean forceStop, boolean observeConstraintsAndExecute)
+            throws NotFoundException, TimeoutException;
     
     /**
      * Starts control for all programs belonging to a given scenario. Returns a
@@ -74,15 +104,18 @@ public interface LoadControlService {
      * @param scenarioName
      * @param startTime
      * @param stopTime
-     * @param forceStart should normally always be set to false, set to true only if
+     * @param forceStart Should normally always be set to false, set to true only if
      * you're sure you really need want to ignore contraint violations.
+     * @param observeConstraintsAndExecute If false, do not execute if there are constraint violations.
+     * If true, allow the server to alter our request to abide by the constraints and execute (i.e. "Observe") 
+     * Note: This value only matters when using forceStart=false.
      * @return
-     * @throws IllegalArgumentException if no scenario exists for given scenarioName.
+     * @throws NotFoundException if no scenario exists for given scenarioName.
      * @throws TimeoutException if server fails to send an program update response for any of the program control start attempted.
      */
     public ScenarioStatus startControlByScenarioName(String scenarioName,
-            Date startTime, Date stopTime, boolean forceStart)
-            throws IllegalArgumentException, TimeoutException;
+            Date startTime, Date stopTime, boolean forceStart, boolean observeConstraintsAndExecute)
+            throws NotFoundException, TimeoutException;
 
     /**
      * Stop control for all programs belonging to a given scenario. Returns a
@@ -94,14 +127,17 @@ public interface LoadControlService {
      * ProgramStatus.
      * @param scenarioName
      * @param stopTime
-     * @param forceStop should normally always be set to false, set to true only if
+     * @param forceStop Should normally always be set to false, set to true only if
      * you're sure you really need want to ignore contraint violations.
+     * @param observeConstraintsAndExecute If false, do not execute if there are constraint violations.
+     * If true, allow the server to alter our request to abide by the constraints and execute (i.e. "Observe") 
+     * Note: This value only matters when using forceStop=false.
      * @return
-     * @throws IllegalArgumentException if no scenario exists for given scenarioName.
+     * @throws NotFoundException if no scenario exists for given scenarioName.
      * @throws TimeoutException if server fails to send an program update response for any of the program control stop attempted.
      */
     public ScenarioStatus stopControlByScenarioName(String scenarioName,
-            Date stopTime, boolean forceStop) throws IllegalArgumentException,
+            Date stopTime, boolean forceStop, boolean observeConstraintsAndExecute) throws NotFoundException,
             TimeoutException;
 
     
@@ -112,9 +148,9 @@ public interface LoadControlService {
      * and id of it's starting gear.
      * @param scenarioName
      * @return
-     * @throws IllegalArgumentException if no scenario exists for given scenarioName.
+     * @throws NotFoundException if no scenario exists for given scenarioName.
      */
-    public ScenarioProgramStartingGears getScenarioProgramStartingGearsByScenarioName(String scenarioName) throws IllegalArgumentException;
+    public ScenarioProgramStartingGears getScenarioProgramStartingGearsByScenarioName(String scenarioName) throws NotFoundException;
     
     /**
      * Returns a list of ProgramControlHistory objects for the given programName, within the given
@@ -123,7 +159,7 @@ public interface LoadControlService {
      * @param fromTime inclusive
      * @param throughTime inclusive
      * @return
-     * @throws IllegalArgumentException if no program exists for given programName
+     * @throws NotFoundException if no program exists for given programName
      */
-    public List<ProgramControlHistory> getControlHistoryByProgramName(String programName, Date fromTime, Date throughTime) throws IllegalArgumentException;
+    public List<ProgramControlHistory> getControlHistoryByProgramName(String programName, Date fromTime, Date throughTime) throws NotFoundException;
 }

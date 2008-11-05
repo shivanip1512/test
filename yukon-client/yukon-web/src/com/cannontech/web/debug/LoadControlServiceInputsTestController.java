@@ -1,0 +1,234 @@
+package com.cannontech.web.debug;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
+
+import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.loadcontrol.service.LoadControlService;
+import com.cannontech.loadcontrol.service.data.ProgramStatus;
+import com.cannontech.loadcontrol.service.data.ScenarioProgramStartingGears;
+import com.cannontech.loadcontrol.service.data.ScenarioStatus;
+import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.user.YukonUserContext;
+import com.cannontech.util.ServletUtil;
+
+public class LoadControlServiceInputsTestController extends MultiActionController {
+    
+    private DateFormattingService dateformattingService;
+    private LoadControlService loadControlService;
+
+    public ModelAndView home(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+        return returnMav(request, new ArrayList<String>(0));
+    }
+    
+    //====================================================================================================================================
+    // PROGRAM STATUS BY PROGRAM NAME
+    //====================================================================================================================================
+    public ModelAndView getProgramStatusByProgramName(HttpServletRequest request, HttpServletResponse response) throws ServletException, Exception {
+
+        List<String> results = new ArrayList<String>();
+        
+        String programName = ServletRequestUtils.getRequiredStringParameter(request, "programName");
+        
+        ProgramStatus programStatus = loadControlService.getProgramStatusByProgramName(programName);
+        results.add(programStatus.toString());
+        
+        return returnMav(request, results);
+    }
+    
+    //====================================================================================================================================
+    // ALL CURRENTLY ACTIVE PROGRAMS 
+    //====================================================================================================================================
+    public ModelAndView getAllCurrentlyActivePrograms(HttpServletRequest request, HttpServletResponse response) throws ServletException, Exception {
+
+        List<String> results = new ArrayList<String>();
+        
+        List<ProgramStatus> programStatii = loadControlService.getAllCurrentlyActivePrograms();
+        
+        for (ProgramStatus programStatus : programStatii) {
+            results.add(programStatus.toString());
+        }
+        
+        if (results.size() < 1) {
+            results.add("No Currrently Active Programs");
+        }
+        
+        return returnMav(request, results);
+    }
+    
+    //====================================================================================================================================
+    // START CONTROL BY SCENARIO NAME
+    //====================================================================================================================================
+    public ModelAndView startControlByScenarioName(HttpServletRequest request, HttpServletResponse response) throws ServletException, Exception {
+
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+
+        List<String> results = new ArrayList<String>();
+        
+        String scenarioName = ServletRequestUtils.getRequiredStringParameter(request, "scenarioName");
+        Date startTime = parseStartStopDateTime(request, "start", userContext);
+        Date stopTime = parseStartStopDateTime(request, "stop", userContext);
+        boolean force = ServletRequestUtils.getBooleanParameter(request, "force", false);
+        boolean observeConstraintsAndExecute = ServletRequestUtils.getBooleanParameter(request, "observeConstraintsAndExecute", false);
+        
+        ScenarioStatus scenarioStatus = loadControlService.startControlByScenarioName(scenarioName, startTime, stopTime, force, observeConstraintsAndExecute);
+        
+        for (ProgramStatus programStatus : scenarioStatus.getProgramStatuses()) {
+            
+            results.add(programStatus.toString());
+            
+            if (programStatus.getConstraintViolations().size() > 0) {
+                results.add("Contains Constraint Violations");
+            }
+        }
+        
+        return returnMav(request, results);
+    }
+    
+    //====================================================================================================================================
+    // START CONTROL BY PROGRAM NAME
+    //====================================================================================================================================
+    public ModelAndView startControlByProgramName(HttpServletRequest request, HttpServletResponse response) throws ServletException, Exception {
+
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+
+        List<String> results = new ArrayList<String>();
+        
+        String programName = ServletRequestUtils.getRequiredStringParameter(request, "programName");
+        Date startTime = parseStartStopDateTime(request, "start", userContext);
+        Date stopTime = parseStartStopDateTime(request, "stop", userContext);
+        int gearNumber = ServletRequestUtils.getRequiredIntParameter(request, "gearNumber");
+        boolean force = ServletRequestUtils.getBooleanParameter(request, "force", false);
+        boolean observeConstraintsAndExecute = ServletRequestUtils.getBooleanParameter(request, "observeConstraintsAndExecute", false);
+        
+        ProgramStatus programStatus = loadControlService.startControlByProgramName(programName, startTime, stopTime, gearNumber, force, observeConstraintsAndExecute);
+        results.add(programStatus.toString());
+        
+        if (programStatus.getConstraintViolations().size() > 0) {
+            results.add("Contains Constraint Violations");
+        }
+        
+        return returnMav(request, results);
+    }
+    
+    //====================================================================================================================================
+    // STOP CONTROL BY SCENARIO NAME
+    //====================================================================================================================================
+    public ModelAndView stopControlByScenarioName(HttpServletRequest request, HttpServletResponse response) throws ServletException, Exception {
+
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+
+        List<String> results = new ArrayList<String>();
+        
+        String scenarioName = ServletRequestUtils.getRequiredStringParameter(request, "scenarioName");
+        Date stopTime = parseStartStopDateTime(request, "stop", userContext);
+        boolean force = ServletRequestUtils.getBooleanParameter(request, "force", false);
+        boolean observeConstraintsAndExecute = ServletRequestUtils.getBooleanParameter(request, "observeConstraintsAndExecute", false);
+        
+        ScenarioStatus scenarioStatus = loadControlService.stopControlByScenarioName(scenarioName, stopTime, force, observeConstraintsAndExecute);
+        
+        for (ProgramStatus programStatus : scenarioStatus.getProgramStatuses()) {
+            
+            results.add(programStatus.toString());
+            
+            if (programStatus.getConstraintViolations().size() > 0) {
+                results.add("Contains Constraint Violations");
+            }
+        }
+        
+        return returnMav(request, results);
+    }
+    
+    //====================================================================================================================================
+    // STOP CONTROL BY PROGRAM NAME
+    //====================================================================================================================================
+    public ModelAndView stopControlByProgramName(HttpServletRequest request, HttpServletResponse response) throws ServletException, Exception {
+
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+
+        List<String> results = new ArrayList<String>();
+        
+        String programName = ServletRequestUtils.getRequiredStringParameter(request, "programName");
+        Date stopTime = parseStartStopDateTime(request, "stop", userContext);
+        boolean force = ServletRequestUtils.getBooleanParameter(request, "force", false);
+        boolean observeConstraintsAndExecute = ServletRequestUtils.getBooleanParameter(request, "observeConstraintsAndExecute", false);
+        
+        ProgramStatus programStatus = loadControlService.stopControlByProgramName(programName, stopTime, force, observeConstraintsAndExecute);
+        results.add(programStatus.toString());
+        
+        if (programStatus.getConstraintViolations().size() > 0) {
+            results.add("Contains Constraint Violations");
+        }
+        
+        return returnMav(request, results);
+    }
+    
+    //====================================================================================================================================
+    // SCENARIOS LIST OF PROGRAM STARTING GEARS
+    //====================================================================================================================================
+    public ModelAndView getScenarioProgramStartGears(HttpServletRequest request, HttpServletResponse response) throws ServletException, java.text.ParseException {
+
+        List<String> results = new ArrayList<String>();
+        
+        String scenarioName = ServletRequestUtils.getRequiredStringParameter(request, "scenarioName");
+        
+        ScenarioProgramStartingGears scenarioProgramStartingGears = loadControlService.getScenarioProgramStartingGearsByScenarioName(scenarioName);
+        results.add(scenarioProgramStartingGears.toString());
+        
+        return returnMav(request, results);
+    }
+    
+    // HELPERS
+    private ModelAndView returnMav(HttpServletRequest request, List<String> results) {
+        
+        ModelAndView mav = new ModelAndView("loadControlService/inputs/home.jsp");
+     
+        // re-populate fields
+        mav.addAllObjects(ServletUtil.getParameterMap(request));
+        mav.addObject("results", results);
+        
+        return mav;
+    }
+    
+    private Date parseStartStopDateTime(HttpServletRequest request, String startOrStop, YukonUserContext userContext) throws ServletException, java.text.ParseException {
+        
+        Date date = null;
+        String dateStr = ServletRequestUtils.getStringParameter(request, startOrStop + "Date", null);
+        String timeStr = ServletRequestUtils.getStringParameter(request, startOrStop + "Time", null);
+        
+        if (dateStr == null) {
+            return null;
+        }
+        
+        String d = dateStr + " " + timeStr;
+        try {
+            date = dateformattingService.flexibleDateParser(d, userContext);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Bad date: " + d);
+        }
+        
+        return date;
+    }
+    
+    
+    @Autowired
+    public void setDateformattingService(
+            DateFormattingService dateformattingService) {
+        this.dateformattingService = dateformattingService;
+    }
+    
+    @Autowired
+    public void setLoadControlService(LoadControlService loadControlService) {
+        this.loadControlService = loadControlService;
+    }
+}

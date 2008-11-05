@@ -23,7 +23,7 @@ public class ProgramStatus {
         this.constraintViolations.add(violation);
     }
     
-    public void addConstraintViolations(List<String> violations) {
+    public void setConstraintViolations(List<String> violations) {
         this.constraintViolations.addAll(violations);
     }
     

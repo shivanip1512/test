@@ -3,14 +3,12 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:standardPage title="Load Control Service Test Page" module="blank">
-    <cti:standardMenu menuSelection=""/>
+<cti:standardPage title="Load Control Service Inputs Test Page" module="debug">
+    <cti:standardMenu menuSelection="loadControlService|inputs" />
     
     <style type="text/css">
       table.resultsTable th.functionality {width:200px;}
       table.resultsTable td.functionality {vertical-align: top;text-align:center;}
-      table.resultsTable th.doc {width:200px;}
-      table.resultsTable td.doc {vertical-align: top;text-align:center;}
       table.resultsTable td.xmlTest {}
       table.resultsTable td.inputTest {vertical-align: top;}
       textarea.xml {
@@ -21,29 +19,28 @@
         }
     </style>
     
+    <script>
+        
+        function toggleObserveConstraintsAndExecute(forceEl, observeAndExecuteId) {
+            if (forceEl.checked) {
+                $(observeAndExecuteId).checked = false;
+                $(observeAndExecuteId).disabled = true;
+            } else {
+                $(observeAndExecuteId).disabled = false;
+            }
+        }
+    </script>
     
-    <h2>Load Control Service Test Page</h2>
+    <h2>Load Control Service Inputs Test Page</h2>
     <br>
     
     <%-- RESULT AREA --%>
-    <c:if test="${not empty results || not empty errorReasons}">
-    
-        <tags:nameValueContainer>
-            
-            <c:forEach items="${errorReasons}" var="errorReason">
-                <tags:nameValue name="Error">
-                    <div class="errorRed">${errorReason}</div>
-                </tags:nameValue>
-            </c:forEach>
-            
-            <c:forEach items="${results}" var="result">
-                <tags:nameValue name="Result">
-                    <div style="color:#151B8D">${result}</div>
-                </tags:nameValue>
-            </c:forEach>
-        
-        </tags:nameValueContainer>
-    
+    <c:if test="${not empty results}">
+        <ul>
+        <c:forEach items="${results}" var="result">
+            <li><div style="color:#151B8D">${result}</div></li>
+        </c:forEach>
+        </ul>
     <br><br>
     </c:if>
     
@@ -51,27 +48,14 @@
     
         <tr>
             <th class="functionality">Functionality</th>
-            <th class="doc">BGE Integration<br>Requirements Doc Ref</th>
-            <th>XML Test</th>
             <th>Input Test</th>
         </tr>
         
         <%-- PROGRAM STATUS BY PROGRAM NAME --%>
         <tr>
             <td class="functionality">Program Status By Program Name</td>
-            <td class="doc">Section 2, #1</td>
-            <td class="xmlTest">
-                <form action="/spring/loadControlServiceTest/getProgramStatusByProgramName_xml" method="post">
-                <textarea name="xml" class="xml">
-<programStatusRequest xmlns="http://yukon.cannontech.com/api" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://yukon.cannontech.com/api ../ProgramStatusRequest.xsd">
-  <programName>AC</programName> 
-</programStatusRequest>
-                </textarea>
-                <input type="submit" value="TEST">
-                </form>
-            </td>
             <td class="inputTest">
-                <form action="/spring/loadControlServiceTest/getProgramStatusByProgramName" method="post">
+                <form action="/spring/debug/loadControlService/inputs/getProgramStatusByProgramName" method="post">
                     <tags:nameValueContainer>
                         <tags:nameValue name="Program Name" nameColumnWidth="200px">
                             <input type="text" name="programName" value="${programName}">
@@ -89,17 +73,8 @@
         <%-- CURRENTLY ACTIVE PROGRAMS --%>
         <tr>
             <td class="functionality">All Currently Active Programs</td>
-            <td class="doc">Section 2, #2</td>
-            <td class="xmlTest">
-                <form action="/spring/loadControlServiceTest/getAllCurrentlyActivePrograms_xml" method="post">
-                <textarea name="xml" class="xml">
-<currentlyActiveProgramsRequest xmlns="http://yukon.cannontech.com/api" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://yukon.cannontech.com/api ../CurrentlyActiveProgramsRequest.xsd" /> 
-                </textarea>
-                <input type="submit" value="TEST">
-                </form>
-            </td>
             <td class="inputTest">
-                <form action="/spring/loadControlServiceTest/getAllCurrentlyActivePrograms" method="post">
+                <form action="/spring/debug/loadControlService/inputs/getAllCurrentlyActivePrograms" method="post">
                     <tags:nameValueContainer>
                         <tags:nameValue name="RUN" nameColumnWidth="200px">
                             <input type="submit" value="TEST">
@@ -113,21 +88,8 @@
         <%-- START CONTROL BY SCENARIO NAME.--%>
         <tr>
             <td class="functionality">Start By Scenario Name</td>
-            <td class="doc">Section 2, #3</td>
-            <td class="xmlTest">
-                <form action="/spring/loadControlServiceTest/startControlByScenarioName_xml" method="post">
-                <textarea name="xml" class="xml">
-<scenarioStartRequest xmlns="http://yukon.cannontech.com/api" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://yukon.cannontech.com/api ../ScenarioStartRequest.xsd">
-  <scenarioName>AC</scenarioName> 
-  <startDateTime>2008-10-28T15:07:40</startDateTime> 
-  <stopDateTime>2008-10-28T17:07:40</stopDateTime> 
-</scenarioStartRequest>
-                </textarea>
-                <input type="submit" value="TEST">
-                </form>
-            </td>
             <td class="inputTest">
-                <form action="/spring/loadControlServiceTest/startControlByScenarioName" method="post">
+                <form action="/spring/debug/loadControlService/inputs/startControlByScenarioName" method="post">
                     <tags:nameValueContainer>
                         <tags:nameValue name="Scenario Name" nameColumnWidth="200px">
                             <input type="text" name="scenarioName" value="${scenarioName}">
@@ -143,8 +105,12 @@
                             <input type="text" name="stopTime" value="${stopTime}">(HH:MM)
                         </tags:nameValue>
 
-                        <tags:nameValue name="Force Start">
-                            <input type="checkbox" name="force">
+                        <tags:nameValue name="Force Execute">
+                            <input type="checkbox" name="force" onclick="toggleObserveConstraintsAndExecute(this, 'observeConstraintsAndExecute24');">
+                        </tags:nameValue>
+                        
+                        <tags:nameValue name="Observe Constraints And Execute">
+                            <input type="checkbox" id="observeConstraintsAndExecute24" name="observeConstraintsAndExecute" checked>
                         </tags:nameValue>
                         
                         <tags:nameValue name="RUN">
@@ -158,17 +124,8 @@
         <%-- START CONTROL BY PROGRAM NAME. --%>
         <tr>
             <td class="functionality">Start By Program Name</td>
-            <td class="doc">Section 2, #4</td>
-            <td class="xmlTest">
-                <form action="/spring/loadControlServiceTest/startControlByProgramName_xml" method="post">
-                <textarea name="xml" class="xml">
-NOT IMPLEMENTED
-                </textarea>
-                <input type="submit" value="TEST">
-                </form>
-            </td>
             <td class="inputTest">
-                <form action="/spring/loadControlServiceTest/startControlByProgramName" method="post">
+                <form action="/spring/debug/loadControlService/inputs/startControlByProgramName" method="post">
                     <tags:nameValueContainer>
                         <tags:nameValue name="Program Name" nameColumnWidth="200px">
                             <input type="text" name="programName" value="${programName}">
@@ -184,8 +141,16 @@ NOT IMPLEMENTED
                             <input type="text" name="stopTime" value="${stopTime}">(HH:MM)
                         </tags:nameValue>
                         
-                        <tags:nameValue name="Force Start">
-                            <input type="checkbox" name="force">
+                        <tags:nameValue name="Gear Number">
+                            <input type="text" name="gearNumber" value="${gearNumber}" size="2">
+                        </tags:nameValue>
+                        
+                        <tags:nameValue name="Force Execute">
+                            <input type="checkbox" name="force" onclick="toggleObserveConstraintsAndExecute(this, 'observeConstraintsAndExecute25');">
+                        </tags:nameValue>
+                        
+                        <tags:nameValue name="Observe Constraints And Execute">
+                            <input type="checkbox" id="observeConstraintsAndExecute25" name="observeConstraintsAndExecute" checked>
                         </tags:nameValue>
                         
                         <tags:nameValue name="RUN">
@@ -199,17 +164,8 @@ NOT IMPLEMENTED
         <%-- STOP CONTROL BY SCENARIO NAME.--%>
         <tr>
             <td class="functionality">Stop By Scenario Name</td>
-            <td class="doc">Section 2, #5</td>
-            <td class="xmlTest">
-                <form action="/spring/loadControlServiceTest/stopControlByScenarioName_xml" method="post">
-                <textarea name="xml" class="xml">
-NOT IMPLEMENTED
-                </textarea>
-                <input type="submit" value="TEST">
-                </form>
-            </td>
             <td class="inputTest">
-                <form action="/spring/loadControlServiceTest/stopControlByScenarioName" method="post">
+                <form action="/spring/debug/loadControlService/inputs/stopControlByScenarioName" method="post">
                     <tags:nameValueContainer>
                         <tags:nameValue name="Scenario Name" nameColumnWidth="200px">
                             <input type="text" name="scenarioName" value="${scenarioName}">
@@ -220,8 +176,12 @@ NOT IMPLEMENTED
                             <input type="text" name="stopTime" value="${stopTime}">(HH:MM)
                         </tags:nameValue>
                         
-                        <tags:nameValue name="Force Stop">
-                            <input type="checkbox" name="force">
+                        <tags:nameValue name="Force Execute">
+                            <input type="checkbox" name="force" onclick="toggleObserveConstraintsAndExecute(this, 'observeConstraintsAndExecute26');">
+                        </tags:nameValue>
+                        
+                        <tags:nameValue name="Observe Constraints And Execute">
+                            <input type="checkbox" id="observeConstraintsAndExecute26" name="observeConstraintsAndExecute" checked>
                         </tags:nameValue>
                         
                         <tags:nameValue name="RUN">
@@ -235,17 +195,8 @@ NOT IMPLEMENTED
         <%-- STOP CONTROL BY PROGRAM NAME.--%>
         <tr>
             <td class="functionality">Stop By Program Name</td>
-            <td class="doc">Section 2, #6</td>
-            <td class="xmlTest">
-                <form action="/spring/loadControlServiceTest/stopControlByProgramName_xml" method="post">
-                <textarea name="xml" class="xml">
-NOT IMPLEMENTED
-                </textarea>
-                <input type="submit" value="TEST">
-                </form>
-            </td>
             <td class="inputTest">
-                <form action="/spring/loadControlServiceTest/stopControlByProgramName" method="post">
+                <form action="/spring/debug/loadControlService/inputs/stopControlByProgramName" method="post">
                     <tags:nameValueContainer>
                         <tags:nameValue name="Program Name" nameColumnWidth="200px">
                             <input type="text" name="programName" value="${programName}">
@@ -256,8 +207,12 @@ NOT IMPLEMENTED
                             <input type="text" name="stopTime" value="${startTime}">(HH:MM)
                         </tags:nameValue>
                         
-                        <tags:nameValue name="Force Stop">
-                            <input type="checkbox" name="force">
+                        <tags:nameValue name="Force Execute">
+                            <input type="checkbox" name="force" onclick="toggleObserveConstraintsAndExecute(this, 'observeConstraintsAndExecute27');">
+                        </tags:nameValue>
+                        
+                        <tags:nameValue name="Observe Constraints And Execute">
+                            <input type="checkbox" id="observeConstraintsAndExecute27" name="observeConstraintsAndExecute" checked>
                         </tags:nameValue>
                         
                         <tags:nameValue name="RUN">
@@ -271,17 +226,8 @@ NOT IMPLEMENTED
         <%-- SCENARIOS LIST OF PROGRAMS --%>
         <tr>
             <td class="functionality">Scenario List O' Programs (Starting Gears)</td>
-            <td class="doc">Section 2, #7</td>
-            <td class="xmlTest">
-                <form action="/spring/loadControlServiceTest/getScenarioProgramStartGears_xml" method="post">
-                <textarea name="xml" class="xml">
-NOT IMPLEMENTED
-                </textarea>
-                <input type="submit" value="TEST">
-                </form>
-            </td>
             <td class="inputTest">
-                <form action="/spring/loadControlServiceTest/getScenarioProgramStartGears" method="post">
+                <form action="/spring/debug/loadControlService/inputs/getScenarioProgramStartGears" method="post">
                     <tags:nameValueContainer>
                         <tags:nameValue name="Scenario Name" nameColumnWidth="200px">
                             <input type="text" name="scenarioName" value="${scenarioName}">

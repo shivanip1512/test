@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
 
+import org.apache.commons.lang.time.DateUtils;
+
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.loadcontrol.data.IGearProgram;
 import com.cannontech.loadcontrol.data.LMProgramBase;
@@ -96,10 +98,14 @@ public class ProgramUtils {
             constraintFlag = LMManualControlRequest.CONSTRAINTS_FLAG_OVERRIDE;
         }
         
-        LMManualControlRequest request = null;
         Date nowTime = new Date();
         
-        if (nowTime.getTime() >= startTime.getTime()) {
+        if (stopTime == null) {
+            stopTime = DateUtils.addYears(nowTime, 1);
+        }
+        
+        LMManualControlRequest request = null;
+        if (startTime == null || nowTime.getTime() >= startTime.getTime()) {
             request = program.createStartStopNowMsg(stopTime, gearNumber, "", true, constraintFlag);
         } else {
             request = program.createScheduledStartMsg(startTime, stopTime, gearNumber, null, "", constraintFlag);
@@ -128,10 +134,10 @@ public class ProgramUtils {
         LMManualControlRequest request = null;
         Date nowTime = new Date();
         
-        if (nowTime.getTime() >= stopTime.getTime()) {
-            request = program.createStartStopNowMsg(nowTime, gearNumber, "", false, constraintFlag);
+        if (stopTime == null || nowTime.getTime() >= stopTime.getTime()) {
+            request = program.createStartStopNowMsg(CtiUtilities.get1990GregCalendar().getTime(), gearNumber, "", false, constraintFlag);
         } else {
-            request = program.createScheduledStopMsg(program.getStartTime().getTime(), stopTime, gearNumber, "");
+            request = program.createScheduledStopMsg(CtiUtilities.get1990GregCalendar().getTime(), stopTime, gearNumber, "");
         }
         
         return request;

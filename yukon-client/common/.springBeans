@@ -1,32 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beansProjectDescription>
-	<version>1</version>
-	<pluginVersion><![CDATA[2.0.2.v200712142013]]></pluginVersion>
-	<configSuffixes>
-		<configSuffix><![CDATA[xml]]></configSuffix>
-	</configSuffixes>
+	<configExtensions>
+		<configExtension>xml</configExtension>
+	</configExtensions>
 	<configs>
-		<config>src/com/cannontech/mainContext.xml</config>
-		<config>src/com/cannontech/amr/amrContext.xml</config>
-		<config>src/com/cannontech/amr/amrContext-client.xml</config>
 		<config>src/com/cannontech/common/bulk/bulkContext.xml</config>
-		<config>src/com/cannontech/common/chart/chartContext.xml</config>
-		<config>src/com/cannontech/common/device/deviceContext.xml</config>
-		<config>src/com/cannontech/common/device/deviceContext-server.xml</config>
-		<config>src/com/cannontech/common/device/config/deviceConfigurationContext.xml</config>
-		<config>src/com/cannontech/common/search/searchContext.xml</config>
-		<config>src/com/cannontech/core/authentication/authContext.xml</config>
-		<config>src/com/cannontech/core/authorization/applicationContext.xml</config>
-		<config>src/com/cannontech/core/dao/applicationContext.xml</config>
-		<config>src/com/cannontech/core/dynamic/applicationContext.xml</config>
-		<config>src/com/cannontech/core/service/applicationContext.xml</config>
-		<config>src/com/cannontech/jobs/jobContext.xml</config>
 		<config>src/com/cannontech/report/reportContext.xml</config>
+		<config>src/com/cannontech/amr/amrContext-client.xml</config>
+		<config>src/com/cannontech/core/authentication/authContext.xml</config>
+		<config>src/com/cannontech/core/service/applicationContext.xml</config>
+		<config>src/com/cannontech/core/dynamic/applicationContext.xml</config>
+		<config>src/com/cannontech/common/device/deviceContext.xml</config>
+		<config>src/com/cannontech/core/authorization/applicationContext.xml</config>
+		<config>src/com/cannontech/amr/amrContext.xml</config>
+		<config>src/com/cannontech/core/dao/applicationContext.xml</config>
+		<config>src/com/cannontech/mainContext.xml</config>
+		<config>src/com/cannontech/jobs/jobContext.xml</config>
+		<config>src/com/cannontech/common/search/searchContext.xml</config>
 		<config>src/com/cannontech/hibernate/hibernateContext.xml</config>
+		<config>src/com/cannontech/common/device/config/deviceConfigurationContext.xml</config>
+		<config>src/com/cannontech/common/chart/chartContext.xml</config>
 	</configs>
 	<configSets>
 		<configSet>
-			<name><![CDATA[Common]]></name>
+			<name>Common</name>
 			<allowBeanDefinitionOverriding>true</allowBeanDefinitionOverriding>
 			<incomplete>false</incomplete>
 			<configs>
@@ -36,7 +33,6 @@
 				<config>src/com/cannontech/common/chart/chartContext.xml</config>
 				<config>src/com/cannontech/common/device/config/deviceConfigurationContext.xml</config>
 				<config>src/com/cannontech/common/device/deviceContext.xml</config>
-				<config>src/com/cannontech/common/device/deviceContext-server.xml</config>
 				<config>src/com/cannontech/common/search/searchContext.xml</config>
 				<config>src/com/cannontech/core/authentication/authContext.xml</config>
 				<config>src/com/cannontech/core/authorization/applicationContext.xml</config>
@@ -50,4 +46,5 @@
 			</configs>
 		</configSet>
 	</configSets>
+	<springVersion>1.2</springVersion>
 </beansProjectDescription>

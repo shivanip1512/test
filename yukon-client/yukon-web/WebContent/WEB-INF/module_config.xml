@@ -604,6 +604,16 @@
     	  </option>
     	</links>
       </option>
+      <option id="loadControlService">
+        <links>
+          <option id="inputs" >
+            <link>/spring/debug/loadControlService/inputs/home</link>
+          </option>
+          <option id="xml" >
+            <link>/spring/debug/loadControlService/xml/home</link>
+          </option>
+        </links>
+      </option>
     </links>
   </module>
         

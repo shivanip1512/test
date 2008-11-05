@@ -5,18 +5,18 @@ import java.util.List;
 public class ScenarioStatus {
 
     private String scenarioName;
-    private List<ProgramStatus> programStatii;
+    private List<ProgramStatus> programStatuses;
     
-    public ScenarioStatus(String scenarioName, List<ProgramStatus> programsStaii) {
+    public ScenarioStatus(String scenarioName, List<ProgramStatus> programStatuses) {
         this.scenarioName = scenarioName;
-        this.programStatii = programsStaii;
+        this.programStatuses = programStatuses;
     }
     
     public String getScenarioName() {
         return scenarioName;
     }
     
-    public List<ProgramStatus> getProgramStatii() {
-        return programStatii;
+    public List<ProgramStatus> getProgramStatuses() {
+        return programStatuses;
     }
 }

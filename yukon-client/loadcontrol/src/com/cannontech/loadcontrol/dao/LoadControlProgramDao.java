@@ -2,6 +2,7 @@ package com.cannontech.loadcontrol.dao;
 
 import java.util.List;
 
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.loadcontrol.service.data.ProgramStartingGear;
 
 public interface LoadControlProgramDao {
@@ -11,18 +12,18 @@ public interface LoadControlProgramDao {
      * exists for given programName.
      * @param programName
      * @return
-     * @throws IllegalArgumentException
+     * @throws NotFoundException if no program exists for given programName.
      */
-    public int getProgramIdByProgramName(String programName) throws IllegalArgumentException;
+    public int getProgramIdByProgramName(String programName) throws NotFoundException;
     
     /**
      * Return id of scenario for given scenarioName. Throws IllegalArgumentException if no scenario
      * exists for given scenarioName.
      * @param scenarioName
      * @return
-     * @throws IllegalArgumentException
+     * @throws NotFoundException if no scenario exists for given scenarioName.
      */
-    public int getScenarioIdForScenarioName(String scenarioName) throws IllegalArgumentException;
+    public int getScenarioIdForScenarioName(String scenarioName) throws NotFoundException;
     
     /**
      * Returns list of a program ids.
@@ -41,9 +42,9 @@ public interface LoadControlProgramDao {
      * Find all program id linked to given scenario. Returns empty list if no programs are linked to scenario.
      * @param scenarioName
      * @return
-     * @throws IllegalArgumentException if no scenario exists for given scenarioName.
+     * @throws NotFoundException if no scenario exists for given scenarioName.
      */
-    public List<Integer> getProgramIdsByScenarioName(String scenarioName) throws IllegalArgumentException;
+    public List<Integer> getProgramIdsByScenarioName(String scenarioName) throws NotFoundException;
     
     /**
      * Get starting gear number for given program and scenario id.

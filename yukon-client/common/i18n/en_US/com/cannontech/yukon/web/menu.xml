@@ -154,6 +154,10 @@
 <entry key="yukon.web.menu.config.debug.scheduler.status">Status</entry>
 <entry key="yukon.web.menu.config.debug.scheduler.jobs">Jobs</entry>
 
+<entry key="yukon.web.menu.config.debug.loadControlService">Load Control Service</entry>
+<entry key="yukon.web.menu.config.debug.loadControlService.inputs">Inputs</entry>
+<entry key="yukon.web.menu.config.debug.loadControlService.xml">XML</entry>
+
 <!-- Commander Module -->
 <entry key="yukon.web.menu.config.commander.deviceselection">Device Selection</entry>
 

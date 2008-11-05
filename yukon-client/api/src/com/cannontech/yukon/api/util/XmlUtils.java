@@ -62,8 +62,7 @@ public class XmlUtils {
     public static Element createDateElement(String name, Namespace namespace, Date value) {
         Element element = new Element(name, namespace);
         
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
-        df.setTimeZone(UTC);
+        DateFormat df = getDateFormat();
         String dateStr = df.format(value);
         
         element.setText(dateStr);
@@ -82,4 +81,11 @@ public class XmlUtils {
         return element;
     }
     
+    public static DateFormat getDateFormat() {
+        
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
+        df.setTimeZone(UTC);
+        
+        return df;
+    }
 }

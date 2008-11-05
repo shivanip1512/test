@@ -9,6 +9,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
 import com.cannontech.loadcontrol.dao.ProgramIdMapper;
 import com.cannontech.loadcontrol.service.data.ProgramStartingGear;
@@ -17,7 +18,7 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
 
     private SimpleJdbcOperations simpleJdbcTemplate;
     
-    public int getProgramIdByProgramName(String programName) throws IllegalArgumentException {
+    public int getProgramIdByProgramName(String programName) throws NotFoundException {
         
         try {
             String sql = "SELECT ypo.PAObjectID" +
@@ -27,11 +28,11 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
             
             return simpleJdbcTemplate.queryForInt(sql, programName);
         } catch (EmptyResultDataAccessException e) {
-            throw new IllegalArgumentException("No program named " + programName);
+            throw new NotFoundException("No program named " + programName);
         }
     }
     
-    public int getScenarioIdForScenarioName(String scenarioName) throws IllegalArgumentException {
+    public int getScenarioIdForScenarioName(String scenarioName) throws NotFoundException {
         
         try {
             String sql = "SELECT ypo.PAObjectID" +
@@ -40,7 +41,7 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
             
             return simpleJdbcTemplate.queryForInt(sql, scenarioName);
         } catch (EmptyResultDataAccessException e) {
-            throw new IllegalArgumentException("No scenario named " + scenarioName);
+            throw new NotFoundException("No scenario named " + scenarioName);
         }
     }
     
@@ -64,7 +65,7 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
         return programIds;
     }
 
-    public List<Integer> getProgramIdsByScenarioName(String scenarioName) throws IllegalArgumentException {
+    public List<Integer> getProgramIdsByScenarioName(String scenarioName) throws NotFoundException {
         
         int scenarioId = getScenarioIdForScenarioName(scenarioName);
         

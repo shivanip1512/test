@@ -1,6 +1,9 @@
 package com.cannontech.loadcontrol.service;
 
 import java.util.Date;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
@@ -8,6 +11,8 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.dynamic.receive.LMProgramChanged;
+import com.cannontech.loadcontrol.messages.LMManualControlRequest;
+import com.cannontech.loadcontrol.service.data.ProgramStatus;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
 import com.cannontech.message.util.TimeoutException;
@@ -16,30 +21,54 @@ public class ProgramChangeBlocker implements MessageListener {
 
     private Logger log = YukonLogManager.getLogger(ProgramChangeBlocker.class);
     
+    private LMManualControlRequest controlRequest;
+    private ProgramStatus programStatus;
+    private LoadControlCommandService loadControlCommandService;
+    private LoadControlClientConnection loadControlClientConnection;
+    private long timeout;
+    
     private int programId;
     private long afterTime;
-    private long timeout;
-    private LoadControlClientConnection loadControlClientConnection;
     private boolean receivedUpdate;
+    private CountDownLatch countDownLatch;
     
-    public ProgramChangeBlocker(LoadControlClientConnection loadControlClientConnection, int programId, long afterTime, long timeout) {
-        this.programId = programId;
-        this.afterTime = afterTime;
-        this.timeout = timeout;
+    
+    public ProgramChangeBlocker(LMManualControlRequest controlRequest,
+            ProgramStatus programStatus,
+            LoadControlCommandService loadControlCommandService,
+            LoadControlClientConnection loadControlClientConnection,
+            long timeout) {
+        
+        this.controlRequest = controlRequest;
+        this.programStatus = programStatus;
+        this.loadControlCommandService = loadControlCommandService;
         this.loadControlClientConnection = loadControlClientConnection;
+        this.timeout = timeout;
+        
+        this.programId = programStatus.getProgramId();
         this.receivedUpdate = false;
     }
     
-    public synchronized LMProgramBase getUpdatedProgram() throws TimeoutException {
+    public void updateProgramStatus() throws TimeoutException {
         
-        log.info("Waiting for program update for programId " + this.programId + " to occur after " + this.afterTime);
+        log.info("Adding message listener.");
         loadControlClientConnection.addMessageListener(this);
         
+        log.info("Creating countDown latch.");
+        this.countDownLatch = new CountDownLatch(1);
+        
+        this.afterTime = (new Date()).getTime();
+        log.info("Executing program update for programId " + this.programId);
+        List<String> executeViolations = loadControlCommandService.executeManualCommand(controlRequest);
+        programStatus.setConstraintViolations(executeViolations);
+        
         try {
-            wait(this.timeout);
+            log.info("Waiting for program update for programId " + this.programId + " to occur after " + this.afterTime);
+            this.receivedUpdate = countDownLatch.await(this.timeout, TimeUnit.MILLISECONDS);
         } catch(InterruptedException e) {
             // do nothing
         } finally {
+            log.info("Removing message listener.");
             loadControlClientConnection.removeMessageListener(this);
         }
         
@@ -47,11 +76,12 @@ public class ProgramChangeBlocker implements MessageListener {
             throw new TimeoutException();
         }
         
-        return loadControlClientConnection.getProgram(programId);
+        LMProgramBase updatedProgram = loadControlClientConnection.getProgram(programId);
+        programStatus.setProgram(updatedProgram);
     }
     
     @Override
-    public synchronized void messageReceived(MessageEvent e) {
+    public void messageReceived(MessageEvent e) {
 
         Object obj = e.getMessage();
         if(obj instanceof LMProgramChanged) {
@@ -63,8 +93,7 @@ public class ProgramChangeBlocker implements MessageListener {
                 long timeNow = now.getTime();
                 if (timeNow > this.afterTime) {
                     log.info("Recieved program update for programId " + this.programId + " at time " + timeNow);
-                    this.receivedUpdate = true;
-                    notifyAll();
+                    this.countDownLatch.countDown();
                 }
             }
         }

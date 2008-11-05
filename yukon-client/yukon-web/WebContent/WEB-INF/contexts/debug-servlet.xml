@@ -20,6 +20,10 @@
         <property name="scheduledRepeatingJobDao" ref="scheduledRepeatingJobDao"/>
     </bean>
     
-
+    <bean name="/loadControlService/inputs/*" class="com.cannontech.web.debug.LoadControlServiceInputsTestController" >
+    </bean>
+    
+    <bean name="/loadControlService/xml/*" class="com.cannontech.web.debug.LoadControlServiceXMLTestController" >
+    </bean>
     
 </beans>

@@ -274,14 +274,6 @@
 	</servlet>
 	
 	<servlet>
-		<servlet-name>loadControlServiceTest</servlet-name>
-		<servlet-class>
-			com.cannontech.web.spring.CannonDispatcherServlet
-		</servlet-class>
-		<load-on-startup>1</load-on-startup>
-	</servlet>
-
-	<servlet>
 		<servlet-name>picker</servlet-name>
 		<servlet-class>
 			com.cannontech.web.spring.CannonDispatcherServlet
@@ -829,11 +821,6 @@
 	<servlet-mapping>
 		<servlet-name>bulk</servlet-name>
 		<url-pattern>/spring/bulk/*</url-pattern>
-	</servlet-mapping>
-	
-	<servlet-mapping>
-		<servlet-name>loadControlServiceTest</servlet-name>
-		<url-pattern>/spring/loadControlServiceTest/*</url-pattern>
 	</servlet-mapping>
 
 	<servlet-mapping>
