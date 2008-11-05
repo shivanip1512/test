@@ -111,8 +111,8 @@ public class ContactController extends AbstractConsumerController {
         LiteCustomer customer = customerDao.getCustomerForUser(userId);
 
         LiteContact contact = new LiteContact(-1);
-        contact.setContFirstName("");
-        contact.setContLastName("");
+        contact.setContFirstName("New Contact");
+        contact.setContLastName("New Contact");
         contact.setLoginID(-9999);
 
         contactDao.addAdditionalContact(contact, customer);
