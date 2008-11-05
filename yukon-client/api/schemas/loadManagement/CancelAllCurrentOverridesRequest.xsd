@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:yukon="http://yukon.cannontech.com/api" targetNamespace="http://yukon.cannontech.com/api">
+	
+<xsd:annotation>
+ 	<xsd:documentation xml:lang="en">
+  	ESO Single Screen schema for Integration I at BG&amp;E: Item #8 from Requirements Outline
+  	An override is an opt out.
+ 	</xsd:documentation>
+</xsd:annotation>
+
+<xsd:complexType name="CancelAllCurrentOverridesRequest">
+</xsd:complexType>
+
+<xsd:element name="cancelAllCurrentOverridesRequest" type="yukon:CancelAllCurrentOverridesRequest"/>
+
+</xsd:schema>

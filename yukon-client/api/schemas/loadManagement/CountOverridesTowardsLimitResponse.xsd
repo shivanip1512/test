@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:yukon="http://yukon.cannontech.com/api" targetNamespace="http://yukon.cannontech.com/api">
+	<xsd:include schemaLocation="ErrorCode.xsd"/>
+	<xsd:annotation>
+		<xsd:documentation xml:lang="en">
+  	ESO Single Screen schema for Integration I at BG&amp;E: Ack msg for use with Item #10 of
+  	Requirements outline.  
+  	An override is an opt out.
+ 	</xsd:documentation>
+	</xsd:annotation>
+	<xsd:complexType name="CountOverridesTowardsLimitResponse">
+		<xsd:sequence>
+			<xsd:element name="errorCode" type="yukon:ErrorCode"/>
+			<xsd:element name="errorDescription" type="xsd:string"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="countOverridesTowardsLimitResponse" type="yukon:CountOverridesTowardsLimitResponse"/>
+</xsd:schema>

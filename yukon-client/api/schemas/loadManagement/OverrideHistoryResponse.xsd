@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:yukon="http://yukon.cannontech.com/api" targetNamespace="http://yukon.cannontech.com/api">
+<xsd:include schemaLocation="OverrideHistory.xsd"/>
+<xsd:include schemaLocation="../ESO Single Screen/ErrorCode.xsd"/>
+<xsd:annotation>
+ 	<xsd:documentation xml:lang="en">
+  	  	Integration II schema (integration with Retail Office) at BG&amp;E: Item #1, returned when 
+  	  	either INPUT option is used
+ 		*Yukon account number is Premise Number for BG&amp;E
+ 	</xsd:documentation>
+</xsd:annotation>
+
+<xsd:complexType name="OverrideHistoryResponse">
+<xsd:sequence>
+	<xsd:element name="overrideHistoryEntries">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="overrideHistory" type="yukon:OverrideHistory" maxOccurs="unbounded"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="errorCode"   type="yukon:ErrorCode"/>
+   	<xsd:element name="errorDescription"   type="xsd:string"/>
+   	</xsd:sequence>
+</xsd:complexType>
+
+<xsd:element name="overrideHistoryResponse" type="yukon:OverrideHistoryResponse"/>
+
+</xsd:schema>
