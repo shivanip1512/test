@@ -216,6 +216,7 @@
     <entry key="yukon.dr.consumer.thermostatSchedule.recommend">Recommended Settings</entry>
     <entry key="yukon.dr.consumer.thermostatSchedule.name">Thermostat Schedule Name:</entry>
     <entry key="yukon.dr.consumer.thermostatSchedule.noScheduleName">You must provide a schedule name.</entry>
+    <entry key="yukon.dr.consumer.thermostatSchedule.saveScheduleText">Changes have been made to this schedule. To disregard these changes, click OK. To return to the page to save your changes, click Cancel.</entry>
     
     <!-- savedSchedules.jsp -->
     <entry key="yukon.dr.consumer.savedSchedules.header">Thermostat - Saved Schedules</entry>

@@ -21,6 +21,7 @@
 
     
     <cti:msg var="noScheduleName" key="yukon.dr.consumer.thermostatSchedule.noScheduleName" />
+    <cti:msg var="saveScheduleText" key="yukon.dr.consumer.thermostatSchedule.saveScheduleText" />
     <c:set var="isCooling" value="${mode == 'COOL'}" />
     
     
@@ -66,6 +67,20 @@
         }
         
     }
+    
+    function alertSaveSchedule() {
+    
+	    if(!viewHasChanged){
+	        return true;
+	    }
+	    
+	    var continueNoSave = confirm('${saveScheduleText}');
+	    if(continueNoSave) {
+	       viewHasChanged = false;
+	    }
+	    
+	    return continueNoSave;
+	}
     
     
 </script>
@@ -186,10 +201,10 @@
                                     <img src="${blueArrow}"> 
                                 </td>
                                 <td>
-                                    <input id="coolHeat" type="radio" name="coolHeat" value="COOL" onclick="updateMode('COOL')" ${(mode == 'COOL')? 'checked' : ''} />
+                                    <input id="coolRadio" type="radio" name="coolHeat" value="COOL" onclick="updateMode('COOL')" ${(mode == 'COOL')? 'checked' : ''} />
                                 </td>
                                 <td>
-                                    <input id="coolHeat" type="radio" name="coolHeat" value="HEAT" onclick="updateMode('HEAT')" ${(mode == 'HEAT')? 'checked' : ''} />
+                                    <input id="heatRadio" type="radio" name="coolHeat" value="HEAT" onclick="updateMode('HEAT')" ${(mode == 'HEAT')? 'checked' : ''} />
                                 </td>
                                 <td class="TableCell" style="color: #FF0000;">
                                     <img src="${redArrow}">
@@ -200,7 +215,7 @@
                         <table width="478" height="186" background="${thermostatScheduleBackground}" style="background-repeat: no-repeat" border="0" cellspacing="0" cellpadding="0">
                             <tr>
                                 <td width="50">
-                                    <div id="MovingLayer1" class="movingBar" style="z-index:1;" onMouseDown="beginDrag(event,0,0,getRightBound(1),getLeftBound(1),'showTimeWake()','horizontal','MovingLayer1');">
+                                    <div id="MovingLayer1" class="movingBar" style="z-index:1;" onMouseDown="beginDrag(event,0,0,getRightBound(1),getLeftBound(1),'showTimeWake()','horizontal','MovingLayer1');viewChanged();">
                                         <table class="movingTable">
                                             <tr>
                                                 <td class="barTemperature" colspan="2">
@@ -223,13 +238,13 @@
                                             <tr>
                                                 <td width="50%">
                                                     <div id="div1C" class="barCool">
-                                                        <img id="arrow1C" src="${blueArrow}" onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'handleUpdateTemp(1)','vertical','div1C');" style="display: ${coolVisible};"></img>
+                                                        <img id="arrow1C" src="${blueArrow}" onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'handleUpdateTemp(1)','vertical','div1C');viewChanged();" style="display: ${coolVisible};"></img>
                                                         <img id="arrow1C_Gray" src="${grayLeftArrow}" class="barGrayArrow" style="display: ${heatVisible}"></img>
                                                     </div>
                                                 </td>
                                                 <td width="50%">
                                                     <div id="div1H" class="barHeat">
-                                                        <img id="arrow1H" src="${redArrow}" onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'handleUpdateTemp(1)','vertical','div1H');" style="display: ${heatVisible}"></img>
+                                                        <img id="arrow1H" src="${redArrow}" onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'handleUpdateTemp(1)','vertical','div1H');viewChanged();" style="display: ${heatVisible}"></img>
                                                         <img id="arrow1H_Gray" src="${grayRightArrow}" class="barGrayArrow" style="display: ${coolVisible};"></img>
                                                     </div>
                                                 </td>
@@ -238,7 +253,7 @@
                                     </div>
                                 </td>
                                 <td width="50">
-                                    <div id="MovingLayer2" class="movingBar" style="z-index:2; ${(twoBars)? 'display: none;': ''}" onMouseDown="beginDrag(event,0,0,getRightBound(2),getLeftBound(2),'showTimeLeave()','horizontal','MovingLayer2');"> 
+                                    <div id="MovingLayer2" class="movingBar" style="z-index:2; ${(twoBars)? 'display: none;': ''}" onMouseDown="beginDrag(event,0,0,getRightBound(2),getLeftBound(2),'showTimeLeave()','horizontal','MovingLayer2');viewChanged();"> 
                                         <table class="movingTable">
                                             <tr>
                                                 <td class="barTemperature" colspan="2">
@@ -261,13 +276,13 @@
                                             <tr>
                                                 <td width="50%">
                                                     <div id="div2C" class="barCool">
-                                                        <img id="arrow2C" src="${blueArrow}" onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'handleUpdateTemp(2)','vertical','div2C');" style="display: ${coolVisible}"></img>
+                                                        <img id="arrow2C" src="${blueArrow}" onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'handleUpdateTemp(2)','vertical','div2C');viewChanged();" style="display: ${coolVisible}"></img>
                                                         <img id="arrow2C_Gray" src="${grayLeftArrow}" class="barGrayArrow" style="display: ${heatVisible}"></img>
                                                     </div>
                                                 </td>
                                                 <td width="50%">
                                                     <div id="div2H" class="barHeat">
-                                                        <img id="arrow2H" src="${redArrow}" onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'handleUpdateTemp(2)','vertical','div2H');" style="display: ${heatVisible}"></img>
+                                                        <img id="arrow2H" src="${redArrow}" onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'handleUpdateTemp(2)','vertical','div2H');viewChanged();" style="display: ${heatVisible}"></img>
                                                         <img id="arrow2H_Gray" src="${grayRightArrow}" class="barGrayArrow" style="display: ${coolVisible}"></img>
                                                     </div>
                                                 </td>
@@ -276,7 +291,7 @@
                                     </div>
                                 </td>
                                 <td width="50">
-                                    <div id="MovingLayer3" class="movingBar" style="z-index:3; ${(twoBars)? 'display: none;': ''}" onMouseDown="beginDrag(event,0,0,getRightBound(3),getLeftBound(3),'showTimeReturn()','horizontal','MovingLayer3');"> 
+                                    <div id="MovingLayer3" class="movingBar" style="z-index:3; ${(twoBars)? 'display: none;': ''}" onMouseDown="beginDrag(event,0,0,getRightBound(3),getLeftBound(3),'showTimeReturn()','horizontal','MovingLayer3');viewChanged();"> 
                                         <table class="movingTable">
                                             <tr> 
                                                 <td class="barTemperature" colspan="2"> 
@@ -299,13 +314,13 @@
                                             <tr> 
                                                 <td width="50%"> 
                                                     <div id="div3C" class="barCool"> 
-                                                        <img id="arrow3C" src="${blueArrow}" onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'handleUpdateTemp(3)','vertical','div3C');" style="display: ${coolVisible}"></img>
+                                                        <img id="arrow3C" src="${blueArrow}" onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'handleUpdateTemp(3)','vertical','div3C');viewChanged();" style="display: ${coolVisible}"></img>
                                                         <img id="arrow3C_Gray" src="${grayLeftArrow}" class="barGrayArrow" style="display: ${heatVisible}"></img>
                                                     </div>
                                                 </td>
                                                 <td width="50%"> 
                                                     <div id="div3H" class="barHeat"> 
-                                                        <img id="arrow3H" src="${redArrow}" onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'handleUpdateTemp(3)','vertical','div3H');" style="display: ${heatVisible}"></img>
+                                                        <img id="arrow3H" src="${redArrow}" onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'handleUpdateTemp(3)','vertical','div3H');viewChanged();" style="display: ${heatVisible}"></img>
                                                         <img id="arrow3H_Gray" src="${grayRightArrow }" class="barGrayArrow" style="display: ${coolVisible}"></img>
                                                     </div>
                                                 </td>
@@ -314,7 +329,7 @@
                                     </div>
                                 </td>
                                 <td width="50">
-                                    <div id="MovingLayer4" class="movingBar" style="z-index:4;" onMouseDown="beginDrag(event,0,0,getRightBound(4),getLeftBound(4),'showTimeSleep()','horizontal','MovingLayer4');"> 
+                                    <div id="MovingLayer4" class="movingBar" style="z-index:4;" onMouseDown="beginDrag(event,0,0,getRightBound(4),getLeftBound(4),'showTimeSleep()','horizontal','MovingLayer4');viewChanged();"> 
                                         <table class="movingTable">
                                             <tr> 
                                                 <td class="barTemperature" colspan="2"> 
@@ -337,13 +352,13 @@
                                             <tr> 
                                                 <td width="50%"> 
                                                     <div id="div4C" class="barCool"> 
-                                                        <img id="arrow4C" src="${blueArrow}" onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'handleUpdateTemp(4)','vertical','div4C');" style="display: ${coolVisible}"></img>
+                                                        <img id="arrow4C" src="${blueArrow}" onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'handleUpdateTemp(4)','vertical','div4C');viewChanged();" style="display: ${coolVisible}"></img>
                                                         <img id="arrow4C_Gray" src="${grayLeftArrow}" class="barGrayArrow" style="display: ${heatVisible}"></img>
                                                     </div>
                                                 </td>
                                                 <td width="50%"> 
                                                     <div id="div4H" class="barHeat"> 
-                                                        <img id="arrow4H" src="${redArrow}" onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'handleUpdateTemp(4)','vertical','div4H');" style="display: ${heatVisible}"></img>
+                                                        <img id="arrow4H" src="${redArrow}" onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'handleUpdateTemp(4)','vertical','div4H');viewChanged();" style="display: ${heatVisible}"></img>
                                                         <img id="arrow4H_Gray" src="${grayRightArrow}" class="barGrayArrow" style="display: ${coolVisible}"></img>
                                                     </div>
                                                 </td>
@@ -372,18 +387,18 @@
                                             <cti:msg key="yukon.dr.consumer.thermostatSchedule.start" />
                                         </td>
                                         <td class="timeTempField">  
-                                            <input id="time1" type="text" size="8" name="time1" onchange="timeChange(this,1);">
+                                            <input id="time1" type="text" size="8" name="time1" onchange="timeChange(this,1);viewChanged();">
                                             <input id="time1min" type="hidden" size="8" name="time1min">
-                                            <input id="time2" type="hidden" size="8" name="time2" onchange="timeChange(this,2);">
+                                            <input id="time2" type="hidden" size="8" name="time2" onchange="timeChange(this,2);viewChanged();">
                                             <input id="time2min" type="hidden" size="8" name="time2min">
                                         </td>
                                         <td class="fieldLabel" width="10%">
                                             <cti:msg key="yukon.dr.consumer.thermostatSchedule.start" />
                                         </td>
                                         <td class="timeTempField"> 
-                                            <input id="time3" type="hidden" size="8" name="time3" onchange="timeChange(this,3);">
+                                            <input id="time3" type="hidden" size="8" name="time3" onchange="timeChange(this,3);viewChanged();">
                                             <input id="time3min" type="hidden" size="8" name="time3min">
-                                            <input id="time4" type="text" size="8" name="time4" onchange="timeChange(this,4);">
+                                            <input id="time4" type="text" size="8" name="time4" onchange="timeChange(this,4);viewChanged();">
                                             <input id="time4min" type="hidden" size="8" name="time4min">
                                         </td>
                                     </tr>
@@ -392,7 +407,7 @@
                                             <cti:msg key="yukon.dr.consumer.thermostatSchedule.temp" />
                                         </td>
                                         <td class="timeTempField">  
-                                            <input id="tempin1" type="text" size="3" value="" name="tempin1" onchange="tempChange(1);">
+                                            <input id="tempin1" type="text" size="3" value="" name="tempin1" onchange="tempChange(1);viewChanged();">
                                             <c:choose>
                                                 <c:when test="${temperatureUnit == 'F'}">
                                                     <span id="tempin1F">${degreesFahrenheit}</span><span id="tempin1C" style="display: none;">${degreesCelsius}</span>
@@ -404,7 +419,7 @@
                                             <span style="display: none;">
                                                 <span id="tempin2F"></span>
                                                 <span id="tempin2C"></span>
-                                                <input id="tempin2" type="hidden" size="3" value="" name="tempin2" onchange="tempChange(2);">
+                                                <input id="tempin2" type="hidden" size="3" value="" name="tempin2" onchange="tempChange(2);viewChanged();">
                                             </span>
                                         </td>
                                         <td class="fieldLabel">
@@ -412,11 +427,11 @@
                                         </td>
                                         <td class="timeTempField"> 
                                             <span style="display: none;">
-                                                <input id="tempin3" type="text" size="3" value="" name="tempin3" onchange="tempChange(3);">
+                                                <input id="tempin3" type="text" size="3" value="" name="tempin3" onchange="tempChange(3);viewChanged();">
                                                 <span id="tempin3F"></span>
                                                 <span id="tempin3C"></span>
                                              </span>
-                                            <input id="tempin4" type="text" size="3" value="" name="tempin4" onchange="tempChange(4);">
+                                            <input id="tempin4" type="text" size="3" value="" name="tempin4" onchange="tempChange(4);viewChanged();">
                                             <c:choose>
                                                 <c:when test="${temperatureUnit == 'F'}">
                                                     <span id="tempin4F">${degreesFahrenheit}</span><span id="tempin4C" style="display: none;">${degreesCelsius}</span>
@@ -454,28 +469,28 @@
                                             <cti:msg key="yukon.dr.consumer.thermostatSchedule.start" />
                                         </td>
                                         <td class="timeTempField">  
-                                            <input id="time1" type="text" size="8" name="time1" onchange="timeChange(this,1);">
+                                            <input id="time1" type="text" size="8" name="time1" onchange="timeChange(this,1);viewChanged();">
                                             <input id="time1min" type="hidden" size="8" name="time1min">
                                         </td>
                                         <td class="fieldLabel" width="10%">
                                             <cti:msg key="yukon.dr.consumer.thermostatSchedule.start" />
                                         </td>
                                         <td class="timeTempField"> 
-                                            <input id="time2" type="text" size="8" name="time2" onchange="timeChange(this,2);">
+                                            <input id="time2" type="text" size="8" name="time2" onchange="timeChange(this,2);viewChanged();">
                                             <input id="time2min" type="hidden" size="8" name="time2min">
                                         </td>
                                         <td class="fieldLabel" width="10%">
                                             <cti:msg key="yukon.dr.consumer.thermostatSchedule.start" />
                                         </td>
                                         <td class="timeTempField"> 
-                                            <input id="time3" type="text" size="8" name="time3" onchange="timeChange(this,3);">
+                                            <input id="time3" type="text" size="8" name="time3" onchange="timeChange(this,3);viewChanged();">
                                             <input id="time3min" type="hidden" size="8" name="time3min">
                                         </td>
                                         <td class="fieldLabel" width="10%">
                                             <cti:msg key="yukon.dr.consumer.thermostatSchedule.start" />
                                         </td>
                                         <td class="timeTempField"> 
-                                            <input id="time4" type="text" size="8" name="time4" onchange="timeChange(this,4);">
+                                            <input id="time4" type="text" size="8" name="time4" onchange="timeChange(this,4);viewChanged();">
                                             <input id="time4min" type="hidden" size="8" name="time4min">
                                         </td>
                                     </tr>
@@ -484,7 +499,7 @@
                                             <cti:msg key="yukon.dr.consumer.thermostatSchedule.temp" />
                                         </td>
                                         <td class="timeTempField">  
-                                            <input id="tempin1" type="text" size="3" value="" name="tempin1" onchange="tempChange(1);">
+                                            <input id="tempin1" type="text" size="3" value="" name="tempin1" onchange="tempChange(1);viewChanged();">
                                                 <c:choose>
                                                     <c:when test="${temperatureUnit == 'F'}">
                                                         <span id="tempin1F">${degreesFahrenheit}</span><span id="tempin1C" style="display: none;">${degreesCelsius}</span>
@@ -498,7 +513,7 @@
                                             <cti:msg key="yukon.dr.consumer.thermostatSchedule.temp" />
                                         </td>
                                         <td class="timeTempField"> 
-                                            <input id="tempin2" type="text" size="3" value="" name="tempin2" onchange="tempChange(2);">
+                                            <input id="tempin2" type="text" size="3" value="" name="tempin2" onchange="tempChange(2);viewChanged();">
                                             <c:choose>
                                                 <c:when test="${temperatureUnit == 'F'}">
                                                     <span id="tempin2F">${degreesFahrenheit}</span><span id="tempin2C" style="display: none;">${degreesCelsius}</span>
@@ -512,7 +527,7 @@
                                             <cti:msg key="yukon.dr.consumer.thermostatSchedule.temp" />
                                         </td>
                                         <td class="timeTempField"> 
-                                            <input id="tempin3" type="text" size="3" value="" name="tempin3" onchange="tempChange(3);">
+                                            <input id="tempin3" type="text" size="3" value="" name="tempin3" onchange="tempChange(3);viewChanged();">
                                             <c:choose>
                                                 <c:when test="${temperatureUnit == 'F'}">
                                                     <span id="tempin3F">${degreesFahrenheit}</span><span id="tempin3C" style="display: none;">${degreesCelsius}</span>
@@ -526,7 +541,7 @@
                                             <cti:msg key="yukon.dr.consumer.thermostatSchedule.temp" />
                                         </td>
                                         <td class="timeTempField"> 
-                                            <input id="tempin4" type="text" size="3" value="" name="tempin4" onchange="tempChange(4);">
+                                            <input id="tempin4" type="text" size="3" value="" name="tempin4" onchange="tempChange(4);viewChanged();">
                                             <c:choose>
                                                 <c:when test="${temperatureUnit == 'F'}">
                                                     <span id="tempin4F">${degreesFahrenheit}</span><span id="tempin4C" style="display: none;">${degreesCelsius}</span>

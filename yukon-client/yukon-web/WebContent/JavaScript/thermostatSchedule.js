@@ -322,6 +322,16 @@ function updateMode(mode) {
 
     $('mode').value = mode;
     var cool = (mode == 'COOL');
+
+    if(!alertSaveSchedule()) {
+        if(!cool) {
+            $('coolRadio').checked = "checked";
+        } else {
+            $('heatRadio').checked = "checked";
+        }
+        return;
+    }
+
     
     // Save the current settings for the mode we were just on
     getCurrentSchedule(currentTimePeriod, (cool)? 'HEAT' : 'COOL');
@@ -396,7 +406,7 @@ function getCurrentSchedule(timePeriod, currentCoolHeat) {
     // Add array of time/temp to schedules for current heatCool and timePeriod   
     var coolHeat = currentCoolHeat;     
     if(coolHeat == null) {
-        coolHeat = $RF('coolHeat');
+        coolHeat = $RF('coolRadio');
     }
     var timePeriodHash = schedules[coolHeat];
     if(timePeriodHash == null) {
@@ -415,7 +425,7 @@ function getCurrentSchedule(timePeriod, currentCoolHeat) {
 function setCurrentSchedule(timePeriod) {
 
     // Get the array of time/temp for the current coolHeat setting and timePeriod
-    var coolHeat = $RF('coolHeat');
+    var coolHeat = $RF('coolRadio');
     var timeTempArray = schedules[coolHeat][timePeriod];
 
     // Set the time/temp values
@@ -442,6 +452,10 @@ function setCurrentSchedule(timePeriod) {
 }
 
 function switchSchedule(timePeriod) {
+
+    if(!alertSaveSchedule()) {
+        return;
+    }
 
     $('weekdayText').hide();
     $('saturdayText').hide();
@@ -534,5 +548,10 @@ function validateTemp(input) {
     
     $(input).value = fTemp;
     
+}
+
+var viewHasChanged = false;
+function viewChanged() {
+    viewHasChanged = true;
 }
     
