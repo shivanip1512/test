@@ -595,7 +595,7 @@ public class ProfileWidget extends WidgetControllerBase {
         int deviceId = ServletRequestUtils.getRequiredIntParameter(request, "deviceId");
         YukonDevice device = deviceDao.getYukonDeviceObjectById(deviceId);
         
-        LitePoint point = attributeService.getPointForAttribute(device, BuiltInAttribute.USAGE);
+        LitePoint point = attributeService.getPointForAttribute(device, BuiltInAttribute.LOAD_PROFILE);
         Integer pointId = point.getLiteID();
         
         // get date range
