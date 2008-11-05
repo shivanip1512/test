@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/mgr_ptclients.cpp-arc  $
-* REVISION     :  $Revision: 1.53 $
-* DATE         :  $Date: 2008/11/03 18:40:56 $
+* REVISION     :  $Revision: 1.54 $
+* DATE         :  $Date: 2008/11/05 19:03:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -41,7 +41,7 @@
 
 using namespace std;
 
-#define POINT_REFRESH_SIZE 1024 //This is overriden by cparm.
+#define POINT_REFRESH_SIZE 1000 //This is overriden by cparm.
 
 /*
  *  This method initializes each point's dynamic data to it's default/initial values.
@@ -241,10 +241,13 @@ void CtiPointClientManager::refreshListByPointIDs(const set<long> &ids)
     {
         set<long> tempIds;
 
+        int count = 0;
+
         for( set<long>::iterator iter = ids.begin(); iter != ids.end(); )
         {
             tempIds.insert(*iter);
             iter++;
+            count++;
             if( tempIds.size() == max_size || iter == ids.end() )
             {
                 refreshListByPointIDs(tempIds);
@@ -302,11 +305,11 @@ void CtiPointClientManager::refreshAlarming(LONG pntID, LONG paoID, const set<lo
         coll_type::writer_lock_guard_t guard(getLock());
         if( pntID )
         {
-            _alarming.erase(pntID);
+            removeAlarming(pntID);
         }
         for( std::list<CtiTablePointAlarming>::iterator iter = tempList.begin(); iter != tempList.end(); iter++ )
         {
-            _alarming.insert(*iter);
+            addAlarming(*iter);
         }
     }
 
@@ -1191,58 +1194,62 @@ void CtiPointClientManager::refreshPointLimits(LONG pntID, LONG paoID, const set
     }
 }
 
-
-
-//Virtual function, removes almost all internal references to a single point
-//If this is an expiration, the dynamic data is not erased.
-void CtiPointClientManager::removePoint(Inherited::ptr_type pTempCtiPoint, bool isExpiration)
+void CtiPointClientManager::expire(long pid)
 {
-    if( pTempCtiPoint )
+    removePoint(pid, true);
+    Inherited::expire(pid);
+}
+
+void CtiPointClientManager::erase(long pid)
+{
+    removePoint(pid, false);
+    Inherited::erase(pid);
+}
+
+//Removes almost all internal references to a single point
+//If this is an expiration, the dynamic data is not erased.
+void CtiPointClientManager::removePoint(long pointID, bool isExpiration)
+{
+    for( ConnectionMgrPointMap::iterator iter = _conMgrPointMap.begin(); iter != _conMgrPointMap.end(); iter++ )
     {
-        long pointID = pTempCtiPoint->getID();
-        for( ConnectionMgrPointMap::iterator iter = _conMgrPointMap.begin(); iter != _conMgrPointMap.end(); iter++ )
-        {
-            iter->second.erase(pointID);
-        }
-
-        //Either this is an expiration and the dynamic values need to be written to the DB, or
-        //this is a deletion, and the values cannot be written to the db.
-        if(!isExpiration)
-        {
-            //Delete entries with the given point id, set to null in case delete does not remove them!
-            DynamicPointDispatchMap::iterator iter = _dynamic.find(pointID);
-            if( iter != _dynamic.end() && iter->second != NULL)
-            {
-                delete iter->second;
-                iter->second = NULL;
-            }
-
-            PointPropertyRange range = _properties.equal_range(pointID);
-    
-            //Delete entries with the given point id, set to null in case delete does not remove them!
-            for( ; range.first != range.second; ++range.first )
-            {
-                if( range.first->second != NULL )
-                {
-                    delete range.first->second;
-                    range.first->second = NULL;
-                }
-            }
-
-            _dynamic.erase(pointID);
-            _pointConnectionMap.erase(pointID);
-
-            //Properties are always loaded!
-            _properties.erase(pointID);
-        }
-
-        _alarming.erase(pointID);
-        _reasonabilityLimits.erase(pointID);
-        _limits.erase(CtiTablePointLimit(pointID, 0));
-        _limits.erase(CtiTablePointLimit(pointID, 1));
+        iter->second.erase(pointID);
     }
 
-    Inherited::removePoint(pTempCtiPoint, isExpiration);
+    //Either this is an expiration and the dynamic values need to be written to the DB, or
+    //this is a deletion, and the values cannot be written to the db.
+    if(!isExpiration)
+    {
+        //Delete entries with the given point id, set to null in case delete does not remove them!
+        DynamicPointDispatchMap::iterator iter = _dynamic.find(pointID);
+        if( iter != _dynamic.end() && iter->second != NULL)
+        {
+            delete iter->second;
+            iter->second = NULL;
+        }
+
+        PointPropertyRange range = _properties.equal_range(pointID);
+
+        //Delete entries with the given point id, set to null in case delete does not remove them!
+        for( ; range.first != range.second; ++range.first )
+        {
+            if( range.first->second != NULL )
+            {
+                delete range.first->second;
+                range.first->second = NULL;
+            }
+        }
+
+        _dynamic.erase(pointID);
+        _pointConnectionMap.erase(pointID);
+
+        //Properties are always loaded!
+        _properties.erase(pointID);
+    }
+
+    removeAlarming(pointID);
+    _reasonabilityLimits.erase(pointID);
+    _limits.erase(CtiTablePointLimit(pointID, 0));
+    _limits.erase(CtiTablePointLimit(pointID, 1));
 }
 
 bool CtiPointClientManager::isPointLoaded(LONG Pt)
@@ -1350,6 +1357,14 @@ CtiTablePointLimit CtiPointClientManager::getPointLimit(CtiPointSPtr point, LONG
     return retVal;
 }
 
+/**
+ * Returns the stored alarming value, or a default alarming 
+ * value for the given point. 
+ * 
+ * @param point CtiPointSPtr 
+ * 
+ * @return CtiTablePointAlarming 
+ */
 CtiTablePointAlarming CtiPointClientManager::getAlarming(CtiPointSPtr point) const
 {
     CtiTablePointAlarming retVal(point->getPointID());
@@ -1523,4 +1538,27 @@ CtiPointManager::ptr_type CtiPointClientManager::getControlOffsetEqual(LONG pao,
     }
 
     return retVal;
+}
+
+
+
+/**
+ * Adds the alarming table to the internal alarming stores
+ * 
+ * @param table CtiTablePointAlarming& 
+ */
+void CtiPointClientManager::addAlarming(CtiTablePointAlarming &table)
+{
+    _alarming.insert(table);
+}
+
+/**
+ * Removes the alarming entry from internal stores with the 
+ * given point ID. 
+ * 
+ * @param pointID unsigned long 
+ */
+void CtiPointClientManager::removeAlarming(unsigned long pointID)
+{
+    _alarming.erase(pointID);
 }

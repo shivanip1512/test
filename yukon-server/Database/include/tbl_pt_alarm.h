@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_pt_alarm.h-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2008/10/08 14:17:03 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2008/11/05 19:03:37 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -101,17 +101,7 @@ protected:
    BOOL        _notifyOnAcknowledge;
    BOOL        _notifyOnClear;
    UINT        _notificationGroupID;
-
-   CtiTablePointAlarming& setPointID            ( const LONG &aLong );
-   CtiTablePointAlarming& setRecipientID        ( const LONG &aLong );
-   CtiTablePointAlarming& setAlarmCategory      ( const INT offset, const UINT &aInt );
-   CtiTablePointAlarming& setAlarmCategory      ( const string str );
-   CtiTablePointAlarming& setExcludeNotifyStates( const UINT &aInt );
-   CtiTablePointAlarming& setAutoAckStates      ( const UINT &aInt );
-   CtiTablePointAlarming& setNotifyOnAcknowledge( const BOOL &aBool );
-   CtiTablePointAlarming& setNotifyOnClear      ( const BOOL &aBool );
-   CtiTablePointAlarming& setNotificationGroupID( const UINT &aInt );
-
+   
 private:
 
    static UINT resolveExcludeStates( string &str );
@@ -139,6 +129,16 @@ public:
    BOOL getNotifyOnAcknowledge()            const;
    BOOL getNotifyOnClear()                  const;
    UINT getNotificationGroupID()            const;
+
+   CtiTablePointAlarming& setPointID            ( const LONG &aLong );
+   CtiTablePointAlarming& setRecipientID        ( const LONG &aLong );
+   CtiTablePointAlarming& setAlarmCategory      ( const INT offset, const UINT &aInt );
+   CtiTablePointAlarming& setAlarmCategory      ( const string str );
+   CtiTablePointAlarming& setExcludeNotifyStates( const UINT &aInt );
+   CtiTablePointAlarming& setAutoAckStates      ( const UINT &aInt );
+   CtiTablePointAlarming& setNotifyOnAcknowledge( const BOOL &aBool );
+   CtiTablePointAlarming& setNotifyOnClear      ( const BOOL &aBool );
+   CtiTablePointAlarming& setNotificationGroupID( const UINT &aInt );
 
    bool isNotifyExcluded( int alarm ) const;
    bool isAutoAcked     ( int alarm ) const;

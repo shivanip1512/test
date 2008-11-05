@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_alarm.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2008/10/08 15:13:02 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2008/11/05 19:03:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -33,13 +33,14 @@ CtiTablePointAlarming& CtiTablePointAlarming::operator=(const CtiTablePointAlarm
 {
     if(this != &aRef)
     {
-        //setPointID( aRef.getPointID() );
+        _pointID = aRef._pointID;
 
         for(int i = 0; i < ALARM_STATE_SIZE; i++)
         {
             setAlarmCategory( i, aRef.getAlarmCategory(i) );
         }
 
+        setAutoAckStates( aRef.getAutoAckStates() );
         setExcludeNotifyStates( aRef.getExcludeNotifyStates() );
         setNotifyOnAcknowledge( aRef.getNotifyOnAcknowledge() );
         setRecipientID( aRef.getRecipientID() );
@@ -197,13 +198,13 @@ void CtiTablePointAlarming::getSQL(string &sql, LONG pointID, LONG paoID, const 
     sql_stream << "select pointid, alarmstates, excludenotifystates, notifyonacknowledge,";
     sql_stream << " recipientid, notificationgroupid from pointalarming";
 
-    if( pointID )
-    {
-        sql_stream << " where pointid = " << pointID;
-    }
-    else
     {
         sql_stream << " where alarmstates != '\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001'";
+    }
+
+    if( pointID )
+    {
+        sql_stream << " AND pointid = " << pointID;
     }
 
     if( paoID )

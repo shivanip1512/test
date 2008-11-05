@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/mgr_ptclients.h-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2008/11/03 18:40:56 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2008/11/05 19:03:37 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -84,9 +84,12 @@ private:
 
    CtiDynamicPointDispatch *getDynamic(unsigned long pointID) const;
 
-protected:
+   void removePoint(long point, bool isExpiration = false);
 
-   virtual void removePoint(Inherited::ptr_type pTempCtiPoint, bool isExpiration = false);
+   void addAlarming(CtiTablePointAlarming &table);
+   void removeAlarming(unsigned long pointID);
+
+   friend class Test_CtiPointClientManager;
 
 public:
 
@@ -107,6 +110,9 @@ public:
 
    void DumpList(void);
    virtual void DeleteList(void);
+   virtual void expire (long pid);
+   virtual void erase  (long pid);
+   //virtual void refresh(long pid);
 
    int InsertConnectionManager(CtiServer::ptr_type CM, const CtiPointRegistrationMsg &aReg, bool debugprint = false);
    int RemoveConnectionManager(CtiServer::ptr_type CM);
@@ -133,5 +139,15 @@ public:
    WeakPointMap getRegistrationMap(LONG mgrID);
 
 };
+
+class Test_CtiPointClientManager : public CtiPointClientManager
+{
+private:
+    typedef CtiPointClientManager Inherited;
+public:
+    void addAlarming(CtiTablePointAlarming &table) { Inherited::addAlarming(table); }
+    void removeAlarming(unsigned long pointID)     { Inherited::removeAlarming(pointID); }
+};
+
 
 #endif                  // #ifndef __MGR_PTCLIENTS_H__

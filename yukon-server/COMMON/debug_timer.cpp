@@ -80,7 +80,7 @@ DebugTimer::~DebugTimer()
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
 
-        dout << formatSystemTime(_start) << " " << _action << " / complete, took " << setprecision(3) << duration << " seconds" << endl;
+        dout << formatSystemTime(end) << " " << _action << " / complete, took " << setprecision(3) << duration << " seconds" << endl;
     }
 }
 

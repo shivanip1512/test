@@ -57,7 +57,8 @@ $(COMPILEBASE)\lib\ctivg.lib
 
 
 DISPATCHTESTOBJS= \
-test_signalmanager.obj
+test_signalmanager.obj \
+test_mgr_ptclients.obj
 
 TARGS = dispatch.exe
 
@@ -113,6 +114,22 @@ clean:
 
 ######################################################################################
 #UPDATE#
+test_mgr_ptclients.obj:	yukon.h precompiled.h ctidbgmem.h \
+		mgr_ptclients.h dlldefs.h mgr_point.h smartmap.h boostutil.h \
+		utility.h ctitime.h queues.h cticalls.h os2_2w32.h types.h \
+		numstr.h sorted_vector.h dllbase.h dsm2.h mutex.h guard.h \
+		clrdump.h cticonnect.h netports.h readers_writer_lock.h \
+		critical_section.h fifo_multiset.h pt_base.h dbmemobject.h \
+		resolvers.h pointtypes.h db_entry_defines.h pointdefs.h \
+		pt_dyn_base.h tbl_pt_base.h dbaccess.h sema.h desolvers.h \
+		tbl_pt_property.h tbl_pt_trigger.h msg_pdata.h message.h \
+		collectable.h rwutil.h boost_time.h ptconnect.h hashkey.h \
+		hash_functions.h con_mgr.h connection.h exchange.h logger.h \
+		thread.h CtiPCPtrQueue.h msg_multi.h msg_ptreg.h msg_reg.h \
+		queue.h cparms.h configkey.h configval.h ctibase.h ctinexus.h \
+		server_b.h cmdopts.h argkey.h argval.h pt_dyn_dispatch.h \
+		tbl_pt_alarm.h tbl_ptdispatch.h tbl_pt_limit.h rtdb.h \
+		tbl_rawpthistory.h
 test_signalmanager.obj:	yukon.h precompiled.h ctidbgmem.h \
 		tbl_pt_alarm.h dlldefs.h dllbase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h \

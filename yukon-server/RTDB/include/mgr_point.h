@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_point.h-arc  $
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2008/11/03 18:40:56 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2008/11/05 19:03:36 $
 *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
  * All Rights Reserved
@@ -96,9 +96,9 @@ private:
 
     friend class Test_CtiPointManager;
 
-protected:
+    void removePoint(ptr_type pTempCtiPoint);
 
-    virtual void removePoint(ptr_type pTempCtiPoint, bool isExpiration = false);
+protected:
 
     coll_type::lock_t &getLock();
     coll_type::lock_t &getLock() const;
@@ -126,7 +126,9 @@ public:
     void     getEqualByPAO(long pao, std::vector<ptr_type> &points);
     long     getPAOIdForPointId(long pointid);
 
-    void erase(long pid, bool isExpiration = false);
+    virtual void expire (long pid);
+    virtual void erase  (long pid);
+    virtual void refresh(long pid);
 
     spiterator begin();
     spiterator end();

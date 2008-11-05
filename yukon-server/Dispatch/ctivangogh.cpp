@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.206 $
-* DATE         :  $Date: 2008/10/30 19:54:26 $
+* REVISION     :  $Revision: 1.207 $
+* DATE         :  $Date: 2008/11/05 19:03:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -87,6 +87,7 @@
 #include "dllyukon.h"
 #include "ctidate.h"
 #include "numstr.h"
+#include "debug_timer.h"
 
 using namespace std;
 
@@ -97,7 +98,7 @@ using namespace std;
 #define MAX_DYNLMQ_ENTRIES       100            // If this many entries appear, we'll do a dump
 #define DUMP_RATE                30             // Otherwise, do a dump evey this many seconds
 #define CONFRONT_RATE            300            // Ask every client to post once per 5 minutes or be terminated
-#define UPDATERTDB_RATE          3600           // Save all dirty point records once per n seconds
+#define UPDATERTDB_RATE          1800           // Save all dirty point records once per n seconds
 #define SANITY_RATE              300
 #define POINT_EXPIRE_CHECK_RATE  60
 #define DYNAMIC_LOAD_SIZE        256
@@ -1761,6 +1762,7 @@ void CtiVanGogh::VGCacheHandlerThread(int threadNumber)
     CtiPointDataMsg         *pDataMsg;
     CtiCommandMsg           *pCmdMsg;
     CtiPointRegistrationMsg *pRegMsg;
+    string timerOutput;
     string threadName = "Cache Handler Thread " + CtiNumStr(threadNumber);
 
     {
@@ -1821,23 +1823,10 @@ void CtiVanGogh::VGCacheHandlerThread(int threadNumber)
 
             if(ptIdList.size() > 0)
             {
-                SYSTEMTIME startTime, endTime;
-                GetLocalTime(&startTime);
+                timerOutput = threadName + " loading " + CtiNumStr(ptIdList.size()) + " points";
+                Cti::DebugTimer debugTime(timerOutput, gDispatchDebugLevel & DISPATCH_DEBUG_PERFORMANCE, 2);
 
                 PointMgr.refreshListByPointIDs(ptIdList);
-
-                if(gDispatchDebugLevel & DISPATCH_DEBUG_PERFORMANCE)
-                {
-                    GetLocalTime(&endTime);
-                    int ms = (endTime.wMinute - startTime.wMinute) * 60000 +
-                             (endTime.wSecond - startTime.wSecond) * 1000  +
-                             (endTime.wMilliseconds - startTime.wMilliseconds);
-
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** PERFORMANCE CHECK **** " << endl;
-                    dout << "RefreshListByPointIDs took " << ms << "ms to do " << ptIdList.size() << " points" << endl;
-                }
-
                 ptIdList.clear();
             }
 

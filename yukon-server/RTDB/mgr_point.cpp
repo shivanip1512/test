@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.66 $
-* DATE         :  $Date: 2008/11/03 18:40:56 $
+* REVISION     :  $Revision: 1.67 $
+* DATE         :  $Date: 2008/11/05 19:03:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -649,7 +649,7 @@ void CtiPointManager::addPoint( CtiPointBase *point )
     {
         if( _smartMap.find(point->getID()) )
         {
-            erase(point->getID());
+            refresh(point->getID());
         }
 
         _smartMap.insert(point->getID(), point); // Stuff it in the list
@@ -1041,27 +1041,54 @@ void CtiPointManager::processExpired()
     //  erase all expired points
     for( ; pointid_itr != pointid_end; ++pointid_itr )
     {
-        erase(*pointid_itr, true);
+        expire(*pointid_itr);
 
         _lru_points.erase(*pointid_itr);
     }
 }
 
+/**
+ * Expires the given point ID.
+ * 
+ * @param pid long 
+ */
+void CtiPointManager::expire(long pid)
+{
+    //Calling smartMap.find here as getPoint can have side effects
+    ptr_type point = _smartMap.find(pid);
 
-void CtiPointManager::erase(long pid, bool isExpiration)
+    if(point)
+    {
+        _paoids_loaded.erase(point->getDeviceID());
+    }
+
+    CtiPointManager::erase(pid);
+}
+
+/**
+ * Prepares the point to be reloaded.
+ * 
+ * @param pid long 
+ */
+void CtiPointManager::refresh(long pid)
+{
+    CtiPointManager::erase(pid);
+}
+
+/**
+ * Completely erases the point. Should be used on delete.
+ * 
+ * @param pid long 
+ */
+void CtiPointManager::erase(long pid)
 {
     ptr_type deleted = _smartMap.remove(pid);
 
-    removePoint(deleted, isExpiration);
-
-    if(isExpiration)
-    {
-        _paoids_loaded.erase(deleted->getDeviceID());
-    }
+    removePoint(deleted);
 }
 
 
-void CtiPointManager::removePoint(ptr_type pTempCtiPoint, bool isExpiration)
+void CtiPointManager::removePoint(ptr_type pTempCtiPoint)
 {
     if( pTempCtiPoint )
     {
