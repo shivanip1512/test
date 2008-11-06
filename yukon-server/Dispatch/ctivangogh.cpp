@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.207 $
-* DATE         :  $Date: 2008/11/05 19:03:36 $
+* REVISION     :  $Revision: 1.208 $
+* DATE         :  $Date: 2008/11/06 23:08:25 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2179,11 +2179,6 @@ INT CtiVanGogh::processMessageData( CtiMessage *pMsg )
                 messageDump(pMsg);
                 const CtiDBChangeMsg &aChg = *((CtiDBChangeMsg*)(pMsg));
                 postDBChange(aChg);
-
-                if(aChg.getDatabase() == ChangePAODb)
-                {
-                    _deviceLiteSet.erase(aChg.getId());
-                }
 
                 break;
             }
@@ -4803,7 +4798,7 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
 
                 if(guard.isAcquired())
                 {
-                    bool deviceDisabled, controlInhibited;
+                    bool deviceDisabled = false, controlInhibited = false;
                     id = ((pChg == NULL) ? 0 : pChg->getId());
 
                     if(pChg && pChg->getTypeOfChange() == ChangeTypeDelete)
@@ -4815,7 +4810,7 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
                             dout << CtiTime() << " Device delete for PAO id " << pChg->getId() << endl;
                         }
 
-                        _deviceLiteSet.clear();          // All stategroups will be reloaded on their next usage..  This shouldn't happen very often
+                        _deviceLiteSet.erase(pChg->getId());
                     }
                     else if(pChg && pChg->getTypeOfChange() == ChangeTypeUpdate)
                     {
@@ -4842,10 +4837,10 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
                     string username = pChg ? pChg->getUser() : string("Dispatch Application");
 
                     // If it is an update and the disable flag has changed, call adjust.
-                    // Otherwise, call adjust on all add's.
-                    if(pChg && pChg->getTypeOfChange() == ChangeTypeUpdate)
+                    // On add, deviceDisabled and controlInhibited == false.
+                    // If the device has disable or inhibited set on add, we call adjust.
+                    if(pChg && (pChg->getTypeOfChange() == ChangeTypeUpdate || pChg->getTypeOfChange() == ChangeTypeAdd))
                     {
-                        
                         CtiDeviceLiteSet_t::iterator iter = _deviceLiteSet.find(id);
                         if(iter != _deviceLiteSet.end())
                         {
@@ -4854,11 +4849,6 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
                                 adjustDeviceDisableTags(id, true, username);
                             }
                         }
-                    }
-                    //ReThinkThis!!!!!!!!!!!!!!!!!!!
-                    else if(pChg && pChg->getTypeOfChange() == ChangeTypeAdd)
-                    {
-                        adjustDeviceDisableTags(id, true, username);
                     }
 
                     deltaT = Now.now().seconds() - Now.seconds();
@@ -8278,6 +8268,7 @@ void CtiVanGogh::loadStalePointMaps(int pointID)
         CtiPointSPtr tempPoint;
         for( ; iter != end; iter++ )
         {
+             pointID = *iter;
              //  this should turn into a find() function for PointClientManager
              if( PointMgr.hasProperty(pointID, CtiTablePointProperty::STALE_ALARM_TIME) )
              {

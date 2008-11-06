@@ -1443,13 +1443,14 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
         CtiCCSubstation_vec& ccStations =  *store->getCCSubstations(CtiTime().seconds());
         
         CtiPointRegistrationMsg* regMsg;// = new CtiPointRegistrationMsg();
-        string simple_registration = gConfigParms.getValueAsString("CAP_CONTROL_SIMPLE_REGISTRATION", "false");
+        //This is left here as there is no other documentation of this cparm ever existing!
+        /*string simple_registration = gConfigParms.getValueAsString("CAP_CONTROL_SIMPLE_REGISTRATION", "false");
         if(simple_registration == "true" || simple_registration == "TRUE")
         {   
             //register for all points
             regMsg = new CtiPointRegistrationMsg(REG_ALL_PTS_MASK);
         }
-        else
+        else*/
         { 
             //register for each point specifically
             regMsg = new CtiPointRegistrationMsg();
