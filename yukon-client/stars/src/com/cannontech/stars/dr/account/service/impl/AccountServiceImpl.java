@@ -24,6 +24,7 @@ import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.core.dynamic.impl.AsyncDynamicDataSourceImpl;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteAddress;
@@ -86,7 +87,8 @@ public class AccountServiceImpl implements AccountService {
     private LMThermostatDao lmThermostatDao;
     private EventAccountDao eventAccountDao;
     private StarsCustAccountInformationDao starsCustAccountInformationDao;
-    private DBPersistentDao dbPersistentDao;
+    private DBPersistentDao dbPersistantDao;
+    private AsyncDynamicDataSourceImpl asyncDynamicDataSource;
 
     @Override
     @Transactional
@@ -112,7 +114,7 @@ public class AccountServiceImpl implements AccountService {
             groups.add(defaultYukonGroup);
             groups.add(operatorGroup);
             yukonUserDao.addLiteYukonUserWithPassword(user, accountDto.getPassword(), liteEnergyCompany, groups);
-            dbPersistentDao.processDBChange(new DBChangeMsg(user.getLiteID(),
+            dbPersistantDao.processDBChange(new DBChangeMsg(user.getLiteID(),
                                    DBChangeMsg.CHANGE_YUKON_USER_DB,
                                    DBChangeMsg.CAT_YUKON_USER,
                                    DBChangeMsg.CAT_YUKON_USER,
@@ -143,7 +145,7 @@ public class AccountServiceImpl implements AccountService {
             liteContact.setLoginID(user.getUserID());
             liteContact.setAddressID(liteAddress.getAddressID());
             contactDao.saveContact(liteContact);
-            dbPersistentDao.processDBChange(new DBChangeMsg(liteContact.getLiteID(),
+            dbPersistantDao.processDBChange(new DBChangeMsg(liteContact.getLiteID(),
                                    DBChangeMsg.CHANGE_CONTACT_DB,
                                    DBChangeMsg.CAT_CUSTOMERCONTACT,
                                    DBChangeMsg.CAT_CUSTOMERCONTACT,
@@ -183,7 +185,7 @@ public class AccountServiceImpl implements AccountService {
             liteCustomer.setAltTrackingNumber(CtiUtilities.STRING_NONE);
             liteCustomer.setTemperatureUnit(authDao.getRolePropertyValue(liteEnergyCompany.getUserID(), EnergyCompanyRole.DEFAULT_TEMPERATURE_UNIT));
             customerDao.addCustomer(liteCustomer);
-            dbPersistentDao.processDBChange(new DBChangeMsg(liteCustomer.getLiteID(),
+            dbPersistantDao.processDBChange(new DBChangeMsg(liteCustomer.getLiteID(),
                                    DBChangeMsg.CHANGE_CUSTOMER_DB,
                                    DBChangeMsg.CAT_CUSTOMER,
                                    DBChangeMsg.CAT_CUSTOMER,
@@ -200,7 +202,7 @@ public class AccountServiceImpl implements AccountService {
                 liteCICustomer.setCompanyName(accountDto.getCompanyName());
                 liteCICustomer.setCICustType(YukonListEntryTypes.CUSTOMER_TYPE_COMMERCIAL);
                 customerDao.addCICustomer(liteCICustomer);
-                dbPersistentDao.processDBChange(new DBChangeMsg(liteCustomer.getLiteID(),
+                dbPersistantDao.processDBChange(new DBChangeMsg(liteCustomer.getLiteID(),
                                        DBChangeMsg.CHANGE_CUSTOMER_DB,
                                        DBChangeMsg.CAT_CI_CUSTOMER,
                                        DBChangeMsg.CAT_CI_CUSTOMER,
@@ -212,7 +214,7 @@ public class AccountServiceImpl implements AccountService {
              */
             LiteSiteInformation liteSiteInformation = new LiteSiteInformation();
             siteInformationDao.add(liteSiteInformation);
-            dbPersistentDao.processDBChange(new DBChangeMsg(liteSiteInformation.getLiteID(),
+            dbPersistantDao.processDBChange(new DBChangeMsg(liteSiteInformation.getLiteID(),
                                    DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,
                                    DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
                                    DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
@@ -333,7 +335,7 @@ public class AccountServiceImpl implements AccountService {
              * Delete customer
              */
             customerDao.deleteCustomer(account.getCustomerId());
-            dbPersistentDao.processDBChange(new DBChangeMsg(liteCustomer.getLiteID(),
+            dbPersistantDao.processDBChange(new DBChangeMsg(liteCustomer.getLiteID(),
                                                DBChangeMsg.CHANGE_CUSTOMER_DB,
                                                DBChangeMsg.CAT_CUSTOMER,
                                                DBChangeMsg.CAT_CUSTOMER,
@@ -343,7 +345,7 @@ public class AccountServiceImpl implements AccountService {
              * Delete primary contact
              */
             contactDao.deleteContact(primaryContact.getContactID());
-            dbPersistentDao.processDBChange(new DBChangeMsg(primaryContact.getLiteID(),
+            dbPersistantDao.processDBChange(new DBChangeMsg(primaryContact.getLiteID(),
                                    DBChangeMsg.CHANGE_CONTACT_DB,
                                    DBChangeMsg.CAT_CUSTOMERCONTACT,
                                    DBChangeMsg.CAT_CUSTOMERCONTACT,
@@ -352,15 +354,9 @@ public class AccountServiceImpl implements AccountService {
             /*
              * Delete additional contacts
              */
-            List<LiteContact> additionalContacts = contactDao.getAdditionalContactsForAccount(account.getCustomerId());
+            List<Integer> additionalContacts = contactDao.getAdditionalContactIdsForCustomer(account.getCustomerId());
             contactDao.deleteAllAdditionalContactsForCustomer(account.getCustomerId());
-            for(LiteContact contact : additionalContacts) {
-                dbPersistentDao.processDBChange(new DBChangeMsg(contact.getLiteID(),
-                                       DBChangeMsg.CHANGE_CONTACT_DB,
-                                       DBChangeMsg.CAT_CUSTOMERCONTACT,
-                                       DBChangeMsg.CAT_CUSTOMERCONTACT,
-                                       DBChangeMsg.CHANGE_TYPE_DELETE));
-            }
+            processContactDeletes(additionalContacts);
             
             /*
              * Delete login
@@ -370,7 +366,7 @@ public class AccountServiceImpl implements AccountService {
                     userId != UserUtils.USER_YUKON_ID) {
                 yukonUserDao.deleteUser(userId);
                 StarsDatabaseCache.getInstance().deleteStarsYukonUser( userId );
-                dbPersistentDao.processDBChange(new DBChangeMsg(user.getLiteID(),
+                dbPersistantDao.processDBChange(new DBChangeMsg(user.getLiteID(),
                                        DBChangeMsg.CHANGE_YUKON_USER_DB,
                                        DBChangeMsg.CAT_YUKON_USER,
                                        DBChangeMsg.CAT_YUKON_USER,
@@ -381,7 +377,7 @@ public class AccountServiceImpl implements AccountService {
              * Delete customer info
              */
             starsEnergyCompany.deleteCustAccountInformation(customerInfo);
-            dbPersistentDao.processDBChange(new DBChangeMsg(customerInfo.getLiteID(),
+            dbPersistantDao.processDBChange(new DBChangeMsg(customerInfo.getLiteID(),
                                    DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,
                                    DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
                                    DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
@@ -435,7 +431,7 @@ public class AccountServiceImpl implements AccountService {
             primaryContact.setContLastName(accountDto.getLastName());
             primaryContact.setAddressID(liteStreetAddress.getAddressID());
             contactDao.saveContact(primaryContact);
-            dbPersistentDao.processDBChange(new DBChangeMsg(primaryContact.getLiteID(),
+            dbPersistantDao.processDBChange(new DBChangeMsg(primaryContact.getLiteID(),
                                    DBChangeMsg.CHANGE_CONTACT_DB,
                                    DBChangeMsg.CAT_CUSTOMERCONTACT,
                                    DBChangeMsg.CAT_CUSTOMERCONTACT,
@@ -538,6 +534,19 @@ public class AccountServiceImpl implements AccountService {
     //==============================================================================================
     // HELPER METHODS
     //==============================================================================================
+    
+    private void processContactDeletes(List<Integer> contactIds) {
+        for(Integer contactId : contactIds) {
+            DBChangeMsg changeMsg = new DBChangeMsg(contactId,
+                DBChangeMsg.CHANGE_CONTACT_DB,
+                DBChangeMsg.CAT_CUSTOMERCONTACT,
+                DBChangeMsg.CAT_CUSTOMERCONTACT,
+                DBChangeMsg.CHANGE_TYPE_DELETE);
+            
+            dbPersistantDao.processDBChange(changeMsg);
+            asyncDynamicDataSource.handleDBChange(changeMsg);
+        }
+    }
     
     private void setAddressFieldsFromDTO(LiteAddress lite, Address address) {
         lite.setLocationAddress1(address.getLocationAddress1());
@@ -669,7 +678,12 @@ public class AccountServiceImpl implements AccountService {
     
     @Autowired
     public void setDBPersistentDao(DBPersistentDao dbPersistentDao) {
-        this.dbPersistentDao = dbPersistentDao;
+        this.dbPersistantDao = dbPersistentDao;
+    }
+    
+    @Autowired
+    public void setAsyncDynamicDataSource(AsyncDynamicDataSourceImpl asyncDynamicDataSource) {
+        this.asyncDynamicDataSource = asyncDynamicDataSource;
     }
 
 }

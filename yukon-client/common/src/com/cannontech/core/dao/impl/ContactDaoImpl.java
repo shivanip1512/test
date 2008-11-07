@@ -28,6 +28,7 @@ import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.dynamic.impl.AsyncDynamicDataSourceImpl;
+import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteCICustomer;
@@ -521,6 +522,13 @@ public final class ContactDaoImpl implements ContactDao {
 
         return contactList;
     }
+    
+    @Override
+    public List<Integer> getAdditionalContactIdsForCustomer(int customerId){
+        String sql = "SELECT ContactId FROM Contact WHERE CustomerId = ?";
+        List<Integer> contactIds = simpleJdbcTemplate.query(sql, new IntegerRowMapper(), customerId);
+        return contactIds;
+    }
 
     @Override
     @Transactional
@@ -584,10 +592,10 @@ public final class ContactDaoImpl implements ContactDao {
                                                            contact.getLiteContactNotifications());
         
         DBChangeMsg changeMsg = new DBChangeMsg(contactId,
-                                                DBChangeMsg.CHANGE_CONTACT_DB,
-                                                DBChangeMsg.CAT_CUSTOMERCONTACT,
-                                                DBChangeMsg.CAT_CUSTOMERCONTACT,
-                                                changeType);
+            DBChangeMsg.CHANGE_CONTACT_DB,
+            DBChangeMsg.CAT_CUSTOMERCONTACT,
+            DBChangeMsg.CAT_CUSTOMERCONTACT,
+            changeType);
         
         dbPersistantDao.processDBChange(changeMsg);
         asyncDynamicDataSource.handleDBChange(changeMsg);
@@ -600,20 +608,13 @@ public final class ContactDaoImpl implements ContactDao {
 
         // Remove all notifications
         contactNotificationDao.removeNotificationsForContact(contactId);
-        
-        StringBuilder additionalSql = new StringBuilder("DELETE FROM CustomerAdditionalContact");
-        additionalSql.append(" WHERE ContactId = ?");
-        simpleJdbcTemplate.update(additionalSql.toString(), contactId);
-
-        StringBuilder sql = new StringBuilder("DELETE FROM Contact");
-        sql.append(" WHERE ContactId = ?");
-        simpleJdbcTemplate.update(sql.toString(), contactId);
-        
+        deleteAdditionalContactById(contactId);
+        deleteContactById(contactId);
         DBChangeMsg changeMsg = new DBChangeMsg(contactId,
-                                                DBChangeMsg.CHANGE_CONTACT_DB,
-                                                DBChangeMsg.CAT_CUSTOMERCONTACT,
-                                                DBChangeMsg.CAT_CUSTOMERCONTACT,
-                                                DBChangeMsg.CHANGE_TYPE_DELETE);
+            DBChangeMsg.CHANGE_CONTACT_DB,
+            DBChangeMsg.CAT_CUSTOMERCONTACT,
+            DBChangeMsg.CAT_CUSTOMERCONTACT,
+            DBChangeMsg.CHANGE_TYPE_DELETE);
         
         dbPersistantDao.processDBChange(changeMsg);
         asyncDynamicDataSource.handleDBChange(changeMsg);
@@ -626,12 +627,43 @@ public final class ContactDaoImpl implements ContactDao {
     }
     
     @Override
+    public void deleteContactById(Integer contactId) {
+        String sql = "DELETE FROM Contact WHERE contactId = ?";
+        simpleJdbcTemplate.update(sql, contactId);
+    }
+    
+    @Override
+    public void deleteAdditionalContactById(Integer contactId) {
+        String sql = "DELETE FROM CustomerAdditionalContact WHERE contactId = ?";
+        simpleJdbcTemplate.update(sql, contactId);
+    }
+    
+    @Override
+    public void deleteContactsByIds(List<Integer> contactIds) {
+        SqlStatementBuilder sql = new SqlStatementBuilder("DELETE FROM Contact WHERE ContactId IN(");
+        sql.append(contactIds);
+        sql.append(")");
+        simpleJdbcTemplate.update(sql.toString());
+    }
+    
+    @Override
+    public void deleteAdditionalContactsByContactId(List<Integer> contactIds) {
+        SqlStatementBuilder sql = new SqlStatementBuilder("DELETE FROM CustomerAdditionalContact WHERE ContactId IN(");
+        sql.append(contactIds);
+        sql.append(")");
+        simpleJdbcTemplate.update(sql.toString());
+    }
+    
+    @Override
     @Transactional
     public void deleteAllAdditionalContactsForCustomer(Integer customerId) {
-        List<LiteContact> contacts = getAdditionalContactsForCustomer(customerId);
-        for(LiteContact contact : contacts) {
-            deleteContact(contact.getContactID());
-        }
+        List<Integer> contactIds = getAdditionalContactIdsForCustomer(customerId);
+        List<Integer> contactNotifIds = contactNotificationDao.getAllNotificationIdsForContactIds(contactIds);
+        contactNotificationDao.removeContactNotifDestinationsForNotifs(contactNotifIds);
+        contactNotificationDao.removeContactNotifsForContactIds(contactIds);
+        contactNotificationDao.removeContactNotifMapEntriesForContactIds(contactIds);
+        deleteAdditionalContactsByContactId(contactIds);
+        deleteContactsByIds(contactIds);
     }
     
     @Override
@@ -715,7 +747,7 @@ public final class ContactDaoImpl implements ContactDao {
         }
 
     }
-
+    
     public void setContactNotificationDao(
             ContactNotificationDao contactNotificationDao) {
         this.contactNotificationDao = contactNotificationDao;

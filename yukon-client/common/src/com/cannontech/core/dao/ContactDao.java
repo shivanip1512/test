@@ -212,4 +212,35 @@ public interface ContactDao {
      */
     public void deleteAllAdditionalContactsForCustomer(Integer customerId);
 
+    /**
+     * Method to get all contact ids for a customer
+     * @param customerId
+     * @return
+     */
+    List<Integer> getAdditionalContactIdsForCustomer(int customerId);
+
+    /**
+     * Method to delete a list of additional contacts.
+     * @param contactIds
+     */
+    public void deleteAdditionalContactsByContactId(List<Integer> contactIds);
+
+    /**
+     * Method to delete a contact by id.
+     * @param contactId
+     */
+    public void deleteContactById(Integer contactId);
+
+    /**
+     * Method to delete a list of contacts by ids.
+     * @param contactIds
+     */
+    public void deleteContactsByIds(List<Integer> contactIds);
+
+    /**
+     * Method to delete an additional contact by id.
+     * @param contactId
+     */
+    public void deleteAdditionalContactById(Integer contactId);
+
 }

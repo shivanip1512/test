@@ -42,6 +42,26 @@ public class ChunkingSqlTemplate<E> {
         return resultList;
     }
     
+    public void update(final SqlGenerator<E> sqlGenerator, final Collection<E> input, final Object... args) {
+                    
+        final List<E> tempInputList = new ArrayList<E>(input);
+        final List<String> queryList = new ArrayList<String>();
+        
+        int inputSize = tempInputList.size();
+        for (int start = 0; start < inputSize; start += chunkSize ) {
+            int nextToIndex = start + chunkSize;
+            int toIndex = (inputSize < nextToIndex) ? inputSize : nextToIndex;
+            
+            List<E> subList = tempInputList.subList(start, toIndex);
+            String query = sqlGenerator.generate(subList);
+            queryList.add(query);
+        }
+
+        for (final String sql : queryList) {
+            simpleJdbcTemplate.update(sql, args);
+        }
+    }
+    
     public void setChunkSize(final int chunkSize) {
         this.chunkSize = chunkSize;
     }

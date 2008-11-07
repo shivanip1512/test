@@ -5,11 +5,16 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.SqlGenerator;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.ContactNotificationDao;
+import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
@@ -20,11 +25,11 @@ import com.cannontech.yukon.IDatabaseCache;
  * Functions for the LiteContactNotification data in cache
  * 
  */
-public final class ContactNotificationDaoImpl implements ContactNotificationDao 
-{
+public final class ContactNotificationDaoImpl implements ContactNotificationDao, InitializingBean{
     private IDatabaseCache databaseCache;
     
     private SimpleJdbcTemplate simpleJdbcTemplate;
+    private ChunkingSqlTemplate<Integer> chunkyJdbcTemplate;
     private NextValueHelper nextValueHelper;
     
 	public void setDatabaseCache(IDatabaseCache databaseCache) {
@@ -198,6 +203,23 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao
     }
     
     @Override
+    public List<Integer> getNotificationIdsForContact(int contactId) {
+        String sql = "SELECT ContactNotifId FROM ContactNotification WHERE ContactId = ?";
+        List<Integer> notifs = simpleJdbcTemplate.query(sql, new IntegerRowMapper(), contactId);
+        return notifs;
+    }
+    
+    @Override
+    public List<Integer> getAllNotificationIdsForContactIds(List<Integer> contactIds){
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ContactNotifId FROM ContactNotification WHERE ContactId IN (");
+        sql.append(contactIds);
+        sql.append(")");
+        List<Integer> notifIds = simpleJdbcTemplate.query(sql.toString(), new IntegerRowMapper());
+        return notifIds;
+    }
+    
+    @Override
     public LiteContactNotification getNotificationForContactByType(int contactId, int type) {
         List<LiteContactNotification> notifs = getNotificationsForContact(contactId);
         for(LiteContactNotification notif : notifs) {
@@ -219,6 +241,15 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao
         
     }
     
+    @Override
+    public void removeNotificationsForContactIds(List<Integer> contactIds) {
+        StringBuilder sql = new StringBuilder("DELETE ");
+        sql.append(" FROM ContactNotification");
+        sql.append(" WHERE ContactId =  ?");
+        
+        simpleJdbcTemplate.update(sql.toString(), contactIds);
+        
+    }
 
     @Override
     public void removeNotificationsForContact(int contactId) {
@@ -229,6 +260,76 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao
         
         simpleJdbcTemplate.update(sql.toString(), contactId);
         
+    }
+    
+    @Override
+    public void removeContactNotifDestinationsForNotifs(List<Integer> contactNotifIds) {
+        chunkyJdbcTemplate.update(new NotifDestinationSqlGenerator(), contactNotifIds);
+    }
+    
+    @Override
+    public void removeContactNotifsForContactIds(List<Integer> contactIds) {
+        chunkyJdbcTemplate.update(new ContactNotifSqlGenerator(), contactIds);
+    }
+    
+    @Override
+    public void removeContactNotifMapEntriesForContactIds(List<Integer> contactIds) {
+        chunkyJdbcTemplate.update(new ContactNotifMapSqlGenerator(), contactIds);
+    }
+    
+    
+    /**
+     * Sql generator for deleting in NotificationDestination, useful for bulk deleteing
+     * with chunking sql template.
+     * @author asolberg
+     *
+     */
+    private class NotifDestinationSqlGenerator implements SqlGenerator<Integer> {
+
+        @Override
+        public String generate(List<Integer> contactNotifIds) {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("DELETE FROM NotificationDestination WHERE RecipientId IN (");
+            sql.append(contactNotifIds);
+            sql.append(")");
+            return sql.toString();
+        }
+    }
+    
+    /**
+     * Sql generator for deleting in ContactNotification, useful for bulk deleteing
+     * with chunking sql template.
+     * @author asolberg
+     *
+     */
+    private class ContactNotifSqlGenerator implements SqlGenerator<Integer> {
+
+        @Override
+        public String generate(List<Integer> contactNotifIds) {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("DELETE FROM ContactNotification WHERE ContactId IN (");
+            sql.append(contactNotifIds);
+            sql.append(")");
+            return sql.toString();
+        }
+    }
+    
+    /**
+     * Sql generator for deleting in ContactNotification, useful for bulk deleteing
+     * with chunking sql template.
+     * @author asolberg
+     *
+     */
+    private class ContactNotifMapSqlGenerator implements SqlGenerator<Integer> {
+
+        @Override
+        public String generate(List<Integer> contactNotifIds) {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("DELETE FROM ContactNotifGroupMap WHERE ContactId IN (");
+            sql.append(contactNotifIds);
+            sql.append(")");
+            return sql.toString();
+        }
     }
 
     /**
@@ -258,6 +359,11 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao
             return notification;
         }
 
+    }
+    
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        chunkyJdbcTemplate= new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
     }
 
 }
