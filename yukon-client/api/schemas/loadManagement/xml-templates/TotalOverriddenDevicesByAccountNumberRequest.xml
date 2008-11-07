@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<totalOverriddenDevicesByAccountNumberRequest xmlns="http://yukon.cannontech.com/api"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://yukon.cannontech.com/api ../TotalOverriddenDevicesByAccountNumberRequest.xsd"
+           version="1.0">
+    <accountNumber>34l5jk3 4l5k34</accountNumber>
+    <startTime>2008-10-28T15:07:40</startTime>
+    <stopTime>2008-10-28T17:07:40</stopTime>
+</totalOverriddenDevicesByAccountNumberRequest>
