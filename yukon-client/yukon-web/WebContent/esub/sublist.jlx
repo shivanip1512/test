@@ -14,7 +14,7 @@ com.cannontech.esub.element.DrawingMetaElement
 A "NCS" 0 0 0 0 $ 1 C $ 0 0
 0 0
 "Default" 0 32 "_"
-2 1024 768 -16777216 -1
+1 1024 768 -1
 
 com.cannontech.esub.element.StaticText
 ! 110101100 20;20;283.269531;22.234375 5 0 $ ! ! 0 0
@@ -38,7 +38,7 @@ A "NCS" 0 0 0 0 $ 1 C ffffffff 0 0
 1 "Arial Bold" 12 255 255 255 !
 
 com.cannontech.esub.element.StaticText
-! 110101100 208;168;545.683594;11.265625 5 0 $ ! ! 0 0
+! 110101100 208;168;546.357422;11.265625 5 0 $ ! ! 0 0
 A "NCS" 0 0 0 0 $ 1 C ffffffff 0 0
 0 0
 "Arial Bold" 0 12 "You can normally find this file on the Yukon server in c:\yukon\server\web\webapps\ROOT\esub"
