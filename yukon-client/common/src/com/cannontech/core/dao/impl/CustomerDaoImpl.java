@@ -330,11 +330,8 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
     
     @Override
     public void setTempForCustomer(int customerId, String temp) {
-        StringBuilder sql = new StringBuilder("UPDATE Customer");
-        sql.append(" SET TemperatureUnit = '" + temp + "'");
-        sql.append(" WHERE CustomerID = " + customerId);
-
-        simpleJdbcTemplate.update(sql.toString());
+        String sql = "UPDATE Customer SET TemperatureUnit = ? WHERE CustomerId = ?";
+        simpleJdbcTemplate.update(sql.toString(), temp ,customerId);
     }
     
     @Override
