@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<currentlyActiveProgramsResponse xmlns="http://yukon.cannontech.com/api"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://yukon.cannontech.com/api ../CurrentlyActiveProgramsResponse.xsd">
+           
+    <programStatuses>
+    
+        <programStatus>
+            <programName>AC</programName>
+            <currentStatus>Active</currentStatus>
+            <startDateTime>2008-11-04T13:00:00</startDateTime>
+            <stopDateTime>2008-11-04T20:30:00</stopDateTime>
+            <gearName>50%</gearName>
+        </programStatus>
+    
+        <programStatus>
+            <programName>AC-LITE</programName>
+            <currentStatus>Active</currentStatus>
+            <startDateTime>2008-11-04T14:20:00</startDateTime>
+            <stopDateTime>2008-11-04T19:10:00</stopDateTime>
+            <gearName>20%</gearName>
+        </programStatus>
+        
+    </programStatuses>
+           
+           
+</currentlyActiveProgramsResponse>

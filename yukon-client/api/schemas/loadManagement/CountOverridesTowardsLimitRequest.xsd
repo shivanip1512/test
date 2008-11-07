@@ -1,16 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:yukon="http://yukon.cannontech.com/api" targetNamespace="http://yukon.cannontech.com/api">
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+            xmlns:yukon="http://yukon.cannontech.com/api" 
+            targetNamespace="http://yukon.cannontech.com/api"
+            elementFormDefault="qualified">
 	
-<xsd:annotation>
- 	<xsd:documentation xml:lang="en">
-  	ESO Single Screen schema for Integration I at BG&amp;E: Item #10 from Requirements Outline
-  	An override is an opt out.
- 	</xsd:documentation>
-</xsd:annotation>
+    <xsd:include schemaLocation="YukonAttributes.xsd" />
+    
+    <xsd:annotation>
+     	<xsd:documentation xml:lang="en">
+      	ESO Single Screen schema for Integration I at BG&amp;E: Item #10 from Requirements Outline
+      	An override is an opt out.
+     	</xsd:documentation>
+    </xsd:annotation>
 
-<xsd:complexType name="CountOverridesTowardsLimitRequest">
-</xsd:complexType>
-
-<xsd:element name="countOverridesTowardsLimitRequest" type="yukon:CountOverridesTowardsLimitRequest"/>
-
+    <xsd:complexType name="CountOverridesTowardsLimitRequest">
+        <xsd:complexContent>
+            <xsd:extension base="yukon:YukonAttributes"></xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:element name="countOverridesTowardsLimitRequest" type="yukon:CountOverridesTowardsLimitRequest"/>
+    
 </xsd:schema>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<countOverridesTowardsLimitResponse xmlns="http://yukon.cannontech.com/api"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://yukon.cannontech.com/api ../CountOverridesTowardsLimitResponse.xsd">
+           
+	<failure>
+        <errorCode>SomethingBadHappened</errorCode>
+        <errorReference>YK100</errorReference>
+        <errorDescription>Bad stuff happened.</errorDescription>
+    </failure>
+           
+</countOverridesTowardsLimitResponse>

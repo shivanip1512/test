@@ -1,17 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:yukon="http://yukon.cannontech.com/api" targetNamespace="http://yukon.cannontech.com/api">
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+            xmlns:yukon="http://yukon.cannontech.com/api" 
+            targetNamespace="http://yukon.cannontech.com/api"
+            elementFormDefault="qualified">
+            
+    <xsd:include schemaLocation="YukonAttributes.xsd" />
 	
-<xsd:annotation>
- 	<xsd:documentation xml:lang="en">
-  	ESO Single Screen schema for Integration I at BG&amp;E: Item #2 from Requirements Outline
- 	</xsd:documentation>
-</xsd:annotation>
+    <xsd:annotation>
+     	<xsd:documentation xml:lang="en">
+      	 ESO Single Screen schema for Integration I at BG&amp;E: Item #2 from Requirements Outline
+     	</xsd:documentation>
+    </xsd:annotation>
 
-<xsd:complexType name="CurrentlyActiveProgramsRequest">
-</xsd:complexType>
 
-<xsd:element name="currentlyActiveProgramsRequest" type="yukon:CurrentlyActiveProgramsRequest"/>
-
-<xsd:element name="comment" type="xsd:string"/>
-
+    <xsd:complexType name="CurrentlyActiveProgramsRequest">
+        <xsd:complexContent>
+            <xsd:extension base="yukon:YukonAttributes">
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:element name="currentlyActiveProgramsRequest" type="yukon:CurrentlyActiveProgramsRequest"/>
+    
 </xsd:schema>

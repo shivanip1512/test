@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:yukon="http://yukon.cannontech.com/api" targetNamespace="http://yukon.cannontech.com/api">
+<xsd:schema 
+xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+xmlns:yukon="http://yukon.cannontech.com/api" 
+
+targetNamespace="http://yukon.cannontech.com/api">
 	
 <xsd:annotation>
  	<xsd:documentation xml:lang="en">
@@ -15,6 +19,5 @@
 
 <xsd:element name="listScenarioProgramsRequest" type="yukon:ListScenarioProgramsRequest"/>
 
-<xsd:element name="comment" type="xsd:string"/>
 
 </xsd:schema>
