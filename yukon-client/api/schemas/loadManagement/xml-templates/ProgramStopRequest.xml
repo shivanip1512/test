@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <programStopRequest xmlns="http://yukon.cannontech.com/api"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xsi:schemaLocation="http://yukon.cannontech.com/api ../ProgramStopRequest.xsd">
+           xsi:schemaLocation="http://yukon.cannontech.com/api ../ProgramStopRequest.xsd"
+           version="1.0">
+           
     <programName>Residential LCR Cooling 75% Contract</programName>
     <stopDateTime>2008-10-28T17:07:40</stopDateTime>
+    
 </programStopRequest>

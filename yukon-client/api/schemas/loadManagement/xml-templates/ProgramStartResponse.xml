@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <programStartResponse xmlns="http://yukon.cannontech.com/api"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xsi:schemaLocation="http://yukon.cannontech.com/api ../ProgramStartResponse.xsd">
-    <programName>Residential LCR Cooling 75% Contract</programName>
+           xsi:schemaLocation="http://yukon.cannontech.com/api ../ProgramStartResponse.xsd"
+           version="1.0">
+    
+    <success />        
+    
 </programStartResponse>

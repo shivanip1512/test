@@ -5,6 +5,7 @@
             targetNamespace="http://yukon.cannontech.com/api"
             elementFormDefault="qualified">
 
+    <xsd:include schemaLocation="YukonAttributes.xsd" />
 	<xsd:include schemaLocation="Error.xsd"/>
 
     <xsd:annotation>
@@ -17,10 +18,14 @@
 
 
     <xsd:complexType name="CancelAllCurrentOverridesResponse" >
-        <xsd:choice>
-            <xsd:element name="success" />
-            <xsd:element name="failure" type="yukon:Error" />
-        </xsd:choice>
+        <xsd:complexContent>
+            <xsd:extension base="yukon:YukonAttributes">
+                <xsd:choice>
+                    <xsd:element name="success" />
+                    <xsd:element name="failure" type="yukon:Error" />
+                </xsd:choice>
+            </xsd:extension>
+        </xsd:complexContent>
     </xsd:complexType>
     
     <xsd:element name="cancelAllCurrentOverridesResponse" type="yukon:CancelAllCurrentOverridesResponse" />

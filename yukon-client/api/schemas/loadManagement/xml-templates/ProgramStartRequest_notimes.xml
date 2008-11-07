@@ -2,10 +2,9 @@
 
 <programStartRequest xmlns="http://yukon.cannontech.com/api"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xsi:schemaLocation="http://yukon.cannontech.com/api ../ProgramStartRequest.xsd" version="1.0">
-           
+           xsi:schemaLocation="http://yukon.cannontech.com/api ../ProgramStartRequest.xsd"
+           version="1.0">
+    
     <programName>Residential LCR Cooling 75% Contract</programName>
-    <startTime>2008-10-28T15:07:40</startTime>
-    <stopTime>2008-10-28T17:07:40</stopTime>
     
 </programStartRequest>

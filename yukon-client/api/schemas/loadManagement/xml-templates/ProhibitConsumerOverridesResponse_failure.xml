@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<cancelAllCurrentOverridesResponse xmlns="http://yukon.cannontech.com/api"
+<prohibitConsumerOverridesResponse xmlns="http://yukon.cannontech.com/api"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xsi:schemaLocation="http://yukon.cannontech.com/api ../CancelAllCurrentOverridesResponse.xsd"
+           xsi:schemaLocation="http://yukon.cannontech.com/api ../ProhibitConsumerOverridesResponse.xsd"
            version="1.0">
            
     <failure>
@@ -11,4 +11,4 @@
         <errorDescription>Bad stuff happened.</errorDescription>
     </failure>
     
-</cancelAllCurrentOverridesResponse>
+</prohibitConsumerOverridesResponse>

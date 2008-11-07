@@ -5,6 +5,7 @@
             targetNamespace="http://yukon.cannontech.com/api"
             elementFormDefault="qualified">
             
+    <xsd:include schemaLocation="YukonAttributes.xsd" />
 	<xsd:include schemaLocation="Error.xsd"/>
     <xsd:include schemaLocation="ProgramStatus.xsd"/>
     
@@ -15,18 +16,22 @@
 	</xsd:annotation>
     
 	<xsd:complexType name="CurrentlyActiveProgramsResponse">
-        <xsd:choice>
-            <xsd:sequence>
-                <xsd:element name="programStatuses">
-                    <xsd:complexType>
-                        <xsd:sequence>
-                            <xsd:element name="programStatus" type="yukon:ProgramStatus" maxOccurs="unbounded"/>
-                        </xsd:sequence>
-                    </xsd:complexType>
-                </xsd:element>
-            </xsd:sequence>
-            <xsd:element name="failure" type="yukon:Error"/>
-        </xsd:choice>
+        <xsd:complexContent>
+            <xsd:extension base="yukon:YukonAttributes">
+                <xsd:choice>
+                    <xsd:sequence>
+                        <xsd:element name="programStatuses">
+                            <xsd:complexType>
+                                <xsd:sequence>
+                                    <xsd:element name="programStatus" type="yukon:ProgramStatus" maxOccurs="unbounded"/>
+                                </xsd:sequence>
+                            </xsd:complexType>
+                        </xsd:element>
+                    </xsd:sequence>
+                    <xsd:element name="failure" type="yukon:Error"/>
+                </xsd:choice>
+            </xsd:extension>
+        </xsd:complexContent>
 	</xsd:complexType>
     
 	<xsd:element name="currentlyActiveProgramsResponse" type="yukon:CurrentlyActiveProgramsResponse"/>
