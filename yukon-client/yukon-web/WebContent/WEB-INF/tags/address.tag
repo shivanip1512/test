@@ -1,4 +1,4 @@
-<%@ attribute name="address" required="true" type="com.cannontech.amr.account.model.Address"%>
+<%@ attribute name="address" required="true" type="com.cannontech.common.model.Address"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags" %>
