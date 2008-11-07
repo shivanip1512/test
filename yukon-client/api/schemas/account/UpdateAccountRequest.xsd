@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:yukon="http://yukon.cannontech.com/api" targetNamespace="http://yukon.cannontech.com/api">
+    <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+            ESO Single Screen schema for Integration I at BG&amp;E: For use with Item #2 in Customer Account section in Requirements Outline.
+        </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType name="UpdateAccountRequest">
+        <xsd:sequence>
+            <xsd:element name="accountNumber" type="xsd:string"/>
+            <xsd:element name="lastName" type="xsd:string"/>
+            <xsd:element name="firstName" type="xsd:string"/>
+            <xsd:element name="companyName" type="xsd:string"/>
+            <xsd:element name="accountType" type="xsd:string"/>
+            <xsd:element name="homePhone" type="xsd:string"/>
+            <xsd:element name="workPhone" type="xsd:string"/>
+            <xsd:element name="emailAddress" type="xsd:string"/>
+            <xsd:element name="streetAddress1" type="xsd:string"/>
+            <xsd:element name="streetAddress2" type="xsd:string"/>
+            <xsd:element name="city" type="xsd:string"/>
+            <xsd:element name="county" type="xsd:string"/>
+            <xsd:element name="state" type="xsd:string"/>
+            <xsd:element name="zipcode" type="xsd:string"/>
+            <xsd:element name="billingStreetAddress1" type="xsd:string"/>
+            <xsd:element name="billingStreetAddress2" type="xsd:string"/>
+            <xsd:element name="billingCity" type="xsd:string"/>
+            <xsd:element name="billingCounty" type="xsd:string"/>
+            <xsd:element name="billingState" type="xsd:string"/>
+            <xsd:element name="billingZipcode" type="xsd:string"/>
+            <xsd:element name="username" type="xsd:string"/>
+            <xsd:element name="password" type="xsd:string"/>
+            <xsd:element name="loginGroup" type="xsd:string"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:element name="updateAccountRequest" type="yukon:UpdateAccountRequest"/>
+</xsd:schema>
