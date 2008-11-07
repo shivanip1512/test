@@ -75,6 +75,13 @@ public class AddressDaoImpl implements AddressDao {
         return result;
     }
     
+    @Override
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+    public void remove(int addressId) {
+        LiteAddress address = getByAddressId(addressId);
+        remove(address);
+    }
+
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public boolean remove(LiteAddress address) {
         int rowsAffected = simpleJdbcTemplate.update(removeSql, address.getAddressID());

@@ -2,6 +2,7 @@ package com.cannontech.stars.dr.appliance.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,12 +22,14 @@ import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
 import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
 import com.cannontech.stars.dr.appliance.model.Appliance;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
+import com.cannontech.stars.dr.hardware.dao.LMHardwareConfigurationDao;
 
 public class ApplianceDaoImpl implements ApplianceDao {
     private static final String selectBaseSql;
     private final ParameterizedRowMapper<Appliance> rowMapper = createRowMapper();
     private SimpleJdbcTemplate simpleJdbcTemplate;
     private ApplianceCategoryDao applianceCategoryDao;
+    private LMHardwareConfigurationDao lmHardwareConfigurationDao;
     
     static {
         
@@ -50,6 +53,33 @@ public class ApplianceDaoImpl implements ApplianceDao {
         String sql = selectBaseSql + " AND ab.AccountID = ?";
         List<Appliance> list = simpleJdbcTemplate.query(sql, rowMapper, accountId);
         return list;
+    }
+    
+    @Override
+    @Transactional
+    public void deleteAppliancesForAccount(int accountId) {
+        List<Appliance> appliances = getByAccountId(accountId);
+        for(Appliance appliance : appliances) {
+            deleteAppliance(appliance);    
+        }
+    }
+    
+    @Override
+    @Transactional
+    public void deleteAppliance(Appliance appliance) {
+        deleteAppliance(appliance.getApplianceId());
+    }
+    
+    @Override
+    @Transactional
+    public void deleteAppliance(int applianceId) {
+        lmHardwareConfigurationDao.deleteForAppliance(applianceId);
+        for(String table : ApplianceBase.DEPENDENT_TABLES) {
+            String delete = "DELETE FROM " + table + " WHERE ApplianceId = ?";
+            simpleJdbcTemplate.update(delete, applianceId);
+        }
+        String delete = "DELETE FROM ApplianceBase WHERE ApplianceId = ?";
+        simpleJdbcTemplate.update(delete, applianceId);
     }
     
     public void deleteAppliancesByAccountId(int accountId) {
@@ -144,5 +174,10 @@ public class ApplianceDaoImpl implements ApplianceDao {
     public void setApplianceCategoryDao(
             ApplianceCategoryDao applianceCategoryDao) {
         this.applianceCategoryDao = applianceCategoryDao;
+    }
+    
+    @Autowired
+    public void setLMHardwareConfigurationDao(LMHardwareConfigurationDao lmHardwareConfigurationDao) {
+        this.lmHardwareConfigurationDao = lmHardwareConfigurationDao;
     }
 }

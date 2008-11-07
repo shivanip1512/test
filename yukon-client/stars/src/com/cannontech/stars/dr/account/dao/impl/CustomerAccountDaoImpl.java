@@ -108,21 +108,25 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public CustomerAccount getByAccountNumber(final String accountNumber, final LiteYukonUser user) {
-    	final SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
-    	sqlBuilder.append("SELECT ca.AccountId,AccountSiteId,AccountNumber,ca.CustomerId,BillingAddressId,AccountNotes");
-    	sqlBuilder.append("FROM CustomerAccount ca, ECToAccountMapping ecta");
-    	sqlBuilder.append("WHERE ca.AccountID = ecta.AccountID");
-    	sqlBuilder.append("AND ca.AccountNumber = ?");
-    	sqlBuilder.append("AND ecta.EnergyCompanyID = ?");
-    	final String sql = sqlBuilder.toString();
-    	
-    	LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
-    	int engergyCompanyId = energyCompany.getEnergyCompanyID();
-    	
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
+        return getByAccountNumber(accountNumber, energyCompany.getEnergyCompanyID());
+    }
+    
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    @Override
+    public CustomerAccount getByAccountNumber(final String accountNumber, final int energyCompanyId) {
+        final SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
+        sqlBuilder.append("SELECT ca.AccountId,AccountSiteId,AccountNumber,ca.CustomerId,BillingAddressId,AccountNotes");
+        sqlBuilder.append("FROM CustomerAccount ca, ECToAccountMapping ecta");
+        sqlBuilder.append("WHERE ca.AccountID = ecta.AccountID");
+        sqlBuilder.append("AND ca.AccountNumber = ?");
+        sqlBuilder.append("AND ecta.EnergyCompanyID = ?");
+        final String sql = sqlBuilder.toString();
+        
         CustomerAccount account = simpleJdbcTemplate.queryForObject(sql, 
-        															rowMapper,
-        															accountNumber,
-        															engergyCompanyId);
+                                                                    rowMapper,
+                                                                    accountNumber,
+                                                                    energyCompanyId);
         return account;
     }
     

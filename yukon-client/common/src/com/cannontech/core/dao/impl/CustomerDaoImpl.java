@@ -5,18 +5,29 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Vector;
 
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.CustomerDao;
+import com.cannontech.core.dao.DeviceCustomerListDao;
+import com.cannontech.core.dao.GraphCustomerListDao;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.database.FieldMapper;
+import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -24,13 +35,17 @@ import com.cannontech.yukon.IDatabaseCache;
  * 
  * @author:
  */
-public final class CustomerDaoImpl implements CustomerDao {
+public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
 
     private ContactDao contactDao;
     private YukonUserDao yukonUserDao;    
     private IDatabaseCache databaseCache;
-    
+    private NextValueHelper nextValueHelper;
     private SimpleJdbcTemplate simpleJdbcTemplate;
+    private GraphCustomerListDao graphCustomerListDao;
+    private DeviceCustomerListDao deviceCustomerListDao;
+    private static final String CUSTOMER_TABLE_NAME = "Customer";
+    private static final String CI_CUSTOMER_TABLE_NAME = "CICustomerBase";
     
     /**
      * CustomerFuncs constructor comment.
@@ -38,6 +53,58 @@ public final class CustomerDaoImpl implements CustomerDao {
     private CustomerDaoImpl() {
         super();
     }
+    
+    private FieldMapper<LiteCustomer> customerFieldMapper = new FieldMapper<LiteCustomer>() {
+
+        @Override
+        public void extractValues(MapSqlParameterSource p, LiteCustomer o) {
+            p.addValue("PrimaryContactId", o.getPrimaryContactID());
+            p.addValue("CustomerTypeId", o.getCustomerTypeID());
+            p.addValue("TimeZone", o.getTimeZone());
+            p.addValue("CustomerNumber", o.getCustomerNumber());
+            p.addValue("RateScheduleId", o.getRateScheduleID());
+            p.addValue("AltTrackNum", o.getAltTrackingNumber());
+            p.addValue("TemperatureUnit", o.getTemperatureUnit());
+        }
+
+        @Override
+        public Number getPrimaryKey(LiteCustomer object) {
+            return object.getCustomerID();
+        }
+
+        @Override
+        public void setPrimaryKey(LiteCustomer object, int value) {
+            object.setCustomerID(value);
+            
+        }
+    };
+    
+    private FieldMapper<LiteCICustomer> ciCustomerFieldMapper = new FieldMapper<LiteCICustomer>() {
+
+        @Override
+        public void extractValues(MapSqlParameterSource p, LiteCICustomer o) {
+            p.addValue("MainAddressId", o.getMainAddressID());
+            p.addValue("CustomerDemandLevel", o.getDemandLevel());
+            p.addValue("CurtailmentAgreement", CtiUtilities.STRING_NONE);
+            p.addValue("CurtailAmount", o.getCurtailAmount());
+            p.addValue("CompanyName", o.getCompanyName());
+            p.addValue("CICustType", o.getCICustType());
+        }
+
+        @Override
+        public Number getPrimaryKey(LiteCICustomer object) {
+            return object.getCustomerID();
+        }
+
+        @Override
+        public void setPrimaryKey(LiteCICustomer object, int value) {
+            object.setCustomerID(value);
+            
+        }
+    };
+    
+    private SimpleTableAccessTemplate<LiteCustomer> liteCustomerTemplate;
+    private SimpleTableAccessTemplate<LiteCICustomer> liteCICustomerTemplate;
 
     /*
      * (non-Javadoc)
@@ -80,6 +147,37 @@ public final class CustomerDaoImpl implements CustomerDao {
             }
         }
         return null;
+    }
+    
+    @Override
+    @Transactional
+    public void deleteCustomer(Integer customerId) {
+        graphCustomerListDao.deleteGraphsForCustomer(customerId);
+        deviceCustomerListDao.deleteDeviceListForCustomer(customerId);
+        contactDao.deleteAllAdditionalContactsToCustomerReferences(customerId); 
+        String deleteCustomerNotifGroupMap = "DELETE FROM CustomerNotifGroupMap WHERE CustomerId = ?";
+        simpleJdbcTemplate.update(deleteCustomerNotifGroupMap, customerId);
+        String delete = "DELETE FROM Customer WHERE CustomerId = ?";
+        simpleJdbcTemplate.update(delete, customerId);
+        if(isCICustomer(customerId)) {
+            deleteCICustomer(customerId);
+        }
+    }
+    
+    @Override
+    public void deleteCICustomer(Integer customerId) {
+        String delete = "DELETE FROM CICustomerBase WHERE CustomerId = ?";
+        simpleJdbcTemplate.update(delete, customerId);
+    }
+    
+    @Override
+    public boolean isCICustomer(Integer customerId) {
+        String sql = "SELECT CustomerTypeId FROM Customer WHERE CustomerId = ?";
+        Integer type = simpleJdbcTemplate.queryForInt(sql, customerId);
+        if(type == CustomerTypes.CUSTOMER_CI) {
+            return true;
+        }
+        return false;
     }
 
     public LiteCustomer getLiteCustomer(int customerId) {
@@ -228,6 +326,35 @@ public final class CustomerDaoImpl implements CustomerDao {
         }
         
     }
+    
+    @Override
+    public void setTempForCustomer(int customerId, String temp) {
+        StringBuilder sql = new StringBuilder("UPDATE Customer");
+        sql.append(" SET TemperatureUnit = '" + temp + "'");
+        sql.append(" WHERE CustomerID = " + customerId);
+
+        simpleJdbcTemplate.update(sql.toString());
+    }
+    
+    @Override
+    public void addCustomer(LiteCustomer liteCustomer) throws DataAccessException {
+        liteCustomerTemplate.insert(liteCustomer);
+    }
+    
+    @Override
+    public void addCICustomer(LiteCICustomer customer) throws DataAccessException {
+        liteCICustomerTemplate.insert(customer);
+    }
+    
+    @Override
+    public void updateCustomer(LiteCustomer customer) {
+        liteCustomerTemplate.update(customer);
+    }
+    
+    @Override
+    public void updateCICustomer(LiteCICustomer customer) {
+        liteCICustomerTemplate.update(customer);
+    }
 
     public void setContactDao(ContactDao contactDao) {
         this.contactDao = contactDao;
@@ -245,13 +372,30 @@ public final class CustomerDaoImpl implements CustomerDao {
         this.simpleJdbcTemplate = simpleJdbcTemplate;
     }
 
-    @Override
-    public void setTempForCustomer(int customerId, String temp) {
-        StringBuilder sql = new StringBuilder("UPDATE Customer");
-        sql.append(" SET TemperatureUnit = '" + temp + "'");
-        sql.append(" WHERE CustomerID = " + customerId);
-
-        simpleJdbcTemplate.update(sql.toString());
+    @Autowired
+    public void setNextValueHelper(NextValueHelper nextValueHelper) {
+        this.nextValueHelper = nextValueHelper;
     }
-
+    
+    @Autowired
+    public void setGraphCustomerListDao(GraphCustomerListDao graphCustomerListDao) {
+        this.graphCustomerListDao = graphCustomerListDao;
+    }
+    
+    @Autowired
+    public void setDeviceCustomerListDao(DeviceCustomerListDao deviceCustomerListDao) {
+        this.deviceCustomerListDao = deviceCustomerListDao;
+    }
+    
+    public void afterPropertiesSet() throws Exception {
+        liteCustomerTemplate = new SimpleTableAccessTemplate<LiteCustomer>(simpleJdbcTemplate, nextValueHelper);
+        liteCustomerTemplate.withTableName(CUSTOMER_TABLE_NAME);
+        liteCustomerTemplate.withPrimaryKeyField("CustomerId");
+        liteCustomerTemplate.withFieldMapper(customerFieldMapper); 
+        
+        liteCICustomerTemplate = new SimpleTableAccessTemplate<LiteCICustomer>(simpleJdbcTemplate, nextValueHelper);
+        liteCICustomerTemplate.withTableName(CI_CUSTOMER_TABLE_NAME);
+        liteCICustomerTemplate.withPrimaryKeyField("CustomerId");
+        liteCICustomerTemplate.withFieldMapper(ciCustomerFieldMapper); 
+    }
 }

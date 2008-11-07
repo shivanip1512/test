@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.data.lite.stars.LiteLMHardwareEvent;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.core.dao.ECMappingDao;
@@ -214,6 +215,16 @@ public class InventoryDaoImpl implements InventoryDao {
 
         }
 
+    }
+    
+    @Override
+    public List<Integer> getInventoryIdsByAccount(int accountId){
+        List<Integer> inventoryIds = new ArrayList<Integer>();
+        
+        String sql = "SELECT InventoryId FROM InventoryBase where AccountId = ?";
+        inventoryIds = jdbcTemplate.query(sql,new IntegerRowMapper(), accountId);
+        
+        return inventoryIds;
     }
 
 }

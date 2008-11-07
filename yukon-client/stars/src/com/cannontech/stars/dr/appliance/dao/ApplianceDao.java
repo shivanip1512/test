@@ -13,5 +13,11 @@ public interface ApplianceDao {
     public Appliance getById(int applianceId);
     
     public List<Appliance> getByAccountId(int accountId);
+
+    public void deleteAppliancesForAccount(int accountId);
+
+    public void deleteAppliance(Appliance appliance);
+
+    public void deleteAppliance(int applianceId);
     
 }

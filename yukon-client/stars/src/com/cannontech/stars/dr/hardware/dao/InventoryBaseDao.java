@@ -30,5 +30,7 @@ public interface InventoryBaseDao {
     public List<InventoryBase> getAll();
     
     public String getDisplayName(InventoryBase inventoryBase);
+
+    public void uninstallInventory(Integer inventoryId);
     
 }

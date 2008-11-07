@@ -13,13 +13,18 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
+import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
+import com.cannontech.stars.dr.event.dao.EventWorkOrderDao;
 
 public class StarsWorkOrderBaseDaoImpl implements StarsWorkOrderBaseDao {
     private static final String selectSql;
     private static final ParameterizedRowMapper<LiteWorkOrderBase> rowMapper = createRowMapper();
     private SimpleJdbcTemplate simpleJdbcTemplate;
+    private ECMappingDao ecMappingDao;
+    private EventWorkOrderDao eventWorkOrderDao;
 
     static {
 
@@ -105,9 +110,37 @@ public class StarsWorkOrderBaseDaoImpl implements StarsWorkOrderBaseDao {
         };
     }
     
+    @Override
+    @Transactional
+    public void deleteByAccount(int accountId) {
+        List<Integer> workOrderIds = getByAccount(accountId);
+        ecMappingDao.deleteECToWorkOrderMapping(workOrderIds);
+        eventWorkOrderDao.deleteEventWorkOrders(workOrderIds);
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM WorkOrderBase WHERE OrderId IN (", workOrderIds, ")");
+        simpleJdbcTemplate.update(sql.toString());
+    }
+    
+    @Override
+    public List<Integer> getByAccount(int accountId){
+        String sql = "SELECT OrderId FROM WorkOrderBase WHERE AccountId = ?";
+        List<Integer> workOrderIds = simpleJdbcTemplate.query(sql, new IntegerRowMapper(), accountId);
+        return workOrderIds;
+    }
+    
     @Autowired
     public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
         this.simpleJdbcTemplate = simpleJdbcTemplate;
+    }
+
+    @Autowired
+    public void setECMappingDao(ECMappingDao ecMappingDao) {
+        this.ecMappingDao = ecMappingDao;
+    }
+    
+    @Autowired
+    public void setEventWorkOrderDao(EventWorkOrderDao eventWorkOrderDao) {
+        this.eventWorkOrderDao = eventWorkOrderDao;
     }
     
 }

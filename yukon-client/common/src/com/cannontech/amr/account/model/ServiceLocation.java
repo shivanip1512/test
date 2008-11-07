@@ -1,5 +1,7 @@
 package com.cannontech.amr.account.model;
 
+import com.cannontech.common.model.Address;
+
 
 public class ServiceLocation {
     private String customerNumber;

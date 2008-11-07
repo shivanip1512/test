@@ -1,4 +1,4 @@
-package com.cannontech.amr.account.model;
+package com.cannontech.common.model;
 
 public class Address {
     private String cityName;
@@ -6,6 +6,7 @@ public class Address {
     private String zipCode;
     private String locationAddress1;
     private String locationAddress2;
+    private String country;
 
     public Address() {
         
@@ -50,6 +51,14 @@ public class Address {
     public void setLocationAddress2(final String locationAddress2) {
         this.locationAddress2 = locationAddress2;
     }
+    
+    public String getCounty() {
+        return country;
+    }
+
+    public void setCounty(final String country) {
+        this.country = country;
+    }
    
     @Override
     public boolean equals(Object o) {
@@ -59,7 +68,8 @@ public class Address {
                 (this.locationAddress1.equals(obj.locationAddress1)) &&
                 (this.locationAddress2.equals(obj.locationAddress2)) &&
                 (this.stateCode.equals(obj.stateCode)) &&
-                (this.zipCode.equals(obj.zipCode)));   
+                (this.zipCode.equals(obj.zipCode)) &&
+                (this.country.equals(obj.country)));   
     }
     
     @Override
@@ -70,6 +80,7 @@ public class Address {
         result = result * 37 + this.zipCode.hashCode();
         result = result * 37 + this.locationAddress1.hashCode();
         result = result * 37 + this.locationAddress2.hashCode();
+        result = result * 37 + this.country.hashCode();
         return result;
     }
     

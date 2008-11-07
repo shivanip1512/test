@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
-import java.util.Vector;
 
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
@@ -185,8 +184,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
     
     private int dftRouteID = CtiUtilities.NONE_ZERO_ID;
     private int operDftGroupID = com.cannontech.database.db.user.YukonGroup.EDITABLE_MIN_GROUP_ID - 1;
-    
-    private Map<Integer,Integer> contactAccountIDMap = null;
     
     // Energy company hierarchy
     private LiteStarsEnergyCompany parent = null;
@@ -386,8 +383,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
         
         dftRouteID = CtiUtilities.NONE_ZERO_ID;
         operDftGroupID = com.cannontech.database.db.user.YukonGroup.EDITABLE_MIN_GROUP_ID - 1;
-        
-        contactAccountIDMap = null;
         
         parent = null;
         children = null;
@@ -1306,16 +1301,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
         // Remove customer from the cache
         ServerUtils.handleDBChange( liteAcctInfo.getCustomer(), DBChangeMsg.CHANGE_TYPE_DELETE );
         
-        // Remote all contacts from the cache
-        Map<Integer,Integer> contAcctIDMap = getContactAccountIDMap();
-        synchronized (contAcctIDMap) {
-            contAcctIDMap.remove( new Integer(liteAcctInfo.getCustomer().getPrimaryContactID()) );
-            
-            Vector<LiteContact> contacts = liteAcctInfo.getCustomer().getAdditionalContacts();
-            for (int i = 0; i < contacts.size(); i++)
-                contAcctIDMap.remove( new Integer(contacts.get(i).getContactID()) );
-        }
-        
     }
     
     /**
@@ -1874,13 +1859,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
     
     public StarsCustAccountInformation getStarsCustAccountInformation(int accountID) {
         return getStarsCustAccountInformation( accountID, false );
-    }
-    
-    public synchronized Map<Integer,Integer> getContactAccountIDMap() {
-        if (contactAccountIDMap == null)
-            contactAccountIDMap = new Hashtable<Integer,Integer>();
-        
-        return contactAccountIDMap;
     }
     
     public void updateThermostatSettings(LiteStarsCustAccountInformation liteAcctInfo) {

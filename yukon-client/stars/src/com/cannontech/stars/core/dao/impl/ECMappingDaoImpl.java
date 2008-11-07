@@ -1,5 +1,7 @@
 package com.cannontech.stars.core.dao.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
@@ -8,6 +10,7 @@ import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
+import com.cannontech.stars.dr.account.model.ECToAccountMapping;
 
 public class ECMappingDaoImpl implements ECMappingDao {
     private SimpleJdbcTemplate simpleJdbcTemplate;
@@ -58,6 +61,45 @@ public class ECMappingDaoImpl implements ECMappingDao {
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
         return energyCompany;
     }
+    
+    @Override
+    public void updateECToAccountMapping(int accountId, int energyCompanyId) {
+        String sql = "UPDATE ECToAccountMapping SET EnergyCompanyId = ? WHERE AccountId = ?";
+        simpleJdbcTemplate.update(sql, energyCompanyId, accountId);
+    }
+    
+    @Override
+    public void addECToAccountMapping(ECToAccountMapping ecToAccountMapping) {
+        String sql = "INSERT INTO ECToAccountMapping VALUES (?,?)";
+        simpleJdbcTemplate.update(sql, ecToAccountMapping.getEnergyCompanyId(), ecToAccountMapping.getAccountId());
+    }
+    
+    @Override
+    public void deleteECToAccountMapping(Integer accountId) {
+        String sql = "DELETE FROM ECToAccountMapping WHERE AccountId = ?";
+        simpleJdbcTemplate.update(sql, accountId);
+    }
+    
+    @Override
+    public void deleteECToCustomerEventMapping(List<Integer> eventIds) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM ECToLMCustomerEventMapping WHERE EventId IN (", eventIds, ")");
+        simpleJdbcTemplate.update(sql.toString());
+    }
+    
+    @Override
+    public void deleteECToWorkOrderMapping(List<Integer> workOrderIds) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM ECToWorkOrderMapping WHERE EventId IN (", workOrderIds, ")");
+        simpleJdbcTemplate.update(sql.toString());
+    }
+    
+    @Override
+    public void deleteECToCallReportMapping(List<Integer> callReportIds) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM ECToCallReportMapping WHERE EventId IN (", callReportIds, ")");
+        simpleJdbcTemplate.update(sql.toString());
+    }
 
     @Autowired
     public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
@@ -68,5 +110,4 @@ public class ECMappingDaoImpl implements ECMappingDao {
     public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
         this.starsDatabaseCache = starsDatabaseCache;
     }
-    
 }

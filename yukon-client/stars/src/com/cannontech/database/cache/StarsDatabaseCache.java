@@ -41,6 +41,8 @@ import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
+import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.LMControlHistoryUtil;
 import com.cannontech.stars.util.OptOutEventQueue;
@@ -381,9 +383,11 @@ public class StarsDatabaseCache implements DBChangeListener {
                     }
 					
 					if (contOwner == null) {
-						Integer accountID = energyCompany.getContactAccountIDMap().get( new Integer(msg.getId()) );
-						if (accountID != null)
-							contOwner = energyCompany.getStarsCustAccountInformation( accountID.intValue() );
+					    CustomerAccountDao customerAccountDao = YukonSpringHook.getBean("CustomerAccountDao", CustomerAccountDao.class);
+						CustomerAccount customerAccount = customerAccountDao.getAccountByContactId(msg.getId());
+						if (customerAccount != null) {
+							contOwner = energyCompany.getStarsCustAccountInformation(customerAccount.getAccountId());
+						}
 					}
 				}
 				
@@ -472,9 +476,10 @@ public class StarsDatabaseCache implements DBChangeListener {
 				if (liteContact != null) {
 					for (int i = 0; i < companies.size(); i++) {
 						LiteStarsEnergyCompany energyCompany = companies.get(i);
-						Integer accountID = energyCompany.getContactAccountIDMap().get( new Integer(liteContact.getContactID()) );
-						if (accountID != null) {
-							StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( accountID.intValue() );
+						CustomerAccountDao customerAccountDao = YukonSpringHook.getBean("CustomerAccountDao", CustomerAccountDao.class);
+                        CustomerAccount customerAccount = customerAccountDao.getAccountByContactId(msg.getId());
+                        if (customerAccount != null) {
+							StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( customerAccount.getAccountId());
 							if (starsAcctInfo != null && starsAcctInfo.getStarsUser() != null) {
 								handleYukonUserChange( msg, energyCompany, starsAcctInfo );
 								return;
@@ -565,7 +570,6 @@ public class StarsDatabaseCache implements DBChangeListener {
 						}
 					}
 					
-					energyCompany.getContactAccountIDMap().remove( new Integer(msg.getId()) );
 				}
 				
 				break;

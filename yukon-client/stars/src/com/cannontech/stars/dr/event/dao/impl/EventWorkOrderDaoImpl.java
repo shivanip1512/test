@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.database.data.stars.event.EventWorkOrder;
 import com.cannontech.stars.dr.event.dao.EventWorkOrderDao;
@@ -92,6 +93,22 @@ public class EventWorkOrderDaoImpl implements EventWorkOrderDao {
         sqlBuilder.append("ORDER BY EB.EVENTID, EVENTTIMESTAMP");
         String sql = sqlBuilder.toString();
         return sql;
+    }
+    
+    @Override
+    public void deleteEventWorkOrders(List<Integer> workOrderIds) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM EventWorkOrder WHERE OrderId IN (", workOrderIds, ")");
+        simpleJdbcTemplate.update(sql.toString());
+    }
+    
+    @Override
+    public List<Integer> getEventIdsForWorkOrder(Integer workOrderId){
+        String sql = "SELECT EventId FROM EventWorkOrder WHERE OrderId = ?";
+        List<Integer> eventIds = new ArrayList<Integer>();
+        eventIds = simpleJdbcTemplate.query(sql, new IntegerRowMapper(), workOrderId);
+        
+        return eventIds;
     }
     
     private static ParameterizedRowMapper<EventWorkOrder> createRowMapper() {

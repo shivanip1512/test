@@ -28,5 +28,7 @@ public interface AddressDao {
     public List<LiteAddress> getByCounty(String county);
     
     public List<LiteAddress> getAll();
+
+    public void remove(int addressId);
     
 }

@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.core.dao.AddressDao;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.dr.account.dao.AccountSiteDao;
 import com.cannontech.stars.dr.account.model.AccountSite;
@@ -20,6 +21,7 @@ public class AccountSiteDaoImpl implements AccountSiteDao {
     private static final ParameterizedRowMapper<AccountSite> rowMapper;
     private SimpleJdbcTemplate simpleJdbcTemplate;
     private NextValueHelper nextValueHelper;
+    private AddressDao addressDao;
     
     static {
         
@@ -73,8 +75,12 @@ public class AccountSiteDaoImpl implements AccountSiteDao {
     public boolean remove(final AccountSite accountSite) {
         validateNotNull(accountSite);
         
+        String deleteCustomerResidence = "DELETE FROM CustomerResidence WHERE AccountSiteId = ?";
+        simpleJdbcTemplate.update(deleteCustomerResidence, accountSite.getAccountSiteId());
+        addressDao.remove(accountSite.getStreetAddressId());
+        String deleteSiteInfo = "DELETE FROM SiteInfomation WHERE SiteId = ?";
+        simpleJdbcTemplate.update(deleteSiteInfo, accountSite.getSiteInformationId());
         String sql = "DELETE FROM AccountSite WHERE AccountSiteID = ?";
-        
         int rows = simpleJdbcTemplate.update(sql, accountSite.getAccountSiteId());
         boolean result = (rows == 1);
         return result;
@@ -133,6 +139,11 @@ public class AccountSiteDaoImpl implements AccountSiteDao {
     @Autowired
     public void setNextValueHelper(NextValueHelper nextValueHelper) {
         this.nextValueHelper = nextValueHelper;
+    }
+    
+    @Autowired
+    public void setAddressDao(AddressDao addressDao) {
+        this.addressDao = addressDao;
     }
 
 }

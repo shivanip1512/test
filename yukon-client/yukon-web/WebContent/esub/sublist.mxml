@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml"  layout="absolute" color="#FFFFFF" backgroundGradientAlphas="[1.0, 1.0]" backgroundGradientColors="[#000000, #000000]">
+<mx:Text x="20" y="37" text="Esubstation Test Display" color="#FFFFFF" alpha="1.0" fontFamily="Arial" fontWeight="normal" fontStyle="normal"/>
+
+<mx:Text x="20" y="60" text="If you made it here esubstation is working!" color="#FFFFFF" alpha="1.0" fontFamily="Arial" fontWeight="normal" fontStyle="normal"/>
+
+<mx:Text x="208" y="161" text="To get started creating new displays you might want to start by editing this file in the Esubstation Editor." color="#FFFFFF" alpha="1.0" fontFamily="Arial" fontWeight="normal" fontStyle="normal"/>
+
+<mx:Text x="208" y="177" text="You can normally find this file on the Yukon server in c:\yukon\server\web\webapps\ROOT\esub" color="#FFFFFF" alpha="1.0" fontFamily="Arial" fontWeight="normal" fontStyle="normal"/>
+
+</mx:Application>

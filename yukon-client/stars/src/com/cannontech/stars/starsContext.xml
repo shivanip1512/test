@@ -171,15 +171,27 @@
     <bean id="optOutDao" class="com.cannontech.stars.dr.optout.dao.impl.OptOutDaoImpl"/>
 
     <bean id="optOutNotificationService" class="com.cannontech.stars.dr.optout.service.impl.OptOutNotificationServiceImpl"/>
+    
+    <bean id="callReportDao" class="com.cannontech.stars.core.dao.impl.CallReportDaoImpl"/>
+    
+    <bean id="siteInformationDao" class="com.cannontech.stars.core.dao.impl.SiteInformationDaoImpl"/>
+    
+    <bean id="eventAccountDao" class="com.cannontech.stars.dr.event.dao.impl.EventAccountDaoImpl"/>
+    
+    <bean id="lmProgramEventDao" class="com.cannontech.stars.dr.event.dao.impl.LMProgramEventDaoImpl"/>
+    
+    <bean id="lmHardwareConfigurationDao" class="com.cannontech.stars.dr.hardware.dao.impl.LMHardwareConfigurationDaoImpl"/>
+    
+    <bean id="lmThermostatDao" class="com.cannontech.stars.dr.hardware.dao.impl.LMThermostatDaoImpl"/>
 
     <bean id="applianceAndProgramDao"
         class="com.cannontech.stars.dr.account.dao.impl.ApplianceAndProgramDaoImpl">
         <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
     </bean>
+    
+    <bean id="AccountService" class="com.cannontech.stars.dr.account.service.impl.AccountServiceImpl"/>
 
-    <bean id="hardwareBaseDao" class="com.cannontech.stars.dr.hardware.dao.impl.LMHardwareBaseDaoImpl">
-        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
-    </bean>
+    <bean id="hardwareBaseDao" class="com.cannontech.stars.dr.hardware.dao.impl.LMHardwareBaseDaoImpl"/>
 
     <bean id="inventoryBaseDao" class="com.cannontech.stars.dr.hardware.dao.impl.InventoryBaseDaoImpl"/>
     

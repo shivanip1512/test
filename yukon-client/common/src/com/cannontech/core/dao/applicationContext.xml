@@ -63,6 +63,8 @@
     <property name="databaseCache" ref="databaseCache"/>
     <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
   </bean>
+  <bean id="deviceCustomerListDao" class="com.cannontech.core.dao.impl.DeviceCustomerListDaoImpl" />
+  <bean id="graphCustomerListDao" class="com.cannontech.core.dao.impl.GraphCustomerListDaoImpl" />
   <bean id="dbDeletionDao" class="com.cannontech.core.dao.impl.DBDeletionDaoImpl">
     <property name="macScheduleDao" ref="macScheduleDao"/>
   </bean>
@@ -153,6 +155,7 @@
   <bean id="yukonUserDao" class="com.cannontech.core.dao.impl.YukonUserDaoImpl" >
      <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
      <property name="databaseCache" ref="databaseCache"/>
+     <property name="userPaoPermissionDao" ref="userPaoPermissionDao" />
   </bean>
   <bean id="yukonGroupDao" class="com.cannontech.core.dao.impl.YukonGroupDaoImpl" >
       <property name="jdbcOps" ref="jdbcTemplate"/>
@@ -181,4 +184,9 @@
   <bean id="fdrTranslationDao" class="com.cannontech.core.dao.impl.FdrTranslationDaoImpl">
        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
    </bean> 
+   
+   <bean id="userPaoPermissionDao" class="com.cannontech.core.authorization.dao.UserPaoPermissionDaoImpl" >
+        <property name="jdbcOps" ref="jdbcTemplate" />
+        <property name="nextValueHelper" ref="nextValueHelper" />
+    </bean>
 </beans>

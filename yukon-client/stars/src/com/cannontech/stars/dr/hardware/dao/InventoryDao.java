@@ -29,4 +29,11 @@ public interface InventoryDao {
      * @param thermostat - Thermostat to save
      */
     public void save(Thermostat thermostat);
+
+    /**
+     * Method to get all inventory items for an account
+     * @param accountId
+     * @return
+     */
+    public List<Integer> getInventoryIdsByAccount(int accountId);
 }

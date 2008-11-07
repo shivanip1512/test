@@ -3,6 +3,7 @@ package com.cannontech.stars.dr.hardware.dao.impl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -113,6 +114,13 @@ public class InventoryBaseDaoImpl implements InventoryBaseDao {
                                                                 inventoryBase.getInventoryId());
         boolean result = (rowsAffected == 1);
         return result;
+    }
+    
+    @Override
+    public void uninstallInventory(Integer inventoryId) {
+        Date now = new Date();
+        String sql = "UPDATE InventoryBase SET AccountId = 0, RemoveDate = ? WHERE InventoryId = ?";
+        simpleJdbcTemplate.update(sql, now, inventoryId);
     }
     
     @Override

@@ -1,8 +1,6 @@
 package com.cannontech.stars.dr.advice;
 
-import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.After;
-import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,23 +31,6 @@ public class StarsDaoAdvice {
     
     @Pointcut("execution(* *.removeAdditionalContact(..))")
     public void removeAdditionalContactMethodNamePointCut() {}
-
-    @Around("bean(customerAccountDao) && updateMethodNamePointCut() && args(account)")
-    public Object doCustomerAccountAction(ProceedingJoinPoint pjp,
-            CustomerAccount account) throws Throwable {
-        // get Energy Company before the mapping is removed by pjp.proceed()
-        LiteStarsEnergyCompany energyCompany = mappingDao.getCustomerAccountEC(account);
-
-        Object returnValue = pjp.proceed(); // required
-
-        LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation(account.getAccountId(),
-                                                                                               false);
-        if (liteAcctInfo != null) {
-            energyCompany.deleteCustAccountInformation(liteAcctInfo);
-        }
-
-        return returnValue; // required
-    }
 
     @After("bean(customerEventDao) && saveMethodNamePointCut() && args(event)")
     public void doManualEventAction(ThermostatManualEvent event)

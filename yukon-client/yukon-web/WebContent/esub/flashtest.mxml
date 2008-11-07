@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml"  layout="absolute">
+<mx:Text x="70" y="78" text="FLASH IS COOL" color="#CC00CC" alpha="1.0" fontFamily="Times New Roman" fontWeight="normal" fontStyle="normal"/>
+</mx:Application>

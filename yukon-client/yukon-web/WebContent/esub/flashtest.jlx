@@ -1,0 +1,27 @@
+JLoox 3.0.0
+"UTF8"
+A "NCS" 0 1 0 0 ffffffff 1 ! 0
+!
+"Default" 0 32
+0 0 001
+1
+"0" 1
+
+2
+
+com.cannontech.esub.element.DrawingMetaElement
+! 111101100 0;0;18.640625;2.03125 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C $ 0 0
+0 0
+"Default" 0 32 "_"
+2 1024 768 -16777216 -1
+
+com.cannontech.esub.element.StaticText
+! 110101100 70;70;86.90625;8.3125 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffcc00cc 0 0
+0 0
+"Times New Roman" 0 12 "FLASH IS COOL"
+1 "Times New Roman" 12 204 0 204 !
+
+
+0

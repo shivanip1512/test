@@ -18,7 +18,18 @@ public class YukonGroup extends DBPersistent
 
 	//what group IDs can be modified
 	public static final int EDITABLE_MIN_GROUP_ID  = 0;
-
+	
+	// Default group ids
+	public static final int YUKON_GROUP_ID = -1;
+	public static final int SYSTEM_ADMINISTRATOR_GROUP_ID = -2;
+	public static final int OPERATORS_GROUP_ID = -100;
+	public static final int ESUB_USERS_GROUP_ID = -200;
+	public static final int ESUB_OPERATORS_GROUP_ID = -201;
+	public static final int RESIDENTIAL_CUSTOMER_GROUP_ID = -300;
+	public static final int WEB_CLIENT_OPERATORS_GROUP_ID = -301;
+	public static final int WEB_CLIENT_CUSTOMERS_GROUP_ID = -302;
+	public static final int STARS_OPERATORS_GROUP_ID = -303;
+	public static final int STARS_RESIDENTIAL_CUSTOMERS_GROUP_ID = -304;
 	
 	private Integer groupID;
 	private String groupName;
@@ -55,7 +66,7 @@ public class YukonGroup extends DBPersistent
 		
 		java.sql.PreparedStatement pstmt = null;
 		java.sql.ResultSet rset = null;
-		ArrayList list = new ArrayList(16);
+		ArrayList<YukonGroup> list = new ArrayList<YukonGroup>(16);
 		
 		try 
 		{		
@@ -93,7 +104,7 @@ public class YukonGroup extends DBPersistent
 		}
 		
 		YukonGroup[] groups = new YukonGroup[list.size()];
-		return (YukonGroup[])list.toArray( groups );
+		return list.toArray( groups );
 	}
 
 

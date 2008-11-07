@@ -112,7 +112,7 @@ public final class ContactDaoImpl implements ContactDao {
 	public LiteContactNotification getContactNotification(LiteContact liteContact, int notifCatID)
 	{
 		for (int i = 0; i < liteContact.getLiteContactNotifications().size(); i++) {
-			LiteContactNotification liteNotif = (LiteContactNotification) liteContact.getLiteContactNotifications().get(i);
+			LiteContactNotification liteNotif = liteContact.getLiteContactNotifications().get(i);
 			
 			if (liteNotif.getNotificationCategoryID() == notifCatID)
 				return liteNotif;
@@ -292,7 +292,7 @@ public final class ContactDaoImpl implements ContactDao {
 			contList.add( getContact(contIDs[i]) );
 		}
 
-		return (LiteContact[])contList.toArray( new LiteContact[contList.size()] );
+		return contList.toArray( new LiteContact[contList.size()] );
 	}
 
 	/* (non-Javadoc)
@@ -330,14 +330,14 @@ public final class ContactDaoImpl implements ContactDao {
 		for( int j = 0; j < contact.getLiteContactNotifications().size(); j++  )
 		{	
 			LiteContactNotification ltCntNotif =
-					(LiteContactNotification)contact.getLiteContactNotifications().get(j);
+					contact.getLiteContactNotifications().get(j);
 					
 			if( ltCntNotif.getNotificationCategoryID() == YukonListEntryTypes.YUK_ENTRY_ID_PIN )
 				strList.add( ltCntNotif );
 		}
 
 		LiteContactNotification[] pins = new LiteContactNotification[ strList.size() ];
-		return (LiteContactNotification[])strList.toArray( pins );
+		return strList.toArray( pins );
 	}
 
     /* (non-Javadoc)
@@ -352,7 +352,7 @@ public final class ContactDaoImpl implements ContactDao {
         for( int j = 0; j < contact.getLiteContactNotifications().size(); j++  )
         {   
             LiteContactNotification ltCntNotif = 
-                    (LiteContactNotification)contact.getLiteContactNotifications().get(j);
+                    contact.getLiteContactNotifications().get(j);
                 
             if( yukonListDao.isPhoneNumber(ltCntNotif.getNotificationCategoryID()) )
             {
@@ -361,7 +361,7 @@ public final class ContactDaoImpl implements ContactDao {
         }
 
         LiteContactNotification[] phones = new LiteContactNotification[ phoneList.size() ];
-        return (LiteContactNotification[])phoneList.toArray( phones );
+        return phoneList.toArray( phones );
     }
     
 	/* (non-Javadoc)
@@ -386,7 +386,7 @@ public final class ContactDaoImpl implements ContactDao {
 				LiteCICustomer cst = iter.next();
 				for( int i = 0; i < cst.getAdditionalContacts().size(); i++ )
 				{
-					if( ((LiteContact)cst.getAdditionalContacts().get(i)).getContactID() == addtlContactID_ )
+					if( cst.getAdditionalContacts().get(i).getContactID() == addtlContactID_ )
 					{
 						return cst;
 					}
@@ -619,7 +619,42 @@ public final class ContactDaoImpl implements ContactDao {
         asyncDynamicDataSource.handleDBChange(changeMsg);
     }
     
-
+    @Override
+    public void deleteAllAdditionalContactsToCustomerReferences(Integer customerId) {
+        String sql = "DELETE FROM CustomerAdditionalContact WHERE CustomerID = ?";
+        simpleJdbcTemplate.update(sql, customerId);
+    }
+    
+    @Override
+    @Transactional
+    public void deleteAllAdditionalContactsForCustomer(Integer customerId) {
+        List<LiteContact> contacts = getAdditionalContactsForCustomer(customerId);
+        for(LiteContact contact : contacts) {
+            deleteContact(contact.getContactID());
+        }
+    }
+    
+    @Override
+    @Transactional
+    public void deleteContact(Integer contactId) {
+        Integer addressId = getContact(contactId).getAddressID();
+        String deleteNotificationDestinations = "DELETE FROM NotificationDestination " + 
+            "WHERE RecipientID in (SELECT ContactNotifID " +
+            "FROM ContactNotification WHERE ContactID = ?)";
+        simpleJdbcTemplate.update(deleteNotificationDestinations, contactId);
+        String deleteContactNotification = "DELETE FROM ContactNotification WHERE ContactId = ?"; 
+        simpleJdbcTemplate.update(deleteContactNotification, contactId);
+        String deleteContactNotifGroupMap = "DELETE FROM ContactNotifGroupMap WHERE ContactId = ?";
+        simpleJdbcTemplate.update(deleteContactNotifGroupMap, contactId);
+        removeAdditionalContact(contactId);
+        String delete = "DELETE FROM Contact WHERE ContactId = ?";
+        simpleJdbcTemplate.update(delete, contactId);
+        if(addressId != CtiUtilities.NONE_ZERO_ID) {
+            String deleteAddress = "DELETE FROM Address WHERE AddressId = ?";
+            simpleJdbcTemplate.update(deleteAddress, addressId);
+        }
+    }
+    
     @Override
     @Transactional
     public void addAdditionalContact(LiteContact contact, LiteCustomer customer) {

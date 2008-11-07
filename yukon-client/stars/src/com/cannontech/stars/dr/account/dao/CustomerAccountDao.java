@@ -32,4 +32,6 @@ public interface CustomerAccountDao {
     public List<CustomerAccountWithNames> getAllAccountsWithNamesByGroupIds(final int ecId, List<Integer> groupIds,
                                                                             Date startDate, Date stopDate);
     public CustomerAccountWithNames getAccountWithNamesByCustomerId(final int customerId, final int ecId);
+
+    public CustomerAccount getByAccountNumber(String accountNumber, int energyCompanyId);
 }

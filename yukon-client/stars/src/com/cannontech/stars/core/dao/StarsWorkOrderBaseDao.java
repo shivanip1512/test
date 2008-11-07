@@ -19,5 +19,9 @@ public interface StarsWorkOrderBaseDao {
      */
     @Deprecated
     public List<LiteWorkOrderBase> getAll(int energyCompanyId);
+
+    public void deleteByAccount(int accountId);
+
+    public List<Integer> getByAccount(int accountId);
     
 }

@@ -12,4 +12,6 @@ public interface YukonGroupDao {
     public List<LiteYukonGroup> getGroupsForUser(int userID);
     
     public LiteYukonGroup getLiteYukonGroup(int groupID);
+
+    public LiteYukonGroup getLiteYukonGroupByName(String groupName);
 }

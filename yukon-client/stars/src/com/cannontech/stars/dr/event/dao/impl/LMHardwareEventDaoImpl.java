@@ -77,4 +77,10 @@ public class LMHardwareEventDaoImpl implements LMHardwareEventDao {
         this.simpleJdbcTemplate = simpleJdbcTemplate;
     }
     
+    @Override
+    public void deleteHardwareToMeterMapping(Integer inventoryId) {
+        String delete = "DELETE FROM LMHardwareToMeterMapping WHERE LMHardwareInventoryId = ?";
+        simpleJdbcTemplate.update(delete, inventoryId);
+    }
+    
 }

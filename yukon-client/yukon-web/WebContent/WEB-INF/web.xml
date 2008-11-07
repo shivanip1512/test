@@ -274,6 +274,14 @@
 	</servlet>
 	
 	<servlet>
+        <servlet-name>accountServiceTest</servlet-name>
+        <servlet-class>
+            com.cannontech.web.spring.CannonDispatcherServlet
+        </servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+	<servlet>
 		<servlet-name>picker</servlet-name>
 		<servlet-class>
 			com.cannontech.web.spring.CannonDispatcherServlet
@@ -822,6 +830,11 @@
 		<servlet-name>bulk</servlet-name>
 		<url-pattern>/spring/bulk/*</url-pattern>
 	</servlet-mapping>
+	
+	<servlet-mapping>
+        <servlet-name>accountServiceTest</servlet-name>
+        <url-pattern>/spring/accountServiceTest/*</url-pattern>
+    </servlet-mapping>
 
 	<servlet-mapping>
 		<servlet-name>deviceConfiguration</servlet-name>

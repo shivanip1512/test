@@ -28,16 +28,19 @@ public class SimpleTableAccessTemplate<T> {
         this.nextValueHelper = nextValueHelper;
     }
 
-    public void withTableName(String tableName) {
+    public SimpleTableAccessTemplate<T> withTableName(String tableName) {
         this.tableName = tableName;
+        return this;
     }
     
-    public void withFieldMapper(FieldMapper<T> fieldMapper) {
+    public SimpleTableAccessTemplate<T> withFieldMapper(FieldMapper<T> fieldMapper) {
         this.fieldMapper = fieldMapper;
+        return this;
     }
     
-    public void withPrimaryKeyField(String primaryKeyField) {
+    public SimpleTableAccessTemplate<T> withPrimaryKeyField(String primaryKeyField) {
         this.primaryKeyField = primaryKeyField;
+        return this;
     }
     
     public void save(T object) {

@@ -1,6 +1,6 @@
 package com.cannontech.amr.account.model;
 
-import com.cannontech.amr.account.model.Address;
+import com.cannontech.common.model.Address;
 
 public class AccountInfo {
     private int accountId;

@@ -1,7 +1,10 @@
 package com.cannontech.stars.dr.event.dao.impl;
 
+import java.util.List;
+
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.dr.event.dao.LMCustomerEventBaseDao;
 import com.cannontech.stars.dr.event.model.LMCustomerEventBase;
@@ -38,6 +41,13 @@ public class LMCustomerEventBaseDaoImpl implements LMCustomerEventBaseDao {
         
         boolean result = ((rows == 1) && (rows2 == 1) && (rows3 == 1));
         return result;
+    }
+    
+    @Override
+    public void deleteCustomerEvents(List<Integer> eventIds) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM LMCustomerEventBase WHERE EventId IN (", eventIds, ")");
+        simpleJdbcTemplate.update(sql.toString());
     }
 
     public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {

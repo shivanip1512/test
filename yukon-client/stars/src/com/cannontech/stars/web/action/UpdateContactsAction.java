@@ -25,7 +25,6 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
-import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.customer.CustomerAdditionalContact;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
@@ -125,8 +124,7 @@ public class UpdateContactsAction implements ActionBase {
     					login.getYukonGroups().addElement(((com.cannontech.database.data.user.YukonGroup)LiteFactory.convertLiteToDBPers(custGroups[0])).getYukonGroup());
     					login.getYukonUser().setStatus(UserUtils.STATUS_ENABLED);
     					//login.setEnergyCompany()
-    					login = (YukonUser)
-    						Transaction.createTransaction(Transaction.INSERT, login).execute();
+    					login = Transaction.createTransaction(Transaction.INSERT, login).execute();
     					LiteYukonUser liteUser = new LiteYukonUser( login.getUserID().intValue() );
     					ServerUtils.handleDBChange(liteUser, DBChangeMsg.CHANGE_TYPE_ADD);
     					contact.setLoginID(login.getUserID().intValue());
@@ -237,8 +235,7 @@ public class UpdateContactsAction implements ActionBase {
 				StarsLiteFactory.setContact( primContact, litePrimContact, energyCompany );
 				StarsFactory.setCustomerContact( primContact, starsPrimContact );
             	
-            	primContact= (com.cannontech.database.data.customer.Contact)
-            			Transaction.createTransaction( Transaction.UPDATE, primContact ).execute();
+            	primContact= Transaction.createTransaction( Transaction.UPDATE, primContact ).execute();
 				
 				StarsLiteFactory.setLiteContact( litePrimContact, primContact );
 				StarsLiteFactory.setStarsCustomerContact( starsPrimContact, litePrimContact );
@@ -248,15 +245,15 @@ public class UpdateContactsAction implements ActionBase {
 			
 			resp.setPrimaryContact( starsPrimContact );
 
-			Vector contactList = liteCustomer.getAdditionalContacts();
-			Vector newContactList = new Vector();
+			Vector<LiteContact> contactList = liteCustomer.getAdditionalContacts();
+			Vector<LiteContact> newContactList = new Vector<LiteContact>();
             
 			for (int i = 0; i < updateContacts.getAdditionalContactCount(); i++) {
 				AdditionalContact starsContact = updateContacts.getAdditionalContact(i);
 				LiteContact liteContact = null;
 				
 				for (int j = 0; j < contactList.size(); j++) {
-					liteContact = (LiteContact) contactList.get(j);
+					liteContact = contactList.get(j);
 					if (liteContact.getContactID() == starsContact.getContactID()) {
 						contactList.remove(j);
 		        		
@@ -266,8 +263,7 @@ public class UpdateContactsAction implements ActionBase {
 							StarsLiteFactory.setContact( contact, liteContact, energyCompany );
 							StarsFactory.setCustomerContact( contact, starsContact );
 			            	
-							contact= (com.cannontech.database.data.customer.Contact)
-									Transaction.createTransaction( Transaction.UPDATE, contact ).execute();
+							contact= Transaction.createTransaction( Transaction.UPDATE, contact ).execute();
 							
 							StarsLiteFactory.setLiteContact( liteContact, contact );
 							StarsLiteFactory.setStarsCustomerContact( starsContact, liteContact );
@@ -285,8 +281,7 @@ public class UpdateContactsAction implements ActionBase {
 					com.cannontech.database.data.customer.Contact contact = new com.cannontech.database.data.customer.Contact();
 					StarsFactory.setCustomerContact( contact, starsContact );
 		            
-					contact = (com.cannontech.database.data.customer.Contact)
-							Transaction.createTransaction( Transaction.INSERT, contact ).execute();
+					contact = Transaction.createTransaction( Transaction.INSERT, contact ).execute();
 					
 					//also need to add the link	between the customer and this new contact	
 					CustomerAdditionalContact newAdditional = new CustomerAdditionalContact();
@@ -307,13 +302,12 @@ public class UpdateContactsAction implements ActionBase {
             
 			// Remove customer contacts that are not in the update list
 			for (int i = 0; i < contactList.size(); i++) {
-				LiteContact liteContact = (LiteContact) contactList.get(i);
+				LiteContact liteContact = contactList.get(i);
 				com.cannontech.database.data.customer.Contact contact = new com.cannontech.database.data.customer.Contact();
 				StarsLiteFactory.setContact( contact, liteContact );
             	
             	Transaction.createTransaction( Transaction.DELETE, contact ).execute();
             	
-            	energyCompany.getContactAccountIDMap().remove( new Integer(liteContact.getContactID()) );
             	ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_DELETE );
             	
 			}

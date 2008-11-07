@@ -16,5 +16,11 @@ public interface LMHardwareEventDao {
      * @return Sorted events
      */
     List<LiteLMHardwareEvent> getByInventoryId(int inventoryId);
+
+    /**
+     * Method to delete hardware to meter mappings
+     * @param inventoryIds
+     */
+    public void deleteHardwareToMeterMapping(Integer inventoryId);
     
 }

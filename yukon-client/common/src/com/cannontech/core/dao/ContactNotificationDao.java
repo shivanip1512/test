@@ -57,4 +57,15 @@ public interface ContactNotificationDao {
      */
     public void removeNotificationsForContact(int contactId);
 
+    /**
+     * Method to return the lite notification for a contact of a specific type.
+     * Returns null if none exists for that type.
+     * Example usage: getNotificationForContactByType(contact.getContactId(), YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE)
+     * would return the home phone for that contact.
+     * @param contactId
+     * @param type
+     * @return
+     */
+    public LiteContactNotification getNotificationForContactByType(int contactId, int type);
+
 }

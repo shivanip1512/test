@@ -3,6 +3,8 @@ package com.cannontech.core.dao;
 import java.util.List;
 import java.util.Vector;
 
+import org.springframework.dao.DataAccessException;
+
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteCustomer;
@@ -114,4 +116,52 @@ public interface CustomerDao {
      * @param temp
      */
     public void setTempForCustomer(int customerId, String temp);
+
+    /**
+     * Method to add a customer to the database
+     * @param liteCustomer
+     * @throws DataAccessException
+     */
+    void addCustomer(LiteCustomer liteCustomer) throws DataAccessException;
+
+    /**
+     * Method to add a commercial/industrial customer to the database
+     * @param liteCICustomer
+     * @throws DataAccessException
+     */
+    void addCICustomer(LiteCICustomer liteCICustomer) throws DataAccessException;
+
+    /**
+     * Method to delete a customer
+     * @param customerId
+     */
+    public void deleteCustomer(Integer customerId);
+
+    /**
+     * Returns true if this customer is a commercial/industrial customer, false otherwise
+     * @param customerId
+     * @return
+     */
+    boolean isCICustomer(Integer customerId);
+
+    /**
+     * Method to delete commercial/industrial customer info
+     * @param customerId
+     */
+    public void deleteCICustomer(Integer customerId);
+
+    /**
+     * Method to update a lite customer
+     * @param customer
+     * @return
+     */
+    public void updateCustomer(LiteCustomer customer);
+    
+    /**
+     * Method to update a lite commercial/industrial customer
+     * @param customer
+     * @return
+     */
+    public void updateCICustomer(LiteCICustomer customer);
+
 }

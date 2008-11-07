@@ -11,5 +11,9 @@ public interface EventWorkOrderDao {
     Map<Integer,List<EventWorkOrder>> getByWorkOrders(List<LiteWorkOrderBase> workOrderList);
     
     List<EventWorkOrder> getByWorkOrderId(int workOrderId);
+
+    public void deleteEventWorkOrders(List<Integer> workOrderIds);
+
+    public List<Integer> getEventIdsForWorkOrder(Integer workOrderId);
     
 }

@@ -4,10 +4,10 @@ import java.rmi.RemoteException;
 
 import com.cannontech.amr.account.dao.AccountInfoDao;
 import com.cannontech.amr.account.model.AccountInfo;
-import com.cannontech.amr.account.model.Address;
 import com.cannontech.amr.account.model.ServiceLocation;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.common.model.Address;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MspObjectDao;
