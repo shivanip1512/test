@@ -3,7 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:standardPage title="Load Control Service Test Page" module="blank">
+<cti:standardPage title="Account Service Test Page" module="blank">
     <cti:standardMenu menuSelection=""/>
     
     <style type="text/css">
@@ -52,26 +52,13 @@
         <tr>
             <th class="functionality">Functionality</th>
             <th class="doc">BGE Integration<br>Requirements Doc Ref</th>
-            <th>XML Test</th>
             <th>Input Test</th>
         </tr>
         
-        <%-- DELTE ACCOUNT --%>
+        <%-- DELETE ACCOUNT --%>
         <tr>
             <td class="functionality">Delete Account</td>
             <td class="doc">Section 3, #3</td>
-            <td class="xmlTest">
-                <form action="/spring/accountServiceTest/deleteAccount_xml" method="post">
-                <textarea name="xml" class="xml">
-                    <accountActionResultRequest xmlns="http://yukon.cannontech.com/api" 
-                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-                        xsi:schemaLocation="http://yukon.cannontech.com/api ../AccountActionResultRequestRequest.xsd">
-                        <accountNumber>42424241</accountNumber> 
-                    </accountActionResultRequest>
-                </textarea>
-                <input type="submit" value="TEST">
-                </form>
-            </td>
             <td class="inputTest">
                 <form action="/spring/accountServiceTest/deleteAccount" method="post">
                     <tags:nameValueContainer>

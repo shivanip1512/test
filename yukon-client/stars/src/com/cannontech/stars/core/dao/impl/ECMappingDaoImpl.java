@@ -90,14 +90,14 @@ public class ECMappingDaoImpl implements ECMappingDao {
     @Override
     public void deleteECToWorkOrderMapping(List<Integer> workOrderIds) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("DELETE FROM ECToWorkOrderMapping WHERE EventId IN (", workOrderIds, ")");
+        sql.append("DELETE FROM ECToWorkOrderMapping WHERE WorkOrderId IN (", workOrderIds, ")");
         simpleJdbcTemplate.update(sql.toString());
     }
     
     @Override
     public void deleteECToCallReportMapping(List<Integer> callReportIds) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("DELETE FROM ECToCallReportMapping WHERE EventId IN (", callReportIds, ")");
+        sql.append("DELETE FROM ECToCallReportMapping WHERE CallReportId IN (", callReportIds, ")");
         simpleJdbcTemplate.update(sql.toString());
     }
 

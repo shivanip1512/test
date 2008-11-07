@@ -82,7 +82,7 @@ public class LMThermostatSchedule extends DBPersistent {
 			setInventoryID( (Integer) results[3] );
 		}
 		else
-			throw new Error(getClass() + " - Incorrect number of results retrieved");
+			throw new Error(getClass() + " - Incorrect number of results retrieved. Expected:"+SETTER_COLUMNS.length+" got:"+results.length);
 	}
 
 	/* (non-Javadoc)

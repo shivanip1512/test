@@ -614,6 +614,16 @@
           </option>
         </links>
       </option>
+      <option id="accountService">
+        <links>
+          <option id="inputs" >
+            <link>/spring/debug/accountService/inputs/home</link>
+          </option>
+          <option id="xml" >
+            <link>/spring/debug/accountService/xml/home</link>
+          </option>
+        </links>
+      </option>
     </links>
   </module>
         

@@ -26,4 +26,10 @@
     <bean name="/loadControlService/xml/*" class="com.cannontech.web.debug.LoadControlServiceXMLTestController" >
     </bean>
     
+    <bean name="/accountService/inputs/*" class="com.cannontech.web.debug.AccountServiceInputsTestController" >
+    </bean>
+    
+    <bean name="/accountService/xml/*" class="com.cannontech.web.debug.AccountServiceXMLTestController" >
+    </bean>
+    
 </beans>

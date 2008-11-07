@@ -1,4 +1,4 @@
-package com.cannontech.web.accountServiceTest;
+package com.cannontech.web.debug;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +17,7 @@ import com.cannontech.stars.dr.account.service.AccountService;
 import com.cannontech.stars.dr.account.service.result.AccountActionResult;
 import com.cannontech.util.ServletUtil;
 
-public class AccountServiceTestController extends MultiActionController{
+public class AccountServiceInputsTestController extends MultiActionController{
     
     private AccountService accountService;
     

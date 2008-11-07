@@ -264,6 +264,7 @@ public class AccountServiceImpl implements AccountService {
             LiteStarsCustAccountInformation customerInfo = starsCustAccountInformationDao.getById(account.getAccountId(), liteEnergyCompany.getEnergyCompanyID());
             AccountSite accountSite = accountSiteDao.getByAccountSiteId(account.getAccountSiteId());
             LiteCustomer liteCustomer = customerDao.getLiteCustomer(account.getCustomerId());
+            customerInfo.setCustomer(liteCustomer);
             LiteAddress billingAddress = addressDao.getByAddressId(account.getBillingAddressId());
             LiteContact primaryContact = customerDao.getPrimaryContact(account.getCustomerId());
             LiteStarsEnergyCompany starsEnergyCompany = ecMappingDao.getContactEC(primaryContact.getContactID());

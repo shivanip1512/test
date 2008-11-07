@@ -77,11 +77,11 @@ public class AccountSiteDaoImpl implements AccountSiteDao {
         
         String deleteCustomerResidence = "DELETE FROM CustomerResidence WHERE AccountSiteId = ?";
         simpleJdbcTemplate.update(deleteCustomerResidence, accountSite.getAccountSiteId());
-        addressDao.remove(accountSite.getStreetAddressId());
-        String deleteSiteInfo = "DELETE FROM SiteInfomation WHERE SiteId = ?";
-        simpleJdbcTemplate.update(deleteSiteInfo, accountSite.getSiteInformationId());
         String sql = "DELETE FROM AccountSite WHERE AccountSiteID = ?";
         int rows = simpleJdbcTemplate.update(sql, accountSite.getAccountSiteId());
+        addressDao.remove(accountSite.getStreetAddressId());
+        String deleteSiteInfo = "DELETE FROM SiteInformation WHERE SiteId = ?";
+        simpleJdbcTemplate.update(deleteSiteInfo, accountSite.getSiteInformationId());
         boolean result = (rows == 1);
         return result;
     }

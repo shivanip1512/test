@@ -157,9 +157,10 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
         contactDao.deleteAllAdditionalContactsToCustomerReferences(customerId); 
         String deleteCustomerNotifGroupMap = "DELETE FROM CustomerNotifGroupMap WHERE CustomerId = ?";
         simpleJdbcTemplate.update(deleteCustomerNotifGroupMap, customerId);
+        boolean isCICustomer = isCICustomer(customerId);
         String delete = "DELETE FROM Customer WHERE CustomerId = ?";
         simpleJdbcTemplate.update(delete, customerId);
-        if(isCICustomer(customerId)) {
+        if(isCICustomer) {
             deleteCICustomer(customerId);
         }
     }

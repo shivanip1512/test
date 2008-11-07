@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import org.springframework.dao.EmptyResultDataAccessException;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
@@ -383,8 +385,11 @@ public class StarsDatabaseCache implements DBChangeListener {
                     }
 					
 					if (contOwner == null) {
-					    CustomerAccountDao customerAccountDao = YukonSpringHook.getBean("CustomerAccountDao", CustomerAccountDao.class);
-						CustomerAccount customerAccount = customerAccountDao.getAccountByContactId(msg.getId());
+					    CustomerAccountDao customerAccountDao = YukonSpringHook.getBean("customerAccountDao", CustomerAccountDao.class);
+					    CustomerAccount customerAccount = null;
+					    try {
+					        customerAccount = customerAccountDao.getAccountByContactId(msg.getId());
+					    }catch(EmptyResultDataAccessException empty) {}
 						if (customerAccount != null) {
 							contOwner = energyCompany.getStarsCustAccountInformation(customerAccount.getAccountId());
 						}

@@ -1296,7 +1296,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
         if (liteAcctInfo == null) return;
         
         // Remove from opt out event queue
-        OptOutEventQueue.getInstance().removeEvents( liteAcctInfo.getAccountID() );
+        // OptOutEventQueue.getInstance().removeEvents( liteAcctInfo.getAccountID() );
         
         // Remove customer from the cache
         ServerUtils.handleDBChange( liteAcctInfo.getCustomer(), DBChangeMsg.CHANGE_TYPE_DELETE );
