@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:yukon="http://yukon.cannontech.com/api" targetNamespace="http://yukon.cannontech.com/api">
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:yukon="http://yukon.cannontech.com/api" 
+elementFormDefault="qualified"
+targetNamespace="http://yukon.cannontech.com/api">
 	
+    <xsd:include schemaLocation="YukonAttributes.xsd" />
+  
 <xsd:annotation>
  	<xsd:documentation xml:lang="en">
   	Integration II schema (integration with Retail Office) at BG&amp;E: Item #1, second INPUT option
@@ -10,11 +14,15 @@
 </xsd:annotation>
 
 <xsd:complexType name="OverrideHistoryByAccountNumberRequest">
-  	<xsd:sequence maxOccurs="1" minOccurs="1">
-	    <xsd:element name="accountNumber"   type="xsd:string"/>
-	    <xsd:element name="startTime" type="xsd:dateTime" />
-	    <xsd:element name="stopTime" type="xsd:dateTime" />
-	</xsd:sequence>
+  <xsd:complexContent>
+    <xsd:extension base="yukon:YukonAttributes">
+      <xsd:sequence maxOccurs="1" minOccurs="1">
+        <xsd:element name="accountNumber" type="xsd:string" />
+        <xsd:element name="startTime" type="xsd:dateTime" />
+        <xsd:element name="stopTime" type="xsd:dateTime" />
+      </xsd:sequence>
+    </xsd:extension>
+  </xsd:complexContent>
 </xsd:complexType>
 
 <xsd:element name="overrideHistoryByAccountNumberRequest" type="yukon:OverrideHistoryByAccountNumberRequest"/>

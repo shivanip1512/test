@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<overrideHistoryByAccountNumberResponse
+  xmlns="http://yukon.cannontech.com/api" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://yukon.cannontech.com/api ../OverrideHistoryByAccountNumberResponse.xsd"
+  version="1.0">
+  <overrideHistoryEntries>
+    <overrideHistory>
+      <serialNumber>234234234</serialNumber>
+      <programName>My Program name</programName>
+      <accountNumber>1346532456345</accountNumber>
+      <status>Active</status>
+      <scheduledDateTime>2008-10-28T15:07:40</scheduledDateTime>
+      <startDateTime>2008-10-28T15:07:40</startDateTime>
+      <stopDateTime>2008-10-28T15:07:40</stopDateTime>
+      <userName>jdoe</userName> <!-- what is this? -->
+      <overrideNumber>4</overrideNumber>
+      <countedAgainstLimit>true</countedAgainstLimit>
+    </overrideHistory>
+  </overrideHistoryEntries>
+</overrideHistoryByAccountNumberResponse>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:yukon="http://yukon.cannontech.com/api" targetNamespace="http://yukon.cannontech.com/api"
+  elementFormDefault="qualified">
+  <xsd:include schemaLocation="OverrideHistory.xsd" />
+  <xsd:annotation>
+  <xsd:documentation xml:lang="en">
+	  	Integration II schema (integration with Retail Office) at BG&amp;E: Item #1, returned when 
+	  	either INPUT option is used
+	*Yukon account number is Premise Number for BG&amp;E
+  </xsd:documentation>
+  </xsd:annotation>
+
+
+  <xsd:element name="overrideHistoryByAccountNumberResponse" type="yukon:OverrideHistoryResponse"/>
+
+</xsd:schema>
