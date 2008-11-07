@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:yukon="http://yukon.cannontech.com/api" targetNamespace="http://yukon.cannontech.com/api">
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:yukon="http://yukon.cannontech.com/api" 
+elementFormDefault="qualified"
+targetNamespace="http://yukon.cannontech.com/api">
 	
 <xsd:annotation>
  	<xsd:documentation xml:lang="en">
@@ -18,7 +20,5 @@
    	    <xsd:element name="gearName" type="xsd:string"/>
 	</xsd:sequence>
 </xsd:complexType>
-
-<xsd:element name="programStatus" type="yukon:ProgramControlHistory"/>
 
 </xsd:schema>
