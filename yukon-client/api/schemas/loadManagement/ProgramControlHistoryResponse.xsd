@@ -1,33 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-  xmlns:yukon="http://yukon.cannontech.com/api" targetNamespace="http://yukon.cannontech.com/api" 
-  elementFormDefault="qualified">
-  <xsd:include schemaLocation="YukonAttributes.xsd" />
-  <xsd:include schemaLocation="Error.xsd" />
-  <xsd:include schemaLocation="ProgramControlHistory.xsd" />
-  <xsd:annotation>
-    <xsd:documentation xml:lang="en">
-		Integration II schema (integration with Retail Office) at BG&amp;E: Item #2
- 	</xsd:documentation>
-  </xsd:annotation>
+    xmlns:yukon="http://yukon.cannontech.com/api"
+    targetNamespace="http://yukon.cannontech.com/api"
+    elementFormDefault="qualified">
 
-  <xsd:complexType name="ProgramControlHistoryResponse">
-    <xsd:complexContent>
-      <xsd:extension base="yukon:YukonAttributes">
-        <xsd:choice>
-	      <xsd:element name="controlHistoryEntries">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="programControlHistory" type="yukon:ProgramControlHistory" maxOccurs="unbounded"/>
-              </xsd:sequence>
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="failure" type="yukon:Error"/>
-   	    </xsd:choice>
-      </xsd:extension>
-    </xsd:complexContent>
-  </xsd:complexType>
+    <xsd:include schemaLocation="../common/YukonMessage.xsd" />
+    <xsd:include schemaLocation="../common/Failure.xsd" />
+    <xsd:include schemaLocation="ProgramControlHistory.xsd" />
 
-  <xsd:element name="programControlHistoryResponse" type="yukon:ProgramControlHistoryResponse"/>
+    <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+            Integration II schema (integration with Retail Office) at
+            BG&amp;E: Item #2
+        </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexType name="ProgramControlHistoryResponse">
+        <xsd:complexContent>
+            <xsd:extension base="yukon:YukonMessage">
+                <xsd:choice>
+                    <xsd:element name="controlHistoryEntries">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element
+                                    name="programControlHistory"
+                                    type="yukon:ProgramControlHistory"
+                                    maxOccurs="unbounded" />
+                            </xsd:sequence>
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="failure" type="yukon:Failure" />
+                </xsd:choice>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:element name="programControlHistoryResponse" type="yukon:ProgramControlHistoryResponse" />
 
 </xsd:schema>

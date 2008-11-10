@@ -1,14 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<programControlHistoryResponse
-  xmlns="http://yukon.cannontech.com/api" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://yukon.cannontech.com/api ../ProgramControlHistoryResponse.xsd"
-  version="1.0">
-  <controlHistoryEntries>
-    <programControlHistory>
-      <programName>My Program name</programName>
-      <startDateTime>2008-10-28T15:07:40</startDateTime>
-      <stopDateTime>2008-10-28T15:07:40</stopDateTime>
-      <gearName>Gear 9</gearName>
-    </programControlHistory>
-  </controlHistoryEntries>
+<programControlHistoryResponse xmlns="http://yukon.cannontech.com/api"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://yukon.cannontech.com/api ../ProgramControlHistoryResponse.xsd"
+    version="1.0">
+
+    <controlHistoryEntries>
+        
+        <programControlHistory>
+            <programName>
+                Residential LCR Cooling 75% Contract
+            </programName>
+            <startDateTime>2008-10-28T13:08:00</startDateTime>
+            <gearName>50% Ramp</gearName>
+        </programControlHistory>
+        
+        <programControlHistory>
+            <programName>
+                Residential LCR Cooling 75% Contract
+            </programName>
+            <startDateTime>2008-10-28T15:00:00</startDateTime>
+            <gearName>75% Ramp</gearName>
+        </programControlHistory>
+        
+        <programControlHistory>
+            <programName>
+                Residential LCR Cooling 75% Contract
+            </programName>
+            <startDateTime>2008-10-28T16:00:00</startDateTime>
+            <stopDateTime>2008-10-28T17:00:00</stopDateTime>
+            <gearName>50% Ramp</gearName>
+        </programControlHistory>
+        
+    </controlHistoryEntries>
+
 </programControlHistoryResponse>

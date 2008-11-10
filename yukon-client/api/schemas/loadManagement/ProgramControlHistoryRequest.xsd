@@ -1,26 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-  xmlns:yukon="http://yukon.cannontech.com/api" targetNamespace="http://yukon.cannontech.com/api"
-  elementFormDefault="qualified">
-  <xsd:include schemaLocation="YukonAttributes.xsd" />
-  <xsd:annotation>
-    <xsd:documentation xml:lang="en">
-  	  	Integration II schema (integration with Retail Office) at BG&amp;E: Item #2
- 	</xsd:documentation>
-</xsd:annotation>
+    xmlns:yukon="http://yukon.cannontech.com/api"
+    targetNamespace="http://yukon.cannontech.com/api"
+    elementFormDefault="qualified">
+    
+    <xsd:include schemaLocation="../common/YukonMessage.xsd" />
+
+    <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+            Integration II schema (integration with Retail Office) at
+            BG&amp;E: Item #2
+        </xsd:documentation>
+    </xsd:annotation>
 
     <xsd:complexType name="ProgramControlHistoryRequest">
         <xsd:complexContent>
-            <xsd:extension base="yukon:YukonAttributes">
-                <xsd:sequence maxOccurs="1" minOccurs="1">
-	                <xsd:element name="programName"   type="xsd:string" />
-   	                <xsd:element name="startTime" type="xsd:dateTime" />
-	                <xsd:element name="stopTime" type="xsd:dateTime" />
+            <xsd:extension base="yukon:YukonMessage">
+                <xsd:sequence>
+                    <xsd:element name="programName" type="xsd:string" />
+                    <xsd:element name="startDateTime" type="xsd:dateTime" />
+                    <xsd:element name="stopDateTime" type="xsd:dateTime" />
                 </xsd:sequence>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
 
-    <xsd:element name="programControlHistoryRequest" type="yukon:ProgramControlHistoryRequest"/>
+    <xsd:element name="programControlHistoryRequest" type="yukon:ProgramControlHistoryRequest" />
 
 </xsd:schema>
