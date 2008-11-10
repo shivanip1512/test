@@ -5,7 +5,7 @@
             targetNamespace="http://yukon.cannontech.com/api"
             elementFormDefault="qualified">
 	
-    <xsd:include schemaLocation="YukonAttributes.xsd" />
+    <xsd:include schemaLocation="../common/YukonMessage.xsd" />
     
     <xsd:annotation>
 		<xsd:documentation xml:lang="en">
@@ -16,7 +16,7 @@
     
     <xsd:complexType name="ProhibitConsumerOverridesRequest">
         <xsd:complexContent>
-            <xsd:extension base="yukon:YukonAttributes"></xsd:extension>
+            <xsd:extension base="yukon:YukonMessage"></xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
     
