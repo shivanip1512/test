@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<removeControllableDevicesRequest xmlns="http://yukon.cannontech.com/api"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://yukon.cannontech.com/api ../RemoveControllableDevicesRequest.xsd"
+           version="1.0">
+	<controllableDeviceList>
+       	<controllableDevice>
+	       	<accountNumber>276699</accountNumber>
+	       	<serialNumber>300000005</serialNumber>
+	       	<deviceType>LCR-4700</deviceType>
+	    </controllableDevice>
+	    <controllableDevice>
+	       	<accountNumber>290418</accountNumber>
+	       	<serialNumber>500000007</serialNumber>
+	       	<deviceType>LCR-4700</deviceType>
+	    </controllableDevice>
+   	    <controllableDevice>
+	       	<accountNumber>276699</accountNumber>
+	       	<serialNumber>500000009</serialNumber>
+	       	<deviceType>LCR-4700</deviceType>
+	    </controllableDevice>
+    </controllableDeviceList>
+</removeControllableDevicesRequest>

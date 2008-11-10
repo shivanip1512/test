@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<removeControllableDevicesResponse xmlns="http://yukon.cannontech.com/api"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://yukon.cannontech.com/api ../RemoveControllableDevicesResponse.xsd"
+           version="1.0">
+	<controllableDeviceResultList>
+        <controllableDeviceResult>
+            <accountNumber>945998</accountNumber>
+	       	<serialNumber>276699</serialNumber>
+            <failure>
+                <errorCode>ERRORCODE</errorCode>
+                <errorReference>YK100</errorReference>
+                <errorDescription>Bad stuff happened.</errorDescription>
+            </failure>
+        </controllableDeviceResult>
+        <controllableDeviceResult>
+            <accountNumber>290418</accountNumber>
+	       	<serialNumber>500000007</serialNumber>
+        </controllableDeviceResult>
+        <controllableDeviceResult>
+            <accountNumber>276699</accountNumber>
+	       	<serialNumber>500000009</serialNumber>
+            <failure>
+                <errorCode>ERRORCODE</errorCode>
+                <errorReference>YK100</errorReference>
+                <errorDescription>Bad stuff happened.</errorDescription>
+            </failure>
+        </controllableDeviceResult>
+    </controllableDeviceResultList>
+</removeControllableDevicesResponse>
