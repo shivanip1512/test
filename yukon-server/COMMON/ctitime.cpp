@@ -78,9 +78,9 @@ CtiTime::CtiTime(const CtiDate& d, unsigned hour, unsigned minute, unsigned seco
   _seconds(0)
 {
     if(d.isValid()) {
-        if(d.is_neg_infinity()){
+        if(d.is_neg_infinity() || d.isStartOfTime()){
             _seconds = std::numeric_limits<ctitime_t>::min();
-        } else if(d.is_pos_infinity()){
+        } else if(d.is_pos_infinity() || d.isEndOfTime()){
             _seconds = std::numeric_limits<ctitime_t>::max();
         } else {
             _seconds = maketm(d, hour, minute, second);
@@ -280,7 +280,7 @@ CtiTime CtiTime::asGMT() const
 
 bool CtiTime::isValid() const
 {
-    return _seconds > 0 || is_neg_infinity();
+    return _seconds > 0 && _seconds != std::numeric_limits<ctitime_t>::max();
 }
 
 bool CtiTime::is_special() const

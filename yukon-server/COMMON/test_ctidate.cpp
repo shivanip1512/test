@@ -109,7 +109,7 @@ BOOST_AUTO_UNIT_TEST(test_ctidate_methods)
     BOOST_CHECK_EQUAL( ct4.isValid(), false );
     //  will need to be re-added when special value constructors are handled as special values again
     //BOOST_CHECK_EQUAL( ct5.is_pos_infinity(), true );
-    BOOST_CHECK_EQUAL( ct5.isValid(), true );
+    BOOST_CHECK_EQUAL( ct5.isValid(), false );
 
     string expectedResult = "11/02/2008";
     CtiDate result(2,11,2008);

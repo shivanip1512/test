@@ -187,8 +187,8 @@ BOOST_AUTO_UNIT_TEST(test_ctitime_specials)
     std::cout << endl;*/
 
     BOOST_CHECK_EQUAL( CtiTime((unsigned long)0).is_special(), true );
-    BOOST_CHECK_EQUAL( CtiTime(CtiTime::neg_infin).isValid(), true );
-    BOOST_CHECK_EQUAL( CtiTime(CtiTime::pos_infin).isValid(), true );
+    BOOST_CHECK_EQUAL( CtiTime(CtiTime::neg_infin).isValid(), false );
+    BOOST_CHECK_EQUAL( CtiTime(CtiTime::pos_infin).isValid(), false );
     BOOST_CHECK_EQUAL( CtiTime((unsigned long)0).isValid(), false );
     BOOST_CHECK_EQUAL( CtiTime(ct1).isValid(), false );
     
@@ -211,7 +211,7 @@ BOOST_AUTO_UNIT_TEST(test_ctitime_specials)
 
     BOOST_CHECK_EQUAL( ct4.isValid(), false );
     BOOST_CHECK_EQUAL( ct6.is_pos_infinity(), true );
-    BOOST_CHECK_EQUAL( ct6.isValid(), true );
+    BOOST_CHECK_EQUAL( ct6.isValid(), false );
 }
 
 

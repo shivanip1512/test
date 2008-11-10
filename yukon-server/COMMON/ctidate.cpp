@@ -7,6 +7,8 @@
 
 using namespace boost::gregorian;
 
+const boost::gregorian::date CtiDate::StartOfTime = date(1970, 1, 1);
+const boost::gregorian::date CtiDate::EndOfTime = date(2036, 1, 1);
 
 CtiDate::CtiDate() :
   bdate(day_clock::local_day())
@@ -104,8 +106,6 @@ CtiDate::CtiDate(specialvalues sv) :
     }
 }
 
-
-
 CtiDate& CtiDate::operator=(const CtiDate& cd)
 {
     bdate = cd.bdate;
@@ -145,6 +145,16 @@ bool CtiDate::is_pos_infinity() const
     return bdate.is_pos_infinity();
 }
 
+
+bool CtiDate::isStartOfTime() const
+{
+    return bdate == StartOfTime;
+}
+
+bool CtiDate::isEndOfTime() const
+{
+    return bdate == EndOfTime;
+}
 
 unsigned int CtiDate::day() const
 {

@@ -75,6 +75,8 @@ public:
     bool is_special() const;
     bool is_neg_infinity() const;
     bool is_pos_infinity() const;
+	bool isStartOfTime() const;
+	bool isEndOfTime() const;
 
     string asString() const;
     string asStringUSFormat() const;
@@ -82,6 +84,9 @@ public:
 
     friend CtiDate IM_EX_CTIBASE operator + (const CtiDate& d, const unsigned long s);
     friend CtiDate IM_EX_CTIBASE operator - (const CtiDate& d, const unsigned long s);
+
+	const static boost::gregorian::date StartOfTime;
+	const static boost::gregorian::date EndOfTime;
 };
 
 
