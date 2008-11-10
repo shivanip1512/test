@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+            xmlns:yukon="http://yukon.cannontech.com/api" 
+            targetNamespace="http://yukon.cannontech.com/api"
+            elementFormDefault="qualified">
+            
+    <xsd:include schemaLocation="../common/YukonMessage.xsd" />
+    <xsd:include schemaLocation="CustomerAccount.xsd"/>
+	
+    <xsd:annotation>
+     	<xsd:documentation xml:lang="en">
+    		STARS Customer and Device Import schema for Integration III at BG&amp;E
+    		Item 2 from Requirements Outline
+    		*This message is used for both ADD WHEN NEW and UPDATE WHEN EXISTS behavior.
+     	</xsd:documentation>
+    </xsd:annotation>
+    
+    <xsd:complexType name="UpdateAccountsRequest">
+        <xsd:complexContent>
+            <xsd:extension base="yukon:YukonMessage">
+                <xsd:sequence>
+                    <xsd:element name="accountsList">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="customerAccount" type="yukon:CustomerAccount" maxOccurs="unbounded"/>
+                            </xsd:sequence>
+                        </xsd:complexType>
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:element name="updateAccountsRequest" type="yukon:UpdateAccountsRequest"/>
+    
+</xsd:schema>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<updateAccountsRequest xmlns="http://yukon.cannontech.com/api"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://yukon.cannontech.com/api ../UpdateAccountsRequest.xsd"
+           version="1.0">
+	<accountsList>
+        <customerAccount>
+            <accountNumber>772526</accountNumber>
+            <mainAddress>
+            	<street>15601 BOND-MILL</street>
+            	<street2>AV 1FL</street2>
+				<city>BALTIMORE</city>
+				<state>MD</state>
+				<postalCode>20707</postalCode>
+            	<county>PRINCE GEO</county>
+            </mainAddress>
+            <lastName>FELLOW</lastName>
+            <firstName>ABEL</firstName>
+            <homePhone>301-490-1001</homePhone>
+            <workPhone>202-463-4114</workPhone>
+            <isCommercial>N</isCommercial>
+            <alternateTrackingNumber>487437-23</alternateTrackingNumber>
+            <accountUser>
+            	<username>772526</username>
+            	<password>772526</password>
+            	<loginGroupName>Residential_Customer</loginGroupName>
+            </accountUser>
+        </customerAccount>
+        <customerAccount>
+			<accountNumber>287433</accountNumber>
+            <mainAddress>
+            	<street>15601 BOND-MILL</street>
+            	<street2>AV 1FL</street2>
+				<city>BALTIMORE</city>
+				<state>MD</state>
+				<postalCode>20707</postalCode>
+            	<county>PRINCE GEO</county>
+            </mainAddress>
+            <lastName>MANN</lastName>
+            <firstName>GENEROUS</firstName>
+            <homePhone>301-490-1001</homePhone>
+            <workPhone>202-463-4114</workPhone>
+            <isCommercial>Y</isCommercial>
+            <companyName>VERLE INC</companyName>
+            <alternateTrackingNumber>555437-23</alternateTrackingNumber>
+            <accountUser>
+            	<username>287433</username>
+            	<password>287433</password>
+            	<loginGroupName>Residential_Customer</loginGroupName>
+            </accountUser>  
+        </customerAccount>
+    </accountsList>
+</updateAccountsRequest>
