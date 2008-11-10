@@ -5,8 +5,8 @@
             targetNamespace="http://yukon.cannontech.com/api"
             elementFormDefault="qualified">
             
-    <xsd:include schemaLocation="YukonAttributes.xsd" />
-	<xsd:include schemaLocation="Error.xsd"/>
+    <xsd:include schemaLocation="../common/YukonMessage.xsd" />
+	<xsd:include schemaLocation="../common/Failure.xsd"/>
     <xsd:include schemaLocation="ProgramStatus.xsd"/>
     
 	<xsd:annotation>
@@ -17,7 +17,7 @@
     
 	<xsd:complexType name="CurrentlyActiveProgramsResponse">
         <xsd:complexContent>
-            <xsd:extension base="yukon:YukonAttributes">
+            <xsd:extension base="yukon:YukonMessage">
                 <xsd:choice>
                     <xsd:sequence>
                         <xsd:element name="programStatuses">
@@ -28,7 +28,7 @@
                             </xsd:complexType>
                         </xsd:element>
                     </xsd:sequence>
-                    <xsd:element name="failure" type="yukon:Error"/>
+                    <xsd:element name="failure" type="yukon:Failure"/>
                 </xsd:choice>
             </xsd:extension>
         </xsd:complexContent>
