@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:yukon="http://yukon.cannontech.com/api" targetNamespace="http://yukon.cannontech.com/api" elementFormDefault="qualified">
+	<xsd:annotation>
+		<xsd:documentation xml:lang="en">
+            Generic base type for all Yukon requests and responses types.
+        </xsd:documentation>
+	</xsd:annotation>
+	<xsd:complexType name="YukonMessage">
+		<xsd:attribute name="version" type="xsd:string" use="required"/>
+		<xsd:attribute name="other" type="xsd:string"/>
+	</xsd:complexType>
+</xsd:schema>

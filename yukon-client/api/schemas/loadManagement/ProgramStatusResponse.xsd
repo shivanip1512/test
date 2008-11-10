@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:yukon="http://yukon.cannontech.com/api" targetNamespace="http://yukon.cannontech.com/api">
-
-	<xsd:include schemaLocation="YukonAttributes.xsd" />
-	<xsd:include schemaLocation="Error.xsd"/>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+            xmlns:yukon="http://yukon.cannontech.com/api" 
+            targetNamespace="http://yukon.cannontech.com/api" 
+            elementFormDefault="qualified">
+            
+	<xsd:include schemaLocation="../common/YukonMessage.xsd" />
+	<xsd:include schemaLocation="../common/Failure.xsd"/>
     <xsd:include schemaLocation="ProgramStatus.xsd"/>
 
 	<xsd:annotation>
@@ -14,10 +17,10 @@
     
 	<xsd:complexType name="ProgramStatusResponse">
         <xsd:complexContent>
-            <xsd:extension base="yukon:YukonAttributes">
+            <xsd:extension base="yukon:YukonMessage">
                 <xsd:choice>
                     <xsd:element name="programStatus" type="yukon:ProgramStatus" />
-                    <xsd:element name="failure" type="yukon:Error"/>
+                    <xsd:element name="failure" type="yukon:Failure"/>
                 </xsd:choice>
             </xsd:extension>
         </xsd:complexContent>
