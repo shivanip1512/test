@@ -2,12 +2,12 @@
 
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
             xmlns:yukon="http://yukon.cannontech.com/api" 
-            targetNamespace="http://yukon.cannontech.com/api"
+            targetNamespace="http://yukon.cannontech.com/api" 
             elementFormDefault="qualified">
-            
-    <xsd:include schemaLocation="YukonAttributes.xsd" />
-    <xsd:include schemaLocation="Error.xsd"/>
-    
+
+	<xsd:include schemaLocation="../common/YukonMessage.xsd"/>
+	<xsd:include schemaLocation="../common/Failure.xsd"/>
+
 	<xsd:annotation>
 		<xsd:documentation xml:lang="en">
           	ESO Single Screen schema for Integration I at BG&amp;E: Ack msg for use with Item #4 of
@@ -15,20 +15,18 @@
             Possible errorCode: InvalidProgramName, Timeout
      	</xsd:documentation>
 	</xsd:annotation>
-	
-    <xsd:include schemaLocation="Error.xsd"/>
-	
-    <xsd:complexType name="ProgramStartResponse">
-        <xsd:complexContent>
-            <xsd:extension base="yukon:YukonAttributes">
-                <xsd:choice>
-                    <xsd:element name="success" />
-                    <xsd:element name="failure" type="yukon:Error"/>
-                </xsd:choice>
-            </xsd:extension>
-        </xsd:complexContent>
+
+	<xsd:complexType name="ProgramStartResponse">
+		<xsd:complexContent>
+			<xsd:extension base="yukon:YukonMessage">
+				<xsd:choice>
+					<xsd:element name="programName" type="xsd:string"/>
+					<xsd:element name="failure" type="yukon:Failure"/>
+				</xsd:choice>
+			</xsd:extension>
+		</xsd:complexContent>
 	</xsd:complexType>
-    
+
 	<xsd:element name="programStartResponse" type="yukon:ProgramStartResponse"/>
-    
+
 </xsd:schema>

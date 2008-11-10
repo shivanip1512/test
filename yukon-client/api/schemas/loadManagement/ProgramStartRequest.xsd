@@ -4,7 +4,7 @@
             targetNamespace="http://yukon.cannontech.com/api"
             elementFormDefault="qualified">
 	
-    <xsd:include schemaLocation="YukonAttributes.xsd" />
+    <xsd:include schemaLocation="../common/YukonMessage.xsd" />
     
     <xsd:annotation>
 		<xsd:documentation xml:lang="en">
@@ -14,7 +14,7 @@
     
 	<xsd:complexType name="ProgramStartRequest">
         <xsd:complexContent>
-            <xsd:extension base="yukon:YukonAttributes">
+            <xsd:extension base="yukon:YukonMessage">
         		<xsd:sequence>
         			<xsd:element name="programName" type="xsd:string"/>
         			<xsd:element name="startDateTime" type="xsd:dateTime" minOccurs="0"/>
