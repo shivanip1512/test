@@ -6,7 +6,7 @@
            version="1.0">
            
     <failure>
-        <errorCode>Timeout</errorCode>
+        <errorCode>InvalidScenarioName</errorCode>
         <errorReference>YK100</errorReference>
         <errorDescription>Bad stuff happened.</errorDescription>
     </failure>

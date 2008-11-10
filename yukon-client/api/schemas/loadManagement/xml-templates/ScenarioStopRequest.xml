@@ -5,7 +5,7 @@
            xsi:schemaLocation="http://yukon.cannontech.com/api ../ScenarioStopRequest.xsd" 
            version="1.0">
            
-    <scenarioName>Scenario A1</scenarioName>
+    <scenarioName>PJM Rider 22</scenarioName>
     <stopDateTime>2008-10-28T17:07:40</stopDateTime>
     
 </scenarioStopRequest>
