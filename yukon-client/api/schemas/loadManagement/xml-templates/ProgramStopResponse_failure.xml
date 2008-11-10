@@ -6,9 +6,9 @@
            version="1.0">
            
     <failure>
-        <errorCode>Timeout</errorCode>
+        <errorCode>InvalidProgramName</errorCode>
         <errorReference>YK100</errorReference>
-        <errorDescription>Bad stuff happened.</errorDescription>
+        <errorDescription>A descriptive explanation of problem.</errorDescription>
     </failure>
     
 </programStopResponse>
