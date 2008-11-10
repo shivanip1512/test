@@ -2,9 +2,9 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:yukon="http://yukon.cannontech.com/api" targetNamespace="http://yukon.cannontech.com/api" elementFormDefault="qualified">
 	<xsd:annotation>
 		<xsd:documentation xml:lang="en">
-            For general use with Integration I at BG&amp;E: this provides an error value that could
+            For general use with Integration at BG&amp;E: this provides an error value that could
             be coded around on the TIBCO side.
-            Error should be used as a base type. Specific responses should entend this type and add a 
+            Error should be used as a base type. Specific responses should extend this type and add a 
             ErrorCode element, which should be an enumeration of values specific to that response.
         </xsd:documentation>
 	</xsd:annotation>

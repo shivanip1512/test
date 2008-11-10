@@ -19,7 +19,7 @@ targetNamespace="http://yukon.cannontech.com/api">
         <xsd:element name="accountNumber"   type="xsd:string" />
         <xsd:element name="startTime" type="xsd:dateTime" />
         <xsd:element name="stopTime" type="xsd:dateTime" />
-        <xsd:element name="programName" type="xsd:string"/>
+        <xsd:element name="programName" type="xsd:string" minOccurs="0"/>
     </xsd:sequence>
   </xsd:extension>
   </xsd:complexContent>

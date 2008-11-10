@@ -16,7 +16,7 @@
 			<xsd:element name="programName" type="xsd:string"/>
 			<xsd:element name="currentStatus" type="yukon:CurrentProgramStatus"/>
 			<xsd:element name="startDateTime" type="xsd:dateTime"/>
-			<xsd:element name="stopDateTime" type="xsd:dateTime"/>
+			<xsd:element name="stopDateTime" type="xsd:dateTime" minOccurs="0"/>
 			<xsd:element name="gearName" type="xsd:string"/>
 		</xsd:sequence>
 	</xsd:complexType>
