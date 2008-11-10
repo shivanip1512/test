@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<decrementDeviceOverrideLimitRequest xmlns="http://yukon.cannontech.com/api"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://yukon.cannontech.com/api ../DecrementDeviceOverrideLimitRequest.xsd"
+           version="1.0">
+    <accountNumber>945998</accountNumber>
+   	<serialNumber>300000005</serialNumber>
+    <loadProgramName>Residential LCR Cooling 75% Contract</loadProgramName>
+</decrementDeviceOverrideLimitRequest>

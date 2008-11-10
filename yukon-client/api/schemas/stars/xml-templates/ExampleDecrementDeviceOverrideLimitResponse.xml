@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<decrementDeviceOverrideLimitResponse xmlns="http://yukon.cannontech.com/api"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://yukon.cannontech.com/api ../DecrementDeviceOverrideLimitResponse.xsd"
+           version="1.0">
+    <accountNumber>945998</accountNumber>
+    <serialNumber>300000005</serialNumber>
+    <loadProgramName>Residential LCR Cooling 75% Contract</loadProgramName>
+    <failure>
+        <errorCode>ERRORCODE</errorCode>
+        <errorReference>YK100</errorReference>
+        <errorDescription>Bad stuff happened.</errorDescription>
+    </failure>
+</decrementDeviceOverrideLimitResponse>
