@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<removeAccountsRequest xmlns="http://yukon.cannontech.com/api"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://yukon.cannontech.com/api ../RemoveAccountsRequest.xsd"
+           version="1.0">
+	<accountsList>
+        <accountNumber>772526</accountNumber>
+		<accountNumber>287433</accountNumber>
+    </accountsList>
+</removeAccountsRequest>

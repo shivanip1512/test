@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+            xmlns:yukon="http://yukon.cannontech.com/api" 
+            targetNamespace="http://yukon.cannontech.com/api"
+            elementFormDefault="qualified">
+            
+    <xsd:include schemaLocation="../common/YukonMessage.xsd" />
+    <xsd:include schemaLocation="CustomerAccountResultList.xsd"/>
+	
+    <xsd:annotation>
+     	<xsd:documentation xml:lang="en">
+    		STARS Customer and Device Import schema for Integration III at BG&amp;E
+    		Item 3 from Requirements Outline
+     	</xsd:documentation>
+    </xsd:annotation>
+    
+    <xsd:complexType name="RemoveAccountsResponse">
+    	<xsd:complexContent>
+            <xsd:extension base="yukon:YukonMessage">
+                <xsd:sequence>
+                    <xsd:element name="accountResultList" type="yukon:CustomerAccountResultList"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:element name="removeAccountsResponse" type="yukon:RemoveAccountsResponse"/>
+
+</xsd:schema>
