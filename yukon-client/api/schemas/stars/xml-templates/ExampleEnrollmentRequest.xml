@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<enrollmentRequest xmlns="http://yukon.cannontech.com/api"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://yukon.cannontech.com/api ../EnrollmentRequest.xsd"
+           version="1.0">
+	<enrollmentList>
+        <programEnrollment>
+            <accountNumber>772526</accountNumber>
+            <serialNumber>300000001</serialNumber>
+            <loadProgramName>Residential ExpressStat Cooling 75% Contract</loadProgramName>
+            <loadGroupName>Residential ExpressStat Cooling 75%</loadGroupName>
+            <relay>1</relay>
+        </programEnrollment>
+        <programEnrollment>
+            <accountNumber>287433</accountNumber>
+            <serialNumber>500000006</serialNumber>
+            <loadProgramName>Residential ExpressStat Cooling 100% Contract</loadProgramName>
+            <loadGroupName>Residential Thing 35%</loadGroupName>
+            <applianceCategoryName>Residential Thermostat</applianceCategoryName>
+        </programEnrollment>
+    </enrollmentList>
+</enrollmentRequest>

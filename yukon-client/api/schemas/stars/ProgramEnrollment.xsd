@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+            xmlns:yukon="http://yukon.cannontech.com/api" 
+            targetNamespace="http://yukon.cannontech.com/api"
+            elementFormDefault="qualified">
+	
+    <xsd:annotation>
+     	<xsd:documentation xml:lang="en">
+            STARS Customer and Device Import schema for Integration III at BG&amp;E
+     	</xsd:documentation>
+    </xsd:annotation>
+    
+    <xsd:complexType name="ProgramEnrollment">
+      	<xsd:sequence>
+    	    <xsd:element name="accountNumber" type="xsd:string"/>
+      		<xsd:element name="serialNumber" type="xsd:long"/>
+    		<xsd:element name="loadProgramName" type="xsd:string"/>
+          	<xsd:element name="loadGroupName" type="xsd:string"/>
+          	<xsd:element name="applianceCategoryName" type="xsd:string" minOccurs="0"/>
+          	<xsd:element name="appliancekW" type="xsd:positiveInteger" minOccurs="0"/>
+          	<xsd:element name="relay" minOccurs="0">
+     			<xsd:simpleType>
+       				<xsd:restriction base="xsd:positiveInteger">
+         				<xsd:maxInclusive value="4"/>
+       				</xsd:restriction>
+     			</xsd:simpleType>
+    		</xsd:element>
+    		<xsd:element name="seasonalLoad" type="xsd:string" minOccurs="0"/>
+    	</xsd:sequence>
+    </xsd:complexType>
+    
+</xsd:schema>
