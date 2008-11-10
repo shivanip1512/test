@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<newAccountsResponse xmlns="http://yukon.cannontech.com/api"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://yukon.cannontech.com/api ../NewAccountsResponse.xsd"
+           version="1.0">
+	<accountResultList>
+        <customerAccount>
+            <accountNumber>772526</accountNumber>
+            <failure>
+                <errorCode>ERRORCODE</errorCode>
+                <errorReference>YK100</errorReference>
+                <errorDescription>Bad stuff happened.</errorDescription>
+            </failure>
+        </customerAccount>
+        <customerAccount>
+            <accountNumber>287433</accountNumber>
+        </customerAccount>
+    </accountResultList>
+</newAccountsResponse>

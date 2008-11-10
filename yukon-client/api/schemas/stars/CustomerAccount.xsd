@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+            xmlns:yukon="http://yukon.cannontech.com/api" 
+            targetNamespace="http://yukon.cannontech.com/api"
+            elementFormDefault="qualified">
+            
+    <xsd:annotation>
+     	<xsd:documentation xml:lang="en">
+      	STARS Customer and Device Import schema for Integration III at BG&amp;E
+      	*Alternate tracking number would be used for the billing account number 
+      	(from Item 10 on the Requirements Outline) at BG&amp;E
+     	</xsd:documentation>
+    </xsd:annotation>
+    
+    <xsd:complexType name="CustomerAccount">
+      	<xsd:sequence>
+    	    <xsd:element name="accountNumber" type="xsd:string"/>
+    	    <xsd:element name="mainAddress" type="yukon:USAddress" minOccurs="0"/>
+    	    <xsd:element name="billingAddress" type="yukon:USAddress" minOccurs="0"/>
+    	    <xsd:element name="lastName" type="xsd:string" minOccurs="0"/>
+       	    <xsd:element name="firstName" type="xsd:string" minOccurs="0"/>
+    	    <xsd:element name="homePhone" type="xsd:string" minOccurs="0"/>
+    	    <xsd:element name="workPhone" type="xsd:string" minOccurs="0"/>
+    	    <xsd:element name="email" type="xsd:string" minOccurs="0"/>
+    	    <xsd:element name="isCommercial" type="xsd:string" minOccurs="0"/>
+    	    <xsd:element name="companyName" type="xsd:string" minOccurs="0"/>
+    	    <xsd:element name="siteInformation" type="yukon:SiteInformationData" minOccurs="0"/>
+    	    <xsd:element name="alternateTrackingNumber" type="xsd:string" minOccurs="0"/>
+    	    <xsd:element name="accountUser" type="yukon:YukonUser" minOccurs="0"/>
+       	    <xsd:element name="voiceRecognition" type="yukon:VoiceRecognitionData" minOccurs="0"/>
+    	</xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="USAddress">
+    	<xsd:sequence>
+        	<xsd:element name="street" type="xsd:string"/>
+          	<xsd:element name="street2" type="xsd:string"/>
+          	<xsd:element name="city" type="xsd:string"/>
+          	<xsd:element name="state" type="xsd:string"/>
+          	<xsd:element name="postalCode" type="xsd:string"/>
+          	<xsd:element name="county" type="xsd:string"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="YukonUser">
+    	<xsd:sequence>
+    	    <xsd:element name="username" type="xsd:string" />
+    	    <xsd:element name="password" type="xsd:string"/>
+    	   	<xsd:element name="loginGroupName" type="xsd:string"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="SiteInformationData">
+    	<xsd:sequence>
+        	<xsd:element name="mapNumber" type="xsd:string"/>
+          	<xsd:element name="substationName" type="xsd:string"/>
+          	<xsd:element name="feeder" type="xsd:string"/>
+          	<xsd:element name="pole" type="xsd:string"/>
+          	<xsd:element name="transformerSize" type="xsd:positiveInteger"/>
+          	<xsd:element name="siteVoltage" type="xsd:positiveInteger"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="VoiceRecognitionData">
+    	<xsd:sequence>
+    	    <xsd:element name="username" type="xsd:string" />
+    	    <xsd:element name="pin" type="xsd:string"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+</xsd:schema>
