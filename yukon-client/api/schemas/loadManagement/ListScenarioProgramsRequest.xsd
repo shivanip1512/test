@@ -5,7 +5,7 @@
             targetNamespace="http://yukon.cannontech.com/api"
             elementFormDefault="qualified">
 	
-    <xsd:include schemaLocation="YukonAttributes.xsd" />
+    <xsd:include schemaLocation="../common/YukonMessage.xsd" />
     
     <xsd:annotation>
      	<xsd:documentation xml:lang="en">
@@ -15,9 +15,9 @@
 
     <xsd:complexType name="ListScenarioProgramsRequest">
         <xsd:complexContent>
-            <xsd:extension base="yukon:YukonAttributes">
-                <xsd:sequence maxOccurs="1" minOccurs="1">
-            	    <xsd:element name="scenarioName"   type="xsd:string" />
+            <xsd:extension base="yukon:YukonMessage">
+                <xsd:sequence>
+            	    <xsd:element name="scenarioName" type="xsd:string" />
             	</xsd:sequence>
             </xsd:extension>
         </xsd:complexContent>

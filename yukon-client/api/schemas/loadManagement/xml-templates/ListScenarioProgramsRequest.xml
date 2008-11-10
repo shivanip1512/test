@@ -4,6 +4,6 @@
            xsi:schemaLocation="http://yukon.cannontech.com/api ../ListScenarioProgramsRequest.xsd"
            version="1.0">
            
-           <scenarioName>Scenario A1</scenarioName>
+           <scenarioName>PJM Rider 22</scenarioName>
            
 </listScenarioProgramsRequest>

@@ -5,18 +5,71 @@
            xsi:schemaLocation="http://yukon.cannontech.com/api ../ListScenarioProgramsResponse.xsd"
            version="1.0">
            
-    <scenarioName>Scenario A1</scenarioName>
+    <scenarioName>PJM Rider 22</scenarioName>
            
     <scenarioProgramsList>
-    
+
         <scenarioProgram>
-            <programName>AC</programName>
-            <gearName>50%</gearName>
+            <programName>
+                Residential LCR Cooling 50% Contract
+            </programName>
+            <gearName>50% Ramp</gearName>
         </scenarioProgram>
-    
+        
         <scenarioProgram>
-            <programName>AC-LITE</programName>
-            <gearName>20%</gearName>
+            <programName>
+                Residential LCR Cooling 75% Contract
+            </programName>
+            <gearName>75% Ramp</gearName>
+        </scenarioProgram>
+        
+        <scenarioProgram>
+            <programName>
+                Residential LCR Cooling 100% Contract
+            </programName>
+            <gearName>100% Ramp</gearName>
+        </scenarioProgram>
+        
+        <scenarioProgram>
+            <programName>
+                Commercial ExpressStat Cooling 50% Contract
+            </programName>
+            <gearName>50% Ramp</gearName>
+        </scenarioProgram>
+        
+        <scenarioProgram>
+            <programName>
+                Commercial ExpressStat Cooling 75% Contract
+            </programName>
+            <gearName>75% Ramp</gearName>
+        </scenarioProgram>
+        
+        <scenarioProgram>
+            <programName>
+                Commercial ExpressStat Cooling 100% Contract
+            </programName>
+            <gearName>100% Ramp</gearName>
+        </scenarioProgram>
+        
+        <scenarioProgram>
+            <programName>
+                Residential ExpressStat Cooling 50% Contract
+            </programName>
+            <gearName>50% Ramp</gearName>
+        </scenarioProgram>
+        
+        <scenarioProgram>
+            <programName>
+                Residential ExpressStat Cooling 75% Contract
+            </programName>
+            <gearName>75% Ramp</gearName>
+        </scenarioProgram>
+        
+        <scenarioProgram>
+            <programName>
+                Residential ExpressStat Cooling 100% Contract
+            </programName>
+            <gearName>100% Ramp</gearName>
         </scenarioProgram>
         
     </scenarioProgramsList>

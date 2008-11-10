@@ -5,19 +5,20 @@
             targetNamespace="http://yukon.cannontech.com/api"
             elementFormDefault="qualified">
     
-    <xsd:include schemaLocation="YukonAttributes.xsd" />
-	<xsd:include schemaLocation="Error.xsd"/>
+    <xsd:include schemaLocation="../common/YukonMessage.xsd" />
+	<xsd:include schemaLocation="../common/Failure.xsd"/>
     <xsd:include schemaLocation="ScenarioProgram.xsd"/>
     
     <xsd:annotation>
      	<xsd:documentation xml:lang="en">
       	ESO Single Screen schema for Integration I at BG&amp;E: Item #7 from Requirements Outline
+        Possible errorCode: InvalidScenarioName
      	</xsd:documentation>
     </xsd:annotation>
 
     <xsd:complexType name="ListScenarioProgramsResponse.xsd">
         <xsd:complexContent>
-            <xsd:extension base="yukon:YukonAttributes">
+            <xsd:extension base="yukon:YukonMessage">
                 <xsd:choice>
                     <xsd:sequence>
                         <xsd:element name="scenarioName" type="xsd:string" />
@@ -29,7 +30,7 @@
                             </xsd:complexType>
                         </xsd:element>
                    	</xsd:sequence>
-                    <xsd:element name="failure" type="yukon:Error" />
+                    <xsd:element name="failure" type="yukon:Failure" />
                 </xsd:choice>
             </xsd:extension>
         </xsd:complexContent>
@@ -37,6 +38,4 @@
     
     <xsd:element name="listScenarioProgramsResponse" type="yukon:ListScenarioProgramsResponse.xsd"/>
     
-    <xsd:element name="comment" type="xsd:string"/>
-
 </xsd:schema>
