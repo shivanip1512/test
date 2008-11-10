@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<newControllableDevicesRequest xmlns="http://yukon.cannontech.com/api"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://yukon.cannontech.com/api ../NewControllableDevicesRequest.xsd"
+           version="1.0">
+	<controllableDeviceList>
+       	<controllableDevice>
+	       	<accountNumber>945998</accountNumber>
+	       	<serialNumber>300000005</serialNumber>
+	       	<deviceType>Residential ExpressStat</deviceType>
+	       	<deviceLabel>Upstairs</deviceLabel>
+	       	<fieldInstallDate>2008-10-28</fieldInstallDate>
+	       	<serviceCompanyName>Honeywell</serviceCompanyName>
+	    </controllableDevice>
+	    <controllableDevice>
+	       	<accountNumber>290418</accountNumber>
+	       	<serialNumber>500000007</serialNumber>
+	       	<deviceType>LCR-4700</deviceType>
+	       	<deviceLabel>Backyard AC</deviceLabel>
+	       	<fieldInstallDate>2008-10-28</fieldInstallDate>
+	       	<serviceCompanyName>Honeywell</serviceCompanyName>
+	    </controllableDevice>
+    </controllableDeviceList>
+</newControllableDevicesRequest>
