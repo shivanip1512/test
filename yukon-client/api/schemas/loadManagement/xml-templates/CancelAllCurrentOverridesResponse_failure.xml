@@ -8,7 +8,7 @@
     <failure>
         <errorCode>SomethingBadHappened</errorCode>
         <errorReference>YK100</errorReference>
-        <errorDescription>Bad stuff happened.</errorDescription>
+        <errorDescription>Descriptive explanation of the problem.</errorDescription>
     </failure>
     
 </cancelAllCurrentOverridesResponse>
