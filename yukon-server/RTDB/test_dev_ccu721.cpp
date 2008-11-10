@@ -70,17 +70,16 @@ BOOST_AUTO_UNIT_TEST(test_ccu721_bword)
     cout.setf(ios::hex, ios::basefield);
     cout.width(2);
 
-    char *result1 = "\x1c"
-                    "\xa2\x10\x0c\x0e\x70\x10\x00"
+    char *result1 = "\xa2\x10\x0c\x0e\x70\x10\x00"
                     "\xc1\x22\x33\x44\x55\x62\xb0"
                     "\xc6\x77\x88\x99\xaa\xb1\x40"
                     "\xcb\xcc\xdd\xee\xff\x01\xb0";
 
     expected.assign(reinterpret_cast<unsigned char *>(result1),
-                    reinterpret_cast<unsigned char *>(result1) + 7 * 4 + 1);
+                    reinterpret_cast<unsigned char *>(result1) + 7 * 4);
 
     // copy(buf.begin(), buf.end(), ostream_iterator<int>(cout, " "));
 
-    BOOST_CHECK(!memcmp(buf.begin(), expected.begin(), 29));
+    BOOST_CHECK(!memcmp(buf.begin(), expected.begin(), 7 * 4));
 }
 
