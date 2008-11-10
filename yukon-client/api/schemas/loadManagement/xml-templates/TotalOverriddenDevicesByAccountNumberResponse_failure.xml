@@ -5,6 +5,10 @@
     xsi:schemaLocation="http://yukon.cannontech.com/api ../TotalOverriddenDevicesByAccountNumberResponse.xsd"
     version="1.0">
     
-    <totalDevices>5</totalDevices>
+    <failure>
+        <errorCode>SomeErrorCode</errorCode>
+        <errorReference>YK100</errorReference>
+        <errorDescription>Descriptive explanation of the problem.</errorDescription>
+    </failure>
     
 </totalOverriddenDevicesByAccountNumberResponse>

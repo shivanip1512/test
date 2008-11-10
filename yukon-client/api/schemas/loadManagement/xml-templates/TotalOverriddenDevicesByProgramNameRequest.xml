@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<totalOverriddenDevicesByProgramNameRequest xmlns="http://yukon.cannontech.com/api"
-           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xsi:schemaLocation="http://yukon.cannontech.com/api ../TotalOverriddenDevicesByProgramNameRequest.xsd"
-           version="1.0">
-    <programName>My Program Name</programName>
-    <startTime>2008-10-28T15:07:40</startTime>
-    <stopTime>2008-10-28T17:07:40</stopTime>
+<totalOverriddenDevicesByProgramNameRequest
+    xmlns="http://yukon.cannontech.com/api"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://yukon.cannontech.com/api ../TotalOverriddenDevicesByProgramNameRequest.xsd"
+    version="1.0">
+    
+    <programName>Residential LCR Cooling 75% Contract</programName>
+    <startDateTime>2008-09-30T12:00:00</startDateTime>
+    <stopDateTime>2008-09-30T23:59:59</stopDateTime>
+    
 </totalOverriddenDevicesByProgramNameRequest>

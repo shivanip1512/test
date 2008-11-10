@@ -1,30 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:yukon="http://yukon.cannontech.com/api" 
-elementFormDefault="qualified"
-targetNamespace="http://yukon.cannontech.com/api">
-    
-    <xsd:include schemaLocation="YukonAttributes.xsd" />
-  
-<xsd:annotation>
-    <xsd:documentation xml:lang="en">
-    Integration II schema (integration with Retail Office) at BG&amp;E: Item #4, first INPUT option
-    Response would be a message of TotalOverriddenDevicesResponse format.
-    </xsd:documentation>
-</xsd:annotation>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:yukon="http://yukon.cannontech.com/api"
+    elementFormDefault="qualified"
+    targetNamespace="http://yukon.cannontech.com/api">
 
-<xsd:complexType name="TotalOverriddenDevicesByAccountNumberRequest">
-  <xsd:complexContent>
-    <xsd:extension base="yukon:YukonAttributes">
-    <xsd:sequence>
-        <xsd:element name="accountNumber"   type="xsd:string" />
-        <xsd:element name="startTime" type="xsd:dateTime" />
-        <xsd:element name="stopTime" type="xsd:dateTime" />
-        <xsd:element name="programName" type="xsd:string" minOccurs="0"/>
-    </xsd:sequence>
-  </xsd:extension>
-  </xsd:complexContent>
-</xsd:complexType>
+    <xsd:include schemaLocation="../common/YukonMessage.xsd" />
 
-<xsd:element name="totalOverriddenDevicesByAccountNumberRequest" type="yukon:TotalOverriddenDevicesByAccountNumberRequest"/>
+    <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+            Integration II schema (integration with Retail Office) at
+            BG&amp;E: Item #4, first INPUT option Response would be a
+            message of TotalOverriddenDevicesResponse format.
+        </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexType name="TotalOverriddenDevicesByAccountNumberRequest">
+        <xsd:complexContent>
+            <xsd:extension base="yukon:YukonMessage">
+                <xsd:sequence>
+                    <xsd:element name="accountNumber" type="xsd:string" />
+                    <xsd:element name="startDateTime" type="xsd:dateTime" />
+                    <xsd:element name="stopDateTime" type="xsd:dateTime" />
+                    <xsd:element name="programName" type="xsd:string" minOccurs="0" />
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:element name="totalOverriddenDevicesByAccountNumberRequest" type="yukon:TotalOverriddenDevicesByAccountNumberRequest" />
 
 </xsd:schema>

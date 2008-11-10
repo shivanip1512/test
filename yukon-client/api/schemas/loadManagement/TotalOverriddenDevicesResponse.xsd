@@ -5,28 +5,24 @@
     targetNamespace="http://yukon.cannontech.com/api">
 
     <xsd:include schemaLocation="../common/YukonMessage.xsd" />
+    <xsd:include schemaLocation="../common/Failure.xsd" />
 
     <xsd:annotation>
         <xsd:documentation xml:lang="en">
             Integration II schema (integration with Retail Office) at
-            BG&amp;E: Item #4, first INPUT option Response would be a
-            message of TotalOverriddenDevicesResponse format.
+            BG&amp;E: Item #4, response for both INPUT options
         </xsd:documentation>
     </xsd:annotation>
 
-    <xsd:complexType
-        name="TotalOverriddenDevicesByProgramNameRequest">
+    <xsd:complexType name="TotalOverriddenDevicesResponse">
         <xsd:complexContent>
             <xsd:extension base="yukon:YukonMessage">
-                <xsd:sequence>
-                    <xsd:element name="programName" type="xsd:string" />
-                    <xsd:element name="startDateTime" type="xsd:dateTime" />
-                    <xsd:element name="stopDateTime" type="xsd:dateTime" />
-                </xsd:sequence>
+                <xsd:choice>
+                    <xsd:element name="totalDevices" type="xsd:long" />
+                    <xsd:element name="failure" type="yukon:Failure" />
+                </xsd:choice>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
-
-    <xsd:element name="totalOverriddenDevicesByProgramNameRequest" type="yukon:TotalOverriddenDevicesByProgramNameRequest" />
 
 </xsd:schema>
