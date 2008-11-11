@@ -5,8 +5,8 @@
 * Date:   2/12/2008
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2008/10/30 19:54:27 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2008/11/11 21:51:43 $
 *
 * Copyright (c) 2008 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,6 +24,9 @@
 #include <rw/db/datetime.h>
 #include <rw/thr/recursiv.h>
 #include <rw/thr/monitor.h>
+
+#include <boost/shared_ptr.hpp>
+using boost::shared_ptr;
 
 #include <map>
 #include "dlldefs.h"
@@ -77,5 +80,7 @@ public:
         UPDATE_ON_CHANGE,
     };
 };
+
+typedef shared_ptr< CtiTablePointProperty > CtiTablePointPropertySPtr;
 
 #endif // #ifndef __TBL_PT_PROPERTY_H__

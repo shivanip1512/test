@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ctivangogh.h-arc  $
-* REVISION     :  $Revision: 1.59 $
-* DATE         :  $Date: 2008/10/30 19:54:27 $
+* REVISION     :  $Revision: 1.60 $
+* DATE         :  $Date: 2008/11/11 21:51:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -49,6 +49,7 @@ using std::iostream;
 #include "mutex.h"
 #include "pendingopthread.h"
 #include "pending_info.h"
+#include "pt_dyn_dispatch.h"
 #include "pt_status.h"
 #include "pttrigger.h"
 #include "signalmanager.h"
@@ -131,15 +132,15 @@ private:
 
     UINT writeRawPointHistory(bool justdoit, int maxrowstowrite);
 
-    int checkNumericReasonability(CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointNumericSPtr pointNumeric, CtiDynamicPointDispatch *pDyn, CtiSignalMsg *&pSig );
-    void checkNumericRateOfChange(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointNumericSPtr pointNumeric, CtiDynamicPointDispatch *pDyn, CtiSignalMsg *&pSig );
-    void checkNumericLimits(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointNumericSPtr pointNumeric, CtiDynamicPointDispatch *pDyn, CtiSignalMsg *&pSig );
+    int checkNumericReasonability(CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointNumericSPtr pointNumeric, CtiDynamicPointDispatchSPtr &pDyn, CtiSignalMsg *&pSig );
+    void checkNumericRateOfChange(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointNumericSPtr pointNumeric, CtiDynamicPointDispatchSPtr &pDyn, CtiSignalMsg *&pSig );
+    void checkNumericLimits(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointNumericSPtr pointNumeric, CtiDynamicPointDispatchSPtr &pDyn, CtiSignalMsg *&pSig );
     INT getNumericLimitFromHighLow(int alarmOffset, int alarm);
 
-    void checkStatusUCOS(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointSPtr point, CtiDynamicPointDispatch *pDyn, CtiSignalMsg *&pSig );
-    void checkStatusCommandFail(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointSPtr point, CtiDynamicPointDispatch *pDyn, CtiSignalMsg *&pSig );
-    void checkStatusState(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointSPtr point, CtiDynamicPointDispatch *pDyn, CtiSignalMsg *&pSig );
-    void checkChangeOfState(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointSPtr point, CtiDynamicPointDispatch *pDyn, CtiSignalMsg *&pSig );
+    void checkStatusUCOS(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointSPtr point, CtiDynamicPointDispatchSPtr &pDyn, CtiSignalMsg *&pSig );
+    void checkStatusCommandFail(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointSPtr point, CtiDynamicPointDispatchSPtr &pDyn, CtiSignalMsg *&pSig );
+    void checkStatusState(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointSPtr point, CtiDynamicPointDispatchSPtr &pDyn, CtiSignalMsg *&pSig );
+    void checkChangeOfState(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointSPtr point, CtiDynamicPointDispatchSPtr &pDyn, CtiSignalMsg *&pSig );
     void tagSignalAsAlarm(CtiPointSPtr point, CtiSignalMsg *&pSig, int alarm, CtiPointDataMsg *pData = 0);
     void updateDynTagsForSignalMsg( CtiPointSPtr point, CtiSignalMsg *&pSig, int alarm_condition, bool condition_active );
 
@@ -179,7 +180,7 @@ private:
     std::multiset<StalePointTimeData> _expirationSet;//This is yucky. Oh well.
     std::map<long, CtiTime> _pointUpdatedTime;//The whole point of this is to give me a time associated with these points.
     void loadStalePointMaps(int pointID = 0);
-    void processStalePoint(CtiPointSPtr pPoint, CtiDynamicPointDispatch* pDyn, int updateType, const CtiPointDataMsg &aPD, CtiMultiWrapper& wrap );
+    void processStalePoint(CtiPointSPtr pPoint, CtiDynamicPointDispatchSPtr &pDyn, int updateType, const CtiPointDataMsg &aPD, CtiMultiWrapper& wrap );
     void checkForStalePoints(CtiMultiWrapper &aWrap);
 
 public:
@@ -237,7 +238,7 @@ public:
     BOOL  isConnectionAttachedToMsgPoint(const CtiServer::ptr_type &Conn,
                                          const LONG                          pID);
     BOOL  isPointDataForConnection(const CtiServer::ptr_type &Conn, const CtiPointDataMsg &Msg);
-    BOOL  isPointDataNewInformation(const CtiPointDataMsg &Msg, const CtiDynamicPointDispatch *pDyn);
+    BOOL  isPointDataNewInformation(const CtiPointDataMsg &Msg, const CtiDynamicPointDispatchSPtr &pDyn);
     BOOL  isSignalForConnection(const CtiServer::ptr_type &Conn, const CtiSignalMsg &Msg);
     BOOL  isTagForConnection(const CtiServer::ptr_type   &Conn, const CtiTagMsg &Msg);
 
@@ -304,7 +305,7 @@ public:
     void adjustDeviceDisableTags(LONG id = 0, bool dbchange = false, string user = string("System"));
     void loadDeviceLites(LONG id = 0);
     void pruneCommErrorHistory();
-    void activatePointAlarm(int alarm, CtiMultiWrapper &aWrap, CtiPointSPtr point, CtiDynamicPointDispatch *&pDyn, bool activate);
+    void activatePointAlarm(int alarm, CtiMultiWrapper &aWrap, CtiPointSPtr point, CtiDynamicPointDispatchSPtr &pDyn, bool activate);
     void deactivatePointAlarm(int alarm, CtiMultiWrapper &aWrap, CtiPointSPtr point, CtiDynamicPointDispatch *&pDyn);
     void reactivatePointAlarm(int alarm, CtiMultiWrapper &aWrap, CtiPointSPtr point, CtiDynamicPointDispatch *&pDyn);
 

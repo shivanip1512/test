@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/INCLUDE/test_queue.cpp-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2008/11/05 19:03:36 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2008/11/11 21:51:43 $
 *
 * Copyright (c) 2008 Cooper Industries, All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -121,4 +121,41 @@ BOOST_AUTO_UNIT_TEST(test_alarming)
     BOOST_CHECK(!(alarm.getAlarmCategory(6) > SignalEvent));
     BOOST_CHECK(!(alarm.getAlarmCategory(7) > SignalEvent));
     BOOST_CHECK(alarm.getAutoAckStates() == 0);
+}
+
+BOOST_AUTO_UNIT_TEST(test_dynamic)
+{
+    Test_CtiPointClientManager manager;
+    BOOST_CHECK(manager.entries() == 0);
+
+    Test_CtiPointStatus *point_status1,
+                        *point_status2;
+    Test_CtiPointAnalog *point_analog1,
+                        *point_analog2,
+                        *point_analog3;
+
+    point_status1 = make_point<Test_CtiPointStatus>(device1_id, status1_id, StatusPointType, point1_offset);
+    point_status2 = make_point<Test_CtiPointStatus>(device1_id, status2_id, StatusPointType, point2_offset);
+    point_analog1 = make_point<Test_CtiPointAnalog>(device1_id, analog1_id, AnalogPointType, point1_offset);
+    point_analog2 = make_point<Test_CtiPointAnalog>(device1_id, analog2_id, AnalogPointType, point2_offset);
+    point_analog3 = make_point<Test_CtiPointAnalog>(device2_id, analog3_id, AnalogPointType, point1_offset);
+
+    CtiPointSPtr point_status1_sptr = CtiPointSPtr(point_status1);
+
+    CtiDynamicPointDispatchSPtr dynamic = manager.getDynamic(point_status1_sptr);
+
+    BOOST_CHECK(!dynamic);
+
+    dynamic = CtiDynamicPointDispatchSPtr(CTIDBG_new CtiDynamicPointDispatch(status1_id));
+    manager.setDynamic(status1_id, dynamic);
+    
+    CtiDynamicPointDispatchSPtr pDispatch = manager.getDynamic(point_status1_sptr);
+    BOOST_CHECK(pDispatch);
+
+    BOOST_CHECK_EQUAL(pDispatch.get(), dynamic.get());
+
+    manager.erase(status1_id);
+    pDispatch = manager.getDynamic(point_status1_sptr);
+
+    BOOST_CHECK(!pDispatch);
 }

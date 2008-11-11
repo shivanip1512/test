@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/mgr_ptclients.h-arc  $
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2008/11/05 19:03:37 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2008/11/11 21:51:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -46,9 +46,9 @@ private:
    typedef std::map<LONG, ReasonabilityLimitStruct> ReasonabilityLimitMap;
    typedef std::set<CtiTablePointLimit>             PointLimitSet;
    typedef std::set<CtiTablePointAlarming>          PointAlarmingSet;
-   typedef std::multimap<long, CtiTablePointProperty *> PointPropertyMap;
-   typedef std::map<long, CtiDynamicPointDispatch *>    DynamicPointDispatchMap;
-   typedef std::map<long, CtiDynamicPointDispatch *>::iterator DynamicPointDispatchIterator;
+   typedef std::multimap<long, CtiTablePointPropertySPtr> PointPropertyMap;
+   typedef std::map<long, CtiDynamicPointDispatchSPtr>  DynamicPointDispatchMap;
+   typedef DynamicPointDispatchMap::iterator            DynamicPointDispatchIterator;
    typedef std::map<long, CtiPointConnection>           PointConnectionMap;
 
    // The weak pointers contained in this map are no longer guaranteed to exist.
@@ -82,7 +82,7 @@ private:
    void writeRecordsToDB  (list<CtiTablePointDispatch> &updateList);
    void removeOldDynamicData();
 
-   CtiDynamicPointDispatch *getDynamic(unsigned long pointID) const;
+   CtiDynamicPointDispatchSPtr getDynamic(unsigned long pointID) const;
 
    void removePoint(long point, bool isExpiration = false);
 
@@ -128,8 +128,8 @@ public:
    ReasonabilityLimitStruct getReasonabilityLimits(CtiPointSPtr point) const;
    CtiTablePointLimit       getPointLimit(CtiPointSPtr point, LONG limitNum) const;  //  is copying the table cheap/fast enough?
    CtiTablePointAlarming    getAlarming  (CtiPointSPtr point) const;                 //    if not, we'll need to return smart pointers
-   CtiDynamicPointDispatch *getDynamic   (CtiPointSPtr point) const;
-   bool                     setDynamic   (long pointID, CtiDynamicPointDispatch *point);
+   CtiDynamicPointDispatchSPtr getDynamic   (CtiPointSPtr point) const;
+   bool                     setDynamic   (long pointID, CtiDynamicPointDispatchSPtr &point);
    int  getProperty (LONG point, unsigned int property) const;
    bool hasProperty (LONG point, unsigned int property) const;
    void getPointsWithProperty(unsigned int propertyID, vector<long> &points);

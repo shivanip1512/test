@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/mgr_ptclients.cpp-arc  $
-* REVISION     :  $Revision: 1.54 $
-* DATE         :  $Date: 2008/11/05 19:03:36 $
+* REVISION     :  $Revision: 1.55 $
+* DATE         :  $Date: 2008/11/11 21:51:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -49,11 +49,11 @@ using namespace std;
 void ApplyInitialDynamicConditions(const long key, CtiPointSPtr pTempPoint, void* d)
 {
     CtiPointClientManager *pointManager = (CtiPointClientManager*)d;
-    CtiDynamicPointDispatch *pDyn = pointManager->getDynamic(pTempPoint);
+    CtiDynamicPointDispatchSPtr pDyn = pointManager->getDynamic(pTempPoint);
 
-    if(pDyn == NULL)
+    if(!pDyn)
     {
-        if(NULL != (pDyn = CTIDBG_new CtiDynamicPointDispatch(pTempPoint->getID())))
+        if((pDyn = CtiDynamicPointDispatchSPtr(CTIDBG_new CtiDynamicPointDispatch(pTempPoint->getID()))))
         {
             UINT statictags = pDyn->getDispatch().getTags();
             pTempPoint->adjustStaticTags(statictags);
@@ -93,7 +93,7 @@ void CtiPointClientManager::processPointDynamicData(LONG pntID, LONG paoID, cons
         {
             ApplyInitialDynamicConditions(0,pTempPoint,this);
 
-            const CtiDynamicPointDispatch *dynamic = getDynamic(pTempPoint);
+            const CtiDynamicPointDispatchSPtr dynamic = getDynamic(pTempPoint);
 
             //This will probably always be true, but why not check.
             if(dynamic && !dynamic->getDispatch().getUpdatedFlag())
@@ -139,7 +139,7 @@ void CtiPointClientManager::processPointDynamicData(LONG pntID, LONG paoID, cons
 
 struct non_updated_check
 {
-    bool operator()(pair<long, CtiDynamicPointDispatch *> dynamic)
+    bool operator()(pair<long, CtiDynamicPointDispatchSPtr> dynamic)
     {
         return dynamic.second && !dynamic.second->getDispatch().getUpdatedFlag();
     }
@@ -387,21 +387,11 @@ void CtiPointClientManager::refreshProperties(LONG pntID, LONG paoID, const set<
         coll_type::writer_lock_guard_t guard(getLock());
         if( pntID )
         {
-            PointPropertyRange range = _properties.equal_range(pntID);
-            for( ; range.first != range.second; ++range.first )
-            {
-                if( range.first->second != NULL )
-                {
-                    delete range.first->second;
-                    range.first->second = NULL;
-                }
-            }
-    
             _properties.erase(pntID);
         }
         for( std::list<CtiTablePointProperty *>::iterator iter = tempList.begin(); iter != tempList.end(); iter++ )
         {
-            _properties.insert(make_pair((*iter)->getPointID(), *iter));
+            _properties.insert(make_pair((*iter)->getPointID(), CtiTablePointPropertySPtr(*iter)));
         }
     }
 
@@ -485,17 +475,15 @@ void CtiPointClientManager::refreshArchivalList(LONG pntID, LONG paoID, const se
             PointPropertyRange range = _properties.equal_range(pntID);
             for( ; range.first != range.second; ++range.first )
             {
-                if( range.first->second != NULL && range.first->second->getPropertyID() == CtiTablePointProperty::ARCHIVE_ON_TIMER)
+                if( range.first->second && range.first->second->getPropertyID() == CtiTablePointProperty::ARCHIVE_ON_TIMER)
                 {
-                    delete range.first->second;
-                    range.first->second = NULL;
                     _properties.erase(range.first);
                 }
             }
         }
         for( std::list<CtiTablePointProperty *>::iterator iter = tempList.begin(); iter != tempList.end(); iter++ )
         {
-            _properties.insert(make_pair((*iter)->getPointID(), *iter));
+            _properties.insert(make_pair((*iter)->getPointID(), CtiTablePointPropertySPtr(*iter)));
         }
     }
 
@@ -521,9 +509,9 @@ void CtiPointClientManager::DumpList(void)
             p = itr->second;
 
             {
-                const CtiDynamicPointDispatch *pDyn = getDynamic(p);
+                const CtiDynamicPointDispatchSPtr pDyn = getDynamic(p);
 
-                if(p->isValid() && pDyn != NULL)
+                if(p->isValid() && pDyn)
                 {
                     cout << "MemoryPoint \"" << p->getID( ) << "\" defined and initialized" << endl;
                     cout << " Point Value         : " << pDyn->getValue() << endl;
@@ -703,9 +691,9 @@ CtiTime CtiPointClientManager::findNextNearestArchivalTime()
 
             if( pPt )
             {
-                const CtiDynamicPointDispatch *pDyn = getDynamic(pPt);
+                const CtiDynamicPointDispatchSPtr pDyn = getDynamic(pPt);
 
-                if(pDyn != NULL)
+                if(pDyn)
                 {
                     if(pDyn->getNextArchiveTime() < closeTime)
                     {
@@ -734,9 +722,9 @@ void CtiPointClientManager::scanForArchival(const CtiTime &Now, CtiFIFOQueue<Cti
             CtiPointSPtr pPt = getPoint(*itr);
 
             {
-                CtiDynamicPointDispatch *pDyn = getDynamic(pPt);
+                CtiDynamicPointDispatchSPtr pDyn = getDynamic(pPt);
 
-                if(pDyn != NULL && !(pDyn->getDispatch().getTags() & MASK_ANY_SERVICE_DISABLE))  // Point is disabled.
+                if(pDyn && !(pDyn->getDispatch().getTags() & MASK_ANY_SERVICE_DISABLE))  // Point is disabled.
                 {
                     if(
                       pPt->getArchiveType() == ArchiveTypeOnTimer             ||
@@ -794,9 +782,9 @@ void CtiPointClientManager::getDirtyRecordList(list<CtiTablePointDispatch> &upda
     {
         try
         {
-            CtiDynamicPointDispatch *pDyn = itr->second;
+            CtiDynamicPointDispatchSPtr pDyn = itr->second;
 
-            if(pDyn != NULL && (pDyn->getDispatch().isDirty() || !pDyn->getDispatch().getUpdatedFlag()) )
+            if(pDyn && (pDyn->getDispatch().isDirty() || !pDyn->getDispatch().getUpdatedFlag()) )
             {
                 UINT statictags = pDyn->getDispatch().getTags();
                 pDyn->getDispatch().resetTags();                    // clear them all!
@@ -871,10 +859,6 @@ void CtiPointClientManager::removeOldDynamicData()
         {
             if(!isPointLoaded(itr->first))
             {
-                if( itr->second != NULL )
-                {
-                    delete itr->second;
-                }
                 itr = _dynamic.erase(itr);
                 count ++;
             }
@@ -931,22 +915,6 @@ CtiPointClientManager::~CtiPointClientManager()
 void CtiPointClientManager::DeleteList(void)
 {
     coll_type::writer_lock_guard_t guard(getLock());
-
-    for( DynamicPointDispatchMap::iterator itr = _dynamic.begin(); itr != _dynamic.end(); itr++ )
-    {
-        if( itr->second != NULL )
-        {
-            delete itr->second;
-        }
-    }
-
-    for( PointPropertyMap::iterator iter = _properties.begin(); iter != _properties.end(); iter++ )
-    {
-        if( iter->second != NULL )
-        {
-            delete iter->second;
-        }
-    }
 
     _conMgrPointMap.clear();
     _pointConnectionMap.clear();
@@ -1020,9 +988,9 @@ void CtiPointClientManager::RefreshDynamicData(LONG id, const set<long> &pointId
 
         if(pTempPoint)
         {
-            CtiDynamicPointDispatch *pDyn = getDynamic(pTempPoint);
+            CtiDynamicPointDispatchSPtr pDyn = getDynamic(pTempPoint);
 
-            if(pDyn != NULL)
+            if(pDyn)
             {
                 if(pDyn->getDispatch().getUpdatedFlag() == FALSE)
                 {
@@ -1219,26 +1187,6 @@ void CtiPointClientManager::removePoint(long pointID, bool isExpiration)
     //this is a deletion, and the values cannot be written to the db.
     if(!isExpiration)
     {
-        //Delete entries with the given point id, set to null in case delete does not remove them!
-        DynamicPointDispatchMap::iterator iter = _dynamic.find(pointID);
-        if( iter != _dynamic.end() && iter->second != NULL)
-        {
-            delete iter->second;
-            iter->second = NULL;
-        }
-
-        PointPropertyRange range = _properties.equal_range(pointID);
-
-        //Delete entries with the given point id, set to null in case delete does not remove them!
-        for( ; range.first != range.second; ++range.first )
-        {
-            if( range.first->second != NULL )
-            {
-                delete range.first->second;
-                range.first->second = NULL;
-            }
-        }
-
         _dynamic.erase(pointID);
         _pointConnectionMap.erase(pointID);
 
@@ -1257,7 +1205,7 @@ bool CtiPointClientManager::isPointLoaded(LONG Pt)
     // The point must be loaded in both locations to exist. If it is loaded
     // in just the inherited container, the dynamic may not yet be loaded.
     // The point will be in only dynamic for a time when the point expires.
-    return (Inherited::getPoint(Pt) && getDynamic(Pt) != NULL);
+    return (Inherited::getPoint(Pt) && getDynamic(Pt));
 }
 
 CtiPointManager::ptr_type CtiPointClientManager::getCachedPoint(LONG Pt)
@@ -1383,28 +1331,28 @@ CtiTablePointAlarming CtiPointClientManager::getAlarming(CtiPointSPtr point) con
     return retVal;
 }
 
-bool CtiPointClientManager::setDynamic(long pointID, CtiDynamicPointDispatch *point)
+bool CtiPointClientManager::setDynamic(long pointID, CtiDynamicPointDispatchSPtr &point)
 {
     coll_type::writer_lock_guard_t guard(getLock());
 
     return (_dynamic.insert(make_pair(pointID, point))).second;
 }
 
-CtiDynamicPointDispatch *CtiPointClientManager::getDynamic(CtiPointSPtr point) const
+CtiDynamicPointDispatchSPtr CtiPointClientManager::getDynamic(CtiPointSPtr point) const
 {
-    CtiDynamicPointDispatch *retval = NULL;
+    CtiDynamicPointDispatchSPtr retVal;
 
     if( point )
     {
         coll_type::reader_lock_guard_t guard(getLock());
-        DynamicPointDispatchMap::iterator iter = _dynamic.find(point->getPointID());
-        if(iter != _dynamic.end())
+        DynamicPointDispatchIterator iter = _dynamic.find(point->getPointID());
+        if( iter != _dynamic.end() )
         {
-            retval = iter->second;
+            retVal = iter->second;
         }
     }
 
-    return retval;
+    return retVal;
 }
 
 /**
@@ -1415,18 +1363,20 @@ CtiDynamicPointDispatch *CtiPointClientManager::getDynamic(CtiPointSPtr point) c
  * 
  * @return CtiDynamicPointDispatch* 
  */
-CtiDynamicPointDispatch* CtiPointClientManager::getDynamic(unsigned long pointID) const
+CtiDynamicPointDispatchSPtr CtiPointClientManager::getDynamic(unsigned long pointID) const
 {
-    CtiDynamicPointDispatch *retval = NULL;
+    CtiDynamicPointDispatchSPtr retVal;
 
-    coll_type::reader_lock_guard_t guard(getLock());
-    DynamicPointDispatchMap::iterator iter = _dynamic.find(pointID);
-    if(iter != _dynamic.end())
     {
-        retval = iter->second;
+        coll_type::reader_lock_guard_t guard(getLock());
+        DynamicPointDispatchIterator iter = _dynamic.find(pointID);
+        if( iter != _dynamic.end() )
+        {
+            retVal = iter->second;
+        }
     }
 
-    return retval;
+    return retVal;
 }
 
 int CtiPointClientManager::getProperty(LONG point, unsigned int propertyID) const
@@ -1437,7 +1387,7 @@ int CtiPointClientManager::getProperty(LONG point, unsigned int propertyID) cons
 
     for( ; range.first != range.second; ++range.first )
     {
-        const CtiTablePointProperty *property_ptr = range.first->second;
+        const CtiTablePointPropertySPtr property_ptr = range.first->second;
         if( property_ptr && property_ptr->getPropertyID() == propertyID )
         {
             return property_ptr->getIntProperty();
@@ -1455,7 +1405,7 @@ bool CtiPointClientManager::hasProperty(LONG point, unsigned int propertyID) con
 
     for( ; range.first != range.second; ++range.first )
     {
-        const CtiTablePointProperty *property_ptr = range.first->second;
+        const CtiTablePointPropertySPtr property_ptr = range.first->second;
         if( property_ptr && property_ptr->getPropertyID() == propertyID )
         {
             return true;
@@ -1474,7 +1424,7 @@ void CtiPointClientManager::getPointsWithProperty(unsigned int propertyID, vecto
 
     for( ; range.first != range.second; ++range.first )
     {
-        const CtiTablePointProperty *property_ptr = range.first->second;
+        const CtiTablePointPropertySPtr property_ptr = range.first->second;
         if( property_ptr && property_ptr->getPropertyID() == propertyID )
         {
             points.push_back(property_ptr->getPointID());

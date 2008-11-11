@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_dyn_dispatch.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2008/10/02 18:27:29 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2008/11/11 21:51:43 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,6 +19,8 @@
 #pragma warning( disable : 4786)
 
 #include <windows.h>
+#include <boost/shared_ptr.hpp>
+using boost::shared_ptr;
 
 #include "pt_dyn_base.h"
 #include "tbl_pt_alarm.h"
@@ -76,5 +78,7 @@ public:
    void setConditionActive(int alarm_condition, bool active = true);
    bool isConditionActive(int alarm_condition) const;
 };
+
+typedef shared_ptr< CtiDynamicPointDispatch > CtiDynamicPointDispatchSPtr;
 
 #endif // #ifndef __PT_DYN_DISPATCH_H__

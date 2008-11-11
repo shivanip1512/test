@@ -7,11 +7,16 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.39 $
-* DATE         :  $Date: 2008/10/21 21:51:12 $
+* REVISION     :  $Revision: 1.40 $
+* DATE         :  $Date: 2008/11/11 21:51:43 $
 *
 * HISTORY      :
 * $Log: pendingOpThread.cpp,v $
+* Revision 1.40  2008/11/11 21:51:43  jotteson
+* YUK-6504 Server processes should not load all points
+* Changed most of mgr_ptclients to use smart pointers.
+* Updated tests for dispatch points.
+*
 * Revision 1.39  2008/10/21 21:51:12  jotteson
 * YUK-6504 Server processes should not load all points
 * Changed Dispatch to load points by pao differently than porter handles it.
@@ -2038,8 +2043,8 @@ CtiPendingOpThread::CtiPendingOpSet_t::iterator CtiPendingOpThread::erasePending
     CtiPointSPtr point = PointMgr.getPoint(iter->getPointID());
     if( point )
     {
-        CtiDynamicPointDispatch *pDyn = PointMgr.getDynamic(point);
-        if( pDyn != NULL )
+        CtiDynamicPointDispatchSPtr pDyn = PointMgr.getDynamic(point);
+        if( pDyn )
         {
             pDyn->getDispatch().resetTags( TAG_CONTROL_PENDING );
         }
