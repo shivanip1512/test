@@ -20,7 +20,7 @@
         <xsd:complexContent>
             <xsd:extension base="yukon:YukonMessage">
                 <xsd:choice>
-                    <xsd:element name="scenarioName" type="xsd:string"/>
+                    <xsd:element name="success"/>
                     <xsd:element name="failure" type="yukon:Failure"/>
                 </xsd:choice>
             </xsd:extension>

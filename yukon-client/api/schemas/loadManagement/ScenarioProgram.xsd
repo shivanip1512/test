@@ -14,7 +14,7 @@
 	<xsd:complexType name="ScenarioProgram">
 		<xsd:sequence>
 			<xsd:element name="programName" type="xsd:string"/>
-			<xsd:element name="gearName" type="xsd:string"/>
+			<xsd:element name="startGearName" type="xsd:string"/>
 		</xsd:sequence>
 	</xsd:complexType>
     

@@ -13,63 +13,63 @@
             <programName>
                 Residential LCR Cooling 50% Contract
             </programName>
-            <gearName>50% Ramp</gearName>
+            <startGearName>50% Ramp</startGearName>
         </scenarioProgram>
         
         <scenarioProgram>
             <programName>
                 Residential LCR Cooling 75% Contract
             </programName>
-            <gearName>75% Ramp</gearName>
+            <startGearName>75% Ramp</startGearName>
         </scenarioProgram>
         
         <scenarioProgram>
             <programName>
                 Residential LCR Cooling 100% Contract
             </programName>
-            <gearName>100% Ramp</gearName>
+            <startGearName>100% Ramp</startGearName>
         </scenarioProgram>
         
         <scenarioProgram>
             <programName>
                 Commercial ExpressStat Cooling 50% Contract
             </programName>
-            <gearName>50% Ramp</gearName>
+            <startGearName>50% Ramp</startGearName>
         </scenarioProgram>
         
         <scenarioProgram>
             <programName>
                 Commercial ExpressStat Cooling 75% Contract
             </programName>
-            <gearName>75% Ramp</gearName>
+            <startGearName>75% Ramp</startGearName>
         </scenarioProgram>
         
         <scenarioProgram>
             <programName>
                 Commercial ExpressStat Cooling 100% Contract
             </programName>
-            <gearName>100% Ramp</gearName>
+            <startGearName>100% Ramp</startGearName>
         </scenarioProgram>
         
         <scenarioProgram>
             <programName>
                 Residential ExpressStat Cooling 50% Contract
             </programName>
-            <gearName>50% Ramp</gearName>
+            <startGearName>50% Ramp</startGearName>
         </scenarioProgram>
         
         <scenarioProgram>
             <programName>
                 Residential ExpressStat Cooling 75% Contract
             </programName>
-            <gearName>75% Ramp</gearName>
+            <startGearName>75% Ramp</startGearName>
         </scenarioProgram>
         
         <scenarioProgram>
             <programName>
                 Residential ExpressStat Cooling 100% Contract
             </programName>
-            <gearName>100% Ramp</gearName>
+            <startGearName>100% Ramp</startGearName>
         </scenarioProgram>
         
     </scenarioProgramsList>

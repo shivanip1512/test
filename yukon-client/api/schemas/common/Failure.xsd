@@ -11,7 +11,7 @@
 	<xsd:complexType name="Failure">
 		<xsd:sequence>
 			<xsd:element name="errorCode" type="xsd:string"/>
-			<xsd:element name="errorReference" type="xsd:string"/>
+			<xsd:element name="errorReference" type="xsd:string" minOccurs="0"/>
 			<xsd:element name="errorDescription" type="xsd:string"/>
 		</xsd:sequence>
 	</xsd:complexType>

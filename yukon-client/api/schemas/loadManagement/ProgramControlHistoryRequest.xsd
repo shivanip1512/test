@@ -17,9 +17,17 @@
         <xsd:complexContent>
             <xsd:extension base="yukon:YukonMessage">
                 <xsd:sequence>
+                
                     <xsd:element name="programName" type="xsd:string" />
+                
                     <xsd:element name="startDateTime" type="xsd:dateTime" />
-                    <xsd:element name="stopDateTime" type="xsd:dateTime" />
+                
+                    <xsd:element name="stopDateTime" type="xsd:dateTime" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation>stopDateTime is optional. If ommited all control history through the request time will be included in the response.</xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                
                 </xsd:sequence>
             </xsd:extension>
         </xsd:complexContent>

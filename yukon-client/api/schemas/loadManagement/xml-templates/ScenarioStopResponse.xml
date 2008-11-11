@@ -5,6 +5,6 @@
            xsi:schemaLocation="http://yukon.cannontech.com/api ../ScenarioStopResponse.xsd"
            version="1.0">
 
-    <scenarioName>PJM Rider 22</scenarioName>
+    <success />
 
 </scenarioStopResponse>

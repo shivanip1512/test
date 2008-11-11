@@ -19,7 +19,11 @@
         <xsd:sequence>
             <xsd:element name="programName" type="xsd:string" />
             <xsd:element name="startDateTime" type="xsd:dateTime" />
-            <xsd:element name="stopDateTime" type="xsd:dateTime" minOccurs="0" />
+            <xsd:element name="stopDateTime" type="xsd:dateTime" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>stopDateTime may not appear in the response, this means the control has no stop time scheduled.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
             <xsd:element name="gearName" type="xsd:string" />
         </xsd:sequence>
     </xsd:complexType>

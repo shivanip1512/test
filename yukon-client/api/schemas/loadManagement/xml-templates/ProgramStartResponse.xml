@@ -5,6 +5,6 @@
            xsi:schemaLocation="http://yukon.cannontech.com/api ../ProgramStartResponse.xsd"
            version="1.0">
     
-    <programName>Residential LCR Cooling 75% Contract</programName>  
+    <success /> 
     
 </programStartResponse>

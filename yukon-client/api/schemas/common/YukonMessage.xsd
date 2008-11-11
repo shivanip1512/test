@@ -7,6 +7,5 @@
 	</xsd:annotation>
 	<xsd:complexType name="YukonMessage">
 		<xsd:attribute name="version" type="xsd:string" use="required"/>
-		<xsd:attribute name="other" type="xsd:string"/>
 	</xsd:complexType>
 </xsd:schema>
