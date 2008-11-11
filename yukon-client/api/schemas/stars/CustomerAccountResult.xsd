@@ -14,19 +14,13 @@
      	</xsd:documentation>
     </xsd:annotation>
     
-    <xsd:complexType name="CustomerAccountResultList">
+    <xsd:complexType name="CustomerAccountResult">
         <xsd:sequence>
-            <xsd:element name="customerAccount" maxOccurs="unbounded">
-                <xsd:complexType>
-                    <xsd:sequence>
-                        <xsd:element name="accountNumber" type="yukon:AcountNumber"/>
-                        <xsd:choice>
-                            <xsd:element name="success" />
-                            <xsd:element name="failure" type="yukon:Failure" />
-                        </xsd:choice>
-                    </xsd:sequence>
-                </xsd:complexType>
-            </xsd:element>
+            <xsd:element name="accountNumber" type="yukon:AcountNumber"/>
+            <xsd:choice>
+                <xsd:element name="success" />
+                <xsd:element name="failure" type="yukon:Failure" />
+            </xsd:choice>
         </xsd:sequence>
     </xsd:complexType>
 

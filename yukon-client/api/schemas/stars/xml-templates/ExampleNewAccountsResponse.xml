@@ -4,17 +4,17 @@
            xsi:schemaLocation="http://yukon.cannontech.com/api ../NewAccountsResponse.xsd"
            version="1.0">
 	<accountResultList>
-        <customerAccount>
+        <accountResult>
             <accountNumber>772526</accountNumber>
             <failure>
                 <errorCode>ERRORCODE</errorCode>
                 <errorReference>YK100</errorReference>
                 <errorDescription>Bad stuff happened.</errorDescription>
             </failure>
-        </customerAccount>
-        <customerAccount>
+        </accountResult>
+        <accountResult>
             <accountNumber>287433</accountNumber>
             <success/>
-        </customerAccount>
+        </accountResult>
     </accountResultList>
 </newAccountsResponse>
