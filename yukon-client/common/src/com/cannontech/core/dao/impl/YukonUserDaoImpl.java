@@ -18,7 +18,6 @@ import com.cannontech.core.authentication.service.AuthType;
 import com.cannontech.core.authorization.dao.PaoPermissionDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteContact;
-import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.user.YukonUser;
@@ -75,7 +74,7 @@ public final class YukonUserDaoImpl implements YukonUserDao {
 	
 	@Override
 	@Transactional
-	public void addLiteYukonUserWithPassword(LiteYukonUser user, String password, LiteEnergyCompany energyCompany, List<LiteYukonGroup> groups) throws DataAccessException {
+	public void addLiteYukonUserWithPassword(LiteYukonUser user, String password, int energyCompanyId, List<LiteYukonGroup> groups) throws DataAccessException {
 	    int userId = nextValueHelper.getNextValue(YukonUser.TABLE_NAME);
 	    user.setUserID(userId);
 	    List<Object> values = new ArrayList<Object>();
@@ -101,10 +100,10 @@ public final class YukonUserDaoImpl implements YukonUserDao {
     	    simpleJdbcTemplate.update(sql.toString());
 	    }
 	    
-	    if( energyCompany != null) {
+	    if( energyCompanyId > -2 ) { // default energy company starts at -1 
 	        sql = new SqlStatementBuilder();
 	        sql.append("INSERT INTO EnergyCompanyOperatorLoginList VALUES (");
-	        sql.append(energyCompany.getEnergyCompanyID());
+	        sql.append(energyCompanyId);
 	        sql.append(", ");
 	        sql.append(user.getUserID());
 	        sql.append(")");

@@ -12,9 +12,9 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
-import com.cannontech.database.data.lite.LiteEnergyCompany;
+import com.cannontech.database.cache.StarsDatabaseCache;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.service.AccountService;
-import com.cannontech.stars.dr.account.service.result.AccountActionResult;
 import com.cannontech.util.ServletUtil;
 
 public class AccountServiceInputsTestController extends MultiActionController{
@@ -35,10 +35,10 @@ public class AccountServiceInputsTestController extends MultiActionController{
         List<String> errorReasons = new ArrayList<String>();
         
         String accountNumber = ServletRequestUtils.getRequiredStringParameter(request, "accountNumber");
-        LiteEnergyCompany liteEnergyCompany = new LiteEnergyCompany();
+        LiteStarsEnergyCompany liteEnergyCompany = StarsDatabaseCache.getInstance().getDefaultEnergyCompany();
         try {
-            AccountActionResult result = accountService.deleteAccount(accountNumber, liteEnergyCompany);
-            results.add(result.toString());
+            accountService.deleteAccount(accountNumber, liteEnergyCompany);
+            results.add("");
         } catch (IllegalArgumentException e) {
             errorReasons.add(e.getMessage());
         }

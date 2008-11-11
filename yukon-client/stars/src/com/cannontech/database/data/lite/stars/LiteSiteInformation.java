@@ -44,7 +44,7 @@ public class LiteSiteInformation extends LiteBase {
 		SiteInformation site = new SiteInformation();
 		site.setSiteID( new Integer(getSiteID()) );
 		try {
-			site = (SiteInformation) Transaction.createTransaction(Transaction.RETRIEVE, site).execute();
+			site = Transaction.createTransaction(Transaction.RETRIEVE, site).execute();
 			StarsLiteFactory.setLiteSiteInformation( this, site );
 		}
 		catch (Exception e) {

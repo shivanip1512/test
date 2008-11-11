@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -21,6 +20,7 @@ import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.DBPersistentDao;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonUserDao;
@@ -32,7 +32,6 @@ import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteCustomer;
-import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteSiteInformation;
@@ -49,11 +48,12 @@ import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
 import com.cannontech.stars.dr.account.dao.AccountSiteDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
+import com.cannontech.stars.dr.account.exception.AccountNumberUnavailableException;
+import com.cannontech.stars.dr.account.exception.UserNameUnavailableException;
 import com.cannontech.stars.dr.account.model.AccountSite;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.account.model.ECToAccountMapping;
 import com.cannontech.stars.dr.account.service.AccountService;
-import com.cannontech.stars.dr.account.service.result.AccountActionResult;
 import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
 import com.cannontech.stars.dr.event.dao.EventAccountDao;
 import com.cannontech.stars.dr.event.dao.LMProgramEventDao;
@@ -92,443 +92,467 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public AccountActionResult addAccount(AccountDto accountDto) {
+    public void addAccount(AccountDto accountDto, LiteStarsEnergyCompany liteEnergyCompany) throws AccountNumberUnavailableException, UserNameUnavailableException {
         
-        AccountActionResult result = new AccountActionResult(accountDto.getAccountNumber());
+        LiteStarsCustAccountInformation accountInformation = liteEnergyCompany.searchAccountByAccountNo(accountDto.getAccountNumber());
         
-        try {
-            LiteEnergyCompany liteEnergyCompany = accountDto.getLiteEnergyCompany();
-            Address streetAddress = accountDto.getStreetAddress();
-            Address billingAddress = accountDto.getBillingAddress();
-            /*
-             * Create the user login
-             */
-            LiteYukonUser user = new LiteYukonUser(); 
-            user.setUsername(accountDto.getUserName());
-            user.setStatus(UserUtils.STATUS_ENABLED);
-            AuthType defaultAuthType = roleDao.getGlobalRolePropertyValue(AuthType.class, AuthenticationRole.DEFAULT_AUTH_TYPE);
-            user.setAuthType(defaultAuthType);
-            List<LiteYukonGroup> groups = new ArrayList<LiteYukonGroup>();
-            LiteYukonGroup defaultYukonGroup = yukonGroupDao.getLiteYukonGroup(YukonGroup.YUKON_GROUP_ID);
-            LiteYukonGroup operatorGroup = yukonGroupDao.getLiteYukonGroupByName(accountDto.getLoginGroup());
-            groups.add(defaultYukonGroup);
-            groups.add(operatorGroup);
-            yukonUserDao.addLiteYukonUserWithPassword(user, accountDto.getPassword(), liteEnergyCompany, groups);
+        if(StringUtils.isBlank(accountDto.getAccountNumber())) {
+            log.error("Account " + accountDto.getAccountNumber() + " could not be added: The provided account number cannot be empty.");
+            throw new IllegalArgumentException("The provided account number cannot be empty.");
+        }
+        
+        if(accountInformation != null) {
+            log.error("Account " + accountDto.getAccountNumber() + " could not be added: The provided account number already exists.");
+            throw new AccountNumberUnavailableException("The provided account number already exists");
+        }
+        
+        if(yukonUserDao.getLiteYukonUser( accountDto.getUserName() ) != null) {
+            log.error("Account " + accountDto.getAccountNumber() + " could not be added: The provided username already exists.");
+            throw new UserNameUnavailableException("The provided username already exists.");
+        }
+        
+        Address streetAddress = accountDto.getStreetAddress();
+        Address billingAddress = accountDto.getBillingAddress();
+        
+        /*
+         * Create the user login
+         */
+        LiteYukonUser user = new LiteYukonUser(); 
+        user.setUsername(accountDto.getUserName());
+        user.setStatus(UserUtils.STATUS_ENABLED);
+        AuthType defaultAuthType = roleDao.getGlobalRolePropertyValue(AuthType.class, AuthenticationRole.DEFAULT_AUTH_TYPE);
+        user.setAuthType(defaultAuthType);
+        List<LiteYukonGroup> groups = new ArrayList<LiteYukonGroup>();
+        LiteYukonGroup defaultYukonGroup = yukonGroupDao.getLiteYukonGroup(YukonGroup.YUKON_GROUP_ID);
+        LiteYukonGroup operatorGroup = yukonGroupDao.getLiteYukonGroupByName(accountDto.getLoginGroup());
+        groups.add(defaultYukonGroup);
+        groups.add(operatorGroup);
+        yukonUserDao.addLiteYukonUserWithPassword(user, accountDto.getPassword(), liteEnergyCompany.getEnergyCompanyID(), groups);
+        dbPersistantDao.processDBChange(new DBChangeMsg(user.getLiteID(),
+            DBChangeMsg.CHANGE_YUKON_USER_DB,
+            DBChangeMsg.CAT_YUKON_USER,
+            DBChangeMsg.CAT_YUKON_USER,
+            DBChangeMsg.CHANGE_TYPE_ADD));
+            
+        /*
+         * Create the address
+         */
+        LiteAddress liteAddress = new LiteAddress();
+        setAddressFieldsFromDTO(liteAddress, streetAddress);
+        addressDao.add(liteAddress);
+            
+        /*
+         * Create billing address if supplied
+         */
+        LiteAddress liteBillingAddress = null;
+        if(billingAddress != null && StringUtils.isNotBlank(billingAddress.getLocationAddress1())) {
+            setAddressFieldsFromDTO(liteAddress, accountDto.getBillingAddress());
+            addressDao.add(liteBillingAddress);
+        }
+            
+        /*
+         * Create the contact
+         */
+        LiteContact liteContact = new LiteContact(-1); 
+        liteContact.setContFirstName(accountDto.getFirstName());
+        liteContact.setContLastName(accountDto.getLastName());
+        liteContact.setLoginID(user.getUserID());
+        liteContact.setAddressID(liteAddress.getAddressID());
+        contactDao.saveContact(liteContact);
+        dbPersistantDao.processDBChange(new DBChangeMsg(liteContact.getLiteID(),
+                               DBChangeMsg.CHANGE_CONTACT_DB,
+                               DBChangeMsg.CAT_CUSTOMERCONTACT,
+                               DBChangeMsg.CAT_CUSTOMERCONTACT,
+                               DBChangeMsg.CHANGE_TYPE_ADD));
+            
+        /*
+         * Create the notifications
+         */
+        if(StringUtils.isNotBlank(accountDto.getHomePhone())) {
+            LiteContactNotification homePhoneLiteContactNotification = createNotification(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE, accountDto.getHomePhone());
+            contactNotificationDao.saveNotification(homePhoneLiteContactNotification);
+        }
+        
+        if(StringUtils.isNotBlank(accountDto.getWorkPhone())) {
+            LiteContactNotification workPhoneLiteContactNotification = createNotification(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE, accountDto.getWorkPhone());
+            contactNotificationDao.saveNotification(workPhoneLiteContactNotification);
+        }
+        
+        if(StringUtils.isNotBlank(accountDto.getEmailAddress())) {
+            LiteContactNotification emailLiteContactNotification = createNotification(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL, accountDto.getEmailAddress());
+            contactNotificationDao.saveNotification(emailLiteContactNotification);
+        }
+            
+        /*
+         * Create the customer
+         */
+        LiteCustomer liteCustomer = new LiteCustomer();
+        liteCustomer.setPrimaryContactID(liteContact.getContactID());
+        if(accountDto.getCustomerType().equalsIgnoreCase(CustomerTypes.STRING_CI_CUSTOMER)) {
+            liteCustomer.setCustomerTypeID(CustomerTypes.CUSTOMER_CI);
+        }else {
+            liteCustomer.setCustomerTypeID(CustomerTypes.CUSTOMER_RESIDENTIAL);
+        }
+        liteCustomer.setTimeZone(authDao.getUserTimeZone(user).getID());
+        liteCustomer.setCustomerNumber(CtiUtilities.STRING_NONE);
+        liteCustomer.setRateScheduleID(CtiUtilities.NONE_ZERO_ID);
+        liteCustomer.setAltTrackingNumber(CtiUtilities.STRING_NONE);
+        liteCustomer.setTemperatureUnit(authDao.getRolePropertyValue(liteEnergyCompany.getUserID(), EnergyCompanyRole.DEFAULT_TEMPERATURE_UNIT));
+        customerDao.addCustomer(liteCustomer);
+        dbPersistantDao.processDBChange(new DBChangeMsg(liteCustomer.getLiteID(),
+                               DBChangeMsg.CHANGE_CUSTOMER_DB,
+                               DBChangeMsg.CAT_CUSTOMER,
+                               DBChangeMsg.CAT_CUSTOMER,
+                               DBChangeMsg.CHANGE_TYPE_ADD));
+            
+        /*
+         * Create comercial/industrial customer if company was passed
+         */
+        if(liteCustomer.getCustomerTypeID() == CustomerTypes.CUSTOMER_CI) {
+            LiteCICustomer liteCICustomer = new LiteCICustomer();
+            liteCICustomer.setMainAddressID(liteAddress.getAddressID());
+            liteCICustomer.setDemandLevel(CtiUtilities.NONE_ZERO_ID);
+            liteCICustomer.setCurtailAmount(CtiUtilities.NONE_ZERO_ID);
+            liteCICustomer.setCompanyName(accountDto.getCompanyName());
+            liteCICustomer.setCICustType(YukonListEntryTypes.CUSTOMER_TYPE_COMMERCIAL);
+            customerDao.addCICustomer(liteCICustomer);
+            dbPersistantDao.processDBChange(new DBChangeMsg(liteCustomer.getLiteID(),
+                                   DBChangeMsg.CHANGE_CUSTOMER_DB,
+                                   DBChangeMsg.CAT_CI_CUSTOMER,
+                                   DBChangeMsg.CAT_CI_CUSTOMER,
+                                   DBChangeMsg.CHANGE_TYPE_ADD));
+        }
+            
+        /*
+         * Create service info
+         */
+        CustomerAccount customerAccount = new CustomerAccount();
+        LiteSiteInformation liteSiteInformation = new LiteSiteInformation();
+        siteInformationDao.add(liteSiteInformation);
+        dbPersistantDao.processDBChange(new DBChangeMsg(liteSiteInformation.getLiteID(),
+                               DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,
+                               DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
+                               DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
+                               DBChangeMsg.CHANGE_TYPE_ADD));
+    
+        
+        AccountSite accountSite = new AccountSite();
+        accountSite.setSiteInformationId(liteSiteInformation.getSiteID());
+        accountSite.setStreetAddressId(liteAddress.getAddressID());
+        accountSite.setCustAtHome("N");
+        accountSite.setCustomerStatus("A");
+        accountSite.setSiteNumber("");
+        accountSiteDao.add(accountSite);
+        
+        customerAccount.setAccountSiteId(accountSite.getAccountSiteId());
+        customerAccount.setAccountNumber(accountDto.getAccountNumber());
+        customerAccount.setCustomerId(liteCustomer.getCustomerID());
+        if(liteBillingAddress != null) {
+            customerAccount.setBillingAddressId(liteBillingAddress.getAddressID());
+        }
+        customerAccountDao.add(customerAccount);
+            
+        /*
+         * Add mapping
+         */
+        ECToAccountMapping ecToAccountMapping = new ECToAccountMapping();
+        ecToAccountMapping.setEnergyCompanyId(liteEnergyCompany.getEnergyCompanyID());
+        ecToAccountMapping.setAccountId(customerAccount.getAccountId());
+        ecMappingDao.addECToAccountMapping(ecToAccountMapping);
+        
+        log.info("Account: " + accountDto.getAccountNumber() + " added successfully.");
+    }
+
+    @Override
+    @Transactional
+    public void deleteAccount(String accountNumber, LiteStarsEnergyCompany liteEnergyCompany) {
+        
+        LiteStarsCustAccountInformation accountInformation = liteEnergyCompany.searchAccountByAccountNo(accountNumber);
+        if(accountInformation != null) {
+            log.error("Account " + accountNumber + " could not be deleted: The provided account number doesn't exists.");
+            throw new NotFoundException("The provided account number doesn't exists");
+        }
+        
+        CustomerAccount account = customerAccountDao.getByAccountNumber(accountNumber, liteEnergyCompany.getEnergyCompanyID());
+        LiteStarsCustAccountInformation customerInfo = starsCustAccountInformationDao.getById(account.getAccountId(), liteEnergyCompany.getEnergyCompanyID());
+        AccountSite accountSite = accountSiteDao.getByAccountSiteId(account.getAccountSiteId());
+        LiteCustomer liteCustomer = customerDao.getLiteCustomer(account.getCustomerId());
+        customerInfo.setCustomer(liteCustomer);
+        LiteAddress billingAddress = addressDao.getByAddressId(account.getBillingAddressId());
+        LiteContact primaryContact = customerDao.getPrimaryContact(account.getCustomerId());
+        LiteStarsEnergyCompany starsEnergyCompany = ecMappingDao.getContactEC(primaryContact.getContactID());
+        Integer userId = primaryContact.getLoginID();
+        LiteYukonUser user = yukonUserDao.getLiteYukonUser(userId);
+        
+        /*
+         * Delete Hardware info
+         */
+        List<Integer> inventoryIds = inventoryDao.getInventoryIdsByAccount(account.getAccountId());
+        for(Integer inventoryId : inventoryIds) {
+            hardwareBaseDao.clearLMHardwareInfo(inventoryId);
+        }
+        
+        /*
+         * Delete Program info
+         */
+        lmProgramEventDao.deleteProgramEventsForAccount(account.getAccountId());
+        
+        /*
+         * Delete Appliance info
+         */
+        applianceDao.deleteAppliancesForAccount(account.getAccountId());
+        
+        /*
+         * Delete WorkOrders
+         */
+        workOrderDao.deleteByAccount(account.getAccountId());
+        
+        /*
+         * Delete CallReports 
+         */
+        callReportDao.deleteByAccount(account.getAccountId());
+        
+        /*
+         * Delete thermostat schedules for account
+         */
+        lmThermostatDao.deleteSchedulesForAccount(account.getAccountId());
+        
+        /*
+         * Delete account mappings
+         */
+        ecMappingDao.deleteECToAccountMapping(account.getAccountId());
+        
+        /*
+         * Delete account events
+         */
+        eventAccountDao.deleteAllEventsForAccount(account.getAccountId());
+        
+        /*
+         * Delete customer account
+         */
+        customerAccountDao.remove(account);
+        
+        /*
+         * Delete account site
+         */
+        accountSiteDao.remove(accountSite);
+        
+        /*
+         * Delete billing address
+         */
+        addressDao.remove(billingAddress);
+        
+        /*
+         * Delete customer
+         */
+        customerDao.deleteCustomer(account.getCustomerId());
+        dbPersistantDao.processDBChange(new DBChangeMsg(liteCustomer.getLiteID(),
+                                           DBChangeMsg.CHANGE_CUSTOMER_DB,
+                                           DBChangeMsg.CAT_CUSTOMER,
+                                           DBChangeMsg.CAT_CUSTOMER,
+                                           DBChangeMsg.CHANGE_TYPE_DELETE));
+        
+        /*
+         * Delete primary contact
+         */
+        contactDao.deleteContact(primaryContact.getContactID());
+        dbPersistantDao.processDBChange(new DBChangeMsg(primaryContact.getLiteID(),
+                               DBChangeMsg.CHANGE_CONTACT_DB,
+                               DBChangeMsg.CAT_CUSTOMERCONTACT,
+                               DBChangeMsg.CAT_CUSTOMERCONTACT,
+                               DBChangeMsg.CHANGE_TYPE_DELETE));
+        
+        /*
+         * Delete additional contacts
+         */
+        List<Integer> additionalContacts = contactDao.getAdditionalContactIdsForCustomer(account.getCustomerId());
+        contactDao.deleteAllAdditionalContactsForCustomer(account.getCustomerId());
+        processContactDeletes(additionalContacts);
+        
+        /*
+         * Delete login
+         */
+        if (userId != UserUtils.USER_DEFAULT_ID &&
+                userId != UserUtils.USER_ADMIN_ID &&
+                userId != UserUtils.USER_YUKON_ID) {
+            yukonUserDao.deleteUser(userId);
+            StarsDatabaseCache.getInstance().deleteStarsYukonUser( userId );
             dbPersistantDao.processDBChange(new DBChangeMsg(user.getLiteID(),
                                    DBChangeMsg.CHANGE_YUKON_USER_DB,
                                    DBChangeMsg.CAT_YUKON_USER,
                                    DBChangeMsg.CAT_YUKON_USER,
-                                   DBChangeMsg.CHANGE_TYPE_ADD));
+                                   DBChangeMsg.CHANGE_TYPE_DELETE)); 
+        }
+        
+        /*
+         * Delete customer info
+         */
+        starsEnergyCompany.deleteCustAccountInformation(customerInfo);
+        dbPersistantDao.processDBChange(new DBChangeMsg(customerInfo.getLiteID(),
+                               DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,
+                               DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
+                               DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
+                               DBChangeMsg.CHANGE_TYPE_DELETE));
+        
+        log.info("Account: " +accountNumber + " deleted successfully.");
+    }
+    
+    @Override
+    @Transactional
+    public void updateOrAddAccount(AccountDto accountDto, LiteStarsEnergyCompany liteEnergyCompany) {
+        if(StringUtils.isBlank(accountDto.getAccountNumber())) {
+            log.error("Account " + accountDto.getAccountNumber() + " could not be added/updated: The provided account number cannot be empty.");
+            throw new IllegalArgumentException("The provided account number cannot be empty.");
+        }
+        
+        LiteStarsCustAccountInformation accountInformation = liteEnergyCompany.searchAccountByAccountNo(accountDto.getAccountNumber());
+     
+        if(accountInformation == null) {
+            addAccount(accountDto, liteEnergyCompany);
+        } else {
+            updateAccount(accountDto, liteEnergyCompany);
+        }
             
-            /*
-             * Create the address
-             */
-            LiteAddress liteAddress = new LiteAddress();
-            setAddressFieldsFromDTO(liteAddress, streetAddress);
-            addressDao.add(liteAddress);
-            
-            /*
-             * Create billing address if supplied
-             */
-            LiteAddress liteBillingAddress = null;
-            if(billingAddress != null && StringUtils.isNotBlank(billingAddress.getLocationAddress1())) {
-                setAddressFieldsFromDTO(liteAddress, accountDto.getBillingAddress());
-                addressDao.add(liteBillingAddress);
-            }
-            
-            /*
-             * Create the contact
-             */
-            LiteContact liteContact = new LiteContact(-1); 
-            liteContact.setContFirstName(accountDto.getFirstName());
-            liteContact.setContLastName(accountDto.getLastName());
-            liteContact.setLoginID(user.getUserID());
-            liteContact.setAddressID(liteAddress.getAddressID());
-            contactDao.saveContact(liteContact);
-            dbPersistantDao.processDBChange(new DBChangeMsg(liteContact.getLiteID(),
-                                   DBChangeMsg.CHANGE_CONTACT_DB,
-                                   DBChangeMsg.CAT_CUSTOMERCONTACT,
-                                   DBChangeMsg.CAT_CUSTOMERCONTACT,
-                                   DBChangeMsg.CHANGE_TYPE_ADD));
-            
-            /*
-             * Create the notifications
-             */
-            if(StringUtils.isNotBlank(accountDto.getHomePhone())) {
-                LiteContactNotification homePhoneLiteContactNotification = createNotification(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE, accountDto.getHomePhone());
+    }
+
+    @Override
+    @Transactional
+    public void updateAccount(AccountDto accountDto, LiteStarsEnergyCompany liteEnergyCompany) {
+
+        if(StringUtils.isBlank(accountDto.getAccountNumber())) {
+            log.error("Account " + accountDto.getAccountNumber() + " could not be added: The provided account number cannot be empty.");
+            throw new IllegalArgumentException("The provided account number cannot be empty.");
+        }
+        
+        LiteStarsCustAccountInformation accountInformation = liteEnergyCompany.searchAccountByAccountNo(accountDto.getAccountNumber());
+        
+        if(accountInformation == null) {
+            log.error("Account " + accountDto.getAccountNumber() + " could not be updated: The provided account number doesn't exists.");
+            throw new NotFoundException("The provided account number doesn't exists");
+        }
+        
+        CustomerAccount account = customerAccountDao.getByAccountNumber(accountDto.getAccountNumber(), liteEnergyCompany.getEnergyCompanyID());
+        LiteCustomer liteCustomer = customerDao.getLiteCustomer(account.getCustomerId());
+        AccountSite accountSite = accountSiteDao.getByAccountSiteId(account.getAccountSiteId());
+        LiteAddress liteStreetAddress = addressDao.getByAddressId(accountSite.getStreetAddressId()); 
+        LiteAddress liteBillingAddress = addressDao.getByAddressId(account.getBillingAddressId());
+        LiteContact primaryContact = customerDao.getPrimaryContact(account.getCustomerId());
+        Address streetAddress = accountDto.getStreetAddress();
+        Address billingAddress = accountDto.getBillingAddress();
+        
+        
+        /*
+         * Update the address
+         */
+        setAddressFieldsFromDTO(liteStreetAddress, streetAddress);
+        addressDao.update(liteStreetAddress);
+        
+        /*
+         * Update the billing address if supplied
+         */
+        if(billingAddress != null && StringUtils.isNotBlank(billingAddress.getLocationAddress1())) {
+            setAddressFieldsFromDTO(liteBillingAddress, billingAddress);
+            addressDao.update(liteBillingAddress);
+        }
+        
+        /*
+         * Update the primary contact
+         */
+        primaryContact.setContFirstName(accountDto.getFirstName());
+        primaryContact.setContLastName(accountDto.getLastName());
+        primaryContact.setAddressID(liteStreetAddress.getAddressID());
+        contactDao.saveContact(primaryContact);
+        dbPersistantDao.processDBChange(new DBChangeMsg(primaryContact.getLiteID(),
+            DBChangeMsg.CHANGE_CONTACT_DB,
+            DBChangeMsg.CAT_CUSTOMERCONTACT,
+            DBChangeMsg.CAT_CUSTOMERCONTACT,
+            DBChangeMsg.CHANGE_TYPE_UPDATE));
+        
+        /*
+         * Update the notifications
+         */
+        LiteContactNotification homePhoneNotif = contactNotificationDao.getNotificationForContactByType(primaryContact.getContactID(), YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE);
+        LiteContactNotification workPhoneNotif = contactNotificationDao.getNotificationForContactByType(primaryContact.getContactID(), YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE);
+        LiteContactNotification emailNotif = contactNotificationDao.getNotificationForContactByType(primaryContact.getContactID(), YukonListEntryTypes.YUK_ENTRY_ID_EMAIL);
+        
+        if(StringUtils.isNotBlank(accountDto.getHomePhone())) {
+            if(homePhoneNotif == null) {
+                LiteContactNotification homePhoneLiteContactNotification = createNotification(primaryContact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE, accountDto.getHomePhone());
                 contactNotificationDao.saveNotification(homePhoneLiteContactNotification);
-            }
-            
-            if(StringUtils.isNotBlank(accountDto.getWorkPhone())) {
-                LiteContactNotification workPhoneLiteContactNotification = createNotification(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE, accountDto.getWorkPhone());
-                contactNotificationDao.saveNotification(workPhoneLiteContactNotification);
-            }
-            
-            if(StringUtils.isNotBlank(accountDto.getEmailAddress())) {
-                LiteContactNotification emailLiteContactNotification = createNotification(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL, accountDto.getEmailAddress());
-                contactNotificationDao.saveNotification(emailLiteContactNotification);
-            }
-            
-            /*
-             * Create the customer
-             */
-            LiteCustomer liteCustomer = new LiteCustomer();
-            liteCustomer.setPrimaryContactID(liteContact.getContactID());
-            if(accountDto.getCustomerType().equalsIgnoreCase(CustomerTypes.STRING_CI_CUSTOMER)) {
-                liteCustomer.setCustomerTypeID(CustomerTypes.CUSTOMER_CI);
             }else {
-                liteCustomer.setCustomerTypeID(CustomerTypes.CUSTOMER_RESIDENTIAL);
+                homePhoneNotif.setNotification(accountDto.getHomePhone());
+                contactNotificationDao.saveNotification(homePhoneNotif);
             }
-            liteCustomer.setTimeZone(authDao.getUserTimeZone(user).getID());
-            liteCustomer.setCustomerNumber(CtiUtilities.STRING_NONE);
-            liteCustomer.setRateScheduleID(CtiUtilities.NONE_ZERO_ID);
-            liteCustomer.setAltTrackingNumber(CtiUtilities.STRING_NONE);
-            liteCustomer.setTemperatureUnit(authDao.getRolePropertyValue(liteEnergyCompany.getUserID(), EnergyCompanyRole.DEFAULT_TEMPERATURE_UNIT));
-            customerDao.addCustomer(liteCustomer);
-            dbPersistantDao.processDBChange(new DBChangeMsg(liteCustomer.getLiteID(),
-                                   DBChangeMsg.CHANGE_CUSTOMER_DB,
-                                   DBChangeMsg.CAT_CUSTOMER,
-                                   DBChangeMsg.CAT_CUSTOMER,
-                                   DBChangeMsg.CHANGE_TYPE_ADD));
-            
-            /*
-             * Create comercial/industrial customer if company was passed
-             */
-            if(liteCustomer.getCustomerTypeID() == CustomerTypes.CUSTOMER_CI) {
+        }else {
+            if(homePhoneNotif != null) {
+                contactNotificationDao.removeNotification(homePhoneNotif.getContactNotifID());
+            }
+        }
+        
+        if(StringUtils.isNotBlank(accountDto.getWorkPhone())) {
+            if(workPhoneNotif == null) {
+                LiteContactNotification workPhoneLiteContactNotification = createNotification(primaryContact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE, accountDto.getWorkPhone());
+                contactNotificationDao.saveNotification(workPhoneLiteContactNotification);
+            }else {
+                workPhoneNotif.setNotification(accountDto.getWorkPhone());
+                contactNotificationDao.saveNotification(workPhoneNotif);
+            }
+        }else {
+            if(workPhoneNotif != null) {
+                contactNotificationDao.removeNotification(workPhoneNotif.getContactNotifID());
+            }
+        }
+        
+        if(StringUtils.isNotBlank(accountDto.getEmailAddress())) {
+            if(emailNotif == null) {
+                LiteContactNotification emailLiteContactNotification = createNotification(primaryContact, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL, accountDto.getEmailAddress());
+                contactNotificationDao.saveNotification(emailLiteContactNotification);
+            }else {
+                emailNotif.setNotification(accountDto.getEmailAddress());
+                contactNotificationDao.saveNotification(emailNotif);
+            }
+        }else {
+            if(emailNotif != null) {
+                contactNotificationDao.removeNotification(emailNotif.getContactNotifID());
+            }
+        }
+        
+        if(customerDao.isCICustomer(liteCustomer.getCustomerID())){
+            if(accountDto.getCustomerType().equalsIgnoreCase(CustomerTypes.STRING_RES_CUSTOMER)) {
+                // was commercial, not anymore
+                LiteCICustomer liteCICustomer = customerDao.getLiteCICustomer(liteCustomer.getCustomerID());
+                customerDao.deleteCICustomer(liteCustomer.getCustomerID());
+                if(liteCICustomer.getMainAddressID() != CtiUtilities.NONE_ZERO_ID) {
+                    LiteAddress mainAddress = addressDao.getByAddressId(liteCICustomer.getMainAddressID());
+                    addressDao.remove(mainAddress);
+                }
+                liteCustomer.setCustomerTypeID(CustomerTypes.CUSTOMER_RESIDENTIAL);
+                customerDao.updateCustomer(liteCustomer);
+            }else {
+                // was commercial and still is
+                LiteCICustomer liteCICustomer = customerDao.getLiteCICustomer(liteCustomer.getCustomerID());
+                liteCICustomer.setCompanyName(accountDto.getCompanyName());
+                customerDao.updateCICustomer(liteCICustomer);
+            }
+        }else {
+            if(accountDto.getCustomerType().equalsIgnoreCase(CustomerTypes.STRING_CI_CUSTOMER)) {
+                // was residential, now commercial
                 LiteCICustomer liteCICustomer = new LiteCICustomer();
-                liteCICustomer.setMainAddressID(liteAddress.getAddressID());
+                liteCICustomer.setMainAddressID(liteStreetAddress.getAddressID());
                 liteCICustomer.setDemandLevel(CtiUtilities.NONE_ZERO_ID);
                 liteCICustomer.setCurtailAmount(CtiUtilities.NONE_ZERO_ID);
                 liteCICustomer.setCompanyName(accountDto.getCompanyName());
                 liteCICustomer.setCICustType(YukonListEntryTypes.CUSTOMER_TYPE_COMMERCIAL);
                 customerDao.addCICustomer(liteCICustomer);
-                dbPersistantDao.processDBChange(new DBChangeMsg(liteCustomer.getLiteID(),
-                                       DBChangeMsg.CHANGE_CUSTOMER_DB,
-                                       DBChangeMsg.CAT_CI_CUSTOMER,
-                                       DBChangeMsg.CAT_CI_CUSTOMER,
-                                       DBChangeMsg.CHANGE_TYPE_ADD));
             }
-            
-            /*
-             * Create service info
-             */
-            LiteSiteInformation liteSiteInformation = new LiteSiteInformation();
-            siteInformationDao.add(liteSiteInformation);
-            dbPersistantDao.processDBChange(new DBChangeMsg(liteSiteInformation.getLiteID(),
-                                   DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,
-                                   DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
-                                   DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
-                                   DBChangeMsg.CHANGE_TYPE_ADD));
-            
-            AccountSite accountSite = new AccountSite();
-            accountSite.setSiteInformationId(liteSiteInformation.getSiteID());
-            accountSite.setStreetAddressId(liteAddress.getAddressID());
-            accountSite.setCustAtHome("N");
-            accountSite.setCustomerStatus("A");
-            accountSite.setSiteNumber("");
-            accountSiteDao.add(accountSite);
-            
-            CustomerAccount customerAccount = new CustomerAccount();
-            customerAccount.setAccountSiteId(accountSite.getAccountSiteId());
-            customerAccount.setAccountNumber(accountDto.getAccountNumber());
-            customerAccount.setCustomerId(liteCustomer.getCustomerID());
-            if(liteBillingAddress != null) {
-                customerAccount.setBillingAddressId(liteBillingAddress.getAddressID());
-            }
-            customerAccountDao.add(customerAccount);
-            
-            /*
-             * Add mapping
-             */
-            ECToAccountMapping ecToAccountMapping = new ECToAccountMapping();
-            ecToAccountMapping.setEnergyCompanyId(liteEnergyCompany.getEnergyCompanyID());
-            ecToAccountMapping.setAccountId(customerAccount.getAccountId());
-            ecMappingDao.addECToAccountMapping(ecToAccountMapping);
-            
-        } catch (DataAccessException dae) {
-            result.setSuccess(false);
-            result.setReason(dae.getMessage());
-            log.error("Account: " + accountDto.getAccountNumber() + " could not be added. ", dae);
-            return result;
         }
         
-        log.info("Account: " + accountDto.getAccountNumber() + " added successfully.");
-        return result;
-    }
-
-    @Override
-    @Transactional
-    public AccountActionResult deleteAccount(String accountNumber, LiteEnergyCompany liteEnergyCompany) {
-        AccountActionResult result = new AccountActionResult(accountNumber);
-        
-        try {
-            CustomerAccount account = customerAccountDao.getByAccountNumber(accountNumber, liteEnergyCompany.getEnergyCompanyID());
-            LiteStarsCustAccountInformation customerInfo = starsCustAccountInformationDao.getById(account.getAccountId(), liteEnergyCompany.getEnergyCompanyID());
-            AccountSite accountSite = accountSiteDao.getByAccountSiteId(account.getAccountSiteId());
-            LiteCustomer liteCustomer = customerDao.getLiteCustomer(account.getCustomerId());
-            customerInfo.setCustomer(liteCustomer);
-            LiteAddress billingAddress = addressDao.getByAddressId(account.getBillingAddressId());
-            LiteContact primaryContact = customerDao.getPrimaryContact(account.getCustomerId());
-            LiteStarsEnergyCompany starsEnergyCompany = ecMappingDao.getContactEC(primaryContact.getContactID());
-            Integer userId = primaryContact.getLoginID();
-            LiteYukonUser user = yukonUserDao.getLiteYukonUser(userId);
-            
-            /*
-             * Delete Hardware info
-             */
-            List<Integer> inventoryIds = inventoryDao.getInventoryIdsByAccount(account.getAccountId());
-            for(Integer inventoryId : inventoryIds) {
-                hardwareBaseDao.clearLMHardwareInfo(inventoryId);
-            }
-            
-            /*
-             * Delete Program info
-             */
-            lmProgramEventDao.deleteProgramEventsForAccount(account.getAccountId());
-            
-            /*
-             * Delete Appliance info
-             */
-            applianceDao.deleteAppliancesForAccount(account.getAccountId());
-            
-            /*
-             * Delete WorkOrders
-             */
-            workOrderDao.deleteByAccount(account.getAccountId());
-            
-            /*
-             * Delete CallReports 
-             */
-            callReportDao.deleteByAccount(account.getAccountId());
-            
-            /*
-             * Delete thermostat schedules for account
-             */
-            lmThermostatDao.deleteSchedulesForAccount(account.getAccountId());
-            
-            /*
-             * Delete account mappings
-             */
-            ecMappingDao.deleteECToAccountMapping(account.getAccountId());
-            
-            /*
-             * Delete account events
-             */
-            eventAccountDao.deleteAllEventsForAccount(account.getAccountId());
-            
-            /*
-             * Delete customer account
-             */
-            customerAccountDao.remove(account);
-            
-            /*
-             * Delete account site
-             */
-            accountSiteDao.remove(accountSite);
-            
-            /*
-             * Delete billing address
-             */
-            addressDao.remove(billingAddress);
-            
-            /*
-             * Delete customer
-             */
-            customerDao.deleteCustomer(account.getCustomerId());
-            dbPersistantDao.processDBChange(new DBChangeMsg(liteCustomer.getLiteID(),
-                                               DBChangeMsg.CHANGE_CUSTOMER_DB,
-                                               DBChangeMsg.CAT_CUSTOMER,
-                                               DBChangeMsg.CAT_CUSTOMER,
-                                               DBChangeMsg.CHANGE_TYPE_DELETE));
-            
-            /*
-             * Delete primary contact
-             */
-            contactDao.deleteContact(primaryContact.getContactID());
-            dbPersistantDao.processDBChange(new DBChangeMsg(primaryContact.getLiteID(),
-                                   DBChangeMsg.CHANGE_CONTACT_DB,
-                                   DBChangeMsg.CAT_CUSTOMERCONTACT,
-                                   DBChangeMsg.CAT_CUSTOMERCONTACT,
-                                   DBChangeMsg.CHANGE_TYPE_DELETE));
-            
-            /*
-             * Delete additional contacts
-             */
-            List<Integer> additionalContacts = contactDao.getAdditionalContactIdsForCustomer(account.getCustomerId());
-            contactDao.deleteAllAdditionalContactsForCustomer(account.getCustomerId());
-            processContactDeletes(additionalContacts);
-            
-            /*
-             * Delete login
-             */
-            if (userId != UserUtils.USER_DEFAULT_ID &&
-                    userId != UserUtils.USER_ADMIN_ID &&
-                    userId != UserUtils.USER_YUKON_ID) {
-                yukonUserDao.deleteUser(userId);
-                StarsDatabaseCache.getInstance().deleteStarsYukonUser( userId );
-                dbPersistantDao.processDBChange(new DBChangeMsg(user.getLiteID(),
-                                       DBChangeMsg.CHANGE_YUKON_USER_DB,
-                                       DBChangeMsg.CAT_YUKON_USER,
-                                       DBChangeMsg.CAT_YUKON_USER,
-                                       DBChangeMsg.CHANGE_TYPE_DELETE)); 
-            }
-            
-            /*
-             * Delete customer info
-             */
-            starsEnergyCompany.deleteCustAccountInformation(customerInfo);
-            dbPersistantDao.processDBChange(new DBChangeMsg(customerInfo.getLiteID(),
-                                   DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,
-                                   DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
-                                   DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
-                                   DBChangeMsg.CHANGE_TYPE_DELETE));
-        }catch(DataAccessException dae) {
-            result.setSuccess(false);
-            result.setReason(dae.getMessage());
-            log.error("Account: " +accountNumber + " could not be deleted. ", dae);
-            return result;
-        }
-        
-        log.info("Account: " +accountNumber + " deleted successfully.");
-        return result;
-    }
-
-    @Override
-    @Transactional
-    public AccountActionResult updateAccount(AccountDto accountDto) {
-        AccountActionResult result = new AccountActionResult(accountDto.getAccountNumber());
-        
-        try {
-            LiteEnergyCompany liteEnergyCompany = accountDto.getLiteEnergyCompany();
-            CustomerAccount account = customerAccountDao.getByAccountNumber(accountDto.getAccountNumber(), liteEnergyCompany.getEnergyCompanyID());
-            LiteCustomer liteCustomer = customerDao.getLiteCustomer(account.getCustomerId());
-            AccountSite accountSite = accountSiteDao.getByAccountSiteId(account.getAccountSiteId());
-            LiteAddress liteStreetAddress = addressDao.getByAddressId(accountSite.getStreetAddressId()); 
-            LiteAddress liteBillingAddress = addressDao.getByAddressId(account.getBillingAddressId());
-            LiteContact primaryContact = customerDao.getPrimaryContact(account.getCustomerId());
-            Address streetAddress = accountDto.getStreetAddress();
-            Address billingAddress = accountDto.getBillingAddress();
-            
-            
-            /*
-             * Update the address
-             */
-            setAddressFieldsFromDTO(liteStreetAddress, streetAddress);
-            addressDao.update(liteStreetAddress);
-            
-            /*
-             * Update the billing address if supplied
-             */
-            if(billingAddress != null && StringUtils.isNotBlank(billingAddress.getLocationAddress1())) {
-                setAddressFieldsFromDTO(liteBillingAddress, billingAddress);
-                addressDao.update(liteBillingAddress);
-            }
-            
-            /*
-             * Update the primary contact
-             */
-            primaryContact.setContFirstName(accountDto.getFirstName());
-            primaryContact.setContLastName(accountDto.getLastName());
-            primaryContact.setAddressID(liteStreetAddress.getAddressID());
-            contactDao.saveContact(primaryContact);
-            dbPersistantDao.processDBChange(new DBChangeMsg(primaryContact.getLiteID(),
-                                   DBChangeMsg.CHANGE_CONTACT_DB,
-                                   DBChangeMsg.CAT_CUSTOMERCONTACT,
-                                   DBChangeMsg.CAT_CUSTOMERCONTACT,
-                                   DBChangeMsg.CHANGE_TYPE_UPDATE));
-            
-            /*
-             * Update the notifications
-             */
-            LiteContactNotification homePhoneNotif = contactNotificationDao.getNotificationForContactByType(primaryContact.getContactID(), YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE);
-            LiteContactNotification workPhoneNotif = contactNotificationDao.getNotificationForContactByType(primaryContact.getContactID(), YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE);
-            LiteContactNotification emailNotif = contactNotificationDao.getNotificationForContactByType(primaryContact.getContactID(), YukonListEntryTypes.YUK_ENTRY_ID_EMAIL);
-            
-            if(StringUtils.isNotBlank(accountDto.getHomePhone())) {
-                if(homePhoneNotif == null) {
-                    LiteContactNotification homePhoneLiteContactNotification = createNotification(primaryContact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE, accountDto.getHomePhone());
-                    contactNotificationDao.saveNotification(homePhoneLiteContactNotification);
-                }else {
-                    homePhoneNotif.setNotification(accountDto.getHomePhone());
-                    contactNotificationDao.saveNotification(homePhoneNotif);
-                }
-            }else {
-                if(homePhoneNotif != null) {
-                    contactNotificationDao.removeNotification(homePhoneNotif.getContactNotifID());
-                }
-            }
-            
-            if(StringUtils.isNotBlank(accountDto.getWorkPhone())) {
-                if(workPhoneNotif == null) {
-                    LiteContactNotification workPhoneLiteContactNotification = createNotification(primaryContact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE, accountDto.getWorkPhone());
-                    contactNotificationDao.saveNotification(workPhoneLiteContactNotification);
-                }else {
-                    workPhoneNotif.setNotification(accountDto.getWorkPhone());
-                    contactNotificationDao.saveNotification(workPhoneNotif);
-                }
-            }else {
-                if(workPhoneNotif != null) {
-                    contactNotificationDao.removeNotification(workPhoneNotif.getContactNotifID());
-                }
-            }
-            
-            if(StringUtils.isNotBlank(accountDto.getEmailAddress())) {
-                if(emailNotif == null) {
-                    LiteContactNotification emailLiteContactNotification = createNotification(primaryContact, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL, accountDto.getEmailAddress());
-                    contactNotificationDao.saveNotification(emailLiteContactNotification);
-                }else {
-                    emailNotif.setNotification(accountDto.getEmailAddress());
-                    contactNotificationDao.saveNotification(emailNotif);
-                }
-            }else {
-                if(emailNotif != null) {
-                    contactNotificationDao.removeNotification(emailNotif.getContactNotifID());
-                }
-            }
-            
-            if(customerDao.isCICustomer(liteCustomer.getCustomerID())){
-                if(accountDto.getCustomerType().equalsIgnoreCase(CustomerTypes.STRING_RES_CUSTOMER)) {
-                    // was commercial, not anymore
-                    LiteCICustomer liteCICustomer = customerDao.getLiteCICustomer(liteCustomer.getCustomerID());
-                    customerDao.deleteCICustomer(liteCustomer.getCustomerID());
-                    if(liteCICustomer.getMainAddressID() != CtiUtilities.NONE_ZERO_ID) {
-                        LiteAddress mainAddress = addressDao.getByAddressId(liteCICustomer.getMainAddressID());
-                        addressDao.remove(mainAddress);
-                    }
-                    liteCustomer.setCustomerTypeID(CustomerTypes.CUSTOMER_RESIDENTIAL);
-                    customerDao.updateCustomer(liteCustomer);
-                }else {
-                    // was commercial and still is
-                    LiteCICustomer liteCICustomer = customerDao.getLiteCICustomer(liteCustomer.getCustomerID());
-                    liteCICustomer.setCompanyName(accountDto.getCompanyName());
-                    customerDao.updateCICustomer(liteCICustomer);
-                }
-            }else {
-                if(accountDto.getCustomerType().equalsIgnoreCase(CustomerTypes.STRING_CI_CUSTOMER)) {
-                    // was residential, now commercial
-                    LiteCICustomer liteCICustomer = new LiteCICustomer();
-                    liteCICustomer.setMainAddressID(liteStreetAddress.getAddressID());
-                    liteCICustomer.setDemandLevel(CtiUtilities.NONE_ZERO_ID);
-                    liteCICustomer.setCurtailAmount(CtiUtilities.NONE_ZERO_ID);
-                    liteCICustomer.setCompanyName(accountDto.getCompanyName());
-                    liteCICustomer.setCICustType(YukonListEntryTypes.CUSTOMER_TYPE_COMMERCIAL);
-                    customerDao.addCICustomer(liteCICustomer);
-                }
-            }
-            
-            /*
-             * Update mapping
-             */
-            ecMappingDao.updateECToAccountMapping(account.getAccountId(), liteEnergyCompany.getEnergyCompanyID());
-        }catch(DataAccessException dae) {
-            result.setSuccess(false);
-            result.setReason(dae.getMessage());
-            log.error("Account: " +accountDto.getAccountNumber() + " could not be deleted. ", dae);
-            return result;
-        }
+        /*
+         * Update mapping
+         */
+        ecMappingDao.updateECToAccountMapping(account.getAccountId(), liteEnergyCompany.getEnergyCompanyID());
         
         log.info("Account: " +accountDto.getAccountNumber() + " deleted successfully.");
-        return result;
     }
     
     //==============================================================================================

@@ -1,30 +1,39 @@
 package com.cannontech.stars.dr.account.service;
 
 import com.cannontech.common.bulk.field.impl.AccountDto;
-import com.cannontech.database.data.lite.LiteEnergyCompany;
-import com.cannontech.stars.dr.account.service.result.AccountActionResult;
+import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.stars.dr.account.exception.AccountNumberUnavailableException;
+import com.cannontech.stars.dr.account.exception.UserNameUnavailableException;
 
 public interface AccountService {
 
     /**
-     * Method to create an account
+     * Mehtod to add an account. Throws AccountNumberUnavailableException if the account
+     * number is alread used for that energy company.
      * @param accountDto
-     * @return AccountActionResult
+     * @param liteEnergyCompany
+     * @throws AccountNumberUnavailableException
      */
-    public AccountActionResult addAccount(AccountDto accountDto);
+    public void addAccount(AccountDto accountDto, LiteStarsEnergyCompany liteEnergyCompany) throws AccountNumberUnavailableException, UserNameUnavailableException;
     
     /**
      * Method to update an account
      * @param accountDto
-     * @return AccountActionResult
      */
-    public AccountActionResult updateAccount(AccountDto accountDto);
+    public void updateAccount(AccountDto accountDto, LiteStarsEnergyCompany liteEnergyCompany) throws NotFoundException;
 
     /**
      * Method to delete an account
-     * @param accountNumer
+     * @param accountNumber
      * @param liteEnergyCompany
-     * @return AccountActionResult
      */
-    public AccountActionResult deleteAccount(String accountNumber, LiteEnergyCompany liteEnergyCompany);
+    public void deleteAccount(String accountNumber, LiteStarsEnergyCompany liteEnergyCompany);
+
+    /**
+     * Method that will update an account if it exists, update otherwise.
+     * @param accountDto
+     * @param liteEnergyCompany
+     */
+    void updateOrAddAccount(AccountDto accountDto, LiteStarsEnergyCompany liteEnergyCompany);
 }
