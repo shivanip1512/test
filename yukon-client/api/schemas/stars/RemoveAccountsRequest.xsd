@@ -6,7 +6,6 @@
             elementFormDefault="qualified">
 	
     <xsd:include schemaLocation="../common/YukonMessage.xsd" />
-    <xsd:include schemaLocation="CustomerAccount.xsd"/>
     
     <xsd:annotation>
      	<xsd:documentation xml:lang="en">
