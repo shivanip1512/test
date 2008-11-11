@@ -19,7 +19,10 @@
                 <xsd:complexType>
                     <xsd:sequence>
                         <xsd:element name="accountNumber" type="xsd:string"/>
-                        <xsd:element name="failure" type="yukon:Failure" minOccurs="0"/>
+                        <xsd:choice>
+                            <xsd:element name="success" />
+                            <xsd:element name="failure" type="yukon:Failure" />
+                        </xsd:choice>
                     </xsd:sequence>
                 </xsd:complexType>
             </xsd:element>

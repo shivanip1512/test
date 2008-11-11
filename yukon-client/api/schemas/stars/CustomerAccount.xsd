@@ -23,23 +23,25 @@
     	    <xsd:element name="homePhone" type="xsd:string" minOccurs="0"/>
     	    <xsd:element name="workPhone" type="xsd:string" minOccurs="0"/>
     	    <xsd:element name="email" type="xsd:string" minOccurs="0"/>
-    	    <xsd:element name="isCommercial" type="xsd:string" minOccurs="0"/>
+    	    <xsd:element name="isCommercial" type="xsd:boolean" minOccurs="0"/>
     	    <xsd:element name="companyName" type="xsd:string" minOccurs="0"/>
     	    <xsd:element name="siteInformation" type="yukon:SiteInformationData" minOccurs="0"/>
     	    <xsd:element name="alternateTrackingNumber" type="xsd:string" minOccurs="0"/>
-    	    <xsd:element name="accountUser" type="yukon:YukonUser" minOccurs="0"/>
+    	    <!-- If the accountUser is left blank the ConsumerInfoRole.CREATE_LOGIN_FOR_ACCOUNT 
+            role property can be set to auto-create a login -->
+            <xsd:element name="accountUser" type="yukon:YukonUser" minOccurs="0"/>
        	    <xsd:element name="voiceRecognition" type="yukon:VoiceRecognitionData" minOccurs="0"/>
     	</xsd:sequence>
     </xsd:complexType>
     
     <xsd:complexType name="USAddress">
     	<xsd:sequence>
-        	<xsd:element name="street" type="xsd:string"/>
-          	<xsd:element name="street2" type="xsd:string"/>
-          	<xsd:element name="city" type="xsd:string"/>
-          	<xsd:element name="state" type="xsd:string"/>
-          	<xsd:element name="postalCode" type="xsd:string"/>
-          	<xsd:element name="county" type="xsd:string"/>
+        	<xsd:element name="street" type="xsd:string" minOccurs="0"/>
+          	<xsd:element name="street2" type="xsd:string" minOccurs="0"/>
+          	<xsd:element name="city" type="xsd:string" minOccurs="0"/>
+          	<xsd:element name="state" type="xsd:string" minOccurs="0"/>
+          	<xsd:element name="postalCode" type="xsd:string" minOccurs="0"/>
+          	<xsd:element name="county" type="xsd:string" minOccurs="0"/>
         </xsd:sequence>
     </xsd:complexType>
     
@@ -53,12 +55,12 @@
     
     <xsd:complexType name="SiteInformationData">
     	<xsd:sequence>
-        	<xsd:element name="mapNumber" type="xsd:string"/>
-          	<xsd:element name="substationName" type="xsd:string"/>
-          	<xsd:element name="feeder" type="xsd:string"/>
-          	<xsd:element name="pole" type="xsd:string"/>
-          	<xsd:element name="transformerSize" type="xsd:positiveInteger"/>
-          	<xsd:element name="siteVoltage" type="xsd:positiveInteger"/>
+        	<xsd:element name="mapNumber" type="xsd:string" minOccurs="0"/>
+          	<xsd:element name="substationName" type="xsd:string" minOccurs="0"/>
+          	<xsd:element name="feeder" type="xsd:string" minOccurs="0"/>
+          	<xsd:element name="pole" type="xsd:string" minOccurs="0"/>
+          	<xsd:element name="transformerSize" type="xsd:positiveInteger" minOccurs="0"/>
+          	<xsd:element name="siteVoltage" type="xsd:positiveInteger" minOccurs="0"/>
         </xsd:sequence>
     </xsd:complexType>
     

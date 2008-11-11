@@ -18,7 +18,7 @@
             <firstName>ABEL</firstName>
             <homePhone>301-490-1001</homePhone>
             <workPhone>202-463-4114</workPhone>
-            <isCommercial>N</isCommercial>
+            <isCommercial>false</isCommercial>
             <alternateTrackingNumber>487437-23</alternateTrackingNumber>
             <accountUser>
             	<username>772526</username>
@@ -40,7 +40,7 @@
             <firstName>GENEROUS</firstName>
             <homePhone>301-490-1001</homePhone>
             <workPhone>202-463-4114</workPhone>
-            <isCommercial>Y</isCommercial>
+            <isCommercial>true</isCommercial>
             <companyName>VERLE INC</companyName>
             <alternateTrackingNumber>555437-23</alternateTrackingNumber>
             <accountUser>

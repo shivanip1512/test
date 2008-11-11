@@ -6,6 +6,7 @@
 	<accountResultList>
         <customerAccount>
             <accountNumber>772526</accountNumber>
+            <success/>
         </customerAccount>
         <customerAccount>
             <accountNumber>287433</accountNumber>
