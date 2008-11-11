@@ -17,7 +17,7 @@
     
     <xsd:complexType name="CustomerAccount">
       	<xsd:sequence>
-    	    <xsd:element name="accountNumber" type="yukon:AcountNumber"/>
+    	    <xsd:element name="accountNumber" type="yukon:AccountNumber"/>
     	    <xsd:element name="mainAddress" type="yukon:USAddress" minOccurs="0"/>
     	    <xsd:element name="billingAddress" type="yukon:USAddress" minOccurs="0"/>
     	    <xsd:element name="lastName" type="xsd:string" minOccurs="0"/>
@@ -29,9 +29,14 @@
     	    <xsd:element name="companyName" type="xsd:string" minOccurs="0"/>
     	    <xsd:element name="siteInformation" type="yukon:SiteInformationData" minOccurs="0"/>
     	    <xsd:element name="alternateTrackingNumber" type="xsd:string" minOccurs="0"/>
-    	    <!-- If the accountUser is left blank the ConsumerInfoRole.CREATE_LOGIN_FOR_ACCOUNT 
-            role property can be set to auto-create a login -->
-            <xsd:element name="accountUser" type="yukon:YukonUser" minOccurs="0"/>
+            <xsd:element name="accountUser" type="yukon:YukonUser" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        If the accountUser is left blank the ConsumerInfoRole.CREATE_LOGIN_FOR_ACCOUNT 
+                        role property can be set to auto-create a login
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
        	    <xsd:element name="voiceRecognition" type="yukon:VoiceRecognitionData" minOccurs="0"/>
     	</xsd:sequence>
     </xsd:complexType>

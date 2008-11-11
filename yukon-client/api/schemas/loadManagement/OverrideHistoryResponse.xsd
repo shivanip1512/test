@@ -6,6 +6,7 @@
 
     <xsd:include schemaLocation="../common/Failure.xsd" />
     <xsd:include schemaLocation="../common/YukonMessage.xsd" />
+    <xsd:include schemaLocation="../common/Types.xsd" />
 
     <xsd:annotation>
         <xsd:documentation xml:lang="en">
@@ -16,7 +17,7 @@
 
     <xsd:complexType name="OverrideHistory">
         <xsd:sequence>
-            <xsd:element name="serialNumber" type="xsd:long" />
+            <xsd:element name="serialNumber" type="yukon:SerialNumber" />
             <xsd:element name="programName" type="xsd:string" />
             <xsd:element name="accountNumber" type="xsd:string" />
             <xsd:element name="status" type="yukon:CurrentOverrideHistory" />

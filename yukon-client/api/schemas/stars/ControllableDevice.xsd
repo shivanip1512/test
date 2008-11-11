@@ -15,7 +15,7 @@
     
     <xsd:complexType name="ControllableDevice">
       	<xsd:sequence>
-    	    <xsd:element name="accountNumber" type="yukon:AcountNumber"/>
+    	    <xsd:element name="accountNumber" type="yukon:AccountNumber"/>
       		<xsd:element name="serialNumber" type="yukon:SerialNumber"/>
        	    <xsd:element name="deviceType" type="xsd:string"/>
     	    <xsd:element name="deviceLabel" type="xsd:string" minOccurs="0"/>

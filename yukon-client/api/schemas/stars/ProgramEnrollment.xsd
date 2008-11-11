@@ -15,7 +15,7 @@
     
     <xsd:complexType name="ProgramEnrollment">
       	<xsd:sequence>
-    	    <xsd:element name="accountNumber" type="yukon:AcountNumber"/>
+    	    <xsd:element name="accountNumber" type="yukon:AccountNumber"/>
       		<xsd:element name="serialNumber" type="yukon:SerialNumber"/>
     		<xsd:element name="loadProgramName" type="xsd:string"/>
           	<xsd:element name="loadGroupName" type="xsd:string"/>

@@ -16,7 +16,7 @@
     
     <xsd:complexType name="ControllableDeviceResult">
         <xsd:sequence>
-    	    <xsd:element name="accountNumber" type="yukon:AcountNumber"/>
+    	    <xsd:element name="accountNumber" type="yukon:AccountNumber"/>
       		<xsd:element name="serialNumber" type="yukon:SerialNumber"/>
             <xsd:choice>
                 <xsd:element name="success" />

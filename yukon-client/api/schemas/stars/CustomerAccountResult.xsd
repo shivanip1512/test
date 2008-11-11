@@ -16,7 +16,7 @@
     
     <xsd:complexType name="CustomerAccountResult">
         <xsd:sequence>
-            <xsd:element name="accountNumber" type="yukon:AcountNumber"/>
+            <xsd:element name="accountNumber" type="yukon:AccountNumber"/>
             <xsd:choice>
                 <xsd:element name="success" />
                 <xsd:element name="failure" type="yukon:Failure" />

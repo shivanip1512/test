@@ -16,21 +16,17 @@
         <xsd:complexContent>
             <xsd:extension base="yukon:YukonMessage">
         		<xsd:sequence>
-        			
                     <xsd:element name="programName" type="xsd:string"/>
-                    
         			<xsd:element name="startDateTime" type="xsd:dateTime" minOccurs="0">
                         <xsd:annotation>
-                            <xsd:documentation>startDateTime is optional. If ommitted, control will start "now" (constraints will be observed)</xsd:documentation>
+                            <xsd:documentation>startDateTime is optional. If omitted, control will start "now" (constraints will be observed)</xsd:documentation>
                         </xsd:annotation>
                     </xsd:element>
-                    
         			<xsd:element name="stopDateTime" type="xsd:dateTime" minOccurs="0">
                         <xsd:annotation>
-                            <xsd:documentation>stopDateTime is optional. If ommited, control will not be schedule to stop</xsd:documentation>
+                            <xsd:documentation>stopDateTime is optional. If omitted, control will not be schedule to stop</xsd:documentation>
                         </xsd:annotation>
                     </xsd:element>
-                    
         		</xsd:sequence>
             </xsd:extension>
         </xsd:complexContent>
