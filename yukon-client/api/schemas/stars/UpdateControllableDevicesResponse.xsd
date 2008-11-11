@@ -6,7 +6,7 @@
             elementFormDefault="qualified">
 
     <xsd:include schemaLocation="../common/YukonMessage.xsd" />
-    <xsd:include schemaLocation="ControllableDeviceResultList.xsd"/>
+    <xsd:include schemaLocation="ControllableDeviceResult.xsd"/>
 	
     <xsd:annotation>
      	<xsd:documentation xml:lang="en">
@@ -19,7 +19,13 @@
         <xsd:complexContent>
             <xsd:extension base="yukon:YukonMessage">
                 <xsd:sequence>
-                    <xsd:element name="controllableDeviceResultList" type="yukon:ControllableDeviceResultList"/>
+                    <xsd:element name="controllableDeviceResultList">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="controllableDeviceResult"  type="yukon:ControllableDeviceResult" maxOccurs="unbounded"/>
+                            </xsd:sequence>
+                        </xsd:complexType>
+                    </xsd:element>
                 </xsd:sequence>
             </xsd:extension>
         </xsd:complexContent>

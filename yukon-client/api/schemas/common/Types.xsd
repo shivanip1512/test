@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+            xmlns:yukon="http://yukon.cannontech.com/api" 
+            targetNamespace="http://yukon.cannontech.com/api" 
+            elementFormDefault="qualified">
+            
+	<xsd:annotation>
+		<xsd:documentation xml:lang="en">
+            General type definitions for yukon message elements
+        </xsd:documentation>
+	</xsd:annotation>
+    
+    <xsd:simpleType name="AcountNumber" >
+        <xsd:restriction base="xsd:string" />
+    </xsd:simpleType>
+
+    <xsd:simpleType name="SerialNumber" >
+        <xsd:restriction base="xsd:string" />
+    </xsd:simpleType>
+    
+	
+</xsd:schema>

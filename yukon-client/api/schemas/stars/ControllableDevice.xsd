@@ -5,6 +5,8 @@
             targetNamespace="http://yukon.cannontech.com/api"
             elementFormDefault="qualified">
 	
+    <xsd:include schemaLocation="../common/Types.xsd"/>
+    
     <xsd:annotation>
      	<xsd:documentation xml:lang="en">
       	STARS Customer and Device Import schema for Integration III at BG&amp;E
@@ -13,12 +15,12 @@
     
     <xsd:complexType name="ControllableDevice">
       	<xsd:sequence>
-    	    <xsd:element name="accountNumber" type="xsd:string"/>
-      		<xsd:element name="serialNumber" type="xsd:long"/>
+    	    <xsd:element name="accountNumber" type="yukon:AcountNumber"/>
+      		<xsd:element name="serialNumber" type="yukon:SerialNumber"/>
        	    <xsd:element name="deviceType" type="xsd:string"/>
     	    <xsd:element name="deviceLabel" type="xsd:string" minOccurs="0"/>
-    	    <xsd:element name="fieldInstallDate" type="xsd:date" minOccurs="0"/>
-       	    <xsd:element name="fieldRemoveDate" type="xsd:date" minOccurs="0"/>
+    	    <xsd:element name="fieldInstallDate" type="xsd:dateTime" minOccurs="0"/>
+       	    <xsd:element name="fieldRemoveDate" type="xsd:dateTime" minOccurs="0"/>
        	    <xsd:element name="serviceCompanyName" type="xsd:string" minOccurs="0"/>
     	</xsd:sequence>
     </xsd:complexType>

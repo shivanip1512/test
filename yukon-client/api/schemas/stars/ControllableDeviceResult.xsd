@@ -6,6 +6,7 @@
             elementFormDefault="qualified">
     
     <xsd:include schemaLocation="../common/Failure.xsd"/>
+    <xsd:include schemaLocation="../common/Types.xsd"/>
 	
     <xsd:annotation>
      	<xsd:documentation xml:lang="en">
@@ -13,17 +14,11 @@
      	</xsd:documentation>
     </xsd:annotation>
     
-    <xsd:complexType name="ControllableDeviceResultList">
+    <xsd:complexType name="ControllableDeviceResult">
         <xsd:sequence>
-            <xsd:element name="controllableDeviceResult" maxOccurs="unbounded">
-                <xsd:complexType>
-                    <xsd:sequence>
-                	    <xsd:element name="accountNumber" type="xsd:string"/>
-                  		<xsd:element name="serialNumber" type="xsd:long"/>
-                        <xsd:element name="failure" type="yukon:Failure" minOccurs="0"/>
-                    </xsd:sequence>
-                </xsd:complexType>
-            </xsd:element>
+    	    <xsd:element name="accountNumber" type="yukon:AcountNumber"/>
+      		<xsd:element name="serialNumber" type="yukon:SerialNumber"/>
+            <xsd:element name="failure" type="yukon:Failure" minOccurs="0"/>
         </xsd:sequence>
     </xsd:complexType>
     

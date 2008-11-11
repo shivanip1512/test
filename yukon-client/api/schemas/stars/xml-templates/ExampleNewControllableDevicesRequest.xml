@@ -9,7 +9,7 @@
 	       	<serialNumber>300000005</serialNumber>
 	       	<deviceType>Residential ExpressStat</deviceType>
 	       	<deviceLabel>Upstairs</deviceLabel>
-	       	<fieldInstallDate>2008-10-28</fieldInstallDate>
+	       	<fieldInstallDate>2008-10-28T17:07:40</fieldInstallDate>
 	       	<serviceCompanyName>Honeywell</serviceCompanyName>
 	    </controllableDevice>
 	    <controllableDevice>
@@ -17,7 +17,7 @@
 	       	<serialNumber>500000007</serialNumber>
 	       	<deviceType>LCR-4700</deviceType>
 	       	<deviceLabel>Backyard AC</deviceLabel>
-	       	<fieldInstallDate>2008-10-28</fieldInstallDate>
+	       	<fieldInstallDate>2008-10-28T17:07:40</fieldInstallDate>
 	       	<serviceCompanyName>Honeywell</serviceCompanyName>
 	    </controllableDevice>
     </controllableDeviceList>
