@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<decrementDeviceOverrideLimitResponse xmlns="http://yukon.cannontech.com/api"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://yukon.cannontech.com/api ../DecrementDeviceOverrideLimitResponse.xsd"
+           version="1.0">
+    <failure>
+        <errorCode>ERRORCODE</errorCode>
+        <errorReference>YK100</errorReference>
+        <errorDescription>Bad stuff happened.</errorDescription>
+    </failure>
+</decrementDeviceOverrideLimitResponse>

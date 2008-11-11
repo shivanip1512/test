@@ -20,7 +20,14 @@
                 <xsd:sequence>
             		<xsd:element name="accountNumber" type="xsd:string"/>
                		<xsd:element name="serialNumber" type="xsd:long"/>
-            		<xsd:element name="loadProgramName" type="xsd:string" minOccurs="0"/>
+            		<xsd:element name="loadProgramName" type="xsd:string" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                If loadProgramName is not supplied, all override limit counters
+                                for the device will be decremented.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
                	</xsd:sequence>
             </xsd:extension>
         </xsd:complexContent>

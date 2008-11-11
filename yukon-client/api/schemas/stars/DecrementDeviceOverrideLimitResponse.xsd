@@ -19,10 +19,10 @@
         <xsd:complexContent>
             <xsd:extension base="yukon:YukonMessage">
                 <xsd:sequence>
-                	<xsd:element name="accountNumber" type="xsd:string"/>
-                	<xsd:element name="serialNumber" type="xsd:long"/>
-                	<xsd:element name="loadProgramName" type="xsd:string" minOccurs="0"/>
-                	<xsd:element name="failure" type="yukon:Failure" minOccurs="0"/>
+                	<xsd:choice>
+                        <xsd:element name="success" />
+                        <xsd:element name="failure" type="yukon:Failure" />
+                    </xsd:choice>
                 </xsd:sequence>
             </xsd:extension>
         </xsd:complexContent>
