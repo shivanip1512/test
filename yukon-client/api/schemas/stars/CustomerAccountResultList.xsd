@@ -6,6 +6,7 @@
             elementFormDefault="qualified">
 	
     <xsd:include schemaLocation="../common/Failure.xsd"/>
+    <xsd:include schemaLocation="../common/Types.xsd"/>
 
     <xsd:annotation>
      	<xsd:documentation xml:lang="en">
@@ -18,7 +19,7 @@
             <xsd:element name="customerAccount" maxOccurs="unbounded">
                 <xsd:complexType>
                     <xsd:sequence>
-                        <xsd:element name="accountNumber" type="xsd:string"/>
+                        <xsd:element name="accountNumber" type="yukon:AcountNumber"/>
                         <xsd:choice>
                             <xsd:element name="success" />
                             <xsd:element name="failure" type="yukon:Failure" />

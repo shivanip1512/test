@@ -18,7 +18,10 @@
         <xsd:sequence>
     	    <xsd:element name="accountNumber" type="yukon:AcountNumber"/>
       		<xsd:element name="serialNumber" type="yukon:SerialNumber"/>
-            <xsd:element name="failure" type="yukon:Failure" minOccurs="0"/>
+            <xsd:choice>
+                <xsd:element name="success" />
+                <xsd:element name="failure" type="yukon:Failure" />
+            </xsd:choice>
         </xsd:sequence>
     </xsd:complexType>
     

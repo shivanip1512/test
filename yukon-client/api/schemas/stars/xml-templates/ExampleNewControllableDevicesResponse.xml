@@ -16,6 +16,7 @@
         <controllableDeviceResult>
             <accountNumber>290418</accountNumber>
 	       	<serialNumber>500000007</serialNumber>
+            <success/>
         </controllableDeviceResult>
     </controllableDeviceResultList>
 </newControllableDevicesResponse>
