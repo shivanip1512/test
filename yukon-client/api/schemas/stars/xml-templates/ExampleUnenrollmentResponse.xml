@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<enrollmentResponse xmlns="http://yukon.cannontech.com/api"
+<unenrollmentResponse xmlns="http://yukon.cannontech.com/api"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xsi:schemaLocation="http://yukon.cannontech.com/api ../EnrollmentResponse.xsd"
+           xsi:schemaLocation="http://yukon.cannontech.com/api ../UnEnrollmentResponse.xsd"
            version="1.0">
 	<enrollmentResultList>
         <programEnrollmentResult>
@@ -23,4 +23,4 @@
             </failure>
         </programEnrollmentResult>
     </enrollmentResultList>
-</enrollmentResponse>
+</unenrollmentResponse>

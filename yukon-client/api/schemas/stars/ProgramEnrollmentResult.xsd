@@ -4,32 +4,27 @@
             xmlns:yukon="http://yukon.cannontech.com/api" 
             targetNamespace="http://yukon.cannontech.com/api"
             elementFormDefault="qualified">
-	
-    <xsd:include schemaLocation="../common/Types.xsd"/>
     
+    <xsd:include schemaLocation="../common/Failure.xsd"/>
+    <xsd:include schemaLocation="../common/Types.xsd"/>
+	
     <xsd:annotation>
      	<xsd:documentation xml:lang="en">
             STARS Customer and Device Import schema for Integration III at BG&amp;E
      	</xsd:documentation>
     </xsd:annotation>
     
-    <xsd:complexType name="ProgramEnrollment">
-      	<xsd:sequence>
+    <xsd:complexType name="ProgramEnrollmentResult">
+        <xsd:sequence>
     	    <xsd:element name="accountNumber" type="yukon:AcountNumber"/>
       		<xsd:element name="serialNumber" type="yukon:SerialNumber"/>
     		<xsd:element name="loadProgramName" type="xsd:string"/>
           	<xsd:element name="loadGroupName" type="xsd:string"/>
-          	<xsd:element name="applianceCategoryName" type="xsd:string" minOccurs="0"/>
-          	<xsd:element name="appliancekW" type="xsd:float" minOccurs="0"/>
-          	<xsd:element name="relay" minOccurs="0">
-     			<xsd:simpleType>
-       				<xsd:restriction base="xsd:positiveInteger">
-         				<xsd:maxInclusive value="4"/>
-       				</xsd:restriction>
-     			</xsd:simpleType>
-    		</xsd:element>
-    		<xsd:element name="seasonalLoad" type="xsd:string" minOccurs="0"/>
-    	</xsd:sequence>
+            <xsd:choice>
+                <xsd:element name="success" />
+                <xsd:element name="failure" type="yukon:Failure" />
+            </xsd:choice>
+        </xsd:sequence>
     </xsd:complexType>
     
 </xsd:schema>
