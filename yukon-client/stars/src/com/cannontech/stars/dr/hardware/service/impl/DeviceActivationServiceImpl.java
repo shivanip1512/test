@@ -7,6 +7,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataRetrievalFailureException;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.core.service.StarsCacheService;
@@ -39,6 +40,8 @@ public class DeviceActivationServiceImpl implements DeviceActivationService {
             InventoryBase inventoryBase = inventoryBaseDao.getById(hardware.getInventoryId());
             return true;
         } catch (DataRetrievalFailureException e) {
+            return false;
+        } catch (NotFoundException nfe){
             return false;
         }
     }

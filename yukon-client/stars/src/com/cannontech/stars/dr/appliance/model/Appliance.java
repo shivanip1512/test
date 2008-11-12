@@ -3,6 +3,7 @@ package com.cannontech.stars.dr.appliance.model;
 public class Appliance {
     private ApplianceCategory applianceCategory;
     private int applianceId;
+    private float applianceKW;
     private int inventoryId;
     private int programId;
     private int accountId;
@@ -20,6 +21,13 @@ public class Appliance {
         this.applianceId = applianceId;
     }
 
+    public float getApplianceKW() {
+        return applianceKW;
+    }
+    public void setApplianceKW(float applianceKW) {
+        this.applianceKW = applianceKW;
+    }
+    
     public int getInventoryId() {
         return inventoryId;
     }

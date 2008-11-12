@@ -2,10 +2,11 @@ package com.cannontech.stars.dr.appliance.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
@@ -17,7 +18,6 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.db.stars.appliance.ApplianceBase;
-import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
 import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
 import com.cannontech.stars.dr.appliance.model.Appliance;
@@ -25,34 +25,73 @@ import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareConfigurationDao;
 
 public class ApplianceDaoImpl implements ApplianceDao {
-    private static final String selectBaseSql;
     private final ParameterizedRowMapper<Appliance> rowMapper = createRowMapper();
     private SimpleJdbcTemplate simpleJdbcTemplate;
     private ApplianceCategoryDao applianceCategoryDao;
     private LMHardwareConfigurationDao lmHardwareConfigurationDao;
     
-    static {
-        
-        selectBaseSql = "SELECT ab.ApplianceID,ab.ApplianceCategoryID,AccountID,ProgramID,InventoryID,AddressingGroupID,LoadNumber " +
-                        "FROM ApplianceBase ab,LMHardwareConfiguration lmhc " +
-                        "WHERE ab.ApplianceID = lmhc.ApplianceID";
-        
-    }
+    private String applianceSQLHeader = 
+        "SELECT AB.applianceId, AB.applianceCategoryId, AB.accountId, " +
+    	"       AB.programId, LMHC.inventoryId, LMHC.addressingGroupId, " +
+    	"       LMHC.loadNumber, AB.kwCapacity " +
+    	"FROM ApplianceBase AB, LMHardwareConfiguration LMHC ";
     
+    private String applianceSQLFooter = 
+        " AB.applianceId = LMHC.applianceId ";
+    
+    
+    @Override
+    public void updateApplianceKW(int applianceId, float applianceKW) {
+        SqlStatementBuilder updateApplianceSQL = new SqlStatementBuilder();
+        updateApplianceSQL.append("UPDATE ApplianceBase");
+        updateApplianceSQL.append("SET kwCapacity = "+applianceKW+" ");
+        updateApplianceSQL.append("WHERE applianceId = ?");
+
+        simpleJdbcTemplate.update(updateApplianceSQL.toString(), 
+                                  applianceId);
+    }
+
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public Appliance getById(final int applianceId) {
-        String sql = selectBaseSql + " AND ab.ApplianceID = ?";
-        Appliance appliance = simpleJdbcTemplate.queryForObject(sql, rowMapper, applianceId);
+        SqlStatementBuilder applianceSQL = new SqlStatementBuilder();
+        applianceSQL.append(applianceSQLHeader);
+        applianceSQL.append("WHERE AB.applianceId = ? ");
+        applianceSQL.append("AND "+applianceSQLFooter);
+
+        Appliance appliance = simpleJdbcTemplate.queryForObject(applianceSQL.toString(), rowMapper, applianceId);
         return appliance;
     }
 
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<Appliance> getByAccountId(final int accountId) {
-        String sql = selectBaseSql + " AND ab.AccountID = ?";
-        List<Appliance> list = simpleJdbcTemplate.query(sql, rowMapper, accountId);
+        SqlStatementBuilder applianceSQL = new SqlStatementBuilder();
+        applianceSQL.append(applianceSQLHeader);
+        applianceSQL.append("WHERE AB.accountId = ? ");
+        applianceSQL.append("AND "+applianceSQLFooter);
+
+        List<Appliance> list = simpleJdbcTemplate.query(applianceSQL.toString(), rowMapper, accountId);
         return list;
+    }
+    
+    public List<Appliance> getByAccountIdAndProgramIdAndInventoryId(int accountId, 
+                                                                    int programId,
+                                                                    int inventoryId) {
+
+        SqlStatementBuilder applianceSQL = new SqlStatementBuilder();
+        applianceSQL.append(applianceSQLHeader); 
+        applianceSQL.append("Where AB.accountId = ? ");
+        applianceSQL.append("AND AB.programId = ? ");
+        applianceSQL.append("AND LMHC.inventoryId = ?");
+        applianceSQL.append("AND "+applianceSQLFooter);
+        
+        try {
+            return simpleJdbcTemplate.query(applianceSQL.toString(), rowMapper, 
+                                            accountId, programId, inventoryId);
+        } catch (EmptyResultDataAccessException ex) {
+            return Collections.emptyList();
+        }
     }
     
     @Override
@@ -108,7 +147,6 @@ public class ApplianceDaoImpl implements ApplianceDao {
     
     @SuppressWarnings("unchecked")
     public void deleteAppliancesByAccountIdAndInventoryId(int accountId, int inventoryId) {
-        SimpleJdbcTemplate simpleJdbcTemplate = YukonSpringHook.getBean("simpleJdbcTemplate", SimpleJdbcTemplate.class);
         
         String applianceIdsSQL = "Select AB.applianceId " + 
                                  "From ApplianceBase AB, LMHardwareConfiguration LMHC " + 

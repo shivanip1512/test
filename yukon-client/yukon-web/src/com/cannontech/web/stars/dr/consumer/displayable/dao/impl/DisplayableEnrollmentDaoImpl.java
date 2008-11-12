@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
-import com.cannontech.stars.dr.appliance.model.ApplianceType;
+import com.cannontech.stars.dr.appliance.model.ApplianceTypeEnum;
 import com.cannontech.stars.dr.hardware.model.InventoryBase;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.user.YukonUserContext;
@@ -54,8 +54,8 @@ public class DisplayableEnrollmentDaoImpl extends AbstractDisplayableDao impleme
                 
                 enrollment.setApplianceCategory(applianceCategory);
                 
-                ApplianceType applianceType = applianceCategory.getApplianceType();
-                enrollment.setApplianceType(applianceType);
+                ApplianceTypeEnum applianceTypeEnum = applianceCategory.getApplianceTypeEnum();
+                enrollment.setApplianceType(applianceTypeEnum);
                 
                 String logoPath = applianceCategory.getLogoPath();
                 enrollment.setApplianceLogo(logoPath);

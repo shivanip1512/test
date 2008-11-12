@@ -7,11 +7,13 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.stars.dr.event.dao.LMHardwareEventDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryBaseDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
@@ -71,8 +73,11 @@ public class LMHardwareBaseDaoImpl implements LMHardwareBaseDao {
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public LMHardwareBase getBySerialNumber(final String serialNumber) throws DataAccessException {
-        LMHardwareBase hardwareBase = simpleJdbcTemplate.queryForObject(selectBySerialNumber, rowMapper, serialNumber);
-        return hardwareBase;
+        try {
+            return simpleJdbcTemplate.queryForObject(selectBySerialNumber, rowMapper, serialNumber);
+        } catch(EmptyResultDataAccessException ex) {
+            throw new NotFoundException("The serial number supplied does not exist.");
+        }
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)

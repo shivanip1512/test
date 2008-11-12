@@ -3,16 +3,16 @@ package com.cannontech.stars.dr.appliance.model;
 public class ApplianceCategory {
     private final int applianceCategoryId;
     private final String categoryLabel;
-    private final ApplianceType applianceType;
+    private final ApplianceTypeEnum applianceTypeEnum;
     private final String logoPath;
 
     public ApplianceCategory(int applianceCategoryId,
                              String categoryLabel,
-                             ApplianceType applianceType, 
+                             ApplianceTypeEnum applianceType, 
                              String logoPath) {
         this.applianceCategoryId = applianceCategoryId;
         this.categoryLabel = categoryLabel;
-        this.applianceType = applianceType;
+        this.applianceTypeEnum = applianceType;
         this.logoPath = logoPath;
     }
 
@@ -24,8 +24,8 @@ public class ApplianceCategory {
         return categoryLabel;
     }
 
-    public ApplianceType getApplianceType() {
-        return applianceType;
+    public ApplianceTypeEnum getApplianceTypeEnum() {
+        return applianceTypeEnum;
     }
 
     public String getLogoPath() {
@@ -37,8 +37,8 @@ public class ApplianceCategory {
         final int prime = 31;
         int result = 1;
         result = prime * result + applianceCategoryId;
-        result = prime * result + ((applianceType == null) ? 0
-                : applianceType.hashCode());
+        result = prime * result + ((applianceTypeEnum == null) ? 0
+                : applianceTypeEnum.hashCode());
         result = prime * result + ((logoPath == null) ? 0 : logoPath.hashCode());
         return result;
     }
@@ -57,10 +57,10 @@ public class ApplianceCategory {
         if (!categoryLabel.equalsIgnoreCase(other.categoryLabel)){
             return false;
         }
-        if (applianceType == null) {
-            if (other.applianceType != null)
+        if (applianceTypeEnum == null) {
+            if (other.applianceTypeEnum != null)
                 return false;
-        } else if (!applianceType.equals(other.applianceType))
+        } else if (!applianceTypeEnum.equals(other.applianceTypeEnum))
             return false;
         if (logoPath == null) {
             if (other.logoPath != null)

@@ -106,6 +106,10 @@
         <property name="porterConnection" ref="porterConnection"/>
     </bean>
 
+    <bean id="enrollmentService" class="com.cannontech.stars.dr.enrollment.service.impl.EnrollmentHelperServiceImpl">
+        <property name="programDao" ref="starsProgramDao"/>
+    </bean>
+
 	<bean id="lmHardwareControlInformationService" class="com.cannontech.stars.dr.hardware.service.impl.LMHardwareControlInformationServiceImpl">
 		<property name="lmHardwareControlGroupDao" ref="lmHardwareControlGroupDao"/>
         <property name="programDao" ref="starsProgramDao"/>
@@ -152,6 +156,8 @@
 
     <bean id="starsProgramDao" class="com.cannontech.stars.dr.program.dao.impl.ProgramDaoImpl"/>
     
+    <bean id="loadGroupDao" class="com.cannontech.stars.dr.loadgroup.dao.impl.LoadGroupDaoImpl"/>
+    
     <bean id="starsProgramService" class="com.cannontech.stars.dr.program.service.impl.ProgramServiceImpl"/>
 
     <bean id="starsProgramEnrollmentService" class="com.cannontech.stars.dr.program.service.impl.ProgramEnrollmentServiceImpl"/>
@@ -165,6 +171,8 @@
     <bean id="thermostatService" class="com.cannontech.stars.dr.thermostat.service.impl.ThermostatServiceImpl" />
 
     <bean id="scheduledOptOutDao" class="com.cannontech.stars.dr.optout.dao.impl.ScheduledOptOutDaoImpl"/>
+    
+    <bean id="enrollmentDao" class="com.cannontech.stars.dr.enrollment.dao.impl.EnrollmentDaoImpl"/>
     
     <bean id="optOutService" class="com.cannontech.stars.dr.optout.service.impl.OptOutServiceImpl"/>
 

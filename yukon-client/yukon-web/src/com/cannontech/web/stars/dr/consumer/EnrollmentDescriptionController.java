@@ -60,7 +60,7 @@ public class EnrollmentDescriptionController extends AbstractConsumerController 
 			map.addAttribute("descriptionUrl", descriptionUrl);
 		} else {
 			map.addAttribute("hasUrl", false);
-			map.addAttribute("applianceType", currentEnrollment.getApplianceType());
+			map.addAttribute("applianceType", currentEnrollment.getApplianceTypeEnum());
 			map.addAttribute("programs", currentEnrollment.getEnrollmentPrograms());
 		}
 		

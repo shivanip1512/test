@@ -18,6 +18,8 @@ public interface ProgramDao {
     
     public List<Program> getByProgramIds(List<Integer> programIdList);
     
+    public List<Program> getByProgramName(String programName); 
+    
     public List<Integer> getDistinctGroupIdsByYukonProgramIds(final Set<Integer> programIds);
 
     public List<Integer> getDistinctProgramIdsByGroupIds(final Set<Integer> groupIds);

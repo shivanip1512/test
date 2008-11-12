@@ -19,8 +19,8 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
-import com.cannontech.stars.dr.program.model.ProgramEnrollmentResult;
-import com.cannontech.stars.dr.program.service.ProgramEnrollmentRequest;
+import com.cannontech.stars.dr.program.model.ProgramEnrollmentResultEnum;
+import com.cannontech.stars.dr.program.service.ProgramEnrollment;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.WebSecurityChecker;
@@ -72,7 +72,7 @@ public class EnrollmentController extends AbstractConsumerController {
         final LiteYukonUser user = yukonUserContext.getYukonUser();
         
         JSONObject jsonObj = new JSONObject(json);
-        List<ProgramEnrollmentRequest> requestList = new ArrayList<ProgramEnrollmentRequest>();
+        List<ProgramEnrollment> requestList = new ArrayList<ProgramEnrollment>();
         
         @SuppressWarnings("unchecked") Iterator<String> iterator = jsonObj.keys();
         while (iterator.hasNext()) {
@@ -92,7 +92,7 @@ public class EnrollmentController extends AbstractConsumerController {
                 accountCheckerService.checkInventory(user, inventoryId);
                 accountCheckerService.checkApplianceCategory(user, applianceCategoryId);
                 
-                ProgramEnrollmentRequest enrollmentRequest = new ProgramEnrollmentRequest();
+                ProgramEnrollment enrollmentRequest = new ProgramEnrollment();
                 enrollmentRequest.setProgramId(programId);
                 enrollmentRequest.setInventoryId(inventoryId);
                 enrollmentRequest.setApplianceCategoryId(applianceCategoryId);
@@ -106,9 +106,9 @@ public class EnrollmentController extends AbstractConsumerController {
             }
         }
         
-        ProgramEnrollmentResult enrollmentResult = 
+        ProgramEnrollmentResultEnum enrollmentResultEnum = 
             programEnrollmentService.applyEnrollmentRequests(customerAccount, requestList, yukonUserContext);
-        map.addAttribute("enrollmentResult", enrollmentResult);
+        map.addAttribute("enrollmentResult", enrollmentResultEnum);
         
         
         EventUtils.logSTARSEvent(user.getUserID(),

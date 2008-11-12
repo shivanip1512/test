@@ -29,17 +29,15 @@ import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
-import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
-import com.cannontech.stars.dr.appliance.model.Appliance;
 import com.cannontech.stars.dr.controlhistory.model.ControlHistory;
 import com.cannontech.stars.dr.controlhistory.service.ControlHistoryService;
+import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
-import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.dr.program.model.Program;
-import com.cannontech.stars.dr.program.model.ProgramEnrollmentResult;
-import com.cannontech.stars.dr.program.service.ProgramEnrollmentRequest;
+import com.cannontech.stars.dr.program.model.ProgramEnrollmentResultEnum;
+import com.cannontech.stars.dr.program.service.ProgramEnrollment;
 import com.cannontech.stars.dr.program.service.ProgramEnrollmentService;
 import com.cannontech.stars.dr.util.ControlGroupUtil;
 import com.cannontech.stars.util.ServerUtils;
@@ -59,15 +57,15 @@ import com.cannontech.user.YukonUserContext;
 public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
     private static final Logger log = YukonLogManager.getLogger(ProgramEnrollmentServiceImpl.class);
     private ProgramDao programDao;
-    private ApplianceDao applianceDao;
+    private EnrollmentDao enrollmentDao;
     private LMHardwareControlGroupDao lmHardwareControlGroupDao;
     private ControlHistoryService controlHistoryService;
     private ECMappingDao ecMappingDao;
     private StarsCustAccountInformationDao starsCustAccountInformationDao;
 
     @Override
-    public ProgramEnrollmentResult applyEnrollmentRequests(final CustomerAccount customerAccount,
-            final List<ProgramEnrollmentRequest> requests, final YukonUserContext yukonUserContext) {
+    public ProgramEnrollmentResultEnum applyEnrollmentRequests(final CustomerAccount customerAccount,
+            final List<ProgramEnrollment> requests, final YukonUserContext yukonUserContext) {
 
         final int customerAccountId = customerAccount.getAccountId();
         LiteYukonUser user = yukonUserContext.getYukonUser();
@@ -89,11 +87,12 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
             operation = createStarsOperation(customerAccount, requests, energyCompany, liteCustomerAccount);
             StarsProgramSignUp programSignUp = operation.getStarsProgramSignUp();
 
-            List<LiteStarsLMHardware> hwsToConfig = ProgramSignUpAction.updateProgramEnrollment(programSignUp,
-                                                                                                liteCustomerAccount,
-                                                                                                null,
-                                                                                                energyCompany,
-                                                                                                user);
+            List<LiteStarsLMHardware> hwsToConfig = 
+                ProgramSignUpAction.updateProgramEnrollment(programSignUp,
+                                                            liteCustomerAccount,
+                                                            null,
+                                                            energyCompany,
+                                                            user);
 
             // Send out the config/disable command
             for (final LiteStarsLMHardware liteHw : hwsToConfig) {
@@ -120,10 +119,10 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
             }
         } catch (InvalidParameterException e) {
             log.error(e);
-            return ProgramEnrollmentResult.NOT_CONFIGURED_CORRECTLY;
+            return ProgramEnrollmentResultEnum.NOT_CONFIGURED_CORRECTLY;
         } catch (WebClientException e2) {
             log.error(e2);
-            return ProgramEnrollmentResult.FAILURE;
+            return ProgramEnrollmentResultEnum.FAILURE;
         }
 
         // Log activity
@@ -143,13 +142,13 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                                 ActivityLogActions.PROGRAM_ENROLLMENT_ACTION,
                                 logMessage);
         
-        ProgramEnrollmentResult result = (useHardwareAddressing) ?
-                ProgramEnrollmentResult.SUCCESS_HARDWARE_CONFIG : ProgramEnrollmentResult.SUCCESS;
+        ProgramEnrollmentResultEnum result = (useHardwareAddressing) ?
+                ProgramEnrollmentResultEnum.SUCCESS_HARDWARE_CONFIG : ProgramEnrollmentResultEnum.SUCCESS;
         return result;
     }
     
     private StarsOperation createStarsOperation(CustomerAccount customerAccount,
-            List<ProgramEnrollmentRequest> requests, LiteStarsEnergyCompany energyCompany,
+            List<ProgramEnrollment> requests, LiteStarsEnergyCompany energyCompany,
             LiteStarsCustAccountInformation liteCustomerAccount) {
 
         final StarsProgramSignUp programSignUp = new StarsProgramSignUp();
@@ -157,12 +156,16 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
         programSignUp.setAccountNumber(customerAccount.getAccountNumber());
 
         StarsSULMPrograms programs = new StarsSULMPrograms();
-        for (final ProgramEnrollmentRequest request : requests) {
+        for (final ProgramEnrollment request : requests) {
             SULMProgram program = new SULMProgram();
             program.setProgramID(request.getProgramId());
             program.setApplianceCategoryID(request.getApplianceCategoryId());
+            if (request.getLmGroupId() != 0) {
+                program.setAddressingGroupID(request.getLmGroupId());
+            } else {
+                program.setAddressingGroupID(ServerUtils.ADDRESSING_GROUP_NOT_FOUND);
+            }
             program.setInventoryID(request.getInventoryId());
-            program.setAddressingGroupID(ServerUtils.ADDRESSING_GROUP_NOT_FOUND);
             programs.addSULMProgram(program);
         }
         programSignUp.setStarsSULMPrograms(programs);
@@ -180,15 +183,13 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
             if (groupId == ServerUtils.ADDRESSING_GROUP_NOT_FOUND) {
                 int programId = program.getProgramID();
                 LiteLMProgramWebPublishing webProg = energyCompany.getProgram(programId);
-                List<LMHardwareConfiguration> lmHardwareConfiguration = 
-                    lmHardwareControlGroupDao.getOldConfigDataByInventoryId(program.getInventoryID());
+                List<ProgramEnrollment> activeProgramEnrollments = enrollmentDao.getActiveEnrollmentByAccountId(customerAccount.getAccountId());
                 
                 int grpID = webProg.getGroupIDs()[0];
-                for (LMHardwareConfiguration hardwareConfiguration : lmHardwareConfiguration) {
-                    int applianceId = hardwareConfiguration.getApplianceId();
-                    Appliance appliance = applianceDao.getById(applianceId);
-                    if(appliance.getApplianceCategory().getApplianceCategoryId() == webProg.getApplianceCategoryID()){
-                        grpID = hardwareConfiguration.getAddressingGroupId();
+                for (ProgramEnrollment programEnrollment : activeProgramEnrollments) {
+                    if (programEnrollment.getProgramId() == webProg.getProgramID() && 
+                        programEnrollment.getApplianceCategoryId() == webProg.getApplianceCategoryID()) {
+                        grpID = programEnrollment.getLmGroupId();
                     }
                 }
                 
@@ -251,15 +252,10 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
         boolean isProgramEnrolled = ControlGroupUtil.isEnrolled(entryList, new Date());
         return isProgramEnrolled;
     }
-
+    
     @Autowired
     public void setProgramDao(ProgramDao programDao) {
         this.programDao = programDao;
-    }
-
-    @Autowired
-    public void setApplianceDao(ApplianceDao applianceDao) {
-        this.applianceDao = applianceDao;
     }
 
     @Autowired
@@ -283,6 +279,11 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
     public void setStarsCustAccountInformationDao(
             StarsCustAccountInformationDao starsCustAccountInformationDao) {
         this.starsCustAccountInformationDao = starsCustAccountInformationDao;
+    }
+
+    @Autowired
+    public void setEnrollmentDao(EnrollmentDao enrollmentDao) {
+        this.enrollmentDao = enrollmentDao;
     }
 
 }

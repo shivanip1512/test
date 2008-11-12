@@ -19,6 +19,9 @@ import com.cannontech.loadcontrol.service.data.ProgramStatus;
 import com.cannontech.loadcontrol.service.data.ScenarioProgramStartingGears;
 import com.cannontech.loadcontrol.service.data.ScenarioStatus;
 import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
+import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
+import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 
@@ -26,7 +29,8 @@ public class LoadControlServiceInputsTestController extends MultiActionControlle
     
     private DateFormattingService dateformattingService;
     private LoadControlService loadControlService;
-
+    private EnrollmentHelperService enrollmentHelperService;
+    
     public ModelAndView home(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         return returnMav(request, new ArrayList<String>(0));
     }
@@ -188,6 +192,52 @@ public class LoadControlServiceInputsTestController extends MultiActionControlle
         return returnMav(request, results);
     }
     
+    //====================================================================================================================================
+    // ENROLLING A DEVICE IN A PROGRAM
+    //====================================================================================================================================
+    public ModelAndView enrollingADeviceInAProgram(HttpServletRequest request, HttpServletResponse response) throws ServletException, java.text.ParseException {
+
+        List<String> results = new ArrayList<String>();
+
+        YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
+
+        EnrollmentHelper enrollmentHelper = new EnrollmentHelper();
+        enrollmentHelper.setAccountNumber(ServletRequestUtils.getRequiredStringParameter(request, "accountNumber"));
+        enrollmentHelper.setLoadGroupName(ServletRequestUtils.getRequiredStringParameter(request, "loadGroupName"));
+        enrollmentHelper.setProgramName(ServletRequestUtils.getRequiredStringParameter(request, "programName"));
+        enrollmentHelper.setSerialNumber(ServletRequestUtils.getRequiredStringParameter(request, "serialNumber"));
+        enrollmentHelper.setRelay(ServletRequestUtils.getStringParameter(request, "relay"));
+        enrollmentHelper.setApplianceKW(ServletRequestUtils.getFloatParameter(request, "applianceKW", 0));
+        enrollmentHelper.setApplianceCategoryName(ServletRequestUtils.getStringParameter(request, "applianceCategoryName"));
+        
+        enrollmentHelperService.doEnrollment(enrollmentHelper, EnrollmentEnum.ENROLL, yukonUserContext);
+        
+        return returnMav(request, results);
+    }
+
+    //====================================================================================================================================
+    // UNENROLLING A DEVICE IN A PROGRAM
+    //====================================================================================================================================
+    public ModelAndView unenrollingADeviceInAProgram(HttpServletRequest request, HttpServletResponse response) throws ServletException, java.text.ParseException {
+
+        List<String> results = new ArrayList<String>();
+
+        YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
+        
+        EnrollmentHelper enrollmentHelper = new EnrollmentHelper();
+        enrollmentHelper.setAccountNumber(ServletRequestUtils.getRequiredStringParameter(request, "accountNumber"));
+        enrollmentHelper.setLoadGroupName(ServletRequestUtils.getRequiredStringParameter(request, "loadGroupName"));
+        enrollmentHelper.setProgramName(ServletRequestUtils.getRequiredStringParameter(request, "programName"));
+        enrollmentHelper.setSerialNumber(ServletRequestUtils.getRequiredStringParameter(request, "serialNumber"));
+        enrollmentHelper.setRelay(ServletRequestUtils.getStringParameter(request, "relay"));
+        enrollmentHelper.setApplianceKW(ServletRequestUtils.getFloatParameter(request, "applianceKW", 0));
+        enrollmentHelper.setApplianceCategoryName(ServletRequestUtils.getStringParameter(request, "applianceCategoryName"));
+
+        enrollmentHelperService.doEnrollment(enrollmentHelper, EnrollmentEnum.UNENROLL, yukonUserContext);
+        
+        return returnMav(request, results);
+    }
+    
     // HELPERS
     private ModelAndView returnMav(HttpServletRequest request, List<String> results) {
         
@@ -220,6 +270,11 @@ public class LoadControlServiceInputsTestController extends MultiActionControlle
         return date;
     }
     
+    @Autowired
+    public void setEnrollmentHelperService(
+            EnrollmentHelperService enrollmentHelperService) {
+        this.enrollmentHelperService = enrollmentHelperService;
+    }
     
     @Autowired
     public void setDateformattingService(

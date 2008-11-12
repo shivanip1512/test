@@ -2,7 +2,7 @@ package com.cannontech.stars.dr.appliance.model;
 
 import com.cannontech.common.i18n.DisplayableEnum;
 
-public enum ApplianceType implements DisplayableEnum {
+public enum ApplianceTypeEnum implements DisplayableEnum {
     DEFAULT,
     AIR_CONDITIONER,
     STORAGE_HEAT,

@@ -1,19 +1,19 @@
 package com.cannontech.stars.dr.program.service;
 
-public class ProgramEnrollmentRequest {
+public class ProgramEnrollment {
     private int applianceCategoryId;
     private int programId;
+    private int lmGroupId;
+    private double applianceKW;
+    private int relay;
     private int inventoryId;
     private boolean enroll; 
     
-    public ProgramEnrollmentRequest() {
-
-    }
+    public ProgramEnrollment() {}
 
     public int getApplianceCategoryId() {
         return applianceCategoryId;
     }
-
     public void setApplianceCategoryId(int categoryId) {
         this.applianceCategoryId = categoryId;
     }
@@ -21,15 +21,41 @@ public class ProgramEnrollmentRequest {
     public int getProgramId() {
         return programId;
     }
-
     public void setProgramId(int programId) {
         this.programId = programId;
     }
 
+    public int getLmGroupId() {
+        return lmGroupId;
+    }
+    public void setLmGroupId(int lmGroupId) {
+        this.lmGroupId = lmGroupId;
+    }
+    
+    public double getApplianceKW() {
+        return applianceKW;
+    }
+    public void setApplianceKW(double applianceKW) {
+        this.applianceKW = applianceKW;
+    }
+
+    public int getRelay() {
+        return relay;
+    }
+    public void setRelay(int relay) {
+        this.relay = relay;
+    }
+    public void setRelay(String relay) {
+        if (relay.equalsIgnoreCase("(none)")) {
+            this.relay = 0;
+        } else {
+            this.relay = Integer.parseInt(relay);
+        }
+    }
+    
     public int getInventoryId() {
         return inventoryId;
     }
-
     public void setInventoryId(int inventoryId) {
         this.inventoryId = inventoryId;
     }
@@ -37,7 +63,6 @@ public class ProgramEnrollmentRequest {
     public boolean isEnroll() {
         return enroll;
     }
-
     public void setEnroll(boolean enroll) {
         this.enroll = enroll;
     }
@@ -61,7 +86,7 @@ public class ProgramEnrollmentRequest {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        final ProgramEnrollmentRequest other = (ProgramEnrollmentRequest) obj;
+        final ProgramEnrollment other = (ProgramEnrollment) obj;
         if (applianceCategoryId != other.applianceCategoryId)
             return false;
         if (enroll != other.enroll)

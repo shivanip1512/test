@@ -6,14 +6,14 @@ import java.util.List;
 import java.util.Set;
 
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
-import com.cannontech.stars.dr.appliance.model.ApplianceType;
+import com.cannontech.stars.dr.appliance.model.ApplianceTypeEnum;
 import com.cannontech.stars.dr.program.model.Program;
 
 public final class DisplayableEnrollment {
     public static final Comparator<DisplayableEnrollmentProgram> enrollmentProgramComparator;
     public static final Comparator<DisplayableEnrollment> enrollmentComparator;
     private ApplianceCategory applianceCategory;
-    private ApplianceType applianceType;
+    private ApplianceTypeEnum applianceTypeEnum;
     private String applianceLogo;
     private Set<DisplayableEnrollmentProgram> enrollmentPrograms;
     
@@ -31,7 +31,7 @@ public final class DisplayableEnrollment {
         enrollmentComparator = new Comparator<DisplayableEnrollment>() {
             @Override
             public int compare(DisplayableEnrollment o1, DisplayableEnrollment o2) {
-                return o1.getApplianceType().name().compareTo(o2.getApplianceType().name());
+                return o1.getApplianceTypeEnum().name().compareTo(o2.getApplianceTypeEnum().name());
             }
         };
     }
@@ -50,12 +50,12 @@ public final class DisplayableEnrollment {
 
 
 
-    public ApplianceType getApplianceType() {
-        return applianceType;
+    public ApplianceTypeEnum getApplianceTypeEnum() {
+        return applianceTypeEnum;
     }
 
-    public void setApplianceType(ApplianceType applianceType) {
-        this.applianceType = applianceType;
+    public void setApplianceType(ApplianceTypeEnum applianceTypeEnum) {
+        this.applianceTypeEnum = applianceTypeEnum;
     }
 
     public String getApplianceLogo() {

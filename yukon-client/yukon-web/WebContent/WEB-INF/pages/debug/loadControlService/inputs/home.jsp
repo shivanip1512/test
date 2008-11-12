@@ -240,7 +240,82 @@
                 </form>
             </td>
         </tr>
+        
+        <%-- ENROLLING A DEVICE IN A PROGRAM.--%>
+        <tr>
+            <td class="functionality">Enrolling a device in a program</td>
+            <td class="inputTest">
+                <form action="/spring/debug/loadControlService/inputs/enrollingADeviceInAProgram" method="post">
+                    <tags:nameValueContainer>
+                    
+                        <tags:nameValue name="Account Number" nameColumnWidth="200px">
+                            <input type="text" name="accountNumber" value="${accountNumber}">
+                        </tags:nameValue>
+                        <tags:nameValue name="Program Name" nameColumnWidth="200px">
+                            <input type="text" name="programName" value="${programName}">
+                        </tags:nameValue>
+                        <tags:nameValue name="Serial Number" nameColumnWidth="200px">
+                            <input type="text" name="serialNumber" value="${serialNumber}">
+                        </tags:nameValue>
+                        <tags:nameValue name="Appliance Category Name" nameColumnWidth="200px">
+                            <input type="text" name="applianceCategoryName" value="${applianceCategoryName}">
+                        </tags:nameValue>
+                        <tags:nameValue name="Load Group Name" nameColumnWidth="200px">
+                            <input type="text" name="loadGroupName" value="${loadGroupName}">
+                        </tags:nameValue>
+                        <tags:nameValue name="applianceKW" nameColumnWidth="200px">
+                            <input type="text" name="applianceKW" value="${applianceKW}">
+                        </tags:nameValue>
+                        <tags:nameValue name="Relay" nameColumnWidth="200px">
+                            <input type="text" name="relay" value="${relay}">
+                        </tags:nameValue>
+                        
+                        <tags:nameValue name="RUN">
+                            <input type="submit" value="TEST">
+                        </tags:nameValue>
+                    </tags:nameValueContainer>
+                </form>
+            </td>
+        </tr>
     
+    
+        <%-- UNENROLLING A DEVICE IN A PROGRAM.--%>
+        <tr>
+            <td class="functionality">Unenrolling a device in a program</td>
+            <td class="inputTest">
+                <form action="/spring/debug/loadControlService/inputs/unenrollingADeviceInAProgram" method="post">
+                    <tags:nameValueContainer>
+                    
+                        <tags:nameValue name="Account Number" nameColumnWidth="200px">
+                            <input type="text" name="accountNumber" value="${accountNumber}">
+                        </tags:nameValue>
+                        <tags:nameValue name="Program Name" nameColumnWidth="200px">
+                            <input type="text" name="programName" value="${programName}">
+                        </tags:nameValue>
+                        <tags:nameValue name="Serial Number" nameColumnWidth="200px">
+                            <input type="text" name="serialNumber" value="${serialNumber}">
+                        </tags:nameValue>
+                        <tags:nameValue name="Appliance Category Name" nameColumnWidth="200px">
+                            <input type="text" name="applianceCategoryName" value="${applianceCategoryName}">
+                        </tags:nameValue>
+                        <tags:nameValue name="Load Group Name" nameColumnWidth="200px">
+                            <input type="text" name="loadGroupName" value="${loadGroupName}">
+                        </tags:nameValue>
+                        <tags:nameValue name="applianceKW" nameColumnWidth="200px">
+                            <input type="text" name="applianceKW" value="${applianceKW}">
+                        </tags:nameValue>
+                        <tags:nameValue name="Relay" nameColumnWidth="200px">
+                            <input type="text" name="relay" value="${relay}">
+                        </tags:nameValue>
+                        
+                        <tags:nameValue name="RUN">
+                            <input type="submit" value="TEST">
+                        </tags:nameValue>
+                    </tags:nameValueContainer>
+                </form>
+            </td>
+        </tr>
+
     </table>
     
 </cti:standardPage>

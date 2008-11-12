@@ -21,6 +21,7 @@ import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.stars.dr.appliance.model.Appliance;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
@@ -29,6 +30,7 @@ import com.cannontech.stars.dr.program.model.Program;
 
 public class ProgramDaoImpl implements ProgramDao {
     private static final String selectSql;
+    private static final String selectSQLHeader;
     private final ParameterizedRowMapper<Program> rowMapper = createRowMapper();
     private final ParameterizedRowMapper<Integer> groupIdRowMapper = createGroupIdRowMapper();
     private final ParameterizedRowMapper<Integer> programIdRowMapper = createProgramIdRowMapper();
@@ -40,6 +42,14 @@ public class ProgramDaoImpl implements ProgramDao {
                     "WHERE pwp.WebsettingsID = ywc.ConfigurationID " +
                     "AND ypo.PAObjectID = pwp.DeviceID " +
                     "AND yle.EntryID = pwp.ChanceOfControlID";
+        
+        
+        selectSQLHeader = "SELECT LMPWP.programId, LMPWP.programOrder, YWC.description, YWC.url, " +
+                          "       YWC.alternateDisplayName, PAO.paoName, YLE.entryText as ChanceOfControl, " +
+                          "       LMPWP.applianceCategoryId, YWC.logoLocation " +
+                          "FROM LMProgramWebPublishing LMPWP, YukonWebConfiguration YWC, " + 
+                          "     YukonPAObject PAO, YukonListEntry YLE ";
+        
     }
     
     @Override
@@ -128,6 +138,29 @@ public class ProgramDaoImpl implements ProgramDao {
         return programList;
     }
 
+    @Override
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public List<Program> getByProgramName(String programName) {
+        
+        final SqlStatementBuilder programQuery = new SqlStatementBuilder();
+        programQuery.append(selectSQLHeader);
+        programQuery.append("WHERE (PAO.paoName = ?");
+        programQuery.append("       OR YWC.alternateDisplayName like ? ) ");
+        programQuery.append("AND LMPWP.webSettingsId = YWC.configurationId ");
+        programQuery.append("AND PAO.paobjectId = LMPWP.deviceId ");
+        programQuery.append("AND YLE.entryId = LMPWP.chanceOfControlId ");
+        
+        try {
+            List<Program> programList = simpleJdbcTemplate.query(programQuery.toString(), 
+                                                                 rowMapper,
+                                                                 programName,
+                                                                 programName);
+            return programList;
+        } catch(IncorrectResultSizeDataAccessException ex){
+            throw new NotFoundException("The program name supplied does not exist.");
+        }
+    }
+    
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<Integer> getDistinctGroupIdsByYukonProgramIds(final Set<Integer> programIds) {

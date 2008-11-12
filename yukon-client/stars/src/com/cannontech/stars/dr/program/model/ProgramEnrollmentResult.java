@@ -1,18 +1,39 @@
 package com.cannontech.stars.dr.program.model;
 
-import com.cannontech.common.i18n.DisplayableEnum;
 
-public enum ProgramEnrollmentResult implements DisplayableEnum {
-    SUCCESS,
-    SUCCESS_HARDWARE_CONFIG,
-    FAILURE,
-    NOT_CONFIGURED_CORRECTLY;
-
-    private static final String keyPrefix = "yukon.dr.consumer.enrollment.result.";
+public class ProgramEnrollmentResult {
     
-    @Override
-    public String getFormatKey() {
-        return keyPrefix + name();
+    String accountNumber;
+    long serialNumber;
+    String loadProgramName;
+    String loadGroupName;
+
+    public String getAccountNumber() {
+        return accountNumber;
+    }
+    public void setAccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
+    }
+    
+    public long getSerialNumber() {
+        return serialNumber;
+    }
+    public void setSerialNumber(long serialNumber) {
+        this.serialNumber = serialNumber;
+    }
+    
+    public String getLoadProgramName() {
+        return loadProgramName;
+    }
+    public void setLoadProgramName(String loadProgramName) {
+        this.loadProgramName = loadProgramName;
+    }
+    
+    public String getLoadGroupName() {
+        return loadGroupName;
+    }
+    public void setLoadGroupName(String loadGroupName) {
+        this.loadGroupName = loadGroupName;
     }
 
 }
