@@ -21,11 +21,7 @@
                 <xsd:sequence>
                     <xsd:element name="accountNumber" type="yukon:AccountNumber" />
                     <xsd:element name="startDateTime" type="xsd:dateTime" />
-                    <xsd:element name="stopDateTime" type="xsd:dateTime" minOccurs="0">
-                        <xsd:annotation>
-                            <xsd:documentation>stopDateTime is optional. If omitted all overrides through the request time will be counted in the response.</xsd:documentation>
-                        </xsd:annotation>
-                    </xsd:element>
+                    <xsd:element name="stopDateTime" type="xsd:dateTime" />
                     <xsd:element name="programName" type="xsd:string" minOccurs="0" />
                 </xsd:sequence>
             </xsd:extension>
