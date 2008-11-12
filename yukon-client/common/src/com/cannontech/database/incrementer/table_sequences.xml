@@ -67,13 +67,13 @@
         <table name="ActivityLog" identitycolumn="ACTIVITYLOGID" initsequence="true"/>
       </sequence>
       <sequence name="DeviceReadLog">
-        <table name="DeviceReadLog" identitycolumn="DeviceReadLogId"/>
+        <table name="DeviceReadLog" identitycolumn="DeviceReadLogId" initsequence="true"/>
       </sequence>
       <sequence name="DeviceReadRequestLog">
-        <table name="DeviceReadRequestLog" identitycolumn="DeviceReadRequestLogId"/>
+        <table name="DeviceReadRequestLog" identitycolumn="DeviceReadRequestLogId" initsequence="true"/>
       </sequence>
       <sequence name="DeviceReadJobLog">
-        <table name="DeviceReadJobLog" identitycolumn="DeviceReadJobLogId"/>
+        <table name="DeviceReadJobLog" identitycolumn="DeviceReadJobLogId" initsequence="true"/>
       </sequence>
       <sequence name="userpaopermissionid">
         <table name="UserPaoPermission" identitycolumn="userpaopermissionid"/>
