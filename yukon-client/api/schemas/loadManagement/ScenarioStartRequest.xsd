@@ -25,7 +25,7 @@
                     </xsd:element>
                 	<xsd:element name="stopDateTime" type="xsd:dateTime" minOccurs="0">
                         <xsd:annotation>
-                            <xsd:documentation>stopDateTime is optional. If omitted, control will not be schedule to stop for each program</xsd:documentation>
+                            <xsd:documentation>stopDateTime is optional. If omitted, control will not be scheduled to stop for each program</xsd:documentation>
                         </xsd:annotation>
                     </xsd:element>
                 </xsd:sequence>
