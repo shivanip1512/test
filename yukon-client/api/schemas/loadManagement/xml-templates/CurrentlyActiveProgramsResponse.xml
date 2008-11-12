@@ -12,8 +12,8 @@
                 Residential LCR Cooling 50% Contract
             </programName>
             <currentStatus>Active</currentStatus>
-            <startDateTime>2008-10-28T17:08:00</startDateTime>
-            <stopDateTime>2008-10-28T11:59:59</stopDateTime>
+            <startDateTime>2008-10-28T17:08:00Z</startDateTime>
+            <stopDateTime>2008-10-28T11:59:59Z</stopDateTime>
             <gearName>50% Ramp</gearName>
         </programStatus>
         
@@ -22,8 +22,8 @@
                 Residential LCR Cooling 75% Contract
             </programName>
             <currentStatus>Active</currentStatus>
-            <startDateTime>2008-10-28T17:08:00</startDateTime>
-            <stopDateTime>2008-10-28T11:59:59</stopDateTime>
+            <startDateTime>2008-10-28T17:08:00Z</startDateTime>
+            <stopDateTime>2008-10-28T11:59:59Z</stopDateTime>
             <gearName>75% Ramp</gearName>
         </programStatus>
         
@@ -32,8 +32,8 @@
                 Residential LCR Cooling 100% Contract
             </programName>
             <currentStatus>Active</currentStatus>
-            <startDateTime>2008-10-28T17:08:00</startDateTime>
-            <stopDateTime>2008-10-28T11:59:59</stopDateTime>
+            <startDateTime>2008-10-28T17:08:00Z</startDateTime>
+            <stopDateTime>2008-10-28T11:59:59Z</stopDateTime>
             <gearName>100% Ramp</gearName>
         </programStatus>
         
@@ -42,8 +42,8 @@
                 Commercial ExpressStat Cooling 50% Contract
             </programName>
             <currentStatus>Active</currentStatus>
-            <startDateTime>2008-10-28T17:08:00</startDateTime>
-            <stopDateTime>2008-10-28T11:59:59</stopDateTime>
+            <startDateTime>2008-10-28T17:08:00Z</startDateTime>
+            <stopDateTime>2008-10-28T11:59:59Z</stopDateTime>
             <gearName>50% Ramp</gearName>
         </programStatus>
         
@@ -52,8 +52,8 @@
                 Commercial ExpressStat Cooling 75% Contract
             </programName>
             <currentStatus>Active</currentStatus>
-            <startDateTime>2008-10-28T17:08:00</startDateTime>
-            <stopDateTime>2008-10-28T11:59:59</stopDateTime>
+            <startDateTime>2008-10-28T17:08:00Z</startDateTime>
+            <stopDateTime>2008-10-28T11:59:59Z</stopDateTime>
             <gearName>75% Ramp</gearName>
         </programStatus>
         
@@ -62,8 +62,8 @@
                 Commercial ExpressStat Cooling 100% Contract
             </programName>
             <currentStatus>Active</currentStatus>
-            <startDateTime>2008-10-28T17:08:00</startDateTime>
-            <stopDateTime>2008-10-28T11:59:59</stopDateTime>
+            <startDateTime>2008-10-28T17:08:00Z</startDateTime>
+            <stopDateTime>2008-10-28T11:59:59Z</stopDateTime>
             <gearName>100% Ramp</gearName>
         </programStatus>
         
@@ -72,8 +72,8 @@
                 Residential ExpressStat Cooling 50% Contract
             </programName>
             <currentStatus>Active</currentStatus>
-            <startDateTime>2008-10-28T17:08:00</startDateTime>
-            <stopDateTime>2008-10-28T11:59:59</stopDateTime>
+            <startDateTime>2008-10-28T17:08:00Z</startDateTime>
+            <stopDateTime>2008-10-28T11:59:59Z</stopDateTime>
             <gearName>50% Ramp</gearName>
         </programStatus>
         
@@ -82,8 +82,8 @@
                 Residential ExpressStat Cooling 75% Contract
             </programName>
             <currentStatus>Active</currentStatus>
-            <startDateTime>2008-10-28T17:08:00</startDateTime>
-            <stopDateTime>2008-10-28T11:59:59</stopDateTime>
+            <startDateTime>2008-10-28T17:08:00Z</startDateTime>
+            <stopDateTime>2008-10-28T11:59:59Z</stopDateTime>
             <gearName>75% Ramp</gearName>
         </programStatus>
         
@@ -92,8 +92,8 @@
                 Residential ExpressStat Cooling 100% Contract
             </programName>
             <currentStatus>Inactive</currentStatus>
-            <startDateTime>2008-10-28T17:08:00</startDateTime>
-            <stopDateTime>2008-10-28T11:59:59</stopDateTime>
+            <startDateTime>2008-10-28T17:08:00Z</startDateTime>
+            <stopDateTime>2008-10-28T11:59:59Z</stopDateTime>
             <gearName>100% Ramp</gearName>
         </programStatus>
         

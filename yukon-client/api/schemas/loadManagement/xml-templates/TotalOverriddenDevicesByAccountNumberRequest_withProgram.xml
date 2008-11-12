@@ -6,8 +6,8 @@
     version="1.0">
 
     <accountNumber>03499834</accountNumber>
-    <startDateTime>2008-09-30T12:00:00</startDateTime>
-    <stopDateTime>2008-09-30T23:59:59</stopDateTime>
+    <startDateTime>2008-09-30T12:00:00Z</startDateTime>
+    <stopDateTime>2008-09-30T23:59:59Z</stopDateTime>
     <programName>Residential LCR Cooling 75% Contract</programName>
     
 </totalOverriddenDevicesByAccountNumberRequest>

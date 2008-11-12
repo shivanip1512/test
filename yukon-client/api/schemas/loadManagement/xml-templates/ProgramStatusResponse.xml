@@ -8,8 +8,8 @@
     <programStatus>
         <programName>Residential LCR Cooling 50% Contract</programName>
         <currentStatus>Active</currentStatus>
-        <startDateTime>2008-10-28T17:08:00</startDateTime>
-        <stopDateTime>2008-10-29T17:08:00</stopDateTime>
+        <startDateTime>2008-10-28T17:08:00Z</startDateTime>
+        <stopDateTime>2008-10-29T17:08:00Z</stopDateTime>
         <gearName>50% Ramp</gearName>
     </programStatus>
         

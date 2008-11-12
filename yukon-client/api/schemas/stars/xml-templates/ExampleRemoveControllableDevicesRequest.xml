@@ -18,7 +18,7 @@
 	       	<accountNumber>276699</accountNumber>
 	       	<serialNumber>500000009</serialNumber>
 	       	<deviceType>LCR-4700</deviceType>
-            <fieldRemoveDate>2008-10-28T17:07:40</fieldRemoveDate>
+            <fieldRemoveDate>2008-10-28T17:07:40Z</fieldRemoveDate>
 	    </controllableDevice>
     </controllableDeviceList>
 </removeControllableDevicesRequest>

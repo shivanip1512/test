@@ -10,7 +10,7 @@
             <programName>
                 Residential LCR Cooling 75% Contract
             </programName>
-            <startDateTime>2008-10-28T13:08:00</startDateTime>
+            <startDateTime>2008-10-28T13:08:00Z</startDateTime>
             <gearName>50% Ramp</gearName>
         </programControlHistory>
         
@@ -18,7 +18,7 @@
             <programName>
                 Residential LCR Cooling 75% Contract
             </programName>
-            <startDateTime>2008-10-28T15:00:00</startDateTime>
+            <startDateTime>2008-10-28T15:00:00Z</startDateTime>
             <gearName>75% Ramp</gearName>
         </programControlHistory>
         
@@ -26,8 +26,8 @@
             <programName>
                 Residential LCR Cooling 75% Contract
             </programName>
-            <startDateTime>2008-10-28T16:00:00</startDateTime>
-            <stopDateTime>2008-10-28T17:00:00</stopDateTime>
+            <startDateTime>2008-10-28T16:00:00Z</startDateTime>
+            <stopDateTime>2008-10-28T17:00:00Z</stopDateTime>
             <gearName>50% Ramp</gearName>
         </programControlHistory>
         
