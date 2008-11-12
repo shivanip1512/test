@@ -63,7 +63,7 @@ class CtiTime;
 
 // square root of 3 for power factor calculations
 #define SQRT3               1.7320508075688772935274463415059
-
+#define BEFOREPHASEMULTIPLIER   100000
 
 /* Various debug levels */
 #define CC_DEBUG_NONE              0x00000000

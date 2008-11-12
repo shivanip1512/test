@@ -7021,6 +7021,11 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
             _additionalFlags.append(char2string(*(addFlags+11)));
             _additionalFlags.append("NNNNNNNN");
 
+            //storing current and before var values in the same db column CURRENTVALUE.BEFOREVALUE
+            double hijackedPhaseABeforeAndAfter = (INT)_phaseAvalue + (_phaseAvalueBeforeControl/BEFOREPHASEMULTIPLIER);
+            double hijackedPhaseBBeforeAndAfter = (INT)_phaseBvalue + (_phaseBvalueBeforeControl/BEFOREPHASEMULTIPLIER);
+            double hijackedPhaseCBeforeAndAfter = (INT)_phaseCvalue + (_phaseCvalueBeforeControl/BEFOREPHASEMULTIPLIER);
+
             updater.clear();
 
             updater.where(dynamicCCFeederTable["feederid"]==_paoid);
@@ -7042,9 +7047,9 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
             << dynamicCCFeederTable["ivcount"].assign(_iVCount)
             << dynamicCCFeederTable["iwcontroltot"].assign(_iWControlTot)
             << dynamicCCFeederTable["iwcount"].assign(_iWCount)
-            << dynamicCCFeederTable["phaseavalue"].assign(_phaseAvalue)
-            << dynamicCCFeederTable["phasebvalue"].assign(_phaseBvalue)
-            << dynamicCCFeederTable["phasecvalue"].assign(_phaseCvalue)
+            << dynamicCCFeederTable["phaseavalue"].assign(hijackedPhaseABeforeAndAfter)
+            << dynamicCCFeederTable["phasebvalue"].assign(hijackedPhaseBBeforeAndAfter)
+            << dynamicCCFeederTable["phasecvalue"].assign(hijackedPhaseCBeforeAndAfter)
             << dynamicCCFeederTable["lastwattpointtime"].assign( toRWDBDT((CtiTime)_lastWattPointTime) )
             << dynamicCCFeederTable["lastvoltpointtime"].assign( toRWDBDT((CtiTime)_lastVoltPointTime) )
             << dynamicCCFeederTable["retryindex"].assign(_retryIndex);
@@ -7717,9 +7722,22 @@ void CtiCCFeeder::setDynamicData(RWDBReader& rdr)
     rdr["iwcontroltot"] >> _iWControlTot;
     rdr["iwcount"] >> _iWCount;
 
-    rdr["phaseavalue"] >> _phaseAvalue;
-    rdr["phasebvalue"] >> _phaseBvalue;
-    rdr["phasecvalue"] >> _phaseCvalue;
+    //current and before var values were stored in the same db column CURRENTVALUE.BEFOREVALUE
+    double hijackedPhaseABeforeAndAfter; 
+    double hijackedPhaseBBeforeAndAfter; 
+    double hijackedPhaseCBeforeAndAfter; 
+    rdr["phaseavalue"] >> hijackedPhaseABeforeAndAfter;
+    rdr["phasebvalue"] >> hijackedPhaseBBeforeAndAfter;
+    rdr["phasecvalue"] >> hijackedPhaseCBeforeAndAfter;
+
+    _phaseAvalue = (INT)hijackedPhaseABeforeAndAfter; 
+    _phaseBvalue = (INT)hijackedPhaseBBeforeAndAfter; 
+    _phaseCvalue = (INT)hijackedPhaseCBeforeAndAfter; 
+
+    _phaseAvalueBeforeControl = (hijackedPhaseABeforeAndAfter - _phaseAvalue)*BEFOREPHASEMULTIPLIER;
+    _phaseBvalueBeforeControl = (hijackedPhaseBBeforeAndAfter - _phaseBvalue)*BEFOREPHASEMULTIPLIER;
+    _phaseCvalueBeforeControl = (hijackedPhaseCBeforeAndAfter - _phaseCvalue)*BEFOREPHASEMULTIPLIER;
+
 
     rdr["lastwattpointtime"] >> _lastWattPointTime;
     rdr["lastvoltpointtime"] >> _lastVoltPointTime;
