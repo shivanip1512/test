@@ -3447,7 +3447,6 @@ void CtiCapController::porterReturnMsg( long deviceId, const string& _commandStr
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << CtiTime() << " - Porter Return May Indicate a Comm Failure!!  Bus: " << currentSubstationBus->getPAOName() << ", Feeder: " << currentFeeder->getPAOName()<< ", CapBank: " << currentCapBank->getPAOName() << endl;
                 }
-                currentCapBank->setControlRecentlySentFlag(FALSE);
                 if( currentCapBank->getStatusPointId() > 0 )
                 {
                     string additional = ("Sub: ");
@@ -3469,6 +3468,7 @@ void CtiCapController::porterReturnMsg( long deviceId, const string& _commandStr
                         if (!stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 702"))
                         {
                             currentCapBank->setPorterRetFailFlag(TRUE);
+                            currentCapBank->setControlRecentlySentFlag(FALSE);
                             
                             if (currentCapBank->getControlStatus() == CtiCCCapBank::CloseQuestionable ||
                                 currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
@@ -3489,6 +3489,7 @@ void CtiCapController::porterReturnMsg( long deviceId, const string& _commandStr
                     else if (!stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 702") ) 
                     {
                         text1 += currentCapBank->getControlStatusText();
+                        currentCapBank->setControlRecentlySentFlag(FALSE);
 
                         sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType, "Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
                         LONG stationId, areaId, spAreaId;
