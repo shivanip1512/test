@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/mgr_ptclients.cpp-arc  $
-* REVISION     :  $Revision: 1.55 $
-* DATE         :  $Date: 2008/11/11 21:51:43 $
+* REVISION     :  $Revision: 1.56 $
+* DATE         :  $Date: 2008/11/12 22:10:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -241,13 +241,10 @@ void CtiPointClientManager::refreshListByPointIDs(const set<long> &ids)
     {
         set<long> tempIds;
 
-        int count = 0;
-
         for( set<long>::iterator iter = ids.begin(); iter != ids.end(); )
         {
             tempIds.insert(*iter);
             iter++;
-            count++;
             if( tempIds.size() == max_size || iter == ids.end() )
             {
                 refreshListByPointIDs(tempIds);

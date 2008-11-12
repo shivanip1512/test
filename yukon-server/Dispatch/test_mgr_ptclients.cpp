@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/INCLUDE/test_queue.cpp-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2008/11/11 21:51:43 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2008/11/12 22:10:40 $
 *
 * Copyright (c) 2008 Cooper Industries, All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -77,7 +77,8 @@ BOOST_AUTO_UNIT_TEST(test_alarming)
 
     CtiPointSPtr point_status1_sptr = CtiPointSPtr(point_status1);
 
-    CtiTablePointAlarming alarm = manager.getAlarming(point_status1_sptr);
+    Test_CtiTablePointAlarming alarm;
+    alarm = manager.getAlarming(point_status1_sptr);
 
     BOOST_CHECK(!(alarm.getAlarmCategory(0) > SignalEvent));
     BOOST_CHECK(!(alarm.getAlarmCategory(1) > SignalEvent));

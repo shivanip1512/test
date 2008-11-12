@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_pt_alarm.h-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2008/11/05 19:03:37 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2008/11/12 22:10:40 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -90,6 +90,17 @@ public:
 
 protected:
 
+   CtiTablePointAlarming& setRecipientID        ( const LONG &aLong );
+   CtiTablePointAlarming& setAlarmCategory      ( const INT offset, const UINT &aInt );
+   CtiTablePointAlarming& setAlarmCategory      ( const string str );
+   CtiTablePointAlarming& setExcludeNotifyStates( const UINT &aInt );
+   CtiTablePointAlarming& setAutoAckStates      ( const UINT &aInt );
+   CtiTablePointAlarming& setNotifyOnAcknowledge( const BOOL &aBool );
+   CtiTablePointAlarming& setNotifyOnClear      ( const BOOL &aBool );
+   CtiTablePointAlarming& setNotificationGroupID( const UINT &aInt );
+
+private:
+
    LONG        _pointID;
 
    UINT        _alarmCategory[ ALARM_STATE_SIZE ];
@@ -101,8 +112,6 @@ protected:
    BOOL        _notifyOnAcknowledge;
    BOOL        _notifyOnClear;
    UINT        _notificationGroupID;
-   
-private:
 
    static UINT resolveExcludeStates( string &str );
    static UINT resolveAutoAcknowledgeStates( string &str );
@@ -121,29 +130,28 @@ public:
    static void getSQL(string &sql, LONG pointID = 0, LONG paoID = 0, const std::set<long> &pointIds = std::set<long>());
    static string getTableName();
 
-   LONG getPointID()                        const;
-   LONG getRecipientID()                    const;
-   UINT getAlarmCategory(const INT offset)  const;
-   UINT getExcludeNotifyStates()            const;
-   UINT getAutoAckStates()                  const;
-   BOOL getNotifyOnAcknowledge()            const;
-   BOOL getNotifyOnClear()                  const;
-   UINT getNotificationGroupID()            const;
+   virtual LONG getRecipientID()                    const;
+   virtual UINT getAlarmCategory(const INT offset)  const;
+   virtual UINT getExcludeNotifyStates()            const;
+   virtual UINT getAutoAckStates()                  const;
+   virtual BOOL getNotifyOnAcknowledge()            const;
+   virtual BOOL getNotifyOnClear()                  const;
+   virtual UINT getNotificationGroupID()            const;
 
-   CtiTablePointAlarming& setPointID            ( const LONG &aLong );
-   CtiTablePointAlarming& setRecipientID        ( const LONG &aLong );
-   CtiTablePointAlarming& setAlarmCategory      ( const INT offset, const UINT &aInt );
-   CtiTablePointAlarming& setAlarmCategory      ( const string str );
-   CtiTablePointAlarming& setExcludeNotifyStates( const UINT &aInt );
-   CtiTablePointAlarming& setAutoAckStates      ( const UINT &aInt );
-   CtiTablePointAlarming& setNotifyOnAcknowledge( const BOOL &aBool );
-   CtiTablePointAlarming& setNotifyOnClear      ( const BOOL &aBool );
-   CtiTablePointAlarming& setNotificationGroupID( const UINT &aInt );
+   virtual bool isNotifyExcluded( int alarm ) const;
+   virtual bool isAutoAcked     ( int alarm ) const;
+   virtual bool alarmOn         ( int alarm ) const;
+   virtual INT  alarmPriority   ( int alarm ) const;
+};
 
-   bool isNotifyExcluded( int alarm ) const;
-   bool isAutoAcked     ( int alarm ) const;
-   bool alarmOn         ( int alarm ) const;
-   INT  alarmPriority   ( int alarm ) const;
+class IM_EX_CTIYUKONDB Test_CtiTablePointAlarming : public CtiTablePointAlarming
+{
+private:
+   typedef CtiTablePointAlarming Inherited;
+public:
+   CtiTablePointAlarming& operator=(const CtiTablePointAlarming& aRef) { Inherited::operator=(aRef); return *this; }
+
+   CtiTablePointAlarming& setAlarmCategory      ( const INT offset, const UINT &aInt ) { return Inherited::setAlarmCategory(offset,aInt); }
 };
 
 #endif // #ifndef __TBL_PT_ALARM_H__
