@@ -22,7 +22,19 @@
                     <xsd:element name="controllableDeviceList">
                         <xsd:complexType>
                             <xsd:sequence>
-                                <xsd:element name="controllableDevice" type="yukon:ControllableDevice" maxOccurs="unbounded"/>
+                                <xsd:element name="controllableDevice" maxOccurs="unbounded">
+                                    <xsd:complexType>
+                                        <xsd:complexContent>
+                                            <xsd:extension base="yukon:ControllableDevice">
+                                                <xsd:sequence>
+                                                    <xsd:element name="deviceLabel" type="xsd:string" minOccurs="0"/>
+                                                    <xsd:element name="fieldInstallDate" type="xsd:dateTime" minOccurs="0"/>
+                                                    <xsd:element name="serviceCompanyName" type="xsd:string" minOccurs="0"/>
+                                                </xsd:sequence>
+                                            </xsd:extension>
+                                        </xsd:complexContent>
+                                    </xsd:complexType>
+                                </xsd:element>
                             </xsd:sequence>
                         </xsd:complexType>
                     </xsd:element>
