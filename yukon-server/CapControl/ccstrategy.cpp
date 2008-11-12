@@ -236,8 +236,7 @@ void CtiCCStrategy::restore(RWDBReader &rdr)
     rdr["controlsendretries"] >> _controlsendretries;
     rdr["peaklag"] >> _peaklag;
     rdr["peaklead"] >> _peaklead;
-    if (!stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::KVARControlUnits)||
-        !stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::PF_BY_KVARControlUnits)||
+    if (!stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::PF_BY_KVARControlUnits)||
         !stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::PF_BY_KQControlUnits))
     {
         _peaklag = fabs(_peaklag);
@@ -245,8 +244,7 @@ void CtiCCStrategy::restore(RWDBReader &rdr)
     }
     rdr["offpklag"] >> _offpklag;
     rdr["offpklead"] >> _offpklead;
-    if (!stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::KVARControlUnits)||
-        !stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::PF_BY_KVARControlUnits)||
+    if (!stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::PF_BY_KVARControlUnits)||
         !stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::PF_BY_KQControlUnits))
     {
         _offpklag = fabs(_offpklag);
@@ -256,11 +254,6 @@ void CtiCCStrategy::restore(RWDBReader &rdr)
     rdr["peakvarlead"] >> _peakVARlead;
     rdr["offpkvarlag"] >> _offpkVARlag;
     rdr["offpkvarlead"] >> _offpkVARlead;
-
-    _peakVARlag = fabs(_peakVARlag);
-    _peakVARlead =  -fabs(_peakVARlead);
-    _offpkVARlag = fabs(_offpkVARlag);
-    _offpkVARlead =  -fabs(_offpkVARlead);
 
     rdr["peakpfsetpoint"] >> _peakPFSetPoint;
     if (_peakPFSetPoint > 100)
