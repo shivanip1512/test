@@ -166,6 +166,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                 program.setAddressingGroupID(ServerUtils.ADDRESSING_GROUP_NOT_FOUND);
             }
             program.setInventoryID(request.getInventoryId());
+            program.setLoadNumber(request.getRelay());
             programs.addSULMProgram(program);
         }
         programSignUp.setStarsSULMPrograms(programs);

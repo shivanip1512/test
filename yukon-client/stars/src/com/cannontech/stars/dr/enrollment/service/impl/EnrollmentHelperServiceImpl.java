@@ -193,11 +193,11 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         if (!StringUtils.isBlank(applianceCategoryName)){
             List<ApplianceCategory> applianceCategoryList = applianceCategoryDao.getByApplianceCategoryName(applianceCategoryName);
             applianceCategory = applianceCategoryList.get(0);
+        
+            if (program.getApplianceCategoryId() != applianceCategory.getApplianceCategoryId())
+                throw new IllegalArgumentException("The supplied program does not belong to the supplied appliance category.");
         }
         
-        if (program.getApplianceCategoryId() != applianceCategory.getApplianceCategoryId())
-            throw new IllegalArgumentException("The supplied program does not belong to the supplied appliance category.");
-
         return applianceCategory;
     }
 

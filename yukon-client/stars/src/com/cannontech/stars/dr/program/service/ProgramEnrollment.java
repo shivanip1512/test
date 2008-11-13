@@ -4,7 +4,7 @@ public class ProgramEnrollment {
     private int applianceCategoryId;
     private int programId;
     private int lmGroupId;
-    private double applianceKW;
+    private float applianceKW;
     private int relay;
     private int inventoryId;
     private boolean enroll; 
@@ -32,10 +32,10 @@ public class ProgramEnrollment {
         this.lmGroupId = lmGroupId;
     }
     
-    public double getApplianceKW() {
+    public float getApplianceKW() {
         return applianceKW;
     }
-    public void setApplianceKW(double applianceKW) {
+    public void setApplianceKW(float applianceKW) {
         this.applianceKW = applianceKW;
     }
 

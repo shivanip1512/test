@@ -70,7 +70,7 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
                 programEnrollment.setApplianceCategoryId(rs.getInt("applianceCategoryId"));
                 programEnrollment.setProgramId(rs.getInt("programId"));
                 programEnrollment.setLmGroupId(rs.getInt("lmGroupId"));
-                programEnrollment.setApplianceKW(rs.getDouble("KWCapacity"));
+                programEnrollment.setApplianceKW(rs.getFloat("KWCapacity"));
                 programEnrollment.setRelay(rs.getInt("relay"));
                 programEnrollment.setInventoryId(rs.getInt("inventoryId"));
                 return programEnrollment;

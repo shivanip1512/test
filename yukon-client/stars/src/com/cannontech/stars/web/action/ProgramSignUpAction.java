@@ -729,7 +729,9 @@ public class ProgramSignUpAction implements ActionBase {
 						 * If liteInv is not null, it's from the import program or hardware configuration page;
 						 * in the later case, update the group of all loads assigned to this program if necessary.
 						 */
-						if (liteHw != null && program.hasAddressingGroupID() && liteApp.getAddressingGroupID() != groupID) {
+						if (liteHw != null && 
+						    ((program.hasAddressingGroupID() && liteApp.getAddressingGroupID() != groupID) ||
+						     (program.hasLoadNumber() && liteApp.getLoadNumber() != oldApplianceRelay))) {
 							liteApp.setAddressingGroupID( groupID );
 							if (!hwsToConfig.contains( liteHw )) 
 								hwsToConfig.add( liteHw );
@@ -744,6 +746,15 @@ public class ProgramSignUpAction implements ActionBase {
                             currentEnrollmentInformation[GROUP] = groupID;
                             currentEnrollmentInformation[RELAY] = relay;
                             hwInfoToEnroll.add(currentEnrollmentInformation);
+                            
+                            //  We need remove the old enrollment entry to eliminate duplicate entries.
+                            int[] pastEnrollmentInformation = new int [6];
+                            pastEnrollmentInformation[INV] = liteHw.getInventoryID();
+                            pastEnrollmentInformation[ACCT] = liteHw.getAccountID();
+                            pastEnrollmentInformation[GROUP] = oldLoadGroupId;
+                            pastEnrollmentInformation[RELAY] = oldApplianceRelay;
+                            hwInfoToUnenroll.add(pastEnrollmentInformation);
+                            
                             /*
                              * here we catch hardware that are ONLY being unenrolled.  If they are simply being enrolled in a different
                              * program, then the service's startEnrollment will handle the appropriate un-enrollments and we don't need
