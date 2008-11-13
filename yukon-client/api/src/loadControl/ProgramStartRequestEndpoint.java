@@ -1,6 +1,5 @@
 package loadControl;
 
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -49,9 +48,8 @@ public class ProgramStartRequestEndpoint {
         String stopTimeStr = programNameExpression.valueOf(programStartRequest);
         
         Namespace ns = YukonXml.getYukonNamespace();
-        DateFormat df = XmlUtils.getDateFormat();
-        Date startTime = df.parse(startTimeStr);
-        Date stopTime = df.parse(stopTimeStr);
+        Date startTime = XmlUtils.parseDate(startTimeStr);
+        Date stopTime = XmlUtils.parseDate(stopTimeStr);
         
         ProgramStatus programStatus = loadControlService.startControlByProgramName(programName, startTime, stopTime, false, true);
         

@@ -6,5 +6,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/common"/>
 	<classpathentry kind="lib" path="/third-party/spring-ws-1.5.2.jar" sourcepath="Z:/java/Third-Party Sources/spring-ws-1.5.2-with-dependencies.zip"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/loadcontrol"/>
+	<classpathentry kind="lib" path="/third-party/joda-time-1.6.jar" sourcepath="Z:/java/Third-Party Sources/joda-time-1.6.zip"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

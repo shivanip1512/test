@@ -1,20 +1,18 @@
 package com.cannontech.yukon.api.util;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
 
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.jdom.Text;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 
 public class XmlUtils {
-
-    private static final TimeZone UTC = TimeZone.getTimeZone("UTC");
 
     public static List<Integer> convertToIntegerList(List<?> selectNodes) {
         List<Integer> result = new ArrayList<Integer>(selectNodes.size());
@@ -59,11 +57,18 @@ public class XmlUtils {
         return element;
     }
     
+    /**
+     * Creates an element containing a date in ISO format with a UTC zone.
+     * Ex: 2008-10-13T12:30:00Z
+     * @param name
+     * @param namespace
+     * @param value
+     * @return
+     */
     public static Element createDateElement(String name, Namespace namespace, Date value) {
         Element element = new Element(name, namespace);
         
-        DateFormat df = getDateFormat();
-        String dateStr = df.format(value);
+        String dateStr = formatDate(value);
         
         element.setText(dateStr);
         
@@ -81,11 +86,32 @@ public class XmlUtils {
         return element;
     }
     
-    public static DateFormat getDateFormat() {
+    /**
+     * Returns date formatted as ISO with UTC zone.
+     * Ex: 2008-10-13T12:30:00Z
+     * @param d
+     * @return
+     */
+    public static String formatDate(Date date) {
         
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
-        df.setTimeZone(UTC);
+        DateTime dt = new DateTime(date, DateTimeZone.UTC);
+        DateTimeFormatter fmt = ISODateTimeFormat.dateTimeNoMillis();
+        return fmt.print(dt);
+    }
+    
+    /**
+     * Parses ISO date string into a Date.
+     * The ISO string may either contain a UTC zone indicator of "Z"
+     * Ex: 2008-10-13T12:30:00Z
+     * Or a time zone offset in the format "+|-HH:mm"
+     * Ex: 2008-10-13T06:30:00-06:00
+     * @param str
+     * @return
+     */
+    public static Date parseDate(String str) {
         
-        return df;
+        DateTimeFormatter fmt = ISODateTimeFormat.dateTimeNoMillis();
+        DateTime dt = fmt.parseDateTime(str);
+        return dt.toDate();
     }
 }
