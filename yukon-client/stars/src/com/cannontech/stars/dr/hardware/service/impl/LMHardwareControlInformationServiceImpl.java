@@ -35,11 +35,10 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
              * We need to allow this method to do stops as well as starts to help migrate from legacy STARS systems and to
              * properly log repetitive enrollments.
              */
+            List<Integer> newProgramIds = programDao.getDistinctProgramIdsByGroupIds(Collections.singleton(loadGroupId));
             for(LMHardwareControlGroup existingEnrollment : controlInformationList) {
                 
                 List<Integer> existingProgramIds = programDao.getDistinctProgramIdsByGroupIds(Collections.singleton(existingEnrollment.getLmGroupId()));
-                List<Integer> newProgramIds = programDao.getDistinctProgramIdsByGroupIds(Collections.singleton(loadGroupId));
-                
                 if(existingProgramIds.contains(newProgramIds.get(0)) &&
                    existingEnrollment.getLmGroupId() != loadGroupId &&
                    existingEnrollment.getRelay() == relay && 
