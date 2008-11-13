@@ -15,8 +15,8 @@
 						  {"Service.jsp", DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_SERVICE_REQUEST)},
 						  {"ServiceSummary.jsp", DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_SERVICE_HISTORY)},
 						  {"Password.jsp", DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_CHANGE_LOGIN)},
-						  {"FAQ.jsp", DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_FAQ)},
-						  {"Privileges.jsp", "Privileges"},
+						  {"faq.jsp", DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_FAQ)},
+                                                  {"Privileges.jsp", "Privileges"},
 						  {"PrintExport.jsp", "Print/Export"},
 						  {"CreateAppliances.jsp", "New"},
 						  {(DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, ConsumerInfoRole.INVENTORY_CHECKING)? "SerialNumber.jsp?action=New" : "CreateHardware.jsp"), "New", "CreateHardware.jsp"},
@@ -455,8 +455,8 @@
           </tr>
 <%	} else { %>
           <tr>
-            <td width="10"><%= ((String[]) links.get("FAQ.jsp"))[0] %></td>
-            <td style="padding:1"><%= ((String[]) links.get("FAQ.jsp"))[1] %></td>
+            <td width="10"><%= ((String[]) links.get("faq.jsp"))[0] %></td>
+            <td style="padding:1"><%= ((String[]) links.get("faq.jsp"))[1] %></td>
           </tr>
 <%	} %>
 		  </cti:checkProperty>
