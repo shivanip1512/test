@@ -506,8 +506,6 @@ private javax.swing.JLabel getJLabelWarning() {
 			ivjJLabelWarning.setName("JLabelWarning");
 			ivjJLabelWarning.setFont(new java.awt.Font("dialog", 0, 12));
 			ivjJLabelWarning.setText("Control Window changes take effect at midnight");
-			ivjJLabelWarning.setMinimumSize(new Dimension(100,10));
-			ivjJLabelWarning.setPreferredSize(new Dimension(100,10));
 		} catch (java.lang.Throwable ivjExc) {
 			handleException(ivjExc);
 		}
