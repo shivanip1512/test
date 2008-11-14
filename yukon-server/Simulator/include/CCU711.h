@@ -16,7 +16,6 @@
 #define  __CCU711_H__
 #include "CCU710.h"
 #include "ctiTime.h"
-#include "mctStruct.h"
 #include "EmetconWordB.h"
 #include "Mct410Sim.h"
 #include <queue>

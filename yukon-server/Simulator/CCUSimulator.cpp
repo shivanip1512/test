@@ -29,7 +29,6 @@
 #include "color.h"
 #include "ctiTime.h"
 #include "dbaccess.h"
-#include "mctStruct.h"
 #include "SimulatedCCU.h"
 #include "CCU711Manager.h"
 #include "CCU710Manager.h"
