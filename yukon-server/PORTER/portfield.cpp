@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.233 $
-* DATE         :  $Date: 2008/10/31 19:42:34 $
+* REVISION     :  $Revision: 1.234 $
+* DATE         :  $Date: 2008/11/14 19:32:08 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2696,7 +2696,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                              *  This is the guy who does some rudimentary checking on the CCU message
                                              *  He will return REQACK in that case...
                                              */
-                                            status = GenReply (InMessage->IDLCStat, InMessage->InLength, &pInfo->RemoteSequence.Request, &pInfo->RemoteSequence.Reply, Device->getAddress());
+                                            status = GenReply (InMessage->IDLCStat, InMessage->InLength, &pInfo->RemoteSequence.Request, &pInfo->RemoteSequence.Reply, Device->getAddress(), OutMessage->Command);
                                         }
                                     }
                                 }

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/portdecl.h-arc  $
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2008/10/29 18:16:48 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2008/11/14 19:32:08 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,7 +29,7 @@ class CtiDeviceBase;
 INT PreIDLC (PBYTE, USHORT, USHORT, USHORT, USHORT, USHORT, USHORT, USHORT, USHORT);
 INT PreUnSequenced (PBYTE, USHORT, USHORT, USHORT, CtiDeviceSPtr );
 INT PostIDLC (PBYTE, USHORT);
-INT GenReply (PBYTE, USHORT, PUSHORT, PUSHORT, USHORT);
+INT GenReply (PBYTE, USHORT, PUSHORT, PUSHORT, USHORT, USHORT);
 INT RTUReply (PBYTE, USHORT);
 INT RTUReplyHeader (USHORT, USHORT, PBYTE, PULONG);
 INT IDLCRej (PBYTE, PUSHORT);

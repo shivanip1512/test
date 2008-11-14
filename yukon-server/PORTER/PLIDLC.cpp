@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PLIDLC.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2008/10/29 18:16:47 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2008/11/14 19:32:08 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -221,7 +221,8 @@ GenReply (PBYTE Reply,            /* reply message */
           USHORT  Length,         /* reply message length */
           PUSHORT ReqNum,         /* request number */
           PUSHORT RepNum,         /* reply number */
-          USHORT RemoteAddress)
+          USHORT RemoteAddress,
+          USHORT Command)
 
 {
    USHORT Save;
@@ -266,6 +267,14 @@ GenReply (PBYTE Reply,            /* reply message */
    if(Reply[6] & STAT_REQACK)
    {
       return(REQACK);
+   }
+
+   /* Make sure the command was echoed back properly */
+   if((Reply[5] & 0x7f) != Command)
+   {
+      /* We didn't get back the message we were expecting,
+         probably due to an earlier timeout - try again */
+      return(READTIMEOUT);
    }
 
    return(NORMAL);
