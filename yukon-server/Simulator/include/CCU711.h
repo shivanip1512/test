@@ -9,16 +9,13 @@
 *    PURPOSE: CCU Simulator
 *
 *    DESCRIPTION: Simulate the behavior of CCU 711s
-*    
+*
 *    Copyright (C) 2007 Cannon Technologies, Inc.  All rights reserved.
 *****************************************************************************/
 #ifndef  __CCU711_H__
 #define  __CCU711_H__
-#include "Winsock2.h"
-#include <iostream>
 #include "CCU710.h"
 #include "ctiTime.h"
-#include "ctiDate.h"
 #include "mctStruct.h"
 #include "EmetconWordB.h"
 #include "Mct410Sim.h"
@@ -32,11 +29,9 @@ class CCU711
         void processRequest(unsigned char ReadBuffer[], int bufferSize);
 
     public:
-        //Default constructor
         CCU711(unsigned char addressFound);
-        //Destructor
-    
-        struct _queueMessage {
+
+        struct queueMessage {
             public:
                 int getmessageLength();
                 void copyInto(unsigned char Data[], int bytes);
@@ -55,16 +50,14 @@ class CCU711
                 void setFunction(int function);
                 int  getFunction();
                 int  getioType();
-                void setAddress(unsigned char address);
                 void setbytesToReturn(int bytesToReturn);
                 int  getbytesToReturn();
-                unsigned char getAddress();
                 void setTime(CtiTime currentTime, int delay);
                 CtiTime getTime();
                 bool isReady();
                 int getmctAddress();
                 void setmctAddress(int address);
-    
+
             private:
                 int _bytesToReturn;  // Store L1
                 int _messageLength;
@@ -72,18 +65,13 @@ class CCU711
                 unsigned char _data [300];
                 unsigned char origData [300];
                 CtiTime _timeWhenReady;
-                unsigned char _address;
-                //route infot (3 elements)
-                unsigned char _RTE_CIRCUIT;
-                unsigned char _RTE_RPTCON;
-                unsigned char _RTE_TYPCON;
                 int _wordType;      //a,b,g words
                 int _ioType;       // i/o
                 int _function;
                 int _mctAddress;
                 unsigned char _QENID[4];
         };
-    
+
         // Constructor to build a new Message
         void CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], unsigned char Address = 0x00, unsigned char Frame = 0x00);
         //Send the message back to porter
@@ -99,14 +87,14 @@ class CCU711
         //Output the outgoing message information to the screen
         void PrintMessage();
         //  Translate message for user
-        void TranslateInfo(bool direction, string & printMsg, string & printCmd, string & printPre, string & printWrd, string & printFnc);
+        void TranslateInfo(bool direction, std::string & printMsg, std::string & printCmd, std::string & printPre, std::string & printWrd, std::string & printFnc);
         //  Figure out what the preamble says
         void DecodeCommand(unsigned char Data[]);
 
         /* Not called
         //  Figure out what the preamble says
         int DecodePreamble(int &setccuNumber);
-        // This is used to insert words into incoming messages 
+        // This is used to insert words into incoming messages
         void InsertWord(int WordType, unsigned char Data[], int counter);
         */
 
@@ -121,11 +109,9 @@ class CCU711
         void CreateResponse(int command);
         //  Copy the message from the queue into the 711 outgoing message storage
         void LoadQueuedMsg();
-        //  Return the correct RLEN plus 14
-        unsigned char getRLEN();
 
         /* LGRPQ Functions */
-        void createLGRPQResponse(Mct410Sim *mct);
+        bool createLGRPQResponse(Mct410Sim *mct, queueMessage &message);
         void decodeLGRPQLong(int &type, int &iotype, int &function, unsigned char &address, int &mctaddress,int &bytesToReturn, int &repeaters, int offset);
         void processMsgLGRPQ();
 
@@ -136,14 +122,11 @@ class CCU711
         void setStrategy(int strategy);
         int getStrategy();
         int determingMessageLength(unsigned char controlByte, unsigned char lenByte);
-        int getNumberOfRepeaters();
-    
+
     private:
-        //Storage for sockets
-        WSADATA wsaData;
-    
+
         CCU710 subCCU710;
-    
+
         unsigned char _data[300];
 
         int _messageType;
@@ -152,18 +135,15 @@ class CCU711
         unsigned char _messageData[300];
         EmetconWord _words[4];
         int _bytesToFollow;
-        int _indexOfEnd;
-        int _indexOfWords;
-    
+
         int _outmessageType;
         int _outcommandType;
         int _outpreamble;
         unsigned char _outmessageData[300];
         EmetconWord _outwords[4];
         int _outindexOfEnd;
-        int _outindexOfWords;
         int _mctNumber;
-        std::deque <_queueMessage> _messageQueue;
+        std::deque <queueMessage> _messageQueue;
         int _qmessagesReady;
         int _strategy;
 
@@ -172,10 +152,7 @@ class CCU711
         EmetconWordBase* magicWord;//Incoming B Word  ?!? .sdflkjasdfl;kjas;lkjasg;lkwetg;lkfb
 
         std::map<int,Mct410Sim*> mctMap;
-
-
 };
 
 #endif
-
 

@@ -39,6 +39,8 @@
 
 #include "math.h"
 
+PROJECT_ID("CCU Simulator");
+
 bool globalCtrlCFlag = false;
 
 using namespace std;
@@ -106,11 +108,11 @@ int main(int argc, char *argv[])
     dout.setToStdOut(true);
     dout.setWriteInterval(0);
 
+    identifyProject(CompileInfo);
+    setConsoleTitle(CompileInfo);
+
     {
         CtiLockGuard<CtiLogger> dout_guard(dout);
-
-        dout << "=== CCU Simulator startup ===" << endl;
-
         dout << "Port range [" << port_min << " - " << port_max << "], strategy " << strategy << endl;
     }
 
