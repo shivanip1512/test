@@ -50,9 +50,6 @@
  	<property name="mspValidationService" ref="mspValidationService"/>
  	<property name="meterDao" ref="meterDao"/>
   </bean>
-  <bean id="mr_oa" class="com.cannontech.multispeak.deploy.service.impl.MR_OAImpl">
-    	<property name="multispeakFuncs" ref="multispeakFuncs"/>
-  </bean>
   <bean id="od_oa" class="com.cannontech.multispeak.deploy.service.impl.OD_OAImpl">
   	<property name="multispeakFuncs" ref="multispeakFuncs"/>
   	<property name="multispeak" ref="multispeak"/>

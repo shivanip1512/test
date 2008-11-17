@@ -63,14 +63,12 @@ public class MultispeakDefines
     //SERVER interfaces
     public static final String MR_CB_STR = "MR_CB";
     public static final String MR_EA_STR = "MR_EA";
-    public static final String MR_OA_STR = "MR_OA";
     public static final String CD_CB_STR = "CD_CB";
     public static final String OD_OA_STR = "OD_OA";
     
     //CLIENT only interfaces
     public static final String CB_MR_STR = "CB_MR";
     public static final String EA_MR_STR = "EA_MR";
-    public static final String OA_MR_STR = "OA_MR";
     public static final String CB_CD_STR = "CB_CD";
     public static final String OA_OD_STR = "OA_OD";
     

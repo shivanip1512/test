@@ -23,12 +23,6 @@ import com.cannontech.multispeak.deploy.service.MR_CBSoap_PortType;
 import com.cannontech.multispeak.deploy.service.MR_EALocator;
 import com.cannontech.multispeak.deploy.service.MR_EASoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.MR_EASoap_PortType;
-import com.cannontech.multispeak.deploy.service.MR_OALocator;
-import com.cannontech.multispeak.deploy.service.MR_OASoap_BindingStub;
-import com.cannontech.multispeak.deploy.service.MR_OASoap_PortType;
-import com.cannontech.multispeak.deploy.service.OA_MRLocator;
-import com.cannontech.multispeak.deploy.service.OA_MRSoap_BindingStub;
-import com.cannontech.multispeak.deploy.service.OA_MRSoap_PortType;
 import com.cannontech.multispeak.deploy.service.OA_ODLocator;
 import com.cannontech.multispeak.deploy.service.OA_ODSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.OA_ODSoap_PortType;
@@ -239,55 +233,5 @@ public class MultispeakPortFactory {
             CTILogger.error("ServiceException Detail: " + e);
         }
         return (EA_MRSoap_BindingStub)port;
-	}
-
-	/**
-	 * Returns a new MR_OA port instance. 
-	 * @param mspVendor
-	 * @return
-	 * @throws ServiceException
-	 */
-	public static MR_OASoap_BindingStub getMR_OAPort(MultispeakVendor mspVendor) {
-
-		MR_OALocator service = new MR_OALocator();
-        service.setMR_OASoapEndpointAddress(mspVendor.getEndpointURL(MultispeakDefines.MR_OA_STR));
-        MR_OASoap_PortType port = null;
-        
-        try {
-            port = service.getMR_OASoap();
-//            ((MR_OASoap_BindingStub)port).setUsername(mspVendor.getOutUserName());
-//            ((MR_OASoap_BindingStub)port).setPassword(mspVendor.getOutPassword());
-            ((MR_OASoap_BindingStub)port).setHeader(mspVendor.getHeader());
-            ((MR_OASoap_BindingStub)port).setTimeout(new Long(mspVendor.getRequestMessageTimeout()).intValue());
-        } catch (ServiceException e) {
-            CTILogger.error("MR_OA service is not defined for company(" + mspVendor.getCompanyName()+ ") - method failed.");
-            CTILogger.error("ServiceException Detail: " + e);
-        }
-        return (MR_OASoap_BindingStub)port;
-	}
-
-	/**
-	 * Returns a new OA_MR port instance. 
-	 * @param mspVendor
-	 * @return
-	 * @throws ServiceException
-	 */
-	public static OA_MRSoap_BindingStub getOA_MRPort(MultispeakVendor mspVendor) {
-
-		OA_MRLocator service = new OA_MRLocator();
-        service.setOA_MRSoapEndpointAddress(mspVendor.getEndpointURL(MultispeakDefines.OA_MR_STR));
-        
-        OA_MRSoap_PortType port = null;  
-        try {
-            port = service.getOA_MRSoap();
-//            ((OA_MRSoap_BindingStub)port).setUsername(mspVendor.getOutUserName());
-//            ((OA_MRSoap_BindingStub)port).setPassword(mspVendor.getOutPassword());
-            ((OA_MRSoap_BindingStub)port).setHeader(mspVendor.getHeader());
-            ((OA_MRSoap_BindingStub)port).setTimeout(new Long(mspVendor.getRequestMessageTimeout()).intValue());
-        } catch (ServiceException e) {
-            CTILogger.error("OA_MR service is not defined for company(" + mspVendor.getCompanyName()+ ") - method failed.");
-            CTILogger.error("ServiceException Detail: " + e);
-        }
-        return (OA_MRSoap_BindingStub)port;
 	}
 }

@@ -42,9 +42,7 @@ import com.cannontech.multispeak.deploy.service.EA_MRSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
 import com.cannontech.multispeak.deploy.service.MR_CBSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.MR_EASoap_BindingStub;
-import com.cannontech.multispeak.deploy.service.MR_OASoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.MspObject;
-import com.cannontech.multispeak.deploy.service.OA_MRSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.OA_ODSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.OD_OASoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.ServiceLocation;
@@ -463,14 +461,6 @@ public class MultispeakServlet extends HttpServlet
             CB_CDSoap_BindingStub port = MultispeakPortFactory.getCB_CDPort(mspVendor);
             objects = port.pingURL();
         }
-        else if( service.equalsIgnoreCase(MultispeakDefines.MR_OA_STR)) {
-            MR_OASoap_BindingStub port = MultispeakPortFactory.getMR_OAPort(mspVendor);
-            objects = port.pingURL();
-        }
-        else if( service.equalsIgnoreCase(MultispeakDefines.OA_MR_STR)) {
-            OA_MRSoap_BindingStub port = MultispeakPortFactory.getOA_MRPort(mspVendor);
-            objects = port.pingURL();
-        }
         return objects;
     }
     
@@ -514,14 +504,6 @@ public class MultispeakServlet extends HttpServlet
         }
         else if( service.equalsIgnoreCase(MultispeakDefines.CB_CD_STR)) {
             CB_CDSoap_BindingStub port = MultispeakPortFactory.getCB_CDPort(mspVendor);
-            objects = port.getMethods();
-        }
-        else if( service.equalsIgnoreCase(MultispeakDefines.MR_OA_STR)) {
-            MR_OASoap_BindingStub port = MultispeakPortFactory.getMR_OAPort(mspVendor);
-            objects = port.getMethods();
-        }
-        else if( service.equalsIgnoreCase(MultispeakDefines.OA_MR_STR)) {
-            OA_MRSoap_BindingStub port = MultispeakPortFactory.getOA_MRPort(mspVendor);
             objects = port.getMethods();
         }
         return objects;
