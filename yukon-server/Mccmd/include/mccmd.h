@@ -64,7 +64,14 @@ extern unsigned gMccmdDebugLevel;
 extern "C" {
 #endif
 
-typedef std::map< long, CtiReturnMsg*, std::less<long> > PILReturnMap;
+// map to device id, holds return message time and return message status in a pair.
+struct MACS_Return_Data
+{
+    CtiTime time;
+    int     status;
+};
+
+typedef std::map< long, MACS_Return_Data, std::less<long> > PILReturnMap;
 
 /* Registers MACS commands with the interpreter
    and registers MCCmd as a package */

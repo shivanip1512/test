@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.81 $
-* DATE         :  $Date: 2008/10/23 20:34:35 $
+* REVISION     :  $Revision: 1.82 $
+* DATE         :  $Date: 2008/11/17 18:51:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1840,7 +1840,6 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
          m_iter++ )
     {
         GetDeviceName(m_iter->first,dev_name);
-    delete m_iter->second;
         Tcl_ListObjAppendElement(interp, good_list, Tcl_NewStringObj(dev_name.c_str(), -1));
     }
 
@@ -1852,8 +1851,7 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
 
         Tcl_ListObjAppendElement(interp, bad_list, Tcl_NewStringObj(dev_name.c_str(), -1));
         Tcl_ListObjAppendElement(interp, status_list,
-        Tcl_NewIntObj(m_iter->second->Status()));
-        delete m_iter->second;
+        Tcl_NewIntObj(m_iter->second.status));
     }
 
     // any device id's left in this set must have timed out
@@ -1863,14 +1861,13 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
              m_iter != device_map.end();
              m_iter++ )
         {
-            CtiTableMeterReadLog result(0, m_iter->first, 0, ErrorMACSTimeout, m_iter->second->getMessageTime());
+            CtiTableMeterReadLog result(0, m_iter->first, 0, ErrorMACSTimeout, m_iter->second.time);
             resultQueue.push_back(result);
             GetDeviceName(m_iter->first,dev_name);
 
             Tcl_ListObjAppendElement(interp, bad_list, Tcl_NewStringObj(dev_name.c_str(), -1));
             Tcl_ListObjAppendElement(interp, status_list,
-            Tcl_NewIntObj(m_iter->second->Status()));
-            delete m_iter->second;
+            Tcl_NewIntObj(m_iter->second.status));
         }
     }
 
@@ -1958,13 +1955,18 @@ void HandleReturnMessage(CtiReturnMsg* msg,
     }
     else
     {
+        MACS_Return_Data data;
+        data.time = msg->getMessageTime();
+        data.status = msg->Status();
+
         if( msg->Status() == DEVICEINHIBITED )
         {
             //Ignore it!
         }
         else if( msg->ExpectMore() )
         {
-            device_map.insert(PILReturnMap::value_type(dev_id, msg));
+            device_map.insert(PILReturnMap::value_type(dev_id, data));
+
             if( msg->Status() != NORMAL )
             {
                 CtiTableMeterReadLog result(0, msg->DeviceId(), 0, msg->Status(), msg->getMessageTime());
@@ -1984,18 +1986,16 @@ void HandleReturnMessage(CtiReturnMsg* msg,
                     string warn("moved device from bad list to good list, id: ");
                     warn += CtiNumStr(dev_id);
                     WriteOutput(warn.c_str());
-                    delete pos->second;
                     bad_map.erase(pos);
                 }
 
                 pos = device_map.find(dev_id);
                 if(pos != device_map.end())
                 {
-                    delete pos->second;
                     device_map.erase(pos);
                 }
 
-                if( !good_map.insert(PILReturnMap::value_type(dev_id,msg)).second )
+                if( !good_map.insert(PILReturnMap::value_type(dev_id,data)).second )
                 {
                     string warn("device already in good list, id: ");
                     warn += CtiNumStr(dev_id);
@@ -2007,11 +2007,11 @@ void HandleReturnMessage(CtiReturnMsg* msg,
                 pos = device_map.find(dev_id);
                 if(pos != device_map.end())
                 {
-                    delete pos->second;
                     device_map.erase(pos);
                 }
 
-                if( !bad_map.insert(PILReturnMap::value_type(dev_id,msg)).second)
+                
+                if( !bad_map.insert(PILReturnMap::value_type(dev_id,data)).second)
                 {
                     string warn("device already in bad list, id: ");
                     warn += CtiNumStr(dev_id);
@@ -2019,6 +2019,12 @@ void HandleReturnMessage(CtiReturnMsg* msg,
                 }
             }
         }
+    }
+
+    if( msg != NULL )
+    {
+        delete msg;
+        msg = NULL;
     }
 }
 
