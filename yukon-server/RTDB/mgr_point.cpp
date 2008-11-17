@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.67 $
-* DATE         :  $Date: 2008/11/05 19:03:36 $
+* REVISION     :  $Revision: 1.68 $
+* DATE         :  $Date: 2008/11/17 17:34:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -623,20 +623,32 @@ void CtiPointManager::updateAccess(long pointid, time_t time_now)
 
     lru_point_lookup_map::iterator lru_point = _lru_points.find(pointid);
 
+    lru_timeslice_map::iterator timeslice_itr;
+
     //  we know about this pointid
     if( lru_point != _lru_points.end() )
     {
-        lru_timeslice_map::iterator &timeslice = lru_point->second;
+        timeslice_itr = lru_point->second;
 
         //  it's already in the right timeslice - we're done
-        if( timeslice->first == time_index )  return;
+        if( timeslice_itr->first == time_index )  return;
 
         //  invalidate the old entry
-        timeslice->second.erase(pointid);
+        timeslice_itr->second.erase(pointid);
     }
 
+    //  check to see if the current timeslice exists...  we do this because operator[] calls
+    //    insert(), which creates and destroys a value_type - in this case, a set, which is
+    //    very expensive
+    timeslice_itr = _lru_timeslices.find(time_index);
+
     //  insert the pointid into the current timeslice's set
-    _lru_timeslices[time_index].insert(pointid);
+    if( timeslice_itr == _lru_timeslices.end() )
+    {
+        timeslice_itr = _lru_timeslices.insert(make_pair(time_index, set<long>())).first;
+    }
+
+    timeslice_itr->second.insert(pointid);
 
     //  update the point's iterator
     _lru_points[pointid] = _lru_timeslices.find(time_now / 10);
@@ -814,7 +826,7 @@ CtiPointManager::ptr_type CtiPointManager::getOffsetTypeEqual(LONG pao, INT Offs
 
         for( ; type_itr != upper_bound; type_itr++ )
         {
-            if( (p = getPoint(type_itr->second)) && (p->getType() == Type) /* && p->getDeviceID() == pao */ )
+            if( (p = getPoint(type_itr->second)) && (p->getType() == Type) )
             {
                 //  make sure we don't return any pseudo status points
                 if( !(p->getType() == StatusPointType && p->isPseudoPoint()) )
@@ -1049,8 +1061,8 @@ void CtiPointManager::processExpired()
 
 /**
  * Expires the given point ID.
- * 
- * @param pid long 
+ *
+ * @param pid long
  */
 void CtiPointManager::expire(long pid)
 {
@@ -1059,7 +1071,9 @@ void CtiPointManager::expire(long pid)
 
     if(point)
     {
+        //  protected by the writer_lock_guard in processExpired()
         _paoids_loaded.erase(point->getDeviceID());
+        _all_paoids_loaded = false;
     }
 
     CtiPointManager::erase(pid);
@@ -1067,8 +1081,8 @@ void CtiPointManager::expire(long pid)
 
 /**
  * Prepares the point to be reloaded.
- * 
- * @param pid long 
+ *
+ * @param pid long
  */
 void CtiPointManager::refresh(long pid)
 {
@@ -1077,8 +1091,8 @@ void CtiPointManager::refresh(long pid)
 
 /**
  * Completely erases the point. Should be used on delete.
- * 
- * @param pid long 
+ *
+ * @param pid long
  */
 void CtiPointManager::erase(long pid)
 {

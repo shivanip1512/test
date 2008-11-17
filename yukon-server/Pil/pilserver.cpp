@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.123 $
-* DATE         :  $Date: 2008/10/31 14:47:43 $
+* REVISION     :  $Revision: 1.124 $
+* DATE         :  $Date: 2008/11/17 17:34:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2031,10 +2031,13 @@ int CtiPILServer::reportClientRequests(CtiDeviceSPtr &Dev, const CtiCommandParse
     static unsigned soe = 0;
     string text, addl;
 
-    if( !gConfigParms.isTrue("PIL_OMIT_COMMAND_LOGGING") )   // Set this to true if you want to skip the excessive logs from pil.
+    static const string PIL_OMIT_COMMAND_LOGGING("PIL_OMIT_COMMAND_LOGGING");
+    static const string PIL_LOG_UNKNOWN_USERS   ("PIL_LOG_UNKNOWN_USERS");
+
+    if( !gConfigParms.isTrue(PIL_OMIT_COMMAND_LOGGING) )   // Set this to true if you want to skip the excessive logs from pil.
     {
         bool name_none  = !pReqOrig->getUser().empty() && (!stringCompareIgnoreCase(pReqOrig->getUser(), "none") || !stringCompareIgnoreCase(pReqOrig->getUser(), "(none)"));
-        bool user_valid = !pReqOrig->getUser().empty() && (!name_none || gConfigParms.isTrue("PIL_LOG_UNKNOWN_USERS") );
+        bool user_valid = !pReqOrig->getUser().empty() && (!name_none || gConfigParms.isTrue(PIL_LOG_UNKNOWN_USERS) );
 
         if(Dev && user_valid &&
             (parse.getCommand() == ControlRequest ||

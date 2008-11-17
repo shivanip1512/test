@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.138 $
-* DATE         :  $Date: 2008/10/29 19:17:57 $
+* REVISION     :  $Revision: 1.139 $
+* DATE         :  $Date: 2008/11/17 17:34:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -169,27 +169,21 @@ static RWWinSockInfo  winsock;
 
 ULONG WorkCountPointOffset = 0;
 
-bool findTAPDevice(const long key, const CtiDeviceSPtr &devsptr, void *ptr)
+struct isTAPTerm
 {
-    bool b = false;
-    LONG PortNumber = (LONG) ptr;
-
-    if( devsptr->getPortID() == PortNumber && devsptr->getType() == TYPE_TAPTERM )
+    operator()(const CtiDeviceSPtr &devsptr)
     {
-        b = true;
+        return devsptr->getType() == TYPE_TAPTERM;
     }
-
-    return b;
-}
+};
 
 bool isTAPTermPort(LONG PortNumber)
 {
-    INT            i;
-    bool           result = false;
+    vector<CtiDeviceManager::ptr_type> devices;
 
-    result = DeviceManager.find(findTAPDevice, (void*)PortNumber);
+    DeviceManager.getDevicesByPortID(PortNumber, devices);
 
-    return result;
+    return find_if(devices.begin(), devices.end(), isTAPTerm()) != devices.end();
 }
 
 void attachTransmitterDeviceToRoutes(CtiDeviceManager *DM, CtiRouteManager *RM)
@@ -360,25 +354,31 @@ static void applyDeviceInitialization(const long unusedid, CtiDeviceSPtr RemoteD
     }
 }
 
-static void applyDeviceColdStart(const long unusedid, CtiDeviceSPtr RemoteDevice, void *prtid)
+struct coldStartDevice
 {
-    LONG portid = (LONG)prtid;
+    long port_id;
 
-    if(portid == RemoteDevice->getPortID() && RemoteDevice->getType() == TYPE_CCU711 && !RemoteDevice->isInhibited())
+    coldStartDevice(long port_id_) : port_id(port_id_)  {  };
+
+    operator()(CtiDeviceSPtr &RemoteDevice)
     {
-        if(RemoteDevice->getAddress() != CCUGLOBAL)
+        if(port_id == RemoteDevice->getPortID() && !RemoteDevice->isInhibited() && RemoteDevice->getAddress() != CCUGLOBAL)
         {
             /* Cold Start */
             IDLCFunction (RemoteDevice, 0, DEST_BASE, COLD);
         }
     }
-}
+};
 
 static void applyColdStart(const long unusedid, CtiPortSPtr ptPort, void *unusedPtr)
 {
     if(!ptPort->isInhibited())
     {
-        DeviceManager.apply(applyDeviceColdStart, (void*) ptPort->getPortID());
+        vector<CtiDeviceManager::ptr_type> devices;
+
+        DeviceManager.getDevicesByType(TYPE_CCU711, devices);
+
+        for_each(devices.begin(), devices.end(), coldStartDevice(ptPort->getPortID()));
     }
 }
 
@@ -464,42 +464,6 @@ void applyPortQueuePurge(const long unusedid, CtiPortSPtr ptPort, void *unusedPt
         // PurgeQueue(*QueueHandle(ptPort->getPortID()));
 
         DeviceManager.apply(applyDeviceQueuePurge,(void*)ptPort->getPortID());
-    }
-}
-
-void applyDeviceInitFail(const long unusedid, CtiDeviceSPtr RemoteDevice, void *lprtid)
-{
-    LONG PortID = (LONG)lprtid;
-
-    if(PortID == RemoteDevice->getPortID())
-    {
-        bool commsuccess = false;
-        if(RemoteDevice->adjustCommCounts( commsuccess, false ))
-        {
-            commFail(RemoteDevice);
-        }
-    }
-}
-
-void applyPortInitFail(const long unusedid, CtiPortSPtr ptPort, void *unusedPtr)
-{
-    LONG id = (LONG)unusedPtr;
-
-    if( (id != 0 && ptPort->getPortID() != id) )
-    {
-        // Skip it!
-        return;
-    }
-
-    if(!ptPort->isInhibited())
-    {
-        if(PorterDebugLevel & PORTER_DEBUG_COMMFAIL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Port: " << setw(2) << ptPort->getPortID() << " / " << ptPort->getName() << " comm failing all attached comm status points" << endl;
-        }
-
-        DeviceManager.apply(applyDeviceInitFail, (void*)ptPort->getPortID());
     }
 }
 
@@ -1492,125 +1456,123 @@ INT RefreshPorterRTDB(void *ptr)
         }
     }
 
-    if(!PorterQuit)
+    if(PorterQuit)
     {
-        if(pChg == NULL || (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_ROUTE) )
+        return -1;
+    }
+
+    if(pChg == NULL || (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_ROUTE) )
+    {
+        if(pChg != NULL)
         {
-            if(pChg != NULL)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Reloading all routes based upon db change" << endl;
-                    dout << CtiTime() << " All repeaters will have their role table refreshed." << endl;
-                }
-                autoRole = true;
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Reloading all routes based upon db change" << endl;
+                dout << CtiTime() << " All repeaters will have their role table refreshed." << endl;
             }
-
-            if(gConfigParms.getValueAsULong("PORTER_AUTOROLE_RATE", 0) > 0 && CtiTime().seconds() > lastAutoRole.seconds() + gConfigParms.getValueAsULong("PORTER_AUTOROLE_RATE") )
-            {
-                autoRole = true;
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " AutoRole Download timer (master.cfg: PORTER_AUTOROLE_RATE) expired." << endl;
-                    dout << CtiTime() << " All repeaters will have their role table refreshed." << endl;
-                }
-            }
-
-            RouteManager.RefreshList();
-
-            /* Make routes associate with devices */
-            attachTransmitterDeviceToRoutes(&DeviceManager, &RouteManager);
+            autoRole = true;
         }
 
-        if(autoRole)
+        if(gConfigParms.getValueAsULong("PORTER_AUTOROLE_RATE", 0) > 0 && CtiTime().seconds() > lastAutoRole.seconds() + gConfigParms.getValueAsULong("PORTER_AUTOROLE_RATE") )
         {
-            try
+            autoRole = true;
             {
-                lastAutoRole = lastAutoRole.now();      // Update our static variable.
-
-                DeviceManager.apply(applyRepeaterAutoRole,NULL);
-
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Downloading routes to all CCU-711s on repeater route change" << endl;
-                }
-
-                PortManager.apply( applyLoadAllRoutes, NULL );
-            }
-            catch(...)
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " AutoRole Download timer (master.cfg: PORTER_AUTOROLE_RATE) expired." << endl;
+                dout << CtiTime() << " All repeaters will have their role table refreshed." << endl;
             }
         }
 
-        if(pChg != NULL && (pChg->getDatabase() == ChangeConfigDb))
+        RouteManager.RefreshList();
+
+        /* Make routes associate with devices */
+        attachTransmitterDeviceToRoutes(&DeviceManager, &RouteManager);
+    }
+
+    if(autoRole)
+    {
+        try
         {
-            ConfigManager.processDBUpdate(pChg->getId(), pChg->getCategory(), pChg->getObjectType(), pChg->getTypeOfChange());
+            lastAutoRole = lastAutoRole.now();      // Update our static variable.
+
+            DeviceManager.apply(applyRepeaterAutoRole,NULL);
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Downloading routes to all CCU-711s on repeater route change" << endl;
+            }
+
+            PortManager.apply( applyLoadAllRoutes, NULL );
         }
-
-
-        if(pChg != NULL && (pChg->getDatabase() == ChangePointDb))
+        catch(...)
         {
-            if(pChg->getTypeOfChange() == ChangeTypeDelete)
-            {
-                PorterPointManager.erase(pChg->getId());
-
-                if( getDebugLevel() & DEBUGLEVEL_MGR_POINT )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Deleting pointid (" << pChg->getId() << ")" << endl;
-                }
-            }
-            else
-            {
-                PorterPointManager.refreshList(pChg->getId(), 0, resolvePointType(pChg->getObjectType()));
-
-                if( getDebugLevel() & DEBUGLEVEL_MGR_POINT )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Refreshing pointid (" << pChg->getId() << ")" << endl;
-                }
-
-                // We also need to reload all the point groups to make certain the control strings get updated.
-                if(pChg != NULL && pChg->getId() != 0 )
-                {
-                    if(pChg->getObjectType() == "Status") // only status points can be in point groups.
-                    {
-                        DeviceManager.refreshPointGroups();
-                    }
-                }
-                else
-                {
-                    DeviceManager.refreshPointGroups();
-                }
-            }
-        }
-
-        if(pChg == NULL)
-        {
-            try
-            {
-                PortManager.apply( applyNewLoad, NULL );
-            }
-            catch(...)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
     }
-    else
+
+    if(pChg != NULL && (pChg->getDatabase() == ChangeConfigDb))
     {
-        return -1;
+        ConfigManager.processDBUpdate(pChg->getId(), pChg->getCategory(), pChg->getObjectType(), pChg->getTypeOfChange());
+    }
+
+
+    if(pChg != NULL && (pChg->getDatabase() == ChangePointDb))
+    {
+        if(pChg->getTypeOfChange() == ChangeTypeDelete)
+        {
+            PorterPointManager.erase(pChg->getId());
+
+            if( getDebugLevel() & DEBUGLEVEL_MGR_POINT )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Deleting pointid (" << pChg->getId() << ")" << endl;
+            }
+        }
+        else
+        {
+            PorterPointManager.refreshList(pChg->getId(), 0, resolvePointType(pChg->getObjectType()));
+
+            if( getDebugLevel() & DEBUGLEVEL_MGR_POINT )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Refreshing pointid (" << pChg->getId() << ")" << endl;
+            }
+
+            // We also need to reload all the point groups to make certain the control strings get updated.
+            if(pChg != NULL && pChg->getId() != 0 )
+            {
+                if(pChg->getObjectType() == "Status") // only status points can be in point groups.
+                {
+                    DeviceManager.refreshPointGroups();
+                }
+            }
+            else
+            {
+                DeviceManager.refreshPointGroups();
+            }
+        }
+    }
+
+    if(pChg == NULL)
+    {
+        try
+        {
+            PortManager.apply( applyNewLoad, NULL );
+        }
+        catch(...)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
     }
 
     /* see if we need to start process's for queuing */
     {
-        //  This will be a problem when we run into a large system with no 711s.
-        if(!(_queueCCU711Thread.isValid()) && DeviceManager.contains(findCCU711, NULL))
+        if( (DeviceManager.containsType(TYPE_CCU711) || DeviceManager.containsType(TYPE_CCU721))
+            && !(_queueCCU711Thread.isValid()) )
         {
             _queueCCU711Thread = rwMakeThreadFunction( QueueThread, (void*)NULL );
             _queueCCU711Thread.start();

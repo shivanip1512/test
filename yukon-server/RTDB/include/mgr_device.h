@@ -11,8 +11,8 @@
  *
  *
  * PVCS KEYWORDS:
- * REVISION     :  $Revision: 1.35 $
- * DATE         :  $Date: 2008/10/28 19:21:44 $
+ * REVISION     :  $Revision: 1.36 $
+ * DATE         :  $Date: 2008/11/17 17:34:41 $
  *
  *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
@@ -61,6 +61,12 @@ private:
     coll_type        _portExclusions;       // This is a map of the devices the port has added - when a DB reload occurs, it clears
                                             //   _exclusionMap, so these need to be retained and reinserted from a seperate list
 
+    typedef map<long, set<long> > port_devices_t;
+    typedef map<int,  set<long> > type_devices_t;
+
+    port_devices_t _portDevices;
+    type_devices_t _typeDevices;
+
     bool refreshDevices(RWDBReader& rdr);
 
     bool loadDeviceType(id_range_t &paoids, const string &device_name, const CtiDeviceBase &device, string type=string(), const bool include_type=true);
@@ -74,6 +80,10 @@ private:
     bool refreshPointGroups    (id_range_t &paoids);
 
 protected:
+
+    //  these should be made private - anything that child classes should need to do should be handled through a function
+    spiterator begin();
+    spiterator end();
 
     //typedef set<long> id_range_t;
 
@@ -121,9 +131,6 @@ protected:
 
     virtual void refreshDeviceProperties(id_range_t &paoids, int type);
 
-    spiterator begin();
-    spiterator end();
-
 public:
 
     CtiDeviceManager(CtiApplication_t app_id);
@@ -157,14 +164,17 @@ public:
     void deleteList(void);
 
     ptr_type getDeviceByID(LONG Remote);
+    void     getDevicesByPortID(long portid, vector<ptr_type> &devices);
+    void     getDevicesByType  (int  type,   vector<ptr_type> &devices);
     ptr_type RemoteGetPortRemoteEqual (LONG Port, LONG Remote);
     ptr_type RemoteGetPortRemoteTypeEqual (LONG Port, LONG Remote, INT Type);
     ptr_type RemoteGetPortMasterSlaveTypeEqual (LONG Port, LONG Master, LONG Slave, INT Type);
     ptr_type RemoteGetEqualbyName (const string &RemoteName);
 
+    bool containsType(int type);
+
     void apply(void (*applyFun)(const long, ptr_type, void*), void* d = NULL);
     ptr_type  find(bool (*findFun)(const long, const ptr_type &, void*), void* d = NULL);
-    bool contains (bool (*findFun)(const long, const ptr_type &, void*), void* d = NULL);
 
     int select(bool (*selectFun)(const long, ptr_type, void*), void* d, vector< ptr_type > &coll);
 

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dlcbase.cpp-arc  $
-* REVISION     :  $Revision: 1.52 $
-* DATE         :  $Date: 2008/10/31 14:47:43 $
+* REVISION     :  $Revision: 1.53 $
+* DATE         :  $Date: 2008/11/17 17:34:40 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -220,12 +220,9 @@ INT CtiDeviceDLCBase::retMsgHandler( string commandStr, int status, CtiReturnMsg
 
 INT CtiDeviceDLCBase::decodeCheckErrorReturn(INMESS *InMessage, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
-    CtiCommandParser parse(InMessage->Return.CommandStr);
-
     INT ErrReturn = InMessage->EventCode & 0x3fff;
 
     CtiReturnMsg    *retMsg;
-    string        resultString;
 
     CtiCommandMsg   *pMsg;
 
@@ -333,7 +330,7 @@ INT CtiDeviceDLCBase::decodeCheckErrorReturn(INMESS *InMessage, list< CtiMessage
 
             GetErrorString(ErrReturn, error_str);
 
-            resultString = getName() + " / operation failed \"" + error_str + "\" (" + string(CtiNumStr(ErrReturn).xhex().zpad(2)) + ")";
+            string resultString = getName() + " / operation failed \"" + error_str + "\" (" + string(CtiNumStr(ErrReturn).xhex().zpad(2)) + ")";
 
             retMsg->setResultString(resultString);
 

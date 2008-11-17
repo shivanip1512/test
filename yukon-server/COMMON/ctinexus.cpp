@@ -533,6 +533,9 @@ INT CTINEXUS::CTINexusRead(VOID *buf, ULONG len, PULONG BRead, LONG TimeOut)
 {
     INT retval = NoError;
 
+    //  convert to ms
+    TimeOut *= 1000;
+
     try
     {
         //  READANY waits until the timeout occurs or until any data is read
@@ -551,11 +554,12 @@ INT CTINEXUS::CTINexusRead(VOID *buf, ULONG len, PULONG BRead, LONG TimeOut)
             {
                 if( TimeOut > 0 )
                 {
-                    tv.tv_usec = std::min(TimeOut, 500);
+                    //  convert TimeOut's ms into microseconds
+                    tv.tv_usec = std::min(TimeOut * 1000, 500000);
                 }
                 else
                 {
-                    tv.tv_usec = 500;
+                    tv.tv_usec = 500000;
                 }
 
                 elapsed.reset();

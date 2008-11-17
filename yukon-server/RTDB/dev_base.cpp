@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.77 $
-* DATE         :  $Date: 2008/10/28 19:21:41 $
+* REVISION     :  $Revision: 1.78 $
+* DATE         :  $Date: 2008/11/17 17:34:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -866,16 +866,19 @@ bool CtiDeviceBase::getDirtyInfo(std::vector<CtiTableDynamicPaoInfo *> &dirty_in
 {
     bool retval = false;
 
-    std::set<CtiTableDynamicPaoInfo>::iterator itr;
-
-    for( itr = _paoInfo.begin(); itr != _paoInfo.end(); itr++ )
+    if( !_paoInfo.empty() )
     {
-        if( itr->isDirty() )
-        {
-            dirty_info.push_back(CTIDBG_new CtiTableDynamicPaoInfo(*itr));
-            itr->setDirty(false);
+        std::set<CtiTableDynamicPaoInfo>::iterator itr, itr_end = _paoInfo.end();
 
-            retval = true;
+        for( itr = _paoInfo.begin(); itr != itr_end; itr++ )
+        {
+            if( itr->isDirty() )
+            {
+                dirty_info.push_back(CTIDBG_new CtiTableDynamicPaoInfo(*itr));
+                itr->setDirty(false);
+
+                retval = true;
+            }
         }
     }
 

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.234 $
-* DATE         :  $Date: 2008/11/14 19:32:08 $
+* REVISION     :  $Revision: 1.235 $
+* DATE         :  $Date: 2008/11/17 17:34:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -130,7 +130,6 @@ extern CtiPorterVerification PorterVerificationThread;
 
 extern string GetDeviceName( ULONG id );
 
-extern void applyPortInitFail(const long unusedid, CtiPortSPtr ptPort, void *unusedPtr);
 extern void applyPortQueuePurge(const long unusedid, CtiPortSPtr ptPort, void *unusedPtr);
 extern void DisplayTraceList( CtiPortSPtr Port, list< CtiMessage* > &traceList, bool consume);
 extern HCTIQUEUE* QueueHandle(LONG pid);
@@ -174,8 +173,6 @@ INT ResetChannel(CtiPortSPtr Port, CtiDeviceSPtr &Device);
 INT IdentifyDeviceFromOutMessage(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &Device);
 INT GetWork(CtiPortSPtr Port, CtiOutMessage *&OutMessage, ULONG &QueEntries);
 
-static void ApplyTapNeedsLogon(const long key, CtiDeviceSPtr Dev, void* vpPortId);
-static void ApplyTapLoggedOn(const long key, CtiDeviceSPtr Dev, void* vpPortId);
 static INT OutMessageRequeueOnExclusionFail(CtiPortSPtr &Port, OUTMESS *&OutMessage, CtiDeviceSPtr &Device, CtiTablePaoExclusion &exclusion);
 
 CtiOutMessage *GetLGRippleGroupAreaBitMatch(CtiPortSPtr Port, CtiOutMessage *&OutMessage);
@@ -688,13 +685,16 @@ INT PostCommQueuePeek(CtiPortSPtr Port, CtiDeviceSPtr &Device)
     return slot;
 }
 
-void applyPrimeTRXInfo(const long unusedid, CtiDeviceSPtr RemoteDevice, void *punused)
+struct primeTRXInfo
 {
-    if(RemoteDevice->hasTrxInfo())
+    operator()(CtiDeviceSPtr &RemoteDevice)
     {
-        RemoteDevice->getTrxInfo(); // Prime the TRXInfo Onject
+        if(RemoteDevice->hasTrxInfo())
+        {
+            RemoteDevice->getTrxInfo(); // Prime the TRXInfo Onject
+        }
     }
-}
+};
 
 /*----------------------------------------------------------------------------*
  * This function prepares or resets the communications port for (re)use.
@@ -732,14 +732,20 @@ INT ResetCommsChannel(CtiPortSPtr Port, CtiDeviceSPtr &Device)
 
             if( portpair.first == true && portpair.second == NORMAL)    // Indicates that it was (re)opened successfully on this pass.
             {
+                vector<CtiDeviceManager::ptr_type> devices;
+
+                DeviceManager.getDevicesByPortID(Port->getPortID(), devices);
+
                 /* Report which devices are available and set queues for those using IDLC*/
-                DeviceManager.apply(applyPrimeTRXInfo,NULL);
+                for_each(devices.begin(), devices.end(), primeTRXInfo());
             }
 
             if(status == NORMAL)
             {
+                static const string PORTER_RELEASE_IDLE_PORTS("PORTER_RELEASE_IDLE_PORTS");
+
                 // CGP 062304 // make all ports close
-                if(Port->isDialup() || gConfigParms.isOpt("PORTER_RELEASE_IDLE_PORTS", "true"))
+                if(Port->isDialup() || gConfigParms.isTrue(PORTER_RELEASE_IDLE_PORTS))
                 {
                     Port->setQueueSlot( PostCommQueuePeek(Port, Device) );
                 }
@@ -870,6 +876,28 @@ INT EstablishConnection(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage
     return status;
 }
 
+struct TAPNeedsLogon
+{
+    void operator()(CtiDeviceSPtr &Dev)
+    {
+        if( Dev->getType() == TYPE_TAPTERM )
+        {
+            Dev->setLogOnNeeded( TRUE );
+        }
+    }
+};
+
+struct TAPLoggedOn
+{
+    void operator()(CtiDeviceSPtr &Dev)
+    {
+        if( Dev->getType() == TYPE_TAPTERM )
+        {
+            Dev->setLogOnNeeded( FALSE );
+        }
+    }
+};
+
 INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &Device)
 {
     INT status = NORMAL;
@@ -897,7 +925,12 @@ INT DevicePreprocessing(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &D
             OutMessage = 0;
             Sleep(100L);
 
-            DeviceManager.apply( ApplyTapNeedsLogon, (void*)(Port->getPortID()) );
+            vector<CtiDeviceManager::ptr_type> devices;
+
+            DeviceManager.getDevicesByPortID(Port->getPortID(), devices);
+
+            for_each(devices.begin(), devices.end(), TAPNeedsLogon());
+
             Port->disconnect(Device, FALSE);
 
             return RETRY_SUBMITTED;
@@ -1803,7 +1836,11 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             IED->resetHandshakesRemaining();
                             if(!Port->isDialup())
                             {
-                                DeviceManager.apply( ApplyTapLoggedOn, (void*)(Port->getPortID()) );
+                                vector<CtiDeviceManager::ptr_type> devices;
+
+                                DeviceManager.getDevicesByPortID(Port->getPortID(), devices);
+
+                                for_each(devices.begin(), devices.end(), TAPLoggedOn());
                             }
 
                             Port->setConnectedDevice( IED->getID() );
@@ -3885,7 +3922,12 @@ INT TerminateHandshake (CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, list< CtiMes
                 {
                     // Since an EOT was done on this port by this device, all devices on this port need to logon the next loop.
                     // Sweep the port and tag them so.
-                    DeviceManager.apply( ApplyTapNeedsLogon, (void*)(aPortRecord->getPortID()) );
+                    vector<CtiDeviceManager::ptr_type> devices;
+
+                    DeviceManager.getDevicesByPortID(aPortRecord->getPortID(), devices);
+
+                    for_each(devices.begin(), devices.end(), TAPNeedsLogon());
+
                     break;
                 }
             }
@@ -4129,7 +4171,7 @@ INT CheckIfOutMessageIsExpired(OUTMESS *&OutMessage)
 INT ProcessExclusionLogic(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr Device)
 {
     INT status = NORMAL;
-
+    static const string PORTER_EXCLUSION_TEST("PORTER_EXCLUSION_TEST");
     /*
      * Exclusion logic will consist of:
      *  - Is there a time exclusion on either the port or the device in that order?
@@ -4141,8 +4183,7 @@ INT ProcessExclusionLogic(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr 
 
     try
     {
-        if(OutMessage->MessageFlags & MessageFlag_ApplyExclusionLogic ||
-           !stringCompareIgnoreCase(gConfigParms.getValueAsString("PORTER_EXCLUSION_TEST"),"true") )
+        if(OutMessage->MessageFlags & MessageFlag_ApplyExclusionLogic || gConfigParms.isTrue(PORTER_EXCLUSION_TEST) )
         {
             CtiTablePaoExclusion exclusion;
 
@@ -4205,6 +4246,19 @@ INT ProcessPortPooling(CtiPortSPtr Port)
     return status;
 }
 
+
+struct commFailDevice
+{
+    operator()( CtiDeviceSPtr &device )
+    {
+        bool commsuccess = false;
+        if( device->adjustCommCounts(commsuccess, false) )
+        {
+            commFail(device);
+        }
+    }
+};
+
 /*
  *  This function sets up and or resets the portthread's comm port or ip port.
  *  It is responsible for opening, or reopening the comm channel or IP channel.
@@ -4229,9 +4283,19 @@ INT ResetChannel(CtiPortSPtr Port, CtiDeviceSPtr &Device)
 
             //  !!!  MUST RESET LGRPQ STUFF FOR CCU'S PINFO  !!!
         }
-        else
+        else if(!Port->isInhibited())
         {
-            PortManager.apply( applyPortInitFail, (void*)Port->getPortID() );
+            if(PorterDebugLevel & PORTER_DEBUG_COMMFAIL)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Port: " << setw(2) << Port->getPortID() << " / " << Port->getName() << " comm failing all attached comm status points" << endl;
+            }
+
+            vector<CtiDeviceSPtr> devices;
+
+            DeviceManager.getDevicesByPortID(Port->getPortID(), devices);
+
+            for_each(devices.begin(), devices.end(), commFailDevice());
         }
 
         {
@@ -4403,30 +4467,6 @@ INT GetWork(CtiPortSPtr Port, CtiOutMessage *&OutMessage, ULONG &QueEntries)
     return status;
 }
 
-
-void ApplyTapNeedsLogon(const long key, CtiDeviceSPtr Dev, void* vpPortId)
-{
-    LONG pid = (LONG)vpPortId;
-
-    if( Dev->getType() == TYPE_TAPTERM && Dev->getPortID() == pid )
-    {
-        Dev->setLogOnNeeded( TRUE );
-    }
-
-    return;
-}
-
-void ApplyTapLoggedOn(const long key, CtiDeviceSPtr Dev, void* vpPortId)
-{
-    LONG pid = (LONG)vpPortId;
-
-    if( Dev->getType() == TYPE_TAPTERM && Dev->getPortID() == pid )
-    {
-        Dev->setLogOnNeeded( FALSE );
-    }
-
-    return;
-}
 
 INT OutMessageRequeueOnExclusionFail(CtiPortSPtr &Port, OUTMESS *&OutMessage, CtiDeviceSPtr &Device, CtiTablePaoExclusion &exclusion)
 {

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.72 $
-* DATE         :  $Date: 2008/10/29 19:17:02 $
+* REVISION     :  $Revision: 1.73 $
+* DATE         :  $Date: 2008/11/17 17:34:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -82,9 +82,9 @@ extern map<long, CtiPortShare *> PortShareManager;
 extern HCTIQUEUE *QueueHandle(LONG pid);
 extern bool addCommResult(long deviceID, bool wasFailure, bool retryGtZero);
 
-static ULONG MAX_CCU_QUEUE_TIME = 1800;
+static const ULONG MAX_CCU_QUEUE_TIME = 1800;
+static const ULONG QUEUED_MSG_REQ_ID_BASE = 0xFFFFFF00;
 USHORT QueSequence = 0x8000;
-static ULONG QUEUED_MSG_REQ_ID_BASE = 0xFFFFFF00;
 
 static CHAR tempstr[100];
 
@@ -144,103 +144,106 @@ void blitzNexusFromCCUQueue(CtiDeviceSPtr Device, CtiConnect *&Nexus)
     }
 }
 
-static void applyBuildLGrpQ(const long unusedid, CtiDeviceSPtr Dev, void *usprtid)
+struct buildLGRPQ
 {
-    bool foreignCCU = false;
-
-    if( !gForeignCCUPorts.empty() )
+    void operator()(CtiDeviceSPtr &ccu_device)
     {
-        foreignCCU = (gForeignCCUPorts.find(Dev->getPortID()) != gForeignCCUPorts.end());
-    }
-
-    if(!foreignCCU && !Dev->isInhibited())
-    {
-        switch( Dev->getType() )
+        if( !ccu_device )
         {
-            default:    break;
+            return;
+        }
 
-            case TYPE_CCU721:
+        bool foreignCCU = gForeignCCUPorts.find(ccu_device->getPortID()) != gForeignCCUPorts.end();
+
+        if(!foreignCCU && !ccu_device->isInhibited())
+        {
+            switch( ccu_device->getType() )
             {
-                using Cti::Device::CCU721;
-                boost::shared_ptr<CCU721> ccu = boost::static_pointer_cast<CCU721>(Dev);
+                default:    break;
 
-                OUTMESS *OutMessage = CTIDBG_new OUTMESS;
-
-                if( ccu->hasWaitingWork()
-                    && ccu->buildCommand(OutMessage, CCU721::Command_LoadQueue) )
+                case TYPE_CCU721:
                 {
-                    PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof(*OutMessage), reinterpret_cast<char *>(OutMessage), OutMessage->Priority);
-                }
-                else
-                {
-                    delete OutMessage;
-                }
+                    using Cti::Device::CCU721;
+                    boost::shared_ptr<CCU721> ccu = boost::static_pointer_cast<CCU721>(ccu_device);
 
-                break;
-            }
+                    OUTMESS *OutMessage = CTIDBG_new OUTMESS;
 
-            case TYPE_CCU711:
-            {
-                CtiTransmitter711Info *pInfo = (CtiTransmitter711Info*)Dev->getTrxInfo();
-                if(pInfo != NULL)
-                {
-                    if(pInfo->ActinQueueHandle != (HCTIQUEUE) NULL)
+                    if( ccu->hasWaitingWork()
+                        && ccu->buildCommand(OutMessage, CCU721::Command_LoadQueue) )
                     {
-                        BuildActinShed(Dev);
+                        PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof(*OutMessage), reinterpret_cast<char *>(OutMessage), OutMessage->Priority);
+                    }
+                    else
+                    {
+                        delete OutMessage;
                     }
 
-                    /* Now check out the queue queue handle */
-                    if(pInfo->QueueHandle != (HCTIQUEUE) NULL)
+                    break;
+                }
+
+                case TYPE_CCU711:
+                {
+                    CtiTransmitter711Info *pInfo = (CtiTransmitter711Info*)ccu_device->getTrxInfo();
+                    if(pInfo != NULL)
                     {
-                        if( pInfo->getStatus(INLGRPQ) && pInfo->getINLGRPQWarning() < CtiTime::now() )
+                        if(pInfo->ActinQueueHandle != (HCTIQUEUE) NULL)
                         {
-                            CtiPortSPtr port = PortManager.PortGetEqual(Dev->getPortID());
-                            if( port )
+                            BuildActinShed(ccu_device);
+                        }
+
+                        /* Now check out the queue queue handle */
+                        if(pInfo->QueueHandle != (HCTIQUEUE) NULL)
+                        {
+                            if( pInfo->getStatus(INLGRPQ) && pInfo->getINLGRPQWarning() < CtiTime::now() )
                             {
-                                ULONG reqCount = 0, priority = 0;
-                                ULONG requestID = QUEUED_MSG_REQ_ID_BASE + Dev->getAddress();
-                                HCTIQUEUE portQueue = port->getPortQueueHandle();
-
-                                GetRequestCountAndPriority(portQueue, requestID, reqCount, priority);
-
-                                if( reqCount > 0 )
+                                CtiPortSPtr port = PortManager.PortGetEqual(ccu_device->getPortID());
+                                if( port )
                                 {
-                                    pInfo->setINLGRPQWarning(CtiTime::now().seconds() + 300 ); //Yuck, but ok?
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " **** CHECKPOINT **** - INLGRPQ warning, entry found, NOT removing entry **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    ULONG reqCount = 0, priority = 0;
+                                    ULONG requestID = QUEUED_MSG_REQ_ID_BASE + ccu_device->getAddress();
+                                    HCTIQUEUE portQueue = port->getPortQueueHandle();
+
+                                    GetRequestCountAndPriority(portQueue, requestID, reqCount, priority);
+
+                                    if( reqCount > 0 )
+                                    {
+                                        pInfo->setINLGRPQWarning(CtiTime::now().seconds() + 300 ); //Yuck, but ok?
+                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                        dout << CtiTime() << " **** CHECKPOINT **** - INLGRPQ warning, entry found, NOT removing entry **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    }
+                                    else
+                                    {
+                                        pInfo->clearStatus(INLGRPQ);
+                                        {
+                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                            dout << CtiTime() << " **** CHECKPOINT **** - INLGRPQ warning, no queue entry found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                        }
+                                    }
+
                                 }
                                 else
                                 {
                                     pInfo->clearStatus(INLGRPQ);
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " **** CHECKPOINT **** - INLGRPQ warning, no queue entry found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                        dout << CtiTime() << " **** CHECKPOINT **** - INLGRPQ warning, unknown port **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                     }
                                 }
-
                             }
-                            else
+
+                            if( !pInfo->getStatus(INLGRPQ) )
                             {
-                                pInfo->clearStatus(INLGRPQ);
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " **** CHECKPOINT **** - INLGRPQ warning, unknown port **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                }
+                                BuildLGrpQ(ccu_device);
                             }
-                        }
-
-                        if( !pInfo->getStatus(INLGRPQ) )
-                        {
-                            BuildLGrpQ(Dev);
                         }
                     }
-                }
 
-                break;
+                    break;
+                }
             }
         }
     }
-}
+};
 
 /* Thread to process and dispatch entries from Queue & ACTIN queues */
 VOID QueueThread (VOID *Arg)
@@ -289,7 +292,13 @@ VOID QueueThread (VOID *Arg)
 
         {
             CtiPortManager::coll_type::reader_lock_guard_t guard(PortManager.getLock());  // this applyFunc Writes to the PortManager queues!
-            DeviceManager.apply(applyBuildLGrpQ,NULL);
+
+            vector<CtiDeviceSPtr> ccu_devices;
+
+            DeviceManager.getDevicesByType(TYPE_CCU711, ccu_devices);
+            DeviceManager.getDevicesByType(TYPE_CCU721, ccu_devices);
+
+            for_each(ccu_devices.begin(), ccu_devices.end(), buildLGRPQ());
         }
     }
 }
@@ -1193,19 +1202,14 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
 static ULONG sleepTime = 15000L;
 
 
-static void applyKick(const long unusedid, CtiDeviceSPtr Dev, void *usprtid)
+struct kick
 {
-    int i;
-    bool rcol_sent = false;
-
-    switch( Dev->getType() )
+    operator()(CtiDeviceSPtr &ccu_device)
     {
-        default:  break;
-
-        case TYPE_CCU721:
+        if( ccu_device->getType() == TYPE_CCU721 )
         {
             using Cti::Device::CCU721;
-            Cti::Device::CCU721SPtr ccu = boost::static_pointer_cast<CCU721>(Dev);
+            Cti::Device::CCU721SPtr ccu = boost::static_pointer_cast<CCU721>(ccu_device);
 
             OUTMESS *OutMessage = CTIDBG_new OUTMESS;
 
@@ -1218,33 +1222,30 @@ static void applyKick(const long unusedid, CtiDeviceSPtr Dev, void *usprtid)
             {
                 delete OutMessage;
             }
-
-            break;
         }
-
-        case TYPE_CCU711:
+        else if( ccu_device->getType() == TYPE_CCU711 )
         {
-            RWRecursiveLock<RWMutexLock>::LockGuard   devguard(Dev->getMux());                  // Protect our device!
-            CtiTransmitter711Info *pInfo = (CtiTransmitter711Info*)Dev->getTrxInfo();
+            RWRecursiveLock<RWMutexLock>::LockGuard   devguard(ccu_device->getMux());                  // Protect our device!
+            CtiTransmitter711Info *pInfo = (CtiTransmitter711Info*)ccu_device->getTrxInfo();
 
-            // Verify FreeSlots!
             LONG FreeQents = 0;
             LONG OldFreeEnts;
+            bool rcol_sent = false;
 
             ULONG nowtime = LongTime();
             /* Check if we have anything done yet */
-            for(i = 0; i < MAXQUEENTRIES; i++)
+            for(int offset = 0; offset < MAXQUEENTRIES; offset++)
             {
-                if((pInfo->QueTable[i].InUse & INUSE) && (pInfo->QueTable[i].TimeSent <= nowtime - MAX_CCU_QUEUE_TIME))
+                if((pInfo->QueTable[offset].InUse & INUSE) && (pInfo->QueTable[offset].TimeSent <= nowtime - MAX_CCU_QUEUE_TIME))
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " " << Dev->getName() << " INUSE queue entry is more than " << MAX_CCU_QUEUE_TIME << " seconds old. " << endl;
+                        dout << CtiTime() << " " << ccu_device->getName() << " INUSE queue entry is more than " << MAX_CCU_QUEUE_TIME << " seconds old. " << endl;
                     }
 
                     /* send a message to the calling process */
-                    if(pInfo->QueTable[i].EventCode & RESULT) ReturnQueuedResult(Dev, pInfo, i);
-                    if(pInfo->QueTable[i].InUse) InterlockedIncrement( &(pInfo->FreeSlots) );
+                    if(pInfo->QueTable[offset].EventCode & RESULT) ReturnQueuedResult(ccu_device, pInfo, offset);
+                    if(pInfo->QueTable[offset].InUse) InterlockedIncrement( &(pInfo->FreeSlots) );
                     if(pInfo->FreeSlots > MAXQUEENTRIES)
                     {
                         {
@@ -1252,23 +1253,23 @@ static void applyKick(const long unusedid, CtiDeviceSPtr Dev, void *usprtid)
                             dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
                     }
-                    pInfo->QueTable[i].InUse = 0;
-                    pInfo->QueTable[i].TimeSent = -1L;
+                    pInfo->QueTable[offset].InUse = 0;
+                    pInfo->QueTable[offset].TimeSent = -1L;
                 }
-                else if(pInfo->QueTable[i].InUse & INCCU)
+                else if(pInfo->QueTable[offset].InUse & INCCU)
                 {
-                    if(pInfo->QueTable[i].TimeSent <= nowtime - 5L)
+                    if(pInfo->QueTable[offset].TimeSent <= nowtime - 5L)
                     {
                         if(!rcol_sent)
                         {
                             rcol_sent = true;
-                            IDLCRColQ(Dev);
+                            IDLCRColQ(ccu_device);
                         }
                     }
-                    else if(pInfo->QueTable[i].TimeSent == -1L)
+                    else if(pInfo->QueTable[offset].TimeSent == -1L)
                     {
                         // 20051129 CGP - This should never hapen if we are INCCU.  I've become paranoid!
-                        pInfo->QueTable[i].TimeSent = nowtime;
+                        pInfo->QueTable[offset].TimeSent = nowtime;
                         sleepTime = 2500L;                             // Wake every 2.5 seconds in this case.
                     }
                     else
@@ -1277,27 +1278,23 @@ static void applyKick(const long unusedid, CtiDeviceSPtr Dev, void *usprtid)
                     }
                 }
 
-                if(!pInfo->QueTable[i].InUse) FreeQents++;          // Counting the number of Open slots.
+                if(!pInfo->QueTable[offset].InUse) FreeQents++;          // Counting the number of Open slots.
             }
 
             if( FreeQents != (OldFreeEnts = InterlockedExchange(&(pInfo->FreeSlots), FreeQents)) )
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** FREESLOTS CORRECTION!  **** " << __FILE__ << " (" << __LINE__ << ") " << OldFreeEnts << " != " << FreeQents << endl;
-                }
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** FREESLOTS CORRECTION!  **** " << __FILE__ << " (" << __LINE__ << ") " << OldFreeEnts << " != " << FreeQents << endl;
             }
 
             if(!rcol_sent && pInfo->FreeSlots == MAXQUEENTRIES && pInfo->NCOcts)
             {
                 /* Opps... something got left behind */
-                IDLCRColQ(Dev);
+                IDLCRColQ(ccu_device);
             }
-
-            break;
         }
     }
-}
+};
 
 /* Thread to kick the CCU-711 if no activity and it might have data */
 VOID KickerThread (VOID *Arg)
@@ -1336,7 +1333,13 @@ VOID KickerThread (VOID *Arg)
 
         {
             CtiPortManager::coll_type::reader_lock_guard_t guard(PortManager.getLock());  // this applyFunc Writes to the PortManager queues!
-            DeviceManager.apply( applyKick, NULL );
+
+            vector<CtiDeviceSPtr> ccu_devices;
+
+            DeviceManager.getDevicesByType(TYPE_CCU711, ccu_devices);
+            DeviceManager.getDevicesByType(TYPE_CCU721, ccu_devices);
+
+            for_each(ccu_devices.begin(), ccu_devices.end(), kick());
         }
 
         if(lastTickleTime.seconds() < (lastTickleTime.now().seconds() - CtiThreadMonitor::StandardTickleTime))

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/portload.cpp-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2008/10/29 19:17:02 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2008/11/17 17:34:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -75,25 +75,31 @@ LoadRemoteRoutes(CtiDeviceSPtr Dev);
 LoadPortRoutes (USHORT Port);
 
 
-static void applyLoadRemoteRoutes(const long unusedid, CtiDeviceSPtr Device, void *usprtid)
+struct loadRemoteRoutes
 {
-    USHORT Port = (USHORT)usprtid;
-    if( Port == Device->getPortID() && !Device->isInhibited())
+    operator()(CtiDeviceSPtr &Dev)
     {
-        LoadRemoteRoutes(Device);
+        if( Dev && !Dev->isInhibited() )
+        {
+            LoadRemoteRoutes(Dev);
+        }
     }
+};
 
-}
 /* Routine to load routes on all remotes on a port */
 LoadPortRoutes (USHORT Port)
 {
-    DeviceManager.apply(applyLoadRemoteRoutes, (void*)Port);
+    vector<CtiDeviceManager::ptr_type> devices;
+
+    DeviceManager.getDevicesByPortID(Port, devices);
+
+    for_each(devices.begin(), devices.end(), loadRemoteRoutes());
+
     return(NORMAL);
 }
 
-
 /* Routine to load routes into specified CCU */
-LoadRemoteRoutes(CtiDeviceSPtr Dev)
+LoadRemoteRoutes(CtiDeviceSPtr &Dev)
 {
     USHORT            Index;
     USHORT            RouteCount;
@@ -102,7 +108,7 @@ LoadRemoteRoutes(CtiDeviceSPtr Dev)
     CtiRoute          *RouteRecord;
 
     /* get this remote from database */
-    if( Dev )
+    if( Dev && !Dev->isInhibited() )
     {
         /* CCU-721 is handled seperately from the 711 */
         if( Dev->getType() == TYPE_CCU721 )
