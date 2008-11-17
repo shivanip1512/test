@@ -64,7 +64,7 @@ extern unsigned gMccmdDebugLevel;
 extern "C" {
 #endif
 
-// map to device id, holds return message time and return message status in a pair.
+// Store for the data that we need out of the return message.
 struct MACS_Return_Data
 {
     CtiTime time;
