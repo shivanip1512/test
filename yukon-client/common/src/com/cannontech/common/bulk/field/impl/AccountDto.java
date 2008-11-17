@@ -1,42 +1,25 @@
 package com.cannontech.common.bulk.field.impl;
 
 import com.cannontech.common.model.Address;
-import com.cannontech.database.data.lite.LiteEnergyCompany;
+import com.cannontech.common.model.SiteInformation;
 
 public class AccountDto {
 
-    private String accountNumber;
-    private LiteEnergyCompany liteEnergyCompany;
     private String lastName;
     private String firstName;
     private String companyName;
-    private String accountType;
     private String homePhone;
     private String workPhone;
     private String emailAddress;
-    private Address streetAddress;
-    private Address billingAddress;
+    private Address streetAddress = new Address();
+    private Address billingAddress = new Address();
     private String customerType;
     private String userName;
     private String password;
     private String loginGroup;
-
-    public String getAccountNumber() {
-        return accountNumber;
-    }
-
-    public void setAccountNumber(String accountNumber) {
-        this.accountNumber = accountNumber;
-    }
-
-    public LiteEnergyCompany getLiteEnergyCompany() {
-        return liteEnergyCompany;
-
-    }
-
-    public void setLiteEnergyCompany(LiteEnergyCompany liteEnergyCompany) {
-        this.liteEnergyCompany = liteEnergyCompany;
-    }
+    private SiteInformation siteInfo = new SiteInformation(); 
+    private String mapNumber; // translates to SiteNumber in AccountSite
+    private String altTrackingNumber;
 
     public String getLastName() {
         return lastName;
@@ -60,14 +43,6 @@ public class AccountDto {
 
     public void setCompanyName(String companyName) {
         this.companyName = companyName;
-    }
-
-    public String getAccountType() {
-        return accountType;
-    }
-
-    public void setAccountType(String accountType) {
-        this.accountType = accountType;
     }
 
     public String getHomePhone() {
@@ -140,6 +115,30 @@ public class AccountDto {
 
     public void setBillingAddress(Address billingAddress) {
         this.billingAddress = billingAddress;
+    }
+
+    public SiteInformation getSiteInfo() {
+        return siteInfo;
+    }
+
+    public void setSiteInfo(SiteInformation siteInfo) {
+        this.siteInfo = siteInfo;
+    }
+
+    public String getMapNumber() {
+        return mapNumber;
+    }
+
+    public void setMapNumber(String mapNumber) {
+        this.mapNumber = mapNumber;
+    }
+
+    public String getAltTrackingNumber() {
+        return altTrackingNumber;
+    }
+
+    public void setAltTrackingNumber(String altTrackingNumber) {
+        this.altTrackingNumber = altTrackingNumber;
     }
 
 }

@@ -18,4 +18,6 @@ public interface LMHardwareConfigurationDao {
 
     public void deleteForAppliance(int applianceId);
 
+    public void deleteForAppliances(List<Integer> applianceIds);
+
 }

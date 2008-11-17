@@ -38,8 +38,8 @@ public class AccountServiceInputsTestController extends MultiActionController{
         LiteStarsEnergyCompany liteEnergyCompany = StarsDatabaseCache.getInstance().getDefaultEnergyCompany();
         try {
             accountService.deleteAccount(accountNumber, liteEnergyCompany);
-            results.add("");
-        } catch (IllegalArgumentException e) {
+            results.add(accountNumber + " deleted successfully.");
+        } catch (RuntimeException e) {
             errorReasons.add(e.getMessage());
         }
         

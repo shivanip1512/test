@@ -18,8 +18,8 @@ import com.cannontech.stars.dr.event.dao.LMHardwareEventDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryBaseDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareConfigurationDao;
-import com.cannontech.stars.dr.hardware.dao.LMThermostatDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
+import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
 
 public class LMHardwareBaseDaoImpl implements LMHardwareBaseDao {
     private static final String updateSql;
@@ -32,7 +32,7 @@ public class LMHardwareBaseDaoImpl implements LMHardwareBaseDao {
     private static final ParameterizedRowMapper<LMHardwareBase> rowMapper;
     private SimpleJdbcTemplate simpleJdbcTemplate;
     private LMHardwareConfigurationDao lmHardwareConfigurationDao;
-    private LMThermostatDao lmThermostatDao;
+    private ThermostatScheduleDao thermostatScheduleDao;
     private LMHardwareEventDao lmHardwareEventDao;
     private InventoryBaseDao inventoryBaseDao;
     
@@ -123,8 +123,8 @@ public class LMHardwareBaseDaoImpl implements LMHardwareBaseDao {
     @Transactional
     public void clearLMHardwareInfo(Integer inventoryId) {
         lmHardwareConfigurationDao.delete(inventoryId);
-        lmThermostatDao.deleteSchedulesForInventory(inventoryId);
-        lmThermostatDao.deleteManualEvents(inventoryId);
+        thermostatScheduleDao.deleteScheduleForInventory(inventoryId);
+        thermostatScheduleDao.deleteManualEvents(inventoryId);
         lmHardwareEventDao.deleteHardwareToMeterMapping(inventoryId);
         inventoryBaseDao.uninstallInventory(inventoryId);
     }
@@ -155,8 +155,8 @@ public class LMHardwareBaseDaoImpl implements LMHardwareBaseDao {
     }
 
     @Autowired
-    public void setLMThermostatDao(LMThermostatDao lmThermostatDao) {
-        this.lmThermostatDao = lmThermostatDao;
+    public void setThermostatScheduleDao(ThermostatScheduleDao thermostatScheduleDao) {
+        this.thermostatScheduleDao = thermostatScheduleDao;
     }
 
     @Autowired

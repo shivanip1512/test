@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowCallbackHandler;
@@ -18,13 +19,17 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.data.lite.stars.LiteLMThermostatSchedule;
 import com.cannontech.database.data.lite.stars.LiteLMThermostatSeason;
 import com.cannontech.database.data.lite.stars.LiteLMThermostatSeasonEntry;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.core.dao.ECMappingDao;
+import com.cannontech.stars.dr.event.dao.LMCustomerEventBaseDao;
 import com.cannontech.stars.dr.hardware.model.HardwareType;
 import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.model.ScheduleDropDownItem;
@@ -39,21 +44,34 @@ import com.cannontech.stars.util.StarsMsgUtils;
 /**
  * Implementation class for ThermostatScheduleDao
  */
-public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao {
+public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao, InitializingBean {
 
     private SimpleJdbcTemplate simpleJdbcTemplate;
+    private ChunkingSqlTemplate<Integer> chunkyJdbcTemplate;
     private ECMappingDao ecMappingDao;
+    private LMCustomerEventBaseDao lmCustomerEventBaseDao;
     private NextValueHelper nextValueHelper;
 
     @Autowired
     public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
         this.simpleJdbcTemplate = simpleJdbcTemplate;
     }
+    
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        chunkyJdbcTemplate= new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
+    }
 
     @Autowired
     public void setEcMappingDao(ECMappingDao ecMappingDao) {
         this.ecMappingDao = ecMappingDao;
     }
+    
+    @Autowired
+    public void setLMCustomerEventBaseDao(LMCustomerEventBaseDao lmCustomerEventBaseDao) {
+        this.lmCustomerEventBaseDao = lmCustomerEventBaseDao;
+    }
+
 
     @Autowired
     public void setNextValueHelper(NextValueHelper nextValueHelper) {
@@ -580,6 +598,67 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao {
             return item;
         }
 
+    }
+    
+    @Override
+    @Transactional
+    public void deleteScheduleForInventory(Integer inventoryId) {
+        String sql = "SELECT ScheduleId FROM LMThermostatSchedule WHERE InventoryId = ?";
+        Integer scheduleId = simpleJdbcTemplate.queryForInt(sql, inventoryId);
+        delete(scheduleId);
+    }
+    
+    @Override
+    public List<Integer> getScheduleIdsForAccount(Integer accountId){
+        String sql = "SELECT ScheduleId FROM LMThermostatSchedule WHERE AccountId = ?";
+        List<Integer> scheduleIds = new ArrayList<Integer>();
+        scheduleIds = simpleJdbcTemplate.query(sql, new IntegerRowMapper(), accountId);
+        
+        return scheduleIds;
+    }
+    
+    @Override
+    @Transactional
+    public void deleteSchedulesForAccount(Integer accountId) {
+        List<Integer> scheduleIds = getScheduleIdsForAccount(accountId);
+        for(Integer scheduleId : scheduleIds) {
+            delete(scheduleId);
+        }
+    }
+    
+    @Override
+    public List<Integer> getAllManualEventIds(Integer inventoryId) {
+        List<Integer> eventIds = new ArrayList<Integer>();
+        
+        String sql = "SELECT EventId FROM LMThermostatManualEvent WHERE InventoryId = ? ORDER BY EventID";
+        eventIds = simpleJdbcTemplate.query(sql, new IntegerRowMapper(), inventoryId);
+        
+        return eventIds;
+    }
+    
+    @Override
+    @Transactional
+    public void deleteManualEvents(Integer inventoryId) {
+        List<Integer> eventIds = getAllManualEventIds(inventoryId);
+        if(!eventIds.isEmpty()) {
+            chunkyJdbcTemplate.update(new LMThermostatManualEventDeleteSqlGenerator(), eventIds);
+            ecMappingDao.deleteECToCustomerEventMapping(eventIds);
+            lmCustomerEventBaseDao.deleteCustomerEvents(eventIds);
+        }
+    }
+    
+    /**
+     * Sql generator for deleting in LMThermostatManualEvent, useful for bulk deleteing
+     * with chunking sql template.
+     */
+    private class LMThermostatManualEventDeleteSqlGenerator implements SqlGenerator<Integer> {
+
+        @Override
+        public String generate(List<Integer> eventIds) {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("DELETE FROM LMThermostatManualEvent WHERE EventId IN (", eventIds, ")");
+            return sql.toString();
+        }
     }
 
 }

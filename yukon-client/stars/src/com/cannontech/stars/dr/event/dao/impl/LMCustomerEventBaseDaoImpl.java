@@ -2,17 +2,21 @@ package com.cannontech.stars.dr.event.dao.impl;
 
 import java.util.List;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
+import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.dr.event.dao.LMCustomerEventBaseDao;
 import com.cannontech.stars.dr.event.model.LMCustomerEventBase;
 
-public class LMCustomerEventBaseDaoImpl implements LMCustomerEventBaseDao {
+public class LMCustomerEventBaseDaoImpl implements LMCustomerEventBaseDao, InitializingBean {
     private static final String[] insertSql;
     private SimpleJdbcTemplate simpleJdbcTemplate;
     private NextValueHelper nextValueHelper;
+    private ChunkingSqlTemplate<Integer> chunkyJdbcTemplate;
 
     static {
         
@@ -45,9 +49,23 @@ public class LMCustomerEventBaseDaoImpl implements LMCustomerEventBaseDao {
     
     @Override
     public void deleteCustomerEvents(List<Integer> eventIds) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("DELETE FROM LMCustomerEventBase WHERE EventId IN (", eventIds, ")");
-        simpleJdbcTemplate.update(sql.toString());
+        if(!eventIds.isEmpty()) {
+            chunkyJdbcTemplate.update(new LMCustomerEventBaseDeleteSqlGenerator(), eventIds);
+        }
+    }
+    
+    /**
+     * Sql generator for deleting events from LMCustomerEventBase, useful for bulk deleteing
+     * with chunking sql template.
+     */
+    private class LMCustomerEventBaseDeleteSqlGenerator implements SqlGenerator<Integer> {
+
+        @Override
+        public String generate(List<Integer> eventIds) {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("DELETE FROM LMCustomerEventBase WHERE EventId IN (", eventIds, ")");
+            return sql.toString();
+        }
     }
 
     public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
@@ -58,4 +76,8 @@ public class LMCustomerEventBaseDaoImpl implements LMCustomerEventBaseDao {
         this.nextValueHelper = nextValueHelper;
     }
     
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        chunkyJdbcTemplate= new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
+    }
 }

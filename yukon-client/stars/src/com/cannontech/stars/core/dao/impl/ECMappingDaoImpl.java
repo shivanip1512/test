@@ -2,9 +2,12 @@ package com.cannontech.stars.core.dao.impl;
 
 import java.util.List;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
+import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -12,9 +15,10 @@ import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.account.model.ECToAccountMapping;
 
-public class ECMappingDaoImpl implements ECMappingDao {
+public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
     private SimpleJdbcTemplate simpleJdbcTemplate;
     private StarsDatabaseCache starsDatabaseCache;
+    private ChunkingSqlTemplate<Integer> chunkyJdbcTemplate;
     
     @Override
     public LiteStarsEnergyCompany getCustomerAccountEC(final CustomerAccount account) {
@@ -82,23 +86,65 @@ public class ECMappingDaoImpl implements ECMappingDao {
     
     @Override
     public void deleteECToCustomerEventMapping(List<Integer> eventIds) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("DELETE FROM ECToLMCustomerEventMapping WHERE EventId IN (", eventIds, ")");
-        simpleJdbcTemplate.update(sql.toString());
+        if(!eventIds.isEmpty()) {
+            chunkyJdbcTemplate.update(new ECToCustomerEventMappingDeleteSqlGenerator(), eventIds);
+        }
+    }
+    
+    /**
+     * Sql generator for deleting energy company to event mappings, useful for bulk deleteing
+     * with chunking sql template.
+     */
+    private class ECToCustomerEventMappingDeleteSqlGenerator implements SqlGenerator<Integer> {
+
+        @Override
+        public String generate(List<Integer> eventIds) {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("DELETE FROM ECToLMCustomerEventMapping WHERE EventId IN (", eventIds, ")");
+            return sql.toString();
+        }
     }
     
     @Override
     public void deleteECToWorkOrderMapping(List<Integer> workOrderIds) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("DELETE FROM ECToWorkOrderMapping WHERE WorkOrderId IN (", workOrderIds, ")");
-        simpleJdbcTemplate.update(sql.toString());
+        if(!workOrderIds.isEmpty()) {
+            chunkyJdbcTemplate.update(new ECToWorkOrderMappingDeleteSqlGenerator(), workOrderIds);
+        }
+    }
+    
+    /**
+     * Sql generator for deleting energy company to work order mappings, useful for bulk deleteing
+     * with chunking sql template.
+     */
+    private class ECToWorkOrderMappingDeleteSqlGenerator implements SqlGenerator<Integer> {
+
+        @Override
+        public String generate(List<Integer> workOrderIds) {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("DELETE FROM ECToWorkOrderMapping WHERE WorkOrderId IN (", workOrderIds, ")");
+            return sql.toString();
+        }
     }
     
     @Override
     public void deleteECToCallReportMapping(List<Integer> callReportIds) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("DELETE FROM ECToCallReportMapping WHERE CallReportId IN (", callReportIds, ")");
-        simpleJdbcTemplate.update(sql.toString());
+        if(!callReportIds.isEmpty()) {
+            chunkyJdbcTemplate.update(new ECToCallReportMappingDeleteSqlGenerator(), callReportIds);
+        }
+    }
+    
+    /**
+     * Sql generator for deleting energy company to call report mappings, useful for bulk deleteing
+     * with chunking sql template.
+     */
+    private class ECToCallReportMappingDeleteSqlGenerator implements SqlGenerator<Integer> {
+
+        @Override
+        public String generate(List<Integer> callReportIds) {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("DELETE FROM ECToCallReportMapping WHERE CallReportId IN (", callReportIds, ")");
+            return sql.toString();
+        }
     }
 
     @Autowired
@@ -109,5 +155,10 @@ public class ECMappingDaoImpl implements ECMappingDao {
     @Autowired
     public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
         this.starsDatabaseCache = starsDatabaseCache;
+    }
+    
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        chunkyJdbcTemplate= new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
     }
 }

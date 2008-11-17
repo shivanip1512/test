@@ -8,21 +8,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
+import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.database.data.stars.event.EventWorkOrder;
 import com.cannontech.stars.dr.event.dao.EventWorkOrderDao;
 
-public class EventWorkOrderDaoImpl implements EventWorkOrderDao {
+public class EventWorkOrderDaoImpl implements EventWorkOrderDao, InitializingBean {
     private static final String selectSql;
     private static final String selecltByWorkOrderIdSql;
     private static final ParameterizedRowMapper<EventWorkOrder> rowMapper;
     private SimpleJdbcTemplate simpleJdbcTemplate;
+    private ChunkingSqlTemplate<Integer> chunkyJdbcTemplate;
     
     static {
         
@@ -97,9 +101,23 @@ public class EventWorkOrderDaoImpl implements EventWorkOrderDao {
     
     @Override
     public void deleteEventWorkOrders(List<Integer> workOrderIds) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("DELETE FROM EventWorkOrder WHERE OrderId IN (", workOrderIds, ")");
-        simpleJdbcTemplate.update(sql.toString());
+        if(!workOrderIds.isEmpty()) {
+            chunkyJdbcTemplate.update(new EventWorkOrderDeleteSqlGenerator(), workOrderIds);
+        }
+    }
+    
+    /**
+     * Sql generator for deleting events from EventWorkOrder, useful for bulk deleteing
+     * with chunking sql template.
+     */
+    private class EventWorkOrderDeleteSqlGenerator implements SqlGenerator<Integer> {
+
+        @Override
+        public String generate(List<Integer> workOrderIds) {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("DELETE FROM EventWorkOrder WHERE OrderId IN (", workOrderIds, ")");
+            return sql.toString();
+        }
     }
     
     @Override
@@ -132,4 +150,8 @@ public class EventWorkOrderDaoImpl implements EventWorkOrderDao {
         this.simpleJdbcTemplate = simpleJdbcTemplate;
     }
     
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        chunkyJdbcTemplate= new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
+    }
 }

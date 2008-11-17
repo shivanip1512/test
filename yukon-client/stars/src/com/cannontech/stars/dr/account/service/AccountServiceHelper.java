@@ -1,0 +1,83 @@
+package com.cannontech.stars.dr.account.service;
+
+import java.util.List;
+
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.PropertyAccessorFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.cannontech.common.bulk.field.impl.AccountDto;
+import com.cannontech.common.bulk.field.impl.UpdatableAccount;
+import com.google.common.collect.ImmutableList;
+
+public class AccountServiceHelper {
+    
+    private AccountService accountService;
+    
+    /**
+     * Take a dto with nulls and updated data; fill it in 
+     * with whats in the db for this account.
+     * @param workingAccount
+     * @return UpdatableAccount
+     */
+    public UpdatableAccount buildSmartDto(UpdatableAccount workingAccount, int energyCompanyId) {
+        AccountDto retrievedDto = accountService.getAccountDto(workingAccount.getAccountNumber(), energyCompanyId);
+        copyNonNullValues(workingAccount, retrievedDto);
+        UpdatableAccount result = new UpdatableAccount();
+        result.setAccountNumber(workingAccount.getAccountNumber());
+        result.setAccountDto(retrievedDto);
+        return result;
+    }
+
+    public void copyNonNullValues(UpdatableAccount from, AccountDto to) {
+        BeanWrapper fromDtoAccessor = PropertyAccessorFactory.forBeanPropertyAccess(from.getAccountDto());
+        BeanWrapper toDtoAccessor = PropertyAccessorFactory.forBeanPropertyAccess(to);
+        
+        List<String> accountPropertyList = ImmutableList.of(
+            "lastName",
+            "firstName",
+            "companyName",
+            "customerType",
+            "homePhone",
+            "workPhone",
+            "emailAddress",
+            "streetAddress.locationAddress1",
+            "streetAddress.locationAddress2",
+            "streetAddress.cityName",
+            "streetAddress.stateCode",
+            "streetAddress.zipCode",
+            "streetAddress.county",
+            "billingAddress.locationAddress1",
+            "billingAddress.locationAddress2",
+            "billingAddress.cityName",
+            "billingAddress.stateCode",
+            "billingAddress.zipCode",
+            "billingAddress.county",
+            "userName",
+            "password",
+            "loginGroup",
+            "altTrackingNumber",
+            "mapNumber",
+            "homePhone",
+            "siteInfo.feeder",
+            "siteInfo.pole",
+            "siteInfo.transformerSize",
+            "siteInfo.serviceVoltage",
+            "siteInfo.substationName");
+        
+        for(String property : accountPropertyList) {
+            
+            Object propertyValue = fromDtoAccessor.getPropertyValue(property);
+            if(propertyValue != null) {
+                toDtoAccessor.setPropertyValue(property, propertyValue);
+            }
+        }
+        from.setAccountDto(to);
+    }
+    
+    @Autowired
+    public void setAccountService(AccountService accountService) {
+        this.accountService = accountService;
+    }
+    
+}

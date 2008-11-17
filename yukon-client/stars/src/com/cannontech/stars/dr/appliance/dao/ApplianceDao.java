@@ -18,10 +18,6 @@ public interface ApplianceDao {
     
     public List<Appliance> getByAccountIdAndProgramIdAndInventoryId(int accountId, int programId, int inventoryId);
 
-    public void deleteAppliancesForAccount(int accountId);
-
-    public void deleteAppliance(Appliance appliance);
-
-    public void deleteAppliance(int applianceId);
+    public List<Integer> getApplianceIdsForAccountId(int accountId);
     
 }

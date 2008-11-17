@@ -59,7 +59,7 @@ import com.cannontech.stars.dr.event.dao.EventAccountDao;
 import com.cannontech.stars.dr.event.dao.LMProgramEventDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
-import com.cannontech.stars.dr.hardware.dao.LMThermostatDao;
+import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
 import com.cannontech.user.UserUtils;
 
 public class AccountServiceImpl implements AccountService {
@@ -84,7 +84,7 @@ public class AccountServiceImpl implements AccountService {
     private ApplianceDao applianceDao;
     private StarsWorkOrderBaseDao workOrderDao;
     private CallReportDao callReportDao;
-    private LMThermostatDao lmThermostatDao;
+    private ThermostatScheduleDao thermostatScheduleDao;
     private EventAccountDao eventAccountDao;
     private StarsCustAccountInformationDao starsCustAccountInformationDao;
     private DBPersistentDao dbPersistantDao;
@@ -92,22 +92,22 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public void addAccount(AccountDto accountDto, LiteStarsEnergyCompany liteEnergyCompany) throws AccountNumberUnavailableException, UserNameUnavailableException {
+    public void addAccount(AccountDto accountDto, LiteStarsEnergyCompany liteEnergyCompany, String accountNumber) throws AccountNumberUnavailableException, UserNameUnavailableException {
         
-        LiteStarsCustAccountInformation accountInformation = liteEnergyCompany.searchAccountByAccountNo(accountDto.getAccountNumber());
-        
-        if(StringUtils.isBlank(accountDto.getAccountNumber())) {
-            log.error("Account " + accountDto.getAccountNumber() + " could not be added: The provided account number cannot be empty.");
+        if(StringUtils.isBlank(accountNumber)) {
+            log.error("Account " + accountNumber + " could not be added: The provided account number cannot be empty.");
             throw new IllegalArgumentException("The provided account number cannot be empty.");
         }
         
+        LiteStarsCustAccountInformation accountInformation = liteEnergyCompany.searchAccountByAccountNo(accountNumber);
+        
         if(accountInformation != null) {
-            log.error("Account " + accountDto.getAccountNumber() + " could not be added: The provided account number already exists.");
+            log.error("Account " + accountNumber + " could not be added: The provided account number already exists.");
             throw new AccountNumberUnavailableException("The provided account number already exists");
         }
         
         if(yukonUserDao.getLiteYukonUser( accountDto.getUserName() ) != null) {
-            log.error("Account " + accountDto.getAccountNumber() + " could not be added: The provided username already exists.");
+            log.error("Account " + accountNumber + " could not be added: The provided username already exists.");
             throw new UserNameUnavailableException("The provided username already exists.");
         }
         
@@ -117,36 +117,43 @@ public class AccountServiceImpl implements AccountService {
         /*
          * Create the user login
          */
-        LiteYukonUser user = new LiteYukonUser(); 
-        user.setUsername(accountDto.getUserName());
-        user.setStatus(UserUtils.STATUS_ENABLED);
-        AuthType defaultAuthType = roleDao.getGlobalRolePropertyValue(AuthType.class, AuthenticationRole.DEFAULT_AUTH_TYPE);
-        user.setAuthType(defaultAuthType);
-        List<LiteYukonGroup> groups = new ArrayList<LiteYukonGroup>();
-        LiteYukonGroup defaultYukonGroup = yukonGroupDao.getLiteYukonGroup(YukonGroup.YUKON_GROUP_ID);
-        LiteYukonGroup operatorGroup = yukonGroupDao.getLiteYukonGroupByName(accountDto.getLoginGroup());
-        groups.add(defaultYukonGroup);
-        groups.add(operatorGroup);
-        yukonUserDao.addLiteYukonUserWithPassword(user, accountDto.getPassword(), liteEnergyCompany.getEnergyCompanyID(), groups);
-        dbPersistantDao.processDBChange(new DBChangeMsg(user.getLiteID(),
-            DBChangeMsg.CHANGE_YUKON_USER_DB,
-            DBChangeMsg.CAT_YUKON_USER,
-            DBChangeMsg.CAT_YUKON_USER,
-            DBChangeMsg.CHANGE_TYPE_ADD));
+        LiteYukonUser user = null;
+        if(!StringUtils.isBlank(accountDto.getUserName())) {
+            user = new LiteYukonUser(); 
+            user.setUsername(accountDto.getUserName());
+            user.setStatus(UserUtils.STATUS_ENABLED);
+            AuthType defaultAuthType = roleDao.getGlobalRolePropertyValue(AuthType.class, AuthenticationRole.DEFAULT_AUTH_TYPE);
+            user.setAuthType(defaultAuthType);
+            List<LiteYukonGroup> groups = new ArrayList<LiteYukonGroup>();
+            LiteYukonGroup defaultYukonGroup = yukonGroupDao.getLiteYukonGroup(YukonGroup.YUKON_GROUP_ID);
+            LiteYukonGroup operatorGroup = yukonGroupDao.getLiteYukonGroupByName(accountDto.getLoginGroup());
+            groups.add(defaultYukonGroup);
+            groups.add(operatorGroup);
+            yukonUserDao.addLiteYukonUserWithPassword(user, accountDto.getPassword(), liteEnergyCompany.getEnergyCompanyID(), groups);
+            dbPersistantDao.processDBChange(new DBChangeMsg(user.getLiteID(),
+                DBChangeMsg.CHANGE_YUKON_USER_DB,
+                DBChangeMsg.CAT_YUKON_USER,
+                DBChangeMsg.CAT_YUKON_USER,
+                DBChangeMsg.CHANGE_TYPE_ADD));
+        }
             
         /*
-         * Create the address
+         * Create the address if supplied
          */
-        LiteAddress liteAddress = new LiteAddress();
-        setAddressFieldsFromDTO(liteAddress, streetAddress);
-        addressDao.add(liteAddress);
+        LiteAddress liteAddress = null;
+        if(streetAddress != null && StringUtils.isNotBlank(streetAddress.getLocationAddress1())) {
+        liteAddress = new LiteAddress();
+            setAddressFieldsFromDTO(liteAddress, streetAddress);
+            addressDao.add(liteAddress);
+        }
             
         /*
          * Create billing address if supplied
          */
         LiteAddress liteBillingAddress = null;
         if(billingAddress != null && StringUtils.isNotBlank(billingAddress.getLocationAddress1())) {
-            setAddressFieldsFromDTO(liteAddress, accountDto.getBillingAddress());
+            liteBillingAddress = new LiteAddress();
+            setAddressFieldsFromDTO(liteBillingAddress, billingAddress);
             addressDao.add(liteBillingAddress);
         }
             
@@ -156,7 +163,7 @@ public class AccountServiceImpl implements AccountService {
         LiteContact liteContact = new LiteContact(-1); 
         liteContact.setContFirstName(accountDto.getFirstName());
         liteContact.setContLastName(accountDto.getLastName());
-        liteContact.setLoginID(user.getUserID());
+        liteContact.setLoginID(user == null ? UserUtils.USER_DEFAULT_ID : user.getUserID());
         liteContact.setAddressID(liteAddress.getAddressID());
         contactDao.saveContact(liteContact);
         dbPersistantDao.processDBChange(new DBChangeMsg(liteContact.getLiteID(),
@@ -245,7 +252,7 @@ public class AccountServiceImpl implements AccountService {
         accountSiteDao.add(accountSite);
         
         customerAccount.setAccountSiteId(accountSite.getAccountSiteId());
-        customerAccount.setAccountNumber(accountDto.getAccountNumber());
+        customerAccount.setAccountNumber(accountNumber);
         customerAccount.setCustomerId(liteCustomer.getCustomerID());
         if(liteBillingAddress != null) {
             customerAccount.setBillingAddressId(liteBillingAddress.getAddressID());
@@ -260,7 +267,7 @@ public class AccountServiceImpl implements AccountService {
         ecToAccountMapping.setAccountId(customerAccount.getAccountId());
         ecMappingDao.addECToAccountMapping(ecToAccountMapping);
         
-        log.info("Account: " + accountDto.getAccountNumber() + " added successfully.");
+        log.info("Account: " + accountNumber + " added successfully.");
     }
 
     @Override
@@ -300,7 +307,7 @@ public class AccountServiceImpl implements AccountService {
         /*
          * Delete Appliance info
          */
-        applianceDao.deleteAppliancesForAccount(account.getAccountId());
+        applianceDao.deleteAppliancesByAccountId(account.getAccountId());
         
         /*
          * Delete WorkOrders
@@ -315,7 +322,7 @@ public class AccountServiceImpl implements AccountService {
         /*
          * Delete thermostat schedules for account
          */
-        lmThermostatDao.deleteSchedulesForAccount(account.getAccountId());
+        thermostatScheduleDao.deleteSchedulesForAccount(account.getAccountId());
         
         /*
          * Delete account mappings
@@ -399,39 +406,39 @@ public class AccountServiceImpl implements AccountService {
     
     @Override
     @Transactional
-    public void updateOrAddAccount(AccountDto accountDto, LiteStarsEnergyCompany liteEnergyCompany) {
-        if(StringUtils.isBlank(accountDto.getAccountNumber())) {
-            log.error("Account " + accountDto.getAccountNumber() + " could not be added/updated: The provided account number cannot be empty.");
+    public void updateOrAddAccount(AccountDto accountDto, LiteStarsEnergyCompany liteEnergyCompany, String accountNumber) {
+        if(StringUtils.isBlank(accountNumber)) {
+            log.error("Account " + accountNumber + " could not be added/updated: The provided account number cannot be empty.");
             throw new IllegalArgumentException("The provided account number cannot be empty.");
         }
         
-        LiteStarsCustAccountInformation accountInformation = liteEnergyCompany.searchAccountByAccountNo(accountDto.getAccountNumber());
+        LiteStarsCustAccountInformation accountInformation = liteEnergyCompany.searchAccountByAccountNo(accountNumber);
      
         if(accountInformation == null) {
-            addAccount(accountDto, liteEnergyCompany);
+            addAccount(accountDto, liteEnergyCompany, accountNumber);
         } else {
-            updateAccount(accountDto, liteEnergyCompany);
+            updateAccount(accountDto, liteEnergyCompany, accountNumber);
         }
             
     }
 
     @Override
     @Transactional
-    public void updateAccount(AccountDto accountDto, LiteStarsEnergyCompany liteEnergyCompany) {
+    public void updateAccount(AccountDto accountDto, LiteStarsEnergyCompany liteEnergyCompany, String accountNumber) {
 
-        if(StringUtils.isBlank(accountDto.getAccountNumber())) {
-            log.error("Account " + accountDto.getAccountNumber() + " could not be added: The provided account number cannot be empty.");
+        if(StringUtils.isBlank(accountNumber)) {
+            log.error("Account " + accountNumber + " could not be added: The provided account number cannot be empty.");
             throw new IllegalArgumentException("The provided account number cannot be empty.");
         }
         
-        LiteStarsCustAccountInformation accountInformation = liteEnergyCompany.searchAccountByAccountNo(accountDto.getAccountNumber());
+        LiteStarsCustAccountInformation accountInformation = liteEnergyCompany.searchAccountByAccountNo(accountNumber);
         
         if(accountInformation == null) {
-            log.error("Account " + accountDto.getAccountNumber() + " could not be updated: The provided account number doesn't exists.");
+            log.error("Account " + accountNumber + " could not be updated: The provided account number doesn't exists.");
             throw new NotFoundException("The provided account number doesn't exists");
         }
         
-        CustomerAccount account = customerAccountDao.getByAccountNumber(accountDto.getAccountNumber(), liteEnergyCompany.getEnergyCompanyID());
+        CustomerAccount account = customerAccountDao.getByAccountNumber(accountNumber, liteEnergyCompany.getEnergyCompanyID());
         LiteCustomer liteCustomer = customerDao.getLiteCustomer(account.getCustomerId());
         AccountSite accountSite = accountSiteDao.getByAccountSiteId(account.getAccountSiteId());
         LiteAddress liteStreetAddress = addressDao.getByAddressId(accountSite.getStreetAddressId()); 
@@ -552,7 +559,56 @@ public class AccountServiceImpl implements AccountService {
          */
         ecMappingDao.updateECToAccountMapping(account.getAccountId(), liteEnergyCompany.getEnergyCompanyID());
         
-        log.info("Account: " +accountDto.getAccountNumber() + " deleted successfully.");
+        log.info("Account: " +accountNumber + " deleted successfully.");
+    }
+    
+    @Override
+    public AccountDto getAccountDto(String accountNumber, int energyCompanyId) {
+        AccountDto retrievedDto = new AccountDto();
+        CustomerAccount customerAccount = customerAccountDao.getByAccountNumber(accountNumber, energyCompanyId);
+        LiteCustomer customer = customerDao.getLiteCustomer(customerAccount.getCustomerId());
+        LiteContact primaryContact = contactDao.getContact(customer.getPrimaryContactID());
+        LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany(energyCompanyId);
+        LiteStarsCustAccountInformation liteStarsCustAccountInformation = energyCompany.getCustAccountInformation(customerAccount.getAccountId(), false);
+        
+        retrievedDto.setFirstName(primaryContact.getContFirstName());
+        retrievedDto.setLastName(primaryContact.getContLastName());
+        
+        if(customer instanceof LiteCICustomer) {
+            retrievedDto.setCompanyName(((LiteCICustomer) customer).getCompanyName());
+            retrievedDto.setCustomerType(CustomerTypes.STRING_CI_CUSTOMER);
+        }else {
+            retrievedDto.setCompanyName("");
+            retrievedDto.setCustomerType(CustomerTypes.STRING_RES_CUSTOMER);
+        }
+        LiteContactNotification homePhoneNotif = contactNotificationDao.getNotificationForContactByType(primaryContact.getContactID(), YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE);
+        LiteContactNotification workPhoneNotif = contactNotificationDao.getNotificationForContactByType(primaryContact.getContactID(), YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE);
+        LiteContactNotification emailNotif = contactNotificationDao.getNotificationForContactByType(primaryContact.getContactID(), YukonListEntryTypes.YUK_ENTRY_ID_EMAIL);
+        if(homePhoneNotif != null) {
+            retrievedDto.setHomePhone(homePhoneNotif.getNotification());
+        }else {
+            retrievedDto.setHomePhone("");
+        }
+        if(workPhoneNotif != null) {
+            retrievedDto.setWorkPhone(workPhoneNotif.getNotification());
+        }else {
+            retrievedDto.setWorkPhone("");
+        }
+        if(emailNotif != null) {
+            retrievedDto.setEmailAddress(emailNotif.getNotification());
+        }else {
+            retrievedDto.setEmailAddress("");
+        }
+        
+        // apperently a dummy address row gets set even when one wasn't provided. 
+        LiteAddress address = addressDao.getByAddressId(primaryContact.getAddressID());
+        giveAddressFieldsToDTO(address, retrievedDto.getStreetAddress());
+        LiteAddress billingAdress = addressDao.getByAddressId(customerAccount.getBillingAddressId());
+        giveAddressFieldsToDTO(billingAdress, retrievedDto.getBillingAddress());
+        
+        //TODO finish this
+        
+        return retrievedDto;
     }
     
     //==============================================================================================
@@ -579,6 +635,15 @@ public class AccountServiceImpl implements AccountService {
         lite.setStateCode(address.getStateCode());
         lite.setZipCode(address.getZipCode());
         lite.setCounty(address.getCounty());
+    }
+    
+    private void giveAddressFieldsToDTO(LiteAddress lite, Address address) {
+        address.setLocationAddress1(lite.getLocationAddress1());
+        address.setLocationAddress2(lite.getLocationAddress2());
+        address.setCityName(lite.getCityName());
+        address.setStateCode(lite.getStateCode());
+        address.setZipCode(lite.getZipCode());
+        address.setCounty(lite.getCounty());
     }
     
     private LiteContactNotification createNotification(LiteContact contact, int entyType, String notification) {
@@ -686,8 +751,8 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Autowired
-    public void setLMThermostatDao(LMThermostatDao lmThermostatDao) {
-        this.lmThermostatDao = lmThermostatDao;
+    public void setThermostatScheduleDao(ThermostatScheduleDao thermostatScheduleDao) {
+        this.thermostatScheduleDao = thermostatScheduleDao;
     }
 
     @Autowired

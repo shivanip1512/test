@@ -2,6 +2,7 @@ package com.cannontech.stars.dr.appliance.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -16,6 +17,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.db.stars.appliance.ApplianceBase;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
@@ -95,54 +97,27 @@ public class ApplianceDaoImpl implements ApplianceDao {
     }
     
     @Override
-    @Transactional
-    public void deleteAppliancesForAccount(int accountId) {
-        List<Appliance> appliances = getByAccountId(accountId);
-        for(Appliance appliance : appliances) {
-            deleteAppliance(appliance);    
-        }
+    public List<Integer> getApplianceIdsForAccountId(int accountId){
+        String sql = "SELECT ApplianceId FROM ApplianceBase WHERE ApplianceId = ?";
+        List<Integer> applianceIds = simpleJdbcTemplate.query(sql, new IntegerRowMapper(), accountId);
+        return applianceIds;
     }
     
     @Override
     @Transactional
-    public void deleteAppliance(Appliance appliance) {
-        deleteAppliance(appliance.getApplianceId());
-    }
-    
-    @Override
-    @Transactional
-    public void deleteAppliance(int applianceId) {
-        lmHardwareConfigurationDao.deleteForAppliance(applianceId);
-        for(String table : ApplianceBase.DEPENDENT_TABLES) {
-            String delete = "DELETE FROM " + table + " WHERE ApplianceId = ?";
-            simpleJdbcTemplate.update(delete, applianceId);
-        }
-        String delete = "DELETE FROM ApplianceBase WHERE ApplianceId = ?";
-        simpleJdbcTemplate.update(delete, applianceId);
-    }
-    
     public void deleteAppliancesByAccountId(int accountId) {
-        String cond = "FROM ApplianceBase " +
-        		      "WHERE accountId = " + accountId;
-        SqlStatement stmt = new SqlStatement( "", CtiUtilities.getDatabaseAlias() );
-
-        try {
-            for (int i = 0; i < ApplianceBase.DEPENDENT_TABLES.length; i++) {
-                String sql = "DELETE FROM " + ApplianceBase.DEPENDENT_TABLES[i] + " WHERE ApplianceID IN (SELECT ApplianceID " + cond + ")";
-                stmt.setSQLString( sql );
-                    stmt.execute();
+        List<Integer> applianceIds = getApplianceIdsForAccountId(accountId);
+        if(!applianceIds.isEmpty()) {
+            for(String table : ApplianceBase.DEPENDENT_TABLES) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("DELETE FROM " + table + " WHERE ApplianceId IN (", applianceIds, ")");
+                simpleJdbcTemplate.update(sql.toString());
             }
-            
-            String sql = "DELETE FROM LMHardwareConfiguration WHERE ApplianceID IN (SELECT ApplianceID " + cond + ")";
-            stmt.setSQLString( sql );
-            stmt.execute();
-            
-            stmt.setSQLString( "DELETE " + cond );
-            stmt.execute();
-        } catch (CommandExecutionException e) {
-            CTILogger.error( e.getMessage(), e );
+            lmHardwareConfigurationDao.deleteForAppliances(applianceIds);
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("DELETE FROM ApplianceBase WHERE ApplianceId IN (", applianceIds, ")");
+            simpleJdbcTemplate.update(sql.toString());
         }
-
     }
     
     @SuppressWarnings("unchecked")
@@ -218,4 +193,5 @@ public class ApplianceDaoImpl implements ApplianceDao {
     public void setLMHardwareConfigurationDao(LMHardwareConfigurationDao lmHardwareConfigurationDao) {
         this.lmHardwareConfigurationDao = lmHardwareConfigurationDao;
     }
+
 }

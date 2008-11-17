@@ -15,13 +15,13 @@ public interface AccountService {
      * @param liteEnergyCompany
      * @throws AccountNumberUnavailableException
      */
-    public void addAccount(AccountDto accountDto, LiteStarsEnergyCompany liteEnergyCompany) throws AccountNumberUnavailableException, UserNameUnavailableException;
+    public void addAccount(AccountDto accountDto, LiteStarsEnergyCompany liteEnergyCompany, String accountNumber) throws AccountNumberUnavailableException, UserNameUnavailableException;
     
     /**
      * Method to update an account
      * @param accountDto
      */
-    public void updateAccount(AccountDto accountDto, LiteStarsEnergyCompany liteEnergyCompany) throws NotFoundException;
+    public void updateAccount(AccountDto accountDto, LiteStarsEnergyCompany liteEnergyCompany, String accountNumber) throws NotFoundException;
 
     /**
      * Method to delete an account
@@ -35,5 +35,13 @@ public interface AccountService {
      * @param accountDto
      * @param liteEnergyCompany
      */
-    void updateOrAddAccount(AccountDto accountDto, LiteStarsEnergyCompany liteEnergyCompany);
+    public void updateOrAddAccount(AccountDto accountDto, LiteStarsEnergyCompany liteEnergyCompany, String accountNumber);
+
+    /**
+     * Method to return an account dto for an account number and energy company
+     * @param accountNumber
+     * @param energyCompanyId
+     * @return
+     */
+    public AccountDto getAccountDto(String accountNumber, int energyCompanyId);
 }

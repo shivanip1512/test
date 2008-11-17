@@ -72,4 +72,36 @@ public interface ThermostatScheduleDao {
      */
     public List<Integer> getInventoryIdsForSchedules(Integer... scheduleId);
 
+    /**
+     * Method to delete events from LMThermostatManualEvent for an inventory id.
+     * @param inventoryId
+     */
+    public void deleteManualEvents(Integer inventoryId);
+
+    /**
+     * Method to retrieve a list of manual event ids for an inventory id.
+     * @param inventoryId
+     * @return
+     */
+    public List<Integer> getAllManualEventIds(Integer inventoryId);
+
+    /**
+     * Method to delete schedules for an account.
+     * @param accountId
+     */
+    public void deleteSchedulesForAccount(Integer accountId);
+
+    /**
+     * Method to get a list of schedule ids for an account.
+     * @param accountId
+     * @return
+     */
+    public List<Integer> getScheduleIdsForAccount(Integer accountId);
+
+    /**
+     * Method to delete schedules for an inventory id.
+     * @param inventoryId
+     */
+    public void deleteScheduleForInventory(Integer inventoryId);
+
 }

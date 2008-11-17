@@ -7,11 +7,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
@@ -19,12 +22,13 @@ import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
 import com.cannontech.stars.dr.event.dao.EventWorkOrderDao;
 
-public class StarsWorkOrderBaseDaoImpl implements StarsWorkOrderBaseDao {
+public class StarsWorkOrderBaseDaoImpl implements StarsWorkOrderBaseDao, InitializingBean {
     private static final String selectSql;
     private static final ParameterizedRowMapper<LiteWorkOrderBase> rowMapper = createRowMapper();
     private SimpleJdbcTemplate simpleJdbcTemplate;
     private ECMappingDao ecMappingDao;
     private EventWorkOrderDao eventWorkOrderDao;
+    private ChunkingSqlTemplate<Integer> chunkyJdbcTemplate;
 
     static {
 
@@ -116,9 +120,23 @@ public class StarsWorkOrderBaseDaoImpl implements StarsWorkOrderBaseDao {
         List<Integer> workOrderIds = getByAccount(accountId);
         ecMappingDao.deleteECToWorkOrderMapping(workOrderIds);
         eventWorkOrderDao.deleteEventWorkOrders(workOrderIds);
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("DELETE FROM WorkOrderBase WHERE OrderId IN (", workOrderIds, ")");
-        simpleJdbcTemplate.update(sql.toString());
+        if(!workOrderIds.isEmpty()) {
+            chunkyJdbcTemplate.update(new WorkOrderSqlGenerator(), workOrderIds);
+        }
+    }
+    
+    /**
+     * Sql generator for deleting work orders, useful for bulk deleteing
+     * with chunking sql template.
+     */
+    private class WorkOrderSqlGenerator implements SqlGenerator<Integer> {
+
+        @Override
+        public String generate(List<Integer> workOrderIds) {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("DELETE FROM WorkOrderBase WHERE OrderId IN (", workOrderIds, ")");
+            return sql.toString();
+        }
     }
     
     @Override
@@ -143,4 +161,8 @@ public class StarsWorkOrderBaseDaoImpl implements StarsWorkOrderBaseDao {
         this.eventWorkOrderDao = eventWorkOrderDao;
     }
     
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        chunkyJdbcTemplate= new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
+    }
 }
