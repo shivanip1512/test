@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.209 $
-* DATE         :  $Date: 2008/11/11 21:51:42 $
+* REVISION     :  $Revision: 1.210 $
+* DATE         :  $Date: 2008/11/17 22:45:08 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3278,11 +3278,17 @@ void CtiVanGogh::writeArchiveDataToDB(bool justdoit)
                 panicCounter = writeRawPointHistory(justdoit, maxrowstowrite);
             }
 
+            size_t rowsLeft = _archiverQueue.entries();
             if( panicCounter > 0 )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " RawPointHistory transaction complete. Inserted " << panicCounter
-                     << " of " << archiveent << " rows" << endl;
+                     << " rows" << endl;
+
+                if(rowsLeft > MAX_ARCHIVER_ENTRIES)
+                {
+                    dout << CtiTime() << " RawPointHistory rows remaining: " << rowsLeft << endl;
+                }
             }
 
             if(panicCounter >= PANIC_CONSTANT)
