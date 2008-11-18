@@ -83,11 +83,14 @@ public class ProgramStartRequestEndpointTest {
         
         responseElement = impl.invoke(requestElement);
         XmlUtils.printElement(responseElement, "RESPONSE (no start time, no stop time)");
-        
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
+        
+        // inputs
         Assert.assertEquals("AC", testService.getProgramName());
         Assert.assertEquals(null, testService.getStartTime());
         Assert.assertEquals(null, testService.getStopTime());
+        
+        // outputs
         Assert.assertNotNull(outputTemplate.evaluateAsNode("/y:programStartResponse/y:success"));
         
         
@@ -102,11 +105,14 @@ public class ProgramStartRequestEndpointTest {
         
         responseElement = impl.invoke(requestElement);
         XmlUtils.printElement(responseElement, "RESPONSE (start time, no stop time)");
-        
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
+        
+        // inputs
         Assert.assertEquals("AC", testService.getProgramName());
         Assert.assertEquals("2008-10-13T12:30:00Z", XmlUtils.formatDate(testService.getStartTime()));
         Assert.assertEquals(null, testService.getStopTime());
+        
+        // outputs
         Assert.assertNotNull(outputTemplate.evaluateAsNode("/y:programStartResponse/y:success"));
         
         
@@ -123,11 +129,14 @@ public class ProgramStartRequestEndpointTest {
         
         responseElement = impl.invoke(requestElement);
         XmlUtils.printElement(responseElement, "RESPONSE (start time, stop time)");
-        
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
+        
+        // inputs
         Assert.assertEquals("AC", testService.getProgramName());
         Assert.assertEquals("2008-10-13T12:30:00Z", XmlUtils.formatDate(testService.getStartTime()));
         Assert.assertEquals("2008-10-13T21:49:01Z", XmlUtils.formatDate(testService.getStopTime()));
+        
+        // outputs
         Assert.assertNotNull(outputTemplate.evaluateAsNode("/y:programStartResponse/y:success"));
         
         // not found
@@ -139,8 +148,10 @@ public class ProgramStartRequestEndpointTest {
         
         responseElement = impl.invoke(requestElement);
         XmlUtils.printElement(responseElement, "RESPONSE (not found)");
-        
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
+        
+        // outputs
+        Assert.assertNull(outputTemplate.evaluateAsNode("/y:programStartResponse/y:success"));
         Assert.assertNotNull(outputTemplate.evaluateAsNode("/y:programStartResponse/y:failure"));
         Assert.assertEquals("InvalidProgramName", outputTemplate.evaluateAsString("/y:programStartResponse/y:failure/y:errorCode"));
         
@@ -153,8 +164,10 @@ public class ProgramStartRequestEndpointTest {
         
         responseElement = impl.invoke(requestElement);
         XmlUtils.printElement(responseElement, "RESPONSE (timeout)");
-        
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
+        
+        // outputs
+        Assert.assertNull(outputTemplate.evaluateAsNode("/y:programStartResponse/y:success"));
         Assert.assertNotNull(outputTemplate.evaluateAsNode("/y:programStartResponse/y:failure"));
         Assert.assertEquals("Timeout", outputTemplate.evaluateAsString("/y:programStartResponse/y:failure/y:errorCode"));
     }
