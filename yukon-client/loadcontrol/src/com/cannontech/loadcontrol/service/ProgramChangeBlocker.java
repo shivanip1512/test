@@ -1,6 +1,5 @@
 package com.cannontech.loadcontrol.service;
 
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -51,13 +50,13 @@ public class ProgramChangeBlocker implements MessageListener {
     
     public void updateProgramStatus() throws TimeoutException {
         
-        log.info("Adding message listener.");
+        log.debug("Adding message listener.");
         loadControlClientConnection.addMessageListener(this);
         
-        log.info("Creating countDown latch.");
+        log.debug("Creating countDown latch.");
         this.countDownLatch = new CountDownLatch(1);
         
-        this.afterTime = (new Date()).getTime();
+        this.afterTime = System.currentTimeMillis();
         log.info("Executing program update for programId " + this.programId);
         List<String> executeViolations = loadControlCommandService.executeManualCommand(controlRequest);
         programStatus.setConstraintViolations(executeViolations);
@@ -68,7 +67,7 @@ public class ProgramChangeBlocker implements MessageListener {
         } catch(InterruptedException e) {
             // do nothing
         } finally {
-            log.info("Removing message listener.");
+            log.debug("Removing message listener.");
             loadControlClientConnection.removeMessageListener(this);
         }
         
@@ -89,8 +88,7 @@ public class ProgramChangeBlocker implements MessageListener {
             LMProgramChanged programChangedResp = (LMProgramChanged)obj;
             if (programChangedResp.getPaoID().intValue() == this.programId) {
                 
-                Date now = new Date();
-                long timeNow = now.getTime();
+                long timeNow = System.currentTimeMillis();
                 if (timeNow > this.afterTime) {
                     log.info("Recieved program update for programId " + this.programId + " at time " + timeNow);
                     this.countDownLatch.countDown();

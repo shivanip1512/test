@@ -12,6 +12,7 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XmlUtils;
 import com.cannontech.yukon.api.util.YukonXml;
 
@@ -36,15 +37,15 @@ public class PointDataRequestEndpoint {
     }
 
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="pointDataRequestCmd")
-    protected Element invoke(Element pointDataRequest) throws Exception {
-        Number numberValueOf = newSinceExpression.numberValueOf(pointDataRequest);
+    public Element invoke(Element pointDataRequest) throws Exception {
+        SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(pointDataRequest);
+        Number numberValueOf = template.evaluateAsLong("//y:newSince");
         Long newSince = null;
         if (numberValueOf != null) {
             newSince = numberValueOf.longValue();
         }
         
-        List<?> selectNodes = pointIdExpression.selectNodes(pointDataRequest);
-        List<Integer> pointIdList = XmlUtils.convertToIntegerList(selectNodes);
+        List<Integer> pointIdList = template.evaluateAsIntegerList("//y:pointIds/y:id");
         
         SnapshotResult snapshots = pointDataSnapshotService.getUpdatedSnapshots(pointIdList, newSince);
         

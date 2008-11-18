@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<pointDataRequestCmd xmlns="http://yukon.cannontech.com/api"
-           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xsi:schemaLocation="http://yukon.cannontech.com/api ../pointDataRequest.xsd">
+<y:pointDataRequestCmd xmlns:y="http://yukon.cannontech.com/api">
            
-    <newSince>3121984</newSince>
-    <pointIds>
-        <id>1234</id>
-        <id>983</id>
-    </pointIds>
+    <y:newSince>3121984</y:newSince>
+    <y:pointIds>
+        <y:id>1234</y:id>
+        <y:id>983</y:id>
+    </y:pointIds>
     
-</pointDataRequestCmd>
+</y:pointDataRequestCmd>
  

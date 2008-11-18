@@ -24,6 +24,7 @@ public class ProgramStatus {
     }
     
     public void setConstraintViolations(List<String> violations) {
+        this.constraintViolations.clear();
         this.constraintViolations.addAll(violations);
     }
     

@@ -1,19 +1,31 @@
 package com.cannontech.yukon.api.util;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.JDOMException;
 import org.jdom.Namespace;
 import org.jdom.Text;
+import org.jdom.input.SAXBuilder;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
+import org.jdom.transform.JDOMSource;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
+import org.springframework.core.io.Resource;
+import org.springframework.xml.xpath.XPathException;
 
 public class XmlUtils {
 
+    private static XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
+    
     public static List<Integer> convertToIntegerList(List<?> selectNodes) {
         List<Integer> result = new ArrayList<Integer>(selectNodes.size());
         for (Object object : selectNodes) {
@@ -58,6 +70,30 @@ public class XmlUtils {
     }
     
     /**
+     * Parse an elemnt for a date. If the element does not exists or is empty, return null.
+     * Otherwise return a Date object for the dat string in the element.
+     * @param element
+     * @param expression
+     * @return
+     * @throws JDOMException
+     */
+    public static Date evaluateAsDate(SimpleXPathTemplate elementTemplate, String xpathExpressionStr) throws JDOMException {
+        
+        String dateStr;
+        try {
+            dateStr = elementTemplate.evaluateAsString(xpathExpressionStr).trim();
+        } catch (XPathException e) {
+            return null;
+        }
+        
+        if (!dateStr.equals("")) {
+            return XmlUtils.parseDate(dateStr);
+        }
+        
+        return null;
+    }
+    
+    /**
      * Creates an element containing a date in ISO format with a UTC zone.
      * Ex: 2008-10-13T12:30:00Z
      * @param name
@@ -96,7 +132,8 @@ public class XmlUtils {
         
         DateTime dt = new DateTime(date, DateTimeZone.UTC);
         DateTimeFormatter fmt = ISODateTimeFormat.dateTimeNoMillis();
-        return fmt.print(dt);
+        String dateStr = fmt.print(dt);
+        return dateStr;
     }
     
     /**
@@ -113,5 +150,32 @@ public class XmlUtils {
         DateTimeFormatter fmt = ISODateTimeFormat.dateTimeNoMillis();
         DateTime dt = fmt.parseDateTime(str);
         return dt.toDate();
+    }
+    
+    public static Element createElementFromResource(Resource resource) throws JDOMException, IOException {
+        
+        SAXBuilder builder = new SAXBuilder();
+        Document document = builder.build(resource.getInputStream());
+        Element inputElement = document.getRootElement();
+        return inputElement;
+    }
+    
+    public static SimpleXPathTemplate getXPathTemplateForElement(Element element) {
+        
+        SimpleXPathTemplate template = new SimpleXPathTemplate();
+        template.setContext(new JDOMSource(element));
+        template.setNamespaces(YukonXml.getYukonNamespaceAsProperties());
+        
+        return template;
+    }
+
+    public static void printElement(Element element, String title) throws IOException {
+        
+        if (!StringUtils.isBlank(title)) {
+            System.out.println(title + ":");
+        }
+        xmlOutputter.output(element, System.out);
+        System.out.println();
+        System.out.println();
     }
 }

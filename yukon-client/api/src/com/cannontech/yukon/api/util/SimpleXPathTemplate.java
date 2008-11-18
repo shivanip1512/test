@@ -182,7 +182,18 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
         }
         return results;
     }
-
+    
+    public List<Integer> evaluateAsIntegerList(String expression) throws XPathException {
+        return evaluate(expression, new ObjectMapper<Node, Integer>() {
+            @Override
+            public Integer map(Node from) throws ObjectMappingException {
+                String textContent = from.getTextContent();
+                
+                return Integer.valueOf(textContent);
+            }
+        });
+    }
+    
     public List<Long> evaluateAsLongList(String expression) throws XPathException {
         return evaluate(expression, new ObjectMapper<Node, Long>() {
             @Override

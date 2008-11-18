@@ -3,16 +3,14 @@ package com.cannontech.yukon.api.pointsnapshot;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.jdom.Document;
 import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 import org.jdom.transform.JDOMSource;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,6 +20,7 @@ import org.springframework.core.io.Resource;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
+import com.cannontech.yukon.api.util.XmlUtils;
 import com.cannontech.yukon.api.util.YukonXml;
 
 public class PointDataRequestEndpointTest {
@@ -106,10 +105,10 @@ public class PointDataRequestEndpointTest {
     @Test
     public void testInvoke() throws Exception {
         Resource resource = new ClassPathResource("pointDataRequest.xml", PointDataRequestEndpointTest.class);
-        Element inputElement = createElementFromResource(resource);
+        Element inputElement = XmlUtils.createElementFromResource(resource);
         Element outputElement = impl.invoke(inputElement);
         
-        //new XMLOutputter(Format.getPrettyFormat()).output(outputElement, System.out);
+        new XMLOutputter(Format.getPrettyFormat()).output(outputElement, System.out);
         
         SimpleXPathTemplate template = new SimpleXPathTemplate();
         template.setContext(new JDOMSource(outputElement));
@@ -128,13 +127,4 @@ public class PointDataRequestEndpointTest {
         assertEquals(3121985, template.evaluateAsLong("/y:pointDataResponseMsg/y:validThrough"));
         
     }
-
-    private static Element createElementFromResource(Resource resource)
-            throws JDOMException, IOException {
-        SAXBuilder builder = new SAXBuilder();
-        Document document = builder.build(resource.getInputStream());
-        Element inputElement = document.getRootElement();
-        return inputElement;
-    }
-
 }
