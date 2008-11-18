@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrrccs.cpp-arc  $
-*    REVISION     :  $Revision: 1.15 $
-*    DATE         :  $Date: 2008/10/31 15:36:33 $
+*    REVISION     :  $Revision: 1.16 $
+*    DATE         :  $Date: 2008/11/18 22:20:21 $
 *
 *
 *    AUTHOR: David Sutton
@@ -22,6 +22,11 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrrccs.cpp,v $
+      Revision 1.16  2008/11/18 22:20:21  tspar
+      YUK-6656 FDR cannot register for "ALL" points, it must use a point list
+
+      Removed overloded function that registered for all points. RCCS does not appear to need this.
+
       Revision 1.15  2008/10/31 15:36:33  tspar
       YUK-6649 - Yukon is throwing away point updates from RCCS
 
@@ -1036,13 +1041,6 @@ int CtiFDR_Rccs::processValueMessage(InetInterface_t *data)
         }
     }
     return retVal;
-}
-
-
-void CtiFDR_Rccs::buildRegistrationPointList (CtiPointRegistrationMsg **aMsg)
-{
-    // we have some points to send
-    *aMsg = new CtiPointRegistrationMsg( REG_TAG_MARKMOA | REG_ALL_PTS_MASK );
 }
 
 /****************************************************************************************
