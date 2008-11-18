@@ -15,10 +15,15 @@
  *    Copyright (C) 2005 Cannon Technologies, Inc.  All rights reserved.
  *
  *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinterface.cpp-arc  $
- *    REVISION     :  $Revision: 1.34 $
- *    DATE         :  $Date: 2008/10/15 14:38:23 $
+ *    REVISION     :  $Revision: 1.35 $
+ *    DATE         :  $Date: 2008/11/18 21:50:22 $
  *    History:
  *     $Log: fdrinterface.cpp,v $
+ *     Revision 1.35  2008/11/18 21:50:22  tspar
+ *     YUK-5013 Full FDR reload changes
+ *
+ *     Fixed a bad condition check in UpdateBypointid. Smart Pointer retruns true if not null
+ *
  *     Revision 1.34  2008/10/15 14:38:23  jotteson
  *     Fixing problems found by static analysis tools.
  *
@@ -1544,7 +1549,7 @@ bool CtiFDRInterface::updatePointByIdInList(CtiFDRPointList &aList,
             point = (*itr).second;
     }
 
-    if ( aList.getPointList()->getMap().size() == 0 || point)
+    if ( aList.getPointList()->getMap().size() == 0 || point.get() == NULL)
     {
         foundFlag = false;
     }
