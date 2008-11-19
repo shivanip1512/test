@@ -44,7 +44,7 @@ public class ProgramStatusRequestEndpoint {
         try {
             programStatus = loadControlService.getProgramStatusByProgramName(programName);
         } catch (NotFoundException e) {
-            Element fe = XMLFailureGenerator.generateFailure(programStatusRequest, e, "InvalidProgramName", "No program named \"" + programName + "\" found.");
+            Element fe = XMLFailureGenerator.generateFailure(programStatusRequest, e, "InvalidProgramName", "No program named: "+ programName);
             resp.addContent(fe);
             return resp;
         }

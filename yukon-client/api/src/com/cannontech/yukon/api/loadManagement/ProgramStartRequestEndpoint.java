@@ -49,7 +49,7 @@ public class ProgramStartRequestEndpoint {
         try {
             loadControlService.startControlByProgramName(programName, startTime, stopTime, false, true);
         } catch (NotFoundException e) {
-            Element fe = XMLFailureGenerator.generateFailure(programStartRequest, e, "InvalidProgramName", "No program named \"" + programName + "\" found.");
+            Element fe = XMLFailureGenerator.generateFailure(programStartRequest, e, "InvalidProgramName", "No program named: " + programName);
             resp.addContent(fe);
             return resp;
         } catch (TimeoutException e) {

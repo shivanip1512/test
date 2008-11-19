@@ -47,7 +47,7 @@ public class ProgramStopRequestEndpoint {
         try {
             loadControlService.stopControlByProgramName(programName, stopTime, false, true);
         } catch (NotFoundException e) {
-            Element fe = XMLFailureGenerator.generateFailure(programStopRequest, e, "InvalidProgramName", "No program named \"" + programName + "\" found.");
+            Element fe = XMLFailureGenerator.generateFailure(programStopRequest, e, "InvalidProgramName", "No program named: " + programName);
             resp.addContent(fe);
             return resp;
         } catch (TimeoutException e) {

@@ -16,21 +16,21 @@ import com.cannontech.yukon.api.util.YukonXml;
 public class ProgramStatusRequestEndpointTest {
 
     private ProgramStatusRequestEndpoint impl;
-    private LoadControlServiceTest testService;
+    private MockLoadControlService mockService;
     
     private Namespace ns = YukonXml.getYukonNamespace();
     
     @Before
     public void setUp() throws Exception {
         
-        testService = new LoadControlServiceTest();
+        mockService = new MockLoadControlService();
         
         impl = new ProgramStatusRequestEndpoint();
-        impl.setLoadControlService(testService);
+        impl.setLoadControlService(mockService);
         impl.initialize();
     }
     
-    private class LoadControlServiceTest extends LoadControlServiceAdapter {
+    private class MockLoadControlService extends LoadControlServiceAdapter {
         
         @Override
         public ProgramStatus getProgramStatusByProgramName(String programName) throws NotFoundException {
@@ -63,19 +63,17 @@ public class ProgramStatusRequestEndpointTest {
         requestElement = new Element("programStatusRequest", ns);
         tmpElement = XmlUtils.createStringElement("programName", ns, "Program1");
         requestElement.addContent(tmpElement);
-        XmlUtils.printElement(requestElement, "REQUEST (Program1)");
         
         responseElement = impl.invoke(requestElement);
-        XmlUtils.printElement(responseElement, "RESPONSE (Program1)");
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
         
         // outputs
-        Assert.assertNotNull(outputTemplate.evaluateAsNode("/y:programStatusResponse/y:programStatus"));
-        Assert.assertEquals("Program1", outputTemplate.evaluateAsString("/y:programStatusResponse/y:programStatus/y:programName"));
-        Assert.assertEquals("Active", outputTemplate.evaluateAsString("/y:programStatusResponse/y:programStatus/y:currentStatus"));
-        Assert.assertEquals("2008-10-13T12:30:00Z", outputTemplate.evaluateAsString("/y:programStatusResponse/y:programStatus/y:startDateTime"));
-        Assert.assertEquals("2008-10-13T21:40:01Z", outputTemplate.evaluateAsString("/y:programStatusResponse/y:programStatus/y:stopDateTime"));
-        Assert.assertEquals("Gear1", outputTemplate.evaluateAsString("/y:programStatusResponse/y:programStatus/y:gearName"));
+        Assert.assertNotNull("No programStatus node present.", outputTemplate.evaluateAsNode("/y:programStatusResponse/y:programStatus"));
+        Assert.assertEquals("Incorrect programName", "Program1", outputTemplate.evaluateAsString("/y:programStatusResponse/y:programStatus/y:programName"));
+        Assert.assertEquals("Incorrect currentStatus", "Active", outputTemplate.evaluateAsString("/y:programStatusResponse/y:programStatus/y:currentStatus"));
+        Assert.assertEquals("Incorrect startDateTime", "2008-10-13T12:30:00Z", outputTemplate.evaluateAsString("/y:programStatusResponse/y:programStatus/y:startDateTime"));
+        Assert.assertEquals("Incorrect stopDateTime", "2008-10-13T21:40:01Z", outputTemplate.evaluateAsString("/y:programStatusResponse/y:programStatus/y:stopDateTime"));
+        Assert.assertEquals("Incorrect gearName", "Gear1", outputTemplate.evaluateAsString("/y:programStatusResponse/y:programStatus/y:gearName"));
         
         
         // Program2
@@ -83,19 +81,17 @@ public class ProgramStatusRequestEndpointTest {
         requestElement = new Element("programStatusRequest", ns);
         tmpElement = XmlUtils.createStringElement("programName", ns, "Program2");
         requestElement.addContent(tmpElement);
-        XmlUtils.printElement(requestElement, "REQUEST (Program2)");
         
         responseElement = impl.invoke(requestElement);
-        XmlUtils.printElement(responseElement, "RESPONSE (Program2)");
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
         
         // outputs
-        Assert.assertNotNull(outputTemplate.evaluateAsNode("/y:programStatusResponse/y:programStatus"));
-        Assert.assertEquals("Program2", outputTemplate.evaluateAsString("/y:programStatusResponse/y:programStatus/y:programName"));
-        Assert.assertEquals("Inactive", outputTemplate.evaluateAsString("/y:programStatusResponse/y:programStatus/y:currentStatus"));
-        Assert.assertEquals("2008-10-14T13:45:01Z", outputTemplate.evaluateAsString("/y:programStatusResponse/y:programStatus/y:startDateTime"));
-        Assert.assertNull(outputTemplate.evaluateAsNode("/y:programStatusResponse/y:programStatus/y:stopDateTime"));
-        Assert.assertEquals("Gear2", outputTemplate.evaluateAsString("/y:programStatusResponse/y:programStatus/y:gearName"));
+        Assert.assertNotNull("No programStatus node present.", outputTemplate.evaluateAsNode("/y:programStatusResponse/y:programStatus"));
+        Assert.assertEquals("Incorrect programName", "Program2", outputTemplate.evaluateAsString("/y:programStatusResponse/y:programStatus/y:programName"));
+        Assert.assertEquals("Incorrect currentStatus", "Inactive", outputTemplate.evaluateAsString("/y:programStatusResponse/y:programStatus/y:currentStatus"));
+        Assert.assertEquals("Incorrect startDateTime", "2008-10-14T13:45:01Z", outputTemplate.evaluateAsString("/y:programStatusResponse/y:programStatus/y:startDateTime"));
+        Assert.assertNull("Incorrect stopDateTime - should be null.", outputTemplate.evaluateAsNode("/y:programStatusResponse/y:programStatus/y:stopDateTime"));
+        Assert.assertEquals("Incorrect gearName", "Gear2", outputTemplate.evaluateAsString("/y:programStatusResponse/y:programStatus/y:gearName"));
         
     }
 

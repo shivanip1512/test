@@ -3,7 +3,6 @@ package com.cannontech.yukon.api.loadManagement;
 import java.util.Date;
 
 import org.jdom.Element;
-import org.jdom.Namespace;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,26 +12,25 @@ import com.cannontech.loadcontrol.service.data.ScenarioStatus;
 import com.cannontech.message.util.TimeoutException;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XmlUtils;
-import com.cannontech.yukon.api.util.YukonXml;
+import com.cannontech.yukon.api.utils.LoadManagementTestUtils;
+import com.cannontech.yukon.api.utils.TestUtils;
 
 public class ScenarioStopRequestEndpointTest {
 
     private ScenarioStopRequestEndpoint impl;
-    private LoadControlServiceTest testService;
-    
-    private Namespace ns = YukonXml.getYukonNamespace();
+    private MockLoadControlService mockService;
     
     @Before
     public void setUp() throws Exception {
         
-        testService = new LoadControlServiceTest();
+        mockService = new MockLoadControlService();
         
         impl = new ScenarioStopRequestEndpoint();
-        impl.setLoadControlService(testService);
+        impl.setLoadControlService(mockService);
         impl.initialize();
     }
     
-    private class LoadControlServiceTest extends LoadControlServiceAdapter {
+    private class MockLoadControlService extends LoadControlServiceAdapter {
         
         private String scenarioName;
         private Date stopTime;
@@ -66,79 +64,49 @@ public class ScenarioStopRequestEndpointTest {
         // init
         Element requestElement = null;
         Element responseElement = null;
-        Element tmpElement = null;
         SimpleXPathTemplate outputTemplate = null;
-        
         
         // stop time
         //==========================================================================================
-        requestElement = new Element("scenarioStopRequest", ns);
-        tmpElement = XmlUtils.createStringElement("scenarioName", ns, "Scenario1");
-        requestElement.addContent(tmpElement);
-        tmpElement = XmlUtils.createStringElement("stopDateTime", ns, "2008-10-13T21:49:01Z");
-        requestElement.addContent(tmpElement);
-        XmlUtils.printElement(requestElement, "REQUEST (stop time)");
+        requestElement = LoadManagementTestUtils.createStartStopRequestElement("scenarioStopRequest", "scenarioName", "Scenario1", null, "2008-10-13T21:49:01Z");
         
         responseElement = impl.invoke(requestElement);
-        XmlUtils.printElement(responseElement, "RESPONSE (stop time)");
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
         
-        // inputs
-        Assert.assertEquals("Scenario1", testService.getScenarioName());
-        Assert.assertEquals("2008-10-13T21:49:01Z", XmlUtils.formatDate(testService.getStopTime()));
+        Assert.assertEquals("Incorrect scenarioName", "Scenario1", mockService.getScenarioName());
+        Assert.assertEquals("Incorrect stopDateTime", "2008-10-13T21:49:01Z", XmlUtils.formatDate(mockService.getStopTime()));
         
-        // outputs
-        Assert.assertNotNull(outputTemplate.evaluateAsNode("/y:scenarioStopResponse/y:success"));
+        TestUtils.runSuccessAssertion(outputTemplate, "scenarioStopResponse");
         
         // no stop time
         //==========================================================================================
-        requestElement = new Element("scenarioStopRequest", ns);
-        tmpElement = XmlUtils.createStringElement("scenarioName", ns, "Scenario2");
-        requestElement.addContent(tmpElement);
-        XmlUtils.printElement(requestElement, "REQUEST (no stop time)");
+        requestElement = LoadManagementTestUtils.createStartStopRequestElement("scenarioStopRequest", "scenarioName", "Scenario2", null, null);
         
         responseElement = impl.invoke(requestElement);
-        XmlUtils.printElement(responseElement, "RESPONSE (no stop time)");
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
         
-        // inputs
-        Assert.assertEquals("Scenario2", testService.getScenarioName());
-        Assert.assertEquals(null, testService.getStopTime());
+        Assert.assertEquals("Incorrect scenarioName", "Scenario2", mockService.getScenarioName());
+        Assert.assertEquals("Incorrect stopDateTime - should be null", null, mockService.getStopTime());
         
-        // outputs
-        Assert.assertNotNull(outputTemplate.evaluateAsNode("/y:scenarioStopResponse/y:success"));
+        TestUtils.runSuccessAssertion(outputTemplate, "scenarioStopResponse");
         
         // not found
         //==========================================================================================
-        requestElement = new Element("scenarioStopRequest", ns);
-        tmpElement = XmlUtils.createStringElement("scenarioName", ns, "NOT_FOUND");
-        requestElement.addContent(tmpElement);
-        XmlUtils.printElement(requestElement, "REQUEST (not found)");
+        requestElement = LoadManagementTestUtils.createStartStopRequestElement("scenarioStopRequest", "scenarioName", "NOT_FOUND", null, null);
         
         responseElement = impl.invoke(requestElement);
-        XmlUtils.printElement(responseElement, "RESPONSE (not found)");
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
         
-        // outputs
-        Assert.assertNull(outputTemplate.evaluateAsNode("/y:scenarioStopResponse/y:success"));
-        Assert.assertNotNull(outputTemplate.evaluateAsNode("/y:scenarioStopResponse/y:failure"));
-        Assert.assertEquals("InvalidScenarioName", outputTemplate.evaluateAsString("/y:scenarioStopResponse/y:failure/y:errorCode"));
+        TestUtils.runFailureAssertions(outputTemplate, "scenarioStopResponse", "InvalidScenarioName");
         
         // timeout
         //==========================================================================================
-        requestElement = new Element("scenarioStopRequest", ns);
-        tmpElement = XmlUtils.createStringElement("scenarioName", ns, "TIMEOUT");
-        requestElement.addContent(tmpElement);
-        XmlUtils.printElement(requestElement, "REQUEST (timeout)");
+        requestElement = LoadManagementTestUtils.createStartStopRequestElement("scenarioStopRequest", "scenarioName", "TIMEOUT", null, null);
         
         responseElement = impl.invoke(requestElement);
-        XmlUtils.printElement(responseElement, "RESPONSE (timeout)");
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
         
-        // outputs
-        Assert.assertNull(outputTemplate.evaluateAsNode("/y:scenarioStopResponse/y:success"));
-        Assert.assertNotNull(outputTemplate.evaluateAsNode("/y:scenarioStopResponse/y:failure"));
-        Assert.assertEquals("Timeout", outputTemplate.evaluateAsString("/y:scenarioStopResponse/y:failure/y:errorCode"));
+        TestUtils.runFailureAssertions(outputTemplate, "scenarioStopResponse", "Timeout");
     }
 
 }

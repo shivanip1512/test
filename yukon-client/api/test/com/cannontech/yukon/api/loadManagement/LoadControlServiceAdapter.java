@@ -15,30 +15,26 @@ public class LoadControlServiceAdapter implements LoadControlService {
 
     @Override
     public List<ProgramStatus> getAllCurrentlyActivePrograms() {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException("Not Implemented");
     }
 
     @Override
     public List<ProgramControlHistory> getControlHistoryByProgramName(
             String programName, Date fromTime, Date throughTime)
             throws NotFoundException {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException("Not Implemented");
     }
 
     @Override
     public ProgramStatus getProgramStatusByProgramName(String programName)
             throws NotFoundException {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException("Not Implemented");
     }
 
     @Override
     public ScenarioProgramStartingGears getScenarioProgramStartingGearsByScenarioName(
             String scenarioName) throws NotFoundException {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException("Not Implemented");
     }
 
     @Override
@@ -46,8 +42,7 @@ public class LoadControlServiceAdapter implements LoadControlService {
             Date startTime, Date stopTime, int gearNumber, boolean forceStart,
             boolean observeConstraintsAndExecute) throws NotFoundException,
             TimeoutException {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException("Not Implemented");
     }
 
     @Override
@@ -55,8 +50,7 @@ public class LoadControlServiceAdapter implements LoadControlService {
             Date startTime, Date stopTime, boolean forceStart,
             boolean observeConstraintsAndExecute) throws NotFoundException,
             TimeoutException {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException("Not Implemented");
     }
 
     @Override
@@ -64,8 +58,7 @@ public class LoadControlServiceAdapter implements LoadControlService {
             Date startTime, Date stopTime, boolean forceStart,
             boolean observeConstraintsAndExecute) throws NotFoundException,
             TimeoutException {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException("Not Implemented");
     }
 
     @Override
@@ -73,8 +66,7 @@ public class LoadControlServiceAdapter implements LoadControlService {
             Date stopTime, boolean forceStop,
             boolean observeConstraintsAndExecute) throws NotFoundException,
             TimeoutException {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException("Not Implemented");
     }
 
     @Override
@@ -82,8 +74,7 @@ public class LoadControlServiceAdapter implements LoadControlService {
             Date stopTime, boolean forceStop,
             boolean observeConstraintsAndExecute) throws NotFoundException,
             TimeoutException {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException("Not Implemented");
     }
 
 }

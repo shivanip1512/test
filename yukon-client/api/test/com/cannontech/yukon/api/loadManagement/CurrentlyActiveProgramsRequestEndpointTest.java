@@ -18,21 +18,21 @@ import com.cannontech.yukon.api.util.YukonXml;
 public class CurrentlyActiveProgramsRequestEndpointTest {
 
     private CurrentlyActiveProgramsRequestEndpoint impl;
-    private LoadControlServiceTest testService;
+    private MockLoadControlService mockService;
     
     private Namespace ns = YukonXml.getYukonNamespace();
     
     @Before
     public void setUp() throws Exception {
         
-        testService = new LoadControlServiceTest();
+        mockService = new MockLoadControlService();
         
         impl = new CurrentlyActiveProgramsRequestEndpoint();
-        impl.setLoadControlService(testService);
+        impl.setLoadControlService(mockService);
         impl.initialize();
     }
     
-    private class LoadControlServiceTest extends LoadControlServiceAdapter {
+    private class MockLoadControlService extends LoadControlServiceAdapter {
         
         @Override
         public List<ProgramStatus> getAllCurrentlyActivePrograms() {
@@ -59,30 +59,26 @@ public class CurrentlyActiveProgramsRequestEndpointTest {
         // 2 programs, one with no stop datetime
         //==========================================================================================
         requestElement = new Element("currentlyActiveProgramsRequest", ns);
-        XmlUtils.printElement(requestElement, "REQUEST");
         
         responseElement = impl.invoke(requestElement);
-        XmlUtils.printElement(responseElement, "RESPONSE");
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
         
         // outputs
-        Assert.assertNotNull(outputTemplate.evaluateAsNode("/y:currentlyActiveProgramsResponse/y:programStatuses"));
-        Assert.assertEquals(1, outputTemplate.evaluateAsLong("count(/y:currentlyActiveProgramsResponse/y:programStatuses)"));
-        Assert.assertEquals(2, outputTemplate.evaluateAsLong("count(/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus)"));
+        Assert.assertNotNull("No programStatuses node present.", outputTemplate.evaluateAsNode("/y:currentlyActiveProgramsResponse/y:programStatuses"));
+        Assert.assertEquals("Incorrect number of programStatuses nodes.", 1, outputTemplate.evaluateAsLong("count(/y:currentlyActiveProgramsResponse/y:programStatuses)"));
+        Assert.assertEquals("Incorrect number of programStatus nodes.", 2, outputTemplate.evaluateAsLong("count(/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus)"));
         
-        Assert.assertEquals("Program1", outputTemplate.evaluateAsString("/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus[1]/y:programName"));
-        Assert.assertEquals("Active", outputTemplate.evaluateAsString("/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus[1]/y:currentStatus"));
-        Assert.assertEquals("2008-10-13T12:30:00Z", outputTemplate.evaluateAsString("/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus[1]/y:startDateTime"));
-        Assert.assertEquals("2008-10-13T21:40:01Z", outputTemplate.evaluateAsString("/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus[1]/y:stopDateTime"));
-        Assert.assertEquals("Gear1", outputTemplate.evaluateAsString("/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus[1]/y:gearName"));
+        Assert.assertEquals("Incorrect programName.", "Program1", outputTemplate.evaluateAsString("/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus[1]/y:programName"));
+        Assert.assertEquals("Incorrect currentStatus.", "Active", outputTemplate.evaluateAsString("/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus[1]/y:currentStatus"));
+        Assert.assertEquals("Incorrect startDateTime.", "2008-10-13T12:30:00Z", outputTemplate.evaluateAsString("/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus[1]/y:startDateTime"));
+        Assert.assertEquals("Incorrect stopDateTime.", "2008-10-13T21:40:01Z", outputTemplate.evaluateAsString("/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus[1]/y:stopDateTime"));
+        Assert.assertEquals("Incorrect gearName.", "Gear1", outputTemplate.evaluateAsString("/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus[1]/y:gearName"));
         
-        Assert.assertEquals("Program2", outputTemplate.evaluateAsString("/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus[2]/y:programName"));
-        Assert.assertEquals("Inactive", outputTemplate.evaluateAsString("/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus[2]/y:currentStatus"));
-        Assert.assertEquals("2008-10-14T13:45:01Z", outputTemplate.evaluateAsString("/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus[2]/y:startDateTime"));
-        Assert.assertNull(outputTemplate.evaluateAsNode("/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus[2]/y:stopDateTime"));
-        Assert.assertEquals("Gear2", outputTemplate.evaluateAsString("/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus[2]/y:gearName"));
-        
-        
+        Assert.assertEquals("Incorrect programName.", "Program2", outputTemplate.evaluateAsString("/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus[2]/y:programName"));
+        Assert.assertEquals("Incorrect currentStatus.", "Inactive", outputTemplate.evaluateAsString("/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus[2]/y:currentStatus"));
+        Assert.assertEquals("Incorrect startDateTime.", "2008-10-14T13:45:01Z", outputTemplate.evaluateAsString("/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus[2]/y:startDateTime"));
+        Assert.assertNull("Should not contain stopDateTime node.", outputTemplate.evaluateAsNode("/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus[2]/y:stopDateTime"));
+        Assert.assertEquals("Incorrect gearName.", "Gear2", outputTemplate.evaluateAsString("/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus[2]/y:gearName"));
     }
 
 }

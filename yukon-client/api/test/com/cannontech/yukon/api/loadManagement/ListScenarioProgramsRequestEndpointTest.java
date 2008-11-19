@@ -15,25 +15,26 @@ import com.cannontech.loadcontrol.service.data.ScenarioProgramStartingGears;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XmlUtils;
 import com.cannontech.yukon.api.util.YukonXml;
+import com.cannontech.yukon.api.utils.TestUtils;
 
 public class ListScenarioProgramsRequestEndpointTest {
 
     private ListScenarioProgramsRequestEndpoint impl;
-    private LoadControlServiceTest testService;
+    private MockLoadControlService mockService;
     
     private Namespace ns = YukonXml.getYukonNamespace();
     
     @Before
     public void setUp() throws Exception {
         
-        testService = new LoadControlServiceTest();
+        mockService = new MockLoadControlService();
         
         impl = new ListScenarioProgramsRequestEndpoint();
-        impl.setLoadControlService(testService);
+        impl.setLoadControlService(mockService);
         impl.initialize();
     }
     
-    private class LoadControlServiceTest extends LoadControlServiceAdapter {
+    private class MockLoadControlService extends LoadControlServiceAdapter {
         
         private String scenarioName;
         
@@ -79,38 +80,32 @@ public class ListScenarioProgramsRequestEndpointTest {
         requestElement = new Element("listScenarioProgramsRequest", ns);
         tmpElement = XmlUtils.createStringElement("scenarioName", ns, "Test Scenario");
         requestElement.addContent(tmpElement);
-        XmlUtils.printElement(requestElement, "REQUEST (test scenario)");
         
         responseElement = impl.invoke(requestElement);
-        XmlUtils.printElement(responseElement, "RESPONSE (test scenario)");
         
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
-        Assert.assertNotNull(outputTemplate.evaluateAsNode("/y:listScenarioProgramsResponse/y:scenarioName"));
-        Assert.assertNotNull(outputTemplate.evaluateAsNode("/y:listScenarioProgramsResponse/y:scenarioProgramsList"));
-        Assert.assertEquals("Test Scenario", testService.getScenarioName());
-        Assert.assertEquals(1, outputTemplate.evaluateAsLong("count(/y:listScenarioProgramsResponse/y:scenarioProgramsList)"));
-        Assert.assertEquals(3, outputTemplate.evaluateAsLong("count(/y:listScenarioProgramsResponse/y:scenarioProgramsList/y:scenarioProgram)"));
-        Assert.assertEquals("Program1", outputTemplate.evaluateAsString("/y:listScenarioProgramsResponse/y:scenarioProgramsList/y:scenarioProgram[1]/y:programName"));
-        Assert.assertEquals("Gear1", outputTemplate.evaluateAsString("/y:listScenarioProgramsResponse/y:scenarioProgramsList/y:scenarioProgram[1]/y:startGearName"));
-        Assert.assertEquals("Program2", outputTemplate.evaluateAsString("/y:listScenarioProgramsResponse/y:scenarioProgramsList/y:scenarioProgram[2]/y:programName"));
-        Assert.assertEquals("Gear2", outputTemplate.evaluateAsString("/y:listScenarioProgramsResponse/y:scenarioProgramsList/y:scenarioProgram[2]/y:startGearName"));
-        Assert.assertEquals("Program3", outputTemplate.evaluateAsString("/y:listScenarioProgramsResponse/y:scenarioProgramsList/y:scenarioProgram[3]/y:programName"));
-        Assert.assertEquals("Gear3", outputTemplate.evaluateAsString("/y:listScenarioProgramsResponse/y:scenarioProgramsList/y:scenarioProgram[3]/y:startGearName"));
+        Assert.assertNotNull("No scenarioName node present.", outputTemplate.evaluateAsNode("/y:listScenarioProgramsResponse/y:scenarioName"));
+        Assert.assertNotNull("No scenarioProgramsList node present.", outputTemplate.evaluateAsNode("/y:listScenarioProgramsResponse/y:scenarioProgramsList"));
+        Assert.assertEquals("Incorrect scenarioName", "Test Scenario", mockService.getScenarioName());
+        Assert.assertEquals("Incorrect number of scenarioProgramsList nodes.", 1, outputTemplate.evaluateAsLong("count(/y:listScenarioProgramsResponse/y:scenarioProgramsList)"));
+        Assert.assertEquals("Incorrect number of scenarioProgram nodes.", 3, outputTemplate.evaluateAsLong("count(/y:listScenarioProgramsResponse/y:scenarioProgramsList/y:scenarioProgram)"));
+        Assert.assertEquals("Incorrect programName.", "Program1", outputTemplate.evaluateAsString("/y:listScenarioProgramsResponse/y:scenarioProgramsList/y:scenarioProgram[1]/y:programName"));
+        Assert.assertEquals("Incorrect startGearName.", "Gear1", outputTemplate.evaluateAsString("/y:listScenarioProgramsResponse/y:scenarioProgramsList/y:scenarioProgram[1]/y:startGearName"));
+        Assert.assertEquals("Incorrect programName.", "Program2", outputTemplate.evaluateAsString("/y:listScenarioProgramsResponse/y:scenarioProgramsList/y:scenarioProgram[2]/y:programName"));
+        Assert.assertEquals("Incorrect startGearName.", "Gear2", outputTemplate.evaluateAsString("/y:listScenarioProgramsResponse/y:scenarioProgramsList/y:scenarioProgram[2]/y:startGearName"));
+        Assert.assertEquals("Incorrect programName.", "Program3", outputTemplate.evaluateAsString("/y:listScenarioProgramsResponse/y:scenarioProgramsList/y:scenarioProgram[3]/y:programName"));
+        Assert.assertEquals("Incorrect startGearName.", "Gear3", outputTemplate.evaluateAsString("/y:listScenarioProgramsResponse/y:scenarioProgramsList/y:scenarioProgram[3]/y:startGearName"));
         
         // not found
         //==========================================================================================
         requestElement = new Element("listScenarioProgramsRequest", ns);
         tmpElement = XmlUtils.createStringElement("scenarioName", ns, "NOT_FOUND");
         requestElement.addContent(tmpElement);
-        XmlUtils.printElement(requestElement, "REQUEST (not found)");
         
         responseElement = impl.invoke(requestElement);
-        XmlUtils.printElement(responseElement, "RESPONSE (not found)");
-        
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
-        Assert.assertNotNull(outputTemplate.evaluateAsNode("/y:listScenarioProgramsResponse/y:failure"));
-        Assert.assertEquals("InvalidScenarioName", outputTemplate.evaluateAsString("/y:listScenarioProgramsResponse/y:failure/y:errorCode"));
-
+        
+        TestUtils.runFailureAssertions(outputTemplate, "listScenarioProgramsResponse", "InvalidScenarioName");
     }
 
 }

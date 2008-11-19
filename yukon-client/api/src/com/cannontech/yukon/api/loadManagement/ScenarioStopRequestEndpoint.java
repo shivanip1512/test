@@ -47,7 +47,7 @@ public class ScenarioStopRequestEndpoint {
         try {
             loadControlService.stopControlByScenarioName(scenarioName, stopTime, false, true);
         } catch (NotFoundException e) {
-            Element fe = XMLFailureGenerator.generateFailure(scenarioStopRequest, e, "InvalidScenarioName", "No scenario named \"" + scenarioName + "\" found.");
+            Element fe = XMLFailureGenerator.generateFailure(scenarioStopRequest, e, "InvalidScenarioName", "No scenario named: " + scenarioName);
             resp.addContent(fe);
             return resp;
         } catch (TimeoutException e) {

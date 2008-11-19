@@ -3,7 +3,6 @@ package com.cannontech.yukon.api.loadManagement;
 import java.util.Date;
 
 import org.jdom.Element;
-import org.jdom.Namespace;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,26 +12,25 @@ import com.cannontech.loadcontrol.service.data.ProgramStatus;
 import com.cannontech.message.util.TimeoutException;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XmlUtils;
-import com.cannontech.yukon.api.util.YukonXml;
+import com.cannontech.yukon.api.utils.LoadManagementTestUtils;
+import com.cannontech.yukon.api.utils.TestUtils;
 
 public class ProgramStartRequestEndpointTest {
 
     private ProgramStartRequestEndpoint impl;
-    private LoadControlServiceTest testService;
-    
-    private Namespace ns = YukonXml.getYukonNamespace();
+    private MockLoadControlService mockService;
     
     @Before
     public void setUp() throws Exception {
         
-        testService = new LoadControlServiceTest();
+        mockService = new MockLoadControlService();
         
         impl = new ProgramStartRequestEndpoint();
-        impl.setLoadControlService(testService);
+        impl.setLoadControlService(mockService);
         impl.initialize();
     }
     
-    private class LoadControlServiceTest extends LoadControlServiceAdapter {
+    private class MockLoadControlService extends LoadControlServiceAdapter {
         
         private String programName;
         private Date startTime;
@@ -71,105 +69,66 @@ public class ProgramStartRequestEndpointTest {
         // init
         Element requestElement = null;
         Element responseElement = null;
-        Element tmpElement = null;
         SimpleXPathTemplate outputTemplate = null;
         
         // no start time, no stop time
         //==========================================================================================
-        requestElement = new Element("programStartRequest", ns);
-        tmpElement = XmlUtils.createStringElement("programName", ns, "AC");
-        requestElement.addContent(tmpElement);
-        XmlUtils.printElement(requestElement, "REQUEST (no start time, no stop time)");
+        requestElement = LoadManagementTestUtils.createStartStopRequestElement("programStartRequest", "programName", "Program1", null, null);
         
         responseElement = impl.invoke(requestElement);
-        XmlUtils.printElement(responseElement, "RESPONSE (no start time, no stop time)");
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
         
-        // inputs
-        Assert.assertEquals("AC", testService.getProgramName());
-        Assert.assertEquals(null, testService.getStartTime());
-        Assert.assertEquals(null, testService.getStopTime());
+        Assert.assertEquals("Incorrect programName.", "Program1", mockService.getProgramName());
+        Assert.assertEquals("Incorrect startDateTime - should be null.", null, mockService.getStartTime());
+        Assert.assertEquals("Incorrect stopDateTime - should null.", null, mockService.getStopTime());
         
-        // outputs
-        Assert.assertNotNull(outputTemplate.evaluateAsNode("/y:programStartResponse/y:success"));
+        TestUtils.runSuccessAssertion(outputTemplate, "programStartResponse");
         
         
         // start time, no stop time
         //==========================================================================================
-        requestElement = new Element("programStartRequest", ns);
-        tmpElement = XmlUtils.createStringElement("programName", ns, "AC");
-        requestElement.addContent(tmpElement);
-        tmpElement = XmlUtils.createStringElement("startDateTime", ns, "2008-10-13T12:30:00Z");
-        requestElement.addContent(tmpElement);
-        XmlUtils.printElement(requestElement, "REQUEST (start time, no stop time)");
+        requestElement = LoadManagementTestUtils.createStartStopRequestElement("programStartRequest", "programName", "Program2", "2008-10-13T12:30:00Z", null);
         
         responseElement = impl.invoke(requestElement);
-        XmlUtils.printElement(responseElement, "RESPONSE (start time, no stop time)");
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
         
-        // inputs
-        Assert.assertEquals("AC", testService.getProgramName());
-        Assert.assertEquals("2008-10-13T12:30:00Z", XmlUtils.formatDate(testService.getStartTime()));
-        Assert.assertEquals(null, testService.getStopTime());
+        Assert.assertEquals("Incorrect programName.", "Program2", mockService.getProgramName());
+        Assert.assertEquals("Incorrect startDateTime.", "2008-10-13T12:30:00Z", XmlUtils.formatDate(mockService.getStartTime()));
+        Assert.assertEquals("Incorrect startDateTime - should be null.", null, mockService.getStopTime());
         
-        // outputs
-        Assert.assertNotNull(outputTemplate.evaluateAsNode("/y:programStartResponse/y:success"));
+        TestUtils.runSuccessAssertion(outputTemplate, "programStartResponse");
         
         
         // start time, stop time
         //==========================================================================================
-        requestElement = new Element("programStartRequest", ns);
-        tmpElement = XmlUtils.createStringElement("programName", ns, "AC");
-        requestElement.addContent(tmpElement);
-        tmpElement = XmlUtils.createStringElement("startDateTime", ns, "2008-10-13T12:30:00Z");
-        requestElement.addContent(tmpElement);
-        tmpElement = XmlUtils.createStringElement("stopDateTime", ns, "2008-10-13T21:49:01Z");
-        requestElement.addContent(tmpElement);
-        XmlUtils.printElement(requestElement, "REQUEST (start time, stop time)");
+        requestElement = LoadManagementTestUtils.createStartStopRequestElement("programStartRequest", "programName", "Program3", "2008-10-13T12:30:00Z", "2008-10-13T21:49:01Z");
         
         responseElement = impl.invoke(requestElement);
-        XmlUtils.printElement(responseElement, "RESPONSE (start time, stop time)");
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
         
-        // inputs
-        Assert.assertEquals("AC", testService.getProgramName());
-        Assert.assertEquals("2008-10-13T12:30:00Z", XmlUtils.formatDate(testService.getStartTime()));
-        Assert.assertEquals("2008-10-13T21:49:01Z", XmlUtils.formatDate(testService.getStopTime()));
+        Assert.assertEquals("Incorrect programName.", "Program3", mockService.getProgramName());
+        Assert.assertEquals("Incorrect startDateTime.", "2008-10-13T12:30:00Z", XmlUtils.formatDate(mockService.getStartTime()));
+        Assert.assertEquals("Incorrect stopDateTime.", "2008-10-13T21:49:01Z", XmlUtils.formatDate(mockService.getStopTime()));
         
-        // outputs
-        Assert.assertNotNull(outputTemplate.evaluateAsNode("/y:programStartResponse/y:success"));
+        TestUtils.runSuccessAssertion(outputTemplate, "programStartResponse");
         
         // not found
         //==========================================================================================
-        requestElement = new Element("programStartRequest", ns);
-        tmpElement = XmlUtils.createStringElement("programName", ns, "NOT_FOUND");
-        requestElement.addContent(tmpElement);
-        XmlUtils.printElement(requestElement, "REQUEST (not found)");
+        requestElement = LoadManagementTestUtils.createStartStopRequestElement("programStartRequest", "programName", "NOT_FOUND", null, null);
         
         responseElement = impl.invoke(requestElement);
-        XmlUtils.printElement(responseElement, "RESPONSE (not found)");
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
         
-        // outputs
-        Assert.assertNull(outputTemplate.evaluateAsNode("/y:programStartResponse/y:success"));
-        Assert.assertNotNull(outputTemplate.evaluateAsNode("/y:programStartResponse/y:failure"));
-        Assert.assertEquals("InvalidProgramName", outputTemplate.evaluateAsString("/y:programStartResponse/y:failure/y:errorCode"));
+        TestUtils.runFailureAssertions(outputTemplate, "programStartResponse", "InvalidProgramName");
         
         // timeout
         //==========================================================================================
-        requestElement = new Element("programStartRequest", ns);
-        tmpElement = XmlUtils.createStringElement("programName", ns, "TIMEOUT");
-        requestElement.addContent(tmpElement);
-        XmlUtils.printElement(requestElement, "REQUEST (timeout)");
+        requestElement = LoadManagementTestUtils.createStartStopRequestElement("programStartRequest", "programName", "TIMEOUT", null, null);
         
         responseElement = impl.invoke(requestElement);
-        XmlUtils.printElement(responseElement, "RESPONSE (timeout)");
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
         
-        // outputs
-        Assert.assertNull(outputTemplate.evaluateAsNode("/y:programStartResponse/y:success"));
-        Assert.assertNotNull(outputTemplate.evaluateAsNode("/y:programStartResponse/y:failure"));
-        Assert.assertEquals("Timeout", outputTemplate.evaluateAsString("/y:programStartResponse/y:failure/y:errorCode"));
+        TestUtils.runFailureAssertions(outputTemplate, "programStartResponse", "Timeout");
     }
 
 }

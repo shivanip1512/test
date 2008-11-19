@@ -49,7 +49,7 @@ public class ScenarioStartRequestEndpoint {
         try {
             loadControlService.startControlByScenarioName(scenarioName, startTime, stopTime, false, true);
         } catch (NotFoundException e) {
-            Element fe = XMLFailureGenerator.generateFailure(scenarioStartRequest, e, "InvalidScenarioName", "No scenario named \"" + scenarioName + "\" found.");
+            Element fe = XMLFailureGenerator.generateFailure(scenarioStartRequest, e, "InvalidScenarioName", "No scenario named: " + scenarioName);
             resp.addContent(fe);
             return resp;
         } catch (TimeoutException e) {
