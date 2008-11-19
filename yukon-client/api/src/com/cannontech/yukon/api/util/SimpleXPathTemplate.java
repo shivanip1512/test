@@ -17,6 +17,7 @@
 package com.cannontech.yukon.api.util;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
@@ -152,6 +153,29 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
     
     public String evaluateAsString(String expression) throws XPathException {
         return (String) evaluate(expression, XPathConstants.STRING);
+    }
+    
+    /**
+     * Parse an elemnt for a date. If the element does not exists or is empty, return null.
+     * Otherwise return a Date object for the date string in the element.
+     * @param expression
+     * @return
+     * @throws XPathException
+     */
+    public Date evaluateAsDate(String expression) throws XPathException {
+        
+        String dateStr;
+        try {
+            dateStr = evaluateAsString(expression).trim();
+        } catch (XPathException e) {
+            return null;
+        }
+        
+        if (!dateStr.equals("")) {
+            return XmlUtils.parseDate(dateStr);
+        }
+        
+        return null;
     }
     
     public Object evaluateAsObject(String expression, NodeMapper nodeMapper) throws XPathException {

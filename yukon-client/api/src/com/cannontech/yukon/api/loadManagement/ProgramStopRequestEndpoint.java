@@ -39,7 +39,7 @@ public class ProgramStopRequestEndpoint {
         SimpleXPathTemplate requestTemplate = XmlUtils.getXPathTemplateForElement(programStopRequest);
         
         String programName = requestTemplate.evaluateAsString(programNameExpressionStr);
-        Date stopTime = XmlUtils.evaluateAsDate(requestTemplate, stopTimeExpressionStr);
+        Date stopTime = requestTemplate.evaluateAsDate(stopTimeExpressionStr);
 
         // run service
         Element resp = new Element("programStopResponse", ns);

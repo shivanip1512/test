@@ -20,7 +20,6 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.core.io.Resource;
-import org.springframework.xml.xpath.XPathException;
 
 public class XmlUtils {
 
@@ -67,30 +66,6 @@ public class XmlUtils {
         element.setText(Long.toString(value));
         
         return element;
-    }
-    
-    /**
-     * Parse an elemnt for a date. If the element does not exists or is empty, return null.
-     * Otherwise return a Date object for the dat string in the element.
-     * @param element
-     * @param expression
-     * @return
-     * @throws JDOMException
-     */
-    public static Date evaluateAsDate(SimpleXPathTemplate elementTemplate, String xpathExpressionStr) throws JDOMException {
-        
-        String dateStr;
-        try {
-            dateStr = elementTemplate.evaluateAsString(xpathExpressionStr).trim();
-        } catch (XPathException e) {
-            return null;
-        }
-        
-        if (!dateStr.equals("")) {
-            return XmlUtils.parseDate(dateStr);
-        }
-        
-        return null;
     }
     
     /**

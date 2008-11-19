@@ -39,7 +39,7 @@ public class ScenarioStopRequestEndpoint {
         SimpleXPathTemplate requestTemplate = XmlUtils.getXPathTemplateForElement(scenarioStopRequest);
         
         String scenarioName = requestTemplate.evaluateAsString(scenarioNameExpressionStr);
-        Date stopTime = XmlUtils.evaluateAsDate(requestTemplate, stopTimeExpressionStr);
+        Date stopTime = requestTemplate.evaluateAsDate(stopTimeExpressionStr);
 
         // run service
         Element resp = new Element("scenarioStopResponse", ns);

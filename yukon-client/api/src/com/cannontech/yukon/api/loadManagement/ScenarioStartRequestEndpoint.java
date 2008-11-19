@@ -40,8 +40,8 @@ public class ScenarioStartRequestEndpoint {
         SimpleXPathTemplate requestTemplate = XmlUtils.getXPathTemplateForElement(scenarioStartRequest);
         
         String scenarioName = requestTemplate.evaluateAsString(scenarioNameExpressionStr);
-        Date startTime = XmlUtils.evaluateAsDate(requestTemplate, startTimeExpressionStr);
-        Date stopTime = XmlUtils.evaluateAsDate(requestTemplate, stopTimeExpressionStr);
+        Date startTime = requestTemplate.evaluateAsDate(startTimeExpressionStr);
+        Date stopTime = requestTemplate.evaluateAsDate(stopTimeExpressionStr);
 
         // run service
         Element resp = new Element("scenarioStartResponse", ns);

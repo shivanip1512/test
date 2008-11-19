@@ -40,8 +40,8 @@ public class ProgramStartRequestEndpoint {
         SimpleXPathTemplate requestTemplate = XmlUtils.getXPathTemplateForElement(programStartRequest);
         
         String programName = requestTemplate.evaluateAsString(programNameExpressionStr);
-        Date startTime = XmlUtils.evaluateAsDate(requestTemplate, startTimeExpressionStr);
-        Date stopTime = XmlUtils.evaluateAsDate(requestTemplate, stopTimeExpressionStr);
+        Date startTime = requestTemplate.evaluateAsDate(startTimeExpressionStr);
+        Date stopTime = requestTemplate.evaluateAsDate(stopTimeExpressionStr);
 
         // run service
         Element resp = new Element("programStartResponse", ns);
