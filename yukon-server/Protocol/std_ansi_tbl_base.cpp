@@ -11,10 +11,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/std_ansi_tbl_base.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/12/20 17:19:56 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2008/11/19 16:42:59 $
 *    History: 
       $Log: std_ansi_tbl_base.cpp,v $
+      Revision 1.11  2008/11/19 16:42:59  jrichter
+      YUK-6310 Sentinel dial up meter reads causing exceptions when scanner reads in future or year(S) old lastLpTime dates.
+
       Revision 1.10  2005/12/20 17:19:56  tspar
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
@@ -460,19 +463,12 @@ int CtiAnsiTableBase::toUint32STime( BYTE *source, ULONG &result, int format )
 {
    ULONG    temp;
    
-   /*ULONG    year = 0;
-   ULONG    month = 0;
-   ULONG    day = 0;
-   ULONG    hour = 0;
-   ULONG    minute = 0;
-   ULONG    second = 0;
-   */
    unsigned       year = 0;  
-       unsigned month = 0;   
-       unsigned day = 0;     
-       unsigned hour = 0;    
-       unsigned minute = 0;  
-       unsigned second = 0;  
+   unsigned month = 0;   
+   unsigned day = 0;     
+   unsigned hour = 0;    
+   unsigned minute = 0;  
+   unsigned second = 0;  
 
    int      offset = 0;
 
@@ -533,7 +529,7 @@ int CtiAnsiTableBase::toUint32STime( BYTE *source, ULONG &result, int format )
 
            temp = temp * 60;
 
-           result = CtiTime(temp + CtiTime(CtiDate(1,1,1970)).seconds() /*- 3600*/).seconds();
+           result = CtiTime(temp).seconds();
            offset = 4;
 
        }
@@ -716,7 +712,7 @@ int CtiAnsiTableBase::toUint32LTime( BYTE *source, ULONG &result, int format )
 
            offset = 5;
            
-           result = CtiTime(temp + CtiTime(CtiDate(1,1,1970)).seconds() /*- 3600*/).seconds();
+           result = CtiTime(temp).seconds();
            
         }
       break;
