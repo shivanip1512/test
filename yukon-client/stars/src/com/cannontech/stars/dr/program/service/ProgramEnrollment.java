@@ -87,13 +87,21 @@ public class ProgramEnrollment {
         if (getClass() != obj.getClass())
             return false;
         final ProgramEnrollment other = (ProgramEnrollment) obj;
-        if (applianceCategoryId != other.applianceCategoryId)
+        if (this.getInventoryId() != other.getInventoryId())
             return false;
-        if (enroll != other.enroll)
+        if (this.getProgramId() != other.getProgramId())
             return false;
-        if (inventoryId != other.inventoryId)
+        if (this.getApplianceCategoryId() != 0 &&
+            this.getApplianceCategoryId() != other.getApplianceCategoryId())
             return false;
-        if (programId != other.programId)
+        if (this.getApplianceKW() != 0 &&
+            this.getApplianceKW() != other.getApplianceKW())
+            return false;
+        if (this.getLmGroupId() != 0 &&
+            this.getLmGroupId() != other.getLmGroupId())
+            return false;
+        if(this.getRelay() != 0 &&
+           this.getRelay() != other.getRelay())
             return false;
         return true;
     }

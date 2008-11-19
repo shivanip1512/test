@@ -11,6 +11,7 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
@@ -22,6 +23,8 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.database.data.pao.DeviceClasses;
+import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.stars.dr.appliance.model.Appliance;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
@@ -30,25 +33,26 @@ import com.cannontech.stars.dr.program.model.Program;
 
 public class ProgramDaoImpl implements ProgramDao {
     private static final String selectSql;
-    private static final String selectSQLHeader;
     private final ParameterizedRowMapper<Program> rowMapper = createRowMapper();
     private final ParameterizedRowMapper<Integer> groupIdRowMapper = createGroupIdRowMapper();
     private final ParameterizedRowMapper<Integer> programIdRowMapper = createProgramIdRowMapper();
     private SimpleJdbcTemplate simpleJdbcTemplate;
-    
+
+    private final String selectSQLHeader =
+        "SELECT LMPWP.programId, LMPWP.programOrder, YWC.description, YWC.url, "+
+        "       YWC.alternateDisplayName, PAO.paoName, YLE.entryText as ChanceOfControl, "+
+        "       LMPWP.applianceCategoryId, YWC.logoLocation "+
+        "FROM LMProgramWebPublishing LMPWP "+
+        "INNER JOIN YukonWebConfiguration YWC ON LMPWP.webSettingsId = YWC.configurationId "+
+        "INNER JOIN YukonPAObject PAO ON PAO.paobjectId = LMPWP.deviceId "+
+        "INNER JOIN YukonListEntry YLE ON YLE.entryId = LMPWP.chanceOfControlId ";
+
     static {
         selectSql = "SELECT ProgramID,ProgramOrder,ywc.Description,ywc.url,AlternateDisplayName,PAOName,yle.EntryText as ChanceOfControl,ApplianceCategoryID,LogoLocation " +
                     "FROM LMProgramWebPublishing pwp, YukonWebConfiguration ywc, YukonPAObject ypo, YukonListEntry yle " +
                     "WHERE pwp.WebsettingsID = ywc.ConfigurationID " +
                     "AND ypo.PAObjectID = pwp.DeviceID " +
                     "AND yle.EntryID = pwp.ChanceOfControlID";
-        
-        
-        selectSQLHeader = "SELECT LMPWP.programId, LMPWP.programOrder, YWC.description, YWC.url, " +
-                          "       YWC.alternateDisplayName, PAO.paoName, YLE.entryText as ChanceOfControl, " +
-                          "       LMPWP.applianceCategoryId, YWC.logoLocation " +
-                          "FROM LMProgramWebPublishing LMPWP, YukonWebConfiguration YWC, " + 
-                          "     YukonPAObject PAO, YukonListEntry YLE ";
         
     }
     
@@ -139,25 +143,29 @@ public class ProgramDaoImpl implements ProgramDao {
     }
 
     @Override
-    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public List<Program> getByProgramName(String programName) {
+    @Transactional(readOnly = true)
+    public Program getByProgramName(String programName,
+                                          List<Integer> energyCompanyIds) {
         
         final SqlStatementBuilder programQuery = new SqlStatementBuilder();
         programQuery.append(selectSQLHeader);
-        programQuery.append("WHERE (PAO.paoName = ?");
-        programQuery.append("       OR YWC.alternateDisplayName like ? ) ");
-        programQuery.append("AND LMPWP.webSettingsId = YWC.configurationId ");
-        programQuery.append("AND PAO.paobjectId = LMPWP.deviceId ");
-        programQuery.append("AND YLE.entryId = LMPWP.chanceOfControlId ");
+        programQuery.append("INNER JOIN ECToGenericMapping ECTGM ON (ECTGM.itemId = LMPWP.applianceCategoryId");
+        programQuery.append("                                        AND ECTGM.mappingCategory = 'ApplianceCategory')");
+        programQuery.append("WHERE PAO.paoClass = ?");
+        programQuery.append("AND PAO.category = ?");
+        programQuery.append("AND PAO.paoName = ?");
+        programQuery.append("AND ECTGM.energyCompanyId in (", energyCompanyIds, ")");
         
         try {
-            List<Program> programList = simpleJdbcTemplate.query(programQuery.toString(), 
-                                                                 rowMapper,
-                                                                 programName,
-                                                                 programName);
-            return programList;
-        } catch(IncorrectResultSizeDataAccessException ex){
+            return simpleJdbcTemplate.queryForObject(programQuery.toString(), 
+                                                     rowMapper,
+                                                     DeviceClasses.STRING_CLASS_LOADMANAGER,
+                                                     PAOGroups.STRING_CAT_LOADMANAGEMENT,
+                                                     programName);
+        } catch(EmptyResultDataAccessException ex){
             throw new NotFoundException("The program name supplied does not exist.");
+        } catch(IncorrectResultSizeDataAccessException ex){
+            throw new IllegalArgumentException("The program name supplied returned too many results.  This is normally an indicator of the same program being a part of two separate, but available appliance categories.  Please check your appliance categories.");            
         }
     }
     

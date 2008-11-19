@@ -6,6 +6,6 @@ import com.cannontech.stars.dr.program.service.ProgramEnrollment;
 
 public interface EnrollmentDao {
 
-    public List<ProgramEnrollment> getActiveEnrollmentByAccountId(int accountId);
+    public List<ProgramEnrollment> getActiveEnrollmentsByAccountId(int accountId);
         
 }

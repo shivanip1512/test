@@ -1,5 +1,6 @@
 package com.cannontech.stars.dr.enrollment.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -7,6 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.common.exception.DuplicateEnrollmentException;
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.cache.StarsDatabaseCache;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
@@ -26,6 +31,7 @@ import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
 import com.cannontech.stars.dr.program.service.ProgramEnrollmentService;
+import com.cannontech.stars.util.ECUtils;
 import com.cannontech.user.YukonUserContext;
 
 public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
@@ -39,20 +45,39 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     private LMHardwareControlGroupDao lmHardwareControlGroupDao;
     private ProgramDao programDao;
     private ProgramEnrollmentService programEnrollmentService;
+    private StarsDatabaseCache starsDatabaseCache;
     
     public void doEnrollment(EnrollmentHelper enrollmentHelper, EnrollmentEnum enrollmentEnum, YukonUserContext yukonUserContext){
         CustomerAccount customerAccount = customerAccountDao.getByAccountNumber(enrollmentHelper.getAccountNumber(), yukonUserContext.getYukonUser());
         LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getBySerialNumber(enrollmentHelper.getSerialNumber());
         List<ProgramEnrollment> enrollmentData = 
-            enrollmentDao.getActiveEnrollmentByAccountId(customerAccount.getAccountId());
+            enrollmentDao.getActiveEnrollmentsByAccountId(customerAccount.getAccountId());
 
+        /* This part of the method will get all the energy company ids that can have 
+         * an appliance category this energy company can use.
+         */
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(yukonUserContext.getYukonUser());
+        List<Integer> energyCompanyIds = new ArrayList<Integer>();
+        if(DaoFactory.getAuthDao().checkRoleProperty(energyCompany.getUserID(), EnergyCompanyRole.INHERIT_PARENT_APP_CATS )) {
+            List<LiteStarsEnergyCompany> allAscendants = ECUtils.getAllAscendants(energyCompany);
+            
+            for (LiteStarsEnergyCompany ec : allAscendants) {
+                energyCompanyIds.add(ec.getEnergyCompanyID());
+            }
+        } else {
+            energyCompanyIds.add(energyCompany.getEnergyCompanyID());
+        }
+ 
         /*
          * Gets the program, appliance category, and load group information.  These 
-         * methods also take care of the validation for these objects as well, which
-         * includes checking to see if they are joined.
+         * methods also take care of the validation for these three types and
+         * includes checking to see if they belong to one another.
          */
-        Program program = getProgramByName(enrollmentHelper.getProgramName());
-        ApplianceCategory applianceCategory = getApplianceCategoryByName(enrollmentHelper.getApplianceCategoryName(), program);
+        Program program = programDao.getByProgramName(enrollmentHelper.getProgramName(),
+                                                      energyCompanyIds);
+        ApplianceCategory applianceCategory = getApplianceCategoryByName(enrollmentHelper.getApplianceCategoryName(), 
+                                                                         program,
+                                                                         energyCompanyIds);
         LoadGroup loadGroup = getLoadGroupByName(enrollmentHelper.getLoadGroupName(), program);
         
         /* Builds up the program enrollment object that will be 
@@ -63,19 +88,20 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         programEnrollment.setProgramId(program.getProgramId());
         programEnrollment.setApplianceKW(enrollmentHelper.getApplianceKW());
 
-        if (applianceCategory != null)
+        if (applianceCategory != null) {
             programEnrollment.setApplianceCategoryId(applianceCategory.getApplianceCategoryId());
-        else
+        } else {
             programEnrollment.setApplianceCategoryId(program.getApplianceCategoryId());
-
-        if (loadGroup != null) 
+        }
+        if (loadGroup != null) {
             programEnrollment.setLmGroupId(loadGroup.getLoadGroupId());
-
-        if (!StringUtils.isBlank(enrollmentHelper.getRelay()))
+        }
+        if (!StringUtils.isBlank(enrollmentHelper.getRelay())) {
             programEnrollment.setRelay(enrollmentHelper.getRelay());
+        }
         
         if (enrollmentEnum == EnrollmentEnum.ENROLL) {
-            addProgramEnrollment(enrollmentData, programEnrollment);
+            addProgramEnrollment(enrollmentData, programEnrollment, enrollmentHelper.isSeasonalLoad());
         }
         if (enrollmentEnum == EnrollmentEnum.UNENROLL) {
             removeProgramEnrollment(enrollmentData, programEnrollment);
@@ -91,41 +117,58 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
             List<LMHardwareConfiguration> lmHardwareConfigurations = 
                 lmHardwareControlGroupDao.getOldConfigDataByInventoryIdAndGroupId(programEnrollment.getInventoryId(),
                                                                                   programEnrollment.getLmGroupId());
-            if (lmHardwareConfigurations.size() == 1)
+            if (lmHardwareConfigurations.size() == 1) {
                 applianceDao.updateApplianceKW(lmHardwareConfigurations.get(0).getApplianceId(),
                                                enrollmentHelper.getApplianceKW());
-            else
+            } else {
                 throw new DuplicateEnrollmentException("A duplicate enrollment entry was found in your database.  Please fix as soon as possible.");
+            }
         }
     }
 
     
     private void addProgramEnrollment(List<ProgramEnrollment> programEnrollments,
-                                     ProgramEnrollment newProgramEnrollment){
+                                      ProgramEnrollment newProgramEnrollment,
+                                      boolean seasonalLoad){
         boolean isProgramEnrollmentEnrolled = false;
        
         /* Loop through all the hardware that is enrolled and check to see if there is hardware
-         * enrolled in the same program and appliance category.  If it qualifies the inventory 
-         * should be updated to the new group
+         * enrolled in the same program and appliance category.  In the case where the hardware 
+         * is enrolled in both the same program and appliance category we want to update its
+         * load group to a new load group value.
          */
         for (ProgramEnrollment programEnrollment : programEnrollments) {
-            if ((programEnrollment.getApplianceCategoryId() == 
-                    newProgramEnrollment.getApplianceCategoryId()) &&
-                 programEnrollment.getProgramId() == newProgramEnrollment.getProgramId()) {
+            if (seasonalLoad) {
+                if ((programEnrollment.getApplianceCategoryId() == newProgramEnrollment.getApplianceCategoryId()) &&
+                     programEnrollment.getProgramId() == newProgramEnrollment.getProgramId()) {
 
-                /* Check to see if the inventory is being re-enrolled.  If this is the case
-                 * we don't want to enroll the hardware twice.
-                 */
-                if (programEnrollment.getInventoryId() == newProgramEnrollment.getInventoryId()) {
-                    isProgramEnrollmentEnrolled = true;
+                    /* Check to see if the inventory is being re-enrolled.  If this is the case
+                     * we don't want to enroll the hardware twice.
+                     */
+                    if (programEnrollment.getInventoryId() == newProgramEnrollment.getInventoryId()) {
+                        isProgramEnrollmentEnrolled = true;
+                        programEnrollment.setRelay(newProgramEnrollment.getRelay());
+                    }
+
                     if (newProgramEnrollment.getLmGroupId() != 0){
                         programEnrollment.setLmGroupId(newProgramEnrollment.getLmGroupId());
                     }
-                    programEnrollment.setRelay(newProgramEnrollment.getRelay());
                 }
+            } else {
+                if (programEnrollment.getApplianceCategoryId() == newProgramEnrollment.getApplianceCategoryId()) {
 
-                if (newProgramEnrollment.getLmGroupId() != 0){
-                    programEnrollment.setLmGroupId(newProgramEnrollment.getLmGroupId());
+                    /* Check to see if the inventory is already enrolled in a given being re-enrolled.  If this is the case
+                     * we don't want to enroll the hardware twice.
+                     */
+                    if (programEnrollment.getInventoryId() == newProgramEnrollment.getInventoryId()) {
+                        isProgramEnrollmentEnrolled = true;
+                        programEnrollment.setRelay(newProgramEnrollment.getRelay());
+                    }
+                    
+                    programEnrollment.setProgramId(newProgramEnrollment.getProgramId());
+                    if (newProgramEnrollment.getLmGroupId() != 0){
+                        programEnrollment.setLmGroupId(newProgramEnrollment.getLmGroupId());
+                    }
                 }
             }
         }
@@ -138,44 +181,14 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     private void removeProgramEnrollment(List<ProgramEnrollment> programEnrollments,
                                         ProgramEnrollment removedProgramEnrollment){
         
-        /* Loop through all the hardware that is enrolled and check to see if there is hardware
-         * enrolled in the same program and appliance category.  If it qualifies the inventory 
-         * should be updated to the new group
-         */
         int i;
         removedProgramEnrollment.setEnroll(true);
         for (i = 0;i < programEnrollments.size();i++) {
             ProgramEnrollment programEnrollment = programEnrollments.get(i);
             
-            if (removedProgramEnrollment.getInventoryId() != 
-                programEnrollment.getInventoryId())
-                continue;
-
-            if (removedProgramEnrollment.getProgramId() != 
-                programEnrollment.getProgramId())
-                continue;
-
-            if (removedProgramEnrollment.getApplianceCategoryId() != 0 &&
-                removedProgramEnrollment.getApplianceCategoryId() != 
-                   programEnrollment.getApplianceCategoryId())
-                continue;
-            
-            if (removedProgramEnrollment.getApplianceKW() != 0 &&
-                removedProgramEnrollment.getApplianceKW() != 
-                    programEnrollment.getApplianceKW())
-                continue;
-                 
-            if (removedProgramEnrollment.getLmGroupId() != 0 &&
-                removedProgramEnrollment.getLmGroupId() != 
-                    programEnrollment.getLmGroupId())
-                continue;
-                 
-            if(removedProgramEnrollment.getRelay() != 0 &&
-                    removedProgramEnrollment.getRelay() != 
-                        programEnrollment.getRelay())
-                continue;
-                 
-            break;
+            if (removedProgramEnrollment.equals(programEnrollment)) {
+                break;
+            }
         }
         
         if (i < programEnrollments.size())
@@ -183,22 +196,22 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         
     }           
 
-    private Program getProgramByName(String programName) {
-        List<Program> programList = programDao.getByProgramName(programName);
-        return programList.get(0);
-    }
-    
-    private ApplianceCategory getApplianceCategoryByName(String applianceCategoryName, Program program){
-        ApplianceCategory applianceCategory = null;
-        if (!StringUtils.isBlank(applianceCategoryName)){
-            List<ApplianceCategory> applianceCategoryList = applianceCategoryDao.getByApplianceCategoryName(applianceCategoryName);
-            applianceCategory = applianceCategoryList.get(0);
+    private ApplianceCategory getApplianceCategoryByName(String applianceCategoryName, Program program, List<Integer> energyCompanyIds){
         
-            if (program.getApplianceCategoryId() != applianceCategory.getApplianceCategoryId())
-                throw new IllegalArgumentException("The supplied program does not belong to the supplied appliance category.");
+        if (!StringUtils.isBlank(applianceCategoryName)){
+            List<ApplianceCategory> applianceCategoryList = applianceCategoryDao.getByApplianceCategoryName(applianceCategoryName,
+                                                                                                            energyCompanyIds);
+
+            for (ApplianceCategory applianceCategory : applianceCategoryList) {
+                if(program.getApplianceCategoryId() == applianceCategory.getApplianceCategoryId()) {
+                        return applianceCategory;
+                }
+            }
+                
+            throw new IllegalArgumentException("The supplied program does not belong to the supplied appliance category.");
         }
         
-        return applianceCategory;
+        return null;
     }
 
     private LoadGroup getLoadGroupByName(String loadGroupName, Program program){
@@ -258,6 +271,11 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     @Required
     public void setProgramDao(ProgramDao programDao) {
         this.programDao = programDao;
+    }
+
+    @Autowired
+    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
+        this.starsDatabaseCache = starsDatabaseCache;
     }
 
 }

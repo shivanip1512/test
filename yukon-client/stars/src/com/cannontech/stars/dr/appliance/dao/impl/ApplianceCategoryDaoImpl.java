@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
@@ -20,6 +20,7 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
@@ -31,18 +32,17 @@ import com.cannontech.stars.dr.appliance.model.ApplianceTypeEnum;
 import com.cannontech.stars.util.ECUtils;
 
 public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
-    private final ParameterizedRowMapper<Integer> idRowMapper = createIdRowMapper();
     private SimpleJdbcTemplate simpleJdbcTemplate;
     private AuthDao authDao;
     private ECMappingDao ecMappingDao;
     private YukonUserDao yukonUserDao;
     
-    private String applianceCategorySQLHeader = "SELECT AC.applianceCategoryId, AC.description, YWC.alternateDisplayName, " +
-                                                "       YLE.entryText as applianceType, YWC.logoLocation " +
-                                                "FROM ApplianceCategory AC, YukonWebConfiguration YWC, YukonListEntry YLE ";
-        
-    private String applianceCategorySQLFooter = " AC.webConfigurationId = YWC.configurationId " +
-                                                "AND AC.CategoryId = YLE.entryId ";
+    private final String applianceCategorySQLHeader = 
+        "SELECT AC.applianceCategoryId, AC.description, YWC.alternateDisplayName, "+
+        "       YLE.entryText as applianceType, YWC.logoLocation "+
+        "FROM ApplianceCategory AC "+
+        "INNER JOIN YukonWebConfiguration YWC ON AC.webConfigurationId = YWC.configurationId "+
+        "INNER JOIN YukonListEntry YLE ON AC.categoryId = YLE.entryId ";
 
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
@@ -71,7 +71,7 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
         String sql = sqlBuilder.toString();
         
         List<Integer> applianceCategoryIdList = simpleJdbcTemplate.query(sql,
-                                                                         idRowMapper,
+                                                                         new IntegerRowMapper(),
                                                                          YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY);
         
         final Set<ApplianceCategory> set = new HashSet<ApplianceCategory>(applianceCategoryIdList.size());
@@ -90,91 +90,45 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
         final SqlStatementBuilder applCateQuery = new SqlStatementBuilder();
         applCateQuery.append(applianceCategorySQLHeader);
         applCateQuery.append("WHERE AC.applianceCategoryId = ?");
-        applCateQuery.append("AND "+applianceCategorySQLFooter);
                      
         try {
-            ApplianceCategory applianceCategories = 
+            ApplianceCategory applianceCategory = 
                 simpleJdbcTemplate.queryForObject(applCateQuery.toString(),
-                                                  applianceCategoryRowMapper(),
+                                                  new ApplianceCategoryRowMapper(),
                                                   applianceCategoryId);
         
-            return applianceCategories;
-        } catch (IncorrectResultSizeDataAccessException ex) {
-            return null;
+            return applianceCategory;
+        } catch (EmptyResultDataAccessException ex) {
+            throw new NotFoundException("The appliance category id supplied does not exist.");
         }
     }
 
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public List<ApplianceCategory> getByApplianceCategoryName(String applianceCategoryName){
+    public List<ApplianceCategory> getByApplianceCategoryName(String applianceCategoryName, 
+                                                              List<Integer> energyCompanyIds){
 
         final SqlStatementBuilder applCateQuery = new SqlStatementBuilder();
         applCateQuery.append(applianceCategorySQLHeader);
-        applCateQuery.append("WHERE (AC.Description = ?");
-        applCateQuery.append("       OR YWC.AlternateDisplayName = ?)");
-        applCateQuery.append("AND "+applianceCategorySQLFooter);
-        
-        try {
-            List<ApplianceCategory> applianceCategories = 
-                simpleJdbcTemplate.query(applCateQuery.toString(),
-                                         applianceCategoryRowMapper(),
-                                         applianceCategoryName,
-                                         applianceCategoryName);
+        applCateQuery.append("INNER JOIN ECToGenericMapping ECTGM ON (ECTGM.itemId = AC.applianceCategoryId");
+        applCateQuery.append("                                        AND ECTGM.mappingCategory = 'ApplianceCategory')");
+        applCateQuery.append("WHERE (AC.description = ?");
+        applCateQuery.append("       OR YWC.alternateDisplayName = ?)");
+        applCateQuery.append("AND ECTGM.energyCompanyId in (?)");
 
+        
+        List<ApplianceCategory> applianceCategories = 
+            simpleJdbcTemplate.query(applCateQuery.toString(),
+                                     new ApplianceCategoryRowMapper(),
+                                     applianceCategoryName,
+                                     applianceCategoryName,
+                                     energyCompanyIds);
+
+        if (applianceCategories.size() > 0) {
             return applianceCategories;
-        } catch (IncorrectResultSizeDataAccessException ex) {
-            throw new NotFoundException("The applicance category name supplied does not exist.");
+        } else {
+            throw new NotFoundException("The appliance category name supplied does not exist.");
         }
-    }
-    
-    private ApplianceTypeEnum getApplianceTypeEnumFromTextValue(final String textValue) {
-        String result = textValue;
-        result = result.replaceAll("[(|)]", "");
-        result = result.replaceAll("\\s+", "_");
-        result = result.toUpperCase();
-        return ApplianceTypeEnum.valueOf(result);
-    }
-    
-    private ParameterizedRowMapper<Integer> createIdRowMapper() {
-        final ParameterizedRowMapper<Integer> mapper = new ParameterizedRowMapper<Integer>() {
-            @Override
-            public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
-                return rs.getInt(1);
-            }
-        };
-        return mapper;
-    }
-    
-    private ParameterizedRowMapper<ApplianceCategory> applianceCategoryRowMapper() {
-        final ParameterizedRowMapper<ApplianceCategory> mapper = new ParameterizedRowMapper<ApplianceCategory>() {
-            @Override
-            public ApplianceCategory mapRow(ResultSet rs, int rowNum) throws SQLException {
-                
-                ApplianceCategory applianceCategory = null;
-                
-                int applianceCategoryId = rs.getInt("applianceCategoryId"); 
-                String displayName = rs.getString("alternateDisplayName");
-                String defaultDisplayName = rs.getString("description");
-                String applianceType = rs.getString("applianceType");
-                ApplianceTypeEnum applianceTypeEnum = getApplianceTypeEnumFromTextValue(applianceType);
-                String logoLocation = rs.getString("logoLocation");
-                
-                if (displayName != null){
-                    applianceCategory = new ApplianceCategory(applianceCategoryId, 
-                                                              displayName, 
-                                                              applianceTypeEnum, 
-                                                              logoLocation);
-                } else {
-                    applianceCategory = new ApplianceCategory(applianceCategoryId, 
-                                                              defaultDisplayName, 
-                                                              applianceTypeEnum, 
-                                                              logoLocation);
-                }
-                
-                return applianceCategory;
-            }
-        };
-        return mapper;
     }
     
     @Autowired
@@ -197,4 +151,39 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
         this.yukonUserDao = yukonUserDao;
     }
 
+}
+
+class ApplianceCategoryRowMapper implements ParameterizedRowMapper<ApplianceCategory> {
+
+    @Override
+    public ApplianceCategory mapRow(ResultSet rs, int rowNum)
+            throws SQLException {
+        ApplianceCategory applianceCategory = null;
+        
+        int applianceCategoryId = rs.getInt("applianceCategoryId"); 
+        String displayName = rs.getString("alternateDisplayName");
+        String defaultDisplayName = rs.getString("description");
+        String applianceType = rs.getString("applianceType");
+        ApplianceTypeEnum applianceTypeEnum = getApplianceTypeEnumFromTextValue(applianceType);
+        String logoLocation = rs.getString("logoLocation");
+        
+        if (displayName == null){
+            displayName = defaultDisplayName; 
+        }
+
+        applianceCategory = new ApplianceCategory(applianceCategoryId, 
+                                                  displayName, 
+                                                  applianceTypeEnum, 
+                                                  logoLocation);
+        
+        return applianceCategory;
+    }
+    
+    private ApplianceTypeEnum getApplianceTypeEnumFromTextValue(final String textValue) {
+        String result = textValue;
+        result = result.replaceAll("[(|)]", "");
+        result = result.replaceAll("\\s+", "_");
+        result = result.toUpperCase();
+        return ApplianceTypeEnum.valueOf(result);
+    }
 }

@@ -209,6 +209,7 @@ public class LoadControlServiceInputsTestController extends MultiActionControlle
         enrollmentHelper.setRelay(ServletRequestUtils.getStringParameter(request, "relay"));
         enrollmentHelper.setApplianceKW(ServletRequestUtils.getFloatParameter(request, "applianceKW", 0));
         enrollmentHelper.setApplianceCategoryName(ServletRequestUtils.getStringParameter(request, "applianceCategoryName"));
+        enrollmentHelper.setSeasonalLoad(ServletRequestUtils.getBooleanParameter(request, "seasonalLoad", false));
         
         enrollmentHelperService.doEnrollment(enrollmentHelper, EnrollmentEnum.ENROLL, yukonUserContext);
         

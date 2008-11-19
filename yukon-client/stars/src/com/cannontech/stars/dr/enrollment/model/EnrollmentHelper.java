@@ -9,6 +9,7 @@ public class EnrollmentHelper {
     String applianceCategoryName;
     String loadGroupName;
     Float applianceKW;
+    boolean seasonalLoad;
     String relay;
     
     public String getAccountNumber() {
@@ -60,4 +61,10 @@ public class EnrollmentHelper {
         this.relay = relay;
     }
     
+    public boolean isSeasonalLoad() {
+        return seasonalLoad;
+    }
+    public void setSeasonalLoad(boolean seasonalLoad) {
+        this.seasonalLoad = seasonalLoad;
+    }
 }

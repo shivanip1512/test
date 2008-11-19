@@ -184,7 +184,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
             if (groupId == ServerUtils.ADDRESSING_GROUP_NOT_FOUND) {
                 int programId = program.getProgramID();
                 LiteLMProgramWebPublishing webProg = energyCompany.getProgram(programId);
-                List<ProgramEnrollment> activeProgramEnrollments = enrollmentDao.getActiveEnrollmentByAccountId(customerAccount.getAccountId());
+                List<ProgramEnrollment> activeProgramEnrollments = enrollmentDao.getActiveEnrollmentsByAccountId(customerAccount.getAccountId());
                 
                 int grpID = webProg.getGroupIDs()[0];
                 for (ProgramEnrollment programEnrollment : activeProgramEnrollments) {

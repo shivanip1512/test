@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
@@ -14,6 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.database.IntegerRowMapper;
+import com.cannontech.database.data.pao.DeviceClasses;
+import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.stars.dr.loadgroup.dao.LoadGroupDao;
 import com.cannontech.stars.dr.loadgroup.model.LoadGroup;
 
@@ -28,7 +31,7 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
                                               "FROM YukonPAObject PAO ";
    
     @Override
-    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    @Transactional(readOnly = true)
     public LoadGroup getById(int loadGroupId){
 
         LoadGroup loadGroup = null;
@@ -40,15 +43,17 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
         final SqlStatementBuilder loadGroupQuery = new SqlStatementBuilder();
         loadGroupQuery.append(loadGroupSQLHeader);
         loadGroupQuery.append("WHERE PAO.paobjectId = ?");
-        loadGroupQuery.append("AND PAO.paoClass = 'GROUP'");
-        loadGroupQuery.append("AND PAO.category = 'DEVICE'");
+        loadGroupQuery.append("AND PAO.paoClass = ?");
+        loadGroupQuery.append("AND PAO.category = ?");
         
         try {
             loadGroup = simpleJdbcTemplate.queryForObject(loadGroupQuery.toString(),
                                                           loadGroupDatabaseResultRowMapper(),
-                                                          loadGroupId);
-        } catch (IncorrectResultSizeDataAccessException ex) {
-            return null;
+                                                          loadGroupId,
+                                                          DeviceClasses.STRING_CLASS_GROUP,
+                                                          PAOGroups.STRING_CAT_DEVICE);
+        } catch (EmptyResultDataAccessException ex) {
+            throw new NotFoundException("The load group id supplied does not exist.");
         }
 
         loadGroup.setProgramIds(getLoadGroupProgramIds(loadGroup));
@@ -77,7 +82,7 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
             loadGroup = simpleJdbcTemplate.queryForObject(loadGroupQuery.toString(),
                                                           loadGroupDatabaseResultRowMapper(),
                                                           loadGroupName);
-        } catch (IncorrectResultSizeDataAccessException ex) {
+        } catch (EmptyResultDataAccessException ex) {
             throw new NotFoundException("The load group name supplied does not exist.");
         }
         
@@ -92,15 +97,16 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
     private List<Integer> getLoadGroupProgramIds(LoadGroup loadGroup){
     
         final SqlStatementBuilder loadGroupProgramIdsQuery = new SqlStatementBuilder();
-        loadGroupProgramIdsQuery.append("SELECT deviceId as programId"); 
-        loadGroupProgramIdsQuery.append("FROM LMProgramDirectGroup");
-        loadGroupProgramIdsQuery.append("WHERE LMGroupDeviceId = ?");
+        loadGroupProgramIdsQuery.append("SELECT LMPWP.programId");
+        loadGroupProgramIdsQuery.append("FROM LMProgramDirectGroup LMPDG, LMProgramWebPublishing LMPWP"); 
+        loadGroupProgramIdsQuery.append("WHERE LMPDG.LMGroupDeviceId = ?");
+        loadGroupProgramIdsQuery.append("AND LMPDG.deviceId = LMPWP.deviceId");
     
         try {
             return simpleJdbcTemplate.query(loadGroupProgramIdsQuery.toString(),
-                                            programIdRowMapper(),
+                                            new IntegerRowMapper(),
                                             loadGroup.getLoadGroupId());
-        } catch (IncorrectResultSizeDataAccessException ex) {
+        } catch (EmptyResultDataAccessException ex) {
             return Collections.emptyList();
         }
     }
@@ -121,20 +127,9 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
         return mapper;
     }
 
-    private ParameterizedRowMapper<Integer> programIdRowMapper() {
-        final ParameterizedRowMapper<Integer> mapper = new ParameterizedRowMapper<Integer>() {
-            @Override
-            public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
-                return rs.getInt("programId");
-            }
-        };
-        return mapper;
-    }
-
     @Autowired
     public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
         this.simpleJdbcTemplate = simpleJdbcTemplate;
     }
 
 }
-

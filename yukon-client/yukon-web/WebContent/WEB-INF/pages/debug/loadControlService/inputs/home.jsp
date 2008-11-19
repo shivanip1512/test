@@ -269,6 +269,9 @@
                         <tags:nameValue name="Relay" nameColumnWidth="200px">
                             <input type="text" name="relay" value="${relay}">
                         </tags:nameValue>
+                        <tags:nameValue name="SeasonalLoad" nameColumnWidth="200px">
+                            <input type="checkbox" name="seasonalLoad" value="true">
+                        </tags:nameValue>
                         
                         <tags:nameValue name="RUN">
                             <input type="submit" value="TEST">

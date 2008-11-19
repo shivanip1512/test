@@ -2,8 +2,6 @@ package com.cannontech.stars.dr.appliance.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +15,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.db.stars.appliance.ApplianceBase;
@@ -33,23 +32,22 @@ public class ApplianceDaoImpl implements ApplianceDao {
     private LMHardwareConfigurationDao lmHardwareConfigurationDao;
     
     private String applianceSQLHeader = 
-        "SELECT AB.applianceId, AB.applianceCategoryId, AB.accountId, " +
-    	"       AB.programId, LMHC.inventoryId, LMHC.addressingGroupId, " +
-    	"       LMHC.loadNumber, AB.kwCapacity " +
-    	"FROM ApplianceBase AB, LMHardwareConfiguration LMHC ";
-    
-    private String applianceSQLFooter = 
-        " AB.applianceId = LMHC.applianceId ";
+        "SELECT AB.applianceId, AB.applianceCategoryId, AB.accountId, "+
+        "       AB.programId, LMHC.inventoryId, LMHC.addressingGroupId, "+
+        "       LMHC.loadNumber, AB.kwCapacity "+
+        "FROM ApplianceBase AB "+
+        "INNER JOIN LMHardwareConfiguration LMHC ON AB.applianceId = LMHC.applianceId ";
     
     
     @Override
     public void updateApplianceKW(int applianceId, float applianceKW) {
         SqlStatementBuilder updateApplianceSQL = new SqlStatementBuilder();
         updateApplianceSQL.append("UPDATE ApplianceBase");
-        updateApplianceSQL.append("SET kwCapacity = "+applianceKW+" ");
+        updateApplianceSQL.append("SET kwCapacity = ? ");
         updateApplianceSQL.append("WHERE applianceId = ?");
 
-        simpleJdbcTemplate.update(updateApplianceSQL.toString(), 
+        simpleJdbcTemplate.update(updateApplianceSQL.toString(),
+                                  Float.toString(applianceKW),
                                   applianceId);
     }
 
@@ -59,10 +57,12 @@ public class ApplianceDaoImpl implements ApplianceDao {
         SqlStatementBuilder applianceSQL = new SqlStatementBuilder();
         applianceSQL.append(applianceSQLHeader);
         applianceSQL.append("WHERE AB.applianceId = ? ");
-        applianceSQL.append("AND "+applianceSQLFooter);
 
-        Appliance appliance = simpleJdbcTemplate.queryForObject(applianceSQL.toString(), rowMapper, applianceId);
-        return appliance;
+        try {
+            return simpleJdbcTemplate.queryForObject(applianceSQL.toString(), rowMapper, applianceId);
+        } catch (EmptyResultDataAccessException ex){
+            throw new NotFoundException("The appliance id supplied does not exist.");
+        }
     }
 
     @Override
@@ -71,7 +71,6 @@ public class ApplianceDaoImpl implements ApplianceDao {
         SqlStatementBuilder applianceSQL = new SqlStatementBuilder();
         applianceSQL.append(applianceSQLHeader);
         applianceSQL.append("WHERE AB.accountId = ? ");
-        applianceSQL.append("AND "+applianceSQLFooter);
 
         List<Appliance> list = simpleJdbcTemplate.query(applianceSQL.toString(), rowMapper, accountId);
         return list;
@@ -86,14 +85,9 @@ public class ApplianceDaoImpl implements ApplianceDao {
         applianceSQL.append("Where AB.accountId = ? ");
         applianceSQL.append("AND AB.programId = ? ");
         applianceSQL.append("AND LMHC.inventoryId = ?");
-        applianceSQL.append("AND "+applianceSQLFooter);
         
-        try {
-            return simpleJdbcTemplate.query(applianceSQL.toString(), rowMapper, 
-                                            accountId, programId, inventoryId);
-        } catch (EmptyResultDataAccessException ex) {
-            return Collections.emptyList();
-        }
+        return simpleJdbcTemplate.query(applianceSQL.toString(), rowMapper, 
+                                        accountId, programId, inventoryId);
     }
     
     @Override
