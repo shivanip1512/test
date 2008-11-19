@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.210 $
-* DATE         :  $Date: 2008/11/17 22:45:08 $
+* REVISION     :  $Revision: 1.211 $
+* DATE         :  $Date: 2008/11/19 16:13:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1823,7 +1823,7 @@ void CtiVanGogh::VGCacheHandlerThread(int threadNumber)
 
                 if(ptIdList.size() < DYNAMIC_LOAD_SIZE) //Note that it is very possible to go over this number.
                 {
-                    MsgPtr = CacheQueue_.getQueue(10);
+                    MsgPtr = CacheQueue_.getQueue(0);
                 }
             }
 
@@ -4747,8 +4747,23 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
                     }
                     else if(pChg == NULL)
                     {
-                        PointMgr.loadAllStaticData();
-
+                        if(gConfigParms.isTrue("DISPATCH_LOAD_ALL_POINTS"))
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << Now << " DISPATCH_LOAD_ALL_POINTS is set" << endl;
+                            }
+                            PointMgr.refreshList();
+                            PointMgr.loadAllStaticData();
+                        }
+                        else
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << Now << " DISPATCH_LOAD_ALL_POINTS is not set" << endl;
+                            }
+                            PointMgr.loadAllStaticData();
+                        }
                         //TriggerMgr.refreshList(0, PointMgr);
                     }
                     else

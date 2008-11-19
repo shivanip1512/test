@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/mgr_ptclients.cpp-arc  $
-* REVISION     :  $Revision: 1.56 $
-* DATE         :  $Date: 2008/11/12 22:10:40 $
+* REVISION     :  $Revision: 1.57 $
+* DATE         :  $Date: 2008/11/19 16:13:25 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -278,15 +278,19 @@ void CtiPointClientManager::refreshAlarming(LONG pntID, LONG paoID, const set<lo
     string         sql;
     CtiTime start, stop;
 
+    if( DebugLevel & DEBUGLEVEL_MGR_POINT )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " Looking for Alarming" << endl;
+    }
+
     start = start.now();
     CtiTablePointAlarming::getSQL(sql, pntID, paoID, pointIds);
 
     rdr = ExecuteQuery( conn, sql );
 
-    if( rdr.status().errorCode() != RWDBStatus::ok )
+    if( rdr.status().errorCode() != RWDBStatus::ok || DebugLevel & DEBUGLEVEL_MGR_POINT )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         dout << sql << endl;
     }
 
@@ -314,6 +318,10 @@ void CtiPointClientManager::refreshAlarming(LONG pntID, LONG paoID, const set<lo
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds for Alarming " << endl;
+    }
+    if(DebugLevel & DEBUGLEVEL_MGR_POINT)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " Done looking for Alarming" << endl;
     }
 }
 
@@ -945,7 +953,7 @@ void CtiPointClientManager::RefreshDynamicData(LONG id, const set<long> &pointId
     RWDBSelector selector = db.selector();
     CtiTime start, stop;
 
-    if(DebugLevel & 0x00000001)
+    if(DebugLevel & DEBUGLEVEL_MGR_POINT)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " Looking for Dynamic Dispatch Data" << endl;
     }
@@ -972,7 +980,7 @@ void CtiPointClientManager::RefreshDynamicData(LONG id, const set<long> &pointId
 
     RWDBReader rdr = selector.reader(conn);
 
-    if(DebugLevel & 0x00000001 || selector.status().errorCode() != RWDBStatus::ok)
+    if(DebugLevel & DEBUGLEVEL_MGR_POINT || selector.status().errorCode() != RWDBStatus::ok)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
     }
@@ -1015,7 +1023,7 @@ void CtiPointClientManager::RefreshDynamicData(LONG id, const set<long> &pointId
         dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds for Dynamic Data " << endl;
     }
 
-    if(DebugLevel & 0x00000001)
+    if(DebugLevel & DEBUGLEVEL_MGR_POINT)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " Done looking for Dynamic Dispatch Data" << endl;
     }
@@ -1029,7 +1037,7 @@ void CtiPointClientManager::refreshReasonabilityLimits(LONG pntID, LONG paoID, c
     CtiTime start, stop;
     string sql;
 
-    if(DebugLevel & 0x00000001)
+    if(DebugLevel & DEBUGLEVEL_MGR_POINT)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " Looking for Reasonability limits" << endl;
     }
@@ -1067,7 +1075,7 @@ void CtiPointClientManager::refreshReasonabilityLimits(LONG pntID, LONG paoID, c
     start = start.now();
     RWDBReader rdr = ExecuteQuery( conn, sql );
 
-    if(DebugLevel & 0x00000001)
+    if(DebugLevel & DEBUGLEVEL_MGR_POINT)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << sql << endl;
     }
@@ -1099,7 +1107,7 @@ void CtiPointClientManager::refreshReasonabilityLimits(LONG pntID, LONG paoID, c
         dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds for Reasonability Limits" << endl;
     }
 
-    if(DebugLevel & 0x00000001)
+    if(DebugLevel & DEBUGLEVEL_MGR_POINT)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " Done looking for Reasonability Limits" << endl;
     }
@@ -1119,7 +1127,7 @@ void CtiPointClientManager::refreshPointLimits(LONG pntID, LONG paoID, const set
 
     start = start.now();
 
-    if(DebugLevel & 0x00010000)
+    if(DebugLevel & DEBUGLEVEL_MGR_POINT)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Limits" << endl;
     }
@@ -1128,7 +1136,7 @@ void CtiPointClientManager::refreshPointLimits(LONG pntID, LONG paoID, const set
 
     rdr = ExecuteQuery( conn, sql );
 
-    if(DebugLevel & 0x00010000)
+    if(DebugLevel & DEBUGLEVEL_MGR_POINT)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << sql << endl;
     }
@@ -1156,6 +1164,10 @@ void CtiPointClientManager::refreshPointLimits(LONG pntID, LONG paoID, const set
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds for Limits " << endl;
+    }
+    if(DebugLevel & DEBUGLEVEL_MGR_POINT)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for Limits" << endl;
     }
 }
 
