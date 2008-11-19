@@ -558,8 +558,15 @@ public class CapBankDevice extends StreamableCapObject
 				retVal = "-Q";
 			    break;
 			}
+			case CapControlConst.CC_UNSOLICITED_QUAL:{ 
+			    retVal = "-U";
+			    break;
+			}
+			case CapControlConst.CC_COMMFAIL_QUAL:{
+                retVal = "-CF";
+                break;
+            }
 			case CapControlConst.CC_FAIL_QUAL:
-			case CapControlConst.CC_COMMFAIL_QUAL:
 			case CapControlConst.CC_NO_CONTROL_QUAL:
 		    case CapControlConst.CC_NORMAL_QUAL:
 			default:
