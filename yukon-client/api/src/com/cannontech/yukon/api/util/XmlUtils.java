@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.xml.transform.dom.DOMSource;
+
 import org.apache.commons.lang.StringUtils;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -20,6 +22,7 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.core.io.Resource;
+import org.w3c.dom.Node;
 
 public class XmlUtils {
 
@@ -144,6 +147,15 @@ public class XmlUtils {
         return template;
     }
 
+    public static SimpleXPathTemplate getXPathTemplateForNode(Node node) {
+        
+        SimpleXPathTemplate template = new SimpleXPathTemplate();
+        template.setContext(new DOMSource(node));
+        template.setNamespaces(YukonXml.getYukonNamespaceAsProperties());
+        
+        return template;
+    }
+    
     public static void printElement(Element element, String title) throws IOException {
         
         if (!StringUtils.isBlank(title)) {
