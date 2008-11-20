@@ -6,7 +6,7 @@ import java.util.Map;
 import com.cannontech.stars.dr.hardware.model.HardwareType;
 
 /**
- * Model object which represents a schedule for a thermostat
+ * Model object which represents a schedule for a thermostat.
  */
 public class ThermostatSchedule {
 
