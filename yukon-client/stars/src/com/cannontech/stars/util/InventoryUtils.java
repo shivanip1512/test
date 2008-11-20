@@ -14,6 +14,8 @@ import org.springframework.jdbc.core.JdbcOperations;
 
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.constants.YukonSelectionList;
+import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.JdbcTemplateHelper;
@@ -39,6 +41,19 @@ public class InventoryUtils {
 	public static final int HW_CONFIG_TYPE_SA205 = 3;
 	public static final int HW_CONFIG_TYPE_SA305 = 4;
 	public static final int HW_CONFIG_TYPE_SA_SIMPLE = 5;
+	
+	public static int getDeviceTypeID(String deviceTypeName, LiteStarsEnergyCompany energyCompany) {
+        int deviceTypeId = -1;
+        YukonSelectionList devTypeList = energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE);
+
+        for (YukonListEntry entry : devTypeList.getYukonListEntries()) {
+            if (entry.getEntryText().equalsIgnoreCase(deviceTypeName)) {
+                deviceTypeId = entry.getEntryID();
+                break;
+            }
+        }
+        return deviceTypeId;
+    }	
 	
 	public static int getInventoryCategoryID(int deviceTypeID, LiteStarsEnergyCompany energyCompany) {
 		YukonListEntry entry = DaoFactory.getYukonListDao().getYukonListEntry( deviceTypeID );

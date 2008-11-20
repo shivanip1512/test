@@ -8,4 +8,6 @@ public interface StarsApplianceDao {
 
     public List<LiteStarsAppliance> getByAccountId(int accountId, int energyCompanyId);
     
+    public List<LiteStarsAppliance> getUnassignedAppliances(int accountId, int energyCompanyId);    
+    
 }

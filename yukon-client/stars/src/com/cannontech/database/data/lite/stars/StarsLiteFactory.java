@@ -481,7 +481,7 @@ public class StarsLiteFactory {
 		liteApp.setKWCapacity( app.getApplianceBase().getKWCapacity().doubleValue() );
 		liteApp.setEfficiencyRating( app.getApplianceBase().getEfficiencyRating().doubleValue() );
 		
-		if (app.getLMHardwareConfig().getInventoryID() != null) {
+		if (app.getLMHardwareConfig() != null) {
 			liteApp.setInventoryID( app.getLMHardwareConfig().getInventoryID().intValue() );
 			liteApp.setAddressingGroupID( app.getLMHardwareConfig().getAddressingGroupID().intValue() );
 			liteApp.setLoadNumber( app.getLMHardwareConfig().getLoadNumber().intValue() );

@@ -70,6 +70,12 @@ public interface ECMappingDao {
     public void deleteECToAccountMapping(Integer accountId);
 
     /**
+     * Method to delete energy company to inventory mapping 
+     * @param inventoryId
+     */
+    public void deleteECToInventoryMapping(int inventoryId);
+    
+    /**
      * Method to update energy company for an account
      * @param accountId
      * @param energyCompanyId

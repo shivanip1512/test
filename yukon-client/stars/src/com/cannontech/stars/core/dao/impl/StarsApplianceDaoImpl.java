@@ -41,6 +41,25 @@ public class StarsApplianceDaoImpl implements StarsApplianceDao {
         return list;
     }
     
+    @Override
+    @Transactional(readOnly = true)
+    public List<LiteStarsAppliance> getUnassignedAppliances(int accountId, int energyCompanyId) {
+        final SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
+        sqlBuilder.append("SELECT AccountID,ApplianceID,ApplianceCategoryID,ProgramID,YearManufactured, ");
+        sqlBuilder.append("ManufacturerID,LocationID,KWCapacity,EfficiencyRating,Notes,ModelNumber, ");
+        sqlBuilder.append("FROM ApplianceBase ab ");
+        sqlBuilder.append("WHERE ab.AccountID = ? AND NOT EXISTS ");        
+        sqlBuilder.append("(SELECT InventoryID FROM  LMHardwareConfiguration lmhc WHERE ab.ApplianceID = lmhc.ApplianceID) ");        
+        sqlBuilder.append("ORDER BY ab.ApplianceID DESC ");
+        final String sql = sqlBuilder.toString();
+        
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
+        ParameterizedRowMapper<LiteStarsAppliance> unassignedAppRowMapper = createUnassignedAppRowMapper(energyCompany);
+        
+        List<LiteStarsAppliance> list = simpleJdbcTemplate.query(sql, unassignedAppRowMapper, accountId);
+        return list;
+    }    
+    
     private ParameterizedRowMapper<LiteStarsAppliance> createRowMapper(final LiteStarsEnergyCompany energyCompany) {
         return new ParameterizedRowMapper<LiteStarsAppliance>() {
             @Override
@@ -70,6 +89,36 @@ public class StarsApplianceDaoImpl implements StarsApplianceDao {
                     new com.cannontech.database.data.stars.appliance.ApplianceBase();
                 dataApplianceBase.setApplianceBase(applianceBase);
                 dataApplianceBase.setLMHardwareConfig(config);
+                
+                LiteStarsAppliance liteAppliance = 
+                    StarsLiteFactory.createLiteStarsAppliance(dataApplianceBase, energyCompany);
+                return liteAppliance;
+            }
+        };
+    }
+    
+    private ParameterizedRowMapper<LiteStarsAppliance> createUnassignedAppRowMapper(final LiteStarsEnergyCompany energyCompany) {
+        return new ParameterizedRowMapper<LiteStarsAppliance>() {
+            @Override
+            public LiteStarsAppliance mapRow(ResultSet rs, int rowNum) throws SQLException {
+                final int applianceId = rs.getInt("ApplianceID");
+                
+                ApplianceBase applianceBase = new ApplianceBase();
+                applianceBase.setAccountID(rs.getInt("AccountID"));
+                applianceBase.setApplianceID(applianceId);
+                applianceBase.setApplianceCategoryID(rs.getInt("ApplianceCategoryID"));
+                applianceBase.setProgramID(rs.getInt("ProgramID"));
+                applianceBase.setYearManufactured(rs.getInt("YearManufactured"));
+                applianceBase.setManufacturerID(rs.getInt("ManufacturerID"));
+                applianceBase.setLocationID(rs.getInt("LocationID"));
+                applianceBase.setKWCapacity(rs.getDouble("KWCapacity"));
+                applianceBase.setEfficiencyRating(rs.getDouble("EfficiencyRating"));
+                applianceBase.setNotes(rs.getString("Notes"));
+                applianceBase.setModelNumber(rs.getString("ModelNumber"));
+                
+                com.cannontech.database.data.stars.appliance.ApplianceBase dataApplianceBase =
+                    new com.cannontech.database.data.stars.appliance.ApplianceBase();
+                dataApplianceBase.setApplianceBase(applianceBase);
                 
                 LiteStarsAppliance liteAppliance = 
                     StarsLiteFactory.createLiteStarsAppliance(dataApplianceBase, energyCompany);

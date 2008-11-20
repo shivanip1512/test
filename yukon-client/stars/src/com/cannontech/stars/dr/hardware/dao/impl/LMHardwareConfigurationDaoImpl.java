@@ -13,13 +13,35 @@ import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
 public class LMHardwareConfigurationDaoImpl implements LMHardwareConfigurationDao {
     
     private SimpleJdbcTemplate simpleJdbcTemplate; 
+    private static final String insertLmHwConfigSql;
+    private static final String updateLmHwConfigSql;
+
+    static {
+        insertLmHwConfigSql = "INSERT INTO LMHardwareConfiguration (AddressingGroupID,LoadNumber,InventoryID,ApplianceID) VALUES (?,?,?,?)";
+
+        updateLmHwConfigSql = "UPDATE LMHardwareConfiguration SET AddressingGroupID = ?,LoadNumber=? WHERE InventoryID = ? and ApplianceID=?";
+    }
     
     @Override
-    public void add(LMHardwareConfiguration lmConfiguration) {
-        // TODO Auto-generated method stub
-
+    @Transactional    
+    public void add(LMHardwareConfiguration lmHwConfig) {
+        // Insert into LMHardwareConfiguration
+        Object[] lmHwConfigParams = new Object[] {
+                lmHwConfig.getAddressingGroupId(), lmHwConfig.getLoadNumber(),
+                lmHwConfig.getInventoryId(), lmHwConfig.getApplianceId() };
+        simpleJdbcTemplate.update(insertLmHwConfigSql, lmHwConfigParams);
     }
 
+    @Override
+    @Transactional
+    public void update(LMHardwareConfiguration lmHwConfig) {
+        // Update LMHardwareConfiguration
+        Object[] lmHwConfigParams = new Object[] {
+                lmHwConfig.getAddressingGroupId(), lmHwConfig.getLoadNumber(),
+                lmHwConfig.getInventoryId(), lmHwConfig.getApplianceId() };
+        simpleJdbcTemplate.update(updateLmHwConfigSql, lmHwConfigParams);
+    }
+    
     @Override
     public void delete(LMHardwareConfiguration lmConfiguration) {
         delete(lmConfiguration.getInventoryId());
@@ -53,12 +75,6 @@ public class LMHardwareConfigurationDaoImpl implements LMHardwareConfigurationDa
         simpleJdbcTemplate.update(sql.toString());
     }
 
-    @Override
-    public void update(LMHardwareConfiguration lmConfiguration) {
-        // TODO Auto-generated method stub
-
-    }
-    
     @Autowired
     public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
         this.simpleJdbcTemplate = simpleJdbcTemplate;

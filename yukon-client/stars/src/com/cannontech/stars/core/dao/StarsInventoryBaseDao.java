@@ -51,4 +51,24 @@ public interface StarsInventoryBaseDao {
     @Deprecated
     public List<LiteInventoryBase> getAllByEnergyCompanyList(List<LiteStarsEnergyCompany> energyCompanyList);
     
+    /**
+     * Saves a Inventory hardware device info on the customer account. Handles both insert/update records.
+     */
+    public LiteInventoryBase saveInventoryBase(LiteInventoryBase liteInv, int energyCompanyId);    
+    
+    /**
+     * Saves a LM hardware device info on the customer account. Handles both insert/update records.
+     */
+    public LiteStarsLMHardware saveLmHardware(LiteStarsLMHardware lmHw, int energyCompanyId);
+    
+    /**
+     * Removes a hardware device from the account.
+     */
+    public void removeInventoryFromAccount(LiteInventoryBase liteInv);    
+    
+    /**
+     * Deletes a hardware device from the inventory.  Deletes only the LM Hardware for now.
+     */
+    public void deleteInventoryBase(int inventoryId);    
+    
 }

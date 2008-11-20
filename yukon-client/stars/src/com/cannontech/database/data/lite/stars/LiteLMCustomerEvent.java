@@ -19,6 +19,7 @@ public class LiteLMCustomerEvent extends LiteBase {
 	private int actionID = com.cannontech.common.util.CtiUtilities.NONE_ZERO_ID;
 	private long eventDateTime = 0;
 	private String notes = null;
+	private String authorizedBy = null;
 	
 	public LiteLMCustomerEvent() {
 		super();
@@ -101,5 +102,13 @@ public class LiteLMCustomerEvent extends LiteBase {
 	public void setNotes(String notes) {
 		this.notes = notes;
 	}
+
+    public String getAuthorizedBy() {
+        return authorizedBy;
+    }
+
+    public void setAuthorizedBy(String authorizedBy) {
+        this.authorizedBy = authorizedBy;
+    }
 
 }

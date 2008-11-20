@@ -18,6 +18,7 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -115,6 +116,11 @@ public class StarsUtils {
 		return new Date(time);
 	}
 	
+    public static Timestamp translateTstamp(long time) {
+        if (time < VERY_EARLY_TIME) return null;
+        return new Timestamp(time);
+    }
+    
 	public static String forceNotNull(String str) {
 		return (str == null) ? "" : str.trim();
 	}

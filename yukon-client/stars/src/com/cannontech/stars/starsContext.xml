@@ -140,7 +140,33 @@
 
     <bean id="lmProgramWebPublishingDao" class="com.cannontech.stars.core.dao.impl.LMProgramWebPublishingDaoImpl"/>
 
-    <bean id="starsInventoryBaseDao" class="com.cannontech.stars.core.dao.impl.StarsInventoryBaseDaoImpl"/>
+    <bean id="starsInventoryBaseDao" class="com.cannontech.stars.core.dao.impl.StarsInventoryBaseDaoImpl">
+        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
+        <property name="lmHardwareConfigurationDao" ref="lmHardwareConfigurationDao" />
+        <property name="thermostatScheduleDao" ref="thermostatScheduleDao" />        
+        <property name="hardwareEventDao" ref="hardwareEventDao" />        
+        <property name="lmConfigurationBaseDao" ref="lmConfigurationBaseDao" />
+        <property name="eventInventoryDao" ref="eventInventoryDao" />
+        <property name="ecMappingDao" ref="ecMappingDao" />        
+    </bean>
+
+    <bean id="starsControllableDeviceHandler" class="com.cannontech.stars.ws.handlerImpl.StarsControllableDeviceHandlerImpl">
+		<property name="starsInventoryBaseService" ref="starsInventoryBaseService" />
+        <property name="starsSearchDao" ref="starsSearchDao" />
+        <property name="customerAccountDao" ref="customerAccountDao" />        
+	</bean>
+            
+    <bean id="starsInventoryBaseService" class="com.cannontech.stars.core.service.impl.StarsInventoryBaseServiceImpl">
+        <property name="jdbcTemplate" ref="simpleJdbcTemplate" />
+        <property name="starsSearchDao" ref="starsSearchDao" />
+        <property name="starsCustAccountInformationDao" ref="starsCustAccountInformationDao" />        
+        <property name="starsInventoryBaseDao" ref="starsInventoryBaseDao" />
+        <property name="thermostatScheduleDao" ref="thermostatScheduleDao" />
+        <property name="lmHardwareConfigurationDao" ref="lmHardwareConfigurationDao" />        
+        <property name="hardwareEventDao" ref="hardwareEventDao" />     
+    </bean>    
+
+    <bean id="staticLoadGroupMappingDao" class="com.cannontech.stars.dr.hardware.dao.impl.StaticLoadGroupMappingDaoImpl"/>
     
     <bean id="starsWorkOrderBaseDao" class="com.cannontech.stars.core.dao.impl.StarsWorkOrderBaseDaoImpl"/>
 
@@ -190,6 +216,8 @@
     
     <bean id="lmHardwareConfigurationDao" class="com.cannontech.stars.dr.hardware.dao.impl.LMHardwareConfigurationDaoImpl"/>
     
+    <bean id="lmConfigurationBaseDao" class="com.cannontech.stars.dr.hardware.dao.impl.LMConfigurationBaseDaoImpl"/>
+        
     <bean id="applianceAndProgramDao"
         class="com.cannontech.stars.dr.account.dao.impl.ApplianceAndProgramDaoImpl">
         <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
@@ -201,6 +229,15 @@
 
     <bean id="inventoryBaseDao" class="com.cannontech.stars.dr.hardware.dao.impl.InventoryBaseDaoImpl"/>
     
+    <bean id="eventBaseDao" class="com.cannontech.stars.dr.event.dao.impl.EventBaseDaoImpl">
+        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
+    </bean>
+    
+    <bean id="eventInventoryDao" class="com.cannontech.stars.dr.event.dao.impl.EventInventoryDaoImpl">
+        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
+        <property name="eventBaseDao" ref="eventBaseDao" />
+    </bean>
+            
     <bean id="customerEventBaseDao" class="com.cannontech.stars.dr.event.dao.impl.LMCustomerEventBaseDaoImpl">
         <property name="nextValueHelper" ref="nextValueHelper" />
         <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
@@ -208,6 +245,9 @@
     
     <bean id="hardwareEventDao" class="com.cannontech.stars.dr.event.dao.impl.LMHardwareEventDaoImpl">
         <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
+        <property name="nextValueHelper" ref="nextValueHelper" />
+        <property name="ecMappingDao" ref="ecMappingDao" />
+        <property name="lmCustomerEventBaseDao" ref="customerEventBaseDao" />        
     </bean>
     
     <bean id="eventWorkOrderDao" class="com.cannontech.stars.dr.event.dao.impl.EventWorkOrderDaoImpl">

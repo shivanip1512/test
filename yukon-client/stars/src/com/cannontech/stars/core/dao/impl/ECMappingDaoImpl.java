@@ -84,6 +84,17 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
         simpleJdbcTemplate.update(sql, accountId);
     }
     
+
+    /**
+     * Method to delete energy company to inventory mapping 
+     * @param inventoryId
+     */    
+    @Override    
+    public void deleteECToInventoryMapping(int inventoryId) {
+        String sql = "DELETE FROM ECToInventoryMapping WHERE InventoryID = ?";
+        simpleJdbcTemplate.update(sql, inventoryId);
+    }
+    
     @Override
     public void deleteECToCustomerEventMapping(List<Integer> eventIds) {
         if(!eventIds.isEmpty()) {

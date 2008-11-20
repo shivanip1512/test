@@ -4,12 +4,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.StarsDatabaseCache;
+import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.stars.hardware.LMThermostatSchedule;
@@ -19,6 +23,9 @@ import com.cannontech.stars.core.dao.LMProgramWebPublishingDao;
 import com.cannontech.stars.core.dao.StarsApplianceDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryBaseDao;
+import com.cannontech.stars.dr.hardware.dao.StaticLoadGroupMappingDao;
+import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
+import com.cannontech.stars.dr.hardware.model.StarsStaticLoadGroupMapping;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsCallReport;
@@ -346,4 +353,56 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 		thermostatSchedules = list;
 	}
     
+    public LMHardwareConfiguration getStaticLoadGroupMapping(LiteStarsLMHardware lmHw, LiteStarsEnergyCompany energyCompany) {
+        if(!VersionTools.staticLoadGroupMappingExists()) {
+            return null;
+        }
+        LMHardwareConfiguration lmHwConfig = null;        
+        StarsStaticLoadGroupMapping criteria = new StarsStaticLoadGroupMapping();
+        criteria.setSwitchTypeID(lmHw.getLmHardwareTypeID());
+
+        //get the recently added unassigned appliance on the account
+        LiteStarsAppliance unassignedAppliance = null;
+        if (getCustomerAccount() != null) { //Must already have at least the base objects loaded
+            StarsApplianceDao starsApplianceDao = YukonSpringHook.getBean("starsApplianceDao", StarsApplianceDao.class);
+            List<LiteStarsAppliance> unassignedAppliances = starsApplianceDao.getUnassignedAppliances(getAccountID(), energyCompanyId);
+            if (unassignedAppliances.size() > 0){
+                unassignedAppliance = unassignedAppliances.get(0);
+                criteria.setApplianceCategoryID(unassignedAppliance.getApplianceCategoryID());
+            }
+        }
+        if (unassignedAppliance == null){
+            return null;
+        }
+        //get zipCode
+        String zip = energyCompany.getAddress(getAccountSite().getStreetAddressID()).getZipCode();
+        if(zip.length() > 5) {
+            zip = zip.substring(0, 5);
+        }
+        criteria.setZipCode(zip);
+        
+        //get ConsumptionType
+        LiteCustomer cust = getCustomer();
+        int consumptionType = -1;
+        if(cust instanceof LiteCICustomer && cust.getCustomerTypeID() == CustomerTypes.CUSTOMER_CI){
+            consumptionType = ((LiteCICustomer)cust).getCICustType();
+        }
+        criteria.setConsumptionTypeID(consumptionType);
+        
+        StaticLoadGroupMappingDao staticLoadGroupMappingDao =
+            YukonSpringHook.getBean("staticLoadGroupMappingDao", StaticLoadGroupMappingDao.class);
+        StarsStaticLoadGroupMapping loadGroup = staticLoadGroupMappingDao.getStaticLoadGroupMapping(criteria);
+        
+        if (loadGroup == null) {
+            CTILogger.error("A static mapping could not be determined for serial number=[" + lmHw.getManufacturerSerialNumber() 
+                            + "], applianceCategoryID=[" + unassignedAppliance.getApplianceCategoryID() + "], ZipCode=[" + zip + "], ConsumptionTypeID=[" 
+                            + consumptionType + "],SwitchTypeID=[" + lmHw.getLmHardwareTypeID() + "]");            
+        } else {
+            lmHwConfig = new LMHardwareConfiguration();
+            lmHwConfig.setInventoryId(lmHw.getInventoryID());
+            lmHwConfig.setApplianceId(unassignedAppliance.getApplianceID());
+            lmHwConfig.setAddressingGroupId(loadGroup.getLoadGroupID());
+        }
+        return lmHwConfig;        
+    }
 }
