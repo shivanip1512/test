@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.211 $
-* DATE         :  $Date: 2008/11/19 16:13:24 $
+* REVISION     :  $Revision: 1.212 $
+* DATE         :  $Date: 2008/11/20 21:23:21 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -5194,23 +5194,6 @@ void CtiVanGogh::loadDeviceLites(LONG id)
                 {
                     *(resultpair.first) = dLite;                    // Copy it over the match in case it has changed.
                 }
-            }
-        }
-    }
-
-    if(DebugLevel & 0x00010000)
-    {
-        CtiDeviceLiteSet_t::iterator dnit;
-        bool reloadFailed = false;
-
-        for(dnit = _deviceLiteSet.begin(); dnit != _deviceLiteSet.end(); dnit++ )
-        {
-            CtiDeviceBaseLite &dLite = *dnit;
-
-            if(dLite.getDisableFlag() != "N")
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << dLite.getName() << " (" << __LINE__ << ")" << endl;
             }
         }
     }

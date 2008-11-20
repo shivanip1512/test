@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.124 $
-* DATE         :  $Date: 2008/11/17 17:34:40 $
+* REVISION     :  $Revision: 1.125 $
+* DATE         :  $Date: 2008/11/20 21:23:21 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -656,6 +656,10 @@ void CtiPILServer::resultThread()
                                 for( ; retlist_itr != retlist_end; ++retlist_itr )
                                 {
                                     CtiMessage *&pMsg = *retlist_itr;
+                                    if(InMessage->Priority > 0) 
+                                    {    
+                                        pMsg->setMessagePriority(InMessage->Priority);
+                                    }
 
                                     if(pMsg->isA() == MSG_PCRETURN || pMsg->isA() == MSG_POINTDATA)
                                     {
@@ -669,6 +673,10 @@ void CtiPILServer::resultThread()
                         while( !retList.empty() )
                         {
                             CtiMessage *pRet = retList.front();retList.pop_front();
+                            if(InMessage->Priority > 0)
+                            {    
+                                pRet->setMessagePriority(InMessage->Priority);
+                            }
                             CtiConnection  *Conn = NULL;
 
                             if( pRet->isA() == MSG_PCREQUEST )
