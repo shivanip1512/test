@@ -12,14 +12,15 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
-import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.service.AccountService;
 import com.cannontech.util.ServletUtil;
 
 public class AccountServiceInputsTestController extends MultiActionController{
     
     private AccountService accountService;
+    private YukonUserDao yukonUserDao;
     
     public ModelAndView home(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         return returnMav(request, new ArrayList<String>(0), new ArrayList<String>(0));
@@ -35,9 +36,9 @@ public class AccountServiceInputsTestController extends MultiActionController{
         List<String> errorReasons = new ArrayList<String>();
         
         String accountNumber = ServletRequestUtils.getRequiredStringParameter(request, "accountNumber");
-        LiteStarsEnergyCompany liteEnergyCompany = StarsDatabaseCache.getInstance().getDefaultEnergyCompany();
+        LiteYukonUser yukon = yukonUserDao.getLiteYukonUser("yukon");
         try {
-            accountService.deleteAccount(accountNumber, liteEnergyCompany);
+            accountService.deleteAccount(accountNumber, yukon);
             results.add(accountNumber + " deleted successfully.");
         } catch (RuntimeException e) {
             errorReasons.add(e.getMessage());
@@ -67,6 +68,11 @@ public class AccountServiceInputsTestController extends MultiActionController{
     @Autowired
     public void setAccountService(AccountService accountService) {
         this.accountService = accountService;
+    }
+    
+    @Autowired
+    public void setYukonUser(YukonUserDao authDao) {
+        this.yukonUserDao = authDao;
     }
 
 }

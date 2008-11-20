@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.field.impl.AccountDto;
+import com.cannontech.common.bulk.field.impl.UpdatableAccount;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.model.Address;
 import com.cannontech.common.util.CtiUtilities;
@@ -20,6 +21,7 @@ import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.DBPersistentDao;
+import com.cannontech.core.dao.EnergyCompanyDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.dao.YukonGroupDao;
@@ -32,6 +34,7 @@ import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteCustomer;
+import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteSiteInformation;
@@ -49,6 +52,7 @@ import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
 import com.cannontech.stars.dr.account.dao.AccountSiteDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.exception.AccountNumberUnavailableException;
+import com.cannontech.stars.dr.account.exception.InvalidAccountNumberException;
 import com.cannontech.stars.dr.account.exception.UserNameUnavailableException;
 import com.cannontech.stars.dr.account.model.AccountSite;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -89,17 +93,22 @@ public class AccountServiceImpl implements AccountService {
     private StarsCustAccountInformationDao starsCustAccountInformationDao;
     private DBPersistentDao dbPersistantDao;
     private AsyncDynamicDataSourceImpl asyncDynamicDataSource;
+    private EnergyCompanyDao energyCompanyDao;
 
     @Override
     @Transactional
-    public void addAccount(AccountDto accountDto, LiteStarsEnergyCompany liteEnergyCompany, String accountNumber) throws AccountNumberUnavailableException, UserNameUnavailableException {
+    public void addAccount(UpdatableAccount updatableAccount, LiteYukonUser operator) throws AccountNumberUnavailableException, UserNameUnavailableException {
+        AccountDto accountDto = updatableAccount.getAccountDto();
+        String accountNumber = updatableAccount.getAccountNumber();
         
         if(StringUtils.isBlank(accountNumber)) {
             log.error("Account " + accountNumber + " could not be added: The provided account number cannot be empty.");
-            throw new IllegalArgumentException("The provided account number cannot be empty.");
+            throw new InvalidAccountNumberException("The provided account number cannot be empty.");
         }
         
-        LiteStarsCustAccountInformation accountInformation = liteEnergyCompany.searchAccountByAccountNo(accountNumber);
+        LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(operator);
+        LiteStarsEnergyCompany liteStarsEnergyCompany = StarsDatabaseCache.getInstance().getEnergyCompany(energyCompany.getEnergyCompanyID());
+        LiteStarsCustAccountInformation accountInformation = liteStarsEnergyCompany.searchAccountByAccountNo(accountNumber);
         
         if(accountInformation != null) {
             log.error("Account " + accountNumber + " could not be added: The provided account number already exists.");
@@ -129,7 +138,7 @@ public class AccountServiceImpl implements AccountService {
             LiteYukonGroup operatorGroup = yukonGroupDao.getLiteYukonGroupByName(accountDto.getLoginGroup());
             groups.add(defaultYukonGroup);
             groups.add(operatorGroup);
-            yukonUserDao.addLiteYukonUserWithPassword(user, accountDto.getPassword(), liteEnergyCompany.getEnergyCompanyID(), groups);
+            yukonUserDao.addLiteYukonUserWithPassword(user, accountDto.getPassword(), liteStarsEnergyCompany.getEnergyCompanyID(), groups);
             dbPersistantDao.processDBChange(new DBChangeMsg(user.getLiteID(),
                 DBChangeMsg.CHANGE_YUKON_USER_DB,
                 DBChangeMsg.CAT_YUKON_USER,
@@ -204,7 +213,7 @@ public class AccountServiceImpl implements AccountService {
         liteCustomer.setCustomerNumber(CtiUtilities.STRING_NONE);
         liteCustomer.setRateScheduleID(CtiUtilities.NONE_ZERO_ID);
         liteCustomer.setAltTrackingNumber(CtiUtilities.STRING_NONE);
-        liteCustomer.setTemperatureUnit(authDao.getRolePropertyValue(liteEnergyCompany.getUserID(), EnergyCompanyRole.DEFAULT_TEMPERATURE_UNIT));
+        liteCustomer.setTemperatureUnit(authDao.getRolePropertyValue(liteStarsEnergyCompany.getUserID(), EnergyCompanyRole.DEFAULT_TEMPERATURE_UNIT));
         customerDao.addCustomer(liteCustomer);
         dbPersistantDao.processDBChange(new DBChangeMsg(liteCustomer.getLiteID(),
                                DBChangeMsg.CHANGE_CUSTOMER_DB,
@@ -263,7 +272,7 @@ public class AccountServiceImpl implements AccountService {
          * Add mapping
          */
         ECToAccountMapping ecToAccountMapping = new ECToAccountMapping();
-        ecToAccountMapping.setEnergyCompanyId(liteEnergyCompany.getEnergyCompanyID());
+        ecToAccountMapping.setEnergyCompanyId(liteStarsEnergyCompany.getEnergyCompanyID());
         ecToAccountMapping.setAccountId(customerAccount.getAccountId());
         ecMappingDao.addECToAccountMapping(ecToAccountMapping);
         
@@ -272,16 +281,18 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public void deleteAccount(String accountNumber, LiteStarsEnergyCompany liteEnergyCompany) {
+    public void deleteAccount(String accountNumber, LiteYukonUser user) {
         
-        LiteStarsCustAccountInformation accountInformation = liteEnergyCompany.searchAccountByAccountNo(accountNumber);
+        LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(user);
+        LiteStarsEnergyCompany liteStarsEnergyCompany = StarsDatabaseCache.getInstance().getEnergyCompany(energyCompany.getEnergyCompanyID());
+        LiteStarsCustAccountInformation accountInformation = liteStarsEnergyCompany.searchAccountByAccountNo(accountNumber);
         if(accountInformation != null) {
-            log.error("Account " + accountNumber + " could not be deleted: The provided account number doesn't exists.");
-            throw new NotFoundException("The provided account number doesn't exists");
+            log.error("Account " + accountNumber + " could not be deleted: Unable to find account for account#: " + accountNumber);
+            throw new NotFoundException("Unable to find account for account#: " + accountNumber);
         }
         
-        CustomerAccount account = customerAccountDao.getByAccountNumber(accountNumber, liteEnergyCompany.getEnergyCompanyID());
-        LiteStarsCustAccountInformation customerInfo = starsCustAccountInformationDao.getById(account.getAccountId(), liteEnergyCompany.getEnergyCompanyID());
+        CustomerAccount account = customerAccountDao.getByAccountNumber(accountNumber, liteStarsEnergyCompany.getEnergyCompanyID());
+        LiteStarsCustAccountInformation customerInfo = starsCustAccountInformationDao.getById(account.getAccountId(), liteStarsEnergyCompany.getEnergyCompanyID());
         AccountSite accountSite = accountSiteDao.getByAccountSiteId(account.getAccountSiteId());
         LiteCustomer liteCustomer = customerDao.getLiteCustomer(account.getCustomerId());
         customerInfo.setCustomer(liteCustomer);
@@ -289,7 +300,6 @@ public class AccountServiceImpl implements AccountService {
         LiteContact primaryContact = customerDao.getPrimaryContact(account.getCustomerId());
         LiteStarsEnergyCompany starsEnergyCompany = ecMappingDao.getContactEC(primaryContact.getContactID());
         Integer userId = primaryContact.getLoginID();
-        LiteYukonUser user = yukonUserDao.getLiteYukonUser(userId);
         
         /*
          * Delete Hardware info
@@ -406,39 +416,25 @@ public class AccountServiceImpl implements AccountService {
     
     @Override
     @Transactional
-    public void updateOrAddAccount(AccountDto accountDto, LiteStarsEnergyCompany liteEnergyCompany, String accountNumber) {
-        if(StringUtils.isBlank(accountNumber)) {
-            log.error("Account " + accountNumber + " could not be added/updated: The provided account number cannot be empty.");
-            throw new IllegalArgumentException("The provided account number cannot be empty.");
-        }
+    public void updateAccount(UpdatableAccount updatableAccount, LiteYukonUser user) {
+        AccountDto accountDto = updatableAccount.getAccountDto();
+        String accountNumber = updatableAccount.getAccountNumber();
         
-        LiteStarsCustAccountInformation accountInformation = liteEnergyCompany.searchAccountByAccountNo(accountNumber);
-     
-        if(accountInformation == null) {
-            addAccount(accountDto, liteEnergyCompany, accountNumber);
-        } else {
-            updateAccount(accountDto, liteEnergyCompany, accountNumber);
-        }
-            
-    }
-
-    @Override
-    @Transactional
-    public void updateAccount(AccountDto accountDto, LiteStarsEnergyCompany liteEnergyCompany, String accountNumber) {
-
         if(StringUtils.isBlank(accountNumber)) {
             log.error("Account " + accountNumber + " could not be added: The provided account number cannot be empty.");
-            throw new IllegalArgumentException("The provided account number cannot be empty.");
+            throw new InvalidAccountNumberException("The provided account number cannot be empty.");
         }
         
-        LiteStarsCustAccountInformation accountInformation = liteEnergyCompany.searchAccountByAccountNo(accountNumber);
+        LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(user);
+        LiteStarsEnergyCompany liteStarsEnergyCompany = StarsDatabaseCache.getInstance().getEnergyCompany(energyCompany.getEnergyCompanyID());
+        LiteStarsCustAccountInformation accountInformation = liteStarsEnergyCompany.searchAccountByAccountNo(accountNumber);
         
         if(accountInformation == null) {
-            log.error("Account " + accountNumber + " could not be updated: The provided account number doesn't exists.");
-            throw new NotFoundException("The provided account number doesn't exists");
+            log.error("Account " + accountNumber + " could not be updated: Unable to find account for account#: " + accountNumber);
+            throw new NotFoundException("Unable to find account for account#: " + accountNumber);
         }
         
-        CustomerAccount account = customerAccountDao.getByAccountNumber(accountNumber, liteEnergyCompany.getEnergyCompanyID());
+        CustomerAccount account = customerAccountDao.getByAccountNumber(accountNumber, liteStarsEnergyCompany.getEnergyCompanyID());
         LiteCustomer liteCustomer = customerDao.getLiteCustomer(account.getCustomerId());
         AccountSite accountSite = accountSiteDao.getByAccountSiteId(account.getAccountSiteId());
         LiteAddress liteStreetAddress = addressDao.getByAddressId(accountSite.getStreetAddressId()); 
@@ -446,7 +442,6 @@ public class AccountServiceImpl implements AccountService {
         LiteContact primaryContact = customerDao.getPrimaryContact(account.getCustomerId());
         Address streetAddress = accountDto.getStreetAddress();
         Address billingAddress = accountDto.getBillingAddress();
-        
         
         /*
          * Update the address
@@ -557,19 +552,19 @@ public class AccountServiceImpl implements AccountService {
         /*
          * Update mapping
          */
-        ecMappingDao.updateECToAccountMapping(account.getAccountId(), liteEnergyCompany.getEnergyCompanyID());
+        ecMappingDao.updateECToAccountMapping(account.getAccountId(), liteStarsEnergyCompany.getEnergyCompanyID());
         
-        log.info("Account: " +accountNumber + " deleted successfully.");
+        log.info("Account: " +accountNumber + " updated successfully.");
     }
     
     @Override
     public AccountDto getAccountDto(String accountNumber, int energyCompanyId) {
         AccountDto retrievedDto = new AccountDto();
         CustomerAccount customerAccount = customerAccountDao.getByAccountNumber(accountNumber, energyCompanyId);
+        AccountSite accountSite = accountSiteDao.getByAccountSiteId(customerAccount.getAccountSiteId());
+        LiteSiteInformation siteInfo = siteInformationDao.getSiteInfoById(accountSite.getSiteInformationId());
         LiteCustomer customer = customerDao.getLiteCustomer(customerAccount.getCustomerId());
         LiteContact primaryContact = contactDao.getContact(customer.getPrimaryContactID());
-        LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany(energyCompanyId);
-        LiteStarsCustAccountInformation liteStarsCustAccountInformation = energyCompany.getCustAccountInformation(customerAccount.getAccountId(), false);
         
         retrievedDto.setFirstName(primaryContact.getContFirstName());
         retrievedDto.setLastName(primaryContact.getContLastName());
@@ -600,13 +595,47 @@ public class AccountServiceImpl implements AccountService {
             retrievedDto.setEmailAddress("");
         }
         
-        // apperently a dummy address row gets set even when one wasn't provided. 
+        /*
+         * Apperently a dummy address row gets set even when one wasn't provided. 
+         */
         LiteAddress address = addressDao.getByAddressId(primaryContact.getAddressID());
         giveAddressFieldsToDTO(address, retrievedDto.getStreetAddress());
         LiteAddress billingAdress = addressDao.getByAddressId(customerAccount.getBillingAddressId());
         giveAddressFieldsToDTO(billingAdress, retrievedDto.getBillingAddress());
         
-        //TODO finish this
+        /*
+         * Don't work with passwords here because they are a special case.
+         */
+        int loginId = primaryContact.getLoginID();
+        if(loginId > UserUtils.USER_DEFAULT_ID) {
+            LiteYukonUser login = yukonUserDao.getLiteYukonUser(loginId);
+            retrievedDto.setUserName(login.getUsername());
+            retrievedDto.setPassword("");
+            /*
+             * Currently these accounts only support users with one login group.
+             * This may need to change in the future.
+             */
+            List<LiteYukonGroup> groups = yukonGroupDao.getGroupsForUser(login);
+            retrievedDto.setLoginGroup(groups.get(0).getGroupName());
+        }else {
+            retrievedDto.setUserName("");
+            retrievedDto.setPassword("");
+            retrievedDto.setLoginGroup("");
+        }
+        
+        retrievedDto.setAltTrackingNumber(customer.getAltTrackingNumber());
+        retrievedDto.setMapNumber(accountSite.getSiteNumber());
+        String subName = null;
+        try {
+            subName = siteInformationDao.getSubstationNameById(siteInfo.getSubstationID());
+        } catch(NotFoundException nfe) {
+            subName = "";
+        }
+        retrievedDto.getSiteInfo().setSubstationName(subName);
+        retrievedDto.getSiteInfo().setFeeder(siteInfo.getFeeder());
+        retrievedDto.getSiteInfo().setPole(siteInfo.getPole());
+        retrievedDto.getSiteInfo().setTransformerSize(siteInfo.getTransformerSize());
+        retrievedDto.getSiteInfo().setServiceVoltage(siteInfo.getServiceVoltage());
         
         return retrievedDto;
     }
@@ -775,4 +804,8 @@ public class AccountServiceImpl implements AccountService {
         this.asyncDynamicDataSource = asyncDynamicDataSource;
     }
 
+    @Autowired
+    public void setEnergyCompanyDao(EnergyCompanyDao energyCompanyDao) {
+        this.energyCompanyDao = energyCompanyDao;
+    }
 }

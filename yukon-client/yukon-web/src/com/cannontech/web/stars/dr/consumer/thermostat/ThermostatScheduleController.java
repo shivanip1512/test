@@ -152,24 +152,17 @@ public class ThermostatScheduleController extends AbstractThermostatController {
 
         LiteYukonUser user = yukonUserContext.getYukonUser();
         accountCheckerService.checkThermostatSchedule(user, scheduleId);
-        accountCheckerService.checkInventory(user, 
-                                             thermostatIds.toArray(new Integer[thermostatIds.size()]));
+        accountCheckerService.checkInventory(user, thermostatIds.toArray(new Integer[thermostatIds.size()]));
         
-        String scheduleString = ServletRequestUtils.getRequiredStringParameter(request,
-                                                                               "schedules");
-        Boolean applyToAll = ServletRequestUtils.getBooleanParameter(request,
-                                                                     "applyToWeekend",
-                                                                     false);
+        String scheduleString = ServletRequestUtils.getRequiredStringParameter(request, "schedules");
+        Boolean applyToAll = ServletRequestUtils.getBooleanParameter(request, "applyToWeekend", false);
 
-        String saveAction = ServletRequestUtils.getStringParameter(request,
-                                                                   "saveAction",
-                                                                   null);
+        String saveAction = ServletRequestUtils.getStringParameter(request, "saveAction", null);
         boolean sendAndSave = "saveApply".equals(saveAction);
 
         boolean isFahrenheit = CtiUtilities.FAHRENHEIT_CHARACTER.equalsIgnoreCase(temperatureUnit);
         String escapedTempUnit = StringEscapeUtils.escapeHtml(temperatureUnit);
-        if(StringUtils.isNotBlank(escapedTempUnit) 
-                && (escapedTempUnit.equalsIgnoreCase("C") || escapedTempUnit.equalsIgnoreCase("F")) ) {
+        if(StringUtils.isNotBlank(escapedTempUnit) && (escapedTempUnit.equalsIgnoreCase("C") || escapedTempUnit.equalsIgnoreCase("F")) ) {
             customerDao.setTempForCustomer(account.getCustomerId(), escapedTempUnit);
         }
 

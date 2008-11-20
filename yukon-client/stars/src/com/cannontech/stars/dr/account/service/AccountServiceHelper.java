@@ -15,12 +15,13 @@ public class AccountServiceHelper {
     private AccountService accountService;
     
     /**
-     * Take a dto with nulls and updated data; fill it in 
-     * with whats in the db for this account.
+     * This method takes a dto with nulls and update data;  
+     * Retrieves a dto from the db and copies passed dto values 
+     * into retrieved dto.  Returns resulting dto.
      * @param workingAccount
      * @return UpdatableAccount
      */
-    public UpdatableAccount buildSmartDto(UpdatableAccount workingAccount, int energyCompanyId) {
+    public UpdatableAccount buildFullDto(UpdatableAccount workingAccount, int energyCompanyId) {
         AccountDto retrievedDto = accountService.getAccountDto(workingAccount.getAccountNumber(), energyCompanyId);
         copyNonNullValues(workingAccount, retrievedDto);
         UpdatableAccount result = new UpdatableAccount();

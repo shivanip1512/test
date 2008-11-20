@@ -1,8 +1,9 @@
 package com.cannontech.stars.dr.account.service;
 
 import com.cannontech.common.bulk.field.impl.AccountDto;
+import com.cannontech.common.bulk.field.impl.UpdatableAccount;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.exception.AccountNumberUnavailableException;
 import com.cannontech.stars.dr.account.exception.UserNameUnavailableException;
 
@@ -11,31 +12,27 @@ public interface AccountService {
     /**
      * Mehtod to add an account. Throws AccountNumberUnavailableException if the account
      * number is alread used for that energy company.
-     * @param accountDto
-     * @param liteEnergyCompany
+     * @param updatableAccount
+     * @param operator
      * @throws AccountNumberUnavailableException
+     * @throws UserNameUnavailableException
      */
-    public void addAccount(AccountDto accountDto, LiteStarsEnergyCompany liteEnergyCompany, String accountNumber) throws AccountNumberUnavailableException, UserNameUnavailableException;
+    public void addAccount(UpdatableAccount updatableAccount, LiteYukonUser operator) throws AccountNumberUnavailableException, UserNameUnavailableException;
     
     /**
      * Method to update an account
-     * @param accountDto
+     * @param updatableAccount
+     * @param user
+     * @throws NotFoundException
      */
-    public void updateAccount(AccountDto accountDto, LiteStarsEnergyCompany liteEnergyCompany, String accountNumber) throws NotFoundException;
+    public void updateAccount(UpdatableAccount updatableAccount, LiteYukonUser user) throws NotFoundException;
 
     /**
      * Method to delete an account
      * @param accountNumber
-     * @param liteEnergyCompany
+     * @param user
      */
-    public void deleteAccount(String accountNumber, LiteStarsEnergyCompany liteEnergyCompany);
-
-    /**
-     * Method that will update an account if it exists, update otherwise.
-     * @param accountDto
-     * @param liteEnergyCompany
-     */
-    public void updateOrAddAccount(AccountDto accountDto, LiteStarsEnergyCompany liteEnergyCompany, String accountNumber);
+    public void deleteAccount(String accountNumber, LiteYukonUser user);
 
     /**
      * Method to return an account dto for an account number and energy company
