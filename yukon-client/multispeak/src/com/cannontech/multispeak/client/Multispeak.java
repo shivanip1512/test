@@ -66,7 +66,7 @@ import com.cannontech.multispeak.dao.MspObjectDao;
 import com.cannontech.multispeak.dao.SubstationDao;
 import com.cannontech.multispeak.dao.SubstationToRouteMappingDao;
 import com.cannontech.multispeak.db.Substation;
-import com.cannontech.multispeak.deploy.service.CB_MRSoap_BindingStub;
+import com.cannontech.multispeak.deploy.service.CB_ServerSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.ConnectDisconnectEvent;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
 import com.cannontech.multispeak.deploy.service.ExtensionsItem;
@@ -492,11 +492,15 @@ public class Multispeak implements MessageListener {
             
             //Try to load MeterNumber from another element
             if( StringUtils.isBlank(meterNumber)) {
-                meterNumber = cdEvent.getMeterID().trim(); //SEDC
+                meterNumber = cdEvent.getMeterID(); //SEDC
                 if( StringUtils.isBlank(meterNumber)) {
-                    meterNumber = cdEvent.getMeterNo().trim();
+                    meterNumber = cdEvent.getMeterNo();
                 }
             }
+            if (meterNumber != null) {
+                meterNumber = meterNumber.trim();
+            }
+            
             com.cannontech.amr.meter.model.Meter meter;
             try {
  	        	meter = meterDao.getForMeterNumber(meterNumber);
@@ -515,7 +519,8 @@ public class Multispeak implements MessageListener {
  	                
  	                writePilRequest(meter, commandStr, id, 13);
  	                logMSPActivity("initiateConnectDisconnect",
- 	        						"(ID:" + meter.getDeviceId() + ") MeterNumber (" + meterNumber + ") - " + commandStr + " sent for ReasonCode: " + cdEvent.getReasonCode().getValue(),
+ 	        						"(ID:" + meter.getDeviceId() + ") MeterNumber (" + meterNumber + ") - " + commandStr + 
+ 	        						((cdEvent.getReasonCode() != null) ? " sent for ReasonCode: " + cdEvent.getReasonCode().getValue() : ""),
  	        						vendor.getCompanyName());
  	            } else {
  	                ErrorObject err = mspObjectDao.getErrorObject(meterNumber, 
@@ -1236,7 +1241,7 @@ public class Multispeak implements MessageListener {
         
                 try {
                     String serviceLocationStr = mspServiceLocation.getObjectID();
-                    CB_MRSoap_BindingStub port = MultispeakPortFactory.getCB_MRPort(mspVendor);
+                    CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor, MultispeakDefines.CB_MR_STR);
                     if (port != null) {
                         long start = System.currentTimeMillis();
                         CTILogger.debug("Begin call to getMeterByServLoc for ServLoc:" + serviceLocationStr);
@@ -1248,7 +1253,7 @@ public class Multispeak implements MessageListener {
                             }
                         }
                     } else {
-                        CTILogger.error("Port not found for CB_MR (" + mspVendor.getCompanyName() + ") for ServLoc: " + mspServiceLocation.getObjectID());
+                        CTILogger.error("Port not found for CB_Server (" + mspVendor.getCompanyName() + ") for ServLoc: " + mspServiceLocation.getObjectID());
                     }
                 } catch (RemoteException e) {
                     CTILogger.error("TargetService: " + endpointURL + " - updateServiceLocation (" + mspVendor.getCompanyName() + ") for ServLoc: " + mspServiceLocation.getObjectID());

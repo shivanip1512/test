@@ -8,11 +8,11 @@
 package com.cannontech.multispeak.deploy.service;
 
 public class MspOverCurrentDeviceList  implements java.io.Serializable {
+    private com.cannontech.multispeak.deploy.service.Sectionalizer sectionalizer;
+
     private com.cannontech.multispeak.deploy.service.Recloser recloser;
 
     private com.cannontech.multispeak.deploy.service.Breaker breaker;
-
-    private com.cannontech.multispeak.deploy.service.Sectionalizer sectionalizer;
 
     private com.cannontech.multispeak.deploy.service.Fuse fuse;
 
@@ -22,16 +22,36 @@ public class MspOverCurrentDeviceList  implements java.io.Serializable {
     }
 
     public MspOverCurrentDeviceList(
+           com.cannontech.multispeak.deploy.service.Sectionalizer sectionalizer,
            com.cannontech.multispeak.deploy.service.Recloser recloser,
            com.cannontech.multispeak.deploy.service.Breaker breaker,
-           com.cannontech.multispeak.deploy.service.Sectionalizer sectionalizer,
            com.cannontech.multispeak.deploy.service.Fuse fuse,
            com.cannontech.multispeak.deploy.service.MspOverCurrentDevice mspOverCurrentDevice) {
+           this.sectionalizer = sectionalizer;
            this.recloser = recloser;
            this.breaker = breaker;
-           this.sectionalizer = sectionalizer;
            this.fuse = fuse;
            this.mspOverCurrentDevice = mspOverCurrentDevice;
+    }
+
+
+    /**
+     * Gets the sectionalizer value for this MspOverCurrentDeviceList.
+     * 
+     * @return sectionalizer
+     */
+    public com.cannontech.multispeak.deploy.service.Sectionalizer getSectionalizer() {
+        return sectionalizer;
+    }
+
+
+    /**
+     * Sets the sectionalizer value for this MspOverCurrentDeviceList.
+     * 
+     * @param sectionalizer
+     */
+    public void setSectionalizer(com.cannontech.multispeak.deploy.service.Sectionalizer sectionalizer) {
+        this.sectionalizer = sectionalizer;
     }
 
 
@@ -72,26 +92,6 @@ public class MspOverCurrentDeviceList  implements java.io.Serializable {
      */
     public void setBreaker(com.cannontech.multispeak.deploy.service.Breaker breaker) {
         this.breaker = breaker;
-    }
-
-
-    /**
-     * Gets the sectionalizer value for this MspOverCurrentDeviceList.
-     * 
-     * @return sectionalizer
-     */
-    public com.cannontech.multispeak.deploy.service.Sectionalizer getSectionalizer() {
-        return sectionalizer;
-    }
-
-
-    /**
-     * Sets the sectionalizer value for this MspOverCurrentDeviceList.
-     * 
-     * @param sectionalizer
-     */
-    public void setSectionalizer(com.cannontech.multispeak.deploy.service.Sectionalizer sectionalizer) {
-        this.sectionalizer = sectionalizer;
     }
 
 
@@ -146,15 +146,15 @@ public class MspOverCurrentDeviceList  implements java.io.Serializable {
         __equalsCalc = obj;
         boolean _equals;
         _equals = true && 
+            ((this.sectionalizer==null && other.getSectionalizer()==null) || 
+             (this.sectionalizer!=null &&
+              this.sectionalizer.equals(other.getSectionalizer()))) &&
             ((this.recloser==null && other.getRecloser()==null) || 
              (this.recloser!=null &&
               this.recloser.equals(other.getRecloser()))) &&
             ((this.breaker==null && other.getBreaker()==null) || 
              (this.breaker!=null &&
               this.breaker.equals(other.getBreaker()))) &&
-            ((this.sectionalizer==null && other.getSectionalizer()==null) || 
-             (this.sectionalizer!=null &&
-              this.sectionalizer.equals(other.getSectionalizer()))) &&
             ((this.fuse==null && other.getFuse()==null) || 
              (this.fuse!=null &&
               this.fuse.equals(other.getFuse()))) &&
@@ -172,14 +172,14 @@ public class MspOverCurrentDeviceList  implements java.io.Serializable {
         }
         __hashCodeCalc = true;
         int _hashCode = 1;
+        if (getSectionalizer() != null) {
+            _hashCode += getSectionalizer().hashCode();
+        }
         if (getRecloser() != null) {
             _hashCode += getRecloser().hashCode();
         }
         if (getBreaker() != null) {
             _hashCode += getBreaker().hashCode();
-        }
-        if (getSectionalizer() != null) {
-            _hashCode += getSectionalizer().hashCode();
         }
         if (getFuse() != null) {
             _hashCode += getFuse().hashCode();
@@ -198,6 +198,13 @@ public class MspOverCurrentDeviceList  implements java.io.Serializable {
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "mspOverCurrentDeviceList"));
         org.apache.axis.description.ElementDesc elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("sectionalizer");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "sectionalizer"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "sectionalizer"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("recloser");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "recloser"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "recloser"));
@@ -208,13 +215,6 @@ public class MspOverCurrentDeviceList  implements java.io.Serializable {
         elemField.setFieldName("breaker");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "breaker"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "breaker"));
-        elemField.setMinOccurs(0);
-        elemField.setNillable(false);
-        typeDesc.addFieldDesc(elemField);
-        elemField = new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("sectionalizer");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "sectionalizer"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "sectionalizer"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

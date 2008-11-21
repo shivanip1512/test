@@ -13,9 +13,4 @@ public interface OA_MR extends javax.xml.rpc.Service {
     public com.cannontech.multispeak.deploy.service.OA_MRSoap_PortType getOA_MRSoap() throws javax.xml.rpc.ServiceException;
 
     public com.cannontech.multispeak.deploy.service.OA_MRSoap_PortType getOA_MRSoap(java.net.URL portAddress) throws javax.xml.rpc.ServiceException;
-    public java.lang.String getOA_MRSoap12Address();
-
-    public com.cannontech.multispeak.deploy.service.OA_MRSoap_PortType getOA_MRSoap12() throws javax.xml.rpc.ServiceException;
-
-    public com.cannontech.multispeak.deploy.service.OA_MRSoap_PortType getOA_MRSoap12(java.net.URL portAddress) throws javax.xml.rpc.ServiceException;
 }

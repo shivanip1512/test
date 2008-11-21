@@ -194,6 +194,7 @@ public class Uom implements java.io.Serializable {
     public static final java.lang.String _value175 = "cm";
     public static final java.lang.String _value176 = "mm";
     public static final java.lang.String _value177 = "micro m";
+    public static final java.lang.String _value178 = "percent";
     public static final Uom value1 = new Uom(_value1);
     public static final Uom value2 = new Uom(_value2);
     public static final Uom value3 = new Uom(_value3);
@@ -371,6 +372,7 @@ public class Uom implements java.io.Serializable {
     public static final Uom value175 = new Uom(_value175);
     public static final Uom value176 = new Uom(_value176);
     public static final Uom value177 = new Uom(_value177);
+    public static final Uom value178 = new Uom(_value178);
     public java.lang.String getValue() { return _value_;}
     public static Uom fromValue(java.lang.String value)
           throws java.lang.IllegalArgumentException {

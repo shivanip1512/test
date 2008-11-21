@@ -18,41 +18,45 @@
 		<property name="simpleJdbcTemplate"><ref bean="simpleJdbcTemplate" /></property>
 	</bean>
 	
-  <bean id="mr_cb" class="com.cannontech.multispeak.deploy.service.impl.MR_CBImpl">
+  <bean id="mr_server" class="com.cannontech.multispeak.deploy.service.impl.MR_ServerImpl">
   	<property name="multispeakFuncs" ref="multispeakFuncs"/>
     <property name="mspMeterDao" ref="mspMeterDao"/>
   	<property name="multispeak" ref="multispeak"/>
   	<property name="mspRawPointHistoryDao" ref="mspRawPointHistoryDao"/>
   	<property name="porterConnection" ref="porterConnection"/>
   	<property name="mspValidationService" ref="mspValidationService"/>
+    <property name="mspMeterReadDao" ref="mspMeterReadDao"/>
+    <property name="readingTypesMap">
+        <map>
+          <entry key="Load" value-ref="loadFormattedBlock"/>
+          <entry key="Outage" value-ref="outageFormattedBlock"/>
+    <!--      <entry key="Billing" value-ref="billingFormattedBlock"/>
+          <entry key="BillingTOU" value-ref="billingTOUFormattedBlock"/> -->
+        </map>    
+    </property>
+    <property name="meterDao" ref="meterDao"/>
   </bean>
-  <bean id="cd_cb" class="com.cannontech.multispeak.deploy.service.impl.CD_CBImpl">
+  <bean id="cd_server" class="com.cannontech.multispeak.deploy.service.impl.CD_ServerImpl">
   	<property name="multispeakFuncs" ref="multispeakFuncs"/>
     <property name="mspMeterDao" ref="mspMeterDao"/>
   	<property name="multispeak" ref="multispeak"/>
   	<property name="mspValidationService" ref="mspValidationService"/>
   </bean>
-  <bean id="mr_ea" class="com.cannontech.multispeak.deploy.service.impl.MR_EAImpl">
+  <bean id="od_server" class="com.cannontech.multispeak.deploy.service.impl.OD_ServerImpl">
   	<property name="multispeakFuncs" ref="multispeakFuncs"/>
-    <property name="mspMeterReadDao" ref="mspMeterReadDao"/>
-    <property name="mr_cb" ref="mr_cb"/>
-    <property name="readingTypesMap">
-        <map>
-          <entry key="Load" value-ref="loadFormattedBlock"/>
-          <entry key="Outage" value-ref="outageFormattedBlock"/>
-	<!--      <entry key="Billing" value-ref="billingFormattedBlock"/>
-          <entry key="BillingTOU" value-ref="billingTOUFormattedBlock"/> -->
-        </map>    
-    </property>
-  	<property name="porterConnection" ref="porterConnection"/>
   	<property name="multispeak" ref="multispeak"/>
- 	<property name="mspRawPointHistoryDao" ref="mspRawPointHistoryDao"/>
- 	<property name="mspValidationService" ref="mspValidationService"/>
- 	<property name="meterDao" ref="meterDao"/>
   </bean>
-  <bean id="od_oa" class="com.cannontech.multispeak.deploy.service.impl.OD_OAImpl">
-  	<property name="multispeakFuncs" ref="multispeakFuncs"/>
-  	<property name="multispeak" ref="multispeak"/>
+  <bean id="lm_server" class="com.cannontech.multispeak.deploy.service.impl.LM_ServerImpl">
+    <property name="multispeakFuncs" ref="multispeakFuncs"/>
+    <property name="mspMeterDao" ref="mspMeterDao"/>
+    <property name="multispeak" ref="multispeak"/>
+    <property name="mspValidationService" ref="mspValidationService"/>
+  </bean>
+  <bean id="scada_server" class="com.cannontech.multispeak.deploy.service.impl.SCADA_ServerImpl">
+    <property name="multispeakFuncs" ref="multispeakFuncs"/>
+    <property name="mspMeterDao" ref="mspMeterDao"/>
+    <property name="multispeak" ref="multispeak"/>
+    <property name="mspValidationService" ref="mspValidationService"/>
   </bean>
 
   <bean id="multispeakFuncs" class="com.cannontech.multispeak.client.MultispeakFuncs">
@@ -94,7 +98,7 @@
   </bean>
 
   <bean id="mspValidationService" class="com.cannontech.multispeak.service.impl.MspValidationServiceImpl">
-  	<property name="mr_cb" ref="mr_cb"/>
+  	<property name="mr_server" ref="mr_server"/>
   	<property name="meterDao" ref="meterDao"/>
   </bean>
   

@@ -18,6 +18,8 @@ public class PickListItem  implements java.io.Serializable {
 
     private com.cannontech.multispeak.deploy.service.UnitActn unitAction;
 
+    private com.cannontech.multispeak.deploy.service.ObjectRef materialItemID;
+
     public PickListItem() {
     }
 
@@ -26,12 +28,14 @@ public class PickListItem  implements java.io.Serializable {
            com.cannontech.multispeak.deploy.service.ExtensionsItem[] extensionsList,
            java.lang.String stockNumber,
            java.lang.Float quantity,
-           com.cannontech.multispeak.deploy.service.UnitActn unitAction) {
+           com.cannontech.multispeak.deploy.service.UnitActn unitAction,
+           com.cannontech.multispeak.deploy.service.ObjectRef materialItemID) {
            this.extensions = extensions;
            this.extensionsList = extensionsList;
            this.stockNumber = stockNumber;
            this.quantity = quantity;
            this.unitAction = unitAction;
+           this.materialItemID = materialItemID;
     }
 
 
@@ -134,6 +138,26 @@ public class PickListItem  implements java.io.Serializable {
         this.unitAction = unitAction;
     }
 
+
+    /**
+     * Gets the materialItemID value for this PickListItem.
+     * 
+     * @return materialItemID
+     */
+    public com.cannontech.multispeak.deploy.service.ObjectRef getMaterialItemID() {
+        return materialItemID;
+    }
+
+
+    /**
+     * Sets the materialItemID value for this PickListItem.
+     * 
+     * @param materialItemID
+     */
+    public void setMaterialItemID(com.cannontech.multispeak.deploy.service.ObjectRef materialItemID) {
+        this.materialItemID = materialItemID;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof PickListItem)) return false;
@@ -160,7 +184,10 @@ public class PickListItem  implements java.io.Serializable {
               this.quantity.equals(other.getQuantity()))) &&
             ((this.unitAction==null && other.getUnitAction()==null) || 
              (this.unitAction!=null &&
-              this.unitAction.equals(other.getUnitAction())));
+              this.unitAction.equals(other.getUnitAction()))) &&
+            ((this.materialItemID==null && other.getMaterialItemID()==null) || 
+             (this.materialItemID!=null &&
+              this.materialItemID.equals(other.getMaterialItemID())));
         __equalsCalc = null;
         return _equals;
     }
@@ -194,6 +221,9 @@ public class PickListItem  implements java.io.Serializable {
         }
         if (getUnitAction() != null) {
             _hashCode += getUnitAction().hashCode();
+        }
+        if (getMaterialItemID() != null) {
+            _hashCode += getMaterialItemID().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -238,6 +268,13 @@ public class PickListItem  implements java.io.Serializable {
         elemField.setFieldName("unitAction");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "unitAction"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "unitActn"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("materialItemID");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "materialItemID"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "objectRef"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

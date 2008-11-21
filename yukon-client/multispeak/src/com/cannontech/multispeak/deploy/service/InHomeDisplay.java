@@ -20,6 +20,8 @@ public class InHomeDisplay  extends com.cannontech.multispeak.deploy.service.Msp
 
     private com.cannontech.multispeak.deploy.service.Module[] moduleList;
 
+    private java.lang.String meterBaseID;
+
     public InHomeDisplay() {
     }
 
@@ -41,7 +43,8 @@ public class InHomeDisplay  extends com.cannontech.multispeak.deploy.service.Msp
            java.lang.String deviceType,
            java.lang.String meterID,
            java.lang.String meterNo,
-           com.cannontech.multispeak.deploy.service.Module[] moduleList) {
+           com.cannontech.multispeak.deploy.service.Module[] moduleList,
+           java.lang.String meterBaseID) {
         super(
             objectID,
             verb,
@@ -61,6 +64,7 @@ public class InHomeDisplay  extends com.cannontech.multispeak.deploy.service.Msp
         this.meterID = meterID;
         this.meterNo = meterNo;
         this.moduleList = moduleList;
+        this.meterBaseID = meterBaseID;
     }
 
 
@@ -183,6 +187,26 @@ public class InHomeDisplay  extends com.cannontech.multispeak.deploy.service.Msp
         this.moduleList = moduleList;
     }
 
+
+    /**
+     * Gets the meterBaseID value for this InHomeDisplay.
+     * 
+     * @return meterBaseID
+     */
+    public java.lang.String getMeterBaseID() {
+        return meterBaseID;
+    }
+
+
+    /**
+     * Sets the meterBaseID value for this InHomeDisplay.
+     * 
+     * @param meterBaseID
+     */
+    public void setMeterBaseID(java.lang.String meterBaseID) {
+        this.meterBaseID = meterBaseID;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof InHomeDisplay)) return false;
@@ -212,7 +236,10 @@ public class InHomeDisplay  extends com.cannontech.multispeak.deploy.service.Msp
               this.meterNo.equals(other.getMeterNo()))) &&
             ((this.moduleList==null && other.getModuleList()==null) || 
              (this.moduleList!=null &&
-              java.util.Arrays.equals(this.moduleList, other.getModuleList())));
+              java.util.Arrays.equals(this.moduleList, other.getModuleList()))) &&
+            ((this.meterBaseID==null && other.getMeterBaseID()==null) || 
+             (this.meterBaseID!=null &&
+              this.meterBaseID.equals(other.getMeterBaseID())));
         __equalsCalc = null;
         return _equals;
     }
@@ -249,6 +276,9 @@ public class InHomeDisplay  extends com.cannontech.multispeak.deploy.service.Msp
                     _hashCode += obj.hashCode();
                 }
             }
+        }
+        if (getMeterBaseID() != null) {
+            _hashCode += getMeterBaseID().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -302,6 +332,13 @@ public class InHomeDisplay  extends com.cannontech.multispeak.deploy.service.Msp
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         elemField.setItemQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "module"));
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("meterBaseID");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meterBaseID"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
     }
 

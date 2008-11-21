@@ -8,7 +8,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MspObjectDao;
-import com.cannontech.multispeak.deploy.service.CB_MRSoap_BindingStub;
+import com.cannontech.multispeak.deploy.service.CB_ServerSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.Customer;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
 import com.cannontech.multispeak.deploy.service.ServiceLocation;
@@ -24,11 +24,11 @@ public class MspObjectDaoImpl implements MspObjectDao {
 
         Customer mspCustomer = new Customer();
         try {    
-            CB_MRSoap_BindingStub port = MultispeakPortFactory.getCB_MRPort(mspVendor);
+            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor, MultispeakDefines.CB_MR_STR);
             if (port != null) {
                 mspCustomer = port.getCustomerByMeterNo(meterNumber);
             } else {
-                CTILogger.error("Port not found for CB_MR (" + mspVendor.getCompanyName() + ") for MeterNo: " + meterNumber);
+                CTILogger.error("Port not found for CB_Server (" + mspVendor.getCompanyName() + ") for MeterNo: " + meterNumber);
             }                
         } catch (RemoteException e) {
             String endpointURL = mspVendor.getEndpointURL(MultispeakDefines.CB_MR_STR);
@@ -46,7 +46,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
     public ServiceLocation getMspServiceLocation(String meterNumber, MultispeakVendor mspVendor) {
         ServiceLocation mspServiceLocation = new ServiceLocation();
         try {
-            CB_MRSoap_BindingStub port = MultispeakPortFactory.getCB_MRPort(mspVendor);
+            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor, MultispeakDefines.CB_MR_STR);
             if (port != null) {
                 mspServiceLocation =  port.getServiceLocationByMeterNo(meterNumber);
             } else {
@@ -68,7 +68,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
     public com.cannontech.multispeak.deploy.service.Meter getMspMeter(String meterNumber, MultispeakVendor mspVendor) {
         com.cannontech.multispeak.deploy.service.Meter mspMeter = new com.cannontech.multispeak.deploy.service.Meter();
         try {
-            CB_MRSoap_BindingStub port = MultispeakPortFactory.getCB_MRPort(mspVendor);
+            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor, MultispeakDefines.CB_MR_STR);
             if (port != null) {
                 mspMeter =  port.getMeterByMeterNo(meterNumber);
             } else {

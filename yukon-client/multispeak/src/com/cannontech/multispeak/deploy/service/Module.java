@@ -14,6 +14,10 @@ public class Module  extends com.cannontech.multispeak.deploy.service.MspDevice 
 
     private java.lang.String firmwareVersion;
 
+    private java.lang.String manufacturer;
+
+    private java.lang.String serialNumber;
+
     public Module() {
     }
 
@@ -30,11 +34,11 @@ public class Module  extends com.cannontech.multispeak.deploy.service.MspDevice 
            java.util.Calendar inServiceDate,
            java.util.Calendar outServiceDate,
            java.lang.String facilityID,
-           java.lang.String manufacturer,
-           java.lang.String serialNumber,
            java.lang.String description,
            java.lang.String moduleType,
-           java.lang.String firmwareVersion) {
+           java.lang.String firmwareVersion,
+           java.lang.String manufacturer,
+           java.lang.String serialNumber) {
         super(
             objectID,
             verb,
@@ -47,12 +51,12 @@ public class Module  extends com.cannontech.multispeak.deploy.service.MspDevice 
             deviceClass,
             inServiceDate,
             outServiceDate,
-            facilityID,
-            manufacturer,
-            serialNumber);
+            facilityID);
         this.description = description;
         this.moduleType = moduleType;
         this.firmwareVersion = firmwareVersion;
+        this.manufacturer = manufacturer;
+        this.serialNumber = serialNumber;
     }
 
 
@@ -115,6 +119,46 @@ public class Module  extends com.cannontech.multispeak.deploy.service.MspDevice 
         this.firmwareVersion = firmwareVersion;
     }
 
+
+    /**
+     * Gets the manufacturer value for this Module.
+     * 
+     * @return manufacturer
+     */
+    public java.lang.String getManufacturer() {
+        return manufacturer;
+    }
+
+
+    /**
+     * Sets the manufacturer value for this Module.
+     * 
+     * @param manufacturer
+     */
+    public void setManufacturer(java.lang.String manufacturer) {
+        this.manufacturer = manufacturer;
+    }
+
+
+    /**
+     * Gets the serialNumber value for this Module.
+     * 
+     * @return serialNumber
+     */
+    public java.lang.String getSerialNumber() {
+        return serialNumber;
+    }
+
+
+    /**
+     * Sets the serialNumber value for this Module.
+     * 
+     * @param serialNumber
+     */
+    public void setSerialNumber(java.lang.String serialNumber) {
+        this.serialNumber = serialNumber;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof Module)) return false;
@@ -135,7 +179,13 @@ public class Module  extends com.cannontech.multispeak.deploy.service.MspDevice 
               this.moduleType.equals(other.getModuleType()))) &&
             ((this.firmwareVersion==null && other.getFirmwareVersion()==null) || 
              (this.firmwareVersion!=null &&
-              this.firmwareVersion.equals(other.getFirmwareVersion())));
+              this.firmwareVersion.equals(other.getFirmwareVersion()))) &&
+            ((this.manufacturer==null && other.getManufacturer()==null) || 
+             (this.manufacturer!=null &&
+              this.manufacturer.equals(other.getManufacturer()))) &&
+            ((this.serialNumber==null && other.getSerialNumber()==null) || 
+             (this.serialNumber!=null &&
+              this.serialNumber.equals(other.getSerialNumber())));
         __equalsCalc = null;
         return _equals;
     }
@@ -155,6 +205,12 @@ public class Module  extends com.cannontech.multispeak.deploy.service.MspDevice 
         }
         if (getFirmwareVersion() != null) {
             _hashCode += getFirmwareVersion().hashCode();
+        }
+        if (getManufacturer() != null) {
+            _hashCode += getManufacturer().hashCode();
+        }
+        if (getSerialNumber() != null) {
+            _hashCode += getSerialNumber().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -183,6 +239,20 @@ public class Module  extends com.cannontech.multispeak.deploy.service.MspDevice 
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("firmwareVersion");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "firmwareVersion"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("manufacturer");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "manufacturer"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("serialNumber");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "serialNumber"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);

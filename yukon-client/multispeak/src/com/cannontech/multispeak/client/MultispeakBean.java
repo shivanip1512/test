@@ -50,9 +50,13 @@ public class MultispeakBean
         this.selectedMspVendor = selectedMspVendor;
     }
 
-    public String[] getAllInterfaces()
-    {
+    public String[] getP2PInterfaces() {
         return MultispeakDefines.getMSP_INTERFACE_ARRAY();
+    }
+
+    public String[] getBusInterfaces()
+    {
+        return MultispeakDefines.getMSP_BUS_INTERFACE_ARRAY();
     }
     
     public Map<String, MultispeakInterface> getSelectedInterfacesMap()

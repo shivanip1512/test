@@ -22,7 +22,7 @@ public class MR_EALocator extends org.apache.axis.client.Service implements com.
     }
 
     // Use to get a proxy class for MR_EASoap
-    private java.lang.String MR_EASoap_address = "http://www.multispeak.org/interface/30q/4_MR_EA.asmx";
+    private java.lang.String MR_EASoap_address = "http://localhost/MultiSpeakWebServiceV30u/4_MR_EA.asmx";
 
     public java.lang.String getMR_EASoapAddress() {
         return MR_EASoap_address;
@@ -66,50 +66,6 @@ public class MR_EALocator extends org.apache.axis.client.Service implements com.
     }
 
 
-    // Use to get a proxy class for MR_EASoap12
-    private java.lang.String MR_EASoap12_address = "http://www.multispeak.org/interface/30q/4_MR_EA.asmx";
-
-    public java.lang.String getMR_EASoap12Address() {
-        return MR_EASoap12_address;
-    }
-
-    // The WSDD service name defaults to the port name.
-    private java.lang.String MR_EASoap12WSDDServiceName = "MR_EASoap12";
-
-    public java.lang.String getMR_EASoap12WSDDServiceName() {
-        return MR_EASoap12WSDDServiceName;
-    }
-
-    public void setMR_EASoap12WSDDServiceName(java.lang.String name) {
-        MR_EASoap12WSDDServiceName = name;
-    }
-
-    public com.cannontech.multispeak.deploy.service.MR_EASoap_PortType getMR_EASoap12() throws javax.xml.rpc.ServiceException {
-       java.net.URL endpoint;
-        try {
-            endpoint = new java.net.URL(MR_EASoap12_address);
-        }
-        catch (java.net.MalformedURLException e) {
-            throw new javax.xml.rpc.ServiceException(e);
-        }
-        return getMR_EASoap12(endpoint);
-    }
-
-    public com.cannontech.multispeak.deploy.service.MR_EASoap_PortType getMR_EASoap12(java.net.URL portAddress) throws javax.xml.rpc.ServiceException {
-        try {
-            com.cannontech.multispeak.deploy.service.MR_EASoap12Stub _stub = new com.cannontech.multispeak.deploy.service.MR_EASoap12Stub(portAddress, this);
-            _stub.setPortName(getMR_EASoap12WSDDServiceName());
-            return _stub;
-        }
-        catch (org.apache.axis.AxisFault e) {
-            return null;
-        }
-    }
-
-    public void setMR_EASoap12EndpointAddress(java.lang.String address) {
-        MR_EASoap12_address = address;
-    }
-
     /**
      * For the given interface, get the stub implementation.
      * If this service has no port for the given interface,
@@ -122,11 +78,6 @@ public class MR_EALocator extends org.apache.axis.client.Service implements com.
             if (com.cannontech.multispeak.deploy.service.MR_EASoap_PortType.class.isAssignableFrom(serviceEndpointInterface)) {
                 com.cannontech.multispeak.deploy.service.MR_EASoap_BindingStub _stub = new com.cannontech.multispeak.deploy.service.MR_EASoap_BindingStub(new java.net.URL(MR_EASoap_address), this);
                 _stub.setPortName(getMR_EASoapWSDDServiceName());
-                return _stub;
-            }
-            if (com.cannontech.multispeak.deploy.service.MR_EASoap_PortType.class.isAssignableFrom(serviceEndpointInterface)) {
-                com.cannontech.multispeak.deploy.service.MR_EASoap12Stub _stub = new com.cannontech.multispeak.deploy.service.MR_EASoap12Stub(new java.net.URL(MR_EASoap12_address), this);
-                _stub.setPortName(getMR_EASoap12WSDDServiceName());
                 return _stub;
             }
         }
@@ -149,9 +100,6 @@ public class MR_EALocator extends org.apache.axis.client.Service implements com.
         if ("MR_EASoap".equals(inputPortName)) {
             return getMR_EASoap();
         }
-        else if ("MR_EASoap12".equals(inputPortName)) {
-            return getMR_EASoap12();
-        }
         else  {
             java.rmi.Remote _stub = getPort(serviceEndpointInterface);
             ((org.apache.axis.client.Stub) _stub).setPortName(portName);
@@ -169,7 +117,6 @@ public class MR_EALocator extends org.apache.axis.client.Service implements com.
         if (ports == null) {
             ports = new java.util.HashSet();
             ports.add(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "MR_EASoap"));
-            ports.add(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "MR_EASoap12"));
         }
         return ports.iterator();
     }
@@ -181,10 +128,6 @@ public class MR_EALocator extends org.apache.axis.client.Service implements com.
         
 if ("MR_EASoap".equals(portName)) {
             setMR_EASoapEndpointAddress(address);
-        }
-        else 
-if ("MR_EASoap12".equals(portName)) {
-            setMR_EASoap12EndpointAddress(address);
         }
         else 
 { // Unknown Port Name

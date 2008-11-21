@@ -10,7 +10,11 @@ package com.cannontech.multispeak.deploy.service;
 public class Meter  extends com.cannontech.multispeak.deploy.service.MspDevice  implements java.io.Serializable {
     private java.lang.String meterNo;
 
+    private java.lang.String serialNumber;
+
     private java.lang.String meterType;
+
+    private java.lang.String manufacturer;
 
     private java.lang.String[] sealNumberList;
 
@@ -42,10 +46,10 @@ public class Meter  extends com.cannontech.multispeak.deploy.service.MspDevice  
            java.util.Calendar inServiceDate,
            java.util.Calendar outServiceDate,
            java.lang.String facilityID,
-           java.lang.String manufacturer,
-           java.lang.String serialNumber,
            java.lang.String meterNo,
+           java.lang.String serialNumber,
            java.lang.String meterType,
+           java.lang.String manufacturer,
            java.lang.String[] sealNumberList,
            java.lang.String AMRType,
            java.lang.String AMRDeviceType,
@@ -65,11 +69,11 @@ public class Meter  extends com.cannontech.multispeak.deploy.service.MspDevice  
             deviceClass,
             inServiceDate,
             outServiceDate,
-            facilityID,
-            manufacturer,
-            serialNumber);
+            facilityID);
         this.meterNo = meterNo;
+        this.serialNumber = serialNumber;
         this.meterType = meterType;
+        this.manufacturer = manufacturer;
         this.sealNumberList = sealNumberList;
         this.AMRType = AMRType;
         this.AMRDeviceType = AMRDeviceType;
@@ -101,6 +105,26 @@ public class Meter  extends com.cannontech.multispeak.deploy.service.MspDevice  
 
 
     /**
+     * Gets the serialNumber value for this Meter.
+     * 
+     * @return serialNumber
+     */
+    public java.lang.String getSerialNumber() {
+        return serialNumber;
+    }
+
+
+    /**
+     * Sets the serialNumber value for this Meter.
+     * 
+     * @param serialNumber
+     */
+    public void setSerialNumber(java.lang.String serialNumber) {
+        this.serialNumber = serialNumber;
+    }
+
+
+    /**
      * Gets the meterType value for this Meter.
      * 
      * @return meterType
@@ -117,6 +141,26 @@ public class Meter  extends com.cannontech.multispeak.deploy.service.MspDevice  
      */
     public void setMeterType(java.lang.String meterType) {
         this.meterType = meterType;
+    }
+
+
+    /**
+     * Gets the manufacturer value for this Meter.
+     * 
+     * @return manufacturer
+     */
+    public java.lang.String getManufacturer() {
+        return manufacturer;
+    }
+
+
+    /**
+     * Sets the manufacturer value for this Meter.
+     * 
+     * @param manufacturer
+     */
+    public void setManufacturer(java.lang.String manufacturer) {
+        this.manufacturer = manufacturer;
     }
 
 
@@ -274,9 +318,15 @@ public class Meter  extends com.cannontech.multispeak.deploy.service.MspDevice  
             ((this.meterNo==null && other.getMeterNo()==null) || 
              (this.meterNo!=null &&
               this.meterNo.equals(other.getMeterNo()))) &&
+            ((this.serialNumber==null && other.getSerialNumber()==null) || 
+             (this.serialNumber!=null &&
+              this.serialNumber.equals(other.getSerialNumber()))) &&
             ((this.meterType==null && other.getMeterType()==null) || 
              (this.meterType!=null &&
               this.meterType.equals(other.getMeterType()))) &&
+            ((this.manufacturer==null && other.getManufacturer()==null) || 
+             (this.manufacturer!=null &&
+              this.manufacturer.equals(other.getManufacturer()))) &&
             ((this.sealNumberList==null && other.getSealNumberList()==null) || 
              (this.sealNumberList!=null &&
               java.util.Arrays.equals(this.sealNumberList, other.getSealNumberList()))) &&
@@ -312,8 +362,14 @@ public class Meter  extends com.cannontech.multispeak.deploy.service.MspDevice  
         if (getMeterNo() != null) {
             _hashCode += getMeterNo().hashCode();
         }
+        if (getSerialNumber() != null) {
+            _hashCode += getSerialNumber().hashCode();
+        }
         if (getMeterType() != null) {
             _hashCode += getMeterType().hashCode();
+        }
+        if (getManufacturer() != null) {
+            _hashCode += getManufacturer().hashCode();
         }
         if (getSealNumberList() != null) {
             for (int i=0;
@@ -370,8 +426,22 @@ public class Meter  extends com.cannontech.multispeak.deploy.service.MspDevice  
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("serialNumber");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "serialNumber"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("meterType");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meterType"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("manufacturer");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "manufacturer"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);

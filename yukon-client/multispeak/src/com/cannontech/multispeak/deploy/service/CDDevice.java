@@ -8,6 +8,10 @@
 package com.cannontech.multispeak.deploy.service;
 
 public class CDDevice  extends com.cannontech.multispeak.deploy.service.MspDevice  implements java.io.Serializable {
+    private java.lang.String manufacturer;
+
+    private java.lang.String serialNumber;
+
     private java.lang.String meterBaseID;
 
     private java.lang.Float ratedVoltage;
@@ -50,13 +54,53 @@ public class CDDevice  extends com.cannontech.multispeak.deploy.service.MspDevic
             deviceClass,
             inServiceDate,
             outServiceDate,
-            facilityID,
-            manufacturer,
-            serialNumber);
+            facilityID);
+        this.manufacturer = manufacturer;
+        this.serialNumber = serialNumber;
         this.meterBaseID = meterBaseID;
         this.ratedVoltage = ratedVoltage;
         this.ratedCurrent = ratedCurrent;
         this.moduleList = moduleList;
+    }
+
+
+    /**
+     * Gets the manufacturer value for this CDDevice.
+     * 
+     * @return manufacturer
+     */
+    public java.lang.String getManufacturer() {
+        return manufacturer;
+    }
+
+
+    /**
+     * Sets the manufacturer value for this CDDevice.
+     * 
+     * @param manufacturer
+     */
+    public void setManufacturer(java.lang.String manufacturer) {
+        this.manufacturer = manufacturer;
+    }
+
+
+    /**
+     * Gets the serialNumber value for this CDDevice.
+     * 
+     * @return serialNumber
+     */
+    public java.lang.String getSerialNumber() {
+        return serialNumber;
+    }
+
+
+    /**
+     * Sets the serialNumber value for this CDDevice.
+     * 
+     * @param serialNumber
+     */
+    public void setSerialNumber(java.lang.String serialNumber) {
+        this.serialNumber = serialNumber;
     }
 
 
@@ -151,6 +195,12 @@ public class CDDevice  extends com.cannontech.multispeak.deploy.service.MspDevic
         __equalsCalc = obj;
         boolean _equals;
         _equals = super.equals(obj) && 
+            ((this.manufacturer==null && other.getManufacturer()==null) || 
+             (this.manufacturer!=null &&
+              this.manufacturer.equals(other.getManufacturer()))) &&
+            ((this.serialNumber==null && other.getSerialNumber()==null) || 
+             (this.serialNumber!=null &&
+              this.serialNumber.equals(other.getSerialNumber()))) &&
             ((this.meterBaseID==null && other.getMeterBaseID()==null) || 
              (this.meterBaseID!=null &&
               this.meterBaseID.equals(other.getMeterBaseID()))) &&
@@ -174,6 +224,12 @@ public class CDDevice  extends com.cannontech.multispeak.deploy.service.MspDevic
         }
         __hashCodeCalc = true;
         int _hashCode = super.hashCode();
+        if (getManufacturer() != null) {
+            _hashCode += getManufacturer().hashCode();
+        }
+        if (getSerialNumber() != null) {
+            _hashCode += getSerialNumber().hashCode();
+        }
         if (getMeterBaseID() != null) {
             _hashCode += getMeterBaseID().hashCode();
         }
@@ -205,6 +261,20 @@ public class CDDevice  extends com.cannontech.multispeak.deploy.service.MspDevic
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "CDDevice"));
         org.apache.axis.description.ElementDesc elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("manufacturer");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "manufacturer"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("serialNumber");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "serialNumber"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("meterBaseID");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meterBaseID"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));

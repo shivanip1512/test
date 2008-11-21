@@ -31,8 +31,8 @@ public abstract class MspElectricPoint  extends com.cannontech.multispeak.deploy
            com.cannontech.multispeak.deploy.service.GraphicSymbol[] graphicSymbol,
            com.cannontech.multispeak.deploy.service.GenericAnnotationFeature[] annotationList,
            com.cannontech.multispeak.deploy.service.NodeIdentifier fromNodeID,
-           java.lang.String sectionID,
            com.cannontech.multispeak.deploy.service.ObjectRef parentSectionID,
+           java.lang.String sectionID,
            com.cannontech.multispeak.deploy.service.NodeIdentifier toNodeID,
            com.cannontech.multispeak.deploy.service.PhaseCd phaseCode,
            com.cannontech.multispeak.deploy.service.MspLoadGroup load) {
@@ -52,8 +52,8 @@ public abstract class MspElectricPoint  extends com.cannontech.multispeak.deploy
             graphicSymbol,
             annotationList,
             fromNodeID,
-            sectionID,
             parentSectionID,
+            sectionID,
             toNodeID);
         this.phaseCode = phaseCode;
         this.load = load;

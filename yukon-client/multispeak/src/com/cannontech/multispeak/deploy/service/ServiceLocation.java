@@ -80,6 +80,20 @@ public class ServiceLocation  extends com.cannontech.multispeak.deploy.service.M
 
     private java.lang.String soNumber;
 
+    private java.lang.Boolean isPrePay;
+
+    private java.lang.String billingTerms;
+
+    private java.lang.Float calculatedCurrentBillAmount;
+
+    private java.util.Calendar calculatedCurrentBillDateTime;
+
+    private com.cannontech.multispeak.deploy.service.MeterRead[] calculatedCurrentBillReadings;
+
+    private java.lang.Float lastBillAmount;
+
+    private java.lang.Float calculatedUsedYesterday;
+
     public ServiceLocation() {
     }
 
@@ -99,8 +113,8 @@ public class ServiceLocation  extends com.cannontech.multispeak.deploy.service.M
            com.cannontech.multispeak.deploy.service.GraphicSymbol[] graphicSymbol,
            com.cannontech.multispeak.deploy.service.GenericAnnotationFeature[] annotationList,
            com.cannontech.multispeak.deploy.service.NodeIdentifier fromNodeID,
-           java.lang.String sectionID,
            com.cannontech.multispeak.deploy.service.ObjectRef parentSectionID,
+           java.lang.String sectionID,
            com.cannontech.multispeak.deploy.service.NodeIdentifier toNodeID,
            com.cannontech.multispeak.deploy.service.PhaseCd phaseCode,
            com.cannontech.multispeak.deploy.service.MspLoadGroup load,
@@ -139,7 +153,14 @@ public class ServiceLocation  extends com.cannontech.multispeak.deploy.service.M
            java.lang.String SIC,
            java.lang.Boolean isCogenerationSite,
            java.lang.String woNumber,
-           java.lang.String soNumber) {
+           java.lang.String soNumber,
+           java.lang.Boolean isPrePay,
+           java.lang.String billingTerms,
+           java.lang.Float calculatedCurrentBillAmount,
+           java.util.Calendar calculatedCurrentBillDateTime,
+           com.cannontech.multispeak.deploy.service.MeterRead[] calculatedCurrentBillReadings,
+           java.lang.Float lastBillAmount,
+           java.lang.Float calculatedUsedYesterday) {
         super(
             objectID,
             verb,
@@ -156,8 +177,8 @@ public class ServiceLocation  extends com.cannontech.multispeak.deploy.service.M
             graphicSymbol,
             annotationList,
             fromNodeID,
-            sectionID,
             parentSectionID,
+            sectionID,
             toNodeID,
             phaseCode,
             load);
@@ -197,6 +218,13 @@ public class ServiceLocation  extends com.cannontech.multispeak.deploy.service.M
         this.isCogenerationSite = isCogenerationSite;
         this.woNumber = woNumber;
         this.soNumber = soNumber;
+        this.isPrePay = isPrePay;
+        this.billingTerms = billingTerms;
+        this.calculatedCurrentBillAmount = calculatedCurrentBillAmount;
+        this.calculatedCurrentBillDateTime = calculatedCurrentBillDateTime;
+        this.calculatedCurrentBillReadings = calculatedCurrentBillReadings;
+        this.lastBillAmount = lastBillAmount;
+        this.calculatedUsedYesterday = calculatedUsedYesterday;
     }
 
 
@@ -919,6 +947,146 @@ public class ServiceLocation  extends com.cannontech.multispeak.deploy.service.M
         this.soNumber = soNumber;
     }
 
+
+    /**
+     * Gets the isPrePay value for this ServiceLocation.
+     * 
+     * @return isPrePay
+     */
+    public java.lang.Boolean getIsPrePay() {
+        return isPrePay;
+    }
+
+
+    /**
+     * Sets the isPrePay value for this ServiceLocation.
+     * 
+     * @param isPrePay
+     */
+    public void setIsPrePay(java.lang.Boolean isPrePay) {
+        this.isPrePay = isPrePay;
+    }
+
+
+    /**
+     * Gets the billingTerms value for this ServiceLocation.
+     * 
+     * @return billingTerms
+     */
+    public java.lang.String getBillingTerms() {
+        return billingTerms;
+    }
+
+
+    /**
+     * Sets the billingTerms value for this ServiceLocation.
+     * 
+     * @param billingTerms
+     */
+    public void setBillingTerms(java.lang.String billingTerms) {
+        this.billingTerms = billingTerms;
+    }
+
+
+    /**
+     * Gets the calculatedCurrentBillAmount value for this ServiceLocation.
+     * 
+     * @return calculatedCurrentBillAmount
+     */
+    public java.lang.Float getCalculatedCurrentBillAmount() {
+        return calculatedCurrentBillAmount;
+    }
+
+
+    /**
+     * Sets the calculatedCurrentBillAmount value for this ServiceLocation.
+     * 
+     * @param calculatedCurrentBillAmount
+     */
+    public void setCalculatedCurrentBillAmount(java.lang.Float calculatedCurrentBillAmount) {
+        this.calculatedCurrentBillAmount = calculatedCurrentBillAmount;
+    }
+
+
+    /**
+     * Gets the calculatedCurrentBillDateTime value for this ServiceLocation.
+     * 
+     * @return calculatedCurrentBillDateTime
+     */
+    public java.util.Calendar getCalculatedCurrentBillDateTime() {
+        return calculatedCurrentBillDateTime;
+    }
+
+
+    /**
+     * Sets the calculatedCurrentBillDateTime value for this ServiceLocation.
+     * 
+     * @param calculatedCurrentBillDateTime
+     */
+    public void setCalculatedCurrentBillDateTime(java.util.Calendar calculatedCurrentBillDateTime) {
+        this.calculatedCurrentBillDateTime = calculatedCurrentBillDateTime;
+    }
+
+
+    /**
+     * Gets the calculatedCurrentBillReadings value for this ServiceLocation.
+     * 
+     * @return calculatedCurrentBillReadings
+     */
+    public com.cannontech.multispeak.deploy.service.MeterRead[] getCalculatedCurrentBillReadings() {
+        return calculatedCurrentBillReadings;
+    }
+
+
+    /**
+     * Sets the calculatedCurrentBillReadings value for this ServiceLocation.
+     * 
+     * @param calculatedCurrentBillReadings
+     */
+    public void setCalculatedCurrentBillReadings(com.cannontech.multispeak.deploy.service.MeterRead[] calculatedCurrentBillReadings) {
+        this.calculatedCurrentBillReadings = calculatedCurrentBillReadings;
+    }
+
+
+    /**
+     * Gets the lastBillAmount value for this ServiceLocation.
+     * 
+     * @return lastBillAmount
+     */
+    public java.lang.Float getLastBillAmount() {
+        return lastBillAmount;
+    }
+
+
+    /**
+     * Sets the lastBillAmount value for this ServiceLocation.
+     * 
+     * @param lastBillAmount
+     */
+    public void setLastBillAmount(java.lang.Float lastBillAmount) {
+        this.lastBillAmount = lastBillAmount;
+    }
+
+
+    /**
+     * Gets the calculatedUsedYesterday value for this ServiceLocation.
+     * 
+     * @return calculatedUsedYesterday
+     */
+    public java.lang.Float getCalculatedUsedYesterday() {
+        return calculatedUsedYesterday;
+    }
+
+
+    /**
+     * Sets the calculatedUsedYesterday value for this ServiceLocation.
+     * 
+     * @param calculatedUsedYesterday
+     */
+    public void setCalculatedUsedYesterday(java.lang.Float calculatedUsedYesterday) {
+        this.calculatedUsedYesterday = calculatedUsedYesterday;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof ServiceLocation)) return false;
@@ -1038,7 +1206,28 @@ public class ServiceLocation  extends com.cannontech.multispeak.deploy.service.M
               this.woNumber.equals(other.getWoNumber()))) &&
             ((this.soNumber==null && other.getSoNumber()==null) || 
              (this.soNumber!=null &&
-              this.soNumber.equals(other.getSoNumber())));
+              this.soNumber.equals(other.getSoNumber()))) &&
+            ((this.isPrePay==null && other.getIsPrePay()==null) || 
+             (this.isPrePay!=null &&
+              this.isPrePay.equals(other.getIsPrePay()))) &&
+            ((this.billingTerms==null && other.getBillingTerms()==null) || 
+             (this.billingTerms!=null &&
+              this.billingTerms.equals(other.getBillingTerms()))) &&
+            ((this.calculatedCurrentBillAmount==null && other.getCalculatedCurrentBillAmount()==null) || 
+             (this.calculatedCurrentBillAmount!=null &&
+              this.calculatedCurrentBillAmount.equals(other.getCalculatedCurrentBillAmount()))) &&
+            ((this.calculatedCurrentBillDateTime==null && other.getCalculatedCurrentBillDateTime()==null) || 
+             (this.calculatedCurrentBillDateTime!=null &&
+              this.calculatedCurrentBillDateTime.equals(other.getCalculatedCurrentBillDateTime()))) &&
+            ((this.calculatedCurrentBillReadings==null && other.getCalculatedCurrentBillReadings()==null) || 
+             (this.calculatedCurrentBillReadings!=null &&
+              java.util.Arrays.equals(this.calculatedCurrentBillReadings, other.getCalculatedCurrentBillReadings()))) &&
+            ((this.lastBillAmount==null && other.getLastBillAmount()==null) || 
+             (this.lastBillAmount!=null &&
+              this.lastBillAmount.equals(other.getLastBillAmount()))) &&
+            ((this.calculatedUsedYesterday==null && other.getCalculatedUsedYesterday()==null) || 
+             (this.calculatedUsedYesterday!=null &&
+              this.calculatedUsedYesterday.equals(other.getCalculatedUsedYesterday())));
         __equalsCalc = null;
         return _equals;
     }
@@ -1157,6 +1346,35 @@ public class ServiceLocation  extends com.cannontech.multispeak.deploy.service.M
         }
         if (getSoNumber() != null) {
             _hashCode += getSoNumber().hashCode();
+        }
+        if (getIsPrePay() != null) {
+            _hashCode += getIsPrePay().hashCode();
+        }
+        if (getBillingTerms() != null) {
+            _hashCode += getBillingTerms().hashCode();
+        }
+        if (getCalculatedCurrentBillAmount() != null) {
+            _hashCode += getCalculatedCurrentBillAmount().hashCode();
+        }
+        if (getCalculatedCurrentBillDateTime() != null) {
+            _hashCode += getCalculatedCurrentBillDateTime().hashCode();
+        }
+        if (getCalculatedCurrentBillReadings() != null) {
+            for (int i=0;
+                 i<java.lang.reflect.Array.getLength(getCalculatedCurrentBillReadings());
+                 i++) {
+                java.lang.Object obj = java.lang.reflect.Array.get(getCalculatedCurrentBillReadings(), i);
+                if (obj != null &&
+                    !obj.getClass().isArray()) {
+                    _hashCode += obj.hashCode();
+                }
+            }
+        }
+        if (getLastBillAmount() != null) {
+            _hashCode += getLastBillAmount().hashCode();
+        }
+        if (getCalculatedUsedYesterday() != null) {
+            _hashCode += getCalculatedUsedYesterday().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -1417,6 +1635,56 @@ public class ServiceLocation  extends com.cannontech.multispeak.deploy.service.M
         elemField.setFieldName("soNumber");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "soNumber"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("isPrePay");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "isPrePay"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "boolean"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("billingTerms");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "billingTerms"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("calculatedCurrentBillAmount");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "calculatedCurrentBillAmount"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "float"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("calculatedCurrentBillDateTime");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "calculatedCurrentBillDateTime"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "dateTime"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("calculatedCurrentBillReadings");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "calculatedCurrentBillReadings"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meterRead"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        elemField.setItemQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meterRead"));
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("lastBillAmount");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "lastBillAmount"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "float"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("calculatedUsedYesterday");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "calculatedUsedYesterday"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "float"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

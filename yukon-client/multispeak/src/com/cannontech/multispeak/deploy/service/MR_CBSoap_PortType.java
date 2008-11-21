@@ -304,6 +304,13 @@ public interface MR_CBSoap_PortType extends java.rmi.Remote {
     public com.cannontech.multispeak.deploy.service.ErrorObject[] scheduleGroupMeterRead(java.lang.String meterGroupName, java.util.Calendar timeToRead, java.lang.String responseURL, java.lang.String transactionID) throws java.rmi.RemoteException;
 
     /**
+     * CB requests MR to to update the in-home display associated
+     * with a specific service location.  MR returns information about failed
+     * transactions using an array of errorObjects.
+     */
+    public com.cannontech.multispeak.deploy.service.ErrorObject[] updateServiceLocationDisplays(java.lang.String servLocID) throws java.rmi.RemoteException;
+
+    /**
      * CB Notifies MR of a change in the Customer object by sending
      * the changed customer object.MR returns information about failed transactions
      * using an array of errorObjects. (Recommended)

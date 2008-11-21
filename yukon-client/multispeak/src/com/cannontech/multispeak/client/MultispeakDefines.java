@@ -46,7 +46,7 @@ public class MultispeakDefines
 //        "GIS_CB", "CB_GIS",   //Interface 16
 //        "WS_DGV",   //Omitted   //Interface 17
 //        "DGV_OA", "OA_DGV",   //Interface 18
-//        "CB_EA", "EA_CB",    //Interface 19
+//        "CB_EA", "EA_CB",   //Interface 19
 //        "CH_DGV",   //Omitted   //Interface 20
 //        "STAKING_GIS", "GIS_STAKING",   //Interface 21
 //        "EA_GIS", "GIS_EA",   //Interface 22
@@ -59,21 +59,43 @@ public class MultispeakDefines
 //        "FA_CRM",   //Batch Only   //Interface 29
 //        "GIS_LM", "LM_GIS"   //Interface 30
     };
-
+    
     //SERVER interfaces
     public static final String MR_CB_STR = "MR_CB";
     public static final String MR_EA_STR = "MR_EA";
     public static final String CD_CB_STR = "CD_CB";
     public static final String OD_OA_STR = "OD_OA";
-    
+
     //CLIENT only interfaces
     public static final String CB_MR_STR = "CB_MR";
     public static final String EA_MR_STR = "EA_MR";
     public static final String CB_CD_STR = "CB_CD";
     public static final String OA_OD_STR = "OA_OD";
+
+    //SERVER BUS Interfaces
+    public static final String MR_Server_STR = "MR_Server";
+    public static final String CD_Server_STR = "CD_Server";
+    public static final String OD_Server_STR = "OD_Server";
+    public static final String LM_Server_STR = "LM_Server";
+    public static final String SCADA_Server_STR = "SCADA_Server";
+
+    //CLIENT BUS Interfaces
+    public static final String CB_Server_STR = "CB_Server";
+    public static final String EA_Server_STR = "EA_Server";
+    public static final String OA_Server_STR = "OA_Server";
+
+    public static final String[] MSP_BUS_INTERFACE_ARRAY = new String[]{
+        MR_Server_STR, OD_Server_STR, CD_Server_STR, LM_Server_STR, SCADA_Server_STR,
+        CB_Server_STR, OA_Server_STR, EA_Server_STR
+    };
     
     public static String[] getMSP_INTERFACE_ARRAY()
     {
         return MSP_INTERFACE_ARRAY;
     }
+    
+    public static String[] getMSP_BUS_INTERFACE_ARRAY()
+    {
+        return MSP_BUS_INTERFACE_ARRAY;
+    }    
 }

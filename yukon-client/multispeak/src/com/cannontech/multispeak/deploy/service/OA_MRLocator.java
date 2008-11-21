@@ -65,51 +65,6 @@ public class OA_MRLocator extends org.apache.axis.client.Service implements com.
         OA_MRSoap_address = address;
     }
 
-
-    // Use to get a proxy class for OA_MRSoap12
-    private java.lang.String OA_MRSoap12_address = "http://www.multispeak.org/interface/30q/27_OA_MR.asmx";
-
-    public java.lang.String getOA_MRSoap12Address() {
-        return OA_MRSoap12_address;
-    }
-
-    // The WSDD service name defaults to the port name.
-    private java.lang.String OA_MRSoap12WSDDServiceName = "OA_MRSoap12";
-
-    public java.lang.String getOA_MRSoap12WSDDServiceName() {
-        return OA_MRSoap12WSDDServiceName;
-    }
-
-    public void setOA_MRSoap12WSDDServiceName(java.lang.String name) {
-        OA_MRSoap12WSDDServiceName = name;
-    }
-
-    public com.cannontech.multispeak.deploy.service.OA_MRSoap_PortType getOA_MRSoap12() throws javax.xml.rpc.ServiceException {
-       java.net.URL endpoint;
-        try {
-            endpoint = new java.net.URL(OA_MRSoap12_address);
-        }
-        catch (java.net.MalformedURLException e) {
-            throw new javax.xml.rpc.ServiceException(e);
-        }
-        return getOA_MRSoap12(endpoint);
-    }
-
-    public com.cannontech.multispeak.deploy.service.OA_MRSoap_PortType getOA_MRSoap12(java.net.URL portAddress) throws javax.xml.rpc.ServiceException {
-        try {
-            com.cannontech.multispeak.deploy.service.OA_MRSoap12Stub _stub = new com.cannontech.multispeak.deploy.service.OA_MRSoap12Stub(portAddress, this);
-            _stub.setPortName(getOA_MRSoap12WSDDServiceName());
-            return _stub;
-        }
-        catch (org.apache.axis.AxisFault e) {
-            return null;
-        }
-    }
-
-    public void setOA_MRSoap12EndpointAddress(java.lang.String address) {
-        OA_MRSoap12_address = address;
-    }
-
     /**
      * For the given interface, get the stub implementation.
      * If this service has no port for the given interface,
@@ -122,11 +77,6 @@ public class OA_MRLocator extends org.apache.axis.client.Service implements com.
             if (com.cannontech.multispeak.deploy.service.OA_MRSoap_PortType.class.isAssignableFrom(serviceEndpointInterface)) {
                 com.cannontech.multispeak.deploy.service.OA_MRSoap_BindingStub _stub = new com.cannontech.multispeak.deploy.service.OA_MRSoap_BindingStub(new java.net.URL(OA_MRSoap_address), this);
                 _stub.setPortName(getOA_MRSoapWSDDServiceName());
-                return _stub;
-            }
-            if (com.cannontech.multispeak.deploy.service.OA_MRSoap_PortType.class.isAssignableFrom(serviceEndpointInterface)) {
-                com.cannontech.multispeak.deploy.service.OA_MRSoap12Stub _stub = new com.cannontech.multispeak.deploy.service.OA_MRSoap12Stub(new java.net.URL(OA_MRSoap12_address), this);
-                _stub.setPortName(getOA_MRSoap12WSDDServiceName());
                 return _stub;
             }
         }
@@ -149,9 +99,6 @@ public class OA_MRLocator extends org.apache.axis.client.Service implements com.
         if ("OA_MRSoap".equals(inputPortName)) {
             return getOA_MRSoap();
         }
-        else if ("OA_MRSoap12".equals(inputPortName)) {
-            return getOA_MRSoap12();
-        }
         else  {
             java.rmi.Remote _stub = getPort(serviceEndpointInterface);
             ((org.apache.axis.client.Stub) _stub).setPortName(portName);
@@ -169,7 +116,6 @@ public class OA_MRLocator extends org.apache.axis.client.Service implements com.
         if (ports == null) {
             ports = new java.util.HashSet();
             ports.add(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "OA_MRSoap"));
-            ports.add(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "OA_MRSoap12"));
         }
         return ports.iterator();
     }
@@ -181,10 +127,6 @@ public class OA_MRLocator extends org.apache.axis.client.Service implements com.
         
 if ("OA_MRSoap".equals(portName)) {
             setOA_MRSoapEndpointAddress(address);
-        }
-        else 
-if ("OA_MRSoap12".equals(portName)) {
-            setOA_MRSoap12EndpointAddress(address);
         }
         else 
 { // Unknown Port Name

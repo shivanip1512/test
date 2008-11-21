@@ -21,7 +21,7 @@ import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.data.MeterReadFactory;
 import com.cannontech.multispeak.data.ReadableDevice;
-import com.cannontech.multispeak.deploy.service.CB_MRSoap_BindingStub;
+import com.cannontech.multispeak.deploy.service.CB_ServerSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
 import com.cannontech.multispeak.deploy.service.MeterRead;
 import com.cannontech.multispeak.deploy.service.impl.MultispeakPortFactory;
@@ -88,7 +88,7 @@ public class MeterReadEvent extends MultispeakEvent{
             MeterRead [] meterReads = new MeterRead[1];
             meterReads[0] = getDevice().getMeterRead();
 
-            CB_MRSoap_BindingStub port = MultispeakPortFactory.getCB_MRPort(getMspVendor());
+            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(getMspVendor(), MultispeakDefines.CB_MR_STR);
             if (port != null) {
                 ErrorObject[] errObjects = port.readingChangedNotification(meterReads, getTransactionID());
                 if( errObjects != null)

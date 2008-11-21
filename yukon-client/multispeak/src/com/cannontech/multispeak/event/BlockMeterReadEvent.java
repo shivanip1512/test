@@ -19,7 +19,7 @@ import com.cannontech.multispeak.block.FormattedBlockService;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
-import com.cannontech.multispeak.deploy.service.EA_MRSoap_BindingStub;
+import com.cannontech.multispeak.deploy.service.EA_ServerSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
 import com.cannontech.multispeak.deploy.service.FormattedBlock;
 import com.cannontech.multispeak.deploy.service.impl.MultispeakPortFactory;
@@ -79,16 +79,16 @@ public class BlockMeterReadEvent extends MultispeakEvent {
     public void eventNotification() {
         
         String endpointURL = getMspVendor().getEndpointURL(MultispeakDefines.EA_MR_STR);
-        CTILogger.info("Sending EA_MR_FormattedBlockNotification ("+ endpointURL+ ")");
+        CTILogger.info("Sending EA_Server_FormattedBlockNotification ("+ endpointURL+ ")");
         
         try {            
-            EA_MRSoap_BindingStub port = MultispeakPortFactory.getEA_MRPort(getMspVendor());
+            EA_ServerSoap_BindingStub port = MultispeakPortFactory.getEA_ServerPort(getMspVendor());
             if (port != null) {
-                ErrorObject[] errObjects = port.formattedBlockNotification( getMspFormattedBlock(), getTransactionID());
+                ErrorObject[] errObjects = port.formattedBlockNotification( getMspFormattedBlock());
                 if( errObjects != null)
                     ((MultispeakFuncs)YukonSpringHook.getBean("multispeakFuncs")).logErrorObjects(endpointURL, "ReadingChangedNotification", errObjects);
             } else {
-                CTILogger.error("Port not found for EA_MR (" + getMspVendor().getCompanyName() + ")");
+                CTILogger.error("Port not found for EA_Server (" + getMspVendor().getCompanyName() + ")");
             }
         } catch (RemoteException e) {
             CTILogger.error("TargetService: " + endpointURL + " - ReadingChangedNotification (" + getMspVendor().getCompanyName() + ")");

@@ -10,58 +10,58 @@ package com.cannontech.multispeak.deploy.service;
 import java.rmi.RemoteException;
 import java.util.Calendar;
 
-import com.cannontech.multispeak.deploy.service.impl.OD_OAImpl;
+import com.cannontech.multispeak.deploy.service.impl.OD_ServerImpl;
 import com.cannontech.spring.YukonSpringHook;
 
 public class OD_OASoap_BindingImpl implements com.cannontech.multispeak.deploy.service.OD_OASoap_PortType{
-    private OD_OASoap_PortType od_oa = YukonSpringHook.getBean("od_oa", OD_OAImpl.class);
+    private OD_ServerSoap_PortType od_server = YukonSpringHook.getBean("od_server", OD_ServerImpl.class);
 
     public ErrorObject[] cancelODMonitoringRequestByObject(ObjectRef[] objectRef, Calendar requestDate)
             throws RemoteException {
-        return od_oa.cancelODMonitoringRequestByObject(objectRef, requestDate);
+        return od_server.cancelODMonitoringRequestByObject(objectRef, requestDate);
     }
 
     public ObjectRef[] displayODMonitoringRequests() throws RemoteException {
-        return od_oa.displayODMonitoringRequests();
+        return od_server.displayODMonitoringRequests();
     }
 
     public OutageDetectionDevice[] getAllOutageDetectionDevices(String lastReceived) throws RemoteException {
-        return od_oa.getAllOutageDetectionDevices(lastReceived);
+        return od_server.getAllOutageDetectionDevices(lastReceived);
     }
 
     public DomainMember[] getDomainMembers(String domainName) throws RemoteException {
-        return od_oa.getDomainMembers(domainName);
+        return od_server.getDomainMembers(domainName);
     }
 
     public String[] getDomainNames() throws RemoteException {
-        return od_oa.getDomainNames();
+        return od_server.getDomainNames();
     }
 
     public String[] getMethods() throws RemoteException {
-        return od_oa.getMethods();
+        return od_server.getMethods();
     }
 
     public OutageDetectionDevice[] getOutageDetectionDevicesByMeterNo(String meterNo) throws RemoteException {
-        return od_oa.getOutageDetectionDevicesByMeterNo(meterNo);
+        return od_server.getOutageDetectionDevicesByMeterNo(meterNo);
     }
 
     public OutageDetectionDevice[] getOutageDetectionDevicesByStatus(OutageDetectDeviceStatus status,
             String lastReceived) throws RemoteException {
-        return od_oa.getOutageDetectionDevicesByStatus(status, lastReceived);
+        return od_server.getOutageDetectionDevicesByStatus(status, lastReceived);
     }
 
     public OutageDetectionDevice[] getOutageDetectionDevicesByType(OutageDetectDeviceType type, String lastReceived)
             throws RemoteException {
-        return od_oa.getOutageDetectionDevicesByType(type, lastReceived);
+        return od_server.getOutageDetectionDevicesByType(type, lastReceived);
     }
 
     public OutageDetectionDevice[] getOutagedODDevices() throws RemoteException {
-        return od_oa.getOutagedODDevices();
+        return od_server.getOutagedODDevices();
     }
 
     public ErrorObject[] initiateODEventRequestByObject(String objectName, String nounType, PhaseCd phaseCode,
             Calendar requestDate, String responseURL, String transactionID) throws RemoteException {
-        return od_oa.initiateODEventRequestByObject(objectName,
+        return od_server.initiateODEventRequestByObject(objectName,
                                                     nounType,
                                                     phaseCode,
                                                     requestDate,
@@ -71,12 +71,12 @@ public class OD_OASoap_BindingImpl implements com.cannontech.multispeak.deploy.s
 
     public ErrorObject[] initiateODEventRequestByServiceLocation(String[] servLoc, Calendar requestDate,
             String responseURL, String transactionID) throws RemoteException {
-        return od_oa.initiateODEventRequestByServiceLocation(servLoc, requestDate, responseURL, transactionID);
+        return od_server.initiateODEventRequestByServiceLocation(servLoc, requestDate, responseURL, transactionID);
     }
 
     public ErrorObject[] initiateODMonitoringRequestByObject(String objectName, String nounType, PhaseCd phaseCode,
             int periodicity, Calendar requestDate, String responseURL, String transactionID) throws RemoteException {
-        return od_oa.initiateODMonitoringRequestByObject(objectName,
+        return od_server.initiateODMonitoringRequestByObject(objectName,
                                                          nounType,
                                                          phaseCode,
                                                          periodicity,
@@ -87,14 +87,14 @@ public class OD_OASoap_BindingImpl implements com.cannontech.multispeak.deploy.s
 
     public ErrorObject[] initiateOutageDetectionEventRequest(String[] meterNos, Calendar requestDate,
             String responseURL, String transactionID) throws RemoteException {
-        return od_oa.initiateOutageDetectionEventRequest(meterNos, requestDate, responseURL, transactionID);
+        return od_server.initiateOutageDetectionEventRequest(meterNos, requestDate, responseURL, transactionID);
     }
 
     public void modifyODDataForOutageDetectionDevice(OutageDetectionDevice device) throws RemoteException {
-        od_oa.modifyODDataForOutageDetectionDevice(device);
+        od_server.modifyODDataForOutageDetectionDevice(device);
     }
 
     public ErrorObject[] pingURL() throws RemoteException {
-        return od_oa.pingURL();
+        return od_server.pingURL();
     }
 }

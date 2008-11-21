@@ -16,7 +16,7 @@ import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.porter.message.Return;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakVendor;
-import com.cannontech.multispeak.deploy.service.CB_CDSoap_BindingStub;
+import com.cannontech.multispeak.deploy.service.CB_ServerSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.LoadActionCode;
 import com.cannontech.multispeak.deploy.service.impl.MultispeakPortFactory;
 import com.cannontech.spring.YukonSpringHook;
@@ -139,7 +139,7 @@ public class CDEvent extends MultispeakEvent{
     }
 
     /**
-     * Send an CDEventNotification to the CB_CD webservice containing cdEvents 
+     * Send an CDEventNotification to the CB_Server webservice containing cdEvents 
      * @param cdEvents
      */
     public void eventNotification()
@@ -150,15 +150,16 @@ public class CDEvent extends MultispeakEvent{
 
         try
         {
-            CB_CDSoap_BindingStub port = MultispeakPortFactory.getCB_CDPort(getMspVendor());
+            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(getMspVendor(), MultispeakDefines.CB_CD_STR);
             if (port != null) {
-                port.CDStateChangedNotification(getMeterNumber(), getLoadActionCode(), getTransactionID());
+                port.CDStateChangedNotification(getMeterNumber(), getLoadActionCode(), "123");
             } else {
-                CTILogger.error("Port not found for CB_CD (" + getMspVendor().getCompanyName() + ")");
+                CTILogger.error("Port not found for CB_Server (" + getMspVendor().getCompanyName() + ")");
             }  
         } catch (RemoteException e) {
             CTILogger.error("TargetService: " + endpointURL + " - initiateConnectDisconnect (" + getMspVendor().getCompanyName() + ")");
             CTILogger.error("RemoteExceptionDetail: "+e.getMessage());
+            e.printStackTrace();
         }   
     }
     

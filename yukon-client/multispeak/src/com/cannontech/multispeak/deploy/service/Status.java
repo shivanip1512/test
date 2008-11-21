@@ -8,29 +8,29 @@
 package com.cannontech.multispeak.deploy.service;
 
 public class Status  implements java.io.Serializable {
-    private java.lang.Boolean configChanged;
-
-    private java.lang.Boolean testData;
-
-    private java.lang.Boolean recorderStopped;
-
-    private java.lang.Boolean manuallyModified;
-
     private java.lang.Boolean clockForward;
-
-    private java.lang.Boolean invalid;
 
     private java.lang.Boolean longInterval;
 
     private java.lang.Boolean manuallyEntered;
 
-    private java.lang.Boolean clockBackward;
+    private java.lang.Boolean invalid;
 
-    private java.lang.Boolean partialInterval;
+    private java.lang.Boolean DSTinEffect;
+
+    private java.lang.Boolean clockBackward;
 
     private java.lang.Boolean overflow;
 
-    private java.lang.Boolean DSTinEffect;
+    private java.lang.Boolean manuallyModified;
+
+    private java.lang.Boolean configChanged;
+
+    private java.lang.Boolean partialInterval;
+
+    private java.lang.Boolean recorderStopped;
+
+    private java.lang.Boolean testData;
 
     private org.apache.axis.types.UnsignedInt intervalIndex;  // attribute
 
@@ -38,112 +38,32 @@ public class Status  implements java.io.Serializable {
     }
 
     public Status(
-           java.lang.Boolean configChanged,
-           java.lang.Boolean testData,
-           java.lang.Boolean recorderStopped,
-           java.lang.Boolean manuallyModified,
            java.lang.Boolean clockForward,
-           java.lang.Boolean invalid,
            java.lang.Boolean longInterval,
            java.lang.Boolean manuallyEntered,
-           java.lang.Boolean clockBackward,
-           java.lang.Boolean partialInterval,
-           java.lang.Boolean overflow,
+           java.lang.Boolean invalid,
            java.lang.Boolean DSTinEffect,
+           java.lang.Boolean clockBackward,
+           java.lang.Boolean overflow,
+           java.lang.Boolean manuallyModified,
+           java.lang.Boolean configChanged,
+           java.lang.Boolean partialInterval,
+           java.lang.Boolean recorderStopped,
+           java.lang.Boolean testData,
            org.apache.axis.types.UnsignedInt intervalIndex) {
-           this.configChanged = configChanged;
-           this.testData = testData;
-           this.recorderStopped = recorderStopped;
-           this.manuallyModified = manuallyModified;
            this.clockForward = clockForward;
-           this.invalid = invalid;
            this.longInterval = longInterval;
            this.manuallyEntered = manuallyEntered;
-           this.clockBackward = clockBackward;
-           this.partialInterval = partialInterval;
-           this.overflow = overflow;
+           this.invalid = invalid;
            this.DSTinEffect = DSTinEffect;
+           this.clockBackward = clockBackward;
+           this.overflow = overflow;
+           this.manuallyModified = manuallyModified;
+           this.configChanged = configChanged;
+           this.partialInterval = partialInterval;
+           this.recorderStopped = recorderStopped;
+           this.testData = testData;
            this.intervalIndex = intervalIndex;
-    }
-
-
-    /**
-     * Gets the configChanged value for this Status.
-     * 
-     * @return configChanged
-     */
-    public java.lang.Boolean getConfigChanged() {
-        return configChanged;
-    }
-
-
-    /**
-     * Sets the configChanged value for this Status.
-     * 
-     * @param configChanged
-     */
-    public void setConfigChanged(java.lang.Boolean configChanged) {
-        this.configChanged = configChanged;
-    }
-
-
-    /**
-     * Gets the testData value for this Status.
-     * 
-     * @return testData
-     */
-    public java.lang.Boolean getTestData() {
-        return testData;
-    }
-
-
-    /**
-     * Sets the testData value for this Status.
-     * 
-     * @param testData
-     */
-    public void setTestData(java.lang.Boolean testData) {
-        this.testData = testData;
-    }
-
-
-    /**
-     * Gets the recorderStopped value for this Status.
-     * 
-     * @return recorderStopped
-     */
-    public java.lang.Boolean getRecorderStopped() {
-        return recorderStopped;
-    }
-
-
-    /**
-     * Sets the recorderStopped value for this Status.
-     * 
-     * @param recorderStopped
-     */
-    public void setRecorderStopped(java.lang.Boolean recorderStopped) {
-        this.recorderStopped = recorderStopped;
-    }
-
-
-    /**
-     * Gets the manuallyModified value for this Status.
-     * 
-     * @return manuallyModified
-     */
-    public java.lang.Boolean getManuallyModified() {
-        return manuallyModified;
-    }
-
-
-    /**
-     * Sets the manuallyModified value for this Status.
-     * 
-     * @param manuallyModified
-     */
-    public void setManuallyModified(java.lang.Boolean manuallyModified) {
-        this.manuallyModified = manuallyModified;
     }
 
 
@@ -164,26 +84,6 @@ public class Status  implements java.io.Serializable {
      */
     public void setClockForward(java.lang.Boolean clockForward) {
         this.clockForward = clockForward;
-    }
-
-
-    /**
-     * Gets the invalid value for this Status.
-     * 
-     * @return invalid
-     */
-    public java.lang.Boolean getInvalid() {
-        return invalid;
-    }
-
-
-    /**
-     * Sets the invalid value for this Status.
-     * 
-     * @param invalid
-     */
-    public void setInvalid(java.lang.Boolean invalid) {
-        this.invalid = invalid;
     }
 
 
@@ -228,6 +128,46 @@ public class Status  implements java.io.Serializable {
 
 
     /**
+     * Gets the invalid value for this Status.
+     * 
+     * @return invalid
+     */
+    public java.lang.Boolean getInvalid() {
+        return invalid;
+    }
+
+
+    /**
+     * Sets the invalid value for this Status.
+     * 
+     * @param invalid
+     */
+    public void setInvalid(java.lang.Boolean invalid) {
+        this.invalid = invalid;
+    }
+
+
+    /**
+     * Gets the DSTinEffect value for this Status.
+     * 
+     * @return DSTinEffect
+     */
+    public java.lang.Boolean getDSTinEffect() {
+        return DSTinEffect;
+    }
+
+
+    /**
+     * Sets the DSTinEffect value for this Status.
+     * 
+     * @param DSTinEffect
+     */
+    public void setDSTinEffect(java.lang.Boolean DSTinEffect) {
+        this.DSTinEffect = DSTinEffect;
+    }
+
+
+    /**
      * Gets the clockBackward value for this Status.
      * 
      * @return clockBackward
@@ -244,26 +184,6 @@ public class Status  implements java.io.Serializable {
      */
     public void setClockBackward(java.lang.Boolean clockBackward) {
         this.clockBackward = clockBackward;
-    }
-
-
-    /**
-     * Gets the partialInterval value for this Status.
-     * 
-     * @return partialInterval
-     */
-    public java.lang.Boolean getPartialInterval() {
-        return partialInterval;
-    }
-
-
-    /**
-     * Sets the partialInterval value for this Status.
-     * 
-     * @param partialInterval
-     */
-    public void setPartialInterval(java.lang.Boolean partialInterval) {
-        this.partialInterval = partialInterval;
     }
 
 
@@ -288,22 +208,102 @@ public class Status  implements java.io.Serializable {
 
 
     /**
-     * Gets the DSTinEffect value for this Status.
+     * Gets the manuallyModified value for this Status.
      * 
-     * @return DSTinEffect
+     * @return manuallyModified
      */
-    public java.lang.Boolean getDSTinEffect() {
-        return DSTinEffect;
+    public java.lang.Boolean getManuallyModified() {
+        return manuallyModified;
     }
 
 
     /**
-     * Sets the DSTinEffect value for this Status.
+     * Sets the manuallyModified value for this Status.
      * 
-     * @param DSTinEffect
+     * @param manuallyModified
      */
-    public void setDSTinEffect(java.lang.Boolean DSTinEffect) {
-        this.DSTinEffect = DSTinEffect;
+    public void setManuallyModified(java.lang.Boolean manuallyModified) {
+        this.manuallyModified = manuallyModified;
+    }
+
+
+    /**
+     * Gets the configChanged value for this Status.
+     * 
+     * @return configChanged
+     */
+    public java.lang.Boolean getConfigChanged() {
+        return configChanged;
+    }
+
+
+    /**
+     * Sets the configChanged value for this Status.
+     * 
+     * @param configChanged
+     */
+    public void setConfigChanged(java.lang.Boolean configChanged) {
+        this.configChanged = configChanged;
+    }
+
+
+    /**
+     * Gets the partialInterval value for this Status.
+     * 
+     * @return partialInterval
+     */
+    public java.lang.Boolean getPartialInterval() {
+        return partialInterval;
+    }
+
+
+    /**
+     * Sets the partialInterval value for this Status.
+     * 
+     * @param partialInterval
+     */
+    public void setPartialInterval(java.lang.Boolean partialInterval) {
+        this.partialInterval = partialInterval;
+    }
+
+
+    /**
+     * Gets the recorderStopped value for this Status.
+     * 
+     * @return recorderStopped
+     */
+    public java.lang.Boolean getRecorderStopped() {
+        return recorderStopped;
+    }
+
+
+    /**
+     * Sets the recorderStopped value for this Status.
+     * 
+     * @param recorderStopped
+     */
+    public void setRecorderStopped(java.lang.Boolean recorderStopped) {
+        this.recorderStopped = recorderStopped;
+    }
+
+
+    /**
+     * Gets the testData value for this Status.
+     * 
+     * @return testData
+     */
+    public java.lang.Boolean getTestData() {
+        return testData;
+    }
+
+
+    /**
+     * Sets the testData value for this Status.
+     * 
+     * @param testData
+     */
+    public void setTestData(java.lang.Boolean testData) {
+        this.testData = testData;
     }
 
 
@@ -338,42 +338,42 @@ public class Status  implements java.io.Serializable {
         __equalsCalc = obj;
         boolean _equals;
         _equals = true && 
-            ((this.configChanged==null && other.getConfigChanged()==null) || 
-             (this.configChanged!=null &&
-              this.configChanged.equals(other.getConfigChanged()))) &&
-            ((this.testData==null && other.getTestData()==null) || 
-             (this.testData!=null &&
-              this.testData.equals(other.getTestData()))) &&
-            ((this.recorderStopped==null && other.getRecorderStopped()==null) || 
-             (this.recorderStopped!=null &&
-              this.recorderStopped.equals(other.getRecorderStopped()))) &&
-            ((this.manuallyModified==null && other.getManuallyModified()==null) || 
-             (this.manuallyModified!=null &&
-              this.manuallyModified.equals(other.getManuallyModified()))) &&
             ((this.clockForward==null && other.getClockForward()==null) || 
              (this.clockForward!=null &&
               this.clockForward.equals(other.getClockForward()))) &&
-            ((this.invalid==null && other.getInvalid()==null) || 
-             (this.invalid!=null &&
-              this.invalid.equals(other.getInvalid()))) &&
             ((this.longInterval==null && other.getLongInterval()==null) || 
              (this.longInterval!=null &&
               this.longInterval.equals(other.getLongInterval()))) &&
             ((this.manuallyEntered==null && other.getManuallyEntered()==null) || 
              (this.manuallyEntered!=null &&
               this.manuallyEntered.equals(other.getManuallyEntered()))) &&
-            ((this.clockBackward==null && other.getClockBackward()==null) || 
-             (this.clockBackward!=null &&
-              this.clockBackward.equals(other.getClockBackward()))) &&
-            ((this.partialInterval==null && other.getPartialInterval()==null) || 
-             (this.partialInterval!=null &&
-              this.partialInterval.equals(other.getPartialInterval()))) &&
-            ((this.overflow==null && other.getOverflow()==null) || 
-             (this.overflow!=null &&
-              this.overflow.equals(other.getOverflow()))) &&
+            ((this.invalid==null && other.getInvalid()==null) || 
+             (this.invalid!=null &&
+              this.invalid.equals(other.getInvalid()))) &&
             ((this.DSTinEffect==null && other.getDSTinEffect()==null) || 
              (this.DSTinEffect!=null &&
               this.DSTinEffect.equals(other.getDSTinEffect()))) &&
+            ((this.clockBackward==null && other.getClockBackward()==null) || 
+             (this.clockBackward!=null &&
+              this.clockBackward.equals(other.getClockBackward()))) &&
+            ((this.overflow==null && other.getOverflow()==null) || 
+             (this.overflow!=null &&
+              this.overflow.equals(other.getOverflow()))) &&
+            ((this.manuallyModified==null && other.getManuallyModified()==null) || 
+             (this.manuallyModified!=null &&
+              this.manuallyModified.equals(other.getManuallyModified()))) &&
+            ((this.configChanged==null && other.getConfigChanged()==null) || 
+             (this.configChanged!=null &&
+              this.configChanged.equals(other.getConfigChanged()))) &&
+            ((this.partialInterval==null && other.getPartialInterval()==null) || 
+             (this.partialInterval!=null &&
+              this.partialInterval.equals(other.getPartialInterval()))) &&
+            ((this.recorderStopped==null && other.getRecorderStopped()==null) || 
+             (this.recorderStopped!=null &&
+              this.recorderStopped.equals(other.getRecorderStopped()))) &&
+            ((this.testData==null && other.getTestData()==null) || 
+             (this.testData!=null &&
+              this.testData.equals(other.getTestData()))) &&
             ((this.intervalIndex==null && other.getIntervalIndex()==null) || 
              (this.intervalIndex!=null &&
               this.intervalIndex.equals(other.getIntervalIndex())));
@@ -388,23 +388,8 @@ public class Status  implements java.io.Serializable {
         }
         __hashCodeCalc = true;
         int _hashCode = 1;
-        if (getConfigChanged() != null) {
-            _hashCode += getConfigChanged().hashCode();
-        }
-        if (getTestData() != null) {
-            _hashCode += getTestData().hashCode();
-        }
-        if (getRecorderStopped() != null) {
-            _hashCode += getRecorderStopped().hashCode();
-        }
-        if (getManuallyModified() != null) {
-            _hashCode += getManuallyModified().hashCode();
-        }
         if (getClockForward() != null) {
             _hashCode += getClockForward().hashCode();
-        }
-        if (getInvalid() != null) {
-            _hashCode += getInvalid().hashCode();
         }
         if (getLongInterval() != null) {
             _hashCode += getLongInterval().hashCode();
@@ -412,17 +397,32 @@ public class Status  implements java.io.Serializable {
         if (getManuallyEntered() != null) {
             _hashCode += getManuallyEntered().hashCode();
         }
+        if (getInvalid() != null) {
+            _hashCode += getInvalid().hashCode();
+        }
+        if (getDSTinEffect() != null) {
+            _hashCode += getDSTinEffect().hashCode();
+        }
         if (getClockBackward() != null) {
             _hashCode += getClockBackward().hashCode();
-        }
-        if (getPartialInterval() != null) {
-            _hashCode += getPartialInterval().hashCode();
         }
         if (getOverflow() != null) {
             _hashCode += getOverflow().hashCode();
         }
-        if (getDSTinEffect() != null) {
-            _hashCode += getDSTinEffect().hashCode();
+        if (getManuallyModified() != null) {
+            _hashCode += getManuallyModified().hashCode();
+        }
+        if (getConfigChanged() != null) {
+            _hashCode += getConfigChanged().hashCode();
+        }
+        if (getPartialInterval() != null) {
+            _hashCode += getPartialInterval().hashCode();
+        }
+        if (getRecorderStopped() != null) {
+            _hashCode += getRecorderStopped().hashCode();
+        }
+        if (getTestData() != null) {
+            _hashCode += getTestData().hashCode();
         }
         if (getIntervalIndex() != null) {
             _hashCode += getIntervalIndex().hashCode();
@@ -443,43 +443,8 @@ public class Status  implements java.io.Serializable {
         attrField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "unsignedInt"));
         typeDesc.addFieldDesc(attrField);
         org.apache.axis.description.ElementDesc elemField = new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("configChanged");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "configChanged"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "boolean"));
-        elemField.setMinOccurs(0);
-        elemField.setNillable(false);
-        typeDesc.addFieldDesc(elemField);
-        elemField = new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("testData");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "testData"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "boolean"));
-        elemField.setMinOccurs(0);
-        elemField.setNillable(false);
-        typeDesc.addFieldDesc(elemField);
-        elemField = new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("recorderStopped");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "recorderStopped"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "boolean"));
-        elemField.setMinOccurs(0);
-        elemField.setNillable(false);
-        typeDesc.addFieldDesc(elemField);
-        elemField = new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("manuallyModified");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "manuallyModified"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "boolean"));
-        elemField.setMinOccurs(0);
-        elemField.setNillable(false);
-        typeDesc.addFieldDesc(elemField);
-        elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("clockForward");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "clockForward"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "boolean"));
-        elemField.setMinOccurs(0);
-        elemField.setNillable(false);
-        typeDesc.addFieldDesc(elemField);
-        elemField = new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("invalid");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "invalid"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "boolean"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
@@ -499,15 +464,22 @@ public class Status  implements java.io.Serializable {
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("clockBackward");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "clockBackward"));
+        elemField.setFieldName("invalid");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "invalid"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "boolean"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("partialInterval");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "partialInterval"));
+        elemField.setFieldName("DSTinEffect");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "DSTinEffect"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "boolean"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("clockBackward");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "clockBackward"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "boolean"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
@@ -520,8 +492,36 @@ public class Status  implements java.io.Serializable {
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("DSTinEffect");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "DSTinEffect"));
+        elemField.setFieldName("manuallyModified");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "manuallyModified"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "boolean"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("configChanged");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "configChanged"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "boolean"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("partialInterval");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "partialInterval"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "boolean"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("recorderStopped");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "recorderStopped"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "boolean"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("testData");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "testData"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "boolean"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);

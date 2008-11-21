@@ -17,7 +17,7 @@ import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
-import com.cannontech.multispeak.deploy.service.OA_ODSoap_BindingStub;
+import com.cannontech.multispeak.deploy.service.OA_ServerSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.OutageDetectDeviceType;
 import com.cannontech.multispeak.deploy.service.OutageDetectionEvent;
 import com.cannontech.multispeak.deploy.service.OutageEventType;
@@ -144,13 +144,13 @@ public class ODEvent extends MultispeakEvent{
             OutageDetectionEvent[] odEvents = new OutageDetectionEvent[1];
             odEvents [0] = getOutageDetectionEvent();
             
-            OA_ODSoap_BindingStub port = MultispeakPortFactory.getOA_ODPort(getMspVendor());
+            OA_ServerSoap_BindingStub port = MultispeakPortFactory.getOA_ServerPort(getMspVendor());
             if (port != null) {
                 ErrorObject[] errObjects = port.ODEventNotification(odEvents, getTransactionID());
                 if( errObjects != null)
                     ((MultispeakFuncs)YukonSpringHook.getBean("multispeakFuncs")).logErrorObjects(endpointURL, "ODEventNotification", errObjects);
             } else {
-                CTILogger.error("Port not found for OA_OD (" + getMspVendor().getCompanyName() + ")");
+                CTILogger.error("Port not found for OA_Server (" + getMspVendor().getCompanyName() + ")");
             }
         } catch (RemoteException e) {
             CTILogger.error("TargetService: " + endpointURL + " - initiateOutageDetection (" + getMspVendor().getCompanyName() + ")");
