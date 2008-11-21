@@ -93,8 +93,12 @@ public class Validator
 		{
 			return false;
 		}
-
-		return true;
+		
+        String  regex = "[0-9a-fA-F]*";
+        Pattern p = Pattern.compile(regex);
+        Matcher m = p.matcher(s);
+        
+		return m.matches();
 	}
 
 	public static boolean isHTML(String s)

@@ -38,6 +38,15 @@ public class ValidatorTest {
         assertFalse(Validator.isEmailAddress("test@@cannontech.com"));
         
     }
+    
+    @Test
+    public void test_isHEx() throws NotFoundException {
+        assertTrue(Validator.isHex("123fbc"));
+        assertTrue(Validator.isHex("0123456789abcdefABCDEF"));
+        
+        assertFalse(Validator.isHex("123t45"));
+        assertFalse(Validator.isHex("g23a45"));
+    }
 
 
 }
