@@ -39,6 +39,9 @@ public final static DeviceBase createDevice(int deviceType) {
 		case PAOGroups.SERIES_5_LMI:
 			returnDevice = new Series5LMI();
 			break;
+		case PAOGroups.XML_TRANSMITTER:
+		    returnDevice = new XML();
+		    break;
 		case PAOGroups.RTC:
 			returnDevice = new RTC();
 			break;
@@ -249,6 +252,11 @@ public final static DeviceBase createDevice(int deviceType) {
 			returnDevice.setDeviceType( PAOGroups.STRING_MCT_GROUP[0] );
 			returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_GROUP);
 			break;
+	    case PAOGroups.LM_GROUP_XML:
+            returnDevice = new com.cannontech.database.data.device.lm.LMGroupXML();
+            returnDevice.setDeviceType( PAOGroups.STRING_XML_GROUP[0] );
+            returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_GROUP);
+            break;
 		case PAOGroups.LM_GROUP_SA305:
 			returnDevice = new com.cannontech.database.data.device.lm.LMGroupSA305();
 			returnDevice.setDeviceType(PAOGroups.STRING_SA305_GROUP[0]);

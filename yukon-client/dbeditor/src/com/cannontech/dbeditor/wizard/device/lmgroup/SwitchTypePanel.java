@@ -31,7 +31,6 @@ public class SwitchTypePanel extends com.cannontech.common.gui.util.DataInputPan
             "LCR 4000       (VERSACOM)",
 			"LCR 3100       (EXPRESSCOM)",
             "LCR 3100       (VERSACOM)",
-//            "LCR 3100       (EMETCON)",
 			"LCR 3000       (VERSACOM)",
 			"LCR 3000       (EMETCON)",
 			"LCR 2000       (VERSACOM)",
@@ -40,7 +39,8 @@ public class SwitchTypePanel extends com.cannontech.common.gui.util.DataInputPan
 			"DCU-S1180      (Golay)",
             "T-STAT         (EXPRESSCOM)",
 			"Point Group",
-			"MCT Group"
+			"MCT Group",
+			"XML Group      (EXPRESSCOM-XML)"
 	};
     
     // These are the values that correspond to each selection
@@ -56,7 +56,6 @@ public class SwitchTypePanel extends com.cannontech.common.gui.util.DataInputPan
             com.cannontech.database.data.pao.PAOGroups.LM_GROUP_VERSACOM,
             com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EXPRESSCOMM,
             com.cannontech.database.data.pao.PAOGroups.LM_GROUP_VERSACOM,
-//            com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EMETCON,
             com.cannontech.database.data.pao.PAOGroups.LM_GROUP_VERSACOM,
             com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EMETCON,
             com.cannontech.database.data.pao.PAOGroups.LM_GROUP_VERSACOM,
@@ -66,6 +65,7 @@ public class SwitchTypePanel extends com.cannontech.common.gui.util.DataInputPan
             com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EXPRESSCOMM,
             com.cannontech.database.data.pao.PAOGroups.LM_GROUP_POINT,
             com.cannontech.database.data.pao.PAOGroups.LM_GROUP_MCT,
+            com.cannontech.database.data.pao.PAOGroups.LM_GROUP_XML
     };  
 	
 	//normally we cannot show SA protocol groups, since legal permission
@@ -93,7 +93,8 @@ public class SwitchTypePanel extends com.cannontech.common.gui.util.DataInputPan
 			"DCU-S1180      (Golay)",
             "T-STAT         (EXPRESSCOM)",
 			"Point Group",
-			"MCT Group"
+			"MCT Group",
+			"XML Group      (EXPRESSCOM-XML)"
 	};
 	
 
@@ -124,6 +125,7 @@ public class SwitchTypePanel extends com.cannontech.common.gui.util.DataInputPan
             com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EXPRESSCOMM,
 			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_POINT,
 			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_MCT,
+			com.cannontech.database.data.pao.PAOGroups.LM_GROUP_XML
 	};
 	
 /**

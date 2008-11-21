@@ -14,19 +14,7 @@ import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.wizard.CancelInsertException;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.database.data.device.CarrierBase;
-import com.cannontech.database.data.device.DNPBase;
-import com.cannontech.database.data.device.DeviceBase;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
-import com.cannontech.database.data.device.IDLCBase;
-import com.cannontech.database.data.device.CCU721;
-import com.cannontech.database.data.device.Ion7700;
-import com.cannontech.database.data.device.RTCBase;
-import com.cannontech.database.data.device.RTM;
-import com.cannontech.database.data.device.Repeater900;
-import com.cannontech.database.data.device.Repeater902;
-import com.cannontech.database.data.device.Repeater921;
-import com.cannontech.database.data.device.Series5Base;
+import com.cannontech.database.data.device.*;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
@@ -455,7 +443,7 @@ public Object getValue(Object val)
    }
    else if( val instanceof Series5Base )
    {
-		((Series5Base)val).getSeries5().setSlaveAddress( address );
+       ((Series5Base)val).getSeries5().setSlaveAddress( address );
    }
    else if( val instanceof CarrierBase )
 	{
@@ -471,7 +459,10 @@ public Object getValue(Object val)
 		else
 			((CarrierBase)device).getDeviceCarrierSettings().setAddress( address );
 	}
-	
+   else if (val instanceof XML)
+   {
+       //((Series5Base)val).getSeries5().setSlaveAddress( address );
+   }
 	else  //didn't find it
 		throw new Error("Unable to determine device type when attempting to set the address");
 

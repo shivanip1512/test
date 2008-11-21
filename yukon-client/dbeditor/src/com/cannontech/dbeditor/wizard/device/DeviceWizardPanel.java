@@ -1,6 +1,7 @@
 package com.cannontech.dbeditor.wizard.device;
 
 import com.cannontech.database.data.device.DeviceTypesFuncs;
+import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
 
 /**
@@ -318,6 +319,10 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 			temp.setValue(null);
             temp.setFirstFocus();
 			return temp;
+		}
+		else if (DeviceTypes.XML_TRANSMITTER == devType)
+		{
+		    return getDeviceCommChannelPanel();
 		}
 		else
 		{

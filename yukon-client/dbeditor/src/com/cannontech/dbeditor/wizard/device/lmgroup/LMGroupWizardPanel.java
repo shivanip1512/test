@@ -2,6 +2,7 @@ package com.cannontech.dbeditor.wizard.device.lmgroup;
 
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.ClientRights;
+import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.roles.application.DBEditorRole;
 /**
  * This type was created in VisualAge.
@@ -20,6 +21,7 @@ public class LMGroupWizardPanel extends com.cannontech.common.wizard.WizardPanel
 	private RippleMessageShedPanel rippleMessageShedPanel = null;
 	private SpecialRippleMessagePanel specialRippleMessagePanel = null;
 	private LMGroupExpressComEditorPanel lmGroupExpressComEditorPanel = null;
+	private LMGroupXMLEditorPanel lmGroupXMLEditorPanel = null;
 	private LMGroupPointEditorPanel lmGroupPointEditorPanel = null;
 	
 	private LMGroupMCTEditorPanel lmGroupMCTEditorPanel = null;
@@ -75,6 +77,14 @@ public SA305EditorPanel getSA305EditorPanel()
 		aSA305EditorPanel = new SA305EditorPanel();
 	
 	return aSA305EditorPanel;
+}
+
+public LMGroupXMLEditorPanel getLMGroupXMLEditorPanel() 
+{
+	if( lmGroupXMLEditorPanel == null )
+		lmGroupXMLEditorPanel = new LMGroupXMLEditorPanel();
+	
+	return lmGroupXMLEditorPanel;
 }
 
 public SA205EditorPanel getSA205EditorPanel() 
@@ -284,7 +294,8 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 	}
 	//Start Expresscom specific
 	else if ( currentInputPanel == getLMGroupBasePanel()
-			    && getSwitchTypePanel().getTypeOfSwitchSelected() == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_EXPRESSCOMM )
+			    && (getSwitchTypePanel().getTypeOfSwitchSelected() == PAOGroups.LM_GROUP_EXPRESSCOMM || 
+			        getSwitchTypePanel().getTypeOfSwitchSelected() == PAOGroups.LM_GROUP_XML) )
 	{
 		getLMGroupExpressComEditorPanel().setFirstFocus();
         return getLMGroupExpressComEditorPanel();
@@ -328,7 +339,14 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 	{
 		getGolayEditorPanel().setFirstFocus();
         return getGolayEditorPanel();
-	}	
+	}
+	else if ( currentInputPanel == getLMGroupExpressComEditorPanel()
+			 && getSwitchTypePanel().getTypeOfSwitchSelected() == PAOGroups.LM_GROUP_XML )
+	{
+		getLMGroupXMLEditorPanel().setFirstFocus();
+		return getLMGroupXMLEditorPanel();
+	}
+	
 	
 	System.err.println(getClass() + "::getNextInputPanel() - currentInputPanel was not recognized.");
 	return null;
@@ -384,7 +402,8 @@ protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel
 		 	  || currentPanel == rippleMessageShedPanel
 		 	  || currentPanel == specialRippleMessagePanel
 		      || currentPanel == groupMacroLoadGroupsPanel
-		      || currentPanel == lmGroupExpressComEditorPanel
+		      || (currentPanel == lmGroupExpressComEditorPanel && (getSwitchTypePanel().getTypeOfSwitchSelected() != PAOGroups.LM_GROUP_XML ))
+		      || currentPanel == lmGroupXMLEditorPanel
 		      || currentPanel == lmGroupPointEditorPanel
 		      || currentPanel == aSA305EditorPanel
 			  || currentPanel == aSA205EditorPanel

@@ -183,10 +183,15 @@
   
   <bean id="fdrTranslationDao" class="com.cannontech.core.dao.impl.FdrTranslationDaoImpl">
        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
-   </bean> 
+  </bean> 
    
-   <bean id="userPaoPermissionDao" class="com.cannontech.core.authorization.dao.UserPaoPermissionDaoImpl" >
-        <property name="jdbcOps" ref="jdbcTemplate" />
-        <property name="nextValueHelper" ref="nextValueHelper" />
-    </bean>
+  <bean id="userPaoPermissionDao" class="com.cannontech.core.authorization.dao.UserPaoPermissionDaoImpl" >
+       <property name="jdbcOps" ref="jdbcTemplate" />
+       <property name="nextValueHelper" ref="nextValueHelper" />
+  </bean> 
+  
+  <bean id="xmlLMGroupParametersDao" class="com.cannontech.core.dao.impl.XmlLMGroupParametersDaoImpl">
+       <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
+  </bean> 
+  
 </beans>

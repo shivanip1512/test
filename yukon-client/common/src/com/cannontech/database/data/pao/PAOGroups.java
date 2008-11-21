@@ -253,6 +253,10 @@ public final static int getDeviceType(String typeString)
 	  return LM_GROUP_EXPRESSCOMM;
    else if (isStringDevice(compareString, STRING_POINT_GROUP))
 	  return LM_GROUP_POINT;
+   else if (isStringDevice(compareString, STRING_XML_GROUP))
+       return LM_GROUP_XML;
+   else if (isStringDevice(compareString, STRING_XML_TRANSMITTER))
+       return XML_TRANSMITTER;
    else if (isStringDevice(compareString, STRING_MACRO_GROUP))
 	  return MACRO_GROUP;
    else if (isStringDevice(compareString, STRING_RIPPLE_GROUP))
@@ -520,7 +524,9 @@ public final static String getPAOTypeString(int type)
 		  	return STRING_WCTP_TERMINAL[0];
 		case SNPP_TERMINAL:
 			return STRING_SNPP_TERMINAL[0];
-
+		case XML_TRANSMITTER:
+		    return STRING_XML_TRANSMITTER[0];
+			
 	  	case LM_GROUP_EMETCON:
 		  	return STRING_EMETCON_GROUP[0];
 	  	case LM_GROUP_VERSACOM:
@@ -543,7 +549,8 @@ public final static String getPAOTypeString(int type)
 		  	return STRING_RIPPLE_GROUP[0];
 		case LM_GROUP_MCT:
 			return STRING_MCT_GROUP[0];
-
+	    case LM_GROUP_XML:
+	            return STRING_XML_GROUP[0];
 	  	case MCTBROADCAST:
 		  	return STRING_MCT_BROADCAST[0];
 		  

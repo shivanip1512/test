@@ -5897,7 +5897,18 @@
             </point>
         </points>
     </device>
-    
+    <device>
+        <type value="1106" javaConstant="XML_TRANSMITTER"/>
+        <displayName value="XML"/>
+        <displayGroup value="Signal Transmitters"/>
+        <points>
+            <point init="true" type="Status">
+                <name>Comm Status</name>
+                <offset value="2000"/>
+                <stategroup value="TwoStateStatus"/>
+            </point>
+        </points>
+    </device>
     <!-- Electronic Meters -->
     <device>
         <type value="1009" javaConstant="ALPHA_PPLUS" changeGroup="electronic"/>

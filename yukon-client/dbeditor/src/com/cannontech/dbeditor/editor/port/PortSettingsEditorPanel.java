@@ -13,6 +13,7 @@ import com.cannontech.database.db.port.CommPort;
 import com.cannontech.database.db.port.PortSettings;
 import com.cannontech.database.db.port.PortTerminalServer;
 import com.cannontech.database.db.port.PortTerminalServer.EncodingType;
+import com.cannontech.util.Validator;
  
 public class PortSettingsEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
 	private javax.swing.JComboBox ivjCommonProtocolComboBox = null;
@@ -1017,14 +1018,14 @@ private javax.swing.JLabel getEncryptionLabel() {
         try {
             encodingLabel = new javax.swing.JLabel();
             encodingLabel.setName("EncryptionLabel");
-            encodingLabel.setText("Key");
-            encodingLabel.setMaximumSize(new java.awt.Dimension(50, 16));
+            encodingLabel.setText("Key (Hex)");
+            encodingLabel.setMaximumSize(new java.awt.Dimension(70, 16));
             encodingLabel.setVisible(true);
             encodingLabel.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
-            encodingLabel.setPreferredSize(new java.awt.Dimension(50, 16));
+            encodingLabel.setPreferredSize(new java.awt.Dimension(70, 16));
             encodingLabel.setFont(new java.awt.Font("dialog", 0, 14));
             encodingLabel.setEnabled(true);
-            encodingLabel.setMinimumSize(new java.awt.Dimension(50, 16));
+            encodingLabel.setMinimumSize(new java.awt.Dimension(70, 16));
             encodingLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
             // user code begin {1}
             // user code end
@@ -1333,6 +1334,24 @@ public void setValue(Object val)
 	}
 
 }
+
+public boolean isInputValid() {
+    
+    boolean ret = true;
+    
+    if (!Validator.isHex(getEncodingTextField().getText())) {
+        ret = false;
+        setErrorString("Encryption key must be in Hex format and 16 bytes long. (32 hex values)");
+    }
+    
+    if (getEncodingTextField().getText().length() != 32) {
+        ret = false;
+        setErrorString("Encryption key must be 16 bytes long. (32 hex values)");
+    }
+    
+    return ret;
+}
+
 /**
  * 
  */
