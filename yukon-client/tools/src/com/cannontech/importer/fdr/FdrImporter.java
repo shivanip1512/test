@@ -166,7 +166,7 @@ public class FdrImporter {
                         //analog
                         analogWriter.write(base.getPointParameter("PointName") + ",Analog," 
                                            + base.getPointParameter("PaoName") + "," + i 
-                                           + "," + base.getPointParameter("uom")  );
+                                           + "," + base.getPointParameter("UOM")  );
                         analogWriter.write(",1,0,0,1,,,,,,,NONE,,,,(none),,\n");
                     }
                     base.getPointParametersMap().put("OFFSET", Integer.toString(i));
