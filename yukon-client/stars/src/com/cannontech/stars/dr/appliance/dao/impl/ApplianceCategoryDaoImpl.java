@@ -114,7 +114,7 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
         applCateQuery.append("                                        AND ECTGM.mappingCategory = 'ApplianceCategory')");
         applCateQuery.append("WHERE (AC.description = ?");
         applCateQuery.append("       OR YWC.alternateDisplayName = ?)");
-        applCateQuery.append("AND ECTGM.energyCompanyId in (?)");
+        applCateQuery.append("AND ECTGM.energyCompanyId in (", energyCompanyIds,")");
 
         
         List<ApplianceCategory> applianceCategories = 

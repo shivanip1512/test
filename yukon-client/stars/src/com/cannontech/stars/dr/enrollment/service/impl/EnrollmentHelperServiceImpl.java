@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.common.exception.DuplicateEnrollmentException;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.AuthDao;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
@@ -38,6 +38,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     
     private ApplianceDao applianceDao;
     private ApplianceCategoryDao applianceCategoryDao;
+    private AuthDao authDao;
     private CustomerAccountDao customerAccountDao;
     private EnrollmentDao enrollmentDao;
     private LoadGroupDao loadGroupDao;
@@ -58,7 +59,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
          */
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(yukonUserContext.getYukonUser());
         List<Integer> energyCompanyIds = new ArrayList<Integer>();
-        if(DaoFactory.getAuthDao().checkRoleProperty(energyCompany.getUserID(), EnergyCompanyRole.INHERIT_PARENT_APP_CATS )) {
+        if(authDao.checkRoleProperty(energyCompany.getUserID(), EnergyCompanyRole.INHERIT_PARENT_APP_CATS )) {
             List<LiteStarsEnergyCompany> allAscendants = ECUtils.getAllAscendants(energyCompany);
             
             for (LiteStarsEnergyCompany ec : allAscendants) {
@@ -186,7 +187,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         for (i = 0;i < programEnrollments.size();i++) {
             ProgramEnrollment programEnrollment = programEnrollments.get(i);
             
-            if (removedProgramEnrollment.equals(programEnrollment)) {
+            if (removedProgramEnrollment.equivalent(programEnrollment)) {
                 break;
             }
         }
@@ -231,6 +232,11 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         this.applianceCategoryDao = applianceCategoryDao;
     }
     
+    @Autowired
+    public void setAuthDao(AuthDao authDao) {
+        this.authDao = authDao;
+    }
+
     @Autowired
     public void setCustomerAccountDao(CustomerAccountDao customerAccountDao) {
         this.customerAccountDao = customerAccountDao;

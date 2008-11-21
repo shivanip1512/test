@@ -78,8 +78,12 @@ public class ProgramEnrollment {
         return result;
     }
 
-    @Override
-    public boolean equals(Object obj) {
+    /** This method is very comparable to an equals method, but will not 
+     * return false on any cases where a given value for a supplied ProgramEnrollment
+     * has not been set.  This means if one programEnrollment has a relay of 0 and the
+     * other has a relay of 12 they are still considered equivalent, but not equal.
+     */
+    public boolean equivalent(Object obj) {
         if (this == obj)
             return true;
         if (obj == null)
@@ -87,21 +91,25 @@ public class ProgramEnrollment {
         if (getClass() != obj.getClass())
             return false;
         final ProgramEnrollment other = (ProgramEnrollment) obj;
-        if (this.getInventoryId() != other.getInventoryId())
+        if (this.inventoryId != other.inventoryId)
             return false;
-        if (this.getProgramId() != other.getProgramId())
+        if (this.programId != other.programId)
             return false;
-        if (this.getApplianceCategoryId() != 0 &&
-            this.getApplianceCategoryId() != other.getApplianceCategoryId())
+        if (this.applianceCategoryId != 0 &&
+            other.applianceCategoryId != 0 &&
+            this.applianceCategoryId != other.applianceCategoryId)
             return false;
-        if (this.getApplianceKW() != 0 &&
-            this.getApplianceKW() != other.getApplianceKW())
+        if (this.applianceKW != 0 &&
+            other.applianceKW != 0 &&
+            this.applianceKW != other.applianceKW)
             return false;
-        if (this.getLmGroupId() != 0 &&
-            this.getLmGroupId() != other.getLmGroupId())
+        if (this.lmGroupId != 0 &&
+            other.lmGroupId != 0 &&
+            this.lmGroupId != other.lmGroupId)
             return false;
-        if(this.getRelay() != 0 &&
-           this.getRelay() != other.getRelay())
+        if(this.relay != 0 &&
+           other.relay != 0 &&
+           this.relay != other.relay)
             return false;
         return true;
     }
