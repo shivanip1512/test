@@ -28,7 +28,7 @@ import com.cannontech.multispeak.deploy.service.OD_OASoap_PortType;
 public class OD_OA_Test {
 
 	private OD_OASoap_PortType port = null;
-	private String endpointURL = "http://10.100.10.25/soap/OD_OASoap";
+	private String endpointURL = "http://127.0.0.1:8080/soap/OD_OASoap";
 	private SOAPHeaderElement header;
 	
 	public static void main(String [] args)
@@ -58,6 +58,7 @@ public class OD_OA_Test {
 			test.port = service.getOD_OASoap();
 			((OD_OASoap_BindingStub)test.port).setHeader(test.header);
 
+			test.initiateOutageDetectionTest(mn);
 			if( args.length > 1)
 			{
 				String method = args[1];

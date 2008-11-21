@@ -26,15 +26,15 @@ import com.cannontech.multispeak.deploy.service.Meter;
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public class CB_MR_Test {
+public class CB_CD_Test {
 
 	public static void main(String [] args)
 	{
 		try {
-			String endpointURL = "http://localhost:8080/soap/CB_MRSoap";
-//			endpointURL = "http://209.101.158.56/mspamrintegration/CB_MR.asmx";  //SEDC Test Server
-			endpointURL = "http://209.101.158.56:8080/mspamrintegration/CB_MR.asmx";  //SEDC Test Server and TCPTrace
-		  	endpointURL = "http://10.106.36.146:8081";
+			String endpointURL = "http://localhost:8002/soap/CB_ServerSoap";
+//			endpointURL = "http://209.101.158.56/mspamrintegration/CB_Server.asmx";  //SEDC Test Server
+//			endpointURL = "http://209.101.158.56:8080/mspamrintegration/CB_Server.asmx";  //SEDC Test Server and TCPTrace
+//		  	endpointURL = "http://10.106.36.146:8081";
 			CB_ServerSoap_BindingStub instance = new CB_ServerSoap_BindingStub(new URL(endpointURL), new Service());
 			
             YukonMultispeakMsgHeader msgHeader =new YukonMultispeakMsgHeader();

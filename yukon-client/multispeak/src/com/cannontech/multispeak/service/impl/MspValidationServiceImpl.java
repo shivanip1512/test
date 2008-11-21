@@ -12,17 +12,17 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.multispeak.block.Block;
 import com.cannontech.multispeak.block.FormattedBlockService;
-import com.cannontech.multispeak.deploy.service.MR_CBSoap_PortType;
+import com.cannontech.multispeak.deploy.service.MR_ServerSoap_PortType;
 import com.cannontech.multispeak.service.MspValidationService;
 
 public class MspValidationServiceImpl implements MspValidationService {
 
-    public MR_CBSoap_PortType mr_cb;
+    public MR_ServerSoap_PortType mr_server;
     public MeterDao meterDao;
     
     @Required
-    public void setMr_cb(MR_CBSoap_PortType mr_cb) {
-        this.mr_cb = mr_cb;
+    public void setMr_server(MR_ServerSoap_PortType mr_server) {
+        this.mr_server = mr_server;
     }
     @Required
     public void setMeterDao(MeterDao meterDao) {
