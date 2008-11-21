@@ -63,6 +63,11 @@
 			document.form1.ACTION.value='ChangeVendor';
 			document.form1.submit();
 		}
+
+		function showArchitecture(arch) {
+		    document.getElementById("DivP2PArch").style.display = (arch == "p2p")? "" : "none";
+			document.getElementById("DivBusArch").style.display = (arch == "bus")? "" : "none";
+		}
 	</script>
     
 	<br>
@@ -150,6 +155,10 @@
 				  <tr valign="bottom">
 				    <td colspan="2" style="text-align:right"><u>Interfaces</u>
 				    </td>
+				    <td align="center">
+				        <input type="radio" id="arch" name="arch" value="p2p" checked onChange="showArchitecture('p2p');">Point to Point&nbsp;&nbsp;
+				        <input type="radio" id="arch" name="arch" value=bus" onChange="showArchitecture('bus');">Bus
+				    </td>
 				  </tr>
 				  <tr>
 				    <td colspan="2" style="text-align:right" onMouseOver="dispStatusMsg('Enter the MultiSpeak URL   EX: http://127.0.0.1:80/soap/ ');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">MSP URL</td>
@@ -157,39 +166,74 @@
 				      <input type="text" name="mspURL" size="30" value='<c:out value="${multispeakBean.selectedMspVendor.url}"/>'>
 				    </td>
 				  </tr>
-				
-				  <c:set var="interfacesMap" value="${multispeakBean.selectedInterfacesMap}" scope="page" />  
-				  <c:forEach var="mspPossibleInterface" items="${multispeakBean.allInterfaces}" varStatus="status">
-				    <c:set var="interfaceValue" value="${interfacesMap[mspPossibleInterface]}" scope="page" />    
-				    <c:set var="disabled" value="${interfaceValue == null}" scope="page" />  
-				      <tr>
-				        <td style="text-align:right">
-				          <input id="mspInterface" type="checkbox" <c:if test="${!disabled}">checked</c:if> name='mspInterface' value='<c:out value="${mspPossibleInterface}"/>' onclick='enableEndpointValue(this.checked, this.value)'>
-				        </td>
-				        <td style="text-align:center"><c:out value="${mspPossibleInterface}"/>
-				        </td>
-				        <td colspan="2">
-				          <input id="mspEndpoint<c:out value="${mspPossibleInterface}"/>" type="text" name="mspEndpoint" size="30" 
-				                value='<c:out value="${interfaceValue.mspEndpoint}" default="${mspPossibleInterface}Soap"/>'
-				                <c:if test="${disabled}">disabled</c:if>>                
-				          <c:choose>
-				            <c:when test="${disabled}">
-				              <a id="mspPing<c:out value="${mspPossibleInterface}"/>" href='JavaScript:;' style='cursor:default' class="Link4" name="pingURL">Ping</a>
-				              <a id="mspMethods<c:out value="${mspPossibleInterface}"/>" href='JavaScript:;' style='cursor:default' class="Link4" name="getMethods">Methods</a>
-				            </c:when>
-				            <c:otherwise>
-				              <a id="mspPing<c:out value="${mspPossibleInterface}"/>" style='cursor:pointer' href='JavaScript:serviceSubmit("<c:out value='${interfaceValue.mspInterface}'/>", "pingURL");' class="Link4" name="pingURL">Ping</a>
-				              <a id="mspMethods<c:out value="${mspPossibleInterface}"/>" style='cursor:pointer' href='JavaScript:serviceSubmit("<c:out value='${interfaceValue.mspInterface}'/>", "getMethods");' class="Link4" name="getMethods">Methods</a>
-				            </c:otherwise>
-				          </c:choose>         
-				        </td>
-				        <c:if test="${status.first}">
-				        <td rowspan='${arrayLength}'>
-				          <textarea cols="50" rows="${arrayLength * 2}" name="Results" readonly wrap="VIRTUAL" style='color:<c:out value="${sessionScope.resultColor}"/>'><c:out value="${sessionScope.MSP_RESULT_MSG}"/></textarea>
-				        </td>
-				        </c:if>          
-				      </tr>
-				  </c:forEach>
+				  <tr><td colspan="3"><div id="DivP2PArch"><table>
+					  <c:set var="interfacesMap" value="${multispeakBean.selectedInterfacesMap}" scope="page" />  
+					  <c:forEach var="mspPossibleInterface" items="${multispeakBean.p2PInterfaces}" varStatus="status">
+					    <c:set var="interfaceValue" value="${interfacesMap[mspPossibleInterface]}" scope="page" />    
+					    <c:set var="disabled" value="${interfaceValue == null}" scope="page" />  
+					      <tr>
+					        <td style="text-align:right">
+					          <input id="mspInterface" type="checkbox" <c:if test="${!disabled}">checked</c:if> name='mspInterface' value='<c:out value="${mspPossibleInterface}"/>' onclick='enableEndpointValue(this.checked, this.value)'>
+					        </td>
+					        <td style="text-align:center"><c:out value="${mspPossibleInterface}"/>
+					        </td>
+					        <td colspan="2">
+					          <input id="mspEndpoint<c:out value="${mspPossibleInterface}"/>" type="text" name="mspEndpoint" size="30" 
+					                value='<c:out value="${interfaceValue.mspEndpoint}" default="${mspPossibleInterface}Soap"/>'
+					                <c:if test="${disabled}">disabled</c:if>>                
+					          <c:choose>
+					            <c:when test="${disabled}">
+					              <a id="mspPing<c:out value="${mspPossibleInterface}"/>" href='JavaScript:;' style='cursor:default' class="Link4" name="pingURL">Ping</a>
+					              <a id="mspMethods<c:out value="${mspPossibleInterface}"/>" href='JavaScript:;' style='cursor:default' class="Link4" name="getMethods">Methods</a>
+					            </c:when>
+					            <c:otherwise>
+					              <a id="mspPing<c:out value="${mspPossibleInterface}"/>" style='cursor:pointer' href='JavaScript:serviceSubmit("<c:out value='${interfaceValue.mspInterface}'/>", "pingURL");' class="Link4" name="pingURL">Ping</a>
+					              <a id="mspMethods<c:out value="${mspPossibleInterface}"/>" style='cursor:pointer' href='JavaScript:serviceSubmit("<c:out value='${interfaceValue.mspInterface}'/>", "getMethods");' class="Link4" name="getMethods">Methods</a>
+					            </c:otherwise>
+					          </c:choose>         
+					        </td>
+					        <c:if test="${status.first}">
+					        <td rowspan='${arrayLength}'>
+					          <textarea cols="50" rows="${arrayLength * 2}" name="Results" readonly wrap="VIRTUAL" style='color:<c:out value="${sessionScope.resultColor}"/>'><c:out value="${sessionScope.MSP_RESULT_MSG}"/></textarea>
+					        </td>
+					        </c:if>          
+					      </tr>
+					  </c:forEach>
+				  </table></div></td></tr>
+                  <tr><td colspan="3"><div id="DivBusArch" style="display:none"><table>
+                      <c:set var="interfacesMap" value="${multispeakBean.selectedInterfacesMap}" scope="page" />
+                      <c:forEach var="mspPossibleInterface" items="${multispeakBean.busInterfaces}" varStatus="status">
+                        <c:set var="interfaceValue" value="${interfacesMap[mspPossibleInterface]}" scope="page" />    
+                        <c:set var="disabled" value="${interfaceValue == null}" scope="page" />  
+                          <tr>
+                            <td style="text-align:right">
+                              <input id="mspInterface" type="checkbox" <c:if test="${!disabled}">checked</c:if> name='mspInterface' value='<c:out value="${mspPossibleInterface}"/>' onclick='enableEndpointValue(this.checked, this.value)'>
+                            </td>
+                            <td style="text-align:center"><c:out value="${mspPossibleInterface}"/>
+                            </td>
+                            <td colspan="2">
+                              <input id="mspEndpoint<c:out value="${mspPossibleInterface}"/>" type="text" name="mspEndpoint" size="30" 
+                                    value='<c:out value="${interfaceValue.mspEndpoint}" default="${mspPossibleInterface}Soap"/>'
+                                    <c:if test="${disabled}">disabled</c:if>>                
+                              <c:choose>
+                                <c:when test="${disabled}">
+                                  <a id="mspPing<c:out value="${mspPossibleInterface}"/>" href='JavaScript:;' style='cursor:default' class="Link4" name="pingURL">Ping</a>
+                                  <a id="mspMethods<c:out value="${mspPossibleInterface}"/>" href='JavaScript:;' style='cursor:default' class="Link4" name="getMethods">Methods</a>
+                                </c:when>
+                                <c:otherwise>
+                                  <a id="mspPing<c:out value="${mspPossibleInterface}"/>" style='cursor:pointer' href='JavaScript:serviceSubmit("<c:out value='${interfaceValue.mspInterface}'/>", "pingURL");' class="Link4" name="pingURL">Ping</a>
+                                  <a id="mspMethods<c:out value="${mspPossibleInterface}"/>" style='cursor:pointer' href='JavaScript:serviceSubmit("<c:out value='${interfaceValue.mspInterface}'/>", "getMethods");' class="Link4" name="getMethods">Methods</a>
+                                </c:otherwise>
+                              </c:choose>         
+                            </td>
+                            <c:if test="${status.first}">
+                            <td rowspan='${arrayLength}'>
+                              <textarea cols="50" rows="${arrayLength * 2}" name="Results" readonly wrap="VIRTUAL" style='color:<c:out value="${sessionScope.resultColor}"/>'><c:out value="${sessionScope.MSP_RESULT_MSG}"/></textarea>
+                            </td>
+                            </c:if>          
+                          </tr>
+                      </c:forEach>
+                  </table></div></td></tr>
 				  <tr> 
 				    <td align="right" colspan="3">
 				      <input type="submit" name="Save" value="Save" onclick="document.form1.ACTION.value='Save';">
