@@ -46,6 +46,7 @@ using namespace std;
 using namespace boost;
 
 void CCUThread(int portNumber, int strategy);
+void CCUThreadMaintainer(int portNumber, int strategy);
 
 DLLIMPORT extern CtiLogger dout;
 
@@ -130,12 +131,21 @@ int main(int argc, char *argv[])
 
     for( ; port_min <= port_max; ++port_min )
     {
-        threadGroup.add_thread(new boost::thread(boost::bind(CCUThread, port_min, strategy)));
+        threadGroup.add_thread(new boost::thread(boost::bind(CCUThreadMaintainer, port_min, strategy)));
     }
 
     threadGroup.join_all();
 
     return 0;
+}
+
+void CCUThreadMaintainer(int portNumber, int strategy)
+{
+    while( !globalCtrlCFlag )
+    {
+        boost::thread thread(boost::bind(CCUThread, portNumber, strategy));
+        thread.join();
+    }
 }
 
 void CCUThread(int portNumber, int strategy)
@@ -199,7 +209,8 @@ void CCUThread(int portNumber, int strategy)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " Port " << portNumber << " - Unhandled request ";
-                dout << hex << "(" << peek_buffer[0] << " " << peek_buffer[addr_index] << ")" << endl;
+                dout << hex << "(" << peek_buffer[0] << " " << peek_buffer[addr_index] << ") Closing socket." << endl;
+                break;
             }
 
             bytes_read = 0;
