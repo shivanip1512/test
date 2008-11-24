@@ -2,8 +2,8 @@
 cls
 
 echo:
-echo Executing %~df0 %1
+echo Executing %~df0 %*
 echo:
 
 
-..\yukon-client\build\ant\bin\ant -f build.xml %1
+..\yukon-client\build\ant\bin\ant -f build.xml %*
