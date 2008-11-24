@@ -99,7 +99,5 @@ yukon-client/yukon-web/jspbuild
 yukon-client/yukon-web/srcbuild
 yukon-client/yukon-web/temp
 yukon-client/yukon-web/work
-yukon-client/yukonappclient/bin
-yukon-client/yukonappclient/build
 yukon-client/yukonappserver/bin
 yukon-client/yukonappserver/build
