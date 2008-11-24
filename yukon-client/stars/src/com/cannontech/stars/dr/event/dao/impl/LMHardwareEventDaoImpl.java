@@ -216,10 +216,10 @@ public class LMHardwareEventDaoImpl implements LMHardwareEventDao,
     }
 
     // Spring IOC
-    public void setLMCustomerEventBaseDao(
-            LMCustomerEventBaseDao lmCustomerEventBaseDao) {
-        this.lmCustomerEventBaseDao = lmCustomerEventBaseDao;
-    }
+    public void setLmCustomerEventBaseDao(
+			LMCustomerEventBaseDao lmCustomerEventBaseDao) {
+		this.lmCustomerEventBaseDao = lmCustomerEventBaseDao;
+	}
 
     @Override
     public void deleteHardwareToMeterMapping(Integer inventoryId) {

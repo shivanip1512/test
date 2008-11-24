@@ -425,17 +425,17 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao {
         this.thermostatScheduleDao = thermostatScheduleDao;
     }
 
-    //Spring IOC    
-    public void setLmHardwareEventDao(LMHardwareEventDao lmHardwareEventDao) {
-        this.hardwareEventDao = lmHardwareEventDao;
-    }
+    //Spring IOC
+    public void setHardwareEventDao(LMHardwareEventDao hardwareEventDao) {
+		this.hardwareEventDao = hardwareEventDao;
+	}
 
-    //Spring IOC    
-    public void setLmonfigurationBaseDao(
-            LMConfigurationBaseDao lmonfigurationBaseDao) {
-        this.lmConfigurationBaseDao = lmonfigurationBaseDao;
-    }
-
+    //Spring IOC
+    public void setLmConfigurationBaseDao(
+			LMConfigurationBaseDao lmConfigurationBaseDao) {
+		this.lmConfigurationBaseDao = lmConfigurationBaseDao;
+	}
+    
     //Spring IOC    
     public void setEventInventoryDao(EventInventoryDao eventInventoryDao) {
         this.eventInventoryDao = eventInventoryDao;
