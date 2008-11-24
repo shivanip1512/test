@@ -1,51 +1,51 @@
 <?xml version="1.0" ?>
 <project name="Yukon CruiseControl Ant Build Script" default="targets" basedir="..">
-
+    
     <property environment="env" />
     <tstamp/>
 	<tstamp>
 	    <format property="currenttime" pattern="yyyy-MM-dd HH:mm:ss z" locale="en,US"/>
     </tstamp>
     <property name="module.name" value="yukon" />
-    <property name="log.dir" value="./logs" />
-    <property name="dist.dir" value="./dist" />
-    <property name="temp.dir" value="./temp" />
+    <property name="log.dir" value="../logs" />
+    <property name="dist.dir" value="../dist" />
+    <property name="temp.dir" value="../temp" />
 
     <target name="targets">
         <echo message="The following targets are available" />
-        <echo message=""/>
-        <echo message=" checkout				- cvs checkout" />
         <echo message="" />
-        <echo message=" update					- cvs update" />
-        <echo message=" update-client			- cvs update yukon-client module" />
-        <echo message=" update-server			- cvs update yukon-server module" />
+        <echo message=" clean           - delete everything and start over clean" />
+        <echo message=" clean-dist      - delete old packages and zip files" />
         <echo message="" />
-        <echo message=" clean					- delete everything and start over clean" />
-        <echo message=" cleandist				- delete old packages and zip files" />
-        <echo message="" />
-        <echo message=" build					- clean, checkout, compile, and package everything" />
-        <echo message=" buildquick				- cvs update, compile and package everything" />
-        <echo message=" build-client			- cvs update, and compile yukon-client module" />
-        <echo message=" build-server			- cvs update, and compile yukon-server module" />
-        <echo message=" build-install			- InstallShield"/>
-        <echo message=" builddist				- packages and zips everything up for distribution " />
-        <echo message="" />
-        <echo message=" tag-build				- build then tag"/>
-        <echo message=" branch-build			- build then branch and tag"/>
-        <echo message=""/>
-        <echo message=" tag						- tags cvs HEAD"/>
-        <echo message=" branch					- branchs cvs HEAD then tags branch"/>
-        <echo message=""/>
+        <echo message=" build           - clean, compile, and package everything" />
+        <echo message=" build-client    - compile yukon-client module" />
+        <echo message=" build-server    - compile yukon-server module" />
+        <echo message=" build-install   - InstallShield"/>
+        <echo message=" build-dist      - packages and zips everything up for distribution " />
+   </target>
+
+
+    <target name="svn-info-build">
+        <mkdir dir="${log.dir}"/>
+        <exec failonerror="false"
+              dir="${basedir}"
+              error="${log.dir}/svn-info-error.log"
+              output="${basedir}/yukon-client/common/src/com/cannontech/build-info.xml"
+              resultproperty="errorcode"
+              executable="svn.exe" >
+            <arg value="info"/>
+            <arg value="--xml"/>
+        </exec>
     </target>
 
-	<target name="init" depends="check-setupcustomtasks,setupcustomtasks,cleanwhitespace,loadpropertiesfile,cleanlabels">
+        <target name="init" depends="check-setupcustomtasks,setupcustomtasks,loadpropertiesfile,cleanlabels">
 	
 	    <condition property="internal.label" value="${internal}-${label}" else="${internal}">
     	    <isset property="label"/>
 	    </condition>
     
     	<property name="yukon.build.label" value="${external}"/>
-    	<property name="yukon.build.details" value="BUILD ${internal.label} ${currenttime} ${env.COMPUTERNAME} ${branch}"/>
+    	<property name="yukon.build.details" value="BUILD ${internal.label} ${currenttime} ${env.COMPUTERNAME}"/>
 
 	</target>
     
@@ -78,87 +78,24 @@
         </condition>
     </target>
     
-    <target name="cleanwhitespace">
-
-    	<taskdef name="cleanwhitespace" 
-                 classname="com.cannontech.customtasks.CleanWhiteSpace">
-            <classpath>
-                <fileset dir="yukon-build/lib">
-                	<include name="**/*.jar"/>
-                </fileset>
-                <fileset file="yukon-build/build/dist/customtasks.jar"/>
-            </classpath>    
-    	</taskdef>
-    
-    	<cleanwhitespace file="yukon-build/build_version.properties"/>
-
-    </target>
-    
     <target name="loadpropertiesfile">
-        <property file="yukon-build/build_version.properties"/>
+        <property file="yukon-build/build_version.properties" />
     </target>
         
     <target name="cleanlabels">
+        <property name="cleaninternal" value="BAD_CLEAN_INTERNAL"/>
+        <property name="cleanexternal" value="BAD_CLEAN_EXTERNAL"/>
 
-        <taskdef name="regexprop" 
-                 classname="com.cannontech.customtasks.RegexReplaceProperty">
-            <classpath>
-                <fileset dir="yukon-build/lib">
-                	<include name="**/*.jar"/>
-                </fileset>
-                <fileset file="yukon-build/build/dist/customtasks.jar"/>
-            </classpath> 
-        </taskdef>
-        
-        <regexprop name="cleaninternal" 
-        	   value="${internal}"
-               match = "[^a-zA-Z0-9]"
-        	   replace="_"/>
-
-        <regexprop name="cleanexternal" 
-        	   value="${external}"
-        	   match="[^a-zA-Z0-9]"
-        	   replace="_"/>
-        
     </target>
     
-    <target name="checkout" depends="init">
-        <echo message="checking out module yukon by tag or branch: ${branch}" />
-        <cvs tag="${branch}"
-             package="${module.name}"
-             reallyquiet="false"/>
-    </target>
-
-    <target name="update" depends="init">
-        <echo message="updating module yukon" />
-        <cvs dest="${module.name}" 
-             command="update -d" 
-             reallyquiet="false"/>
-    </target>
-
-    <target name="update-client" depends="init">
-        <echo message="updating module yukon-client" />
-        <cvs dest="${module.name}/yukon-client" 
-             command="update -d" 
-             reallyquiet="false"/>
-    </target>
-
-    <target name="update-server" depends="init">
-        <echo message="updating module yukon-server" />
-        <cvs dest="${module.name}/yukon-server" 
-             command="update -d"
-             reallyquiet="false"/>
-    </target>
-
-    <target name="build" depends="clean,checkout,buildTarget,builddist" />
-    <target name="buildTarget" depends="build-clientTarget,build-serverTarget,build-installTarget" />
-
-    <target name="build-client" depends="update-client,build-clientTarget" />
-    <target name="build-clientTarget">
+    <target name="build" depends="init,clean,svn-info-build,buildTarget,build-dist" />
+    <target name="buildTarget" depends="build-client,build-server,build-install" />
+    
+    <target name="build-client">
         <echo message="building module yukon-client" />
         <mkdir dir="${log.dir}" />
 
-        <exec failonerror="false" dir="${module.name}/yukon-client/build" executable="cmd.exe" error="${log.dir}/client-error.log" output="${log.dir}/client-output.log" resultproperty="errorcode">
+        <exec failonerror="false" dir="${basedir}/yukon-client/build" executable="cmd.exe" error="${log.dir}/client-error.log" output="${log.dir}/client-output.log" resultproperty="errorcode">
             <arg line='/c antExit.bat -Dyukon.build.version="${yukon.build.label}" -Dyukon.build.details="${yukon.build.details}" clean build'/>
         </exec>
 
@@ -178,7 +115,7 @@
         </fail>
 
         <!-- yukon-help.jar -->
-        <ant dir="${module.name}/yukon-client/build"
+        <ant dir="${basedir}/yukon-client/build"
         	 target="help"
         	 inheritAll="true"/>
         
@@ -187,14 +124,12 @@
         <antcall target="signclient" />
 
     </target>
-
-
-    <target name="build-server" depends="update-server,build-serverTarget" />
-    <target name="build-serverTarget">
+    
+    <target name="build-server">
         <echo message="building module yukon-server" />
         <mkdir dir="${log.dir}" />
 
-        <exec failonerror="false" dir="${module.name}/yukon-server/" executable="cmd.exe" error="${log.dir}/server-error.log" output="${log.dir}/server-output.log" resultproperty="errorcode">
+        <exec failonerror="false" dir="${basedir}/yukon-server/" executable="cmd.exe" error="${log.dir}/server-error.log" output="${log.dir}/server-output.log" resultproperty="errorcode">
             <arg line='/c ${basedir}\yukon-build\buildhere.cmd /exit /basedir "${basedir}" /labels "${yukon.build.label}" "${yukon.build.details}"' />
         </exec>
 
@@ -214,7 +149,7 @@
         </fail>
 
         <!-- C++ Unit Tests -->
-        <mkdir dir="${module.name}/yukon-server/bin/unittests"/>
+        <mkdir dir="${basedir}/yukon-server/bin/unittests"/>
         <taskdef name="customexec" 
                  classname="com.cannontech.customtasks.ExecServerUnitTests">
             <classpath>
@@ -225,18 +160,17 @@
             </classpath>
         </taskdef>
   
-        <customexec failonerror="true" dir="${basedir}/${module.name}/yukon-server/bin" todir="${basedir}/${module.name}/yukon-server/bin/unittests"/>
+        <customexec failonerror="true" dir="${basedir}/yukon-server/bin" todir="${basedir}/yukon-server/bin/unittests"/>
         
     </target>
-
-    <target name="build-install" depends="build-installTarget"/>
-    <target name="build-installTarget">
+    
+    <target name="build-install">
         <echo message="building module yukon-install" />
         <mkdir dir="${log.dir}" />
 		
-        <property name="client.bag" value="${module.name}/yukon-client/lib" />
-        <property name="install.bag" value="${module.name}/yukon-install/build" />
-        <property name="server.bag" value="${module.name}/yukon-server/bin" />
+        <property name="client.bag" value="${basedir}/yukon-client/lib" />
+        <property name="install.bag" value="${basedir}/yukon-install/build" />
+        <property name="server.bag" value="${basedir}/yukon-server/bin" />
         
         <!-- Yukon Base Component -->
         <delete dir="${install.bag}"/>
@@ -250,17 +184,17 @@
        	<mkdir dir="${client.dir}/Log"/>
         
         <copy todir="${client.bin}" preservelastmodified="true">
-        	<fileset dir="${module.name}/yukon-install/resources/client_common_dlls" />
+        	<fileset dir="${basedir}/yukon-install/resources/client_common_dlls" />
             <fileset dir="${client.bag}" excludes="*.txt,*.xml,*.properties,*.debug,images/**,commands/**"/>
-            <fileset file="${module.name}/yukon-client/monitor/resource/YukonNoAlarm.ico" />
-            <fileset file="${module.name}/yukon-client/monitor/resource/AlarmMonitor.ico" />
-            <fileset file="${module.name}/yukon-client/trending/resource/GraphIcon.ico"/>
-            <fileset file="${module.name}/yukon-client/dbeditor/resource/dbEditorIcon.ico"/>
-            <fileset file="${module.name}/yukon-client/tdc/resource/tdcIcon.ico"/>
-            <fileset file="${module.name}/yukon-client/commander/resource/CommanderIcon.ico"/>
-            <fileset file="${module.name}/yukon-client/esub-editor/resource/esubEditorIcon.ico"/>
-            <fileset file="${module.name}/yukon-install/resources/shortcut_icons/YukonSetup.ico"/>
-            <fileset file="${module.name}/yukon-install/resources/shortcut_icons/YukonLogin.ico"/>       	
+            <fileset file="${basedir}/yukon-client/monitor/resource/YukonNoAlarm.ico" />
+            <fileset file="${basedir}/yukon-client/monitor/resource/AlarmMonitor.ico" />
+            <fileset file="${basedir}/yukon-client/trending/resource/GraphIcon.ico"/>
+            <fileset file="${basedir}/yukon-client/dbeditor/resource/dbEditorIcon.ico"/>
+            <fileset file="${basedir}/yukon-client/tdc/resource/tdcIcon.ico"/>
+            <fileset file="${basedir}/yukon-client/commander/resource/CommanderIcon.ico"/>
+            <fileset file="${basedir}/yukon-client/esub-editor/resource/esubEditorIcon.ico"/>
+            <fileset file="${basedir}/yukon-install/resources/shortcut_icons/YukonSetup.ico"/>
+            <fileset file="${basedir}/yukon-install/resources/shortcut_icons/YukonLogin.ico"/>       	
         </copy>
        	    
         <!-- Yukon Base Component (Server) -->      
@@ -270,7 +204,7 @@
 		
         <copy todir="${server.bin}" preservelastmodified="true">
 			<fileset dir="${server.bag}" excludes="unittests/**"/>
-            <fileset dir="${module.name}/yukon-install/resources/common_dlls" />
+            <fileset dir="${basedir}/yukon-install/resources/common_dlls" />
 		</copy>
         
         <copy todir="${server.dir}/MACSscripts" file="${server.bag}/init.tcl" preservelastmodified="true"/>
@@ -280,40 +214,40 @@
         <mkdir dir="${server.dir}/Log"/>
         
         <!-- Initial Server Config Component -->
-        <copy todir="${install.bag}/Initial Server Config/Config" file="${module.name}/yukon-install/resources/master.cfg" preservelastmodified="true"/>
+        <copy todir="${install.bag}/Initial Server Config/Config" file="${basedir}/yukon-install/resources/master.cfg" preservelastmodified="true"/>
 
         <!-- Config Properties Component -->
         <copy todir="${install.bag}/Config Properties" preservelastmodified="true">
-            <fileset dir="${module.name}/yukon-install/resources" includes="*Logging.xml," casesensitive="false">
+            <fileset dir="${basedir}/yukon-install/resources" includes="*Logging.xml," casesensitive="false">
             </fileset>
         </copy>
         
         <!-- Common Directories Component -->
-        <copy todir="${install.bag}/Common Directories/Config/Example" file="${module.name}/yukon-install/resources/master.cfg" preservelastmodified="true"/>
+        <copy todir="${install.bag}/Common Directories/Config/Example" file="${basedir}/yukon-install/resources/master.cfg" preservelastmodified="true"/>
         
         <!-- JRE Component -->
         <copy todir="${install.bag}/JRE" preservelastmodified="true">
-            <fileset dir="${module.name}/yukon-install/JRE" />
+            <fileset dir="${basedir}/yukon-install/JRE" />
         </copy>
 
         <!-- Tomcat Component -->
         <copy todir="${install.bag}/Tomcat" preservelastmodified="true">
-            <fileset dir="${module.name}/yukon-install/Tomcat5" />
+            <fileset dir="${basedir}/yukon-install/Tomcat5" />
         </copy>
 
         <!-- WebStart Component -->
         <copy todir="${install.bag}/WebStartJRE" preservelastmodified="true">
-            <fileset dir="${module.name}/yukon-install/WebStartJRE" />
+            <fileset dir="${basedir}/yukon-install/WebStartJRE" />
         </copy>
 
         <!-- Yukon Web Deployment Component -->
         <copy todir="${install.bag}/Yukon Web Deployment/bin" preservelastmodified="true">
-            <fileset dir="${module.name}/yukon-install/JRE/bin" includes="jar.exe,hpi.dll,java.dll,verify.dll,zip.dll,jli.dll,msvcr71.dll" />
+            <fileset dir="${basedir}/yukon-install/JRE/bin" includes="jar.exe,hpi.dll,java.dll,verify.dll,zip.dll,jli.dll,msvcr71.dll" />
             <fileset file="${client.bag}/yukon.war" />
         </copy>
-        <copy todir="${install.bag}/Yukon Web Deployment/bin/client" file="${module.name}/yukon-install/JRE/bin/client/jvm.dll" preservelastmodified="true"/>
-        <copy todir="${install.bag}/Yukon Web Deployment/lib" file="${module.name}/yukon-install/JRE/lib/rt.jar" preservelastmodified="true"/>
-        <copy todir="${install.bag}/Yukon Web Deployment/lib/i386" file="${module.name}/yukon-install/JRE/lib/i386/jvm.cfg" preservelastmodified="true"/>
+        <copy todir="${install.bag}/Yukon Web Deployment/bin/client" file="${basedir}/yukon-install/JRE/bin/client/jvm.dll" preservelastmodified="true"/>
+        <copy todir="${install.bag}/Yukon Web Deployment/lib" file="${basedir}/yukon-install/JRE/lib/rt.jar" preservelastmodified="true"/>
+        <copy todir="${install.bag}/Yukon Web Deployment/lib/i386" file="${basedir}/yukon-install/JRE/lib/i386/jvm.cfg" preservelastmodified="true"/>
 
         <!-- Wrapper files -->
         <copy todir="${install.bag}/Wrapper/Client/bin" preservelastmodified="true">
@@ -324,7 +258,7 @@
         <!--  <property name="isshield" location="C:\Program Files\Macrovision\IS12\System\IsCmdBld.exe" /> -->
         <property name="isshield" value="IsSABld.exe" />
         <!-- <property name="isfile" location="yukon-build/Yukon Installer/Yukon Installer.ism" /> -->
-        <property name="isfile" location='${module.name}\yukon-install\YukonSetupX\Yukon Installer.ism' />
+        <property name="isfile" location='${basedir}\yukon-install\YukonSetupX\Yukon Installer.ism' />
 
         <exec failonerror="false" executable="${isshield}" error="${log.dir}/install-error.log" output="${log.dir}/install-output.log" resultproperty="errorcode">
             <arg line="-p '${isfile}'" />
@@ -350,123 +284,57 @@
         </fail>
     </target>
 
-    <target name="builddist" depends="updatedbscripts">
+    <target name="build-dist" depends="updatedbscripts">
         <mkdir dir="${temp.dir}" />
         <copy todir="${temp.dir}/installer">
-            <fileset dir="${module.name}/yukon-install/YukonSetupX/Media/CD/Disk Images/Disk1" />
+            <fileset dir="${basedir}/yukon-install/YukonSetupX/Media/CD/Disk Images/Disk1" />
         </copy>
         <copy todir="${temp.dir}/eSubImages">
-            <fileset dir="${module.name}/yukon-client/esub/images" />
+            <fileset dir="${basedir}/yukon-client/esub/images" />
         </copy>
         <copy todir="${temp.dir}/YukonDatabase/DatabaseCreation">
-            <fileset dir="${module.name}/yukon-database/CreationScripts" />
+            <fileset dir="${basedir}/yukon-database/CreationScripts" />
         </copy>
         <copy todir="${temp.dir}/YukonDatabase/DatabaseUpdates/Oracle">
-            <fileset dir="${module.name}/yukon-database/DBUpdates/oracle" />
+            <fileset dir="${basedir}/yukon-database/DBUpdates/oracle" />
         </copy>
         <copy todir="${temp.dir}/YukonDatabase/DatabaseUpdates/SqlServer">
-            <fileset dir="${module.name}/yukon-database/DBUpdates/sqlserver" />
+            <fileset dir="${basedir}/yukon-database/DBUpdates/sqlserver" />
         </copy>
         
         <mkdir dir="${dist.dir}" />
         
-        <zip destfile="${dist.dir}/yukon_${DSTAMP}_${cleaninternal}_${cleanexternal}_${TSTAMP}.zip">
+        <zip destfile="${dist.dir}/yukon_${DSTAMP}_${TSTAMP}_${cleanexternal}.zip">
             <fileset dir="${temp.dir}" />
         </zip>
 
         <delete dir="${temp.dir}" />
     </target>
 
-    <target name="cleandist">
+    <target name="clean-dist">
         <delete dir="${dist.dir}" />
     </target>
 
     <target name="clean">
-        <delete dir="${module.name}" />
-        <delete dir="${dist.dir}" />
+       <delete dir="${dist.dir}" />
         <delete dir="${log.dir}" />
     </target>
 
     <target name="runUnitTests">
-        <exec failonerror="true" dir="${module.name}/yukon-client/build" executable="cmd.exe">
+        <exec failonerror="true" dir="${basedir}/yukon-client/build" executable="cmd.exe">
             <arg line="/c antExit.bat -Dyukon.build.version='${yukon.build.label}' runUnitTests" />
         </exec>
     </target>
 
     <target name="signclient">
-        <exec failonerror="true" dir="${module.name}/yukon-client/build" executable="cmd.exe">
+        <exec failonerror="true" dir="${basedir}/yukon-client/build" executable="cmd.exe">
             <arg line="/c antExit.bat sign" />
         </exec>
     </target>
-
-    <target name="tag-build" depends="init">
-        <property name="tag.name" value="TG${DSTAMP}_${cleaninternal}_${cleanexternal}_${TSTAMP}"/>
-        
-        <input
-          message="tag: ${tag.name}		continue?"
-          validargs="y,n"
-          addproperty="do.tag"/>
-        
-        <condition property="do.abort">
-          <equals arg1="n" arg2="${do.tag}"/>
-        </condition>
-        <fail if="do.abort">Build aborted by user.</fail>
-		
-		<antcall target="build"/>
-		<antcall target="tag"/>
-		
-    </target>
     
-    <target name="branch-build" depends="init">
-		<property name="branch.name" value="BR${DSTAMP}_${cleaninternal}_${TSTAMP}"/>
-        <property name="tag.name" value="TG${DSTAMP}_${cleanexternal}_${TSTAMP}"/>
-        
-        <input
-          message="branch: ${branch.name}	tag: ${tag.name}	continue?"
-          validargs="y,n"
-          addproperty="do.tag"/>
-        
-        <condition property="do.abort">
-          <equals arg1="n" arg2="${do.tag}"/>
-        </condition>
-        <fail if="do.abort">Build aborted by user.</fail>
-		
-		<antcall target="build"/>
-		<antcall target="branch"/>
-		
-    </target>
-    
-    <target name="tag">
-		<antcall target="tag-cvsexecute"/>
-        <antcall target="symstore"/>
-    </target>
-    
-    <target name="tag-cvsexecute">
-        <echo message="command: cvs tag ${tag.name} ${module.name}"/>
-        <cvs command="tag ${tag.name} ${module.name}"/>     
-    </target>
-    
-    <target name="branch">
-        <antcall target="branch-cvsexecute"/>
-        <antcall target="tag-cvsexecute"/>
-        
-        <replace file="yukon-build/build_version.properties" token="branch = ${branch}" value="branch = ${branch.name}"/>
-        <cvs command='commit -m "branch property update" -r ${branch} yukon-build/build_version.properties'/>
-
-        <antcall target="updatedbscripts-cvsexecute"/>
-        
-        <antcall target="symstore"/>
-
-    </target>
-    
-    <target name="branch-cvsexecute">
-        <echo message="command: cvs tag -b ${branch.name} ${module.name}"/>
-        <cvs command="tag -b ${branch.name} ${module.name}"/>
-    </target>
-        
     <target name="symstore">
         <exec failonerror="false" dir="yukon-build/symbolserver/" executable="cmd.exe">
-            <arg line='/c symstore add /r /f ${basedir}\${module.name}\yukon-server\*.* /s \\swbuild\symbol /t "Yukon Server" /v "${yukon.build.details}"'/>
+            <arg line='/c symstore add /r /f ${basedir}\yukon-server\*.* /s \\swbuild\symbol /t "Yukon Server" /v "${yukon.build.details}"'/>
         </exec>   
     </target>
         
@@ -477,7 +345,7 @@
         
         <createdbversions buildlabel="${internal}"/>
         
-        <ant dir="${module.name}/yukon-database"
+        <ant dir="${basedir}/yukon-database"
              target="build"
              inheritAll="false"
              inheritRefs="false">
@@ -487,13 +355,5 @@
         </ant>
         
     </target>
-    
-    <target name="updatedbscripts-cvsexecute">
-        <property name="sqlfilename" value="${yukon.major}.${yukon.minor}_${yukon.revision}.sql"/>
-        <cvs command='commit -m "branch yukon version update" -r ${branch} ${module.name}/yukon-database/DBUpdates/sqlserver/${sqlfilename}'/>
-        <cvs command='commit -m "branch yukon version update" -r ${branch} ${module.name}/yukon-database/DBUpdates/oracle/${sqlfilename}'/>
-        <cvs command='commit -m "branch yukon version update" -r HEAD ${module.name}/yukon-database/DBUpdates/sqlserver/${sqlfilename}'/>
-        <cvs command='commit -m "branch yukon version update" -r HEAD ${module.name}/yukon-database/DBUpdates/oracle/${sqlfilename}'/>
-    </target>
-    
+
 </project>

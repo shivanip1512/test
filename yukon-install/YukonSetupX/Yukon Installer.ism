@@ -701,49 +701,50 @@
 		<col def="S255">Value</col>
 		<col def="S255">TestValue</col>
 		<col def="i4">Type</col>
+		<row><td>BUILD_HOME_DIR</td><td>&lt;ISPROJECTDIR&gt;\..\..\..</td><td/><td>2</td></row>
 		<row><td>COMMONFILES</td><td>&lt;CommonFilesFolder&gt;</td><td/><td>2</td></row>
 		<row><td>CommonFilesFolder</td><td/><td/><td>1</td></row>
 		<row><td>ISPROJECTDIR</td><td>1</td><td/><td>1</td></row>
 		<row><td>ISProductFolder</td><td/><td/><td>1</td></row>
 		<row><td>ISProjectDataFolder</td><td>1</td><td/><td>1</td></row>
 		<row><td>ISProjectFolder</td><td/><td/><td>1</td></row>
-		<row><td>PATH_TO_ALARM_MONITOR_FILES</td><td>yukon\yukon-install\build\Alarm Monitor</td><td/><td>2</td></row>
+		<row><td>PATH_TO_ALARM_MONITOR_FILES</td><td>&lt;BUILD_HOME_DIR&gt;\yukon-install\build\Alarm Monitor</td><td/><td>2</td></row>
 		<row><td>PATH_TO_BIN_FILES</td><td>C:\j2sdk1.4.1_06\bin</td><td/><td>2</td></row>
-		<row><td>PATH_TO_CALCULATION_SERVER_FILES</td><td>yukon\yukon-install\build\Calculation Server</td><td/><td>2</td></row>
-		<row><td>PATH_TO_CAP_CONTROL_FILES</td><td>yukon\yukon-install\build\Cap Control</td><td/><td>2</td></row>
+		<row><td>PATH_TO_CALCULATION_SERVER_FILES</td><td>&lt;BUILD_HOME_DIR&gt;\yukon-install\build\Calculation Server</td><td/><td>2</td></row>
+		<row><td>PATH_TO_CAP_CONTROL_FILES</td><td>&lt;BUILD_HOME_DIR&gt;\yukon-install\build\Cap Control</td><td/><td>2</td></row>
 		<row><td>PATH_TO_CLIENT_FILES</td><td>Z:\install\lib\client</td><td/><td>2</td></row>
-		<row><td>PATH_TO_COMMON_BIN_FILES</td><td>yukon\yukon-install\build\Common Bin</td><td/><td>2</td></row>
-		<row><td>PATH_TO_COMMON_DIRECTORIES_FILES</td><td>yukon\yukon-install\build\Common Directories</td><td/><td>2</td></row>
-		<row><td>PATH_TO_COMMON_DLLS_FILES</td><td>yukon\yukon-install\build\Common Dlls</td><td/><td>2</td></row>
-		<row><td>PATH_TO_CONFIG_PROPERTIES_FILES</td><td>yukon\yukon-install\build\Config Properties</td><td/><td>2</td></row>
-		<row><td>PATH_TO_DATABASE_EDITOR_FILES</td><td>yukon\yukon-install\build\Database Editor</td><td/><td>2</td></row>
-		<row><td>PATH_TO_DATA_ROUTER_FILES</td><td>yukon\yukon-install\build\Foreign Data Router</td><td/><td>2</td></row>
-		<row><td>PATH_TO_ESUB_EDITOR_FILES</td><td>yukon\yukon-install\build\ESub Editor</td><td/><td>2</td></row>
-		<row><td>PATH_TO_INITIAL_SERV_CONF_FILES</td><td>yukon\yukon-install\build\Initial Server Config</td><td/><td>2</td></row>
+		<row><td>PATH_TO_COMMON_BIN_FILES</td><td>&lt;BUILD_HOME_DIR&gt;\yukon-install\build\Common Bin</td><td/><td>2</td></row>
+		<row><td>PATH_TO_COMMON_DIRECTORIES_FILES</td><td>&lt;BUILD_HOME_DIR&gt;\yukon-install\build\Common Directories</td><td/><td>2</td></row>
+		<row><td>PATH_TO_COMMON_DLLS_FILES</td><td>&lt;BUILD_HOME_DIR&gt;\yukon-install\build\Common Dlls</td><td/><td>2</td></row>
+		<row><td>PATH_TO_CONFIG_PROPERTIES_FILES</td><td>&lt;BUILD_HOME_DIR&gt;\yukon-install\build\Config Properties</td><td/><td>2</td></row>
+		<row><td>PATH_TO_DATABASE_EDITOR_FILES</td><td>&lt;BUILD_HOME_DIR&gt;\yukon-install\build\Database Editor</td><td/><td>2</td></row>
+		<row><td>PATH_TO_DATA_ROUTER_FILES</td><td>&lt;BUILD_HOME_DIR&gt;\yukon-install\build\Foreign Data Router</td><td/><td>2</td></row>
+		<row><td>PATH_TO_ESUB_EDITOR_FILES</td><td>&lt;BUILD_HOME_DIR&gt;\yukon-install\build\ESub Editor</td><td/><td>2</td></row>
+		<row><td>PATH_TO_INITIAL_SERV_CONF_FILES</td><td>&lt;BUILD_HOME_DIR&gt;\yukon-install\build\Initial Server Config</td><td/><td>2</td></row>
 		<row><td>PATH_TO_JAVA BACKUP_FILES</td><td>Z:\Java backup</td><td/><td>2</td></row>
-		<row><td>PATH_TO_JAVA_SERVICE_MAN_FILES</td><td>yukon\yukon-install\build\Java Service Manager</td><td/><td>2</td></row>
+		<row><td>PATH_TO_JAVA_SERVICE_MAN_FILES</td><td>&lt;BUILD_HOME_DIR&gt;\yukon-install\build\Java Service Manager</td><td/><td>2</td></row>
 		<row><td>PATH_TO_JDK_FILES</td><td>Z:\java\archive\jdk</td><td/><td>2</td></row>
-		<row><td>PATH_TO_JRE_FILES</td><td>yukon\yukon-install\build\JRE</td><td/><td>2</td></row>
-		<row><td>PATH_TO_LOAD_MAN_FILES</td><td>yukon\yukon-install\build\Load Management</td><td/><td>2</td></row>
-		<row><td>PATH_TO_MACS_SERVER_FILES</td><td>yukon\yukon-install\build\MACS Server</td><td/><td>2</td></row>
-		<row><td>PATH_TO_MESS_DISPATCHER_FILES</td><td>yukon\yukon-install\build\Message Dispatcher</td><td/><td>2</td></row>
-		<row><td>PATH_TO_NOTIFICATION_FILES</td><td>yukon\yukon-install\build\Notification</td><td/><td>2</td></row>
-		<row><td>PATH_TO_PORT_CONTROL_FILES</td><td>yukon\yukon-install\build\Port Control</td><td/><td>2</td></row>
+		<row><td>PATH_TO_JRE_FILES</td><td>&lt;BUILD_HOME_DIR&gt;\yukon-install\build\JRE</td><td/><td>2</td></row>
+		<row><td>PATH_TO_LOAD_MAN_FILES</td><td>&lt;BUILD_HOME_DIR&gt;\yukon-install\build\Load Management</td><td/><td>2</td></row>
+		<row><td>PATH_TO_MACS_SERVER_FILES</td><td>&lt;BUILD_HOME_DIR&gt;\yukon-install\build\MACS Server</td><td/><td>2</td></row>
+		<row><td>PATH_TO_MESS_DISPATCHER_FILES</td><td>&lt;BUILD_HOME_DIR&gt;\yukon-install\build\Message Dispatcher</td><td/><td>2</td></row>
+		<row><td>PATH_TO_NOTIFICATION_FILES</td><td>&lt;BUILD_HOME_DIR&gt;\yukon-install\build\Notification</td><td/><td>2</td></row>
+		<row><td>PATH_TO_PORT_CONTROL_FILES</td><td>&lt;BUILD_HOME_DIR&gt;\yukon-install\build\Port Control</td><td/><td>2</td></row>
 		<row><td>PATH_TO_ROGUEWAVE</td><td>Y:\RogueWave\workspaces\WINNT4\MSVC60\15d\lib</td><td/><td>2</td></row>
-		<row><td>PATH_TO_SCANNER_FILES</td><td>yukon\yukon-install\build\Scanner</td><td/><td>2</td></row>
+		<row><td>PATH_TO_SCANNER_FILES</td><td>&lt;BUILD_HOME_DIR&gt;\yukon-install\build\Scanner</td><td/><td>2</td></row>
 		<row><td>PATH_TO_SERVER_FILES</td><td>Z:\install\lib\server</td><td/><td>2</td></row>
-		<row><td>PATH_TO_TAB_DATA_CON_FILES</td><td>yukon\yukon-install\build\Tabular Data Console</td><td/><td>2</td></row>
-		<row><td>PATH_TO_TEST_APP_FILES</td><td>yukon\yukon-install\build\Test Applications</td><td/><td>2</td></row>
+		<row><td>PATH_TO_TAB_DATA_CON_FILES</td><td>&lt;BUILD_HOME_DIR&gt;\yukon-install\build\Tabular Data Console</td><td/><td>2</td></row>
+		<row><td>PATH_TO_TEST_APP_FILES</td><td>&lt;BUILD_HOME_DIR&gt;\yukon-install\build\Test Applications</td><td/><td>2</td></row>
 		<row><td>PATH_TO_TOMCAT 5 SERVIC_FILES</td><td>Z:\install\Tomcat 5 Service Install</td><td/><td>2</td></row>
 		<row><td>PATH_TO_TOMCAT5SERVICEI_FILES</td><td>Z:\install\Tomcat5ServiceInstall</td><td/><td>2</td></row>
-		<row><td>PATH_TO_TOMCAT_FILES</td><td>yukon\yukon-install\build\Tomcat</td><td/><td>2</td></row>
-		<row><td>PATH_TO_TRENDING_FILES</td><td>yukon\yukon-install\build\Trending</td><td/><td>2</td></row>
-		<row><td>PATH_TO_WEBSTARTJRE_FILES</td><td>yukon\yukon-install\build\WebStartJRE</td><td/><td>2</td></row>
-		<row><td>PATH_TO_WRAPPER_FILES</td><td>yukon\yukon-install\build\Wrapper</td><td/><td>2</td></row>
+		<row><td>PATH_TO_TOMCAT_FILES</td><td>&lt;BUILD_HOME_DIR&gt;\yukon-install\build\Tomcat</td><td/><td>2</td></row>
+		<row><td>PATH_TO_TRENDING_FILES</td><td>&lt;BUILD_HOME_DIR&gt;\yukon-install\build\Trending</td><td/><td>2</td></row>
+		<row><td>PATH_TO_WEBSTARTJRE_FILES</td><td>&lt;BUILD_HOME_DIR&gt;\yukon-install\build\WebStartJRE</td><td/><td>2</td></row>
+		<row><td>PATH_TO_WRAPPER_FILES</td><td>&lt;BUILD_HOME_DIR&gt;\yukon-install\build\Wrapper</td><td/><td>2</td></row>
 		<row><td>PATH_TO_YUKONINSTALLJRE_FILES</td><td>Z:\install\YukonInstallJRE</td><td/><td>2</td></row>
-		<row><td>PATH_TO_YUKON_BASE</td><td>yukon\yukon-install\build\Yukon Base</td><td/><td>2</td></row>
-		<row><td>PATH_TO_YUKON_COMMANDER_FILES</td><td>yukon\yukon-install\build\Yukon Commander</td><td/><td>2</td></row>
-		<row><td>PATH_TO_YUKON_WEB_DEP_FILES</td><td>yukon\yukon-install\build\Yukon Web Deployment</td><td/><td>2</td></row>
+		<row><td>PATH_TO_YUKON_BASE</td><td>&lt;BUILD_HOME_DIR&gt;\yukon-install\build\Yukon Base</td><td/><td>2</td></row>
+		<row><td>PATH_TO_YUKON_COMMANDER_FILES</td><td>&lt;BUILD_HOME_DIR&gt;\yukon-install\build\Yukon Commander</td><td/><td>2</td></row>
+		<row><td>PATH_TO_YUKON_WEB_DEP_FILES</td><td>&lt;BUILD_HOME_DIR&gt;\yukon-install\build\Yukon Web Deployment</td><td/><td>2</td></row>
 		<row><td>PROGRAMFILES</td><td>&lt;ProgramFilesFolder&gt;</td><td/><td>2</td></row>
 		<row><td>ProgramFilesFolder</td><td/><td/><td>1</td></row>
 		<row><td>SystemFolder</td><td/><td/><td>1</td></row>
