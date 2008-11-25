@@ -24,7 +24,6 @@ import com.cannontech.stars.util.InventoryUtils;
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public class LiteInventoryBase extends LiteBase {
-    private static final LMHardwareEventDao hardwareEventDao = YukonSpringHook.getBean("hardwareEventDao", LMHardwareEventDao.class);
 	private int accountID = CtiUtilities.NONE_ZERO_ID;
 	private int categoryID = CtiUtilities.NONE_ZERO_ID;
 	private int installationCompanyID = CtiUtilities.NONE_ZERO_ID;
@@ -231,6 +230,7 @@ public class LiteInventoryBase extends LiteBase {
 	}
 	
 	public void updateDeviceStatus() {
+		LMHardwareEventDao hardwareEventDao = YukonSpringHook.getBean("hardwareEventDao", LMHardwareEventDao.class);
 	    List<LiteLMHardwareEvent> invHist = hardwareEventDao.getByInventoryId(this.getLiteID());
 	    updateDeviceStatus(invHist);
 	}
