@@ -33,12 +33,12 @@ public interface AccountService {
      * @param user
      */
     public void deleteAccount(String accountNumber, LiteYukonUser user);
-
+    
     /**
      * Method to return an account dto for an account number and energy company
      * @param accountNumber
-     * @param energyCompanyId
+     * @param yukonUser
      * @return
      */
-    public AccountDto getAccountDto(String accountNumber, int energyCompanyId);
+    public AccountDto getAccountDto(String accountNumber, LiteYukonUser yukonUser);
 }

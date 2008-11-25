@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.bulk.field.impl.AccountDto;
 import com.cannontech.common.bulk.field.impl.UpdatableAccount;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.google.common.collect.ImmutableList;
 
 public class AccountServiceHelper {
@@ -21,8 +22,8 @@ public class AccountServiceHelper {
      * @param workingAccount
      * @return UpdatableAccount
      */
-    public UpdatableAccount buildFullDto(UpdatableAccount workingAccount, int energyCompanyId) {
-        AccountDto retrievedDto = accountService.getAccountDto(workingAccount.getAccountNumber(), energyCompanyId);
+    public UpdatableAccount buildFullDto(UpdatableAccount workingAccount, LiteYukonUser user) {
+        AccountDto retrievedDto = accountService.getAccountDto(workingAccount.getAccountNumber(), user);
         copyNonNullValues(workingAccount, retrievedDto);
         UpdatableAccount result = new UpdatableAccount();
         result.setAccountNumber(workingAccount.getAccountNumber());

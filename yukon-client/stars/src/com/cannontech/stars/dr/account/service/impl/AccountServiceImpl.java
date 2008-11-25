@@ -204,7 +204,7 @@ public class AccountServiceImpl implements AccountService {
          */
         LiteCustomer liteCustomer = new LiteCustomer();
         liteCustomer.setPrimaryContactID(liteContact.getContactID());
-        if(accountDto.getCustomerType().equalsIgnoreCase(CustomerTypes.STRING_CI_CUSTOMER)) {
+        if(accountDto.isCommercial()) {
             liteCustomer.setCustomerTypeID(CustomerTypes.CUSTOMER_CI);
         }else {
             liteCustomer.setCustomerTypeID(CustomerTypes.CUSTOMER_RESIDENTIAL);
@@ -520,7 +520,7 @@ public class AccountServiceImpl implements AccountService {
         }
         
         if(customerDao.isCICustomer(liteCustomer.getCustomerID())){
-            if(accountDto.getCustomerType().equalsIgnoreCase(CustomerTypes.STRING_RES_CUSTOMER)) {
+            if(!accountDto.isCommercial()) {
                 // was commercial, not anymore
                 LiteCICustomer liteCICustomer = customerDao.getLiteCICustomer(liteCustomer.getCustomerID());
                 customerDao.deleteCICustomer(liteCustomer.getCustomerID());
@@ -537,7 +537,7 @@ public class AccountServiceImpl implements AccountService {
                 customerDao.updateCICustomer(liteCICustomer);
             }
         }else {
-            if(accountDto.getCustomerType().equalsIgnoreCase(CustomerTypes.STRING_CI_CUSTOMER)) {
+            if(accountDto.isCommercial()) {
                 // was residential, now commercial
                 LiteCICustomer liteCICustomer = new LiteCICustomer();
                 liteCICustomer.setMainAddressID(liteStreetAddress.getAddressID());
@@ -558,9 +558,10 @@ public class AccountServiceImpl implements AccountService {
     }
     
     @Override
-    public AccountDto getAccountDto(String accountNumber, int energyCompanyId) {
+    public AccountDto getAccountDto(String accountNumber, LiteYukonUser yukonUser) {
         AccountDto retrievedDto = new AccountDto();
-        CustomerAccount customerAccount = customerAccountDao.getByAccountNumber(accountNumber, energyCompanyId);
+        LiteEnergyCompany ec = energyCompanyDao.getEnergyCompany(yukonUser);
+        CustomerAccount customerAccount = customerAccountDao.getByAccountNumber(accountNumber, ec.getEnergyCompanyID());
         AccountSite accountSite = accountSiteDao.getByAccountSiteId(customerAccount.getAccountSiteId());
         LiteSiteInformation siteInfo = siteInformationDao.getSiteInfoById(accountSite.getSiteInformationId());
         LiteCustomer customer = customerDao.getLiteCustomer(customerAccount.getCustomerId());
@@ -571,10 +572,10 @@ public class AccountServiceImpl implements AccountService {
         
         if(customer instanceof LiteCICustomer) {
             retrievedDto.setCompanyName(((LiteCICustomer) customer).getCompanyName());
-            retrievedDto.setCustomerType(CustomerTypes.STRING_CI_CUSTOMER);
+            retrievedDto.setIsCommercial(true);
         }else {
             retrievedDto.setCompanyName("");
-            retrievedDto.setCustomerType(CustomerTypes.STRING_RES_CUSTOMER);
+            retrievedDto.setIsCommercial(false);
         }
         LiteContactNotification homePhoneNotif = contactNotificationDao.getNotificationForContactByType(primaryContact.getContactID(), YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE);
         LiteContactNotification workPhoneNotif = contactNotificationDao.getNotificationForContactByType(primaryContact.getContactID(), YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE);

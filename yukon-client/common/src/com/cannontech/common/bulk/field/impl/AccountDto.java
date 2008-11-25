@@ -13,13 +13,13 @@ public class AccountDto {
     private String emailAddress;
     private Address streetAddress = new Address();
     private Address billingAddress = new Address();
-    private String customerType;
     private String userName;
     private String password;
     private String loginGroup;
     private SiteInformation siteInfo = new SiteInformation(); 
     private String mapNumber; // translates to SiteNumber in AccountSite
     private String altTrackingNumber;
+    private Boolean isCommercial;
 
     public String getLastName() {
         return lastName;
@@ -93,12 +93,12 @@ public class AccountDto {
         this.loginGroup = loginGroup;
     }
 
-    public String getCustomerType() {
-        return customerType;
+    public Boolean isCommercial() {
+        return isCommercial;
     }
 
-    public void setCustomerType(String customerType) {
-        this.customerType = customerType;
+    public void setIsCommercial(Boolean isCommercial) {
+        this.isCommercial = isCommercial;
     }
 
     public Address getStreetAddress() {

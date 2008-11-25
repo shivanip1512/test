@@ -29,6 +29,7 @@
     	    <xsd:element name="companyName" type="xsd:string" minOccurs="0"/>
     	    <xsd:element name="siteInformation" type="yukon:SiteInformationData" minOccurs="0"/>
     	    <xsd:element name="alternateTrackingNumber" type="xsd:string" minOccurs="0"/>
+        	<xsd:element name="mapNumber" type="xsd:string" minOccurs="0"/>
             <xsd:element name="accountUser" type="yukon:YukonUser" minOccurs="0">
                 <xsd:annotation>
                     <xsd:documentation>
@@ -62,7 +63,6 @@
     
     <xsd:complexType name="SiteInformationData">
     	<xsd:sequence>
-        	<xsd:element name="mapNumber" type="xsd:string" minOccurs="0"/>
           	<xsd:element name="substationName" type="xsd:string" minOccurs="0"/>
           	<xsd:element name="feeder" type="xsd:string" minOccurs="0"/>
           	<xsd:element name="pole" type="xsd:string" minOccurs="0"/>
