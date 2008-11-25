@@ -701,7 +701,7 @@
 		<col def="S255">Value</col>
 		<col def="S255">TestValue</col>
 		<col def="i4">Type</col>
-		<row><td>BUILD_HOME_DIR</td><td>&lt;ISPROJECTDIR&gt;\..\..\..</td><td/><td>2</td></row>
+		<row><td>BUILD_HOME_DIR</td><td>&lt;ISPROJECTDIR&gt;\..\..</td><td/><td>2</td></row>
 		<row><td>COMMONFILES</td><td>&lt;CommonFilesFolder&gt;</td><td/><td>2</td></row>
 		<row><td>CommonFilesFolder</td><td/><td/><td>1</td></row>
 		<row><td>ISPROJECTDIR</td><td>1</td><td/><td>1</td></row>
