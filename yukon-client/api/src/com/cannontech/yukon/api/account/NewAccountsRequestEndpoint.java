@@ -27,11 +27,11 @@ public class NewAccountsRequestEndpoint {
     public Element invoke(Element newAccountsRequest, LiteYukonUser user) throws Exception {
         SimpleXPathTemplate requestTemplate = XmlUtils.getXPathTemplateForElement(newAccountsRequest);
         
-        List<UpdatableAccount> customerAccounts = requestTemplate.evaluate("//y:accountList/y:customerAccount", 
+        List<UpdatableAccount> customerAccounts = requestTemplate.evaluate("//y:accountsList/y:customerAccount", 
                               new NodeToElementMapperWrapper<UpdatableAccount>(new AccountsRequestMapper()));
         
         Element newAccountsResponse = new Element("newAccountsResponse", ns);
-        Element newAccountsResultList = new Element("newAccountsResultList", ns);
+        Element newAccountsResultList = new Element("accountResultList", ns);
         newAccountsResponse.addContent(newAccountsResultList);
         
         for (UpdatableAccount account : customerAccounts) {
@@ -56,9 +56,9 @@ public class NewAccountsRequestEndpoint {
     }
     
     private Element addAccountResponse(Namespace ns, Element newAccountsResultList, UpdatableAccount account){
-        Element customerAccountResult = new Element("customerAccountResult", ns);
-        newAccountsResultList.addContent(customerAccountResult);
+        Element customerAccountResult = new Element("accountResult", ns);
         customerAccountResult.addContent(XmlUtils.createStringElement("accountNumber", ns, account.getAccountNumber()));
+        newAccountsResultList.addContent(customerAccountResult);
         return customerAccountResult;
     }
     

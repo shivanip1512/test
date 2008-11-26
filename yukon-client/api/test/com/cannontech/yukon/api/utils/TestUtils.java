@@ -8,7 +8,7 @@ public class TestUtils {
 
     public static void runSuccessAssertion(SimpleXPathTemplate outputTemplate, String serviceResponseName) {
         
-        Assert.assertNotNull("Missing success mode.", outputTemplate.evaluateAsNode("/y:" + serviceResponseName + "/y:success"));
+        Assert.assertNotNull("Missing success node.", outputTemplate.evaluateAsNode("/y:" + serviceResponseName + "/y:success"));
     }
     
     public static void runFailureAssertions(SimpleXPathTemplate outputTemplate, String serviceResponseName, String expectedErrorCode) {
