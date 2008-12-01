@@ -81,7 +81,7 @@ public class ListScenarioProgramsRequestEndpointTest {
         tmpElement = XmlUtils.createStringElement("scenarioName", ns, "Test Scenario");
         requestElement.addContent(tmpElement);
         
-        responseElement = impl.invoke(requestElement);
+        responseElement = impl.invoke(requestElement, null);
         
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
         Assert.assertNotNull("No scenarioName node present.", outputTemplate.evaluateAsNode("/y:listScenarioProgramsResponse/y:scenarioName"));
@@ -102,7 +102,7 @@ public class ListScenarioProgramsRequestEndpointTest {
         tmpElement = XmlUtils.createStringElement("scenarioName", ns, "NOT_FOUND");
         requestElement.addContent(tmpElement);
         
-        responseElement = impl.invoke(requestElement);
+        responseElement = impl.invoke(requestElement, null);
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
         
         TestUtils.runFailureAssertions(outputTemplate, "listScenarioProgramsResponse", "InvalidScenarioName");

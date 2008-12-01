@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.service.LoadControlService;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
 import com.cannontech.yukon.api.util.XmlUtils;
@@ -28,7 +29,7 @@ public class CurrentlyActiveProgramsRequestEndpoint {
     }
     
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="currentlyActiveProgramsRequest")
-    public Element invoke(Element currentlyActiveProgramsRequest) throws Exception {
+    public Element invoke(Element currentlyActiveProgramsRequest, LiteYukonUser user) throws Exception {
         
         // run service
         Element resp = new Element("currentlyActiveProgramsResponse", ns);

@@ -12,6 +12,7 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.service.LoadControlService;
 import com.cannontech.loadcontrol.service.data.ProgramStartingGear;
 import com.cannontech.loadcontrol.service.data.ScenarioProgramStartingGears;
@@ -33,7 +34,7 @@ public class ListScenarioProgramsRequestEndpoint {
     }
     
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="listScenarioProgramsRequest")
-    public Element invoke(Element listScenarioProgramsRequest) throws Exception {
+    public Element invoke(Element listScenarioProgramsRequest, LiteYukonUser user) throws Exception {
         
         // create template and parse data
         SimpleXPathTemplate requestTemplate = XmlUtils.getXPathTemplateForElement(listScenarioProgramsRequest);

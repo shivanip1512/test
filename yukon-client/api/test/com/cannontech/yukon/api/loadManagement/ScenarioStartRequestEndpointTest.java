@@ -75,7 +75,7 @@ public class ScenarioStartRequestEndpointTest {
         //==========================================================================================
         requestElement = LoadManagementTestUtils.createStartStopRequestElement("scenarioStartRequest", "scenarioName", "Scenario1", null, null);
         
-        responseElement = impl.invoke(requestElement);
+        responseElement = impl.invoke(requestElement, null);
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
         
         Assert.assertEquals("Incorrect scenarioName", "Scenario1", mockService.getScenarioName());
@@ -89,7 +89,7 @@ public class ScenarioStartRequestEndpointTest {
         //==========================================================================================
         requestElement = LoadManagementTestUtils.createStartStopRequestElement("scenarioStartRequest", "scenarioName", "Scenario2", "2008-10-13T12:30:00Z", null);
         
-        responseElement = impl.invoke(requestElement);
+        responseElement = impl.invoke(requestElement, null);
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
         
         Assert.assertEquals("Incorrect scenarioName", "Scenario2", mockService.getScenarioName());
@@ -103,7 +103,7 @@ public class ScenarioStartRequestEndpointTest {
         //==========================================================================================
         requestElement = LoadManagementTestUtils.createStartStopRequestElement("scenarioStartRequest", "scenarioName", "Scenario3", "2008-10-13T12:30:00Z", "2008-10-13T21:49:01Z");
         
-        responseElement = impl.invoke(requestElement);
+        responseElement = impl.invoke(requestElement, null);
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
         
         Assert.assertEquals("Incorrect scenarioName", "Scenario3", mockService.getScenarioName());
@@ -116,7 +116,7 @@ public class ScenarioStartRequestEndpointTest {
         //==========================================================================================
         requestElement = LoadManagementTestUtils.createStartStopRequestElement("scenarioStartRequest", "scenarioName", "NOT_FOUND", null, null);
         
-        responseElement = impl.invoke(requestElement);
+        responseElement = impl.invoke(requestElement, null);
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
         
         TestUtils.runFailureAssertions(outputTemplate, "scenarioStartResponse", "InvalidScenarioName");
@@ -125,7 +125,7 @@ public class ScenarioStartRequestEndpointTest {
         //==========================================================================================
         requestElement = LoadManagementTestUtils.createStartStopRequestElement("scenarioStartRequest", "scenarioName", "TIMEOUT", null, null);
         
-        responseElement = impl.invoke(requestElement);
+        responseElement = impl.invoke(requestElement, null);
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
         
         TestUtils.runFailureAssertions(outputTemplate, "scenarioStartResponse", "Timeout");

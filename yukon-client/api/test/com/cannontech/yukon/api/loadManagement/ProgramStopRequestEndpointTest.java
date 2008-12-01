@@ -70,7 +70,7 @@ public class ProgramStopRequestEndpointTest {
         //==========================================================================================
         requestElement = LoadManagementTestUtils.createStartStopRequestElement("programStopRequest", "programName", "Program1", null, "2008-10-13T21:49:01Z");
         
-        responseElement = impl.invoke(requestElement);
+        responseElement = impl.invoke(requestElement, null);
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
         
         Assert.assertEquals("Incorrect programName.", "Program1", mockService.getProgramName());
@@ -82,7 +82,7 @@ public class ProgramStopRequestEndpointTest {
         //==========================================================================================
         requestElement = LoadManagementTestUtils.createStartStopRequestElement("programStopRequest", "programName", "Program2", null, null);
         
-        responseElement = impl.invoke(requestElement);
+        responseElement = impl.invoke(requestElement, null);
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
         
         Assert.assertEquals("Incorrect programName.", "Program2", mockService.getProgramName());
@@ -94,7 +94,7 @@ public class ProgramStopRequestEndpointTest {
         //==========================================================================================
         requestElement = LoadManagementTestUtils.createStartStopRequestElement("programStopRequest", "programName", "NOT_FOUND", null, null);
         
-        responseElement = impl.invoke(requestElement);
+        responseElement = impl.invoke(requestElement, null);
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
         
         TestUtils.runFailureAssertions(outputTemplate, "programStopResponse", "InvalidProgramName");
@@ -103,7 +103,7 @@ public class ProgramStopRequestEndpointTest {
         //==========================================================================================
         requestElement = LoadManagementTestUtils.createStartStopRequestElement("programStopRequest", "programName", "TIMEOUT", null, null);
         
-        responseElement = impl.invoke(requestElement);
+        responseElement = impl.invoke(requestElement, null);
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
         
         TestUtils.runFailureAssertions(outputTemplate, "programStopResponse", "Timeout");

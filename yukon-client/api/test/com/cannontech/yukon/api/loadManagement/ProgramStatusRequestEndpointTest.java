@@ -64,7 +64,7 @@ public class ProgramStatusRequestEndpointTest {
         tmpElement = XmlUtils.createStringElement("programName", ns, "Program1");
         requestElement.addContent(tmpElement);
         
-        responseElement = impl.invoke(requestElement);
+        responseElement = impl.invoke(requestElement, null);
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
         
         // outputs
@@ -82,7 +82,7 @@ public class ProgramStatusRequestEndpointTest {
         tmpElement = XmlUtils.createStringElement("programName", ns, "Program2");
         requestElement.addContent(tmpElement);
         
-        responseElement = impl.invoke(requestElement);
+        responseElement = impl.invoke(requestElement, null);
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
         
         // outputs

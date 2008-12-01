@@ -60,7 +60,7 @@ public class CurrentlyActiveProgramsRequestEndpointTest {
         //==========================================================================================
         requestElement = new Element("currentlyActiveProgramsRequest", ns);
         
-        responseElement = impl.invoke(requestElement);
+        responseElement = impl.invoke(requestElement, null);
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
         
         // outputs
