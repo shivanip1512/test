@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.common.bulk.field.impl.UpdatableAccount;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.exception.InvalidAccountNumberException;
 import com.cannontech.stars.dr.account.service.AccountService;
@@ -29,11 +28,11 @@ public class UpdateAccountsRequestEndpoint {
     public Element invoke(Element updateAccountsRequest, LiteYukonUser user) throws Exception {
         SimpleXPathTemplate requestTemplate = XmlUtils.getXPathTemplateForElement(updateAccountsRequest);
         
-        List<UpdatableAccount> customerAccounts = requestTemplate.evaluate("//y:accountList/y:customerAccount", 
+        List<UpdatableAccount> customerAccounts = requestTemplate.evaluate("//y:accountsList/y:customerAccount", 
                               new NodeToElementMapperWrapper<UpdatableAccount>(new AccountsRequestMapper()));
         
         Element updateAccountsResponse = new Element("updateAccountsResponse", ns);
-        Element updateAccountsResultList = new Element("updateAccountsResultList", ns);
+        Element updateAccountsResultList = new Element("accountResultList", ns);
         updateAccountsResponse.addContent(updateAccountsResultList);
         
         for (UpdatableAccount account : customerAccounts) {
@@ -43,10 +42,6 @@ public class UpdateAccountsRequestEndpoint {
                 accountService.updateAccount(filledAccount, user);
             } catch(InvalidAccountNumberException e) {
                 Element fe = XMLFailureGenerator.generateFailure(updateAccountsRequest, e, "InvalidAccountNumberException", e.getMessage());
-                updateAccountResult.addContent(fe);
-                continue;
-            } catch(NotFoundException e) {
-                Element fe = XMLFailureGenerator.generateFailure(updateAccountsRequest, e, "NotFoundException", e.getMessage());
                 updateAccountResult.addContent(fe);
                 continue;
             }
@@ -59,7 +54,7 @@ public class UpdateAccountsRequestEndpoint {
     }
     
     private Element addAccountResponse(Namespace ns, Element updateAccountsResultList, UpdatableAccount account){
-        Element customerAccountResult = new Element("customerAccountResult", ns);
+        Element customerAccountResult = new Element("accountResult", ns);
         updateAccountsResultList.addContent(customerAccountResult);
         customerAccountResult.addContent(XmlUtils.createStringElement("accountNumber", ns, account.getAccountNumber()));
         return customerAccountResult;
@@ -68,5 +63,10 @@ public class UpdateAccountsRequestEndpoint {
     @Autowired
     public void setAccountService(AccountService accountService) {
         this.accountService = accountService;
+    }
+    
+    @Autowired
+    public void setAccountServiceHelper(AccountServiceHelper accountServiceHelper) {
+        this.accountServiceHelper = accountServiceHelper;
     }
 }

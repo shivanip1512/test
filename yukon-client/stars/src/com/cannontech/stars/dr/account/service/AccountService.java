@@ -5,6 +5,7 @@ import com.cannontech.common.bulk.field.impl.UpdatableAccount;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.exception.AccountNumberUnavailableException;
+import com.cannontech.stars.dr.account.exception.InvalidAccountNumberException;
 import com.cannontech.stars.dr.account.exception.UserNameUnavailableException;
 
 public interface AccountService {
@@ -25,7 +26,7 @@ public interface AccountService {
      * @param user
      * @throws NotFoundException
      */
-    public void updateAccount(UpdatableAccount updatableAccount, LiteYukonUser user) throws NotFoundException;
+    public void updateAccount(UpdatableAccount updatableAccount, LiteYukonUser user) throws InvalidAccountNumberException;
 
     /**
      * Method to delete an account
