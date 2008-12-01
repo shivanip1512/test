@@ -3,13 +3,15 @@ package com.cannontech.stars.core.service;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.stars.dr.hardware.exception.StarsDeviceAlreadyAssignedException;
 
 public interface StarsInventoryBaseService {
 
     /**
      * Adds a hardware device to the customer account. If the hardware doesn't
      * exist, then adds it to the inventory and account. If it is in the
-     * warehouse, just adds it to the account. Errors out, if it is currently
+     * warehouse, just adds it to the account. Errors out with 
+     * StarsDeviceAlreadyAssignedException, if it is currently
      * assigned to another account. If replaceAccount is desired, caller needs to remove it 
      * from the previous account and add it to the new account. Handles only LMHardware
      * devices for now, will need to support other device types later.
@@ -42,7 +44,6 @@ public interface StarsInventoryBaseService {
      * @param deleteFromInventory
      * @param energyCompany
      * @param user
-     * @return
      */
     public void removeDeviceFromAccount(LiteInventoryBase liteInv,
             boolean deleteFromInventory, LiteStarsEnergyCompany energyCompany,

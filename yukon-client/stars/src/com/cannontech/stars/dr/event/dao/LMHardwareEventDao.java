@@ -8,7 +8,7 @@ import com.cannontech.database.data.lite.stars.LiteLMHardwareEvent;
 
 public interface LMHardwareEventDao {
 
-    LiteLMHardwareEvent getById(int id) throws DataRetrievalFailureException;
+    public LiteLMHardwareEvent getById(int id) throws DataRetrievalFailureException;
 
     /**
      * Method to get all hardware events by inventory id (sorted newest to
@@ -16,7 +16,7 @@ public interface LMHardwareEventDao {
      * @param inventoryId - Id of inventory to get events for
      * @return Sorted events
      */
-    List<LiteLMHardwareEvent> getByInventoryId(int inventoryId);
+    public List<LiteLMHardwareEvent> getByInventoryId(int inventoryId);
 
     /**
      * Method to get all hardware events by inventory id and actionId (sorted
@@ -25,7 +25,7 @@ public interface LMHardwareEventDao {
      * @param actionId - ex., install actionId etc
      * @return Sorted events
      */
-    List<LiteLMHardwareEvent> getByInventoryAndActionId(int inventoryId,
+    public List<LiteLMHardwareEvent> getByInventoryAndActionId(int inventoryId,
             int actionId);
 
     /**
@@ -34,9 +34,9 @@ public interface LMHardwareEventDao {
      */
     public void deleteHardwareToMeterMapping(Integer inventoryId);
     
-    LiteLMHardwareEvent add(LiteLMHardwareEvent lmHwEvent, int energyCompanyId);
+    public LiteLMHardwareEvent add(LiteLMHardwareEvent lmHwEvent, int energyCompanyId);
     
-    LiteLMHardwareEvent update(LiteLMHardwareEvent lmHwEvent);    
+    public LiteLMHardwareEvent update(LiteLMHardwareEvent lmHwEvent);    
     
     public void deleteAllLMHardwareEvents(Integer inventoryId);    
 

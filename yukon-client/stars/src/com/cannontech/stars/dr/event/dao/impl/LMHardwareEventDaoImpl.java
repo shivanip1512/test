@@ -2,7 +2,6 @@ package com.cannontech.stars.dr.event.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -34,17 +33,20 @@ public class LMHardwareEventDaoImpl implements LMHardwareEventDao,
     private static final String selectByIdSql;
     private static final String selecyByInventoryIdSql;
     private static final String selecyByInventoryAndActionIdSql;
-    private static final String[] insertLmHwEventSql;
+    private static final String insertCustomerEventSql;
+    private static final String insertEcToCustomerEventSql;
+    private static final String insertHardwareEventSql;    
     private static final String updateLmHwEventSql;
     private static final ParameterizedRowMapper<LiteLMHardwareEvent> rowMapper;
     private SimpleJdbcTemplate simpleJdbcTemplate;
     private NextValueHelper nextValueHelper;
-    private ChunkingSqlTemplate<Integer> chunkyJdbcTemplate;
+    private ChunkingSqlTemplate<Integer> chunkingJdbcTemplate;
     private ECMappingDao ecMappingDao;
-    private LMCustomerEventBaseDao lmCustomerEventBaseDao;
+    private LMCustomerEventBaseDao customerEventBaseDao;
 
     static {
-        selectAllSql = "SELECT ce.EventID,EventTypeID,ActionID,EventDateTime,Notes,InventoryID" + " FROM LMCustomerEventBase ce, LMHardwareEvent he, ECToLMCustomerEventMapping map";
+        selectAllSql = "SELECT ce.EventID,EventTypeID,ActionID,EventDateTime,Notes,InventoryID" 
+            + " FROM LMCustomerEventBase ce, LMHardwareEvent he, ECToLMCustomerEventMapping map";
 
         selectAndSql = " AND map.EventID = ce.EventID AND ce.EventID = he.EventID";
 
@@ -56,11 +58,12 @@ public class LMHardwareEventDaoImpl implements LMHardwareEventDao,
 
         selecyByInventoryAndActionIdSql = selectAllSql + " WHERE InventoryID = ? AND ActionID=?" + selectAndSql + selectOrderSql;
 
-        insertLmHwEventSql = new String[] {
-                "INSERT INTO LMCustomerEventBase (EventID,EventTypeID,ActionID,EventDateTime,Notes,AuthorizedBy) VALUES (?,?,?,?,?,?)",
-                "INSERT INTO ECToLMCustomerEventMapping (EventID,EnergyCompanyID) VALUES (?,?)",
-                "INSERT INTO LMHardwareEvent (EventID,InventoryID) VALUES (?,?)" };
+        insertCustomerEventSql = "INSERT INTO LMCustomerEventBase (EventID,EventTypeID,ActionID,EventDateTime,Notes,AuthorizedBy) VALUES (?,?,?,?,?,?)";       
 
+        insertEcToCustomerEventSql = "INSERT INTO ECToLMCustomerEventMapping (EventID,EnergyCompanyID) VALUES (?,?)";
+        
+        insertHardwareEventSql = "INSERT INTO LMHardwareEvent (EventID,InventoryID) VALUES (?,?)";
+        
         updateLmHwEventSql = "UPDATE LMCustomerEventBase SET EventDateTime=?,Notes=?,AuthorizedBy=? WHERE EventID=?";
 
         rowMapper = createRowMapper();
@@ -101,23 +104,25 @@ public class LMHardwareEventDaoImpl implements LMHardwareEventDao,
     }
 
     @Override
-    @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
+    @Transactional
     public LiteLMHardwareEvent add(LiteLMHardwareEvent lmHwEvent,
             int energyCompanyId) {
         final int eventId = nextValueHelper.getNextValue("LMCustomerEventBase");
         lmHwEvent.setEventID(eventId);
 
-        Object[] insertLmHwEventParams = { eventId, lmHwEvent.getEventTypeID(),
-                lmHwEvent.getActionID(),
-                StarsUtils.translateTstamp(lmHwEvent.getEventDateTime()),
-                lmHwEvent.getNotes(), lmHwEvent.getAuthorizedBy() };
-        simpleJdbcTemplate.update(insertLmHwEventSql[0], insertLmHwEventParams);
+        simpleJdbcTemplate.update(insertCustomerEventSql,
+                                  eventId,
+                                  lmHwEvent.getEventTypeID(),
+                                  lmHwEvent.getActionID(),
+                                  StarsUtils.translateTstamp(lmHwEvent.getEventDateTime()),
+                                  lmHwEvent.getNotes(),
+                                  lmHwEvent.getAuthorizedBy());
 
-        simpleJdbcTemplate.update(insertLmHwEventSql[1],
+        simpleJdbcTemplate.update(insertEcToCustomerEventSql,
                                   eventId,
                                   energyCompanyId);
 
-        simpleJdbcTemplate.update(insertLmHwEventSql[2],
+        simpleJdbcTemplate.update(insertHardwareEventSql,
                                   eventId,
                                   lmHwEvent.getInventoryID());
 
@@ -125,14 +130,14 @@ public class LMHardwareEventDaoImpl implements LMHardwareEventDao,
     }
 
     @Override
-    @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
+    @Transactional
     public LiteLMHardwareEvent update(LiteLMHardwareEvent lmHwEvent) {
 
-        Object[] updateLmHwEventParams = {
-                StarsUtils.translateTstamp(lmHwEvent.getEventDateTime()),
-                lmHwEvent.getNotes(), lmHwEvent.getAuthorizedBy(),
-                lmHwEvent.getEventID() };
-        simpleJdbcTemplate.update(updateLmHwEventSql, updateLmHwEventParams);
+        simpleJdbcTemplate.update(updateLmHwEventSql,
+                                  StarsUtils.translateTstamp(lmHwEvent.getEventDateTime()),
+                                  lmHwEvent.getNotes(),
+                                  lmHwEvent.getAuthorizedBy(),
+                                  lmHwEvent.getEventID());
 
         return lmHwEvent;
     }
@@ -161,16 +166,16 @@ public class LMHardwareEventDaoImpl implements LMHardwareEventDao,
     public void deleteAllLMHardwareEvents(Integer inventoryId) {
         List<Integer> eventIds = getAllLMHardwareEventIds(inventoryId);
         if (!eventIds.isEmpty()) {
-            chunkyJdbcTemplate.update(new LMHardwareEventDeleteSqlGenerator(),
+            chunkingJdbcTemplate.update(new LMHardwareEventDeleteSqlGenerator(),
                                       eventIds);
             ecMappingDao.deleteECToCustomerEventMapping(eventIds);
-            lmCustomerEventBaseDao.deleteCustomerEvents(eventIds);
+            customerEventBaseDao.deleteCustomerEvents(eventIds);
         }
     }
 
     private List<Integer> getAllLMHardwareEventIds(Integer inventoryId) {
         List<Integer> eventIds = new ArrayList<Integer>();
-        String sql = "SELECT EventId FROM LMHardwareEvent WHERE InventoryId = ? ORDER BY EventID";
+        String sql = "SELECT EventId FROM LMHardwareEvent WHERE InventoryId = ?";
         eventIds = simpleJdbcTemplate.query(sql,
                                             new IntegerRowMapper(),
                                             inventoryId);
@@ -195,36 +200,34 @@ public class LMHardwareEventDaoImpl implements LMHardwareEventDao,
         }
     }
 
-    // Spring IOC
+    @Autowired
     public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
         this.simpleJdbcTemplate = simpleJdbcTemplate;
     }
 
-    // Spring IOC
+    @Autowired
     public void setNextValueHelper(NextValueHelper nextValueHelper) {
         this.nextValueHelper = nextValueHelper;
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        chunkyJdbcTemplate = new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
+        chunkingJdbcTemplate = new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
     }
 
-    // Spring IOC
+    @Autowired
     public void setEcMappingDao(ECMappingDao ecMappingDao) {
         this.ecMappingDao = ecMappingDao;
     }
 
-    // Spring IOC
-    public void setLmCustomerEventBaseDao(
-			LMCustomerEventBaseDao lmCustomerEventBaseDao) {
-		this.lmCustomerEventBaseDao = lmCustomerEventBaseDao;
-	}
+    @Autowired
+    public void setCustomerEventBaseDao(LMCustomerEventBaseDao customerEventBaseDao) {
+        this.customerEventBaseDao = customerEventBaseDao;
+    }
 
     @Override
     public void deleteHardwareToMeterMapping(Integer inventoryId) {
         String delete = "DELETE FROM LMHardwareToMeterMapping WHERE LMHardwareInventoryId = ?";
         simpleJdbcTemplate.update(delete, inventoryId);
     }
-
 }

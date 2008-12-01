@@ -65,6 +65,32 @@ public class YukonListEntryHelper {
     }
 
     /**
+     * Helper method to get a yukon entry id for a given energy company based on
+     * a list name and entry text
+     * @param entryText - Entry text of the entry
+     * @param listName - Name of list the entry is in
+     * @param energyCompany - Current energy company
+     * @return The yukon entry id
+     */
+    public static int getEntryIdForEntryText(String entryText, String listName,
+            LiteStarsEnergyCompany energyCompany) {
+
+        int entryId = -1;
+        YukonSelectionList selectionList = energyCompany.getYukonSelectionList(listName);
+
+        for (YukonListEntry entry : selectionList.getYukonListEntries()) {
+            if (entry.getEntryText().equalsIgnoreCase(entryText)) {
+                entryId = entry.getEntryID();
+                break;
+            }
+        }
+        if (entryId <= 0) {
+            throw new NotFoundException("Could not find yukon entry id for list: " + listName + " EntryText: " + entryText);
+        }
+        return entryId;
+    }
+    
+    /**
      * Helper method to get a yukon definition id for a given energy company
      * based on a list entry enum
      * @param energyCompany - Current energy company

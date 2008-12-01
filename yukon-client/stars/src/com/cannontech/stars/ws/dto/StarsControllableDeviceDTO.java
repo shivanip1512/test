@@ -16,6 +16,7 @@ public class StarsControllableDeviceDTO {
     private Date fieldInstallDate;
     private String serviceCompanyName;
     private Date fieldRemoveDate;
+    private Throwable throwable;    
 
     public String getAccountNumber() {
         return accountNumber;
@@ -71,6 +72,14 @@ public class StarsControllableDeviceDTO {
 
     public void setFieldRemoveDate(Date fieldRemoveDate) {
         this.fieldRemoveDate = fieldRemoveDate;
+    }
+
+    public Throwable getThrowable() {
+        return throwable;
+    }
+
+    public void setThrowable(Throwable throwable) {
+        this.throwable = throwable;
     }
 
 }

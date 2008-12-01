@@ -42,19 +42,6 @@ public class InventoryUtils {
 	public static final int HW_CONFIG_TYPE_SA305 = 4;
 	public static final int HW_CONFIG_TYPE_SA_SIMPLE = 5;
 	
-	public static int getDeviceTypeID(String deviceTypeName, LiteStarsEnergyCompany energyCompany) {
-        int deviceTypeId = -1;
-        YukonSelectionList devTypeList = energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE);
-
-        for (YukonListEntry entry : devTypeList.getYukonListEntries()) {
-            if (entry.getEntryText().equalsIgnoreCase(deviceTypeName)) {
-                deviceTypeId = entry.getEntryID();
-                break;
-            }
-        }
-        return deviceTypeId;
-    }	
-	
 	public static int getInventoryCategoryID(int deviceTypeID, LiteStarsEnergyCompany energyCompany) {
 		YukonListEntry entry = DaoFactory.getYukonListDao().getYukonListEntry( deviceTypeID );
 		

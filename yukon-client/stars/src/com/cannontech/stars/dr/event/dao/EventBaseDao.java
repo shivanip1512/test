@@ -5,7 +5,7 @@ import java.util.List;
 public interface EventBaseDao {
 
     /**
-     * Method to delete events from EventBase table
+     * Delete Inventory events, given the list of eventIds for the Inventory.
      * @param eventIds
      */
     void deleteEvents(List<Integer> eventIds);

@@ -6,18 +6,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.FieldMapper;
+import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
-import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.LiteStarsLMHardwareRowMapper;
 import com.cannontech.stars.core.dao.SmartLiteInventoryBaseRowMapper;
@@ -29,19 +32,19 @@ import com.cannontech.stars.dr.hardware.dao.LMHardwareConfigurationDao;
 import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
 import com.cannontech.stars.util.StarsUtils;
 
-public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao {
+public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, InitializingBean {
     private static final ParameterizedRowMapper<LiteInventoryBase> smartInventoryRowMapper = new SmartLiteInventoryBaseRowMapper();
 
     private SimpleJdbcTemplate simpleJdbcTemplate;
+    private SimpleTableAccessTemplate<LiteInventoryBase> liteInventoryTemplate;
 
     private static final String selectInventorySql;
-    private static final String insertInventorySql;
-    private static final String updateInventorySql;
     private static final String insertECToInventorySql;
     private static final String insertLmHardwareSql;
     private static final String updateLmHardwareSql;
     private static final String removeInventoryFromAccountSql;
 
+    private NextValueHelper nextValueHelper;    
     private LMHardwareConfigurationDao lmHardwareConfigurationDao;
     private ThermostatScheduleDao thermostatScheduleDao;
     private LMHardwareEventDao hardwareEventDao;
@@ -50,17 +53,20 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao {
     private ECMappingDao ecMappingDao;
 
     static {
-        selectInventorySql = "SELECT ib.*, lhb.*, mhb.*, etim.energyCompanyId, yle.YukonDefinitionId AS CategoryDefId " + "FROM InventoryBase ib " + "LEFT OUTER JOIN LMHardwareBase lhb ON lhb.InventoryId = ib.InventoryId " + "LEFT OUTER JOIN MeterHardwareBase mhb ON mhb.InventoryId = ib.InventoryId " + "JOIN ECToInventoryMapping etim ON etim.InventoryId = ib.InventoryId " + "JOIN YukonListEntry yle ON yle.EntryId = ib.CategoryId ";
-
-        insertInventorySql = "INSERT INTO InventoryBase (AccountID,InstallationCompanyID,CategoryID,ReceiveDate," + "InstallDate,RemoveDate,AlternateTrackingNumber,VoltageID,Notes,DeviceID," + "DeviceLabel,CurrentStateID,InventoryID) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
-
-        updateInventorySql = "UPDATE InventoryBase SET AccountID = ?, InstallationCompanyID = ?, CategoryID = ?, ReceiveDate = ?, " + "InstallDate = ?, RemoveDate = ?, AlternateTrackingNumber = ?, VoltageID = ?, Notes = ?, " + "DeviceID = ?, DeviceLabel = ?, CurrentStateID = ? WHERE InventoryID = ?";
+        selectInventorySql = "SELECT ib.*, lhb.*, mhb.*, etim.energyCompanyId, yle.YukonDefinitionId AS CategoryDefId " 
+            + "FROM InventoryBase ib " 
+            + "LEFT OUTER JOIN LMHardwareBase lhb ON lhb.InventoryId = ib.InventoryId " 
+            + "LEFT OUTER JOIN MeterHardwareBase mhb ON mhb.InventoryId = ib.InventoryId " 
+            + "JOIN ECToInventoryMapping etim ON etim.InventoryId = ib.InventoryId " 
+            + "JOIN YukonListEntry yle ON yle.EntryId = ib.CategoryId ";
 
         insertECToInventorySql = "INSERT INTO ECToInventoryMapping (EnergyCompanyID,InventoryID) VALUES (?,?)";
 
-        insertLmHardwareSql = "INSERT INTO LMHardwareBase (ManufacturerSerialNumber,LMHardwareTypeID," + "RouteID,ConfigurationID,InventoryID) VALUES (?,?,?,?,?)";
+        insertLmHardwareSql = "INSERT INTO LMHardwareBase (ManufacturerSerialNumber,LMHardwareTypeID," 
+            + "RouteID,ConfigurationID,InventoryID) VALUES (?,?,?,?,?)";
 
-        updateLmHardwareSql = "UPDATE LMHardwareBase SET ManufacturerSerialNumber = ?, LMHardwareTypeID = ?, RouteID = ?, " + "ConfigurationID = ? WHERE InventoryID = ?";
+        updateLmHardwareSql = "UPDATE LMHardwareBase SET ManufacturerSerialNumber = ?, LMHardwareTypeID = ?, RouteID = ?, " 
+            + "ConfigurationID = ? WHERE InventoryID = ?";
 
         removeInventoryFromAccountSql = "UPDATE InventoryBase SET AccountID = 0, DeviceLabel = '', RemoveDate = ?  WHERE InventoryID = ?";
     }
@@ -247,12 +253,8 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao {
 
     }
 
-    /**
-     * Saves a Inventory hardware device to the inventory and customer account.
-     * Handles both insert/update records.
-     */
     @Override
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+    @Transactional
     public LiteInventoryBase saveInventoryBase(LiteInventoryBase liteInv,
             int energyCompanyId) {
 
@@ -261,37 +263,25 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao {
             liteInv.setInventoryID(getNextInventoryID());
             insert = true;
         }
-        // Insert into InventoryBase
-        Object[] invParams = new Object[] { liteInv.getAccountID(),
-                liteInv.getInstallationCompanyID(), liteInv.getCategoryID(),
-                StarsUtils.translateTstamp(liteInv.getReceiveDate()),
-                StarsUtils.translateTstamp(liteInv.getInstallDate()),
-                StarsUtils.translateTstamp(liteInv.getRemoveDate()),
-                liteInv.getAlternateTrackingNumber(), liteInv.getVoltageID(),
-                liteInv.getNotes(), liteInv.getDeviceID(),
-                liteInv.getDeviceLabel(), liteInv.getCurrentStateID(),
-                liteInv.getInventoryID() };
 
         // Insert into ECToInventoryMapping
         Object[] ecToInvParams = new Object[] { energyCompanyId,
                 liteInv.getInventoryID() };
 
         if (insert) {
-            simpleJdbcTemplate.update(insertInventorySql, invParams);
+            //Insert into InventoryBase            
+            liteInventoryTemplate.insert(liteInv);
             simpleJdbcTemplate.update(insertECToInventorySql, ecToInvParams);
         } else {
-            simpleJdbcTemplate.update(updateInventorySql, invParams);
+            //Update InventoryBase            
+            liteInventoryTemplate.update(liteInv);
         }
 
         return liteInv;
     }
 
-    /**
-     * Saves a LM hardware device to the inventory and customer account. Handles
-     * both insert/update records.
-     */
     @Override
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+    @Transactional
     public LiteStarsLMHardware saveLmHardware(LiteStarsLMHardware lmHw,
             int energyCompanyId) {
 
@@ -300,16 +290,6 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao {
             lmHw.setInventoryID(getNextInventoryID());
             insert = true;
         }
-        // Insert into InventoryBase
-        Object[] invParams = new Object[] { lmHw.getAccountID(),
-                lmHw.getInstallationCompanyID(), lmHw.getCategoryID(),
-                StarsUtils.translateTstamp(lmHw.getReceiveDate()),
-                StarsUtils.translateTstamp(lmHw.getInstallDate()),
-                StarsUtils.translateTstamp(lmHw.getRemoveDate()),
-                lmHw.getAlternateTrackingNumber(), lmHw.getVoltageID(),
-                lmHw.getNotes(), lmHw.getDeviceID(), lmHw.getDeviceLabel(),
-                lmHw.getCurrentStateID(), lmHw.getInventoryID() };
-
         // Insert into ECToInventoryMapping
         Object[] ecToInvParams = new Object[] { energyCompanyId,
                 lmHw.getInventoryID() };
@@ -321,22 +301,21 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao {
                 lmHw.getInventoryID() };
 
         if (insert) {
-            simpleJdbcTemplate.update(insertInventorySql, invParams);
+            //Insert into InventoryBase
+            liteInventoryTemplate.insert(lmHw);
             simpleJdbcTemplate.update(insertECToInventorySql, ecToInvParams);
             simpleJdbcTemplate.update(insertLmHardwareSql, lmHwParams);
         } else {
-            simpleJdbcTemplate.update(updateInventorySql, invParams);
+            //Update InventoryBase            
+            liteInventoryTemplate.update(lmHw);
             simpleJdbcTemplate.update(updateLmHardwareSql, lmHwParams);
         }
 
         return lmHw;
     }
 
-    /**
-     * Removes a hardware device from the account.
-     */
     @Override
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+    @Transactional
     public void removeInventoryFromAccount(LiteInventoryBase liteInv) {
 
         // Update InventoryBase
@@ -349,12 +328,8 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao {
 
     }
 
-    /**
-     * Deletes a hardware device from the inventory. Deletes only the LM
-     * Hardware types for now.
-     */
     @Override
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+    @Transactional
     public void deleteInventoryBase(int inventoryId) {
 
         // retrieve the Inventory
@@ -405,46 +380,87 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao {
     }
 
     public final Integer getNextInventoryID() {
-        return new Integer(YukonSpringHook.getNextValueHelper()
-                                          .getNextValue("InventoryBase"));
+        return new Integer(nextValueHelper.getNextValue("InventoryBase"));
     }
-    
-    //Spring IOC
+
+    @Autowired
     public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
         this.simpleJdbcTemplate = simpleJdbcTemplate;
     }
-    
-    //Spring IOC
+
+    @Autowired    
+    public void setNextValueHelper(NextValueHelper nextValueHelper) {
+        this.nextValueHelper = nextValueHelper;
+    }
+
+    @Autowired
     public void setLmHardwareConfigurationDao(
             LMHardwareConfigurationDao lmHardwareConfigurationDao) {
         this.lmHardwareConfigurationDao = lmHardwareConfigurationDao;
     }
 
-    //Spring IOC    
+    @Autowired
     public void setThermostatScheduleDao(ThermostatScheduleDao thermostatScheduleDao) {
         this.thermostatScheduleDao = thermostatScheduleDao;
     }
 
-    //Spring IOC
+    @Autowired
     public void setHardwareEventDao(LMHardwareEventDao hardwareEventDao) {
 		this.hardwareEventDao = hardwareEventDao;
 	}
 
-    //Spring IOC
+    @Autowired
     public void setLmConfigurationBaseDao(
 			LMConfigurationBaseDao lmConfigurationBaseDao) {
 		this.lmConfigurationBaseDao = lmConfigurationBaseDao;
 	}
     
-    //Spring IOC    
+    @Autowired
     public void setEventInventoryDao(EventInventoryDao eventInventoryDao) {
         this.eventInventoryDao = eventInventoryDao;
     }
 
-    //Spring IOC    
+    @Autowired
     public void setEcMappingDao(ECMappingDao ecMappingDao) {
         this.ecMappingDao = ecMappingDao;
     }
     
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        liteInventoryTemplate = new SimpleTableAccessTemplate<LiteInventoryBase>(simpleJdbcTemplate, nextValueHelper);
+        liteInventoryTemplate.withTableName("InventoryBase");
+        liteInventoryTemplate.withPrimaryKeyField("InventoryID");
+        liteInventoryTemplate.withFieldMapper(inventoryFieldMapper);
+    }
+    
+    private FieldMapper<LiteInventoryBase> inventoryFieldMapper = new FieldMapper<LiteInventoryBase>() {
+
+        @Override
+        public void extractValues(MapSqlParameterSource p, LiteInventoryBase o) {
+            p.addValue("AccountID", o.getAccountID());
+            p.addValue("InstallationCompanyID", o.getInstallationCompanyID());
+            p.addValue("CategoryID", o.getCategoryID());
+            p.addValue("ReceiveDate", StarsUtils.translateTstamp(o.getReceiveDate()));
+            p.addValue("InstallDate", StarsUtils.translateTstamp(o.getInstallDate()));
+            p.addValue("RemoveDate", StarsUtils.translateTstamp(o.getRemoveDate()));
+            p.addValue("AlternateTrackingNumber", o.getAlternateTrackingNumber());
+            p.addValue("VoltageID", o.getVoltageID());
+            p.addValue("Notes", o.getNotes());
+            p.addValue("DeviceID", o.getDeviceID());
+            p.addValue("DeviceLabel", o.getDeviceLabel());
+            p.addValue("CurrentStateID", o.getCurrentStateID());
+        }
+
+        @Override
+        public Number getPrimaryKey(LiteInventoryBase object) {
+            return object.getInventoryID();
+        }
+
+        @Override
+        public void setPrimaryKey(LiteInventoryBase object, int value) {
+            object.setInventoryID(value);
+            
+        }
+    };    
     
 }

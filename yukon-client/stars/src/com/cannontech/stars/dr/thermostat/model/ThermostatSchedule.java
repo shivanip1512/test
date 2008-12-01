@@ -3,6 +3,7 @@ package com.cannontech.stars.dr.thermostat.model;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.stars.dr.hardware.model.HardwareType;
 
 /**
@@ -11,7 +12,7 @@ import com.cannontech.stars.dr.hardware.model.HardwareType;
 public class ThermostatSchedule {
 
     private Integer id;
-    private String name;
+    private String name = CtiUtilities.STRING_NONE;
     private HardwareType thermostatType;
     private Integer accountId;
     private Integer inventoryId;

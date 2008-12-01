@@ -2,6 +2,9 @@ package com.cannontech.stars.dr.hardware.dao;
 
 import java.util.List;
 
+import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
 
 public interface LMHardwareConfigurationDao {
@@ -19,5 +22,9 @@ public interface LMHardwareConfigurationDao {
     public void deleteForAppliance(int applianceId);
 
     public void deleteForAppliances(List<Integer> applianceIds);
+    
+    public LMHardwareConfiguration getStaticLoadGroupMapping(
+            LiteStarsCustAccountInformation liteAcct, LiteStarsLMHardware lmHw,
+            LiteStarsEnergyCompany energyCompany);    
 
 }

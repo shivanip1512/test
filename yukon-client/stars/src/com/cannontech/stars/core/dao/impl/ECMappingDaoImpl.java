@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlGenerator;
@@ -67,18 +68,21 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
     }
     
     @Override
+    @Transactional    
     public void updateECToAccountMapping(int accountId, int energyCompanyId) {
         String sql = "UPDATE ECToAccountMapping SET EnergyCompanyId = ? WHERE AccountId = ?";
         simpleJdbcTemplate.update(sql, energyCompanyId, accountId);
     }
     
     @Override
+    @Transactional    
     public void addECToAccountMapping(ECToAccountMapping ecToAccountMapping) {
         String sql = "INSERT INTO ECToAccountMapping VALUES (?,?)";
         simpleJdbcTemplate.update(sql, ecToAccountMapping.getEnergyCompanyId(), ecToAccountMapping.getAccountId());
     }
     
     @Override
+    @Transactional    
     public void deleteECToAccountMapping(Integer accountId) {
         String sql = "DELETE FROM ECToAccountMapping WHERE AccountId = ?";
         simpleJdbcTemplate.update(sql, accountId);
@@ -90,12 +94,14 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
      * @param inventoryId
      */    
     @Override    
+    @Transactional    
     public void deleteECToInventoryMapping(int inventoryId) {
         String sql = "DELETE FROM ECToInventoryMapping WHERE InventoryID = ?";
         simpleJdbcTemplate.update(sql, inventoryId);
     }
     
     @Override
+    @Transactional    
     public void deleteECToCustomerEventMapping(List<Integer> eventIds) {
         if(!eventIds.isEmpty()) {
             chunkyJdbcTemplate.update(new ECToCustomerEventMappingDeleteSqlGenerator(), eventIds);
@@ -117,6 +123,7 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
     }
     
     @Override
+    @Transactional    
     public void deleteECToWorkOrderMapping(List<Integer> workOrderIds) {
         if(!workOrderIds.isEmpty()) {
             chunkyJdbcTemplate.update(new ECToWorkOrderMappingDeleteSqlGenerator(), workOrderIds);
@@ -138,6 +145,7 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
     }
     
     @Override
+    @Transactional    
     public void deleteECToCallReportMapping(List<Integer> callReportIds) {
         if(!callReportIds.isEmpty()) {
             chunkyJdbcTemplate.update(new ECToCallReportMappingDeleteSqlGenerator(), callReportIds);

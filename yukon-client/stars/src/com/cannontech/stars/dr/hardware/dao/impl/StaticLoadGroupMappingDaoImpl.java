@@ -8,20 +8,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
+import com.cannontech.stars.core.dao.StarsApplianceDao;
 import com.cannontech.stars.dr.hardware.dao.StaticLoadGroupMappingDao;
 import com.cannontech.stars.dr.hardware.model.StarsStaticLoadGroupMapping;
 
 public class StaticLoadGroupMappingDaoImpl implements StaticLoadGroupMappingDao {
 
     private static final String selectLoadGroupSql;
-    private static final ParameterizedRowMapper<StarsStaticLoadGroupMapping> loadGroupRowMapper;
+    private static final StarsStaticLoadGroupRowMapper loadGroupRowMapper = new StarsStaticLoadGroupRowMapper();
     private SimpleJdbcTemplate simpleJdbcTemplate;
-    static {
-        selectLoadGroupSql = "SELECT distinct LoadGroupID, ApplianceCategoryID, ZipCode, ConsumptionTypeID, " + "SwitchTypeID FROM StaticLoadGroupMapping " + " WHERE ApplianceCategoryID=? AND ZipCode LIKE '?%' AND ConsumptionTypeID=? " + " AND SwitchTypeID = ?";
 
-        loadGroupRowMapper = StaticLoadGroupMappingDaoImpl.createRowMapper();
+    static {
+        selectLoadGroupSql = "SELECT distinct LoadGroupID, ApplianceCategoryID, ZipCode, ConsumptionTypeID, " 
+            + " SwitchTypeID FROM StaticLoadGroupMapping " 
+            + " WHERE ApplianceCategoryID=? AND ZipCode LIKE '?%' AND ConsumptionTypeID=? " 
+            + " AND SwitchTypeID = ?";
     }
 
+    @Override
     public StarsStaticLoadGroupMapping getStaticLoadGroupMapping(
             StarsStaticLoadGroupMapping criteria) {
         StarsStaticLoadGroupMapping loadGroup = null;
@@ -41,22 +45,21 @@ public class StaticLoadGroupMappingDaoImpl implements StaticLoadGroupMappingDao 
         return loadGroup;
     }
 
-    private static final ParameterizedRowMapper<StarsStaticLoadGroupMapping> createRowMapper() {
-        final ParameterizedRowMapper<StarsStaticLoadGroupMapping> rowMapper = new ParameterizedRowMapper<StarsStaticLoadGroupMapping>() {
-            public StarsStaticLoadGroupMapping mapRow(ResultSet rs, int rowNum)
-                    throws SQLException {
-                StarsStaticLoadGroupMapping staticLoadGroup = new StarsStaticLoadGroupMapping();
-                staticLoadGroup.setApplianceCategoryID(rs.getInt("ApplianceCategoryID"));
-                staticLoadGroup.setConsumptionTypeID(rs.getInt("ConsumptionTypeID"));
-                staticLoadGroup.setLoadGroupID(rs.getInt("LoadGroupID"));
-                staticLoadGroup.setSwitchTypeID(rs.getInt("SwitchTypeID"));
-                staticLoadGroup.setZipCode(rs.getString("ZipCode"));
-                return staticLoadGroup;
-            }
-        };
-        return rowMapper;
-    }
+    public static class StarsStaticLoadGroupRowMapper implements
+            ParameterizedRowMapper<StarsStaticLoadGroupMapping> {
 
+        public StarsStaticLoadGroupMapping mapRow(ResultSet rs, int rowNum)
+                throws SQLException {
+            StarsStaticLoadGroupMapping staticLoadGroup = new StarsStaticLoadGroupMapping();
+            staticLoadGroup.setApplianceCategoryID(rs.getInt("ApplianceCategoryID"));
+            staticLoadGroup.setConsumptionTypeID(rs.getInt("ConsumptionTypeID"));
+            staticLoadGroup.setLoadGroupID(rs.getInt("LoadGroupID"));
+            staticLoadGroup.setSwitchTypeID(rs.getInt("SwitchTypeID"));
+            staticLoadGroup.setZipCode(rs.getString("ZipCode"));
+            return staticLoadGroup;
+        }
+    }
+    
     @Autowired
     public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
         this.simpleJdbcTemplate = simpleJdbcTemplate;
