@@ -2,16 +2,25 @@ package com.cannontech.loadcontrol.service.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.core.authorization.service.PaoPermissionService;
+import com.cannontech.core.authorization.support.AuthorizationResponse;
+import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.ProgramUtils;
 import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
+import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.data.LMProgramDirect;
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
@@ -32,6 +41,7 @@ public class LoadControlServiceImpl implements LoadControlService {
     
     private LoadControlProgramDao loadControlProgramDao;
     private LoadControlCommandService loadControlCommandService;
+    private PaoPermissionService paoPermissionService;
     
     private LoadControlClientConnection loadControlClientConnection;
     
@@ -71,7 +81,10 @@ public class LoadControlServiceImpl implements LoadControlService {
     }
     
     // START CONTROL BY PROGRAM NAME
-    public ProgramStatus startControlByProgramName(String programName, Date startTime, Date stopTime, int gearNumber, boolean forceStart, boolean observeConstraintsAndExecute) throws NotFoundException, TimeoutException {
+	public ProgramStatus startControlByProgramName(String programName,
+			Date startTime, Date stopTime, int gearNumber, boolean forceStart,
+			boolean observeConstraintsAndExecute, LiteYukonUser user)
+			throws NotFoundException, TimeoutException, NotAuthorizedException {
         
         int programId = loadControlProgramDao.getProgramIdByProgramName(programName);
         LMProgramBase program = loadControlClientConnection.getProgram(programId);
@@ -80,10 +93,13 @@ public class LoadControlServiceImpl implements LoadControlService {
             return null;
         }
         
-        return doExecuteStartRequest(program, startTime, stopTime, gearNumber, forceStart, observeConstraintsAndExecute);
+        return doExecuteStartRequest(program, startTime, stopTime, gearNumber, forceStart, observeConstraintsAndExecute, user);
     }
     
-    public ProgramStatus startControlByProgramName(String programName, Date startTime, Date stopTime, boolean forceStart, boolean observeConstraintsAndExecute) throws NotFoundException, TimeoutException {
+    public ProgramStatus startControlByProgramName(String programName,
+			Date startTime, Date stopTime, boolean forceStart,
+			boolean observeConstraintsAndExecute, LiteYukonUser user)
+			throws NotFoundException, TimeoutException, NotAuthorizedException {
         
         int programId = loadControlProgramDao.getProgramIdByProgramName(programName);
         LMProgramBase program = loadControlClientConnection.getProgram(programId);
@@ -94,11 +110,14 @@ public class LoadControlServiceImpl implements LoadControlService {
         
         int gearNumber = ((LMProgramDirect)program).getCurrentGearNumber();
         
-        return doExecuteStartRequest(program, startTime, stopTime, gearNumber, forceStart, observeConstraintsAndExecute);
+        return doExecuteStartRequest(program, startTime, stopTime, gearNumber, forceStart, observeConstraintsAndExecute, user);
     }
 
     // STOP CONTROL BY PROGRAM NAME
-    public ProgramStatus stopControlByProgramName(String programName, Date stopTime, boolean forceStop, boolean observeConstraintsAndExecute) throws NotFoundException, TimeoutException {
+	public ProgramStatus stopControlByProgramName(String programName,
+			Date stopTime, boolean forceStop,
+			boolean observeConstraintsAndExecute, LiteYukonUser user)
+			throws NotFoundException, TimeoutException, NotAuthorizedException {
 
         int programId = loadControlProgramDao.getProgramIdByProgramName(programName);
         LMProgramBase program = loadControlClientConnection.getProgram(programId);
@@ -107,11 +126,14 @@ public class LoadControlServiceImpl implements LoadControlService {
             return null;
         }
         
-        return doExecuteStopRequest(program, stopTime, ((LMProgramDirect)program).getCurrentGearNumber(), forceStop, observeConstraintsAndExecute);
+        return doExecuteStopRequest(program, stopTime, ((LMProgramDirect)program).getCurrentGearNumber(), forceStop, observeConstraintsAndExecute, user);
     }
     
     // START CONTROL BY SCENAIO NAME
-    public ScenarioStatus startControlByScenarioName(String scenarioName, Date startTime, Date stopTime, boolean forceStart, boolean observeConstraintsAndExecute) throws NotFoundException, TimeoutException {
+	public ScenarioStatus startControlByScenarioName(String scenarioName,
+			Date startTime, Date stopTime, boolean forceStart,
+			boolean observeConstraintsAndExecute, LiteYukonUser user)
+			throws NotFoundException, TimeoutException, NotAuthorizedException {
 
         int scenarioId = loadControlProgramDao.getScenarioIdForScenarioName(scenarioName);
         List<Integer> programIds = loadControlProgramDao.getProgramIdsByScenarioId(scenarioId);
@@ -122,7 +144,7 @@ public class LoadControlServiceImpl implements LoadControlService {
                 
             int startingGearNumber = loadControlProgramDao.getStartingGearForScenarioAndProgram(ProgramUtils.getProgramId(program), scenarioId);
             
-            ProgramStatus programStatus = doExecuteStartRequest(program, startTime, stopTime, startingGearNumber, forceStart, observeConstraintsAndExecute);
+            ProgramStatus programStatus = doExecuteStartRequest(program, startTime, stopTime, startingGearNumber, forceStart, observeConstraintsAndExecute, user);
             programStatuses.add(programStatus);
         }
         
@@ -130,7 +152,10 @@ public class LoadControlServiceImpl implements LoadControlService {
     }
     
     // STOP CONTROL BY SCENAIO NAME
-    public ScenarioStatus stopControlByScenarioName(String scenarioName, Date stopTime, boolean forceStop, boolean observeConstraintsAndExecute) throws NotFoundException, TimeoutException {
+	public ScenarioStatus stopControlByScenarioName(String scenarioName,
+			Date stopTime, boolean forceStop,
+			boolean observeConstraintsAndExecute, LiteYukonUser user)
+			throws NotFoundException, TimeoutException, NotAuthorizedException {
 
         int scenarioId = loadControlProgramDao.getScenarioIdForScenarioName(scenarioName);
         List<Integer> programIds = loadControlProgramDao.getProgramIdsByScenarioId(scenarioId);
@@ -141,7 +166,7 @@ public class LoadControlServiceImpl implements LoadControlService {
             
             int startingGearNumber = loadControlProgramDao.getStartingGearForScenarioAndProgram(ProgramUtils.getProgramId(program), scenarioId);
             
-            ProgramStatus programStatus = doExecuteStopRequest(program, stopTime, startingGearNumber, forceStop, observeConstraintsAndExecute);
+            ProgramStatus programStatus = doExecuteStopRequest(program, stopTime, startingGearNumber, forceStop, observeConstraintsAndExecute, user);
             programStatuses.add(programStatus);
         }
         
@@ -192,7 +217,7 @@ public class LoadControlServiceImpl implements LoadControlService {
      * @return
      * @throws TimeoutException
      */
-    private ProgramStatus doExecuteStartRequest(LMProgramBase program, Date startTime, Date stopTime, int gearNumber, boolean forceStart, boolean observeConstraintsAndExecute) throws TimeoutException {
+    private ProgramStatus doExecuteStartRequest(LMProgramBase program, Date startTime, Date stopTime, int gearNumber, boolean forceStart, boolean observeConstraintsAndExecute, LiteYukonUser user) throws TimeoutException {
         
         ProgramStatus programStatus = new ProgramStatus(program);
         programStatus.setProgram(program);
@@ -201,7 +226,7 @@ public class LoadControlServiceImpl implements LoadControlService {
         LMManualControlRequest controlRequest = ProgramUtils.createStartRequest(program, startTime, stopTime, gearNumber, forceStart);
         
         // execute and update program status
-        executeProgramChangeAndUpdateProgramStatus(controlRequest, programStatus, forceStart, observeConstraintsAndExecute);
+        executeProgramChangeAndUpdateProgramStatus(controlRequest, programStatus, forceStart, observeConstraintsAndExecute, user);
         
         return programStatus;
     }
@@ -215,7 +240,7 @@ public class LoadControlServiceImpl implements LoadControlService {
      * @return
      * @throws TimeoutException
      */
-    private ProgramStatus doExecuteStopRequest(LMProgramBase program, Date stopTime, int gearNumber, boolean forceStop,  boolean observeConstraintsAndExecute) throws TimeoutException {
+    private ProgramStatus doExecuteStopRequest(LMProgramBase program, Date stopTime, int gearNumber, boolean forceStop,  boolean observeConstraintsAndExecute, LiteYukonUser user) throws TimeoutException {
         
         ProgramStatus programStatus = new ProgramStatus(program);
         programStatus.setProgram(program);
@@ -224,21 +249,21 @@ public class LoadControlServiceImpl implements LoadControlService {
         LMManualControlRequest controlRequest = ProgramUtils.createStopRequest(program, stopTime, gearNumber, forceStop);
         
         // execute and update program status
-        executeProgramChangeAndUpdateProgramStatus(controlRequest, programStatus, forceStop, observeConstraintsAndExecute);
+        executeProgramChangeAndUpdateProgramStatus(controlRequest, programStatus, forceStop, observeConstraintsAndExecute, user);
         
         return programStatus;
     }
     
     /**
-     * Helper method that first executes a request and looks for contraint violations (not not force). 
+     * Helper method that first executes a request and looks for constraint violations (not not force). 
      * If violations are found they are applied to the ProgramStatus.
      * If violations occur and observeConstraintsAndExecute=true, the request will be executed anyway
      * with in "Observe" mode (CONSTRAINTS_FLAG_USE), and the server will adjust the request to
-     * meet contraints requirements.
+     * meet constraints requirements.
      * If no constraints are violated the request will be executed in either OVERRIDE mode (if force=true) or
      * "Observe" mode (if force=false).
      * The thread then waits for a ProgramChange event from the server, if 
-     * one is returned within timeout period, the program is re-retreived from connection cache and 
+     * one is returned within timeout period, the program is re-retrieved from connection cache and 
      * the Program Status is updated, otherwise a TimeoutExeception will be thrown.
      * @param program
      * @param controlRequest
@@ -248,9 +273,14 @@ public class LoadControlServiceImpl implements LoadControlService {
     private void executeProgramChangeAndUpdateProgramStatus(
             final LMManualControlRequest controlRequest,
             ProgramStatus programStatus,
-            boolean force, boolean observeConstraintsAndExecute) throws TimeoutException {
+            boolean force, boolean observeConstraintsAndExecute, LiteYukonUser user) throws TimeoutException, NotAuthorizedException {
 
-        
+    	// check if user has "access" to program (if this user or some group they belong to has had this program made visible to them)
+    	int programId = programStatus.getProgramId();
+    	boolean isVisible = isProgramVisibleToUser(user, programId);
+    	if (!isVisible) {
+    		throw new NotAuthorizedException("Program is not visible to user: " + programStatus.getProgramName() + "(" + programId + ")");
+    	}
         
         // execute check. if has violations return without executing for real
         if (!force) {
@@ -297,6 +327,46 @@ public class LoadControlServiceImpl implements LoadControlService {
         }
     }
     
+    // checks
+    private boolean isProgramVisibleToUser(LiteYukonUser user, int paoId) {
+    	
+    	// first check if program is directly visible to user
+    	if (isLmPaoVisibleToUser(user, paoId)) {
+    		return true;
+    	}
+    	
+    	// otherwise, check if any of the control areas the program belongs to are visible to user
+    	List<Integer> controlAreaIds = new ArrayList<Integer>();
+    	
+    	HashMap<Integer,LMControlArea> controlAreas = loadControlClientConnection.getControlAreas();
+    	for (LMControlArea controlArea : controlAreas.values()) {
+    		
+    		Vector<LMProgramBase> programs = controlArea.getLmProgramVector();
+    		for (LMProgramBase program : programs) {
+    			if (program.getYukonID().intValue() == paoId) {
+    				controlAreaIds.add(controlArea.getYukonID());
+    				break;
+    			}
+    		}
+    	}
+    	
+    	for (int controlAreaId : controlAreaIds) {
+    		
+    		if (isLmPaoVisibleToUser(user, controlAreaId)) {
+        		return true;
+        	} 
+    	}
+    	
+    	return false;
+    }
+    
+    private boolean isLmPaoVisibleToUser(LiteYukonUser user, int paoId) {
+    	
+    	AuthorizationResponse authResponse = paoPermissionService.hasPermission(user, new LiteYukonPAObject(paoId), Permission.LM_VISIBLE);
+    	
+    	return authResponse.equals(AuthorizationResponse.AUTHORIZED);
+    }
+
     //==============================================================================================
     // INJECTED DEPENDANCIES
     ///=============================================================================================
@@ -317,5 +387,10 @@ public class LoadControlServiceImpl implements LoadControlService {
             LoadControlCommandService loadControlCommandService) {
         this.loadControlCommandService = loadControlCommandService;
     }
-
+    
+    @Autowired
+    public void setPaoPermissionService(
+			PaoPermissionService paoPermissionService) {
+		this.paoPermissionService = paoPermissionService;
+	}
 }

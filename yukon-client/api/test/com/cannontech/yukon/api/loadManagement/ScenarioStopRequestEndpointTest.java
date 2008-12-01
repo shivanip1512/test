@@ -7,7 +7,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.service.data.ScenarioStatus;
 import com.cannontech.message.util.TimeoutException;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
@@ -36,7 +38,7 @@ public class ScenarioStopRequestEndpointTest {
         private Date stopTime;
         
         @Override
-        public ScenarioStatus stopControlByScenarioName(String scenarioName, Date stopTime, boolean forceStop, boolean observeConstraintsAndExecute) throws NotFoundException, TimeoutException {
+        public ScenarioStatus stopControlByScenarioName(String scenarioName, Date stopTime, boolean forceStop, boolean observeConstraintsAndExecute, LiteYukonUser user) throws NotFoundException, TimeoutException {
 
             this.scenarioName = scenarioName;
             this.stopTime = stopTime;
@@ -45,6 +47,8 @@ public class ScenarioStopRequestEndpointTest {
                 throw new NotFoundException("");
             } else if (scenarioName.equals("TIMEOUT")) {
                 throw new TimeoutException();
+            } else if (scenarioName.equals("NOT_AUTH")) {
+                throw new NotAuthorizedException("");
             }
             
             return null;
@@ -107,6 +111,15 @@ public class ScenarioStopRequestEndpointTest {
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
         
         TestUtils.runFailureAssertions(outputTemplate, "scenarioStopResponse", "Timeout");
+        
+        // not auth
+        //==========================================================================================
+        requestElement = LoadManagementTestUtils.createStartStopRequestElement("scenarioStopRequest", "scenarioName", "NOT_AUTH", null, null);
+        
+        responseElement = impl.invoke(requestElement, null);
+        outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
+        
+        TestUtils.runFailureAssertions(outputTemplate, "scenarioStopResponse", "UserNotAuthorized");
     }
 
 }

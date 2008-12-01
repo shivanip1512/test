@@ -7,7 +7,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
 import com.cannontech.message.util.TimeoutException;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
@@ -37,7 +39,7 @@ public class ProgramStartRequestEndpointTest {
         private Date stopTime;
         
         @Override
-        public ProgramStatus startControlByProgramName(String programName, Date startTime, Date stopTime, boolean forceStart, boolean observeConstraintsAndExecute) throws NotFoundException, TimeoutException {
+        public ProgramStatus startControlByProgramName(String programName, Date startTime, Date stopTime, boolean forceStart, boolean observeConstraintsAndExecute, LiteYukonUser user) throws NotFoundException, TimeoutException {
             
             this.programName = programName;
             this.startTime = startTime;
@@ -47,6 +49,8 @@ public class ProgramStartRequestEndpointTest {
                 throw new NotFoundException("");
             } else if (programName.equals("TIMEOUT")) {
                 throw new TimeoutException();
+            } else if (programName.equals("NOT_AUTH")) {
+                throw new NotAuthorizedException("");
             }
             
             return null;
@@ -129,6 +133,15 @@ public class ProgramStartRequestEndpointTest {
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
         
         TestUtils.runFailureAssertions(outputTemplate, "programStartResponse", "Timeout");
+        
+        // not auth
+        //==========================================================================================
+        requestElement = LoadManagementTestUtils.createStartStopRequestElement("programStartRequest", "programName", "NOT_AUTH", null, null);
+        
+        responseElement = impl.invoke(requestElement, null);
+        outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
+        
+        TestUtils.runFailureAssertions(outputTemplate, "programStartResponse", "UserNotAuthorized");
     }
 
 }

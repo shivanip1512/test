@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.service.LoadControlService;
@@ -48,13 +49,17 @@ public class ProgramStartRequestEndpoint {
         Element resp = new Element("programStartResponse", ns);
         
         try {
-            loadControlService.startControlByProgramName(programName, startTime, stopTime, false, true);
+            loadControlService.startControlByProgramName(programName, startTime, stopTime, false, true, user);
         } catch (NotFoundException e) {
             Element fe = XMLFailureGenerator.generateFailure(programStartRequest, e, "InvalidProgramName", "No program named: " + programName);
             resp.addContent(fe);
             return resp;
         } catch (TimeoutException e) {
             Element fe = XMLFailureGenerator.generateFailure(programStartRequest, e, "Timeout", "Timeout wating for program update response.");
+            resp.addContent(fe);
+            return resp;
+        } catch (NotAuthorizedException e) {
+            Element fe = XMLFailureGenerator.generateFailure(programStartRequest, e, "UserNotAuthorized", "The program is not visible to the user.");
             resp.addContent(fe);
             return resp;
         }

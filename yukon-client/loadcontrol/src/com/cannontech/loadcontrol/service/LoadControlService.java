@@ -3,7 +3,9 @@ package com.cannontech.loadcontrol.service;
 import java.util.Date;
 import java.util.List;
 
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.service.data.ProgramControlHistory;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
 import com.cannontech.loadcontrol.service.data.ScenarioProgramStartingGears;
@@ -13,7 +15,7 @@ import com.cannontech.message.util.TimeoutException;
 public interface LoadControlService {
 
     /**
-     * Find program id by name in database them retreieve program from
+     * Find program id by name in database them retrieve program from
      * connection cache. If the cache contains no program for id then return
      * null.
      * @param programName
@@ -38,17 +40,21 @@ public interface LoadControlService {
      * @param stopTime
      * @param gearNumber
      * @param forceStart should normally always be set to false, set to true only if
-     * you're sure you really need want to ignore contraint violations.
+     * @param user will be checked against user/group pao permission tables to validate access to program
+     * you're sure you really need want to ignore constraint violations.
      * @param observeConstraintsAndExecute If false, do not execute if there are constraint violations.
      * If true, allow the server to alter our request to abide by the constraints and execute (i.e. "Observe") 
      * Note: This value only matters when using forceStart=false. 
      * @return
      * @throws NotFoundException if no program exists for given programName
      * @throws TimeoutException if server fails to send an update response for the control start
+     * @throws NotAuthorizedException if neither the user (nor any groups user belongs to) have neither the program (nor any of
+     * the control areas the program belongs to) made visible to them.
+     * to them
      */
     public ProgramStatus startControlByProgramName(String programName,
-            Date startTime, Date stopTime, int gearNumber, boolean forceStart, boolean observeConstraintsAndExecute)
-            throws NotFoundException, TimeoutException;
+            Date startTime, Date stopTime, int gearNumber, boolean forceStart, boolean observeConstraintsAndExecute, LiteYukonUser user)
+            throws NotFoundException, TimeoutException, NotAuthorizedException;
     
     /**
      * Starts control of program of given programName. Returns a ProgramStatus
@@ -61,17 +67,20 @@ public interface LoadControlService {
      * @param stopTime
      * @param gearNumber
      * @param forceStart should normally always be set to false, set to true only if
-     * you're sure you really need want to ignore contraint violations.
+     * @param user will be checked against user/group pao permission tables to validate access to program
+     * you're sure you really need want to ignore constraint violations.
      * @param observeConstraintsAndExecute If false, do not execute if there are constraint violations.
      * If true, allow the server to alter our request to abide by the constraints and execute (i.e. "Observe") 
      * Note: This value only matters when using forceStart=false. 
      * @return
      * @throws NotFoundException if no program exists for given programName
      * @throws TimeoutException if server fails to send an update response for the control start
+     * @throws NotAuthorizedException if neither the user (nor any groups user belongs to) have neither the program (nor any of
+     * the control areas the program belongs to) made visible to them.
      */
     public ProgramStatus startControlByProgramName(String programName,
-            Date startTime, Date stopTime, boolean forceStart, boolean observeConstraintsAndExecute)
-            throws NotFoundException, TimeoutException;
+            Date startTime, Date stopTime, boolean forceStart, boolean observeConstraintsAndExecute, LiteYukonUser user)
+            throws NotFoundException, TimeoutException, NotAuthorizedException;
 
     /**
      * Stops control of program of given programName. Returns a ProgramStatus
@@ -82,17 +91,20 @@ public interface LoadControlService {
      * @param stopTime
      * @param gearNumber
      * @param forceStop Should normally always be set to false, set to true only if
-     * you're sure you really need want to ignore contraint violations.
+     * you're sure you really need want to ignore constraint violations.
      * @param observeConstraintsAndExecute If false, do not execute if there are constraint violations.
      * If true, allow the server to alter our request to abide by the constraints and execute (i.e. "Observe") 
+     * @param user will be checked against user/group pao permission tables to validate access to program
      * Note: This value only matters when using forceStop=false.
      * @return
      * @throws NotFoundException if no program exists for given programName
      * @throws TimeoutException if server fails to send an update response for the control stop
+     * @throws NotAuthorizedException if neither the user (nor any groups user belongs to) have neither the program (nor any of
+     * the control areas the program belongs to) made visible to them.
      */
     public ProgramStatus stopControlByProgramName(String programName,
-            Date stopTime, boolean forceStop, boolean observeConstraintsAndExecute)
-            throws NotFoundException, TimeoutException;
+            Date stopTime, boolean forceStop, boolean observeConstraintsAndExecute, LiteYukonUser user)
+            throws NotFoundException, TimeoutException, NotAuthorizedException;
     
     /**
      * Starts control for all programs belonging to a given scenario. Returns a
@@ -105,17 +117,20 @@ public interface LoadControlService {
      * @param startTime
      * @param stopTime
      * @param forceStart Should normally always be set to false, set to true only if
-     * you're sure you really need want to ignore contraint violations.
+     * you're sure you really need want to ignore constraint violations.
      * @param observeConstraintsAndExecute If false, do not execute if there are constraint violations.
      * If true, allow the server to alter our request to abide by the constraints and execute (i.e. "Observe") 
      * Note: This value only matters when using forceStart=false.
+     * @param user will be checked against user/group pao permission tables to validate access to program
      * @return
      * @throws NotFoundException if no scenario exists for given scenarioName.
      * @throws TimeoutException if server fails to send an program update response for any of the program control start attempted.
+     * @throws NotAuthorizedException for any of of the programs in the scenario - if neither the user (nor any groups user belongs to) have neither the program (nor any of
+     * the control areas the program belongs to) made visible to them.
      */
     public ScenarioStatus startControlByScenarioName(String scenarioName,
-            Date startTime, Date stopTime, boolean forceStart, boolean observeConstraintsAndExecute)
-            throws NotFoundException, TimeoutException;
+            Date startTime, Date stopTime, boolean forceStart, boolean observeConstraintsAndExecute, LiteYukonUser user)
+            throws NotFoundException, TimeoutException, NotAuthorizedException;
 
     /**
      * Stop control for all programs belonging to a given scenario. Returns a
@@ -128,17 +143,20 @@ public interface LoadControlService {
      * @param scenarioName
      * @param stopTime
      * @param forceStop Should normally always be set to false, set to true only if
-     * you're sure you really need want to ignore contraint violations.
+     * you're sure you really need want to ignore constraint violations.
      * @param observeConstraintsAndExecute If false, do not execute if there are constraint violations.
      * If true, allow the server to alter our request to abide by the constraints and execute (i.e. "Observe") 
      * Note: This value only matters when using forceStop=false.
+     * @param user will be checked against user/group pao permission tables to validate access to program
      * @return
      * @throws NotFoundException if no scenario exists for given scenarioName.
      * @throws TimeoutException if server fails to send an program update response for any of the program control stop attempted.
+     * @throws NotAuthorizedException for any of of the programs in the scenario - if neither the user (nor any groups user belongs to) have neither the program (nor any of
+     * the control areas the program belongs to) made visible to them.
      */
     public ScenarioStatus stopControlByScenarioName(String scenarioName,
-            Date stopTime, boolean forceStop, boolean observeConstraintsAndExecute) throws NotFoundException,
-            TimeoutException;
+            Date stopTime, boolean forceStop, boolean observeConstraintsAndExecute, LiteYukonUser user) throws NotFoundException,
+            TimeoutException, NotAuthorizedException;
 
     
     /**
