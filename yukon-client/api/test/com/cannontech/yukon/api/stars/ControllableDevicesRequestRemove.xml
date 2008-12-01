@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<removeControllableDevicesRequest xmlns="http://yukon.cannontech.com/api"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://yukon.cannontech.com/api ../RemoveControllableDevicesRequest.xsd"
+           version="1.0">
+    <controllableDeviceList>
+        <controllableDevice>
+            <accountNumber>AccountNotFound</accountNumber>
+            <serialNumber>AccountNotFound</serialNumber>
+            <deviceType>Residential ExpressStat</deviceType>
+        </controllableDevice>
+        <controllableDevice>
+            <accountNumber>InvalidArgument</accountNumber>
+            <serialNumber>InvalidArgument</serialNumber>
+            <deviceType>LCR-4700</deviceType>
+        </controllableDevice>
+        <controllableDevice>
+            <accountNumber>ProcessingError</accountNumber>
+            <serialNumber>ProcessingError</serialNumber>
+            <deviceType>LCR-4700</deviceType>
+        </controllableDevice>
+        <controllableDevice>
+            <accountNumber>Valid</accountNumber>
+            <serialNumber>Valid</serialNumber>
+            <deviceType>LCR-4700</deviceType>
+            <fieldRemoveDate>2008-10-28T17:07:40Z</fieldRemoveDate>            
+        </controllableDevice>        
+    </controllableDeviceList>
+</removeControllableDevicesRequest>
