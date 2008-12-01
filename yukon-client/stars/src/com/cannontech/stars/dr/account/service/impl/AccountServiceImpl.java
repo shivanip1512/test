@@ -288,7 +288,7 @@ public class AccountServiceImpl implements AccountService {
         LiteStarsCustAccountInformation accountInformation = liteStarsEnergyCompany.searchAccountByAccountNo(accountNumber);
         if(accountInformation != null) {
             log.error("Account " + accountNumber + " could not be deleted: Unable to find account for account#: " + accountNumber);
-            throw new NotFoundException("Unable to find account for account#: " + accountNumber);
+            throw new InvalidAccountNumberException("Unable to find account for account#: " + accountNumber);
         }
         
         CustomerAccount account = customerAccountDao.getByAccountNumber(accountNumber, liteStarsEnergyCompany.getEnergyCompanyID());
