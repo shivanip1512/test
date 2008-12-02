@@ -9,6 +9,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
@@ -35,7 +36,7 @@ public class CurrentlyActiveProgramsRequestEndpointTest {
     private class MockLoadControlService extends LoadControlServiceAdapter {
         
         @Override
-        public List<ProgramStatus> getAllCurrentlyActivePrograms() {
+        public List<ProgramStatus> getAllCurrentlyActivePrograms(LiteYukonUser user) {
             
             List<ProgramStatus> programStatuses = new ArrayList<ProgramStatus>();
             

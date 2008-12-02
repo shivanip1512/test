@@ -46,7 +46,7 @@ public class ListScenarioProgramsRequestEndpoint {
         
         ScenarioProgramStartingGears scenarioProgramStartingGears = null;
         try {
-            scenarioProgramStartingGears = loadControlService.getScenarioProgramStartingGearsByScenarioName(scenarioName);
+            scenarioProgramStartingGears = loadControlService.getScenarioProgramStartingGearsByScenarioName(scenarioName, user);
         } catch (NotFoundException e) {
             Element fe = XMLFailureGenerator.generateFailure(listScenarioProgramsRequest, e, "InvalidScenarioName", "No scenario named: " + scenarioName);
             resp.addContent(fe);

@@ -2,20 +2,17 @@ package com.cannontech.loadcontrol.service.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.NotAuthorizedException;
-import com.cannontech.core.authorization.service.PaoPermissionService;
-import com.cannontech.core.authorization.support.AuthorizationResponse;
+import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.ProgramUtils;
@@ -41,14 +38,20 @@ public class LoadControlServiceImpl implements LoadControlService {
     
     private LoadControlProgramDao loadControlProgramDao;
     private LoadControlCommandService loadControlCommandService;
-    private PaoPermissionService paoPermissionService;
+    private PaoDao paoDao;
+    private PaoAuthorizationService paoAuthorizationService;
     
     private LoadControlClientConnection loadControlClientConnection;
     
     // GET PROGRAM SATUS BY PROGRAM NAME
-    public ProgramStatus getProgramStatusByProgramName(String programName) throws NotFoundException {
+    public ProgramStatus getProgramStatusByProgramName(String programName, LiteYukonUser user) throws NotFoundException, NotAuthorizedException {
         
         int programId = loadControlProgramDao.getProgramIdByProgramName(programName);
+        
+        if (!programIsVisibleToUser(user, programId)) {
+        	throw new NotAuthorizedException("Program is not visible to user: " + programName + " (id=" + programId + ")");
+        }
+        
         LMProgramBase program = loadControlClientConnection.getProgram(programId);
         
         if (program == null) {
@@ -59,25 +62,28 @@ public class LoadControlServiceImpl implements LoadControlService {
     }
     
     // GET ALL CURRENTLY ACTIVE PROGRAMS
-    public List<ProgramStatus> getAllCurrentlyActivePrograms() {
+    public List<ProgramStatus> getAllCurrentlyActivePrograms(LiteYukonUser user) {
         
-        List<ProgramStatus> programStatii = new ArrayList<ProgramStatus>();
+        List<ProgramStatus> programStatuses = new ArrayList<ProgramStatus>();
         
         List<Integer> programIds = loadControlProgramDao.getAllProgramIds();
         for (int programId : programIds) {
             
-            LMProgramBase program = loadControlClientConnection.getProgram(programId);
-            
-            if (program != null) {
-                ProgramStatus programStatus = new ProgramStatus(program);
-                
-                if (programStatus.isActive()) {
-                    programStatii.add(programStatus);
-                }
-            }
+        	if(programIsVisibleToUser(user, programId)) {
+        	
+	            LMProgramBase program = loadControlClientConnection.getProgram(programId);
+	            
+	            if (program != null) {
+	                ProgramStatus programStatus = new ProgramStatus(program);
+	                
+	                if (programStatus.isActive()) {
+	                    programStatuses.add(programStatus);
+	                }
+	            }
+        	}
         }
         
-        return programStatii;
+        return programStatuses;
     }
     
     // START CONTROL BY PROGRAM NAME
@@ -174,18 +180,33 @@ public class LoadControlServiceImpl implements LoadControlService {
     }
     
     // PROGRAM STARTING GEARS BY SCENARIO NAME
-    public ScenarioProgramStartingGears getScenarioProgramStartingGearsByScenarioName(String scenarioName) throws NotFoundException {
+    public ScenarioProgramStartingGears getScenarioProgramStartingGearsByScenarioName(String scenarioName, LiteYukonUser user) throws NotFoundException {
         
         int scenarioId = loadControlProgramDao.getScenarioIdForScenarioName(scenarioName);
-        List<ProgramStartingGear> programStartingGears = loadControlProgramDao.getProgramStartingGearsForScenarioId(scenarioId);
+        List<ProgramStartingGear> allProgramStartingGears = loadControlProgramDao.getProgramStartingGearsForScenarioId(scenarioId);
         
-        return new ScenarioProgramStartingGears(scenarioName, programStartingGears);
+        // only visible programs will be included in the ScenarioProgramStartingGears
+        List<ProgramStartingGear> visibleProgramStartingGears = new ArrayList<ProgramStartingGear>();
+        for (ProgramStartingGear programStartingGear : allProgramStartingGears) {
+        	
+        	if (programIsVisibleToUser(user, programStartingGear.getProgramId())) {
+        		visibleProgramStartingGears.add(programStartingGear);
+        	}
+        }
+        
+        return new ScenarioProgramStartingGears(scenarioName, visibleProgramStartingGears);
     }
     
     // CONTROL HISTORY BY PROGRAM NAME
-    public List<ProgramControlHistory> getControlHistoryByProgramName(String programName, Date fromTime, Date throughTime) throws NotFoundException {
+    public List<ProgramControlHistory> getControlHistoryByProgramName(String programName, Date fromTime, Date throughTime, LiteYukonUser user) throws NotFoundException {
         
-        //TODO everything
+    	int programId = loadControlProgramDao.getProgramIdByProgramName(programName);
+        
+        if (!programIsVisibleToUser(user, programId)) {
+        	throw new NotAuthorizedException("Program is not visible to user: " + programName + " (id=" + programId + ")");
+        }
+        
+        //TODO everything else
         List<ProgramControlHistory> programControlHistory = new ArrayList<ProgramControlHistory>();
      
         return programControlHistory;
@@ -277,9 +298,9 @@ public class LoadControlServiceImpl implements LoadControlService {
 
     	// check if user has "access" to program (if this user or some group they belong to has had this program made visible to them)
     	int programId = programStatus.getProgramId();
-    	boolean isVisible = isProgramVisibleToUser(user, programId);
+    	boolean isVisible = programIsVisibleToUser(user, programId);
     	if (!isVisible) {
-    		throw new NotAuthorizedException("Program is not visible to user: " + programStatus.getProgramName() + "(" + programId + ")");
+    		throw new NotAuthorizedException("Program is not visible to user: " + programStatus.getProgramName() + " (id" + programId + ")");
     	}
         
         // execute check. if has violations return without executing for real
@@ -328,33 +349,17 @@ public class LoadControlServiceImpl implements LoadControlService {
     }
     
     // checks
-    private boolean isProgramVisibleToUser(LiteYukonUser user, int paoId) {
+    private boolean programIsVisibleToUser(LiteYukonUser user, int programId) {
     	
     	// first check if program is directly visible to user
-    	if (isLmPaoVisibleToUser(user, paoId)) {
+    	if (isLmPaoVisibleToUser(user, programId)) {
     		return true;
     	}
     	
-    	// otherwise, check if any of the control areas the program belongs to are visible to user
-    	List<Integer> controlAreaIds = new ArrayList<Integer>();
-    	
-    	HashMap<Integer,LMControlArea> controlAreas = loadControlClientConnection.getControlAreas();
-    	for (LMControlArea controlArea : controlAreas.values()) {
-    		
-    		Vector<LMProgramBase> programs = controlArea.getLmProgramVector();
-    		for (LMProgramBase program : programs) {
-    			if (program.getYukonID().intValue() == paoId) {
-    				controlAreaIds.add(controlArea.getYukonID());
-    				break;
-    			}
-    		}
-    	}
-    	
-    	for (int controlAreaId : controlAreaIds) {
-    		
-    		if (isLmPaoVisibleToUser(user, controlAreaId)) {
-        		return true;
-        	} 
+    	// otherwise, check if the program's control area (if any) is visible to user
+    	LMControlArea controlAreaForProgram = loadControlClientConnection.getControlAreaForProgram(programId);
+    	if (controlAreaForProgram != null) {
+    		return isLmPaoVisibleToUser(user, controlAreaForProgram.getYukonID());
     	}
     	
     	return false;
@@ -362,9 +367,7 @@ public class LoadControlServiceImpl implements LoadControlService {
     
     private boolean isLmPaoVisibleToUser(LiteYukonUser user, int paoId) {
     	
-    	AuthorizationResponse authResponse = paoPermissionService.hasPermission(user, new LiteYukonPAObject(paoId), Permission.LM_VISIBLE);
-    	
-    	return authResponse.equals(AuthorizationResponse.AUTHORIZED);
+    	return paoAuthorizationService.isAuthorized(user, Permission.LM_VISIBLE, paoDao.getLiteYukonPAO(paoId));
     }
 
     //==============================================================================================
@@ -389,8 +392,13 @@ public class LoadControlServiceImpl implements LoadControlService {
     }
     
     @Autowired
-    public void setPaoPermissionService(
-			PaoPermissionService paoPermissionService) {
-		this.paoPermissionService = paoPermissionService;
+    public void setPaoDao(PaoDao paoDao) {
+		this.paoDao = paoDao;
+	}
+    
+    @Autowired
+    public void setPaoAuthorizationService(
+			PaoAuthorizationService paoAuthorizationService) {
+		this.paoAuthorizationService = paoAuthorizationService;
 	}
 }

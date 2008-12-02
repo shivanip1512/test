@@ -83,7 +83,7 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
     
     public List<ProgramStartingGear> getProgramStartingGearsForScenarioId(int scenarioId) {
         
-        String sql = "SELECT ypo.PAOName AS ProgramName, lmpdg.GearName, lmpdg.GearNumber" +
+        String sql = "SELECT ypo.PAObjectID, ypo.PAOName AS ProgramName, lmpdg.GearName, lmpdg.GearNumber" +
         " FROM LMControlScenarioProgram lmcsp" +
         " INNER JOIN LMProgramDirectGear lmpdg ON (lmcsp.ProgramId = lmpdg.DeviceID AND lmcsp.StartGear = lmpdg.GearNumber)" +
         " INNER JOIN YukonPaObject ypo ON (lmpdg.DeviceID = ypo.PAObjectID)" +
@@ -93,11 +93,12 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
             
             public ProgramStartingGear mapRow(ResultSet rs, int rowNum) throws SQLException {
                 
+            	int programId = rs.getInt("PAObjectID");
                 String programName = rs.getString("ProgramName");
                 String gearName = rs.getString("GearName");
                 int gearNumber = rs.getInt("GearNumber");
                 
-                ProgramStartingGear programStartingGear = new ProgramStartingGear(programName, gearName, gearNumber);
+                ProgramStartingGear programStartingGear = new ProgramStartingGear(programId, programName, gearName, gearNumber);
                 return programStartingGear;
             }
         };

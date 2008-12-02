@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.service.data.ProgramStartingGear;
 import com.cannontech.loadcontrol.service.data.ScenarioProgramStartingGears;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
@@ -39,7 +40,7 @@ public class ListScenarioProgramsRequestEndpointTest {
         private String scenarioName;
         
         @Override
-        public ScenarioProgramStartingGears getScenarioProgramStartingGearsByScenarioName(String scenarioName) throws NotFoundException {
+        public ScenarioProgramStartingGears getScenarioProgramStartingGearsByScenarioName(String scenarioName, LiteYukonUser user) throws NotFoundException {
             
             this.scenarioName = scenarioName;
             
@@ -47,9 +48,9 @@ public class ListScenarioProgramsRequestEndpointTest {
                 throw new NotFoundException("");
             }
             
-            ProgramStartingGear programGear1 = new ProgramStartingGear("Program1", "Gear1", 1);
-            ProgramStartingGear programGear2 = new ProgramStartingGear("Program2", "Gear2", 1);
-            ProgramStartingGear programGear3 = new ProgramStartingGear("Program3", "Gear3", 1);
+            ProgramStartingGear programGear1 = new ProgramStartingGear(1, "Program1", "Gear1", 1);
+            ProgramStartingGear programGear2 = new ProgramStartingGear(2, "Program2", "Gear2", 1);
+            ProgramStartingGear programGear3 = new ProgramStartingGear(3, "Program3", "Gear3", 1);
             
             List<ProgramStartingGear> programStartingGears = new ArrayList<ProgramStartingGear>();
             programStartingGears.add(programGear1);

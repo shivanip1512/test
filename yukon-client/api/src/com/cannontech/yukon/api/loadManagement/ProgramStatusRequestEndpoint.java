@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.service.LoadControlService;
@@ -43,9 +44,13 @@ public class ProgramStatusRequestEndpoint {
         
         ProgramStatus programStatus = null;
         try {
-            programStatus = loadControlService.getProgramStatusByProgramName(programName);
+            programStatus = loadControlService.getProgramStatusByProgramName(programName, user);
         } catch (NotFoundException e) {
             Element fe = XMLFailureGenerator.generateFailure(programStatusRequest, e, "InvalidProgramName", "No program named: "+ programName);
+            resp.addContent(fe);
+            return resp;
+        } catch (NotAuthorizedException e) {
+            Element fe = XMLFailureGenerator.generateFailure(programStatusRequest, e, "UserNotAuthorized", "The program is not visible to the user.");
             resp.addContent(fe);
             return resp;
         }

@@ -19,16 +19,21 @@ public interface LoadControlService {
      * connection cache. If the cache contains no program for id then return
      * null.
      * @param programName
+     * @param user will be checked against user/group pao permission tables to validate access to program,
+     * a program is visible to the user either because it is directly visible, or belongs to a control area that is visible.
      * @return A ProgramStatus object based on the Program
      * @throws NotFoundException if no program exists in database for given programName
+     * @throws NotAuthorizedException if neither the user (nor any groups user belongs to) have neither the program (nor any of
+     * the control areas the program belongs to) made visible to them.
      */
-    public ProgramStatus getProgramStatusByProgramName(String programName) throws NotFoundException;
+    public ProgramStatus getProgramStatusByProgramName(String programName, LiteYukonUser user) throws NotFoundException, NotAuthorizedException;
 
     /**
-     * Returns a list of ProgramStatus where the program is active.
+     * Returns a list of ProgramStatus where the program is active, and the program is visible to the user
+     * either because it is directly visible, or belongs to a control area that is visible.
      * @return
      */
-    public List<ProgramStatus> getAllCurrentlyActivePrograms();
+    public List<ProgramStatus> getAllCurrentlyActivePrograms(LiteYukonUser user);
 
     /**
      * Starts control of program of given programName. Returns a ProgramStatus
@@ -40,7 +45,8 @@ public interface LoadControlService {
      * @param stopTime
      * @param gearNumber
      * @param forceStart should normally always be set to false, set to true only if
-     * @param user will be checked against user/group pao permission tables to validate access to program
+     * @param user will be checked against user/group pao permission tables to validate access to program,
+     * a program is visible to the user either because it is directly visible, or belongs to a control area that is visible.
      * you're sure you really need want to ignore constraint violations.
      * @param observeConstraintsAndExecute If false, do not execute if there are constraint violations.
      * If true, allow the server to alter our request to abide by the constraints and execute (i.e. "Observe") 
@@ -67,7 +73,8 @@ public interface LoadControlService {
      * @param stopTime
      * @param gearNumber
      * @param forceStart should normally always be set to false, set to true only if
-     * @param user will be checked against user/group pao permission tables to validate access to program
+     * @param user will be checked against user/group pao permission tables to validate access to program,
+     * a program is visible to the user either because it is directly visible, or belongs to a control area that is visible.
      * you're sure you really need want to ignore constraint violations.
      * @param observeConstraintsAndExecute If false, do not execute if there are constraint violations.
      * If true, allow the server to alter our request to abide by the constraints and execute (i.e. "Observe") 
@@ -94,7 +101,8 @@ public interface LoadControlService {
      * you're sure you really need want to ignore constraint violations.
      * @param observeConstraintsAndExecute If false, do not execute if there are constraint violations.
      * If true, allow the server to alter our request to abide by the constraints and execute (i.e. "Observe") 
-     * @param user will be checked against user/group pao permission tables to validate access to program
+     * @param user will be checked against user/group pao permission tables to validate access to program,
+     * a program is visible to the user either because it is directly visible, or belongs to a control area that is visible.
      * Note: This value only matters when using forceStop=false.
      * @return
      * @throws NotFoundException if no program exists for given programName
@@ -121,7 +129,8 @@ public interface LoadControlService {
      * @param observeConstraintsAndExecute If false, do not execute if there are constraint violations.
      * If true, allow the server to alter our request to abide by the constraints and execute (i.e. "Observe") 
      * Note: This value only matters when using forceStart=false.
-     * @param user will be checked against user/group pao permission tables to validate access to program
+     * @param user will be checked against user/group pao permission tables to validate access to program,
+     * a program is visible to the user either because it is directly visible, or belongs to a control area that is visible.
      * @return
      * @throws NotFoundException if no scenario exists for given scenarioName.
      * @throws TimeoutException if server fails to send an program update response for any of the program control start attempted.
@@ -147,7 +156,8 @@ public interface LoadControlService {
      * @param observeConstraintsAndExecute If false, do not execute if there are constraint violations.
      * If true, allow the server to alter our request to abide by the constraints and execute (i.e. "Observe") 
      * Note: This value only matters when using forceStop=false.
-     * @param user will be checked against user/group pao permission tables to validate access to program
+     * @param user will be checked against user/group pao permission tables to validate access to program,
+     * a program is visible to the user either because it is directly visible, or belongs to a control area that is visible.
      * @return
      * @throws NotFoundException if no scenario exists for given scenarioName.
      * @throws TimeoutException if server fails to send an program update response for any of the program control stop attempted.
@@ -164,11 +174,13 @@ public interface LoadControlService {
      * The ScenarioProgramStartingGears object contains the name of the scenario, and a list of 
      * ProgramStartingGear. Each ProgramStartingGear contains the name of the program, and the name
      * and id of it's starting gear.
+     * Only programs that visible to the user are included in the ScenarioProgramStartingGears object,
+     * a program is visible to the user either because it is directly visible, or belongs to a control area that is visible.
      * @param scenarioName
      * @return
      * @throws NotFoundException if no scenario exists for given scenarioName.
      */
-    public ScenarioProgramStartingGears getScenarioProgramStartingGearsByScenarioName(String scenarioName) throws NotFoundException;
+    public ScenarioProgramStartingGears getScenarioProgramStartingGearsByScenarioName(String scenarioName, LiteYukonUser user) throws NotFoundException;
     
     /**
      * Returns a list of ProgramControlHistory objects for the given programName, within the given
@@ -176,8 +188,14 @@ public interface LoadControlService {
      * @param programName
      * @param fromTime inclusive
      * @param throughTime inclusive
+     * @param user will be checked against user/group pao permission tables to validate access to program,
+     * a program is visible to the user either because it is directly visible, or belongs to a control area that is visible.
      * @return
      * @throws NotFoundException if no program exists for given programName
+     * @throws NotAuthorizedException for any of of the programs in the scenario - if neither the user (nor any groups user belongs to) have neither the program (nor any of
+     * the control areas the program belongs to) made visible to them.
      */
-    public List<ProgramControlHistory> getControlHistoryByProgramName(String programName, Date fromTime, Date throughTime) throws NotFoundException;
+    public List<ProgramControlHistory> getControlHistoryByProgramName(
+			String programName, Date fromTime, Date throughTime,
+			LiteYukonUser user) throws NotFoundException, NotAuthorizedException;
 }

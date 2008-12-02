@@ -34,7 +34,7 @@ public class CurrentlyActiveProgramsRequestEndpoint {
         // run service
         Element resp = new Element("currentlyActiveProgramsResponse", ns);
         
-        List<ProgramStatus> allCurrentlyActivePrograms = loadControlService.getAllCurrentlyActivePrograms();
+        List<ProgramStatus> allCurrentlyActivePrograms = loadControlService.getAllCurrentlyActivePrograms(user);
         
         // build response
         Element programStatuses = new Element("programStatuses", ns);

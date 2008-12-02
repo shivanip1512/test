@@ -40,11 +40,13 @@ public class LoadControlServiceInputsTestController extends MultiActionControlle
     //====================================================================================================================================
     public ModelAndView getProgramStatusByProgramName(HttpServletRequest request, HttpServletResponse response) throws ServletException, Exception {
 
+    	YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+    	
         List<String> results = new ArrayList<String>();
         
         String programName = ServletRequestUtils.getRequiredStringParameter(request, "programName");
         
-        ProgramStatus programStatus = loadControlService.getProgramStatusByProgramName(programName);
+        ProgramStatus programStatus = loadControlService.getProgramStatusByProgramName(programName, userContext.getYukonUser());
         results.add(programStatus.toString());
         
         return returnMav(request, results);
@@ -55,9 +57,11 @@ public class LoadControlServiceInputsTestController extends MultiActionControlle
     //====================================================================================================================================
     public ModelAndView getAllCurrentlyActivePrograms(HttpServletRequest request, HttpServletResponse response) throws ServletException, Exception {
 
+    	YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+    	
         List<String> results = new ArrayList<String>();
         
-        List<ProgramStatus> programStatii = loadControlService.getAllCurrentlyActivePrograms();
+        List<ProgramStatus> programStatii = loadControlService.getAllCurrentlyActivePrograms(userContext.getYukonUser());
         
         for (ProgramStatus programStatus : programStatii) {
             results.add(programStatus.toString());
@@ -182,11 +186,13 @@ public class LoadControlServiceInputsTestController extends MultiActionControlle
     //====================================================================================================================================
     public ModelAndView getScenarioProgramStartGears(HttpServletRequest request, HttpServletResponse response) throws ServletException, java.text.ParseException {
 
+    	YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+    	
         List<String> results = new ArrayList<String>();
         
         String scenarioName = ServletRequestUtils.getRequiredStringParameter(request, "scenarioName");
         
-        ScenarioProgramStartingGears scenarioProgramStartingGears = loadControlService.getScenarioProgramStartingGearsByScenarioName(scenarioName);
+        ScenarioProgramStartingGears scenarioProgramStartingGears = loadControlService.getScenarioProgramStartingGearsByScenarioName(scenarioName, userContext.getYukonUser());
         results.add(scenarioProgramStartingGears.toString());
         
         return returnMav(request, results);

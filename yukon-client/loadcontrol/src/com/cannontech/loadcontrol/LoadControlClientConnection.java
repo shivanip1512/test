@@ -6,6 +6,7 @@ package com.cannontech.loadcontrol;
  * the base class does all the work.
  */
 import java.util.HashMap;
+import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.loadcontrol.data.LMControlArea;
@@ -112,6 +113,27 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
 			getControlAreas().values().toArray( areas );
 			return areas;
 		}
+    }
+    
+    /**
+     * Returns the control area that a program belongs to.
+     * If the program does not belong to any control area, null is returned.
+     * @param programId
+     * @return
+     */
+    public LMControlArea getControlAreaForProgram(int programId) {
+    	
+    	LMControlArea[] allControlAreas = getAllLMControlAreas();
+    	for (LMControlArea controlArea : allControlAreas) {
+    		Vector<LMProgramBase> programs = controlArea.getLmProgramVector();
+    		for (LMProgramBase program : programs) {
+    			if (program.getYukonID().intValue() == programId) {
+    				return controlArea;
+    			}
+    		}
+    	}
+    	
+    	return null;
     }
     
     public int getControlAreaCount() {

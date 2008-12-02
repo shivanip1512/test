@@ -3,6 +3,7 @@ package com.cannontech.yukon.api.loadManagement;
 import java.util.Date;
 import java.util.List;
 
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.service.LoadControlService;
@@ -15,26 +16,26 @@ import com.cannontech.message.util.TimeoutException;
 public class LoadControlServiceAdapter implements LoadControlService {
 
     @Override
-    public List<ProgramStatus> getAllCurrentlyActivePrograms() {
+    public List<ProgramStatus> getAllCurrentlyActivePrograms(LiteYukonUser user) {
         throw new UnsupportedOperationException("Not Implemented");
     }
 
     @Override
     public List<ProgramControlHistory> getControlHistoryByProgramName(
-            String programName, Date fromTime, Date throughTime)
-            throws NotFoundException {
+            String programName, Date fromTime, Date throughTime, LiteYukonUser user)
+            throws NotFoundException, NotAuthorizedException {
         throw new UnsupportedOperationException("Not Implemented");
     }
 
     @Override
-    public ProgramStatus getProgramStatusByProgramName(String programName)
-            throws NotFoundException {
+    public ProgramStatus getProgramStatusByProgramName(String programName, LiteYukonUser user)
+            throws NotFoundException, NotAuthorizedException {
         throw new UnsupportedOperationException("Not Implemented");
     }
 
     @Override
     public ScenarioProgramStartingGears getScenarioProgramStartingGearsByScenarioName(
-            String scenarioName) throws NotFoundException {
+            String scenarioName, LiteYukonUser user) throws NotFoundException {
         throw new UnsupportedOperationException("Not Implemented");
     }
 
@@ -42,7 +43,7 @@ public class LoadControlServiceAdapter implements LoadControlService {
     public ProgramStatus startControlByProgramName(String programName,
             Date startTime, Date stopTime, int gearNumber, boolean forceStart,
             boolean observeConstraintsAndExecute, LiteYukonUser user) throws NotFoundException,
-            TimeoutException {
+            TimeoutException, NotAuthorizedException {
         throw new UnsupportedOperationException("Not Implemented");
     }
 
@@ -50,7 +51,7 @@ public class LoadControlServiceAdapter implements LoadControlService {
     public ProgramStatus startControlByProgramName(String programName,
             Date startTime, Date stopTime, boolean forceStart,
             boolean observeConstraintsAndExecute, LiteYukonUser user) throws NotFoundException,
-            TimeoutException {
+            TimeoutException, NotAuthorizedException {
         throw new UnsupportedOperationException("Not Implemented");
     }
 
@@ -58,7 +59,7 @@ public class LoadControlServiceAdapter implements LoadControlService {
     public ScenarioStatus startControlByScenarioName(String scenarioName,
             Date startTime, Date stopTime, boolean forceStart,
             boolean observeConstraintsAndExecute, LiteYukonUser user) throws NotFoundException,
-            TimeoutException {
+            TimeoutException, NotAuthorizedException {
         throw new UnsupportedOperationException("Not Implemented");
     }
 
@@ -66,7 +67,7 @@ public class LoadControlServiceAdapter implements LoadControlService {
     public ProgramStatus stopControlByProgramName(String programName,
             Date stopTime, boolean forceStop,
             boolean observeConstraintsAndExecute, LiteYukonUser user) throws NotFoundException,
-            TimeoutException {
+            TimeoutException, NotAuthorizedException {
         throw new UnsupportedOperationException("Not Implemented");
     }
 
@@ -74,7 +75,7 @@ public class LoadControlServiceAdapter implements LoadControlService {
     public ScenarioStatus stopControlByScenarioName(String scenarioName,
             Date stopTime, boolean forceStop,
             boolean observeConstraintsAndExecute, LiteYukonUser user) throws NotFoundException,
-            TimeoutException {
+            TimeoutException, NotAuthorizedException {
         throw new UnsupportedOperationException("Not Implemented");
     }
 
