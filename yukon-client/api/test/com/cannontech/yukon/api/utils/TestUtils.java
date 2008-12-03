@@ -56,6 +56,7 @@ public class TestUtils {
      */
     public static void validateAgainstSchema(Element element,
             Resource schemaResource) {
+        boolean processedOk = false;
         try {
             // setup the validating builder
             Assert.assertTrue("Schema Resource not found", schemaResource.exists());
@@ -87,11 +88,14 @@ public class TestUtils {
             log.info("Re-converted Element XML =[" + strWriterBack + "]");
 
             Assert.assertTrue("Element validation failed", !errorHandler.isError());
+            processedOk = true;            
 
         } catch (IOException e) {
             log.error("error: " + e.getMessage());
         } catch (JDOMException e) {
             log.error("error: " + e.getMessage());
+        } finally {
+            Assert.assertTrue("Element validation failed", processedOk);            
         }
     }
 
