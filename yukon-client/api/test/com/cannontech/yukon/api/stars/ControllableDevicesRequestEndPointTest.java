@@ -143,7 +143,7 @@ public class ControllableDevicesRequestEndPointTest {
         // verify the respElement is valid according to schema
         String schemaLoc= "../schemas/stars/NewControllableDevicesResponse.xsd";
         Resource schemaResource = new ClassPathResource(schemaLoc, this.getClass());
-        TestUtils.validateResponse(respElement, schemaResource);
+        TestUtils.validateAgainstSchema(respElement, schemaResource);
 
         // create template and parse response data
         SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(respElement);
@@ -209,7 +209,7 @@ public class ControllableDevicesRequestEndPointTest {
         // verify the respElement is valid according to schema
         String schemaLoc= "../schemas/stars/UpdateControllableDevicesResponse.xsd";
         Resource schemaResource = new ClassPathResource(schemaLoc, this.getClass());
-        TestUtils.validateResponse(respElement, schemaResource);
+        TestUtils.validateAgainstSchema(respElement, schemaResource);
         
         // create template and parse response data
         SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(respElement);
@@ -275,7 +275,7 @@ public class ControllableDevicesRequestEndPointTest {
         // verify the respElement is valid according to schema
         String schemaLoc= "../schemas/stars/RemoveControllableDevicesResponse.xsd";
         Resource schemaResource = new ClassPathResource(schemaLoc, this.getClass());
-        TestUtils.validateResponse(respElement, schemaResource);
+        TestUtils.validateAgainstSchema(respElement, schemaResource);
         
         // create template and parse response data
         SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(respElement);

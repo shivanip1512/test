@@ -49,11 +49,16 @@ public class TestUtils {
                             outputTemplate.evaluateAsString(serviceResponseNameWithNS + "/@version"));
     }
     
-    public static void validateResponse(Element respElement,
+    /**
+     * Validates a Jdom Element against the given Schema resource.
+     * @param element
+     * @param schemaResource
+     */
+    public static void validateAgainstSchema(Element element,
             Resource schemaResource) {
         try {
             // setup the validating builder
-            Assert.assertTrue("Response Schema Resource not found", schemaResource.exists());
+            Assert.assertTrue("Schema Resource not found", schemaResource.exists());
             String schemaLocation = "http://yukon.cannontech.com/api " + schemaResource.getURI();            
 
             SAXBuilder builder = new SAXBuilder("org.apache.xerces.parsers.SAXParser", true);
@@ -63,25 +68,25 @@ public class TestUtils {
             SimpleErrorHandler errorHandler = new SimpleErrorHandler();
             builder.setErrorHandler(errorHandler);
 
-            // get the xml from the respElement
+            // get the xml from the element
             StringWriter strWriter = new StringWriter();
             XMLOutputter xmlOut = new XMLOutputter();
-            xmlOut.output(respElement, strWriter);
-            log.info("Response XML=[" + strWriter + "]");
+            xmlOut.output(element, strWriter);
+            log.info("Element XML=[" + strWriter + "]");
 
-            // run the respElement XML thru the validating builder
+            // run the element XML thru the validating builder
             Document doc = builder.build(new StringReader(strWriter.toString()));
 
-            // here is the respElement back again
-            Element respElementBack = doc.getRootElement();
-            Assert.assertNotNull("Response element rebuild failed", respElementBack);
+            // here is the element back again
+            Element elementBack = doc.getRootElement();
+            Assert.assertNotNull("Element validation failed", elementBack);
 
             // just to see the rebuilt element content back
             StringWriter strWriterBack = new StringWriter();
-            xmlOut.output(respElementBack, strWriterBack);
-            log.info("Re-converted Response XML =[" + strWriterBack + "]");
+            xmlOut.output(elementBack, strWriterBack);
+            log.info("Re-converted Element XML =[" + strWriterBack + "]");
 
-            Assert.assertTrue("Response element validation failed", !errorHandler.isError());
+            Assert.assertTrue("Element validation failed", !errorHandler.isError());
 
         } catch (IOException e) {
             log.error("error: " + e.getMessage());
