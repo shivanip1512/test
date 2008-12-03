@@ -13,7 +13,7 @@ import com.cannontech.database.db.customer.CICustomerPointType;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.support.CustomerPointTypeHelper;
 
-public class CurtailmentInterruptionSummaryModel extends BareDatedReportModelBase<CurtailmentInterruptionSummaryModel.ModelRow> {
+public class CurtailmentInterruptionSummaryModel extends BareDatedReportModelBase<CurtailmentInterruptionSummaryModel.ModelRow> implements EnergyCompanyModelAttributes {
     private int energyCompanyId;
     
     private CustomerStubDao customerStubDao = (CustomerStubDao) YukonSpringHook.getBean("customerStubDao");
@@ -36,6 +36,8 @@ public class CurtailmentInterruptionSummaryModel extends BareDatedReportModelBas
         public Double interruptHoursContract;
         public Double interruptHoursRemaining;
         public Double interruptHoursUsed;
+        public Integer minEventDuration;
+        public Integer interruptHrs24Hr;
         public Double cil;
         public Integer noticeMinutes;
         public Double advancedElectionPricePerkW;
@@ -78,6 +80,8 @@ public class CurtailmentInterruptionSummaryModel extends BareDatedReportModelBas
                 
                 row.cil = customerPointTypeHelper.getPointValue(customerStub, CICustomerPointType.ContractIntLoad);
                 row.noticeMinutes = (int) customerPointTypeHelper.getPointValue(customerStub, CICustomerPointType.MinimumNotice);
+                row.minEventDuration = (int) customerPointTypeHelper.getPointValue(customerStub, CICustomerPointType.MinEventDuration);
+                row.interruptHrs24Hr = (int) customerPointTypeHelper.getPointValue(customerStub, CICustomerPointType.InterruptHrs24Hr);
                 row.advancedElectionPricePerkW = customerPointTypeHelper.getPointValue(customerStub, CICustomerPointType.AdvBuyThrough$);
                 row.advancedElectionkW = customerPointTypeHelper.getPointValue(customerStub, CICustomerPointType.AdvBuyThroughKw);
                 row.cfd = customerPointTypeHelper.getPointValue(customerStub, CICustomerPointType.ContractFrmDmd);

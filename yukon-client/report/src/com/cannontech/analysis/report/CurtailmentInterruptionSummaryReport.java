@@ -24,15 +24,17 @@ import com.cannontech.spring.YukonSpringHook;
  */
 public class CurtailmentInterruptionSummaryReport extends SimpleYukonReportBase {
     private static final ColumnLayoutData bodyColumns[] = new ColumnLayoutData[] {
-        new ColumnLayoutData("Customer Name", "customername", 160),
-        new ColumnLayoutData("Contract Hours", "interruptHoursContract", 60).setFormat("#0.0#"), 
-        new ColumnLayoutData("Remaining Hours", "interruptHoursRemaining", 60).setFormat("#0.0#"),
-        new ColumnLayoutData("Used Hours", "interruptHoursUsed", 40).setFormat("#0.0#"),
-        new ColumnLayoutData("CIL", "cil", 60).setFormat("#,###").setHorizontalAlignment(ElementAlignment.RIGHT),
-        new ColumnLayoutData("Notice (mins)", "noticeMinutes", 60).setFormat("#,###").setHorizontalAlignment(ElementAlignment.RIGHT),
-        new ColumnLayoutData("Adv. Election $/kW", "advancedElectionPricePerkW", 60).setFormat("#0.00#"),
+        new ColumnLayoutData("Customer Name", "customername", 140),
+        new ColumnLayoutData("Contract Hours", "interruptHoursContract", 50).setFormat("#0.0#").setHorizontalAlignment(ElementAlignment.RIGHT), 
+        new ColumnLayoutData("Remaining Hours", "interruptHoursRemaining", 50).setFormat("#0.0#").setHorizontalAlignment(ElementAlignment.RIGHT),
+        new ColumnLayoutData("Used Hours", "interruptHoursUsed", 40).setFormat("#0.0#").setHorizontalAlignment(ElementAlignment.RIGHT),
+        new ColumnLayoutData("CIL", "cil", 40).setFormat("#,###").setHorizontalAlignment(ElementAlignment.RIGHT),
+        new ColumnLayoutData("Notice (mins)", "noticeMinutes", 40).setFormat("#,###").setHorizontalAlignment(ElementAlignment.RIGHT),
+        new ColumnLayoutData("Min Duration", "minEventDuration", 40).setFormat("#,###").setHorizontalAlignment(ElementAlignment.RIGHT),
+        new ColumnLayoutData("Max 24 Hours", "interruptHrs24Hr", 40).setFormat("#,###").setHorizontalAlignment(ElementAlignment.RIGHT),
+        new ColumnLayoutData("Adv. Election $/kW", "advancedElectionPricePerkW", 60).setFormat("#0.00#").setHorizontalAlignment(ElementAlignment.RIGHT),
         new ColumnLayoutData("Adv. Election kW", "advancedElectionkW", 60).setFormat("#,###").setHorizontalAlignment(ElementAlignment.RIGHT),
-        new ColumnLayoutData("CFD", "cfd", 60).setFormat("#,###").setHorizontalAlignment(ElementAlignment.RIGHT),
+        new ColumnLayoutData("CFD", "cfd", 55).setFormat("#,###").setHorizontalAlignment(ElementAlignment.RIGHT),
     };
     private static final AggregateFooterFieldFactory footerColumns[] = new AggregateFooterFieldFactory[] {
         new LabelFooterFieldFactory(bodyColumns[0], "Total"),

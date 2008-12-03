@@ -39,12 +39,7 @@ public abstract class ReportControllerBase implements ReportController {
     public void setRequestParameters(HttpServletRequest req) {
         if (model instanceof EnergyCompanyModelAttributes) {
             EnergyCompanyModelAttributes commonModel = (EnergyCompanyModelAttributes)model;
-
-            String param = req.getParameter("ecID");
-            if ( param != null) {
-                commonModel.setEnergyCompanyId(Integer.valueOf(param));
-            }
-
+            commonModel.setEnergyCompanyId(report.getModel().getEnergyCompanyID());
         }
         
         if (model instanceof DatedModelAttributes) {
