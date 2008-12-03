@@ -1087,6 +1087,11 @@ bool CtiMCServer::processEvent(const ScheduledEvent& event)
             else
                 stopScript(sched->getScheduleID()); // stop script
 
+        {
+            CtiLockGuard< CtiLogger > guard(dout);
+            dout << CtiTime() << " Stopping Schedule: " << sched->getScheduleName() << endl;
+        }
+
         break;
     case StartPending:
         break;
