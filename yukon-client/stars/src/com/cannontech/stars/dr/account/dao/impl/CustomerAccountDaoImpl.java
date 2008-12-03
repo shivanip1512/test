@@ -127,7 +127,7 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         sqlBuilder.append("FROM CustomerAccount ca, ECToAccountMapping ecta");
         sqlBuilder.append("WHERE ca.AccountID = ecta.AccountID");
         sqlBuilder.append("AND ca.AccountNumber = ?");
-        sqlBuilder.append("AND ecta.EnergyCompanyID ?");
+        sqlBuilder.append("AND ecta.EnergyCompanyID = ?");
         final String sql = sqlBuilder.toString();
         
         CustomerAccount account = simpleJdbcTemplate.queryForObject(sql, 
