@@ -129,13 +129,11 @@ public interface LoadControlService {
      * @param observeConstraintsAndExecute If false, do not execute if there are constraint violations.
      * If true, allow the server to alter our request to abide by the constraints and execute (i.e. "Observe") 
      * Note: This value only matters when using forceStart=false.
-     * @param user will be checked against user/group pao permission tables to validate access to program,
-     * a program is visible to the user either because it is directly visible, or belongs to a control area that is visible.
+     * @param user will be checked against user/group pao permission tables to validate visibility of a scenario.
      * @return
      * @throws NotFoundException if no scenario exists for given scenarioName.
      * @throws TimeoutException if server fails to send an program update response for any of the program control start attempted.
-     * @throws NotAuthorizedException for any of of the programs in the scenario - if neither the user (nor any groups user belongs to) have neither the program (nor any of
-     * the control areas the program belongs to) made visible to them.
+     * @throws NotAuthorizedException if neither the user (nor any groups user belongs to) have the scenario made visible to them.
      */
     public ScenarioStatus startControlByScenarioName(String scenarioName,
             Date startTime, Date stopTime, boolean forceStart, boolean observeConstraintsAndExecute, LiteYukonUser user)
@@ -156,13 +154,11 @@ public interface LoadControlService {
      * @param observeConstraintsAndExecute If false, do not execute if there are constraint violations.
      * If true, allow the server to alter our request to abide by the constraints and execute (i.e. "Observe") 
      * Note: This value only matters when using forceStop=false.
-     * @param user will be checked against user/group pao permission tables to validate access to program,
-     * a program is visible to the user either because it is directly visible, or belongs to a control area that is visible.
+     * @param user will be checked against user/group pao permission tables to validate visibility of a scenario.
      * @return
      * @throws NotFoundException if no scenario exists for given scenarioName.
      * @throws TimeoutException if server fails to send an program update response for any of the program control stop attempted.
-     * @throws NotAuthorizedException for any of of the programs in the scenario - if neither the user (nor any groups user belongs to) have neither the program (nor any of
-     * the control areas the program belongs to) made visible to them.
+     * @throws NotAuthorizedException if neither the user (nor any groups user belongs to) have the scenario made visible to them.
      */
     public ScenarioStatus stopControlByScenarioName(String scenarioName,
             Date stopTime, boolean forceStop, boolean observeConstraintsAndExecute, LiteYukonUser user) throws NotFoundException,
@@ -174,13 +170,13 @@ public interface LoadControlService {
      * The ScenarioProgramStartingGears object contains the name of the scenario, and a list of 
      * ProgramStartingGear. Each ProgramStartingGear contains the name of the program, and the name
      * and id of it's starting gear.
-     * Only programs that visible to the user are included in the ScenarioProgramStartingGears object,
-     * a program is visible to the user either because it is directly visible, or belongs to a control area that is visible.
      * @param scenarioName
+     * @param user will be checked against user/group pao permission tables to validate visibility of a scenario.
      * @return
      * @throws NotFoundException if no scenario exists for given scenarioName.
+     * @throws NotAuthorizedException if neither the user (nor any groups user belongs to) have the scenario made visible to them.
      */
-    public ScenarioProgramStartingGears getScenarioProgramStartingGearsByScenarioName(String scenarioName, LiteYukonUser user) throws NotFoundException;
+    public ScenarioProgramStartingGears getScenarioProgramStartingGearsByScenarioName(String scenarioName, LiteYukonUser user) throws NotFoundException, NotAuthorizedException;
     
     /**
      * Returns a list of ProgramControlHistory objects for the given programName, within the given

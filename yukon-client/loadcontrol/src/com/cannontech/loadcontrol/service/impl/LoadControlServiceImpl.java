@@ -48,9 +48,7 @@ public class LoadControlServiceImpl implements LoadControlService {
         
         int programId = loadControlProgramDao.getProgramIdByProgramName(programName);
         
-        if (!programIsVisibleToUser(user, programId)) {
-        	throw new NotAuthorizedException("Program is not visible to user: " + programName + " (id=" + programId + ")");
-        }
+        validateProgramIsVisibleToUser(programName, programId, user);
         
         LMProgramBase program = loadControlClientConnection.getProgram(programId);
         
@@ -93,6 +91,8 @@ public class LoadControlServiceImpl implements LoadControlService {
 			throws NotFoundException, TimeoutException, NotAuthorizedException {
         
         int programId = loadControlProgramDao.getProgramIdByProgramName(programName);
+        validateProgramIsVisibleToUser(programName, programId, user);
+        
         LMProgramBase program = loadControlClientConnection.getProgram(programId);
         
         if (program == null) {
@@ -108,6 +108,8 @@ public class LoadControlServiceImpl implements LoadControlService {
 			throws NotFoundException, TimeoutException, NotAuthorizedException {
         
         int programId = loadControlProgramDao.getProgramIdByProgramName(programName);
+        validateProgramIsVisibleToUser(programName, programId, user);
+        
         LMProgramBase program = loadControlClientConnection.getProgram(programId);
         
         if (program == null) {
@@ -126,6 +128,8 @@ public class LoadControlServiceImpl implements LoadControlService {
 			throws NotFoundException, TimeoutException, NotAuthorizedException {
 
         int programId = loadControlProgramDao.getProgramIdByProgramName(programName);
+        validateProgramIsVisibleToUser(programName, programId, user);
+        
         LMProgramBase program = loadControlClientConnection.getProgram(programId);
         
         if (program == null) {
@@ -142,6 +146,8 @@ public class LoadControlServiceImpl implements LoadControlService {
 			throws NotFoundException, TimeoutException, NotAuthorizedException {
 
         int scenarioId = loadControlProgramDao.getScenarioIdForScenarioName(scenarioName);
+        validateScenarioIsVisibleToUser(scenarioName, scenarioId, user);
+        
         List<Integer> programIds = loadControlProgramDao.getProgramIdsByScenarioId(scenarioId);
         
         List<ProgramStatus> programStatuses = new ArrayList<ProgramStatus>();
@@ -164,6 +170,8 @@ public class LoadControlServiceImpl implements LoadControlService {
 			throws NotFoundException, TimeoutException, NotAuthorizedException {
 
         int scenarioId = loadControlProgramDao.getScenarioIdForScenarioName(scenarioName);
+        validateScenarioIsVisibleToUser(scenarioName, scenarioId, user);
+        
         List<Integer> programIds = loadControlProgramDao.getProgramIdsByScenarioId(scenarioId);
         
         List<ProgramStatus> programStatuses = new ArrayList<ProgramStatus>();
@@ -180,31 +188,20 @@ public class LoadControlServiceImpl implements LoadControlService {
     }
     
     // PROGRAM STARTING GEARS BY SCENARIO NAME
-    public ScenarioProgramStartingGears getScenarioProgramStartingGearsByScenarioName(String scenarioName, LiteYukonUser user) throws NotFoundException {
+    public ScenarioProgramStartingGears getScenarioProgramStartingGearsByScenarioName(String scenarioName, LiteYukonUser user) throws NotFoundException, NotAuthorizedException {
         
         int scenarioId = loadControlProgramDao.getScenarioIdForScenarioName(scenarioName);
-        List<ProgramStartingGear> allProgramStartingGears = loadControlProgramDao.getProgramStartingGearsForScenarioId(scenarioId);
+        validateScenarioIsVisibleToUser(scenarioName, scenarioId, user);
         
-        // only visible programs will be included in the ScenarioProgramStartingGears
-        List<ProgramStartingGear> visibleProgramStartingGears = new ArrayList<ProgramStartingGear>();
-        for (ProgramStartingGear programStartingGear : allProgramStartingGears) {
-        	
-        	if (programIsVisibleToUser(user, programStartingGear.getProgramId())) {
-        		visibleProgramStartingGears.add(programStartingGear);
-        	}
-        }
-        
-        return new ScenarioProgramStartingGears(scenarioName, visibleProgramStartingGears);
+        List<ProgramStartingGear> programStartingGears = loadControlProgramDao.getProgramStartingGearsForScenarioId(scenarioId);
+        return new ScenarioProgramStartingGears(scenarioName, programStartingGears);
     }
     
     // CONTROL HISTORY BY PROGRAM NAME
     public List<ProgramControlHistory> getControlHistoryByProgramName(String programName, Date fromTime, Date throughTime, LiteYukonUser user) throws NotFoundException {
         
     	int programId = loadControlProgramDao.getProgramIdByProgramName(programName);
-        
-        if (!programIsVisibleToUser(user, programId)) {
-        	throw new NotAuthorizedException("Program is not visible to user: " + programName + " (id=" + programId + ")");
-        }
+    	validateProgramIsVisibleToUser(programName, programId, user);
         
         //TODO everything else
         List<ProgramControlHistory> programControlHistory = new ArrayList<ProgramControlHistory>();
@@ -296,13 +293,6 @@ public class LoadControlServiceImpl implements LoadControlService {
             ProgramStatus programStatus,
             boolean force, boolean observeConstraintsAndExecute, LiteYukonUser user) throws TimeoutException, NotAuthorizedException {
 
-    	// check if user has "access" to program (if this user or some group they belong to has had this program made visible to them)
-    	int programId = programStatus.getProgramId();
-    	boolean isVisible = programIsVisibleToUser(user, programId);
-    	if (!isVisible) {
-    		throw new NotAuthorizedException("Program is not visible to user: " + programStatus.getProgramName() + " (id" + programId + ")");
-    	}
-        
         // execute check. if has violations return without executing for real
         if (!force) {
             
@@ -348,7 +338,19 @@ public class LoadControlServiceImpl implements LoadControlService {
         }
     }
     
-    // checks
+    // program/scenario visibility checks
+    private void validateScenarioIsVisibleToUser(String scenarioName, int scenarioId, LiteYukonUser user) {
+    	if (!scenarioIsVisibleToUser(user, scenarioId)) {
+        	throw new NotAuthorizedException("Scenario is not visible to user: " + scenarioName + " (id=" + scenarioId + ")");
+        }
+    }
+    
+    private void validateProgramIsVisibleToUser(String programName, int programId, LiteYukonUser user) {
+    	if (!programIsVisibleToUser(user, programId)) {
+        	throw new NotAuthorizedException("Program is not visible to user: " + programName + " (id=" + programId + ")");
+        }
+    }
+    
     private boolean programIsVisibleToUser(LiteYukonUser user, int programId) {
     	
     	// first check if program is directly visible to user
@@ -365,8 +367,11 @@ public class LoadControlServiceImpl implements LoadControlService {
     	return false;
     }
     
+    private boolean scenarioIsVisibleToUser(LiteYukonUser user, int scenarioId) {
+    	return isLmPaoVisibleToUser(user, scenarioId);
+    }
+    
     private boolean isLmPaoVisibleToUser(LiteYukonUser user, int paoId) {
-    	
     	return paoAuthorizationService.isAuthorized(user, Permission.LM_VISIBLE, paoDao.getLiteYukonPAO(paoId));
     }
 

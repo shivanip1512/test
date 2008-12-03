@@ -35,7 +35,7 @@ public class LoadControlServiceAdapter implements LoadControlService {
 
     @Override
     public ScenarioProgramStartingGears getScenarioProgramStartingGearsByScenarioName(
-            String scenarioName, LiteYukonUser user) throws NotFoundException {
+            String scenarioName, LiteYukonUser user) throws NotFoundException, NotAuthorizedException {
         throw new UnsupportedOperationException("Not Implemented");
     }
 
