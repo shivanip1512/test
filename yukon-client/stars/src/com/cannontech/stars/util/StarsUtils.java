@@ -320,10 +320,4 @@ public class StarsUtils {
 	public static boolean isResidentialCustomer(LiteYukonUser user) {
 		return DaoFactory.getAuthDao().checkRole(user, ResidentialCustomerRole.ROLEID);
 	}
-	
-    public static LiteStarsEnergyCompany getEnergyCompanyForUser(LiteYukonUser user) {
-        StarsDatabaseCache starsDbCacheInstance = StarsDatabaseCache.getInstance();
-        LiteStarsEnergyCompany energyCompany = starsDbCacheInstance.getEnergyCompanyByUser(user);
-        return energyCompany;
-    }	
 }

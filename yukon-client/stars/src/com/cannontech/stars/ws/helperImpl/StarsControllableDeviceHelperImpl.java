@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteServiceCompany;
@@ -35,15 +36,11 @@ public class StarsControllableDeviceHelperImpl implements
         StarsControllableDeviceHelper {
 
     private static final Logger log = YukonLogManager.getLogger(StarsControllableDeviceHelperImpl.class);
-    private CustomerAccountDao customerAccountDao;
+    
     private StarsSearchDao starsSearchDao;
+    private CustomerAccountDao customerAccountDao;    
     private StarsInventoryBaseService starsInventoryBaseService;
-
-    @Autowired
-    public void setStarsInventoryBaseService(
-            StarsInventoryBaseService starsInventoryBaseService) {
-        this.starsInventoryBaseService = starsInventoryBaseService;
-    }
+    private StarsDatabaseCache starsDatabaseCache;
 
     @Autowired
     public void setStarsSearchDao(StarsSearchDao starsSearchDao) {
@@ -53,6 +50,17 @@ public class StarsControllableDeviceHelperImpl implements
     @Autowired
     public void setCustomerAccountDao(CustomerAccountDao customerAccountDao) {
         this.customerAccountDao = customerAccountDao;
+    }
+
+    @Autowired
+    public void setStarsInventoryBaseService(
+            StarsInventoryBaseService starsInventoryBaseService) {
+        this.starsInventoryBaseService = starsInventoryBaseService;
+    }
+    
+    @Autowired    
+    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
+        this.starsDatabaseCache = starsDatabaseCache;
     }
 
     private String getAccountNumber(StarsControllableDeviceDTO deviceInfo) {
@@ -110,7 +118,7 @@ public class StarsControllableDeviceHelperImpl implements
         LiteInventoryBase liteInv = null;
         
         //Get energyCompany for the user
-        LiteStarsEnergyCompany energyCompany = StarsUtils.getEnergyCompanyForUser(user);
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
         
         // Get Inventory, if exists on account
         liteInv = getInventoryOnAccount(deviceInfo, energyCompany);
@@ -279,7 +287,7 @@ public class StarsControllableDeviceHelperImpl implements
         LiteInventoryBase liteInv = null;
         
         //Get energyCompany for the user
-        LiteStarsEnergyCompany energyCompany = StarsUtils.getEnergyCompanyForUser(user);
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
         
         // Get Inventory if exists on account
         liteInv = getInventoryOnAccount(deviceInfo, energyCompany);
@@ -311,7 +319,7 @@ public class StarsControllableDeviceHelperImpl implements
         LiteInventoryBase liteInv = null;
         
         //Get energyCompany for the user
-        LiteStarsEnergyCompany energyCompany = StarsUtils.getEnergyCompanyForUser(user);
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
 
         // Get Inventory if exists on account
         liteInv = getInventoryOnAccount(deviceInfo, energyCompany);
