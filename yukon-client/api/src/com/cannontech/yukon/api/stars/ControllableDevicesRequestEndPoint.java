@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jdom.Attribute;
 import org.jdom.Element;
@@ -31,6 +30,7 @@ import com.cannontech.yukon.api.util.NodeToElementMapperWrapper;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlUtils;
+import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.cannontech.yukon.api.util.YukonXml;
 
 @Endpoint
@@ -41,11 +41,9 @@ public class ControllableDevicesRequestEndPoint {
     private Namespace ns = YukonXml.getYukonNamespace();
 
     // Request elements
-    static final String REQ_XML_VERSION_1_0 = "1.0";
     static final String newDevicesReqStr = "/y:newControllableDevicesRequest";
     static final String updateDevicesReqStr = "/y:updateControllableDevicesRequest";
     static final String removeDevicesReqStr = "/y:removeControllableDevicesRequest";
-    static final String reqVersionStr = "//@version";
     static final String controllableDeviceListStr = "/y:controllableDeviceList";
     static final String controllableDeviceStr = "/y:controllableDevice";
     static final String newDeviceElementStr;
@@ -65,7 +63,6 @@ public class ControllableDevicesRequestEndPoint {
     static final String newDevicesRespStr = "newControllableDevicesResponse";
     static final String updateDevicesRespStr = "updateControllableDevicesResponse";
     static final String removeDevicesRespStr = "removeControllableDevicesResponse";
-    static final String versionRespAttrStr = "version";    
     static final String controllableDeviceResultListStr = "controllableDeviceResultList";
     static final String controllableDeviceResultStr = "controllableDeviceResult";
     static final String accountNumberRespStr = "accountNumber";
@@ -88,18 +85,14 @@ public class ControllableDevicesRequestEndPoint {
     public Element invokeAddDevice(Element newControllableDevicesRequest, LiteYukonUser user) {
         List<StarsControllableDeviceDTO> devices = null;
 
+        // check request xml version
+        XmlVersionUtils.verifyYukonMessageVersion(newControllableDevicesRequest,
+                                                  XmlVersionUtils.YUKON_MSG_VERSION_1_0);
+        
         // create template and parse data
         SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(newControllableDevicesRequest);
-
-        // check request xml version
-        String version = template.evaluateAsString(reqVersionStr);
-        if (!StringUtils.isBlank(version) && version.equals(REQ_XML_VERSION_1_0)) {
-            devices = template.evaluate(newDeviceElementStr,
-                                        deviceElementMapper);
-        } else {
-            throw new RuntimeException("Request XML version is not specified or not valid");
-        }
-
+        devices = template.evaluate(newDeviceElementStr, deviceElementMapper);
+        
         // run service
         for (StarsControllableDeviceDTO device : devices) {
             try {
@@ -122,17 +115,13 @@ public class ControllableDevicesRequestEndPoint {
 
         List<StarsControllableDeviceDTO> devices = null;
         
+        // check request xml version
+        XmlVersionUtils.verifyYukonMessageVersion(updateControllableDevicesRequest,
+                                                  XmlVersionUtils.YUKON_MSG_VERSION_1_0);
+        
         // create template and parse data
         SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(updateControllableDevicesRequest);
-
-        // check request xml version
-        String version = template.evaluateAsString(reqVersionStr);
-        if (!StringUtils.isBlank(version) && version.equals(REQ_XML_VERSION_1_0)) {
-            devices = template.evaluate(updateDeviceElementStr,
-                                        deviceElementMapper);
-        } else {
-            throw new RuntimeException("Request XML version is not specified or not valid");
-        }
+        devices = template.evaluate(updateDeviceElementStr, deviceElementMapper);        
 
         // run service
         for (StarsControllableDeviceDTO device : devices) {
@@ -156,18 +145,14 @@ public class ControllableDevicesRequestEndPoint {
 
         List<StarsControllableDeviceDTO> devices = null;
         
+        // check request xml version
+        XmlVersionUtils.verifyYukonMessageVersion(removeControllableDevicesRequest,
+                                                  XmlVersionUtils.YUKON_MSG_VERSION_1_0);
+        
         // create template and parse data
         SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(removeControllableDevicesRequest);
+        devices = template.evaluate(removeDeviceElementStr, deviceElementMapper);        
 
-        // check request xml version
-        String version = template.evaluateAsString(reqVersionStr);
-        if (!StringUtils.isBlank(version) && version.equals(REQ_XML_VERSION_1_0)) {
-            devices = template.evaluate(removeDeviceElementStr,
-                                        deviceElementMapper);
-        } else {
-            throw new RuntimeException("Request XML version is not specified or not valid");
-        }
-        
         // run service
         for (StarsControllableDeviceDTO device : devices) {
             try {
@@ -190,7 +175,7 @@ public class ControllableDevicesRequestEndPoint {
             List<StarsControllableDeviceDTO> devices) {
 
         Element resp = new Element(respStr, ns);
-        Attribute versionAttr = new Attribute(versionRespAttrStr, REQ_XML_VERSION_1_0);
+        Attribute versionAttr = XmlVersionUtils.createVersionAttribute(XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         resp.setAttribute(versionAttr);
         
         Element deviceResultList = new Element(controllableDeviceResultListStr, ns);
@@ -250,24 +235,16 @@ public class ControllableDevicesRequestEndPoint {
         }
 
         public static ErrorCodeMapper valueOf(Throwable throwable) {
+            ErrorCodeMapper desiredErrorCodeMapper = ProcessingError;
             String throwableClassName = throwable.getClass().getName();
-            if (throwableClassName.equals(AccountNotFound.getThrowableClassName())) {
-                return AccountNotFound;
-            } else if (throwableClassName.equals(DeviceAlreadyAssigned.getThrowableClassName())) {
-                return DeviceAlreadyAssigned;
-            } else if (throwableClassName.equals(DeviceAlreadyExists.getThrowableClassName())) {
-                return DeviceAlreadyExists;
-            } else if (throwableClassName.equals(DeviceNotFoundOnAccount.getThrowableClassName())) {
-                return DeviceNotFoundOnAccount;
-            } else if (throwableClassName.equals(SerialNumberAlreadyExists.getThrowableClassName())) {
-                return SerialNumberAlreadyExists;
-            } else if (throwableClassName.equals(InvalidArgument.getThrowableClassName())) {
-                return InvalidArgument;
-            } else if (throwableClassName.equals(InvalidDeviceType.getThrowableClassName())) {
-                return InvalidDeviceType;                
-            } else {
-                return ProcessingError;
+            for (ErrorCodeMapper errorCodeMapper : ErrorCodeMapper.values()) {
+                if (errorCodeMapper.getThrowableClassName()
+                                   .equals(throwableClassName)) {
+                    desiredErrorCodeMapper = errorCodeMapper;
+                    break;
+                }
             }
+            return desiredErrorCodeMapper;
         }
     }
 

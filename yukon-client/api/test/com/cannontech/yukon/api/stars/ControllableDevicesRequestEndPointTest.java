@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.jdom.Element;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
@@ -23,6 +24,8 @@ import com.cannontech.yukon.api.stars.ControllableDevicesRequestEndPoint.ErrorCo
 import com.cannontech.yukon.api.util.NodeToElementMapperWrapper;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XmlUtils;
+import com.cannontech.yukon.api.util.XmlVersionUtils;
+import com.cannontech.yukon.api.utils.TestUtils;
 
 public class ControllableDevicesRequestEndPointTest {
 
@@ -51,11 +54,9 @@ public class ControllableDevicesRequestEndPointTest {
     static final String updateDeviceRespElementStr;
     static final String removeDeviceRespElementStr;
 
-    static final String RESP_XML_VERSION_1_0 = "1.0";    
     static final String newDevicesRespStr = "/y:newControllableDevicesResponse";
     static final String updateDevicesRespStr = "/y:updateControllableDevicesResponse";
     static final String removeDevicesRespStr = "/y:removeControllableDevicesResponse";
-    static final String respVersionStr = "//@version";    
     static final String controllableDeviceResultListStr = "/y:controllableDeviceResultList";
     static final String controllableDeviceResultStr = "/y:controllableDeviceResult";
     static final String accountNumberRespStr = "y:accountNumber";
@@ -68,7 +69,6 @@ public class ControllableDevicesRequestEndPointTest {
         newDeviceRespElementStr = newDevicesRespStr + controllableDeviceResultListStr + controllableDeviceResultStr;
         updateDeviceRespElementStr = updateDevicesRespStr + controllableDeviceResultListStr + controllableDeviceResultStr;
         removeDeviceRespElementStr = removeDevicesRespStr + controllableDeviceResultListStr + controllableDeviceResultStr;
-        
         deviceResultElementMapper = new NodeToElementMapperWrapper<ControllableDeviceResult>(new ControllableDeviceResultMapper());        
     }
 
@@ -143,7 +143,8 @@ public class ControllableDevicesRequestEndPointTest {
 
         // create template and parse response data
         SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(respElement);
-        assertTrue(template.evaluateAsString(respVersionStr).equals(RESP_XML_VERSION_1_0));
+        TestUtils.runVersionAssertion(template, newDevicesRespStr, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
+
         List<ControllableDeviceResult> deviceResults = template.evaluate(newDeviceRespElementStr,
                                                                          deviceResultElementMapper);
 
@@ -152,31 +153,41 @@ public class ControllableDevicesRequestEndPointTest {
         for (ControllableDeviceResult deviceResult : deviceResults) {
             if (deviceResult.getAccountNumber().equals(ACCOUNT_NUM_NOT_FOUND)) {
 
-                assertTrue(deviceResult.getSerialNumber()
-                                       .equals(SERIAL_NUM_NOT_FOUND));
-                assertTrue(deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode().equals(ACCOUNT_NUM_NOT_FOUND));
-                assertTrue(deviceResult.getFailErrorDesc() != null);
+                assertTrue("Incorrect serialNumber",
+                           deviceResult.getSerialNumber().equals(SERIAL_NUM_NOT_FOUND));
+                assertTrue("Success should be false", !deviceResult.isSuccess());
+                assertTrue("Incorrect errorCode",
+                           deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode()
+                                                                                  .equals(ACCOUNT_NUM_NOT_FOUND));
+                assertTrue("Missing errorDescription", deviceResult.getFailErrorDesc() != null);
             } else if (deviceResult.getAccountNumber()
                                    .equals(ACCOUNT_NUM_INVALID_ARG)) {
-                assertTrue(deviceResult.getSerialNumber()
-                                       .equals(SERIAL_NUM_INVALID_ARG));
-                assertTrue(deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode().equals(ACCOUNT_NUM_INVALID_ARG));
-                assertTrue(deviceResult.getFailErrorDesc() != null);
+                
+                assertTrue("Incorrect serialNumber",
+                           deviceResult.getSerialNumber().equals(SERIAL_NUM_INVALID_ARG));
+                assertTrue("Success should be false", !deviceResult.isSuccess());
+                assertTrue("Incorrect errorCode",
+                           deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode()
+                                                                                  .equals(ACCOUNT_NUM_INVALID_ARG));
+                assertTrue("Missing errorDescription", deviceResult.getFailErrorDesc() != null);
 
             } else if (deviceResult.getAccountNumber()
                                    .equals(ACCOUNT_NUM_ERROR)) {
-                assertTrue(deviceResult.getSerialNumber()
-                                       .equals(SERIAL_NUM_ERROR));
-                assertTrue(deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode().equals(ACCOUNT_NUM_ERROR));
-                assertTrue(deviceResult.getFailErrorDesc() != null);
+                assertTrue("Incorrect serialNumber",
+                           deviceResult.getSerialNumber().equals(SERIAL_NUM_ERROR));
+                assertTrue("Success should be false", !deviceResult.isSuccess());
+                assertTrue("Incorrect errorCode",
+                           deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode()
+                                                                                  .equals(ACCOUNT_NUM_ERROR));
+                assertTrue("Missing errorDescription", deviceResult.getFailErrorDesc() != null);
             } else if (deviceResult.getAccountNumber()
                                    .equals(ACCOUNT_NUM_VALID)) {
                 // valid case, no exceptions
-                assertTrue(deviceResult.getSerialNumber()
-                                       .equals(SERIAL_NUM_VALID));
-                assertTrue(deviceResult.getSuccess() != null);
-                assertTrue(StringUtils.isBlank(deviceResult.getFailErrorCode()));
-                assertTrue(StringUtils.isBlank(deviceResult.getFailErrorDesc()));
+                assertTrue("Incorrect serialNumber",
+                           deviceResult.getSerialNumber().equals(SERIAL_NUM_VALID));
+                assertTrue("Success should be true", deviceResult.isSuccess());
+                assertTrue("Error Code should be blank", StringUtils.isBlank(deviceResult.getFailErrorCode()));
+                assertTrue("Error Description should be blank", StringUtils.isBlank(deviceResult.getFailErrorDesc()));
             }
         }
     }
@@ -192,7 +203,7 @@ public class ControllableDevicesRequestEndPointTest {
 
         // create template and parse response data
         SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(respElement);
-        assertTrue(template.evaluateAsString(respVersionStr).equals(RESP_XML_VERSION_1_0));        
+        TestUtils.runVersionAssertion(template, updateDevicesRespStr, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         List<ControllableDeviceResult> deviceResults = template.evaluate(updateDeviceRespElementStr,
                                                                          deviceResultElementMapper);
 
@@ -201,31 +212,41 @@ public class ControllableDevicesRequestEndPointTest {
         for (ControllableDeviceResult deviceResult : deviceResults) {
             if (deviceResult.getAccountNumber().equals(ACCOUNT_NUM_NOT_FOUND)) {
 
-                assertTrue(deviceResult.getSerialNumber()
-                                       .equals(SERIAL_NUM_NOT_FOUND));
-                assertTrue(deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode().equals(ACCOUNT_NUM_NOT_FOUND));
-                assertTrue(deviceResult.getFailErrorDesc() != null);
+                assertTrue("Incorrect serialNumber",
+                           deviceResult.getSerialNumber().equals(SERIAL_NUM_NOT_FOUND));
+                assertTrue("Success should be false", !deviceResult.isSuccess());
+                assertTrue("Incorrect errorCode",
+                           deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode()
+                                                                                  .equals(ACCOUNT_NUM_NOT_FOUND));
+                assertTrue("Missing errorDescription", deviceResult.getFailErrorDesc() != null);
             } else if (deviceResult.getAccountNumber()
                                    .equals(ACCOUNT_NUM_INVALID_ARG)) {
-                assertTrue(deviceResult.getSerialNumber()
-                                       .equals(SERIAL_NUM_INVALID_ARG));
-                assertTrue(deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode().equals(ACCOUNT_NUM_INVALID_ARG));
-                assertTrue(deviceResult.getFailErrorDesc() != null);
+                
+                assertTrue("Incorrect serialNumber",
+                           deviceResult.getSerialNumber().equals(SERIAL_NUM_INVALID_ARG));
+                assertTrue("Success should be false", !deviceResult.isSuccess());
+                assertTrue("Incorrect errorCode",
+                           deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode()
+                                                                                  .equals(ACCOUNT_NUM_INVALID_ARG));
+                assertTrue("Missing errorDescription", deviceResult.getFailErrorDesc() != null);
 
             } else if (deviceResult.getAccountNumber()
                                    .equals(ACCOUNT_NUM_ERROR)) {
-                assertTrue(deviceResult.getSerialNumber()
-                                       .equals(SERIAL_NUM_ERROR));
-                assertTrue(deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode().equals(ACCOUNT_NUM_ERROR));
-                assertTrue(deviceResult.getFailErrorDesc() != null);
+                assertTrue("Incorrect serialNumber",
+                           deviceResult.getSerialNumber().equals(SERIAL_NUM_ERROR));
+                assertTrue("Success should be false", !deviceResult.isSuccess());
+                assertTrue("Incorrect errorCode",
+                           deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode()
+                                                                                  .equals(ACCOUNT_NUM_ERROR));
+                assertTrue("Missing errorDescription", deviceResult.getFailErrorDesc() != null);
             } else if (deviceResult.getAccountNumber()
                                    .equals(ACCOUNT_NUM_VALID)) {
                 // valid case, no exceptions
-                assertTrue(deviceResult.getSerialNumber()
-                                       .equals(SERIAL_NUM_VALID));
-                assertTrue(deviceResult.getSuccess() != null);
-                assertTrue(StringUtils.isBlank(deviceResult.getFailErrorCode()));
-                assertTrue(StringUtils.isBlank(deviceResult.getFailErrorDesc()));
+                assertTrue("Incorrect serialNumber",
+                           deviceResult.getSerialNumber().equals(SERIAL_NUM_VALID));
+                assertTrue("Success should be true", deviceResult.isSuccess());
+                assertTrue("Error Code should be blank", StringUtils.isBlank(deviceResult.getFailErrorCode()));
+                assertTrue("Error Description should be blank", StringUtils.isBlank(deviceResult.getFailErrorDesc()));
             }
         }
     }
@@ -241,7 +262,7 @@ public class ControllableDevicesRequestEndPointTest {
 
         // create template and parse response data
         SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(respElement);
-        assertTrue(template.evaluateAsString(respVersionStr).equals(RESP_XML_VERSION_1_0));        
+        TestUtils.runVersionAssertion(template, removeDevicesRespStr, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         List<ControllableDeviceResult> deviceResults = template.evaluate(removeDeviceRespElementStr,
                                                                          deviceResultElementMapper);
 
@@ -250,31 +271,41 @@ public class ControllableDevicesRequestEndPointTest {
         for (ControllableDeviceResult deviceResult : deviceResults) {
             if (deviceResult.getAccountNumber().equals(ACCOUNT_NUM_NOT_FOUND)) {
 
-                assertTrue(deviceResult.getSerialNumber()
-                                       .equals(SERIAL_NUM_NOT_FOUND));
-                assertTrue(deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode().equals(ACCOUNT_NUM_NOT_FOUND));
-                assertTrue(deviceResult.getFailErrorDesc() != null);
+                assertTrue("Incorrect serialNumber",
+                           deviceResult.getSerialNumber().equals(SERIAL_NUM_NOT_FOUND));
+                assertTrue("Success should be false", !deviceResult.isSuccess());
+                assertTrue("Incorrect errorCode",
+                           deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode()
+                                                                                  .equals(ACCOUNT_NUM_NOT_FOUND));
+                assertTrue("Missing errorDescription", deviceResult.getFailErrorDesc() != null);
             } else if (deviceResult.getAccountNumber()
                                    .equals(ACCOUNT_NUM_INVALID_ARG)) {
-                assertTrue(deviceResult.getSerialNumber()
-                                       .equals(SERIAL_NUM_INVALID_ARG));
-                assertTrue(deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode().equals(ACCOUNT_NUM_INVALID_ARG));
-                assertTrue(deviceResult.getFailErrorDesc() != null);
+                
+                assertTrue("Incorrect serialNumber",
+                           deviceResult.getSerialNumber().equals(SERIAL_NUM_INVALID_ARG));
+                assertTrue("Success should be false", !deviceResult.isSuccess());
+                assertTrue("Incorrect errorCode",
+                           deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode()
+                                                                                  .equals(ACCOUNT_NUM_INVALID_ARG));
+                assertTrue("Missing errorDescription", deviceResult.getFailErrorDesc() != null);
 
             } else if (deviceResult.getAccountNumber()
                                    .equals(ACCOUNT_NUM_ERROR)) {
-                assertTrue(deviceResult.getSerialNumber()
-                                       .equals(SERIAL_NUM_ERROR));
-                assertTrue(deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode().equals(ACCOUNT_NUM_ERROR));
-                assertTrue(deviceResult.getFailErrorDesc() != null);
+                assertTrue("Incorrect serialNumber",
+                           deviceResult.getSerialNumber().equals(SERIAL_NUM_ERROR));
+                assertTrue("Success should be false", !deviceResult.isSuccess());
+                assertTrue("Incorrect errorCode",
+                           deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode()
+                                                                                  .equals(ACCOUNT_NUM_ERROR));
+                assertTrue("Missing errorDescription", deviceResult.getFailErrorDesc() != null);
             } else if (deviceResult.getAccountNumber()
                                    .equals(ACCOUNT_NUM_VALID)) {
                 // valid case, no exceptions
-                assertTrue(deviceResult.getSerialNumber()
-                                       .equals(SERIAL_NUM_VALID));
-                assertTrue(deviceResult.getSuccess() != null);
-                assertTrue(StringUtils.isBlank(deviceResult.getFailErrorCode()));
-                assertTrue(StringUtils.isBlank(deviceResult.getFailErrorDesc()));
+                assertTrue("Incorrect serialNumber",
+                           deviceResult.getSerialNumber().equals(SERIAL_NUM_VALID));
+                assertTrue("Success should be true", deviceResult.isSuccess());
+                assertTrue("Error Code should be blank", StringUtils.isBlank(deviceResult.getFailErrorCode()));
+                assertTrue("Error Description should be blank", StringUtils.isBlank(deviceResult.getFailErrorDesc()));
             }
         }
     }
@@ -290,7 +321,7 @@ public class ControllableDevicesRequestEndPointTest {
             ControllableDeviceResult deviceResult = new ControllableDeviceResult();
             deviceResult.setAccountNumber(template.evaluateAsString(accountNumberRespStr));
             deviceResult.setSerialNumber(template.evaluateAsString(serialNumberRespStr));
-            deviceResult.setSuccess(template.evaluateAsString(successStr));
+            deviceResult.setSuccess(template.evaluateAsNode(successStr) != null);
             deviceResult.setFailErrorCode(template.evaluateAsString(failErrorCodeStr));
             deviceResult.setFailErrorDesc(template.evaluateAsString(failErrorDescStr));
 
@@ -303,7 +334,7 @@ public class ControllableDevicesRequestEndPointTest {
 
         private String accountNumber;
         private String serialNumber;
-        private String success;
+        private boolean success;
         private String failErrorCode;
         private String failErrorDesc;
 
@@ -323,11 +354,11 @@ public class ControllableDevicesRequestEndPointTest {
             this.serialNumber = serialNumber;
         }
 
-        public String getSuccess() {
+        public boolean isSuccess() {
             return success;
         }
 
-        public void setSuccess(String success) {
+        public void setSuccess(boolean success) {
             this.success = success;
         }
 
