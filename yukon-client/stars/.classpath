@@ -7,6 +7,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/common"/>
 	<classpathentry kind="src" path="/commander"/>
 	<classpathentry kind="src" path="/dbeditor"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/third-party"/>
 	<classpathentry kind="lib" path="/third-party/servlet-api.jar"/>
 	<classpathentry kind="lib" path="/third-party/SqlServer.jar"/>
 	<classpathentry kind="lib" path="/third-party/acme.jar"/>
@@ -24,5 +25,6 @@
 	<classpathentry kind="lib" path="/third-party/mail.jar"/>
 	<classpathentry kind="lib" path="/third-party/commons-fileupload-1.2.1.jar"/>
 	<classpathentry kind="lib" path="/third-party/spring-webmvc.jar" sourcepath="Z:/java/Third-Party Sources/spring-framework-2.5.1-with-dependencies.zip"/>
+	<classpathentry kind="lib" path="/third-party/easymock.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
