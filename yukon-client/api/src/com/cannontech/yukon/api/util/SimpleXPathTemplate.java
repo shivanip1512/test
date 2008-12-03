@@ -257,7 +257,7 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
         }
         return results;
     }
-
+    
     private Object evaluate(String expression, QName returnType) throws XPathException {
         XPath xpath = xpathFactory.newXPath();
         if (getNamespaces() != null && !getNamespaces().isEmpty()) {

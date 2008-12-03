@@ -121,8 +121,7 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
             simpleJdbcTemplate.query(applCateQuery.toString(),
                                      new ApplianceCategoryRowMapper(),
                                      applianceCategoryName,
-                                     applianceCategoryName,
-                                     energyCompanyIds);
+                                     applianceCategoryName);
 
         if (applianceCategories.size() > 0) {
             return applianceCategories;

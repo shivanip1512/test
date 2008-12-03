@@ -34,4 +34,6 @@ public interface CustomerAccountDao {
     public CustomerAccountWithNames getAccountWithNamesByCustomerId(final int customerId, final int ecId);
 
     public CustomerAccount getByAccountNumber(String accountNumber, int energyCompanyId);
+    
+    public CustomerAccount getByAccountNumber(String accountNumber, List<Integer> energyCompanyIds);
 }

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.common.exception.DuplicateEnrollmentException;
 import com.cannontech.core.dao.AuthDao;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
@@ -29,6 +30,7 @@ import com.cannontech.stars.dr.loadgroup.dao.LoadGroupDao;
 import com.cannontech.stars.dr.loadgroup.model.LoadGroup;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.dr.program.model.Program;
+import com.cannontech.stars.dr.program.model.ProgramEnrollmentResultEnum;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
 import com.cannontech.stars.dr.program.service.ProgramEnrollmentService;
 import com.cannontech.stars.util.ECUtils;
@@ -49,11 +51,45 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     private StarsDatabaseCache starsDatabaseCache;
     
     public void doEnrollment(EnrollmentHelper enrollmentHelper, EnrollmentEnum enrollmentEnum, YukonUserContext yukonUserContext){
+        
         CustomerAccount customerAccount = customerAccountDao.getByAccountNumber(enrollmentHelper.getAccountNumber(), yukonUserContext.getYukonUser());
-        LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getBySerialNumber(enrollmentHelper.getSerialNumber());
         List<ProgramEnrollment> enrollmentData = 
             enrollmentDao.getActiveEnrollmentsByAccountId(customerAccount.getAccountId());
 
+        ProgramEnrollment programEnrollment = buildProgrameEnrollment(enrollmentHelper, yukonUserContext);
+        
+        if (enrollmentEnum == EnrollmentEnum.ENROLL) {
+            addProgramEnrollment(enrollmentData, programEnrollment, enrollmentHelper.isSeasonalLoad());
+        }
+        if (enrollmentEnum == EnrollmentEnum.UNENROLL) {
+            removeProgramEnrollment(enrollmentData, programEnrollment);
+        }
+        
+        // Processes the enrollment requests
+        ProgramEnrollmentResultEnum applyEnrollmentRequests = 
+            programEnrollmentService.applyEnrollmentRequests(customerAccount,
+                                                             enrollmentData,
+                                                             yukonUserContext);
+        
+        System.out.println(applyEnrollmentRequests.toString());
+        
+        // Updates the applianceKW if the process was an enrollment.
+        if (enrollmentEnum == EnrollmentEnum.ENROLL) {
+            List<LMHardwareConfiguration> lmHardwareConfigurations = 
+                lmHardwareControlGroupDao.getOldConfigDataByInventoryIdAndGroupId(programEnrollment.getInventoryId(),
+                                                                                  programEnrollment.getLmGroupId());
+            if (lmHardwareConfigurations.size() == 1) {
+                applianceDao.updateApplianceKW(lmHardwareConfigurations.get(0).getApplianceId(),
+                                               enrollmentHelper.getApplianceKW());
+            } else {
+                throw new DuplicateEnrollmentException("A duplicate enrollment entry was found in your database.  Please fix as soon as possible.");
+            }
+        }
+    }
+
+    private ProgramEnrollment buildProgrameEnrollment(EnrollmentHelper enrollmentHelper, YukonUserContext yukonUserContext){
+        
+        LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getBySerialNumber(enrollmentHelper.getSerialNumber());
         /* This part of the method will get all the energy company ids that can have 
          * an appliance category this energy company can use.
          */
@@ -68,7 +104,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         } else {
             energyCompanyIds.add(energyCompany.getEnergyCompanyID());
         }
- 
+        
         /*
          * Gets the program, appliance category, and load group information.  These 
          * methods also take care of the validation for these three types and
@@ -88,7 +124,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         programEnrollment.setInventoryId(lmHardwareBase.getInventoryId());
         programEnrollment.setProgramId(program.getProgramId());
         programEnrollment.setApplianceKW(enrollmentHelper.getApplianceKW());
-
+        
         if (applianceCategory != null) {
             programEnrollment.setApplianceCategoryId(applianceCategory.getApplianceCategoryId());
         } else {
@@ -101,86 +137,55 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
             programEnrollment.setRelay(enrollmentHelper.getRelay());
         }
         
-        if (enrollmentEnum == EnrollmentEnum.ENROLL) {
-            addProgramEnrollment(enrollmentData, programEnrollment, enrollmentHelper.isSeasonalLoad());
-        }
-        if (enrollmentEnum == EnrollmentEnum.UNENROLL) {
-            removeProgramEnrollment(enrollmentData, programEnrollment);
-        }
-        
-        // Processes the enrollment requests
-        programEnrollmentService.applyEnrollmentRequests(customerAccount,
-                                                         enrollmentData,
-                                                         yukonUserContext);
-        
-        // Updates the applianceKW if the process was an enrollment.
-        if (enrollmentEnum == EnrollmentEnum.ENROLL) {
-            List<LMHardwareConfiguration> lmHardwareConfigurations = 
-                lmHardwareControlGroupDao.getOldConfigDataByInventoryIdAndGroupId(programEnrollment.getInventoryId(),
-                                                                                  programEnrollment.getLmGroupId());
-            if (lmHardwareConfigurations.size() == 1) {
-                applianceDao.updateApplianceKW(lmHardwareConfigurations.get(0).getApplianceId(),
-                                               enrollmentHelper.getApplianceKW());
-            } else {
-                throw new DuplicateEnrollmentException("A duplicate enrollment entry was found in your database.  Please fix as soon as possible.");
-            }
-        }
+        return programEnrollment;
     }
-
     
-    private void addProgramEnrollment(List<ProgramEnrollment> programEnrollments,
-                                      ProgramEnrollment newProgramEnrollment,
-                                      boolean seasonalLoad){
+    protected void addProgramEnrollment(List<ProgramEnrollment> programEnrollments,
+                                        ProgramEnrollment newProgramEnrollment,
+                                        boolean seasonalLoad){
         boolean isProgramEnrollmentEnrolled = false;
        
-        /* Loop through all the hardware that is enrolled and check to see if there is hardware
-         * enrolled in the same program and appliance category.  In the case where the hardware 
-         * is enrolled in both the same program and appliance category we want to update its
-         * load group to a new load group value.
-         */
         for (ProgramEnrollment programEnrollment : programEnrollments) {
-            if (seasonalLoad) {
-                if ((programEnrollment.getApplianceCategoryId() == newProgramEnrollment.getApplianceCategoryId()) &&
-                     programEnrollment.getProgramId() == newProgramEnrollment.getProgramId()) {
-
-                    /* Check to see if the inventory is being re-enrolled.  If this is the case
-                     * we don't want to enroll the hardware twice.
-                     */
-                    if (programEnrollment.getInventoryId() == newProgramEnrollment.getInventoryId()) {
-                        isProgramEnrollmentEnrolled = true;
-                        programEnrollment.setRelay(newProgramEnrollment.getRelay());
+            
+            if (programEnrollment.getApplianceCategoryId() == newProgramEnrollment.getApplianceCategoryId()){
+                if (programEnrollment.getInventoryId() == newProgramEnrollment.getInventoryId()) {
+                    if (programEnrollment.getRelay() == newProgramEnrollment.getRelay()) {
+                        if (seasonalLoad){
+                            if (programEnrollment.getProgramId() == newProgramEnrollment.getProgramId()) {
+                                programEnrollment.update(newProgramEnrollment);
+                                programEnrollment.setEnroll(true);
+                                isProgramEnrollmentEnrolled = true;
+                            } else {
+                                continue;
+                            }
+                        } else {
+                            programEnrollment.update(newProgramEnrollment);
+                            programEnrollment.setEnroll(true);
+                            isProgramEnrollmentEnrolled = true;
+                        }
+                    } else {
+                        if (programEnrollment.getProgramId() == newProgramEnrollment.getProgramId()){
+                            programEnrollment.update(newProgramEnrollment);
+                            programEnrollment.setEnroll(true);
+                            isProgramEnrollmentEnrolled = true;
+                        }
                     }
-
-                    if (newProgramEnrollment.getLmGroupId() != 0){
+                } else {
+                    if(programEnrollment.getProgramId() == newProgramEnrollment.getProgramId()){
                         programEnrollment.setLmGroupId(newProgramEnrollment.getLmGroupId());
-                    }
-                }
-            } else {
-                if (programEnrollment.getApplianceCategoryId() == newProgramEnrollment.getApplianceCategoryId()) {
-
-                    /* Check to see if the inventory is already enrolled in a given being re-enrolled.  If this is the case
-                     * we don't want to enroll the hardware twice.
-                     */
-                    if (programEnrollment.getInventoryId() == newProgramEnrollment.getInventoryId()) {
-                        isProgramEnrollmentEnrolled = true;
-                        programEnrollment.setRelay(newProgramEnrollment.getRelay());
-                    }
-                    
-                    programEnrollment.setProgramId(newProgramEnrollment.getProgramId());
-                    if (newProgramEnrollment.getLmGroupId() != 0){
-                        programEnrollment.setLmGroupId(newProgramEnrollment.getLmGroupId());
+                        programEnrollment.setEnroll(true);
                     }
                 }
             }
-        }
+        }    
         
         if (!isProgramEnrollmentEnrolled) {
             programEnrollments.add(newProgramEnrollment);
         }
-    }           
+    }
     
-    private void removeProgramEnrollment(List<ProgramEnrollment> programEnrollments,
-                                        ProgramEnrollment removedProgramEnrollment){
+    protected void removeProgramEnrollment(List<ProgramEnrollment> programEnrollments,
+                                           ProgramEnrollment removedProgramEnrollment){
         
         int i;
         removedProgramEnrollment.setEnroll(true);
@@ -192,8 +197,11 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
             }
         }
         
-        if (i < programEnrollments.size())
+        if (i < programEnrollments.size()){
             programEnrollments.remove(i);
+        } else {
+            throw new NotFoundException("The given program enrollment was not found in the current system.");
+        }
         
     }           
 

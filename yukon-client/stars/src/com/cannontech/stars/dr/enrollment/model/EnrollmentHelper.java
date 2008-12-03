@@ -12,6 +12,29 @@ public class EnrollmentHelper {
     boolean seasonalLoad;
     String relay;
     
+    public EnrollmentHelper(){}
+    public EnrollmentHelper(String accountNumber, String loadGroupName,
+            String programName, String serialNumber) {
+        super();
+        this.accountNumber = accountNumber;
+        this.loadGroupName = loadGroupName;
+        this.programName = programName;
+        this.serialNumber = serialNumber;
+    }
+    public EnrollmentHelper(String accountNumber, String applianceCategoryName,
+            Float applianceKW, String loadGroupName, String programName,
+            String relay, boolean seasonalLoad, String serialNumber) {
+        super();
+        this.accountNumber = accountNumber;
+        this.applianceCategoryName = applianceCategoryName;
+        this.applianceKW = applianceKW;
+        this.loadGroupName = loadGroupName;
+        this.programName = programName;
+        this.relay = relay;
+        this.seasonalLoad = seasonalLoad;
+        this.serialNumber = serialNumber;
+    }
+
     public String getAccountNumber() {
         return accountNumber;
     }

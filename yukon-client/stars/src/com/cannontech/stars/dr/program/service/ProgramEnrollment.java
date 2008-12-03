@@ -9,7 +9,20 @@ public class ProgramEnrollment {
     private int inventoryId;
     private boolean enroll; 
     
+    
     public ProgramEnrollment() {}
+    public ProgramEnrollment(int applianceCategoryId, float applianceKW,
+            boolean enroll, int inventoryId, int lmGroupId, int programId,
+            int relay) {
+        super();
+        this.applianceCategoryId = applianceCategoryId;
+        this.applianceKW = applianceKW;
+        this.enroll = enroll;
+        this.inventoryId = inventoryId;
+        this.lmGroupId = lmGroupId;
+        this.programId = programId;
+        this.relay = relay;
+    }
 
     public int getApplianceCategoryId() {
         return applianceCategoryId;
@@ -72,12 +85,54 @@ public class ProgramEnrollment {
         final int prime = 31;
         int result = 1;
         result = prime * result + applianceCategoryId;
+        result = prime * result + Float.floatToIntBits(applianceKW);
         result = prime * result + (enroll ? 1231 : 1237);
         result = prime * result + inventoryId;
+        result = prime * result + lmGroupId;
         result = prime * result + programId;
+        result = prime * result + relay;
         return result;
     }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        ProgramEnrollment other = (ProgramEnrollment) obj;
+        if (applianceCategoryId != other.applianceCategoryId)
+            return false;
+        if (Float.floatToIntBits(applianceKW) != Float.floatToIntBits(other.applianceKW))
+            return false;
+        if (enroll != other.enroll)
+            return false;
+        if (inventoryId != other.inventoryId)
+            return false;
+        if (lmGroupId != other.lmGroupId)
+            return false;
+        if (programId != other.programId)
+            return false;
+        if (relay != other.relay)
+            return false;
+        return true;
+    }
+    
+    @Override
+    public String toString() {
+        String temp = "["+ applianceCategoryId +", "+
+                      applianceKW +", "+
+                      enroll +", "+
+                      inventoryId +", "+
+                      lmGroupId +", "+
+                      programId +", "+
+                      relay +"]";
+        return temp;
+    }
 
+    
     /** This method is very comparable to an equals method, but will not 
      * return false on any cases where a given value for a supplied ProgramEnrollment
      * has not been set.  This means if one programEnrollment has a relay of 0 and the
@@ -112,6 +167,16 @@ public class ProgramEnrollment {
            this.relay != other.relay)
             return false;
         return true;
+    }
+    
+    public void update(ProgramEnrollment programEnrollment){
+        this.applianceCategoryId = programEnrollment.applianceCategoryId;
+        this.applianceKW = programEnrollment.applianceKW;
+        this.enroll = programEnrollment.enroll;
+        this.inventoryId = programEnrollment.inventoryId;
+        this.lmGroupId = programEnrollment.lmGroupId;
+        this.programId = programEnrollment.programId;
+        this.relay = programEnrollment.relay;
     }
     
 }

@@ -2,6 +2,7 @@ package com.cannontech.stars.dr.account.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -19,6 +20,7 @@ import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.account.model.CustomerAccountWithNames;
+import com.cannontech.stars.util.ECUtils;
 
 public class CustomerAccountDaoImpl implements CustomerAccountDao {
     private static final String insertSql;
@@ -109,7 +111,12 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public CustomerAccount getByAccountNumber(final String accountNumber, final LiteYukonUser user) {
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
-        return getByAccountNumber(accountNumber, energyCompany.getEnergyCompanyID());
+        List<LiteStarsEnergyCompany> allDescendants = ECUtils.getAllDescendants(energyCompany);
+        List<Integer> energyCompanyIds = new ArrayList<Integer>();
+        for (LiteStarsEnergyCompany liteStarsEnergyCompany : allDescendants) {
+            energyCompanyIds.add(liteStarsEnergyCompany.getEnergyCompanyID());
+        }
+        return getByAccountNumber(accountNumber, energyCompanyIds);
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
@@ -120,13 +127,30 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         sqlBuilder.append("FROM CustomerAccount ca, ECToAccountMapping ecta");
         sqlBuilder.append("WHERE ca.AccountID = ecta.AccountID");
         sqlBuilder.append("AND ca.AccountNumber = ?");
-        sqlBuilder.append("AND ecta.EnergyCompanyID = ?");
+        sqlBuilder.append("AND ecta.EnergyCompanyID ?");
         final String sql = sqlBuilder.toString();
         
         CustomerAccount account = simpleJdbcTemplate.queryForObject(sql, 
                                                                     rowMapper,
                                                                     accountNumber,
                                                                     energyCompanyId);
+        return account;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public CustomerAccount getByAccountNumber(final String accountNumber, List<Integer> energyCompanyIds) {
+        final SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
+        sqlBuilder.append("SELECT ca.AccountId,AccountSiteId,AccountNumber,ca.CustomerId,BillingAddressId,AccountNotes");
+        sqlBuilder.append("FROM CustomerAccount ca, ECToAccountMapping ecta");
+        sqlBuilder.append("WHERE ca.AccountID = ecta.AccountID");
+        sqlBuilder.append("AND ca.AccountNumber = ?");
+        sqlBuilder.append("AND ecta.EnergyCompanyID in (",energyCompanyIds,")");
+        final String sql = sqlBuilder.toString();
+        
+        CustomerAccount account = simpleJdbcTemplate.queryForObject(sql, 
+                                                                    rowMapper,
+                                                                    accountNumber);
         return account;
     }
     
