@@ -6,11 +6,11 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.jdom.Element;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.w3c.dom.Node;
 
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.util.ObjectMapper;
@@ -21,7 +21,6 @@ import com.cannontech.stars.util.StarsInvalidArgumentException;
 import com.cannontech.stars.ws.dto.StarsControllableDeviceDTO;
 import com.cannontech.stars.ws.helper.StarsControllableDeviceHelper;
 import com.cannontech.yukon.api.stars.ControllableDevicesRequestEndPoint.ErrorCodeMapper;
-import com.cannontech.yukon.api.util.NodeToElementMapperWrapper;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XmlUtils;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
@@ -47,7 +46,7 @@ public class ControllableDevicesRequestEndPointTest {
     private static final String SERIAL_NUM_ERROR = ErrorCodeMapper.ProcessingError.name();
     private static final String SERIAL_NUM_VALID = "Valid";
 
-    private static NodeToElementMapperWrapper<ControllableDeviceResult> deviceResultElementMapper;
+    private static ControllableDeviceResultMapper deviceResultElementMapper = new ControllableDeviceResultMapper();
 
     // Response elements
     static final String newDeviceRespElementStr;
@@ -69,7 +68,6 @@ public class ControllableDevicesRequestEndPointTest {
         newDeviceRespElementStr = newDevicesRespStr + controllableDeviceResultListStr + controllableDeviceResultStr;
         updateDeviceRespElementStr = updateDevicesRespStr + controllableDeviceResultListStr + controllableDeviceResultStr;
         removeDeviceRespElementStr = removeDevicesRespStr + controllableDeviceResultListStr + controllableDeviceResultStr;
-        deviceResultElementMapper = new NodeToElementMapperWrapper<ControllableDeviceResult>(new ControllableDeviceResultMapper());        
     }
 
     @Before
@@ -139,7 +137,13 @@ public class ControllableDevicesRequestEndPointTest {
         Resource resource = new ClassPathResource(newDeviceReqResource, this.getClass());
         Element reqElement = XmlUtils.createElementFromResource(resource);  
 
+        //invoke test
         Element respElement = impl.invokeAddDevice(reqElement, null);
+        
+        // verify the respElement is valid according to schema
+        String schemaLoc= "../schemas/stars/NewControllableDevicesResponse.xsd";
+        Resource schemaResource = new ClassPathResource(schemaLoc, this.getClass());
+        TestUtils.validateResponse(respElement, schemaResource);
 
         // create template and parse response data
         SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(respElement);
@@ -149,7 +153,7 @@ public class ControllableDevicesRequestEndPointTest {
                                                                          deviceResultElementMapper);
 
         // verify data in the response
-        assertTrue(deviceResults != null && deviceResults.size() == 4);
+        assertTrue("Incorrect resultSize", deviceResults != null && deviceResults.size() == 4);
         for (ControllableDeviceResult deviceResult : deviceResults) {
             if (deviceResult.getAccountNumber().equals(ACCOUNT_NUM_NOT_FOUND)) {
 
@@ -199,16 +203,23 @@ public class ControllableDevicesRequestEndPointTest {
         Resource resource = new ClassPathResource(updateDeviceReqResource, this.getClass());
         Element reqElement = XmlUtils.createElementFromResource(resource);
 
+        //invoke test        
         Element respElement = impl.invokeUpdateDevice(reqElement, null);
 
+        // verify the respElement is valid according to schema
+        String schemaLoc= "../schemas/stars/UpdateControllableDevicesResponse.xsd";
+        Resource schemaResource = new ClassPathResource(schemaLoc, this.getClass());
+        TestUtils.validateResponse(respElement, schemaResource);
+        
         // create template and parse response data
         SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(respElement);
         TestUtils.runVersionAssertion(template, updateDevicesRespStr, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
+        
         List<ControllableDeviceResult> deviceResults = template.evaluate(updateDeviceRespElementStr,
                                                                          deviceResultElementMapper);
 
         // verify data in the response
-        assertTrue(deviceResults != null && deviceResults.size() == 4);
+        assertTrue("Incorrect resultSize", deviceResults != null && deviceResults.size() == 4);
         for (ControllableDeviceResult deviceResult : deviceResults) {
             if (deviceResult.getAccountNumber().equals(ACCOUNT_NUM_NOT_FOUND)) {
 
@@ -258,16 +269,23 @@ public class ControllableDevicesRequestEndPointTest {
         Resource resource = new ClassPathResource(removeDeviceReqResource, this.getClass());
         Element reqElement = XmlUtils.createElementFromResource(resource);
 
+        //invoke test        
         Element respElement = impl.invokeRemoveDevice(reqElement, null);
 
+        // verify the respElement is valid according to schema
+        String schemaLoc= "../schemas/stars/RemoveControllableDevicesResponse.xsd";
+        Resource schemaResource = new ClassPathResource(schemaLoc, this.getClass());
+        TestUtils.validateResponse(respElement, schemaResource);
+        
         // create template and parse response data
         SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(respElement);
         TestUtils.runVersionAssertion(template, removeDevicesRespStr, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
+        
         List<ControllableDeviceResult> deviceResults = template.evaluate(removeDeviceRespElementStr,
                                                                          deviceResultElementMapper);
 
         // verify data in the response
-        assertTrue(deviceResults != null && deviceResults.size() == 4);
+        assertTrue("Incorrect resultSize", deviceResults != null && deviceResults.size() == 4);
         for (ControllableDeviceResult deviceResult : deviceResults) {
             if (deviceResult.getAccountNumber().equals(ACCOUNT_NUM_NOT_FOUND)) {
 
@@ -311,12 +329,12 @@ public class ControllableDevicesRequestEndPointTest {
     }
 
     private static class ControllableDeviceResultMapper implements
-            ObjectMapper<Element, ControllableDeviceResult> {
+            ObjectMapper<Node, ControllableDeviceResult> {
 
         @Override
-        public ControllableDeviceResult map(Element from) throws ObjectMappingException {
+        public ControllableDeviceResult map(Node from) throws ObjectMappingException {
             // create template and parse data
-            SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(from);
+            SimpleXPathTemplate template = XmlUtils.getXPathTemplateForNode(from);
 
             ControllableDeviceResult deviceResult = new ControllableDeviceResult();
             deviceResult.setAccountNumber(template.evaluateAsString(accountNumberRespStr));

@@ -12,6 +12,7 @@ import org.jdom.Namespace;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
+import org.w3c.dom.Node;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
@@ -26,7 +27,6 @@ import com.cannontech.stars.dr.hardware.exception.StarsInvalidDeviceTypeExceptio
 import com.cannontech.stars.util.StarsInvalidArgumentException;
 import com.cannontech.stars.ws.dto.StarsControllableDeviceDTO;
 import com.cannontech.stars.ws.helper.StarsControllableDeviceHelper;
-import com.cannontech.yukon.api.util.NodeToElementMapperWrapper;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlUtils;
@@ -57,7 +57,7 @@ public class ControllableDevicesRequestEndPoint {
     static final String fieldInstallDateStr = "y:fieldInstallDate";
     static final String fieldRemoveDateStr = "y:fieldRemoveDate";
 
-    private static NodeToElementMapperWrapper<StarsControllableDeviceDTO> deviceElementMapper;
+    private static ControllableDeviceDTOMapper deviceElementMapper = new ControllableDeviceDTOMapper();
 
     // Response elements
     static final String newDevicesRespStr = "newControllableDevicesResponse";
@@ -73,8 +73,6 @@ public class ControllableDevicesRequestEndPoint {
         newDeviceElementStr = newDevicesReqStr + controllableDeviceListStr + controllableDeviceStr;
         updateDeviceElementStr = updateDevicesReqStr + controllableDeviceListStr + controllableDeviceStr;
         removeDeviceElementStr = removeDevicesReqStr + controllableDeviceListStr + controllableDeviceStr;
-        
-        deviceElementMapper = new NodeToElementMapperWrapper<StarsControllableDeviceDTO>(new ControllableDeviceDTOMapper());
     }
 
     @PostConstruct
@@ -83,15 +81,13 @@ public class ControllableDevicesRequestEndPoint {
 
     @PayloadRoot(namespace = "http://yukon.cannontech.com/api", localPart = "newControllableDevicesRequest")
     public Element invokeAddDevice(Element newControllableDevicesRequest, LiteYukonUser user) {
-        List<StarsControllableDeviceDTO> devices = null;
-
         // check request xml version
         XmlVersionUtils.verifyYukonMessageVersion(newControllableDevicesRequest,
                                                   XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         
         // create template and parse data
         SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(newControllableDevicesRequest);
-        devices = template.evaluate(newDeviceElementStr, deviceElementMapper);
+        List<StarsControllableDeviceDTO> devices = template.evaluate(newDeviceElementStr, deviceElementMapper);
         
         // run service
         for (StarsControllableDeviceDTO device : devices) {
@@ -112,16 +108,13 @@ public class ControllableDevicesRequestEndPoint {
 
     @PayloadRoot(namespace = "http://yukon.cannontech.com/api", localPart = "updateControllableDevicesRequest")
     public Element invokeUpdateDevice(Element updateControllableDevicesRequest, LiteYukonUser user) {
-
-        List<StarsControllableDeviceDTO> devices = null;
-        
         // check request xml version
         XmlVersionUtils.verifyYukonMessageVersion(updateControllableDevicesRequest,
                                                   XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         
         // create template and parse data
         SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(updateControllableDevicesRequest);
-        devices = template.evaluate(updateDeviceElementStr, deviceElementMapper);        
+        List<StarsControllableDeviceDTO> devices = template.evaluate(updateDeviceElementStr, deviceElementMapper);        
 
         // run service
         for (StarsControllableDeviceDTO device : devices) {
@@ -142,16 +135,13 @@ public class ControllableDevicesRequestEndPoint {
 
     @PayloadRoot(namespace = "http://yukon.cannontech.com/api", localPart = "removeControllableDevicesRequest")
     public Element invokeRemoveDevice(Element removeControllableDevicesRequest, LiteYukonUser user) {
-
-        List<StarsControllableDeviceDTO> devices = null;
-        
         // check request xml version
         XmlVersionUtils.verifyYukonMessageVersion(removeControllableDevicesRequest,
                                                   XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         
         // create template and parse data
         SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(removeControllableDevicesRequest);
-        devices = template.evaluate(removeDeviceElementStr, deviceElementMapper);        
+        List<StarsControllableDeviceDTO> devices = template.evaluate(removeDeviceElementStr, deviceElementMapper);        
 
         // run service
         for (StarsControllableDeviceDTO device : devices) {
@@ -249,12 +239,12 @@ public class ControllableDevicesRequestEndPoint {
     }
 
     public static class ControllableDeviceDTOMapper implements
-            ObjectMapper<Element, StarsControllableDeviceDTO> {
+            ObjectMapper<Node, StarsControllableDeviceDTO> {
 
         @Override
-        public StarsControllableDeviceDTO map(Element from) throws ObjectMappingException {
+        public StarsControllableDeviceDTO map(Node from) throws ObjectMappingException {
             // create template and parse data
-            SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(from);
+            SimpleXPathTemplate template = XmlUtils.getXPathTemplateForNode(from);
 
             StarsControllableDeviceDTO device = new StarsControllableDeviceDTO();
             device.setAccountNumber(template.evaluateAsString(accountNumberStr));
