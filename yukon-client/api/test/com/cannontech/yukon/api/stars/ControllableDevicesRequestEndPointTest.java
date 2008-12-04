@@ -135,15 +135,20 @@ public class ControllableDevicesRequestEndPointTest {
 
         // init
         Resource resource = new ClassPathResource(newDeviceReqResource, this.getClass());
-        Element reqElement = XmlUtils.createElementFromResource(resource);  
-
+        Element reqElement = XmlUtils.createElementFromResource(resource);
+        
+        // verify the reqElement is valid according to schema
+        String reqShemaLoc= "../schemas/stars/NewControllableDevicesRequest.xsd";
+        Resource reqSchemaResource = new ClassPathResource(reqShemaLoc, this.getClass());
+        TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
+        
         //invoke test
         Element respElement = impl.invokeAddDevice(reqElement, null);
         
         // verify the respElement is valid according to schema
-        String schemaLoc= "../schemas/stars/NewControllableDevicesResponse.xsd";
-        Resource schemaResource = new ClassPathResource(schemaLoc, this.getClass());
-        TestUtils.validateAgainstSchema(respElement, schemaResource);
+        String respSchemaLoc= "../schemas/stars/NewControllableDevicesResponse.xsd";
+        Resource respSchemaResource = new ClassPathResource(respSchemaLoc, this.getClass());
+        TestUtils.validateAgainstSchema(respElement, respSchemaResource);
 
         // create template and parse response data
         SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(respElement);
@@ -202,14 +207,19 @@ public class ControllableDevicesRequestEndPointTest {
         // init
         Resource resource = new ClassPathResource(updateDeviceReqResource, this.getClass());
         Element reqElement = XmlUtils.createElementFromResource(resource);
-
+        
+        // verify the reqElement is valid according to schema
+        String reqShemaLoc= "../schemas/stars/UpdateControllableDevicesRequest.xsd";
+        Resource reqSchemaResource = new ClassPathResource(reqShemaLoc, this.getClass());
+        TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
+        
         //invoke test        
         Element respElement = impl.invokeUpdateDevice(reqElement, null);
-
+        
         // verify the respElement is valid according to schema
-        String schemaLoc= "../schemas/stars/UpdateControllableDevicesResponse.xsd";
-        Resource schemaResource = new ClassPathResource(schemaLoc, this.getClass());
-        TestUtils.validateAgainstSchema(respElement, schemaResource);
+        String respSchemaLoc= "../schemas/stars/UpdateControllableDevicesResponse.xsd";
+        Resource respSchemaResource = new ClassPathResource(respSchemaLoc, this.getClass());
+        TestUtils.validateAgainstSchema(respElement, respSchemaResource);
         
         // create template and parse response data
         SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(respElement);
@@ -269,13 +279,18 @@ public class ControllableDevicesRequestEndPointTest {
         Resource resource = new ClassPathResource(removeDeviceReqResource, this.getClass());
         Element reqElement = XmlUtils.createElementFromResource(resource);
 
+        // verify the reqElement is valid according to schema
+        String reqShemaLoc= "../schemas/stars/RemoveControllableDevicesRequest.xsd";
+        Resource reqSchemaResource = new ClassPathResource(reqShemaLoc, this.getClass());
+        TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
+        
         //invoke test        
         Element respElement = impl.invokeRemoveDevice(reqElement, null);
-
+        
         // verify the respElement is valid according to schema
-        String schemaLoc= "../schemas/stars/RemoveControllableDevicesResponse.xsd";
-        Resource schemaResource = new ClassPathResource(schemaLoc, this.getClass());
-        TestUtils.validateAgainstSchema(respElement, schemaResource);
+        String respSchemaLoc= "../schemas/stars/RemoveControllableDevicesResponse.xsd";
+        Resource respSchemaResource = new ClassPathResource(respSchemaLoc, this.getClass());
+        TestUtils.validateAgainstSchema(respElement, respSchemaResource);
         
         // create template and parse response data
         SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(respElement);
