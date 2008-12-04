@@ -1,7 +1,9 @@
 package com.cannontech.yukon.api.utils;
 
+import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.Namespace;
+import org.springframework.core.io.Resource;
 
 import com.cannontech.yukon.api.util.XmlUtils;
 import com.cannontech.yukon.api.util.YukonXml;
@@ -14,12 +16,18 @@ public class LoadManagementTestUtils {
                                               String nameNodeName,
                                               String nameModeValue,
                                               String startDateTimeStr,
-                                              String stopDateTimeStr) {
+                                              String stopDateTimeStr,
+                                              String version,
+                                              Resource requestSchemaResource) {
         
         Element requestElement = null;
+        Attribute versionAttribute = null;
         Element tmpElement = null;
         
         requestElement = new Element(serviceRequestName, ns);
+        versionAttribute = new Attribute("version", version);
+        requestElement.setAttribute(versionAttribute);
+        
         tmpElement = XmlUtils.createStringElement(nameNodeName, ns, nameModeValue);
         requestElement.addContent(tmpElement);
         
@@ -32,6 +40,9 @@ public class LoadManagementTestUtils {
             tmpElement = XmlUtils.createStringElement("stopDateTime", ns, stopDateTimeStr);
             requestElement.addContent(tmpElement);
         }
+        
+        // validate request
+        TestUtils.validateAgainstSchema(requestElement, requestSchemaResource);
         
         return requestElement;
     }

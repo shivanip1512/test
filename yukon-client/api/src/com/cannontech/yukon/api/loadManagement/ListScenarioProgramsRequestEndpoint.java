@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.Namespace;
@@ -19,6 +20,7 @@ import com.cannontech.loadcontrol.service.data.ScenarioProgramStartingGears;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlUtils;
+import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.cannontech.yukon.api.util.YukonXml;
 
 @Endpoint
@@ -36,14 +38,19 @@ public class ListScenarioProgramsRequestEndpoint {
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="listScenarioProgramsRequest")
     public Element invoke(Element listScenarioProgramsRequest, LiteYukonUser user) throws Exception {
         
+    	XmlVersionUtils.verifyYukonMessageVersion(listScenarioProgramsRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
+    	
         // create template and parse data
         SimpleXPathTemplate requestTemplate = XmlUtils.getXPathTemplateForElement(listScenarioProgramsRequest);
         
         String scenarioName = requestTemplate.evaluateAsString(scenarioNameExpressionStr);
 
-        // run service
+        // init response
         Element resp = new Element("listScenarioProgramsResponse", ns);
+        Attribute versionAttribute = new Attribute("version", "1.0");
+        resp.setAttribute(versionAttribute);
         
+        // run service
         ScenarioProgramStartingGears scenarioProgramStartingGears = null;
         try {
             scenarioProgramStartingGears = loadControlService.getScenarioProgramStartingGearsByScenarioName(scenarioName, user);

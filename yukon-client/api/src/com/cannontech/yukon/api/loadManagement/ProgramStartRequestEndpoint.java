@@ -4,6 +4,7 @@ import java.util.Date;
 
 import javax.annotation.PostConstruct;
 
+import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.Namespace;
@@ -19,6 +20,7 @@ import com.cannontech.message.util.TimeoutException;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlUtils;
+import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.cannontech.yukon.api.util.YukonXml;
 
 @Endpoint
@@ -38,6 +40,8 @@ public class ProgramStartRequestEndpoint {
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="programStartRequest")
     public Element invoke(Element programStartRequest, LiteYukonUser user) throws Exception {
         
+    	XmlVersionUtils.verifyYukonMessageVersion(programStartRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
+    	
         // create template and parse data
         SimpleXPathTemplate requestTemplate = XmlUtils.getXPathTemplateForElement(programStartRequest);
         
@@ -45,9 +49,12 @@ public class ProgramStartRequestEndpoint {
         Date startTime = requestTemplate.evaluateAsDate(startTimeExpressionStr);
         Date stopTime = requestTemplate.evaluateAsDate(stopTimeExpressionStr);
 
-        // run service
+        // init response
         Element resp = new Element("programStartResponse", ns);
+        Attribute versionAttribute = new Attribute("version", "1.0");
+        resp.setAttribute(versionAttribute);
         
+        // run service
         try {
             loadControlService.startControlByProgramName(programName, startTime, stopTime, false, true, user);
         } catch (NotFoundException e) {

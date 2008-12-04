@@ -6,6 +6,8 @@ import org.jdom.Element;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.dao.NotFoundException;
@@ -69,12 +71,16 @@ public class ProgramStopRequestEndpointTest {
         Element requestElement = null;
         Element responseElement = null;
         SimpleXPathTemplate outputTemplate = null;
+        Resource requestSchemaResource = new ClassPathResource("../schemas/loadManagement/ProgramStopRequest.xsd", this.getClass());
+        Resource responseSchemaResource = new ClassPathResource("../schemas/loadManagement/ProgramStopResponse.xsd", this.getClass());
         
         // stop time
         //==========================================================================================
-        requestElement = LoadManagementTestUtils.createStartStopRequestElement("programStopRequest", "programName", "Program1", null, "2008-10-13T21:49:01Z");
+        requestElement = LoadManagementTestUtils.createStartStopRequestElement("programStopRequest", "programName", "Program1", null, "2008-10-13T21:49:01Z", "1.0", requestSchemaResource);
         
         responseElement = impl.invoke(requestElement, null);
+        TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
+        
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
         
         Assert.assertEquals("Incorrect programName.", "Program1", mockService.getProgramName());
@@ -84,9 +90,11 @@ public class ProgramStopRequestEndpointTest {
         
         // no stop time
         //==========================================================================================
-        requestElement = LoadManagementTestUtils.createStartStopRequestElement("programStopRequest", "programName", "Program2", null, null);
+        requestElement = LoadManagementTestUtils.createStartStopRequestElement("programStopRequest", "programName", "Program2", null, null, "1.0", requestSchemaResource);
         
         responseElement = impl.invoke(requestElement, null);
+        TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
+        
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
         
         Assert.assertEquals("Incorrect programName.", "Program2", mockService.getProgramName());
@@ -96,30 +104,35 @@ public class ProgramStopRequestEndpointTest {
         
         // not found
         //==========================================================================================
-        requestElement = LoadManagementTestUtils.createStartStopRequestElement("programStopRequest", "programName", "NOT_FOUND", null, null);
+        requestElement = LoadManagementTestUtils.createStartStopRequestElement("programStopRequest", "programName", "NOT_FOUND", null, null, "1.0", requestSchemaResource);
         
         responseElement = impl.invoke(requestElement, null);
+        TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
+        
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
         
         TestUtils.runFailureAssertions(outputTemplate, "programStopResponse", "InvalidProgramName");
         
         // timeout
         //==========================================================================================
-        requestElement = LoadManagementTestUtils.createStartStopRequestElement("programStopRequest", "programName", "TIMEOUT", null, null);
+        requestElement = LoadManagementTestUtils.createStartStopRequestElement("programStopRequest", "programName", "TIMEOUT", null, null, "1.0", requestSchemaResource);
         
         responseElement = impl.invoke(requestElement, null);
+        TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
+        
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
         
         TestUtils.runFailureAssertions(outputTemplate, "programStopResponse", "Timeout");
         
         // not auth
         //==========================================================================================
-        requestElement = LoadManagementTestUtils.createStartStopRequestElement("programStopRequest", "programName", "NOT_AUTH", null, null);
+        requestElement = LoadManagementTestUtils.createStartStopRequestElement("programStopRequest", "programName", "NOT_AUTH", null, null, "1.0", requestSchemaResource);
         
         responseElement = impl.invoke(requestElement, null);
+        TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
+        
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
         
         TestUtils.runFailureAssertions(outputTemplate, "programStopResponse", "UserNotAuthorized");
     }
-
 }

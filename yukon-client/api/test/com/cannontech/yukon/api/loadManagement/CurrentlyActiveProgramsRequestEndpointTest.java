@@ -3,11 +3,14 @@ package com.cannontech.yukon.api.loadManagement;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.data.LMProgramBase;
@@ -15,6 +18,7 @@ import com.cannontech.loadcontrol.service.data.ProgramStatus;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XmlUtils;
 import com.cannontech.yukon.api.util.YukonXml;
+import com.cannontech.yukon.api.utils.TestUtils;
 
 public class CurrentlyActiveProgramsRequestEndpointTest {
 
@@ -54,14 +58,23 @@ public class CurrentlyActiveProgramsRequestEndpointTest {
         
         // init
         Element requestElement = null;
+        Attribute versionAttribute = null;
         Element responseElement = null;
         SimpleXPathTemplate outputTemplate = null;
+        Resource requestSchemaResource = new ClassPathResource("../schemas/loadManagement/CurrentlyActiveProgramsRequest.xsd", this.getClass());
+        Resource responseSchemaResource = new ClassPathResource("../schemas/loadManagement/CurrentlyActiveProgramsResponse.xsd", this.getClass());
         
         // 2 programs, one with no stop datetime
         //==========================================================================================
         requestElement = new Element("currentlyActiveProgramsRequest", ns);
+        versionAttribute = new Attribute("version", "1.0");
+        requestElement.setAttribute(versionAttribute);
+        TestUtils.validateAgainstSchema(requestElement, requestSchemaResource);
         
+        // run and validate response against xsd
         responseElement = impl.invoke(requestElement, null);
+        TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
+        
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
         
         // outputs

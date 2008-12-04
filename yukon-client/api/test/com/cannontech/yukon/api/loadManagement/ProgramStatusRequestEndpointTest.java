@@ -1,5 +1,6 @@
 package com.cannontech.yukon.api.loadManagement;
 
+import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.junit.Assert;
@@ -59,6 +60,7 @@ public class ProgramStatusRequestEndpointTest {
         
         // init
         Element requestElement = null;
+        Attribute versionAttribute = null;
         Element responseElement = null;
         Element tmpElement = null;
         SimpleXPathTemplate outputTemplate = null;
@@ -66,6 +68,9 @@ public class ProgramStatusRequestEndpointTest {
         // Program1
         //==========================================================================================
         requestElement = new Element("programStatusRequest", ns);
+        versionAttribute = new Attribute("version", "1.0");
+        requestElement.setAttribute(versionAttribute);
+        
         tmpElement = XmlUtils.createStringElement("programName", ns, "Program1");
         requestElement.addContent(tmpElement);
         
@@ -84,6 +89,9 @@ public class ProgramStatusRequestEndpointTest {
         // Program2
         //==========================================================================================
         requestElement = new Element("programStatusRequest", ns);
+        versionAttribute = new Attribute("version", "1.0");
+        requestElement.setAttribute(versionAttribute);
+        
         tmpElement = XmlUtils.createStringElement("programName", ns, "Program2");
         requestElement.addContent(tmpElement);
         
@@ -101,6 +109,9 @@ public class ProgramStatusRequestEndpointTest {
         // not found
         //==========================================================================================
         requestElement = new Element("programStatusRequest", ns);
+        versionAttribute = new Attribute("version", "1.0");
+        requestElement.setAttribute(versionAttribute);
+        
         tmpElement = XmlUtils.createStringElement("programName", ns, "NOT_FOUND");
         requestElement.addContent(tmpElement);
         
@@ -111,6 +122,9 @@ public class ProgramStatusRequestEndpointTest {
         // not auth
         //==========================================================================================
         requestElement = new Element("programStatusRequest", ns);
+        versionAttribute = new Attribute("version", "1.0");
+        requestElement.setAttribute(versionAttribute);
+        
         tmpElement = XmlUtils.createStringElement("programName", ns, "NOT_AUTH");
         requestElement.addContent(tmpElement);
         

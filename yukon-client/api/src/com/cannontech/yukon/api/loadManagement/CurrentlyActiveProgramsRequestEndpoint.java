@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.Namespace;
@@ -15,6 +16,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.service.LoadControlService;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
 import com.cannontech.yukon.api.util.XmlUtils;
+import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.cannontech.yukon.api.util.YukonXml;
 
 @Endpoint
@@ -31,9 +33,14 @@ public class CurrentlyActiveProgramsRequestEndpoint {
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="currentlyActiveProgramsRequest")
     public Element invoke(Element currentlyActiveProgramsRequest, LiteYukonUser user) throws Exception {
         
-        // run service
+    	XmlVersionUtils.verifyYukonMessageVersion(currentlyActiveProgramsRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
+    	
+    	// init response
         Element resp = new Element("currentlyActiveProgramsResponse", ns);
+        Attribute versionAttribute = new Attribute("version", "1.0");
+        resp.setAttribute(versionAttribute);
         
+        // run service
         List<ProgramStatus> allCurrentlyActivePrograms = loadControlService.getAllCurrentlyActivePrograms(user);
         
         // build response

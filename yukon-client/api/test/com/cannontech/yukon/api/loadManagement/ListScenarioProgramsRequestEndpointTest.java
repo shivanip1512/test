@@ -3,11 +3,14 @@ package com.cannontech.yukon.api.loadManagement;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -72,19 +75,27 @@ public class ListScenarioProgramsRequestEndpointTest {
         
         // init
         Element requestElement = null;
+        Attribute versionAttribute = null;
         Element responseElement = null;
         Element tmpElement = null;
         SimpleXPathTemplate outputTemplate = null;
+        Resource requestSchemaResource = new ClassPathResource("../schemas/loadManagement/ListScenarioProgramsRequest.xsd", this.getClass());
+        Resource responseSchemaResource = new ClassPathResource("../schemas/loadManagement/ListScenarioProgramsResponse.xsd", this.getClass());
         
         // scenario name, 3 program starting gears
         //==========================================================================================
         requestElement = new Element("listScenarioProgramsRequest", ns);
+        versionAttribute = new Attribute("version", "1.0");
+        requestElement.setAttribute(versionAttribute);
         tmpElement = XmlUtils.createStringElement("scenarioName", ns, "Test Scenario");
         requestElement.addContent(tmpElement);
+        TestUtils.validateAgainstSchema(requestElement, requestSchemaResource);
         
         responseElement = impl.invoke(requestElement, null);
+        TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
         
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
+        
         Assert.assertNotNull("No scenarioName node present.", outputTemplate.evaluateAsNode("/y:listScenarioProgramsResponse/y:scenarioName"));
         Assert.assertNotNull("No scenarioProgramsList node present.", outputTemplate.evaluateAsNode("/y:listScenarioProgramsResponse/y:scenarioProgramsList"));
         Assert.assertEquals("Incorrect scenarioName", "Test Scenario", mockService.getScenarioName());
@@ -100,10 +111,15 @@ public class ListScenarioProgramsRequestEndpointTest {
         // not found
         //==========================================================================================
         requestElement = new Element("listScenarioProgramsRequest", ns);
+        versionAttribute = new Attribute("version", "1.0");
+        requestElement.setAttribute(versionAttribute);
         tmpElement = XmlUtils.createStringElement("scenarioName", ns, "NOT_FOUND");
         requestElement.addContent(tmpElement);
+        TestUtils.validateAgainstSchema(requestElement, requestSchemaResource);
         
         responseElement = impl.invoke(requestElement, null);
+        TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
+        
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
         
         TestUtils.runFailureAssertions(outputTemplate, "listScenarioProgramsResponse", "InvalidScenarioName");

@@ -2,6 +2,7 @@ package com.cannontech.yukon.api.loadManagement;
 
 import javax.annotation.PostConstruct;
 
+import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.Namespace;
@@ -17,6 +18,7 @@ import com.cannontech.loadcontrol.service.data.ProgramStatus;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlUtils;
+import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.cannontech.yukon.api.util.YukonXml;
 
 @Endpoint
@@ -34,14 +36,19 @@ public class ProgramStatusRequestEndpoint {
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="programStatusRequest")
     public Element invoke(Element programStatusRequest, LiteYukonUser user) throws Exception {
         
+    	XmlVersionUtils.verifyYukonMessageVersion(programStatusRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
+    	
         // create template and parse data
         SimpleXPathTemplate requestTemplate = XmlUtils.getXPathTemplateForElement(programStatusRequest);
         
         String programName = requestTemplate.evaluateAsString(programNameExpressionStr);
 
-        // run service
+        // init response
         Element resp = new Element("programStatusResponse", ns);
+        Attribute versionAttribute = new Attribute("version", "1.0");
+        resp.setAttribute(versionAttribute);
         
+        // run service
         ProgramStatus programStatus = null;
         try {
             programStatus = loadControlService.getProgramStatusByProgramName(programName, user);
