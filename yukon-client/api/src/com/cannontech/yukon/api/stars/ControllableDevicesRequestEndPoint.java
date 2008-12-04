@@ -5,7 +5,6 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
-import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.Namespace;
@@ -165,8 +164,7 @@ public class ControllableDevicesRequestEndPoint {
             List<StarsControllableDeviceDTO> devices) {
 
         Element resp = new Element(respStr, ns);
-        Attribute versionAttr = XmlVersionUtils.createVersionAttribute(XmlVersionUtils.YUKON_MSG_VERSION_1_0);
-        resp.setAttribute(versionAttr);
+        XmlVersionUtils.addVersionAttribute(resp, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         
         Element deviceResultList = new Element(controllableDeviceResultListStr, ns);
         for (StarsControllableDeviceDTO device : devices) {

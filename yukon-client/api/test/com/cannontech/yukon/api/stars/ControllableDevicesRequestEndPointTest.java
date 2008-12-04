@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.jdom.Element;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
@@ -138,16 +139,14 @@ public class ControllableDevicesRequestEndPointTest {
         Element reqElement = XmlUtils.createElementFromResource(resource);
         
         // verify the reqElement is valid according to schema
-        String reqShemaLoc= "../schemas/stars/NewControllableDevicesRequest.xsd";
-        Resource reqSchemaResource = new ClassPathResource(reqShemaLoc, this.getClass());
+        Resource reqSchemaResource = new ClassPathResource("../schemas/stars/NewControllableDevicesRequest.xsd", this.getClass());
         TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
         
         //invoke test
         Element respElement = impl.invokeAddDevice(reqElement, null);
         
         // verify the respElement is valid according to schema
-        String respSchemaLoc= "../schemas/stars/NewControllableDevicesResponse.xsd";
-        Resource respSchemaResource = new ClassPathResource(respSchemaLoc, this.getClass());
+        Resource respSchemaResource = new ClassPathResource("../schemas/stars/NewControllableDevicesResponse.xsd", this.getClass());
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
 
         // create template and parse response data
@@ -159,19 +158,24 @@ public class ControllableDevicesRequestEndPointTest {
 
         // verify data in the response
         assertTrue("Incorrect resultSize", deviceResults != null && deviceResults.size() == 4);
-        for (ControllableDeviceResult deviceResult : deviceResults) {
-            if (deviceResult.getAccountNumber().equals(ACCOUNT_NUM_NOT_FOUND)) {
-
+        // results verified by positional check, which validates node-mapper as well
+        for (int index = 0; index < deviceResults.size(); index++) {
+            ControllableDeviceResult deviceResult = deviceResults.get(index);
+            switch (index) {
+            case 0:
+                assertTrue("Incorrect accountNumber",
+                           deviceResult.getAccountNumber().equals(ACCOUNT_NUM_NOT_FOUND));                
                 assertTrue("Incorrect serialNumber",
                            deviceResult.getSerialNumber().equals(SERIAL_NUM_NOT_FOUND));
                 assertTrue("Success should be false", !deviceResult.isSuccess());
                 assertTrue("Incorrect errorCode",
                            deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode()
                                                                                   .equals(ACCOUNT_NUM_NOT_FOUND));
-                assertTrue("Missing errorDescription", deviceResult.getFailErrorDesc() != null);
-            } else if (deviceResult.getAccountNumber()
-                                   .equals(ACCOUNT_NUM_INVALID_ARG)) {
-                
+                assertTrue("Missing errorDescription", deviceResult.getFailErrorDesc() != null);                
+                break;
+            case 1:
+                assertTrue("Incorrect accountNumber",
+                           deviceResult.getAccountNumber().equals(ACCOUNT_NUM_INVALID_ARG));                
                 assertTrue("Incorrect serialNumber",
                            deviceResult.getSerialNumber().equals(SERIAL_NUM_INVALID_ARG));
                 assertTrue("Success should be false", !deviceResult.isSuccess());
@@ -179,9 +183,10 @@ public class ControllableDevicesRequestEndPointTest {
                            deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode()
                                                                                   .equals(ACCOUNT_NUM_INVALID_ARG));
                 assertTrue("Missing errorDescription", deviceResult.getFailErrorDesc() != null);
-
-            } else if (deviceResult.getAccountNumber()
-                                   .equals(ACCOUNT_NUM_ERROR)) {
+                break;
+            case 2:
+                assertTrue("Incorrect accountNumber",
+                           deviceResult.getAccountNumber().equals(ACCOUNT_NUM_ERROR));                
                 assertTrue("Incorrect serialNumber",
                            deviceResult.getSerialNumber().equals(SERIAL_NUM_ERROR));
                 assertTrue("Success should be false", !deviceResult.isSuccess());
@@ -189,14 +194,21 @@ public class ControllableDevicesRequestEndPointTest {
                            deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode()
                                                                                   .equals(ACCOUNT_NUM_ERROR));
                 assertTrue("Missing errorDescription", deviceResult.getFailErrorDesc() != null);
-            } else if (deviceResult.getAccountNumber()
-                                   .equals(ACCOUNT_NUM_VALID)) {
+                break;
+            case 3:
                 // valid case, no exceptions
+                assertTrue("Incorrect accountNumber",
+                           deviceResult.getAccountNumber().equals(ACCOUNT_NUM_VALID));                
                 assertTrue("Incorrect serialNumber",
                            deviceResult.getSerialNumber().equals(SERIAL_NUM_VALID));
                 assertTrue("Success should be true", deviceResult.isSuccess());
                 assertTrue("Error Code should be blank", StringUtils.isBlank(deviceResult.getFailErrorCode()));
                 assertTrue("Error Description should be blank", StringUtils.isBlank(deviceResult.getFailErrorDesc()));
+                break;
+            default:
+                //unexpected result
+                Assert.fail("Unexpected deviceResult");
+                break;
             }
         }
     }
@@ -209,16 +221,14 @@ public class ControllableDevicesRequestEndPointTest {
         Element reqElement = XmlUtils.createElementFromResource(resource);
         
         // verify the reqElement is valid according to schema
-        String reqShemaLoc= "../schemas/stars/UpdateControllableDevicesRequest.xsd";
-        Resource reqSchemaResource = new ClassPathResource(reqShemaLoc, this.getClass());
+        Resource reqSchemaResource = new ClassPathResource("../schemas/stars/UpdateControllableDevicesRequest.xsd", this.getClass());
         TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
         
         //invoke test        
         Element respElement = impl.invokeUpdateDevice(reqElement, null);
         
         // verify the respElement is valid according to schema
-        String respSchemaLoc= "../schemas/stars/UpdateControllableDevicesResponse.xsd";
-        Resource respSchemaResource = new ClassPathResource(respSchemaLoc, this.getClass());
+        Resource respSchemaResource = new ClassPathResource("../schemas/stars/UpdateControllableDevicesResponse.xsd", this.getClass());
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
         
         // create template and parse response data
@@ -230,19 +240,24 @@ public class ControllableDevicesRequestEndPointTest {
 
         // verify data in the response
         assertTrue("Incorrect resultSize", deviceResults != null && deviceResults.size() == 4);
-        for (ControllableDeviceResult deviceResult : deviceResults) {
-            if (deviceResult.getAccountNumber().equals(ACCOUNT_NUM_NOT_FOUND)) {
-
+        // results verified by positional check, which validates node-mapper as well
+        for (int index = 0; index < deviceResults.size(); index++) {
+            ControllableDeviceResult deviceResult = deviceResults.get(index);
+            switch (index) {
+            case 0:
+                assertTrue("Incorrect accountNumber",
+                           deviceResult.getAccountNumber().equals(ACCOUNT_NUM_NOT_FOUND));                
                 assertTrue("Incorrect serialNumber",
                            deviceResult.getSerialNumber().equals(SERIAL_NUM_NOT_FOUND));
                 assertTrue("Success should be false", !deviceResult.isSuccess());
                 assertTrue("Incorrect errorCode",
                            deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode()
                                                                                   .equals(ACCOUNT_NUM_NOT_FOUND));
-                assertTrue("Missing errorDescription", deviceResult.getFailErrorDesc() != null);
-            } else if (deviceResult.getAccountNumber()
-                                   .equals(ACCOUNT_NUM_INVALID_ARG)) {
-                
+                assertTrue("Missing errorDescription", deviceResult.getFailErrorDesc() != null);                
+                break;
+            case 1:
+                assertTrue("Incorrect accountNumber",
+                           deviceResult.getAccountNumber().equals(ACCOUNT_NUM_INVALID_ARG));                
                 assertTrue("Incorrect serialNumber",
                            deviceResult.getSerialNumber().equals(SERIAL_NUM_INVALID_ARG));
                 assertTrue("Success should be false", !deviceResult.isSuccess());
@@ -250,9 +265,10 @@ public class ControllableDevicesRequestEndPointTest {
                            deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode()
                                                                                   .equals(ACCOUNT_NUM_INVALID_ARG));
                 assertTrue("Missing errorDescription", deviceResult.getFailErrorDesc() != null);
-
-            } else if (deviceResult.getAccountNumber()
-                                   .equals(ACCOUNT_NUM_ERROR)) {
+                break;
+            case 2:
+                assertTrue("Incorrect accountNumber",
+                           deviceResult.getAccountNumber().equals(ACCOUNT_NUM_ERROR));                
                 assertTrue("Incorrect serialNumber",
                            deviceResult.getSerialNumber().equals(SERIAL_NUM_ERROR));
                 assertTrue("Success should be false", !deviceResult.isSuccess());
@@ -260,14 +276,21 @@ public class ControllableDevicesRequestEndPointTest {
                            deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode()
                                                                                   .equals(ACCOUNT_NUM_ERROR));
                 assertTrue("Missing errorDescription", deviceResult.getFailErrorDesc() != null);
-            } else if (deviceResult.getAccountNumber()
-                                   .equals(ACCOUNT_NUM_VALID)) {
+                break;
+            case 3:
                 // valid case, no exceptions
+                assertTrue("Incorrect accountNumber",
+                           deviceResult.getAccountNumber().equals(ACCOUNT_NUM_VALID));                
                 assertTrue("Incorrect serialNumber",
                            deviceResult.getSerialNumber().equals(SERIAL_NUM_VALID));
                 assertTrue("Success should be true", deviceResult.isSuccess());
                 assertTrue("Error Code should be blank", StringUtils.isBlank(deviceResult.getFailErrorCode()));
                 assertTrue("Error Description should be blank", StringUtils.isBlank(deviceResult.getFailErrorDesc()));
+                break;
+            default:
+                //unexpected result
+                Assert.fail("Unexpected deviceResult");
+                break;
             }
         }
     }
@@ -280,16 +303,14 @@ public class ControllableDevicesRequestEndPointTest {
         Element reqElement = XmlUtils.createElementFromResource(resource);
 
         // verify the reqElement is valid according to schema
-        String reqShemaLoc= "../schemas/stars/RemoveControllableDevicesRequest.xsd";
-        Resource reqSchemaResource = new ClassPathResource(reqShemaLoc, this.getClass());
+        Resource reqSchemaResource = new ClassPathResource("../schemas/stars/RemoveControllableDevicesRequest.xsd", this.getClass());
         TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
         
         //invoke test        
         Element respElement = impl.invokeRemoveDevice(reqElement, null);
         
         // verify the respElement is valid according to schema
-        String respSchemaLoc= "../schemas/stars/RemoveControllableDevicesResponse.xsd";
-        Resource respSchemaResource = new ClassPathResource(respSchemaLoc, this.getClass());
+        Resource respSchemaResource = new ClassPathResource("../schemas/stars/RemoveControllableDevicesResponse.xsd", this.getClass());
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
         
         // create template and parse response data
@@ -301,19 +322,24 @@ public class ControllableDevicesRequestEndPointTest {
 
         // verify data in the response
         assertTrue("Incorrect resultSize", deviceResults != null && deviceResults.size() == 4);
-        for (ControllableDeviceResult deviceResult : deviceResults) {
-            if (deviceResult.getAccountNumber().equals(ACCOUNT_NUM_NOT_FOUND)) {
-
+        // results verified by positional check, which validates node-mapper as well
+        for (int index = 0; index < deviceResults.size(); index++) {
+            ControllableDeviceResult deviceResult = deviceResults.get(index);
+            switch (index) {
+            case 0:
+                assertTrue("Incorrect accountNumber",
+                           deviceResult.getAccountNumber().equals(ACCOUNT_NUM_NOT_FOUND));                
                 assertTrue("Incorrect serialNumber",
                            deviceResult.getSerialNumber().equals(SERIAL_NUM_NOT_FOUND));
                 assertTrue("Success should be false", !deviceResult.isSuccess());
                 assertTrue("Incorrect errorCode",
                            deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode()
                                                                                   .equals(ACCOUNT_NUM_NOT_FOUND));
-                assertTrue("Missing errorDescription", deviceResult.getFailErrorDesc() != null);
-            } else if (deviceResult.getAccountNumber()
-                                   .equals(ACCOUNT_NUM_INVALID_ARG)) {
-                
+                assertTrue("Missing errorDescription", deviceResult.getFailErrorDesc() != null);                
+                break;
+            case 1:
+                assertTrue("Incorrect accountNumber",
+                           deviceResult.getAccountNumber().equals(ACCOUNT_NUM_INVALID_ARG));                
                 assertTrue("Incorrect serialNumber",
                            deviceResult.getSerialNumber().equals(SERIAL_NUM_INVALID_ARG));
                 assertTrue("Success should be false", !deviceResult.isSuccess());
@@ -321,9 +347,10 @@ public class ControllableDevicesRequestEndPointTest {
                            deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode()
                                                                                   .equals(ACCOUNT_NUM_INVALID_ARG));
                 assertTrue("Missing errorDescription", deviceResult.getFailErrorDesc() != null);
-
-            } else if (deviceResult.getAccountNumber()
-                                   .equals(ACCOUNT_NUM_ERROR)) {
+                break;
+            case 2:
+                assertTrue("Incorrect accountNumber",
+                           deviceResult.getAccountNumber().equals(ACCOUNT_NUM_ERROR));                
                 assertTrue("Incorrect serialNumber",
                            deviceResult.getSerialNumber().equals(SERIAL_NUM_ERROR));
                 assertTrue("Success should be false", !deviceResult.isSuccess());
@@ -331,14 +358,21 @@ public class ControllableDevicesRequestEndPointTest {
                            deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode()
                                                                                   .equals(ACCOUNT_NUM_ERROR));
                 assertTrue("Missing errorDescription", deviceResult.getFailErrorDesc() != null);
-            } else if (deviceResult.getAccountNumber()
-                                   .equals(ACCOUNT_NUM_VALID)) {
+                break;
+            case 3:
                 // valid case, no exceptions
+                assertTrue("Incorrect accountNumber",
+                           deviceResult.getAccountNumber().equals(ACCOUNT_NUM_VALID));                
                 assertTrue("Incorrect serialNumber",
                            deviceResult.getSerialNumber().equals(SERIAL_NUM_VALID));
                 assertTrue("Success should be true", deviceResult.isSuccess());
                 assertTrue("Error Code should be blank", StringUtils.isBlank(deviceResult.getFailErrorCode()));
                 assertTrue("Error Description should be blank", StringUtils.isBlank(deviceResult.getFailErrorDesc()));
+                break;
+            default:
+                //unexpected result
+                Assert.fail("Unexpected deviceResult");
+                break;
             }
         }
     }

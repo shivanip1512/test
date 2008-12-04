@@ -8,10 +8,8 @@ public class XmlVersionUtils {
 
     // Request constants
     public static final String YUKON_MSG_VERSION_1_0 = "1.0";
-    static final String reqVersionStr = "/@version";
-
-    // Response constants
-    static final String respVersionStr = "version";
+    
+    static final String versionStr = "version";
 
     /**
      * Gets version of the given Yukon Message Request element
@@ -19,22 +17,10 @@ public class XmlVersionUtils {
      * @return reqElement version
      */
     public static String getYukonMessageVersion(Element reqElement) {
-        String reqVersion = null;
 
-        // form the xpath expression to version attribute
-        String xpathToVersion = null;
-        if (reqElement.getNamespacePrefix().isEmpty()) {
-            xpathToVersion = StringUtils.join(new String[] { "/",
-                    YukonXml.getYukonNamespace().getPrefix(), ":",
-                    reqElement.getName(), reqVersionStr });
-        } else {
-            xpathToVersion = StringUtils.join(new String[] { "/",
-                    reqElement.getQualifiedName(), reqVersionStr });
-        }
-        
-        // check request xml version
-        SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(reqElement);        
-        reqVersion = template.evaluateAsString(xpathToVersion);
+        // get request xml version        
+        Attribute versionAttr = reqElement.getAttribute(versionStr);
+        String reqVersion = versionAttr.getValue();
         if (StringUtils.isBlank(reqVersion)) {
             throw new RuntimeException("XML Request Message version is not specified");
         }
@@ -64,12 +50,12 @@ public class XmlVersionUtils {
     }
 
     /**
-     * Creates a version attribute to go on the outgoing Yukon Message Response
-     * @param version value
-     * @return Attribute
+     * Adds a version attribute on the given Yukon Message Element
+     * @param element  
+     * @param versionValue
      */
-    public static Attribute createVersionAttribute(String version) {
-        Attribute versionAttr = new Attribute(respVersionStr, version);
-        return versionAttr;
+    public static void addVersionAttribute(Element element, String versionValue) {
+        Attribute versionAttr = new Attribute(versionStr, versionValue);
+        element.setAttribute(versionAttr);
     }
 }
