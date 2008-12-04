@@ -5,6 +5,7 @@ import java.util.List;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
@@ -24,6 +25,7 @@ public class RemoveAccountsRequestEndpoint {
     private Namespace ns = YukonXml.getYukonNamespace();
     
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="removeAccountsRequest")
+    @Transactional
     public Element invoke(Element removeAccountsRequest, LiteYukonUser user) throws Exception {
         SimpleXPathTemplate requestTemplate = XmlUtils.getXPathTemplateForElement(removeAccountsRequest);
         

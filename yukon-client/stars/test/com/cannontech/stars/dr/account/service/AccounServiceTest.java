@@ -21,6 +21,7 @@ import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
 import com.cannontech.stars.dr.account.dao.AccountSiteDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
+import com.cannontech.stars.dr.account.exception.InvalidAccountNumberException;
 import com.cannontech.stars.dr.account.service.impl.AccountServiceImpl;
 import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
 import com.cannontech.stars.dr.event.dao.EventAccountDao;
@@ -64,36 +65,6 @@ public class AccounServiceTest extends TestCase {
     private EnergyCompanyDao energyCompanyDaoMock;
     
     protected void setUp() {
-        accountService = new AccountServiceImpl();
-        accountService.setYukonUserDao(yukonUserDaoMock);
-        accountService.setRoleDao(roleDaoMock);
-        accountService.setAuthDao(authDaoMock);
-        accountService.setYukonGroupDao(yukonGroupDaoMock);
-        accountService.setAddressDao(addressDaoMock);
-        accountService.setContactDao(contactDaoMock);
-        accountService.setContactNotificationDao(contactNotificationDaoMock);
-        accountService.setCustomerDao(customerDaoMock);
-        accountService.setSiteInformationDao(siteInformationDaoMock);
-        accountService.setAccountSiteDao(accountSiteDaoMock);
-        accountService.setCustomerAccountDao(customerAccountDaoMock);
-        accountService.setECMappingDao(ecMappingDaoMock);
-        accountService.setInventoryDao(inventoryDaoMock);
-        accountService.setHardwareBaseDao(hardwareBaseDaoMock);
-        accountService.setLMProgramEventDao(lmProgramEventDaoMock);
-        accountService.setApplianceDao(applianceDaoMock);
-        accountService.setWorkOrderDao(workOrderDaoMock);
-        accountService.setCallReportDao(callReportDaoMock);
-        accountService.setThermostatScheduleDao(thermostatScheduleDaoMock);
-        accountService.setEventAccountDao(eventAccountDaoMock);
-        accountService.setStarsCustAccountInformationDao(starsCustAccountInformationDaoMock);
-        accountService.setDBPersistentDao(dbPersistantDaoMock);
-        accountService.setEnergyCompanyDao(energyCompanyDaoMock);
-        
-        
-    }
-    
-    @Test
-    public void testAddAccount() {
         yukonUserDaoMock = createMock(YukonUserDao.class);
         roleDaoMock = createMock(RoleDao.class);
         authDaoMock = createMock(AuthDao.class);
@@ -118,9 +89,37 @@ public class AccounServiceTest extends TestCase {
         dbPersistantDaoMock = createMock(DBPersistentDao.class);
         energyCompanyDaoMock = createMock(EnergyCompanyDao.class);
         
+        accountService = new AccountServiceImpl();
+        
+        accountService.setYukonUserDao(yukonUserDaoMock);
+        accountService.setRoleDao(roleDaoMock);
+        accountService.setAuthDao(authDaoMock);
+        accountService.setYukonGroupDao(yukonGroupDaoMock);
+        accountService.setAddressDao(addressDaoMock);
+        accountService.setContactDao(contactDaoMock);
+        accountService.setContactNotificationDao(contactNotificationDaoMock);
+        accountService.setCustomerDao(customerDaoMock);
+        accountService.setSiteInformationDao(siteInformationDaoMock);
+        accountService.setAccountSiteDao(accountSiteDaoMock);
+        accountService.setCustomerAccountDao(customerAccountDaoMock);
+        accountService.setECMappingDao(ecMappingDaoMock);
+        accountService.setInventoryDao(inventoryDaoMock);
+        accountService.setHardwareBaseDao(hardwareBaseDaoMock);
+        accountService.setLMProgramEventDao(lmProgramEventDaoMock);
+        accountService.setApplianceDao(applianceDaoMock);
+        accountService.setWorkOrderDao(workOrderDaoMock);
+        accountService.setCallReportDao(callReportDaoMock);
+        accountService.setThermostatScheduleDao(thermostatScheduleDaoMock);
+        accountService.setEventAccountDao(eventAccountDaoMock);
+        accountService.setStarsCustAccountInformationDao(starsCustAccountInformationDaoMock);
+        accountService.setDBPersistentDao(dbPersistantDaoMock);
+        accountService.setEnergyCompanyDao(energyCompanyDaoMock);
+    }
+    
+    @Test
+    public void testAddAccount() {
         replay(yukonUserDaoMock);
         replay(roleDaoMock);
-        replay(yukonUserDaoMock);
         replay(authDaoMock);
         replay(yukonGroupDaoMock);
         replay(addressDaoMock);
@@ -146,8 +145,9 @@ public class AccounServiceTest extends TestCase {
         UpdatableAccount updatableAccount = new UpdatableAccount();
         LiteYukonUser user = new LiteYukonUser();
         
-        accountService.addAccount(updatableAccount, user);
-        
+        try {
+            accountService.addAccount(updatableAccount, user);
+        }catch(InvalidAccountNumberException e) {}
     }
 
 }

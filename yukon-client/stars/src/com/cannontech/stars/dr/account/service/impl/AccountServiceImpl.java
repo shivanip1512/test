@@ -204,7 +204,7 @@ public class AccountServiceImpl implements AccountService {
          */
         LiteCustomer liteCustomer = new LiteCustomer();
         liteCustomer.setPrimaryContactID(liteContact.getContactID());
-        if(accountDto.isCommercial()) {
+        if(accountDto.getIsCommercial()) {
             liteCustomer.setCustomerTypeID(CustomerTypes.CUSTOMER_CI);
         }else {
             liteCustomer.setCustomerTypeID(CustomerTypes.CUSTOMER_RESIDENTIAL);
@@ -520,7 +520,7 @@ public class AccountServiceImpl implements AccountService {
         }
         
         if(customerDao.isCICustomer(liteCustomer.getCustomerID())){
-            if(!accountDto.isCommercial()) {
+            if(!accountDto.getIsCommercial()) {
                 // was commercial, not anymore
                 LiteCICustomer liteCICustomer = customerDao.getLiteCICustomer(liteCustomer.getCustomerID());
                 customerDao.deleteCICustomer(liteCustomer.getCustomerID());
@@ -537,7 +537,7 @@ public class AccountServiceImpl implements AccountService {
                 customerDao.updateCICustomer(liteCICustomer);
             }
         }else {
-            if(accountDto.isCommercial()) {
+            if(accountDto.getIsCommercial()) {
                 // was residential, now commercial
                 LiteCICustomer liteCICustomer = new LiteCICustomer();
                 liteCICustomer.setMainAddressID(liteStreetAddress.getAddressID());

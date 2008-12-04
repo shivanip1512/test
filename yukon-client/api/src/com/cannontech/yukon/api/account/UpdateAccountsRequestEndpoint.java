@@ -5,6 +5,7 @@ import java.util.List;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.common.bulk.field.impl.UpdatableAccount;
@@ -25,6 +26,7 @@ public class UpdateAccountsRequestEndpoint {
     private Namespace ns = YukonXml.getYukonNamespace();
     
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="updateAccountsRequest")
+    @Transactional
     public Element invoke(Element updateAccountsRequest, LiteYukonUser user) throws Exception {
         SimpleXPathTemplate requestTemplate = XmlUtils.getXPathTemplateForElement(updateAccountsRequest);
         
@@ -40,13 +42,12 @@ public class UpdateAccountsRequestEndpoint {
             try {
                 UpdatableAccount filledAccount = accountServiceHelper.buildFullDto(account, user);
                 accountService.updateAccount(filledAccount, user);
+                updateAccountResult.addContent(new Element("success", ns));
             } catch(InvalidAccountNumberException e) {
                 Element fe = XMLFailureGenerator.generateFailure(updateAccountsRequest, e, "InvalidAccountNumberException", e.getMessage());
                 updateAccountResult.addContent(fe);
-                continue;
             }
     
-            updateAccountResult.addContent(new Element("success", ns));
         }
         
         return updateAccountsResponse;

@@ -39,7 +39,7 @@ public class AccountServiceHelper {
             "lastName",
             "firstName",
             "companyName",
-            "customerType",
+            "isCommercial",
             "homePhone",
             "workPhone",
             "emailAddress",

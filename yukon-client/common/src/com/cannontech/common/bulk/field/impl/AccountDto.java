@@ -93,7 +93,7 @@ public class AccountDto {
         this.loginGroup = loginGroup;
     }
 
-    public Boolean isCommercial() {
+    public Boolean getIsCommercial() {
         return isCommercial;
     }
 
