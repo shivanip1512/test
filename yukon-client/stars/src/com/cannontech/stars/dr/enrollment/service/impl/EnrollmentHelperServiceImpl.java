@@ -71,7 +71,12 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
                                                              enrollmentData,
                                                              yukonUserContext);
         
-        System.out.println(applyEnrollmentRequests.toString());
+        if (applyEnrollmentRequests.getFormatKey().equals(ProgramEnrollmentResultEnum.FAILURE)){
+            throw new IllegalArgumentException("Program Enrollment Failed.");
+        }
+        if (applyEnrollmentRequests.getFormatKey().equals(ProgramEnrollmentResultEnum.NOT_CONFIGURED_CORRECTLY)){
+            throw new IllegalArgumentException("Incorrect Configuration.");
+        }
         
         // Updates the applianceKW if the process was an enrollment.
         if (enrollmentEnum == EnrollmentEnum.ENROLL) {

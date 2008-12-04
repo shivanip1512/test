@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.Namespace;
@@ -23,6 +24,7 @@ import com.cannontech.yukon.api.util.NodeToElementMapperWrapper;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlUtils;
+import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.cannontech.yukon.api.util.YukonXml;
 
 @Endpoint
@@ -35,13 +37,18 @@ public class EnrollmentRequestEndpoint {
     
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="enrollmentRequest")
     public Element invoke(Element enrollmentRequest, YukonUserContext yukonUserContext) throws Exception {
-        Namespace ns = YukonXml.getYukonNamespace();
+        XmlVersionUtils.verifyYukonMessageVersion(enrollmentRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0); 
+        
+        Namespace ns = YukonXml.getYukonNamespaceForDefault();
         SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(enrollmentRequest);
         List<EnrollmentHelper> programEnrollments = 
             template.evaluate("//y:enrollmentList/y:programEnrollment", 
                               new NodeToElementMapperWrapper<EnrollmentHelper>(new ProgramElementRequestMapper()));
 
         Element enrollmentResponseBase = new Element("enrollmentResponse", ns);
+        Attribute versionAttribute = new Attribute("version", "1.0"); 
+        enrollmentResponseBase.setAttribute(versionAttribute); 
+        
         Element enrollmentResultList = new Element("enrollmentResultList", ns);
         enrollmentResponseBase.addContent(enrollmentResultList);
 
@@ -51,17 +58,17 @@ public class EnrollmentRequestEndpoint {
                                                                                         enrollmentHelper);
             try {
                 enrollmentHelperService.doEnrollment(enrollmentHelper, EnrollmentEnum.ENROLL, yukonUserContext);
-            } catch(NotFoundException nfe) {
-                Element fe = XMLFailureGenerator.generateFailure(enrollmentRequest, nfe, "NotFoundException", nfe.getMessage());
-                programEnrollmentResult.addContent(fe);
+            } catch(NotFoundException e) {
+                Element failureElement = XMLFailureGenerator.generateFailure(enrollmentRequest, e, "NotFoundException", e.getMessage(), ns);
+                programEnrollmentResult.addContent(failureElement);
                 continue;
-            } catch(IllegalArgumentException iae) {
-                Element fe = XMLFailureGenerator.generateFailure(enrollmentRequest, iae, "IllegalArgumentException", iae.getMessage());
-                programEnrollmentResult.addContent(fe);
+            } catch(IllegalArgumentException e) {
+                Element failureElement = XMLFailureGenerator.generateFailure(enrollmentRequest, e, "IllegalArgumentException", e.getMessage(), ns);
+                programEnrollmentResult.addContent(failureElement);
                 continue;
-            } catch(DuplicateEnrollmentException dee) {
-                Element fe = XMLFailureGenerator.generateFailure(enrollmentRequest, dee, "DuplicateEnrollmentException", dee.getMessage());
-                programEnrollmentResult.addContent(fe);
+            } catch(DuplicateEnrollmentException e) {
+                Element failureElement = XMLFailureGenerator.generateFailure(enrollmentRequest, e, "DuplicateEnrollmentException", e.getMessage(), ns);
+                programEnrollmentResult.addContent(failureElement);
                 continue;
             }
     

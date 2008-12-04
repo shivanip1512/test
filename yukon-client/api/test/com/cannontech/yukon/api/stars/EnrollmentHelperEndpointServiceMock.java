@@ -18,7 +18,7 @@ class EnrollmentHelperEndpointServiceMock extends EnrollmentHelperServiceImpl {
             throw new NotFoundException("The program name supplied does not exist.");
         }
         if (programEnrollmentItem.equalsIgnoreCase("ILLEGAL_ARGUMENT")){
-            throw new NotFoundException("The load group supplies does not belong to the program supplied.");
+            throw new NotFoundException("The load group supplied does not belong to the program supplied.");
         }
         if (programEnrollmentItem.equalsIgnoreCase("DUPLICATE_ENROLLMENT")){
             throw new NotFoundException("The enrollment name supplied causes a duplicate enrollment.");

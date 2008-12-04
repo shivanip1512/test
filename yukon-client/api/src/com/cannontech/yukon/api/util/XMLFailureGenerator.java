@@ -23,6 +23,10 @@ public class XMLFailureGenerator {
     }
     
     public static Element generateFailure(Element request, Throwable t, String errorCode, String errorDescription) {
+        return generateFailure(request, t, errorCode, errorDescription, YukonXml.getYukonNamespace());
+    }
+    
+    public static Element generateFailure(Element request, Throwable t, String errorCode, String errorDescription, Namespace ns) {
         
         // log error
         Throwable rc = CtiUtilities.getRootCause(t);
@@ -30,7 +34,6 @@ public class XMLFailureGenerator {
         handleException(request, t, rc, key);
         
         // generate failure element
-        Namespace ns = YukonXml.getYukonNamespace();
         Element failureElement = new Element("failure", ns);
         failureElement.addContent(XmlUtils.createStringElement("errorCode", ns, errorCode));
         failureElement.addContent(XmlUtils.createStringElement("errorReference", ns, key));
