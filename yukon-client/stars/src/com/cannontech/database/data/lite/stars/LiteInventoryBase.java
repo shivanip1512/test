@@ -246,7 +246,6 @@ public class LiteInventoryBase extends LiteBase {
 			YukonListEntry entry = DaoFactory.getYukonListDao().getYukonListEntry( liteEvent.getActionID() );
 			
 			if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED
-			    || entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_INSTALL			        
 				|| isSA && entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_CONFIG)
 			{
 				deviceStatus = YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL;
