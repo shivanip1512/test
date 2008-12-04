@@ -3,7 +3,9 @@ package com.cannontech.yukon.api.utils;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.ArrayList;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -56,17 +58,16 @@ public class TestUtils {
      */
     public static void validateAgainstSchema(Element element,
             Resource schemaResource) {
-        boolean processedOk = false;
+        ArrayList<String> errorMsgs = new ArrayList<String>();
+        SimpleErrorHandler errorHandler = new SimpleErrorHandler();        
+        boolean processedOk = false;        
         try {
             // setup the validating builder
-            Assert.assertTrue("Schema Resource not found", schemaResource.exists());
-            String schemaLocation = "http://yukon.cannontech.com/api " + schemaResource.getURI();            
+            String schemaLocation = "http://yukon.cannontech.com/api " + schemaResource.getURI();          
 
             SAXBuilder builder = new SAXBuilder("org.apache.xerces.parsers.SAXParser", true);
             builder.setFeature("http://apache.org/xml/features/validation/schema", true);
             builder.setProperty("http://apache.org/xml/properties/schema/external-schemaLocation", schemaLocation);
-            
-            SimpleErrorHandler errorHandler = new SimpleErrorHandler();
             builder.setErrorHandler(errorHandler);
 
             // get the xml from the element
@@ -88,35 +89,46 @@ public class TestUtils {
             log.info("Re-converted Element XML =[" + strWriterBack + "]");
 
             Assert.assertTrue("Element validation failed", !errorHandler.isError());
-            processedOk = true;            
+            processedOk = true;
 
         } catch (IOException e) {
+            errorMsgs.add(e.getMessage());            
             log.error("error: " + e.getMessage());
         } catch (JDOMException e) {
+            errorMsgs.add(e.getMessage());            
             log.error("error: " + e.getMessage());
         } finally {
-            Assert.assertTrue("Element validation failed", processedOk);            
+            if (!processedOk) {
+                errorMsgs.addAll(errorHandler.getErrorMsgs());
+                String detailMsg = "Element validation failed: " + StringUtils.join(errorMsgs, "; ");
+                log.error("error: " + detailMsg);
+                Assert.fail(detailMsg);
+            }
         }
     }
 
     public static class SimpleErrorHandler implements ErrorHandler {
 
+        ArrayList<String> errorMsgs = new ArrayList<String>();        
         private int errorCount = 0;
         private int fatalErrorCount = 0;
         private int warnCount = 0;
 
         public void error(SAXParseException exception) {
             errorCount++;
+            errorMsgs.add(exception.getMessage());            
             log.error("error: " + exception.getMessage());
         }
 
         public void fatalError(SAXParseException exception) {
             fatalErrorCount++;
+            errorMsgs.add(exception.getMessage());            
             log.fatal("fatalError: " + exception.getMessage());
         }
 
         public void warning(SAXParseException exception) {
             warnCount++;
+            errorMsgs.add(exception.getMessage());            
             log.warn("warning: " + exception.getMessage());
         }
 
@@ -126,7 +138,11 @@ public class TestUtils {
         
         public boolean isWarn() {
             return (warnCount > 0);
-        }        
+        }
+
+        public ArrayList<String> getErrorMsgs() {
+            return errorMsgs;
+        }
     }
     
 }
