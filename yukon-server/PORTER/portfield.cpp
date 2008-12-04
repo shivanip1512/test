@@ -141,8 +141,7 @@ bool deviceCanSurviveThisStatus(INT status);
 BOOL isTAPTermPort(LONG PortNumber);
 INT RequeueReportError(INT status, OUTMESS *OutMessage);
 INT PostCommQueuePeek(CtiPortSPtr Port, CtiDeviceSPtr &Device);
-INT VerifyPortStatus(CtiPortSPtr Port);
-INT ResetCommsChannel(CtiPortSPtr Port, CtiDeviceSPtr &Device);
+INT ResetCommsChannel(CtiPortSPtr &Port, CtiDeviceSPtr &Device);
 INT CheckInhibitedState(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceSPtr &Device);
 INT ValidateDevice(CtiPortSPtr Port, CtiDeviceSPtr &Device, OUTMESS *&OutMessage);
 INT VTUPrep(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceSPtr &Device);
@@ -169,7 +168,7 @@ bool ShuffleQueue( CtiPortSPtr shPort, OUTMESS *&OutMessage, CtiDeviceSPtr &devi
 static INT CheckIfOutMessageIsExpired(OUTMESS *&OutMessage);
 INT ProcessExclusionLogic(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr Device);
 INT ProcessPortPooling(CtiPortSPtr Port);
-INT ResetChannel(CtiPortSPtr Port, CtiDeviceSPtr &Device);
+INT ResetChannel(CtiPortSPtr &Port, CtiDeviceSPtr &Device);
 INT IdentifyDeviceFromOutMessage(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &Device);
 INT GetWork(CtiPortSPtr Port, CtiOutMessage *&OutMessage, ULONG &QueEntries);
 
@@ -509,7 +508,7 @@ VOID PortThread(void *pid)
 bool RemoteReset(CtiDeviceSPtr &Device, CtiPortSPtr Port)
 {
     bool didareset = false;
-    extern LoadRemoteRoutes(CtiDeviceSPtr RemoteRecord);
+    extern LoadRemoteRoutes(CtiDeviceSPtr &RemoteRecord);
 
     if(Port->getPortID() == Device->getPortID() && !Device->isInhibited() )
     {
@@ -704,7 +703,7 @@ struct primeTRXInfo
  * variable is used by the portqueue to decide which queue entry to pop from its
  * internal queue
  *----------------------------------------------------------------------------*/
-INT ResetCommsChannel(CtiPortSPtr Port, CtiDeviceSPtr &Device)
+INT ResetCommsChannel(CtiPortSPtr &Port, CtiDeviceSPtr &Device)
 {
     INT status = NORMAL;
 
@@ -742,10 +741,10 @@ INT ResetCommsChannel(CtiPortSPtr Port, CtiDeviceSPtr &Device)
 
             if(status == NORMAL)
             {
-                static const string PORTER_RELEASE_IDLE_PORTS("PORTER_RELEASE_IDLE_PORTS");
+                static const bool release_idle_ports = gConfigParms.isTrue("PORTER_RELEASE_IDLE_PORTS");
 
                 // CGP 062304 // make all ports close
-                if(Port->isDialup() || gConfigParms.isTrue(PORTER_RELEASE_IDLE_PORTS))
+                if(Port->isDialup() || release_idle_ports)
                 {
                     Port->setQueueSlot( PostCommQueuePeek(Port, Device) );
                 }
@@ -4264,7 +4263,7 @@ struct commFailDevice
  *  It is responsible for opening, or reopening the comm channel or IP channel.
  *  It is responsible for resetting, or verifying any established connection from the last loop.
  */
-INT ResetChannel(CtiPortSPtr Port, CtiDeviceSPtr &Device)
+INT ResetChannel(CtiPortSPtr &Port, CtiDeviceSPtr &Device)
 {
     INT status = NORMAL;
     INT initFails = 0;

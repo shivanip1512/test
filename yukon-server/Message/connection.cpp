@@ -246,6 +246,7 @@ void CtiConnection::InThread()
 
     RWCollectable *c;
     CtiTime        NowTime;
+    time_t         last_cancellation_check = 0;
 
     if(getDebugLevel() & DEBUGLEVEL_CONNECTION)
     {
@@ -346,7 +347,12 @@ void CtiConnection::InThread()
                     continue;
                 }
 
-                checkCancellation();
+                if( ::time(0) != last_cancellation_check )
+                {
+                    last_cancellation_check = ::time(0);
+
+                    checkCancellation();
+                }
 
                 try
                 {
@@ -558,6 +564,11 @@ void CtiConnection::OutThread()
                             delete MyMsg;
                             MyMsg = NULL;
                         }
+                    }
+                    else
+                    {
+                        delete MyMsg;
+                        MyMsg = NULL;
                     }
                 }
                 catch( RWSockErr& msg )
@@ -934,7 +945,7 @@ INT CtiConnection::verifyConnection()
                     {
                         dout << ". May restart";
                     }
-    
+
                     dout << endl;
                 }
             }
@@ -959,12 +970,12 @@ INT CtiConnection::verifyConnection()
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " OutThread " << whoStr << " has exited with a completion state of " << status;
-    
+
                     if(!_serverConnection)
                     {
                         dout << ". May restart";
                     }
-    
+
                     dout << endl;
                 }
             }

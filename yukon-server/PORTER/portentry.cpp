@@ -1,47 +1,5 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   portentry
-*
-* Date:   7/17/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.63 $
-* DATE         :  $Date: 2008/10/29 18:16:47 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-
-/*---------------------------------------------------------------------
-    Copyright (c) 1990-1993 Cannon Technologies, Inc. All rights reserved.
-
-    Programmer:
-        William R. Ockert, Corey G. Plender
-
-    FileName:
-        PORTPIPE.C
-
-    Purpose:
-        To Accept request from other process's to Remotes and Devices
-
-    The following procedures are contained in this module:
-        PorterConnectionThread                  RouterThread
-
-    Initial Date:
-        Unknown
-
-    Revision History:
-        Unknown prior to 8-93
-        8-20-93      Added code to handle ARM's directly          WRO
-        8-25-93      Update remote port routine                   WRO
-        9-7-93       Converted to 32 bit                          WRO
-        11-1-93      Modified to keep stats temporarily in memory TRH
-
-        12-20-99     Rewrite for Yukon                            CGP
-
-   -------------------------------------------------------------------- */
 #include <windows.h>
 #include <process.h>
 #include <iostream>
@@ -67,7 +25,6 @@
 #include "master.h"
 
 #include "portglob.h"
-#include "color.h"
 
 #include "c_port_interface.h"
 #include "mgr_port.h"
@@ -414,16 +371,6 @@ INT PorterEntryPoint(OUTMESS *&OutMessage)
         OutMessage->ExpirationTime = CtiTime().seconds() + defaultExpirationSeconds;
     }
 
-#if 0           // 20020611 CGP.. Thin kagain small man.
-
-    /* Find out if this guy gets routed to another system */
-    if(PortFlags[OutMessage->Port] & REMOTEPORT)
-    {
-        return RemotePort(OutMessage);
-    }
-
-#endif
-
      //This could go after more checking, but I like it here. I think the message has been checked enough?
     statisticsNewRequest(OutMessage->Port, OutMessage->DeviceID, OutMessage->TargetID, OutMessage->MessageFlags);
 
@@ -530,17 +477,32 @@ INT ValidateRemote(OUTMESS *&OutMessage, CtiDeviceSPtr TransmitterDev)
 
 INT ValidatePort(OUTMESS *&OutMessage)
 {
-    INT j;
     INT status = NORMAL;
 
-    static CtiPortSPtr Port;  //  all access to this must now be single-threaded
-    static long last_portid = -1;
+    static CtiCriticalSection crit;
+    static CtiPortSPtr last_port;
+    static long last_port_id;
+    static bool first;
 
-    //  this caching is done because the muxed lookup is very expensive
-    if( OutMessage->Port != last_portid )
+    CtiPortSPtr Port;
+
+    //  must be threadsafe - Scanner also comes through here
     {
-        Port = PortManager.PortGetEqual((LONG)OutMessage->Port);
-        last_portid = OutMessage->Port;
+        CtiLockGuard<CtiCriticalSection> guard(crit);
+
+        if( first || last_port_id != OutMessage->Port )
+        {
+            first = false;
+
+            Port = PortManager.PortGetEqual(OutMessage->Port);
+
+            last_port_id = OutMessage->Port;
+            last_port = Port;
+        }
+        else
+        {
+            Port = last_port;
+        }
     }
 
     /* Check the memory database to see if a port like this exists */
@@ -597,12 +559,9 @@ INT ValidateEmetconMessage(OUTMESS *&OutMessage)
 
 INT CCU711Message(OUTMESS *&OutMessage, CtiDeviceSPtr Dev)
 {
-    INT            i, j;
+    INT            i;
     INT            status = NORMAL;
 
-    ULONG          BytesRead;
-
-    OUTMESS        *ArmOutMessage;
     OUTMESS        PeekMessage;
 
     CtiTransmitter711Info *p711Info = (CtiTransmitter711Info *)Dev->getTrxInfo();
@@ -610,6 +569,7 @@ INT CCU711Message(OUTMESS *&OutMessage, CtiDeviceSPtr Dev)
     /* Check if this is a queued message */
     if(OutMessage->EventCode & BWORD)
     {
+        //  we're saving the nexus for use after we've called WriteQueue, which consumes the OutMessage
         CtiConnect *Nexus = OutMessage->ReturnNexus;
 
         /* this is queing so check if this CCU queue is open */
@@ -886,7 +846,7 @@ INT GenerateCompleteRequest(list< OUTMESS* > &outList, OUTMESS *&OutMessage)
             }
             else
             {
-                while( (i = retList.size()) > 0 )
+                while( !retList.empty() )
                 {
                     CtiReturnMsg *pRet = (CtiReturnMsg *)retList.front();retList.pop_front();
                     CtiConnection *Conn = NULL;
@@ -902,7 +862,7 @@ INT GenerateCompleteRequest(list< OUTMESS* > &outList, OUTMESS *&OutMessage)
                     }
                 }
 
-                while( (i = vgList.size()) > 0 )
+                while( !vgList.empty() )
                 {
                     CtiMessage *pVg = vgList.front();vgList.pop_front();
                     VanGoghConnection.WriteConnQue(pVg);
@@ -941,32 +901,28 @@ INT GenerateCompleteRequest(list< OUTMESS* > &outList, OUTMESS *&OutMessage)
 
 INT realignNexus(OUTMESS *&OutMessage)
 {
-    INT i;
     INT loops = sizeof(OUTMESS);
     INT status = NORMAL;
 
     BYTE nextByte;
     ULONG BytesRead = 1;
-    CtiConnect *MyNexus = OutMessage->ReturnNexus;
 
-    // OutMessage->ReturnNexus
     for(loops = sizeof(OUTMESS); loops > 0 && BytesRead > 0; loops--)
     {
-        MyNexus->CTINexusRead(&nextByte, 1, &BytesRead, 60);
+        OutMessage->ReturnNexus->CTINexusRead(&nextByte, 1, &BytesRead, 60);
 
         if(BytesRead == 1 && nextByte == 0x02)
         {
-            MyNexus->CTINexusRead(&nextByte, 1, &BytesRead, 60);
+            OutMessage->ReturnNexus->CTINexusRead(&nextByte, 1, &BytesRead, 60);
 
             if(BytesRead == 1 && nextByte == 0xe0)
             {
-                MyNexus->CTINexusRead (OutMessage + 2, sizeof(OUTMESS) - 2, &BytesRead, 60);
+                OutMessage->ReturnNexus->CTINexusRead (OutMessage + 2, sizeof(OUTMESS) - 2, &BytesRead, 60);
 
                 if(BytesRead == (sizeof(OUTMESS) - 2) && (OutMessage->TailFrame[0] != 0xea && OutMessage->TailFrame[1] == 0x03))
                 {
                     OutMessage->HeadFrame[0] = 0x02;
                     OutMessage->HeadFrame[1] = 0xe0;
-                    OutMessage->ReturnNexus = MyNexus;
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " Inbound Nexus has been successfully realigned " << endl;
@@ -988,3 +944,4 @@ INT realignNexus(OUTMESS *&OutMessage)
 
     return status;
 }
+

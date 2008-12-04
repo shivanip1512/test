@@ -307,7 +307,7 @@ VOID QueueThread (VOID *Arg)
 /* Routine to process results from CCU's */
 CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
 {
-    extern LoadRemoteRoutes(CtiDeviceSPtr RemoteRecord);
+    extern LoadRemoteRoutes(CtiDeviceSPtr &RemoteRecord);
 
     CtiDeviceCCU *ccu = (CtiDeviceCCU *)Dev.get();
 

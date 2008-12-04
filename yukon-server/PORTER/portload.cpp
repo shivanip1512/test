@@ -71,7 +71,7 @@ using namespace std;
 
 extern CtiRouteManager    RouteManager;
 
-LoadRemoteRoutes(CtiDeviceSPtr Dev);
+LoadRemoteRoutes(CtiDeviceSPtr &Dev);
 LoadPortRoutes (USHORT Port);
 
 

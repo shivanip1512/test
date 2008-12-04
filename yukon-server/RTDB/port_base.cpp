@@ -1026,12 +1026,12 @@ CtiPort& CtiPort::setConnectedDeviceUID(const ULONG &i)
 pair< bool, INT > CtiPort::verifyPortStatus(CtiDeviceSPtr Device, INT trace)
 {
     pair< bool, INT > rpair = make_pair( false, NORMAL );
-    static const string PORTER_RELEASE_IDLE_PORTS("PORTER_RELEASE_IDLE_PORTS");
+    static const bool release_idle_ports = gConfigParms.isTrue("PORTER_RELEASE_IDLE_PORTS");
 
     //  no need to attempt this if we're simulating the port
     if( !isSimulated() )
     {
-        if( !isDialup() && !gConfigParms.isTrue(PORTER_RELEASE_IDLE_PORTS)) // We don't always want to re-open these types of port.
+        if( !isDialup() && !release_idle_ports) // We don't always want to re-open these types of port.
         {
             rpair = checkCommStatus(Device, trace);
         }

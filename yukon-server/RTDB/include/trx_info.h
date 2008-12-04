@@ -22,10 +22,9 @@
 
 #include "logger.h"
 #include "queues.h"
-#include "mutex.h"
+#include "critical_section.h"
 #include "porter.h"
 
-#include <limits>
 
 class CtiTransmitterInfo
 {
@@ -36,7 +35,7 @@ public:
 
 private:
 
-    CtiMutex      _statMux;
+    CtiCriticalSection _statusMux;
 
     UINT          _status;
 
@@ -52,8 +51,6 @@ private:
                   _inlgrpq_warning,
                   _inrcolq_expiration;
 
-    INT           _type;  //  we can probably get rid of this - it's never really used
-
     enum
     {
         INLGRPQ_Timeout = 900,
@@ -64,7 +61,6 @@ private:
 public:
 
     CtiTransmitterInfo(int type = -1) :
-        _type(type),
         _status(0),
         _stageTime(0),
         _fiveMinuteCount(0),
@@ -107,9 +103,12 @@ public:
     //  Routine to set a status bit (mutex-protected)
     void setStatus( USHORT mask )
     {
-        CtiLockGuard< CtiMutex > guard(_statMux);
+        CtiLockGuard< CtiCriticalSection > guard(_statusMux);
 
-        if( mask == INRCOLQ )   _inrcolq_expiration = CtiTime::now().seconds() + INRCOLQ_Timeout;
+        if( mask == INRCOLQ )
+        {
+            _inrcolq_expiration = CtiTime::now().seconds() + INRCOLQ_Timeout;
+        }
         if( mask == INLGRPQ )
         {
             _inlgrpq_expiration = CtiTime::now().seconds() + INLGRPQ_Timeout;
@@ -122,7 +121,7 @@ public:
     //  Routine to clear a status bit (mutex-protected)
     void clearStatus( USHORT mask )
     {
-        CtiLockGuard< CtiMutex > guard(_statMux);
+        CtiLockGuard< CtiCriticalSection > guard(_statusMux);
 
         _status &= ~mask;
     }
@@ -130,7 +129,7 @@ public:
     //  Routine to get a status bit (mutex-protected)
     INT getStatus( USHORT mask = std::numeric_limits<USHORT>::max() )
     {
-        CtiLockGuard< CtiMutex > guard(_statMux);
+        CtiLockGuard< CtiCriticalSection > guard(_statusMux);
 
         unsigned long now_seconds = CtiTime::now().seconds();
 

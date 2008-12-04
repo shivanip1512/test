@@ -1637,13 +1637,16 @@ void CtiDeviceManager::writeDynamicPaoInfo( void )
 
     vector<CtiTableDynamicPaoInfo *> dirty_info;
 
-    for( spiterator dev_itr = begin(); dev_itr != end(); dev_itr++ )
+    spiterator dev_itr = begin(),
+               dev_end = end();
+
+    for( ; dev_itr != dev_end; dev_itr++ )
     {
         //  passed by reference
         dev_itr->second->getDirtyInfo(dirty_info);
     }
 
-    if( dirty_info.size() > 0 )
+    if( !dirty_info.empty() )
     {
         try
         {
