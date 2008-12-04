@@ -52,8 +52,6 @@ VOID PerfUpdateThread (PVOID);
 void statisticsNewRequest(long paoportid, long trxpaoid, long targpaoid, UINT &messageFlags);
 void statisticsNewAttempt(long paoportid, long trxpaoid, long targpaoid, int result, UINT messageFlags);
 void statisticsNewCompletion(long paoportid, long trxpaoid, long targpaoid, int result, UINT &messageFlags);
-void statisticsReport( CtiDeviceSPtr pDevice );
-void statisticsRecord();
 
 
 /* Prototypes from PORTPIPE.C */

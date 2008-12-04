@@ -84,7 +84,7 @@ private:
     int _currTrxID;
     int _responsesOnTrxID;
     CtiTime _lastReport;
-    mutable CtiMutex _configMux;
+    static CtiMutex _configMux;
     Cti::Config::CtiConfigDeviceSPtr _deviceConfig;
 
 protected:

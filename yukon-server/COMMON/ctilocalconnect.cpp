@@ -64,17 +64,33 @@ INT CtiLocalConnect<Outbound, Inbound>::CTINexusWrite(VOID *buf, ULONG len, PULO
                 dout << CtiTime() << " **** ctilocalconnect push to queue **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
             */
-            {
-                CtiLockGuard< CtiCriticalSection > g(_crit);
-                _outQueue.insert(o);
-            }
 
-            if( BWritten )
+            if( !o )
             {
-                *BWritten = len;
-            }
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint **** CtiLocalConnect::CTINexusWrite() - Could not allocate new Outbound " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
 
-            retVal = 0;
+                if( BWritten )
+                {
+                    *BWritten = 0;
+                }
+            }
+            else
+            {
+                {
+                    CtiLockGuard< CtiCriticalSection > g(_crit);
+                    _outQueue.insert(o);
+                }
+
+                if( BWritten )
+                {
+                    *BWritten = len;
+                }
+
+                retVal = 0;
+            }
         }
         catch(...)
         {

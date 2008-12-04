@@ -55,7 +55,8 @@ protected:
    INT      MessagePriority;
    int      _soe;             // An ID to group events.. Default to zero if not used
    string   _usr;
-   string   _pwd;
+   //string   _pwd;
+   static const string _unused;
    int      _token;
    string   _src;
 
@@ -93,8 +94,8 @@ public:
    const string& getUser() const;
    CtiMessage&   setUser(const string& usr);
 
-   const string& getPassword() const;
-   CtiMessage&   setPassword(const string& pwd);
+   //const string& getPassword() const;
+   //CtiMessage&   setPassword(const string& pwd);
 
    int getToken() const;
    CtiMessage& setToken(const int& tok);

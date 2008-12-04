@@ -27,6 +27,8 @@
 #include <rw/thr/recursiv.h>
 #include <rw/thr/monitor.h>
 
+#include <bitset>
+
 #include "yukon.h"
 #include "vcomdefs.h"
 #include "dlldefs.h"
@@ -55,7 +57,7 @@ protected:
    INT   _voltageDemandInterval;
    INT   _voltageProfileRate;
 
-   bool  _channelValid[MaxCollectedChannel];
+   std::bitset<MaxCollectedChannel> _channelsValid;
 
 public:
 

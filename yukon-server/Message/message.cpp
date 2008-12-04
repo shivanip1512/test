@@ -25,6 +25,9 @@
 RWDEFINE_COLLECTABLE( CtiMessage, MSG_DEFAULT );
 
 
+const string CtiMessage::_unused;
+
+
 void CtiMessage::saveGuts(RWvostream &aStream) const
 {
    RWCollectable::saveGuts( aStream );
@@ -33,7 +36,7 @@ void CtiMessage::saveGuts(RWvostream &aStream) const
    aStream << MessagePriority;
    aStream << _soe;
    aStream << _usr;
-   aStream << _pwd;
+   aStream << _unused;  //  _pwd;
    aStream << _token;
    aStream << _src;
 }
@@ -42,11 +45,13 @@ void CtiMessage::restoreGuts(RWvistream& aStream)
 {
    RWCollectable::restoreGuts( aStream );
 
+   string tmp;
+
    aStream >> MessageTime;
    aStream >> MessagePriority;
    aStream >> _soe;
    aStream >> _usr;
-   aStream >> _pwd;
+   aStream >> tmp;  //  _pwd;
    aStream >> _token;
    aStream >> _src;
 }
@@ -65,7 +70,7 @@ void CtiMessage::dump() const
    dout << "Priority                       " << MessagePriority << endl;
    dout << "SOE                            " << _soe << endl;
    dout << "User                           " << _usr << endl;
-   dout << "Password                       " << _pwd << endl;
+   //dout << "Password                       " << _pwd << endl;
    dout << "Token                          " << _token << endl;
    dout << "Source                         " << _src << endl;
 
@@ -92,6 +97,7 @@ CtiMessage& CtiMessage::setUser(const string& usr)
    return *this;
 }
 
+/*
 const string& CtiMessage::getPassword() const
 {
    return _pwd;
@@ -101,7 +107,7 @@ CtiMessage& CtiMessage::setPassword(const string& pwd)
    _pwd = pwd;
    return *this;
 }
-
+*/
 int CtiMessage::getToken() const
 {
    return _token;
@@ -117,7 +123,7 @@ CtiMessage::CtiMessage(int Pri) :
    MessagePriority(Pri & 0x0000000f),
    _soe(0),
    _usr(DEFAULT_SYSTEM_USER),
-   _pwd(""),
+   //_pwd(""),
    _token(-1),
    _src("")
 {}
@@ -127,7 +133,7 @@ CtiMessage::CtiMessage(const CtiMessage& aRef) :
    MessagePriority(aRef.getMessagePriority()),
    _soe(0),
    _usr(DEFAULT_SYSTEM_USER),
-   _pwd(""),
+   //_pwd(""),
    _token(-1),
    _src("")
 {}
@@ -142,7 +148,7 @@ CtiMessage& CtiMessage::operator=(const CtiMessage& aRef)
       MessagePriority   = aRef.getMessagePriority();
       _soe              = aRef.getSOE();
       _usr              = aRef.getUser();
-      _pwd              = aRef.getPassword();
+      //_pwd              = aRef.getPassword();
       _token            = aRef.getToken();
       _src              = aRef.getSource();
    }

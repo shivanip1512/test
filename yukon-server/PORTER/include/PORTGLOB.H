@@ -44,10 +44,6 @@
 
 #define NUMPORTEREVENTS                7
 
-
-typedef std::map< ULONG, CtiStatistics * > CtiStatisticsMap_t;
-typedef CtiStatisticsMap_t::iterator CtiStatisticsIterator_t;
-
 extern IM_EX_PORTGLOB INT           PorterRefreshRate;
 
 extern IM_EX_PORTGLOB USHORT        TraceFlag;

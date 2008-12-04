@@ -25,11 +25,6 @@ CtiTableDeviceLoadProfile::CtiTableDeviceLoadProfile() :
     _lastIntervalDemandRate(INT_MAX),
     _loadProfileDemandRate(INT_MAX)
 {
-
-    for( int i = 0; i < MaxCollectedChannel; i++ )
-    {
-        _channelValid[i] = false;
-    }
 }
 
 CtiTableDeviceLoadProfile::CtiTableDeviceLoadProfile(const CtiTableDeviceLoadProfile& aRef)
@@ -46,11 +41,7 @@ CtiTableDeviceLoadProfile& CtiTableDeviceLoadProfile::operator=(const CtiTableDe
         _deviceID               = aRef.getDeviceID();
         _lastIntervalDemandRate = aRef.getLastIntervalDemandRate();
         _loadProfileDemandRate  = aRef.getLoadProfileDemandRate();
-
-        for(int i = 0; i < MaxCollectedChannel; i++)
-        {
-            _channelValid[i]     = aRef.isChannelValid(i);
-        }
+        _channelsValid          = aRef._channelsValid;
     }
 
     return *this;
@@ -61,7 +52,7 @@ INT  CtiTableDeviceLoadProfile::getLoadProfileDemandRate()   const  {  return _l
 INT  CtiTableDeviceLoadProfile::getVoltageDemandInterval()   const  {  return _voltageDemandInterval;   }
 INT  CtiTableDeviceLoadProfile::getVoltageProfileRate()      const  {  return _voltageProfileRate;      }
 
-bool CtiTableDeviceLoadProfile::isChannelValid(int channel)  const  {  return _channelValid[channel];   }
+bool CtiTableDeviceLoadProfile::isChannelValid(int channel)  const  {  return _channelsValid[channel];   }
 
 void CtiTableDeviceLoadProfile::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
@@ -79,7 +70,6 @@ void CtiTableDeviceLoadProfile::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, R
 
 void CtiTableDeviceLoadProfile::DecodeDatabaseReader(RWDBReader &rdr)
 {
-    RWDBNullIndicator isNull;
     string temp_str;
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
@@ -95,13 +85,12 @@ void CtiTableDeviceLoadProfile::DecodeDatabaseReader(RWDBReader &rdr)
     rdr["voltagedmdrate"]         >> _voltageProfileRate;
 
     rdr["loadprofilecollection"] >> temp_str;
-    std::transform(temp_str.begin(), temp_str.end(), temp_str.begin(), tolower);
 
     if( !temp_str.empty() )
     {
         for( int i = 0; i < MaxCollectedChannel; i++ )
         {
-            if( i < temp_str.length() && temp_str[i] == 'y' )
+            if( i < temp_str.length() && tolower(temp_str[i]) == 'y' )
             {
                 if( _loadProfileDemandRate == 0 )
                 {
@@ -113,16 +102,16 @@ void CtiTableDeviceLoadProfile::DecodeDatabaseReader(RWDBReader &rdr)
                         dout << " **** FIX DATABASE ENTRY **** " << endl;
                     }
 
-                    _channelValid[i] = false;
+                    _channelsValid.reset(i);
                 }
                 else
                 {
-                    _channelValid[i] = true;
+                    _channelsValid.set(i);
                 }
             }
             else
             {
-                _channelValid[i] = false;
+                _channelsValid.set(i);
             }
         }
     }
