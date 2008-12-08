@@ -30,7 +30,7 @@ public class EnrollmentRequestEndpoint {
     
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="enrollmentRequest")
     public Element invoke(Element enrollmentRequest, YukonUserContext yukonUserContext) throws Exception {
-        XmlVersionUtils.verifyYukonMessageVersion(enrollmentRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0); 
+        XmlVersionUtils.verifyYukonMessageVersion(enrollmentRequest, "1.0"); 
         
         Namespace ns = YukonXml.getYukonNamespaceForDefault();
         SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(enrollmentRequest);
