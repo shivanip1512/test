@@ -496,8 +496,11 @@ CtiLMGroupBase& CtiLMGroupBase::setPAODescription(const string& description)
 ---------------------------------------------------------------------------*/
 CtiLMGroupBase& CtiLMGroupBase::setDisableFlag(BOOL disable)
 {
-
-    _disableflag = disable;
+    if( disable != _disableflag )
+    {
+        _disableflag = disable;
+        setDirty(true);
+    }
     return *this;
 }
 
