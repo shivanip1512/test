@@ -37,7 +37,7 @@ go
 /* @error ignore-end */
 
 /* Start YUK-5345 */
-IF  EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N'[CCINVENTORY_VIEW]'))
+IF EXISTS (SELECT * FROM SysObjects WHERE type='v' and name = 'CCINVENTORY_VIEW')
 DROP VIEW [CCINVENTORY_VIEW];
 go
 /* End YUK-5345 */
@@ -65,7 +65,7 @@ FROM CAPBANK cb INNER JOIN
 go
 
 /* Start YUK-5345 */
-IF  EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N'[CCOPERATIONS_VIEW]'))
+IF EXISTS (SELECT * FROM SysObjects WHERE type='v' and name = 'CCOPERATIONS_VIEW')
 DROP VIEW [CCOPERATIONS_VIEW];
 go
 /* End YUK-5345 */
