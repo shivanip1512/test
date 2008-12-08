@@ -1,16 +1,14 @@
-package com.cannontech.yukon.api.stars.endpointMappers;
+package com.cannontech.yukon.api.stars.endpointTestMappers;
 
 import org.jdom.Element;
-import org.jdom.Namespace;
 
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.util.ObjectMapper;
-import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentResponse;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XmlUtils;
 
-public class ProgramElementResponseMapper implements ObjectMapper<Element, EnrollmentResponse> {
+public class ProgramEnrollmentElementResponseMapper implements ObjectMapper<Element, EnrollmentResponse> {
 
     @Override
     public EnrollmentResponse map(Element enrollmentResponseElement) throws ObjectMappingException {
@@ -28,18 +26,5 @@ public class ProgramElementResponseMapper implements ObjectMapper<Element, Enrol
         
         return enrollmentResponse;
 
-    }
-    
-    public static Element buildElement(Namespace ns,
-                                       Element enrollmentResponseBase, 
-                                       EnrollmentHelper enrollmentHelper){
-        Element programEnrollmentResult = new Element("programEnrollmentResult", ns);
-        enrollmentResponseBase.addContent(programEnrollmentResult);
-
-        programEnrollmentResult.addContent(XmlUtils.createStringElement("accountNumber", ns, enrollmentHelper.getAccountNumber()));
-        programEnrollmentResult.addContent(XmlUtils.createStringElement("serialNumber", ns, enrollmentHelper.getSerialNumber()));
-        programEnrollmentResult.addContent(XmlUtils.createStringElement("loadProgramName", ns, enrollmentHelper.getProgramName()));
-        programEnrollmentResult.addContent(XmlUtils.createStringElement("loadGroupName", ns, enrollmentHelper.getLoadGroupName()));
-        return programEnrollmentResult;
     }
 }

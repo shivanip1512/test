@@ -2,11 +2,8 @@ package com.cannontech.yukon.api.stars;
 
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-
 import org.jdom.Attribute;
 import org.jdom.Element;
-import org.jdom.JDOMException;
 import org.jdom.Namespace;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
@@ -18,8 +15,7 @@ import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.yukon.api.stars.endpointMappers.ProgramElementRequestMapper;
-import com.cannontech.yukon.api.stars.endpointMappers.ProgramElementResponseMapper;
+import com.cannontech.yukon.api.stars.endpointMappers.ProgramEnrollmentElementRequestMapper;
 import com.cannontech.yukon.api.util.NodeToElementMapperWrapper;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
@@ -32,9 +28,6 @@ public class UnenrollmentRequestEndpoint {
 
     private EnrollmentHelperService enrollmentHelperService;
     
-    @PostConstruct
-    public void initialize() throws JDOMException {}
-    
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="unenrollmentRequest")
     public Element invoke(Element enrollmentRequest, YukonUserContext yukonUserContext) throws Exception {
         XmlVersionUtils.verifyYukonMessageVersion(enrollmentRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0); 
@@ -43,7 +36,7 @@ public class UnenrollmentRequestEndpoint {
         SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(enrollmentRequest);
         List<EnrollmentHelper> programEnrollments = 
             template.evaluate("//y:enrollmentList/y:programEnrollment", 
-                              new NodeToElementMapperWrapper<EnrollmentHelper>(new ProgramElementRequestMapper()));
+                              new NodeToElementMapperWrapper<EnrollmentHelper>(new ProgramEnrollmentElementRequestMapper()));
 
         Element enrollmentResponseBase = new Element("unenrollmentResponse", ns);
         Attribute versionAttribute = new Attribute("version", "1.0"); 
@@ -53,31 +46,27 @@ public class UnenrollmentRequestEndpoint {
         enrollmentResponseBase.addContent(enrollmentResultList);
 
         for (EnrollmentHelper enrollmentHelper : programEnrollments) {
-            Element programEnrollmentResult = ProgramElementResponseMapper.buildElement(ns,
-                                                                                        enrollmentResultList, 
-                                                                                        enrollmentHelper);
+            Element programEnrollmentResult = EnrollmentEndpointUtil.buildEnrollmentResponse(ns,
+                                                                                             enrollmentResultList, 
+                                                                                             enrollmentHelper);
+            Element resultElement;
             try {
                 enrollmentHelperService.doEnrollment(enrollmentHelper, EnrollmentEnum.UNENROLL, yukonUserContext);
+                resultElement = new Element("success", ns);
             } catch(NotFoundException e) {
-                Element failureElement = XMLFailureGenerator.generateFailure(enrollmentRequest, e, "NotFoundException", e.getMessage(), ns);
-                programEnrollmentResult.addContent(failureElement);
-                continue;
+                resultElement = XMLFailureGenerator.generateFailure(enrollmentRequest, e, "NotFoundException", e.getMessage(), ns);
             } catch(IllegalArgumentException e) {
-                Element failureElement = XMLFailureGenerator.generateFailure(enrollmentRequest, e, "IllegalArgumentException", e.getMessage(), ns);
-                programEnrollmentResult.addContent(failureElement);
-                continue;
+                resultElement = XMLFailureGenerator.generateFailure(enrollmentRequest, e, "IllegalArgumentException", e.getMessage(), ns);
             } catch(DuplicateEnrollmentException e) {
-                Element failureElement = XMLFailureGenerator.generateFailure(enrollmentRequest, e, "DuplicateEnrollmentException", e.getMessage(), ns);
-                programEnrollmentResult.addContent(failureElement);
-                continue;
+                resultElement = XMLFailureGenerator.generateFailure(enrollmentRequest, e, "DuplicateEnrollmentException", e.getMessage(), ns);
             }
+            programEnrollmentResult.addContent(resultElement);
     
-            programEnrollmentResult.addContent(new Element("success", ns));
         }
         return enrollmentResponseBase;
     }
     
-        @Autowired
+    @Autowired
     public void setEnrollmentHelperService(
             EnrollmentHelperService enrollmentHelperService) {
         this.enrollmentHelperService = enrollmentHelperService;

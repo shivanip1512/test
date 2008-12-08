@@ -145,6 +145,12 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
         return result != null ? result.doubleValue() : Double.NaN;
     }
 
+
+    public Float evaluateAsFloat(String expression) throws XPathException {
+        Double result = (Double) evaluate(expression, XPathConstants.NUMBER);
+        return result != null ? result.floatValue() : Float.NaN;
+    }
+    
     public long evaluateAsLong(String expression) throws XPathException {
         String result = (String) evaluate(expression, XPathConstants.STRING);
         // let result==null throw a NumberFormatException 

@@ -12,8 +12,7 @@ import org.junit.Test;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentResponse;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.yukon.api.stars.endpointMappers.ProgramElementRequestMapper;
-import com.cannontech.yukon.api.stars.endpointMappers.ProgramElementResponseMapper;
+import com.cannontech.yukon.api.stars.endpointTestMappers.ProgramEnrollmentElementResponseMapper;
 import com.cannontech.yukon.api.util.NodeToElementMapperWrapper;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XmlUtils;
@@ -33,7 +32,6 @@ public class EnrollmentRequestEndpointTest {
         
         impl = new EnrollmentRequestEndpoint();
         impl.setEnrollmentHelperService(enrollmentTestService);
-        impl.initialize();
     }
 
     @Test
@@ -51,7 +49,7 @@ public class EnrollmentRequestEndpointTest {
         // Check the response
         List<EnrollmentResponse> enrollmentResponses = 
             outputTemplate.evaluate(childNodePath, 
-                                    new NodeToElementMapperWrapper<EnrollmentResponse>(new ProgramElementResponseMapper()));
+                                    new NodeToElementMapperWrapper<EnrollmentResponse>(new ProgramEnrollmentElementResponseMapper()));
 
         
         Assert.assertEquals("1234567", enrollmentResponses.get(0).getAccountNumber());
@@ -78,7 +76,7 @@ public class EnrollmentRequestEndpointTest {
         // Check the response
         List<EnrollmentResponse> enrollmentResponses = 
             outputTemplate.evaluate(childNodePath, 
-                                    new NodeToElementMapperWrapper<EnrollmentResponse>(new ProgramElementResponseMapper()));
+                                    new NodeToElementMapperWrapper<EnrollmentResponse>(new ProgramEnrollmentElementResponseMapper()));
 
         
         Assert.assertEquals("1234567", enrollmentResponses.get(0).getAccountNumber());
@@ -105,7 +103,7 @@ public class EnrollmentRequestEndpointTest {
         // Check the response
         List<EnrollmentResponse> enrollmentResponses = 
             outputTemplate.evaluate(childNodePath, 
-                                    new NodeToElementMapperWrapper<EnrollmentResponse>(new ProgramElementResponseMapper()));
+                                    new NodeToElementMapperWrapper<EnrollmentResponse>(new ProgramEnrollmentElementResponseMapper()));
 
         
         Assert.assertEquals("1234567", enrollmentResponses.get(0).getAccountNumber());
@@ -132,7 +130,7 @@ public class EnrollmentRequestEndpointTest {
         // Check the response
         List<EnrollmentResponse> enrollmentResponses = 
             outputTemplate.evaluate(childNodePath, 
-                                    new NodeToElementMapperWrapper<EnrollmentResponse>(new ProgramElementResponseMapper()));
+                                    new NodeToElementMapperWrapper<EnrollmentResponse>(new ProgramEnrollmentElementResponseMapper()));
         
         
         Assert.assertEquals("1234567", enrollmentResponses.get(0).getAccountNumber());
@@ -156,7 +154,7 @@ public class EnrollmentRequestEndpointTest {
         // Check the response
         List<EnrollmentResponse> enrollmentResponses = 
             outputTemplate.evaluate(childNodePath, 
-                                    new NodeToElementMapperWrapper<EnrollmentResponse>(new ProgramElementResponseMapper()));
+                                    new NodeToElementMapperWrapper<EnrollmentResponse>(new ProgramEnrollmentElementResponseMapper()));
 
         
         Assert.assertEquals("1234567", enrollmentResponses.get(0).getAccountNumber());
@@ -186,7 +184,7 @@ public class EnrollmentRequestEndpointTest {
         // Check the response
         List<EnrollmentResponse> enrollmentResponses = 
             outputTemplate.evaluate(childNodePath, 
-                                    new NodeToElementMapperWrapper<EnrollmentResponse>(new ProgramElementResponseMapper()));
+                                    new NodeToElementMapperWrapper<EnrollmentResponse>(new ProgramEnrollmentElementResponseMapper()));
 
         
         Assert.assertEquals("1234567", enrollmentResponses.get(0).getAccountNumber());
@@ -207,9 +205,9 @@ public class EnrollmentRequestEndpointTest {
 
         Element enrollmentListElement = new Element("enrollmentList", ns); 
         requestElement.addContent(enrollmentListElement);
-        ProgramElementRequestMapper.buildElement(ns,
-                                                 enrollmentListElement, 
-                                                 enrollmentHelper);
+        EnrollmentEndpointTestUtil.buildEnrollmentRequest(ns,
+                                                          enrollmentListElement, 
+                                                          enrollmentHelper);
 
         return requestElement;
     }
@@ -224,9 +222,9 @@ public class EnrollmentRequestEndpointTest {
         
         Element enrollmentListElement = new Element("enrollmentList", ns); 
         requestElement.addContent(enrollmentListElement);
-        ProgramElementRequestMapper.buildElement(ns, 
-                                                 enrollmentListElement, 
-                                                 enrollmentHelper);
+        EnrollmentEndpointTestUtil.buildEnrollmentRequest(ns,
+                                                          enrollmentListElement, 
+                                                          enrollmentHelper);
         return requestElement;
     }
     
@@ -242,13 +240,13 @@ public class EnrollmentRequestEndpointTest {
         
         Element enrollmentListElement = new Element("enrollmentList", ns); 
         requestElement.addContent(enrollmentListElement);
-        ProgramElementRequestMapper.buildElement(ns, 
-                                                 enrollmentListElement, 
-                                                 enrollmentHelper1);
+        EnrollmentEndpointTestUtil.buildEnrollmentRequest(ns,
+                                                          enrollmentListElement, 
+                                                          enrollmentHelper1);
         
-        ProgramElementRequestMapper.buildElement(ns, 
-                                                 enrollmentListElement, 
-                                                 enrollmentHelper2);
+        EnrollmentEndpointTestUtil.buildEnrollmentRequest(ns,
+                                                          enrollmentListElement, 
+                                                          enrollmentHelper2);
 
         return requestElement;
     }
@@ -265,9 +263,9 @@ public class EnrollmentRequestEndpointTest {
         
         Element enrollmentListElement = new Element("enrollmentList", ns); 
         requestElement.addContent(enrollmentListElement);
-        ProgramElementRequestMapper.buildElement(ns, 
-                                                 enrollmentListElement, 
-                                                 enrollmentHelper);
+        EnrollmentEndpointTestUtil.buildEnrollmentRequest(ns,
+                                                          enrollmentListElement, 
+                                                          enrollmentHelper);
         
         return requestElement;
     }
