@@ -55,7 +55,7 @@ public class AccountServiceInputsTestController extends MultiActionController{
     // HELPERS
     private ModelAndView returnMav(HttpServletRequest request, List<String> results, List<String> errorReasons) {
         
-        ModelAndView mav = new ModelAndView("home.jsp");
+        ModelAndView mav = new ModelAndView("accountService/inputs/home.jsp");
      
         // re-populate fields
         mav.addAllObjects(ServletUtil.getParameterMap(request));
