@@ -25,9 +25,6 @@
 RWDEFINE_COLLECTABLE( CtiMessage, MSG_DEFAULT );
 
 
-const string CtiMessage::_unused;
-
-
 void CtiMessage::saveGuts(RWvostream &aStream) const
 {
    RWCollectable::saveGuts( aStream );
@@ -36,7 +33,6 @@ void CtiMessage::saveGuts(RWvostream &aStream) const
    aStream << MessagePriority;
    aStream << _soe;
    aStream << _usr;
-   aStream << _unused;  //  _pwd;
    aStream << _token;
    aStream << _src;
 }
@@ -45,13 +41,10 @@ void CtiMessage::restoreGuts(RWvistream& aStream)
 {
    RWCollectable::restoreGuts( aStream );
 
-   string tmp;
-
    aStream >> MessageTime;
    aStream >> MessagePriority;
    aStream >> _soe;
    aStream >> _usr;
-   aStream >> tmp;  //  _pwd;
    aStream >> _token;
    aStream >> _src;
 }
@@ -97,17 +90,6 @@ CtiMessage& CtiMessage::setUser(const string& usr)
    return *this;
 }
 
-/*
-const string& CtiMessage::getPassword() const
-{
-   return _pwd;
-}
-CtiMessage& CtiMessage::setPassword(const string& pwd)
-{
-   _pwd = pwd;
-   return *this;
-}
-*/
 int CtiMessage::getToken() const
 {
    return _token;
@@ -133,7 +115,6 @@ CtiMessage::CtiMessage(const CtiMessage& aRef) :
    MessagePriority(aRef.getMessagePriority()),
    _soe(0),
    _usr(DEFAULT_SYSTEM_USER),
-   //_pwd(""),
    _token(-1),
    _src("")
 {}
@@ -148,7 +129,6 @@ CtiMessage& CtiMessage::operator=(const CtiMessage& aRef)
       MessagePriority   = aRef.getMessagePriority();
       _soe              = aRef.getSOE();
       _usr              = aRef.getUser();
-      //_pwd              = aRef.getPassword();
       _token            = aRef.getToken();
       _src              = aRef.getSource();
    }
