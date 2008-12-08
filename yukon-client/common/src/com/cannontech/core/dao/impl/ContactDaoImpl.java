@@ -525,7 +525,7 @@ public final class ContactDaoImpl implements ContactDao {
     
     @Override
     public List<Integer> getAdditionalContactIdsForCustomer(int customerId){
-        String sql = "SELECT ContactId FROM Contact WHERE CustomerId = ?";
+        String sql = "SELECT ContactId FROM CustomerAdditionalContact WHERE Customerid = ?";
         List<Integer> contactIds = simpleJdbcTemplate.query(sql, new IntegerRowMapper(), customerId);
         return contactIds;
     }
