@@ -445,6 +445,7 @@ INT CtiDeviceMCT::ExecuteRequest( CtiRequestMsg              *pReq,
                                   list< OUTMESS* >     &outList )
 {
     int nRet = NoError;
+    bool twoWay = true;
     list< OUTMESS* > tmpOutList;
 
     if( OutMessage )
@@ -472,11 +473,13 @@ INT CtiDeviceMCT::ExecuteRequest( CtiRequestMsg              *pReq,
         case PutValueRequest:
         {
             nRet = executePutValue( pReq, parse, OutMessage, vgList, retList, tmpOutList );
+            twoWay = false;
             break;
         }
         case ControlRequest:
         {
             nRet = executeControl( pReq, parse, OutMessage, vgList, retList, tmpOutList );
+            twoWay = false;
             break;
         }
         case GetStatusRequest:
@@ -487,6 +490,7 @@ INT CtiDeviceMCT::ExecuteRequest( CtiRequestMsg              *pReq,
         case PutStatusRequest:
         {
             nRet = executePutStatus( pReq, parse, OutMessage, vgList, retList, tmpOutList );
+            twoWay = false;
             break;
         }
         case GetConfigRequest:
@@ -497,6 +501,7 @@ INT CtiDeviceMCT::ExecuteRequest( CtiRequestMsg              *pReq,
         case PutConfigRequest:
         {
             nRet = executePutConfig( pReq, parse, OutMessage, vgList, retList, tmpOutList );
+            twoWay = false;
             break;
         }
         default:
@@ -543,7 +548,7 @@ INT CtiDeviceMCT::ExecuteRequest( CtiRequestMsg              *pReq,
             OutMessage = NULL;
         }
 
-        executeOnDLCRoute(pReq, parse, OutMessage, tmpOutList, vgList, retList, outList, true);
+        executeOnDLCRoute(pReq, parse, OutMessage, tmpOutList, vgList, retList, outList, twoWay);
     }
 
     return nRet;

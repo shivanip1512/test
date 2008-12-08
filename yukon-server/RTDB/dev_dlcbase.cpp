@@ -409,7 +409,7 @@ int CtiDeviceDLCBase::executeOnDLCRoute( CtiRequestMsg              *pReq,
 
             pOut->EventCode = BWORD | WAIT;
 
-            if( result )
+            if( result || (pOut->Buffer.BSt.IO == Emetcon::IO_Function_Read || pOut->Buffer.BSt.IO == Emetcon::IO_Read))
             {
                 pOut->EventCode |= RESULT;
             }
