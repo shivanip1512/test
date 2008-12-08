@@ -471,6 +471,9 @@ public class ImportManagerUtil {
 	    account.setAccountNumber( fields[IDX_ACCOUNT_NO] );
 	    account.setIsCommercial( fields[IDX_CUSTOMER_TYPE].equalsIgnoreCase("COM") || fields[IDX_COMPANY_NAME].length() > 0);
 	    account.setCompany( fields[IDX_COMPANY_NAME] );
+	    if (account.getIsCommercial() && account.getCICustomerType() == 0){
+	    	account.setCICustomerType(YukonListEntryTypes.CUSTOMER_TYPE_COMMERCIAL);
+	    }
 	    account.setAccountNotes( fields[IDX_ACCOUNT_NOTES] );
 	    account.setPropertyNumber( fields[IDX_MAP_NO] );
 	    account.setPropertyNotes( fields[IDX_PROP_NOTES] );
