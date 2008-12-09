@@ -61,5 +61,7 @@ public class EconomicBuilder extends EventBuilderBase {
     public List<EconomicEventParticipant> getParticipantList() {
         return participantList;
     }
-    
+    public Integer getEventDuration() {
+        return getNumberOfWindows() * event.getWindowLengthMinutes();
+    }
 }

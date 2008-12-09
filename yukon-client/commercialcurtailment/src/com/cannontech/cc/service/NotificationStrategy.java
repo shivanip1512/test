@@ -6,6 +6,9 @@ import com.cannontech.cc.model.CurtailmentEvent;
 import com.cannontech.cc.model.Program;
 import com.cannontech.cc.service.builder.CurtailmentBuilder;
 import com.cannontech.cc.service.builder.CurtailmentChangeBuilder;
+import com.cannontech.cc.service.builder.CurtailmentRemoveCustomerBuilder;
+import com.cannontech.cc.service.builder.EventBuilderBase;
+import com.cannontech.cc.service.builder.VerifiedCustomer;
 import com.cannontech.cc.service.exception.EventCreationException;
 import com.cannontech.cc.service.exception.EventModificationException;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -16,6 +19,8 @@ public interface NotificationStrategy extends CICurtailmentStrategy {
     public CurtailmentBuilder createBuilder(Program program, YukonUserContext yukonUserContext);
 
     public CurtailmentChangeBuilder createChangeBuilder(CurtailmentEvent event);
+    
+    public CurtailmentRemoveCustomerBuilder createRemoveBuilder(CurtailmentEvent event);
 
     public void verifyTimes(CurtailmentBuilder builder) throws EventCreationException;
 
@@ -25,6 +30,8 @@ public interface NotificationStrategy extends CICurtailmentStrategy {
     public Boolean canEventBeCancelled(CurtailmentEvent event, LiteYukonUser user);
 
     public Boolean canEventBeAdjusted(CurtailmentEvent event, LiteYukonUser user);
+
+    public Boolean canEventBeRemoved(CurtailmentEvent event, LiteYukonUser user);
 
     public Boolean canEventBeChanged(CurtailmentEvent event, LiteYukonUser user);
 
@@ -41,8 +48,13 @@ public interface NotificationStrategy extends CICurtailmentStrategy {
     public CurtailmentEvent adjustEvent(final CurtailmentChangeBuilder builder,
                                         final LiteYukonUser user) throws EventModificationException;
 
+    public CurtailmentEvent removeCustomerEvent(final CurtailmentRemoveCustomerBuilder builder,
+            final LiteYukonUser user) throws EventModificationException;
+
     @Transactional
     public void deleteEvent(final CurtailmentEvent event, LiteYukonUser user);
 
     public void cancelEvent(CurtailmentEvent event, LiteYukonUser user);
+    
+    public abstract void verifyRemoveCustomer(EventBuilderBase builder, VerifiedCustomer vCustomer);
 }
