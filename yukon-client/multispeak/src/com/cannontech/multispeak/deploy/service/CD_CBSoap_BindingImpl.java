@@ -7,69 +7,92 @@
 
 package com.cannontech.multispeak.deploy.service;
 
+import java.rmi.RemoteException;
+
+import com.cannontech.spring.YukonSpringHook;
+
 public class CD_CBSoap_BindingImpl implements com.cannontech.multispeak.deploy.service.CD_CBSoap_PortType{
-    public com.cannontech.multispeak.deploy.service.ErrorObject[] pingURL() throws java.rmi.RemoteException {
-        return null;
-    }
+    private CD_ServerSoap_PortType cd_server = YukonSpringHook.getBean("cd_server", CD_ServerSoap_PortType.class);
 
-    public java.lang.String[] getMethods() throws java.rmi.RemoteException {
-        return null;
-    }
+	public ErrorObject[] CDDeviceAddNotification(CDDevice[] addedCDDs)
+			throws RemoteException {
+		return cd_server.CDDeviceAddNotification(addedCDDs);
+	}
 
-    public java.lang.String[] getDomainNames() throws java.rmi.RemoteException {
-        return null;
-    }
+	public ErrorObject[] CDDeviceChangedNotification(CDDevice[] changedCDDs)
+			throws RemoteException {
+		return cd_server.CDDeviceChangedNotification(changedCDDs);
+	}
 
-    public com.cannontech.multispeak.deploy.service.DomainMember[] getDomainMembers(java.lang.String domainName) throws java.rmi.RemoteException {
-        return null;
-    }
+	public ErrorObject[] CDDeviceExchangeNotification(
+			CDDeviceExchange[] CDDChangeout) throws RemoteException {
+		return cd_server.CDDeviceExchangeNotification(CDDChangeout);
+	}
 
-    public com.cannontech.multispeak.deploy.service.Meter[] getCDSupportedMeters(java.lang.String lastReceived) throws java.rmi.RemoteException {
-        return null;
-    }
+	public ErrorObject[] CDDeviceRemoveNotification(CDDevice[] removedCDDs)
+			throws RemoteException {
+		return cd_server.CDDeviceRemoveNotification(removedCDDs);
+	}
 
-    public com.cannontech.multispeak.deploy.service.Meter[] getModifiedCDMeters(java.lang.String previousSessionID, java.lang.String lastReceived) throws java.rmi.RemoteException {
-        return null;
-    }
+	public ErrorObject[] CDDeviceRetireNotification(CDDevice[] retiredCDDs)
+			throws RemoteException {
+		return cd_server.CDDeviceRetireNotification(retiredCDDs);
+	}
 
-    public com.cannontech.multispeak.deploy.service.LoadActionCode getCDMeterState(java.lang.String meterNo) throws java.rmi.RemoteException {
-        return null;
-    }
+	public ErrorObject[] customerChangedNotification(Customer[] changedCustomers)
+			throws RemoteException {
+		return cd_server.customerChangedNotification(changedCustomers);
+	}
 
-    public com.cannontech.multispeak.deploy.service.ErrorObject[] initiateConnectDisconnect(com.cannontech.multispeak.deploy.service.ConnectDisconnectEvent[] cdEvents, java.lang.String responseURL, java.lang.String transactionID) throws java.rmi.RemoteException {
-        return null;
-    }
+	public LoadActionCode getCDMeterState(String meterNo)
+			throws RemoteException {
+		return cd_server.getCDMeterState(meterNo);
+	}
 
-    public com.cannontech.multispeak.deploy.service.ErrorObject[] customerChangedNotification(com.cannontech.multispeak.deploy.service.Customer[] changedCustomers) throws java.rmi.RemoteException {
-        return null;
-    }
+	public Meter[] getCDSupportedMeters(String lastReceived)
+			throws RemoteException {
+		return cd_server.getCDSupportedMeters(lastReceived);
+	}
 
-    public com.cannontech.multispeak.deploy.service.ErrorObject[] serviceLocationChangedNotification(com.cannontech.multispeak.deploy.service.ServiceLocation[] changedServiceLocations) throws java.rmi.RemoteException {
-        return null;
-    }
+	public DomainMember[] getDomainMembers(String domainName)
+			throws RemoteException {
+		return cd_server.getDomainMembers(domainName);
+	}
 
-    public com.cannontech.multispeak.deploy.service.ErrorObject[] meterChangedNotification(com.cannontech.multispeak.deploy.service.Meter[] changedMeters) throws java.rmi.RemoteException {
-        return null;
-    }
+	public String[] getDomainNames() throws RemoteException {
+		return cd_server.getDomainNames();
+	}
 
-    public com.cannontech.multispeak.deploy.service.ErrorObject[] CDDeviceAddNotification(com.cannontech.multispeak.deploy.service.CDDevice[] addedCDDs) throws java.rmi.RemoteException {
-        return null;
-    }
+	public String[] getMethods() throws RemoteException {
+		return cd_server.getMethods();
+	}
 
-    public com.cannontech.multispeak.deploy.service.ErrorObject[] CDDeviceChangedNotification(com.cannontech.multispeak.deploy.service.CDDevice[] changedCDDs) throws java.rmi.RemoteException {
-        return null;
-    }
+	public Meter[] getModifiedCDMeters(String previousSessionID,
+			String lastReceived) throws RemoteException {
+		return cd_server.getModifiedCDMeters(previousSessionID, lastReceived);
+	}
 
-    public com.cannontech.multispeak.deploy.service.ErrorObject[] CDDeviceExchangeNotification(com.cannontech.multispeak.deploy.service.CDDeviceExchange[] CDDChangeout) throws java.rmi.RemoteException {
-        return null;
-    }
+	public ErrorObject[] initiateConnectDisconnect(
+			ConnectDisconnectEvent[] cdEvents, String responseURL,
+			String transactionID) throws RemoteException {
+		return cd_server.initiateConnectDisconnect(cdEvents, responseURL,
+				transactionID);
+	}
 
-    public com.cannontech.multispeak.deploy.service.ErrorObject[] CDDeviceRemoveNotification(com.cannontech.multispeak.deploy.service.CDDevice[] removedCDDs) throws java.rmi.RemoteException {
-        return null;
-    }
+	public ErrorObject[] meterChangedNotification(Meter[] changedMeters)
+			throws RemoteException {
+		return cd_server.meterChangedNotification(changedMeters);
+	}
 
-    public com.cannontech.multispeak.deploy.service.ErrorObject[] CDDeviceRetireNotification(com.cannontech.multispeak.deploy.service.CDDevice[] retiredCDDs) throws java.rmi.RemoteException {
-        return null;
-    }
+	public ErrorObject[] pingURL() throws RemoteException {
+		return cd_server.pingURL();
+	}
 
+	public ErrorObject[] serviceLocationChangedNotification(
+			ServiceLocation[] changedServiceLocations) throws RemoteException {
+		return cd_server
+				.serviceLocationChangedNotification(changedServiceLocations);
+	}
+    
+    
 }
