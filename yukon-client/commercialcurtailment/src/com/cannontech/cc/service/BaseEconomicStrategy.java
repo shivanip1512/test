@@ -126,11 +126,16 @@ public abstract class BaseEconomicStrategy extends StrategyBase implements Econo
         revision.setRevision(1); // the first pricing rev is 1
         event.addRevision(revision);
         builder.setEventRevision(revision);
-        
+
+        //set the start time to the previous event's stop time
         builder.getEvent().setStartTime(previous.getStopTime());
-        
-        builder.getEvent().setNotificationTime(previous.getStopTime());
-        
+
+        //set the notification time to now.
+        Date now = timeSource.getCurrentTime();
+        Calendar calendar = Calendar.getInstance(tz);
+        calendar.setTime(now);
+        builder.getEvent().setNotificationTime(calendar.getTime());
+
         builder.getEvent().setWindowLengthMinutes(getWindowLengthMinutes());
         builder.setNumberOfWindows(getDefaultDurationMinutes(program) / getWindowLengthMinutes() / 2);
         
@@ -149,6 +154,10 @@ public abstract class BaseEconomicStrategy extends StrategyBase implements Econo
         return programParameterDao.getParameterValueInt(program, ProgramParameterKey.DEFAULT_EVENT_DURATION_MINUTES);
     }
     
+    protected int getMinimumDurationMinutes(Program program) {
+        return programParameterDao.getParameterValueInt(program, ProgramParameterKey.MINIMUM_EVENT_DURATION_MINUTES);
+    }
+
     protected BigDecimal getDefaultEnergyPrice(Program program) {
         float value = programParameterDao.getParameterValueFloat(program, ProgramParameterKey.DEFAULT_ENERGY_PRICE);
         // specify rounding to five significant places
@@ -190,6 +199,14 @@ public abstract class BaseEconomicStrategy extends StrategyBase implements Econo
             // start time is equal to or less than notification time
             throw new EventCreationException("Start time must be after notification time.");
         }
+
+        if (!builder.getEvent().isEventExtension()) {
+	        int minDuration = getMinimumDurationMinutes(builder.getProgram());
+	        if (builder.getEventDuration() < minDuration) {
+	            throw new EventCreationException("Duration must be greater than " + minDuration + " minutes.");
+	        }
+        }
+
         int notifMinutes = TimeUtil.differenceMinutes(builder.getEvent().getNotificationTime(), builder.getEvent().getStartTime());
         int minNotification = getMinimumNotificationMinutes(builder.getProgram());
         if (notifMinutes < minNotification) {
@@ -548,8 +565,8 @@ public abstract class BaseEconomicStrategy extends StrategyBase implements Econo
         return 60;
     }
     
-    protected int getMinimumAdvanceSelectionEntry() {
-        return 30;
+    protected int getMinimumAdvanceSelectionEntry(Program program) {
+    	return programParameterDao.getParameterValueInt(program, ProgramParameterKey.CUSTOMER_ELECTION_CUTOFF_MINUTES);
     }
 
     @Transactional
@@ -605,7 +622,7 @@ public abstract class BaseEconomicStrategy extends StrategyBase implements Econo
         }
         // first window of revision must not have started
         Date revisionStartTime = pricingRevision.getFirstAffectedWindow().getStartTime();
-        Date latestEntryTime = TimeUtil.addMinutes(revisionStartTime, -getMinimumAdvanceSelectionEntry());
+        Date latestEntryTime = TimeUtil.addMinutes(revisionStartTime, -getMinimumAdvanceSelectionEntry(pricingRevision.getEvent().getProgram()));
         if (time.after(latestEntryTime)) {
             return false;
         }
