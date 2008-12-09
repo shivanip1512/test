@@ -1,5 +1,6 @@
 package com.cannontech.stars.core.dao.impl;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -320,7 +321,7 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
 
         // Update InventoryBase
         Object[] removeInvParams = new Object[] {
-                StarsUtils.translateTstamp(liteInv.getRemoveDate()),
+                new Timestamp(liteInv.getRemoveDate()),
                 liteInv.getInventoryID() };
 
         simpleJdbcTemplate.update(removeInventoryFromAccountSql,
@@ -352,7 +353,10 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
         thermostatScheduleDao.deleteScheduleForInventory(inventoryId);
         thermostatScheduleDao.deleteManualEvents(inventoryId);
         if (liteInv instanceof LiteStarsLMHardware) {
-            lmConfigurationBaseDao.delete(((LiteStarsLMHardware) liteInv).getConfigurationID());
+            LiteStarsLMHardware lmHw = (LiteStarsLMHardware) liteInv;
+            if (lmHw.getConfigurationID() > 0) {
+                lmConfigurationBaseDao.delete(lmHw.getConfigurationID());
+            }
         }
         deleteHardwareToMeterMapping(inventoryId);
         hardwareEventDao.deleteAllLMHardwareEvents(inventoryId);
@@ -440,9 +444,9 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
             p.addValue("AccountID", o.getAccountID());
             p.addValue("InstallationCompanyID", o.getInstallationCompanyID());
             p.addValue("CategoryID", o.getCategoryID());
-            p.addValue("ReceiveDate", StarsUtils.translateTstamp(o.getReceiveDate()));
-            p.addValue("InstallDate", StarsUtils.translateTstamp(o.getInstallDate()));
-            p.addValue("RemoveDate", StarsUtils.translateTstamp(o.getRemoveDate()));
+            p.addValue("ReceiveDate", new Timestamp(o.getReceiveDate()));
+            p.addValue("InstallDate", new Timestamp(o.getInstallDate()));
+            p.addValue("RemoveDate", new Timestamp(o.getRemoveDate()));
             p.addValue("AlternateTrackingNumber", o.getAlternateTrackingNumber());
             p.addValue("VoltageID", o.getVoltageID());
             p.addValue("Notes", o.getNotes());

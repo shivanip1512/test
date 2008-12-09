@@ -22,6 +22,8 @@ import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
+import com.cannontech.stars.ws.dto.StarsControllableDeviceDTO;
+import com.cannontech.stars.ws.helper.StarsControllableDeviceHelper;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 
@@ -30,6 +32,7 @@ public class LoadControlServiceInputsTestController extends MultiActionControlle
     private DateFormattingService dateformattingService;
     private LoadControlService loadControlService;
     private EnrollmentHelperService enrollmentHelperService;
+    private StarsControllableDeviceHelper starsControllableDeviceHelper;
     
     public ModelAndView home(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         return returnMav(request, new ArrayList<String>(0));
@@ -84,8 +87,8 @@ public class LoadControlServiceInputsTestController extends MultiActionControlle
         List<String> results = new ArrayList<String>();
         
         String scenarioName = ServletRequestUtils.getRequiredStringParameter(request, "scenarioName");
-        Date startTime = parseStartStopDateTime(request, "start", userContext);
-        Date stopTime = parseStartStopDateTime(request, "stop", userContext);
+        Date startTime = parseDateTime(request, "start", userContext);
+        Date stopTime = parseDateTime(request, "stop", userContext);
         boolean force = ServletRequestUtils.getBooleanParameter(request, "force", false);
         boolean observeConstraintsAndExecute = ServletRequestUtils.getBooleanParameter(request, "observeConstraintsAndExecute", false);
         
@@ -113,8 +116,8 @@ public class LoadControlServiceInputsTestController extends MultiActionControlle
         List<String> results = new ArrayList<String>();
         
         String programName = ServletRequestUtils.getRequiredStringParameter(request, "programName");
-        Date startTime = parseStartStopDateTime(request, "start", userContext);
-        Date stopTime = parseStartStopDateTime(request, "stop", userContext);
+        Date startTime = parseDateTime(request, "start", userContext);
+        Date stopTime = parseDateTime(request, "stop", userContext);
         int gearNumber = ServletRequestUtils.getRequiredIntParameter(request, "gearNumber");
         boolean force = ServletRequestUtils.getBooleanParameter(request, "force", false);
         boolean observeConstraintsAndExecute = ServletRequestUtils.getBooleanParameter(request, "observeConstraintsAndExecute", false);
@@ -139,7 +142,7 @@ public class LoadControlServiceInputsTestController extends MultiActionControlle
         List<String> results = new ArrayList<String>();
         
         String scenarioName = ServletRequestUtils.getRequiredStringParameter(request, "scenarioName");
-        Date stopTime = parseStartStopDateTime(request, "stop", userContext);
+        Date stopTime = parseDateTime(request, "stop", userContext);
         boolean force = ServletRequestUtils.getBooleanParameter(request, "force", false);
         boolean observeConstraintsAndExecute = ServletRequestUtils.getBooleanParameter(request, "observeConstraintsAndExecute", false);
         
@@ -167,7 +170,7 @@ public class LoadControlServiceInputsTestController extends MultiActionControlle
         List<String> results = new ArrayList<String>();
         
         String programName = ServletRequestUtils.getRequiredStringParameter(request, "programName");
-        Date stopTime = parseStartStopDateTime(request, "stop", userContext);
+        Date stopTime = parseDateTime(request, "stop", userContext);
         boolean force = ServletRequestUtils.getBooleanParameter(request, "force", false);
         boolean observeConstraintsAndExecute = ServletRequestUtils.getBooleanParameter(request, "observeConstraintsAndExecute", false);
         
@@ -245,6 +248,70 @@ public class LoadControlServiceInputsTestController extends MultiActionControlle
         return returnMav(request, results);
     }
     
+    //====================================================================================================================================
+    // ADD A DEVICE TO AN ACCOUNT
+    //====================================================================================================================================
+    public ModelAndView addDeviceToAccount(HttpServletRequest request, HttpServletResponse response) throws ServletException, Exception {
+
+        List<String> results = new ArrayList<String>();        
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+
+        StarsControllableDeviceDTO deviceInfo = new StarsControllableDeviceDTO();
+        deviceInfo.setAccountNumber(ServletRequestUtils.getRequiredStringParameter(request, "accountNumber"));
+        deviceInfo.setSerialNumber(ServletRequestUtils.getRequiredStringParameter(request, "serialNumber"));        
+        deviceInfo.setDeviceType(ServletRequestUtils.getRequiredStringParameter(request, "deviceType"));
+        deviceInfo.setFieldInstallDate(parseDateTime(request, "fieldInstall", userContext));
+        deviceInfo.setServiceCompanyName(ServletRequestUtils.getStringParameter(request, "serviceCompanyName"));
+        deviceInfo.setDeviceLabel(ServletRequestUtils.getStringParameter(request, "deviceLabel"));        
+
+        starsControllableDeviceHelper.addDeviceToAccount(deviceInfo, userContext.getYukonUser());
+        results.add(deviceInfo.toString());
+        
+        return returnMav(request, results);
+    }
+    
+    //====================================================================================================================================
+    // UPDATE A DEVICE ON AN ACCOUNT
+    //====================================================================================================================================
+    public ModelAndView updateDeviceOnAccount(HttpServletRequest request, HttpServletResponse response) throws ServletException, Exception {
+
+        List<String> results = new ArrayList<String>();        
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+
+        StarsControllableDeviceDTO deviceInfo = new StarsControllableDeviceDTO();
+        deviceInfo.setAccountNumber(ServletRequestUtils.getRequiredStringParameter(request, "accountNumber"));
+        deviceInfo.setSerialNumber(ServletRequestUtils.getRequiredStringParameter(request, "serialNumber"));        
+        deviceInfo.setDeviceType(ServletRequestUtils.getRequiredStringParameter(request, "deviceType"));
+        deviceInfo.setFieldInstallDate(parseDateTime(request, "fieldInstall", userContext));
+        deviceInfo.setServiceCompanyName(ServletRequestUtils.getStringParameter(request, "serviceCompanyName"));
+        deviceInfo.setDeviceLabel(ServletRequestUtils.getStringParameter(request, "deviceLabel"));        
+
+        starsControllableDeviceHelper.updateDeviceOnAccount(deviceInfo, userContext.getYukonUser());
+        results.add(deviceInfo.toString());
+        
+        return returnMav(request, results);
+    }
+    
+    //====================================================================================================================================
+    // REMOVE A DEVICE FROM AN ACCOUNT
+    //====================================================================================================================================
+    public ModelAndView removeDeviceFromAccount(HttpServletRequest request, HttpServletResponse response) throws ServletException, Exception {
+
+        List<String> results = new ArrayList<String>();        
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+
+        StarsControllableDeviceDTO deviceInfo = new StarsControllableDeviceDTO();
+        deviceInfo.setAccountNumber(ServletRequestUtils.getRequiredStringParameter(request, "accountNumber"));
+        deviceInfo.setSerialNumber(ServletRequestUtils.getRequiredStringParameter(request, "serialNumber"));        
+        deviceInfo.setDeviceType(ServletRequestUtils.getRequiredStringParameter(request, "deviceType"));
+        deviceInfo.setFieldRemoveDate(parseDateTime(request, "fieldRemove", userContext));
+
+        starsControllableDeviceHelper.removeDeviceFromAccount(deviceInfo, userContext.getYukonUser());
+        results.add(deviceInfo.toString());
+        
+        return returnMav(request, results);
+    }    
+    
     // HELPERS
     private ModelAndView returnMav(HttpServletRequest request, List<String> results) {
         
@@ -257,17 +324,21 @@ public class LoadControlServiceInputsTestController extends MultiActionControlle
         return mav;
     }
     
-    private Date parseStartStopDateTime(HttpServletRequest request, String startOrStop, YukonUserContext userContext) throws ServletException, java.text.ParseException {
+    private Date parseDateTime(HttpServletRequest request, String paramName, YukonUserContext userContext) throws ServletException, java.text.ParseException {
         
         Date date = null;
-        String dateStr = ServletRequestUtils.getStringParameter(request, startOrStop + "Date", null);
-        String timeStr = ServletRequestUtils.getStringParameter(request, startOrStop + "Time", null);
+        String dateStr = ServletRequestUtils.getStringParameter(request, paramName + "Date", null);
+        String timeStr = ServletRequestUtils.getStringParameter(request, paramName + "Time", null);
         
         if (dateStr == null) {
             return null;
         }
         
-        String d = dateStr + " " + timeStr;
+        String d = dateStr;
+        if (timeStr != null) {
+            d = dateStr + " " + timeStr;
+        }
+        
         try {
             date = dateformattingService.flexibleDateParser(d, userContext);
         } catch (Exception e) {
@@ -292,5 +363,11 @@ public class LoadControlServiceInputsTestController extends MultiActionControlle
     @Autowired
     public void setLoadControlService(LoadControlService loadControlService) {
         this.loadControlService = loadControlService;
+    }
+    
+    @Autowired
+    public void setStarsControllableDeviceHelper(
+            StarsControllableDeviceHelper starsControllableDeviceHelper) {
+        this.starsControllableDeviceHelper = starsControllableDeviceHelper;
     }
 }

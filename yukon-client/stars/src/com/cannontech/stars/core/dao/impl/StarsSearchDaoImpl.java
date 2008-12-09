@@ -130,7 +130,7 @@ public class StarsSearchDaoImpl implements StarsSearchDao {
 		}
 		
 		LiteInventoryBase inventoryBase = inventoryBaseList.get(0);
-		if(energyCompany.getEnergyCompanyID() != inventoryBase.getEnergyCompanyId()) {
+		if(!energyCompany.getEnergyCompanyID().equals(inventoryBase.getEnergyCompanyId())) {
 			LiteStarsEnergyCompany inventoryEC = ecMappingDao.getInventoryEC(inventoryBase.getInventoryID());
 			throw new ObjectInOtherEnergyCompanyException( inventoryBase, inventoryEC);
 		}
@@ -180,7 +180,7 @@ public class StarsSearchDaoImpl implements StarsSearchDao {
 			return inventoryBase;
 		}
 		
-		if(energyCompany.getEnergyCompanyID() != inventoryBase.getEnergyCompanyId()) {
+		if(!energyCompany.getEnergyCompanyID().equals(inventoryBase.getEnergyCompanyId())) {
 			LiteStarsEnergyCompany inventoryEC = ecMappingDao.getInventoryEC(inventoryBase.getInventoryID());
 			throw new ObjectInOtherEnergyCompanyException( inventoryBase, inventoryEC);
 		}

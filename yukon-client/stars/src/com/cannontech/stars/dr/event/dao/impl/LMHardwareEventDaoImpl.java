@@ -2,6 +2,7 @@ package com.cannontech.stars.dr.event.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -114,7 +115,7 @@ public class LMHardwareEventDaoImpl implements LMHardwareEventDao,
                                   eventId,
                                   lmHwEvent.getEventTypeID(),
                                   lmHwEvent.getActionID(),
-                                  StarsUtils.translateTstamp(lmHwEvent.getEventDateTime()),
+                                  new Timestamp(lmHwEvent.getEventDateTime()),
                                   lmHwEvent.getNotes(),
                                   lmHwEvent.getAuthorizedBy());
 
@@ -134,7 +135,7 @@ public class LMHardwareEventDaoImpl implements LMHardwareEventDao,
     public LiteLMHardwareEvent update(LiteLMHardwareEvent lmHwEvent) {
 
         simpleJdbcTemplate.update(updateLmHwEventSql,
-                                  StarsUtils.translateTstamp(lmHwEvent.getEventDateTime()),
+                                  new Timestamp(lmHwEvent.getEventDateTime()),
                                   lmHwEvent.getNotes(),
                                   lmHwEvent.getAuthorizedBy(),
                                   lmHwEvent.getEventID());

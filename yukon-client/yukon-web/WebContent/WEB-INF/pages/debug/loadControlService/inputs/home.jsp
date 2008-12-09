@@ -319,6 +319,102 @@
             </td>
         </tr>
 
+        <%-- ADD A DEVICE TO AN ACCOUNT--%>
+        <tr>
+            <td class="functionality">Add a device to an account</td>
+            <td class="inputTest">
+                <form action="/spring/debug/loadControlService/inputs/addDeviceToAccount" method="post">
+                    <tags:nameValueContainer>
+                    
+                        <tags:nameValue name="Account Number" nameColumnWidth="200px">
+                            <input type="text" name="accountNumber" value="${accountNumber}">
+                        </tags:nameValue>
+                        <tags:nameValue name="Serial Number" nameColumnWidth="200px">
+                            <input type="text" name="serialNumber" value="${serialNumber}">
+                        </tags:nameValue>                        
+                        <tags:nameValue name="Device Type" nameColumnWidth="200px">
+                            <input type="text" name="deviceType" value="${deviceType}">
+                        </tags:nameValue>
+                        <tags:nameValue name="Field Install Date">
+                            <tags:dateInputCalendar fieldName="fieldInstallDate" fieldValue="${fieldInstallDate}"/>
+                        </tags:nameValue>                        
+                        <tags:nameValue name="Service Company Name" nameColumnWidth="200px">
+                            <input type="text" name="serviceCompanyName" value="${serviceCompanyName}">
+                        </tags:nameValue>
+                        <tags:nameValue name="Device Label" nameColumnWidth="200px">
+                            <input type="text" name="deviceLabel" value="${deviceLabel}">
+                        </tags:nameValue>
+                        
+                        <tags:nameValue name="RUN">
+                            <input type="submit" value="TEST">
+                        </tags:nameValue>
+                    </tags:nameValueContainer>
+                </form>
+            </td>
+        </tr>
+        
+        <%-- UPDATE A DEVICE ON AN ACCOUNT--%>
+        <tr>
+            <td class="functionality">Update a device on an account</td>
+            <td class="inputTest">
+                <form action="/spring/debug/loadControlService/inputs/updateDeviceOnAccount" method="post">
+                    <tags:nameValueContainer>
+                    
+                        <tags:nameValue name="Account Number" nameColumnWidth="200px">
+                            <input type="text" name="accountNumber" value="${accountNumber}">
+                        </tags:nameValue>
+                        <tags:nameValue name="Serial Number" nameColumnWidth="200px">
+                            <input type="text" name="serialNumber" value="${serialNumber}">
+                        </tags:nameValue>                        
+                        <tags:nameValue name="Device Type" nameColumnWidth="200px">
+                            <input type="text" name="deviceType" value="${deviceType}">
+                        </tags:nameValue>
+                        <tags:nameValue name="Field Install Date">
+                            <tags:dateInputCalendar fieldName="fieldInstallDate" fieldValue="${fieldInstallDate}"/>
+                        </tags:nameValue>                        
+                        <tags:nameValue name="Service Company Name" nameColumnWidth="200px">
+                            <input type="text" name="serviceCompanyName" value="${serviceCompanyName}">
+                        </tags:nameValue>
+                        <tags:nameValue name="Device Label" nameColumnWidth="200px">
+                            <input type="text" name="deviceLabel" value="${deviceLabel}">
+                        </tags:nameValue>
+                        
+                        <tags:nameValue name="RUN">
+                            <input type="submit" value="TEST">
+                        </tags:nameValue>
+                    </tags:nameValueContainer>
+                </form>
+            </td>
+        </tr>
+        
+        <%-- REMOVE A DEVICE FROM AN ACCOUNT--%>
+        <tr>
+            <td class="functionality">Remove a device from an account</td>
+            <td class="inputTest">
+                <form action="/spring/debug/loadControlService/inputs/removeDeviceFromAccount" method="post">
+                    <tags:nameValueContainer>
+                    
+                        <tags:nameValue name="Account Number" nameColumnWidth="200px">
+                            <input type="text" name="accountNumber" value="${accountNumber}">
+                        </tags:nameValue>
+                        <tags:nameValue name="Serial Number" nameColumnWidth="200px">
+                            <input type="text" name="serialNumber" value="${serialNumber}">
+                        </tags:nameValue>                        
+                        <tags:nameValue name="Device Type" nameColumnWidth="200px">
+                            <input type="text" name="deviceType" value="${deviceType}">
+                        </tags:nameValue>
+                        <tags:nameValue name="Field Remove Date">
+                            <tags:dateInputCalendar fieldName="fieldRemoveDate" fieldValue="${fieldRemoveDate}"/>
+                        </tags:nameValue>                        
+                        
+                        <tags:nameValue name="RUN">
+                            <input type="submit" value="TEST">
+                        </tags:nameValue>
+                    </tags:nameValueContainer>
+                </form>
+            </td>
+        </tr>                
+
     </table>
     
 </cti:standardPage>

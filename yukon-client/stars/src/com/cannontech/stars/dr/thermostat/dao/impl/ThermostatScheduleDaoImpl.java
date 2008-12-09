@@ -604,8 +604,10 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao, Initial
     @Transactional
     public void deleteScheduleForInventory(Integer inventoryId) {
         String sql = "SELECT ScheduleId FROM LMThermostatSchedule WHERE InventoryId = ?";
-        Integer scheduleId = simpleJdbcTemplate.queryForInt(sql, inventoryId);
-        delete(scheduleId);
+        List<Integer> scheduleIds = simpleJdbcTemplate.query(sql, new IntegerRowMapper(), inventoryId);
+        for(Integer scheduleId : scheduleIds) {
+            delete(scheduleId);
+        }
     }
     
     @Override

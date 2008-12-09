@@ -46,7 +46,7 @@ public class StarsApplianceDaoImpl implements StarsApplianceDao {
     public List<LiteStarsAppliance> getUnassignedAppliances(int accountId, int energyCompanyId) {
         final SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
         sqlBuilder.append("SELECT AccountID,ApplianceID,ApplianceCategoryID,ProgramID,YearManufactured, ");
-        sqlBuilder.append("ManufacturerID,LocationID,KWCapacity,EfficiencyRating,Notes,ModelNumber, ");
+        sqlBuilder.append("ManufacturerID,LocationID,KWCapacity,EfficiencyRating,Notes,ModelNumber ");
         sqlBuilder.append("FROM ApplianceBase ab ");
         sqlBuilder.append("WHERE ab.AccountID = ? AND NOT EXISTS ");        
         sqlBuilder.append("(SELECT InventoryID FROM  LMHardwareConfiguration lmhc WHERE ab.ApplianceID = lmhc.ApplianceID) ");        

@@ -2,6 +2,8 @@ package com.cannontech.stars.ws.dto;
 
 import java.util.Date;
 
+import org.springframework.core.style.ToStringCreator;
+
 /**
  * This is a Controllable Device data transfer object, used when adding/updating a
  * Device to an account from the Web service.
@@ -81,5 +83,17 @@ public class StarsControllableDeviceDTO {
     public void setThrowable(Throwable throwable) {
         this.throwable = throwable;
     }
+    
+    public String toString() {
+        ToStringCreator tsc = new ToStringCreator(this);
+        tsc.append("accountNumber", getAccountNumber());
+        tsc.append("serialNumber", getSerialNumber());
+        tsc.append("deviceType", getDeviceType());
+        tsc.append("fieldInstallDate", getFieldInstallDate());
+        tsc.append("serviceCompanyName", getServiceCompanyName());
+        tsc.append("deviceLabel", getDeviceLabel());
+        tsc.append("fieldRemoveDate", getFieldRemoveDate());
 
+        return tsc.toString();
+    }
 }

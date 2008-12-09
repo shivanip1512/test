@@ -33,7 +33,7 @@ public class EventInventoryDaoImpl implements EventInventoryDao,
 
     private List<Integer> getInventoryEventIds(Integer inventoryId) {
         List<Integer> eventIds = new ArrayList<Integer>();
-        String sql = "SELECT EventId FROM EventInventory EI, EventBase EB WHERE EB.EventId = EI.EventId AND EI.InventoryId = ?";
+        String sql = "SELECT EB.EventId FROM EventInventory EI, EventBase EB WHERE EB.EventId = EI.EventId AND EI.InventoryId = ?";
         eventIds = simpleJdbcTemplate.query(sql,
                                             new IntegerRowMapper(),
                                             inventoryId);

@@ -21,7 +21,7 @@ public class StaticLoadGroupMappingDaoImpl implements StaticLoadGroupMappingDao 
     static {
         selectLoadGroupSql = "SELECT distinct LoadGroupID, ApplianceCategoryID, ZipCode, ConsumptionTypeID, " 
             + " SwitchTypeID FROM StaticLoadGroupMapping " 
-            + " WHERE ApplianceCategoryID=? AND ZipCode LIKE '?%' AND ConsumptionTypeID=? " 
+            + " WHERE ApplianceCategoryID=? AND ZipCode LIKE ? AND ConsumptionTypeID=? " 
             + " AND SwitchTypeID = ?";
     }
 
@@ -32,7 +32,7 @@ public class StaticLoadGroupMappingDaoImpl implements StaticLoadGroupMappingDao 
 
         // StaticLoadGroupMapping params
         Object[] loadGroupParams = new Object[] {
-                criteria.getApplianceCategoryID(), criteria.getZipCode(),
+                criteria.getApplianceCategoryID(), criteria.getZipCode() + "%",
                 criteria.getConsumptionTypeID(), criteria.getSwitchTypeID() };
 
         List<StarsStaticLoadGroupMapping> loadGroups = simpleJdbcTemplate.query(selectLoadGroupSql,
