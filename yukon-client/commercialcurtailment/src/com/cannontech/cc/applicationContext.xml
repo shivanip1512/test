@@ -58,6 +58,7 @@
   
   <bean id="commercialCurtailmentStrategyBase" class="com.cannontech.cc.service.StrategyBase" abstract="true">
     <property name="loadPoint" value="CurrentLoad"/>
+    <property name="contractFirmDemand" value="ContractFrmDmd"/>
     
     <property name="groupService" ref="groupService"/>
     <property name="notificationProxy" ref="notificationProxy"/>
@@ -128,6 +129,7 @@
         <value>DEFAULT_EVENT_OFFSET_MINUTES</value>
         <value>DEFAULT_NOTIFICATION_OFFSET_MINUTES</value>
         <value>DEFAULT_EVENT_DURATION_MINUTES</value>
+        <value>MINIMUM_EVENT_DURATION_MINUTES</value>
         <value>DEFAULT_ENERGY_PRICE</value>
         <value>MINIMUM_NOTIFICATION_MINUTES</value>
       </set>
@@ -152,6 +154,17 @@
         parent="genericEconomic"
         autowire="byType">
     <property name="isocCommonStrategy" ref="isocCommonStrategy"/>
+    <property name="parameters">
+      <set>
+        <value>DEFAULT_EVENT_OFFSET_MINUTES</value>
+        <value>DEFAULT_NOTIFICATION_OFFSET_MINUTES</value>
+        <value>DEFAULT_EVENT_DURATION_MINUTES</value>
+        <value>MINIMUM_EVENT_DURATION_MINUTES</value>
+        <value>DEFAULT_ENERGY_PRICE</value>
+        <value>MINIMUM_NOTIFICATION_MINUTES</value>
+        <value>CUSTOMER_ELECTION_CUTOFF_MINUTES</value>
+      </set>
+    </property>
   </bean>
   
   
@@ -167,6 +180,8 @@
            <value>InterruptHours</value>
            <value>MinimumNotice</value>
            <value>ContractIntLoad</value>
+           <value>MinEventDuration</value>
+           <value>InterruptHrs24Hr</value>
          </set>
        </entry>
        <entry key="ISOC-load">
