@@ -7,6 +7,8 @@ function initiateCannonDataUpdate(url, delayMs) {
     var lastUpdate = 0;
     var failureCount = 0;
     var processResponseCallback = function(transport) {
+        var someValueHasUpdated = false;
+        
         // looks like stuff is working, hide error div
         $('cannonUpdaterErrorDiv').hide();
         failureCount = 0;
@@ -22,6 +24,7 @@ function initiateCannonDataUpdate(url, delayMs) {
             if (newData && newData != it.innerHTML) {
                 // data was sent and is different than current
                 it.innerHTML = newData;
+                someValueHasUpdated = true;
                 // make it glow
                 if (!disableHighlight) {
                     new Effect.Highlight(it, {'duration': 3.5, 'startcolor': '#FFE900'});
@@ -51,6 +54,12 @@ function initiateCannonDataUpdate(url, delayMs) {
             var idMap = $H(it['identifierMap']);
             var allIdentifierValues = $H();
             
+            if( idMap.keys().length == 0 && someValueHasUpdated) {
+            	//callback for any value change when no identifiers provided
+            	it.callback();
+            	return;
+            }
+           
             idMap.keys().each(function(idFieldName) {
             	var newData = responseStruc.data[idMap[idFieldName]];
             	if(newData) {
@@ -60,8 +69,7 @@ function initiateCannonDataUpdate(url, delayMs) {
             
             if(allIdentifierValues.keys().length >0) {
                 it.callback(allIdentifierValues);
-            }
-           
+            } 
         });
         // save latest date
         lastUpdate = responseStruc.toDate;

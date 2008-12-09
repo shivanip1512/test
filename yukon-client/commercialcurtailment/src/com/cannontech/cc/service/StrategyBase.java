@@ -49,6 +49,7 @@ public abstract class StrategyBase implements CICurtailmentStrategy {
     private INotifConnection notificationProxy;
     private String methodKey;
     private CICustomerPointType loadPoint;
+    private CICustomerPointType contractFirmDemand;
     
     public ProgramParameterDao getProgramParameterDao() {
         return programParameterDao;
@@ -152,11 +153,29 @@ public abstract class StrategyBase implements CICurtailmentStrategy {
     List<? extends BaseEvent> getEventsForProgram(Program program);
 
     public BigDecimal getCurrentLoad(CICustomerStub customer) throws PointException {
-        LitePoint point = pointTypeHelper.getPoint(customer, loadPoint);
+        LitePoint point = getCurrentLoadPoint(customer);
         double interruptLoad = pointAccess.getPointValue(point);
         
         BigDecimal bigDecimal = new BigDecimal(interruptLoad, new MathContext(7));
         return bigDecimal;
+    }
+    
+    public LitePoint getCurrentLoadPoint(CICustomerStub customer) throws PointException {
+        LitePoint point = pointTypeHelper.getPoint(customer, loadPoint);
+        return point;
+    }
+
+    public BigDecimal getContractFirmDemand(CICustomerStub customer) throws PointException {
+        LitePoint point = getContractFirmDemandPoint(customer);
+        double fsl = pointAccess.getPointValue(point);
+        
+        BigDecimal bigDecimal = new BigDecimal(fsl, new MathContext(7));
+        return bigDecimal;
+    }
+    
+    public LitePoint getContractFirmDemandPoint(CICustomerStub customer) throws PointException {
+        LitePoint point = pointTypeHelper.getPoint(customer, contractFirmDemand);
+        return point;
     }
     
     protected void sendProgramNotifications(BaseEvent event, List<? extends BaseParticipant> participants, String action) {
@@ -176,6 +195,11 @@ public abstract class StrategyBase implements CICurtailmentStrategy {
 
     public Set<ProgramParameterKey> getParameters() {
         return parameters;
+    }
+
+    @Override
+    public String getConstraintStatus(CICustomerStub customer) {
+    	return "---";
     }
 
     @Required
@@ -217,5 +241,10 @@ public abstract class StrategyBase implements CICurtailmentStrategy {
     final public void setLoadPoint(CICustomerPointType loadPoint) {
         this.loadPoint = loadPoint;
     }
+    
+    @Required
+    public void setContractFirmDemand(CICustomerPointType contractFirmDemand) {
+		this.contractFirmDemand = contractFirmDemand;
+	}
 
 }

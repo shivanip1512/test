@@ -12,6 +12,7 @@ import com.cannontech.cc.model.ProgramParameter;
 import com.cannontech.cc.service.builder.EventBuilderBase;
 import com.cannontech.cc.service.builder.VerifiedNotifCustomer;
 import com.cannontech.common.exception.PointException;
+import com.cannontech.database.data.lite.LitePoint;
 
 public interface CICurtailmentStrategy {
 
@@ -33,7 +34,15 @@ public interface CICurtailmentStrategy {
     public List<? extends BaseEvent> getEventsForProgram(Program program);
 
     public BigDecimal getCurrentLoad(CICustomerStub customer) throws PointException;
+    
+    public LitePoint getCurrentLoadPoint(CICustomerStub customer) throws PointException;
 
+    public BigDecimal getContractFirmDemand(CICustomerStub customer) throws PointException;
+    
+    public LitePoint getContractFirmDemandPoint(CICustomerStub customer) throws PointException;
+    
     public void forceDelete(BaseEvent event);
+    
+    public String getConstraintStatus(CICustomerStub customer);
 
 }

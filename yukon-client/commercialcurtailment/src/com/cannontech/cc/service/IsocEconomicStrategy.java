@@ -100,6 +100,11 @@ public class IsocEconomicStrategy extends BaseEconomicStrategy {
         }
     }
     
+    @Override
+    public String getConstraintStatus(CICustomerStub customer) {
+    	return isocCommonStrategy.getConstraintStatus(customer);
+    }
+
     public IsocCommonStrategy getIsocCommonStrategy() {
         return isocCommonStrategy;
     }

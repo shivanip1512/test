@@ -18,6 +18,7 @@ import com.cannontech.cc.service.builder.VerifiedNotifCustomer;
 import com.cannontech.common.exception.PointException;
 import com.cannontech.web.cc.methods.EventCreationBase;
 import com.cannontech.web.cc.util.SelectableCustomer;
+import com.cannontech.web.updater.point.PointDataRegistrationService;
 import com.cannontech.web.util.JSFUtil;
 
 public class CustomerSelectionBean {
@@ -27,6 +28,7 @@ public class CustomerSelectionBean {
     private List<Group> selectedGroupList;
     private List<SelectableCustomer> customerList;
     private DataModel customerListModel;
+    private PointDataRegistrationService registrationService;
     
     public List<Group> getSelectedGroupList() {
         return selectedGroupList;
@@ -89,7 +91,32 @@ public class CustomerSelectionBean {
             return "n/a";
         }
     }
+
+    public String getLoadPointUpdaterStr() {
+        SelectableCustomer sCustomer = (SelectableCustomer) customerListModel.getRowData();
+        try {
+        	int currentLoadPointId = eventBean.getStrategy().getCurrentLoadPoint(sCustomer.getCustomer()).getPointID();
+        	return registrationService.getRawPointDataUpdaterSpan(currentLoadPointId, JSFUtil.getYukonUserContext());
+        } catch (PointException e) {    //TODO...what should be caught here???
+            return "n/a";
+        }
+    }
+
+    public String getContractFirmDemandUpdaterStr() {
+        SelectableCustomer sCustomer = (SelectableCustomer) customerListModel.getRowData();
+        try {
+        	int fslPointId = eventBean.getStrategy().getContractFirmDemandPoint(sCustomer.getCustomer()).getPointID();
+        	return registrationService.getRawPointDataUpdaterSpan(fslPointId, JSFUtil.getYukonUserContext());
+        } catch (PointException e) {    //TODO...what should be caught here???
+            return "n/a";
+        }
+    }
     
+    public String getConstraintStatus() {
+    	SelectableCustomer sCustomer = (SelectableCustomer) customerListModel.getRowData();
+        return eventBean.getStrategy().getConstraintStatus(sCustomer.getCustomer());
+    }
+
     public String cancel() {
         return eventBean.cancel();
     }
@@ -137,4 +164,8 @@ public class CustomerSelectionBean {
         this.customerListModel = customerListModel;
     }
 
+    public void setRegistrationService(
+            PointDataRegistrationService registrationService) {
+        this.registrationService = registrationService;
+    }
 }

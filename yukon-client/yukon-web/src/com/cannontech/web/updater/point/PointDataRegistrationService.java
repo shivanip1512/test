@@ -7,4 +7,6 @@ import com.cannontech.web.updater.UpdateValue;
 
 public interface PointDataRegistrationService {
     public UpdateValue getLatestValue(final int pointId, final String format, YukonUserContext userContext);
+    
+    public String getRawPointDataUpdaterSpan(int pointId, YukonUserContext userContext);
 }

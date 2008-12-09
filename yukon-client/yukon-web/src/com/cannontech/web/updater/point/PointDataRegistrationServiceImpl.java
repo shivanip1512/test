@@ -2,6 +2,7 @@ package com.cannontech.web.updater.point;
 
 import org.springframework.beans.factory.annotation.Required;
 
+import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.DataType;
 import com.cannontech.web.updater.DataUpdaterService;
@@ -16,9 +17,20 @@ public class PointDataRegistrationServiceImpl implements PointDataRegistrationSe
         return result;
     }
 
+    public String getRawPointDataUpdaterSpan(int pointId, YukonUserContext userContext) {
+	    String format = Format.VALUE.toString();
+	    UpdateValue updateValue = getLatestValue(pointId, format, userContext);
+	
+	    String spanStr = "<span title=\"pointId:" + pointId + "\" cannonUpdater=\"" + 
+	    updateValue.getFullIdentifier() + "\" class=\"pointValueTagSpan\" >";
+	    
+	    spanStr += updateValue.getValue();
+	    spanStr += "</span>";
+	    return spanStr;
+    }
+    
     @Required
     public void setUpdaterService(DataUpdaterService updaterService) {
         this.updaterService = updaterService;
     }
-    
 }
