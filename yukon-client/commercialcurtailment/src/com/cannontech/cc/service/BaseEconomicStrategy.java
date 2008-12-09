@@ -134,6 +134,8 @@ public abstract class BaseEconomicStrategy extends StrategyBase implements Econo
         Date now = timeSource.getCurrentTime();
         Calendar calendar = Calendar.getInstance(tz);
         calendar.setTime(now);
+        calendar.add(Calendar.MINUTE, 5);	//add 5 minutes to give the op plenty of time to build the extension
+        TimeUtil.roundDateUp(calendar, 5);	//round up for consistency.
         builder.getEvent().setNotificationTime(calendar.getTime());
 
         builder.getEvent().setWindowLengthMinutes(getWindowLengthMinutes());
