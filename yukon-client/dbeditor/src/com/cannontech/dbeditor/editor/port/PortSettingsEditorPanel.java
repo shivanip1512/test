@@ -1338,17 +1338,19 @@ public void setValue(Object val)
 public boolean isInputValid() {
     
     boolean ret = true;
+    boolean udpPort = getIPAddressTextField().getText().equalsIgnoreCase("UDP");
     
-    if (!Validator.isHex(getEncodingTextField().getText())) {
-        ret = false;
-        setErrorString("Encryption key must be in Hex format and 16 bytes long. (32 hex values)");
+    if (udpPort) {
+	    if (!Validator.isHex(getEncodingTextField().getText())) {
+	        ret = false;
+	        setErrorString("Encryption key must be in Hex format and 16 bytes long. (32 hex values)");
+	    }
+	    
+	    if (getEncodingTextField().getText().length() != 32) {
+	        ret = false;
+	        setErrorString("Encryption key must be 16 bytes long. (32 hex values)");
+	    }
     }
-    
-    if (getEncodingTextField().getText().length() != 32) {
-        ret = false;
-        setErrorString("Encryption key must be 16 bytes long. (32 hex values)");
-    }
-    
     return ret;
 }
 
