@@ -192,7 +192,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
 
         try {
             mspValidationService.isYukonMeterNumber(meterNo);
-        }catch (NotFoundException e){
+        }catch (RemoteException e){
             return false;
         }
         return true;
