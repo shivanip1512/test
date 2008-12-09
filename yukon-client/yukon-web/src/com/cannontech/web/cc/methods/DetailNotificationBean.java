@@ -1,5 +1,12 @@
 package com.cannontech.web.cc.methods;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.faces.model.DataModel;
+import javax.faces.model.ListDataModel;
+
 import com.cannontech.cc.model.BaseEvent;
 import com.cannontech.cc.model.CurtailmentEvent;
 import com.cannontech.cc.service.NotificationService;
@@ -7,7 +14,13 @@ import com.cannontech.cc.service.NotificationStrategy;
 import com.cannontech.cc.service.ProgramService;
 import com.cannontech.cc.service.StrategyFactory;
 import com.cannontech.cc.service.builder.CurtailmentChangeBuilder;
+import com.cannontech.cc.service.builder.CurtailmentRemoveCustomerBuilder;
+import com.cannontech.cc.service.builder.VerifiedPlainCustomer;
+import com.cannontech.common.exception.PointException;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.web.cc.util.RemoveableCustomer;
+import com.cannontech.web.updater.point.PointDataRegistrationService;
+import com.cannontech.web.util.JSFUtil;
 
 
 public class DetailNotificationBean implements BaseDetailBean {
@@ -19,6 +32,14 @@ public class DetailNotificationBean implements BaseDetailBean {
     private CurtailmentEvent event;
     private LiteYukonUser yukonUser;
     private CurtailmentChangeBuilder changeBuilder;
+    private CurtailmentRemoveCustomerBuilder removeBuilder;
+    private PointDataRegistrationService registrationService;
+    private List<RemoveableCustomer> removeCustomerList;
+    private DataModel removeCustomerListModel;
+
+    public void setRegistrationService(PointDataRegistrationService registrationService) {
+        this.registrationService = registrationService;
+    }
     
     public String showDetail(BaseEvent event) {
         setEvent((CurtailmentEvent) event);
@@ -44,7 +65,11 @@ public class DetailNotificationBean implements BaseDetailBean {
     public Boolean getShowAdjustButton() {
         return getStrategy().canEventBeAdjusted(getEvent(), getYukonUser());
     }
-    
+
+    public Boolean getShowRemoveButton() {
+        return getStrategy().canEventBeRemoved(getEvent(), getYukonUser());
+    }
+
     public String cancelEvent() {
         getStrategy().cancelEvent(event,getYukonUser());
         
@@ -66,7 +91,30 @@ public class DetailNotificationBean implements BaseDetailBean {
     public String cancelAdjust() {
         return "notifDetail";
     }
+
+    public String prepareRemoveCustomerEvent() {
+        removeBuilder = getStrategy().createRemoveBuilder(getEvent());
+        
+        removeCustomerList = new ArrayList<RemoveableCustomer>();
+        List<VerifiedPlainCustomer> availableCustomerList = removeBuilder.getNewCustomerList();
+        for (VerifiedPlainCustomer vCustomer : availableCustomerList) {
+            removeCustomerList.add(new RemoveableCustomer(vCustomer));
+        }
+        removeCustomerListModel = new ListDataModel(removeCustomerList);
+        
+        return "prepareRemoveCustomerEvent";
+    }
+
+    public String removeCustomerEvent() {
+        getStrategy().removeCustomerEvent(removeBuilder, getYukonUser());
+        
+        return "notifDetail";
+    }
     
+    public String cancelRemove() {
+        return "notifDetail";
+    }
+
     public String deleteEvent() {
         getStrategy().deleteEvent(event,getYukonUser());
         return "programSelect";
@@ -127,8 +175,63 @@ public class DetailNotificationBean implements BaseDetailBean {
         this.helper = helper;
     }
 
+    public CurtailmentRemoveCustomerBuilder getRemoveBuilder() {
+        return removeBuilder;
+    }
+    
     public CurtailmentChangeBuilder getChangeBuilder() {
         return changeBuilder;
     }
+    
+    public String getLoadPointUpdaterStr() {
+        RemoveableCustomer rCustomer = (RemoveableCustomer) removeCustomerListModel.getRowData();
+        try {
+            int pointId = strategy.getCurrentLoadPoint(rCustomer.getCustomer()).getPointID();
+            return registrationService.getRawPointDataUpdaterSpan(pointId, JSFUtil.getYukonUserContext());
+        } catch (PointException e) {    //TODO...what should be caught here???
+            return "n/a";
+        }
+    }
 
+    public String getContractFirmDemandUpdaterStr() {
+    	RemoveableCustomer rCustomer = (RemoveableCustomer) removeCustomerListModel.getRowData();
+        try {
+        	int fslPointId = strategy.getContractFirmDemandPoint(rCustomer.getCustomer()).getPointID();
+        	return registrationService.getRawPointDataUpdaterSpan(fslPointId, JSFUtil.getYukonUserContext());
+        } catch (PointException e) {    //TODO...what should be caught here???
+            return "n/a";
+        }
+    }
+    
+    public String getConstraintStatus() {
+    	RemoveableCustomer rCustomer = (RemoveableCustomer) removeCustomerListModel.getRowData();
+        return strategy.getConstraintStatus(rCustomer.getCustomer());
+    }
+    
+    public List<VerifiedPlainCustomer> getSelectedCustomers() {
+        List<VerifiedPlainCustomer> result = new LinkedList<VerifiedPlainCustomer>();
+        for (RemoveableCustomer remCustomer : removeCustomerList) {
+            if (remCustomer.isSelected()) {
+                VerifiedPlainCustomer customer = remCustomer.getCustomerDelegate();
+                result.add(customer);
+            }
+        }
+        return result;
+    }
+    
+    public String doCustomerRemoveComplete() {
+        if (getSelectedCustomers().isEmpty()) {
+            JSFUtil.addNullWarnMessage("At least one Customer must be selected.");
+            return null;
+        }
+        return removeCustomerEvent();
+    }
+    
+    public List<RemoveableCustomer> getRemoveCustomerList() {
+        return removeCustomerList;
+    }
+    
+    public DataModel getRemoveCustomerListModel() {
+        return removeCustomerListModel;
+    }
 }

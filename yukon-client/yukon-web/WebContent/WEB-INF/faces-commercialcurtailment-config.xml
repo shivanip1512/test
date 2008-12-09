@@ -208,6 +208,11 @@
             <property-name>helper</property-name>
             <value>#{sNotificationDetailHelper}</value>
         </managed-property>
+        <managed-property>
+            <property-name>registrationService</property-name>
+            <value>#{pointDataUpdateRegistrationService}</value>
+        </managed-property>
+        
 
     </managed-bean>
 
@@ -392,6 +397,10 @@
         <managed-property>
             <property-name>programService</property-name>
             <value>#{programService}</value>
+        </managed-property>
+        <managed-property>
+            <property-name>registrationService</property-name>
+            <value>#{pointDataUpdateRegistrationService}</value>
         </managed-property>
     </managed-bean>
 
@@ -585,6 +594,15 @@
         <navigation-case>
             <from-outcome>prepareAdjustEvent</from-outcome>
             <to-view-id>/cc/notif/adjust.jsp</to-view-id>
+            <redirect></redirect>
+        </navigation-case>
+    </navigation-rule>
+    
+    <navigation-rule>
+        <from-view-id>/cc/notif/detail.jsp</from-view-id>
+        <navigation-case>
+            <from-outcome>prepareRemoveCustomerEvent</from-outcome>
+            <to-view-id>/cc/customerRemoveVerification.jsp</to-view-id>
             <redirect></redirect>
         </navigation-case>
     </navigation-rule>
