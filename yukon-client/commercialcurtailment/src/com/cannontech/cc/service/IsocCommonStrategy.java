@@ -1,5 +1,7 @@
 package com.cannontech.cc.service;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
@@ -62,6 +64,19 @@ public class IsocCommonStrategy extends StrategyGroupBase {
         return getTotalEventHours(customer, from, to);
     }
 
+    private double getTotalEventHoursIn24HourPeriod(CICustomerStub customer) {
+        //get first day this year
+        Date now = new Date();
+        TimeZone timeZone = TimeZone.getTimeZone(customer.getLite().getTimeZone());
+        Calendar cal = Calendar.getInstance(timeZone);
+        cal.setTime(now);
+        Date from = cal.getTime();
+        cal.add(Calendar.DATE, 1);
+        Date to = cal.getTime();
+        
+        return getTotalEventHours(customer, from, to);
+    }
+
     public double getTotalEventHours(CICustomerStub customer, Date from, Date to) {
         List<BaseEvent> allEvents = getBaseEventDao().getAllForCustomer(customer, from, to);
         int totalMinutes = 0;
@@ -82,17 +97,46 @@ public class IsocCommonStrategy extends StrategyGroupBase {
         return (actualHours + propossedEventLength) > allowedHours;
     }
 
+    public boolean hasCustomerExceeded24HourPeriodHours(CICustomerStub customer, int propossedEventLength) throws PointException {
+        double allowedHours = get24HourPeriodAllowedHours(customer);
+        if (allowedHours == 0 || allowedHours == 1440)  // 0 and 1440(60*24) represent no 24 hour limit
+            return false;
+        // applies to 24 hour period
+        double actualHours = getTotalEventHoursIn24HourPeriod(customer);
+        return (actualHours + propossedEventLength) > allowedHours;
+    }
+
     public double getAllowedHours(CICustomerStub customer) throws PointException {
         double allowedHours = pointTypeHelper.getPointValue(customer, CICustomerPointType.InterruptHours);
         return allowedHours;
     }
+
+    public double get24HourPeriodAllowedHours(CICustomerStub customer) throws PointException {
+        double allowedHours = pointTypeHelper.getPointValue(customer, CICustomerPointType.InterruptHrs24Hr);
+        return allowedHours;
+    }
     
+    public double getHoursRemaining(CICustomerStub customer) throws PointException{
+	    double interruptHoursContract = getAllowedHours(customer);
+	    double interruptHoursUsed = getTotalEventHours(customer);
+	    return interruptHoursContract - interruptHoursUsed;
+    }
+
     public void checkEventCustomer(VerifiedCustomer vCustomer, BaseEvent event) {
         try {
             checkRequiredPoints(vCustomer);
             checkEventOverlap(vCustomer, event);
             checkAllowedHours(vCustomer, event); 
             checkNoticeTime(vCustomer, event);
+        } catch (PointException e) {
+            handlePointException(vCustomer, e);
+        }
+    }
+
+    public void checkEventRemoveCustomer(VerifiedCustomer vCustomer, BaseEvent event) {
+        try {
+            checkRequiredPoints(vCustomer);
+            checkMinEventDuration(vCustomer, event);
         } catch (PointException e) {
             handlePointException(vCustomer, e);
         }
@@ -176,6 +220,23 @@ public class IsocCommonStrategy extends StrategyGroupBase {
             vCustomer.addExclusion(VerifiedCustomer.Status.EXCLUDE, 
                                    "has exceeded allowed hours");
         }
+        int durationHours24HourPeriod = event.getDuration() / 60;
+        if (hasCustomerExceeded24HourPeriodHours(vCustomer.getCustomer(), durationHours24HourPeriod)) {
+            vCustomer.addExclusion(VerifiedCustomer.Status.EXCLUDE, 
+                                   "has exceeded allowed hours in 24 hour period");
+        }
+    }
+
+    public void checkMinEventDuration(VerifiedCustomer vCustomer, BaseEvent event) throws PointException {
+        LitePoint minEventDuration = pointTypeHelper.getPoint(vCustomer.getCustomer(), CICustomerPointType.MinEventDuration);
+        int minEventDurationMinutes = (int) pointAccess.getPointValue(minEventDuration);
+
+        Date now = new Date(); 
+        int eventMinutes = TimeUtil.differenceMinutes(event.getStartTime(), now);
+        if (eventMinutes < minEventDurationMinutes) {
+            vCustomer.addExclusion(VerifiedCustomer.Status.EXCLUDE, 
+                                   "has not completed minimum event duration");
+        }
     }
 
     public void handlePointException(VerifiedCustomer vCustomer, PointException e) {
@@ -187,6 +248,19 @@ public class IsocCommonStrategy extends StrategyGroupBase {
         LitePoint minimumNoticeMinutesPoint = pointTypeHelper.getPoint(customer, CICustomerPointType.MinimumNotice);
         int minimumNoticeMinutes = (int) pointAccess.getPointValue(minimumNoticeMinutesPoint);
         return notifMinutes < minimumNoticeMinutes;
+    }
+
+    public String getConstraintStatus(CICustomerStub customer) {
+    	try {
+    		Double hoursRemaining = getHoursRemaining(customer);
+    		DecimalFormat format = new DecimalFormat();
+    		format.setMaximumFractionDigits(2);
+    		format.setRoundingMode(RoundingMode.FLOOR);
+
+    		return String.valueOf(format.format(hoursRemaining)) + " Hrs Remain";
+    	} catch (PointException e) {
+    		return "n/a";	
+    	}
     }
 
     public void setPointAccess(SimplePointAccessDao pointAccess) {
