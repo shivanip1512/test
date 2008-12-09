@@ -140,29 +140,80 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
         return nodes;
     }
 
-    public double evaluateAsDouble(String expression) throws XPathException {
-        Double result = (Double) evaluate(expression, XPathConstants.NUMBER);
-        return result != null ? result.doubleValue() : Double.NaN;
+    /**
+     * Evaluate value at expression as a Double.
+     * Returns null if the expression defines a node that does not exists.
+     * @param expression
+     * @return
+     * @throws XPathException
+     */
+    public Double evaluateAsDouble(String expression) throws XPathException {
+    	
+    	Double num = evaluateNumber(expression);
+        return num == null ? null : num;
     }
 
-
-    public Float evaluateAsFloat(String expression) throws XPathException {
-        Double result = (Double) evaluate(expression, XPathConstants.NUMBER);
-        return result != null ? result.floatValue() : Float.NaN;
+    /**
+     * Evaluate value at expression as a Float.
+     * Returns null if the expression defines a node that does not exists.
+     * @param expression
+     * @return
+     * @throws XPathException
+     */
+	public Float evaluateAsFloat(String expression) throws XPathException {
+		
+    	Double num = evaluateNumber(expression);
+        return num == null ? null : num.floatValue();
+    }
+	
+	/**
+     * Evaluate value at expression as a Long.
+     * Returns null if the expression defines a node that does not exists.
+     * @param expression
+     * @return
+     * @throws XPathException
+     */
+    public Long evaluateAsLong(String expression) throws XPathException {
+        
+    	Double num = evaluateNumber(expression);
+        return num == null ? null : num.longValue();
     }
     
-    public long evaluateAsLong(String expression) throws XPathException {
-        String result = (String) evaluate(expression, XPathConstants.STRING);
-        // let result==null throw a NumberFormatException 
-        return Long.parseLong(result);
-    }
-    
+    /**
+     * Helper for long, float, double, etc evaluators. 
+	 * Evaluates number from expression. Returns null if expression defines node that does
+	 * not exists, or if the number is NaN. Otherwise, return the number as a Double to be
+	 * cast in the type required by calling method.
+	 * @param expression
+	 * @return
+	 */
+	private Double evaluateNumber(String expression) {
+		
+		Double num = (Double) evaluate(expression, XPathConstants.NUMBER);
+    	if (num.equals(Double.NaN)) {
+    		return null;
+    	}
+    	return num;
+	}
+	
+    /**
+     * Evaluate value at expression as a String.
+     * Returns null if the expression defines a node that does not exists.
+     * @param expression
+     * @return
+     * @throws XPathException
+     */
     public String evaluateAsString(String expression) throws XPathException {
+    	
+    	if (evaluateAsNode(expression) == null) {
+    		return null;
+    	}
+    	
         return (String) evaluate(expression, XPathConstants.STRING);
     }
     
     /**
-     * Parse an elemnt for a date. If the element does not exists or is empty, return null.
+     * Parse an element for a date. If the element does not exists or is empty, return null.
      * Otherwise return a Date object for the date string in the element.
      * @param expression
      * @return
@@ -172,13 +223,13 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
         
         String dateStr;
         try {
-            dateStr = evaluateAsString(expression).trim();
+            dateStr = evaluateAsString(expression);
         } catch (XPathException e) {
             return null;
         }
         
-        if (!dateStr.equals("")) {
-            return XmlUtils.parseDate(dateStr);
+        if (dateStr != null) {
+            return XmlUtils.parseDate(dateStr.trim());
         }
         
         return null;

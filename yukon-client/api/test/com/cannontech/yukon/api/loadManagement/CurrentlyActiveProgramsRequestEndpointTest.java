@@ -79,8 +79,8 @@ public class CurrentlyActiveProgramsRequestEndpointTest {
         
         // outputs
         Assert.assertNotNull("No programStatuses node present.", outputTemplate.evaluateAsNode("/y:currentlyActiveProgramsResponse/y:programStatuses"));
-        Assert.assertEquals("Incorrect number of programStatuses nodes.", 1, outputTemplate.evaluateAsLong("count(/y:currentlyActiveProgramsResponse/y:programStatuses)"));
-        Assert.assertEquals("Incorrect number of programStatus nodes.", 2, outputTemplate.evaluateAsLong("count(/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus)"));
+        Assert.assertEquals("Incorrect number of programStatuses nodes.", 1, outputTemplate.evaluateAsLong("count(/y:currentlyActiveProgramsResponse/y:programStatuses)").longValue());
+        Assert.assertEquals("Incorrect number of programStatus nodes.", 2, outputTemplate.evaluateAsLong("count(/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus)").longValue());
         
         Assert.assertEquals("Incorrect programName.", "Program1", outputTemplate.evaluateAsString("/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus[1]/y:programName"));
         Assert.assertEquals("Incorrect currentStatus.", "Active", outputTemplate.evaluateAsString("/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus[1]/y:currentStatus"));

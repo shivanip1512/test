@@ -114,17 +114,17 @@ public class PointDataRequestEndpointTest {
         template.setContext(new JDOMSource(outputElement));
         template.setNamespaces(YukonXml.getYukonNamespaceAsProperties());
         
-        assertEquals(2, template.evaluateAsLong("count(/y:pointDataResponseMsg/y:pointValues/y:pointData)"));
-        assertEquals(2, template.evaluateAsLong("count(/y:pointDataResponseMsg/y:pointValues/y:pointData/y:pointId)"));
-        assertEquals(2, template.evaluateAsLong("count(/y:pointDataResponseMsg/y:pointValues/y:pointData/y:time)"));
-        assertEquals(2, template.evaluateAsLong("count(/y:pointDataResponseMsg/y:pointValues/y:pointData/y:value)"));
-        assertEquals(2, template.evaluateAsLong("count(/y:pointDataResponseMsg/y:pointValues/y:pointData/y:quality)"));
+        assertEquals(2, template.evaluateAsLong("count(/y:pointDataResponseMsg/y:pointValues/y:pointData)").longValue());
+        assertEquals(2, template.evaluateAsLong("count(/y:pointDataResponseMsg/y:pointValues/y:pointData/y:pointId)").longValue());
+        assertEquals(2, template.evaluateAsLong("count(/y:pointDataResponseMsg/y:pointValues/y:pointData/y:time)").longValue());
+        assertEquals(2, template.evaluateAsLong("count(/y:pointDataResponseMsg/y:pointValues/y:pointData/y:value)").longValue());
+        assertEquals(2, template.evaluateAsLong("count(/y:pointDataResponseMsg/y:pointValues/y:pointData/y:quality)").longValue());
         
         List<Long> pointIds = template.evaluateAsLongList("/y:pointDataResponseMsg/y:pointValues/y:pointData/y:pointId");
         assertTrue(pointIds.contains(Long.valueOf(1234))); //be sure the 1234 literal gets interpreted as a long
         assertTrue(pointIds.contains(Long.valueOf(983))); 
         
-        assertEquals(3121985, template.evaluateAsLong("/y:pointDataResponseMsg/y:validThrough"));
+        assertEquals(3121985, template.evaluateAsLong("/y:pointDataResponseMsg/y:validThrough").longValue());
         
     }
 }
