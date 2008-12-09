@@ -11,7 +11,6 @@ public class Message
 	private int	priority = 0;
 	private int SOE_Tag = 0;
 	private String userName = com.cannontech.common.util.CtiUtilities.getUserName();
-	private String password = "yukon";
 	private int token = 0;
 	private String source = null;
 /**
@@ -20,14 +19,6 @@ public class Message
 public Message() {
 	super();
 	timeStamp = new java.util.Date();
-}
-/**
- * Insert the method's description here.
- * Creation date: (1/25/2001 4:34:31 PM)
- * @return java.lang.String
- */
-public java.lang.String getPassword() {
-	return password;
 }
 /**
  * This method was created in VisualAge.
@@ -79,14 +70,6 @@ public int getToken() {
 public java.lang.String getUserName() 
 {
 	return userName;
-}
-/**
- * Insert the method's description here.
- * Creation date: (1/25/2001 4:34:31 PM)
- * @param newPassword java.lang.String
- */
-public void setPassword(java.lang.String newPassword) {
-	password = newPassword;
 }
 /**
  * This method was created in VisualAge.

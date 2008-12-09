@@ -60,7 +60,6 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	int priority = vstr.extractInt();
 	int soe_tag = vstr.extractInt();
 	String username = (String) (vstr.restoreObject( SimpleMappings.CString ));
-	String password = (String) (vstr.restoreObject( SimpleMappings.CString ));
 	int token = vstr.extractInt();
 	String source = (String) (vstr.restoreObject( SimpleMappings.CString ));
 
@@ -68,7 +67,6 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	((Message) obj).setPriority( priority );
 	((Message) obj).setSOE_Tag( soe_tag );
 	((Message) obj).setUserName( username );
-	((Message) obj).setPassword( password );
 	((Message) obj).setToken( token );
 	((Message) obj).setSource( source );
 }
@@ -81,7 +79,6 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 	int priority = ((Message) obj).getPriority();
 	int soe_tag = ((Message) obj).getSOE_Tag();
 	String username = ((Message) obj).getUserName();
-	String password = ((Message) obj).getPassword();
 	int token = ((Message) obj).getToken();
 	String source = ((Message) obj).getSource();
 	
@@ -89,7 +86,6 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 	vstr.insertInt( priority );
 	vstr.insertInt( soe_tag );
 	vstr.saveObject( username, SimpleMappings.CString );
-	vstr.saveObject( password, SimpleMappings.CString );
 	vstr.insertInt( token );
 	vstr.saveObject( source, SimpleMappings.CString );
 }
