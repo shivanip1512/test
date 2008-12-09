@@ -1,5 +1,6 @@
 package com.cannontech.cc.service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -22,6 +23,8 @@ import com.cannontech.cc.model.Program;
 import com.cannontech.cc.model.ProgramParameterKey;
 import com.cannontech.cc.service.builder.CurtailmentBuilder;
 import com.cannontech.cc.service.builder.CurtailmentChangeBuilder;
+import com.cannontech.cc.service.builder.CurtailmentRemoveCustomerBuilder;
+import com.cannontech.cc.service.builder.VerifiedPlainCustomer;
 import com.cannontech.cc.service.enums.CurtailmentEventState;
 import com.cannontech.cc.service.exception.EventCreationException;
 import com.cannontech.cc.service.exception.EventModificationException;
@@ -82,6 +85,21 @@ public abstract class BaseNotificationStrategy extends StrategyBase implements N
         builder.setNewMessage("");
         builder.setNewStartTime(event.getStartTime());
         
+        return builder;
+    }
+
+    public CurtailmentRemoveCustomerBuilder createRemoveBuilder(CurtailmentEvent event) {
+        CurtailmentRemoveCustomerBuilder builder = new CurtailmentRemoveCustomerBuilder(event);
+        List<CurtailmentEventParticipant> curtailmentEventParticipants = curtailmentEventParticipantDao.getForEvent(event);
+        List<VerifiedPlainCustomer> verifiedCustomerList = new ArrayList<VerifiedPlainCustomer>();
+        for (CurtailmentEventParticipant curtailmentEventParticipant : curtailmentEventParticipants) {
+            VerifiedPlainCustomer vCustomer = new VerifiedPlainCustomer(curtailmentEventParticipant.getCustomer());
+            verifyRemoveCustomer(builder, vCustomer);
+            if (vCustomer.isIncludable()) {
+                verifiedCustomerList.add(vCustomer);
+            }
+        }
+        builder.setNewCustomerList(verifiedCustomerList);
         return builder;
     }
 
@@ -180,6 +198,17 @@ public abstract class BaseNotificationStrategy extends StrategyBase implements N
         return now.after(paddedStart) && now.before(paddedStop);
     }
     
+    public Boolean canEventBeRemoved(CurtailmentEvent event, LiteYukonUser user) {
+        if (event.getState().equals(CurtailmentEventState.CANCELLED)) {
+            return false;
+        }
+        Date now = new Date();
+        Date paddedStart = TimeUtil.addMinutes(event.getStartTime(), 0);
+        Date paddedStop = TimeUtil.addMinutes(event.getStopTime(), -UNSTOPPABLE_WINDOW_MINUTES);
+        return now.after(paddedStart) && now.before(paddedStop);
+
+    }
+
     public Boolean canEventBeChanged(CurtailmentEvent event, LiteYukonUser user) {
         return false;
     }
@@ -220,6 +249,33 @@ public abstract class BaseNotificationStrategy extends StrategyBase implements N
         
         getNotificationProxy().sendCurtailmentNotification(event.getId(), CurtailmentEventAction.ADJUSTING);
         sendProgramNotifications(event, curtailmentEventParticipantDao.getForEvent(event), "adjusted");
+        return event;
+    }
+
+	//THIS METHOD IS INCOMPLETE (AND PROBABLY WRONG), IT HAS BEEN PLACED HERE AS A PLACEHOLDER
+    public CurtailmentEvent removeCustomerEvent(final CurtailmentRemoveCustomerBuilder builder, final LiteYukonUser user) 
+    throws EventModificationException {
+        final CurtailmentEvent event = builder.getOriginalEvent();
+        CTILogger.debug("Removing Customer event: " + event);
+        transactionTemplate.execute(new TransactionCallback(){
+            public Object doInTransaction(TransactionStatus status) {
+                if (!canEventBeRemoved(event, user)) {
+                    throw new EventModificationException("Event cannot be modified at this time by this user.");
+                }
+                //TODO need to split event into two?
+//                event.setDuration(builder.getNewLength());
+//                event.setMessage(builder.getNewMessage());
+
+                event.setState(CurtailmentEventState.MODIFIED);
+                curtailmentEventDao.save(event);
+                
+                return event;
+            } 
+        });
+        CTILogger.info(event + " modified by " + user);
+        
+//        getNotificationProxy().sendCurtailmentNotification(event.getId(), CurtailmentEventAction.ADJUSTING);
+//        sendProgramNotifications(event, curtailmentEventParticipantDao.getForEvent(event), "adjusted");
         return event;
     }
     
