@@ -459,7 +459,7 @@ public Object getValue(Object val)
 		else
 			((CarrierBase)device).getDeviceCarrierSettings().setAddress( address );
 	}
-   else if (val instanceof XML)
+   else if (val instanceof XmlTransmitter)
    {
        //((Series5Base)val).getSeries5().setSlaveAddress( address );
    }

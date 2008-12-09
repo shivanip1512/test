@@ -371,6 +371,8 @@ public final static String getPAOTypeString(int type)
 			return STRING_VERSACOM;
 		case ROUTE_RTC:
 			return STRING_RTC_ROUTE;
+		case ROUTE_XML:
+			return STRING_XML;
 
 		//capcontrol
 		case CAP_CONTROL_SUBSTATION:
@@ -792,26 +794,39 @@ public final static int getPortType(String typeString)
  */
 public final static int getRouteType(String typeString)
 {
-	if( typeString.equalsIgnoreCase( STRING_CCU) )
+	if( typeString.equalsIgnoreCase(STRING_CCU) ) {
 		return ROUTE_CCU;
-	else if( typeString.equalsIgnoreCase( STRING_LCU) )
+	}
+	else if( typeString.equalsIgnoreCase(STRING_LCU)) {
 		return ROUTE_LCU;
-	else if( typeString.equalsIgnoreCase( STRING_MACRO) )
+	}
+	else if( typeString.equalsIgnoreCase(STRING_MACRO)) {
 		return ROUTE_MACRO;
-	else if( typeString.equalsIgnoreCase( STRING_TAP_PAGING) )
+	}
+	else if( typeString.equalsIgnoreCase(STRING_TAP_PAGING)) {
 		return ROUTE_TAP_PAGING;
-	else if( typeString.equalsIgnoreCase( STRING_WCTP_TERMINAL_ROUTE) )
+	}
+	else if( typeString.equalsIgnoreCase(STRING_WCTP_TERMINAL_ROUTE)) {
 		return ROUTE_WCTP_TERMINAL;
-	else if( typeString.equalsIgnoreCase( STRING_SNPP_TERMINAL_ROUTE) )
+	}
+	else if( typeString.equalsIgnoreCase(STRING_SNPP_TERMINAL_ROUTE)) {
 		return ROUTE_SNPP_TERMINAL;
-	else if( typeString.equalsIgnoreCase( STRING_TCU) )
+	}
+	else if( typeString.equalsIgnoreCase(STRING_TCU)) {
 		return ROUTE_TCU;
-	else if( typeString.equalsIgnoreCase( STRING_VERSACOM) )
+	}
+	else if( typeString.equalsIgnoreCase(STRING_VERSACOM)) {
 		return ROUTE_VERSACOM;
-	else if( typeString.equalsIgnoreCase( STRING_SERIES_5_LMI_ROUTE) )
+	}
+	else if( typeString.equalsIgnoreCase(STRING_SERIES_5_LMI_ROUTE)) {
 		return ROUTE_SERIES_5_LMI;
-	else if( typeString.equalsIgnoreCase( STRING_RTC_ROUTE) )
+	}
+	else if( typeString.equalsIgnoreCase(STRING_RTC_ROUTE)) {
 		return ROUTE_RTC;
+	}
+	else if( typeString.equalsIgnoreCase(STRING_XML)){
+		return ROUTE_XML;
+	}
 	else
 		return INVALID;
 }

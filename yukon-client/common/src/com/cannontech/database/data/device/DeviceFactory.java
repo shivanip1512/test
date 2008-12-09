@@ -40,7 +40,7 @@ public final static DeviceBase createDevice(int deviceType) {
 			returnDevice = new Series5LMI();
 			break;
 		case PAOGroups.XML_TRANSMITTER:
-		    returnDevice = new XML();
+		    returnDevice = new XmlTransmitter();
 		    break;
 		case PAOGroups.RTC:
 			returnDevice = new RTC();

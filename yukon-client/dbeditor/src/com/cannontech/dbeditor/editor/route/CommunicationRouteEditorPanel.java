@@ -7,6 +7,7 @@ package com.cannontech.dbeditor.editor.route;
 import java.awt.GridBagConstraints;
 
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.data.pao.RouteTypes;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class CommunicationRouteEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ItemListener, javax.swing.event.CaretListener, com.klg.jclass.util.value.JCValueListener
@@ -523,7 +524,14 @@ private void loadSignalTransmitterComboBox(String routeType) {
 					getSignalTransmitterComboBox().addItem( devices.get(i) );
 			}
 		}
-
+		else if(routeType.equalsIgnoreCase(RouteTypes.STRING_XML))
+		{
+			for(int i=0;i<devices.size();i++)
+			{
+				if( ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i)).getType() == PAOGroups.XML_TRANSMITTER)
+					getSignalTransmitterComboBox().addItem( devices.get(i) );
+			}
+		}
 	}
 
 

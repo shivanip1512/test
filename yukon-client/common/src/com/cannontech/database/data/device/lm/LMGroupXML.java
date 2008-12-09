@@ -24,13 +24,13 @@ public class LMGroupXML extends LMGroupExpressCom {
     }
     
     //Needs to be transient because this object gets serialized.
-    transient private XmlLMGroupParametersDao dao = null;
-    private List<LMxmlParameter> parameterList;
+    transient private XmlLMGroupParametersDao xmlLMGroupParametersDao = null;
+    private List<LmXmlParameter> parameterList;
 	private XmlType xmlType = XmlType.ZIGBEE;
 	
     public LMGroupXML() {
 		super();
-		parameterList = new ArrayList<LMxmlParameter>();
+		parameterList = new ArrayList<LmXmlParameter>();
 		
 		getYukonPAObject().setType( com.cannontech.database.data.pao.PAOGroups.STRING_XML_GROUP[0] );
 	}
@@ -42,7 +42,7 @@ public class LMGroupXML extends LMGroupExpressCom {
         //Remove them all first. Then add them back in. 
         getDao().removeAllByGroupId(getGroupId());
         
-        for(LMxmlParameter param : parameterList) {  
+        for(LmXmlParameter param : parameterList) {  
             getDao().add(param);
         }
     }
@@ -59,7 +59,7 @@ public class LMGroupXML extends LMGroupExpressCom {
         
         getDao().removeAllByGroupId(getGroupId());
         
-        for(LMxmlParameter param : parameterList) {  
+        for(LmXmlParameter param : parameterList) {  
             getDao().add(param);
         }
     }
@@ -70,7 +70,7 @@ public class LMGroupXML extends LMGroupExpressCom {
         
         super.retrieve();
         
-        List<LMxmlParameter> list = getDao().getParametersForGroup(getGroupId());
+        List<LmXmlParameter> list = getDao().getParametersForGroup(getGroupId());
         
         if( list.size() == 0) {
             //Determine the defaults for the type.
@@ -88,17 +88,17 @@ public class LMGroupXML extends LMGroupExpressCom {
      * @param type
      * @return
      */
-    private List<LMxmlParameter> getDefaultParametersForType( XmlType type )
+    private List<LmXmlParameter> getDefaultParametersForType( XmlType type )
     {
         int id = super.getPAObjectID();
           
-        List<LMxmlParameter> list = new ArrayList<LMxmlParameter>();
+        List<LmXmlParameter> list = new ArrayList<LmXmlParameter>();
 
         //For now we are hard coding ZIGBY.
         if (type == XmlType.ZIGBEE) { 
-            list.add(new LMxmlParameter(id,"UtilID",""));
-            list.add(new LMxmlParameter(id,"DeviceClass",""));
-            list.add(new LMxmlParameter(id,"Criticality",""));
+            list.add(new LmXmlParameter(id,"UtilID",""));
+            list.add(new LmXmlParameter(id,"DeviceClass",""));
+            list.add(new LmXmlParameter(id,"Criticality",""));
         }
         
         return list;
@@ -108,11 +108,11 @@ public class LMGroupXML extends LMGroupExpressCom {
         return super.getPAObjectID();
     }
     
-    public List<LMxmlParameter> getParameterList() {
+    public List<LmXmlParameter> getParameterList() {
         return parameterList;
     }
 
-    public void setParameterList(List<LMxmlParameter> parameterList) {
+    public void setParameterList(List<LmXmlParameter> parameterList) {
         this.parameterList = parameterList;
     }
 
@@ -122,10 +122,10 @@ public class LMGroupXML extends LMGroupExpressCom {
      * @return
      */
     private XmlLMGroupParametersDao getDao() {
-        if (dao == null) {
-            dao = YukonSpringHook.getBean("xmlLMGroupParametersDao",XmlLMGroupParametersDao.class);
+        if (xmlLMGroupParametersDao == null) {
+            xmlLMGroupParametersDao = YukonSpringHook.getBean("xmlLMGroupParametersDao",XmlLMGroupParametersDao.class);
         }
-        return dao;
+        return xmlLMGroupParametersDao;
     }
 
     public XmlType getXmlType() {

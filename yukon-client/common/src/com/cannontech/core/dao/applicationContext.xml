@@ -191,7 +191,6 @@
   </bean> 
   
   <bean id="xmlLMGroupParametersDao" class="com.cannontech.core.dao.impl.XmlLMGroupParametersDaoImpl">
-       <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
   </bean> 
   
 </beans>

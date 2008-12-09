@@ -135,7 +135,7 @@ public interface DeviceTypes extends TypeBase
     public final static int NEUTRAL_MONITOR   = DEVICE_OFFSET + 103;
     public final static int CBC_DNP           = DEVICE_OFFSET + 104;
     public final static int LM_GROUP_XML	  = DEVICE_OFFSET + 105;
-    public final static int XML_TRANSMITTER   = DEVICE_OFFSET + 106;
+    public final static int XML_TRANSMITTER               = DEVICE_OFFSET + 106;
     
     //***IMPORTANT ** If you add a deviceType, please update the total device type count!
 	public final static int DEVICE_TYPES_COUNT = 105;
@@ -243,7 +243,7 @@ public interface DeviceTypes extends TypeBase
 	public static final String[] STRING_SADIGITAL_GROUP = {"SA-Digital Group"};
 	public static final String[] STRING_GOLAY_GROUP = {"Golay Group"};
 	public static final String[] STRING_SERIES_5_LMI = {"RTU-LMI", "RTU LMI"};
-	public static final String[] STRING_XML_TRANSMITTER = {"XML Transmitter"};
+	public static final String[] STRING_XML_TRANSMITTER = {"XML"};
 	public static final String[] STRING_RTC = {"RTC"};
 	public static final String[] STRING_RTM = {"RTM"};
 	public static final String[] STRING_SENTINEL = {"SENTINEL"};

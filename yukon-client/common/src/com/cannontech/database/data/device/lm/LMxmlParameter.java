@@ -2,15 +2,15 @@ package com.cannontech.database.data.device.lm;
 
 import java.io.Serializable;
 
-public class LMxmlParameter implements Serializable{
+public class LmXmlParameter implements Serializable{
 
     private int lmGroupId;
     private String parameterName;
     private String parameterValue;
     
-    public LMxmlParameter() {}
+    public LmXmlParameter() {}
     
-    public LMxmlParameter(int groupId, String name, String value) {
+    public LmXmlParameter(int groupId, String name, String value) {
         this.lmGroupId = groupId;
         this.parameterName = name;
         this.parameterValue = value;

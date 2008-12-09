@@ -6,6 +6,8 @@ import java.util.List;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.data.pao.RouteTypes;
+import com.cannontech.database.data.route.RouteFactory;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -222,7 +224,11 @@ public Object getValue(Object val) {
 	}
 	else if( type == PAOGroups.SERIES_5_LMI )
 	{
-		val = com.cannontech.database.data.route.RouteFactory.createRoute( com.cannontech.database.data.pao.RouteTypes.ROUTE_SERIES_5_LMI);
+		val = RouteFactory.createRoute( RouteTypes.ROUTE_SERIES_5_LMI);
+	}
+	else if (type == PAOGroups.XML_TRANSMITTER)
+	{
+		val = RouteFactory.createRoute( RouteTypes.ROUTE_XML);
 	}
 	else //?
 		throw new Error("RouteType2::getValue() - Unknown transmitter type");

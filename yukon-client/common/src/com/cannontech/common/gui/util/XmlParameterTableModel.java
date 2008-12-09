@@ -3,29 +3,29 @@ package com.cannontech.common.gui.util;
 import java.util.*;
 import javax.swing.table.AbstractTableModel;
 
-import com.cannontech.database.data.device.lm.LMxmlParameter;
+import com.cannontech.database.data.device.lm.LmXmlParameter;
 
 public class XmlParameterTableModel extends AbstractTableModel
 {
     
     private Vector<String> columnNames = new Vector<String>();  
-    private Vector<LMxmlParameter> rows = new Vector<LMxmlParameter>();
+    private Vector<LmXmlParameter> rows = new Vector<LmXmlParameter>();
     
     public XmlParameterTableModel() {
         super();
     }
     
-    public void addRow(LMxmlParameter newRow) {
+    public void addRow(LmXmlParameter newRow) {
         rows.add(newRow);
         fireTableRowsInserted(rows.size()-1,rows.size()-1);
     }
 
-    public void addRows(List<LMxmlParameter> newRows) {
+    public void addRows(List<LmXmlParameter> newRows) {
         rows.addAll(newRows);
         fireTableRowsInserted(rows.size()-1,rows.size()-1);
     }
     
-    public void editRow(int position, LMxmlParameter newRow) {
+    public void editRow(int position, LmXmlParameter newRow) {
         rows.remove(position);
         rows.add(position, newRow);
         fireTableRowsUpdated(position, position);
@@ -43,18 +43,18 @@ public class XmlParameterTableModel extends AbstractTableModel
         return rows.size();
     }
     
-    public LMxmlParameter getRow( int aRow ) {
-        LMxmlParameter row = rows.elementAt(aRow);
+    public LmXmlParameter getRow( int aRow ) {
+        LmXmlParameter row = rows.elementAt(aRow);
         return row;
     }
     
-    public List<LMxmlParameter> getRows() {
-        return new ArrayList<LMxmlParameter>(rows);
+    public List<LmXmlParameter> getRows() {
+        return new ArrayList<LmXmlParameter>(rows);
     }
     
     @Override
     public Object getValueAt(int aRow, int aColumn) {
-        LMxmlParameter param = rows.elementAt(aRow);
+        LmXmlParameter param = rows.elementAt(aRow);
         
         String ret = "---";
         

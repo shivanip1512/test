@@ -10,7 +10,7 @@ import javax.swing.*;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.gui.util.XmlParameterTableModel;
 import com.cannontech.database.data.device.lm.LMGroupXML;
-import com.cannontech.database.data.device.lm.LMxmlParameter;
+import com.cannontech.database.data.device.lm.LmXmlParameter;
 import com.cannontech.database.data.device.lm.LMGroupXML.XmlType;
 
 public class LMGroupXMLEditorPanel extends DataInputPanel implements ActionListener, MouseListener {
@@ -88,12 +88,6 @@ public class LMGroupXMLEditorPanel extends DataInputPanel implements ActionListe
             operationPanel = new JPanel();
             operationPanel.setName("JPanelOperations");
             operationPanel.setLayout(new java.awt.GridBagLayout());
-            
-//            GridBagConstraints xmlTypeDropDownConstraint = new GridBagConstraints();
-//            xmlTypeDropDownConstraint.gridx = 0; xmlTypeDropDownConstraint.gridy = 1;
-//            xmlTypeDropDownConstraint.fill = GridBagConstraints.HORIZONTAL;
-//            xmlTypeDropDownConstraint.anchor = GridBagConstraints.WEST;
-//            operationPanel.add(getXmlTypeDropDown(), xmlTypeDropDownConstraint);
             
             GridBagConstraints constraintsParameterNameLabel = new GridBagConstraints();
             constraintsParameterNameLabel.gridx = 1; constraintsParameterNameLabel.gridy = 0;
@@ -181,7 +175,7 @@ public class LMGroupXMLEditorPanel extends DataInputPanel implements ActionListe
         {    
            LMGroupXML group = (LMGroupXML)o;
            
-           List<LMxmlParameter> list;
+           List<LmXmlParameter> list;
            list = ((XmlParameterTableModel)getParameterTable().getModel()).getRows();
            group.setParameterList(list);
         }
@@ -385,7 +379,7 @@ public class LMGroupXMLEditorPanel extends DataInputPanel implements ActionListe
             return;
         }
         //Make the new parameter from the text fields and insert it into the table model.
-        LMxmlParameter newParam = new LMxmlParameter();
+        LmXmlParameter newParam = new LmXmlParameter();
         
         newParam.setLmGroupId(groupId);
         newParam.setParameterName(name);
@@ -407,7 +401,7 @@ public class LMGroupXMLEditorPanel extends DataInputPanel implements ActionListe
         }
         
         //Make the new parameter from the text fields
-        LMxmlParameter newParam = new LMxmlParameter();
+        LmXmlParameter newParam = new LmXmlParameter();
         
         newParam.setLmGroupId(groupId);
         newParam.setParameterName(getParameterNameTextField().getText());

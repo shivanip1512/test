@@ -2,11 +2,11 @@ package com.cannontech.database.data.device;
 
 import com.cannontech.database.data.pao.DeviceClasses;
 
-public class XML extends RemoteBase {
+public class XmlTransmitter extends RemoteBase {
 
     private String deviceAddress;
     
-    public XML() {
+    public XmlTransmitter() {
         super();
         setDeviceClass( DeviceClasses.STRING_CLASS_TRANSMITTER );
     }
