@@ -6,7 +6,8 @@ public enum ProgramParameterKey {
     MINIMUM_NOTIFICATION_MINUTES("60","Minimum Notification Time Minutes"),
     DEFAULT_EVENT_DURATION_MINUTES("240","Default Event Duration"),
     MINIMUM_EVENT_DURATION_MINUTES("240","Minimum Event Duration"),
-    DEFAULT_ENERGY_PRICE(".01","Energy Price");
+    DEFAULT_ENERGY_PRICE(".01","Energy Price"),
+    CUSTOMER_ELECTION_CUTOFF_MINUTES("45","Customer Election Cutoff"),;
     
     private final String defaultValue;
     private final String longDescription;
