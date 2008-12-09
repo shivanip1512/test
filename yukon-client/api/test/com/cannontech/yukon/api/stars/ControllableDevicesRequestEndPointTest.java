@@ -139,14 +139,14 @@ public class ControllableDevicesRequestEndPointTest {
         Element reqElement = XmlUtils.createElementFromResource(resource);
         
         // verify the reqElement is valid according to schema
-        Resource reqSchemaResource = new ClassPathResource("../schemas/stars/NewControllableDevicesRequest.xsd", this.getClass());
+        Resource reqSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/schemas/stars/NewControllableDevicesRequest.xsd", this.getClass());
         TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
         
         //invoke test
         Element respElement = impl.invokeAddDevice(reqElement, null);
         
         // verify the respElement is valid according to schema
-        Resource respSchemaResource = new ClassPathResource("../schemas/stars/NewControllableDevicesResponse.xsd", this.getClass());
+        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/schemas/stars/NewControllableDevicesResponse.xsd", this.getClass());
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
 
         // create template and parse response data
@@ -221,14 +221,14 @@ public class ControllableDevicesRequestEndPointTest {
         Element reqElement = XmlUtils.createElementFromResource(resource);
         
         // verify the reqElement is valid according to schema
-        Resource reqSchemaResource = new ClassPathResource("../schemas/stars/UpdateControllableDevicesRequest.xsd", this.getClass());
+        Resource reqSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/schemas/stars/UpdateControllableDevicesRequest.xsd", this.getClass());
         TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
         
         //invoke test        
         Element respElement = impl.invokeUpdateDevice(reqElement, null);
         
         // verify the respElement is valid according to schema
-        Resource respSchemaResource = new ClassPathResource("../schemas/stars/UpdateControllableDevicesResponse.xsd", this.getClass());
+        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/schemas/stars/UpdateControllableDevicesResponse.xsd", this.getClass());
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
         
         // create template and parse response data
@@ -303,14 +303,14 @@ public class ControllableDevicesRequestEndPointTest {
         Element reqElement = XmlUtils.createElementFromResource(resource);
 
         // verify the reqElement is valid according to schema
-        Resource reqSchemaResource = new ClassPathResource("../schemas/stars/RemoveControllableDevicesRequest.xsd", this.getClass());
+        Resource reqSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/schemas/stars/RemoveControllableDevicesRequest.xsd", this.getClass());
         TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
         
         //invoke test        
         Element respElement = impl.invokeRemoveDevice(reqElement, null);
         
         // verify the respElement is valid according to schema
-        Resource respSchemaResource = new ClassPathResource("../schemas/stars/RemoveControllableDevicesResponse.xsd", this.getClass());
+        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/schemas/stars/RemoveControllableDevicesResponse.xsd", this.getClass());
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
         
         // create template and parse response data
