@@ -1,6 +1,5 @@
 package com.cannontech.yukon.api.loadManagement;
 
-import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.junit.Before;
@@ -8,54 +7,104 @@ import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XmlUtils;
+import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.cannontech.yukon.api.util.YukonXml;
 import com.cannontech.yukon.api.utils.TestUtils;
 
 public class CountOverridesTowardsLimitRequestEndpointTest {
 
-	//TODO add any required services interface vars
     private CountOverridesTowardsLimitRequestEndpoint impl;
+    private MockOverrideService mockOverrideService; 
     
     private Namespace ns = YukonXml.getYukonNamespace();
+    private static final String USER_SUCCESS = "Success";
+    private static final String USER_FAILURE = "Failure";    
+    private static final String RESP_ELEMENT_NAME = "countOverridesTowardsLimitResponse";
+    
+    //TODO Add/match with actual ErrorCodes thrown here
+    private static final String ERROR_CODE = "ERROR_CODE";
     
     @Before
     public void setUp() throws Exception {
         
-    	impl = new CountOverridesTowardsLimitRequestEndpoint();
-    	//TODO set any mocked required services on endpoint
+        mockOverrideService = new MockOverrideService();
+        
+        impl = new CountOverridesTowardsLimitRequestEndpoint();
+        impl.setOverrideService(mockOverrideService);
         impl.initialize();
     }
     
-    //TODO mock any required services
+    private class MockOverrideService extends OverrideServiceAdapter {
+        
+        @Override
+        public void countOverridesTowardsLimit(LiteYukonUser user) {
+
+            if (!user.getUsername().equals(USER_SUCCESS)){
+                throw new RuntimeException("Invalid request");
+            }
+            
+        }
+    }
     
     @Test
-    public void testInvoke() throws Exception {
+    public void testInvokeSuccess() throws Exception {
         
-        // init
-        Element requestElement = null;
-        Attribute versionAttribute = null;
-        Element responseElement = null;
-        SimpleXPathTemplate outputTemplate = null;
-        Resource requestSchemaResource = new ClassPathResource("../schemas/loadManagement/CountOverridesTowardsLimitRequest.xsd", this.getClass());
-        Resource responseSchemaResource = new ClassPathResource("../schemas/loadManagement/CountOverridesTowardsLimitResponse.xsd", this.getClass());
+        // Init with Request XML
+        Resource resource = new ClassPathResource("CountOverridesTowardsLimitRequest.xml", this.getClass());
+        Element reqElement = XmlUtils.createElementFromResource(resource);
         
-        // test
-        //==========================================================================================
-        requestElement = new Element("countOverridesTowardsLimitRequest", ns);
-        versionAttribute = new Attribute("version", "1.0");
-        requestElement.setAttribute(versionAttribute);
-        TestUtils.validateAgainstSchema(requestElement, requestSchemaResource);
+        // verify the reqElement is valid according to schema
+        Resource reqSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/schemas/loadManagement/CountOverridesTowardsLimitRequest.xsd",
+                                                           this.getClass());
+        TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
         
-        // run and validate response against xsd
-        responseElement = impl.invoke(requestElement, null);
-        TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
+        //invoke test
+        LiteYukonUser user = new LiteYukonUser();
+        user.setUsername(USER_SUCCESS);
+        Element respElement = impl.invoke(reqElement, user);
         
-        outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
+        // verify the respElement is valid according to schema
+        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/schemas/loadManagement/CountOverridesTowardsLimitResponse.xsd",
+                                                            this.getClass());
+        TestUtils.validateAgainstSchema(respElement, respSchemaResource);
+
+        // create template and parse response data
+        SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(respElement);
+        TestUtils.runVersionAssertion(template, RESP_ELEMENT_NAME, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
+        TestUtils.runSuccessAssertion(template, RESP_ELEMENT_NAME);
         
-        // outputs
-        //TODO tests for success/failure
     }
 
+    @Test
+    public void testInvokeFailure() throws Exception {
+        
+        // Init with Request XML
+        Resource resource = new ClassPathResource("CountOverridesTowardsLimitRequest.xml", this.getClass());
+        Element reqElement = XmlUtils.createElementFromResource(resource);
+        
+        // verify the reqElement is valid according to schema
+        Resource reqSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/schemas/loadManagement/CountOverridesTowardsLimitRequest.xsd",
+                                                           this.getClass());
+        TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
+        
+        //invoke test
+        LiteYukonUser user = new LiteYukonUser();
+        user.setUsername(USER_FAILURE);        
+        Element respElement = impl.invoke(reqElement, user);
+        
+        // verify the respElement is valid according to schema
+        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/schemas/loadManagement/CountOverridesTowardsLimitResponse.xsd",
+                                                            this.getClass());
+        TestUtils.validateAgainstSchema(respElement, respSchemaResource);
+
+        // create template and parse response data
+        SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(respElement);
+        TestUtils.runVersionAssertion(template, RESP_ELEMENT_NAME, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
+        //TODO Add/match with actual ErrorCodes thrown here        
+        TestUtils.runFailureAssertions(template, RESP_ELEMENT_NAME, ERROR_CODE);
+        
+    }    
 }

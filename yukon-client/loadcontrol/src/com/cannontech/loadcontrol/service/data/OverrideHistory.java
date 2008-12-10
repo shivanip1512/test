@@ -4,7 +4,7 @@ import java.util.Date;
 
 public class OverrideHistory {
 
-	private int serialNumber;
+	private String serialNumber;
 	private String programName;
 	private String accountNumber;
 	private OverrideStatus status;
@@ -15,10 +15,10 @@ public class OverrideHistory {
 	private long overrideNumber;
 	private boolean countedAgainstLimit;
 	
-	public int getSerialNumber() {
+	public String getSerialNumber() {
 		return serialNumber;
 	}
-	public void setSerialNumber(int serialNumber) {
+	public void setSerialNumber(String serialNumber) {
 		this.serialNumber = serialNumber;
 	}
 	public String getProgramName() {

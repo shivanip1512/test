@@ -42,7 +42,7 @@ public class TestUtils {
 
         String serviceResponseNameWithNS = serviceResponseName;
         if (!serviceResponseNameWithNS.startsWith("/y:")) {
-            serviceResponseNameWithNS += "/y:";
+            serviceResponseNameWithNS = "/y:" + serviceResponseNameWithNS;
         }
         Assert.assertNotNull("No version node present",
                              outputTemplate.evaluateAsNode(serviceResponseNameWithNS + "/@version"));

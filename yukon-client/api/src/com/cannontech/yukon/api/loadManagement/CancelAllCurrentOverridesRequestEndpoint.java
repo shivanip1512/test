@@ -2,7 +2,6 @@ package com.cannontech.yukon.api.loadManagement;
 
 import javax.annotation.PostConstruct;
 
-import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.Namespace;
@@ -34,8 +33,7 @@ public class CancelAllCurrentOverridesRequestEndpoint {
     	
     	// init response
         Element resp = new Element("cancelAllCurrentOverridesResponse", ns);
-        Attribute versionAttribute = new Attribute("version", "1.0");
-        resp.setAttribute(versionAttribute);
+        XmlVersionUtils.addVersionAttribute(resp, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         
         // run service
         //TODO decide what exception(s) this might throw, add error code details

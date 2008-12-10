@@ -62,7 +62,7 @@ public class OverrideHistoryByAccountNumberRequestEndpointTest {
             List<OverrideHistory> overrideHistoryList = new ArrayList<OverrideHistory>();
             
             OverrideHistory hist1 = new OverrideHistory();
-            hist1.setSerialNumber(100);
+            hist1.setSerialNumber("100");
             hist1.setProgramName("program1");
             hist1.setAccountNumber(accountNumber);
             hist1.setStatus(OverrideStatus.ACTIVE);
@@ -74,7 +74,7 @@ public class OverrideHistoryByAccountNumberRequestEndpointTest {
             hist1.setCountedAgainstLimit(true);
             
             OverrideHistory hist2 = new OverrideHistory();
-            hist2.setSerialNumber(200);
+            hist2.setSerialNumber("200");
             hist2.setProgramName("program2");
             hist2.setAccountNumber(accountNumber);
             hist2.setStatus(OverrideStatus.SCHEDULED);

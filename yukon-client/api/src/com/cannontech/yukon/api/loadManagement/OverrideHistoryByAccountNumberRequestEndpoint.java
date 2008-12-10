@@ -78,7 +78,7 @@ public class OverrideHistoryByAccountNumberRequestEndpoint {
             
             Element overrideHistoryElement = new Element("overrideHistory", ns);
         
-            overrideHistoryElement.addContent(XmlUtils.createIntegerElement("serialNumber", ns, overrideHistory.getSerialNumber()));
+            overrideHistoryElement.addContent(XmlUtils.createStringElement("serialNumber", ns, overrideHistory.getSerialNumber()));
             overrideHistoryElement.addContent(XmlUtils.createStringElement("programName", ns, overrideHistory.getProgramName()));
             overrideHistoryElement.addContent(XmlUtils.createStringElement("accountNumber", ns, overrideHistory.getAccountNumber()));
             overrideHistoryElement.addContent(XmlUtils.createStringElement("status", ns, overrideHistory.getStatus().getDescription()));
