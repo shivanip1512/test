@@ -100,6 +100,18 @@ public class XmlUtils {
         return element;
     }
     
+    public static Element createBooleanElement(String name, Namespace namespace, boolean value) {
+        Element element = new Element(name, namespace);
+        
+        if (value) {
+        	element.setText("true");
+        } else {
+        	element.setText("false");
+        }
+        
+        return element;
+    }
+    
     /**
      * Returns date formatted as ISO with UTC zone.
      * Ex: 2008-10-13T12:30:00Z

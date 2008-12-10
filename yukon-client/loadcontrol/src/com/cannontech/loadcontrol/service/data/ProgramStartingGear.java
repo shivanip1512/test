@@ -10,6 +10,7 @@ public class ProgramStartingGear {
     private int startingGearNumber;
     
     public ProgramStartingGear(int programId, String programName, String startingGearName, int startingGearNumber) {
+    	this.programId = programId;
         this.programName = programName;
         this.startingGearName = startingGearName;
         this.startingGearNumber = startingGearNumber;
