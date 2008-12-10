@@ -301,6 +301,7 @@ enum YukonError_t
     ErrorRequestCancelled,      // Cancel message received
 
     ErrorInvalidTimestamp,
+    ErrorInvalidChannel,
 
     FinalError
 };
