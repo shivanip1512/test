@@ -3145,6 +3145,8 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
                     //  reset the "in progress" flag
                     _daily_read_info.request_type = daily_read_info_t::Request_None;
                     InterlockedExchange(&_daily_read_info.in_progress, false);
+
+                    status = ErrorInvalidChannel;
                 }
                 else
                 {
