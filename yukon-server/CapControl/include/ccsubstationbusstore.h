@@ -246,10 +246,7 @@ public:
                                   CtiCCSpArea_vec *ccSpecialAreas);
     void reloadTimeOfDayStrategyFromDatabase(long strategyId, map< long, CtiCCStrategyPtr > *strategy_map);
     void reloadStrategyFromDatabase(long strategyId, map< long, CtiCCStrategyPtr > *strategy_map);
-    void reloadCapBankStatesFromDatabase();
-    void reloadGeoAreasFromDatabase();
-    void reloadClientLinkStatusPointFromDatabase();
-    void reloadAlarmCategoryFromDatabase();
+    void reloadMiscFromDatabase();
     void reloadMapOfBanksToControlByLikeDay(long subbusId, long feederId,  
                                       map< long, long> *controlid_action_map,
                                       CtiTime &lastSendTime, int fallBackConstant);
@@ -311,10 +308,7 @@ public:
     const CtiTime& getLinkDropOutTime() const;
     void  setLinkDropOutTime(const CtiTime& dropOutTime);
 
-    map <long, CtiCCSubstationBusPtr>* getPAOSubMap();
-    string getPAOTypeString(const string paoTypeString);
-
-    static const string CAP_CONTROL_DBCHANGE_MSG_SOURCE;
+     static const string CAP_CONTROL_DBCHANGE_MSG_SOURCE;
     static const string CAP_CONTROL_DBCHANGE_MSG_SOURCE2;
     static void sendUserQuit(void *who);
     static void periodicComplain( void *la );
@@ -326,7 +320,6 @@ public:
     bool removeKVAROperation( long capbankId );
 
     void resetAllOpStats();
-    void printAllOperationStats();
     void incrementOperationCounts(CtiCCCapBank* cap, CtiCCFeeder* feed, 
                                   CtiCCSubstationBus* bus, CtiCCSubstation* station, 
                                   CtiCCArea* area, CtiCCSpecial* spArea);
