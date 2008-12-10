@@ -23,6 +23,7 @@
 #include "msg_cmd.h"
 #include "msg_reg.h"
 #include "msg_signal.h"
+#include "msg_tag.h"
 #include "msg_pdata.h"
 #include "msg_ptreg.h"
 #include "msg_pcrequest.h"
@@ -1752,6 +1753,7 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
         CtiCommandMsg* cmdMsg;
         CtiDBChangeMsg* dbChange;
         CtiSignalMsg* signal;
+        CtiTagMsg* tagMsg;
         int i = 0;
         switch( message->isA() )
         {
@@ -2003,8 +2005,16 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                 break;
             case MSG_TAG:
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Received Tag Message from Porter.  Check Comm Routes."<< endl;
+                    tagMsg = (CtiTagMsg*)message;
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - Received Tag Message.."<< endl;
+                        if( _CC_DEBUG & CC_DEBUG_EXTENDED )
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - Tag Message - PointID: "<< tagMsg->getPointID()<< " TagDesc:"<<tagMsg->getDescriptionStr() <<"."<< endl;
+                        }
+                    }
                 }
                 break;
             default:

@@ -487,46 +487,6 @@ long CtiCCSubstationBusStore::findSubIDbyAltSubID(long altSubId, int index)
 
 }
 
-
-string CtiCCSubstationBusStore::getPAOTypeString(const string paoTypeString)
-{
-    string retVal = "Undefined";
-    INT paoType = resolveCapControlType(paoTypeString);
-
-    switch (paoType)
-    {
-        case TYPE_CC_SPECIALAREA:
-        {
-            retVal = "Special Area";
-            break;
-        }
-        case TYPE_CC_AREA:
-        {
-            retVal = "Area";
-            break;
-        }
-        case TYPE_CC_SUBSTATION:
-        {
-            retVal = "Substation";
-            break;
-        }
-        case TYPE_CC_SUBSTATION_BUS:
-        {
-            retVal = "Substation Bus";
-            break;
-        }
-        case TYPE_CC_FEEDER:
-        {
-            retVal = "Feeder";
-            break;
-        }
-        default:
-            break;
-
-    }
-    return retVal;
-}
-
 /*---------------------------------------------------------------------------
     dumpAllDynamicData
 
@@ -1013,16 +973,8 @@ void CtiCCSubstationBusStore::reset()
              ********    Loading Cap Banks States                ********
              ************************************************************/
             {
-                reloadCapBankStatesFromDatabase();
+                reloadMiscFromDatabase();
             }
-
-            {
-               reloadClientLinkStatusPointFromDatabase();
-            }
-            {
-                reloadAlarmCategoryFromDatabase();
-            }
-
             /************************************************************
              ********    Loading Operation Statistics            ********
              ************************************************************/
@@ -1923,18 +1875,7 @@ void CtiCCSubstationBusStore::capBankMovedToDifferentFeeder(CtiCCFeeder* oldFeed
                         dout << CtiTime() << " - " << text << ", " << additional << endl;
                     }
                 }
-                /*{
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - M3I change, 'Feeder Reconfigure' or 'AIM Import' PAO Id: "
-                         << movedCapBank->getPAOId() << ", name: "
-                         << movedCapBank->getPAOName()
-                         << ", was moved from feeder PAO Id: "
-                         << oldFeeder->getPAOId() << ", name: "
-                         << oldFeeder->getPAOName() << ", to feeder PAO Id: "
-                         << currentFeeder->getPAOId() << ", name: "
-                         << currentFeeder->getPAOName() << ", with order: "
-                         << movedCapBank->getControlOrder() << endl;
-                }*/
+                
                 found = TRUE;
                 break;
             }
@@ -2321,14 +2262,7 @@ void CtiCCSubstationBusStore::doResetThr()
                 dout << CtiTime() << " CapControl doResetThr. TID: " << rwThreadId() << endl;
             }
 
-           /* if(!_shutdownOnThreadTimeout)
-            { */
-                ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl doResetThr", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::periodicComplain, 0) );
-            /*}
-            else
-            {
-                ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl doResetThr", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::sendUserQuit, CTIDBG_new string("CapControl doResetThr")) );
-            } */
+           ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl doResetThr", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::periodicComplain, 0) );
         }
 
     }
@@ -3508,6 +3442,7 @@ void CtiCCSubstationBusStore::reloadStrategyFromDatabase(long strategyId, map< l
                 RWDBTable capControlSpecialAreaTable = db.table("capcontrolspecialarea");
                 RWDBTable dateOfHoliday = db.table("dateofholiday");
                 RWDBTable ccHolidayStratTable = db.table("ccholidaystrategyassignment");
+                RWDBTable capControlObjectTable = capControlSubstationBusTable;
 
                 /**************************************************************
                 ******  Loading Strategies                               ******
@@ -3569,26 +3504,46 @@ void CtiCCSubstationBusStore::reloadStrategyFromDatabase(long strategyId, map< l
                 {
                     LONG paObjectId;
                     //Update Area Strategy Values with dbChanged/editted strategy values
-                    for (int objectType = 0; objectType < 4; objectType++)
+                    for (int objectType = Feeder; objectType <= SpecialArea; objectType++)
                     {
+                               
                         RWDBColumn paObjectColumn;
                         switch (objectType)
                         {
-                            case 0:
-                                paObjectColumn = capControlSpecialAreaTable["areaid"];
+                            case SpecialArea:
+                                {
+                                    paObjectColumn = capControlSpecialAreaTable["areaid"];
+                                    capControlObjectTable = capControlSpecialAreaTable;
+                                }
                                 break;
-                            case 1:
-                                paObjectColumn = capControlAreaTable["areaid"];
+                            case Area:
+                                {
+                                    paObjectColumn = capControlAreaTable["areaid"];
+                                    capControlObjectTable = capControlAreaTable;
+                                }
                                 break;
-                            case 2:
-                                paObjectColumn = capControlSubstationBusTable["substationbusid"];
+                            case SubBus:
+                                {
+                                    paObjectColumn = capControlSubstationBusTable["substationbusid"];
+                                    capControlObjectTable = capControlSubstationBusTable;
+                                }
                                 break;
-                            case 3:
-                                paObjectColumn = capControlFeederTable["feederid"];
+                            case Feeder:
+                                {
+                                    paObjectColumn = capControlFeederTable["feederid"];
+                                    capControlObjectTable = capControlFeederTable;
+                                }
                                 break;
+                            case Unknown:
+                            case CapBank:
+                            case Substation:
+                            case Strategy:
+                            case Schedule:
                             default: 
                                 break;
                         }
+                        if ( paObjectColumn.isValid() )
+                        {
                         RWDBSelector selector = db.selector();
                         selector <<  ccScheduleStrat["paobjectid"]
                                               <<  ccScheduleStrat["seasonscheduleid"]
@@ -3599,173 +3554,174 @@ void CtiCCSubstationBusStore::reloadStrategyFromDatabase(long strategyId, map< l
                                               <<  dateOfSeason["seasonstartday"]
                                               <<  dateOfSeason["seasonendday"];
 
-                         selector.from(capControlSpecialAreaTable);
-                         selector.from(ccScheduleStrat);
-                         selector.from(dateOfSeason);
+                             selector.from(capControlObjectTable);
+                             selector.from(ccScheduleStrat);
+                             selector.from(dateOfSeason);
 
-                         selector.where( ccScheduleStrat["paobjectid"]==paObjectColumn &&
-                                        ccScheduleStrat["seasonscheduleid"] == dateOfSeason["seasonscheduleid"] &&
-                                        ccScheduleStrat["seasonname"] == dateOfSeason["seasonname"] &&
-                                        ccScheduleStrat["strategyid"] == strategyId );
-
-                         if ( _CC_DEBUG & CC_DEBUG_DATABASE )
-                         {
-                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                             dout << CtiTime() << " - " << selector.asString().data() << endl;
-                         }
-                         RWDBReader rdr = selector.reader(conn);
-                         while ( rdr() )
-                         {
-                             int startMon, startDay, endMon, endDay;
-                             rdr["seasonstartmonth"] >> startMon;
-                             rdr["seasonendmonth"] >> endMon;
-                             rdr["seasonstartday"] >> startDay;
-                             rdr["seasonendday"] >> endDay;
-
-                             CtiDate today = CtiDate();
-
-                             if (today >= CtiDate(startDay, startMon, today.year()) &&
-                                 today <= CtiDate(endDay, endMon, today.year())  )
+                             selector.where( ccScheduleStrat["paobjectid"]==paObjectColumn &&
+                                            ccScheduleStrat["seasonscheduleid"] == dateOfSeason["seasonscheduleid"] &&
+                                            ccScheduleStrat["seasonname"] == dateOfSeason["seasonname"] &&
+                                            ccScheduleStrat["strategyid"] == strategyId );
+                            
+                             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                              {
-                                 long objectId, stratId;
-                                 rdr["paobjectid"] >> objectId;
-                                 rdr["strategyid"] >> stratId;
-
-                                 switch (objectType)
+                                 CtiLockGuard<CtiLogger> logger_guard(dout);
+                                 dout << CtiTime() << " - " << selector.asString().data() << endl;
+                             }
+                             RWDBReader rdr = selector.reader(conn);
+                             while ( rdr() )
+                             {
+                                 int startMon, startDay, endMon, endDay;
+                                 rdr["seasonstartmonth"] >> startMon;
+                                 rdr["seasonendmonth"] >> endMon;
+                                 rdr["seasonstartday"] >> startDay;
+                                 rdr["seasonendday"] >> endDay;
+                            
+                                 CtiDate today = CtiDate();
+                            
+                                 if (today >= CtiDate(startDay, startMon, today.year()) &&
+                                     today <= CtiDate(endDay, endMon, today.year())  )
                                  {
-                                     case 0:
-                                         {
-
-                                             CtiCCSpecialPtr currentSpArea = NULL;
-
-                                             currentSpArea = findSpecialAreaByPAObjectID(objectId);
-                                             if (currentSpArea != NULL)
+                                     long objectId, stratId;
+                                     rdr["paobjectid"] >> objectId;
+                                     rdr["strategyid"] >> stratId;
+                            
+                                     switch (objectType)
+                                     {
+                                         case SpecialArea:
                                              {
-                                                 CtiCCStrategyPtr currentCCStrategy = NULL;
-                                            
-                                                 currentCCStrategy = findStrategyByStrategyID(stratId);
-                                                 if (currentCCStrategy == NULL)
+                            
+                                                 CtiCCSpecialPtr currentSpArea = NULL;
+                            
+                                                 currentSpArea = findSpecialAreaByPAObjectID(objectId);
+                                                 if (currentSpArea != NULL)
                                                  {
-                                                     currentSpArea->setStrategyId(0);
-                                                     currentCCStrategy = findStrategyByStrategyID(0);
-                                                 }
-                                                 currentSpArea->setStrategyId(currentCCStrategy->getStrategyId());
-                                                 currentSpArea->setStrategyValues(currentCCStrategy);
-                                            
-                                                 cascadeStrategySettingsToChildren(objectId, 0,0);
-                                             }
-                                         }
-                                         break;
-                                     case 1:
-                                         {
-                                             CtiCCAreaPtr currentArea = NULL;
-
-                                             currentArea = findAreaByPAObjectID(objectId);
-                                             if (currentArea != NULL)
-                                             {
-                                                 CtiCCStrategyPtr currentCCStrategy = NULL;
-                                           
-                                                 currentCCStrategy = findStrategyByStrategyID(stratId);
-                                                 if (currentCCStrategy == NULL)
-                                                 {
-                                                     currentArea->setStrategyId(0);
-                                                     currentCCStrategy = findStrategyByStrategyID(0);
-                                                 }
-                                                 currentArea->setStrategyId(currentCCStrategy->getStrategyId());
-                                                 currentArea->setStrategyValues(currentCCStrategy);
-                                                 cascadeStrategySettingsToChildren(0, objectId,0);
-                                             }
-                                         }
-                                         break;
-                                     case 2: 
-                                         {
-                                             CtiCCSubstationBusPtr currentCCSubstationBus = NULL;
-
-                                             currentCCSubstationBus = findSubBusByPAObjectID(objectId);
-                                             if (currentCCSubstationBus != NULL)
-                                             {
-                                                 CtiCCStrategyPtr currentCCStrategy = NULL;
-                                          
-                                                 CtiCCSubstationPtr currentStation = NULL;
-                                                 currentStation = findSubstationByPAObjectID(currentCCSubstationBus->getParentId());
-                                                 if (currentStation != NULL)
-                                                 {
-                                                     if (currentStation->getSaEnabledFlag())
-                                                     {
-                                                         CtiCCSpecialPtr spArea = findSpecialAreaByPAObjectID(currentStation->getSaEnabledId());
-                                                         if (spArea != NULL)
-                                                             currentCCStrategy =  strategy_map->find(spArea->getStrategyId())->second;
-                                                     }
-                                                     else
-                                                     {
-                                                         currentCCStrategy = findStrategyByStrategyID(stratId);
-                                                     }
+                                                     CtiCCStrategyPtr currentCCStrategy = NULL;
+                                                
+                                                     currentCCStrategy = findStrategyByStrategyID(stratId);
                                                      if (currentCCStrategy == NULL)
                                                      {
-                                                         currentCCSubstationBus->setStrategyId(0);
+                                                         currentSpArea->setStrategyId(0);
                                                          currentCCStrategy = findStrategyByStrategyID(0);
                                                      }
-                                                     currentCCSubstationBus->setStrategyId(currentCCStrategy->getStrategyId());
-                                                     currentCCSubstationBus->setStrategyValues(currentCCStrategy);
-                                                     if (!stringCompareIgnoreCase(currentCCStrategy->getControlMethod(),CtiCCSubstationBus::TimeOfDayMethod) )
-                                                     {
-                                                         currentCCSubstationBus->figureNextCheckTime();
-                                                     }
-                                                     for (int i = 0; i < currentCCSubstationBus->getCCFeeders().size(); i++ )
-                                                     {
-                                                         ((CtiCCFeederPtr)currentCCSubstationBus->getCCFeeders()[i])->setStrategyValues(currentCCStrategy);
-                                                         ((CtiCCFeederPtr)currentCCSubstationBus->getCCFeeders()[i])->setStrategyId(0);
-                                                         ((CtiCCFeederPtr)currentCCSubstationBus->getCCFeeders()[i])->setStrategyName("(none)");
-                                                     }
+                                                     currentSpArea->setStrategyId(currentCCStrategy->getStrategyId());
+                                                     currentSpArea->setStrategyValues(currentCCStrategy);
+                                                
+                                                     cascadeStrategySettingsToChildren(objectId, 0,0);
                                                  }
                                              }
-                                         }
-                                         break;
-                                     case 3:
-                                         {
-                                             CtiCCFeederPtr currentCCFeeder = NULL;
-                                             CtiCCSubstationBusPtr currentSubBus = NULL;
-                                             CtiCCSubstationPtr currentStation = NULL;
-                                           
-                                             currentCCFeeder = findFeederByPAObjectID(objectId);
-                                           
-                                             if (currentCCFeeder != NULL)
+                                             break;
+                                         case Area:
                                              {
-                                                 CtiCCStrategyPtr currentCCStrategy = NULL;
-                                           
-                                                 currentSubBus = findSubBusByPAObjectID(currentCCFeeder->getParentId());
-                                                 if (currentSubBus != NULL)
+                                                 CtiCCAreaPtr currentArea = NULL;
+                            
+                                                 currentArea = findAreaByPAObjectID(objectId);
+                                                 if (currentArea != NULL)
                                                  {
-                                                     currentStation = findSubstationByPAObjectID(currentSubBus->getParentId());
+                                                     CtiCCStrategyPtr currentCCStrategy = NULL;
+                                               
+                                                     currentCCStrategy = findStrategyByStrategyID(stratId);
+                                                     if (currentCCStrategy == NULL)
+                                                     {
+                                                         currentArea->setStrategyId(0);
+                                                         currentCCStrategy = findStrategyByStrategyID(0);
+                                                     }
+                                                     currentArea->setStrategyId(currentCCStrategy->getStrategyId());
+                                                     currentArea->setStrategyValues(currentCCStrategy);
+                                                     cascadeStrategySettingsToChildren(0, objectId,0);
+                                                 }
+                                             }
+                                             break;
+                                         case SubBus: 
+                                             {
+                                                 CtiCCSubstationBusPtr currentCCSubstationBus = NULL;
+                            
+                                                 currentCCSubstationBus = findSubBusByPAObjectID(objectId);
+                                                 if (currentCCSubstationBus != NULL)
+                                                 {
+                                                     CtiCCStrategyPtr currentCCStrategy = NULL;
+                                              
+                                                     CtiCCSubstationPtr currentStation = NULL;
+                                                     currentStation = findSubstationByPAObjectID(currentCCSubstationBus->getParentId());
                                                      if (currentStation != NULL)
                                                      {
                                                          if (currentStation->getSaEnabledFlag())
                                                          {
                                                              CtiCCSpecialPtr spArea = findSpecialAreaByPAObjectID(currentStation->getSaEnabledId());
-                                                              if (spArea != NULL)
-                                                                  currentCCStrategy =  strategy_map->find(spArea->getStrategyId())->second;
-                                                        }
+                                                             if (spArea != NULL)
+                                                                 currentCCStrategy =  strategy_map->find(spArea->getStrategyId())->second;
+                                                         }
                                                          else
                                                          {
                                                              currentCCStrategy = findStrategyByStrategyID(stratId);
                                                          }
+                                                         if (currentCCStrategy == NULL)
+                                                         {
+                                                             currentCCSubstationBus->setStrategyId(0);
+                                                             currentCCStrategy = findStrategyByStrategyID(0);
+                                                         }
+                                                         currentCCSubstationBus->setStrategyId(currentCCStrategy->getStrategyId());
+                                                         currentCCSubstationBus->setStrategyValues(currentCCStrategy);
+                                                         if (!stringCompareIgnoreCase(currentCCStrategy->getControlMethod(),CtiCCSubstationBus::TimeOfDayMethod) )
+                                                         {
+                                                             currentCCSubstationBus->figureNextCheckTime();
+                                                         }
+                                                         for (int i = 0; i < currentCCSubstationBus->getCCFeeders().size(); i++ )
+                                                         {
+                                                             ((CtiCCFeederPtr)currentCCSubstationBus->getCCFeeders()[i])->setStrategyValues(currentCCStrategy);
+                                                             ((CtiCCFeederPtr)currentCCSubstationBus->getCCFeeders()[i])->setStrategyId(0);
+                                                             ((CtiCCFeederPtr)currentCCSubstationBus->getCCFeeders()[i])->setStrategyName("(none)");
+                                                         }
                                                      }
-                                           
                                                  }
-                                                 if (currentCCStrategy == NULL)
-                                                 {
-                                                     currentCCFeeder->setStrategyId(0);
-                                                     currentCCStrategy = findStrategyByStrategyID(0);
-                                                 }
-                                                 currentCCFeeder->setStrategyValues(currentCCStrategy);
-                                           
                                              }
-                                         }
-                                         break;
-                                     default:
-                                         break;
-                                 }
+                                             break;
+                                         case Feeder:
+                                             {
+                                                 CtiCCFeederPtr currentCCFeeder = NULL;
+                                                 CtiCCSubstationBusPtr currentSubBus = NULL;
+                                                 CtiCCSubstationPtr currentStation = NULL;
+                                               
+                                                 currentCCFeeder = findFeederByPAObjectID(objectId);
+                                               
+                                                 if (currentCCFeeder != NULL)
+                                                 {
+                                                     CtiCCStrategyPtr currentCCStrategy = NULL;
+                                               
+                                                     currentSubBus = findSubBusByPAObjectID(currentCCFeeder->getParentId());
+                                                     if (currentSubBus != NULL)
+                                                     {
+                                                         currentStation = findSubstationByPAObjectID(currentSubBus->getParentId());
+                                                         if (currentStation != NULL)
+                                                         {
+                                                             if (currentStation->getSaEnabledFlag())
+                                                             {
+                                                                 CtiCCSpecialPtr spArea = findSpecialAreaByPAObjectID(currentStation->getSaEnabledId());
+                                                                  if (spArea != NULL)
+                                                                      currentCCStrategy =  strategy_map->find(spArea->getStrategyId())->second;
+                                                            }
+                                                             else
+                                                             {
+                                                                 currentCCStrategy = findStrategyByStrategyID(stratId);
+                                                             }
+                                                         }
+                                               
+                                                     }
+                                                     if (currentCCStrategy == NULL)
+                                                     {
+                                                         currentCCFeeder->setStrategyId(0);
+                                                         currentCCStrategy = findStrategyByStrategyID(0);
+                                                     }
+                                                     currentCCFeeder->setStrategyValues(currentCCStrategy);
+                                               
+                                                 }
+                                             }
+                                             break;
+                                         default:
+                                             break;
+                                     }
                                  
+                                 }
                              }
                          }
                     }
@@ -3840,217 +3796,226 @@ void CtiCCSubstationBusStore::reloadAndAssignHolidayStrategysFromDatabase(long s
                 {
                     LONG paObjectId;
                     //Update Area Strategy Values with dbChanged/editted strategy values
-                    for (int objectType = 0; objectType < 4; objectType++)
+                    for (int objectType = Feeder; objectType <= SpecialArea; objectType++)
                     {
+                               
                         RWDBColumn paObjectColumn;
                         switch (objectType)
                         {
-                             case 0:
+                            case SpecialArea:
                                 {
                                     paObjectColumn = capControlSpecialAreaTable["areaid"];
                                     capControlObjectTable = capControlSpecialAreaTable;
                                 }
                                 break;
-                            case 1:
+                            case Area:
                                 {
                                     paObjectColumn = capControlAreaTable["areaid"];
                                     capControlObjectTable = capControlAreaTable;
                                 }
                                 break;
-                            case 2:
+                            case SubBus:
                                 {
                                     paObjectColumn = capControlSubstationBusTable["substationbusid"];
                                     capControlObjectTable = capControlSubstationBusTable;
                                 }
                                 break;
-                            case 3:
+                            case Feeder:
                                 {
                                     paObjectColumn = capControlFeederTable["feederid"];
                                     capControlObjectTable = capControlFeederTable;
                                 }
                                 break;
+                            case Unknown:
+                            case CapBank:
+                            case Substation:
+                            case Strategy:
+                            case Schedule:
                             default: 
                                 break;
                         }
+                        if ( paObjectColumn.isValid() )
+                        {
                         
-                        RWDBSelector selector = db.selector();
-                                     selector <<  ccHolidayStratTable["paobjectid"]
-                                              <<  ccHolidayStratTable["holidayscheduleid"]
-                                              <<  ccHolidayStratTable["strategyid"]
-                                              <<  dateOfHoliday["holidayname"]
-                                              <<  dateOfHoliday["holidaymonth"]
-                                              <<  dateOfHoliday["holidayday"]
-                                              <<  dateOfHoliday["holidayyear"];
-
-                         selector.from(capControlObjectTable);
-                         selector.from(ccHolidayStratTable);
-                         selector.from(dateOfHoliday);
-
-                         selector.where( ccHolidayStratTable["paobjectid"]==paObjectColumn &&
-                                        ccHolidayStratTable["holidayscheduleid"] == dateOfHoliday["holidayscheduleid"] &&
-                                        ccHolidayStratTable["strategyid"] == strategyId );
-
-                         if ( _CC_DEBUG & CC_DEBUG_DATABASE )
-                         {
-                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                             dout << CtiTime() << " - " << selector.asString().data() << endl;
-                         }
-                         RWDBReader rdr = selector.reader(conn);
-                         while ( rdr() )
-                         {
-                             int holMon, holDay, holYear, tempYear;
-                             rdr["holidaymonth"] >> holMon;
-                             rdr["holidayday"] >> holDay;
-                             rdr["holidayyear"] >> holYear;
-
-                             CtiDate today = CtiDate();
-                             if (holYear == -1)
+                            RWDBSelector selector = db.selector();
+                                         selector <<  ccHolidayStratTable["paobjectid"]
+                                                  <<  ccHolidayStratTable["holidayscheduleid"]
+                                                  <<  ccHolidayStratTable["strategyid"]
+                                                  <<  dateOfHoliday["holidayname"]
+                                                  <<  dateOfHoliday["holidaymonth"]
+                                                  <<  dateOfHoliday["holidayday"]
+                                                  <<  dateOfHoliday["holidayyear"];
+                            
+                             selector.from(capControlObjectTable);
+                             selector.from(ccHolidayStratTable);
+                             selector.from(dateOfHoliday);
+                            
+                             selector.where( ccHolidayStratTable["paobjectid"]==paObjectColumn &&
+                                            ccHolidayStratTable["holidayscheduleid"] == dateOfHoliday["holidayscheduleid"] &&
+                                            ccHolidayStratTable["strategyid"] == strategyId );
+                            
+                             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                              {
-                                 tempYear = today.year();
+                                 CtiLockGuard<CtiLogger> logger_guard(dout);
+                                 dout << CtiTime() << " - " << selector.asString().data() << endl;
                              }
-                             else
-                                 tempYear = holYear;
-
-                             if (today == CtiDate(holDay, holMon, tempYear) )
+                             RWDBReader rdr = selector.reader(conn);
+                             while ( rdr() )
                              {
-                                 long objectId, stratId;
-                                 rdr["paobjectid"] >> objectId;
-                                 rdr["strategyid"] >> stratId;
-
-                                 switch (objectType)
+                                 int holMon, holDay, holYear, tempYear;
+                                 rdr["holidaymonth"] >> holMon;
+                                 rdr["holidayday"] >> holDay;
+                                 rdr["holidayyear"] >> holYear;
+                            
+                                 CtiDate today = CtiDate();
+                                 if (holYear == -1)
                                  {
-                                     case 0:
-                                         {
-                                             CtiCCSpecialPtr currentSpArea = NULL;
-                                    
-                                             currentSpArea = findSpecialAreaByPAObjectID(objectId);
-                                             if (currentSpArea != NULL)
+                                     tempYear = today.year();
+                                 }
+                                 else
+                                     tempYear = holYear;
+                            
+                                 if (today == CtiDate(holDay, holMon, tempYear) )
+                                 {
+                                     long objectId, stratId;
+                                     rdr["paobjectid"] >> objectId;
+                                     rdr["strategyid"] >> stratId;
+                            
+                                     switch (objectType)
+                                     {
+                                         case SpecialArea:
                                              {
-                                                 CtiCCStrategyPtr currentCCStrategy = NULL;
-                                            
-                                                 currentCCStrategy = findStrategyByStrategyID(stratId);
-                                                 if (currentCCStrategy == NULL)
+                                                 CtiCCSpecialPtr currentSpArea = NULL;
+                                        
+                                                 currentSpArea = findSpecialAreaByPAObjectID(objectId);
+                                                 if (currentSpArea != NULL)
                                                  {
-                                                     currentSpArea->setStrategyId(0);
-                                                     currentCCStrategy = findStrategyByStrategyID(0);
-                                                 }
-                                                 currentSpArea->setStrategyId(currentCCStrategy->getStrategyId());
-                                                 currentSpArea->setStrategyValues(currentCCStrategy);
-                                             }
-                                         }
-                                         break;
-                                     case 1:
-                                         {
-                                             CtiCCAreaPtr currentArea = NULL;
-
-                                             currentArea = findAreaByPAObjectID(objectId);
-                                             if (currentArea != NULL)
-                                             {
-                                                 CtiCCStrategyPtr currentCCStrategy = NULL;
-                                           
-                                                 currentCCStrategy = findStrategyByStrategyID(stratId);
-                                                 if (currentCCStrategy == NULL)
-                                                 {
-                                                     currentArea->setStrategyId(0);
-                                                     currentCCStrategy = findStrategyByStrategyID(0);
-                                                 }
-                                                 currentArea->setStrategyId(currentCCStrategy->getStrategyId());
-                                                 currentArea->setStrategyValues(currentCCStrategy);
-                                             }
-                                         }
-                                         break;
-                                     case 2:
-                                         {
-                                             CtiCCSubstationBusPtr currentCCSubstationBus = NULL;
-
-                                             currentCCSubstationBus = findSubBusByPAObjectID(objectId);
-                                             if (currentCCSubstationBus != NULL)
-                                             {
-                                                 CtiCCStrategyPtr currentCCStrategy = NULL;
-                                          
-                                                 CtiCCSubstationPtr currentStation = NULL;
-                                                 currentStation = findSubstationByPAObjectID(currentCCSubstationBus->getParentId());
-                                                 if (currentStation != NULL)
-                                                 {
-                                                     if (currentStation->getSaEnabledFlag())
-                                                     {
-                                                         CtiCCSpecialPtr spArea = findSpecialAreaByPAObjectID(currentStation->getSaEnabledId());
-                                                         if (spArea != NULL)
-                                                             currentCCStrategy =  strategy_map->find(spArea->getStrategyId())->second;
-                                                     }
-                                                     else
-                                                     {
-                                                         currentCCStrategy = findStrategyByStrategyID(stratId);
-                                                     }
+                                                     CtiCCStrategyPtr currentCCStrategy = NULL;
+                                                
+                                                     currentCCStrategy = findStrategyByStrategyID(stratId);
                                                      if (currentCCStrategy == NULL)
                                                      {
-                                                         currentCCSubstationBus->setStrategyId(0);
+                                                         currentSpArea->setStrategyId(0);
                                                          currentCCStrategy = findStrategyByStrategyID(0);
                                                      }
-                                                     currentCCSubstationBus->setStrategyId(currentCCStrategy->getStrategyId());
-                                                     currentCCSubstationBus->setStrategyValues(currentCCStrategy);
-                                                     if (!stringCompareIgnoreCase(currentCCStrategy->getControlMethod(),CtiCCSubstationBus::TimeOfDayMethod) )
-                                                     {
-                                                         currentCCSubstationBus->figureNextCheckTime();
-                                                     }
-                                                     for (int i = 0; i < currentCCSubstationBus->getCCFeeders().size(); i++ )
-                                                     {
-                                                         ((CtiCCFeederPtr)currentCCSubstationBus->getCCFeeders()[i])->setStrategyValues(currentCCStrategy);
-                                                         ((CtiCCFeederPtr)currentCCSubstationBus->getCCFeeders()[i])->setStrategyId(0);
-                                                         ((CtiCCFeederPtr)currentCCSubstationBus->getCCFeeders()[i])->setStrategyName("(none)");
-                                                     }
+                                                     currentSpArea->setStrategyId(currentCCStrategy->getStrategyId());
+                                                     currentSpArea->setStrategyValues(currentCCStrategy);
                                                  }
                                              }
-                                         }
-                                         break;
-                                     case 3:
-                                         {
-                                             CtiCCFeederPtr currentCCFeeder = NULL;
-                                             CtiCCSubstationBusPtr currentSubBus = NULL;
-                                             CtiCCSubstationPtr currentStation = NULL;
-                                            
-                                             currentCCFeeder = findFeederByPAObjectID(objectId);
-                                            
-                                             if (currentCCFeeder != NULL)
+                                             break;
+                                         case Area:
                                              {
-                                                 CtiCCStrategyPtr currentCCStrategy = NULL;
-                                            
-                                                 currentSubBus = findSubBusByPAObjectID(currentCCFeeder->getParentId());
-                                                 if (currentSubBus != NULL)
+                                                 CtiCCAreaPtr currentArea = NULL;
+                            
+                                                 currentArea = findAreaByPAObjectID(objectId);
+                                                 if (currentArea != NULL)
                                                  {
-                                                     currentStation = findSubstationByPAObjectID(currentSubBus->getParentId());
+                                                     CtiCCStrategyPtr currentCCStrategy = NULL;
+                                               
+                                                     currentCCStrategy = findStrategyByStrategyID(stratId);
+                                                     if (currentCCStrategy == NULL)
+                                                     {
+                                                         currentArea->setStrategyId(0);
+                                                         currentCCStrategy = findStrategyByStrategyID(0);
+                                                     }
+                                                     currentArea->setStrategyId(currentCCStrategy->getStrategyId());
+                                                     currentArea->setStrategyValues(currentCCStrategy);
+                                                 }
+                                             }
+                                             break;
+                                         case SubBus:
+                                             {
+                                                 CtiCCSubstationBusPtr currentCCSubstationBus = NULL;
+                            
+                                                 currentCCSubstationBus = findSubBusByPAObjectID(objectId);
+                                                 if (currentCCSubstationBus != NULL)
+                                                 {
+                                                     CtiCCStrategyPtr currentCCStrategy = NULL;
+                                              
+                                                     CtiCCSubstationPtr currentStation = NULL;
+                                                     currentStation = findSubstationByPAObjectID(currentCCSubstationBus->getParentId());
                                                      if (currentStation != NULL)
                                                      {
                                                          if (currentStation->getSaEnabledFlag())
                                                          {
                                                              CtiCCSpecialPtr spArea = findSpecialAreaByPAObjectID(currentStation->getSaEnabledId());
-                                                              if (spArea != NULL)
-                                                                  currentCCStrategy =  strategy_map->find(spArea->getStrategyId())->second;
-                                                        }
+                                                             if (spArea != NULL)
+                                                                 currentCCStrategy =  strategy_map->find(spArea->getStrategyId())->second;
+                                                         }
                                                          else
                                                          {
                                                              currentCCStrategy = findStrategyByStrategyID(stratId);
                                                          }
+                                                         if (currentCCStrategy == NULL)
+                                                         {
+                                                             currentCCSubstationBus->setStrategyId(0);
+                                                             currentCCStrategy = findStrategyByStrategyID(0);
+                                                         }
+                                                         currentCCSubstationBus->setStrategyId(currentCCStrategy->getStrategyId());
+                                                         currentCCSubstationBus->setStrategyValues(currentCCStrategy);
+                                                         if (!stringCompareIgnoreCase(currentCCStrategy->getControlMethod(),CtiCCSubstationBus::TimeOfDayMethod) )
+                                                         {
+                                                             currentCCSubstationBus->figureNextCheckTime();
+                                                         }
+                                                         for (int i = 0; i < currentCCSubstationBus->getCCFeeders().size(); i++ )
+                                                         {
+                                                             ((CtiCCFeederPtr)currentCCSubstationBus->getCCFeeders()[i])->setStrategyValues(currentCCStrategy);
+                                                             ((CtiCCFeederPtr)currentCCSubstationBus->getCCFeeders()[i])->setStrategyId(0);
+                                                             ((CtiCCFeederPtr)currentCCSubstationBus->getCCFeeders()[i])->setStrategyName("(none)");
+                                                         }
                                                      }
-                                            
                                                  }
-                                                 if (currentCCStrategy == NULL)
-                                                 {
-                                                     currentCCFeeder->setStrategyId(0);
-                                                     currentCCStrategy = findStrategyByStrategyID(0);
-                                                 }
-                                                 currentCCFeeder->setStrategyValues(currentCCStrategy);
-                                            
                                              }
-
-                                         }
-                                         break;
-                                     default:
-                                         break;
-                                     
+                                             break;
+                                         case Feeder:
+                                             {
+                                                 CtiCCFeederPtr currentCCFeeder = NULL;
+                                                 CtiCCSubstationBusPtr currentSubBus = NULL;
+                                                 CtiCCSubstationPtr currentStation = NULL;
+                                                
+                                                 currentCCFeeder = findFeederByPAObjectID(objectId);
+                                                
+                                                 if (currentCCFeeder != NULL)
+                                                 {
+                                                     CtiCCStrategyPtr currentCCStrategy = NULL;
+                                                
+                                                     currentSubBus = findSubBusByPAObjectID(currentCCFeeder->getParentId());
+                                                     if (currentSubBus != NULL)
+                                                     {
+                                                         currentStation = findSubstationByPAObjectID(currentSubBus->getParentId());
+                                                         if (currentStation != NULL)
+                                                         {
+                                                             if (currentStation->getSaEnabledFlag())
+                                                             {
+                                                                 CtiCCSpecialPtr spArea = findSpecialAreaByPAObjectID(currentStation->getSaEnabledId());
+                                                                  if (spArea != NULL)
+                                                                      currentCCStrategy =  strategy_map->find(spArea->getStrategyId())->second;
+                                                            }
+                                                             else
+                                                             {
+                                                                 currentCCStrategy = findStrategyByStrategyID(stratId);
+                                                             }
+                                                         }
+                                                
+                                                     }
+                                                     if (currentCCStrategy == NULL)
+                                                     {
+                                                         currentCCFeeder->setStrategyId(0);
+                                                         currentCCStrategy = findStrategyByStrategyID(0);
+                                                     }
+                                                     currentCCFeeder->setStrategyValues(currentCCStrategy);
+                                                
+                                                 }
+                            
+                                             }
+                                             break;
+                                         default:
+                                             break;
+                                         
+                                     }
                                  }
                              }
-                         }
+                        }
                     }
 
                 }
@@ -4153,220 +4118,225 @@ void CtiCCSubstationBusStore::reloadTimeOfDayStrategyFromDatabase(long strategyI
                     {
                         currentCCStrategy->setTimeAndCloseValues(rdr);
                     }
-
-                    //currentCCStrategy->dumpTimeOfDayControllers();
                 }
 
 
                 if (strategyId > 0)
                 {
                     //Update Area Strategy Values with dbChanged/editted strategy values
-                    for (int objectType = 0; objectType < 4; objectType++)
+                    for (int objectType = Feeder; objectType <= SpecialArea; objectType++)
                     {
-                        RWDBColumn paObjectColumn = capControlSpecialAreaTable["areaid"];
+                        RWDBColumn paObjectColumn;
                         switch (objectType)
                         {
-                            case 0:
+                            case SpecialArea:
                                 {
                                     paObjectColumn = capControlSpecialAreaTable["areaid"];
                                     capControlObjectTable = capControlSpecialAreaTable;
                                 }
                                 break;
-                            case 1:
+                            case Area:
                                 {
                                     paObjectColumn = capControlAreaTable["areaid"];
                                     capControlObjectTable = capControlAreaTable;
                                 }
                                 break;
-                            case 2:
+                            case SubBus:
                                 {
                                     paObjectColumn = capControlSubstationBusTable["substationbusid"];
                                     capControlObjectTable = capControlSubstationBusTable;
                                 }
                                 break;
-                            case 3:
+                            case Feeder:
                                 {
                                     paObjectColumn = capControlFeederTable["feederid"];
                                     capControlObjectTable = capControlFeederTable;
                                 }
                                 break;
+                            case Unknown:
+                            case CapBank:
+                            case Substation:
+                            case Strategy:
+                            case Schedule:
                             default: 
                                 break;
                         }
-                        RWDBSelector selector = db.selector();
-                                     selector <<  ccScheduleStrat["paobjectid"]
-                                              <<  ccScheduleStrat["seasonscheduleid"]
-                                              <<  ccScheduleStrat["seasonname"]
-                                              <<  ccScheduleStrat["strategyid"]
-                                              <<  dateOfSeason["seasonstartmonth"]
-                                              <<  dateOfSeason["seasonendmonth"]
-                                              <<  dateOfSeason["seasonstartday"]
-                                              <<  dateOfSeason["seasonendday"];
-
-                         selector.from(capControlObjectTable);
-                         selector.from(ccScheduleStrat);
-                         selector.from(dateOfSeason);
-
-                         selector.where( ccScheduleStrat["paobjectid"]==paObjectColumn &&
-                                        ccScheduleStrat["seasonscheduleid"] == dateOfSeason["seasonscheduleid"] &&
-                                        ccScheduleStrat["seasonname"] == dateOfSeason["seasonname"] &&
-                                        ccScheduleStrat["strategyid"] == strategyId );
-
-                         if ( _CC_DEBUG & CC_DEBUG_DATABASE )
-                         {
-                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                             dout << CtiTime() << " - " << selector.asString().data() << endl;
-                         }
-                         RWDBReader rdr = selector.reader(conn);
-                         while ( rdr() )
-                         {
-                             int startMon, startDay, endMon, endDay;
-                             rdr["seasonstartmonth"] >> startMon;
-                             rdr["seasonendmonth"] >> endMon;
-                             rdr["seasonstartday"] >> startDay;
-                             rdr["seasonendday"] >> endDay;
-
-                             CtiDate today = CtiDate();
-
-                             if (today  >= CtiDate(startDay, startMon, today.year()) &&
-                                 today <= CtiDate(endDay, endMon, today.year())  )
-                             {
-                                 long objectId, stratId;
-                                 rdr["paobjectid"] >> objectId;
-                                 rdr["strategyid"] >> stratId;
-
-
-                                 switch (objectType)
-                                 {
-                                     case 0:
-                                         {
-                                            CtiCCSpecialPtr currentSpArea = NULL;
-
-                                            currentSpArea = findSpecialAreaByPAObjectID(objectId);
-                                            if (currentSpArea != NULL)
-                                            {
-                                                CtiCCStrategyPtr currentCCStrategy = NULL;
+                        if ( paObjectColumn.isValid() )
+                        {
+                           RWDBSelector selector = db.selector();
+                                       selector <<  ccScheduleStrat["paobjectid"]
+                                                <<  ccScheduleStrat["seasonscheduleid"]
+                                                <<  ccScheduleStrat["seasonname"]
+                                                <<  ccScheduleStrat["strategyid"]
+                                                <<  dateOfSeason["seasonstartmonth"]
+                                                <<  dateOfSeason["seasonendmonth"]
+                                                <<  dateOfSeason["seasonstartday"]
+                                                <<  dateOfSeason["seasonendday"];
+                           
+                           selector.from(capControlObjectTable);
+                           selector.from(ccScheduleStrat);
+                           selector.from(dateOfSeason);
+                           
+                           selector.where( ccScheduleStrat["paobjectid"]==paObjectColumn &&
+                                          ccScheduleStrat["seasonscheduleid"] == dateOfSeason["seasonscheduleid"] &&
+                                          ccScheduleStrat["seasonname"] == dateOfSeason["seasonname"] &&
+                                          ccScheduleStrat["strategyid"] == strategyId );
+                           
+                           if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+                           {
+                               CtiLockGuard<CtiLogger> logger_guard(dout);
+                               dout << CtiTime() << " - " << selector.asString().data() << endl;
+                           }
+                           RWDBReader rdr = selector.reader(conn);
+                           while ( rdr() )
+                           {
+                               int startMon, startDay, endMon, endDay;
+                               rdr["seasonstartmonth"] >> startMon;
+                               rdr["seasonendmonth"] >> endMon;
+                               rdr["seasonstartday"] >> startDay;
+                               rdr["seasonendday"] >> endDay;
+                           
+                               CtiDate today = CtiDate();
+                           
+                               if (today  >= CtiDate(startDay, startMon, today.year()) &&
+                                   today <= CtiDate(endDay, endMon, today.year())  )
+                               {
+                                   long objectId, stratId;
+                                   rdr["paobjectid"] >> objectId;
+                                   rdr["strategyid"] >> stratId;
+                           
+                           
+                                   switch (objectType)
+                                   {
+                                       case SpecialArea:
+                                           {
+                                              CtiCCSpecialPtr currentSpArea = NULL;
+                           
+                                              currentSpArea = findSpecialAreaByPAObjectID(objectId);
+                                              if (currentSpArea != NULL)
+                                              {
+                                                  CtiCCStrategyPtr currentCCStrategy = NULL;
+                                              
+                                                  currentCCStrategy = findStrategyByStrategyID(stratId);
+                                                  if (currentCCStrategy == NULL)
+                                                  {
+                                                      currentSpArea->setStrategyId(0);
+                                                      currentCCStrategy = findStrategyByStrategyID(0);
+                                                  }
+                                                  currentSpArea->setStrategyId(currentCCStrategy->getStrategyId());
+                                                  currentSpArea->setStrategyValues(currentCCStrategy);
+                                              }
+                                           }
+                                           break;
+                                       case Area:
+                                           {
+                                               CtiCCAreaPtr currentArea = NULL;
+                           
+                                               currentArea = findAreaByPAObjectID(objectId);
+                                               if (currentArea != NULL)
+                                               {
+                                                   CtiCCStrategyPtr currentCCStrategy = NULL;
+                                             
+                                                   currentCCStrategy = findStrategyByStrategyID(stratId);
+                                                   if (currentCCStrategy == NULL)
+                                                   {
+                                                       currentArea->setStrategyId(0);
+                                                       currentCCStrategy = findStrategyByStrategyID(0);
+                                                   }
+                                                   currentArea->setStrategyId(currentCCStrategy->getStrategyId());
+                                                   currentArea->setStrategyValues(currentCCStrategy);
+                                               }
+                                           }
+                                           break;
+                                       case SubBus:
+                                           {
+                                               CtiCCSubstationBusPtr currentCCSubstationBus = NULL;
+                           
+                                               currentCCSubstationBus = findSubBusByPAObjectID(objectId);
+                                               if (currentCCSubstationBus != NULL)
+                                               {
+                                                   CtiCCStrategyPtr currentCCStrategy = NULL;
                                             
-                                                currentCCStrategy = findStrategyByStrategyID(stratId);
-                                                if (currentCCStrategy == NULL)
-                                                {
-                                                    currentSpArea->setStrategyId(0);
-                                                    currentCCStrategy = findStrategyByStrategyID(0);
-                                                }
-                                                currentSpArea->setStrategyId(currentCCStrategy->getStrategyId());
-                                                currentSpArea->setStrategyValues(currentCCStrategy);
-                                            }
-                                         }
-                                         break;
-                                     case 1:
-                                         {
-                                             CtiCCAreaPtr currentArea = NULL;
-
-                                             currentArea = findAreaByPAObjectID(objectId);
-                                             if (currentArea != NULL)
-                                             {
-                                                 CtiCCStrategyPtr currentCCStrategy = NULL;
-                                           
-                                                 currentCCStrategy = findStrategyByStrategyID(stratId);
-                                                 if (currentCCStrategy == NULL)
-                                                 {
-                                                     currentArea->setStrategyId(0);
-                                                     currentCCStrategy = findStrategyByStrategyID(0);
-                                                 }
-                                                 currentArea->setStrategyId(currentCCStrategy->getStrategyId());
-                                                 currentArea->setStrategyValues(currentCCStrategy);
-                                             }
-                                         }
-                                         break;
-                                     case 2:
-                                         {
-                                             CtiCCSubstationBusPtr currentCCSubstationBus = NULL;
-
-                                             currentCCSubstationBus = findSubBusByPAObjectID(objectId);
-                                             if (currentCCSubstationBus != NULL)
-                                             {
-                                                 CtiCCStrategyPtr currentCCStrategy = NULL;
-                                          
-                                                 CtiCCSubstationPtr currentStation = NULL;
-                                                 currentStation = findSubstationByPAObjectID(currentCCSubstationBus->getParentId());
-                                                 if (currentStation != NULL)
-                                                 {
-                                                     if (currentStation->getSaEnabledFlag())
-                                                     {
-                                                         CtiCCSpecialPtr spArea = findSpecialAreaByPAObjectID(currentStation->getSaEnabledId());
-                                                         if (spArea != NULL)
-                                                             currentCCStrategy =  strategy_map->find(spArea->getStrategyId())->second;
-                                                     }
-                                                     else
-                                                     {
-                                                         currentCCStrategy = findStrategyByStrategyID(stratId);
-                                                     }
-                                                     if (currentCCStrategy == NULL)
-                                                     {
-                                                         currentCCSubstationBus->setStrategyId(0);
-                                                         currentCCStrategy = findStrategyByStrategyID(0);
-                                                     }
-                                                     currentCCSubstationBus->setStrategyId(currentCCStrategy->getStrategyId());
-                                                     currentCCSubstationBus->setStrategyValues(currentCCStrategy);
-                                                     currentCCSubstationBus->figureNextCheckTime();
-                                                     for (int i = 0; i < currentCCSubstationBus->getCCFeeders().size(); i++ )
-                                                     {
-                                                         ((CtiCCFeederPtr)currentCCSubstationBus->getCCFeeders()[i])->setStrategyValues(currentCCStrategy);
-                                                         ((CtiCCFeederPtr)currentCCSubstationBus->getCCFeeders()[i])->setStrategyId(0);
-                                                         ((CtiCCFeederPtr)currentCCSubstationBus->getCCFeeders()[i])->setStrategyName("(none)");
-                                                     }
-                                                 }
-                                             }
-                                         }
-                                         break;
-                                     case 3:
-                                         {
-                                             CtiCCFeederPtr currentCCFeeder = NULL;
-                                             CtiCCSubstationBusPtr currentSubBus = NULL;
-                                             CtiCCSubstationPtr currentStation = NULL;
-                                          
-                                             currentCCFeeder = findFeederByPAObjectID(objectId);
-                                          
-                                             if (currentCCFeeder != NULL)
-                                             {
-                                                 CtiCCStrategyPtr currentCCStrategy = NULL;
-                                          
-                                                 currentSubBus = findSubBusByPAObjectID(currentCCFeeder->getParentId());
-                                                 if (currentSubBus != NULL)
-                                                 {
-                                                     currentStation = findSubstationByPAObjectID(currentSubBus->getParentId());
-                                                     if (currentStation != NULL)
-                                                     {
-                                                         if (currentStation->getSaEnabledFlag())
-                                                         {
-                                                             CtiCCSpecialPtr spArea = findSpecialAreaByPAObjectID(currentStation->getSaEnabledId());
-                                                              if (spArea != NULL)
-                                                                  currentCCStrategy =  strategy_map->find(spArea->getStrategyId())->second;
-                                                        }
-                                                         else
-                                                         {
-                                                             currentCCStrategy = findStrategyByStrategyID(stratId);
-                                                         }
-                                                     }
-                                          
-                                                 }
-                                                 if (currentCCStrategy == NULL)
-                                                 {
-                                                     currentCCFeeder->setStrategyId(0);
-                                                     currentCCStrategy = findStrategyByStrategyID(0);
-                                                 }
-                                                 currentCCFeeder->setStrategyValues(currentCCStrategy);
-                                             }
-                                         }
-                                         break;
-                                     default:
-                                         break;
-                                 }
-                                 
-                             }
-                         }
-                     }
-                 }
+                                                   CtiCCSubstationPtr currentStation = NULL;
+                                                   currentStation = findSubstationByPAObjectID(currentCCSubstationBus->getParentId());
+                                                   if (currentStation != NULL)
+                                                   {
+                                                       if (currentStation->getSaEnabledFlag())
+                                                       {
+                                                           CtiCCSpecialPtr spArea = findSpecialAreaByPAObjectID(currentStation->getSaEnabledId());
+                                                           if (spArea != NULL)
+                                                               currentCCStrategy =  strategy_map->find(spArea->getStrategyId())->second;
+                                                       }
+                                                       else
+                                                       {
+                                                           currentCCStrategy = findStrategyByStrategyID(stratId);
+                                                       }
+                                                       if (currentCCStrategy == NULL)
+                                                       {
+                                                           currentCCSubstationBus->setStrategyId(0);
+                                                           currentCCStrategy = findStrategyByStrategyID(0);
+                                                       }
+                                                       currentCCSubstationBus->setStrategyId(currentCCStrategy->getStrategyId());
+                                                       currentCCSubstationBus->setStrategyValues(currentCCStrategy);
+                                                       currentCCSubstationBus->figureNextCheckTime();
+                                                       for (int i = 0; i < currentCCSubstationBus->getCCFeeders().size(); i++ )
+                                                       {
+                                                           ((CtiCCFeederPtr)currentCCSubstationBus->getCCFeeders()[i])->setStrategyValues(currentCCStrategy);
+                                                           ((CtiCCFeederPtr)currentCCSubstationBus->getCCFeeders()[i])->setStrategyId(0);
+                                                           ((CtiCCFeederPtr)currentCCSubstationBus->getCCFeeders()[i])->setStrategyName("(none)");
+                                                       }
+                                                   }
+                                               }
+                                           }
+                                           break;
+                                       case Feeder:
+                                           {
+                                               CtiCCFeederPtr currentCCFeeder = NULL;
+                                               CtiCCSubstationBusPtr currentSubBus = NULL;
+                                               CtiCCSubstationPtr currentStation = NULL;
+                                            
+                                               currentCCFeeder = findFeederByPAObjectID(objectId);
+                                            
+                                               if (currentCCFeeder != NULL)
+                                               {
+                                                   CtiCCStrategyPtr currentCCStrategy = NULL;
+                                            
+                                                   currentSubBus = findSubBusByPAObjectID(currentCCFeeder->getParentId());
+                                                   if (currentSubBus != NULL)
+                                                   {
+                                                       currentStation = findSubstationByPAObjectID(currentSubBus->getParentId());
+                                                       if (currentStation != NULL)
+                                                       {
+                                                           if (currentStation->getSaEnabledFlag())
+                                                           {
+                                                               CtiCCSpecialPtr spArea = findSpecialAreaByPAObjectID(currentStation->getSaEnabledId());
+                                                                if (spArea != NULL)
+                                                                    currentCCStrategy =  strategy_map->find(spArea->getStrategyId())->second;
+                                                          }
+                                                           else
+                                                           {
+                                                               currentCCStrategy = findStrategyByStrategyID(stratId);
+                                                           }
+                                                       }
+                                            
+                                                   }
+                                                   if (currentCCStrategy == NULL)
+                                                   {
+                                                       currentCCFeeder->setStrategyId(0);
+                                                       currentCCStrategy = findStrategyByStrategyID(0);
+                                                   }
+                                                   currentCCFeeder->setStrategyValues(currentCCStrategy);
+                                               }
+                                           }
+                                           break;
+                                       default:
+                                           break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -8005,7 +7975,7 @@ void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long capBankId, ma
 }
 
 
-void CtiCCSubstationBusStore::reloadCapBankStatesFromDatabase()
+void CtiCCSubstationBusStore::reloadMiscFromDatabase()
 {
     try
     {
@@ -8029,6 +7999,9 @@ void CtiCCSubstationBusStore::reloadCapBankStatesFromDatabase()
 
                     RWDBDatabase db = getDatabase();
                     RWDBTable stateTable = db.table("state");
+                    RWDBTable alarmTable = db.table("alarmcategory");
+                    RWDBTable fdrTranslationTable = db.table("fdrtranslation");
+
 
                     RWDBSelector selector = db.selector();
                     selector << stateTable["text"]
@@ -8054,35 +8027,8 @@ void CtiCCSubstationBusStore::reloadCapBankStatesFromDatabase()
                         CtiCCState* ccState = new CtiCCState(rdr);
                         _ccCapBankStates->push_back( ccState );
                     }
-                }
-            }
 
-        }
-
-    }
-    catch(...)
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-    }
-}
-
-
-void CtiCCSubstationBusStore::reloadAlarmCategoryFromDatabase()
-{
-    try
-    {
-        RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
-        {
-            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-            RWDBConnection conn = getConnection();
-            {
-                if ( conn.isValid() )
-                {
-                    RWDBDatabase db = getDatabase();
-                    RWDBTable alarmTable = db.table("alarmcategory");
-
-                    RWDBSelector selector = db.selector();
+                    selector = db.selector();
                     selector << alarmTable["alarmcategoryid"]
                     << alarmTable["categoryname"];
 
@@ -8097,45 +8043,13 @@ void CtiCCSubstationBusStore::reloadAlarmCategoryFromDatabase()
                         dout << CtiTime() << " - " << selector.asString().data() << endl;
                     }
 
-                    RWDBReader rdr = selector.reader(conn);
-
+                    rdr = selector.reader(conn);
                     while ( rdr() )
                     {
                         rdr["alarmcategoryid"] >> _MAXOPS_ALARM_CATID;
                     }
-                }
-            }
-
-        }
-
-    }
-    catch(...)
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-    }
-}
-
-void CtiCCSubstationBusStore::reloadClientLinkStatusPointFromDatabase()
-{
-    try
-    {
-        RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
-        {
-            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-            RWDBConnection conn = getConnection();
-            {
-                if ( conn.isValid() )
-                {
-                    /*if ( _ccLinkStatusPoint > 0 )
-                    {
-
-                    } */
-
-                    RWDBDatabase db = getDatabase();
-                    RWDBTable fdrTranslationTable = db.table("fdrtranslation");
-
-                    RWDBSelector selector = db.selector();
+                    
+                    selector = db.selector();
                     selector << fdrTranslationTable["pointid"]
                     << fdrTranslationTable["directiontype"]
                     << fdrTranslationTable["interfacetype"]
@@ -8154,7 +8068,7 @@ void CtiCCSubstationBusStore::reloadClientLinkStatusPointFromDatabase()
                         dout << CtiTime() << " - " << selector.asString().data() << endl;
                     }
 
-                    RWDBReader rdr = selector.reader(conn);
+                    rdr = selector.reader(conn);
                     CtiString str;
                     char var[128];
                     std::strcpy(var, "FDR_INTERFACES");
@@ -8162,7 +8076,6 @@ void CtiCCSubstationBusStore::reloadClientLinkStatusPointFromDatabase()
                     {
                         str = "none";
                     }
-
 
                     while ( rdr() )
                     {
@@ -8201,9 +8114,7 @@ void CtiCCSubstationBusStore::reloadClientLinkStatusPointFromDatabase()
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
-
 }
-
 
 void CtiCCSubstationBusStore::reloadMapOfBanksToControlByLikeDay(long subbusId, long feederId,
                                   map< long, long> *controlid_action_map,
@@ -8564,10 +8475,6 @@ void CtiCCSubstationBusStore::deleteArea(long areaId)
                }
                areaToDelete->getPointIds()->clear();
             }
-            /*try
-            {
-                _pointid_area_map.clear();
-            }*/
             catch(...)
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -8674,10 +8581,6 @@ void CtiCCSubstationBusStore::deleteSpecialArea(long areaId)
                }
                spAreaToDelete->getPointIds()->clear();
             }
-            /*try
-            {
-                _pointid_specialarea_map.clear();
-            } */
             catch(...)
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -10430,10 +10333,7 @@ void CtiCCSubstationBusStore::removeItemsFromMap(int mapType, long first)
     }
     return;
 }
-map <long, CtiCCSubstationBusPtr>* CtiCCSubstationBusStore::getPAOSubMap()
-{
-    return &_paobject_subbus_map;
-}
+
 
 
 void CtiCCSubstationBusStore::setLinkStatusPointId(LONG pointId)
@@ -10791,58 +10691,6 @@ void CtiCCSubstationBusStore::resetAllConfirmationStats()
     return;
 }
 
-void CtiCCSubstationBusStore::printAllOperationStats()
-{
-
-    LONG i=0;
-    for(i=0;i<_ccGeoAreas->size();i++)
-    {
-        CtiCCArea* currentArea = (CtiCCArea*)_ccGeoAreas->at(i);
-        currentArea->getOperationStats().printOpStats();
-    }
-
-    for(i=0;i<_ccSpecialAreas->size();i++)
-    {
-        CtiCCSpecial* currentSpArea = (CtiCCSpecial*)_ccSpecialAreas->at(i);
-        currentSpArea->getOperationStats().printOpStats();
-
-    }
-
-    for(i=0;i<_ccSubstations->size();i++)
-    {
-        CtiCCSubstation* currentStation = (CtiCCSubstation*)_ccSubstations->at(i);
-        currentStation->getOperationStats().printOpStats();
-
-    }
-
-    for(i=0;i<_ccSubstationBuses->size();i++)
-    {
-        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)_ccSubstationBuses->at(i);
-        currentSubstationBus->getOperationStats().printOpStats();
-
-        CtiFeeder_vec &ccFeeders = currentSubstationBus->getCCFeeders();
-
-        for(LONG j=0; j < ccFeeders.size(); j++)
-        {
-            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)(ccFeeders.at(j));
-            currentFeeder->getOperationStats().printOpStats();
-
-            CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
-
-            for(LONG k=0;k<ccCapBanks.size();k++)
-            {
-                CtiCCCapBank* currentCapBank = (CtiCCCapBank*)(ccCapBanks[k]);
-                currentCapBank->getOperationStats().printOpStats();
-            }
-        }
-    }
-
-    return;
-}
-
-
-
-
 void CtiCCSubstationBusStore::reCalculateOperationStatsFromDatabase( )
 {
     try
@@ -10930,18 +10778,12 @@ void CtiCCSubstationBusStore::reCalculateOperationStatsFromDatabase( )
                                 dout << CtiTime() << " logDateTime >= userDefWindow " << CtiTime(logDateTime) <<">="<<CtiTime(userDefWindow) << endl;
                             }
 
-                            if (cap != NULL)
-                                cap->getOperationStats().incrementAllOpCounts();
-                            if (feeder != NULL)
-                                feeder->getOperationStats().incrementAllOpCounts();
-                            if (bus != NULL)
-                                bus->getOperationStats().incrementAllOpCounts();
-                            if (station != NULL)
-                                station->getOperationStats().incrementAllOpCounts();
-                            if (area != NULL)
-                                area->getOperationStats().incrementAllOpCounts();
-                            if (spArea != NULL)
-                                spArea->getOperationStats().incrementAllOpCounts();
+                            if (cap != NULL)  cap->getOperationStats().incrementAllOpCounts();
+                            if (feeder != NULL) feeder->getOperationStats().incrementAllOpCounts();
+                            if (bus != NULL) bus->getOperationStats().incrementAllOpCounts();
+                            if (station != NULL) station->getOperationStats().incrementAllOpCounts();
+                            if (area != NULL) area->getOperationStats().incrementAllOpCounts();
+                            if (spArea != NULL) spArea->getOperationStats().incrementAllOpCounts();
 
                         }
                         if (logDateTime >= yesterday )
@@ -10951,18 +10793,12 @@ void CtiCCSubstationBusStore::reCalculateOperationStatsFromDatabase( )
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << CtiTime() << " logDateTime >= yesterday " << CtiTime(logDateTime) <<">="<<CtiTime(yesterday) << endl;
                             }
-                            if (cap != NULL)
-                                cap->getOperationStats().incrementDailyOpCounts();
-                            if (feeder != NULL)
-                                feeder->getOperationStats().incrementDailyOpCounts();
-                            if (bus != NULL)
-                                bus->getOperationStats().incrementDailyOpCounts();
-                            if (station != NULL)
-                                station->getOperationStats().incrementDailyOpCounts();
-                            if (area != NULL)
-                                area->getOperationStats().incrementDailyOpCounts();
-                            if (spArea != NULL)
-                                spArea->getOperationStats().incrementDailyOpCounts();
+                            if (cap != NULL) cap->getOperationStats().incrementDailyOpCounts();
+                            if (feeder != NULL) feeder->getOperationStats().incrementDailyOpCounts();
+                            if (bus != NULL) bus->getOperationStats().incrementDailyOpCounts();
+                            if (station != NULL) station->getOperationStats().incrementDailyOpCounts();
+                            if (area != NULL) area->getOperationStats().incrementDailyOpCounts();
+                            if (spArea != NULL) spArea->getOperationStats().incrementDailyOpCounts();
                         }
                         else if (logDateTime >= lastWeek )
                         {
@@ -10971,18 +10807,12 @@ void CtiCCSubstationBusStore::reCalculateOperationStatsFromDatabase( )
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << CtiTime() << " logDateTime >= lastWeek " << CtiTime(logDateTime) <<">="<<CtiTime(lastWeek) << endl;
                             }
-                            if (cap != NULL)
-                                cap->getOperationStats().incrementWeeklyOpCounts();
-                            if (feeder != NULL)
-                                feeder->getOperationStats().incrementWeeklyOpCounts();
-                            if (bus != NULL)
-                                bus->getOperationStats().incrementWeeklyOpCounts();
-                            if (station != NULL)
-                                station->getOperationStats().incrementWeeklyOpCounts();
-                            if (area != NULL)
-                                area->getOperationStats().incrementWeeklyOpCounts();
-                            if (spArea != NULL)
-                                spArea->getOperationStats().incrementWeeklyOpCounts();
+                            if (cap != NULL) cap->getOperationStats().incrementWeeklyOpCounts();
+                            if (feeder != NULL) feeder->getOperationStats().incrementWeeklyOpCounts();
+                            if (bus != NULL) bus->getOperationStats().incrementWeeklyOpCounts();
+                            if (station != NULL) station->getOperationStats().incrementWeeklyOpCounts();
+                            if (area != NULL) area->getOperationStats().incrementWeeklyOpCounts();
+                            if (spArea != NULL) spArea->getOperationStats().incrementWeeklyOpCounts();
                         }
                         else if (logDateTime >= oneMonthAgo )
                         {
@@ -10991,18 +10821,12 @@ void CtiCCSubstationBusStore::reCalculateOperationStatsFromDatabase( )
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << CtiTime() << " logDateTime >= oneMonthAgo " << CtiTime(logDateTime) <<">="<<CtiTime(oneMonthAgo) << endl;
                             }
-                            if (cap != NULL)
-                                cap->getOperationStats().incrementMonthlyOpCounts();
-                            if (feeder != NULL)
-                                feeder->getOperationStats().incrementMonthlyOpCounts();
-                            if (bus != NULL)
-                                bus->getOperationStats().incrementMonthlyOpCounts();
-                            if (station != NULL)
-                                station->getOperationStats().incrementMonthlyOpCounts();
-                            if (area != NULL)
-                                area->getOperationStats().incrementMonthlyOpCounts();
-                            if (spArea != NULL)
-                                spArea->getOperationStats().incrementMonthlyOpCounts();
+                            if (cap != NULL) cap->getOperationStats().incrementMonthlyOpCounts();
+                            if (feeder != NULL) feeder->getOperationStats().incrementMonthlyOpCounts();
+                            if (bus != NULL) bus->getOperationStats().incrementMonthlyOpCounts();
+                            if (station != NULL) station->getOperationStats().incrementMonthlyOpCounts();
+                            if (area != NULL) area->getOperationStats().incrementMonthlyOpCounts();
+                            if (spArea != NULL) spArea->getOperationStats().incrementMonthlyOpCounts();
                         }
                         else
                         {
@@ -11056,63 +10880,39 @@ void CtiCCSubstationBusStore::reCalculateOperationStatsFromDatabase( )
 
                         if (logDateTime >= userDefWindow )
                         {
-                             if (cap != NULL)
-                                cap->getOperationStats().incrementAllOpFails();
-                            if (feeder != NULL)
-                                feeder->getOperationStats().incrementAllOpFails();
-                            if (bus != NULL)
-                                bus->getOperationStats().incrementAllOpFails();
-                            if (station != NULL)
-                                station->getOperationStats().incrementAllOpFails();
-                            if (area != NULL)
-                                area->getOperationStats().incrementAllOpFails();
-                            if (spArea != NULL)
-                                spArea->getOperationStats().incrementAllOpFails();
+                            if (cap != NULL) cap->getOperationStats().incrementAllOpFails();
+                            if (feeder != NULL) feeder->getOperationStats().incrementAllOpFails();
+                            if (bus != NULL) bus->getOperationStats().incrementAllOpFails();
+                            if (station != NULL) station->getOperationStats().incrementAllOpFails();
+                            if (area != NULL) area->getOperationStats().incrementAllOpFails();
+                            if (spArea != NULL) spArea->getOperationStats().incrementAllOpFails();
                         }
                         else if (logDateTime >= yesterday )
                         {
-                            if (cap != NULL)
-                                cap->getOperationStats().incrementDailyOpFails();
-                            if (feeder != NULL)
-                                feeder->getOperationStats().incrementDailyOpFails();
-                            if (bus != NULL)
-                                bus->getOperationStats().incrementDailyOpFails();
-                            if (station != NULL)
-                                station->getOperationStats().incrementDailyOpFails();
-                            if (area != NULL)
-                                area->getOperationStats().incrementDailyOpFails();
-                            if (spArea != NULL)
-                                spArea->getOperationStats().incrementDailyOpFails();
+                            if (cap != NULL) cap->getOperationStats().incrementDailyOpFails();
+                            if (feeder != NULL) feeder->getOperationStats().incrementDailyOpFails();
+                            if (bus != NULL) bus->getOperationStats().incrementDailyOpFails();
+                            if (station != NULL) station->getOperationStats().incrementDailyOpFails();
+                            if (area != NULL) area->getOperationStats().incrementDailyOpFails();
+                            if (spArea != NULL) spArea->getOperationStats().incrementDailyOpFails();
                         }
                         else if (logDateTime >= lastWeek )
                         {
-                            if (cap != NULL)
-                                cap->getOperationStats().incrementWeeklyOpFails();
-                            if (feeder != NULL)
-                                feeder->getOperationStats().incrementWeeklyOpFails();
-                            if (bus != NULL)
-                                bus->getOperationStats().incrementWeeklyOpFails();
-                            if (station != NULL)
-                                station->getOperationStats().incrementWeeklyOpFails();
-                            if (area != NULL)
-                                area->getOperationStats().incrementWeeklyOpFails();
-                            if (spArea != NULL)
-                                spArea->getOperationStats().incrementWeeklyOpFails();
+                            if (cap != NULL) cap->getOperationStats().incrementWeeklyOpFails();
+                            if (feeder != NULL) feeder->getOperationStats().incrementWeeklyOpFails();
+                            if (bus != NULL) bus->getOperationStats().incrementWeeklyOpFails();
+                            if (station != NULL) station->getOperationStats().incrementWeeklyOpFails();
+                            if (area != NULL) area->getOperationStats().incrementWeeklyOpFails();
+                            if (spArea != NULL) spArea->getOperationStats().incrementWeeklyOpFails();
                         }
                         else if (logDateTime >= oneMonthAgo )
                         {
-                            if (cap != NULL)
-                                cap->getOperationStats().incrementMonthlyOpFails();
-                            if (feeder != NULL)
-                                feeder->getOperationStats().incrementMonthlyOpFails();
-                            if (bus != NULL)
-                                bus->getOperationStats().incrementMonthlyOpFails();
-                            if (station != NULL)
-                                station->getOperationStats().incrementMonthlyOpFails();
-                            if (area != NULL)
-                                area->getOperationStats().incrementMonthlyOpFails();
-                            if (spArea != NULL)
-                                spArea->getOperationStats().incrementMonthlyOpFails();
+                            if (cap != NULL) cap->getOperationStats().incrementMonthlyOpFails();
+                            if (feeder != NULL) feeder->getOperationStats().incrementMonthlyOpFails();
+                            if (bus != NULL) bus->getOperationStats().incrementMonthlyOpFails();
+                            if (station != NULL) station->getOperationStats().incrementMonthlyOpFails();
+                            if (area != NULL) area->getOperationStats().incrementMonthlyOpFails();
+                            if (spArea != NULL) spArea->getOperationStats().incrementMonthlyOpFails();
                         }
                         else
                         {
@@ -11134,9 +10934,6 @@ void CtiCCSubstationBusStore::reCalculateOperationStatsFromDatabase( )
     }
 
 }
-
-
-
 
 void CtiCCSubstationBusStore::reCalculateConfirmationStatsFromDatabase( )
 {
@@ -11360,11 +11157,7 @@ void CtiCCSubstationBusStore::reCalculateConfirmationStatsFromDatabase( )
                                         CtiLockGuard<CtiLogger> logger_guard(dout);
                                         dout << CtiTime() << " ##### Incrementing User Def Comm Counts for Cap: "<< cap->getPAOName() << endl;
                                     }
-                                    /*cap->getConfirmationStats().setUserDefCommCount(attempts);
-                                    cap->getConfirmationStats().setUserDefCommFail(errorTotal);
-                                    successPercent = cap->getConfirmationStats().calculateSuccessPercent(attempts, errorTotal);
-                                    cap->getConfirmationStats().setUserDefCommSuccessPercent(successPercent);
-                                    */
+                                   
                                     cap->getConfirmationStats().incrementUserDefCommCounts(attempts);
                                     cap->getConfirmationStats().incrementUserDefCommFails(errorTotal);
 
