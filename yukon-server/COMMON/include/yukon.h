@@ -300,6 +300,8 @@ enum YukonError_t
     ErrorFreezeNotRecorded,
     ErrorRequestCancelled,      // Cancel message received
 
+    ErrorInvalidTimestamp,
+
     FinalError
 };
 

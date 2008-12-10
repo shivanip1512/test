@@ -3213,6 +3213,8 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
                     resultString += "(" + CtiNumStr(day) + "/" + CtiNumStr(month + 1) + ", expecting " + CtiNumStr(d.dayOfMonth()) + "/" + CtiNumStr(((d.month() - 1) % 4) + 1) + ")";
 
                     _daily_read_info.single_day = 86400;  //  reset it - it doesn't match what the MCT has
+
+                    status = ErrorInvalidTimestamp;
                 }
                 else
                 {
@@ -3298,6 +3300,8 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
                 {
                     resultString  = getName() + " / Invalid channel returned by daily read ";
                     resultString += "(" + CtiNumStr(channel) + "), expecting (" + CtiNumStr(expected_channel) + ")";
+
+                    status = ErrorInvalidTimestamp;
                 }
                 else if( day != d.dayOfMonth() || (month % 4) != ((d.month() - 1) % 4) )
                 {
@@ -3309,6 +3313,8 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
                     {
                         _daily_read_info.single_day = 86400;  //  reset it - it doesn't match what the MCT has
                     }
+
+                    status = ErrorInvalidTimestamp;
                 }
                 else
                 {
