@@ -152,5 +152,11 @@
       <sequence name="WorkOrderBase">
         <table name="WorkOrderBase" identitycolumn="OrderID" initsequence="true"/>
       </sequence>
+      <sequence name="Address">
+        <table name="Address" identitycolumn="AddressId" initsequence="true"/>
+      </sequence>
+      <sequence name="Customer">
+        <table name="Customer" identitycolumn="CustomerId" initsequence="true"/>
+      </sequence>
   </sequencetable>
 </sequencetables>

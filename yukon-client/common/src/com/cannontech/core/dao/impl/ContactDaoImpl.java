@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
@@ -22,15 +23,16 @@ import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dao.YukonUserDao;
-import com.cannontech.core.dynamic.impl.AsyncDynamicDataSourceImpl;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
+import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
@@ -48,6 +50,7 @@ import com.cannontech.yukon.IDatabaseCache;
  * @author: 
  */
 public final class ContactDaoImpl implements ContactDao {
+    private AddressDao addressDao;
     private YukonListDao yukonListDao;
     private ContactNotificationDao contactNotificationDao;
     private YukonUserDao yukonUserDao;
@@ -58,7 +61,6 @@ public final class ContactDaoImpl implements ContactDao {
     private final ParameterizedRowMapper<LiteContact> rowMapper = new LiteContactRowMapper();
 
     private DBPersistentDao dbPersistantDao;
-    private AsyncDynamicDataSourceImpl asyncDynamicDataSource; 
     
 	/**
 	 * ContactFuncs constructor comment.
@@ -557,8 +559,22 @@ public final class ContactDaoImpl implements ContactDao {
         int changeType;
         
         StringBuilder sql = new StringBuilder();
-        if (contactId == -1) {
-            // Insert if id is -1
+        if (contactId == -1) { // Insert if id is -1, otherwise update
+            /*
+             * HACK: Legacy code depends on conacts having a dummy address row.
+             * This should get fixed which will involve fixing dbeditor.
+             */
+            LiteAddress address = new LiteAddress();
+            address.setCityName(CtiUtilities.STRING_NONE);
+            address.setCounty(CtiUtilities.STRING_NONE);
+            address.setLocationAddress1(CtiUtilities.STRING_NONE);
+            address.setLocationAddress2(CtiUtilities.STRING_NONE);
+            address.setZipCode(CtiUtilities.STRING_NONE);
+            address.setStateCode("MN");
+            addressDao.add(address);
+            contact.setAddressID(address.getAddressID());
+            // END HACK
+            
             changeType = DBChangeMsg.CHANGE_TYPE_ADD;
             
             contactId = nextValueHelper.getNextValue("Contact");
@@ -598,7 +614,6 @@ public final class ContactDaoImpl implements ContactDao {
             changeType);
         
         dbPersistantDao.processDBChange(changeMsg);
-        asyncDynamicDataSource.handleDBChange(changeMsg);
 
     }
     
@@ -617,7 +632,6 @@ public final class ContactDaoImpl implements ContactDao {
             DBChangeMsg.CHANGE_TYPE_DELETE);
         
         dbPersistantDao.processDBChange(changeMsg);
-        asyncDynamicDataSource.handleDBChange(changeMsg);
     }
     
     @Override
@@ -712,7 +726,6 @@ public final class ContactDaoImpl implements ContactDao {
                                                 DBChangeMsg.CHANGE_TYPE_UPDATE);
         
         dbPersistantDao.processDBChange(changeMsg);
-        asyncDynamicDataSource.handleDBChange(changeMsg);
         
     }
 
@@ -748,6 +761,11 @@ public final class ContactDaoImpl implements ContactDao {
 
     }
     
+    @Autowired
+    public void setAddressDao(AddressDao addressDao) {
+        this.addressDao = addressDao;
+    }
+    
     public void setContactNotificationDao(
             ContactNotificationDao contactNotificationDao) {
         this.contactNotificationDao = contactNotificationDao;
@@ -777,9 +795,4 @@ public final class ContactDaoImpl implements ContactDao {
         this.dbPersistantDao = dbPersistantDao;
     }
     
-    public void setAsyncDynamicDataSource(
-            AsyncDynamicDataSourceImpl asyncDynamicDataSource) {
-        this.asyncDynamicDataSource = asyncDynamicDataSource;
-    }
-
 }

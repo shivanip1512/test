@@ -2,7 +2,6 @@ package com.cannontech.core.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,17 +76,9 @@ public final class YukonUserDaoImpl implements YukonUserDao {
 	public void addLiteYukonUserWithPassword(LiteYukonUser user, String password, int energyCompanyId, List<LiteYukonGroup> groups) throws DataAccessException {
 	    int userId = nextValueHelper.getNextValue(YukonUser.TABLE_NAME);
 	    user.setUserID(userId);
-	    List<Object> values = new ArrayList<Object>();
-	    values.add(user.getUserID());
-	    values.add(user.getUsername());
-	    values.add(password);
-	    values.add(user.getStatus());
-	    values.add(user.getAuthType());
 	    SqlStatementBuilder sql = new SqlStatementBuilder();
-	    sql.append("INSERT INTO YukonUser VALUES (");
-	    sql.append(values);
-	    sql.append(")");
-	    simpleJdbcTemplate.update(sql.toString());
+	    sql.append("INSERT INTO YukonUser VALUES (?,?,?,?,?)");
+	    simpleJdbcTemplate.update(sql.toString(), user.getUserID(), user.getUsername(), password, user.getStatus(), user.getAuthType().name());
 	    
 	    for(LiteYukonGroup group : groups) {
 	        sql = new SqlStatementBuilder();

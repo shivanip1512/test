@@ -243,7 +243,6 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         sql.append("         WHERE ContactId = ?))");
         
         CustomerAccount account = simpleJdbcTemplate.queryForObject(sql.toString(), rowMapper, contactId, contactId);
-        
         return account;
     }
 

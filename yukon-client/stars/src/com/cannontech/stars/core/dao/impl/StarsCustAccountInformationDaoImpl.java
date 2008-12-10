@@ -60,7 +60,7 @@ public class StarsCustAccountInformationDaoImpl implements StarsCustAccountInfor
                                                                                              accountId);
             return liteAcctInfo;
         } catch (IncorrectResultSizeDataAccessException e) {
-            log.error(e);
+            log.error("Customer Account Info not found for Account Id: "+ accountId + " and Energy Company Id: "+ energyCompanyId + ".", e);
             return null;
         }
     }

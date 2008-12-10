@@ -266,7 +266,7 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     }
     
     
-    public void handleDBChange(DBChangeMsg dbChange) {
+    private void handleDBChange(DBChangeMsg dbChange) {
         // the following would be a nice check some day
         
 //        if (!dbChange.getSource().equals(CtiUtilities.DEFAULT_MSG_SOURCE)) {

@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -26,7 +27,6 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonUserDao;
-import com.cannontech.core.dynamic.impl.AsyncDynamicDataSourceImpl;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteAddress;
@@ -92,7 +92,6 @@ public class AccountServiceImpl implements AccountService {
     private EventAccountDao eventAccountDao;
     private StarsCustAccountInformationDao starsCustAccountInformationDao;
     private DBPersistentDao dbPersistantDao;
-    private AsyncDynamicDataSourceImpl asyncDynamicDataSource;
     private EnergyCompanyDao energyCompanyDao;
 
     @Override
@@ -169,11 +168,10 @@ public class AccountServiceImpl implements AccountService {
         /*
          * Create the contact
          */
-        LiteContact liteContact = new LiteContact(-1); 
+        LiteContact liteContact = new LiteContact(-1); //  contactDao.saveContact will insert for -1, otherwise update
         liteContact.setContFirstName(accountDto.getFirstName());
         liteContact.setContLastName(accountDto.getLastName());
         liteContact.setLoginID(user == null ? UserUtils.USER_DEFAULT_ID : user.getUserID());
-        liteContact.setAddressID(liteAddress.getAddressID());
         contactDao.saveContact(liteContact);
         dbPersistantDao.processDBChange(new DBChangeMsg(liteContact.getLiteID(),
                                DBChangeMsg.CHANGE_CONTACT_DB,
@@ -284,15 +282,15 @@ public class AccountServiceImpl implements AccountService {
     public void deleteAccount(String accountNumber, LiteYukonUser user) {
         
         LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(user);
-        LiteStarsEnergyCompany liteStarsEnergyCompany = StarsDatabaseCache.getInstance().getEnergyCompany(energyCompany.getEnergyCompanyID());
-        LiteStarsCustAccountInformation accountInformation = liteStarsEnergyCompany.searchAccountByAccountNo(accountNumber);
-        if(accountInformation != null) {
+        CustomerAccount  account = null;
+        try {
+            account = customerAccountDao.getByAccountNumber(accountNumber, energyCompany.getEnergyCompanyID());
+        }catch(EmptyResultDataAccessException e ) {
             log.error("Account " + accountNumber + " could not be deleted: Unable to find account for account#: " + accountNumber);
             throw new InvalidAccountNumberException("Unable to find account for account#: " + accountNumber);
         }
         
-        CustomerAccount account = customerAccountDao.getByAccountNumber(accountNumber, liteStarsEnergyCompany.getEnergyCompanyID());
-        LiteStarsCustAccountInformation customerInfo = starsCustAccountInformationDao.getById(account.getAccountId(), liteStarsEnergyCompany.getEnergyCompanyID());
+        LiteStarsCustAccountInformation customerInfo = starsCustAccountInformationDao.getById(account.getAccountId(), energyCompany.getEnergyCompanyID());
         AccountSite accountSite = accountSiteDao.getByAccountSiteId(account.getAccountSiteId());
         LiteCustomer liteCustomer = customerDao.getLiteCustomer(account.getCustomerId());
         customerInfo.setCustomer(liteCustomer);
@@ -654,7 +652,6 @@ public class AccountServiceImpl implements AccountService {
                 DBChangeMsg.CHANGE_TYPE_DELETE);
             
             dbPersistantDao.processDBChange(changeMsg);
-            asyncDynamicDataSource.handleDBChange(changeMsg);
         }
     }
     
@@ -800,11 +797,6 @@ public class AccountServiceImpl implements AccountService {
         this.dbPersistantDao = dbPersistentDao;
     }
     
-    @Autowired
-    public void setAsyncDynamicDataSource(AsyncDynamicDataSourceImpl asyncDynamicDataSource) {
-        this.asyncDynamicDataSource = asyncDynamicDataSource;
-    }
-
     @Autowired
     public void setEnergyCompanyDao(EnergyCompanyDao energyCompanyDao) {
         this.energyCompanyDao = energyCompanyDao;

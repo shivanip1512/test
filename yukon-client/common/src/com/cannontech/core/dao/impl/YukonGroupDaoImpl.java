@@ -66,7 +66,7 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
     
     @Override
     public LiteYukonGroup getLiteYukonGroupByName(String groupName) {
-        String sql = "SELECT GroupId, GroupName FROM ? WHERE GroupName = ?";
+        String sql = "SELECT GroupId, GroupName FROM YukonGroup WHERE GroupName = ?";
         LiteYukonGroup group = simpleJdbcTemplate.queryForObject(sql, new LiteYukonGroupMapper(), groupName);
         return group;
     }

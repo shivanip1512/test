@@ -44,7 +44,7 @@ public class SiteInformationDaoImpl implements SiteInformationDao, InitializingB
 
         @Override
         public Number getPrimaryKey(LiteSiteInformation object) {
-            return object.getSiteID();
+            return null;
         }
 
         @Override

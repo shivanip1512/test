@@ -11,7 +11,6 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 
@@ -28,7 +27,6 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteLMControlHistory;
 import com.cannontech.database.data.lite.stars.LiteLMProgramWebPublishing;
-import com.cannontech.database.data.lite.stars.LiteServiceCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompanyFactory;
@@ -41,6 +39,7 @@ import com.cannontech.database.db.web.YukonWebConfiguration;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
@@ -54,11 +53,9 @@ import com.cannontech.stars.util.SwitchCommandQueue;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.util.StarsAdminUtil;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
-import com.cannontech.stars.xml.serialize.StarsEnergyCompany;
 import com.cannontech.stars.xml.serialize.StarsEnrLMProgram;
 import com.cannontech.stars.xml.serialize.StarsEnrollmentPrograms;
 import com.cannontech.stars.xml.serialize.StarsInventory;
-import com.cannontech.stars.xml.serialize.StarsServiceCompany;
 
 /**
  * 
@@ -353,54 +350,15 @@ public class StarsDatabaseCache implements DBChangeListener {
         List<LiteStarsEnergyCompany> companies = getAllEnergyCompanies();
 		
 		if (msg.getDatabase() == DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB) {
-			for (int i = 0; i < companies.size(); i++) {
-				LiteStarsEnergyCompany energyCompany = companies.get(i);
-				if( energyCompany.getEnergyCompanyID().intValue() != EnergyCompany.DEFAULT_ENERGY_COMPANY_ID)
-				{				
-					LiteStarsCustAccountInformation liteAcctInfo = 
-					    starsCustAccountInformationDao.getById(msg.getId(), energyCompany.getEnergyCompanyID());
-					if (liteAcctInfo != null) {
-						handleCustomerAccountChange( msg, energyCompany, liteAcctInfo );
-						return;
-					}
-				}
-			}
-		}
-		else if (msg.getDatabase() == DBChangeMsg.CHANGE_CONTACT_DB) {
-			
-			for (int i = 0; i < companies.size(); i++) {
-				LiteStarsEnergyCompany energyCompany = companies.get(i);
-				Object contOwner = null;
-				
-				if (energyCompany.getPrimaryContactID() == msg.getId()) {
-					contOwner = energyCompany;
-				}
-				else {
-                    List<LiteServiceCompany> servCompanies = energyCompany.getServiceCompanies();
-                    for (final LiteServiceCompany servCompany : servCompanies) {
-                        if (servCompany.getPrimaryContactID() == msg.getId()) {
-                            contOwner = servCompany;
-                            break;
-                        }
-                    }
-					
-					if (contOwner == null) {
-					    CustomerAccountDao customerAccountDao = YukonSpringHook.getBean("customerAccountDao", CustomerAccountDao.class);
-					    CustomerAccount customerAccount = null;
-					    try {
-					        customerAccount = customerAccountDao.getAccountByContactId(msg.getId());
-					    }catch(EmptyResultDataAccessException empty) {}
-						if (customerAccount != null) {
-							contOwner = energyCompany.getStarsCustAccountInformation(customerAccount.getAccountId());
-						}
-					}
-				}
-				
-				if (contOwner != null) {
-					handleContactChange( msg, energyCompany, contOwner );
-					return;
-				}
-			}
+            ECMappingDao ecMappingDao = YukonSpringHook.getBean("ecMappingDao", ECMappingDao.class);
+            LiteStarsEnergyCompany energyCompany = ecMappingDao.getCustomerAccountEC(msg.getId());
+            if( energyCompany.getEnergyCompanyID().intValue() != EnergyCompany.DEFAULT_ENERGY_COMPANY_ID) {				
+                LiteStarsCustAccountInformation liteAcctInfo = starsCustAccountInformationDao.getById(msg.getId(), energyCompany.getEnergyCompanyID());
+            	if (liteAcctInfo != null) {
+            		handleCustomerAccountChange( msg, energyCompany, liteAcctInfo );
+            		return;
+            	}
+            }
 		}
 		else if (msg.getDatabase() == DBChangeMsg.CHANGE_PAO_DB) {
 		    LiteYukonPAObject litePao = null;
@@ -479,18 +437,22 @@ public class StarsDatabaseCache implements DBChangeListener {
 			if (msg.getCategory().equals( DBChangeMsg.CAT_YUKON_USER )) {
 				LiteContact liteContact = DaoFactory.getYukonUserDao().getLiteContact( msg.getId() );
 				if (liteContact != null) {
-					for (int i = 0; i < companies.size(); i++) {
-						LiteStarsEnergyCompany energyCompany = companies.get(i);
-						CustomerAccountDao customerAccountDao = YukonSpringHook.getBean("CustomerAccountDao", CustomerAccountDao.class);
-                        CustomerAccount customerAccount = customerAccountDao.getAccountByContactId(msg.getId());
+						CustomerAccountDao customerAccountDao = YukonSpringHook.getBean("customerAccountDao", CustomerAccountDao.class);
+						CustomerAccount customerAccount = null;
+						try {
+						    customerAccount = customerAccountDao.getAccountByContactId(liteContact.getContactID());
+						}catch(EmptyResultDataAccessException e) {
+						    CTILogger.error("Unable to find CustomerAccount for contact id: " + liteContact.getContactID(), e);
+						}
                         if (customerAccount != null) {
+                            ECMappingDao ecMappingDao = YukonSpringHook.getBean("ecMappingDao", ECMappingDao.class);
+                            LiteStarsEnergyCompany energyCompany = ecMappingDao.getCustomerAccountEC(customerAccount);
 							StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( customerAccount.getAccountId());
 							if (starsAcctInfo != null && starsAcctInfo.getStarsUser() != null) {
 								handleYukonUserChange( msg, energyCompany, starsAcctInfo );
 								return;
 							}
 						}
-					}
 				}
 			}
 		}
@@ -511,75 +473,6 @@ public class StarsDatabaseCache implements DBChangeListener {
 		}
 	}
 	
-	private void handleContactChange(DBChangeMsg msg, LiteStarsEnergyCompany energyCompany, Object contOwner) {
-		switch (msg.getTypeOfChange()) {
-			case DBChangeMsg.CHANGE_TYPE_ADD :
-				// Don't need to do anything
-				break;
-				
-			case DBChangeMsg.CHANGE_TYPE_UPDATE :
-				LiteContact liteContact = DaoFactory.getContactDao().getContact( msg.getId() );
-				
-				if (contOwner instanceof LiteStarsEnergyCompany) {
-					StarsEnergyCompany starsEC = energyCompany.getStarsEnergyCompany();
-					StarsLiteFactory.setStarsEnergyCompany( starsEC, energyCompany );
-				}
-				else if (contOwner instanceof LiteServiceCompany) {
-                    List<LiteStarsEnergyCompany> descendants = ECUtils.getAllDescendants( energyCompany );
-					for (int i = 0; i < descendants.size(); i++) {
-						LiteStarsEnergyCompany company = descendants.get(i);
-						for (int j = 0; j < company.getStarsServiceCompanies().getStarsServiceCompanyCount(); j++) {
-							StarsServiceCompany starsSC = company.getStarsServiceCompanies().getStarsServiceCompany(j);
-							if (starsSC.getPrimaryContact() != null && starsSC.getPrimaryContact().getContactID() == liteContact.getContactID()) {
-								StarsLiteFactory.setStarsCustomerContact( starsSC.getPrimaryContact(), liteContact );
-								break;
-							}
-						}
-					}
-				}
-				else if (contOwner instanceof StarsCustAccountInformation) {
-					StarsCustAccountInformation starsAcctInfo = (StarsCustAccountInformation) contOwner;
-					
-					if (starsAcctInfo.getStarsCustomerAccount().getPrimaryContact().getContactID() == liteContact.getContactID()) {
-						StarsLiteFactory.setStarsCustomerContact(starsAcctInfo.getStarsCustomerAccount().getPrimaryContact(), liteContact);
-					}
-					else {
-						for (int i = 0; i < starsAcctInfo.getStarsCustomerAccount().getAdditionalContactCount(); i++) {
-							if (starsAcctInfo.getStarsCustomerAccount().getAdditionalContact(i).getContactID() == liteContact.getContactID()) {
-								StarsLiteFactory.setStarsCustomerContact(starsAcctInfo.getStarsCustomerAccount().getAdditionalContact(i), liteContact);
-								break;
-							}
-						}
-					}
-				}
-				
-				break;
-				
-			case DBChangeMsg.CHANGE_TYPE_DELETE :
-				if (contOwner instanceof StarsCustAccountInformation) {
-					StarsCustAccountInformation starsAcctInfo = (StarsCustAccountInformation) contOwner;
-					LiteStarsCustAccountInformation liteAcctInfo = 
-					    starsCustAccountInformationDao.getById(starsAcctInfo.getStarsCustomerAccount().getAccountID(), energyCompany.getEnergyCompanyID());
-                    Vector<LiteContact> contacts = liteAcctInfo.getCustomer().getAdditionalContacts();
-					for (int i = 0; i < contacts.size(); i++) {
-						if (contacts.get(i).getContactID() == msg.getId()) {
-							contacts.remove(i);
-							break;
-						}
-					}
-					
-					for (int i = 0; i < starsAcctInfo.getStarsCustomerAccount().getAdditionalContactCount(); i++) {
-						if (starsAcctInfo.getStarsCustomerAccount().getAdditionalContact(i).getContactID() == msg.getId()) {
-							starsAcctInfo.getStarsCustomerAccount().removeAdditionalContact(i);
-							break;
-						}
-					}
-					
-				}
-				
-				break;
-		}
-	}
 	
 	private void handleLMProgramChange(DBChangeMsg msg, LiteStarsEnergyCompany energyCompany, LiteLMProgramWebPublishing liteProg) {
 		switch( msg.getTypeOfChange() )

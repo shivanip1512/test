@@ -8,7 +8,6 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.customer.Customer;
 import com.cannontech.database.data.stars.event.EventAccount;
-import com.cannontech.database.data.stars.event.EventInventory;
 import com.cannontech.database.db.DBPersistent;
 
 
@@ -68,9 +67,10 @@ public class CustomerAccount extends DBPersistent {
         if (getCustomer() != null) getCustomer().setDbConnection(conn);
     }
 
+    @SuppressWarnings("cast")
     public void delete() throws java.sql.SQLException {
 		for (int i = 0; i < getInventoryVector().size(); i++) {
-			Integer invID = (Integer) getInventoryVector().get(i);
+			Integer invID = getInventoryVector().get(i);
 			
 			// Don't delete hardware information from the database
 			com.cannontech.database.data.stars.hardware.LMHardwareBase.clearLMHardware( invID.intValue() );

@@ -69,7 +69,7 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
 
         @Override
         public Number getPrimaryKey(LiteCustomer object) {
-            return object.getCustomerID();
+            return null;
         }
 
         @Override
