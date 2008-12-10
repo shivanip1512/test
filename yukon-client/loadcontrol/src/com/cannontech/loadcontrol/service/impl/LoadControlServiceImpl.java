@@ -359,7 +359,7 @@ public class LoadControlServiceImpl implements LoadControlService {
     	}
     	
     	// otherwise, check if the program's control area (if any) is visible to user
-    	LMControlArea controlAreaForProgram = loadControlClientConnection.getControlAreaForProgram(programId);
+    	LMControlArea controlAreaForProgram = loadControlClientConnection.findControlAreaForProgram(programId);
     	if (controlAreaForProgram != null) {
     		return isLmPaoVisibleToUser(user, controlAreaForProgram.getYukonID());
     	}

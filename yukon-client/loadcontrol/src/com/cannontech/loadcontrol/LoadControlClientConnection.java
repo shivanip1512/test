@@ -121,7 +121,7 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
      * @param programId
      * @return
      */
-    public LMControlArea getControlAreaForProgram(int programId) {
+    public LMControlArea findControlAreaForProgram(int programId) {
     	
     	LMControlArea[] allControlAreas = getAllLMControlAreas();
     	for (LMControlArea controlArea : allControlAreas) {
