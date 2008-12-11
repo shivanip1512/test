@@ -23,4 +23,6 @@ public interface AdministratorRole {
     public static final int ADMIN_LM_USER_ASSIGN = OperatorRoleDefs.ADMINISTRATOR_PROPERTYID_BASE - 12;
     public static final int ADMIN_EDIT_CONFIG = OperatorRoleDefs.ADMINISTRATOR_PROPERTYID_BASE - 13;
     public static final int ADMIN_VIEW_CONFIG = OperatorRoleDefs.ADMINISTRATOR_PROPERTYID_BASE - 14;
+    public static final int ADMIN_MANAGE_INDEXES = OperatorRoleDefs.ADMINISTRATOR_PROPERTYID_BASE - 15;
+    public static final int ADMIN_VIEW_LOGS = OperatorRoleDefs.ADMINISTRATOR_PROPERTYID_BASE - 16;
 }

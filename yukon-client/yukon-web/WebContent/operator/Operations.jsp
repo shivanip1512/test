@@ -311,14 +311,18 @@
 	            	<a href="/spring/editor/userGroupSelector">User/Group Editor</a>
 	            </tags:sectionLink>
 			</cti:checkProperty>
-            <tags:sectionLink>
-            	<a href="/logging/">View Logs</a>
-            </tags:sectionLink>
-            <tags:sectionLink>
-            	<a href="/index/manage">Manage Indexes</a>
-            </tags:sectionLink>
-            <cti:checkProperty property="AdministratorRole.ADMIN_VIEW_CONFIG"> 
-	            <tags:sectionLink>
+			<cti:checkProperty property="AdministratorRole.ADMIN_VIEW_LOGS"> 
+                    <tags:sectionLink>
+            	        <a href="/logging/">View Logs</a>
+                    </tags:sectionLink>
+			</cti:checkProperty>
+			<cti:checkProperty property="AdministratorRole.ADMIN_MANAGE_INDEXES"> 
+                    <tags:sectionLink>
+            	        <a href="/index/manage">Manage Indexes</a>
+                    </tags:sectionLink>
+			</cti:checkProperty>
+                   <cti:checkProperty property="AdministratorRole.ADMIN_VIEW_CONFIG"> 
+	               <tags:sectionLink>
 		   	    	<a href="<c:url value="/spring/deviceConfiguration?home"/>">Device Configuration</a>
 		        </tags:sectionLink>
 	        </cti:checkProperty>

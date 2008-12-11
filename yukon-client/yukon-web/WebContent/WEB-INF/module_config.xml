@@ -234,10 +234,12 @@
 
         <option id="viewLogs">
           <link>/logging/</link>
+          <requireRoleProperty value="AdministratorRole.ADMIN_VIEW_LOGS"/>
         </option>
 
         <option id="manageIndexes">
           <link>/index/manage</link>
+          <requireRoleProperty value="AdministratorRole.ADMIN_MANAGE_INDEXES"/>
         </option>
         
         <option id="deviceConfiguration">
