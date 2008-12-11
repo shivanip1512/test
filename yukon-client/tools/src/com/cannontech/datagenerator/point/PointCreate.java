@@ -26,6 +26,9 @@ abstract class PointCreate
 	private static boolean capBankOpCntPointCreate = false;
 	private static boolean outageLogCreate = false;
 	private static boolean mct410FrozenPointCreate = false;
+	private static boolean tamperFlagCreate = false;
+	private static boolean zeroUsageFlagCreate = false;
+	private static boolean reversePowerFlagCreate = false;
 	/**
 	 * PowerFailPointCreate constructor comment.
 	 */
@@ -81,6 +84,18 @@ abstract class PointCreate
 			else if( args[i].toLowerCase().startsWith("o"))
 			{
 				outageLogCreate = true;    //MCT 410 missing OutageLog points will be created
+			}
+			else if( args[i].toLowerCase().startsWith("t"))
+			{
+				tamperFlagCreate = true;    //MCT 410 missing tamper flag points will be created
+			}
+			else if( args[i].toLowerCase().startsWith("z"))
+			{
+				zeroUsageFlagCreate = true;    //MCT 410 missing zero usage flag points will be created
+			}
+			else if( args[i].toLowerCase().startsWith("r"))
+			{
+				reversePowerFlagCreate = true;    //MCT 410 missing reverse power flag points will be created
 			}
 		}
 			
@@ -152,7 +167,30 @@ abstract class PointCreate
 			timerStop = new java.util.Date();
 			CTILogger.info( (timerStop.getTime() - timerStart.getTime())*.001 + " Secs for OutageLogPointCreate to complete" );
 		}
-
+		if( tamperFlagCreate)
+		{
+			timerStart = new java.util.Date();
+			TamperFlagPointCreate tamperFlagPointCreator = new TamperFlagPointCreate();
+			tamperFlagPointCreator.create();
+			timerStop = new java.util.Date();
+			CTILogger.info( (timerStop.getTime() - timerStart.getTime())*.001 + " Secs for TamperFlagPointCreate to complete" );
+		}
+		if( zeroUsageFlagCreate)
+		{
+			timerStart = new java.util.Date();
+			ZeroUsageFlagPointCreate zeroUsageFlagPointCreator = new ZeroUsageFlagPointCreate();
+			zeroUsageFlagPointCreator.create();
+			timerStop = new java.util.Date();
+			CTILogger.info( (timerStop.getTime() - timerStart.getTime())*.001 + " Secs for ZeroUsageFlagPointCreate to complete" );
+		}
+		if( reversePowerFlagCreate)
+		{
+			timerStart = new java.util.Date();
+			ReversePowerFlagPointCreate reversePowerFlagPointCreator = new ReversePowerFlagPointCreate();
+			reversePowerFlagPointCreator.create();
+			timerStop = new java.util.Date();
+			CTILogger.info( (timerStop.getTime() - timerStart.getTime())*.001 + " Secs for ReversePowerFlagCreate to complete" );
+		}
 		System.exit(0);
 	}
 

@@ -7,7 +7,7 @@ goto done
 
 :usage
 echo:
-echo Usage:	pointcreate.bat [ p[owerfail] o[utageslog] d[isconnect] mct410 mct410frozen lg[oadgroup] analog cbop] [(with analog only) devID count]
+echo Usage:	pointcreate.bat [ p[owerfail] o[utageslog] d[isconnect] mct410 mct410frozen lg[oadgroup] r[eversepower] t[amper] z[erousage] analog cbop] [(with analog only) devID count]
 echo:
 echo Ex1:  pointcreate.bat p d     - creates Blink Count and DISCONNECT points
 echo Ex1:  pointcreate.bat b       - creates Blink Count (same as powerfail) point
@@ -19,5 +19,8 @@ echo Ex4:  pointcreate.bat mct410  - adds missing points (kw,kwh,volts,minVolts,
 echo Ex5:  pointcreate.bat lg      - creates history and control points for every LoadGroup
 echo Ex6:  pointcreate.bat cbop    - creates operations count points for every Switched Cap Bank
 echo Ex7:  pointcreate.bat mct410frozen  - adds missing frozen points (frozen peak demand,frozen min volts,frozen max volts) to MCT410 devices
+echo Ex1:  pointcreate.bat t       - creates Tamper Flag for all MCT410 devices
+echo Ex1:  pointcreate.bat z       - creates Zero Usage Flag for all MCT410 devices
+echo Ex1:  pointcreate.bat r       - creates Reverse Power Flag for all MCT410 devices
 echo:
 :done

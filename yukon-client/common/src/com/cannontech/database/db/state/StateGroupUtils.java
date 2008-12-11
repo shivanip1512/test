@@ -19,6 +19,8 @@ public final class StateGroupUtils {
     public static final int STATEGROUP_TWO_STATE_STATUS = 1;
 
     public static final int SYSTEM_STATEGROUPID = 0;
+    
+    public static final int STATEGROUP_TRUEFALSE = 4;
 
     public static final int STATEGROUP_MCT410DISC = -6;
 
