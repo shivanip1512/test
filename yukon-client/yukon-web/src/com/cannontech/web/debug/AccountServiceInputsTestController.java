@@ -126,9 +126,10 @@ public class AccountServiceInputsTestController extends MultiActionController{
         List<String> errorReasons = new ArrayList<String>();
         
         String accountNumber = ServletRequestUtils.getRequiredStringParameter(request, "accountNumber");
-        LiteYukonUser yukon = yukonUserDao.getLiteYukonUser("yukon");
+        String user = ServletRequestUtils.getRequiredStringParameter(request, "user");
         try {
-            accountService.deleteAccount(accountNumber, yukon);
+            LiteYukonUser yukonuser = yukonUserDao.getLiteYukonUser(user);
+            accountService.deleteAccount(accountNumber, yukonuser);
             results.add(accountNumber + " deleted successfully.");
         } catch (RuntimeException e) {
             errorReasons.add(e.getMessage());

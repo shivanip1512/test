@@ -66,6 +66,10 @@
                             <input type="text" name="accountNumber" value="${accountNumber}">
                         </tags:nameValue>
                         
+                        <tags:nameValue name="Operator (yukon user)" nameColumnWidth="200px">
+                            <input type="text" name="user" value="${user}">
+                        </tags:nameValue>
+                        
                         <tags:nameValue name="RUN">
                             <input type="submit" value="TEST">
                         </tags:nameValue>
