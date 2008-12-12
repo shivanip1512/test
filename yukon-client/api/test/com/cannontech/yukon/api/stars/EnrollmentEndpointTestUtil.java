@@ -42,10 +42,9 @@ public class EnrollmentEndpointTestUtil {
                                                                              ns, 
                                                                              enrollmentHelper.getRelay()));
 
-        if (enrollmentHelper.getSerialNumber() != null)
-            programEnrollmentElement.addContent(XmlUtils.createStringElement("seasonalLoad", 
-                                                                             ns, 
-                                                                             enrollmentHelper.getSerialNumber()));
+        programEnrollmentElement.addContent(XmlUtils.createBooleanElement("seasonalLoad", 
+                                                                          ns, 
+                                                                          enrollmentHelper.isSeasonalLoad()));
         return programEnrollmentElement;
     }
 
