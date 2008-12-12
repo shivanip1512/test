@@ -97,7 +97,8 @@ public class AddressDaoImpl implements AddressDao {
                                                                 address.getCityName(),
                                                                 address.getStateCode(),
                                                                 address.getZipCode(),
-                                                                address.getCounty());
+                                                                address.getCounty(),
+                                                                address.getAddressID());
         boolean result = (rowsAffected == 1);
         return result;
     }

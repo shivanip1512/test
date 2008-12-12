@@ -63,11 +63,11 @@
                 <form action="/spring/debug/accountService/inputs/deleteAccount" method="post">
                     <tags:nameValueContainer>
                         <tags:nameValue name="Account Number" nameColumnWidth="200px">
-                            <input type="text" name="accountNumber" value="${accountNumber}">
+                            <input type="text" name="delete_accountNumber" value="${delete_accountNumber}">
                         </tags:nameValue>
                         
                         <tags:nameValue name="Operator (yukon user)" nameColumnWidth="200px">
-                            <input type="text" name="user" value="${user}">
+                            <input type="text" name="delete_user" value="${delete_user}">
                         </tags:nameValue>
                         
                         <tags:nameValue name="RUN">
@@ -86,100 +86,100 @@
                 <form action="/spring/debug/accountService/inputs/addAccount" method="post">
                     <tags:nameValueContainer>
                         <tags:nameValue name="Operator (yukon user)" nameColumnWidth="200px">
-                            <input type="text" name="user" value="${user}">
+                            <input type="text" name="add_user" value="${add_user}">
                         </tags:nameValue>
                         <tags:nameValue name="Account Number" nameColumnWidth="200px">
-                            <input type="text" name="accountNumber" value="${accountNumber}">
+                            <input type="text" name="add_accountNumber" value="${add_accountNumber}">
                         </tags:nameValue>
                         <tags:nameValue name="Last Name" nameColumnWidth="200px">
-                            <input type="text" name="lastName" value="${lastName}">
+                            <input type="text" name="add_lastName" value="${add_lastName}">
                         </tags:nameValue>
                         <tags:nameValue name="First Name" nameColumnWidth="200px">
-                            <input type="text" name="firstName" value="${firstName}">
+                            <input type="text" name="add_firstName" value="${add_firstName}">
                         </tags:nameValue>
                         <tags:nameValue name="Home Phone" nameColumnWidth="200px">
-                            <input type="text" name="homePhone" value="${homePhone}">
+                            <input type="text" name="add_homePhone" value="${add_homePhone}">
                         </tags:nameValue>
                         <tags:nameValue name="Work Phone" nameColumnWidth="200px">
-                            <input type="text" name="workPhone" value="${workPhone}">
+                            <input type="text" name="add_workPhone" value="${add_workPhone}">
                         </tags:nameValue>
                         <tags:nameValue name="Email Address" nameColumnWidth="200px">
-                            <input type="text" name="emailAddress" value="${emailAddress}">
+                            <input type="text" name="add_emailAddress" value="${add_emailAddress}">
                         </tags:nameValue>
                         <tags:nameValue name="Alt Tracking #" nameColumnWidth="200px">
-                            <input type="text" name="altTrackingNum" value="${altTrackingNum}">
+                            <input type="text" name="add_altTrackingNum" value="${add_altTrackingNum}">
                         </tags:nameValue>
                         <tags:nameValue name="Map #" nameColumnWidth="200px">
-                            <input type="text" name="mapNum" value="${mapNum}">
+                            <input type="text" name="add_mapNum" value="${add_mapNum}">
                         </tags:nameValue>
                         <tags:nameValue name="commercial? (true-false)" nameColumnWidth="200px">
-                            <input type="text" name="isCommercial" value="${isCommercial}">
+                            <input type="text" name="add_isCommercial" value="${add_isCommercial}">
                         </tags:nameValue>
                         <tags:nameValue name="Company Name (commercial only)" nameColumnWidth="200px">
-                            <input type="text" name="companyName" value="${companyName}">
+                            <input type="text" name="add_companyName" value="${add_companyName}">
                         </tags:nameValue>
                         <tags:nameValue name="Address 1" nameColumnWidth="200px">
-                            <input type="text" name="streetAddress1" value="${streetAddress1}">
+                            <input type="text" name="add_streetAddress1" value="${add_streetAddress1}">
                         </tags:nameValue>
                         <tags:nameValue name="Address 2" nameColumnWidth="200px">
-                            <input type="text" name="streetAddress2" value="${streetAddress2}">
+                            <input type="text" name="add_streetAddress2" value="${add_streetAddress2}">
                         </tags:nameValue>
                         <tags:nameValue name="City" nameColumnWidth="200px">
-                            <input type="text" name="city" value="${city}">
+                            <input type="text" name="add_city" value="${add_city}">
                         </tags:nameValue>
                         <tags:nameValue name="State" nameColumnWidth="200px">
-                            <input type="text" name="state" value="${state}">
+                            <input type="text" name="add_state" value="${add_state}">
                         </tags:nameValue>
                         <tags:nameValue name="Zip" nameColumnWidth="200px">
-                            <input type="text" name="zip" value="${zip}">
+                            <input type="text" name="add_zip" value="${add_zip}">
                         </tags:nameValue>
                         <tags:nameValue name="County" nameColumnWidth="200px">
-                            <input type="text" name="county" value="${county}">
+                            <input type="text" name="add_county" value="${add_county}">
                         </tags:nameValue>
                         
                         <tags:nameValue name="Billing Address 1" nameColumnWidth="200px">
-                            <input type="text" name="billingAddress1" value="${billingAddress1}">
+                            <input type="text" name="add_billingAddress1" value="${add_billingAddress1}">
                         </tags:nameValue>
                         <tags:nameValue name="Billing Address 2" nameColumnWidth="200px">
-                            <input type="text" name="billingAddress2" value="${billingAddress2}">
+                            <input type="text" name="add_billingAddress2" value="${add_billingAddress2}">
                         </tags:nameValue>
                         <tags:nameValue name="Billing City" nameColumnWidth="200px">
-                            <input type="text" name="billingCity" value="${billingCity}">
+                            <input type="text" name="add_billingCity" value="${add_billingCity}">
                         </tags:nameValue>
                         <tags:nameValue name="Billing State" nameColumnWidth="200px">
-                            <input type="text" name="billingState" value="${billingState}">
+                            <input type="text" name="add_billingState" value="${add_billingState}">
                         </tags:nameValue>
                         <tags:nameValue name="Billing Zip" nameColumnWidth="200px">
-                            <input type="text" name="billingZip" value="${billingZip}">
+                            <input type="text" name="add_billingZip" value="${add_billingZip}">
                         </tags:nameValue>
                         <tags:nameValue name="Billing County" nameColumnWidth="200px">
-                            <input type="text" name="billingCounty" value="${billingCounty}">
+                            <input type="text" name="add_billingCounty" value="${add_billingCounty}">
                         </tags:nameValue>
                         
                         <tags:nameValue name="Substation Name" nameColumnWidth="200px">
-                            <input type="text" name="substation" value="${substation}">
+                            <input type="text" name="add_substation" value="${add_substation}">
                         </tags:nameValue>
                         <tags:nameValue name="Feeder" nameColumnWidth="200px">
-                            <input type="text" name="feeder" value="${feeder}">
+                            <input type="text" name="add_feeder" value="${add_feeder}">
                         </tags:nameValue>
                         <tags:nameValue name="Pole" nameColumnWidth="200px">
-                            <input type="text" name="pole" value="${pole}">
+                            <input type="text" name="add_pole" value="${add_pole}">
                         </tags:nameValue>
                         <tags:nameValue name="Transformer Size" nameColumnWidth="200px">
-                            <input type="text" name="transformerSize" value="${transformerSize}">
+                            <input type="text" name="add_transformerSize" value="${add_transformerSize}">
                         </tags:nameValue>
                         <tags:nameValue name="Service Voltage" nameColumnWidth="200px">
-                            <input type="text" name="serviceVoltage" value="${serviceVoltage}">
+                            <input type="text" name="add_serviceVoltage" value="${add_serviceVoltage}">
                         </tags:nameValue>
                         
                         <tags:nameValue name="User Name" nameColumnWidth="200px">
-                            <input type="text" name="username" value="${username}">
+                            <input type="text" name="add_username" value="${add_username}">
                         </tags:nameValue>
                         <tags:nameValue name="Password" nameColumnWidth="200px">
-                            <input type="text" name="password" value="${password}">
+                            <input type="text" name="add_password" value="${add_password}">
                         </tags:nameValue>
                         <tags:nameValue name="Login Group" nameColumnWidth="200px">
-                            <input type="text" name="loginGroup" value="${loginGroup}">
+                            <input type="text" name="add_loginGroup" value="${add_loginGroup}">
                         </tags:nameValue>
                         
                         <tags:nameValue name="RUN">
@@ -190,6 +190,117 @@
             </td>
         </tr>
         
+        <%-- UPDATE ACCOUNT --%>
+        <tr>
+            <td class="functionality">Update Account</td>
+            <td class="doc"></td>
+            <td class="inputTest">
+                <form action="/spring/debug/accountService/inputs/updateAccount" method="post">
+                    <tags:nameValueContainer>
+                        <tags:nameValue name="Operator (yukon user)" nameColumnWidth="200px">
+                            <input type="text" name="update_user" value="${update_user}">
+                        </tags:nameValue>
+                        <tags:nameValue name="Account Number" nameColumnWidth="200px">
+                            <input type="text" name="update_accountNumber" value="${update_accountNumber}">
+                        </tags:nameValue>
+                        <tags:nameValue name="Last Name" nameColumnWidth="200px">
+                            <input type="text" name="update_lastName" value="${update_lastName}">
+                        </tags:nameValue>
+                        <tags:nameValue name="First Name" nameColumnWidth="200px">
+                            <input type="text" name="update_firstName" value="${update_firstName}">
+                        </tags:nameValue>
+                        <tags:nameValue name="Home Phone" nameColumnWidth="200px">
+                            <input type="text" name="update_homePhone" value="${update_homePhone}">
+                        </tags:nameValue>
+                        <tags:nameValue name="Work Phone" nameColumnWidth="200px">
+                            <input type="text" name="update_workPhone" value="${update_workPhone}">
+                        </tags:nameValue>
+                        <tags:nameValue name="Email Address" nameColumnWidth="200px">
+                            <input type="text" name="update_emailAddress" value="${update_emailAddress}">
+                        </tags:nameValue>
+                        <tags:nameValue name="Alt Tracking #" nameColumnWidth="200px">
+                            <input type="text" name="update_altTrackingNum" value="${update_altTrackingNum}">
+                        </tags:nameValue>
+                        <tags:nameValue name="Map #" nameColumnWidth="200px">
+                            <input type="text" name="update_mapNum" value="${update_mapNum}">
+                        </tags:nameValue>
+                        <tags:nameValue name="commercial? (true-false)" nameColumnWidth="200px">
+                            <input type="text" name="update_isCommercial" value="${update_isCommercial}">
+                        </tags:nameValue>
+                        <tags:nameValue name="Company Name (commercial only)" nameColumnWidth="200px">
+                            <input type="text" name="update_companyName" value="${update_companyName}">
+                        </tags:nameValue>
+                        <tags:nameValue name="Address 1" nameColumnWidth="200px">
+                            <input type="text" name="update_streetAddress1" value="${update_streetAddress1}">
+                        </tags:nameValue>
+                        <tags:nameValue name="Address 2" nameColumnWidth="200px">
+                            <input type="text" name="update_streetAddress2" value="${update_streetAddress2}">
+                        </tags:nameValue>
+                        <tags:nameValue name="City" nameColumnWidth="200px">
+                            <input type="text" name="update_city" value="${update_city}">
+                        </tags:nameValue>
+                        <tags:nameValue name="State" nameColumnWidth="200px">
+                            <input type="text" name="update_state" value="${update_state}">
+                        </tags:nameValue>
+                        <tags:nameValue name="Zip" nameColumnWidth="200px">
+                            <input type="text" name="update_zip" value="${update_zip}">
+                        </tags:nameValue>
+                        <tags:nameValue name="County" nameColumnWidth="200px">
+                            <input type="text" name="update_county" value="${update_county}">
+                        </tags:nameValue>
+                        
+                        <tags:nameValue name="Billing Address 1" nameColumnWidth="200px">
+                            <input type="text" name="update_billingAddress1" value="${update_billingAddress1}">
+                        </tags:nameValue>
+                        <tags:nameValue name="Billing Address 2" nameColumnWidth="200px">
+                            <input type="text" name="update_billingAddress2" value="${update_billingAddress2}">
+                        </tags:nameValue>
+                        <tags:nameValue name="Billing City" nameColumnWidth="200px">
+                            <input type="text" name="update_billingCity" value="${update_billingCity}">
+                        </tags:nameValue>
+                        <tags:nameValue name="Billing State" nameColumnWidth="200px">
+                            <input type="text" name="update_billingState" value="${update_billingState}">
+                        </tags:nameValue>
+                        <tags:nameValue name="Billing Zip" nameColumnWidth="200px">
+                            <input type="text" name="update_billingZip" value="${update_billingZip}">
+                        </tags:nameValue>
+                        <tags:nameValue name="Billing County" nameColumnWidth="200px">
+                            <input type="text" name="update_billingCounty" value="${update_billingCounty}">
+                        </tags:nameValue>
+                        
+                        <tags:nameValue name="Substation Name" nameColumnWidth="200px">
+                            <input type="text" name="update_substation" value="${update_substation}">
+                        </tags:nameValue>
+                        <tags:nameValue name="Feeder" nameColumnWidth="200px">
+                            <input type="text" name="update_feeder" value="${update_feeder}">
+                        </tags:nameValue>
+                        <tags:nameValue name="Pole" nameColumnWidth="200px">
+                            <input type="text" name="update_pole" value="${update_pole}">
+                        </tags:nameValue>
+                        <tags:nameValue name="Transformer Size" nameColumnWidth="200px">
+                            <input type="text" name="update_transformerSize" value="${update_transformerSize}">
+                        </tags:nameValue>
+                        <tags:nameValue name="Service Voltage" nameColumnWidth="200px">
+                            <input type="text" name="update_serviceVoltage" value="${update_serviceVoltage}">
+                        </tags:nameValue>
+                        
+                        <tags:nameValue name="User Name" nameColumnWidth="200px">
+                            <input type="text" name="update_username" value="${update_username}">
+                        </tags:nameValue>
+                        <tags:nameValue name="Password" nameColumnWidth="200px">
+                            <input type="text" name="update_password" value="${update_password}">
+                        </tags:nameValue>
+                        <tags:nameValue name="Login Group" nameColumnWidth="200px">
+                            <input type="text" name="update_loginGroup" value="${update_loginGroup}">
+                        </tags:nameValue>
+                        
+                        <tags:nameValue name="RUN">
+                            <input type="submit" value="TEST">
+                        </tags:nameValue>
+                    </tags:nameValueContainer>
+                </form>
+            </td>
+        </tr>
     </table>
     
 </cti:standardPage>

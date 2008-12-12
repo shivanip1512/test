@@ -20,11 +20,13 @@ import com.cannontech.common.model.SiteInformation;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.service.AccountService;
+import com.cannontech.stars.dr.account.service.AccountServiceHelper;
 import com.cannontech.util.ServletUtil;
 
 public class AccountServiceInputsTestController extends MultiActionController{
     
     private AccountService accountService;
+    private AccountServiceHelper accountServiceHelper;
     private YukonUserDao yukonUserDao;
     
     public ModelAndView home(HttpServletRequest request, HttpServletResponse response) throws ServletException {
@@ -35,40 +37,40 @@ public class AccountServiceInputsTestController extends MultiActionController{
         List<String> results = new ArrayList<String>();
         List<String> errorReasons = new ArrayList<String>();
         
-        String user = ServletRequestUtils.getRequiredStringParameter(request, "user");
-        String accountNumber = ServletRequestUtils.getRequiredStringParameter(request, "accountNumber");
-        String lastName = ServletRequestUtils.getRequiredStringParameter(request, "lastName");
-        String firstName = ServletRequestUtils.getRequiredStringParameter(request, "firstName");
-        String homePhone = ServletRequestUtils.getRequiredStringParameter(request, "homePhone");
-        String workPhone = ServletRequestUtils.getRequiredStringParameter(request, "workPhone");
-        String emailAddress = ServletRequestUtils.getRequiredStringParameter(request, "emailAddress");
-        String altTrackingNum = ServletRequestUtils.getRequiredStringParameter(request, "altTrackingNum");
-        String mapNum = ServletRequestUtils.getRequiredStringParameter(request, "mapNum");
-        String isCommercial = ServletRequestUtils.getRequiredStringParameter(request, "isCommercial");
-        String companyName = ServletRequestUtils.getRequiredStringParameter(request, "companyName");
-        String streetAddress1 = ServletRequestUtils.getRequiredStringParameter(request, "streetAddress1");
-        String streetAddress2 = ServletRequestUtils.getRequiredStringParameter(request, "streetAddress2");
-        String city = ServletRequestUtils.getRequiredStringParameter(request, "city");
-        String state = ServletRequestUtils.getRequiredStringParameter(request, "state");
-        String zip = ServletRequestUtils.getRequiredStringParameter(request, "zip");
-        String county = ServletRequestUtils.getRequiredStringParameter(request, "county");
+        String user = ServletRequestUtils.getRequiredStringParameter(request, "add_user");
+        String accountNumber = ServletRequestUtils.getRequiredStringParameter(request, "add_accountNumber");
+        String lastName = ServletRequestUtils.getRequiredStringParameter(request, "add_lastName");
+        String firstName = ServletRequestUtils.getRequiredStringParameter(request, "add_firstName");
+        String homePhone = ServletRequestUtils.getRequiredStringParameter(request, "add_homePhone");
+        String workPhone = ServletRequestUtils.getRequiredStringParameter(request, "add_workPhone");
+        String emailAddress = ServletRequestUtils.getRequiredStringParameter(request, "add_emailAddress");
+        String altTrackingNum = ServletRequestUtils.getRequiredStringParameter(request, "add_altTrackingNum");
+        String mapNum = ServletRequestUtils.getRequiredStringParameter(request, "add_mapNum");
+        String isCommercial = ServletRequestUtils.getRequiredStringParameter(request, "add_isCommercial");
+        String companyName = ServletRequestUtils.getRequiredStringParameter(request, "add_companyName");
+        String streetAddress1 = ServletRequestUtils.getRequiredStringParameter(request, "add_streetAddress1");
+        String streetAddress2 = ServletRequestUtils.getRequiredStringParameter(request, "add_streetAddress2");
+        String city = ServletRequestUtils.getRequiredStringParameter(request, "add_city");
+        String state = ServletRequestUtils.getRequiredStringParameter(request, "add_state");
+        String zip = ServletRequestUtils.getRequiredStringParameter(request, "add_zip");
+        String county = ServletRequestUtils.getRequiredStringParameter(request, "add_county");
         
-        String billingAddress1 = ServletRequestUtils.getRequiredStringParameter(request, "billingAddress1");
-        String billingAddress2 = ServletRequestUtils.getRequiredStringParameter(request, "billingAddress2");
-        String billingCity = ServletRequestUtils.getRequiredStringParameter(request, "billingCity");
-        String billingState = ServletRequestUtils.getRequiredStringParameter(request, "billingState");
-        String billingZip = ServletRequestUtils.getRequiredStringParameter(request, "billingZip");
-        String billingCounty = ServletRequestUtils.getRequiredStringParameter(request, "billingCounty");
+        String billingAddress1 = ServletRequestUtils.getRequiredStringParameter(request, "add_billingAddress1");
+        String billingAddress2 = ServletRequestUtils.getRequiredStringParameter(request, "add_billingAddress2");
+        String billingCity = ServletRequestUtils.getRequiredStringParameter(request, "add_billingCity");
+        String billingState = ServletRequestUtils.getRequiredStringParameter(request, "add_billingState");
+        String billingZip = ServletRequestUtils.getRequiredStringParameter(request, "add_billingZip");
+        String billingCounty = ServletRequestUtils.getRequiredStringParameter(request, "add_billingCounty");
         
-        String substation = ServletRequestUtils.getRequiredStringParameter(request, "substation");
-        String feeder = ServletRequestUtils.getRequiredStringParameter(request, "feeder");
-        String pole = ServletRequestUtils.getRequiredStringParameter(request, "pole");
-        String transformerSize = ServletRequestUtils.getRequiredStringParameter(request, "transformerSize");
-        String serviceVoltage = ServletRequestUtils.getRequiredStringParameter(request, "serviceVoltage");
+        String substation = ServletRequestUtils.getRequiredStringParameter(request, "add_substation");
+        String feeder = ServletRequestUtils.getRequiredStringParameter(request, "add_feeder");
+        String pole = ServletRequestUtils.getRequiredStringParameter(request, "add_pole");
+        String transformerSize = ServletRequestUtils.getRequiredStringParameter(request, "add_transformerSize");
+        String serviceVoltage = ServletRequestUtils.getRequiredStringParameter(request, "add_serviceVoltage");
         
-        String username = ServletRequestUtils.getRequiredStringParameter(request, "username");
-        String password = ServletRequestUtils.getRequiredStringParameter(request, "password");
-        String loginGroup = ServletRequestUtils.getRequiredStringParameter(request, "loginGroup");
+        String username = ServletRequestUtils.getRequiredStringParameter(request, "add_username");
+        String password = ServletRequestUtils.getRequiredStringParameter(request, "add_password");
+        String loginGroup = ServletRequestUtils.getRequiredStringParameter(request, "add_loginGroup");
         
         UpdatableAccount updatableAccount = new UpdatableAccount();
         updatableAccount.setAccountDto(new AccountDto());
@@ -126,8 +128,8 @@ public class AccountServiceInputsTestController extends MultiActionController{
         List<String> results = new ArrayList<String>();
         List<String> errorReasons = new ArrayList<String>();
         
-        String accountNumber = ServletRequestUtils.getRequiredStringParameter(request, "accountNumber");
-        String user = ServletRequestUtils.getRequiredStringParameter(request, "user");
+        String accountNumber = ServletRequestUtils.getRequiredStringParameter(request, "delete_accountNumber");
+        String user = ServletRequestUtils.getRequiredStringParameter(request, "delete_user");
         try {
             LiteYukonUser yukonuser = yukonUserDao.getLiteYukonUser(user);
             accountService.deleteAccount(accountNumber, yukonuser);
@@ -141,7 +143,94 @@ public class AccountServiceInputsTestController extends MultiActionController{
     
     public ModelAndView updateAccount(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         
-        return null;
+        List<String> results = new ArrayList<String>();
+        List<String> errorReasons = new ArrayList<String>();
+        
+        String user = ServletRequestUtils.getRequiredStringParameter(request, "update_user");
+        String accountNumber = ServletRequestUtils.getRequiredStringParameter(request, "update_accountNumber");
+        String lastName = ServletRequestUtils.getRequiredStringParameter(request, "update_lastName");
+        String firstName = ServletRequestUtils.getRequiredStringParameter(request, "update_firstName");
+        String homePhone = ServletRequestUtils.getRequiredStringParameter(request, "update_homePhone");
+        String workPhone = ServletRequestUtils.getRequiredStringParameter(request, "update_workPhone");
+        String emailAddress = ServletRequestUtils.getRequiredStringParameter(request, "update_emailAddress");
+        String altTrackingNum = ServletRequestUtils.getRequiredStringParameter(request, "update_altTrackingNum");
+        String mapNum = ServletRequestUtils.getRequiredStringParameter(request, "update_mapNum");
+        String isCommercial = ServletRequestUtils.getRequiredStringParameter(request, "update_isCommercial");
+        String companyName = ServletRequestUtils.getRequiredStringParameter(request, "update_companyName");
+        String streetAddress1 = ServletRequestUtils.getRequiredStringParameter(request, "update_streetAddress1");
+        String streetAddress2 = ServletRequestUtils.getRequiredStringParameter(request, "update_streetAddress2");
+        String city = ServletRequestUtils.getRequiredStringParameter(request, "update_city");
+        String state = ServletRequestUtils.getRequiredStringParameter(request, "update_state");
+        String zip = ServletRequestUtils.getRequiredStringParameter(request, "update_zip");
+        String county = ServletRequestUtils.getRequiredStringParameter(request, "update_county");
+        
+        String billingAddress1 = ServletRequestUtils.getRequiredStringParameter(request, "update_billingAddress1");
+        String billingAddress2 = ServletRequestUtils.getRequiredStringParameter(request, "update_billingAddress2");
+        String billingCity = ServletRequestUtils.getRequiredStringParameter(request, "update_billingCity");
+        String billingState = ServletRequestUtils.getRequiredStringParameter(request, "update_billingState");
+        String billingZip = ServletRequestUtils.getRequiredStringParameter(request, "update_billingZip");
+        String billingCounty = ServletRequestUtils.getRequiredStringParameter(request, "update_billingCounty");
+        
+        String substation = ServletRequestUtils.getRequiredStringParameter(request, "update_substation");
+        String feeder = ServletRequestUtils.getRequiredStringParameter(request, "update_feeder");
+        String pole = ServletRequestUtils.getRequiredStringParameter(request, "update_pole");
+        String transformerSize = ServletRequestUtils.getRequiredStringParameter(request, "update_transformerSize");
+        String serviceVoltage = ServletRequestUtils.getRequiredStringParameter(request, "update_serviceVoltage");
+        
+        String username = ServletRequestUtils.getRequiredStringParameter(request, "update_username");
+        String password = ServletRequestUtils.getRequiredStringParameter(request, "update_password");
+        String loginGroup = ServletRequestUtils.getRequiredStringParameter(request, "update_loginGroup");
+        
+        UpdatableAccount updatableAccount = new UpdatableAccount();
+        updatableAccount.setAccountDto(new AccountDto());
+        updatableAccount.setAccountNumber(accountNumber);
+        updatableAccount.getAccountDto().setFirstName(firstName);
+        updatableAccount.getAccountDto().setLastName(lastName);
+        updatableAccount.getAccountDto().setEmailAddress(emailAddress);
+        updatableAccount.getAccountDto().setHomePhone(homePhone);
+        updatableAccount.getAccountDto().setWorkPhone(workPhone);
+        updatableAccount.getAccountDto().setAltTrackingNumber(altTrackingNum);
+        updatableAccount.getAccountDto().setMapNumber(mapNum);
+        updatableAccount.getAccountDto().setIsCommercial(new Boolean(isCommercial));
+        updatableAccount.getAccountDto().setCompanyName(companyName);
+        Address streetAddress = new Address();
+        streetAddress.setLocationAddress1(streetAddress1);
+        streetAddress.setLocationAddress2(streetAddress2);
+        streetAddress.setCityName(city);
+        streetAddress.setStateCode(state);
+        streetAddress.setZipCode(zip);
+        streetAddress.setCounty(county);
+        updatableAccount.getAccountDto().setStreetAddress(streetAddress);
+        Address billingAddress = new Address();
+        billingAddress.setLocationAddress1(billingAddress1);
+        billingAddress.setLocationAddress2(billingAddress2);
+        billingAddress.setCityName(billingCity);
+        billingAddress.setStateCode(billingState);
+        billingAddress.setZipCode(billingZip);
+        billingAddress.setCounty(billingCounty);
+        updatableAccount.getAccountDto().setBillingAddress(billingAddress);
+        SiteInformation siteInfo = new SiteInformation();
+        siteInfo.setSubstationName(substation);
+        siteInfo.setFeeder(feeder);
+        siteInfo.setPole(pole);
+        siteInfo.setTransformerSize(transformerSize);
+        siteInfo.setServiceVoltage(serviceVoltage);
+        updatableAccount.getAccountDto().setSiteInfo(siteInfo);
+        updatableAccount.getAccountDto().setUserName(username);
+        updatableAccount.getAccountDto().setPassword(password);
+        updatableAccount.getAccountDto().setLoginGroup(loginGroup);
+        
+        try {
+            LiteYukonUser yukonuser = yukonUserDao.getLiteYukonUser(user);
+            UpdatableAccount account = accountServiceHelper.buildFullDto(updatableAccount, yukonuser);
+            accountService.updateAccount(account, yukonuser);
+            results.add(accountNumber + " updated successfully.");
+        } catch (RuntimeException e) {
+            errorReasons.add(e.getMessage());
+            CTILogger.error(e.getMessage(), e);
+        }
+        
+        return returnMav(request, results, errorReasons);
     }
     
     // HELPERS
@@ -160,6 +249,11 @@ public class AccountServiceInputsTestController extends MultiActionController{
     @Autowired
     public void setAccountService(AccountService accountService) {
         this.accountService = accountService;
+    }
+    
+    @Autowired
+    public void setAccountServiceHelper(AccountServiceHelper accountServiceHelper) {
+        this.accountServiceHelper = accountServiceHelper;
     }
     
     @Autowired

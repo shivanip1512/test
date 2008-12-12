@@ -203,7 +203,9 @@
         <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
     </bean>
     
-    <bean id="AccountService" class="com.cannontech.stars.dr.account.service.impl.AccountServiceImpl"/>
+    <bean id="accountService" class="com.cannontech.stars.dr.account.service.impl.AccountServiceImpl"/>
+    
+    <bean id="accountServiceHelper" class="com.cannontech.stars.dr.account.service.AccountServiceHelper"/>
 
     <bean id="hardwareBaseDao" class="com.cannontech.stars.dr.hardware.dao.impl.LMHardwareBaseDaoImpl"/>
 

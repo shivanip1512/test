@@ -237,7 +237,6 @@ public class AccountServiceImpl implements AccountService {
         /*
          * Create service info
          */
-        CustomerAccount customerAccount = new CustomerAccount();
         LiteSiteInformation liteSiteInformation = new LiteSiteInformation();
         try {
             int subId = siteInformationDao.getSubstationIdByName(accountDto.getSiteInfo().getSubstationName());
@@ -259,6 +258,10 @@ public class AccountServiceImpl implements AccountService {
         accountSite.setSiteNumber(accountDto.getMapNumber());
         accountSiteDao.add(accountSite);
         
+        /*
+         * Create customer account
+         */
+        CustomerAccount customerAccount = new CustomerAccount();
         customerAccount.setAccountSiteId(accountSite.getAccountSiteId());
         customerAccount.setAccountNumber(accountNumber);
         customerAccount.setCustomerId(liteCustomer.getCustomerID());
@@ -298,6 +301,7 @@ public class AccountServiceImpl implements AccountService {
         
         LiteStarsCustAccountInformation customerInfo = starsCustAccountInformationDao.getById(account.getAccountId(), energyCompany.getEnergyCompanyID());
         AccountSite accountSite = accountSiteDao.getByAccountSiteId(account.getAccountSiteId());
+        LiteSiteInformation siteInfo = siteInformationDao.getSiteInfoById(accountSite.getSiteInformationId());
         LiteCustomer liteCustomer = customerDao.getLiteCustomer(account.getCustomerId());
         customerInfo.setCustomer(liteCustomer);
         LiteAddress billingAddress = addressDao.getByAddressId(account.getBillingAddressId());
@@ -357,6 +361,11 @@ public class AccountServiceImpl implements AccountService {
          * Delete account site
          */
         accountSiteDao.remove(accountSite);
+        
+        /*
+         * Delete site information
+         */
+        siteInformationDao.delete(siteInfo);
         
         /*
          * Delete billing address
@@ -441,6 +450,7 @@ public class AccountServiceImpl implements AccountService {
         CustomerAccount account = customerAccountDao.getByAccountNumber(accountNumber, liteStarsEnergyCompany.getEnergyCompanyID());
         LiteCustomer liteCustomer = customerDao.getLiteCustomer(account.getCustomerId());
         AccountSite accountSite = accountSiteDao.getByAccountSiteId(account.getAccountSiteId());
+        LiteSiteInformation liteSiteInformation = siteInformationDao.getSiteInfoById(accountSite.getSiteInformationId());
         LiteAddress liteStreetAddress = addressDao.getByAddressId(accountSite.getStreetAddressId()); 
         LiteAddress liteBillingAddress = addressDao.getByAddressId(account.getBillingAddressId());
         LiteContact primaryContact = customerDao.getPrimaryContact(account.getCustomerId());
@@ -462,11 +472,22 @@ public class AccountServiceImpl implements AccountService {
         }
         
         /*
+         * Update the customer account
+         */
+        
+        account.setAccountNumber(accountNumber);
+        customerAccountDao.update(account);
+        dbPersistantDao.processDBChange(new DBChangeMsg(account.getAccountId(),
+                                                        DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,
+                                                        DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
+                                                        DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
+                                                        DBChangeMsg.CHANGE_TYPE_UPDATE));
+        
+        /*
          * Update the primary contact
          */
         primaryContact.setContFirstName(accountDto.getFirstName());
         primaryContact.setContLastName(accountDto.getLastName());
-        primaryContact.setAddressID(liteStreetAddress.getAddressID());
         contactDao.saveContact(primaryContact);
         dbPersistantDao.processDBChange(new DBChangeMsg(primaryContact.getLiteID(),
             DBChangeMsg.CHANGE_CONTACT_DB,
@@ -524,6 +545,7 @@ public class AccountServiceImpl implements AccountService {
         }
         
         if(customerDao.isCICustomer(liteCustomer.getCustomerID())){
+            liteCustomer.setAltTrackingNumber(accountDto.getAltTrackingNumber());
             if(!accountDto.getIsCommercial()) {
                 // was commercial, not anymore
                 LiteCICustomer liteCICustomer = customerDao.getLiteCICustomer(liteCustomer.getCustomerID());
@@ -537,6 +559,7 @@ public class AccountServiceImpl implements AccountService {
             }else {
                 // was commercial and still is
                 LiteCICustomer liteCICustomer = customerDao.getLiteCICustomer(liteCustomer.getCustomerID());
+                liteCICustomer.setAltTrackingNumber(accountDto.getAltTrackingNumber());
                 liteCICustomer.setCompanyName(accountDto.getCompanyName());
                 customerDao.updateCICustomer(liteCICustomer);
             }
@@ -549,9 +572,33 @@ public class AccountServiceImpl implements AccountService {
                 liteCICustomer.setCurtailAmount(CtiUtilities.NONE_ZERO_ID);
                 liteCICustomer.setCompanyName(accountDto.getCompanyName());
                 liteCICustomer.setCICustType(YukonListEntryTypes.CUSTOMER_TYPE_COMMERCIAL);
+                liteCICustomer.setAltTrackingNumber(accountDto.getAltTrackingNumber());
                 customerDao.addCICustomer(liteCICustomer);
+            }else {
+                customerDao.updateCustomer(liteCustomer);
             }
         }
+        
+        /*
+         * Update account site
+         */
+        accountSite.setSiteNumber(accountDto.getMapNumber());
+        accountSiteDao.update(accountSite);
+        
+        /*
+         * Update site information
+         */
+        try {
+            int subId = siteInformationDao.getSubstationIdByName(accountDto.getSiteInfo().getSubstationName());
+            liteSiteInformation.setSubstationID(subId);
+        }catch(NotFoundException e) {
+            log.error("Unable to find substation by name: " + accountDto.getSiteInfo().getSubstationName() , e);
+        }
+        liteSiteInformation.setFeeder(accountDto.getSiteInfo().getFeeder());
+        liteSiteInformation.setPole(accountDto.getSiteInfo().getPole());
+        liteSiteInformation.setTransformerSize(accountDto.getSiteInfo().getTransformerSize());
+        liteSiteInformation.setServiceVoltage(accountDto.getSiteInfo().getServiceVoltage());
+        siteInformationDao.update(liteSiteInformation);
         
         /*
          * Update mapping

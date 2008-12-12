@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.FieldMapper;
@@ -44,7 +45,7 @@ public class SiteInformationDaoImpl implements SiteInformationDao, InitializingB
 
         @Override
         public Number getPrimaryKey(LiteSiteInformation object) {
-            return null;
+            return object.getSiteID();
         }
 
         @Override
@@ -107,6 +108,10 @@ public class SiteInformationDaoImpl implements SiteInformationDao, InitializingB
     
     @Override
     public void add(LiteSiteInformation liteSiteInformation) {
+        if(liteSiteInformation.getSiteID() >= CtiUtilities.NONE_ZERO_ID) {
+            int nextId = nextValueHelper.getNextValue(TABLE_NAME);
+            liteSiteInformation.setSiteID(nextId);
+        }
         siteInfoTemplate.insert(liteSiteInformation);
     }
 
