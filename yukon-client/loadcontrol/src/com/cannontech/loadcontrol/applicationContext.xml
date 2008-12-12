@@ -19,13 +19,13 @@
    <bean id="loadControlProgramDao" class="com.cannontech.loadcontrol.dao.impl.LoadControlProgramDaoImpl">
    </bean>
     
-   <bean id="LoadControlService" class="com.cannontech.loadcontrol.service.impl.LoadControlServiceImpl">
+   <bean id="loadControlService" class="com.cannontech.loadcontrol.service.impl.LoadControlServiceImpl">
    </bean>
    
-   <bean id="LoadControlCommandService" class="com.cannontech.loadcontrol.service.impl.LoadControlCommandServiceImpl">
+   <bean id="loadControlCommandService" class="com.cannontech.loadcontrol.service.impl.LoadControlCommandServiceImpl">
    </bean>
     
-   <bean id="OverrideService" class="com.cannontech.loadcontrol.service.impl.OverrideServiceImpl">
+   <bean id="overrideService" class="com.cannontech.loadcontrol.service.impl.OverrideServiceImpl">
    </bean>
    
 <!-- 
