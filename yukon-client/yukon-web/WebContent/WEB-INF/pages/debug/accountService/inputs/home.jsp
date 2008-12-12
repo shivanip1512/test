@@ -85,6 +85,9 @@
             <td class="inputTest">
                 <form action="/spring/debug/accountService/inputs/addAccount" method="post">
                     <tags:nameValueContainer>
+                        <tags:nameValue name="Operator (yukon user)" nameColumnWidth="200px">
+                            <input type="text" name="user" value="${user}">
+                        </tags:nameValue>
                         <tags:nameValue name="Account Number" nameColumnWidth="200px">
                             <input type="text" name="accountNumber" value="${accountNumber}">
                         </tags:nameValue>

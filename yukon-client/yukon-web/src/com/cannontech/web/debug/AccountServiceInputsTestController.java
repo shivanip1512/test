@@ -35,6 +35,7 @@ public class AccountServiceInputsTestController extends MultiActionController{
         List<String> results = new ArrayList<String>();
         List<String> errorReasons = new ArrayList<String>();
         
+        String user = ServletRequestUtils.getRequiredStringParameter(request, "user");
         String accountNumber = ServletRequestUtils.getRequiredStringParameter(request, "accountNumber");
         String lastName = ServletRequestUtils.getRequiredStringParameter(request, "lastName");
         String firstName = ServletRequestUtils.getRequiredStringParameter(request, "firstName");
@@ -108,9 +109,9 @@ public class AccountServiceInputsTestController extends MultiActionController{
         updatableAccount.getAccountDto().setPassword(password);
         updatableAccount.getAccountDto().setLoginGroup(loginGroup);
         
-        LiteYukonUser yukon = yukonUserDao.getLiteYukonUser("yukon");
         try {
-            accountService.addAccount(updatableAccount, yukon);
+            LiteYukonUser yukonuser = yukonUserDao.getLiteYukonUser(user);
+            accountService.addAccount(updatableAccount, yukonuser);
             results.add(accountNumber + " added successfully.");
         } catch (RuntimeException e) {
             errorReasons.add(e.getMessage());

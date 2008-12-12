@@ -14,7 +14,6 @@ import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.DBPersistentDao;
-import com.cannontech.core.dao.EnergyCompanyDao;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonUserDao;
@@ -80,7 +79,6 @@ public class AccountServiceTest extends TestCase {
     private EventAccountDao eventAccountDaoMock;
     private StarsCustAccountInformationDao starsCustAccountInformationDaoMock;
     private DBPersistentDao dbPersistantDaoMock;
-    private EnergyCompanyDao energyCompanyDaoMock;
     
     protected void setUp() {
         yukonUserDaoMock = createMock(YukonUserDao.class);
@@ -105,7 +103,6 @@ public class AccountServiceTest extends TestCase {
         eventAccountDaoMock = createMock(EventAccountDao.class);
         starsCustAccountInformationDaoMock = createMock(StarsCustAccountInformationDao.class);
         dbPersistantDaoMock = createMock(DBPersistentDao.class);
-        energyCompanyDaoMock = createMock(EnergyCompanyDao.class);
         
         accountService = new AccountServiceImpl();
         
@@ -131,7 +128,6 @@ public class AccountServiceTest extends TestCase {
         accountService.setEventAccountDao(eventAccountDaoMock);
         accountService.setStarsCustAccountInformationDao(starsCustAccountInformationDaoMock);
         accountService.setDBPersistentDao(dbPersistantDaoMock);
-        accountService.setEnergyCompanyDao(energyCompanyDaoMock);
     }
     
     @Test
@@ -158,7 +154,6 @@ public class AccountServiceTest extends TestCase {
         replay(eventAccountDaoMock);
         replay(starsCustAccountInformationDaoMock);
         replay(dbPersistantDaoMock);
-        replay(energyCompanyDaoMock);
         
         UpdatableAccount updatableAccount = new UpdatableAccount();
         LiteYukonUser user = new LiteYukonUser();
@@ -243,13 +238,13 @@ public class AccountServiceTest extends TestCase {
                                DBChangeMsg.CAT_CUSTOMER,
                                DBChangeMsg.CHANGE_TYPE_ADD));
         siteInformationDaoMock.add(new LiteSiteInformation());
-        dbPersistantDaoMock.processDBChange(new DBChangeMsg(1,
-                               DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,
-                               DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
-                               DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
-                               DBChangeMsg.CHANGE_TYPE_ADD));
         accountSiteDaoMock.add(new AccountSite());
         customerAccountDaoMock.add(new CustomerAccount());
+        dbPersistantDaoMock.processDBChange(new DBChangeMsg(1,
+                                                            DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,
+                                                            DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
+                                                            DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
+                                                            DBChangeMsg.CHANGE_TYPE_ADD));
         ecMappingDaoMock.addECToAccountMapping(new ECToAccountMapping());
         
         /*
@@ -277,16 +272,11 @@ public class AccountServiceTest extends TestCase {
         replay(eventAccountDaoMock);
         replay(starsCustAccountInformationDaoMock);
         replay(dbPersistantDaoMock);
-        replay(energyCompanyDaoMock);
         
         /*
          * run test
          */
-//        try {
             accountService.addAccount(updatableAccount, user);
-//        }catch(InvalidAccountNumberException e) {}
-//        catch(AccountNumberUnavailableException e) {}
-//        catch(UserNameUnavailableException e) {}
     }
 
 }
