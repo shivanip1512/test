@@ -6,10 +6,8 @@ import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -49,6 +47,8 @@ public class TestCoverageCalculator {
             List<Element> children = rootElement.getChildren("row");
 
             Map<String,AuthorStats> authors = new HashMap<String, AuthorStats>();
+            int regularFileCount = 0;
+            int testFileCount = 0;
 
             for (Element row : children) {
                 String path = row.getChildText("path");
@@ -62,8 +62,11 @@ public class TestCoverageCalculator {
 
                 if (path.matches(".*Test\\.java")) {
                     authorStats.testFileCount++;
+                    testFileCount++;
+                    System.out.println("Got new test " + path + " from " + author);
                 } else {
                     authorStats.regularFileCount++;
+                    regularFileCount++;
                 }
             }
 
@@ -78,6 +81,13 @@ public class TestCoverageCalculator {
                 String ratio = percentInstance.format(d);
                 System.out.println("   Ratio: " + ratio);
             }
+            
+            System.out.println("Total");
+            System.out.println("   New Files: " + regularFileCount);
+            System.out.println("   New Tests: " + testFileCount);
+            double d = ((double)testFileCount / (double)regularFileCount);
+            String ratio = percentInstance.format(d);
+            System.out.println("   Ratio: " + ratio);
 
 
         } catch (Exception e) {
