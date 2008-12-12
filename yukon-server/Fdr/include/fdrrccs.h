@@ -52,7 +52,6 @@ class IM_EX_FDRRCCS CtiFDR_Rccs : public CtiFDR_Inet
         virtual ~CtiFDR_Rccs();
 
         virtual int  processMessageFromForeignSystem (CHAR *data);
-        virtual void buildRegistrationPointList(CtiPointRegistrationMsg **aMsg);
         virtual bool buildAndWriteToForeignSystem (CtiFDRPoint &aPoint );
 
         // end getters and setters
