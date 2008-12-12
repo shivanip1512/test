@@ -69,13 +69,12 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
 
         @Override
         public Number getPrimaryKey(LiteCustomer object) {
-            return object.getCustomerID();
+            return object.getCustomerID() == CtiUtilities.NONE_ZERO_ID ? null : object.getCustomerID();
         }
 
         @Override
         public void setPrimaryKey(LiteCustomer object, int value) {
             object.setCustomerID(value);
-            
         }
     };
     
@@ -98,8 +97,7 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
 
         @Override
         public void setPrimaryKey(LiteCICustomer object, int value) {
-            object.setCustomerID(value);
-            
+            object.setCustomerID(value == CtiUtilities.NONE_ZERO_ID ? null : value);
         }
     };
     
@@ -336,10 +334,6 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
     
     @Override
     public void addCustomer(LiteCustomer liteCustomer) throws DataAccessException {
-        if(liteCustomer.getCustomerID() >= CtiUtilities.NONE_ZERO_ID) {
-            int nextId = nextValueHelper.getNextValue(CUSTOMER_TABLE_NAME);
-            liteCustomer.setCustomerID(nextId);
-        }
         liteCustomerTemplate.insert(liteCustomer);
     }
     

@@ -45,13 +45,12 @@ public class SiteInformationDaoImpl implements SiteInformationDao, InitializingB
 
         @Override
         public Number getPrimaryKey(LiteSiteInformation object) {
-            return object.getSiteID();
+            return object.getSiteID() == CtiUtilities.NONE_ZERO_ID ? null : object.getSiteID();
         }
 
         @Override
         public void setPrimaryKey(LiteSiteInformation object, int value) {
             object.setSiteID(value);
-            
         }
     };
     
@@ -108,10 +107,6 @@ public class SiteInformationDaoImpl implements SiteInformationDao, InitializingB
     
     @Override
     public void add(LiteSiteInformation liteSiteInformation) {
-        if(liteSiteInformation.getSiteID() >= CtiUtilities.NONE_ZERO_ID) {
-            int nextId = nextValueHelper.getNextValue(TABLE_NAME);
-            liteSiteInformation.setSiteID(nextId);
-        }
         siteInfoTemplate.insert(liteSiteInformation);
     }
 
