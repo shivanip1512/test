@@ -11,6 +11,7 @@ using boost::unit_test_framework::test_suite;
 #include "utility.h"
 #include "dsm2.h"
 #include "queues.h"
+#include "devicetypes.h"
 
 struct instance_counter
 {
@@ -188,6 +189,25 @@ BOOST_AUTO_UNIT_TEST(test_csv_output_iterator)
     std::copy(source.begin(), source.end(), csv_itr);
 
     BOOST_CHECK_EQUAL(ostr.str(), "1,1,2,3,5,8");
+}
+
+BOOST_AUTO_UNIT_TEST(test_isExpresscomGroup)
+{
+    //True cases
+    bool ret = isExpresscomGroup(TYPE_LMGROUP_EXPRESSCOM);
+    BOOST_CHECK_EQUAL(ret, true);
+
+    //False cases
+    for (int i = 0; i < 3000; ++i)
+    {
+        ret = isExpresscomGroup(i);
+        if (i == TYPE_LMGROUP_EXPRESSCOM)
+        {
+            BOOST_CHECK_EQUAL(ret, true);
+        } else {
+            BOOST_CHECK_EQUAL(ret, false);
+        }
+    }
 }
 
 

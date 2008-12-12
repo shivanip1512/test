@@ -388,6 +388,7 @@ enum CtiRoute_t
     RouteTypeSeriesVLMI,
     RouteTypeSNPP,
     RouteTypeForeignPorter,
+	RouteTypeXML,
 
     RouteTypeMax
 };

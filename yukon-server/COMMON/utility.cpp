@@ -922,6 +922,21 @@ bool isLCU(INT type)
     return isit;
 }
 
+bool isExpresscomGroup(INT Type)
+{
+    bool isit = false;
+
+    switch(Type)
+    {
+        case TYPE_LMGROUP_EXPRESSCOM:
+        {
+            isit = true;
+        }
+    }
+
+    return isit;
+}
+
 int generateTransmissionID()
 {
     static int id = 0;
@@ -2659,6 +2674,46 @@ vector<int> getPointIdsOnPao(long paoid)
 
     return ids;
 }
+
+std::vector< std::vector<string> > getLmXmlParametersByGroupId(long groupId)
+{
+    string sql("SELECT parametername,parametervalue FROM LMGroupXMLParameter WHERE lmgroupid = ");
+    sql += CtiNumStr(groupId);
+
+    std::vector< std::vector<string> > params;
+
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
+
+    RWDBReader  rdr = ExecuteQuery( conn, sql );
+
+    if(rdr.isValid())
+    {
+        while (rdr())
+        {
+            std::vector<string> parameters;
+            string name, value;
+            rdr["parametername"] >> name;
+            rdr["parametervalue"] >> value;
+
+            parameters.push_back(name);
+            parameters.push_back(value);
+
+            params.push_back(parameters);
+        }
+    }
+    else if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << " " << sql << endl;
+        }
+    }
+
+    return params;
+}
+
 
 void GetPseudoPointIDs(std::vector<unsigned long> &pointIDs)
 {

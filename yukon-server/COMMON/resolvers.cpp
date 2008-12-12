@@ -64,6 +64,10 @@ INT resolveRouteType( const string& _rwsTemp)
     {
         Ret = RouteTypeExpresscom;
     }
+    else if(rwsTemp == "xml")
+    {
+        Ret = RouteTypeXML;
+    }
     else if(rwsTemp == "tap paging" || rwsTemp == "tappaging")
     {
         Ret = RouteTypeTap;
@@ -562,7 +566,7 @@ INT resolveDeviceType(const string& _rwsTemp)
     {
         nRet = TYPE_LMGROUP_VERSACOM;
     }
-    else if(rwsTemp == "expresscom group")
+    else if(rwsTemp == "expresscom group" || rwsTemp == "xml group")
     {
         nRet = TYPE_LMGROUP_EXPRESSCOM;
     }
@@ -713,6 +717,10 @@ INT resolveDeviceType(const string& _rwsTemp)
     else if(rwsTemp == "virtual system")
     {
         nRet = TYPE_VIRTUAL_SYSTEM;
+    }
+    else if(rwsTemp == "xml")
+    {
+        nRet = TYPE_XML_XMIT;
     }
     else
     {
@@ -1210,6 +1218,7 @@ bool resolveIsDeviceTypeSingle(INT Type)
         case TYPE_FOREIGNPORTER:
         case TYPE_FCI:
         case TYPE_NEUTRAL_MONITOR:
+        case TYPE_XML_XMIT:
         {
             bRet = true;
             break;

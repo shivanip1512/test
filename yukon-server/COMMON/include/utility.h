@@ -184,6 +184,7 @@ IM_EX_CTIBASE LONG  OutMessageCount();
 IM_EX_CTIBASE bool  isLCU(INT type);
 IM_EX_CTIBASE bool  isION(INT type);
 IM_EX_CTIBASE bool  isMCT(INT type);
+IM_EX_CTIBASE bool  isExpresscomGroup(INT Type);
 
 IM_EX_CTIBASE int   generateTransmissionID();
 
@@ -228,6 +229,7 @@ IM_EX_CTIBASE void testSA305CRC(char* testData);
 IM_EX_CTIBASE LONG GetPAOIdOfEnergyPro(long devicesn);
 
 IM_EX_CTIBASE vector<int> getPointIdsOnPao(long paoid);
+IM_EX_CTIBASE std::vector< std::vector<string> > getLmXmlParametersByGroupId(long groupId);
 IM_EX_CTIBASE string getEncodingTypeForPort(long portId);
 IM_EX_CTIBASE string getEncodingKeyForPort(long portId);
 

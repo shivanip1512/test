@@ -118,6 +118,7 @@ prot_sixnet.obj \
 prot_base.obj \
 prot_dnp.obj \
 prot_modbus.obj \
+prot_xml.obj \
 $(DNPOBJS) \
 prot_ion.obj \
 $(IONOBJS) \

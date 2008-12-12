@@ -24,7 +24,7 @@ BOOST_AUTO_UNIT_TEST(test_generating_xml_2)
 	</ChildTag>
 	</TestTag>
 	*/
-	string expected = "<TestTag name=\"tag1\" addr=\"here\">\n<ChildTag>\n</ChildTag>\n<ChildTag name=\"tag1\">\n</ChildTag>\n</TestTag>\n";
+	string expected = "<TestTag name=\"tag1\" addr=\"here\"><ChildTag></ChildTag><ChildTag name=\"tag1\"></ChildTag></TestTag>";
 
 	XmlObject::XmlObjectSPtr xml(new XmlObject());
 
@@ -62,7 +62,7 @@ BOOST_AUTO_UNIT_TEST(test_generating_xml_3)
 	</ChildTag> 
     </TestTag>
 	*/
-	string expected = "<TestTag name=\"tag1\" addr=\"here\">\n<ChildTag>\n<Child2Tag name=\"tag1\">\n</Child2Tag>\n</ChildTag>\n</TestTag>\n";
+	string expected = "<TestTag name=\"tag1\" addr=\"here\"><ChildTag><Child2Tag name=\"tag1\"></Child2Tag></ChildTag></TestTag>";
 
 	XmlObject::XmlObjectSPtr xml(new XmlObject());
 
@@ -81,6 +81,30 @@ BOOST_AUTO_UNIT_TEST(test_generating_xml_3)
 
 	xml->insertXmlNode(c1_xml);
 
+
+	stringstream ss(stringstream::out);
+
+	/*Use String stream and compare to expected.*/
+	xml->outputXml(ss);
+
+	string output = ss.str();
+
+	BOOST_CHECK_EQUAL(expected,output);
+}
+
+BOOST_AUTO_UNIT_TEST(test_generating_xml_insertData)
+{
+	/* Expected Result 
+	<TestTag>
+	42
+    </TestTag>
+	*/
+	string expected = "<TestTag>42</TestTag>";
+
+	XmlObject::XmlObjectSPtr xml(new XmlObject());
+
+	xml->setTagName("TestTag");
+	xml->insertData("42");
 
 	stringstream ss(stringstream::out);
 

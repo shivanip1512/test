@@ -771,7 +771,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
 
                                 if( (!stringCompareIgnoreCase(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::TrueCycleMethod) ||
                                      !stringCompareIgnoreCase(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::MagnitudeCycleMethod)) &&
-                                    (currentLMGroup->getPAOType() == TYPE_LMGROUP_EXPRESSCOM ||
+                                    (isExpresscomGroup(currentLMGroup->getPAOType()) ||
                                      currentLMGroup->getPAOType() == TYPE_LMGROUP_SA305) )
                                 {
                                     requestMsg = currentLMGroup->createTrueCycleRequestMsg(percent, period, cycleCount, no_ramp, defaultLMStartPriority);
@@ -862,7 +862,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                             {
                                 CtiRequestMsg* requestMsg = NULL;
                                 bool no_ramp = (currentGearObject->getFrontRampOption() == CtiLMProgramDirectGear::NoRampRandomOptionType);
-                                if( currentLMGroup->getPAOType() == TYPE_LMGROUP_EXPRESSCOM ||
+                                if( isExpresscomGroup(currentLMGroup->getPAOType()) ||
                                     currentLMGroup->getPAOType() == TYPE_LMGROUP_SA305 )
                                 {
                                     requestMsg = currentLMGroup->createTargetCycleRequestMsg(percent, period, cycleCount, no_ramp, defaultLMStartPriority, kw, getStartedControlling(), getAdditionalInfo());
@@ -1066,7 +1066,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                             !currentLMGroup->getControlInhibit() &&
                             !hasGroupExceededMaxDailyOps(currentLMGroup) )
                         {
-                            if( currentLMGroup->getPAOType() == TYPE_LMGROUP_EXPRESSCOM )
+                            if(isExpresscomGroup(currentLMGroup->getPAOType()))
                             {
                                 // XXX thermostat constraints??
                                 CtiRequestMsg* requestMsg = currentLMGroup->createSetPointRequestMsg(settings, minValue, maxValue, valueB, valueD, valueF, random, valueTA, valueTB, valueTC, valueTD, valueTE, valueTF, defaultLMStartPriority);
@@ -1620,7 +1620,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(ULONG secondsFrom1901, CtiMul
                         {
                             CtiRequestMsg* requestMsg = NULL;
                             bool no_ramp = (currentGearObject->getFrontRampOption() == CtiLMProgramDirectGear::NoRampRandomOptionType);
-                            if( currentLMGroup->getPAOType() == TYPE_LMGROUP_EXPRESSCOM || currentLMGroup->getPAOType() == TYPE_LMGROUP_SA305 )
+                            if( isExpresscomGroup(currentLMGroup->getPAOType()) || currentLMGroup->getPAOType() == TYPE_LMGROUP_SA305 )
                             {
                                 requestMsg = currentLMGroup->createTrueCycleRequestMsg(percent, period, cycleCount, no_ramp, defaultLMStartPriority);
                             }
@@ -1762,7 +1762,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(ULONG secondsFrom1901, CtiMul
                         {
                             CtiRequestMsg* requestMsg = NULL;
                             bool no_ramp = (currentGearObject->getFrontRampOption() == CtiLMProgramDirectGear::NoRampRandomOptionType);
-                            if( currentLMGroup->getPAOType() == TYPE_LMGROUP_EXPRESSCOM || currentLMGroup->getPAOType() == TYPE_LMGROUP_SA305 )
+                            if( isExpresscomGroup(currentLMGroup->getPAOType()) || currentLMGroup->getPAOType() == TYPE_LMGROUP_SA305 )
                             {
                                 requestMsg = currentLMGroup->createTargetCycleRequestMsg(percent, period, cycleCount, no_ramp, defaultLMStartPriority, kw, getStartedControlling(), getAdditionalInfo());
                             }
@@ -1832,7 +1832,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(ULONG secondsFrom1901, CtiMul
                     if( !currentLMGroup->getDisableFlag() &&
                         !currentLMGroup->getControlInhibit() )
                     {
-                        if( currentLMGroup->getPAOType() == TYPE_LMGROUP_EXPRESSCOM )
+                        if( isExpresscomGroup(currentLMGroup->getPAOType()) )
                         {
                             // thermo constraints?? XXX
 
@@ -3028,7 +3028,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
                     {
                         CtiRequestMsg* requestMsg = NULL;
                         bool no_ramp = (currentGearObject->getFrontRampOption() == CtiLMProgramDirectGear::NoRampRandomOptionType);
-                        if( currentLMGroup->getPAOType() == TYPE_LMGROUP_EXPRESSCOM || currentLMGroup->getPAOType() == TYPE_LMGROUP_SA305 )
+                        if( isExpresscomGroup(currentLMGroup->getPAOType()) || currentLMGroup->getPAOType() == TYPE_LMGROUP_SA305 )
                         {
                             requestMsg = currentLMGroup->createTrueCycleRequestMsg(percent, period, cycleCount, no_ramp, defaultLMStartPriority);
                         }
@@ -3099,7 +3099,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
                     {
                         CtiRequestMsg* requestMsg = NULL;
                         bool no_ramp = (currentGearObject->getFrontRampOption() == CtiLMProgramDirectGear::NoRampRandomOptionType);
-                        if( currentLMGroup->getPAOType() == TYPE_LMGROUP_EXPRESSCOM || currentLMGroup->getPAOType() == TYPE_LMGROUP_SA305 )
+                        if( isExpresscomGroup(currentLMGroup->getPAOType()) || currentLMGroup->getPAOType() == TYPE_LMGROUP_SA305 )
                         {
                             requestMsg = currentLMGroup->createTargetCycleRequestMsg(percent, period, cycleCount, no_ramp, defaultLMStartPriority, kw, getStartedControlling(), getAdditionalInfo());
                         }
@@ -3157,7 +3157,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
                 if( !currentLMGroup->getDisableFlag() &&
                     !currentLMGroup->getControlInhibit() )
                 {
-                    if( currentLMGroup->getPAOType() == TYPE_LMGROUP_EXPRESSCOM )
+                    if( isExpresscomGroup(currentLMGroup->getPAOType()) )
                     {
                         CtiRequestMsg* requestMsg = currentLMGroup->createSetPointRequestMsg(settings, minValue, maxValue, valueB, valueD, valueF, random, valueTA, valueTB, valueTC, valueTD, valueTE, valueTF, defaultLMStartPriority);
                         startGroupControl(currentLMGroup, requestMsg, multiPilMsg);
@@ -3705,7 +3705,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                                 bool no_ramp = (currentGearObject->getFrontRampOption() == CtiLMProgramDirectGear::NoRampRandomOptionType);
                                 if( (!stringCompareIgnoreCase(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::TrueCycleMethod) ||
                                      !stringCompareIgnoreCase(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::MagnitudeCycleMethod)) &&
-                                    (currentLMGroup->getPAOType() == TYPE_LMGROUP_EXPRESSCOM ||
+                                    (isExpresscomGroup(currentLMGroup->getPAOType()) ||
                                      currentLMGroup->getPAOType() == TYPE_LMGROUP_SA305) )
                                 {
                                     requestMsg = currentLMGroup->createTrueCycleRequestMsg(percent, period, cycleCount, no_ramp, defaultLMStartPriority);
@@ -3922,7 +3922,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                                 CtiRequestMsg* requestMsg = NULL;
                                 bool no_ramp = (currentGearObject->getFrontRampOption() == CtiLMProgramDirectGear::NoRampRandomOptionType);
                                 if( !stringCompareIgnoreCase(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::TargetCycleMethod) &&
-                                    (currentLMGroup->getPAOType() == TYPE_LMGROUP_EXPRESSCOM ||
+                                    (isExpresscomGroup(currentLMGroup->getPAOType()) ||
                                      currentLMGroup->getPAOType() == TYPE_LMGROUP_SA305) )
                                 {
                                     requestMsg = currentLMGroup->createTargetCycleRequestMsg(percent, period, cycleCount, no_ramp, defaultLMStartPriority, kw, getStartedControlling(), getAdditionalInfo());
@@ -5890,7 +5890,7 @@ bool CtiLMProgramDirect::sendSimpleThermostatMessage(CtiLMProgramDirectGear* cur
             {
                 minutesFromBegin = 0;
             }
-            if( currentLMGroup->getPAOType() == TYPE_LMGROUP_EXPRESSCOM )
+            if( isExpresscomGroup(currentLMGroup->getPAOType()) )
             {
                 // XXX thermostat constraints??
                 CtiRequestMsg* requestMsg = currentLMGroup->createSetPointSimpleMsg(settings, minValue, maxValue, precoolTemp, random, rampRate, precoolTime, precoolHoldTime, maxTempChange, totalControlMinutes, rampOutTime, minutesFromBegin, defaultLMStartPriority);

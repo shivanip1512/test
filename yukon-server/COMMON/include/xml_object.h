@@ -58,6 +58,13 @@ class IM_EX_CTIBASE XmlObject
 		void insertParameter(const string& key, const string& value);
 
 		/**
+		 * Insert the data for the tag.
+		 * 
+		 * @param data 
+		 */
+		void insertData(const string& data);
+
+		/**
 		 * Insert a node. This will be another XmlObject that has been 
 		 * completed. It will be stored to be used with the << operator
 		 * 
@@ -74,10 +81,12 @@ class IM_EX_CTIBASE XmlObject
 		 * 
 		 * @return ostream& 
 		 */
-		ostream& outputXml( ostream& os );
+		ostream& outputXml (ostream& os);
+		
 
 	private:
 		string tagName;
+		string tagData;
 		ParamList tagParams;
 		NodeList nodes;
 };

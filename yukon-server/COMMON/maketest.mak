@@ -33,6 +33,7 @@ test_queue.obj \
 test_resolvers.obj \
 test_rwutil.obj \
 test_utility.obj \
+test_xmlobject.obj \
 
 
 LIBS=\

@@ -113,6 +113,7 @@ dev_tnpp.obj \
 dev_vectron.obj \
 dev_wctp.obj \
 dev_welco.obj \
+dev_xml.obj \
 device.obj \
 device_queue_interface.obj \
 dlldev.obj \

@@ -102,7 +102,7 @@ void CtiDeviceGroupExpresscom::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RW
     Inherited::getSQL(db, keyTable, selector);
     CtiTableExpresscomLoadGroup::getSQL(db, keyTable, selector);
 
-    selector.where( rwdbUpper(keyTable["type"]) == RWDBExpr("EXPRESSCOM GROUP") && selector.where() );
+    selector.where( (rwdbUpper(keyTable["type"]) == RWDBExpr("EXPRESSCOM GROUP") || rwdbUpper(keyTable["type"]) == RWDBExpr("XML GROUP")) && selector.where() );
 }
 
 void CtiDeviceGroupExpresscom::DecodeDatabaseReader(RWDBReader &rdr)
@@ -428,7 +428,7 @@ CtiDeviceGroupBase::ADDRESSING_COMPARE_RESULT CtiDeviceGroupExpresscom::compareA
 {
     ADDRESSING_COMPARE_RESULT retVal = NO_RELATIONSHIP;
 
-    if( otherGroup  && otherGroup->getType() == TYPE_LMGROUP_EXPRESSCOM )
+    if( otherGroup  && isExpresscomGroup(otherGroup->getType()) )
     {
         CtiDeviceGroupExpresscom *expGroup = (CtiDeviceGroupExpresscom*)otherGroup.get();
         if( _expresscomGroup.getAddressUsage() == expGroup->_expresscomGroup.getAddressUsage() )
@@ -472,7 +472,7 @@ void CtiDeviceGroupExpresscom::reportControlStart(int isshed, int shedtime, int 
         for( WPtrGroupMap::iterator iter = _children.begin(); iter != _children.end(); iter++ )
         {
             CtiDeviceGroupBaseSPtr sptr = iter->second.lock();
-            if( sptr && sptr->getType() == TYPE_LMGROUP_EXPRESSCOM )
+            if( sptr && isExpresscomGroup(sptr->getType()) )
             {
                 CtiDeviceGroupExpresscom *grpPtr = (CtiDeviceGroupExpresscom*)sptr.get();
                 grpPtr->reportChildControlStart(isshed, shedtime, reductionratio, vgList, cmd, controlPriority);

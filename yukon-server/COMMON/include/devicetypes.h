@@ -124,6 +124,7 @@
 #define TYPE_SERIESVRTU                      1915
 #define TYPE_SERIESVLMIRTU                   1920
 #define TYPE_MODBUS                          1930
+#define TYPE_XML_XMIT						 1931
 
 #define TYPE_FCI                             1940
 #define TYPE_NEUTRAL_MONITOR                 1941

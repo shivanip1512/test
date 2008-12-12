@@ -56,6 +56,7 @@
 #include "dev_grp_versacom.h"
 #include "dev_grp_mct.h"
 #include "dev_mct_broadcast.h"
+#include "dev_xml.h"
 
 #include "devicetypes.h"
 #include "resolvers.h"
@@ -807,6 +808,9 @@ void CtiDeviceManager::refreshList(id_range_t &paoids, const LONG deviceType)
                         rowFound |= loadDeviceType(paoid_subset, "CBC devices",            CtiDeviceCBC());
                         rowFound |= loadDeviceType(paoid_subset, "FMU devices",            CtiDeviceFMU(),         "FMU");
                         rowFound |= loadDeviceType(paoid_subset, "RTC devices",            CtiDeviceRTC());
+                        
+                        //XML Transmitters
+                        rowFound |= loadDeviceType(paoid_subset, "Xml devices",            CtiDeviceXml());
 
                         rowFound |= loadDeviceType(paoid_subset, "Emetcon groups",         CtiDeviceGroupEmetcon());
                         rowFound |= loadDeviceType(paoid_subset, "Versacom groups",        CtiDeviceGroupVersacom());
@@ -2021,13 +2025,13 @@ void CtiDeviceManager::refreshGroupHierarchy(LONG deviceID)
 {
     CtiDeviceManager::ptr_type device = getDeviceByID(deviceID);
 
-    if( gConfigParms.isTrue("LOG_WITH_EXPRESSCOM_HIERARCHY") && (deviceID == 0 || (device && device->isGroup() && device->getType() == TYPE_LMGROUP_EXPRESSCOM)) )
+    if( gConfigParms.isTrue("LOG_WITH_EXPRESSCOM_HIERARCHY") && (deviceID == 0 || (device && device->isGroup() && isExpresscomGroup(device->getType()))) )
     {
         CtiDeviceGroupBaseSPtr groupDevice = boost::static_pointer_cast<CtiDeviceGroupBase>(device);
         vector< CtiDeviceSPtr > match_coll;
         vector< CtiDeviceGroupBaseSPtr > groupVec;
         getDevicesByType(TYPE_LMGROUP_EXPRESSCOM, match_coll);
-
+        
         //This makes me so very unhappy.
         for( vector< CtiDeviceSPtr >::iterator iter = match_coll.begin(); iter != match_coll.end(); iter++ )
         {

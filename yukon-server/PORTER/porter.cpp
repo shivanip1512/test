@@ -215,6 +215,7 @@ void attachTransmitterDeviceToRoutes(CtiDeviceManager *DM, CtiRouteManager *RM)
                 case RouteTypeRTC:
                 case RouteTypeSeriesVLMI:
                 case RouteTypeForeignPorter:
+                case RouteTypeXML:
                 {
                     CtiRouteXCUSPtr pXCU = boost::static_pointer_cast<CtiRouteXCU>(itr->second);
 

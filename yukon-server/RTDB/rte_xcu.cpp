@@ -631,6 +631,7 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
 
     CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
 
+    int saveDevId = OutMessage->DeviceID;
     OutMessage->DeviceID = _transmitterDevice->getID();
     OutMessage->Port     = _transmitterDevice->getPortID();
     OutMessage->Remote   = _transmitterDevice->getAddress();
@@ -655,6 +656,17 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
 
         switch(_transmitterDevice->getType())
         {
+        case TYPE_XML_XMIT:
+            {
+                /* Drop this case in with the other's to load expresscom into OutMessage*/
+
+                //Added to preserve the LMGroupId
+                OutMessage->DeviceIDofLMGroup = saveDevId;
+
+                outList.push_back( OutMessage );
+                OutMessage = 0; // It has been used, don't let it be deleted!
+                break;
+            }
         case TYPE_SNPP:
         case TYPE_WCTP:
         case TYPE_TAPTERM:

@@ -81,6 +81,7 @@
 #include "dev_rtm.h"
 #include "dev_fmu.h"
 #include "dev_wctp.h"
+#include "dev_xml.h"
 #include "porter.h"
 #include "master.h"
 #include "portdecl.h"
@@ -1397,7 +1398,47 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         status = Port->outMess(trx, Device, traceList);
                         break;
                     }
+                    case TYPE_XML_XMIT:
+                    {
+                        CtiDeviceXmlSPtr ds = boost::static_pointer_cast<CtiDeviceXml>(Device);
+                        int comm_status = NoError;
 
+                        if( !Device->isSingle() )
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " **** Checkpoint - device \'" << Device->getName() << "\' is not a CtiDeviceSingle, aborting communication **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+                        else if( status = ds->recvCommRequest(OutMessage) )
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " **** Checkpoint - error \"" << status << "\" in recvCommRequest() for \"" << Device->getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+                        else
+                        {
+                            while( !ds->isTransactionComplete() )
+                            {
+                                //generate must fill the trx with data.
+                                if( !(status = ds->generate(trx)) )
+                                {
+                                    //sends the message on the port.
+                                    comm_status = Port->outMess(trx, Device, traceList);
+
+                                    //Decode results of send.
+                                    status = ds->decode(trx, comm_status);
+                                }
+
+                                // Prepare for tracing
+                                if(trx.doTrace(comm_status))
+                                {
+                                    Port->traceXfer(trx, traceList, Device, comm_status);
+                                }
+
+                                DisplayTraceList(Port, traceList, true);
+                            }
+                        }
+
+                        break;
+                    }
                     case TYPE_ION7330:
                     case TYPE_ION7700:
                     case TYPE_ION8300:

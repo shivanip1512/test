@@ -341,7 +341,7 @@ BOOST_AUTO_UNIT_TEST(test_resolveDeviceType)
     tempName = "expresscom group";
     devType = TYPE_LMGROUP_EXPRESSCOM;
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
-    tempName = "energypro group";
+	tempName = "energypro group";
     devType = TYPE_LMGROUP_ENERGYPRO;
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
     tempName = "mct group";
@@ -458,5 +458,7 @@ BOOST_AUTO_UNIT_TEST(test_resolveDeviceType)
     tempName = "virtual system";
     devType = TYPE_VIRTUAL_SYSTEM;
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
-
+    tempName = "xml";
+    devType = TYPE_XML_XMIT;
+    BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
 }
