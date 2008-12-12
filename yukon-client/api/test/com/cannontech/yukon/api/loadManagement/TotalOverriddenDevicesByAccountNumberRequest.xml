@@ -5,9 +5,9 @@
     xsi:schemaLocation="http://yukon.cannontech.com/api ../TotalOverriddenDevicesByAccountNumberRequest.xsd"
     version="1.0">
 
-    <accountNumber>03499834</accountNumber>
+    <accountNumber>ACCOUNT_VALID</accountNumber>
     <startDateTime>2008-09-30T12:00:00Z</startDateTime>
-    <stopDateTime>2008-09-30T23:59:59Z</stopDateTime>
-    <programName>Residential LCR Cooling 75% Contract</programName>
+    <stopDateTime>2008-09-30T23:59:59Z</stopDateTime>    
+    <programName>PROGRAM_VALID</programName>
     
 </totalOverriddenDevicesByAccountNumberRequest>

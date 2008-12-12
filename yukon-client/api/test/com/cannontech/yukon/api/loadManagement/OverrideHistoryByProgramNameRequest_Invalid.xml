@@ -6,9 +6,8 @@
     xsi:schemaLocation="http://yukon.cannontech.com/api ../OverrideHistoryByProgramNameRequest.xsd"
     version="1.0">
 
-    <programName>PROGRAM_VALID</programName>
-    <startDateTime>2008-09-30T12:00:00Z</startDateTime>
-    <stopDateTime>2008-09-30T23:59:59Z</stopDateTime>    
-
+    <programName>PROGRAM_INVALID</programName>
+    <startDateTime>2008-10-30T12:00:00Z</startDateTime>
+    <stopDateTime>2008-10-30T23:59:59Z</stopDateTime>
 
 </overrideHistoryByProgramNameRequest>

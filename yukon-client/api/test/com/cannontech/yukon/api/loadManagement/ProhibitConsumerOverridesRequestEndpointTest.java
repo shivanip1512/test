@@ -15,15 +15,15 @@ import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.cannontech.yukon.api.util.YukonXml;
 import com.cannontech.yukon.api.utils.TestUtils;
 
-public class CountOverridesTowardsLimitRequestEndpointTest {
+public class ProhibitConsumerOverridesRequestEndpointTest {
 
-    private CountOverridesTowardsLimitRequestEndpoint impl;
+    private ProhibitConsumerOverridesRequestEndpoint impl;
     private MockOverrideService mockOverrideService; 
     
     private Namespace ns = YukonXml.getYukonNamespace();
     private static final String USER_SUCCESS = "Success";
     private static final String USER_FAILURE = "Failure";    
-    private static final String RESP_ELEMENT_NAME = "countOverridesTowardsLimitResponse";
+    private static final String RESP_ELEMENT_NAME = "prohibitConsumerOverridesResponse";
     
     //TODO Add/match with actual ErrorCodes thrown here
     private static final String ERROR_CODE = "ERROR_CODE";
@@ -33,7 +33,7 @@ public class CountOverridesTowardsLimitRequestEndpointTest {
         
         mockOverrideService = new MockOverrideService();
         
-        impl = new CountOverridesTowardsLimitRequestEndpoint();
+        impl = new ProhibitConsumerOverridesRequestEndpoint();
         impl.setOverrideService(mockOverrideService);
         impl.initialize();
     }
@@ -41,13 +41,11 @@ public class CountOverridesTowardsLimitRequestEndpointTest {
     private class MockOverrideService extends OverrideServiceAdapter {
         
         @Override
-        public void countOverridesTowardsLimit(LiteYukonUser user) {
-
-            //TODO Match up here with expected exceptions that may be thrown            
-            if (!user.getUsername().equals(USER_SUCCESS)){
+        public void prohibitConsumerOverrides(LiteYukonUser user) {
+            // TODO Match up here with expected exceptions that may be thrown
+            if (!user.getUsername().equals(USER_SUCCESS)) {
                 throw new StarsInvalidArgumentException("Invalid Arguments");
             }
-            
         }
     }
     
@@ -55,11 +53,11 @@ public class CountOverridesTowardsLimitRequestEndpointTest {
     public void testInvokeSuccess() throws Exception {
         
         // Init with Request XML
-        Resource resource = new ClassPathResource("CountOverridesTowardsLimitRequest.xml", this.getClass());
+        Resource resource = new ClassPathResource("ProhibitConsumerOverridesRequest.xml", this.getClass());
         Element reqElement = XmlUtils.createElementFromResource(resource);
         
         // verify the reqElement is valid according to schema
-        Resource reqSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/schemas/loadManagement/CountOverridesTowardsLimitRequest.xsd",
+        Resource reqSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/schemas/loadManagement/ProhibitConsumerOverridesRequest.xsd",
                                                            this.getClass());
         TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
         
@@ -69,7 +67,7 @@ public class CountOverridesTowardsLimitRequestEndpointTest {
         Element respElement = impl.invoke(reqElement, user);
         
         // verify the respElement is valid according to schema
-        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/schemas/loadManagement/CountOverridesTowardsLimitResponse.xsd",
+        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/schemas/loadManagement/ProhibitConsumerOverridesResponse.xsd",
                                                             this.getClass());
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
 
@@ -84,11 +82,11 @@ public class CountOverridesTowardsLimitRequestEndpointTest {
     public void testInvokeFailure() throws Exception {
         
         // Init with Request XML
-        Resource resource = new ClassPathResource("CountOverridesTowardsLimitRequest.xml", this.getClass());
+        Resource resource = new ClassPathResource("ProhibitConsumerOverridesRequest.xml", this.getClass());
         Element reqElement = XmlUtils.createElementFromResource(resource);
         
         // verify the reqElement is valid according to schema
-        Resource reqSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/schemas/loadManagement/CountOverridesTowardsLimitRequest.xsd",
+        Resource reqSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/schemas/loadManagement/ProhibitConsumerOverridesRequest.xsd",
                                                            this.getClass());
         TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
         
@@ -98,7 +96,7 @@ public class CountOverridesTowardsLimitRequestEndpointTest {
         Element respElement = impl.invoke(reqElement, user);
         
         // verify the respElement is valid according to schema
-        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/schemas/loadManagement/CountOverridesTowardsLimitResponse.xsd",
+        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/schemas/loadManagement/ProhibitConsumerOverridesResponse.xsd",
                                                             this.getClass());
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
 
@@ -110,3 +108,4 @@ public class CountOverridesTowardsLimitRequestEndpointTest {
         
     }    
 }
+

@@ -26,15 +26,22 @@ public class TestUtils {
     private static Logger log = YukonLogManager.getLogger(TestUtils.class);
     
     public static void runSuccessAssertion(SimpleXPathTemplate outputTemplate, String serviceResponseName) {
-        
-        Assert.assertNotNull("Missing success node.", outputTemplate.evaluateAsNode("/y:" + serviceResponseName + "/y:success"));
+        String serviceResponseNameWithNS = serviceResponseName;
+        if (!serviceResponseNameWithNS.startsWith("/y:")) {
+            serviceResponseNameWithNS = "/y:" + serviceResponseNameWithNS;
+        }        
+        Assert.assertNotNull("Missing success node.", outputTemplate.evaluateAsNode(serviceResponseNameWithNS + "/y:success"));
     }
     
     public static void runFailureAssertions(SimpleXPathTemplate outputTemplate, String serviceResponseName, String expectedErrorCode) {
-        
-        Assert.assertNull("Should not have success node.", outputTemplate.evaluateAsNode("/y:" + serviceResponseName + "/y:success"));
-        Assert.assertNotNull("No failure node present.", outputTemplate.evaluateAsNode("/y:" + serviceResponseName + "/y:failure"));
-        Assert.assertEquals("Incorrect errorCode.", expectedErrorCode, outputTemplate.evaluateAsString("/y:" + serviceResponseName + "/y:failure/y:errorCode"));
+
+        String serviceResponseNameWithNS = serviceResponseName;
+        if (!serviceResponseNameWithNS.startsWith("/y:")) {
+            serviceResponseNameWithNS = "/y:" + serviceResponseNameWithNS;
+        }
+        Assert.assertNull("Should not have success node.", outputTemplate.evaluateAsNode(serviceResponseNameWithNS + "/y:success"));
+        Assert.assertNotNull("No failure node present.", outputTemplate.evaluateAsNode(serviceResponseNameWithNS + "/y:failure"));
+        Assert.assertEquals("Incorrect errorCode.", expectedErrorCode, outputTemplate.evaluateAsString(serviceResponseNameWithNS + "/y:failure/y:errorCode"));
     }
     
     public static void runVersionAssertion(SimpleXPathTemplate outputTemplate,

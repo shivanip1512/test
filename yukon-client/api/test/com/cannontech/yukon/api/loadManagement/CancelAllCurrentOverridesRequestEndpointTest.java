@@ -8,6 +8,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.stars.util.StarsInvalidArgumentException;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XmlUtils;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
@@ -42,8 +43,9 @@ public class CancelAllCurrentOverridesRequestEndpointTest {
     	@Override
     	public void cancelAllCurrentOverrides(LiteYukonUser user) {
 
+    	    //TODO Match up here with expected exceptions that may be thrown
     	    if (!user.getUsername().equals(USER_SUCCESS)){
-    	        throw new RuntimeException("Invalid request");
+    	        throw new StarsInvalidArgumentException("Invalid Arguments");
     	    }
     		
     	}

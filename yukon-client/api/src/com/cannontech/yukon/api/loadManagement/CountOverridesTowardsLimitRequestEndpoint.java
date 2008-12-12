@@ -11,6 +11,7 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.service.OverrideService;
+import com.cannontech.stars.util.StarsInvalidArgumentException;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlUtils;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
@@ -39,7 +40,7 @@ public class CountOverridesTowardsLimitRequestEndpoint {
         //TODO decide what exception(s) this might throw, add error code details
         try {
         	overrideService.countOverridesTowardsLimit(user);
-        } catch (Exception e) {
+        } catch (StarsInvalidArgumentException e) {
         	
         	Element fe = XMLFailureGenerator.generateFailure(countOverridesTowardsLimitRequest, e, "ERROR_CODE", "ERROR_DESCRIPTION");
             resp.addContent(fe);
