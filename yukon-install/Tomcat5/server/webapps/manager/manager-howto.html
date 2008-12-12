@@ -47,7 +47,8 @@ configuration file.</p>
 (installed by default on context path <code>/manager</code>) that supports
 the following functions:</p>
 <ul>
-<li>Deploy a new web application from the uploaded contents of a WAR file.</li>
+<li>Deploy a new web application, on a specified context path, from
+    the uploaded contents of a WAR file.</li>
 <li>Deploy a new web application, on a specified context path, from the
     server file system.</li>
 <li>List the currently deployed web applications, as well as the
@@ -67,16 +68,22 @@ the following functions:</p>
     directory (unless it was deployed from file system).</li>
 </ul>
 
-<p>A default Tomcat installation includes the manager. To add an instance of the
-Manager web application <code>Context</code> to a new host install the
-<code>manager.xml</code> context configuration file in the
-<code>$CATALINA_HOME/conf/[enginename]/[hostname]</code> folder. Here is an
-example:
+<p>There are two ways to configure the Manager web application
+<code>Context</code>:
+<ul>
+<li>Install the <code>manager.xml</code> context configuration file
+    in the <code>$CATALINA_HOME/conf/[enginename]/[hostname]</code> folder.
+</li>
+<li>Configure the Manager <code>Context</code> within the
+    <code>Host</code> configuration in your Tomcat <code>server.xml</code>
+    configuration. Here is an example:
 <pre>
 &lt;Context path="/manager" debug="0" privileged="true"
          docBase="/usr/local/kinetic/tomcat5/server/webapps/manager"&gt;
 &lt;/Context&gt;
 </pre>
+</li>
+</ul>
 </p>
 
 <p>If you have Tomcat configured to support multiple virtual hosts
@@ -96,6 +103,17 @@ Supported Manager Commands for more information.</li>
 (version 1.4 or later) build tool.  See
 Executing Manager Commands
 With Ant for more information.</li>
+</ul>
+</p>
+
+<p>Future versions of Tomcat 5 will include administrative functionality that
+is presented in (at least) the following forms:
+<ul>
+<li>As web services, so that Tomcat administration can be easily integrated
+    into remote and/or non-Java mnagement environments.</li>
+<li>As a web application with a nice user interface (built on top of the
+    web services processing layer) for easy Tomcat administration via a
+    web browser.</li>
 </ul>
 </p>
 
@@ -168,7 +186,7 @@ an example of restricting access to the localhost by IP address:
 &lt;Context path="/manager" debug="0" privileged="true"
          docBase="/usr/local/kinetic/tomcat5/server/webapps/manager"&gt;
          &lt;Valve className="org.apache.catalina.valves.RemoteAddrValve"
-                allow="127\.0\.0\.1"/&gt;
+                allow="127.0.0.1"/&gt;
 &lt;/Context&gt;
 </pre>
 </p>
@@ -243,16 +261,17 @@ but could be removed in a future release.</p>
 <table cellpadding="2" cellspacing="0" border="0"><tr><td bgcolor="#828DA6"><font face="arial,helvetica.sanserif" color="#ffffff"><a name="Deploy A New Application Remotely"><strong>Deploy A New Application Remotely</strong></a></font></td></tr><tr><td><blockquote>
 
 <div align="left"><table border="0" cellpadding="0" cellspacing="4"><tr><td height="1" width="1" bgcolor="#023264"><img border="0" hspace="0" vspace="0" height="1" width="1" src="./images/void.gif"></td><td height="1" bgcolor="#023264"><img border="0" hspace="0" vspace="0" height="1" width="1" src="./images/void.gif"></td><td height="1" width="1" bgcolor="#023264"><img border="0" hspace="0" vspace="0" height="1" width="1" src="./images/void.gif"></td></tr><tr><td width="1" bgcolor="#023264"><img border="0" hspace="0" vspace="0" height="1" width="1" src="./images/void.gif"></td><td height="1" bgcolor="#ffffff"><pre>
-http://localhost:8080/manager/deploy
+http://localhost:8080/manager/deploy?path=/foo
 </pre></td><td width="1" bgcolor="#023264"><img border="0" hspace="0" vspace="0" height="1" width="1" src="./images/void.gif"></td></tr><tr><td height="1" width="1" bgcolor="#023264"><img border="0" hspace="0" vspace="0" height="1" width="1" src="./images/void.gif"></td><td height="1" bgcolor="#023264"><img border="0" hspace="0" vspace="0" height="1" width="1" src="./images/void.gif"></td><td height="1" width="1" bgcolor="#023264"><img border="0" hspace="0" vspace="0" height="1" width="1" src="./images/void.gif"></td></tr></table></div>
 
 <p>Upload the web application archive (WAR) file that is specified as the
 request data in this HTTP PUT request, install it into the <code>appBase</code>
-directory of our corresponding virtual host, and start it using the war file
-name without the .war extension as the path.  The application can later be
-undeployed (and the corresponding application directory removed) by use of the
-<code>/undeploy</code>. To deploy the ROOT web application (the application
-with a context path of "/"), name the war ROOT.war.</p>
+directory of our corresponding virtual host, and start it on the context path
+specified by the <code>path</code> request parameter.  If no <code>path</code>
+is specified the directory name or the war file name without the .war extension
+is used as the path.  The application can
+later be undeployed (and the corresponding application directory removed)
+by use of the <code>/undeploy</code>.</p>
 
 <p>The .WAR file may include Tomcat specific deployment configuration, by 
 including a Context configuration XML file in 
@@ -297,6 +316,15 @@ error message.  Possible causes for problems include:</p>
     problems parsing your <code>/WEB-INF/web.xml</code> file, or missing
     classes encountered when initializing application event listeners and
     filters.</p>
+    </blockquote></li>
+<li><em>Invalid context path was specified</em>
+    <blockquote>
+    <p>The context path must start with a slash character. To reference the
+    ROOT web application use "/".</p>
+    </blockquote></li>
+<li><em>No context path was specified</em>
+    <blockquote>
+    The <code>path</code> parameter is required.
     </blockquote></li>
 </ul>
 
@@ -353,13 +381,14 @@ http://localhost:8080/manager/deploy?war=jar:file:/path/to/bar.war!/
 <h3>Deploy a Directory or War from the Host appBase</h3>
 
 <p>Deploy a web application directory or ".war" file located in your Host
-appBase directory. The directory name or the war file name without the ".war"
-extension is used as the path.</p>
+appBase directory. If no <code>path</code> is specified the directory name
+or the war file name without the ".war" extension is used as the path.</p>
 
 <p>In this example the web application located in a sub directory named
 <code>foo</code> in the Host appBase directory of the Tomcat server is
 deployed as the web application context named <code>/foo</code>. Notice
-that the context path used is the name of the web application directory.
+that there is no <code>path</code> parameter so the context path defaults
+to the name of the web application directory.
 <div align="left"><table border="0" cellpadding="0" cellspacing="4"><tr><td height="1" width="1" bgcolor="#023264"><img border="0" hspace="0" vspace="0" height="1" width="1" src="./images/void.gif"></td><td height="1" bgcolor="#023264"><img border="0" hspace="0" vspace="0" height="1" width="1" src="./images/void.gif"></td><td height="1" width="1" bgcolor="#023264"><img border="0" hspace="0" vspace="0" height="1" width="1" src="./images/void.gif"></td></tr><tr><td width="1" bgcolor="#023264"><img border="0" hspace="0" vspace="0" height="1" width="1" src="./images/void.gif"></td><td height="1" bgcolor="#ffffff"><pre>
 http://localhost:8080/manager/deploy?war=foo
 </pre></td><td width="1" bgcolor="#023264"><img border="0" hspace="0" vspace="0" height="1" width="1" src="./images/void.gif"></td></tr><tr><td height="1" width="1" bgcolor="#023264"><img border="0" hspace="0" vspace="0" height="1" width="1" src="./images/void.gif"></td><td height="1" bgcolor="#023264"><img border="0" hspace="0" vspace="0" height="1" width="1" src="./images/void.gif"></td><td height="1" width="1" bgcolor="#023264"><img border="0" hspace="0" vspace="0" height="1" width="1" src="./images/void.gif"></td></tr></table></div>
@@ -367,9 +396,9 @@ http://localhost:8080/manager/deploy?war=foo
 
 <p>In this example the ".war" file <code>bar.war</code> located in your
 Host appBase directory on the Tomcat server is deployed as the web
-application context named <code>/bar</code>.
+application context named <code>/bartoo</code>.
 <div align="left"><table border="0" cellpadding="0" cellspacing="4"><tr><td height="1" width="1" bgcolor="#023264"><img border="0" hspace="0" vspace="0" height="1" width="1" src="./images/void.gif"></td><td height="1" bgcolor="#023264"><img border="0" hspace="0" vspace="0" height="1" width="1" src="./images/void.gif"></td><td height="1" width="1" bgcolor="#023264"><img border="0" hspace="0" vspace="0" height="1" width="1" src="./images/void.gif"></td></tr><tr><td width="1" bgcolor="#023264"><img border="0" hspace="0" vspace="0" height="1" width="1" src="./images/void.gif"></td><td height="1" bgcolor="#ffffff"><pre>
-http://localhost:8080/manager/deploy?war=bar.war
+http://localhost:8080/manager/deploy?path=/bartoo&amp;war=bar.war
 </pre></td><td width="1" bgcolor="#023264"><img border="0" hspace="0" vspace="0" height="1" width="1" src="./images/void.gif"></td></tr><tr><td height="1" width="1" bgcolor="#023264"><img border="0" hspace="0" vspace="0" height="1" width="1" src="./images/void.gif"></td><td height="1" bgcolor="#023264"><img border="0" hspace="0" vspace="0" height="1" width="1" src="./images/void.gif"></td><td height="1" width="1" bgcolor="#023264"><img border="0" hspace="0" vspace="0" height="1" width="1" src="./images/void.gif"></td></tr></table></div>
 </p>
 
@@ -412,7 +441,7 @@ http://localhost:8080/manager/deploy?config=file:/path/context.xml
 configuration ".xml" file and a web application ".war" file located
 on the server.
 <div align="left"><table border="0" cellpadding="0" cellspacing="4"><tr><td height="1" width="1" bgcolor="#023264"><img border="0" hspace="0" vspace="0" height="1" width="1" src="./images/void.gif"></td><td height="1" bgcolor="#023264"><img border="0" hspace="0" vspace="0" height="1" width="1" src="./images/void.gif"></td><td height="1" width="1" bgcolor="#023264"><img border="0" hspace="0" vspace="0" height="1" width="1" src="./images/void.gif"></td></tr><tr><td width="1" bgcolor="#023264"><img border="0" hspace="0" vspace="0" height="1" width="1" src="./images/void.gif"></td><td height="1" bgcolor="#ffffff"><pre>
-http://localhost:8080/manager/deploy?config=file:/path/context.xml&amp;war=file:/path/bar.war&amp;path=/bar
+http://localhost:8080/manager/deploy?config=file:/path/context.xml&amp;war=jar:file:/path/bar.war!/
 </pre></td><td width="1" bgcolor="#023264"><img border="0" hspace="0" vspace="0" height="1" width="1" src="./images/void.gif"></td></tr><tr><td height="1" width="1" bgcolor="#023264"><img border="0" hspace="0" vspace="0" height="1" width="1" src="./images/void.gif"></td><td height="1" bgcolor="#023264"><img border="0" hspace="0" vspace="0" height="1" width="1" src="./images/void.gif"></td><td height="1" width="1" bgcolor="#023264"><img border="0" hspace="0" vspace="0" height="1" width="1" src="./images/void.gif"></td></tr></table></div>
 </p>
 
@@ -923,7 +952,7 @@ file might look something like this:</p>
   &lt;target name="deploy" description="Install web application"
           depends="compile"&gt;
     &lt;deploy url="${url}" username="${username}" password="${password}"
-            path="${path}" war="file:${build}${path}.war"/&gt;
+            path="${path}" war="${build}${path}.war"/&gt;
   &lt;/target&gt;
 
   &lt;target name="reload" description="Reload web application"
@@ -1234,5 +1263,5 @@ Error: java.lang.NumberFormatException: For input string: "cowbell"
 
 
 </blockquote></td></tr></table></td></tr><!--FOOTER SEPARATOR--><tr><td colspan="2"><hr size="1" noshade="noshade"></td></tr><!--PAGE FOOTER--><tr><td colspan="2"><div align="center"><font size="-1" color="#525D76"><em>
-        Copyright &copy; 1999-2008, Apache Software Foundation
+        Copyright &copy; 1999-2006, Apache Software Foundation
         </em></font></div></td></tr></table></body></html>
