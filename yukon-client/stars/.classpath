@@ -19,7 +19,6 @@
 	<classpathentry kind="lib" path="/third-party/jaxm-runtime.jar"/>
 	<classpathentry kind="lib" path="/third-party/jruntags.jar"/>
 	<classpathentry kind="lib" path="/third-party/castor-xml.jar"/>
-	<classpathentry kind="lib" path="/third-party/dom4j.jar"/>
 	<classpathentry kind="lib" path="/third-party/jtds.jar"/>
 	<classpathentry kind="lib" path="/third-party/saaj.jar"/>
 	<classpathentry kind="lib" path="/third-party/mail.jar"/>

@@ -19,8 +19,7 @@ public class XmlVersionUtils {
     public static String getYukonMessageVersion(Element reqElement) {
 
         // get request xml version        
-        Attribute versionAttr = reqElement.getAttribute(versionStr);
-        String reqVersion = versionAttr.getValue();
+    	String reqVersion = reqElement.getAttributeValue(versionStr, (String)null);
         if (StringUtils.isBlank(reqVersion)) {
             throw new RuntimeException("XML Request Message version is not specified");
         }

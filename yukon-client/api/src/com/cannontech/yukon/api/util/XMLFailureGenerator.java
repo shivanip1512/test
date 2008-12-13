@@ -49,7 +49,6 @@ public class XMLFailureGenerator {
             level = Level.DEBUG;
         }
         log.log(level, "Web service Endpoint caught an exception processing {" + key + "}: " + getFailureInfo(request), t);
-        log.log(level, "Root cause was: ", rc);
     }
     
     private static String getFailureInfo(Element request) {

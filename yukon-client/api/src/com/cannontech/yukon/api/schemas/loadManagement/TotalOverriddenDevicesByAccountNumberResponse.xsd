@@ -4,7 +4,7 @@
     targetNamespace="http://yukon.cannontech.com/api"
     elementFormDefault="qualified">
     
-    <xsd:include schemaLocation="TotalOverriddenDevicesResponse.xsd" />
+    <xsd:include schemaLocation="TotalOverriddenDevicesTypes.xsd" />
     
     <xsd:annotation>
         <xsd:documentation xml:lang="en">

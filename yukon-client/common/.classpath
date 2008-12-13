@@ -5,54 +5,233 @@
 	<classpathentry kind="src" path="test/unit"/>
 	<classpathentry kind="src" path="i18n/en_US"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/third-party/SqlServer.jar"/>
+	<classpathentry kind="lib" path="/third-party/SqlServer.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="/third-party/acme.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
 		<accessrules>
 			<accessrule kind="discouraged" pattern="**"/>
 		</accessrules>
 	</classpathentry>
-	<classpathentry kind="lib" path="/third-party/classes12.jar"/>
-	<classpathentry kind="lib" path="/third-party/jaxm-api.jar"/>
-	<classpathentry kind="lib" path="/third-party/jcfield401K.jar"/>
-	<classpathentry kind="lib" path="/third-party/jcpagelayout450K.jar"/>
-	<classpathentry kind="lib" path="/third-party/rwav.jar"/>
-	<classpathentry kind="lib" path="/third-party/saaj.jar"/>
-	<classpathentry kind="lib" path="/third-party/jfreechart.jar"/>
-	<classpathentry kind="lib" path="/third-party/jcommon.jar"/>
-	<classpathentry kind="lib" path="/third-party/jtds.jar"/>
-	<classpathentry kind="lib" path="/third-party/jradius-client.jar"/>
-	<classpathentry kind="lib" path="/third-party/mx4j.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/commons-lang-2.3.jar" sourcepath="Z:/java/Third-Party Sources/commons-lang-2.3-src.zip"/>
-	<classpathentry kind="lib" path="/third-party/ecs-1.4.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/jdom.jar" sourcepath="Z:/java/Third-Party Sources/jdom-1.1.zip"/>
-	<classpathentry kind="lib" path="/third-party/mx4j-tools.jar"/>
-	<classpathentry kind="lib" path="/third-party/ejb3-persistence.jar"/>
-	<classpathentry kind="lib" path="/third-party/hibernate3.jar" sourcepath="Z:/java/Third-Party Sources/hibernate-3.2.1.ga.zip"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring.jar" sourcepath="Z:/java/Third-Party Sources/spring-framework-2.5.4-with-dependencies.zip"/>
-	<classpathentry kind="lib" path="/third-party/commons-collections-3.2.jar"/>
-	<classpathentry kind="lib" path="/third-party/lucene-core-2.3.2.jar" sourcepath="Z:/java/Third-Party Sources/lucene-2.3.2-src.zip"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/commons-dbcp-1.2.1.jar" sourcepath="Z:/java/Third-Party Sources/commons-dbcp-1.2.1-src.zip"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/commons-pool-1.3.jar" sourcepath="Z:/java/Third-Party Sources/commons-pool-1.3-src.zip"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/log4j-1.2.14.jar" sourcepath="Z:/java/Third-Party Sources/logging-log4j-1.2.14.zip"/>
-	<classpathentry kind="lib" path="/third-party/jsp-api.jar"/>
-	<classpathentry kind="lib" path="/third-party/servlet-api.jar"/>
-	<classpathentry kind="lib" path="/third-party/activation.jar"/>
-	<classpathentry kind="lib" path="/third-party/mail.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/commons-logging-1.1.jar" sourcepath="Z:/java/Third-Party Sources/commons-logging-1.1-src.zip"/>
-	<classpathentry kind="lib" path="/third-party/castor-xml.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/jta.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/xercesImpl.jar"/>
-	<classpathentry kind="lib" path="/third-party/commons-codec-1.3.jar"/>
-	<classpathentry kind="lib" path="/third-party/commons-fileupload-1.2.1.jar"/>
-	<classpathentry kind="lib" path="/third-party/commons-io-1.3.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/quartz-all-1.6.0.jar"/>
-	<classpathentry kind="lib" path="/third-party/dom4j-1.6.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/junit-4.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/aspectjrt.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/aspectjweaver.jar"/>
-	<classpathentry kind="lib" path="/third-party/spring-test.jar" sourcepath="Z:/java/Third-Party Sources/spring-framework-2.5.4-with-dependencies.zip"/>
-	<classpathentry kind="lib" path="/third-party/jopcbridge.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/google-collections-0.8.jar" sourcepath="Z:/java/Third-Party Sources/google-collections-0.8-src.zip"/>
-	<classpathentry kind="lib" path="/third-party/jaxen-1.1.1.jar"/>
+	<classpathentry kind="lib" path="/third-party/classes12.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/jaxm-api.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/jcfield401K.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/jcpagelayout450K.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/rwav.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/saaj.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/jfreechart.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/jcommon.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/jtds.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/jradius-client.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/mx4j.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="/third-party/commons-lang-2.3.jar" sourcepath="Z:/java/Third-Party Sources/commons-lang-2.3-src.zip">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/ecs-1.4.2.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="/third-party/jdom.jar" sourcepath="Z:/java/Third-Party Sources/jdom-1.1.zip">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/mx4j-tools.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/ejb3-persistence.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/hibernate3.jar" sourcepath="Z:/java/Third-Party Sources/hibernate-3.2.1.ga.zip">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="/third-party/spring.jar" sourcepath="Z:/java/Third-Party Sources/spring-framework-2.5.4-with-dependencies.zip">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/commons-collections-3.2.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/lucene-core-2.3.2.jar" sourcepath="Z:/java/Third-Party Sources/lucene-2.3.2-src.zip">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="/third-party/commons-dbcp-1.2.1.jar" sourcepath="Z:/java/Third-Party Sources/commons-dbcp-1.2.1-src.zip">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="/third-party/commons-pool-1.3.jar" sourcepath="Z:/java/Third-Party Sources/commons-pool-1.3-src.zip">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="/third-party/log4j-1.2.14.jar" sourcepath="Z:/java/Third-Party Sources/logging-log4j-1.2.14.zip">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/jsp-api.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/servlet-api.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/activation.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/mail.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="/third-party/commons-logging-1.1.jar" sourcepath="Z:/java/Third-Party Sources/commons-logging-1.1-src.zip">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/castor-xml.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="/third-party/jta.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="/third-party/xercesImpl.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/commons-codec-1.3.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/commons-fileupload-1.2.1.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/commons-io-1.3.2.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="/third-party/quartz-all-1.6.0.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/dom4j-1.6.1.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="/third-party/junit-4.4.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="/third-party/aspectjrt.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="/third-party/aspectjweaver.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/spring-test.jar" sourcepath="Z:/java/Third-Party Sources/spring-framework-2.5.4-with-dependencies.zip">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/jopcbridge.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="/third-party/google-collections-0.8.jar" sourcepath="Z:/java/Third-Party Sources/google-collections-0.8-src.zip">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/jaxen-1.1.1.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -14,6 +14,10 @@ public interface YukonUserDao {
 
     public LiteYukonUser getLiteYukonUser(int userId);
 
+    /**
+     * @param userName
+     * @return the LiteYukonUser or null if userName doesn't exist
+     */
     public LiteYukonUser getLiteYukonUser(String userName);
 
     public LiteContact getLiteContact(int userId);

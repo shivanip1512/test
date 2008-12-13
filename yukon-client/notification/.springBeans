@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beansProjectDescription>
 	<version>1</version>
-	<pluginVersion><![CDATA[2.0.2.v200712142013]]></pluginVersion>
+	<pluginVersion><![CDATA[2.2.1.v200811281800]]></pluginVersion>
 	<configSuffixes>
 		<configSuffix><![CDATA[xml]]></configSuffix>
 	</configSuffixes>
+	<enableImports><![CDATA[false]]></enableImports>
 	<configs>
 		<config>src/com/cannontech/notif/applicationContext.xml</config>
 	</configs>
@@ -22,7 +23,6 @@
 				<config>/common/src/com/cannontech/common/chart/chartContext.xml</config>
 				<config>/common/src/com/cannontech/common/device/config/deviceConfigurationContext.xml</config>
 				<config>/common/src/com/cannontech/common/device/deviceContext.xml</config>
-				<config>/common/src/com/cannontech/common/device/deviceContext-server.xml</config>
 				<config>/common/src/com/cannontech/common/search/searchContext.xml</config>
 				<config>/common/src/com/cannontech/core/authentication/authContext.xml</config>
 				<config>/common/src/com/cannontech/core/authorization/applicationContext.xml</config>

@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beansProjectDescription>
-	<configExtensions>
-		<configExtension>xml</configExtension>
-	</configExtensions>
+	<version>1</version>
+	<pluginVersion><![CDATA[2.2.1.v200811281800]]></pluginVersion>
+	<configSuffixes>
+		<configSuffix><![CDATA[xml]]></configSuffix>
+	</configSuffixes>
+	<enableImports><![CDATA[false]]></enableImports>
 	<configs>
 		<config>src/com/cannontech/common/bulk/bulkContext.xml</config>
 		<config>src/com/cannontech/report/reportContext.xml</config>
@@ -23,7 +26,7 @@
 	</configs>
 	<configSets>
 		<configSet>
-			<name>Common</name>
+			<name><![CDATA[Common]]></name>
 			<allowBeanDefinitionOverriding>true</allowBeanDefinitionOverriding>
 			<incomplete>false</incomplete>
 			<configs>
@@ -46,5 +49,4 @@
 			</configs>
 		</configSet>
 	</configSets>
-	<springVersion>1.2</springVersion>
 </beansProjectDescription>

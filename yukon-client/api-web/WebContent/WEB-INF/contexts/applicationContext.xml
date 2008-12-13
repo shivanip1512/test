@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+	
+    <bean id="webSecurityInterceptor" class="com.cannontech.web.security.WebSecurityInterceptor"/>
+
+    <bean id="webSecurityAnnotationProcessor" class="com.cannontech.web.security.WebSecurityAnnotationProcessor"/>
+    
+    <bean id="webSecurityChecker" class="com.cannontech.web.security.WebSecurityChecker"/>
+    
+    <bean id="userContextResolver" class="com.cannontech.web.util.YukonUserContextConstructor">
+        <property name="authDao" ref="authDao"/>
+        <property name="defaultThemeResolver" ref="themeResolver"/>
+    </bean>
+    
+    <bean id="themeResolver" class="org.springframework.web.servlet.theme.FixedThemeResolver">
+        <property name="defaultThemeName" value="default"/>
+    </bean>
+    
+
+    <bean id="urlAccessChecker" class="com.cannontech.web.login.access.UrlAccessCheckerImpl">
+        <property name="descriptionParser">
+            <bean class="com.cannontech.web.login.access.UrlAccessDescriptionParser"/>
+        </property>
+        <property name="urlAccessDescriptions">
+            <list>
+                <!-- DO NOT REMOVE -->
+                <value>ALLOW|/remote/**|DBEditorRole.ROLEID,TDCRole.ROLEID,CommanderRole.ROLEID,EsubEditorRole.ROLEID,TrendingRole.ROLEID</value>
+                <value>ALLOW|/**|WebClientRole.ROLEID</value> 
+                <value>DENY|/**|*</value> 
+                <!-- DO NOT REMOVE -->
+            </list>
+        </property>    
+    </bean>
+
+</beans>

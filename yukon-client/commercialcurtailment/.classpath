@@ -13,5 +13,6 @@
 	<classpathentry exported="true" kind="lib" path="/third-party/antlr-2.7.6rc1.jar"/>
 	<classpathentry kind="lib" path="/third-party/commons-collections-3.2.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/loadcontrol"/>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

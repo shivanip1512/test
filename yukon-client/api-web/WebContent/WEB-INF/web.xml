@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app id="WebApp_ID" version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+	<display-name>api-web</display-name>
+    
+    <context-param>
+        <param-name>locatorFactorySelector</param-name>
+        <param-value>classpath*:beanRefContext.xml</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>parentContextKey</param-name>
+        <param-value>com.cannontech.context.api-web</param-value>
+    </context-param>
+
+	<context-param>
+		<param-name>contextClass</param-name>
+        <!-- A special class is used here to override the default location of the .xml files. -->
+		<param-value>com.cannontech.spring.CannonXmlWebApplicationContext</param-value>
+	</context-param>
+    
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+    
+
+    <!-- take especial notice of the name of this servlet -->
+    <servlet>
+        <servlet-name>api-ws-soap</servlet-name>
+        <servlet-class>org.springframework.ws.transport.http.MessageDispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>transformWsdlLocations</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <init-param>
+            <param-name>contextClass</param-name>
+            <param-value>com.cannontech.spring.CannonXmlWebApplicationContext</param-value>
+        </init-param>
+        </servlet>
+
+    <servlet-mapping>
+        <servlet-name>api-ws-soap</servlet-name>
+        <url-pattern>/soap/*</url-pattern>
+    </servlet-mapping>
+
+
+
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+		<welcome-file>index.htm</welcome-file>
+		<welcome-file>index.jsp</welcome-file>
+		<welcome-file>default.html</welcome-file>
+		<welcome-file>default.htm</welcome-file>
+		<welcome-file>default.jsp</welcome-file>
+	</welcome-file-list>
+</web-app>

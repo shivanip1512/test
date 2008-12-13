@@ -3,13 +3,46 @@
 	<name>build</name>
 	<comment></comment>
 	<projects>
+		<project>api</project>
+		<project>api-web</project>
+		<project>billing</project>
+		<project>calchist</project>
+		<project>cbc</project>
+		<project>commander</project>
+		<project>commands</project>
+		<project>commercialcurtailment</project>
+		<project>common</project>
+		<project>cttp</project>
+		<project>custom</project>
+		<project>dbeditor</project>
+		<project>esub</project>
+		<project>esub-editor</project>
+		<project>export</project>
+		<project>foreign</project>
+		<project>loadcontrol</project>
+		<project>logger</project>
+		<project>macs</project>
+		<project>monitor</project>
+		<project>multispeak</project>
+		<project>notification</project>
+		<project>palm</project>
+		<project>report</project>
+		<project>resource</project>
+		<project>sensus-jms</project>
+		<project>Servers</project>
+		<project>services</project>
+		<project>servlet</project>
+		<project>stars</project>
+		<project>tdc</project>
+		<project>third-party</project>
+		<project>tools</project>
+		<project>trending</project>
+		<project>web-common</project>
+		<project>webgraph</project>
+		<project>yukon-web</project>
+		<project>yukonappserver</project>
 	</projects>
 	<buildSpec>
-		<buildCommand>
-			<name>com.ibm.etools.validation.validationbuilder</name>
-			<arguments>
-			</arguments>
-		</buildCommand>
 	</buildSpec>
 	<natures>
 	</natures>

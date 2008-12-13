@@ -4,7 +4,7 @@
  <beans>
 <!-- The application context files that are loaded by tomcat -->
    <bean id="com.cannontech.context.web" 
-        class="com.cannontech.spring.CannonClassPathXmlApplicationContext"
+        class="org.springframework.context.support.ClassPathXmlApplicationContext"
         lazy-init="true">
      <constructor-arg>
        <list>
@@ -26,12 +26,7 @@
        </list>
      </constructor-arg>
      <constructor-arg>
-         <bean class="com.cannontech.spring.CannonClassPathXmlApplicationContext"
-             lazy-init="true">
-             <constructor-arg index="0" ref="com.cannontech.baseserver.list" />
-             <constructor-arg index="1" value="true"/>
-             <constructor-arg index="2"><null /></constructor-arg>
-         </bean>
+         <ref bean="com.cannontech.context.baseapi"/>
      </constructor-arg>
    </bean>
     
