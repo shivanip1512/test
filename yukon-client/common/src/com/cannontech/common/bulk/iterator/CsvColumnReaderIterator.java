@@ -29,7 +29,7 @@ public class CsvColumnReaderIterator extends ReadAheadIterator<String> {
         try {
             String[] currentLine = csvReader.readNext();
             
-            if (currentLine != null && columnIdx < currentLine.length - 1) {
+            if (currentLine != null && columnIdx <= currentLine.length - 1) {
                 return currentLine[columnIdx];
             } else {
                 return null;
