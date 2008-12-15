@@ -2118,23 +2118,6 @@ INT CtiDeviceMCT::executeGetConfig(CtiRequestMsg                  *pReq,
     //  get raw memory locations
     else if(parse.isKeyValid("rawloc"))
     {
-        int rawloc, rawlen;
-
-        rawloc = parse.getiValue("rawloc");
-        rawlen = 13;  //  default to 13 bytes
-
-        if( parse.isKeyValid("rawlen") )
-        {
-            //  if a length was specified
-            rawlen = parse.getiValue("rawlen");
-
-            //  13 is max data return from an MCT
-            if( rawlen > 13 )
-            {
-                rawlen = 13;
-            }
-        }
-
         function = Emetcon::GetConfig_Raw;
         found = getOperation(function, OutMessage->Buffer.BSt);
 
@@ -2143,8 +2126,8 @@ INT CtiDeviceMCT::executeGetConfig(CtiRequestMsg                  *pReq,
             OutMessage->Buffer.BSt.IO = Emetcon::IO_Function_Read;
         }
 
-        OutMessage->Buffer.BSt.Function = rawloc;
-        OutMessage->Buffer.BSt.Length   = rawlen;
+        OutMessage->Buffer.BSt.Function = parse.getiValue("rawloc");
+        OutMessage->Buffer.BSt.Length   = std::min(parse.getiValue("rawlen", 13), 13);  //  default (and maximum) is 13 bytes
     }
 
     if(!found)
@@ -3206,7 +3189,7 @@ INT CtiDeviceMCT::decodeGetConfig(INMESS *InMessage, CtiTime &TimeNow, list< Cti
 
                 if( parse.isKeyValid("rawlen") )
                 {
-                    rawlen = parse.getiValue("rawlen");
+                    rawlen = std::min(parse.getiValue("rawlen"), 13);
                 }
                 else
                 {
