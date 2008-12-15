@@ -149,7 +149,7 @@ public class DailyUsageModel extends BareReportModelBase<DailyUsageModel.ModelRo
             Double dayValue = dayValues.get(date);
             if (dayValue != null) {
                 row.value = valueFormatter.format(dayValues.get(date));
-                row.units = "kW";
+                row.units = "kWh";
             }
             else {
                 row.value = "---";
