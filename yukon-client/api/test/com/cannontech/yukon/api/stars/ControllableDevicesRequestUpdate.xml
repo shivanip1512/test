@@ -21,8 +21,8 @@
             <serviceCompanyName>Honeywell</serviceCompanyName>
         </controllableDevice>
         <controllableDevice>
-            <accountNumber>ProcessingError</accountNumber>
-            <serialNumber>ProcessingError</serialNumber>
+            <accountNumber>ClientRequestError</accountNumber>
+            <serialNumber>ClientRequestError</serialNumber>
             <deviceType>LCR-4700</deviceType>
             <deviceLabel>Backyard AC</deviceLabel>
             <fieldInstallDate>2008-10-28T17:07:40Z</fieldInstallDate>

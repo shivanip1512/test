@@ -5,26 +5,31 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 
+import javax.xml.transform.Result;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
+
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.xerces.jaxp.validation.XMLSchemaFactory;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.XMLOutputter;
+import org.jdom.transform.JDOMResult;
+import org.jdom.transform.JDOMSource;
 import org.junit.Assert;
 import org.springframework.core.io.Resource;
 import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 
 
 public class TestUtils {
 
-    private static Logger log = YukonLogManager.getLogger(TestUtils.class);
-    
     public static void runSuccessAssertion(SimpleXPathTemplate outputTemplate, String serviceResponseName) {
         String serviceResponseNameWithNS = serviceResponseName;
         if (!serviceResponseNameWithNS.startsWith("/y:")) {
@@ -66,54 +71,34 @@ public class TestUtils {
     public static void validateAgainstSchema(Element element,
             Resource schemaResource) {
         ArrayList<String> errorMsgs = new ArrayList<String>();
-        SimpleErrorHandler errorHandler = new SimpleErrorHandler();        
-        boolean processedOk = false;        
+        SimpleErrorHandler errorHandler = new SimpleErrorHandler();
+        boolean processedOk = false;
         try {
-            // setup the validating builder
-            String schemaLocation = "http://yukon.cannontech.com/api " + schemaResource.getURI();          
+            // create a schema validator
+            Schema schema = new XMLSchemaFactory().newSchema(schemaResource.getURL());
+            Validator validator = schema.newValidator();
+            validator.setErrorHandler(errorHandler);
 
-            SAXBuilder builder = new SAXBuilder("org.apache.xerces.parsers.SAXParser", true);
-            builder.setFeature("http://apache.org/xml/features/validation/schema", true);
-            builder.setProperty("http://apache.org/xml/properties/schema/external-schemaLocation", schemaLocation);
-            builder.setErrorHandler(errorHandler);
-
-            // get the xml from the element
-            StringWriter strWriter = new StringWriter();
-            XMLOutputter xmlOut = new XMLOutputter();
-            xmlOut.output(element, strWriter);
-            log.info("Element XML=[" + strWriter + "]");
-
-            // run the element XML thru the validating builder
-            Document doc = builder.build(new StringReader(strWriter.toString()));
-
-            // here is the element back again
-            Element elementBack = doc.getRootElement();
-            Assert.assertNotNull("Element validation failed", elementBack);
-
-            // just to see the rebuilt element content back
-            StringWriter strWriterBack = new StringWriter();
-            xmlOut.output(elementBack, strWriterBack);
-            log.info("Re-converted Element XML =[" + strWriterBack + "]");
+            // run the element XML thru the validator
+            validator.validate(new JDOMSource(element));
 
             Assert.assertTrue("Element validation failed", !errorHandler.isError());
             processedOk = true;
 
         } catch (IOException e) {
-            errorMsgs.add(e.getMessage());            
-            log.error("error: " + e.getMessage());
-        } catch (JDOMException e) {
-            errorMsgs.add(e.getMessage());            
-            log.error("error: " + e.getMessage());
+            errorMsgs.add(e.getMessage());
+        } catch (SAXException e) {
+            errorMsgs.add(e.getMessage());
         } finally {
             if (!processedOk) {
                 errorMsgs.addAll(errorHandler.getErrorMsgs());
-                String detailMsg = "Element validation failed: " + StringUtils.join(errorMsgs, "; ");
-                log.error("error: " + detailMsg);
+                String detailMsg = "Element validation failed: " + StringUtils.join(errorMsgs,
+                                                                                    "; ");
                 Assert.fail(detailMsg);
             }
         }
     }
-
+    
     public static class SimpleErrorHandler implements ErrorHandler {
 
         ArrayList<String> errorMsgs = new ArrayList<String>();        
@@ -124,19 +109,16 @@ public class TestUtils {
         public void error(SAXParseException exception) {
             errorCount++;
             errorMsgs.add(exception.getMessage());            
-            log.error("error: " + exception.getMessage());
         }
 
         public void fatalError(SAXParseException exception) {
             fatalErrorCount++;
             errorMsgs.add(exception.getMessage());            
-            log.fatal("fatalError: " + exception.getMessage());
         }
 
         public void warning(SAXParseException exception) {
             warnCount++;
             errorMsgs.add(exception.getMessage());            
-            log.warn("warning: " + exception.getMessage());
         }
 
         public boolean isError() {

@@ -23,6 +23,7 @@ import com.cannontech.stars.dr.hardware.exception.StarsDeviceAlreadyExistsExcept
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceNotFoundOnAccountException;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlreadyExistsException;
 import com.cannontech.stars.dr.hardware.exception.StarsInvalidDeviceTypeException;
+import com.cannontech.stars.util.StarsClientRequestException;
 import com.cannontech.stars.util.StarsInvalidArgumentException;
 import com.cannontech.stars.ws.dto.StarsControllableDeviceDTO;
 import com.cannontech.stars.ws.helper.StarsControllableDeviceHelper;
@@ -92,7 +93,7 @@ public class ControllableDevicesRequestEndPoint {
         for (StarsControllableDeviceDTO device : devices) {
             try {
                 starsControllableDeviceHelper.addDeviceToAccount(device, user);
-            } catch (RuntimeException e) {
+            } catch (StarsClientRequestException e) {
                 // store error and continue to process all devices
                 device.setThrowable(e);
             }
@@ -119,7 +120,7 @@ public class ControllableDevicesRequestEndPoint {
         for (StarsControllableDeviceDTO device : devices) {
             try {
                 starsControllableDeviceHelper.updateDeviceOnAccount(device, user);
-            } catch (RuntimeException e) {
+            } catch (StarsClientRequestException e) {
                 // store error and continue to process all devices
                 device.setThrowable(e);
             }
@@ -146,7 +147,7 @@ public class ControllableDevicesRequestEndPoint {
         for (StarsControllableDeviceDTO device : devices) {
             try {
                 starsControllableDeviceHelper.removeDeviceFromAccount(device, user);
-            } catch (RuntimeException e) {
+            } catch (StarsClientRequestException e) {
                 // store error and continue to process all devices
                 device.setThrowable(e);
             }
@@ -198,36 +199,39 @@ public class ControllableDevicesRequestEndPoint {
 
     // Convert the Exception to an errorCode string
     private String getErrorCode(Throwable t) {
-        String errorCode = ErrorCodeMapper.valueOf(t).name();
+        String errorCode = "ProcessingError";
+        ErrorCodeMapper errorCodeMapper = ErrorCodeMapper.valueOf(t);
+        if (errorCodeMapper != null) {
+            errorCode = errorCodeMapper.name();
+        }
         return errorCode;
     }
 
     enum ErrorCodeMapper {
-        AccountNotFound(StarsAccountNotFoundException.class.getName()), 
-        DeviceAlreadyAssigned(StarsDeviceAlreadyAssignedException.class.getName()), 
-        DeviceAlreadyExists(StarsDeviceAlreadyExistsException.class.getName()), 
-        DeviceNotFoundOnAccount(StarsDeviceNotFoundOnAccountException.class.getName()), 
-        SerialNumberAlreadyExists(StarsDeviceSerialNumberAlreadyExistsException.class.getName()), 
-        InvalidArgument(StarsInvalidArgumentException.class.getName()), 
-        InvalidDeviceType(StarsInvalidDeviceTypeException.class.getName()), 
-        ProcessingError(Throwable.class.getName());
+        AccountNotFound(StarsAccountNotFoundException.class), 
+        DeviceAlreadyAssigned(StarsDeviceAlreadyAssignedException.class), 
+        DeviceAlreadyExists(StarsDeviceAlreadyExistsException.class), 
+        DeviceNotFoundOnAccount(StarsDeviceNotFoundOnAccountException.class), 
+        SerialNumberAlreadyExists(StarsDeviceSerialNumberAlreadyExistsException.class), 
+        InvalidArgument(StarsInvalidArgumentException.class), 
+        InvalidDeviceType(StarsInvalidDeviceTypeException.class), 
+        ClientRequestError(StarsClientRequestException.class);
 
-        private String throwableClassName;
+        private Class<? extends Throwable> throwableClass;
 
-        private ErrorCodeMapper(String throwableClassName) {
-            this.throwableClassName = throwableClassName;
+        private ErrorCodeMapper(Class<? extends Throwable> throwableClass) {
+            this.throwableClass = throwableClass;
         }
 
-        public String getThrowableClassName() {
-            return throwableClassName;
+        public Class<? extends Throwable> getThrowableClass() {
+            return throwableClass;
         }
 
         public static ErrorCodeMapper valueOf(Throwable throwable) {
-            ErrorCodeMapper desiredErrorCodeMapper = ProcessingError;
-            String throwableClassName = throwable.getClass().getName();
+            ErrorCodeMapper desiredErrorCodeMapper = null;
             for (ErrorCodeMapper errorCodeMapper : ErrorCodeMapper.values()) {
-                if (errorCodeMapper.getThrowableClassName()
-                                   .equals(throwableClassName)) {
+                if (errorCodeMapper.getThrowableClass()
+                                   .isInstance(throwable)) {
                     desiredErrorCodeMapper = errorCodeMapper;
                     break;
                 }

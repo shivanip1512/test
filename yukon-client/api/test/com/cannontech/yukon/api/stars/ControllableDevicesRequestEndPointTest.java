@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.jdom.Element;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
@@ -18,6 +17,7 @@ import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.stars.dr.account.exception.StarsAccountNotFoundException;
+import com.cannontech.stars.util.StarsClientRequestException;
 import com.cannontech.stars.util.StarsInvalidArgumentException;
 import com.cannontech.stars.ws.dto.StarsControllableDeviceDTO;
 import com.cannontech.stars.ws.helper.StarsControllableDeviceHelper;
@@ -39,12 +39,12 @@ public class ControllableDevicesRequestEndPointTest {
 
     private static final String ACCOUNT_NUM_NOT_FOUND = ErrorCodeMapper.AccountNotFound.name();
     private static final String ACCOUNT_NUM_INVALID_ARG = ErrorCodeMapper.InvalidArgument.name();
-    private static final String ACCOUNT_NUM_ERROR = ErrorCodeMapper.ProcessingError.name();
+    private static final String ACCOUNT_NUM_ERROR = ErrorCodeMapper.ClientRequestError.name();
     private static final String ACCOUNT_NUM_VALID = "Valid";
 
     private static final String SERIAL_NUM_NOT_FOUND = ErrorCodeMapper.AccountNotFound.name();
     private static final String SERIAL_NUM_INVALID_ARG = ErrorCodeMapper.InvalidArgument.name();
-    private static final String SERIAL_NUM_ERROR = ErrorCodeMapper.ProcessingError.name();
+    private static final String SERIAL_NUM_ERROR = ErrorCodeMapper.ClientRequestError.name();
     private static final String SERIAL_NUM_VALID = "Valid";
 
     private static ControllableDeviceResultMapper deviceResultElementMapper = new ControllableDeviceResultMapper();
@@ -92,7 +92,7 @@ public class ControllableDevicesRequestEndPointTest {
                                  .equals(ACCOUNT_NUM_INVALID_ARG)) {
                 throw new StarsInvalidArgumentException("Account Number is required");
             } else if (deviceInfo.getAccountNumber().equals(ACCOUNT_NUM_ERROR)) {
-                throw new RuntimeException("Processing Error");
+                throw new StarsClientRequestException("Client Request Error");
             } else {
                 // valid case, return null for now; result is not read back
                 return null;
@@ -108,7 +108,7 @@ public class ControllableDevicesRequestEndPointTest {
                                  .equals(ACCOUNT_NUM_INVALID_ARG)) {
                 throw new StarsInvalidArgumentException("Account Number is required");
             } else if (deviceInfo.getAccountNumber().equals(ACCOUNT_NUM_ERROR)) {
-                throw new RuntimeException("Processing Error");
+                throw new StarsClientRequestException("Client Request Error");
             } else {
                 // valid case, return null for now; result is not read back
                 return null;
@@ -124,7 +124,7 @@ public class ControllableDevicesRequestEndPointTest {
                                  .equals(ACCOUNT_NUM_INVALID_ARG)) {
                 throw new StarsInvalidArgumentException("Account Number is required");
             } else if (deviceInfo.getAccountNumber().equals(ACCOUNT_NUM_ERROR)) {
-                throw new RuntimeException("Processing Error");
+                throw new StarsClientRequestException("Client Request Error");
             } else {
                 // valid case, no exceptions
             }
@@ -158,59 +158,53 @@ public class ControllableDevicesRequestEndPointTest {
 
         // verify data in the response
         assertTrue("Incorrect resultSize", deviceResults != null && deviceResults.size() == 4);
+        
         // results verified by positional check, which validates node-mapper as well
-        for (int index = 0; index < deviceResults.size(); index++) {
-            ControllableDeviceResult deviceResult = deviceResults.get(index);
-            switch (index) {
-            case 0:
-                assertTrue("Incorrect accountNumber",
-                           deviceResult.getAccountNumber().equals(ACCOUNT_NUM_NOT_FOUND));                
-                assertTrue("Incorrect serialNumber",
-                           deviceResult.getSerialNumber().equals(SERIAL_NUM_NOT_FOUND));
-                assertTrue("Success should be false", !deviceResult.isSuccess());
-                assertTrue("Incorrect errorCode",
-                           deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode()
-                                                                                  .equals(ACCOUNT_NUM_NOT_FOUND));
-                assertTrue("Missing errorDescription", deviceResult.getFailErrorDesc() != null);                
-                break;
-            case 1:
-                assertTrue("Incorrect accountNumber",
-                           deviceResult.getAccountNumber().equals(ACCOUNT_NUM_INVALID_ARG));                
-                assertTrue("Incorrect serialNumber",
-                           deviceResult.getSerialNumber().equals(SERIAL_NUM_INVALID_ARG));
-                assertTrue("Success should be false", !deviceResult.isSuccess());
-                assertTrue("Incorrect errorCode",
-                           deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode()
-                                                                                  .equals(ACCOUNT_NUM_INVALID_ARG));
-                assertTrue("Missing errorDescription", deviceResult.getFailErrorDesc() != null);
-                break;
-            case 2:
-                assertTrue("Incorrect accountNumber",
-                           deviceResult.getAccountNumber().equals(ACCOUNT_NUM_ERROR));                
-                assertTrue("Incorrect serialNumber",
-                           deviceResult.getSerialNumber().equals(SERIAL_NUM_ERROR));
-                assertTrue("Success should be false", !deviceResult.isSuccess());
-                assertTrue("Incorrect errorCode",
-                           deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode()
-                                                                                  .equals(ACCOUNT_NUM_ERROR));
-                assertTrue("Missing errorDescription", deviceResult.getFailErrorDesc() != null);
-                break;
-            case 3:
-                // valid case, no exceptions
-                assertTrue("Incorrect accountNumber",
-                           deviceResult.getAccountNumber().equals(ACCOUNT_NUM_VALID));                
-                assertTrue("Incorrect serialNumber",
-                           deviceResult.getSerialNumber().equals(SERIAL_NUM_VALID));
-                assertTrue("Success should be true", deviceResult.isSuccess());
-                assertTrue("Error Code should be blank", StringUtils.isBlank(deviceResult.getFailErrorCode()));
-                assertTrue("Error Description should be blank", StringUtils.isBlank(deviceResult.getFailErrorDesc()));
-                break;
-            default:
-                //unexpected result
-                Assert.fail("Unexpected deviceResult");
-                break;
-            }
-        }
+        // Not found case
+        ControllableDeviceResult deviceResult = deviceResults.get(0);
+        assertTrue("Incorrect accountNumber",
+                   deviceResult.getAccountNumber().equals(ACCOUNT_NUM_NOT_FOUND));                
+        assertTrue("Incorrect serialNumber",
+                   deviceResult.getSerialNumber().equals(SERIAL_NUM_NOT_FOUND));
+        assertTrue("Success should be false", !deviceResult.isSuccess());
+        assertTrue("Incorrect errorCode",
+                   deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode()
+                                                                          .equals(ACCOUNT_NUM_NOT_FOUND));
+        assertTrue("Missing errorDescription", deviceResult.getFailErrorDesc() != null);
+        
+        //Invalid argument case
+        deviceResult = deviceResults.get(1);
+        assertTrue("Incorrect accountNumber",
+                   deviceResult.getAccountNumber().equals(ACCOUNT_NUM_INVALID_ARG));                
+        assertTrue("Incorrect serialNumber",
+                   deviceResult.getSerialNumber().equals(SERIAL_NUM_INVALID_ARG));
+        assertTrue("Success should be false", !deviceResult.isSuccess());
+        assertTrue("Incorrect errorCode",
+                   deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode()
+                                                                          .equals(ACCOUNT_NUM_INVALID_ARG));
+        assertTrue("Missing errorDescription", deviceResult.getFailErrorDesc() != null);
+        
+        // error case        
+        deviceResult = deviceResults.get(2);
+        assertTrue("Incorrect accountNumber",
+                   deviceResult.getAccountNumber().equals(ACCOUNT_NUM_ERROR));                
+        assertTrue("Incorrect serialNumber",
+                   deviceResult.getSerialNumber().equals(SERIAL_NUM_ERROR));
+        assertTrue("Success should be false", !deviceResult.isSuccess());
+        assertTrue("Incorrect errorCode",
+                   deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode()
+                                                                          .equals(ACCOUNT_NUM_ERROR));
+        assertTrue("Missing errorDescription", deviceResult.getFailErrorDesc() != null);
+        
+        // valid case, no exceptions        
+        deviceResult = deviceResults.get(3);        
+        assertTrue("Incorrect accountNumber",
+                   deviceResult.getAccountNumber().equals(ACCOUNT_NUM_VALID));                
+        assertTrue("Incorrect serialNumber",
+                   deviceResult.getSerialNumber().equals(SERIAL_NUM_VALID));
+        assertTrue("Success should be true", deviceResult.isSuccess());
+        assertTrue("Error Code should be blank", StringUtils.isBlank(deviceResult.getFailErrorCode()));
+        assertTrue("Error Description should be blank", StringUtils.isBlank(deviceResult.getFailErrorDesc()));
     }
 
     @Test
@@ -240,59 +234,53 @@ public class ControllableDevicesRequestEndPointTest {
 
         // verify data in the response
         assertTrue("Incorrect resultSize", deviceResults != null && deviceResults.size() == 4);
+        
         // results verified by positional check, which validates node-mapper as well
-        for (int index = 0; index < deviceResults.size(); index++) {
-            ControllableDeviceResult deviceResult = deviceResults.get(index);
-            switch (index) {
-            case 0:
-                assertTrue("Incorrect accountNumber",
-                           deviceResult.getAccountNumber().equals(ACCOUNT_NUM_NOT_FOUND));                
-                assertTrue("Incorrect serialNumber",
-                           deviceResult.getSerialNumber().equals(SERIAL_NUM_NOT_FOUND));
-                assertTrue("Success should be false", !deviceResult.isSuccess());
-                assertTrue("Incorrect errorCode",
-                           deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode()
-                                                                                  .equals(ACCOUNT_NUM_NOT_FOUND));
-                assertTrue("Missing errorDescription", deviceResult.getFailErrorDesc() != null);                
-                break;
-            case 1:
-                assertTrue("Incorrect accountNumber",
-                           deviceResult.getAccountNumber().equals(ACCOUNT_NUM_INVALID_ARG));                
-                assertTrue("Incorrect serialNumber",
-                           deviceResult.getSerialNumber().equals(SERIAL_NUM_INVALID_ARG));
-                assertTrue("Success should be false", !deviceResult.isSuccess());
-                assertTrue("Incorrect errorCode",
-                           deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode()
-                                                                                  .equals(ACCOUNT_NUM_INVALID_ARG));
-                assertTrue("Missing errorDescription", deviceResult.getFailErrorDesc() != null);
-                break;
-            case 2:
-                assertTrue("Incorrect accountNumber",
-                           deviceResult.getAccountNumber().equals(ACCOUNT_NUM_ERROR));                
-                assertTrue("Incorrect serialNumber",
-                           deviceResult.getSerialNumber().equals(SERIAL_NUM_ERROR));
-                assertTrue("Success should be false", !deviceResult.isSuccess());
-                assertTrue("Incorrect errorCode",
-                           deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode()
-                                                                                  .equals(ACCOUNT_NUM_ERROR));
-                assertTrue("Missing errorDescription", deviceResult.getFailErrorDesc() != null);
-                break;
-            case 3:
-                // valid case, no exceptions
-                assertTrue("Incorrect accountNumber",
-                           deviceResult.getAccountNumber().equals(ACCOUNT_NUM_VALID));                
-                assertTrue("Incorrect serialNumber",
-                           deviceResult.getSerialNumber().equals(SERIAL_NUM_VALID));
-                assertTrue("Success should be true", deviceResult.isSuccess());
-                assertTrue("Error Code should be blank", StringUtils.isBlank(deviceResult.getFailErrorCode()));
-                assertTrue("Error Description should be blank", StringUtils.isBlank(deviceResult.getFailErrorDesc()));
-                break;
-            default:
-                //unexpected result
-                Assert.fail("Unexpected deviceResult");
-                break;
-            }
-        }
+        // Not found case
+        ControllableDeviceResult deviceResult = deviceResults.get(0);
+        assertTrue("Incorrect accountNumber",
+                   deviceResult.getAccountNumber().equals(ACCOUNT_NUM_NOT_FOUND));                
+        assertTrue("Incorrect serialNumber",
+                   deviceResult.getSerialNumber().equals(SERIAL_NUM_NOT_FOUND));
+        assertTrue("Success should be false", !deviceResult.isSuccess());
+        assertTrue("Incorrect errorCode",
+                   deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode()
+                                                                          .equals(ACCOUNT_NUM_NOT_FOUND));
+        assertTrue("Missing errorDescription", deviceResult.getFailErrorDesc() != null);
+        
+        //Invalid argument case
+        deviceResult = deviceResults.get(1);
+        assertTrue("Incorrect accountNumber",
+                   deviceResult.getAccountNumber().equals(ACCOUNT_NUM_INVALID_ARG));                
+        assertTrue("Incorrect serialNumber",
+                   deviceResult.getSerialNumber().equals(SERIAL_NUM_INVALID_ARG));
+        assertTrue("Success should be false", !deviceResult.isSuccess());
+        assertTrue("Incorrect errorCode",
+                   deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode()
+                                                                          .equals(ACCOUNT_NUM_INVALID_ARG));
+        assertTrue("Missing errorDescription", deviceResult.getFailErrorDesc() != null);
+        
+        // error case        
+        deviceResult = deviceResults.get(2);
+        assertTrue("Incorrect accountNumber",
+                   deviceResult.getAccountNumber().equals(ACCOUNT_NUM_ERROR));                
+        assertTrue("Incorrect serialNumber",
+                   deviceResult.getSerialNumber().equals(SERIAL_NUM_ERROR));
+        assertTrue("Success should be false", !deviceResult.isSuccess());
+        assertTrue("Incorrect errorCode",
+                   deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode()
+                                                                          .equals(ACCOUNT_NUM_ERROR));
+        assertTrue("Missing errorDescription", deviceResult.getFailErrorDesc() != null);
+        
+        // valid case, no exceptions        
+        deviceResult = deviceResults.get(3);        
+        assertTrue("Incorrect accountNumber",
+                   deviceResult.getAccountNumber().equals(ACCOUNT_NUM_VALID));                
+        assertTrue("Incorrect serialNumber",
+                   deviceResult.getSerialNumber().equals(SERIAL_NUM_VALID));
+        assertTrue("Success should be true", deviceResult.isSuccess());
+        assertTrue("Error Code should be blank", StringUtils.isBlank(deviceResult.getFailErrorCode()));
+        assertTrue("Error Description should be blank", StringUtils.isBlank(deviceResult.getFailErrorDesc()));
     }
 
     @Test
@@ -322,59 +310,53 @@ public class ControllableDevicesRequestEndPointTest {
 
         // verify data in the response
         assertTrue("Incorrect resultSize", deviceResults != null && deviceResults.size() == 4);
+        
         // results verified by positional check, which validates node-mapper as well
-        for (int index = 0; index < deviceResults.size(); index++) {
-            ControllableDeviceResult deviceResult = deviceResults.get(index);
-            switch (index) {
-            case 0:
-                assertTrue("Incorrect accountNumber",
-                           deviceResult.getAccountNumber().equals(ACCOUNT_NUM_NOT_FOUND));                
-                assertTrue("Incorrect serialNumber",
-                           deviceResult.getSerialNumber().equals(SERIAL_NUM_NOT_FOUND));
-                assertTrue("Success should be false", !deviceResult.isSuccess());
-                assertTrue("Incorrect errorCode",
-                           deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode()
-                                                                                  .equals(ACCOUNT_NUM_NOT_FOUND));
-                assertTrue("Missing errorDescription", deviceResult.getFailErrorDesc() != null);                
-                break;
-            case 1:
-                assertTrue("Incorrect accountNumber",
-                           deviceResult.getAccountNumber().equals(ACCOUNT_NUM_INVALID_ARG));                
-                assertTrue("Incorrect serialNumber",
-                           deviceResult.getSerialNumber().equals(SERIAL_NUM_INVALID_ARG));
-                assertTrue("Success should be false", !deviceResult.isSuccess());
-                assertTrue("Incorrect errorCode",
-                           deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode()
-                                                                                  .equals(ACCOUNT_NUM_INVALID_ARG));
-                assertTrue("Missing errorDescription", deviceResult.getFailErrorDesc() != null);
-                break;
-            case 2:
-                assertTrue("Incorrect accountNumber",
-                           deviceResult.getAccountNumber().equals(ACCOUNT_NUM_ERROR));                
-                assertTrue("Incorrect serialNumber",
-                           deviceResult.getSerialNumber().equals(SERIAL_NUM_ERROR));
-                assertTrue("Success should be false", !deviceResult.isSuccess());
-                assertTrue("Incorrect errorCode",
-                           deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode()
-                                                                                  .equals(ACCOUNT_NUM_ERROR));
-                assertTrue("Missing errorDescription", deviceResult.getFailErrorDesc() != null);
-                break;
-            case 3:
-                // valid case, no exceptions
-                assertTrue("Incorrect accountNumber",
-                           deviceResult.getAccountNumber().equals(ACCOUNT_NUM_VALID));                
-                assertTrue("Incorrect serialNumber",
-                           deviceResult.getSerialNumber().equals(SERIAL_NUM_VALID));
-                assertTrue("Success should be true", deviceResult.isSuccess());
-                assertTrue("Error Code should be blank", StringUtils.isBlank(deviceResult.getFailErrorCode()));
-                assertTrue("Error Description should be blank", StringUtils.isBlank(deviceResult.getFailErrorDesc()));
-                break;
-            default:
-                //unexpected result
-                Assert.fail("Unexpected deviceResult");
-                break;
-            }
-        }
+        // Not found case
+        ControllableDeviceResult deviceResult = deviceResults.get(0);
+        assertTrue("Incorrect accountNumber",
+                   deviceResult.getAccountNumber().equals(ACCOUNT_NUM_NOT_FOUND));                
+        assertTrue("Incorrect serialNumber",
+                   deviceResult.getSerialNumber().equals(SERIAL_NUM_NOT_FOUND));
+        assertTrue("Success should be false", !deviceResult.isSuccess());
+        assertTrue("Incorrect errorCode",
+                   deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode()
+                                                                          .equals(ACCOUNT_NUM_NOT_FOUND));
+        assertTrue("Missing errorDescription", deviceResult.getFailErrorDesc() != null);
+        
+        //Invalid argument case
+        deviceResult = deviceResults.get(1);
+        assertTrue("Incorrect accountNumber",
+                   deviceResult.getAccountNumber().equals(ACCOUNT_NUM_INVALID_ARG));                
+        assertTrue("Incorrect serialNumber",
+                   deviceResult.getSerialNumber().equals(SERIAL_NUM_INVALID_ARG));
+        assertTrue("Success should be false", !deviceResult.isSuccess());
+        assertTrue("Incorrect errorCode",
+                   deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode()
+                                                                          .equals(ACCOUNT_NUM_INVALID_ARG));
+        assertTrue("Missing errorDescription", deviceResult.getFailErrorDesc() != null);
+        
+        // error case        
+        deviceResult = deviceResults.get(2);
+        assertTrue("Incorrect accountNumber",
+                   deviceResult.getAccountNumber().equals(ACCOUNT_NUM_ERROR));                
+        assertTrue("Incorrect serialNumber",
+                   deviceResult.getSerialNumber().equals(SERIAL_NUM_ERROR));
+        assertTrue("Success should be false", !deviceResult.isSuccess());
+        assertTrue("Incorrect errorCode",
+                   deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode()
+                                                                          .equals(ACCOUNT_NUM_ERROR));
+        assertTrue("Missing errorDescription", deviceResult.getFailErrorDesc() != null);
+        
+        // valid case, no exceptions        
+        deviceResult = deviceResults.get(3);        
+        assertTrue("Incorrect accountNumber",
+                   deviceResult.getAccountNumber().equals(ACCOUNT_NUM_VALID));                
+        assertTrue("Incorrect serialNumber",
+                   deviceResult.getSerialNumber().equals(SERIAL_NUM_VALID));
+        assertTrue("Success should be true", deviceResult.isSuccess());
+        assertTrue("Error Code should be blank", StringUtils.isBlank(deviceResult.getFailErrorCode()));
+        assertTrue("Error Description should be blank", StringUtils.isBlank(deviceResult.getFailErrorDesc()));
     }
 
     private static class ControllableDeviceResultMapper implements
