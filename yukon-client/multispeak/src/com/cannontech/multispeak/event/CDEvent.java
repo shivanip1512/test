@@ -152,7 +152,7 @@ public class CDEvent extends MultispeakEvent{
         {
             CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(getMspVendor(), MultispeakDefines.CB_CD_STR);
             if (port != null) {
-                port.CDStateChangedNotification(getMeterNumber(), getLoadActionCode(), "123");
+                port.CDStateChangedNotification(getMeterNumber(), getLoadActionCode(), getTransactionID());
             } else {
                 CTILogger.error("Port not found for CB_Server (" + getMspVendor().getCompanyName() + ")");
             }  
