@@ -23,13 +23,18 @@
     <bean name="/loadControlService/inputs/*" class="com.cannontech.web.debug.LoadControlServiceInputsTestController" >
     </bean>
     
-    <bean name="/loadControlService/xml/*" class="com.cannontech.web.debug.LoadControlServiceXMLTestController" >
-    </bean>
-    
     <bean name="/accountService/inputs/*" class="com.cannontech.web.debug.AccountServiceInputsTestController" >
     </bean>
     
-    <bean name="/accountService/xml/*" class="com.cannontech.web.debug.AccountServiceXMLTestController" >
+    <bean name="/webservice/xml/*" class="com.cannontech.web.debug.webservice.XMLTestController" >
     </bean>
     
+    <bean id="messageFactory" class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory"/>
+
+    <bean id="webServiceTemplate" class="org.springframework.ws.client.core.WebServiceTemplate">
+        <constructor-arg ref="messageFactory"/>
+        <property name="defaultUri" value="http://example.com/WebService"/>
+    </bean>
+	 
+	 
 </beans>

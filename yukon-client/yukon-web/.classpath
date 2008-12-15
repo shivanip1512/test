@@ -64,5 +64,6 @@
 	<classpathentry kind="lib" path="/third-party/jopcbridge.jar"/>
 	<classpathentry kind="lib" path="/third-party/dom4j-1.6.1.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/web-common"/>
+	<classpathentry kind="lib" path="/third-party/spring-ws-1.5.5-all.jar" sourcepath="Z:/java/Third-Party Sources/spring-ws-1.5.5-sources.jar"/>
 	<classpathentry kind="output" path="WebContent/WEB-INF/classes"/>
 </classpath>

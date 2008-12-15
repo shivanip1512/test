@@ -611,9 +611,6 @@
           <option id="inputs" >
             <link>/spring/debug/loadControlService/inputs/home</link>
           </option>
-          <option id="xml" >
-            <link>/spring/debug/loadControlService/xml/home</link>
-          </option>
         </links>
       </option>
       <option id="accountService">
@@ -621,8 +618,12 @@
           <option id="inputs" >
             <link>/spring/debug/accountService/inputs/home</link>
           </option>
+        </links>
+      </option>
+      <option id="webservice">
+        <links>
           <option id="xml" >
-            <link>/spring/debug/accountService/xml/home</link>
+            <link>/spring/debug/webservice/xml/home</link>
           </option>
         </links>
       </option>
