@@ -11,7 +11,7 @@ rem
 rem name        (optional) If the second argument is present it is considered
 rem                        to be new service name                                           
 rem
-rem $Id: service.bat 414655 2006-06-15 18:56:42Z yoavs $
+rem $Id: service.bat 609414 2008-01-06 21:42:23Z markt $
 rem ---------------------------------------------------------------------------
 
 rem Guess CATALINA_HOME if not defined
@@ -29,8 +29,8 @@ echo The CATALINA_HOME environment variable is not defined correctly.
 echo This environment variable is needed to run this program
 goto end
 rem Make sure prerequisite environment variables are set
-if not "%JRE_HOME%" == "" goto okHome
-echo The JRE_HOME environment variable is not defined
+if not "%JAVA_HOME%" == "" goto okHome
+echo The JAVA_HOME environment variable is not defined
 echo This environment variable is needed to run this program
 goto end 
 :okHome
@@ -41,13 +41,13 @@ set CATALINA_BASE=%CATALINA_HOME%
 set EXECUTABLE=%CATALINA_HOME%\bin\tomcat5.exe
 
 rem Set default Service name
-set SERVICE_NAME=YukonWebApplicationService
-set PR_DISPLAYNAME=Yukon Web Application Service
+set SERVICE_NAME=Tomcat5
+set PR_DISPLAYNAME=Apache Tomcat
 
 if "%1" == "" goto displayUsage
 if "%2" == "" goto setServiceName
 set SERVICE_NAME=%2
-set PR_DISPLAYNAME=%2
+set PR_DISPLAYNAME=Apache Tomcat %2
 :setServiceName
 if %1 == install goto doInstall
 if %1 == remove goto doRemove
@@ -60,37 +60,42 @@ goto end
 
 :doRemove
 rem Remove the service
-"%EXECUTABLE%"//DS//%SERVICE_NAME%
-echo The service '%PR_DISPLAYNAME%' has been removed
+"%EXECUTABLE%" //DS//%SERVICE_NAME%
+echo The service '%SERVICE_NAME%' has been removed
 goto end
 
 :doInstall
 rem Install the service
-echo Installing the service '%PR_DISPLAYNAME%' ...
+echo Installing the service '%SERVICE_NAME%' ...
 echo Using CATALINA_HOME:    %CATALINA_HOME%
 echo Using CATALINA_BASE:    %CATALINA_BASE%
-echo Using JRE_HOME:        %JRE_HOME%
+echo Using JAVA_HOME:        %JAVA_HOME%
 
 rem Use the environment variables as an example
 rem Each command line option is prefixed with PR_
 
-set PR_DESCRIPTION=Yukon web server 
+set PR_DESCRIPTION=Apache Tomcat Server - http://tomcat.apache.org
 set PR_INSTALL=%EXECUTABLE%
 set PR_LOGPATH=%CATALINA_BASE%\logs
 set PR_CLASSPATH=%CATALINA_HOME%\bin\bootstrap.jar
 
-rem Set the client jvm from JRE_HOME
-set PR_JVM=%JRE_HOME%\bin\client\jvm.dll
+rem Set the server jvm from JAVA_HOME
+set PR_JVM=%JAVA_HOME%\jre\bin\server\jvm.dll
+if exist "%PR_JVM%" goto foundJvm
+rem Set the client jvm from JAVA_HOME
+set PR_JVM=%JAVA_HOME%\jre\bin\client\jvm.dll
+if exist "%PR_JVM%" goto foundJvm
+rem Check for JRockit JVM: Bugzilla 39674
+set PR_JVM=%JAVA_HOME%\jre\bin\jrockit\jvm.dll
 if exist "%PR_JVM%" goto foundJvm
 set PR_JVM=auto
 
 :foundJvm
 echo Using JVM:              %PR_JVM%
-"%EXECUTABLE%"//IS//%SERVICE_NAME% --Startup auto --StartClass org.apache.catalina.startup.Bootstrap --StopClass org.apache.catalina.startup.Bootstrap --StartParams start --StopParams stop
+"%EXECUTABLE%" //IS//%SERVICE_NAME% --StartClass org.apache.catalina.startup.Bootstrap --StopClass org.apache.catalina.startup.Bootstrap --StartParams start --StopParams stop
 if not errorlevel 1 goto installed
-echo Failed installing '%PR_DISPLAYNAME%' service
+echo Failed installing '%SERVICE_NAME%' service
 goto end
-
 :installed
 rem Clear the environment variables. They are not needed any more.
 set PR_DISPLAYNAME=
@@ -99,17 +104,14 @@ set PR_INSTALL=
 set PR_LOGPATH=
 set PR_CLASSPATH=
 set PR_JVM=
-
-
-rem Set extra parameters using //US// option on already installed service
-"%EXECUTABLE%"//US//%SERVICE_NAME% --JvmOptions "-Dcatalina.base=%CATALINA_BASE%;-Dcatalina.home=%CATALINA_HOME%;-Djava.endorsed.dirs=%CATALINA_HOME%\common\endorsed" --StartMode jvm --StopMode jvm
-
+rem Set extra parameters
+"%EXECUTABLE%" //US//%SERVICE_NAME% --JvmOptions "-Dcatalina.base=%CATALINA_BASE%;-Dcatalina.home=%CATALINA_HOME%;-Djava.endorsed.dirs=%CATALINA_HOME%\common\endorsed" --StartMode jvm --StopMode jvm
 rem More extra parameters
 set PR_LOGPATH=%CATALINA_BASE%\logs
 set PR_STDOUTPUT=auto
 set PR_STDERROR=auto
-"%EXECUTABLE%"//US//%SERVICE_NAME% ++JvmOptions "-Djava.io.tmpdir=%CATALINA_BASE%\temp" --JvmMs 256 --JvmMx 384
-echo The service 'Yukon Web Application Service' has been installed.
+"%EXECUTABLE%" //US//%SERVICE_NAME% ++JvmOptions "-Djava.io.tmpdir=%CATALINA_BASE%\temp;-Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager;-Djava.util.logging.config.file=%CATALINA_BASE%\conf\logging.properties" --JvmMs 128 --JvmMx 256
+echo The service '%SERVICE_NAME%' has been installed.
 
 :end
 cd %CURRENT_DIR%
