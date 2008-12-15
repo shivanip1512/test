@@ -213,16 +213,16 @@ public class AccountServiceTest extends TestCase {
         /*
          * Record what should happen
          */
-        yukonGroupDaoMock.getLiteYukonGroup(YukonGroup.YUKON_GROUP_ID);
-        yukonGroupDaoMock.getLiteYukonGroupByName(dto.getLoginGroup());
+        expect(yukonGroupDaoMock.getLiteYukonGroup(YukonGroup.YUKON_GROUP_ID)).andReturn(new LiteYukonGroup());
+        expect(yukonGroupDaoMock.getLiteYukonGroupByName(dto.getLoginGroup())).andReturn(new LiteYukonGroup());
         yukonUserDaoMock.addLiteYukonUserWithPassword(user, dto.getPassword(), 1, new ArrayList<LiteYukonGroup>());
         dbPersistantDaoMock.processDBChange(new DBChangeMsg(user.getLiteID(),
             DBChangeMsg.CHANGE_YUKON_USER_DB,
             DBChangeMsg.CAT_YUKON_USER,
             DBChangeMsg.CAT_YUKON_USER,
             DBChangeMsg.CHANGE_TYPE_ADD));
-        addressDaoMock.add(new LiteAddress());
-        addressDaoMock.add(new LiteAddress());
+        expect(addressDaoMock.add(new LiteAddress())).andReturn(true);
+        expect(addressDaoMock.add(new LiteAddress())).andReturn(true);
         contactDaoMock.saveContact(new LiteContact(1));
         dbPersistantDaoMock.processDBChange(new DBChangeMsg(1,
                                DBChangeMsg.CHANGE_CONTACT_DB,
@@ -238,8 +238,8 @@ public class AccountServiceTest extends TestCase {
                                DBChangeMsg.CAT_CUSTOMER,
                                DBChangeMsg.CHANGE_TYPE_ADD));
         siteInformationDaoMock.add(new LiteSiteInformation());
-        accountSiteDaoMock.add(new AccountSite());
-        customerAccountDaoMock.add(new CustomerAccount());
+        expect(accountSiteDaoMock.add(new AccountSite())).andReturn(true);
+        expect(customerAccountDaoMock.add(new CustomerAccount())).andReturn(true);
         dbPersistantDaoMock.processDBChange(new DBChangeMsg(1,
                                                             DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,
                                                             DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
@@ -276,7 +276,7 @@ public class AccountServiceTest extends TestCase {
         /*
          * run test
          */
-            accountService.addAccount(updatableAccount, user);
+        accountService.addAccount(updatableAccount, user);
     }
 
 }
