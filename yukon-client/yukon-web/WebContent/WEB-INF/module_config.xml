@@ -350,8 +350,8 @@
           </links>
 	    </option>
 		<option id="administration">
-		  <requireRoleProperty value="ResidentialCustomerRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN" />
-		  <links>
+		  <requireRoleProperty value="ResidentialCustomerRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN, ResidentialCustomerRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD" />
+          <links>
 		    <option id="changeLogin">
               <link>/spring/stars/consumer/changelogin</link>
             </option>

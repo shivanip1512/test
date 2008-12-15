@@ -117,7 +117,11 @@ function deleteLogin(form) {
                       <div align="right">New User Name: </div>
                     </td>
                     <td width="268"> 
-                      <input type="text" name="Username" maxlength="20" size="20" value="<%= login.getUsername() %>" onchange="setContentChanged(true)">
+                      <input type="text" name="Username" maxlength="20" size="20" value="<%= login.getUsername() %>" onchange="setContentChanged(true)"
+						<cti:checkNoProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN %>">
+						  disabled
+						</cti:checkNoProperty>
+					  >
                     </td>
                   </tr>
                   <tr> 
@@ -125,21 +129,31 @@ function deleteLogin(form) {
                       <div align="right">New Password:</div>
                     </td>
                     <td width="268"> 
-                      <input type="password" name="Password" maxlength="20" size="20" onchange="setContentChanged(true)">
+                      <input type="password" name="Password" maxlength="20" size="20" onchange="setContentChanged(true)" 
+                        <cti:checkNoProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD %>">
+                          disabled
+                        </cti:checkNoProperty>
+                      >
                     </td>
                   </tr>
-                  <tr> 
+				  <tr> 
                     <td width="128" class="TableCell"> 
                       <div align="right">Confirm Password:</div>
                     </td>
                     <td width="268"> 
-                      <input type="password" name="Password2" maxlength="20" size="20">
+                      <input type="password" name="Password2" maxlength="20" size="20"
+                        <cti:checkNoProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD %>">
+                          disabled
+                        </cti:checkNoProperty>
+                      >
                     </td>
                   </tr>
                   <tr> 
                     <td width="128" class="TableCell">&nbsp;</td>
                     <td width="268"> 
-                      <input type="button" name="GenPasswd" value="Generate Password" onclick="generatePassword()" <% if (login.getUsername().equals("")) out.print("disabled"); %>>
+                      <cti:checkProperty property="ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD">
+                        <input type="button" name="GenPasswd" value="Generate Password" onclick="generatePassword()" <% if (login.getUsername().equals("")) out.print("disabled"); %>>
+                      </cti:checkProperty>
                     </td>
                   </tr>
                 </table>

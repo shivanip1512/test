@@ -640,7 +640,7 @@ are present in page, session, etc. as an attribute. -->
                   </td>
                 </tr>
               </table>
-<cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN %>">
+<cti:checkProperty property="ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN">
 <%
 	com.cannontech.database.data.lite.LiteYukonGroup[] custGroups = liteEC.getResidentialCustomerGroups();
 	if (custGroups != null && custGroups.length > 0) {

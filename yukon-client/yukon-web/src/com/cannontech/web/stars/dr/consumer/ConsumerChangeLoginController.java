@@ -16,7 +16,7 @@ import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @CheckRole(ResidentialCustomerRole.ROLEID)
-@CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN)
+@CheckRoleProperty({ResidentialCustomerRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN, ResidentialCustomerRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD})
 @Controller
 @RequestMapping("/consumer/changelogin")
 public class ConsumerChangeLoginController extends AbstractConsumerController {

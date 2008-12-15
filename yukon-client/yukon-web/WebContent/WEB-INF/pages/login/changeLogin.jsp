@@ -8,6 +8,7 @@
 
 <div id="changeLogin">
 
+    <cti:checkProperty  property="ResidentialCustomerRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN">
     <cti:msg key="yukon.web.changelogin.changeUsername" var="changeUsernameTitle"/>
     <ct:boxContainer title="${changeUsernameTitle}" hideEnabled="false">
         <form action="${usernameActionUrl}" method="POST">
@@ -41,9 +42,10 @@
             <input type="hidden" name="redirectUrl" value="${redirectUrl}"></input>
         </form>
     </ct:boxContainer>
-    
+    </cti:checkProperty>
     <br>
-    
+
+    <cti:checkProperty  property="ResidentialCustomerRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD">
     <cti:msg key="yukon.web.changelogin.changePassword" var="changePasswordTitle"/>
     <ct:boxContainer title="${changePasswordTitle}" hideEnabled="false">
         <form action="${passwordActionUrl}" method="POST">
@@ -85,7 +87,8 @@
             <input type="hidden" name="redirectUrl" value="${redirectUrl}"></input>
         </form>
     </ct:boxContainer>
-    
+    </cti:checkProperty>    
+
     <c:if test="${not empty loginError}">
         <br>
         <div id="changeLoginErrorDiv"><cti:msg key="${loginError}"/></div>
