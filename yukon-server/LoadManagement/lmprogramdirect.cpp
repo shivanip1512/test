@@ -15,6 +15,7 @@
 #include "yukon.h"
 
 #include <algorithm>
+#include <queue>
 
 #include "dbaccess.h"
 #include "rwutil.h"
@@ -44,6 +45,7 @@
 
 
 extern ULONG _LM_DEBUG;
+extern std::queue<CtiTableLMProgramHistory> _PROGRAM_HISTORY_QUEUE;
 
 RWDEFINE_COLLECTABLE( CtiLMProgramDirect, CTILMPROGRAMDIRECT_ID )
 
@@ -2264,6 +2266,12 @@ BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, vector<CtiLMContro
                         dout << CtiTime() << " - " << text << ", " << additional << endl;
                     }
                 }
+
+                if( isControlling() )
+                {
+                    setChangeReason("Duration Gear Change");
+                    recordHistory(CtiTableLMProgramHistory::GearChange, CtiTime::now());
+                }
                 hasGearChanged(currentPriority, controlAreaTriggers, secondsFrom1901, multiDispatchMsg, isTriggerCheckNeeded);
                 returnBoolean = TRUE;
             }
@@ -2288,6 +2296,12 @@ BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, vector<CtiLMContro
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << CtiTime() << " - " << text << ", " << additional << endl;
                     }
+                }
+
+                if( isControlling() )
+                {
+                    setChangeReason("Priority Gear Change");
+                    recordHistory(CtiTableLMProgramHistory::GearChange, CtiTime::now());
                 }
                 hasGearChanged(currentPriority, controlAreaTriggers, secondsFrom1901, multiDispatchMsg, isTriggerCheckNeeded);
                 returnBoolean = TRUE;
@@ -2322,6 +2336,12 @@ BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, vector<CtiLMContro
                                 dout << CtiTime() << " - " << text << ", " << additional << endl;
                             }
                         }
+
+                        if( isControlling() )
+                        {
+                            setChangeReason("Trigger Offset Gear Change");
+                            recordHistory(CtiTableLMProgramHistory::GearChange, CtiTime::now());
+                        }
                         hasGearChanged(currentPriority, controlAreaTriggers, secondsFrom1901, multiDispatchMsg, isTriggerCheckNeeded);
                         returnBoolean = TRUE;
                     }
@@ -2346,6 +2366,11 @@ BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, vector<CtiLMContro
                             dout << CtiTime() << " - " << text << ", " << additional << endl;
                         }
 
+                        if( isControlling() )
+                        {
+                            setChangeReason("Trigger Offset Gear Change");
+                            recordHistory(CtiTableLMProgramHistory::GearChange, CtiTime::now());
+                        }
                         hasGearChanged(currentPriority, controlAreaTriggers, secondsFrom1901, multiDispatchMsg, isTriggerCheckNeeded);
                         returnBoolean = TRUE;
                     }
@@ -2412,6 +2437,12 @@ BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, vector<CtiLMContro
                         }
                     }
                     _currentgearnumber--;
+
+                    if( isControlling() )
+                    {
+                        setChangeReason("Priority Gear Change");
+                        recordHistory(CtiTableLMProgramHistory::GearChange, CtiTime::now());
+                    }
                     hasGearChanged(currentPriority, controlAreaTriggers, secondsFrom1901, multiDispatchMsg, isTriggerCheckNeeded);
                     returnBoolean = TRUE;
                 }
@@ -2443,6 +2474,12 @@ BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, vector<CtiLMContro
                             }
                         }
                         _currentgearnumber--;
+
+                        if( isControlling() )
+                        {
+                            setChangeReason("Trigger Offset Gear Change");
+                            recordHistory(CtiTableLMProgramHistory::GearChange, CtiTime::now());
+                        }
                         hasGearChanged(currentPriority, controlAreaTriggers, secondsFrom1901, multiDispatchMsg, isTriggerCheckNeeded);
                         returnBoolean = TRUE;
                     }
@@ -4491,11 +4528,16 @@ BOOL CtiLMProgramDirect::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg*
         if( getProgramState() == CtiLMProgramBase::ManualActiveState && hasGearChanged(_lmprogramdirectgears[_currentgearnumber]->getChangePriority() - 1, getControlArea()->getLMControlAreaTriggers(), secondsFrom1901, multiDispatchMsg, true) )
         {
             // hasGearChanged here changed the gear for us, we want to do a full manual control now, not a refresh.
-            setProgramState(CtiLMProgramBase::ScheduledState);
+            setProgramState(CtiLMProgramBase::GearChangeState);
+        }
+        else if( getProgramState() ==  CtiLMProgramBase::GearChangeState )
+        {
+            //This is a bit ugly, but this is where we record a gear change when a manual gear change message came through.
+            recordHistory(CtiTableLMProgramHistory::LMHistoryActions::GearChange, CtiTime::now());
         }
     }
 
-    if( getProgramState() == CtiLMProgramBase::ScheduledState )
+    if( getProgramState() == CtiLMProgramBase::ScheduledState || getProgramState() == CtiLMProgramBase::GearChangeState )
     {
         if( secondsFrom1901 >= getDirectStartTime().seconds() )
         {
@@ -5246,6 +5288,7 @@ void CtiLMProgramDirect::restore(RWDBReader& rdr)
         rdr["notifyinactivetime"] >> _notify_inactive_time;
         rdr["startedrampingout"] >> _startedrampingout;
         rdr["additionalinfo"] >> _additionalinfo;
+        rdr["currentlogid"] >> _curLogID;
         rdr["constraintoverride"] >> tempBoolString;
         CtiToLower(tempBoolString);
         setConstraintOverride(tempBoolString=="y"?TRUE:FALSE);
@@ -5266,6 +5309,7 @@ void CtiLMProgramDirect::restore(RWDBReader& rdr)
         _constraint_override = false;
         setControlActivatedByStatusTrigger(FALSE);
         _insertDynamicDataFlag = TRUE;
+        _curLogID = 0;
         setDirty(true);
     }
     //ok to announce timed program constraint violations once per database reload
@@ -5321,7 +5365,8 @@ void CtiLMProgramDirect::dumpDynamicData(RWDBConnection& conn, CtiTime& currentD
                 << dynamicLMProgramDirectTable["startedrampingout"].assign(toRWDBDT(getStartedRampingOutTime()))
                 << dynamicLMProgramDirectTable["notifyinactivetime"].assign(toRWDBDT(getNotifyInactiveTime()))
                 << dynamicLMProgramDirectTable["constraintoverride"].assign( (getConstraintOverride() ? "Y":"N") )
-                << dynamicLMProgramDirectTable["additionalinfo"].assign(additionalInfo.c_str());
+                << dynamicLMProgramDirectTable["additionalinfo"].assign(additionalInfo.c_str())
+                << dynamicLMProgramDirectTable["currentlogid"].assign(getCurrentLogID());
 
                 updater.where(dynamicLMProgramDirectTable["deviceid"]==getPAOId());//will be paobjectid
 
@@ -5354,7 +5399,8 @@ void CtiLMProgramDirect::dumpDynamicData(RWDBConnection& conn, CtiTime& currentD
                 << getStartedRampingOutTime()
                 << getNotifyInactiveTime()
                 << string( ( getConstraintOverride() ? "Y": "N" ) )
-                << additionalInfo;
+                << additionalInfo
+                << getCurrentLogID();
 
                 if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
                 {
@@ -5934,6 +5980,143 @@ bool CtiLMProgramDirect::sendSimpleThermostatMessage(CtiLMProgramDirectGear* cur
         }
     }
     return retVal;
+}
+
+/**
+ * recordHistory assumes that the current gear object is set for 
+ * the current or starting control. 
+ * 
+ * @param action LMHistoryActions 
+ * @param time CtiTime& 
+ * 
+ * @return bool 
+ */
+bool CtiLMProgramDirect::recordHistory(CtiTableLMProgramHistory::LMHistoryActions action, CtiTime &time)
+{
+    bool retVal  = false;
+    unsigned long programLogID = getCurrentLogID();
+
+    CtiLMProgramDirectGear* gear = getCurrentGearObject();
+
+    if( action == CtiTableLMProgramHistory::LMHistoryActions::Start )
+    {
+        programLogID = SynchronizedIdGen("LMProgramHistoryID", 1); // Both of the ID gens here are not necessary.
+        setCurrentLogEventID(programLogID);
+    }
+    if( gear != NULL && programLogID != 0)
+    {
+        unsigned long gearLogID = SynchronizedIdGen("LMGearHistoryID", 1);
+        if( gearLogID != 0 )
+        {
+            _PROGRAM_HISTORY_QUEUE.push(CtiTableLMProgramHistory(programLogID, gearLogID, getPAOId(), gear->getUniqueID(), action, getPAOName(), getAndClearChangeReason(), getLastUser(), gear->getGearName(), time));
+            retVal = true;
+        }
+    }
+
+    return retVal;
+}
+
+/*---------------------------------------------------------------------------
+    setProgramState
+
+    Sets the current state of the program
+---------------------------------------------------------------------------*/
+CtiLMProgramBase& CtiLMProgramDirect::setProgramState(LONG newState)
+{
+    long currentState = getProgramState();
+
+    if( currentState != newState && 
+        newState     != CtiLMProgramBase::GearChangeState &&
+        currentState != CtiLMProgramBase::GearChangeState )
+    {
+        if( isAControlState(newState) && !isAControlState(currentState) )
+        {
+            //It is a start
+            recordHistory(CtiTableLMProgramHistory::LMHistoryActions::Start, CtiTime::now());
+        }
+        else if( isAStopState(newState) && currentState != CtiLMProgramBase::ScheduledState )
+        {
+            // It is a stop.
+            CtiTime recordTime = std::min(CtiTime::now(), getDirectStopTime());
+            if( recordTime.is_special() || recordTime == gInvalidCtiTime )
+            {
+                recordTime = recordTime.now();
+            }
+            recordHistory(CtiTableLMProgramHistory::LMHistoryActions::Stop, recordTime);
+        }
+    }
+
+    Inherited::setProgramState(newState);
+    return *this;
+}
+
+/**
+ * Returns true if the given state is considered an active 
+ * (controlling) state. Uses states from lmprogrambase.h
+ * 
+ * @param state LONG 
+ * 
+ * @return bool 
+ */
+bool CtiLMProgramDirect::isAControlState(int state)
+{
+    bool retVal = false;
+    if( state == ActiveState || state == ManualActiveState ||
+        state == FullyActiveState || state == StoppingState ||
+        state == NonControllingState )
+    {
+        retVal = true;
+    }
+    return retVal;
+}
+
+bool CtiLMProgramDirect::isAStopState(int state)
+{
+    bool retVal = false;
+    if( state == InactiveState )
+    {
+        retVal = true;
+    }
+    return retVal;
+}
+
+bool CtiLMProgramDirect::isControlling()
+{
+    return isAControlState(getProgramState());
+}
+
+void CtiLMProgramDirect::setCurrentLogEventID(unsigned long logID)
+{
+    _curLogID = logID;
+}
+
+unsigned long CtiLMProgramDirect::getCurrentLogID()
+{
+    return _curLogID;
+}
+
+void CtiLMProgramDirect::setChangeReason(const string& reason)
+{
+    _change_reason = reason;
+}
+
+void CtiLMProgramDirect::setLastUser(const string& user)
+{
+    _last_user = user;
+}
+
+// Returns the last set change reason and clears out the reason.
+// Each reason can only be used once!
+string CtiLMProgramDirect::getAndClearChangeReason()
+{
+    string tempStr = _change_reason;
+    _change_reason = "";
+    return tempStr;
+}
+
+string CtiLMProgramDirect::getLastUser()
+{
+    return _last_user;
 }
 
 // Static Members

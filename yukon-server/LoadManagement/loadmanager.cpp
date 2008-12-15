@@ -16,6 +16,7 @@
 
 #include <map>
 #include <set>
+#include <queue>
 
 #include "dbaccess.h"
 #include "connection.h"
@@ -34,6 +35,7 @@
 #include "loadmanager.h"
 #include "lmcontrolareastore.h"
 #include "lmcontrolareatrigger.h"
+#include "tbl_lmprogramhistory.h"
 #include "executor.h"
 #include "ctibase.h"
 #include "netports.h"
@@ -56,6 +58,8 @@ extern BOOL _LM_POINT_EVENT_LOGGING;
 set<long> _CHANGED_GROUP_LIST;
 set<long> _CHANGED_CONTROL_AREA_LIST;
 set<long> _CHANGED_PROGRAM_LIST;
+
+queue<CtiTableLMProgramHistory> _PROGRAM_HISTORY_QUEUE;
 
 /* The singleton instance of CtiLoadManager */
 CtiLoadManager* CtiLoadManager::_instance = NULL;
@@ -587,6 +591,20 @@ void CtiLoadManager::controlLoop()
                         {
                             delete multi;
                             multi = 0;
+                        }
+
+                        tempCount = 0;
+                        while( !_PROGRAM_HISTORY_QUEUE.empty() )
+                        {
+                            tempCount ++;
+                            _PROGRAM_HISTORY_QUEUE.front().Insert();
+                            _PROGRAM_HISTORY_QUEUE.pop();
+                        }
+
+                        if( _LM_DEBUG & LM_DEBUG_DATABASE && tempCount > 0 )
+                        {
+                            CtiLockGuard<CtiLogger> dout_guard(dout);
+                            dout << CtiTime() << "Inserted " << tempCount << " history rows" << endl;
                         }
 
                         _CHANGED_CONTROL_AREA_LIST.clear();

@@ -1247,19 +1247,28 @@ void CtiLMProgramBase::setDirty(BOOL b)
     CtiMemDBObject::setDirty(b);
 }
 
+// Sets the reason for the recent change, only used by LMProgramDirect
+void CtiLMProgramBase::setChangeReason(const string& reason)
+{
+}
+
+// Sets the last user, only used by LMProgramDirect
+void CtiLMProgramBase::setLastUser(const string& user)
+{
+}
 
 // Static Members
 const string CtiLMProgramBase::AutomaticType = "Automatic";
 const string CtiLMProgramBase::ManualOnlyType = "ManualOnly";
 const string CtiLMProgramBase::TimedType = "Timed";
 
-int CtiLMProgramBase::InactiveState = STATEZERO;
-int CtiLMProgramBase::ActiveState = STATEONE;
-int CtiLMProgramBase::ManualActiveState = STATETWO;
-int CtiLMProgramBase::ScheduledState = STATETHREE;
-int CtiLMProgramBase::NotifiedState = STATEFOUR;
-int CtiLMProgramBase::FullyActiveState = STATEFIVE;
-int CtiLMProgramBase::StoppingState = STATESIX;
-int CtiLMProgramBase::AttemptingControlState = STATESEVEN;
-int CtiLMProgramBase::NonControllingState = STATEEIGHT;
-int CtiLMProgramBase::TimedActiveState = STATENINE;
+const int CtiLMProgramBase::InactiveState = STATEZERO;
+const int CtiLMProgramBase::ActiveState = STATEONE;
+const int CtiLMProgramBase::ManualActiveState = STATETWO;
+const int CtiLMProgramBase::ScheduledState = STATETHREE;
+const int CtiLMProgramBase::NotifiedState = STATEFOUR;
+const int CtiLMProgramBase::FullyActiveState = STATEFIVE;
+const int CtiLMProgramBase::StoppingState = STATESIX;
+const int CtiLMProgramBase::GearChangeState = STATESEVEN;
+const int CtiLMProgramBase::NonControllingState = STATEEIGHT;
+const int CtiLMProgramBase::TimedActiveState = STATENINE;

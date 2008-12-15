@@ -36,9 +36,10 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirectGear )
 
     virtual ~CtiLMProgramDirectGear();
     
-    LONG getPAOId() const;
+    LONG getProgramPAOId() const;
     const string& getGearName() const;
     LONG getGearNumber() const;
+    LONG getUniqueID() const;
     const string& getControlMethod() const;
     LONG getMethodRate() const;
     LONG getMethodPeriod() const;
@@ -61,7 +62,7 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirectGear )
     const string& getFrontRampOption() const;
     DOUBLE getKWReduction() const;
         
-    CtiLMProgramDirectGear& setPAOId(LONG paoid);
+    CtiLMProgramDirectGear& setProgramPAOId(LONG paoid);
     CtiLMProgramDirectGear& setGearName(const string& name);
     CtiLMProgramDirectGear& setGearNumber(LONG gearnum);
     CtiLMProgramDirectGear& setControlMethod(const string& contmeth);
@@ -145,9 +146,10 @@ protected:
 
 private:
 
-    LONG _paoid;
+    LONG _program_paoid;
     string _gearname;
     LONG _gearnumber;
+    LONG _gearID;
     string _controlmethod;
     LONG _methodrate;
     LONG _methodperiod;

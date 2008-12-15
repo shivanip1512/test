@@ -326,8 +326,7 @@ int CtiLMControlArea::getCurrentStopPriority()
     {
         CtiLMProgramBaseSPtr lm_program = _lmprograms[i];
         if( (lm_program->getProgramState() == CtiLMProgramBase::ActiveState ||
-             lm_program->getProgramState() == CtiLMProgramBase::FullyActiveState ||
-             lm_program->getProgramState() == CtiLMProgramBase::AttemptingControlState) &&
+             lm_program->getProgramState() == CtiLMProgramBase::FullyActiveState) &&
             // What other states?
 //        if(lm_program->getProgramState() != CtiLMProgramBase::InactiveState &&
             lm_program->getStopPriority() > 0 )
@@ -1242,6 +1241,8 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
                         //                            (lmProgramDirect->getMaxDailyOps() == 0 ||
                         //                             lmProgramDirect->getDailyOps() < lmProgramDirect->getMaxDailyOps()))
                         {
+                            lmProgramDirect->setLastUser("(yukon system)");
+                            lmProgramDirect->setChangeReason("Automatic Threshold Trigger");
                             expectedLoadReduced = lmProgramDirect->reduceProgramLoad(loadReductionNeeded, getCurrentStartPriority(), _lmcontrolareatriggers, secondsFromBeginningOfDay, secondsFrom1901, multiPilMsg, multiDispatchMsg, multiNotifMsg, isTriggerCheckNeeded(secondsFrom1901));
 
                             if( lmProgramDirect->getProgramState() != CtiLMProgramBase::InactiveState )   // reduceProgram load might not have been able to do anything,

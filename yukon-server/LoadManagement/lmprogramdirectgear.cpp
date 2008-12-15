@@ -56,14 +56,14 @@ CtiLMProgramDirectGear::~CtiLMProgramDirectGear()
 }
 
 /*---------------------------------------------------------------------------
-    getPAOId
+    getProgramPAOId
     
-    Returns the unique id of the gear
+    Returns the unique id of the gear's program
 ---------------------------------------------------------------------------*/
-LONG CtiLMProgramDirectGear::getPAOId() const
+LONG CtiLMProgramDirectGear::getProgramPAOId() const
 {
 
-    return _paoid;
+    return _program_paoid;
 }
 
 /*---------------------------------------------------------------------------
@@ -86,6 +86,18 @@ LONG CtiLMProgramDirectGear::getGearNumber() const
 {
 
     return _gearnumber;
+}
+
+/**
+ * Returns the unique ID of this gear. This is NOT a PAO id but 
+ * is unique on the gear table. 
+ * 
+ * 
+ * @return LONG 
+ */
+LONG CtiLMProgramDirectGear::getUniqueID() const
+{
+    return _gearID;
 }
 
 /*---------------------------------------------------------------------------
@@ -320,14 +332,14 @@ DOUBLE CtiLMProgramDirectGear::getKWReduction() const
 }
 
 /*---------------------------------------------------------------------------
-    setPAOId
+    setProgramPAOId
     
-    Sets the id of the control area - use with caution
+    Sets the id of the program - use with caution
 ---------------------------------------------------------------------------*/
-CtiLMProgramDirectGear& CtiLMProgramDirectGear::setPAOId(LONG paoid)
+CtiLMProgramDirectGear& CtiLMProgramDirectGear::setProgramPAOId(LONG paoid)
 {
 
-    _paoid = paoid;
+    _program_paoid = paoid;
     //do not notify observers of this !
     return *this;
 }
@@ -611,7 +623,7 @@ void CtiLMProgramDirectGear::restoreGuts(RWvistream& istrm)
 {
     RWCollectable::restoreGuts( istrm );
 
-    istrm >> _paoid
+    istrm >> _program_paoid
     >> _gearname
     >> _gearnumber
     >> _controlmethod
@@ -645,7 +657,7 @@ void CtiLMProgramDirectGear::saveGuts(RWvostream& ostrm ) const
 {
     RWCollectable::saveGuts( ostrm );
 
-    ostrm << _paoid
+    ostrm << _program_paoid
     << _gearname
     << _gearnumber
     << _controlmethod
@@ -679,7 +691,7 @@ void CtiLMProgramDirectGear::saveGuts(RWvostream& ostrm ) const
 int CtiLMProgramDirectGear::operator==(const CtiLMProgramDirectGear& right) const
 {
 
-    return getPAOId() == right.getPAOId();
+    return getProgramPAOId() == right.getProgramPAOId();
 }
 
 /*---------------------------------------------------------------------------
@@ -688,7 +700,7 @@ int CtiLMProgramDirectGear::operator==(const CtiLMProgramDirectGear& right) cons
 int CtiLMProgramDirectGear::operator!=(const CtiLMProgramDirectGear& right) const
 {
 
-    return getPAOId() != right.getPAOId();
+    return getProgramPAOId() != right.getProgramPAOId();
 }
 
 /*---------------------------------------------------------------------------
@@ -708,7 +720,7 @@ CtiLMProgramDirectGear* CtiLMProgramDirectGear::replicate() const
 ---------------------------------------------------------------------------*/
 void CtiLMProgramDirectGear::restore(RWDBReader& rdr)
 {
-    rdr["deviceid"] >> _paoid;//will be paobjectid
+    rdr["deviceid"] >> _program_paoid;//will be paobjectid
     rdr["gearname"] >> _gearname;
     rdr["gearnumber"] >> _gearnumber;
     rdr["controlmethod"] >> _controlmethod;
@@ -726,6 +738,7 @@ void CtiLMProgramDirectGear::restore(RWDBReader& rdr)
     rdr["groupselectionmethod"] >> _groupselectionmethod;
     rdr["methodoptiontype"] >> _methodoptiontype;
     rdr["methodoptionmax"] >> _methodoptionmax;
+    rdr["gearid"] >> _gearID;
     rdr["rampininterval"] >> _rampininterval;
     rdr["rampinpercent"] >> _rampinpercent;
     rdr["rampoutinterval"] >> _rampoutinterval;

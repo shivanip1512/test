@@ -851,6 +851,7 @@ void CtiLMControlAreaStore::reset()
                         << dynamicLMProgramDirectTable["startedrampingout"]
                         << dynamicLMProgramDirectTable["constraintoverride"]
                         << dynamicLMProgramDirectTable["additionalinfo"]
+                        << dynamicLMProgramDirectTable["currentlogid"]
                         << pointTable["pointid"]
                         << pointTable["pointoffset"]
                         << pointTable["pointtype"];
@@ -1009,6 +1010,7 @@ void CtiLMControlAreaStore::reset()
                         << lmProgramDirectGearTable["groupselectionmethod"]
                         << lmProgramDirectGearTable["methodoptiontype"]
                         << lmProgramDirectGearTable["methodoptionmax"]
+                        << lmProgramDirectGearTable["gearid"]
                         << lmProgramDirectGearTable["rampininterval"]
                         << lmProgramDirectGearTable["rampinpercent"]
                         << lmProgramDirectGearTable["rampoutinterval"]
@@ -1064,7 +1066,7 @@ void CtiLMControlAreaStore::reset()
                             if( newDirectGear != NULL )
                             {
                                 CtiLMProgramBaseSPtr programToPutGearIn;
-                                if( directProgramHashMap.findValue(newDirectGear->getPAOId(),programToPutGearIn) )
+                                if( directProgramHashMap.findValue(newDirectGear->getProgramPAOId(),programToPutGearIn) )
                                 {
                                     vector<CtiLMProgramDirectGear*>& lmProgramDirectGearList = boost::static_pointer_cast< CtiLMProgramDirect>(programToPutGearIn)->getLMProgramDirectGears();
                                     lmProgramDirectGearList.push_back(newDirectGear);

@@ -1138,6 +1138,7 @@ void CtiLMManualControlRequestExecutor::Execute()
 {
     CtiLMProgramBaseSPtr program;
     CtiLMControlArea* controlArea = NULL;
+    string controlReason;
 
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
     //RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
@@ -1233,6 +1234,10 @@ void CtiLMManualControlRequestExecutor::Execute()
         case CtiLMManualControlRequest::OVERRIDE_CONSTRAINTS:
             (boost::static_pointer_cast< CtiLMProgramDirect >(program))->setConstraintOverride(true);
             StartProgram(program, controlArea, startTime, stopTime);
+            controlReason = "Manual Start Command";
+            program->setChangeReason(controlReason);
+            program->setLastUser(_controlMsg->getUser());
+
             if( response != NULL )
             {
                 response->setStatus(CtiServerResponseMsg::OK);
@@ -1248,6 +1253,9 @@ void CtiLMManualControlRequestExecutor::Execute()
                 checker.checkControlAreaControlWindows(*controlArea, startTime.seconds(), stopTime.seconds()) )
             {
                 StartProgram(program, controlArea, startTime, stopTime);
+                controlReason = "Manual Start Command";
+                program->setChangeReason(controlReason);
+                program->setLastUser(_controlMsg->getUser());
 
                 if( response != NULL )
                 {
@@ -1364,6 +1372,10 @@ void CtiLMManualControlRequestExecutor::Execute()
                              " NewGear: " << _controlMsg->getStartGear()-1 << endl;
                     }
                     StartProgram(program, controlArea, startTime, stopTime);
+                    program->setProgramState(CtiLMProgramBase::GearChangeState);
+                    controlReason = "Manual Gear Change Command";
+                    program->setChangeReason(controlReason);
+                    program->setLastUser(_controlMsg->getUser());
 
                     if( response != NULL )
                     {
@@ -1511,6 +1523,7 @@ void CtiLMManualControlRequestExecutor::StartProgram(CtiLMProgramBaseSPtr progra
 
 void CtiLMManualControlRequestExecutor::StopProgram(CtiLMProgramBaseSPtr program, CtiLMControlArea* controlArea, const CtiTime& stop)
 {
+    static const string controlReason = "Manual Stop Command";
     if( program->getPAOType() == TYPE_LMPROGRAM_DIRECT )
     {
         if( _LM_DEBUG & LM_DEBUG_STANDARD )
@@ -1526,6 +1539,11 @@ void CtiLMManualControlRequestExecutor::StopProgram(CtiLMProgramBaseSPtr program
 
         CtiLMProgramDirectSPtr lmProgramDirect = boost::static_pointer_cast< CtiLMProgramDirect >(program);
         StopDirectProgram(lmProgramDirect, controlArea, stop);
+        lmProgramDirect->setChangeReason(controlReason);
+        if( _controlMsg != NULL )
+        {
+            lmProgramDirect->setLastUser(_controlMsg->getUser());
+        }
 
         string text = ("Scheduled Manual Stop, LM Program: ");
         text += lmProgramDirect->getPAOName();
@@ -1572,7 +1590,11 @@ void CtiLMManualControlRequestExecutor::StartDirectProgram(CtiLMProgramDirectSPt
     CtiTime startTime = start;
 
     lmProgramDirect->setManualControlReceivedFlag(FALSE);
-    lmProgramDirect->setProgramState(CtiLMProgramBase::ScheduledState);
+    if( !lmProgramDirect->isControlling() )
+    {
+        //If this is a gear change, we are already controlling, dont set to scheduled!
+        lmProgramDirect->setProgramState(CtiLMProgramBase::ScheduledState);
+    }
 
     lmProgramDirect->setDirectStartTime(startTime);
     lmProgramDirect->setStartedControlling(startTime);

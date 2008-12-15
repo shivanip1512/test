@@ -107,13 +107,13 @@ public:
     CtiLMProgramBase& setHolidayScheduleId(LONG schdid);
     CtiLMProgramBase& setSeasonScheduleId(LONG schdid);
     CtiLMProgramBase& setProgramStatusPointId(LONG statuspointid);
-    CtiLMProgramBase& setProgramState(LONG progstate);
     CtiLMProgramBase& setReductionAnalogPointId(LONG reductionpointid);
     CtiLMProgramBase& setStartedControlling(const CtiTime& startcont);
     CtiLMProgramBase& setLastControlSent(const CtiTime& lastcontrol);
     CtiLMProgramBase& setReductionTotal(DOUBLE reduction);
     CtiLMProgramBase& setManualControlReceivedFlag(BOOL manualreceived);
     CtiLMControlArea* getControlArea();
+    virtual CtiLMProgramBase& setProgramState(LONG progstate);
 
     BOOL isAvailableToday();
     BOOL isWithinValidControlWindow(LONG secondsFromBeginningOfDay);
@@ -137,6 +137,8 @@ public:
     virtual CtiLMProgramControlWindow* getNextControlWindow(LONG secondsFromBeginningOfDay);
 
     virtual void setDirty(BOOL b=TRUE);
+    virtual void setChangeReason(const string& reason);
+    virtual void setLastUser(const string& user);
     
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );
@@ -155,16 +157,16 @@ public:
     static const string TimedType;
     
     // Possible program states
-    static int InactiveState;
-    static int ActiveState;
-    static int ManualActiveState;
-    static int ScheduledState;
-    static int NotifiedState;
-    static int FullyActiveState;
-    static int StoppingState;
-    static int AttemptingControlState;
-    static int NonControllingState;
-    static int TimedActiveState;
+    static const int InactiveState;
+    static const int ActiveState;
+    static const int ManualActiveState;
+    static const int ScheduledState;
+    static const int NotifiedState;
+    static const int FullyActiveState;
+    static const int StoppingState;
+    static const int GearChangeState;
+    static const int NonControllingState;
+    static const int TimedActiveState;
 
 protected:
 

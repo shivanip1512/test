@@ -31,6 +31,7 @@
 #include "observe.h"
 #include "lmprogramdirectgear.h"
 #include "lmcontrolarea.h"
+#include "tbl_lmprogramhistory.h"
 
 using std::set;
 using std::vector;
@@ -105,6 +106,8 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     CtiLMProgramDirect& setConstraintOverride(BOOL override);
     CtiLMProgramDirect& setControlActivatedByStatusTrigger(BOOL flag);
 
+    virtual CtiLMProgramBase& setProgramState(LONG newState);
+
     
     void dumpDynamicData();
     void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
@@ -125,6 +128,7 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     BOOL stopOverControlledGroup(CtiLMProgramDirectGear* currentGearObject, CtiLMGroupPtr& currentLMGroup, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg);
 
     bool updateGroupsRampingOut(CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, ULONG secondsFrom1901);
+    bool isControlling();
 
     BOOL notifyGroupsOfStart(CtiMultiMsg* multiNotifMsg);
     BOOL notifyGroupsOfStop(CtiMultiMsg* multiNotifMsg);    
@@ -152,6 +156,9 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     void scheduleNotification(const CtiTime& start_time, const CtiTime& stop_time);
     void scheduleStartNotification(const CtiTime& start_time);
     void scheduleStopNotification(const CtiTime& stop_time);
+
+    virtual void setLastUser(const string& user);
+    virtual void setChangeReason(const string& reason);
 	
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );
@@ -170,6 +177,7 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
 
 private:
 
+    typedef CtiLMProgramBase Inherited;
     bool notifyGroups(int type, CtiMultiMsg* multiNotifMsg);
     bool areAllGroupsStopped();
     
@@ -180,6 +188,8 @@ private:
     string _message_header;
     string _message_footer;
     string _additionalinfo;
+    string _last_user;
+    string _change_reason;
     LONG _trigger_offset;
     LONG _trigger_restore_offset;
 	
@@ -207,6 +217,8 @@ private:
                                      
     vector<int> _notificationgroupids;
 
+    unsigned long _curLogID;
+
     //don't stream/don't save
     BOOL _insertDynamicDataFlag;
     bool _announced_program_constraint_violation; // used for timed schedules so we don't spam the logs with constraint violations
@@ -217,6 +229,13 @@ private:
     void RampInGroups(ULONG secondsFrom1901, CtiLMProgramDirectGear* lm_gear = 0);
     double StartMasterCycle(ULONG secondsFrom1901, CtiLMProgramDirectGear* lm_gear);
     bool sendSimpleThermostatMessage(CtiLMProgramDirectGear* currentGearObject, LONG secondsFrom1901, CtiMultiMsg* multiPilMsg, double &expectedLoadReduced, bool isRefresh);
+    bool recordHistory(CtiTableLMProgramHistory::LMHistoryActions action, CtiTime &time);
+    bool isAControlState(int state);
+    bool isAStopState(int state);
+    unsigned long getCurrentLogID();
+    void setCurrentLogEventID(unsigned long logID);
+    string getAndClearChangeReason();
+    string getLastUser();
     
     void restore(RWDBReader& rdr);
 };
