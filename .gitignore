@@ -79,6 +79,7 @@ yukon-client/tools/build
 yukon-client/trending/.cvsignore
 yukon-client/trending/bin
 yukon-client/trending/build
+yukon-client/web-common/build
 yukon-client/webgraph/.cvsignore
 yukon-client/webgraph/bin
 yukon-client/webgraph/build
