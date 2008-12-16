@@ -3,8 +3,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:standardPage title="Account Service Test Page" module="blank">
-    <cti:standardMenu menuSelection=""/>
+<cti:standardPage title="Account Service Test Page" module="debug">
+    <cti:standardMenu menuSelection="accountService|inputs"/>
     
     <style type="text/css">
       table.resultsTable th.functionality {width:200px;}
