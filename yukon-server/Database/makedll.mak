@@ -67,6 +67,7 @@ tbl_devicereadjoblog.obj \
 tbl_devicereadrequestlog.obj \
 tbl_gateway_end_device.obj \
 tbl_lm_controlhist.obj \
+tbl_lmprogramhistory.obj \
 tbl_lmg_point.obj \
 tbl_lmg_sasimple.obj \
 tbl_lmg_sa205105.obj \
