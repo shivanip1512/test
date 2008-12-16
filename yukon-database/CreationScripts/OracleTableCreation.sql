@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/28/2008 6:31:04 PM                        */
+/* Created on:     12/16/2008 5:23:01 PM                        */
 /*==============================================================*/
 
 
@@ -9018,6 +9018,8 @@ INSERT INTO YukonRoleProperty VALUES(-20011,-200,'MultiSpeak Setup','false','Con
 INSERT INTO YukonRoleProperty VALUES(-20012,-200,'LM User Assignment','false','Controls visibility of LM objects for 3-tier and direct control, based off assignment of users.');
 INSERT INTO YukonRoleProperty VALUES(-20013,-200,'Edit Device Config','false','Controls the ability to edit and create device configurations');
 INSERT INTO YukonRoleProperty VALUES(-20014,-200,'View Device Config','true','Controls the ability to view existing device configurations');
+INSERT INTO YukonRoleProperty VALUES(-20015,-200,'Manage Indexes','false','Controls access to manually build Lucene indexes.'); 
+INSERT INTO YukonRoleProperty VALUES(-20016,-200,'View Logs','false','Controls access to view or download log files.');
 
 /* Operator Metering Role Properties*/
 INSERT INTO YukonRoleProperty VALUES (-20203,-202,'Enable Bulk Importer','true','Allows access to the Bulk Importer');
