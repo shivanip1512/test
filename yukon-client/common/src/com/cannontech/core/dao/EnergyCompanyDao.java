@@ -69,4 +69,11 @@ public interface EnergyCompanyDao {
      */
     public String getEnergyCompanyProperty(LiteEnergyCompany ec,
             int rolePropertyID);
+
+    /**
+     * Method to add a customer, energy company pair to EnergyCompanyCustomerList
+     * @param customerId
+     * @param ecId
+     */
+    void addEnergyCompanyCustomerListEntry(int customerId, int ecId);
 }

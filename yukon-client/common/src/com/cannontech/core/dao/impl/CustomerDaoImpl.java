@@ -15,9 +15,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.DeviceCustomerListDao;
+import com.cannontech.core.dao.EnergyCompanyDao;
 import com.cannontech.core.dao.GraphCustomerListDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.FieldMapper;
@@ -46,6 +48,8 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
     private DeviceCustomerListDao deviceCustomerListDao;
     private static final String CUSTOMER_TABLE_NAME = "Customer";
     private static final String CI_CUSTOMER_TABLE_NAME = "CICustomerBase";
+    private AddressDao addressDao;
+    private EnergyCompanyDao energyCompanyDao;
     
     /**
      * CustomerFuncs constructor comment.
@@ -92,12 +96,12 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
 
         @Override
         public Number getPrimaryKey(LiteCICustomer object) {
-            return object.getCustomerID();
+            return object.getCustomerID() == CtiUtilities.NONE_ZERO_ID ? null : object.getCustomerID();
         }
 
         @Override
         public void setPrimaryKey(LiteCICustomer object, int value) {
-            object.setCustomerID(value == CtiUtilities.NONE_ZERO_ID ? null : value);
+            object.setCustomerID(value);
         }
     };
     
@@ -156,17 +160,41 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
         String deleteCustomerNotifGroupMap = "DELETE FROM CustomerNotifGroupMap WHERE CustomerId = ?";
         simpleJdbcTemplate.update(deleteCustomerNotifGroupMap, customerId);
         boolean isCICustomer = isCICustomer(customerId);
-        String delete = "DELETE FROM Customer WHERE CustomerId = ?";
-        simpleJdbcTemplate.update(delete, customerId);
         if(isCICustomer) {
             deleteCICustomer(customerId);
         }
+        String delete = "DELETE FROM Customer WHERE CustomerId = ?";
+        simpleJdbcTemplate.update(delete, customerId);
     }
     
     @Override
     public void deleteCICustomer(Integer customerId) {
+        String sql = "DELETE FROM EnergyCompanyCustomerList WHERE CustomerID = ?";
+        simpleJdbcTemplate.update(sql, customerId);
+        sql = "DELETE FROM LMEnergyExchangeHourlyCustomer WHERE CustomerId = ?";
+        simpleJdbcTemplate.update(sql, customerId);
+        sql = "DELETE FROM LMEnergyExchangeCustomerReply WHERE CustomerId = ?";
+        simpleJdbcTemplate.update(sql, customerId);
+        sql = "DELETE FROM LMCurtailCustomerActivity WHERE CustomerId = ?";
+        simpleJdbcTemplate.update(sql, customerId);
+        sql = "DELETE FROM CICustomerPointData WHERE CustomerId = ?";
+        simpleJdbcTemplate.update(sql, customerId);
+        sql = "DELETE FROM CustomerBaseLinePoint WHERE CustomerId = ?";
+        simpleJdbcTemplate.update(sql, customerId);
+        
+        int companyAddressId = getAddressIdForCICustomer(customerId);
         String delete = "DELETE FROM CICustomerBase WHERE CustomerId = ?";
         simpleJdbcTemplate.update(delete, customerId);
+        if(companyAddressId > CtiUtilities.NONE_ZERO_ID) {
+            addressDao.remove(companyAddressId);
+        }
+    }
+    
+    @Override
+    public int getAddressIdForCICustomer(int customerId) {
+        String sql = "SELECT MainAddressId from CICustomerBase WHERE CustomerId = ?";
+        int addressId = simpleJdbcTemplate.queryForInt(sql, customerId);
+        return addressId;
     }
     
     @Override
@@ -340,6 +368,7 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
     @Override
     public void addCICustomer(LiteCICustomer customer) throws DataAccessException {
         liteCICustomerTemplate.insert(customer);
+        energyCompanyDao.addEnergyCompanyCustomerListEntry(customer.getCustomerID(), customer.getEnergyCompanyID());
     }
     
     @Override
@@ -381,6 +410,16 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
     @Autowired
     public void setDeviceCustomerListDao(DeviceCustomerListDao deviceCustomerListDao) {
         this.deviceCustomerListDao = deviceCustomerListDao;
+    }
+    
+    @Autowired
+    public void setAddressDao(AddressDao addressDao) {
+        this.addressDao = addressDao;
+    }
+    
+    @Autowired
+    public void setEnergyCompanyDao(EnergyCompanyDao energyCompanyDao) {
+        this.energyCompanyDao = energyCompanyDao;
     }
     
     public void afterPropertiesSet() throws Exception {

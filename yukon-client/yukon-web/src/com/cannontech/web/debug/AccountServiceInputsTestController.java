@@ -136,6 +136,7 @@ public class AccountServiceInputsTestController extends MultiActionController{
             results.add(accountNumber + " deleted successfully.");
         } catch (RuntimeException e) {
             errorReasons.add(e.getMessage());
+            CTILogger.error(e.getMessage(), e);
         }
         
         return returnMav(request, results, errorReasons);

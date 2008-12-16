@@ -147,7 +147,7 @@ public class AccountServiceImpl implements AccountService {
          */
         LiteAddress liteAddress = null;
         if(streetAddress != null && StringUtils.isNotBlank(streetAddress.getLocationAddress1())) {
-        liteAddress = new LiteAddress();
+            liteAddress = new LiteAddress();
             setAddressFieldsFromDTO(liteAddress, streetAddress);
             addressDao.add(liteAddress);
         }
@@ -220,12 +220,20 @@ public class AccountServiceImpl implements AccountService {
          * Create comercial/industrial customer if company was passed
          */
         if(liteCustomer.getCustomerTypeID() == CustomerTypes.CUSTOMER_CI) {
+            LiteAddress companyAddress = new LiteAddress();
+            if(streetAddress != null && StringUtils.isNotBlank(streetAddress.getLocationAddress1())) {
+                setAddressFieldsFromDTO(companyAddress, streetAddress);
+            }
+            addressDao.add(companyAddress);
+            
             LiteCICustomer liteCICustomer = new LiteCICustomer();
-            liteCICustomer.setMainAddressID(liteAddress.getAddressID());
+            liteCICustomer.setCustomerID(liteCustomer.getCustomerID());
+            liteCICustomer.setMainAddressID(companyAddress.getAddressID());
             liteCICustomer.setDemandLevel(CtiUtilities.NONE_ZERO_ID);
             liteCICustomer.setCurtailAmount(CtiUtilities.NONE_ZERO_ID);
             liteCICustomer.setCompanyName(accountDto.getCompanyName());
             liteCICustomer.setCICustType(YukonListEntryTypes.CUSTOMER_TYPE_COMMERCIAL);
+            liteCICustomer.setEnergyCompanyID(energyCompany.getEnergyCompanyID());
             customerDao.addCICustomer(liteCICustomer);
             dbPersistantDao.processDBChange(new DBChangeMsg(liteCustomer.getLiteID(),
                                    DBChangeMsg.CHANGE_CUSTOMER_DB,
@@ -548,12 +556,7 @@ public class AccountServiceImpl implements AccountService {
             liteCustomer.setAltTrackingNumber(accountDto.getAltTrackingNumber());
             if(!accountDto.getIsCommercial()) {
                 // was commercial, not anymore
-                LiteCICustomer liteCICustomer = customerDao.getLiteCICustomer(liteCustomer.getCustomerID());
                 customerDao.deleteCICustomer(liteCustomer.getCustomerID());
-                if(liteCICustomer.getMainAddressID() != CtiUtilities.NONE_ZERO_ID) {
-                    LiteAddress mainAddress = addressDao.getByAddressId(liteCICustomer.getMainAddressID());
-                    addressDao.remove(mainAddress);
-                }
                 liteCustomer.setCustomerTypeID(CustomerTypes.CUSTOMER_RESIDENTIAL);
                 customerDao.updateCustomer(liteCustomer);
             }else {
@@ -566,13 +569,23 @@ public class AccountServiceImpl implements AccountService {
         }else {
             if(accountDto.getIsCommercial()) {
                 // was residential, now commercial
+                LiteAddress companyAddress = new LiteAddress();
+                if(streetAddress != null && StringUtils.isNotBlank(streetAddress.getLocationAddress1())) {
+                    setAddressFieldsFromDTO(companyAddress, streetAddress);
+                }
+                addressDao.add(companyAddress);
+                
+                liteCustomer.setCustomerTypeID(CustomerTypes.CUSTOMER_CI);
+                customerDao.updateCustomer(liteCustomer);
+                
                 LiteCICustomer liteCICustomer = new LiteCICustomer();
-                liteCICustomer.setMainAddressID(liteStreetAddress.getAddressID());
+                liteCICustomer.setMainAddressID(companyAddress.getAddressID());
                 liteCICustomer.setDemandLevel(CtiUtilities.NONE_ZERO_ID);
                 liteCICustomer.setCurtailAmount(CtiUtilities.NONE_ZERO_ID);
                 liteCICustomer.setCompanyName(accountDto.getCompanyName());
                 liteCICustomer.setCICustType(YukonListEntryTypes.CUSTOMER_TYPE_COMMERCIAL);
                 liteCICustomer.setAltTrackingNumber(accountDto.getAltTrackingNumber());
+                liteCICustomer.setCustomerID(liteCustomer.getCustomerID());
                 customerDao.addCICustomer(liteCICustomer);
             }else {
                 customerDao.updateCustomer(liteCustomer);

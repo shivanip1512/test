@@ -5,6 +5,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
+
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.EnergyCompanyDao;
 import com.cannontech.core.dao.NotFoundException;
@@ -24,6 +27,7 @@ public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
     private AuthDao authDao;
     private YukonUserDao yukonUserDao;
     private IDatabaseCache databaseCache;
+    private SimpleJdbcTemplate simpleJdbcTemplate;
     
 private EnergyCompanyDaoImpl() {
 	super();
@@ -126,6 +130,17 @@ public String getEnergyCompanyProperty(LiteYukonUser user, int rolePropertyID) {
  */
 public String getEnergyCompanyProperty(LiteEnergyCompany ec, int rolePropertyID) {
     return authDao.getRolePropertyValue(getEnergyCompanyUser(ec), rolePropertyID);
+}
+
+@Override
+public void addEnergyCompanyCustomerListEntry(int customerId, int energyCompanyId) {
+    String sql = "INSERT INTO EnergyCompanyCustomerList VALUES (?,?)";
+    simpleJdbcTemplate.update(sql, energyCompanyId, customerId);
+}
+
+@Autowired
+public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
+    this.simpleJdbcTemplate = simpleJdbcTemplate;
 }
 
 public void setDatabaseCache(IDatabaseCache databaseCache) {

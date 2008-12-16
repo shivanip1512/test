@@ -164,4 +164,11 @@ public interface CustomerDao {
      */
     public void updateCICustomer(LiteCICustomer customer);
 
+    /**
+     * Method to return the address id of a commercial/industrial customer
+     * @param customerId
+     * @return
+     */
+    public int getAddressIdForCICustomer(int customerId);
+
 }
