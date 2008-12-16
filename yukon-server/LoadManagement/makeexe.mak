@@ -40,7 +40,8 @@ $(COMPILEBASE)\lib\ctimsg.lib \
 $(COMPILEBASE)\lib\ctibase.lib \
 $(COMPILEBASE)\lib\clrdump.lib \
 $(COMPILEBASE)\lib\ctiholidaydb.lib \
-$(COMPILEBASE)\lib\ctiseasondb.lib
+$(COMPILEBASE)\lib\ctiseasondb.lib \
+$(COMPILEBASE)\lib\ctidbsrc.lib
 
 BASEOBJS= \
 clientconn.obj \
