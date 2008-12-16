@@ -222,18 +222,6 @@ INT CtiDeviceCCU::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMes
     return(NORMAL);
 }
 
-bool CtiDeviceCCU::hasQueuedWork() const
-{
-    if( getType() == TYPE_CCU711 && queuedWorkCount != 0 )
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
-
 INT CtiDeviceCCU::queuedWorkCount() const
 {
     long workCount = 0;
@@ -246,17 +234,6 @@ INT CtiDeviceCCU::queuedWorkCount() const
 
     return workCount;
 }
-
-/*void CtiDeviceCCU::getRequestQueueInfo(long requestID, long &count, long &priority)
-{
-    count = 0;
-    priority = 0;
-    if( requestID > 0 )
-    {
-        CtiTransmitter711Info *p711Info =  (CtiTransmitter711Info *)_trxInfo;
-        GetRequestCountAndPriority(p711Info->QueueHandle, requestID, count, priority);
-    }
-}*/
 
 Cti::DeviceQueueInterface* CtiDeviceCCU::getDeviceQueueHandler()
 {

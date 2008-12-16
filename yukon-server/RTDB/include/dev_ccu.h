@@ -1,22 +1,5 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_ccu
-*
-* Class:  CtiDeviceCCU
-* Date:   6/07/2001
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_ccu.h-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2007/11/12 17:08:02 $
-*
-* Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #ifndef __DEV_CCU_H__
 #define __DEV_CCU_H__
-
 
 #include <windows.h>
 
@@ -69,10 +52,6 @@ public:
 
     CtiDeviceCCU& operator=(const CtiDeviceCCU& aRef);
 
-    /*
-     *  These guys initiate a scan based upon the type requested.
-     */
-
     INT CCUDecode(INMESS *InMessage, CtiTime &ScanTime, list< CtiMessage* > &retList);
     CtiReturnMsg*  CCUDecodeStatus(INMESS *InMessage);
 
@@ -81,7 +60,6 @@ public:
 
     bool checkForTimeSyncLoop(int status);
     bool checkAlgorithmReset(int alg);
-    bool hasQueuedWork() const;
     INT queuedWorkCount() const;
     Cti::DeviceQueueInterface* getDeviceQueueHandler();
 
