@@ -131,7 +131,7 @@ public class XMLTestController extends MultiActionController {
 			QName userElementName = new QName("http://yukon.cannontech.com/api", "user", "api");
 			SoapHeaderElement userHeaderElement = soapHeader.addHeaderElement(userElementName);
 			userHeaderElement.setText(this.userContext.getYukonUser().getUsername());
-			userHeaderElement.setMustUnderstand(true);
+			userHeaderElement.setMustUnderstand(false);
 		}
     }
 
@@ -156,8 +156,8 @@ public class XMLTestController extends MultiActionController {
     private List<String> getUriNames() throws IOException {
     	
     	List<String> uriNames = new ArrayList<String>();
-    	uriNames.add("http://tmackdesk2.cannontech.com:8081/api/soap/loadManagement");
-    	uriNames.add("http://tmackdesk2.cannontech.com:8081/api/soap/stars");
+    	uriNames.add("http://127.0.0.1:8081/api/soap/loadManagement");
+    	uriNames.add("http://127.0.0.1:8081/api/soap/stars");
     	uriNames.add("http://www.weather.gov/forecasts/xml/SOAP_server/ndfdXMLserver.php");
 			
     	return uriNames;

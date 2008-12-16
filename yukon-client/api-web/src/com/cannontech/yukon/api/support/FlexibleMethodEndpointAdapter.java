@@ -14,11 +14,11 @@ import org.springframework.ws.context.MessageContext;
 import org.springframework.ws.server.endpoint.MethodEndpoint;
 import org.springframework.ws.server.endpoint.adapter.AbstractMethodEndpointAdapter;
 
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.user.SystemUserContext;
-import com.cannontech.user.UserUtils;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.ImmutableSet;
 
@@ -56,17 +56,18 @@ public class FlexibleMethodEndpointAdapter extends AbstractMethodEndpointAdapter
 					thisArgument = jdomResult.getDocument().getRootElement();
 				}
 			} else if (LiteYukonUser.class.equals(parameter)) {
-				Object property = messageContext.getProperty("yukonUser");
-				if (property instanceof String) {
-					LiteYukonUser yukonUser = yukonUserDao.getLiteYukonUser((String)property);
+				
+				String userName = SoapHeaderElementExtractor.findElementValue(messageContext, "user");
+				
+				if (userName != null) {
+					LiteYukonUser yukonUser = yukonUserDao.getLiteYukonUser(userName);
 					if (yukonUser == null) {
-						throw new NotFoundException("User " + property + " is not known");
+						throw new NotFoundException("User " + userName + " is not known");
 					} else {
 						thisArgument = yukonUser;
 					}
 				} else {
-					// TODO this should be an exception or something
-					thisArgument = UserUtils.getYukonUser();
+					throw new NotAuthorizedException("Service requires user name header");
 				}
 			} else if (YukonUserContext.class.equals(parameter)) {
 				thisArgument = new SystemUserContext();

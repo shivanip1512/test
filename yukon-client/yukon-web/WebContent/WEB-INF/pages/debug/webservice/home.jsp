@@ -35,7 +35,9 @@
 
 		function uriChange() {
 
+			$('uri').value = $('uriSelect').options[$('uriSelect').selectedIndex].value;
 			$('selectedUriIndex').value = $('uri').selectedIndex;
+			
 		}
 		
 		function executeRequestForm() {
@@ -71,34 +73,51 @@
     					</c:choose>
     				</c:forEach>
     			</select>
+    			<br><br>
     		</td>
     		
     		<%-- URI --%>
     		<td>
-    			<B>URI:</B> 
+    		
     			<input type="hidden" id="selectedUriIndex" name="selectedUriIndex" value="${selectedUriIndex}">
-    			<select id="uri" name="uri" onchange="uriChange()">
-    				<c:forEach var="uriName" items="${uriNames}" varStatus="status">
-    					<c:choose>
-	    					<c:when test="${status.count - 1 == selectedUriIndex}">
-	    						<option value="${uriName}" selected>${uriName}</option>
-	    					</c:when>
-	    					<c:otherwise>
-	    						<option value="${uriName}">${uriName}</option>
-	    					</c:otherwise>
-    					</c:choose>
-    				</c:forEach>
-    			</select>
+    			<table>
+    				<tr>
+    					<td>
+    						<B>URI:</B>
+    					</td>
+    					<td>
+    						<select id="uriSelect" name="uriSelect" onchange="uriChange()">
+			    				<c:forEach var="uriName" items="${uriNames}" varStatus="status">
+			    					<c:choose>
+				    					<c:when test="${status.count - 1 == selectedUriIndex}">
+				    						<option value="${uriName}" selected>${uriName}</option>
+				    					</c:when>
+				    					<c:otherwise>
+				    						<option value="${uriName}">${uriName}</option>
+				    					</c:otherwise>
+			    					</c:choose>
+			    				</c:forEach>
+			    			</select>
+    					</td>
+    				</tr>
+    				<tr>
+    					<td>&nbsp;</td>
+    					<td>
+    						<input type="text" name="uri" id="uri" value="http://127.0.0.1:8081/api/soap/loadManagement" size="66">
+    					</td>
+    				</tr>
+    			</table>
+    			
     		</td>
     		<td align="right">
     			<input type="button" value="Submit Request" onclick="executeRequestForm()"> 
+    			<br><br>
     		</td>
     	</tr>
     	
     	<%-- REQUEST AREA --%>
     	<tr>
     		<td colspan="3">
-    			
 		        <textarea id="xmlRequest" name="xmlRequest" class="xml">${xmlRequest}</textarea>
 		    </td>
     	</tr>
