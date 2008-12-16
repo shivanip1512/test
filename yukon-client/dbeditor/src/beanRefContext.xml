@@ -4,7 +4,7 @@
  <beans>
 <!-- The application context files that are loaded by tomcat -->
    <bean id="com.cannontech.context.dbeditor" 
-        class="com.cannontech.spring.CannonClassPathXmlApplicationContext"
+        class="org.springframework.context.support.ClassPathXmlApplicationContext"
         lazy-init="true">
      <constructor-arg>
        <list>
