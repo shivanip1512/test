@@ -13,6 +13,8 @@ import org.springframework.web.servlet.ModelAndView;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 /**
 * LogDownloadController handles the downloading of
@@ -24,6 +26,8 @@ import com.cannontech.util.ServletUtil;
 * @see LogController base class and AbstractController
 * @author dharrington
 */
+@CheckRole(AdministratorRole.ROLEID)
+@CheckRoleProperty(AdministratorRole.ADMIN_VIEW_LOGS)
 public class LogDownloadController extends LogController {
     
     //logger for this class

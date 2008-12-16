@@ -20,6 +20,8 @@ import com.cannontech.common.version.VersionTools;
 import com.cannontech.database.PoolManager;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 /**
  * LogMenuController handles the retrieving of log file names from the local and
@@ -27,6 +29,9 @@ import com.cannontech.util.ServletUtil;
  * @see view for this controller: menu.jsp
  * @author dharrington
  */
+
+@CheckRole(AdministratorRole.ROLEID)
+@CheckRoleProperty(AdministratorRole.ADMIN_VIEW_LOGS)
 public class LogMenuController extends LogController {
 
     private PoolManager poolManager;

@@ -18,6 +18,8 @@ import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 
 /**
@@ -28,6 +30,8 @@ import com.cannontech.util.ServletUtil;
  * @see view for this controller is logTail.jsp
  * @author dharrington
  */
+@CheckRole(AdministratorRole.ROLEID)
+@CheckRoleProperty(AdministratorRole.ADMIN_VIEW_LOGS)
 public class LogTailController extends LogController {
     
     //logger for this class
