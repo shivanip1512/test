@@ -1,23 +1,14 @@
 package com.cannontech.yukon.api.utils;
 
 import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.util.ArrayList;
 
-import javax.xml.transform.Result;
 import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.xerces.jaxp.validation.XMLSchemaFactory;
-import org.jdom.Document;
 import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
-import org.jdom.output.XMLOutputter;
-import org.jdom.transform.JDOMResult;
 import org.jdom.transform.JDOMSource;
 import org.junit.Assert;
 import org.springframework.core.io.Resource;
