@@ -19,12 +19,11 @@ import com.cannontech.stars.dr.controlhistory.dao.ControlHistoryEventDao.Control
 import com.cannontech.stars.dr.controlhistory.model.ControlHistory;
 import com.cannontech.stars.dr.controlhistory.model.ControlHistoryEvent;
 import com.cannontech.stars.dr.controlhistory.service.ControlHistoryService;
+import com.cannontech.stars.dr.displayable.model.DisplayableProgram;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.cannontech.web.stars.dr.consumer.displayable.model.DisplayableScheduledOptOut;
-import com.cannontech.web.stars.dr.consumer.displayable.model.DisplayableProgram;
 
 @CheckRole(ResidentialCustomerRole.ROLEID)
 @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY)
@@ -58,11 +57,6 @@ public class ControlHistoryController extends AbstractConsumerController {
         List<DisplayableProgram> displayablePrograms = 
             displayableProgramDao.getAllDisplayablePrograms(customerAccount, yukonUserContext);
         map.addAttribute("displayablePrograms", displayablePrograms);
-        
-        DisplayableScheduledOptOut displayableOptOut = 
-            displayableScheduledOptOutDao.getLastDisplayableScheduledOptOut(customerAccount,
-                                                                   yukonUserContext);
-        map.addAttribute("displayableOptOut", displayableOptOut);
         
         return viewName;
     }

@@ -245,6 +245,21 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         CustomerAccount account = simpleJdbcTemplate.queryForObject(sql.toString(), rowMapper, contactId, contactId);
         return account;
     }
+    
+    @Override
+    public int getTotalNumberOfAccounts(LiteStarsEnergyCompany energyCompany) {
+
+    	SqlStatementBuilder sql = new SqlStatementBuilder();
+    	sql.append("SELECT COUNT(*)");
+    	sql.append("FROM CustomerAccount ca");
+    	sql.append("	JOIN ECToAccountMapping ectam ON ca.AccountId = ectam.AccountId");
+    	sql.append("WHERE ectam.EnergyCompanyId = ?");
+    	
+    	int totalNumberOfAccounts = simpleJdbcTemplate.queryForInt(sql.toString(), 
+    															energyCompany.getEnergyCompanyID());
+    	
+    	return totalNumberOfAccounts;
+    }
 
     public void setSimpleJdbcTemplate(final SimpleJdbcTemplate simpleJdbcTemplate) {
         this.simpleJdbcTemplate = simpleJdbcTemplate;

@@ -11,7 +11,6 @@ import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.dr.optout.model.OptOut;
-import com.cannontech.stars.dr.optout.model.ScheduledOptOut;
 import com.cannontech.stars.xml.serialize.StarsLMProgramEvent;
 import com.cannontech.stars.xml.serialize.StarsLMProgramHistory;
 
@@ -55,22 +54,6 @@ public final class OptOutUtil {
         optOut.setEndDate(endDate);
         optOut.setDurationInHours(durationInHours);
         return optOut;
-    }
-    
-    public static ScheduledOptOut toScheduledOptOut(final int customerAccountId,
-            final StarsLMProgramEvent event) {
-        
-        int durationInHours = event.getDuration();
-        Date startDate = event.getEventDateTime();
-        Date endDate = (durationInHours > 24) ?
-            DateUtils.addHours(startDate, durationInHours) : null;
-        
-        ScheduledOptOut scheduledOptOut = new ScheduledOptOut();
-        scheduledOptOut.setCustomerAccountId(customerAccountId);
-        scheduledOptOut.setStartDate(startDate);
-        scheduledOptOut.setEndDate(endDate);
-        scheduledOptOut.setDurationInHours(durationInHours);
-        return scheduledOptOut;
     }
     
 }

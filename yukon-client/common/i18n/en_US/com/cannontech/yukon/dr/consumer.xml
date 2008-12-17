@@ -26,7 +26,6 @@
     <entry key="yukon.dr.consumer.general.description">Thank you for participating in our Consumer Energy Services programs. By participating, you have helped to optimize our delivery of energy, stabilize rates, and reduce energy costs. Best of all, you are saving energy dollars!&lt;br&gt;&lt;br&gt;This site is designed to help manage your programs online from anywhere with access to a Web browser.</entry>
     <entry key="yukon.dr.consumer.general.enrolledProgramsTitle">Your Enrolled Programs</entry>
     <entry key="yukon.dr.consumer.general.notEnrolledMessage">You are not enrolled in any viewable programs.</entry>
-    <entry key="yukon.dr.consumer.general.scheduledoptout.forMessage">You have an opt out event scheduled for {0}.</entry>
     <entry key="yukon.dr.consumer.general.scheduledoptout.fromMessage">You have an opt out event scheduled from {0} to {1}.</entry>
     
     <!--  contacts.jsp -->
@@ -326,6 +325,26 @@
     <entry key="yukon.dr.consumer.optout.days">Days</entry>
     <entry key="yukon.dr.consumer.optout.apply">Apply</entry>
     
+    <entry key="yukon.dr.consumer.optout.currentOptOuts">Current Opt Outs</entry>
+    <entry key="yukon.dr.consumer.optout.noCurrentOptOuts">There are no Active or Scheduled Opt Outs</entry>
+    <entry key="yukon.dr.consumer.optout.device">Device</entry>
+    <entry key="yukon.dr.consumer.optout.program">Program(s)</entry>
+    <entry key="yukon.dr.consumer.optout.status">Status</entry>
+    <entry key="yukon.dr.consumer.optout.actions">Actions</entry>
+    <entry key="yukon.dr.consumer.optout.cancel">Cancel</entry>
+    
+    <entry key="yukon.dr.consumer.optout.optOutLimits">Opt Out Limits</entry>
+    <entry key="yukon.dr.consumer.optout.used">Used</entry>
+    <entry key="yukon.dr.consumer.optout.remaining">Remaining</entry>
+    <entry key="yukon.dr.consumer.optout.unlimitedRemaining">unlimited</entry>
+    
+    <entry key="yukon.dr.consumer.optout.optOutHistory">Opt Out History</entry>
+    <entry key="yukon.dr.consumer.optout.dateScheduled">Date Scheduled</entry>
+    <entry key="yukon.dr.consumer.optout.dateActive">Active Date</entry>
+    <entry key="yukon.dr.consumer.optout.noPreviousOptOuts">There are no previous Opt Outs</entry>
+    <entry key="yukon.dr.consumer.optout.duration">Duration</entry>
+    <entry key="yukon.dr.consumer.optout.canceled">Canceled</entry>
+
     <!-- optOutList.jsp -->
     <entry key="yukon.dr.consumer.optoutlist.header">Programs - Opt Out</entry>
     <entry key="yukon.dr.consumer.optoutlist.description">Please select the hardware you want to opt out of.</entry>
@@ -374,5 +393,37 @@ Reenable Time: {reenableDate}
 ======================================================
     
 {questions}]]></entry>
+    <entry key="yukon.dr.consumer.cancelscheduledoptoutnotification.messageBody">
+<![CDATA[======================================================
+    
+{accountInfo}
+======================================================
+    
+SCHEDULED OPT OUT CANCELED
+
+Scheduled Opt Out Time:  {optOutDate}
+Scheduled Reenable Time: {reenableDate}
+    
+{programInfo}
+======================================================]]></entry>
+    <entry key="yukon.dr.consumer.reenableoptoutnotification.messageBody">
+<![CDATA[======================================================
+    
+{accountInfo}
+======================================================
+    
+REENABLE
+
+Last Opt Out Time:  {optOutDate}
+Scheduled Reenable Time: {reenableDate}
+    
+{programInfo}
+======================================================]]></entry>
+    
+    <!-- Opt out states -->
+    <entry key="yukon.dr.consumer.optout.state.START_OPT_OUT_SENT">Active</entry>
+    <entry key="yukon.dr.consumer.optout.state.CANCEL_SENT">Canceled</entry>
+    <entry key="yukon.dr.consumer.optout.state.SCHEDULED">Scheduled</entry>
+    <entry key="yukon.dr.consumer.optout.state.SCHEDULE_CANCELLED">Scheduled Canceled</entry>
     
 </properties>    

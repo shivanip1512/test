@@ -19,14 +19,14 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
+import com.cannontech.stars.dr.displayable.dao.DisplayableEnrollmentDao;
+import com.cannontech.stars.dr.displayable.model.DisplayableEnrollment;
 import com.cannontech.stars.dr.program.model.ProgramEnrollmentResultEnum;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.WebSecurityChecker;
 import com.cannontech.web.security.annotation.CheckRole;
-import com.cannontech.web.stars.dr.consumer.displayable.dao.DisplayableEnrollmentDao;
-import com.cannontech.web.stars.dr.consumer.displayable.model.DisplayableEnrollment;
 
 @CheckRole(ResidentialCustomerRole.ROLEID)
 @Controller

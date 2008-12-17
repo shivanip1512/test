@@ -10,11 +10,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
+import com.cannontech.stars.dr.displayable.model.DisplayableProgram;
+import com.cannontech.stars.dr.optout.model.OptOutEvent;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.cannontech.web.stars.dr.consumer.displayable.model.DisplayableScheduledOptOut;
-import com.cannontech.web.stars.dr.consumer.displayable.model.DisplayableProgram;
 
 @CheckRole(ResidentialCustomerRole.ROLEID)
 @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_ACCOUNT_GENERAL)
@@ -35,10 +35,10 @@ public class GeneralController extends AbstractConsumerController {
 
         if (isNotEnrolled) return viewName; // if there are no programs enrolled there is nothing more to show
         
-        DisplayableScheduledOptOut displayableOptOut = 
-            displayableScheduledOptOutDao.getLastDisplayableScheduledOptOut(customerAccount,
-                                                                   yukonUserContext);
-        map.addAttribute("displayableOptOut", displayableOptOut);
+        List<OptOutEvent> scheduledOptOuts = 
+        	optOutEventDao.getAllScheduledOptOutEvents(customerAccount.getAccountId());
+
+        map.addAttribute("scheduledOptOuts", scheduledOptOuts);
         
         return viewName;
     }

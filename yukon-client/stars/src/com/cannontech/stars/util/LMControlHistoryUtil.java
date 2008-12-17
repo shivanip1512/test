@@ -3,7 +3,6 @@ package com.cannontech.stars.util;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -47,14 +46,11 @@ public class LMControlHistoryUtil {
     public static final int TOTAL_OPTOUT_TIME = 2;
     public static final int TOTAL_CONTROL_DURING_OPTOUT_TIME = 3;
     
-    private static Hashtable activeCtrlHist = new Hashtable();
+    private static Hashtable<Integer, LiteStarsLMControlHistory> activeCtrlHist = 
+    	new Hashtable<Integer, LiteStarsLMControlHistory>();
 	
 	private static boolean isUpToDate(LiteStarsLMControlHistory liteCtrlHist) {
 		return (System.currentTimeMillis() - liteCtrlHist.getLastSearchedStopTime()) * 0.001 < LMCtrlHistTimerTask.TIMER_PERIOD * 2;
-	}
-	
-	private static boolean needUpdate(LiteStarsLMControlHistory liteCtrlHist, Date startDate) {
-		return (startDate != null) && (!isUpToDate(liteCtrlHist) || StarsUtils.isDateBefore( startDate, new Date(liteCtrlHist.getLastSearchedStartTime()) ));
 	}
 	
 	public synchronized static void addActiveControlHistory(LiteStarsLMControlHistory liteCtrlHist) {
@@ -62,7 +58,7 @@ public class LMControlHistoryUtil {
 	}
 	
 	public synchronized static LiteStarsLMControlHistory getActiveControlHistory(int groupID) {
-		return (LiteStarsLMControlHistory)activeCtrlHist.get( new Integer(groupID) );
+		return activeCtrlHist.get( new Integer(groupID) );
 	}
 	
 	public synchronized static void clearActiveControlHistory() {
@@ -96,12 +92,12 @@ public class LMControlHistoryUtil {
 		return date;
 	}
 
-	public static com.cannontech.database.db.pao.LMControlHistory[] getLMControlHistory(int groupID, Date dateFrom, Date dateTo) {
+	public static LMControlHistory[] getLMControlHistory(int groupID, Date dateFrom, Date dateTo) {
 		java.sql.Connection conn = null;
 		java.sql.PreparedStatement pstmt = null;
 		java.sql.ResultSet rset = null;
         
-		ArrayList ctrlHistList = new ArrayList();
+		List<LMControlHistory> ctrlHistList = new ArrayList<LMControlHistory>();
 
 		try {
 			conn = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
@@ -128,8 +124,7 @@ public class LMControlHistoryUtil {
             
 			rset = pstmt.executeQuery();
 			while (rset.next()) {
-				com.cannontech.database.db.pao.LMControlHistory ctrlHist =
-						new com.cannontech.database.db.pao.LMControlHistory();
+				LMControlHistory ctrlHist = new LMControlHistory();
 
 				ctrlHist.setLmCtrlHistID( new Integer(rset.getInt(1)) );
 				ctrlHist.setPaObjectID( new Integer(rset.getInt(2)) );
@@ -325,7 +320,7 @@ public class LMControlHistoryUtil {
 	public static int[] getControllableGroupIDs(LiteLMConfiguration liteCfg, int relayNo) {
 		if (relayNo <= 0) return new int[0];
 		
-		ArrayList groupIDs = new ArrayList();
+		List<Integer> groupIDs = new ArrayList<Integer>();
 		
 		try {
 			if (liteCfg.getExpressCom() != null) {
@@ -476,7 +471,7 @@ public class LMControlHistoryUtil {
 		
 		int[] ids = new int[ groupIDs.size() ];
 		for (int i = 0; i < groupIDs.size(); i++)
-			ids[i] = ((Integer) groupIDs.get(i)).intValue();
+			ids[i] = groupIDs.get(i);
 		return ids;
 	}
 	
@@ -540,15 +535,16 @@ public class LMControlHistoryUtil {
 	}
 	
 	public static void updateActiveControlHistory() {
-		Hashtable ctrlHistMap = new Hashtable( activeCtrlHist );
+		Hashtable<Integer, LiteStarsLMControlHistory> ctrlHistMap = 
+			new Hashtable<Integer, LiteStarsLMControlHistory> ( activeCtrlHist );
 		if (ctrlHistMap.size() == 0) return;
 		
 		long lastSearchedTime = System.currentTimeMillis();
 		int startCtrlHistID = Integer.MAX_VALUE;
 		
-		Iterator it = ctrlHistMap.values().iterator();
+		Iterator<LiteStarsLMControlHistory> it = ctrlHistMap.values().iterator();
 		while (it.hasNext()) {
-			LiteStarsLMControlHistory liteCtrlHist = (LiteStarsLMControlHistory) it.next();
+			LiteStarsLMControlHistory liteCtrlHist = it.next();
 			
 			if (liteCtrlHist.getLastControlHistory() != null &&
 				liteCtrlHist.getLastControlHistory().getLmCtrlHistID() < startCtrlHistID)
@@ -560,7 +556,7 @@ public class LMControlHistoryUtil {
 		com.cannontech.database.db.pao.LMControlHistory[] ctrlHist = getLMControlHistory( startCtrlHistID );
 		
 		for (int i = 0; i < ctrlHist.length; i++) {
-			LiteStarsLMControlHistory liteCtrlHist = (LiteStarsLMControlHistory) ctrlHistMap.get( ctrlHist[i].getPaObjectID() );
+			LiteStarsLMControlHistory liteCtrlHist = ctrlHistMap.get( ctrlHist[i].getPaObjectID() );
 			if (liteCtrlHist == null) continue;
 			
 			LiteLMControlHistory lastCtrlHist = liteCtrlHist.getLastControlHistory();
@@ -585,7 +581,7 @@ public class LMControlHistoryUtil {
 		
 		it = ctrlHistMap.values().iterator();
 		while (it.hasNext()) {
-			LiteStarsLMControlHistory liteCtrlHist = (LiteStarsLMControlHistory) it.next();
+			LiteStarsLMControlHistory liteCtrlHist = it.next();
 			
 			if (liteCtrlHist.getLastControlHistory() != null && lastSearchedID > 0)
 				liteCtrlHist.getLastControlHistory().setLmCtrlHistID( lastSearchedID );

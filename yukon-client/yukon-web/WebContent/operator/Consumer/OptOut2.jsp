@@ -48,89 +48,12 @@ function prepareSubmit(form) {
               <% String header = DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_TITLE_OPT_OUT); %>
               <%@ include file="include/InfoSearchBar.jspf" %>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
-              <table width="80%" border="0" cellspacing="0" cellpadding="0">
-                <tr> 
-                  <td align="center" class="MainText">Please select the hardware you want to <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_OPT_OUT_VERB %>"/>.</td>
-                </tr>
-              </table>
-              <form name="form1" method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient" onsubmit="return prepareSubmit(this);">
-			    <input type="hidden" name="action" value="OptOutProgram">
-				<input type="hidden" name="StartDate" value="<%= request.getParameter("StartDate") %>">
-				<input type="hidden" name="Duration" value="<%= request.getParameter("Duration") %>">
-			    <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Consumer/Programs.jsp">
-			    <input type="hidden" name="REFERRER" value="<%= request.getContextPath() %>/operator/Consumer/OptOut.jsp">
-			    <input type="hidden" name="<%= ServletUtils.CONFIRM_ON_MESSAGE_PAGE %>">
-<% if (exitQuestions != null && exitQuestions.getStarsExitInterviewQuestionCount() > 0) { %>
-			    <input type="hidden" name="<%= ServletUtils.NEED_MORE_INFORMATION %>">
-			    <input type="hidden" name="REDIRECT2" value="<%= request.getContextPath() %>/operator/Consumer/OptForm.jsp">
-<% } %>
-                <table width="70%" border="1" cellspacing="0" cellpadding="3">
-                  <tr align="center">
-                    <td class="HeaderCell" width="5%">&nbsp;</td>
-                    <td class="HeaderCell" width="35%">Hardware</td>
-                    <td class="HeaderCell" width="60%">Program(s) Assigned</td>
-                  </tr>
-                  <%
-	for (int i = 0; i < inventories.getStarsInventoryCount(); i++) {
-		StarsInventory inventory = inventories.getStarsInventory(i);
-		if (inventory.getLMHardware() == null) continue;
-		
-		int invProgCount = 0;
-		ArrayList assignedProgs = new ArrayList();
-		for (int j = 0; j < appliances.getStarsApplianceCount(); j++) {
-			StarsAppliance app = appliances.getStarsAppliance(j);
-			if (app.getInventoryID() == inventory.getInventoryID() && app.getProgramID() > 0) {
-				String[] prog = new String[2];
-				prog[0] = ServletUtils.getProgramDisplayNames(ServletUtils.getEnrollmentProgram(categories, app.getProgramID()))[0];
-				prog[1] = (app.getLoadNumber() > 0)? String.valueOf(app.getLoadNumber()) : "(N/A)";
-				assignedProgs.add(prog);
-			}
-			else {
-				invProgCount++;
-			}
-		}
-		
-		if (invProgCount >= appliances.getStarsApplianceCount()) continue;
-		String label = inventory.getDeviceLabel();
-		if (label.equals("")) label = inventory.getLMHardware().getManufacturerSerialNumber();
-%>
-                  <tr>
-                    <td width="5%" class="TableCell">
-                      <input type="checkbox" name="InvID" value="<%= inventory.getInventoryID() %>" checked>
-                    </td>
-                    <td width="35%" class="TableCell"><%= StringEscapeUtils.escapeHtml(label) %></td>
-                    <td width="60%" class="TableCell"> 
-                      <table width="100%" border="0" cellspacing="0" cellpadding="1" class="TableCell">
-                        <%
-		for (int j = 0; j < assignedProgs.size(); j++) {
-			String[] prog = (String[]) assignedProgs.get(j);
-%>
-                        <tr> 
-                          <td width="65%"><%= prog[0] %></td>
-                          <td width="35%">Relay <%= prog[1] %></td>
-                        </tr>
-                        <%
-		}
-%>
-                      </table>
-                    </td>
-                  </tr>
-                  <%
-	}
-%>
-                </table>
-                <br>
-                <table width="50%" border="0" cellspacing="0" cellpadding="5" align="center">
-                  <tr> 
-                    <td width="50%" align="right"> 
-                      <input type="submit" name="Submit" value="Submit">
-                    </td>
-                    <td width="50%" align="left"> 
-					  <input type="button" name="Cancel" value="Cancel" onclick="history.back()">
-                    </td>
-                  </tr>
-                </table>
-                </form>
+              
+              <jsp:include page="/spring/stars/operator/optout/view2">
+                <jsp:param name="startDate" value="${param.startDate}"/>
+                <jsp:param name="durationInDays" value="${param.duration}"/>
+              </jsp:include>
+              
               <p>&nbsp;</p>
             </div>
           </td>

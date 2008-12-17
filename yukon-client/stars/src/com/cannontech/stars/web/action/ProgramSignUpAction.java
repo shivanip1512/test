@@ -911,9 +911,6 @@ public class ProgramSignUpAction implements ActionBase {
 			for (int i = 0; i < progUnenrollList.size(); i++) {
 				Integer progID = progUnenrollList.get(i);
 				
-				ProgramOptOutAction.removeProgramFutureActivationEvents(
-						liteAcctInfo.getProgramHistory(), progID.intValue(), energyCompany );
-	    		
 				event.setEventID( null );
 				event.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
 				eventDB.setAccountID( accountID );

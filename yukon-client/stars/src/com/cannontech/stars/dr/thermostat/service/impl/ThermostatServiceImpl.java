@@ -130,9 +130,6 @@ public class ThermostatServiceImpl implements ThermostatService {
         } catch (CommandCompletionException e) {
             logger.error("Thermostat manual event failed.", e);
             return ThermostatManualEventResult.CONSUMER_MANUAL_ERROR;
-        } catch (PaoAuthorizationException e) {
-            logger.error("Thermostat manual event failed.", e);
-            return ThermostatManualEventResult.CONSUMER_MANUAL_ERROR;
         } catch (ConnectionException e) {
             logger.error("Thermostat manual event failed.", e);
             return ThermostatManualEventResult.CONSUMER_MANUAL_ERROR;
@@ -243,9 +240,6 @@ public class ThermostatServiceImpl implements ThermostatService {
 			resultHolder = commandRequestExecutor.execute(
 					routeId, updateScheduleCommand, yukonUser);
         } catch (CommandCompletionException e) {
-            logger.error("Failed to update thermostat schedule.", e);
-            return ThermostatScheduleUpdateResult.CONSUMER_UPDATE_SCHEDULE_ERROR;
-        } catch (PaoAuthorizationException e) {
             logger.error("Failed to update thermostat schedule.", e);
             return ThermostatScheduleUpdateResult.CONSUMER_UPDATE_SCHEDULE_ERROR;
         } catch (ConnectionException e) {

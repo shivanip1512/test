@@ -158,5 +158,14 @@
       <sequence name="Customer">
         <table name="Customer" identitycolumn="CustomerId" initsequence="true"/>
       </sequence>
+      <sequence name="OptOutEvent">
+        <table name="OptOutEvent" identitycolumn="OptOutEventId" initsequence="true"/>
+      </sequence>
+      <sequence name="OptOutEventLog">
+        <table name="OptOutEventLog" identitycolumn="OptOutEventLogId" initsequence="true"/>
+      </sequence>
+      <sequence name="OptOutTempOverride">
+        <table name="OptOutTemporaryOverride" identitycolumn="OptOutTemporaryOverrideId" initsequence="true"/>
+      </sequence>
   </sequencetable>
 </sequencetables>

@@ -1,0 +1,121 @@
+package com.cannontech.stars.dr.optout.dao;
+
+import java.util.Date;
+import java.util.List;
+
+import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.stars.dr.optout.model.OptOutAction;
+import com.cannontech.stars.dr.optout.model.OptOutCounts;
+import com.cannontech.stars.dr.optout.model.OptOutEvent;
+import com.cannontech.stars.dr.optout.model.OptOutEventDto;
+import com.cannontech.stars.dr.optout.model.OptOutLog;
+
+/**
+ * Dao class for persisting Opt out events
+ * 
+ */
+public interface OptOutEventDao {
+
+	public OptOutEvent getOptOutEventById(int eventId);
+
+	/**
+	 * Method to save/update an Opt out event and log the action taken
+	 * 
+	 * @param event - Event to save/update
+	 * @param action - Action taken on the opt out event
+	 * @param user - User requesting the action
+	 */
+	public void save(OptOutEvent event, OptOutAction action, LiteYukonUser user);
+	
+	/**
+	 * Method to determine if there is a current active opt out for a given inventory/customer account 
+	 * pair.
+	 */
+	public boolean isOptedOut(int inventoryId, int customerAccountId);
+	
+	/**
+	 * Method to get a list of opt out history for a given account for all inventory on that account
+	 * @param customerAccountId - Account to get history for
+	 * @param numberOfRecords - Optional parameter to specify max number of records to return
+	 * @return List of opt out event history
+	 */
+	public List<OptOutEventDto> getOptOutHistoryForAccount(int customerAccountId, int... numberOfRecords);
+
+	/**
+	 * Method to get the last (or current) opt out event that actually happened (ignoring canceled 
+	 * scheduled events) for the given inventory and account
+	 * @return Last or current event or null if no events
+	 */
+	public OptOutEvent getLastEvent(int inventoryId, int customerAccountId);
+	
+	/**
+	 * Method to add an opt change to the OptOutEventLog table
+	 * @param optOutLog - Change to be logged
+	 */
+	public void logOptOutRequest(OptOutLog optOutLog);
+	
+	/**
+	 * Method to get the active (hasn't been canceled) scheduled opt out event if one exists
+	 * @param inventoryId - Inventory to get event for
+	 * @param customerAccountId - Account to get event for
+	 * @return Event or null if none exists
+	 */
+	public OptOutEvent getScheduledOptOutEvent(int inventoryId, int customerAccountId);
+	
+	/**
+	 * Method to get a list of all currently scheduled opt out events for the account
+	 * @param customerAccountId - Account to get opt outs for
+	 * @return List of scheduled opt outs
+	 */
+	public List<OptOutEvent> getAllScheduledOptOutEvents(int customerAccountId);
+	
+	/**
+	 * Method to get a list of all currently active and scheduled opt outs for an account
+	 * @param customerAccountId - Account to get opt outs for
+	 * @return List of events
+	 */
+	public List<OptOutEventDto> getCurrentOptOuts(int customerAccountId);
+
+	/**
+	 * Method to get all current opt out events for a given energy company
+	 * @param energyCompany - Company to get opt outs for
+	 * @return List of Opt out events
+	 */
+	public List<OptOutEvent> getAllCurrentOptOuts(LiteStarsEnergyCompany energyCompany);
+	
+	/**
+	 * Method to get the total number of opt outs that have been used for a given inventory and 
+	 * account for a given time period
+	 * 
+	 * @param inventoryId - Inventory to count opt outs for
+	 * @param customerAccountId - Account to count opt outs for
+	 * @param startDate - Start of time period to count opt outs
+	 * @param endDate - End of time period to count opt outs
+	 * @return Number of opt outs used in time period
+	 */
+	public Integer getNumberOfOptOutsUsed(int inventoryId,
+			int customerAccountId, Date startDate, Date endDate);
+	
+	/**
+	 * Method to get a count of all currently active Opt Outs
+	 * @param energyCompany - Company to get opt outs for
+	 * @return Count of active Opt Outs
+	 */
+	public int getTotalNumberOfActiveOptOuts(LiteStarsEnergyCompany energyCompany);
+
+	/**
+	 * Method to get a count of all scheduled Opt Outs
+	 * @param energyCompany - Company to get opt outs for
+	 * @return Count of scheduled Opt Outs
+	 */
+	public int getTotalNumberOfScheduledOptOuts(LiteStarsEnergyCompany energyCompany);
+	
+	/**
+	 * Method to change the current count state of all active opt outs to the given value
+	 * @param energyCompany - Energy company to change state for
+	 * @param counts - Count or Don't Count
+	 */
+	public void changeCurrentOptOutCountState(LiteStarsEnergyCompany energyCompany, OptOutCounts counts);
+	
+}

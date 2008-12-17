@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.account.model.CustomerAccountWithNames;
 
@@ -36,4 +37,11 @@ public interface CustomerAccountDao {
     public CustomerAccount getByAccountNumber(String accountNumber, int energyCompanyId);
     
     public CustomerAccount getByAccountNumber(String accountNumber, List<Integer> energyCompanyIds);
+    
+    /**
+     * Method to get a total count of the number of customer accounts in the system.
+     * @param energyCompany - Energy company to get accounts for
+     * @return Total number of accounts
+     */
+    public int getTotalNumberOfAccounts(LiteStarsEnergyCompany energyCompany);
 }

@@ -31,7 +31,6 @@ import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.optout.service.OptOutNotificationService;
 import com.cannontech.stars.dr.optout.service.OptOutNotificationUtil;
 import com.cannontech.stars.dr.optout.service.OptOutRequest;
-import com.cannontech.stars.web.action.ProgramOptOutAction;
 import com.cannontech.tools.email.EmailMessage;
 import com.cannontech.user.YukonUserContext;
 
@@ -40,7 +39,9 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
     private static final String DELIMITER = ",";
 
     private static final String CODE_SUBJECT = "yukon.dr.consumer.optoutnotification.subject";
-    private static final String CODE_MESSAGEBODY = "yukon.dr.consumer.optoutnotification.messageBody";
+    private static final String OPT_OUT_MESSAGEBODY = "yukon.dr.consumer.optoutnotification.messageBody";
+    private static final String CANCEL_SCHEDULED_OPT_OUT_MESSAGEBODY = "yukon.dr.consumer.cancelscheduledoptoutnotification.messageBody";
+    private static final String REENABLE_MESSAGEBODY = "yukon.dr.consumer.reenableoptoutnotification.messageBody";
     
     private final Logger logger = YukonLogManager.getLogger(OptOutNotificationServiceImpl.class);
     private YukonUserContextMessageSourceResolver messageSourceResolver;
@@ -49,21 +50,81 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
     private StarsInventoryBaseDao starsInventoryBaseDao;
     
     @Override
-    public void sendNotification(final CustomerAccount customerAccount,  
+    public void sendOptOutNotification(final CustomerAccount customerAccount,  
             final LiteStarsEnergyCompany energyCompany, final OptOutRequest request, 
             final YukonUserContext yukonUserContext) throws MessagingException {
         
         MessageSourceAccessor messageSourceAccessor = 
             messageSourceResolver.getMessageSourceAccessor(yukonUserContext);
         
+        String subject = messageSourceAccessor.getMessage(CODE_SUBJECT);
+        String messageBody = messageSourceAccessor.getMessage(OPT_OUT_MESSAGEBODY);
+        
         final Holder holder = new Holder();
         holder.customerAccount = customerAccount;
         holder.energyCompany = energyCompany;
         holder.request = request;
-        holder.messageSourceAccessor = messageSourceAccessor;
+        holder.subject = subject;
+        holder.messageBody = messageBody;
         holder.yukonUserContext = yukonUserContext;
         
-        String recipientsCsvString = 
+        this.sendNotification(holder);
+        
+    }
+    
+
+	@Override
+	public void sendCancelScheduledNotification(
+			CustomerAccount customerAccount,
+			LiteStarsEnergyCompany energyCompany, OptOutRequest request,
+			YukonUserContext yukonUserContext) throws MessagingException {
+
+		MessageSourceAccessor messageSourceAccessor = 
+            messageSourceResolver.getMessageSourceAccessor(yukonUserContext);
+        
+        String subject = messageSourceAccessor.getMessage(CODE_SUBJECT);
+        String messageBody = messageSourceAccessor.getMessage(CANCEL_SCHEDULED_OPT_OUT_MESSAGEBODY);
+        
+        final Holder holder = new Holder();
+        holder.customerAccount = customerAccount;
+        holder.energyCompany = energyCompany;
+        holder.request = request;
+        holder.subject = subject;
+        holder.messageBody = messageBody;
+        holder.yukonUserContext = yukonUserContext;
+        
+        this.sendNotification(holder);
+		
+	}
+
+	@Override
+	public void sendReenableNotification(CustomerAccount customerAccount,
+			LiteStarsEnergyCompany energyCompany, OptOutRequest request,
+			YukonUserContext yukonUserContext) throws MessagingException {
+
+		MessageSourceAccessor messageSourceAccessor = 
+            messageSourceResolver.getMessageSourceAccessor(yukonUserContext);
+        
+        String subject = messageSourceAccessor.getMessage(CODE_SUBJECT);
+        String messageBody = messageSourceAccessor.getMessage(REENABLE_MESSAGEBODY);
+        
+        final Holder holder = new Holder();
+        holder.customerAccount = customerAccount;
+        holder.energyCompany = energyCompany;
+        holder.request = request;
+        holder.subject = subject;
+        holder.messageBody = messageBody;
+        holder.yukonUserContext = yukonUserContext;
+        
+        this.sendNotification(holder);
+		
+	}
+	
+	private void sendNotification(Holder holder) throws MessagingException {
+		
+		LiteStarsEnergyCompany energyCompany = holder.energyCompany;
+		
+		String recipientsCsvString = 
             energyCompany.getEnergyCompanySetting( EnergyCompanyRole.OPTOUT_NOTIFICATION_RECIPIENTS );
         
         if (StringUtils.isBlank(recipientsCsvString)) {
@@ -72,7 +133,7 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
         
         String[] recipients = recipientsCsvString.split(DELIMITER);
         String fromAddress = energyCompany.getAdminEmailAddress();
-        String subject = messageSourceAccessor.getMessage(CODE_SUBJECT);
+        String subject = holder.subject;
         String messageBody = getMessageBody(holder);
         
         if (messageBody == null) {
@@ -90,9 +151,8 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
         EmailMessage emailMsg = new EmailMessage(recipients, subject, messageBody);
         emailMsg.setFrom(fromAddress);
         emailMsg.send();
-    }
+	}
     
-    @SuppressWarnings("unchecked")
     private String getMessageBody(Holder holder) {
         final int durationInHours = holder.request.getDurationInHours();
         if (durationInHours <= 0) return null;
@@ -122,17 +182,11 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
                                                    holder.energyCompany.getEnergyCompanyID());
 
         List<Integer> inventoryIdList = holder.request.getInventoryIdList();
-        List<LiteStarsLMHardware> hardwares;
+        List<LiteStarsLMHardware> hardwares = new ArrayList<LiteStarsLMHardware>();;
         
-        if (inventoryIdList.size() > 0) {
-            hardwares = new ArrayList<LiteStarsLMHardware>();
-            for (final Integer inventoryId : inventoryIdList) {
-                hardwares.add((LiteStarsLMHardware) starsInventoryBaseDao.getById(inventoryId));
-            }    
-        }
-        else {
-            hardwares = ProgramOptOutAction.getAffectedHardwares(liteAcctInfo, holder.energyCompany);
-        }
+        for (final Integer inventoryId : inventoryIdList) {
+            hardwares.add((LiteStarsLMHardware) starsInventoryBaseDao.getById(inventoryId));
+        }    
         
         String accountInfo = OptOutNotificationUtil.getAccountInformation(holder.energyCompany, liteAcctInfo);
         String programInfo = OptOutNotificationUtil.getProgramInformation(holder.energyCompany, liteAcctInfo, hardwares);
@@ -146,7 +200,7 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
         values.put("questions", questions);
         
         final SimpleTemplateProcessor templateProcessor = new SimpleTemplateProcessor();
-        String template = holder.messageSourceAccessor.getMessage(CODE_MESSAGEBODY);
+        String template = holder.messageBody;
         
         String messageBody = templateProcessor.process(template, values);
         return messageBody;
@@ -156,7 +210,8 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
         CustomerAccount customerAccount;
         LiteStarsEnergyCompany energyCompany;
         OptOutRequest request;
-        MessageSourceAccessor messageSourceAccessor;
+        String subject;
+        String messageBody;
         YukonUserContext yukonUserContext;
     }
     

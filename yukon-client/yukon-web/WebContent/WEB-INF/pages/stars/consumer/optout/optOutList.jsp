@@ -66,7 +66,7 @@ function createJSON() {
                                         
                                         <tr class="<ct:alternateRow odd='altRow' even=''/>">
                                             <td align="left">
-                                                <input id="check_${inventoryId}" type="checkbox" checked="checked"></input>
+                                                <input id="check_${inventoryId}" type="checkbox"></input>
                                             </td>
                                             <td align="left" title="${displayableInventory.serialNumber}">
                                                 <spring:escapeBody htmlEscape="true">${displayableInventory.displayName}</spring:escapeBody>

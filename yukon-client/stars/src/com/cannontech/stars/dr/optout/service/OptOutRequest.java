@@ -1,10 +1,15 @@
 package com.cannontech.stars.dr.optout.service;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import com.cannontech.stars.dr.optout.model.ScheduledOptOutQuestion;
 
+/**
+ * Class which holds information about an Opt Out request
+ */
 public class OptOutRequest {
     private Date startDate;
     private int durationInHours;
@@ -41,6 +46,20 @@ public class OptOutRequest {
     
     public void setQuestions(List<ScheduledOptOutQuestion> questions) {
         this.questions = questions;
+    }
+    
+    public Date getStopDate() {
+    	if(startDate == null) {
+    		return null;
+    	}
+    	
+    	Calendar cal = new GregorianCalendar();
+    	cal.setTime(startDate);
+    	cal.add(Calendar.HOUR_OF_DAY, durationInHours);
+    	
+    	Date stopDate = cal.getTime();
+    	
+    	return stopDate;
     }
     
 }

@@ -15,14 +15,14 @@ import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
 import com.cannontech.stars.dr.controlhistory.dao.ControlHistoryDao;
+import com.cannontech.stars.dr.displayable.dao.DisplayableInventoryDao;
+import com.cannontech.stars.dr.displayable.dao.DisplayableProgramDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryBaseDao;
+import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.dr.program.service.ProgramEnrollmentService;
 import com.cannontech.stars.dr.program.service.ProgramService;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.stars.dr.consumer.displayable.dao.DisplayableInventoryDao;
-import com.cannontech.web.stars.dr.consumer.displayable.dao.DisplayableProgramDao;
-import com.cannontech.web.stars.dr.consumer.displayable.dao.DisplayableScheduledOptOutDao;
 
 public abstract class AbstractConsumerController {
     protected YukonUserContextMessageSourceResolver messageSourceResolver;
@@ -33,10 +33,10 @@ public abstract class AbstractConsumerController {
     protected ProgramEnrollmentService programEnrollmentService;
     protected InventoryBaseDao inventoryBaseDao;
     protected DisplayableProgramDao displayableProgramDao;
-    protected DisplayableScheduledOptOutDao displayableScheduledOptOutDao;
     protected DisplayableInventoryDao displayableInventoryDao;
     protected ControlHistoryDao controlHistoryDao;
     protected AccountCheckerService accountCheckerService;
+    protected OptOutEventDao optOutEventDao;
     
     @ModelAttribute("customerAccount")
     public CustomerAccount getCustomerAccount(HttpServletRequest request) {
@@ -91,12 +91,6 @@ public abstract class AbstractConsumerController {
     }
     
     @Autowired
-    public void setDisplayableScheduledOptOutDao(
-            DisplayableScheduledOptOutDao displayableScheduledOptOutDao) {
-        this.displayableScheduledOptOutDao = displayableScheduledOptOutDao;
-    }
-    
-    @Autowired
     public void setControlHistoryDao(ControlHistoryDao controlHistoryDao) {
         this.controlHistoryDao = controlHistoryDao;
     }
@@ -112,5 +106,10 @@ public abstract class AbstractConsumerController {
             DisplayableInventoryDao displayableInventoryDao) {
         this.displayableInventoryDao = displayableInventoryDao;
     }
+    
+    @Autowired
+    public void setOptOutEventDao(OptOutEventDao optOutEventDao) {
+		this.optOutEventDao = optOutEventDao;
+	}
     
 }

@@ -17,7 +17,7 @@
         <br>
     
         <input type="button" value='<cti:msg key="yukon.dr.consumer.optoutresult.ok"/>'
-               onclick="location.href='${generalUrl}';"></input>
+               onclick="location.href='/spring/stars/consumer/optout';"></input>
     </div>
     
     

@@ -10,6 +10,9 @@
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
+    <!-- Loads all @Components from the specified packages. -->
+    <context:component-scan base-package="com.cannontech.stars.dr" />
+
     <bean id="simpleCollectionFactory" class="com.cannontech.stars.web.collection.SimpleCollectionFactory"/>
 
     <bean id="abstractFilter" class="com.cannontech.stars.util.filter.AbstractFilter" abstract="true"/>
@@ -176,13 +179,15 @@
 
     <bean id="thermostatService" class="com.cannontech.stars.dr.thermostat.service.impl.ThermostatServiceImpl" />
 
-    <bean id="scheduledOptOutDao" class="com.cannontech.stars.dr.optout.dao.impl.ScheduledOptOutDaoImpl"/>
-    
     <bean id="enrollmentDao" class="com.cannontech.stars.dr.enrollment.dao.impl.EnrollmentDaoImpl"/>
     
     <bean id="optOutService" class="com.cannontech.stars.dr.optout.service.impl.OptOutServiceImpl"/>
 
-    <bean id="optOutDao" class="com.cannontech.stars.dr.optout.dao.impl.OptOutDaoImpl"/>
+    <bean id="optOutStatusService" class="com.cannontech.stars.dr.optout.service.impl.OptOutStatusServiceImpl"/>
+
+    <bean id="optOutEventDao" class="com.cannontech.stars.dr.optout.dao.impl.OptOutEventDaoImpl"/>
+
+    <bean id="optOutTemporaryOverrideDao" class="com.cannontech.stars.dr.optout.dao.impl.OptOutTemporaryOverrideDaoImpl"/>
 
     <bean id="optOutNotificationService" class="com.cannontech.stars.dr.optout.service.impl.OptOutNotificationServiceImpl"/>
     

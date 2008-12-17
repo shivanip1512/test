@@ -72,6 +72,12 @@
 			</c:when>
 		</c:choose>
 		
+		<cti:checkMultiProperty property="ConsumerInfoRole.OPT_OUT_ADMIN_STATUS,ConsumerInfoRole.OPT_OUT_ADMIN_CHANGE_ENABLE,ConsumerInfoRole.OPT_OUT_ADMIN_CANCEL_CURRENT,ConsumerInfoRole.OPT_OUT_ADMIN_CHANGE_COUNTS">
+			<tags:sectionLink>
+	            <a href="/spring/stars/operator/optOut/admin"><cti:msg key="yukon.web.menu.portal.consumerAccountInformation.optOutAdmin" /></a>
+	        </tags:sectionLink>
+	    </cti:checkMultiProperty>
+		
 		<!-- Customer search form -->
 		<c:if test="${showStarsList}">
 			<div class="sectionForm">

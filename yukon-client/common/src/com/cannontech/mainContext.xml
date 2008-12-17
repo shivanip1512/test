@@ -127,6 +127,8 @@
                <value>classpath:com/cannontech/yukon/web/defaults</value>
                <value>classpath:com/cannontech/yukon/web/modules/consumer/general</value>
                <value>classpath:com/cannontech/yukon/web/modules/consumer/root</value>
+               <value>classpath:com/cannontech/yukon/web/modules/dr/optOut</value>
+               <value>classpath:com/cannontech/yukon/web/modules/dr/root</value>
                <value>classpath:com/cannontech/yukon/common/device/bulk</value>
                <value>classpath:com/cannontech/yukon/common/device/commander</value>
                <value>classpath:com/cannontech/yukon/common/device/group</value>

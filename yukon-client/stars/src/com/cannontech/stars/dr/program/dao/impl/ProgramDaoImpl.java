@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -19,7 +18,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.ChunkingSqlTemplate;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
@@ -28,12 +26,11 @@ import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.stars.dr.appliance.model.Appliance;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
-import com.cannontech.stars.dr.program.model.ChanceOfControl;
+import com.cannontech.stars.dr.program.dao.ProgramRowMapper;
 import com.cannontech.stars.dr.program.model.Program;
 
 public class ProgramDaoImpl implements ProgramDao {
     private static final String selectSql;
-    private final ParameterizedRowMapper<Program> rowMapper = createRowMapper();
     private final ParameterizedRowMapper<Integer> groupIdRowMapper = createGroupIdRowMapper();
     private final ParameterizedRowMapper<Integer> programIdRowMapper = createProgramIdRowMapper();
     private SimpleJdbcTemplate simpleJdbcTemplate;
@@ -60,7 +57,7 @@ public class ProgramDaoImpl implements ProgramDao {
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public Program getByProgramId(final int programId) {
         final String sql = selectSql + " AND pwp.ProgramID = ?";
-        Program program = simpleJdbcTemplate.queryForObject(sql, rowMapper, programId);
+        Program program = simpleJdbcTemplate.queryForObject(sql, new ProgramRowMapper(simpleJdbcTemplate), programId);
         return program;
     }
     
@@ -77,6 +74,7 @@ public class ProgramDaoImpl implements ProgramDao {
     }
     
     @Override
+    @Transactional
     public Map<ApplianceCategory, List<Program>> getByApplianceCategories(
         final List<ApplianceCategory> applianceCategories) {
 
@@ -98,7 +96,7 @@ public class ProgramDaoImpl implements ProgramDao {
                 String sql = sqlBuilder.toString();
                 return sql;
             }
-        }, idList, rowMapper);
+        }, idList, new ProgramRowMapper(simpleJdbcTemplate));
         
         final Map<ApplianceCategory, List<Program>> resultMap =
             new HashMap<ApplianceCategory, List<Program>>(applianceCategories.size());
@@ -138,7 +136,7 @@ public class ProgramDaoImpl implements ProgramDao {
         sqlBuilder.append(" ORDER BY ProgramOrder");
         
         String sql = sqlBuilder.toString();
-        List<Program> programList = simpleJdbcTemplate.query(sql, rowMapper);
+        List<Program> programList = simpleJdbcTemplate.query(sql, new ProgramRowMapper(simpleJdbcTemplate));
         return programList;
     }
 
@@ -158,7 +156,7 @@ public class ProgramDaoImpl implements ProgramDao {
         
         try {
             return simpleJdbcTemplate.queryForObject(programQuery.toString(), 
-                                                     rowMapper,
+            										 new ProgramRowMapper(simpleJdbcTemplate),
                                                      DeviceClasses.STRING_CLASS_LOADMANAGER,
                                                      PAOGroups.STRING_CAT_LOADMANAGEMENT,
                                                      programName);
@@ -217,38 +215,6 @@ public class ProgramDaoImpl implements ProgramDao {
         return groupIdList;
     }
     
-    private ParameterizedRowMapper<Program> createRowMapper() {
-        final ParameterizedRowMapper<Program> mapper = new ParameterizedRowMapper<Program>() {
-            @Override
-            public Program mapRow(ResultSet rs, int rowNum) throws SQLException {
-                final Program program = new Program();
-                program.setProgramId(rs.getInt("ProgramID"));
-                
-                String chanceOfControlString = rs.getString("ChanceOfControl");
-                ChanceOfControl chanceOfControl = ChanceOfControl.valueOfName(chanceOfControlString);
-                program.setChanceOfControl(chanceOfControl);
-                
-                program.setDescription(rs.getString("Description"));
-                program.setProgramOrder(rs.getInt("ProgramOrder"));
-                
-                String programName = getProgramName(rs);
-                program.setProgramName(programName);
-
-                String logoLocation = getLogoLocation(rs);
-                program.setLogoLocation(logoLocation);
-                
-                int applianceCategoryId = rs.getInt("ApplianceCategoryID");
-                program.setApplianceCategoryId(applianceCategoryId);
-                
-                String url = rs.getString("url");
-                program.setDescriptionUrl(url);
-                
-                return program;
-            }
-        };
-        return mapper;
-    }
-    
     private ParameterizedRowMapper<Integer> createGroupIdRowMapper() {
         final ParameterizedRowMapper<Integer> mapper = new ParameterizedRowMapper<Integer>() {
             @Override
@@ -269,58 +235,6 @@ public class ProgramDaoImpl implements ProgramDao {
             }
         };
         return mapper;
-    }
-    
-    private String getProgramName(final ResultSet rs) throws SQLException {
-        String programName;
-        String paoName = rs.getString("PAOName");
-        
-        String alternateDisplayName = rs.getString("AlternateDisplayName");
-        if (alternateDisplayName == null) {
-            programName = paoName;
-        } else {
-            String[] split = alternateDisplayName.split(",");
-            programName = (split.length > 0) ? split[0] : paoName;
-        }
-        return programName;
-    }
-    
-    /**
-     * Returns the logoLocation of the program, if the program's logoLocation
-     * is empty the logoLocation of the ApplianceCategory that the program 
-     * belongs to is returned instead.
-     * @param rs 
-     * @return logoLocation
-     * @throws SQLException
-     */
-    private String getLogoLocation(final ResultSet rs) throws SQLException {
-        String logoLocation = rs.getString("LogoLocation");
-       
-        boolean isEmpty = isEmptyString(logoLocation);
-        if (!isEmpty) return logoLocation;
-        
-        int applianceCategoryId = rs.getInt("ApplianceCategoryID");
-        
-        final StringBuilder sb = new StringBuilder();
-        sb.append("SELECT LogoLocation ");
-        sb.append("FROM YukonWebConfiguration ywc,ApplianceCategory ac ");
-        sb.append("WHERE ywc.ConfigurationID = ac.WebConfigurationID ");
-        sb.append("AND ac.ApplianceCategoryID = ?");
-        
-        String sql = sb.toString();
-        String applianceCategoryLogoLocation = simpleJdbcTemplate.queryForObject(sql, String.class, applianceCategoryId);
-        return applianceCategoryLogoLocation;
-    }
-    
-    /**
-     * Checks for null or empty Strings "", empty database varchars "(none)",
-     * and empty csv varchars stored in STARS ",,"
-     */
-    private boolean isEmptyString(final String value) {
-        if (StringUtils.isEmpty(value)) return true;
-        if (value.equals(CtiUtilities.STRING_NONE)) return true;
-        if (value.matches("^,+$")) return true;
-        return false;
     }
     
     @Autowired

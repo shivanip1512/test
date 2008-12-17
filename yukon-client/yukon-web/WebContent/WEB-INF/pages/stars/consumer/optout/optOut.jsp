@@ -59,6 +59,126 @@
 	        </table>
         </form>
         
+        <br><br>
+        <!-- Current Opt Outs -->
+        <cti:msg key="yukon.dr.consumer.optout.currentOptOuts"/>
+        
+        <c:choose>
+            <c:when test="${fn:length(currentOptOutList) > 0}">
+		        <table id="deviceTable" class="miniResultsTable">
+		        	<tr class="<ct:alternateRow odd="" even="altRow"/>">
+		        		<th><cti:msg key="yukon.dr.consumer.optout.device"/></th>
+		        		<th><cti:msg key="yukon.dr.consumer.optout.program"/></th>
+		        		<th><cti:msg key="yukon.dr.consumer.optout.status"/></th>
+		        		<th><cti:msg key="yukon.dr.consumer.optout.dateActive"/></th>
+		        		<th><cti:msg key="yukon.dr.consumer.optout.actions"/></th>
+		        	</tr>
+		        	
+		        	<c:forEach var="optOut" items="${currentOptOutList}">
+			        	<tr class="<ct:alternateRow odd="" even="altRow"/>">
+			        		<td>${optOut.inventory.deviceLabel}</td>
+			        		<td>
+		                        <c:forEach var="program" items="${optOut.programList}">
+		                            ${program.programName} 
+		                        </c:forEach>
+		                    </td>
+			        		<td><cti:msg key="${optOut.state.formatKey}"/></td>
+			        		<td>
+                                <cti:formatDate value="${optOut.startDate}" type="DATEHM"/>
+                            </td>
+			        		<td>
+                                <c:if test="${optOut.state == 'SCHEDULED'}">
+			                        <form action="/spring/stars/consumer/optout/cancel" method="post">
+				        				<input type="hidden" name="eventId" value="${optOut.eventId}">
+				        				<input type="submit" name="submit" value="<cti:msg key="yukon.dr.consumer.optout.cancel"/>">
+				        			</form>
+			        			</c:if>
+			        		</td>
+			        	</tr>
+		        	</c:forEach>
+		        </table>
+		    </c:when>
+		    <c:otherwise>
+                <br><cti:msg key="yukon.dr.consumer.optout.noCurrentOptOuts"/>
+		    </c:otherwise>
+        </c:choose>
+        
+        <br><br>
+        <!-- Opt Out Limits -->
+        <cti:msg key="yukon.dr.consumer.optout.optOutLimits"/>
+        
+        <table id="deviceTable" class="miniResultsTable">
+            <tr class="<ct:alternateRow odd="" even="altRow"/>">
+                <th><cti:msg key="yukon.dr.consumer.optout.device"/></th>
+                <th><cti:msg key="yukon.dr.consumer.optout.used"/></th>
+                <th><cti:msg key="yukon.dr.consumer.optout.remaining"/></th>
+            </tr>
+            
+            <c:forEach var="optOutCount" items="${optOutCountList}">
+                <tr class="<ct:alternateRow odd="" even="altRow"/>">
+                    <td>${optOutCount.inventory.displayName}</td>
+                    <td>${optOutCount.usedOptOuts}</td>
+                    <td>
+                        <c:choose>
+                            <c:when test="${optOutCount.remainingOptOuts == -1}">
+                                <cti:msg key="yukon.dr.consumer.optout.unlimitedRemaining"/>
+                            </c:when>
+                            <c:otherwise>
+                                ${optOutCount.remainingOptOuts}
+                            </c:otherwise>
+                        </c:choose>
+                    </td>
+                </tr>
+            </c:forEach>
+        </table>
+
+        <br><br>
+        <!-- Opt Out History -->
+        <cti:msg key="yukon.dr.consumer.optout.optOutHistory"/>
+        <c:choose>
+            <c:when test="${fn:length(previousOptOutList) > 0}">
+		        <table id="deviceTable" class="miniResultsTable">
+		        	<tr class="<ct:alternateRow odd="" even="altRow"/>">
+		        		<th><cti:msg key="yukon.dr.consumer.optout.device"/></th>
+		        		<th><cti:msg key="yukon.dr.consumer.optout.program"/></th>
+		        		<th><cti:msg key="yukon.dr.consumer.optout.dateScheduled"/></th>
+		        		<th><cti:msg key="yukon.dr.consumer.optout.dateActive"/></th>
+		        		<th><cti:msg key="yukon.dr.consumer.optout.duration"/></th>
+		        	</tr>
+		        	
+		        	<c:forEach var="optOut" items="${previousOptOutList}">
+			        	<tr class="<ct:alternateRow odd="" even="altRow"/>">
+			        		<td>${optOut.inventory.deviceLabel}</td>
+			        		<td>
+		                        <c:forEach var="program" items="${optOut.programList}">
+		                            ${program.programName} 
+		                        </c:forEach>
+		                    </td>
+			        		<td>
+			        		   <cti:formatDate value="${optOut.scheduledDate}" type="DATEHM"/>
+			        		</td>
+			        		<td>
+			        		   <cti:formatDate value="${optOut.startDate}" type="DATEHM"/>
+                            </td>
+			        		<td>
+		                        <c:choose>
+		                            <c:when test="${optOut.state == 'SCHEDULE_CANCELED'}">
+		                                <cti:msg key="yukon.dr.consumer.optout.canceled"/>
+		                            </c:when>
+		                            <c:otherwise>
+					        		    <cti:formatTimePeriod startDate="${optOut.startDate}" endDate="${optOut.stopDate}" type="DH"/>
+		                            </c:otherwise>
+		                        </c:choose>
+			        		</td>
+			        	</tr>
+		        	</c:forEach>
+		        </table>
+		    </c:when>
+		    <c:otherwise>
+                <br><cti:msg key="yukon.dr.consumer.optout.noPreviousOptOuts"/>
+		    </c:otherwise>
+        </c:choose>
+        
     </div>     
     
 </cti:standardPage>    

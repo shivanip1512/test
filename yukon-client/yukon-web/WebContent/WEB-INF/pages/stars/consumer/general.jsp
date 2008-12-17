@@ -72,18 +72,14 @@
             </c:choose>
         </ct:boxContainer>
         <br>
-        <c:if test="${not empty displayableOptOut}">
+        <c:if test="${not empty scheduledOptOuts}">
             <i>
-                <cti:formatDate value="${displayableOptOut.startDate}" type="DATE" var="startDate" />
-
-                <c:if test="${displayableOptOut.forDisplay}">
-                    <cti:msg key="yukon.dr.consumer.general.scheduledoptout.forMessage" arguments="${startDate}"/>
-                </c:if>
-                
-                <c:if test="${displayableOptOut.fromDisplay}">
-                    <cti:formatDate value="${displayableOptOut.endDate}" type="DATE" var="endDate" />
-                    <cti:msg key="yukon.dr.consumer.general.scheduledoptout.fromMessage" arguments="${startDate},${endDate}"/>
-                </c:if>
+	            <c:forEach var="event" items="${scheduledOptOuts}">
+	                <cti:formatDate value="${event.startDate}" type="DATE" var="startDate" />
+	                <cti:formatDate value="${event.stopDate}" type="DATE" var="stopDate" />
+	                <cti:msg key="yukon.dr.consumer.general.scheduledoptout.fromMessage" arguments="${startDate},${stopDate}"/>
+	                <br>
+	            </c:forEach>
             </i>
         </c:if>
     </div>

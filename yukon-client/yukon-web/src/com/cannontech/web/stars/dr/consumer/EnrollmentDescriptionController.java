@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
+import com.cannontech.stars.dr.displayable.dao.DisplayableEnrollmentDao;
+import com.cannontech.stars.dr.displayable.model.DisplayableEnrollment;
+import com.cannontech.stars.dr.displayable.model.DisplayableEnrollment.DisplayableEnrollmentProgram;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.cannontech.web.stars.dr.consumer.displayable.dao.DisplayableEnrollmentDao;
-import com.cannontech.web.stars.dr.consumer.displayable.model.DisplayableEnrollment;
-import com.cannontech.web.stars.dr.consumer.displayable.model.DisplayableEnrollment.DisplayableEnrollmentProgram;
 
 @CheckRole(ResidentialCustomerRole.ROLEID)
 @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_ENROLLMENT)

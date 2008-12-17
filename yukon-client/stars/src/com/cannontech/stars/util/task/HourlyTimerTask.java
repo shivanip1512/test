@@ -1,6 +1,5 @@
 package com.cannontech.stars.util.task;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -12,14 +11,10 @@ import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.OptOutEventQueue;
-import com.cannontech.stars.util.ServerUtils;
-import com.cannontech.stars.web.action.ProgramOptOutAction;
-import com.cannontech.stars.web.action.ProgramReenableAction;
 import com.cannontech.user.UserUtils;
 
 /**
@@ -27,6 +22,9 @@ import com.cannontech.user.UserUtils;
  * Run at midnight every day
  */
 public class HourlyTimerTask extends StarsTimerTask {
+	
+	// TODO - this was made obsolete by the new opt out additions for BGE
+	// remove this class and replace functionality with new style daily task
 	
 	private static final long TIMER_PERIOD = 1000 * 60 * 60;	// 1 hour
 	private static final long TIME_LIMIT = 1000 * 60 * 30;	// 30 minutes
@@ -95,57 +93,57 @@ public class HourlyTimerTask extends StarsTimerTask {
                 YukonUserDao yukonUserDao = DaoFactory.getYukonUserDao();
                 LiteYukonUser user = yukonUserDao.getLiteYukonUser(UserUtils.USER_ADMIN_ID);
                 
-				try {
-					if (dueEvents[j].getPeriod() == OptOutEventQueue.PERIOD_REENABLE) {	// This is a "reenable" event
-						List<LiteStarsLMHardware> hardwares = new ArrayList<LiteStarsLMHardware>();
-						if (dueEvents[j].getInventoryID() != 0)
-							hardwares.add( (LiteStarsLMHardware) starsInventoryBaseDao.getById(dueEvents[j].getInventoryID()) );
-						else
-							hardwares = ProgramOptOutAction.getAffectedHardwares( liteAcctInfo, company );
-						
-						for (int k = 0; k < hardwares.size(); k++) {
-							LiteStarsLMHardware liteHw = hardwares.get(k);
-							if (liteHw == null) continue;
-							
-							String cmd = ProgramReenableAction.getReenableCommand( liteHw, company );
-							int routeID = liteHw.getRouteID();
-							if (routeID == 0) routeID = company.getDefaultRouteID();
-							ServerUtils.sendSerialCommand( cmd, routeID, user );
-						}
-						
-						ProgramReenableAction.handleReenableEvent( dueEvents[j], company, user );
-					}
-					else {	// This is a "opt out" event
-						List<LiteStarsLMHardware> hardwares = new ArrayList<LiteStarsLMHardware>();
-						if (dueEvents[j].getInventoryID() != 0)
-							hardwares.add( (LiteStarsLMHardware) starsInventoryBaseDao.getById(dueEvents[j].getInventoryID()) );
-						else
-							hardwares = ProgramOptOutAction.getAffectedHardwares( liteAcctInfo, company );
-						
-						for (int k = 0; k < hardwares.size(); k++) {
-							LiteStarsLMHardware liteHw = hardwares.get(k);
-							
-							String cmd = ProgramOptOutAction.getOptOutCommand( liteHw, company, dueEvents[j].getPeriod() );
-							int routeID = liteHw.getRouteID();
-							if (routeID == 0) routeID = company.getDefaultRouteID();
-							ServerUtils.sendSerialCommand( cmd, routeID, user );
-						}
-						
-						ProgramOptOutAction.handleOptOutEvent( dueEvents[j], company, user );
-						
-						// Insert a corresponding "reenable" event back into the queue
-						OptOutEventQueue.OptOutEvent e = new OptOutEventQueue.OptOutEvent();
-						e.setEnergyCompanyID( company.getLiteID() );
-						e.setStartDateTime( reenableTime.getTimeInMillis() );
-						e.setPeriod( OptOutEventQueue.PERIOD_REENABLE );
-						e.setAccountID( dueEvents[j].getAccountID() );
-						e.setInventoryID( dueEvents[j].getInventoryID() );
-						OptOutEventQueue.getInstance().addEvent( e, false );
-					}
-				}
-				catch (Exception e) {
-					com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-				}
+//				try {
+//					if (dueEvents[j].getPeriod() == OptOutEventQueue.PERIOD_REENABLE) {	// This is a "reenable" event
+//						List<LiteStarsLMHardware> hardwares = new ArrayList<LiteStarsLMHardware>();
+//						if (dueEvents[j].getInventoryID() != 0)
+//							hardwares.add( (LiteStarsLMHardware) starsInventoryBaseDao.getById(dueEvents[j].getInventoryID()) );
+//						else
+//							hardwares = ProgramOptOutAction.getAffectedHardwares( liteAcctInfo, company );
+//						
+//						for (int k = 0; k < hardwares.size(); k++) {
+//							LiteStarsLMHardware liteHw = hardwares.get(k);
+//							if (liteHw == null) continue;
+//							
+//							String cmd = ProgramReenableAction.getReenableCommand( liteHw, company );
+//							int routeID = liteHw.getRouteID();
+//							if (routeID == 0) routeID = company.getDefaultRouteID();
+//							ServerUtils.sendSerialCommand( cmd, routeID, user );
+//						}
+//						
+//						ProgramReenableAction.handleReenableEvent( dueEvents[j], company, user );
+//					}
+//					else {	// This is a "opt out" event
+//						List<LiteStarsLMHardware> hardwares = new ArrayList<LiteStarsLMHardware>();
+//						if (dueEvents[j].getInventoryID() != 0)
+//							hardwares.add( (LiteStarsLMHardware) starsInventoryBaseDao.getById(dueEvents[j].getInventoryID()) );
+//						else
+//							hardwares = ProgramOptOutAction.getAffectedHardwares( liteAcctInfo, company );
+//						
+//						for (int k = 0; k < hardwares.size(); k++) {
+//							LiteStarsLMHardware liteHw = hardwares.get(k);
+//							
+//							String cmd = ProgramOptOutAction.getOptOutCommand( liteHw, company, dueEvents[j].getPeriod() );
+//							int routeID = liteHw.getRouteID();
+//							if (routeID == 0) routeID = company.getDefaultRouteID();
+//							ServerUtils.sendSerialCommand( cmd, routeID, user );
+//						}
+//						
+//						ProgramOptOutAction.handleOptOutEvent( dueEvents[j], company, user );
+//						
+//						// Insert a corresponding "reenable" event back into the queue
+//						OptOutEventQueue.OptOutEvent e = new OptOutEventQueue.OptOutEvent();
+//						e.setEnergyCompanyID( company.getLiteID() );
+//						e.setStartDateTime( reenableTime.getTimeInMillis() );
+//						e.setPeriod( OptOutEventQueue.PERIOD_REENABLE );
+//						e.setAccountID( dueEvents[j].getAccountID() );
+//						e.setInventoryID( dueEvents[j].getInventoryID() );
+//						OptOutEventQueue.getInstance().addEvent( e, false );
+//					}
+//				}
+//				catch (Exception e) {
+//					com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+//				}
 			}
 			
 			// Synchronize the event queue to disk file

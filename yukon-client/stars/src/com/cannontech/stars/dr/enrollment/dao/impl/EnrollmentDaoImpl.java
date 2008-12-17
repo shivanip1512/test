@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
+import com.cannontech.stars.dr.program.dao.ProgramRowMapper;
+import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
 
 public class EnrollmentDaoImpl implements EnrollmentDao {
@@ -53,6 +55,31 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
         }
         return programEnrollments;
     }
+    
+
+	@Override
+	@Transactional
+	public List<Program> getCurrentlyEnrolledProgramsByInventoryId(int inventoryId) {
+
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		sql.append("SELECT ProgramID, ProgramOrder, ywc.Description, ywc.url, AlternateDisplayName");
+		sql.append("	, PAOName, yle.EntryText as ChanceOfControl, ApplianceCategoryID, LogoLocation ");
+		sql.append("FROM LMProgramWebPublishing pwp");
+		sql.append("	JOIN YukonWebConfiguration ywc ON pwp.WebsettingsID = ywc.ConfigurationID");
+		sql.append("	JOIN YukonPAObject ypo ON ypo.PAObjectID = pwp.DeviceID");
+		sql.append("	JOIN YukonListEntry yle ON yle.EntryID = pwp.ChanceOfControlID");
+		sql.append("	JOIN LMProgramDirectGroup lmpdg ON pwp.DeviceID = lmpdg.DeviceId");
+		sql.append("	JOIN LMHardwareControlGroup lmhcg ON lmhcg.LMGroupID = lmpdg.LMGroupDeviceId");
+		sql.append("WHERE pwp.WebsettingsID = ywc.ConfigurationID");
+		sql.append("	AND lmhcg.InventoryId = ?");
+		sql.append("	AND NOT lmhcg.groupEnrollStart IS NULL");
+		sql.append("	AND lmhcg.groupEnrollStop IS NULL");
+		
+		List<Program> programList = 
+			simpleJdbcTemplate.query(sql.toString(), new ProgramRowMapper(simpleJdbcTemplate), inventoryId);
+		
+		return programList;
+	}
     
     private static final ParameterizedRowMapper<ProgramEnrollment> enrollmentRowMapper() {
         final ParameterizedRowMapper<ProgramEnrollment> oldConfigInfoRowMapper = new ParameterizedRowMapper<ProgramEnrollment>() {

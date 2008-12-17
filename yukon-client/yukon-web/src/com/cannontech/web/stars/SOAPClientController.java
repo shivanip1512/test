@@ -27,13 +27,10 @@ import com.cannontech.stars.web.action.DeleteThermostatScheduleAction;
 import com.cannontech.stars.web.action.GetCustAccountAction;
 import com.cannontech.stars.web.action.MultiAction;
 import com.cannontech.stars.web.action.NewCustAccountAction;
-import com.cannontech.stars.web.action.ProgramOptOutAction;
-import com.cannontech.stars.web.action.ProgramReenableAction;
 import com.cannontech.stars.web.action.ProgramSignUpAction;
 import com.cannontech.stars.web.action.SaveThermostatScheduleAction;
 import com.cannontech.stars.web.action.SearchCustAccountAction;
 import com.cannontech.stars.web.action.SendOddsForControlAction;
-import com.cannontech.stars.web.action.SendOptOutNotificationAction;
 import com.cannontech.stars.web.action.UpdateApplianceAction;
 import com.cannontech.stars.web.action.UpdateCallReportAction;
 import com.cannontech.stars.web.action.UpdateContactsAction;
@@ -255,57 +252,6 @@ public class SOAPClientController implements Controller {
             clientAction = new DeleteCustAccountAction();
             if (destURL == null) destURL = request.getContextPath() + "/operator/Operations.jsp";
             if (errorURL == null) errorURL = request.getContextPath() + "/operator/Consumer/Update.jsp";
-        }
-        else if (action.equalsIgnoreCase("OptOutProgram")
-            || action.equalsIgnoreCase("RepeatLastOptOut")
-            || action.equalsIgnoreCase("OverrideLMHardware"))
-        {
-            clientAction = new ProgramOptOutAction();
-            SOAPMessage msg = clientAction.build( request, session );
-            if (msg == null) {
-                String location = ServletUtil.createSafeRedirectUrl(request, errorURL);
-                response.sendRedirect(location);
-                return null;
-            }
-            
-            MultiAction actions = new MultiAction();
-            actions.addAction( clientAction, msg );
-            
-            if (request.getParameter(ServletUtils.NEED_MORE_INFORMATION) != null) {
-                session.setAttribute( ServletUtils.ATT_MULTI_ACTIONS, actions );
-                String location = ServletUtil.createSafeRedirectUrl(request, request.getParameter(ServletUtils.ATT_REDIRECT2));
-                response.sendRedirect(location);
-                return null;
-            }
-            
-            SendOptOutNotificationAction action2 = new SendOptOutNotificationAction();
-            SOAPMessage msg2 = action2.build( request, session );
-            if (msg2 == null) {
-                String location = ServletUtil.createSafeRedirectUrl(request, errorURL);
-                response.sendRedirect(location);
-                return null;
-            }
-            
-            actions.addAction( action2, msg2 );
-            clientAction = actions;
-        }
-        else if (action.equalsIgnoreCase("SendOptOutNotification")) {
-            clientAction = new SendOptOutNotificationAction();
-            SOAPMessage msg = clientAction.build( request, session );
-            if (msg == null) {
-                String location = ServletUtil.createSafeRedirectUrl(request, errorURL);
-                response.sendRedirect(location);
-                return null;
-            }
-            
-            MultiAction actions = (MultiAction) session.getAttribute( ServletUtils.ATT_MULTI_ACTIONS );
-            actions.addAction( clientAction, msg );
-            session.removeAttribute( ServletUtils.ATT_MULTI_ACTIONS );
-            
-            clientAction = actions;
-        }
-        else if (action.equalsIgnoreCase("ReenableProgram") || action.equalsIgnoreCase("CancelScheduledOptOut")) {
-            clientAction = new ProgramReenableAction();
         }
         else if (action.equalsIgnoreCase("DisableLMHardware") || action.equalsIgnoreCase("EnableLMHardware")) {
             clientAction = new YukonSwitchCommandAction();

@@ -29,6 +29,7 @@ public interface ResidentialCustomerRole {
 	public static final int HIDE_OPT_OUT_BOX = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 51;
 	public static final int AUTOMATIC_CONFIGURATION = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 52;
 	public static final int OPT_OUT_RULES = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 55;
+	public static final int OPT_OUT_LIMITS = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 56;
 	
 	public static final int WEB_LINK_FAQ = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 100;
 	public static final int WEB_LINK_THERM_INSTRUCTIONS = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 102;

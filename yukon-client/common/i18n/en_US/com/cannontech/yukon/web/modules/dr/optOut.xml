@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+    <entry key="yukon.web.modules.dr.optOut.title">Opt Out Status</entry>
+    <entry key="yukon.web.modules.dr.optOut.search">Search for existing customer:</entry>
+    
+    <entry key="yukon.web.modules.dr.optOut.systemInfo">System Information: Opt Out</entry>
+    <entry key="yukon.web.modules.dr.optOut.totalAccounts">Total Consumer Accounts</entry>
+    <entry key="yukon.web.modules.dr.optOut.todaysOptOuts">Today's Opt Outs</entry>
+    <entry key="yukon.web.modules.dr.optOut.futureOptOuts">Future Opt Outs</entry>
+
+    <entry key="yukon.web.modules.dr.optOut.disableOptOutsTitle">Disable Consumer Opt Out Ability for Today</entry>
+    <entry key="yukon.web.modules.dr.optOut.optOutEnabled">Consumer opt outs are currently enabled.</entry>
+    <entry key="yukon.web.modules.dr.optOut.optOutDisabled">Consumer opt outs are currently disabled.</entry>
+    <entry key="yukon.web.modules.dr.optOut.enableOptOuts">Enable Opt Outs</entry>
+    <entry key="yukon.web.modules.dr.optOut.disableOptOuts">Prohibit Opt Outs</entry>
+
+    <entry key="yukon.web.modules.dr.optOut.cancleOptOuts">Cancel Current Opt Outs</entry>
+    <entry key="yukon.web.modules.dr.optOut.cancelAllOptOuts">Reactivate Opted Out devices</entry>
+    <entry key="yukon.web.modules.dr.optOut.cancelOptOutsWarning">WARNING: This action will broadcast commands to devices in the field.</entry>
+    
+    <entry key="yukon.web.modules.dr.optOut.optOutCountsAgainstLimit">Count Today Against Opt Out Limits</entry>
+    <entry key="yukon.web.modules.dr.optOut.countOptOuts">Count Today's Opt Outs</entry>
+    <entry key="yukon.web.modules.dr.optOut.dontCountOptOuts">Don't Count Today's Opt Outs</entry>
+    <entry key="yukon.web.modules.dr.optOut.optOutsCount">Opt Outs currently DO count against set limits.</entry>
+    <entry key="yukon.web.modules.dr.optOut.optOutsDontCount">Opt Outs currently DO NOT count against set limits.</entry>
+
+    <!-- Operator OptOut.jsp -->
+    <entry key="yukon.dr.operator.optout.header">Programs - Opt Out</entry>
+    <entry key="yukon.dr.operator.optout.description">If you would like to temporarily opt out of all programs, select the time frame below.</entry>
+    <entry key="yukon.dr.operator.optout.startDate">Start Date:</entry>
+    <entry key="yukon.dr.operator.optout.duration">Duration:</entry>
+    <entry key="yukon.dr.operator.optout.day">Day</entry>
+    <entry key="yukon.dr.operator.optout.days">Days</entry>
+    <entry key="yukon.dr.operator.optout.apply">Apply</entry>
+    
+    <entry key="yukon.dr.operator.optout.currentOptOuts">Current Opt Outs</entry>
+    <entry key="yukon.dr.operator.optout.noCurrentOptOuts">There are no Active or Scheduled Opt Outs</entry>
+    <entry key="yukon.dr.operator.optout.device">Device</entry>
+    <entry key="yukon.dr.operator.optout.program">Program(s)</entry>
+    <entry key="yukon.dr.operator.optout.status">Status</entry>
+    <entry key="yukon.dr.operator.optout.actions">Actions</entry>
+    <entry key="yukon.dr.operator.optout.cancel">Cancel</entry>
+    <entry key="yukon.dr.operator.optout.repeat">Repeat</entry>
+    
+    <entry key="yukon.dr.operator.optout.optOutLimits">Opt Out Limits</entry>
+    <entry key="yukon.dr.operator.optout.used">Used</entry>
+    <entry key="yukon.dr.operator.optout.allowAdditional">Allow Another Opt Out</entry>
+    <entry key="yukon.dr.operator.optout.allowAnother">Allow 1</entry>
+    <entry key="yukon.dr.operator.optout.remaining">Consumer Opt Outs&lt;br&gt;Remaining</entry>
+    <entry key="yukon.dr.consumer.optout.unlimitedRemaining">unlimited</entry>
+    <entry key="yukon.dr.operator.optout.reset">Reset</entry>
+    <entry key="yukon.dr.operator.optout.clear">Clear</entry>
+    
+    <entry key="yukon.dr.operator.optout.optOutHistory">Opt Out History</entry>
+    <entry key="yukon.dr.operator.optout.dateScheduled">Date Scheduled</entry>
+    <entry key="yukon.dr.operator.optout.dateActive">Active Date</entry>
+    <entry key="yukon.dr.operator.optout.noPreviousOptOuts">There are no previous Opt Outs</entry>
+    <entry key="yukon.dr.operator.optout.duration">Duration</entry>
+    <entry key="yukon.dr.operator.optout.canceled">Canceled</entry>
+    <entry key="yukon.dr.operator.optout.viewAll">View Full History</entry>
+
+    <entry key="yukon.dr.operator.optout.backToOptOut">Back to Opt Out</entry>
+
+    <!-- optOutList.jsp -->
+    <entry key="yukon.dr.operator.optoutlist.header">Programs - Opt Out</entry>
+    <entry key="yukon.dr.operator.optoutlist.description">Please select the hardware you want to opt out of.</entry>
+    <entry key="yukon.dr.operator.optoutlist.programOptOutTitle">Program Opt Out</entry>
+    <entry key="yukon.dr.operator.optoutlist.hardware">Hardware</entry>
+    <entry key="yukon.dr.operator.optoutlist.programAssigned">Program Assigned</entry>
+    <entry key="yukon.dr.operator.optoutlist.relay">Relay {0}</entry>
+    <entry key="yukon.dr.operator.optoutlist.noRelay">Relay (N/A)</entry>
+    <entry key="yukon.dr.operator.optoutlist.save">Opt Out</entry>
+    
+    <!--  optOutConfirm.jsp -->
+    <entry key="yukon.dr.operator.optoutconfirm.header">Programs - Opt Out</entry>
+    <entry key="yukon.dr.operator.optoutconfirm.description">Please complete the following form to opt out of your program:</entry>
+    <entry key="yukon.dr.operator.optoutconfirm.save">Opt Out</entry>
+    <entry key="yukon.dr.operator.optoutconfirm.cancel">Cancel</entry>
+    <entry key="yukon.dr.operator.optoutconfirm.question.1">Question 1</entry>
+    <entry key="yukon.dr.operator.optoutconfirm.question.2">Question 2</entry>
+    <entry key="yukon.dr.operator.optoutconfirm.question.3">Question 3</entry>
+    
+
+</properties>

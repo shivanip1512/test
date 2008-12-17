@@ -1,0 +1,578 @@
+package com.cannontech.stars.dr.optout.dao.impl;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.lite.stars.LiteInventoryBase;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
+import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
+import com.cannontech.stars.dr.optout.model.OptOutAction;
+import com.cannontech.stars.dr.optout.model.OptOutCounts;
+import com.cannontech.stars.dr.optout.model.OptOutEvent;
+import com.cannontech.stars.dr.optout.model.OptOutEventDto;
+import com.cannontech.stars.dr.optout.model.OptOutEventState;
+import com.cannontech.stars.dr.optout.model.OptOutLog;
+import com.cannontech.stars.dr.program.model.Program;
+
+/**
+ * Implementation class for OptOutEventDao
+ */
+public class OptOutEventDaoImpl implements OptOutEventDao {
+
+	private SimpleJdbcTemplate simpleJdbcTemplate;
+	private NextValueHelper nextValueHelper;
+	
+	private EnrollmentDao enrollmentDao;
+	private StarsInventoryBaseDao starsInventoryBaseDao;
+
+	@Override
+	@Transactional
+	public void save(OptOutEvent event, OptOutAction action, LiteYukonUser user) {
+
+		SqlStatementBuilder eventSql = new SqlStatementBuilder();
+		if(event.getEventId() == null) {
+			// No event id, do an insert
+			int eventId = nextValueHelper.getNextValue("OptOutEvent");
+			event.setEventId(eventId);
+			
+			eventSql.append("INSERT INTO OptOutEvent");
+			eventSql.append("(InventoryId, CustomerAccountId, ScheduledDate, StartDate, StopDate");
+			eventSql.append(", EventCounts, EventState, OptOutEventId)");
+			eventSql.append("VALUES (?,?,?,?,?,?,?,?)");
+		} else {
+			// event id exists, do an update
+			eventSql.append("UPDATE OptOutEvent");
+			eventSql.append("SET InventoryId = ?, CustomerAccountId = ?, ScheduledDate = ?");
+			eventSql.append(", StartDate = ?, StopDate = ?, EventCounts = ?, EventState = ?");
+			eventSql.append("WHERE OptOutEventId = ?");
+		}
+
+		// Add or Update opt out event
+		Integer inventoryId = event.getInventoryId();
+		Integer customerAccountId = event.getCustomerAccountId();
+		Date scheduledDate = event.getScheduledDate();
+		Date startDate = event.getStartDate();
+		Date stopDate = event.getStopDate();
+		String eventCounts = event.getEventCounts().toString();
+
+		simpleJdbcTemplate.update(eventSql.toString(), 
+				inventoryId, 
+				customerAccountId,
+				scheduledDate,
+				startDate,
+				stopDate,
+				eventCounts,
+				event.getState().toString(),
+				event.getEventId());
+		
+		OptOutLog log = new OptOutLog();
+		log.setAction(action);
+		log.setCustomerAccountId(customerAccountId);
+		log.setEventCounts(event.getEventCounts());
+		log.setEventId(event.getEventId());
+		log.setInventoryId(inventoryId);
+		log.setStartDate(startDate);
+		log.setStopDate(stopDate);
+		log.setUserId(user.getUserID());
+		
+		// Add OptOutEventLog entry
+		logOptOutRequest(log);
+		
+	}
+	
+	@Override
+	@Transactional
+	public void logOptOutRequest(OptOutLog optOutLog) {
+
+		SqlStatementBuilder logSql = new SqlStatementBuilder();
+		logSql.append("INSERT INTO OptOutEventLog");
+		logSql.append("(OptOutEventLogId, InventoryId, CustomerAccountId, Action, LogDate");
+		logSql.append(", EventStartDate, EventStopDate, LogUserId, OptOutEventId, EventCounts)");
+		logSql.append("VALUES (?,?,?,?,?,?,?,?,?,?)");
+		
+		int logId = nextValueHelper.getNextValue("OptOutEventLog");
+		optOutLog.setLogId(logId);
+		optOutLog.setLogDate(new Date());
+		
+		simpleJdbcTemplate.update(
+				logSql.toString(), 
+				optOutLog.getLogId(),
+				optOutLog.getInventoryId(),
+				optOutLog.getCustomerAccountId(),
+				optOutLog.getAction().toString(),
+				optOutLog.getLogDate(),
+				optOutLog.getStartDate(),
+				optOutLog.getStopDate(),
+				optOutLog.getUserId(),
+				optOutLog.getEventId(),
+				optOutLog.getEventCounts().toString());
+		
+	}
+
+	@Override
+	public boolean isOptedOut(int inventoryId, int customerAccountId) {
+
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		sql.append("SELECT * ");
+		sql.append("FROM OptOutEvent ");
+		sql.append("WHERE InventoryId = ? ");
+		sql.append("	AND CustomerAccountId = ? ");
+		sql.append("	AND StartDate <= ? ");
+		sql.append("	AND StopDate > ? ");
+		sql.append("	AND EventState = ? ");
+		
+		Date now = new Date();
+		
+		try {
+			simpleJdbcTemplate.queryForObject(
+						sql.toString(), 
+						new OptOutEventRowMapper(), 
+						inventoryId,
+						customerAccountId,
+						now,
+						now,
+						OptOutEventState.START_OPT_OUT_SENT.toString());
+		} catch (EmptyResultDataAccessException e) {
+			return false;
+		}
+		
+		return true;
+
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	@Transactional
+	public List<OptOutEventDto> getOptOutHistoryForAccount(
+			int customerAccountId, int... numberOfRecords) {
+		
+		
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		sql.append("SELECT * ");
+		sql.append("FROM OptOutEvent ");
+		sql.append("WHERE CustomerAccountId = ? ");
+		sql.append("	AND StartDate < ? ");
+		sql.append("	AND StopDate < ? ");
+		sql.append("ORDER BY StartDate DESC");
+		
+		Date now = new Date();
+		
+		Integer maxNumberOfRecords = null;
+		List<OptOutEventDto> eventList;
+		if (numberOfRecords != null && numberOfRecords.length == 1) {
+			// If a max records was supplied, only process that number of records
+			maxNumberOfRecords = numberOfRecords[0];
+
+			eventList = (List<OptOutEventDto>) simpleJdbcTemplate.getJdbcOperations().query(
+													sql.toString(), 
+													new Object[]{customerAccountId, now, now}, 
+													new OptOutEventDtoExtractor(maxNumberOfRecords));
+		} else {
+			// Process and return all records
+			
+			eventList = simpleJdbcTemplate.query(
+					sql.toString(), 
+					new OptOutEventDtoRowMapper(), 
+					customerAccountId,
+					now,
+					now);
+		}
+		
+		return eventList;
+	}
+
+	@Override
+	public OptOutEvent getOptOutEventById(int eventId) {
+
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		sql.append("SELECT * ");
+		sql.append("FROM OptOutEvent ");
+		sql.append("WHERE OptOutEventId = ? ");
+		
+		OptOutEvent event = simpleJdbcTemplate.queryForObject(
+													sql.toString(), 
+													new OptOutEventRowMapper(), 
+													eventId);
+		
+		return event;
+	}
+	
+
+	@Override
+	public OptOutEvent getLastEvent(int inventoryId, int customerAccountId) {
+		
+		// In English: 
+		// Select the event with a stop date equal to the maximum stop date for an event 
+		// with a start date earlier than or equal to today and a current state of ACTIVE_SENT 
+		// or CANCEL_SENT
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		sql.append("SELECT ooeOuter.*");
+		sql.append("FROM OptOutEvent ooeOuter");
+		sql.append("WHERE ooeOuter.StopDate = ");
+		sql.append("	(SELECT MAX(ooeInner.StopDate)");
+		sql.append("	 FROM OptOutEvent ooeInner");
+		sql.append("	 WHERE ooeInner.InventoryId = ooeOuter.InventoryId");
+		sql.append("	 	AND ooeInner.CustomerAccountId = ooeOuter.CustomerAccountId");
+		sql.append("	 	AND ooeInner.StartDate <= ?");
+		sql.append("	 	AND (ooeInner.EventState = ?");
+		sql.append("	 		OR ooeInner.EventState = ?)");
+		sql.append("	 GROUP BY ooeInner.InventoryId, ooeInner.CustomerAccountId)");
+		sql.append("	AND ooeOuter.InventoryId = ?");
+		sql.append("	AND ooeOuter.CustomerAccountId = ?");
+		
+		OptOutEvent event = null;
+		try {
+			event = simpleJdbcTemplate.queryForObject(
+														sql.toString(), 
+														new OptOutEventRowMapper(), 
+														new Date(),
+														OptOutEventState.START_OPT_OUT_SENT.toString(),
+														OptOutEventState.CANCEL_SENT.toString(),
+														inventoryId,
+														customerAccountId);
+		} catch (EmptyResultDataAccessException e) {
+			// No event found, return null
+			return null;
+		}
+		
+		return event;
+	}
+	
+
+	@Override
+	public OptOutEvent getScheduledOptOutEvent(int inventoryId, int customerAccountId) {
+
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		sql.append("SELECT * ");
+		sql.append("FROM OptOutEvent ");
+		sql.append("WHERE InventoryId = ? ");
+		sql.append("	AND CustomerAccountId = ? ");
+		sql.append("	AND EventState = ? ");
+		sql.append("	AND StartDate > ? ");
+		
+		OptOutEvent event = null;
+		try {
+			event = simpleJdbcTemplate.queryForObject(sql.toString(), 
+													  new OptOutEventRowMapper(), 
+													  inventoryId,
+													  customerAccountId,
+													  OptOutEventState.SCHEDULED.toString(),
+													  new Date());
+		} catch(EmptyResultDataAccessException e) {
+			// no scheduled event, return null
+			return null;
+		}
+		
+		return event;
+	}
+	
+
+	@Override
+	public List<OptOutEvent> getAllScheduledOptOutEvents(int customerAccountId) {
+
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		sql.append("SELECT * ");
+		sql.append("FROM OptOutEvent ");
+		sql.append("WHERE CustomerAccountId = ? ");
+		sql.append("	AND EventState = ? ");
+		sql.append("	AND StartDate > ? ");
+		
+		List<OptOutEvent> eventList = simpleJdbcTemplate.query(sql.toString(),
+															new OptOutEventRowMapper(), 
+															customerAccountId,
+															OptOutEventState.SCHEDULED.toString(), 
+															new Date());
+		return eventList;
+	}
+
+	@Override
+	@Transactional
+	public List<OptOutEventDto> getCurrentOptOuts(int customerAccountId) {
+		
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		sql.append("SELECT OptOutEventId, InventoryId, ScheduledDate, StartDate, StopDate, EventState");
+		sql.append("FROM OptOutEvent");
+		sql.append("WHERE CustomerAccountId = ? ");
+		sql.append("	AND ((EventState = ? ");
+		sql.append("			AND StopDate > ?) ");
+		sql.append("		OR EventState = ?) ");
+
+		List<OptOutEventDto> eventList = simpleJdbcTemplate.query(
+														sql.toString(), 
+														new OptOutEventDtoRowMapper(), 
+														customerAccountId,
+														OptOutEventState.START_OPT_OUT_SENT.toString(),
+														new Date(),
+														OptOutEventState.SCHEDULED.toString());
+		
+		return eventList;
+	}
+
+	@Override
+	public Integer getNumberOfOptOutsUsed(int inventoryId,
+			int customerAccountId, Date startDate, Date endDate) {
+		
+		// Count the number of opt outs used in the time period
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		sql.append("SELECT COUNT(*)");
+		sql.append("FROM OptOutEvent");
+		sql.append("WHERE InventoryId = ?");
+		sql.append("	AND CustomerAccountId = ?");
+		sql.append("	AND (EventState = ?");
+		sql.append("		OR EventState = ?)");
+		sql.append("	AND EventCounts = ?");
+		sql.append("	AND StartDate >= ?");
+		sql.append("	AND StartDate <= ?");
+		
+		int usedOptOuts = simpleJdbcTemplate.queryForInt(sql.toString(), 
+												inventoryId, 
+												customerAccountId, 
+												OptOutEventState.START_OPT_OUT_SENT.toString(), 
+												OptOutEventState.CANCEL_SENT.toString(),
+												OptOutCounts.COUNT.toString(),
+												startDate,
+												endDate);
+		
+		return usedOptOuts;
+	}
+	
+
+	@Override
+	public int getTotalNumberOfActiveOptOuts(LiteStarsEnergyCompany energyCompany) {
+
+		Date now = new Date();
+		
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		sql.append("SELECT COUNT(*)");
+		sql.append("FROM OptOutEvent ooe");
+		sql.append("	JOIN ECToAccountMapping ectam ON ooe.CustomerAccountId = ectam.AccountId");
+		sql.append("WHERE ooe.EventState = ?");
+		sql.append("	AND ooe.StartDate <= ?");
+		sql.append("	AND ooe.StopDate >= ?");
+		sql.append("	AND ectam.EnergyCompanyId = ?");
+		
+		int currentOptOutCount = simpleJdbcTemplate.queryForInt(sql.toString(), 
+													OptOutEventState.START_OPT_OUT_SENT.toString(),
+													now,
+													now,
+													energyCompany.getEnergyCompanyID());
+		
+		return currentOptOutCount;
+	}
+
+	@Override
+	public int getTotalNumberOfScheduledOptOuts(LiteStarsEnergyCompany energyCompany) {
+		
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		sql.append("SELECT COUNT(*)");
+		sql.append("FROM OptOutEvent ooe");
+		sql.append("	JOIN ECToAccountMapping ectam ON ooe.CustomerAccountId = ectam.AccountId");
+		sql.append("WHERE ooe.EventState = ?");
+		sql.append("	AND ectam.EnergyCompanyId = ?");
+		
+		int scheduledOptOutCount = simpleJdbcTemplate.queryForInt(sql.toString(), 
+													OptOutEventState.SCHEDULED.toString(),
+													energyCompany.getEnergyCompanyID());
+		
+		return scheduledOptOutCount;
+	}
+
+	@Override
+	public List<OptOutEvent> getAllCurrentOptOuts(LiteStarsEnergyCompany energyCompany) {
+
+		Date now = new Date();
+		
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		sql.append("SELECT ooe.*");
+		sql.append("FROM OptOutEvent ooe");
+		sql.append("	JOIN ECToAccountMapping ectam ON ooe.CustomerAccountId = ectam.AccountId");
+		sql.append("WHERE ooe.EventState = ?");
+		sql.append("	AND ooe.StartDate <= ?");
+		sql.append("	AND ooe.StopDate >= ?");
+		sql.append("	AND ectam.EnergyCompanyId = ?");
+		
+		List<OptOutEvent> optOutEvents = simpleJdbcTemplate.query(sql.toString(), 
+												new OptOutEventRowMapper(), 
+												OptOutEventState.START_OPT_OUT_SENT.toString(),
+												now,
+												now,
+												energyCompany.getEnergyCompanyID());
+		
+		return optOutEvents;
+	}
+
+	@Override
+	@Transactional
+	public void changeCurrentOptOutCountState(
+			LiteStarsEnergyCompany energyCompany, OptOutCounts counts) {
+
+		Date now = new Date();
+		
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		sql.append("UPDATE OptOutEvent");
+		sql.append("SET EventCounts = ?");
+		sql.append("FROM OptOutEvent ooe");
+		sql.append("	JOIN ECToAccountMapping ectam ON ooe.CustomerAccountId = ectam.AccountId");
+		sql.append("WHERE ooe.EventState = ?");
+		sql.append("	AND ooe.StartDate <= ?");
+		sql.append("	AND ooe.StopDate >= ?");
+		sql.append("	AND ectam.EnergyCompanyId = ?");
+		
+		simpleJdbcTemplate.update(sql.toString(), 
+				counts.toString(),
+				OptOutEventState.START_OPT_OUT_SENT.toString(),
+				now,
+				now,
+				energyCompany.getEnergyCompanyID());
+	}
+
+	/**
+	 * Helper class to map a result set row into an OptOutEvent
+	 */
+	private class OptOutEventRowMapper implements
+			ParameterizedRowMapper<OptOutEvent> {
+
+		@Override
+		public OptOutEvent mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+			OptOutEvent event = new OptOutEvent();
+			event.setEventId(rs.getInt("OptOutEventId"));
+			event.setInventoryId(rs.getInt("InventoryId"));
+			event.setCustomerAccountId(rs.getInt("CustomerAccountId"));
+			event.setScheduledDate(rs.getTimestamp("ScheduledDate"));
+			event.setStartDate(rs.getTimestamp("StartDate"));
+			event.setStopDate(rs.getTimestamp("StopDate"));
+			
+			String eventCountsString = rs.getString("EventCounts");
+			OptOutCounts eventCounts = OptOutCounts.valueOf(eventCountsString);
+			event.setEventCounts(eventCounts);
+			
+			String eventStateString = rs.getString("EventState");
+			OptOutEventState eventState = OptOutEventState.valueOf(eventStateString);
+			event.setState(eventState);
+
+			return event;
+		}
+
+	}
+	
+	/**
+	 * Helper class to map a result set row into an OptOutEventDto. This class will only
+	 * process the number of records specified in the constructor arg.  This class must
+	 * be used in a transaction because it has a db hit inside the mapRow method.
+	 */
+	private class OptOutEventDtoExtractor implements ResultSetExtractor {
+
+		private int maxNumberOfRecords = Integer.MAX_VALUE;
+		
+		public OptOutEventDtoExtractor(int maxNumberOfRecords) {
+			this.maxNumberOfRecords = maxNumberOfRecords;
+		}
+		
+		@Override
+		public Object extractData(ResultSet rs) throws SQLException,
+				DataAccessException {
+
+			List<OptOutEventDto> eventList = new ArrayList<OptOutEventDto>();
+			
+			while(rs.next() && maxNumberOfRecords-- > 0){
+				OptOutEventDto event = new OptOutEventDto();
+				event.setEventId(rs.getInt("OptOutEventId"));
+				event.setScheduledDate(rs.getTimestamp("ScheduledDate"));
+				event.setStartDate(rs.getTimestamp("StartDate"));
+				event.setStopDate(rs.getTimestamp("StopDate"));
+				
+				String eventStateString = rs.getString("EventState");
+				OptOutEventState eventState = OptOutEventState.valueOf(eventStateString);
+				event.setState(eventState);
+				
+				int inventoryId = rs.getInt("InventoryId");
+				LiteInventoryBase inventory = starsInventoryBaseDao.getById(inventoryId);
+				event.setInventory(inventory);
+				
+				List<Program> programList = 
+					enrollmentDao.getCurrentlyEnrolledProgramsByInventoryId(inventoryId);
+				event.setProgramList(programList);
+				
+				eventList.add(event);
+				
+			}
+			
+			return eventList;
+		}
+		
+	}
+
+	/**
+	 * Helper class to map a result set row into an OptOutEventDto. This class must
+	 * be used in a transaction because it has a db hit inside the mapRow method.
+	 */
+	private class OptOutEventDtoRowMapper implements ParameterizedRowMapper<OptOutEventDto> {
+		
+		public OptOutEventDtoRowMapper(){}
+		
+		@Override
+		public OptOutEventDto mapRow(ResultSet rs, int rowNum) throws SQLException {
+			
+			OptOutEventDto event = new OptOutEventDto();
+			event.setEventId(rs.getInt("OptOutEventId"));
+			event.setScheduledDate(rs.getTimestamp("ScheduledDate"));
+			event.setStartDate(rs.getTimestamp("StartDate"));
+			event.setStopDate(rs.getTimestamp("StopDate"));
+			
+			String eventStateString = rs.getString("EventState");
+			OptOutEventState eventState = OptOutEventState.valueOf(eventStateString);
+			event.setState(eventState);
+			
+			int inventoryId = rs.getInt("InventoryId");
+			LiteInventoryBase inventory = starsInventoryBaseDao.getById(inventoryId);
+			event.setInventory(inventory);
+			
+			List<Program> programList = 
+				enrollmentDao.getCurrentlyEnrolledProgramsByInventoryId(inventoryId);
+			event.setProgramList(programList);
+			
+				
+			return event;
+		}
+		
+	}
+
+	@Autowired
+	public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
+		this.simpleJdbcTemplate = simpleJdbcTemplate;
+	}
+	
+	@Autowired
+	public void setNextValueHelper(NextValueHelper nextValueHelper) {
+		this.nextValueHelper = nextValueHelper;
+	}
+	
+	@Autowired
+	public void setEnrollmentDao(EnrollmentDao enrollmentDao) {
+		this.enrollmentDao = enrollmentDao;
+	}
+	
+	@Autowired
+	public void setStarsInventoryBaseDao(
+			StarsInventoryBaseDao starsInventoryBaseDao) {
+		this.starsInventoryBaseDao = starsInventoryBaseDao;
+	}
+
+}

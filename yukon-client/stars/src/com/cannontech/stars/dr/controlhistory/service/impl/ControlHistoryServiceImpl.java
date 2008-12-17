@@ -82,7 +82,7 @@ public class ControlHistoryServiceImpl implements ControlHistoryService {
             
             // Found time gap, process previous event and reset startDate/endDate.
             if (eventStartDate.after(lastEndDate)) {
-                long diff = getDiffInSeconds(lastStartDate, lastEndDate);
+                long diff = lastEndDate.getTime() - lastStartDate.getTime();
                 programTotalDuration += diff;
                 
                 lastStartDate = eventStartDate;
@@ -97,16 +97,11 @@ public class ControlHistoryServiceImpl implements ControlHistoryService {
         
         // Process the event that may have been missed in the last iteration.
         if (lastStartDate != null && lastEndDate != null) {
-            long diff = getDiffInSeconds(lastStartDate, lastEndDate);
+            long diff = lastEndDate.getTime() - lastStartDate.getTime();
             programTotalDuration += diff;
         }
         
         return programTotalDuration;
-    }
-    
-    private long getDiffInSeconds(Date startDate, Date endDate) {
-        long diff = (endDate.getTime() - startDate.getTime()) / 1000;
-        return diff;
     }
     
 }
