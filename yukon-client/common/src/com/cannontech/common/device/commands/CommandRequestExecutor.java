@@ -3,7 +3,6 @@ package com.cannontech.common.device.commands;
 import java.util.List;
 
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
-import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 /**
@@ -18,11 +17,9 @@ public interface CommandRequestExecutor<T> {
      * @param user - User executing the command
      * @return Results of executing command
      * @throws CommandCompletionException
-     * @throws PaoAuthorizationException - When user doesn't have permission to
-     *             execute the command
      */
     public CommandResultHolder execute(T command, LiteYukonUser user)
-            throws CommandCompletionException, PaoAuthorizationException;
+            throws CommandCompletionException;
 
     /**
      * Method to execute multiple command request for a given user (this method
@@ -31,11 +28,9 @@ public interface CommandRequestExecutor<T> {
      * @param user - User executing the commands
      * @return Results of executing commands
      * @throws CommandCompletionException
-     * @throws PaoAuthorizationException - When user doesn't have permission to
-     *             execute the commands
      */
     public CommandResultHolder execute(List<T> commands, LiteYukonUser user)
-            throws CommandCompletionException, PaoAuthorizationException;
+            throws CommandCompletionException;
 
     /**
      * Method to execute multiple command request for a given user (this method
@@ -43,11 +38,9 @@ public interface CommandRequestExecutor<T> {
      * @param commands - Commands to execute
      * @param callback - Callback which will be called as the commands execute
      * @param user - User executing the commands
-     * @throws PaoAuthorizationException - When user doesn't have permission to
-     *             execute the commands
      */
     public void execute(List<T> commands, CommandCompletionCallback<? super T> callback,
-            LiteYukonUser user) throws PaoAuthorizationException;
+            LiteYukonUser user);
     
     /**
      * 

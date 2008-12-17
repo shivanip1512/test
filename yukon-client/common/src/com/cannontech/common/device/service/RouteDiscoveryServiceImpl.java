@@ -14,7 +14,6 @@ import com.cannontech.common.device.commands.CommandRequestRouteAndDevice;
 import com.cannontech.common.device.commands.CommandRequestRouteAndDeviceExecutor;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.common.util.SimpleCallback;
-import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
@@ -151,9 +150,6 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
                     // execute
                     try {
                         commandRequestRouteAndDeviceExecutor.execute(Collections.singletonList(cmdReq), callback, state.getUser());
-                    } catch (PaoAuthorizationException e) {
-                        runCallbackWithNull(state, "User not authorized to run command for device.", deviceLogStr, "", e);
-                        
                     } catch (Exception e) {
                         runCallbackWithNull(state, "Unknown exception.", deviceLogStr, "", e);
                     }

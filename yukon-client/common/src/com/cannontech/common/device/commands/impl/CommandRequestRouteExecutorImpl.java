@@ -7,7 +7,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.CommandRequestRoute;
 import com.cannontech.common.device.commands.CommandRequestRouteExecutor;
 import com.cannontech.common.device.commands.CommandResultHolder;
-import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.porter.message.Request;
 
@@ -35,7 +34,7 @@ public class CommandRequestRouteExecutorImpl extends
 
 	@Override
 	public CommandResultHolder execute(int routeId, String command,
-			LiteYukonUser user) throws CommandCompletionException, PaoAuthorizationException {
+			LiteYukonUser user) throws CommandCompletionException {
 		
 		CommandRequestRoute commandRequest = new CommandRequestRoute();
         commandRequest.setCommand(command);

@@ -27,7 +27,6 @@ import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestExecutor;
 import com.cannontech.common.device.commands.CommandResultHolder;
-import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.core.authorization.support.CommandPermissionConverter;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.service.PorterRequestCancelService;
@@ -215,12 +214,12 @@ public abstract class CommandRequestExecutorBase<T> implements
     }
 
     public CommandResultHolder execute(T command, LiteYukonUser user)
-            throws CommandCompletionException, PaoAuthorizationException {
+            throws CommandCompletionException {
         return execute(Collections.singletonList(command), user);
     }
 
     public CommandResultHolder execute(List<T> commands, LiteYukonUser user)
-            throws CommandCompletionException, PaoAuthorizationException {
+            throws CommandCompletionException {
         WaitableCommandCompletionCallback callback = new WaitableCommandCompletionCallback();
 
         execute(commands, callback, user);
@@ -239,8 +238,7 @@ public abstract class CommandRequestExecutorBase<T> implements
     }
 
     public void execute(List<T> commands,
-            final CommandCompletionCallback<? super T> callback, LiteYukonUser user)
-            throws PaoAuthorizationException {
+            final CommandCompletionCallback<? super T> callback, LiteYukonUser user) {
 
         log.debug("Executing " + commands.size() + " for " + callback);
 

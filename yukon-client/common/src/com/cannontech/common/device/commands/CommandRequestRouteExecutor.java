@@ -21,5 +21,5 @@ public interface CommandRequestRouteExecutor extends
      *             execute the command
 	 */
 	public CommandResultHolder execute(int routeId, String command,
-			LiteYukonUser user) throws CommandCompletionException, PaoAuthorizationException;
+			LiteYukonUser user) throws CommandCompletionException;
 }

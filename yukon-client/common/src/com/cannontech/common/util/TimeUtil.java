@@ -5,6 +5,9 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.commons.lang.Validate;
+import org.joda.time.DateMidnight;
+import org.joda.time.DateTime;
+import org.joda.time.Hours;
 
 /**
  * This type really needs to be looked at before it is used
@@ -284,6 +287,12 @@ public static int differenceMinutes(Date from, Date to) {
     return (int) (diffMillis / millisPerMinute);
 }
 
+	public static int differenceInHours(Date from, Date to) {
+		long diffMillis = to.getTime() - from.getTime();
+		int millisPerHour = (60 * 60 * 1000);
+		return (int) (diffMillis / millisPerHour);
+	}
+
     /**
      * Convert seconds of time into hh:mm:ss string.
      * @param int seconds
@@ -306,4 +315,51 @@ public static int differenceMinutes(Date from, Date to) {
 
         return format.format(hour) + ":" + format.format(min) + ":" + format.format(Math.floor(sec))+  format2.format(seconds).toString();
     }    
+    
+    /**
+     * Method to get a date which represents midnight tonight (00:00:00.000 tomorrow)
+     * @return Midnight date
+     */
+    public static Date getMidnightTonight() {
+    	
+    	// Get midnight tonight using Joda
+		DateTime date = new DateTime();
+		DateMidnight dateMidnight = date.toDateMidnight();
+		DateMidnight midnightTonight = dateMidnight.plusDays(1);
+		Date midnight = new Date(midnightTonight.getMillis());
+		
+		return midnight;
+    }
+
+    /**
+     * Method to get a date which represents midnight today (last night at 00:00:00.000 today)
+     * @param date - Date to get midnight for
+     * @return Midnight date
+     */
+    public static Date getMidnight(Date date) {
+    	
+    	// Get midnight last night using Joda
+    	DateTime dateTime = new DateTime(date.getTime());
+    	DateMidnight dateMidnight = dateTime.toDateMidnight();
+    	Date midnight = new Date(dateMidnight.getMillis());
+    	
+    	return midnight;
+    }
+    
+    /**
+     * Method to get the count of hours left until midnight for the date given
+     * @param date - Date to start with
+     * @return Hours till midnight on the same day
+     */
+    public static int getHoursTillMidnight(Date date){
+    	
+    	// Get hours till midnight using Joda
+    	DateTime dateTime = new DateTime(date.getTime());
+    	DateMidnight dateMidnight = dateTime.toDateMidnight();
+    	DateMidnight midnightTonight = dateMidnight.plusDays(1);
+    	return Hours.hoursBetween(dateTime, midnightTonight).getHours();
+
+    	
+    }
+
 }
