@@ -1160,6 +1160,8 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
 
             if( currentTrigger->getPointId() == pointID )
             {
+                currentControlArea->setUpdatedFlag(TRUE);
+
                 string text = ("");
                 bool isNewData = false;
                 string additional = ("");
@@ -1182,7 +1184,6 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
                 if( currentTrigger->getPointValue() != value )
                 {
                     currentTrigger->setPointValue(value);
-                    currentControlArea->setUpdatedFlag(TRUE);
                 }
 
                 //This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
@@ -1223,7 +1224,6 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
                 {
                     currentTrigger->setProjectedPointValue(value);
                 }
-                currentControlArea->setUpdatedFlag(TRUE);
 
                 if( _LM_POINT_EVENT_LOGGING && text.length() > 0 )
                 {
@@ -1245,6 +1245,8 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
 
             if( currentTrigger->getPeakPointId() == pointID )
             {
+                currentControlArea->setUpdatedFlag(TRUE);
+
                 if( value > currentTrigger->getPeakPointValue() )
                 {
                     currentTrigger->setLastPeakPointValueTimestamp(timestamp);
@@ -1290,67 +1292,62 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
                         }
                     }
                 }
-
-                currentControlArea->setUpdatedFlag(TRUE);
             }
         }
-        CtiLMGroupPtr lm_group = store->findGroupByPointID(pointID);
-        if( lm_group.get() != 0 )   //we know this point is associated with this group,
+    }
+
+    CtiLMGroupPtr lm_group = store->findGroupByPointID(pointID);
+    if( lm_group.get() != 0 )   //we know this point is associated with this group,
+    {
+        //figure out how and deal with it
+        if( lm_group->getHoursDailyPointId() == pointID )
         {
-            //figure out how and deal with it
-            if( lm_group->getHoursDailyPointId() == pointID )
-            {
-                CtiTime now;
-                struct tm now_tm, timestamp_tm;
+            CtiTime now;
+            struct tm now_tm, timestamp_tm;
 
-                now.extract(&now_tm);
-                timestamp.extract(&timestamp_tm);
+            now.extract(&now_tm);
+            timestamp.extract(&timestamp_tm);
 
-                long nowDaysSince1900 = (now_tm.tm_year*365) + now_tm.tm_yday;
-                long timestampDaysSince1900 = (timestamp_tm.tm_year*365) + timestamp_tm.tm_yday;
+            long nowDaysSince1900 = (now_tm.tm_year*365) + now_tm.tm_yday;
+            long timestampDaysSince1900 = (timestamp_tm.tm_year*365) + timestamp_tm.tm_yday;
 
-                if( nowDaysSince1900 == timestampDaysSince1900 )//i.e. is this daily control history from today or from some previous day
-                {
-                    lm_group->setCurrentHoursDaily(value);
-                }
-                else
-                {
-                    lm_group->setCurrentHoursDaily(0.0);
-                }
-            }
-            if( lm_group->getHoursMonthlyPointId() == pointID )
+            if( nowDaysSince1900 == timestampDaysSince1900 )//i.e. is this daily control history from today or from some previous day
             {
-                lm_group->setCurrentHoursMonthly(value);
+                lm_group->setCurrentHoursDaily(value);
             }
-            if( lm_group->getHoursSeasonalPointId() == pointID )
+            else
             {
-                lm_group->setCurrentHoursSeasonal(value);
-            }
-            if( lm_group->getHoursAnnuallyPointId() == pointID )
-            {
-                lm_group->setCurrentHoursAnnually(value);
-            }
-            if( lm_group->getControlStatusPointId() == pointID )
-            {
-                // Did this group just go from active to inactive?
-                if( CtiLMGroupBase::ActiveState == lm_group->getGroupControlState() &&
-                    CtiLMGroupBase::InactiveState == value )
-                {
-                    if( _LM_DEBUG & LM_DEBUG_STANDARD )
-                    {
-                        CtiLockGuard<CtiLogger> dout_guard(dout);
-                        dout << CtiTime() << " Load Group: " << lm_group->getPAOName() << " has gone control complete."  << endl;
-                    }
-                    lm_group->setControlCompleteTime(CtiTime(secondsFrom1901));
-                }
-                lm_group->setGroupControlState(value);
-            }
-
-            if( lm_group->isDirty() )
-            {
-                currentControlArea->setUpdatedFlag(TRUE);
+                lm_group->setCurrentHoursDaily(0.0);
             }
         }
+        if( lm_group->getHoursMonthlyPointId() == pointID )
+        {
+            lm_group->setCurrentHoursMonthly(value);
+        }
+        if( lm_group->getHoursSeasonalPointId() == pointID )
+        {
+            lm_group->setCurrentHoursSeasonal(value);
+        }
+        if( lm_group->getHoursAnnuallyPointId() == pointID )
+        {
+            lm_group->setCurrentHoursAnnually(value);
+        }
+        if( lm_group->getControlStatusPointId() == pointID )
+        {
+            // Did this group just go from active to inactive?
+            if( CtiLMGroupBase::ActiveState == lm_group->getGroupControlState() &&
+                CtiLMGroupBase::InactiveState == value )
+            {
+                if( _LM_DEBUG & LM_DEBUG_STANDARD )
+                {
+                    CtiLockGuard<CtiLogger> dout_guard(dout);
+                    dout << CtiTime() << " Load Group: " << lm_group->getPAOName() << " has gone control complete."  << endl;
+                }
+                lm_group->setControlCompleteTime(CtiTime(secondsFrom1901));
+            }
+            lm_group->setGroupControlState(value);
+        }
+
     }
 }
 
