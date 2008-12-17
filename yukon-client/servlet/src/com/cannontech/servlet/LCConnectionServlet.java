@@ -52,7 +52,7 @@ public class LCConnectionServlet extends ErrorAwareInitializingServlet implement
 	// Key used to store instances of this in the servlet context
 	public static final String SERVLET_CONTEXT_ID = "LCConnection";
 
-	private LoadControlClientConnection conn = null;
+	private LoadControlClientConnection clientConnection = null;
 	private com.cannontech.web.loadcontrol.LoadcontrolCache cache = null;
     
     private DateFormattingService dateFormattingService = null;
@@ -68,9 +68,9 @@ public void destroy()
 	// Pull this out of the servlet context
 	getServletContext().removeAttribute(SERVLET_CONTEXT_ID);
 	
-	if( conn != null )
+	if( clientConnection != null )
     {
-    	conn.disconnect();
+    	clientConnection.disconnect();
     }
 	
 	super.destroy();
@@ -87,7 +87,7 @@ public LoadcontrolCache getCache() {
  * @return com.cannontech.macs.LClientConnection
  */
 public LoadControlClientConnection getConnection() {
-	return conn;
+	return clientConnection;
 }
 /**
  * Makes a connection to Loadcontrol and stores a reference to this in
@@ -97,37 +97,17 @@ public LoadControlClientConnection getConnection() {
  * @exception javax.servlet.ServletException The exception description.
  */
 public void doInit(ServletConfig config) throws ServletException {
-	String lcHost = "127.0.0.1";
-	int lcPort = 1920;
 
-    dateFormattingService = YukonSpringHook.getBean("dateFormattingService", DateFormattingService.class);
+	dateFormattingService = YukonSpringHook.getBean("dateFormattingService", DateFormattingService.class);
     yukonUserDao = YukonSpringHook.getBean("yukonUserDao", YukonUserDao.class);
     authDao = YukonSpringHook.getBean("authDao", AuthDao.class);
+	clientConnection = YukonSpringHook.getBean("loadControlClientConnection", LoadControlClientConnection.class);
 
-    lcHost = DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.LOADCONTROL_MACHINE );
-
-    String lcPortStr =
-            DaoFactory.getRoleDao().getGlobalPropertyValue(SystemRole.LOADCONTROL_PORT);
-    lcPort = Integer.parseInt(lcPortStr);
-
-
-	CTILogger.info("Will attempt to connect to loadcontrol @" + lcHost + ":" + lcPort);
-	conn = LoadControlClientConnection.getInstance();
-	conn.addObserver(this);
+	clientConnection.addObserver(this);
 	
-	if( lcHost != null )
-		conn.setHost(lcHost);
-
-	if( lcPort != -1 )
-		conn.setPort(lcPort);
-		
-	conn.setAutoReconnect(true);	
-
-	conn.connectWithoutWait();
-
 	// Create a load control cache
-	cache = new LoadcontrolCache(conn);
-	conn.addObserver(cache);
+	cache = new LoadcontrolCache(clientConnection);
+	clientConnection.addObserver(cache);
 
 	// Add this to the context so other servlets can access the connection
 	getServletContext().setAttribute(SERVLET_CONTEXT_ID, this);		

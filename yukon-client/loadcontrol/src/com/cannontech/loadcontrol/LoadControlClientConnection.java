@@ -21,15 +21,14 @@ import com.cannontech.loadcontrol.dynamic.receive.LMGroupChanged;
 import com.cannontech.loadcontrol.dynamic.receive.LMProgramChanged;
 import com.cannontech.loadcontrol.dynamic.receive.LMTriggerChanged;
 import com.cannontech.loadcontrol.events.LCChangeEvent;
-import com.cannontech.loadcontrol.messages.LMCommand;
 import com.cannontech.loadcontrol.messages.LMControlAreaMsg;
 import com.cannontech.message.server.ServerResponseMsg;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
+import com.cannontech.spring.YukonSpringHook;
 import com.roguewave.vsj.CollectableStreamer;
 
 public class LoadControlClientConnection extends com.cannontech.message.util.ClientConnection implements MessageListener {
-	private static LoadControlClientConnection staticLoadControlClientConnection = null;
 	
 	private HashMap<Integer, LMControlArea> controlAreas = null;
     private HashMap<Integer, LMProgramBase> programs = null;
@@ -38,9 +37,8 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
 
     protected LoadControlClientConnection() {
     	super("LC");
-    	initialize();
     } 
-
+    
     public void addObserver(java.util.Observer obs) 
     {
     	super.addObserver(obs);
@@ -53,7 +51,7 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
     		cmd.setCommand( com.cannontech.loadcontrol.messages.LMCommand.RETRIEVE_ALL_CONTROL_AREAS );
     		
     		//tell the server we need all the ControlAreas sent to the new registered object
-    		LoadControlClientConnection.getInstance().queue( cmd );
+    		queue( cmd );
     	}
     	
     }
@@ -84,8 +82,6 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
     	super.disconnect();
     
     	deleteObservers();
-    
-    	staticLoadControlClientConnection = null;
     }
     
     private void handleDeletedAreas( LMControlAreaMsg msg ) {
@@ -184,11 +180,10 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
         return triggers;
     }
     
-    public synchronized static LoadControlClientConnection getInstance() {
-    	if( staticLoadControlClientConnection == null )
-    		staticLoadControlClientConnection = new LoadControlClientConnection();
-    		
-    	return staticLoadControlClientConnection;
+    @Deprecated
+    public static LoadControlClientConnection getInstance() {
+    	LoadControlClientConnection clientConnection = YukonSpringHook.getBean("loadControlClientConnection", LoadControlClientConnection.class);
+    	return clientConnection;
     }
     
     /**
@@ -256,33 +251,12 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
     
     /**
      * Insert the method's description here.
-     * Creation date: (2/21/2001 5:56:32 PM)
-     */
-    private void initialize() {
-    	addMessageListener( this );
-        LMCommand cmd = new LMCommand();
-        cmd.setCommand( LMCommand.RETRIEVE_ALL_CONTROL_AREAS );
-        setRegistrationMsg(cmd);
-    }
-    
-    /**
-     * Insert the method's description here.
      * Creation date: (7/30/2001 4:05:08 PM)
      * @return boolean
      */
     public boolean needInitConn() {
     	//return true if there hasn't been any Observers set to watch this connection
     	return (countObservers() <= 0);
-    }
-    
-    public synchronized void removeClient(Object client) {
-    	if( client instanceof java.util.Observer )
-    		deleteObserver( (java.util.Observer)client );
-    
-    	if( countObservers() == 0 ) {
-        	super.disconnect();
-        	staticLoadControlClientConnection = null;
-        }
     }
     
     public synchronized void messageReceived( MessageEvent e ) {

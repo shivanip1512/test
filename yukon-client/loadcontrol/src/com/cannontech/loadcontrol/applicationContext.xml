@@ -8,11 +8,13 @@
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
 
-   <bean id="loadControlConnection" class="com.cannontech.loadcontrol.LoadControlClientConnection" 
-         factory-method="getInstance" scope="singleton" />
+   <bean id="loadControlClientConnectionFactory" class="com.cannontech.loadcontrol.LoadControlClientConnectionFactory" />
+   <bean id="loadControlClientConnection" factory-bean="loadControlClientConnectionFactory" 
+         factory-method="createConnection" scope="singleton" />
+         
    <bean id="loadManagementService" class="com.cannontech.loadcontrol.LoadManagementProxy" 
          scope="singleton">
-        <property name="loadControlClientConnection" ref="loadControlConnection" />
+        <property name="loadControlClientConnection" ref="loadControlClientConnection" />
         <property name="serverRequest" ref="serverRequest" />
    </bean>
    
