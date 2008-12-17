@@ -12,6 +12,8 @@
 	</context-param>
 
 	<context-param>
+        <!-- In addition to its normal Spring meaning, this is used to set the default context on 
+             the YukonSpringHook. -->
 		<param-name>parentContextKey</param-name>
 		<param-value>com.cannontech.context.web</param-value>
 	</context-param>
@@ -20,6 +22,13 @@
 		<param-name>contextClass</param-name>
         <!-- A special class is used here to override the default location of the .xml files. -->
 		<param-value>com.cannontech.spring.CannonXmlWebApplicationContext</param-value>
+	</context-param>
+
+	<context-param>
+        <!-- This is read by the CannonContextLoaderListener and then used to set a system property
+             with the same name and value. -->
+		<param-name>cti.app.name</param-name>
+		<param-value>Webserver</param-value>
 	</context-param>
 
 	<context-param>
@@ -49,7 +58,7 @@
 	<filter>
 		<filter-name>ErrorHelper</filter-name>
 		<filter-class>
-			com.cannontech.servlet.filter.ErrorHelperFilter
+			com.cannontech.web.util.ErrorHelperFilter
 		</filter-class>
 	</filter>
 
@@ -219,7 +228,7 @@
 
 	<listener>
 		<listener-class>
-			com.cannontech.servlet.CannonContextLoaderListener
+			com.cannontech.web.util.CannonContextLoaderListener
 		</listener-class>
 	</listener>
 

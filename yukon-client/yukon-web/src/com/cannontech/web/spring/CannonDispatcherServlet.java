@@ -11,8 +11,8 @@ import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.servlet.filter.ErrorHelperFilter;
 import com.cannontech.spring.CannonXmlWebApplicationContext;
+import com.cannontech.web.util.ErrorHelperFilter;
 
 public class CannonDispatcherServlet extends DispatcherServlet {
     private HandlerInterceptor securityInterceptor;

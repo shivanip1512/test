@@ -8,6 +8,8 @@
     </context-param>
 
     <context-param>
+       <!-- In addition to its normal Spring meaning, this is used to set the default context on 
+             the YukonSpringHook. -->
         <param-name>parentContextKey</param-name>
         <param-value>com.cannontech.context.api-web</param-value>
     </context-param>
@@ -18,10 +20,18 @@
 		<param-value>com.cannontech.spring.CannonXmlWebApplicationContext</param-value>
 	</context-param>
     
+    <context-param>
+        <!-- This is read by the CannonContextLoaderListener and then used to set a system property
+             with the same name and value. -->
+        <param-name>cti.app.name</param-name>
+        <param-value>WebServices</param-value>
+    </context-param>
+
     <listener>
-        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+        <listener-class>
+            com.cannontech.web.util.CannonContextLoaderListener
+        </listener-class>
     </listener>
-    
 
     <!-- take especial notice of the name of this servlet -->
     <servlet>
