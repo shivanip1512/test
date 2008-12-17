@@ -9,6 +9,7 @@ import org.springframework.core.io.Resource;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.util.StarsInvalidArgumentException;
+import com.cannontech.yukon.api.loadManagement.endpoint.ProhibitConsumerOverridesRequestEndpoint;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XmlUtils;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
@@ -57,7 +58,7 @@ public class ProhibitConsumerOverridesRequestEndpointTest {
         Element reqElement = XmlUtils.createElementFromResource(resource);
         
         // verify the reqElement is valid according to schema
-        Resource reqSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/schemas/loadManagement/ProhibitConsumerOverridesRequest.xsd",
+        Resource reqSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/ProhibitConsumerOverridesRequest.xsd",
                                                            this.getClass());
         TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
         
@@ -67,7 +68,7 @@ public class ProhibitConsumerOverridesRequestEndpointTest {
         Element respElement = impl.invoke(reqElement, user);
         
         // verify the respElement is valid according to schema
-        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/schemas/loadManagement/ProhibitConsumerOverridesResponse.xsd",
+        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/ProhibitConsumerOverridesResponse.xsd",
                                                             this.getClass());
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
 
@@ -86,7 +87,7 @@ public class ProhibitConsumerOverridesRequestEndpointTest {
         Element reqElement = XmlUtils.createElementFromResource(resource);
         
         // verify the reqElement is valid according to schema
-        Resource reqSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/schemas/loadManagement/ProhibitConsumerOverridesRequest.xsd",
+        Resource reqSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/ProhibitConsumerOverridesRequest.xsd",
                                                            this.getClass());
         TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
         
@@ -96,7 +97,7 @@ public class ProhibitConsumerOverridesRequestEndpointTest {
         Element respElement = impl.invoke(reqElement, user);
         
         // verify the respElement is valid according to schema
-        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/schemas/loadManagement/ProhibitConsumerOverridesResponse.xsd",
+        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/ProhibitConsumerOverridesResponse.xsd",
                                                             this.getClass());
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
 

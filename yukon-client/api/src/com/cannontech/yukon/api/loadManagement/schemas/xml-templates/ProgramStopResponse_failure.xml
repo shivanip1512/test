@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<programStopResponse xmlns="http://yukon.cannontech.com/api"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://yukon.cannontech.com/api ../ProgramStopResponse.xsd"
+           version="1.0">
+           
+    <failure>
+        <errorCode>InvalidProgramName</errorCode>
+        <errorReference>YK100</errorReference>
+        <errorDescription>A descriptive explanation of problem.</errorDescription>
+    </failure>
+    
+</programStopResponse>

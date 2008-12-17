@@ -13,6 +13,7 @@ import org.springframework.core.io.Resource;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.util.StarsInvalidArgumentException;
+import com.cannontech.yukon.api.loadManagement.endpoint.TotalOverriddenDevicesRequestEndpoint;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XmlUtils;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
@@ -117,7 +118,7 @@ public class TotalOverriddenDevicesRequestEndpointTest {
         Element reqElement = XmlUtils.createElementFromResource(resource);
         
         // verify the reqElement is valid according to schema
-        Resource reqSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/schemas/loadManagement/TotalOverriddenDevicesByAccountNumberRequest.xsd",
+        Resource reqSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/TotalOverriddenDevicesByAccountNumberRequest.xsd",
                                                            this.getClass());
         TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
         
@@ -131,7 +132,7 @@ public class TotalOverriddenDevicesRequestEndpointTest {
         Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, XmlUtils.formatDate(mockService.getStopTime()));
         
         // verify the respElement is valid according to schema
-        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/schemas/loadManagement/TotalOverriddenDevicesByAccountNumberResponse.xsd",
+        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/TotalOverriddenDevicesByAccountNumberResponse.xsd",
                                                             this.getClass());
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
 
@@ -153,7 +154,7 @@ public class TotalOverriddenDevicesRequestEndpointTest {
         Element reqElement = XmlUtils.createElementFromResource(resource);
         
         // verify the reqElement is valid according to schema
-        Resource reqSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/schemas/loadManagement/TotalOverriddenDevicesByAccountNumberRequest.xsd",
+        Resource reqSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/TotalOverriddenDevicesByAccountNumberRequest.xsd",
                                                            this.getClass());
         TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
         
@@ -167,7 +168,7 @@ public class TotalOverriddenDevicesRequestEndpointTest {
         Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_INVALID, XmlUtils.formatDate(mockService.getStopTime()));
         
         // verify the respElement is valid according to schema
-        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/schemas/loadManagement/TotalOverriddenDevicesByAccountNumberResponse.xsd",
+        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/TotalOverriddenDevicesByAccountNumberResponse.xsd",
                                                             this.getClass());
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
 
@@ -186,7 +187,7 @@ public class TotalOverriddenDevicesRequestEndpointTest {
         Element reqElement = XmlUtils.createElementFromResource(resource);
         
         // verify the reqElement is valid according to schema
-        Resource reqSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/schemas/loadManagement/TotalOverriddenDevicesByProgramNameRequest.xsd",
+        Resource reqSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/TotalOverriddenDevicesByProgramNameRequest.xsd",
                                                            this.getClass());
         TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
         
@@ -199,7 +200,7 @@ public class TotalOverriddenDevicesRequestEndpointTest {
         Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, XmlUtils.formatDate(mockService.getStopTime()));
         
         // verify the respElement is valid according to schema
-        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/schemas/loadManagement/TotalOverriddenDevicesByProgramNameResponse.xsd",
+        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/TotalOverriddenDevicesByProgramNameResponse.xsd",
                                                             this.getClass());
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
 
@@ -221,7 +222,7 @@ public class TotalOverriddenDevicesRequestEndpointTest {
         Element reqElement = XmlUtils.createElementFromResource(resource);
         
         // verify the reqElement is valid according to schema
-        Resource reqSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/schemas/loadManagement/TotalOverriddenDevicesByProgramNameRequest.xsd",
+        Resource reqSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/TotalOverriddenDevicesByProgramNameRequest.xsd",
                                                            this.getClass());
         TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
         
@@ -234,7 +235,7 @@ public class TotalOverriddenDevicesRequestEndpointTest {
         Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_INVALID, XmlUtils.formatDate(mockService.getStopTime()));
         
         // verify the respElement is valid according to schema
-        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/schemas/loadManagement/TotalOverriddenDevicesByProgramNameResponse.xsd",
+        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/TotalOverriddenDevicesByProgramNameResponse.xsd",
                                                             this.getClass());
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
 

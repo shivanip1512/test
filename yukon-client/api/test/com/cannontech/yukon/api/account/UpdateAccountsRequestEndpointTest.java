@@ -21,6 +21,7 @@ import com.cannontech.stars.dr.account.exception.InvalidAccountNumberException;
 import com.cannontech.stars.dr.account.exception.UserNameUnavailableException;
 import com.cannontech.stars.dr.account.service.AccountService;
 import com.cannontech.stars.dr.account.service.AccountServiceHelper;
+import com.cannontech.yukon.api.account.endpoint.UpdateAccountsRequestEndpoint;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XmlUtils;
 import com.cannontech.yukon.api.util.YukonXml;

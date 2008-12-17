@@ -14,6 +14,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.service.data.ScenarioStatus;
 import com.cannontech.message.util.TimeoutException;
+import com.cannontech.yukon.api.loadManagement.endpoint.ScenarioStopRequestEndpoint;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XmlUtils;
 import com.cannontech.yukon.api.utils.LoadManagementTestUtils;
@@ -71,8 +72,8 @@ public class ScenarioStopRequestEndpointTest {
         Element requestElement = null;
         Element responseElement = null;
         SimpleXPathTemplate outputTemplate = null;
-        Resource requestSchemaResource = new ClassPathResource("../schemas/loadManagement/ScenarioStopRequest.xsd", this.getClass());
-        Resource responseSchemaResource = new ClassPathResource("../schemas/loadManagement/ScenarioStopResponse.xsd", this.getClass());
+        Resource requestSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/ScenarioStopRequest.xsd", this.getClass());
+        Resource responseSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/ScenarioStopResponse.xsd", this.getClass());
         
         // stop time
         //==========================================================================================

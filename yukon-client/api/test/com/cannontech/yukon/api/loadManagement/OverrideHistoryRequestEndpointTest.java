@@ -20,6 +20,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.service.data.OverrideHistory;
 import com.cannontech.loadcontrol.service.data.OverrideStatus;
 import com.cannontech.stars.util.StarsInvalidArgumentException;
+import com.cannontech.yukon.api.loadManagement.endpoint.OverrideHistoryRequestEndpoint;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XmlUtils;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
@@ -181,7 +182,7 @@ public class OverrideHistoryRequestEndpointTest {
         Element reqElement = XmlUtils.createElementFromResource(resource);
         
         // verify the reqElement is valid according to schema
-        Resource reqSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/schemas/loadManagement/OverrideHistoryByAccountNumberRequest.xsd",
+        Resource reqSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/OverrideHistoryByAccountNumberRequest.xsd",
                                                            this.getClass());
         TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
         
@@ -195,7 +196,7 @@ public class OverrideHistoryRequestEndpointTest {
         Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, XmlUtils.formatDate(mockService.getStopTime()));
         
         // verify the respElement is valid according to schema
-        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/schemas/loadManagement/OverrideHistoryByAccountNumberResponse.xsd",
+        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/OverrideHistoryByAccountNumberResponse.xsd",
                                                             this.getClass());
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
 
@@ -274,7 +275,7 @@ public class OverrideHistoryRequestEndpointTest {
         Element reqElement = XmlUtils.createElementFromResource(resource);
         
         // verify the reqElement is valid according to schema
-        Resource reqSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/schemas/loadManagement/OverrideHistoryByAccountNumberRequest.xsd",
+        Resource reqSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/OverrideHistoryByAccountNumberRequest.xsd",
                                                            this.getClass());
         TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
         
@@ -288,7 +289,7 @@ public class OverrideHistoryRequestEndpointTest {
         Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_INVALID, XmlUtils.formatDate(mockService.getStopTime()));
         
         // verify the respElement is valid according to schema
-        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/schemas/loadManagement/OverrideHistoryByAccountNumberResponse.xsd",
+        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/OverrideHistoryByAccountNumberResponse.xsd",
                                                             this.getClass());
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
 
@@ -307,7 +308,7 @@ public class OverrideHistoryRequestEndpointTest {
         Element reqElement = XmlUtils.createElementFromResource(resource);
         
         // verify the reqElement is valid according to schema
-        Resource reqSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/schemas/loadManagement/OverrideHistoryByProgramNameRequest.xsd",
+        Resource reqSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/OverrideHistoryByProgramNameRequest.xsd",
                                                            this.getClass());
         TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
         
@@ -320,7 +321,7 @@ public class OverrideHistoryRequestEndpointTest {
         Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, XmlUtils.formatDate(mockService.getStopTime()));
         
         // verify the respElement is valid according to schema
-        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/schemas/loadManagement/OverrideHistoryByProgramNameResponse.xsd",
+        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/OverrideHistoryByProgramNameResponse.xsd",
                                                             this.getClass());
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
 
@@ -399,7 +400,7 @@ public class OverrideHistoryRequestEndpointTest {
         Element reqElement = XmlUtils.createElementFromResource(resource);
         
         // verify the reqElement is valid according to schema
-        Resource reqSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/schemas/loadManagement/OverrideHistoryByProgramNameRequest.xsd",
+        Resource reqSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/OverrideHistoryByProgramNameRequest.xsd",
                                                            this.getClass());
         TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
         
@@ -412,7 +413,7 @@ public class OverrideHistoryRequestEndpointTest {
         Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_INVALID, XmlUtils.formatDate(mockService.getStopTime()));
         
         // verify the respElement is valid according to schema
-        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/schemas/loadManagement/OverrideHistoryByProgramNameResponse.xsd",
+        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/OverrideHistoryByProgramNameResponse.xsd",
                                                             this.getClass());
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
 

@@ -8,8 +8,6 @@
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
-    <context:component-scan base-package="com.cannontech.yukon.api" />
-
     <context:component-scan base-package="com.cannontech.yukon.api">
         <context:include-filter type="annotation"
             expression="org.springframework.ws.server.endpoint.annotation.Endpoint" />
@@ -32,8 +30,8 @@
             <bean class="org.springframework.xml.xsd.commons.CommonsXsdSchemaCollection">
                 <property name="xsds">
                     <list>
-                        <value>classpath*:com/cannontech/yukon/api/schemas/loadManagement/*Request.xsd</value>
-                        <value>classpath*:com/cannontech/yukon/api/schemas/loadManagement/*Response.xsd</value>
+                        <value>classpath*:com/cannontech/yukon/api/loadManagement/schemas/*Request.xsd</value>
+                        <value>classpath*:com/cannontech/yukon/api/loadManagement/schemas/*Response.xsd</value>
                     </list>
                 </property>
                 <property name="inline" value="true" />
@@ -50,9 +48,8 @@
             <bean class="org.springframework.xml.xsd.commons.CommonsXsdSchemaCollection">
                 <property name="xsds">
                     <list>
-                        <value>classpath*:com/cannontech/yukon/api/schemas/common/*.xsd</value>
-                        <value>classpath*:com/cannontech/yukon/api/schemas/stars/*Request.xsd</value>
-                        <value>classpath*:com/cannontech/yukon/api/schemas/stars/*Response.xsd</value>
+                        <value>classpath*:com/cannontech/yukon/api/stars/schemas/*Request.xsd</value>
+                        <value>classpath*:com/cannontech/yukon/api/stars/schemas/*Response.xsd</value>
                     </list>
                 </property>
                 <property name="inline" value="true" />
@@ -60,6 +57,23 @@
         </property>
         <property name="portTypeName" value="starsPort" />
         <property name="locationUri" value="/soap/stars" />
+    </bean>
+    
+    <bean id="account"
+        class="org.springframework.ws.wsdl.wsdl11.DefaultWsdl11Definition">
+        <property name="schemaCollection">
+            <bean class="org.springframework.xml.xsd.commons.CommonsXsdSchemaCollection">
+                <property name="xsds">
+                    <list>
+                        <value>classpath*:com/cannontech/yukon/api/account/schemas/*Request.xsd</value>
+                        <value>classpath*:com/cannontech/yukon/api/account/schemas/*Response.xsd</value>
+                    </list>
+                </property>
+                <property name="inline" value="true" />
+            </bean>
+        </property>
+        <property name="portTypeName" value="accountPort" />
+        <property name="locationUri" value="/soap/account" />
     </bean>
 
 </beans>

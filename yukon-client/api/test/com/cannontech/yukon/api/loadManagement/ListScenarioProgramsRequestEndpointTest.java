@@ -16,6 +16,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.service.data.ProgramStartingGear;
 import com.cannontech.loadcontrol.service.data.ScenarioProgramStartingGears;
+import com.cannontech.yukon.api.loadManagement.endpoint.ListScenarioProgramsRequestEndpoint;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XmlUtils;
 import com.cannontech.yukon.api.util.YukonXml;
@@ -79,8 +80,8 @@ public class ListScenarioProgramsRequestEndpointTest {
         Element responseElement = null;
         Element tmpElement = null;
         SimpleXPathTemplate outputTemplate = null;
-        Resource requestSchemaResource = new ClassPathResource("../schemas/loadManagement/ListScenarioProgramsRequest.xsd", this.getClass());
-        Resource responseSchemaResource = new ClassPathResource("../schemas/loadManagement/ListScenarioProgramsResponse.xsd", this.getClass());
+        Resource requestSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/ListScenarioProgramsRequest.xsd", this.getClass());
+        Resource responseSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/ListScenarioProgramsResponse.xsd", this.getClass());
         
         // scenario name, 3 program starting gears
         //==========================================================================================

@@ -15,6 +15,7 @@ import org.springframework.core.io.Resource;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
+import com.cannontech.yukon.api.loadManagement.endpoint.CurrentlyActiveProgramsRequestEndpoint;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XmlUtils;
 import com.cannontech.yukon.api.util.YukonXml;
@@ -61,8 +62,8 @@ public class CurrentlyActiveProgramsRequestEndpointTest {
         Attribute versionAttribute = null;
         Element responseElement = null;
         SimpleXPathTemplate outputTemplate = null;
-        Resource requestSchemaResource = new ClassPathResource("../schemas/loadManagement/CurrentlyActiveProgramsRequest.xsd", this.getClass());
-        Resource responseSchemaResource = new ClassPathResource("../schemas/loadManagement/CurrentlyActiveProgramsResponse.xsd", this.getClass());
+        Resource requestSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/CurrentlyActiveProgramsRequest.xsd", this.getClass());
+        Resource responseSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/CurrentlyActiveProgramsResponse.xsd", this.getClass());
         
         // 2 programs, one with no stop datetime
         //==========================================================================================
