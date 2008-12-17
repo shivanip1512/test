@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/16/2008 5:21:03 PM                        */
+/* Created on:     12/16/2008 6:35:51 PM                        */
 /*==============================================================*/
 
 
@@ -4482,7 +4482,7 @@ insert into command values(-13, 'control connect', 'Connect Meter', 'All Disconn
 /* MCT-250, 318, 318L, 360, 370 */
 insert into command values(-14, 'getstatus external', 'Read Status Points', 'All Status Input');
 /* LS-BASE */
-insert into command values(-15, 'getstatus LP', 'Read LS Info', 'All LP Meters');
+insert into command values(-15, 'getstatus LP', 'Read LP Info', 'All LP Meters');
 insert into command values(-16, 'Not Available Yet', 'Read LS Intervals 1 Thru 6', 'All LP Meters');
 insert into command values(-17, 'Not Available Yet', 'Read  6 LS Intervals Starting at ?', 'All LP Meters');
 insert into command values(-18, 'getconfig time', 'Read Date/Time', 'All LP Meters');
