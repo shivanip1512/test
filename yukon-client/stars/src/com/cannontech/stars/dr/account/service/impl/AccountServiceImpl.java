@@ -378,7 +378,9 @@ public class AccountServiceImpl implements AccountService {
         /*
          * Delete billing address
          */
-        addressDao.remove(billingAddress);
+        if(billingAddress.getAddressID() != CtiUtilities.NONE_ZERO_ID) {
+            addressDao.remove(billingAddress);
+        }
         
         /*
          * Delete customer
