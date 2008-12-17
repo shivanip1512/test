@@ -263,7 +263,7 @@ public class AccountServiceImpl implements AccountService {
         accountSite.setStreetAddressId(liteAddress.getAddressID());
         accountSite.setCustAtHome("N");
         accountSite.setCustomerStatus("A");
-        accountSite.setSiteNumber(accountDto.getMapNumber());
+        accountSite.setSiteNumber(accountDto.getMapNumber() == null ? " " : accountDto.getMapNumber());
         accountSiteDao.add(accountSite);
         
         /*

@@ -39,10 +39,10 @@ public class AccountsRequestMapper implements ObjectMapper<Element, UpdatableAcc
         
         mainAddress.setLocationAddress1(template.evaluateAsString("//y:mainAddress/y:street"));
         mainAddress.setLocationAddress2(template.evaluateAsString("//y:mainAddress/y:street2"));
-        mainAddress.setCityName(template.evaluateAsString("//y:mainAdress/y:city"));
-        mainAddress.setStateCode(template.evaluateAsString("//y:mainAdress/y:state"));
-        mainAddress.setZipCode(template.evaluateAsString("//y:mainAdress/y:postalCode"));
-        mainAddress.setCounty(template.evaluateAsString("//y:mainAdress/y:county"));
+        mainAddress.setCityName(template.evaluateAsString("//y:mainAddress/y:city"));
+        mainAddress.setStateCode(template.evaluateAsString("//y:mainAddress/y:state"));
+        mainAddress.setZipCode(template.evaluateAsString("//y:mainAddress/y:postalCode"));
+        mainAddress.setCounty(template.evaluateAsString("//y:mainAddress/y:county"));
         
         billingAddress.setLocationAddress1(template.evaluateAsString("//y:billingAddress/y:street"));
         billingAddress.setLocationAddress2(template.evaluateAsString("//y:billingAddress/y:street2"));
