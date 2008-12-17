@@ -1628,17 +1628,22 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
             //  the parser eliminates only the parse keywords that have already been acted on (select device, route)
             pReq->setCommandString(parse.getCommandStr());
 
-            for( itr = members.begin(); itr != members_end; itr++ )
+            for( itr = members.begin(); itr != members_end; )
             {
-                // Create a message for this one!
                 //   Note that we're going to let PIL fail us on a failed device lookup to save us the device lookup here
                 pReq->setDeviceId(*itr);
+                itr++;
 
-                CtiRequestMsg *pNew = (CtiRequestMsg*)pReq->replicateMessage();
-                pNew->setConnectionHandle( pReq->getConnectionHandle() );
-
-                //  put it back on the queue to be processed in order
-                _groupQueue.insert(pNew);
+                //On the last loop we dont put the message into the group queue.
+                if(itr != members_end)
+                {
+                    // Create a message for this one!
+                    CtiRequestMsg *pNew = (CtiRequestMsg*)pReq->replicateMessage();
+                    pNew->setConnectionHandle( pReq->getConnectionHandle() );
+                
+                    //  put it back on the queue to be processed in order
+                    _groupQueue.insert(pNew);
+                }
 
                 groupsubmitcnt++;
             }
