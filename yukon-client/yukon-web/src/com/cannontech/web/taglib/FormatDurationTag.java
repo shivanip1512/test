@@ -18,7 +18,7 @@ public class FormatDurationTag extends YukonTagSupport {
     private String var;
     private boolean isVarSet = false;
     
-    private int value; //seconds
+    private int value; //milliseconds
     private boolean isValueSet = false; 
     
     private String type;

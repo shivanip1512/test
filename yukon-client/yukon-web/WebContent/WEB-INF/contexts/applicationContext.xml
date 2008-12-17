@@ -704,6 +704,8 @@
     </bean>
     
     <bean id="formatDurationTagPrototype" class="com.cannontech.web.taglib.FormatDurationTag"/>
+
+    <bean id="formatTimePeriodTagPrototype" class="com.cannontech.web.taglib.FormatTimePeriodTag"/>
     
     <bean id="pointStatusColorTagPrototype" class="com.cannontech.web.taglib.PointStatusColorTag">
         <property name="pointDataRegistrationService" ref="pointDataUpdateRegistrationService"/>
@@ -854,6 +856,9 @@
     
     <bean id="trendingMenuOption" class="com.cannontech.web.menu.option.producer.TrendingMenuOptionProducer">
         <property name="graphDao" ref="graphDao" />
+    </bean>
+    <bean id="optOutMenuOption" class="com.cannontech.web.menu.option.producer.OptOutMenuOptionProducer">
+        <property name="optOutStatusService" ref="optOutStatusService" />
     </bean>
 
     <bean id="deviceGroupSelectorTagPrototype" class="com.cannontech.web.taglib.DeviceGroupSelectorTag">

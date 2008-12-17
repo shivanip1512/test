@@ -798,6 +798,32 @@
   </tag>
 
   <tag>
+    <name>formatTimePeriod</name>
+    <tag-class>com.cannontech.web.taglib.FormatTimePeriodTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+        <name>startDate</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue> 
+    </attribute>
+    <attribute>
+        <name>endDate</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue> 
+    </attribute>
+    <attribute>
+        <name>var</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+        <name>type</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+
+  <tag>
     <name>formatPhoneNumber</name>
     <tag-class>com.cannontech.web.taglib.FormatPhoneNumberTag</tag-class>
     <body-content>empty</body-content>
