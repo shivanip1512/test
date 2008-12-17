@@ -133,16 +133,8 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/third-party/jsp-api.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/third-party/servlet-api.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
-		</attributes>
-	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/jsp-api.jar"/>
+	<classpathentry kind="lib" path="/third-party/servlet-api.jar"/>
 	<classpathentry kind="lib" path="/third-party/activation.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
