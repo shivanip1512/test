@@ -26,7 +26,6 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 * @see LogController base class and AbstractController
 * @author dharrington
 */
-@CheckRole(AdministratorRole.ROLEID)
 @CheckRoleProperty(AdministratorRole.ADMIN_VIEW_LOGS)
 public class LogDownloadController extends LogController {
     

@@ -18,7 +18,6 @@ import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
-import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 /**
@@ -29,7 +28,6 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
  * @see view for this controller is logView.jsp
  * @author dharrington
  */
-@CheckRole(AdministratorRole.ROLEID)
 @CheckRoleProperty(AdministratorRole.ADMIN_VIEW_LOGS)
 public class LogViewController extends LogController {
     

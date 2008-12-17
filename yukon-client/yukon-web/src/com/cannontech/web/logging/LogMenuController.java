@@ -20,7 +20,6 @@ import com.cannontech.common.version.VersionTools;
 import com.cannontech.database.PoolManager;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.util.ServletUtil;
-import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 /**
@@ -30,7 +29,6 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
  * @author dharrington
  */
 
-@CheckRole(AdministratorRole.ROLEID)
 @CheckRoleProperty(AdministratorRole.ADMIN_VIEW_LOGS)
 public class LogMenuController extends LogController {
 
