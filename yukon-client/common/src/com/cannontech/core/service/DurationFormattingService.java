@@ -1,5 +1,7 @@
 package com.cannontech.core.service;
 
+import java.util.Date;
+
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.user.YukonUserContext;
 
@@ -14,6 +16,7 @@ public interface DurationFormattingService {
 
     public enum DurationFormat implements DisplayableEnum {
         DHMS,
+        DH,
         HMS,
         HM,
         H,
@@ -26,7 +29,25 @@ public interface DurationFormattingService {
             return keyPrefix + name();
         }
     }
-    
+
+    /**
+     * Method to get a formatted string representation of a time duration - assumes the start of
+     * the duration is now.
+     * @param duration - Duration (in milliseconds) to format
+     * @param type - Format type for the time duration
+     * @param yukonUserContext - Current user context
+     * @return String representing duration in given format
+     */
     public String formatDuration(long duration, DurationFormat type, YukonUserContext yukonUserContext);
+
+    /**
+     * Method to get a formatted string representation of a time period
+     * @param startDate - Start date of period
+     * @param endDate - End date of period
+     * @param type - Format type for the time period
+     * @param yukonUserContext - Current user context
+     * @return String representing time period in given format
+     */
+    public String formatDuration(Date startDate, Date endDate, DurationFormat type, YukonUserContext yukonUserContext);
     
 }
