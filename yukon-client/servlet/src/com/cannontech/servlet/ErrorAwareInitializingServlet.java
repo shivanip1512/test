@@ -6,7 +6,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.servlet.filter.ErrorHelperFilter;
+import com.cannontech.web.util.ErrorHelperFilter;
 
 public abstract class ErrorAwareInitializingServlet extends HttpServlet {
     private boolean startupErrorsAreFatal;

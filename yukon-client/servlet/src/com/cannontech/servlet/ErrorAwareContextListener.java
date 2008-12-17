@@ -8,7 +8,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.servlet.filter.ErrorHelperFilter;
+import com.cannontech.web.util.ErrorHelperFilter;
 
 public abstract class ErrorAwareContextListener implements ServletContextListener {
     private WebApplicationContext applicationContext;
