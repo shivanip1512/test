@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/16/2008 6:35:51 PM                        */
+/* Created on:     12/17/2008 1:52:16 PM                        */
 /*==============================================================*/
 
 
@@ -606,6 +606,15 @@ if exists (select 1
             and   indid > 0
             and   indid < 255)
    drop index LMCurtailProgramActivity.Indx_LMCrtPrgActStTime
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('LMGroupXMLParameter')
+            and   name  = 'INDX_LMGroupId_ParamName_UNQ'
+            and   indid > 0
+            and   indid < 255)
+   drop index LMGroupXMLParameter.INDX_LMGroupId_ParamName_UNQ
 go
 
 if exists (select 1
@@ -2466,6 +2475,13 @@ if exists (select 1
            where  id = object_id('LMGroupVersacom')
             and   type = 'U')
    drop table LMGroupVersacom
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMGroupXMLParameter')
+            and   type = 'U')
+   drop table LMGroupXMLParameter
 go
 
 if exists (select 1
@@ -8476,6 +8492,27 @@ create table LMGroupVersacom (
    RELAYUSAGE           char(7)              not null,
    SerialAddress        varchar(15)          not null,
    constraint PK_LMGROUPVERSACOM primary key (DEVICEID)
+)
+go
+
+/*==============================================================*/
+/* Table: LMGroupXMLParameter                                   */
+/*==============================================================*/
+create table LMGroupXMLParameter (
+   xmlParamId           numeric              not null,
+   lmGroupId            numeric              not null,
+   parameterName        varchar(50)          not null,
+   parameterValue       varchar(50)          not null,
+   constraint PK_LMGROUPXMLPARAMETER primary key (xmlParamId)
+)
+go
+
+/*==============================================================*/
+/* Index: INDX_LMGroupId_ParamName_UNQ                          */
+/*==============================================================*/
+create unique index INDX_LMGroupId_ParamName_UNQ on LMGroupXMLParameter (
+lmGroupId ASC,
+parameterName ASC
 )
 go
 
@@ -14579,6 +14616,11 @@ go
 alter table LMGroupVersacom
    add constraint SYS_C0013367 foreign key (ROUTEID)
       references Route (RouteID)
+go
+
+alter table LMGroupXMLParameter
+   add constraint FK_LMGroupXml_LMGroup foreign key (lmGroupId)
+      references LMGroup (DeviceID)
 go
 
 alter table LMHardwareBase

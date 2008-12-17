@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/16/2008 6:27:42 PM                        */
+/* Created on:     12/17/2008 2:00:28 PM                        */
 /*==============================================================*/
 
 
@@ -154,6 +154,8 @@ drop index Index_LMCrtCstAckSt;
 drop index Index_LMCrtCstActID;
 
 drop index Indx_LMCrtPrgActStTime;
+
+drop index INDX_LMGroupId_ParamName_UNQ;
 
 drop index CstLdIn_LMHrdCfg_FK;
 
@@ -670,6 +672,8 @@ drop table LMGroupSA305 cascade constraints;
 drop table LMGroupSASimple cascade constraints;
 
 drop table LMGroupVersacom cascade constraints;
+
+drop table LMGroupXMLParameter cascade constraints;
 
 drop table LMHardwareBase cascade constraints;
 
@@ -5889,6 +5893,25 @@ create table LMGroupVersacom  (
    RELAYUSAGE           CHAR(7)                         not null,
    SerialAddress        VARCHAR2(15)                    not null,
    constraint PK_LMGROUPVERSACOM primary key (DEVICEID)
+);
+
+/*==============================================================*/
+/* Table: LMGroupXMLParameter                                   */
+/*==============================================================*/
+create table LMGroupXMLParameter  (
+   xmlParamId           NUMBER                          not null,
+   lmGroupId            NUMBER                          not null,
+   parameterName        VARCHAR2(50)                    not null,
+   parameterValue       VARCHAR2(50)                    not null,
+   constraint PK_LMGROUPXMLPARAMETER primary key (xmlParamId)
+);
+
+/*==============================================================*/
+/* Index: INDX_LMGroupId_ParamName_UNQ                          */
+/*==============================================================*/
+create unique index INDX_LMGroupId_ParamName_UNQ on LMGroupXMLParameter (
+   lmGroupId ASC,
+   parameterName ASC
 );
 
 /*==============================================================*/
@@ -11443,6 +11466,10 @@ alter table LMGroupVersacom
 alter table LMGroupVersacom
    add constraint SYS_C0013367 foreign key (ROUTEID)
       references Route (RouteID);
+
+alter table LMGroupXMLParameter
+   add constraint FK_LMGroupXml_LMGroup foreign key (lmGroupId)
+      references LMGroup (DeviceID);
 
 alter table LMHardwareBase
    add constraint FK_LMHrdB_Rt foreign key (RouteID)
