@@ -257,7 +257,7 @@ public class IsocCommonStrategy extends StrategyGroupBase {
     		format.setMaximumFractionDigits(2);
     		format.setRoundingMode(RoundingMode.FLOOR);
 
-    		return String.valueOf(format.format(hoursRemaining)) + " Hrs Remain";
+    		return format.format(hoursRemaining) + " Hrs Remain";
     	} catch (PointException e) {
     		return "n/a";	
     	}

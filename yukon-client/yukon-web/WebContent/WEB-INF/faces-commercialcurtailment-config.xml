@@ -601,7 +601,7 @@
     <navigation-rule>
         <from-view-id>/cc/notif/detail.jsp</from-view-id>
         <navigation-case>
-            <from-outcome>prepareRemoveCustomerEvent</from-outcome>
+            <from-outcome>prepareSplitEvent</from-outcome>
             <to-view-id>/cc/customerRemoveVerification.jsp</to-view-id>
             <redirect></redirect>
         </navigation-case>

@@ -132,11 +132,13 @@ public abstract class BaseEconomicStrategy extends StrategyBase implements Econo
 
         //set the notification time to now.
         Date now = timeSource.getCurrentTime();
-        Calendar calendar = Calendar.getInstance(tz);
-        calendar.setTime(now);
-        calendar.add(Calendar.MINUTE, 5);	//add 5 minutes to give the op plenty of time to build the extension
-        TimeUtil.roundDateUp(calendar, 5);	//round up for consistency.
-        builder.getEvent().setNotificationTime(calendar.getTime());
+        Date notifTime = TimeUtil.addMinutes(now, 5); 	//add 5 minutes to give the op plenty of time to build the extension
+        TimeUtil.roundDateUp(notifTime, 5); //round up for consistency.
+        //if the original notification time is before the new notif time, then use that instead.
+        if (notifTime.before(previous.getNotificationTime())) {
+        	notifTime = previous.getNotificationTime();
+        }
+        builder.getEvent().setNotificationTime(notifTime);
 
         builder.getEvent().setWindowLengthMinutes(getWindowLengthMinutes());
         builder.setNumberOfWindows(getDefaultDurationMinutes(program) / getWindowLengthMinutes() / 2);
@@ -406,6 +408,23 @@ public abstract class BaseEconomicStrategy extends StrategyBase implements Econo
             // too late, event is already over
             return false;
         }
+        
+        //set the notification time to now.
+        Date notifTime = TimeUtil.addMinutes(now, 5); 	//add 5 minutes to give the op plenty of time to build the extension
+        TimeUtil.roundDateUp(notifTime, 5); //round up for consistency.
+        
+        //if the original notification time is before the new notif time, then use that instead.
+        if (notifTime.before(event.getNotificationTime())) {
+        	notifTime = event.getNotificationTime();
+        }
+        
+        //stop will be the startTime for any extended event
+        int notifMinutes = TimeUtil.differenceMinutes(notifTime, paddedStop);
+        int minNotification = getMinimumNotificationMinutes(event.getProgram());
+        if (notifMinutes < minNotification) {
+            return false;
+        }
+        
         EconomicEvent childEvent = economicEventDao.getChildEvent(event);
         if (childEvent != null) {
             // already been extended 

@@ -242,6 +242,19 @@ public static void roundDateUp(Calendar date, int minuteInterval) {
     date.set(Calendar.MILLISECOND, 0);
 }
 
+/** 
+ * See roundDateUp(Calendar date, int minuteInterval).
+ * This is a helper method to work with a Date.
+ * @param date
+ * @param minuteInterval
+ */
+public static void roundDateUp(Date date, int minuteInterval) {
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTime(date);
+    roundDateUp(calendar, minuteInterval);
+    date.setTime(calendar.getTimeInMillis());
+}
+
 public static Date addMinutes(Date date, int minutes) {
     return TimeUtil.addUnit(date, Calendar.MINUTE, minutes);
 }

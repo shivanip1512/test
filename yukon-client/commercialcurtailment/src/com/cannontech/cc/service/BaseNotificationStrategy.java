@@ -198,7 +198,7 @@ public abstract class BaseNotificationStrategy extends StrategyBase implements N
         return now.after(paddedStart) && now.before(paddedStop);
     }
     
-    public Boolean canEventBeRemoved(CurtailmentEvent event, LiteYukonUser user) {
+    public Boolean canCustomersBeRemovedFromEvent(CurtailmentEvent event, LiteYukonUser user) {
         if (event.getState().equals(CurtailmentEventState.CANCELLED)) {
             return false;
         }
@@ -253,13 +253,13 @@ public abstract class BaseNotificationStrategy extends StrategyBase implements N
     }
 
 	//THIS METHOD IS INCOMPLETE (AND PROBABLY WRONG), IT HAS BEEN PLACED HERE AS A PLACEHOLDER
-    public CurtailmentEvent removeCustomerEvent(final CurtailmentRemoveCustomerBuilder builder, final LiteYukonUser user) 
+    public CurtailmentEvent splitEvent(final CurtailmentRemoveCustomerBuilder builder, final LiteYukonUser user) 
     throws EventModificationException {
         final CurtailmentEvent event = builder.getOriginalEvent();
         CTILogger.debug("Removing Customer event: " + event);
         transactionTemplate.execute(new TransactionCallback(){
             public Object doInTransaction(TransactionStatus status) {
-                if (!canEventBeRemoved(event, user)) {
+                if (!canCustomersBeRemovedFromEvent(event, user)) {
                     throw new EventModificationException("Event cannot be modified at this time by this user.");
                 }
                 //TODO need to split event into two?

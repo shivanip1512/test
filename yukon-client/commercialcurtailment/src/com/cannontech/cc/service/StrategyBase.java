@@ -165,14 +165,6 @@ public abstract class StrategyBase implements CICurtailmentStrategy {
         return point;
     }
 
-    public BigDecimal getContractFirmDemand(CICustomerStub customer) throws PointException {
-        LitePoint point = getContractFirmDemandPoint(customer);
-        double fsl = pointAccess.getPointValue(point);
-        
-        BigDecimal bigDecimal = new BigDecimal(fsl, new MathContext(7));
-        return bigDecimal;
-    }
-    
     public LitePoint getContractFirmDemandPoint(CICustomerStub customer) throws PointException {
         LitePoint point = pointTypeHelper.getPoint(customer, contractFirmDemand);
         return point;

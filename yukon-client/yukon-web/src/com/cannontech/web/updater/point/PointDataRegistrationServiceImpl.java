@@ -17,8 +17,7 @@ public class PointDataRegistrationServiceImpl implements PointDataRegistrationSe
         return result;
     }
 
-    public String getRawPointDataUpdaterSpan(int pointId, YukonUserContext userContext) {
-	    String format = Format.VALUE.toString();
+    public String getRawPointDataUpdaterSpan(int pointId, String format, YukonUserContext userContext) {
 	    UpdateValue updateValue = getLatestValue(pointId, format, userContext);
 	
 	    String spanStr = "<span title=\"pointId:" + pointId + "\" cannonUpdater=\"" + 

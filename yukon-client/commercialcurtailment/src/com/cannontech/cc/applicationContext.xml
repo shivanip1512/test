@@ -155,13 +155,7 @@
         autowire="byType">
     <property name="isocCommonStrategy" ref="isocCommonStrategy"/>
     <property name="parameters">
-      <set>
-        <value>DEFAULT_EVENT_OFFSET_MINUTES</value>
-        <value>DEFAULT_NOTIFICATION_OFFSET_MINUTES</value>
-        <value>DEFAULT_EVENT_DURATION_MINUTES</value>
-        <value>MINIMUM_EVENT_DURATION_MINUTES</value>
-        <value>DEFAULT_ENERGY_PRICE</value>
-        <value>MINIMUM_NOTIFICATION_MINUTES</value>
+      <set merge="true">
         <value>CUSTOMER_ELECTION_CUTOFF_MINUTES</value>
       </set>
     </property>

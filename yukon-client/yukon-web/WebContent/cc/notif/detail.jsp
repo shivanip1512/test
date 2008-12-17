@@ -62,7 +62,7 @@
       <t:commandButton action="#{sNotificationDetail.cancelEvent}" value="Cancel" rendered="#{sNotificationDetail.showCancelButton}"/>
       <t:commandButton action="#{sNotificationDetail.prepareAdjustEvent}" value="Adjust" rendered="#{sNotificationDetail.showAdjustButton}"/>
       <t:commandButton action="#{sNotificationDetail.refresh}" value="Refresh"/>
-      <t:commandButton action="#{sNotificationDetail.prepareRemoveCustomerEvent}" value="Remove" rendered="#{sNotificationDetail.showRemoveButton}"/>
+      <t:commandButton action="#{sNotificationDetail.prepareSplitEvent}" value="Remove" rendered="#{sNotificationDetail.showRemoveButton}"/>
     </td>
   </tr>
 </table>

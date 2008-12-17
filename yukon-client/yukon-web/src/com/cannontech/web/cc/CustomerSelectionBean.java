@@ -16,6 +16,7 @@ import com.cannontech.cc.service.GroupService;
 import com.cannontech.cc.service.ProgramService;
 import com.cannontech.cc.service.builder.VerifiedNotifCustomer;
 import com.cannontech.common.exception.PointException;
+import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.web.cc.methods.EventCreationBase;
 import com.cannontech.web.cc.util.SelectableCustomer;
 import com.cannontech.web.updater.point.PointDataRegistrationService;
@@ -96,8 +97,9 @@ public class CustomerSelectionBean {
         SelectableCustomer sCustomer = (SelectableCustomer) customerListModel.getRowData();
         try {
         	int currentLoadPointId = eventBean.getStrategy().getCurrentLoadPoint(sCustomer.getCustomer()).getPointID();
-        	return registrationService.getRawPointDataUpdaterSpan(currentLoadPointId, JSFUtil.getYukonUserContext());
-        } catch (PointException e) {    //TODO...what should be caught here???
+    	    String format = Format.VALUE.toString();
+        	return registrationService.getRawPointDataUpdaterSpan(currentLoadPointId, format, JSFUtil.getYukonUserContext());
+        } catch (PointException e) {
             return "n/a";
         }
     }
@@ -106,8 +108,9 @@ public class CustomerSelectionBean {
         SelectableCustomer sCustomer = (SelectableCustomer) customerListModel.getRowData();
         try {
         	int fslPointId = eventBean.getStrategy().getContractFirmDemandPoint(sCustomer.getCustomer()).getPointID();
-        	return registrationService.getRawPointDataUpdaterSpan(fslPointId, JSFUtil.getYukonUserContext());
-        } catch (PointException e) {    //TODO...what should be caught here???
+    	    String format = Format.VALUE.toString();
+        	return registrationService.getRawPointDataUpdaterSpan(fslPointId, format, JSFUtil.getYukonUserContext());
+        } catch (PointException e) {
             return "n/a";
         }
     }

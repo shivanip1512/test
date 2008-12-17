@@ -1,9 +1,11 @@
 package com.cannontech.cc.service;
 
+import com.cannontech.cc.model.CurtailmentEvent;
 import com.cannontech.cc.service.builder.CurtailmentBuilder;
 import com.cannontech.cc.service.builder.CurtailmentRemoveCustomerBuilder;
 import com.cannontech.cc.service.builder.EventBuilderBase;
 import com.cannontech.cc.service.builder.VerifiedCustomer;
+import com.cannontech.database.data.lite.LiteYukonUser;
 
 public class IsocNotificationStrategy extends BaseNotificationStrategy {
     IsocCommonStrategy isocCommonStrategy;
@@ -40,4 +42,10 @@ public class IsocNotificationStrategy extends BaseNotificationStrategy {
         this.isocCommonStrategy = isocCommonStrategy;
     }
     
+    @Override
+    public Boolean canEventBeAdjusted(CurtailmentEvent event, LiteYukonUser user) {
+    	//The addition of new customer restrictions (max 4 hr control in 24 hr period and less than 4 hour control
+    	//  make it so that it no longer is possible to adjust an event safely without reselecting all the customers.
+    	return false;
+    }
 }

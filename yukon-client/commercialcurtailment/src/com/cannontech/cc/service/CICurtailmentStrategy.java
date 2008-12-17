@@ -37,8 +37,6 @@ public interface CICurtailmentStrategy {
     
     public LitePoint getCurrentLoadPoint(CICustomerStub customer) throws PointException;
 
-    public BigDecimal getContractFirmDemand(CICustomerStub customer) throws PointException;
-    
     public LitePoint getContractFirmDemandPoint(CICustomerStub customer) throws PointException;
     
     public void forceDelete(BaseEvent event);

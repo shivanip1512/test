@@ -17,6 +17,7 @@ import com.cannontech.cc.service.builder.CurtailmentChangeBuilder;
 import com.cannontech.cc.service.builder.CurtailmentRemoveCustomerBuilder;
 import com.cannontech.cc.service.builder.VerifiedPlainCustomer;
 import com.cannontech.common.exception.PointException;
+import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.cc.util.RemoveableCustomer;
 import com.cannontech.web.updater.point.PointDataRegistrationService;
@@ -67,7 +68,7 @@ public class DetailNotificationBean implements BaseDetailBean {
     }
 
     public Boolean getShowRemoveButton() {
-        return getStrategy().canEventBeRemoved(getEvent(), getYukonUser());
+        return getStrategy().canCustomersBeRemovedFromEvent(getEvent(), getYukonUser());
     }
 
     public String cancelEvent() {
@@ -92,7 +93,7 @@ public class DetailNotificationBean implements BaseDetailBean {
         return "notifDetail";
     }
 
-    public String prepareRemoveCustomerEvent() {
+    public String prepareSplitEvent() {
         removeBuilder = getStrategy().createRemoveBuilder(getEvent());
         
         removeCustomerList = new ArrayList<RemoveableCustomer>();
@@ -102,11 +103,11 @@ public class DetailNotificationBean implements BaseDetailBean {
         }
         removeCustomerListModel = new ListDataModel(removeCustomerList);
         
-        return "prepareRemoveCustomerEvent";
+        return "prepareSplitEvent";
     }
 
-    public String removeCustomerEvent() {
-        getStrategy().removeCustomerEvent(removeBuilder, getYukonUser());
+    public String splitEvent() {
+        getStrategy().splitEvent(removeBuilder, getYukonUser());
         
         return "notifDetail";
     }
@@ -187,8 +188,9 @@ public class DetailNotificationBean implements BaseDetailBean {
         RemoveableCustomer rCustomer = (RemoveableCustomer) removeCustomerListModel.getRowData();
         try {
             int pointId = strategy.getCurrentLoadPoint(rCustomer.getCustomer()).getPointID();
-            return registrationService.getRawPointDataUpdaterSpan(pointId, JSFUtil.getYukonUserContext());
-        } catch (PointException e) {    //TODO...what should be caught here???
+    	    String format = Format.VALUE.toString();
+            return registrationService.getRawPointDataUpdaterSpan(pointId, format, JSFUtil.getYukonUserContext());
+        } catch (PointException e) {
             return "n/a";
         }
     }
@@ -197,8 +199,9 @@ public class DetailNotificationBean implements BaseDetailBean {
     	RemoveableCustomer rCustomer = (RemoveableCustomer) removeCustomerListModel.getRowData();
         try {
         	int fslPointId = strategy.getContractFirmDemandPoint(rCustomer.getCustomer()).getPointID();
-        	return registrationService.getRawPointDataUpdaterSpan(fslPointId, JSFUtil.getYukonUserContext());
-        } catch (PointException e) {    //TODO...what should be caught here???
+    	    String format = Format.VALUE.toString();
+        	return registrationService.getRawPointDataUpdaterSpan(fslPointId, format, JSFUtil.getYukonUserContext());
+        } catch (PointException e) {
             return "n/a";
         }
     }
@@ -224,7 +227,7 @@ public class DetailNotificationBean implements BaseDetailBean {
             JSFUtil.addNullWarnMessage("At least one Customer must be selected.");
             return null;
         }
-        return removeCustomerEvent();
+        return splitEvent();
     }
     
     public List<RemoveableCustomer> getRemoveCustomerList() {

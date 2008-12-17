@@ -31,7 +31,7 @@ public interface NotificationStrategy extends CICurtailmentStrategy {
 
     public Boolean canEventBeAdjusted(CurtailmentEvent event, LiteYukonUser user);
 
-    public Boolean canEventBeRemoved(CurtailmentEvent event, LiteYukonUser user);
+    public Boolean canCustomersBeRemovedFromEvent(CurtailmentEvent event, LiteYukonUser user);
 
     public Boolean canEventBeChanged(CurtailmentEvent event, LiteYukonUser user);
 
@@ -48,7 +48,7 @@ public interface NotificationStrategy extends CICurtailmentStrategy {
     public CurtailmentEvent adjustEvent(final CurtailmentChangeBuilder builder,
                                         final LiteYukonUser user) throws EventModificationException;
 
-    public CurtailmentEvent removeCustomerEvent(final CurtailmentRemoveCustomerBuilder builder,
+    public CurtailmentEvent splitEvent(final CurtailmentRemoveCustomerBuilder builder,
             final LiteYukonUser user) throws EventModificationException;
 
     @Transactional
