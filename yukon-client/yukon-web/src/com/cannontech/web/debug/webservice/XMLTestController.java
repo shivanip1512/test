@@ -49,6 +49,7 @@ public class XMLTestController extends MultiActionController {
     	ModelAndView mav = new ModelAndView("webservice/home.jsp");
     	mav.addObject("exampleFileNames", getExampleFileNames());
     	mav.addObject("uriNames", getUriNames());
+    	mav.addObject("uri", getUriNames().get(0));
     	
     	return mav;
     }
@@ -158,6 +159,7 @@ public class XMLTestController extends MultiActionController {
     	List<String> uriNames = new ArrayList<String>();
     	uriNames.add("http://127.0.0.1:8081/api/soap/loadManagement");
     	uriNames.add("http://127.0.0.1:8081/api/soap/stars");
+    	uriNames.add("http://127.0.0.1:8081/api/soap/account");
     	uriNames.add("http://www.weather.gov/forecasts/xml/SOAP_server/ndfdXMLserver.php");
 			
     	return uriNames;

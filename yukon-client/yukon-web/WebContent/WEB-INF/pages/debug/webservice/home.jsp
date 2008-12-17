@@ -20,8 +20,6 @@
 
 		function xmlTemplateChange() {
 
-			$('selectedTemplateIndex').value = $('xmlTemplate').selectedIndex;
-
 			var url = '/spring/debug/webservice/xml/xmlTemplateChange';
             var args = {};
             args.xmlTemplate = $('xmlTemplate').options[$('xmlTemplate').selectedIndex].value;
@@ -36,12 +34,13 @@
 		function uriChange() {
 
 			$('uri').value = $('uriSelect').options[$('uriSelect').selectedIndex].value;
-			$('selectedUriIndex').value = $('uri').selectedIndex;
-			
 		}
 		
 		function executeRequestForm() {
 
+			$('selectedTemplateIndex').value = $('xmlTemplate').selectedIndex;
+			$('selectedUriIndex').value = $('uriSelect').selectedIndex;
+			
 			$('executeRequestForm').submit();
 		}
 		
@@ -103,7 +102,7 @@
     				<tr>
     					<td>&nbsp;</td>
     					<td>
-    						<input type="text" name="uri" id="uri" value="http://127.0.0.1:8081/api/soap/loadManagement" size="66">
+    						<input type="text" name="uri" id="uri" value="${uri}" size="66">
     					</td>
     				</tr>
     			</table>
