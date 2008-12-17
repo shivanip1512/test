@@ -96,7 +96,7 @@ public class OverrideHistoryRequestEndpointTest {
         private String programName;
         
         @Override
-        public List<OverrideHistory> overrideHistoryByAccountNumber(String accountNumber, String programName, Date startTime, Date stopTime, LiteYukonUser user) {
+        public List<OverrideHistory> getOverrideHistoryByAccountNumber(String accountNumber, String programName, Date startTime, Date stopTime, LiteYukonUser user) {
         	
         	this.accountNumber = accountNumber;
             this.startTime = startTime;
@@ -113,7 +113,7 @@ public class OverrideHistoryRequestEndpointTest {
         }
         
         @Override
-        public List<OverrideHistory> overrideHistoryByProgramName(String programName, Date startTime, Date stopTime, LiteYukonUser user) {
+        public List<OverrideHistory> getOverrideHistoryByProgramName(String programName, Date startTime, Date stopTime, LiteYukonUser user) {
 
             this.programName = programName;            
             this.startTime = startTime;
@@ -210,61 +210,48 @@ public class OverrideHistoryRequestEndpointTest {
         // verify data in the response
         assertTrue("Incorrect resultSize", overrideHistResults != null && overrideHistResults.size() == 2);
         // results verified by positional check, which validates test node-mapper as well
-        for (int index = 0; index < overrideHistResults.size(); index++) {
-            OverrideHistory overrideHist = overrideHistResults.get(index);
-            switch (index) {
-            case 0:
-                assertTrue("Incorrect serialNumber",
-                           overrideHist.getSerialNumber().equals(SERIAL_NUMBER1_VALID));
-                assertTrue("Incorrect programName",
-                           overrideHist.getProgramName().equals(PROGRAM1_VALID));
-                assertTrue("Incorrect accountNumber",
-                           overrideHist.getAccountNumber().equals(ACCOUNT_VALID));
-                assertTrue("Incorrect status",
-                           overrideHist.getStatus().equals(STATUS1_ACTIVE));
-                assertTrue("Incorrect scheduledDate",
-                           XmlUtils.formatDate(overrideHist.getScheduledDate()).equals(SCHEDULED_DATE_VALID));
-                assertTrue("Incorrect startDate",
-                           XmlUtils.formatDate(overrideHist.getStartDate()).equals(START_DATE_VALID));
-                assertTrue("Incorrect stopDate",
-                           XmlUtils.formatDate(overrideHist.getStopDate()).equals(STOP_DATE_VALID));
-                assertTrue("Incorrect userName",
-                           overrideHist.getUserName().equals(USER1_VALID));
-                assertTrue("Incorrect overrideNumber",
-                           overrideHist.getOverrideNumber() == OVERRIDE_NUMBER1_VALID);
-                assertTrue("Incorrect countedAgainstLimit",
-                           overrideHist.isCountedAgainstLimit());
-                break;
-            case 1:
-                assertTrue("Incorrect serialNumber",
-                           overrideHist.getSerialNumber().equals(SERIAL_NUMBER2_VALID));
-                assertTrue("Incorrect programName",
-                           overrideHist.getProgramName().equals(PROGRAM2_VALID));
-                assertTrue("Incorrect accountNumber",
-                           overrideHist.getAccountNumber().equals(ACCOUNT_VALID));
-                assertTrue("Incorrect status",
-                           overrideHist.getStatus().equals(STATUS2_SCHEDULED));
-                assertTrue("Incorrect scheduledDate",
-                           XmlUtils.formatDate(overrideHist.getScheduledDate()).equals(SCHEDULED_DATE_VALID));
-                assertTrue("Incorrect startDate",
-                           XmlUtils.formatDate(overrideHist.getStartDate()).equals(START_DATE_VALID));
-                assertTrue("Incorrect stopDate",
-                           XmlUtils.formatDate(overrideHist.getStopDate()).equals(STOP_DATE_VALID));
-                assertTrue("Incorrect userName",
-                           overrideHist.getUserName().equals(USER2_VALID));
-                assertTrue("Incorrect overrideNumber",
-                           overrideHist.getOverrideNumber() == OVERRIDE_NUMBER2_VALID);
-                assertTrue("Incorrect countedAgainstLimit",
-                           !overrideHist.isCountedAgainstLimit());
-                break;
-
-            default:
-                //unexpected result
-                Assert.fail("Unexpected overrideHistory result");
-                break;
-            }
-        }        
-       
+        OverrideHistory overrideHist = overrideHistResults.get(0);
+        assertTrue("Incorrect serialNumber",
+                   overrideHist.getSerialNumber().equals(SERIAL_NUMBER1_VALID));
+        assertTrue("Incorrect programName", 
+                   overrideHist.getProgramName().equals(PROGRAM1_VALID));
+        assertTrue("Incorrect accountNumber",
+                   overrideHist.getAccountNumber().equals(ACCOUNT_VALID));
+        assertTrue("Incorrect status", 
+                   overrideHist.getStatus().equals(STATUS1_ACTIVE));
+        assertTrue("Incorrect scheduledDate",
+                   XmlUtils.formatDate(overrideHist.getScheduledDate()).equals(SCHEDULED_DATE_VALID));
+        assertTrue("Incorrect startDate",
+                   XmlUtils.formatDate(overrideHist.getStartDate()).equals(START_DATE_VALID));
+        assertTrue("Incorrect stopDate",
+                   XmlUtils.formatDate(overrideHist.getStopDate()).equals(STOP_DATE_VALID));
+        assertTrue("Incorrect userName", overrideHist.getUserName().equals(USER1_VALID));
+        assertTrue("Incorrect overrideNumber",
+                   overrideHist.getOverrideNumber() == OVERRIDE_NUMBER1_VALID);
+        assertTrue("Incorrect countedAgainstLimit",
+                   overrideHist.isCountedAgainstLimit());
+        
+        overrideHist = overrideHistResults.get(1);
+        assertTrue("Incorrect serialNumber",
+                   overrideHist.getSerialNumber().equals(SERIAL_NUMBER2_VALID));
+        assertTrue("Incorrect programName",
+                   overrideHist.getProgramName().equals(PROGRAM2_VALID));
+        assertTrue("Incorrect accountNumber",
+                   overrideHist.getAccountNumber().equals(ACCOUNT_VALID));
+        assertTrue("Incorrect status",
+                   overrideHist.getStatus().equals(STATUS2_SCHEDULED));
+        assertTrue("Incorrect scheduledDate",
+                   XmlUtils.formatDate(overrideHist.getScheduledDate()).equals(SCHEDULED_DATE_VALID));
+        assertTrue("Incorrect startDate",
+                   XmlUtils.formatDate(overrideHist.getStartDate()).equals(START_DATE_VALID));
+        assertTrue("Incorrect stopDate",
+                   XmlUtils.formatDate(overrideHist.getStopDate()).equals(STOP_DATE_VALID));
+        assertTrue("Incorrect userName",
+                   overrideHist.getUserName().equals(USER2_VALID));
+        assertTrue("Incorrect overrideNumber",
+                   overrideHist.getOverrideNumber() == OVERRIDE_NUMBER2_VALID);
+        assertTrue("Incorrect countedAgainstLimit",
+                   !overrideHist.isCountedAgainstLimit());        
     }
     
     @Test
@@ -335,61 +322,49 @@ public class OverrideHistoryRequestEndpointTest {
         // verify data in the response
         assertTrue("Incorrect resultSize", overrideHistResults != null && overrideHistResults.size() == 2);
         // results verified by positional check, which validates test node-mapper as well
-        for (int index = 0; index < overrideHistResults.size(); index++) {
-            OverrideHistory overrideHist = overrideHistResults.get(index);
-            switch (index) {
-            case 0:
-                assertTrue("Incorrect serialNumber",
-                           overrideHist.getSerialNumber().equals(SERIAL_NUMBER1_VALID));
-                assertTrue("Incorrect programName",
-                           overrideHist.getProgramName().equals(PROGRAM1_VALID));
-                assertTrue("Incorrect accountNumber",
-                           overrideHist.getAccountNumber().equals(ACCOUNT_VALID));
-                assertTrue("Incorrect status",
-                           overrideHist.getStatus().equals(STATUS1_ACTIVE));
-                assertTrue("Incorrect scheduledDate",
-                           XmlUtils.formatDate(overrideHist.getScheduledDate()).equals(SCHEDULED_DATE_VALID));
-                assertTrue("Incorrect startDate",
-                           XmlUtils.formatDate(overrideHist.getStartDate()).equals(START_DATE_VALID));
-                assertTrue("Incorrect stopDate",
-                           XmlUtils.formatDate(overrideHist.getStopDate()).equals(STOP_DATE_VALID));
-                assertTrue("Incorrect userName",
-                           overrideHist.getUserName().equals(USER1_VALID));
-                assertTrue("Incorrect overrideNumber",
-                           overrideHist.getOverrideNumber() == OVERRIDE_NUMBER1_VALID);
-                assertTrue("Incorrect countedAgainstLimit",
-                           overrideHist.isCountedAgainstLimit());
-                break;
-            case 1:
-                assertTrue("Incorrect serialNumber",
-                           overrideHist.getSerialNumber().equals(SERIAL_NUMBER2_VALID));
-                assertTrue("Incorrect programName",
-                           overrideHist.getProgramName().equals(PROGRAM2_VALID));
-                assertTrue("Incorrect accountNumber",
-                           overrideHist.getAccountNumber().equals(ACCOUNT_VALID));
-                assertTrue("Incorrect status",
-                           overrideHist.getStatus().equals(STATUS2_SCHEDULED));
-                assertTrue("Incorrect scheduledDate",
-                           XmlUtils.formatDate(overrideHist.getScheduledDate()).equals(SCHEDULED_DATE_VALID));
-                assertTrue("Incorrect startDate",
-                           XmlUtils.formatDate(overrideHist.getStartDate()).equals(START_DATE_VALID));
-                assertTrue("Incorrect stopDate",
-                           XmlUtils.formatDate(overrideHist.getStopDate()).equals(STOP_DATE_VALID));
-                assertTrue("Incorrect userName",
-                           overrideHist.getUserName().equals(USER2_VALID));
-                assertTrue("Incorrect overrideNumber",
-                           overrideHist.getOverrideNumber() == OVERRIDE_NUMBER2_VALID);
-                assertTrue("Incorrect countedAgainstLimit",
-                           !overrideHist.isCountedAgainstLimit());
-                break;
-
-            default:
-                //unexpected result
-                Assert.fail("Unexpected overrideHistory result");
-                break;
-            }
-        }        
-       
+        OverrideHistory overrideHist = overrideHistResults.get(0);
+        assertTrue("Incorrect serialNumber",
+                   overrideHist.getSerialNumber().equals(SERIAL_NUMBER1_VALID));
+        assertTrue("Incorrect programName",
+                   overrideHist.getProgramName().equals(PROGRAM1_VALID));
+        assertTrue("Incorrect accountNumber",
+                   overrideHist.getAccountNumber().equals(ACCOUNT_VALID));
+        assertTrue("Incorrect status",
+                   overrideHist.getStatus().equals(STATUS1_ACTIVE));
+        assertTrue("Incorrect scheduledDate",
+                   XmlUtils.formatDate(overrideHist.getScheduledDate()).equals(SCHEDULED_DATE_VALID));
+        assertTrue("Incorrect startDate",
+                   XmlUtils.formatDate(overrideHist.getStartDate()).equals(START_DATE_VALID));
+        assertTrue("Incorrect stopDate",
+                   XmlUtils.formatDate(overrideHist.getStopDate()).equals(STOP_DATE_VALID));
+        assertTrue("Incorrect userName",
+                   overrideHist.getUserName().equals(USER1_VALID));
+        assertTrue("Incorrect overrideNumber",
+                   overrideHist.getOverrideNumber() == OVERRIDE_NUMBER1_VALID);
+        assertTrue("Incorrect countedAgainstLimit",
+                   overrideHist.isCountedAgainstLimit());
+        
+        overrideHist = overrideHistResults.get(1);
+        assertTrue("Incorrect serialNumber",
+                   overrideHist.getSerialNumber().equals(SERIAL_NUMBER2_VALID));
+        assertTrue("Incorrect programName",
+                   overrideHist.getProgramName().equals(PROGRAM2_VALID));
+        assertTrue("Incorrect accountNumber",
+                   overrideHist.getAccountNumber().equals(ACCOUNT_VALID));
+        assertTrue("Incorrect status",
+                   overrideHist.getStatus().equals(STATUS2_SCHEDULED));
+        assertTrue("Incorrect scheduledDate",
+                   XmlUtils.formatDate(overrideHist.getScheduledDate()).equals(SCHEDULED_DATE_VALID));
+        assertTrue("Incorrect startDate",
+                   XmlUtils.formatDate(overrideHist.getStartDate()).equals(START_DATE_VALID));
+        assertTrue("Incorrect stopDate",
+                   XmlUtils.formatDate(overrideHist.getStopDate()).equals(STOP_DATE_VALID));
+        assertTrue("Incorrect userName",
+                   overrideHist.getUserName().equals(USER2_VALID));
+        assertTrue("Incorrect overrideNumber",
+                   overrideHist.getOverrideNumber() == OVERRIDE_NUMBER2_VALID);
+        assertTrue("Incorrect countedAgainstLimit",
+                   !overrideHist.isCountedAgainstLimit());
     }
     
     @Test

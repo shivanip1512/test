@@ -66,7 +66,7 @@ public class TotalOverriddenDevicesRequestEndpointTest {
         private String programName;
         
         @Override
-        public long totalOverridenDevicesByAccountNumber(String accountNumber, String programName, Date startTime, Date stopTime, LiteYukonUser user) {
+        public long getTotalOverridenDevicesByAccountNumber(String accountNumber, String programName, Date startTime, Date stopTime, LiteYukonUser user) {
             
             this.accountNumber = accountNumber;
             this.startTime = startTime;
@@ -82,7 +82,7 @@ public class TotalOverriddenDevicesRequestEndpointTest {
         }
         
         @Override
-        public long totalOverridenDevicesByProgramName(String programName, Date startTime, Date stopTime, LiteYukonUser user) {
+        public long getTotalOverridenDevicesByProgramName(String programName, Date startTime, Date stopTime, LiteYukonUser user) {
 
             this.programName = programName;            
             this.startTime = startTime;

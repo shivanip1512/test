@@ -61,7 +61,7 @@ public class TotalOverriddenDevicesRequestEndpoint {
         //TODO decide what exception(s) this might throw, add error code details
         long totalDevices = 0; 
         try {
-            totalDevices = overrideService.totalOverridenDevicesByAccountNumber(accountNumber, programName, startTime, stopTime, user);
+            totalDevices = overrideService.getTotalOverridenDevicesByAccountNumber(accountNumber, programName, startTime, stopTime, user);
         } catch (StarsInvalidArgumentException e) {
             
             Element fe = XMLFailureGenerator.generateFailure(totalOverriddenDevicesByAccountNumberRequest, e, "ERROR_CODE", "ERROR_DESCRIPTION");
@@ -96,7 +96,7 @@ public class TotalOverriddenDevicesRequestEndpoint {
         //TODO decide what exception(s) this might throw, add error code details
         long totalDevices = 0; 
         try {
-            totalDevices = overrideService.totalOverridenDevicesByProgramName(programName, startTime, stopTime, user);
+            totalDevices = overrideService.getTotalOverridenDevicesByProgramName(programName, startTime, stopTime, user);
         } catch (StarsInvalidArgumentException e) {
             
             Element fe = XMLFailureGenerator.generateFailure(totalOverriddenDevicesByProgramNameRequest, e, "ERROR_CODE", "ERROR_DESCRIPTION");

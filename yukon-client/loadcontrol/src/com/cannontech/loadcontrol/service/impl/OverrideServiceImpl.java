@@ -22,14 +22,14 @@ public class OverrideServiceImpl implements OverrideService {
 	}
 
 	@Override
-	public List<OverrideHistory> overrideHistoryByAccountNumber(
+	public List<OverrideHistory> getOverrideHistoryByAccountNumber(
 			String accountNumber, String programName, Date startTime, Date stopTime, LiteYukonUser user) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public List<OverrideHistory> overrideHistoryByProgramName(
+	public List<OverrideHistory> getOverrideHistoryByProgramName(
 			String programName, Date startTime, Date stopTime, LiteYukonUser user) {
 		// TODO Auto-generated method stub
 		return null;
@@ -42,14 +42,14 @@ public class OverrideServiceImpl implements OverrideService {
 	}
 
 	@Override
-	public long totalOverridenDevicesByAccountNumber(String accountNumber,
+	public long getTotalOverridenDevicesByAccountNumber(String accountNumber,
 			String programName, Date startDate, Date startTime, LiteYukonUser user) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
-	public long totalOverridenDevicesByProgramName(String programName, Date startTime, Date stopTime, 
+	public long getTotalOverridenDevicesByProgramName(String programName, Date startTime, Date stopTime, 
 			LiteYukonUser user) {
 		// TODO Auto-generated method stub
 		return 0;

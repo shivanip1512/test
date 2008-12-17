@@ -12,13 +12,13 @@ public interface OverrideService {
 	
 	public void countOverridesTowardsLimit(LiteYukonUser user);
 	
-	public List<OverrideHistory> overrideHistoryByAccountNumber(String accountNumber, String programName, Date startTime, Date stopTime, LiteYukonUser user);
+	public List<OverrideHistory> getOverrideHistoryByAccountNumber(String accountNumber, String programName, Date startTime, Date stopTime, LiteYukonUser user);
 	
-	public List<OverrideHistory> overrideHistoryByProgramName(String programName, Date startTime, Date stopTime, LiteYukonUser user);
+	public List<OverrideHistory> getOverrideHistoryByProgramName(String programName, Date startTime, Date stopTime, LiteYukonUser user);
 	
 	public void prohibitConsumerOverrides(LiteYukonUser user);
 	
-	public long totalOverridenDevicesByAccountNumber(String accountNumber, String programName, Date startTime, Date stopTime, LiteYukonUser user);
+	public long getTotalOverridenDevicesByAccountNumber(String accountNumber, String programName, Date startTime, Date stopTime, LiteYukonUser user);
 	
-	public long totalOverridenDevicesByProgramName(String programName, Date startTime, Date stopTime, LiteYukonUser user);
+	public long getTotalOverridenDevicesByProgramName(String programName, Date startTime, Date stopTime, LiteYukonUser user);
 }

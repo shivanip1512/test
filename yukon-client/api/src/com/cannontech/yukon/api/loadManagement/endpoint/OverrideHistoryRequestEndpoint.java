@@ -64,7 +64,7 @@ public class OverrideHistoryRequestEndpoint {
         //TODO catch and set any exceptions to throwable here
         List<OverrideHistory> overrideHistoryList = new ArrayList<OverrideHistory>();
         try {
-        	overrideHistoryList = overrideService.overrideHistoryByAccountNumber(accountNumber,
+        	overrideHistoryList = overrideService.getOverrideHistoryByAccountNumber(accountNumber,
                                                                                  programName,
                                                                                  startTime,
                                                                                  stopTime,
@@ -101,7 +101,7 @@ public class OverrideHistoryRequestEndpoint {
         //TODO catch and set any exceptions to throwable here
         List<OverrideHistory> overrideHistoryList = new ArrayList<OverrideHistory>();
         try {
-            overrideHistoryList = overrideService.overrideHistoryByProgramName(programName,
+            overrideHistoryList = overrideService.getOverrideHistoryByProgramName(programName,
                                                                                startTime,
                                                                                stopTime,
                                                                                user);

@@ -20,13 +20,13 @@ public class OverrideServiceAdapter implements OverrideService {
 	}
 
 	@Override
-	public List<OverrideHistory> overrideHistoryByAccountNumber(
+	public List<OverrideHistory> getOverrideHistoryByAccountNumber(
 			String accountNumber, String programName, Date startTime, Date stopTime, LiteYukonUser user) {
 		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
-	public List<OverrideHistory> overrideHistoryByProgramName(
+	public List<OverrideHistory> getOverrideHistoryByProgramName(
 			String programName, Date startTime, Date stopTime, LiteYukonUser user) {
 		throw new UnsupportedOperationException("Not Implemented");
 	}
@@ -37,14 +37,14 @@ public class OverrideServiceAdapter implements OverrideService {
 	}
 
 	@Override
-	public long totalOverridenDevicesByAccountNumber(String accountNumber,
+	public long getTotalOverridenDevicesByAccountNumber(String accountNumber,
 			String programName, Date startDate, Date stopDate,
 			LiteYukonUser user) {
 		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
-	public long totalOverridenDevicesByProgramName(String programName,
+	public long getTotalOverridenDevicesByProgramName(String programName,
 			Date startDate, Date stopDate, LiteYukonUser user) {
 		throw new UnsupportedOperationException("Not Implemented");
 	}
