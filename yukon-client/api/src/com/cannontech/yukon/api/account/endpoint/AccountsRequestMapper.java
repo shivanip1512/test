@@ -55,7 +55,7 @@ public class AccountsRequestMapper implements ObjectMapper<Element, UpdatableAcc
         siteInfo.setFeeder(template.evaluateAsString("//y:siteInformation/y:feeder"));
         siteInfo.setPole(template.evaluateAsString("//y:siteInformation/y:pole"));
         siteInfo.setTransformerSize(template.evaluateAsString("//y:siteInformation/y:transformerSize"));    
-        siteInfo.setServiceVoltage(template.evaluateAsString("//y:siteInformation/y:serviceVoltage"));
+        siteInfo.setServiceVoltage(template.evaluateAsString("//y:siteInformation/y:siteVoltage"));
         
         dto.setBillingAddress(billingAddress);
         dto.setStreetAddress(mainAddress);

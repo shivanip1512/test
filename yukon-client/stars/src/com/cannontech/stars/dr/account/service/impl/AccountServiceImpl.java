@@ -564,11 +564,12 @@ public class AccountServiceImpl implements AccountService {
             }else {
                 // was commercial and still is
                 LiteCICustomer liteCICustomer = customerDao.getLiteCICustomer(liteCustomer.getCustomerID());
-                liteCICustomer.setAltTrackingNumber(accountDto.getAltTrackingNumber());
                 liteCICustomer.setCompanyName(accountDto.getCompanyName());
                 customerDao.updateCICustomer(liteCICustomer);
+                customerDao.updateCustomer(liteCustomer);
             }
         }else {
+            liteCustomer.setAltTrackingNumber(accountDto.getAltTrackingNumber());
             if(accountDto.getIsCommercial()) {
                 // was residential, now commercial
                 LiteAddress companyAddress = new LiteAddress();
