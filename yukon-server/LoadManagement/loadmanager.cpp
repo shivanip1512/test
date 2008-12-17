@@ -542,6 +542,7 @@ void CtiLoadManager::controlLoop()
                             if( tempProgram )
                             {
                                 multi->insert(CTIDBG_new CtiLMDynamicProgramDataMsg(boost::static_pointer_cast<CtiLMProgramDirect>(tempProgram)));
+                                tempProgram->createControlStatusPointUpdates(multiDispatchMsg);
                                 tempCount++;
                             }
                             else
@@ -564,6 +565,7 @@ void CtiLoadManager::controlLoop()
                             if( tempControlArea != NULL )
                             {
                                 multi->insert(CTIDBG_new CtiLMDynamicControlAreaDataMsg(tempControlArea));
+                                tempControlArea->createControlStatusPointUpdates(multiDispatchMsg);
                                 tempCount++;
                             }
                             else
