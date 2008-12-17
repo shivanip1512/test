@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.YukonSelectionListDefs;
@@ -28,7 +29,6 @@ import com.cannontech.stars.dr.util.YukonListEntryHelper;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.StarsInvalidArgumentException;
-import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.ws.dto.StarsControllableDeviceDTO;
 import com.cannontech.stars.ws.helper.StarsControllableDeviceHelper;
 
@@ -90,8 +90,16 @@ public class StarsControllableDeviceHelperImpl implements
     private CustomerAccount getCustomerAccount(
             StarsControllableDeviceDTO deviceInfo,
             LiteStarsEnergyCompany energyCompany) {
-        CustomerAccount custAcct = customerAccountDao.getByAccountNumber(getAccountNumber(deviceInfo),
-                                                                         energyCompany.getLiteID());
+        CustomerAccount custAcct = null;
+        try {
+            custAcct = customerAccountDao.getByAccountNumber(getAccountNumber(deviceInfo),
+                                                             energyCompany.getLiteID());
+        } catch (DataAccessException e) {
+            // convert to a better, Account not found exception
+            throw new StarsAccountNotFoundException(getAccountNumber(deviceInfo),
+                                                    energyCompany.getName(),
+                                                    e);
+        }
         if (custAcct == null) {
             throw new StarsAccountNotFoundException(getAccountNumber(deviceInfo),
                                                     energyCompany.getName());
