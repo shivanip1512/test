@@ -97,7 +97,6 @@ public class FormattingTemplateProcessorTest {
         data.put("dayList", dayList);
         
         String result = tp.process(template, data);
-        System.out.println(result);
         
         Assert.assertEquals("Tom Mack's favorite days are\n  3/7/78\n  3/25/80", result);
     }
