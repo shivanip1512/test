@@ -56,8 +56,8 @@ ALTER TABLE LMProgramGearHistory
    ADD CONSTRAINT FK_LMProgGearHist_LMProgHist FOREIGN KEY (ProgramHistId)
       REFERENCES LMProgramHistory (ProgramHistId);
 
-ALTER TABLE DynamicLMProgramDirect 
-ADD CurrentLogId NUMBER NOT NULL DEFAULT 0;
+ALTER TABLE DynamicLMProgramDirect
+ADD CurrentLogId NUMBER DEFAULT 0 NOT NULL;
 /* End YUK-6742 */ 
 
 /* Start YUK-6743 */ 
