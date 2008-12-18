@@ -51,6 +51,7 @@
 	}
     boolean hasSubstationControl = CBCWebUtils.hasSubstationControlRights(session);
     
+    String pageTitle = "Substation In Area:  " + areaName; 
 %>
 
 <c:set var="areaId" value="<%=areaId%>"/>
@@ -81,7 +82,7 @@ if(special){
 	}
 </script>
 
-<cti:titledContainer title="<%="Substation In Area:  " + areaName%>" id="last_titled_container">
+<cti:titledContainer title="<%= pageTitle %>" id="last_titled_container">
           
 <%
 if (areaSubs.size() > 0) {
