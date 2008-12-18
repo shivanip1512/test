@@ -29,7 +29,7 @@ public class DecrementOverrideLimitRequestEndpoint {
     public void initialize() throws JDOMException {
     }
     
-    @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="totalOverriddenDevicesByAccountNumberRequest")
+    @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="decrementDeviceOverrideLimitRequest")
     public Element invokeDecrementCountToLimitBySerialNumberAndAccount(
     		Element decrementDeviceOverrideLimitRequest, LiteYukonUser user) throws Exception {
         
