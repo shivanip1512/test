@@ -14,22 +14,22 @@ WHERE commandId = -15;
 /* End YUK-6736 */
 
 /* Start YUK-6710 */ 
-create table LMGroupXMLParameter ( 
-   xmlParamId NUMBER not null, 
-   lmGroupId NUMBER not null, 
-   parameterName VARCHAR2(50) not null, 
-   parameterValue VARCHAR2(50) not null, 
-   constraint PK_LMGROUPXMLPARAMETER primary key (xmlParamId) 
+CREATE TABLE LMGroupXMLParameter ( 
+   XmlParamId NUMBER NOT NULL, 
+   LMGroupId NUMBER NOT NULL, 
+   ParameterName VARCHAR2(50) NOT NULL, 
+   ParameterValue VARCHAR2(50) NOT NULL, 
+   CONSTRAINT PK_LMGROUPXMLPARAMETER PRIMARY KEY (XmlParamId) 
 ); 
 
-create unique index INDX_LMGroupId_ParamName_UNQ on LMGroupXMLParameter ( 
-   lmGroupId ASC, 
-   parameterName ASC 
+CREATE UNIQUE INDEX INDX_LMGroupId_ParamName_UNQ ON LMGroupXMLParameter ( 
+   LMGroupId ASC, 
+   ParameterName ASC 
 ); 
 
-alter table LMGroupXMLParameter 
-   add constraint FK_LMGroupXml_LMGroup foreign key (lmGroupId) 
-      references LMGroup (DeviceID); 
+ALTER TABLE LMGroupXMLParameter 
+   ADD CONSTRAINT FK_LMGroupXml_LMGroup FOREIGN KEY (LMGroupId) 
+      REFERENCES LMGroup (DeviceId); 
 /* End YUK-6710 */
 
 /* Start YUK-6742 */ 

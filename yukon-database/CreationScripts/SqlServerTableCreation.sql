@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/17/2008 6:16:08 PM                        */
+/* Created on:     12/17/2008 11:45:01 PM                       */
 /*==============================================================*/
 
 
@@ -8514,11 +8514,11 @@ go
 /* Table: LMGroupXMLParameter                                   */
 /*==============================================================*/
 create table LMGroupXMLParameter (
-   xmlParamId           numeric              not null,
-   lmGroupId            numeric              not null,
-   parameterName        varchar(50)          not null,
-   parameterValue       varchar(50)          not null,
-   constraint PK_LMGROUPXMLPARAMETER primary key (xmlParamId)
+   XmlParamId           numeric              not null,
+   LMGroupId            numeric              not null,
+   ParameterName        varchar(50)          not null,
+   ParameterValue       varchar(50)          not null,
+   constraint PK_LMGROUPXMLPARAMETER primary key (XmlParamId)
 )
 go
 
@@ -8526,8 +8526,8 @@ go
 /* Index: INDX_LMGroupId_ParamName_UNQ                          */
 /*==============================================================*/
 create unique index INDX_LMGroupId_ParamName_UNQ on LMGroupXMLParameter (
-lmGroupId ASC,
-parameterName ASC
+LMGroupId ASC,
+ParameterName ASC
 )
 go
 
@@ -14661,7 +14661,7 @@ alter table LMGroupVersacom
 go
 
 alter table LMGroupXMLParameter
-   add constraint FK_LMGroupXml_LMGroup foreign key (lmGroupId)
+   add constraint FK_LMGroupXml_LMGroup foreign key (LMGroupId)
       references LMGroup (DeviceID)
 go
 

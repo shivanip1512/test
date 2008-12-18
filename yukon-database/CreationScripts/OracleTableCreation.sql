@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/17/2008 6:15:04 PM                        */
+/* Created on:     12/17/2008 11:47:07 PM                       */
 /*==============================================================*/
 
 
@@ -5904,19 +5904,19 @@ create table LMGroupVersacom  (
 /* Table: LMGroupXMLParameter                                   */
 /*==============================================================*/
 create table LMGroupXMLParameter  (
-   xmlParamId           NUMBER                          not null,
-   lmGroupId            NUMBER                          not null,
-   parameterName        VARCHAR2(50)                    not null,
-   parameterValue       VARCHAR2(50)                    not null,
-   constraint PK_LMGROUPXMLPARAMETER primary key (xmlParamId)
+   XmlParamId           NUMBER                          not null,
+   LMGroupId            NUMBER                          not null,
+   ParameterName        VARCHAR2(50)                    not null,
+   ParameterValue       VARCHAR2(50)                    not null,
+   constraint PK_LMGROUPXMLPARAMETER primary key (XmlParamId)
 );
 
 /*==============================================================*/
 /* Index: INDX_LMGroupId_ParamName_UNQ                          */
 /*==============================================================*/
 create unique index INDX_LMGroupId_ParamName_UNQ on LMGroupXMLParameter (
-   lmGroupId ASC,
-   parameterName ASC
+   LMGroupId ASC,
+   ParameterName ASC
 );
 
 /*==============================================================*/
@@ -11498,7 +11498,7 @@ alter table LMGroupVersacom
       references Route (RouteID);
 
 alter table LMGroupXMLParameter
-   add constraint FK_LMGroupXml_LMGroup foreign key (lmGroupId)
+   add constraint FK_LMGroupXml_LMGroup foreign key (LMGroupId)
       references LMGroup (DeviceID);
 
 alter table LMHardwareBase
