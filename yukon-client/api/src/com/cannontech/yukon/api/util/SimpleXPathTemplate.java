@@ -122,7 +122,28 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
         }
     }
 
+    /**
+     * This method returns null if the tag isn't there, otherwise a Boolean object
+     * of the tag contents.
+     * @param expression
+     * @return
+     * @throws XPathException
+     */
     public Boolean evaluateAsBoolean(String expression) throws XPathException {
+        //XPathConstants.BOOLEAN looks for presence/absence of element,
+        //so retrieve the NODE and its text-value
+        Node result = evaluateAsNode(expression);
+        return result == null ? null : Boolean.valueOf(result.getTextContent());
+    }
+    
+    /**
+     * This method returns a Boolean(false) if the tag isn't there, otherwise a Boolean
+     * object of the tag contents.
+     * @param expression
+     * @return
+     * @throws XPathException
+     */
+    public Boolean evaluateAsBooleanWithDefault(String expression) throws XPathException {
         //XPathConstants.BOOLEAN looks for presence/absence of element,
         //so retrieve the NODE and its text-value
         Node result = evaluateAsNode(expression);
