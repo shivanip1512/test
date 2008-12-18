@@ -11,7 +11,6 @@ import com.cannontech.stars.dr.optout.model.OptOutCountHolder;
 import com.cannontech.stars.dr.optout.model.OptOutLimit;
 import com.cannontech.stars.dr.optout.model.OverrideHistory;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
-import com.cannontech.user.YukonUserContext;
 
 /**
  * Interface for service which handles opt outs and canceling of opt outs
@@ -25,29 +24,28 @@ public interface OptOutService {
 	 * Method to opt a device out or schedule an opt out for a future date
 	 * @param customerAccount - Account the device is on
 	 * @param request - Contains info about the opt out such as start date and duration
-	 * @param userContext - User requesting opt out
+	 * @param user - User requesting opt out
 	 * @throws CommandCompletionException - If the command could not be sent to the device
 	 */
 	public void optOut(CustomerAccount customerAccount, OptOutRequest request,
-			YukonUserContext userContext) 
+			LiteYukonUser user) 
 		throws CommandCompletionException;
 
 	/**
 	 * Method to cancel an opt out or a scheduled opt out
 	 * @param eventIdList - List of opt out event ids to cancel
-	 * @param userContext - User requesting the cancel
+	 * @param user - User requesting the cancel
 	 * @throws CommandCompletionException - If the cancel command could not be sent to the device
 	 */
-	public void cancelOptOut(List<Integer> eventIdList,
-			YukonUserContext userContext) 
+	public void cancelOptOut(List<Integer> eventIdList, LiteYukonUser user) 
 		throws CommandCompletionException;
 
 	/**
 	 * Method to cancel all current opt outs for the given user's energy company
-	 * @param userContext - User requesting cancel
+	 * @param user - User requesting cancel
 	 * @throws CommandCompletionException - If the cancel command could not be sent to the devices
 	 */
-	public void cancelAllOptOuts(YukonUserContext userContext) 
+	public void cancelAllOptOuts(LiteYukonUser user) 
 		throws CommandCompletionException;
 
 	/**

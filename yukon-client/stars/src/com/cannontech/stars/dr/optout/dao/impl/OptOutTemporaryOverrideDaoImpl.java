@@ -80,9 +80,9 @@ public class OptOutTemporaryOverrideDaoImpl implements OptOutTemporaryOverrideDa
 		Date now = new Date();
 		
 		SqlStatementBuilder sql = new SqlStatementBuilder();
-		sql.append("SELECT Value");
+		sql.append("SELECT OptOutValue");
 		sql.append("FROM OptOutTemporaryOverride");
-		sql.append("WHERE Type = ?");
+		sql.append("WHERE OptOutType = ?");
 		sql.append("	AND StartDate <= ?");
 		sql.append("	AND StopDate > ?");
 		sql.append("	AND EnergyCompanyId = ?");
@@ -124,7 +124,7 @@ public class OptOutTemporaryOverrideDaoImpl implements OptOutTemporaryOverrideDa
 		sql.append("SET	StopDate = ?");
 		sql.append("WHERE StartDate <= ?");
 		sql.append("		AND StopDate > ?");
-		sql.append("	AND Type = ?");
+		sql.append("	AND OptOutType = ?");
 		sql.append("	AND EnergyCompanyId = ?");
 		
 		simpleJdbcTemplate.update(sql.toString(),
@@ -137,8 +137,8 @@ public class OptOutTemporaryOverrideDaoImpl implements OptOutTemporaryOverrideDa
 		
 		sql = new SqlStatementBuilder();
 		sql.append("INSERT INTO OptOutTemporaryOverride");
-		sql.append("	(OptOutTemporaryOverrideId, UserId, EnergyCompanyId, Type, StartDate");
-		sql.append("	, StopDate, Value)");
+		sql.append("	(OptOutTemporaryOverrideId, UserId, EnergyCompanyId, OptOutType, StartDate");
+		sql.append("	, StopDate, OptOutValue)");
 		sql.append("VALUES (?,?,?,?,?,?,?)");
 
 		int id = nextValueHelper.getNextValue("OptOutTemporaryOverride");

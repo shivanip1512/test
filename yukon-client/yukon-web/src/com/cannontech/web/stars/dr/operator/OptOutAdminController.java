@@ -22,7 +22,6 @@ import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
 import com.cannontech.stars.dr.optout.service.OptOutService;
 import com.cannontech.stars.dr.optout.service.OptOutStatusService;
-import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRole;
 
 /**
@@ -101,12 +100,11 @@ public class OptOutAdminController {
     }
     
     @RequestMapping(value = "/operator/optOut/admin/cancelAllOptOuts", method = RequestMethod.POST)
-    public String cancelActiveOptOuts(YukonUserContext userContext, ModelMap map) throws Exception {
+    public String cancelActiveOptOuts(LiteYukonUser user, ModelMap map) throws Exception {
     	
-    	LiteYukonUser user = userContext.getYukonUser();
     	authDao.verifyTrueProperty(user, ConsumerInfoRole.OPT_OUT_ADMIN_CANCEL_CURRENT);
     	
-    	optOutService.cancelAllOptOuts(userContext);
+    	optOutService.cancelAllOptOuts(user);
 
     	return "redirect:/spring/stars/operator/optOut/admin";
     }

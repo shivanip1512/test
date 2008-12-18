@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dao.AuthDao;
@@ -246,45 +245,9 @@ public class OptOutOperatorController {
 	        optOutRequest.setInventoryIdList(inventoryIds);
 	        optOutRequest.setQuestions(questionList);
 	        
-//	        try {
-//		        result = optOutService.processOptOutRequest(customerAccount,
-//	                                                        optOutRequest,
-//	                                                        yukonUserContext);
+	        LiteYukonUser user = yukonUserContext.getYukonUser();
+	        optOutService.optOut(customerAccount, optOutRequest, user);
 	        
-	        //TODO uncomment catching for rules and constraints
-	        optOutService.optOut(customerAccount, optOutRequest, yukonUserContext);
-	        
-	        
-//	        } catch (OptOutRuleFormatException e) {
-//	                
-//                String rule = e.getRule();
-//                result = new YukonMessageSourceResolvable("yukon.dr.consumer.optoutresult.checkRule", rule);
-//	                
-//            } catch (OptOutConstraintViolatedException e2) {
-//                
-//                switch (e2.getType()) {
-//                    case TIMES_ALLOWED : {
-//                    	result = new YukonMessageSourceResolvable("yukon.dr.consumer.optoutresult.timesConstraintViolated",
-//                                                e2.getAllowed(),
-//                                                e2.getActual(),
-//                                                e2.getPeriod());
-//                    }
-//                    case HOURS_ALLOWED : {
-//                        result =  new YukonMessageSourceResolvable("yukon.dr.consumer.optoutresult.hoursConstraintViolated",
-//                                                e2.getAllowed(),
-//                                                e2.getActual(),
-//                                                e2.getPeriod());
-//                    }
-//                    case DUE_TIME : {
-//                        result = new YukonMessageSourceResolvable("yukon.dr.consumer.optoutresult.dueDateConstraintViolated",
-//                                                e2.getDueDate());
-//                    }
-//                    default : result = new YukonMessageSourceResolvable("yukon.dr.consumer.optoutresult.failure");
-//                }
-//                
-//            } catch (Exception e3) {
-//            	result = new YukonMessageSourceResolvable("yukon.dr.consumer.optoutresult.failure");
-//            }
         }
         
         map.addAttribute("result", result);
@@ -293,7 +256,7 @@ public class OptOutOperatorController {
     
     @RequestMapping(value = "/operator/optout/cancel", method = RequestMethod.POST)
     public String cancel(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
-    		Integer eventId, YukonUserContext yukonUserContext) {
+    		Integer eventId, YukonUserContext yukonUserContext) throws Exception {
     	
     	authDao.verifyTrueProperty(yukonUserContext.getYukonUser(), 
     			ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_OPT_OUT);
@@ -301,12 +264,8 @@ public class OptOutOperatorController {
     	// Check that the inventory we're working with belongs to the current account
     	this.checkEventAgainstAccount(eventId, customerAccount);
     	
-    	try {
-    		optOutService.cancelOptOut(Collections.singletonList(eventId), yukonUserContext);
-    	} catch (CommandCompletionException e) {
-    		// TODO Auto-generated catch block
-    		e.printStackTrace();
-    	}
+		LiteYukonUser user = yukonUserContext.getYukonUser();
+		optOutService.cancelOptOut(Collections.singletonList(eventId), user);
     	
     	return "redirect:/operator/Consumer/OptOut.jsp";
     }
@@ -329,7 +288,7 @@ public class OptOutOperatorController {
     
     @RequestMapping(value = "/operator/optout/repeat", method = RequestMethod.POST)
     public String repeat(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
-    		Integer inventoryId, YukonUserContext yukonUserContext) {
+    		Integer inventoryId, YukonUserContext yukonUserContext) throws Exception {
     	
     	authDao.verifyTrueProperty(yukonUserContext.getYukonUser(), 
     			ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_OPT_OUT);
@@ -337,15 +296,10 @@ public class OptOutOperatorController {
     	// Check that the inventory we're working with belongs to the current account
     	this.checkInventoryAgainstAccount(Collections.singletonList(inventoryId), customerAccount);
     	
-    	try {
-			optOutService.resendOptOut(
-					inventoryId, 
-					customerAccount.getAccountId(), 
-					yukonUserContext.getYukonUser());
-		} catch (CommandCompletionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		optOutService.resendOptOut(
+				inventoryId, 
+				customerAccount.getAccountId(), 
+				yukonUserContext.getYukonUser());
     	
     	return "redirect:/operator/Consumer/OptOut.jsp";
     }

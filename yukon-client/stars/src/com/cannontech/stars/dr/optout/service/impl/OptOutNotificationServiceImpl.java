@@ -18,12 +18,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.SimpleTemplateProcessor;
+import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.i18n.service.YukonUserContextService;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
@@ -48,12 +51,16 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
     private DateFormattingService dateFormattingService;
     private StarsCustAccountInformationDao starsCustAccountInformationDao;
     private StarsInventoryBaseDao starsInventoryBaseDao;
+    private YukonUserDao yukonUserDao;
+    private YukonUserContextService yukonUserContextService;
     
     @Override
     public void sendOptOutNotification(final CustomerAccount customerAccount,  
             final LiteStarsEnergyCompany energyCompany, final OptOutRequest request, 
-            final YukonUserContext yukonUserContext) throws MessagingException {
+            final LiteYukonUser user) throws MessagingException {
         
+    	YukonUserContext yukonUserContext = this.getDefaultEnergyCompanyUserContext(energyCompany);
+    	
         MessageSourceAccessor messageSourceAccessor = 
             messageSourceResolver.getMessageSourceAccessor(yukonUserContext);
         
@@ -77,8 +84,10 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
 	public void sendCancelScheduledNotification(
 			CustomerAccount customerAccount,
 			LiteStarsEnergyCompany energyCompany, OptOutRequest request,
-			YukonUserContext yukonUserContext) throws MessagingException {
+			LiteYukonUser user) throws MessagingException {
 
+		YukonUserContext yukonUserContext = this.getDefaultEnergyCompanyUserContext(energyCompany);
+		
 		MessageSourceAccessor messageSourceAccessor = 
             messageSourceResolver.getMessageSourceAccessor(yukonUserContext);
         
@@ -100,8 +109,10 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
 	@Override
 	public void sendReenableNotification(CustomerAccount customerAccount,
 			LiteStarsEnergyCompany energyCompany, OptOutRequest request,
-			YukonUserContext yukonUserContext) throws MessagingException {
+			LiteYukonUser user) throws MessagingException {
 
+		YukonUserContext yukonUserContext = this.getDefaultEnergyCompanyUserContext(energyCompany);
+		
 		MessageSourceAccessor messageSourceAccessor = 
             messageSourceResolver.getMessageSourceAccessor(yukonUserContext);
         
@@ -118,6 +129,23 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
         
         this.sendNotification(holder);
 		
+	}
+	
+	/**
+	 * Helper method to get a default user context for an energy company
+	 * @param energyCompany - Energy company to get context for
+	 * @return Default context
+	 */
+	private YukonUserContext getDefaultEnergyCompanyUserContext(
+			LiteStarsEnergyCompany energyCompany) {
+		
+		int userId = energyCompany.getUserID();
+    	LiteYukonUser yukonUser = yukonUserDao.getLiteYukonUser(userId);
+    	
+    	YukonUserContext userContext = 
+    		yukonUserContextService.getEnergyCompanyDefaultUserContext(yukonUser);
+    	
+    	return userContext;
 	}
 	
 	private void sendNotification(Holder holder) throws MessagingException {
@@ -237,6 +265,17 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
     public void setStarsInventoryBaseDao(
 			StarsInventoryBaseDao starsInventoryBaseDao) {
 		this.starsInventoryBaseDao = starsInventoryBaseDao;
+	}
+    
+    @Autowired
+    public void setYukonUserDao(YukonUserDao yukonUserDao) {
+		this.yukonUserDao = yukonUserDao;
+	}
+    
+    @Autowired
+    public void setYukonUserContextService(
+			YukonUserContextService yukonUserContextService) {
+		this.yukonUserContextService = yukonUserContextService;
 	}
     
 }

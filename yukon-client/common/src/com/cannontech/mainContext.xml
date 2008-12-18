@@ -189,4 +189,6 @@
 
     <bean id="configurationSource" class="com.cannontech.common.config.MasterConfigHelper" factory-method="getConfiguration"/>
     
+    <bean id="yukonUserContextService" class="com.cannontech.i18n.service.impl.YukonUserContextServiceImpl" />
+    
 </beans>

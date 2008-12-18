@@ -233,7 +233,7 @@ public class OptOutController extends AbstractConsumerController {
 	        optOutRequest.setInventoryIdList(inventoryIds);
 	        optOutRequest.setQuestions(questionList);
 
-	        optOutService.optOut(customerAccount, optOutRequest, yukonUserContext);
+	        optOutService.optOut(customerAccount, optOutRequest, user);
 	        
 	        
         }
@@ -253,7 +253,7 @@ public class OptOutController extends AbstractConsumerController {
     	// Make sure the event is the current user's event
     	this.checkEventAgainstAccount(eventId, null);
     	
-    	optOutService.cancelOptOut(Collections.singletonList(eventId), yukonUserContext);
+    	optOutService.cancelOptOut(Collections.singletonList(eventId), user);
         
     	return "redirect:/spring/stars/consumer/optout";
     }

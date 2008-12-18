@@ -449,7 +449,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 		sql.append("	AND ((StartDate >= ?");
 		sql.append("		  AND StartDate <= ?)");
 		sql.append("		OR (StopDate >= ?");
-		sql.append("			AND StopDate <= ?)");
+		sql.append("			AND StopDate <= ?))");
 		sql.append("	AND CustomerAccountId = ?");
 		
 		List<Integer> optOutDeviceList = 

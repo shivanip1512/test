@@ -71,7 +71,6 @@ import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
-import com.cannontech.user.YukonUserContext;
 
 public class OptOutServiceImpl implements OptOutService {
 
@@ -101,12 +100,11 @@ public class OptOutServiceImpl implements OptOutService {
 	@Override
 	@Transactional
 	public void optOut(CustomerAccount customerAccount, OptOutRequest request, 
-			YukonUserContext userContext) throws CommandCompletionException {
+			LiteYukonUser user) throws CommandCompletionException {
 		
 		int customerAccountId = customerAccount.getAccountId();
 		LiteStarsEnergyCompany energyCompany = ecMappingDao.getCustomerAccountEC(customerAccount);
 		List<Integer> inventoryIdList = request.getInventoryIdList();
-		LiteYukonUser user = userContext.getYukonUser();
 		Date startDate = request.getStartDate();
 		boolean startNow = false;
 		if(startDate == null) {
@@ -144,7 +142,7 @@ public class OptOutServiceImpl implements OptOutService {
 				if(scheduledEvent != null) {
 					this.cancelOptOut(
 							Collections.singletonList(scheduledEvent.getEventId()), 
-							userContext);
+							user);
 				}
 
 				// Schedule the opt out 
@@ -212,7 +210,7 @@ public class OptOutServiceImpl implements OptOutService {
 					customerAccount, 
 					energyCompany, 
 					request, 
-					userContext);
+					user);
 		} catch (MessagingException e) {
 			// Not much we can do - tried to send notification
 			logger.error(e);
@@ -266,7 +264,7 @@ public class OptOutServiceImpl implements OptOutService {
 
 	@Override
 	@Transactional
-	public void cancelOptOut(List<Integer> eventIdList, YukonUserContext userContext) 
+	public void cancelOptOut(List<Integer> eventIdList, LiteYukonUser user) 
 		throws CommandCompletionException {
 		
 		for(Integer eventId : eventIdList) {
@@ -277,7 +275,6 @@ public class OptOutServiceImpl implements OptOutService {
 				(LiteStarsLMHardware) starsInventoryBaseDao.getById(inventoryId);
 			LiteStarsEnergyCompany energyCompany = ecMappingDao.getInventoryEC(inventoryId);
     		CustomerAccount customerAccount = customerAccountDao.getAccountByInventoryId(inventoryId);
-    		LiteYukonUser user = userContext.getYukonUser();
     		
 			OptOutEventState state = event.getState();
 			if(OptOutEventState.START_OPT_OUT_SENT == state && event.getStopDate().after(new Date())) {
@@ -288,7 +285,7 @@ public class OptOutServiceImpl implements OptOutService {
 						energyCompany, 
 						event, 
 						customerAccount, 
-						userContext);
+						user);
 				
 			} else if (OptOutEventState.SCHEDULED == state) {
 				// The opt out is scheduled but not active
@@ -320,7 +317,7 @@ public class OptOutServiceImpl implements OptOutService {
 							customerAccount, 
 							energyCompany, 
 							request, 
-							userContext);
+							user);
 				} catch (MessagingException e) {
 					// Not much we can do - tried to send notification
 					logger.error(e);
@@ -333,9 +330,8 @@ public class OptOutServiceImpl implements OptOutService {
 	}
 
 	@Override
-	public void cancelAllOptOuts(YukonUserContext userContext) {
+	public void cancelAllOptOuts(LiteYukonUser user) {
 
-		LiteYukonUser user = userContext.getYukonUser();
 		LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
 		List<OptOutEvent> currentOptOuts = optOutEventDao.getAllCurrentOptOuts(energyCompany);
 		
@@ -352,7 +348,7 @@ public class OptOutServiceImpl implements OptOutService {
 						energyCompany, 
 						event, 
 						customerAccount, 
-						userContext);
+						user);
 			} catch (CommandCompletionException e) {
 				// Can't do much - tried to cancel opt out.  Log the error and 
 				// continue to cancel other opt outs
@@ -479,7 +475,7 @@ public class OptOutServiceImpl implements OptOutService {
 		CustomerAccount account = customerAccountDao.getByAccountNumber(accountNumber, user);
 
 		List<OverrideHistory> inventoryHistoryList = 
-			optOutEventDao.getOptOutHistoryForInventory(account.getAccountId(), startTime, stopTime);
+			optOutEventDao.getOptOutHistoryForAccount(account.getAccountId(), startTime, stopTime);
 		
 		for(OverrideHistory history : inventoryHistoryList) {
 			Integer inventoryId = history.getInventoryId();
@@ -607,11 +603,10 @@ public class OptOutServiceImpl implements OptOutService {
 			LiteStarsEnergyCompany energyCompany, 
 			OptOutEvent event, 
 			CustomerAccount customerAccount, 
-			YukonUserContext userContext) 
+			LiteYukonUser user) 
 		throws CommandCompletionException {
 		
 		int inventoryId = inventory.getInventoryID();
-		LiteYukonUser user = userContext.getYukonUser();
 		
 		// Send the command to cancel opt out to the field
 		this.sendCancelRequest(inventory, energyCompany, user);
@@ -657,7 +652,7 @@ public class OptOutServiceImpl implements OptOutService {
 					customerAccount, 
 					energyCompany, 
 					request, 
-					userContext);
+					user);
 		} catch (MessagingException e) {
 			// Not much we can do - tried to send notification
 			logger.error(e);
@@ -732,7 +727,11 @@ public class OptOutServiceImpl implements OptOutService {
 		
 		// Send the command
 		String commandString = cmd.toString();
-		commandRequestRouteExecutor.execute(inventory.getRouteID(), commandString, user);
+		try {
+			commandRequestRouteExecutor.execute(inventory.getRouteID(), commandString, user);
+		} catch (Exception e) {
+			
+		}
 		
 	}
 	
@@ -788,7 +787,11 @@ public class OptOutServiceImpl implements OptOutService {
 		
 		// Send the command
 		String commandString = cmd.toString();
-		commandRequestRouteExecutor.execute(inventory.getRouteID(), commandString, user);
+		try {
+			commandRequestRouteExecutor.execute(inventory.getRouteID(), commandString, user);
+		} catch (Exception e) {
+			
+		}
 		
 	}
 	
