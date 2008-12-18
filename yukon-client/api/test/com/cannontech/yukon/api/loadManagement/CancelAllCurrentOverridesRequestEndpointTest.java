@@ -9,8 +9,6 @@ import org.springframework.core.io.Resource;
 
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.user.SimpleYukonUserContext;
-import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.api.loadManagement.endpoint.CancelAllCurrentOverridesRequestEndpoint;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XmlUtils;
@@ -47,7 +45,7 @@ public class CancelAllCurrentOverridesRequestEndpointTest {
 		}
     	
     	@Override
-    	public void cancelAllOptOuts(YukonUserContext userContext)
+    	public void cancelAllOptOuts(LiteYukonUser user)
     			throws CommandCompletionException {
     		this.callCount++;
     	}
@@ -68,8 +66,7 @@ public class CancelAllCurrentOverridesRequestEndpointTest {
         
         //invoke test
         LiteYukonUser user = new LiteYukonUser();
-        YukonUserContext context = new SimpleYukonUserContext(user, null, null, null);
-        Element respElement = impl.invoke(reqElement, context);
+        Element respElement = impl.invoke(reqElement, user);
         
         // verify the respElement is valid according to schema
         Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/CancelAllCurrentOverridesResponse.xsd",

@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.optout.service.OptOutService;
-import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.api.util.XmlUtils;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.cannontech.yukon.api.util.YukonXml;
@@ -26,7 +26,7 @@ public class CancelAllCurrentOverridesRequestEndpoint {
     }
     
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="cancelAllCurrentOverridesRequest")
-    public Element invoke(Element cancelAllCurrentOverridesRequest, YukonUserContext userContext) throws Exception {
+    public Element invoke(Element cancelAllCurrentOverridesRequest, LiteYukonUser user) throws Exception {
         
     	XmlVersionUtils.verifyYukonMessageVersion(cancelAllCurrentOverridesRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
     	
@@ -35,7 +35,7 @@ public class CancelAllCurrentOverridesRequestEndpoint {
         XmlVersionUtils.addVersionAttribute(resp, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         
         // run service
-        optOutService.cancelAllOptOuts(userContext);
+        optOutService.cancelAllOptOuts(user);
         
         // build response
         resp.addContent(XmlUtils.createStringElement("success", ns, ""));

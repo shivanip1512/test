@@ -13,7 +13,6 @@ import com.cannontech.stars.dr.optout.model.OverrideHistory;
 import com.cannontech.stars.dr.optout.service.OptOutRequest;
 import com.cannontech.stars.dr.optout.service.OptOutService;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
-import com.cannontech.user.YukonUserContext;
 
 public class OptOutServiceAdapter implements OptOutService {
 
@@ -26,14 +25,14 @@ public class OptOutServiceAdapter implements OptOutService {
 	}
 
 	@Override
-	public void cancelAllOptOuts(YukonUserContext userContext)
+	public void cancelAllOptOuts(LiteYukonUser user)
 			throws CommandCompletionException {
 		throw new UnsupportedOperationException("not implemented");
 	}
 
 	@Override
 	public void cancelOptOut(List<Integer> eventIdList,
-			YukonUserContext userContext) throws CommandCompletionException {
+			LiteYukonUser user) throws CommandCompletionException {
 		throw new UnsupportedOperationException("not implemented");
 	}
 
@@ -87,7 +86,7 @@ public class OptOutServiceAdapter implements OptOutService {
 
 	@Override
 	public void optOut(CustomerAccount customerAccount, OptOutRequest request,
-			YukonUserContext userContext) throws CommandCompletionException {
+			LiteYukonUser user) throws CommandCompletionException {
 		throw new UnsupportedOperationException("not implemented");
 	}
 
