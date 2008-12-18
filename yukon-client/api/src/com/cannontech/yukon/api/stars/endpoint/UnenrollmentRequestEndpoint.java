@@ -11,10 +11,10 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.common.exception.DuplicateEnrollmentException;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
-import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.api.stars.endpoint.endpointMappers.ProgramEnrollmentElementRequestMapper;
 import com.cannontech.yukon.api.util.NodeToElementMapperWrapper;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
@@ -29,7 +29,7 @@ public class UnenrollmentRequestEndpoint {
     private EnrollmentHelperService enrollmentHelperService;
     
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="unenrollmentRequest")
-    public Element invoke(Element enrollmentRequest, YukonUserContext yukonUserContext) throws Exception {
+    public Element invoke(Element enrollmentRequest, LiteYukonUser user) throws Exception {
         XmlVersionUtils.verifyYukonMessageVersion(enrollmentRequest, "1.0"); 
         
         Namespace ns = YukonXml.getYukonNamespaceForDefault();
@@ -51,7 +51,7 @@ public class UnenrollmentRequestEndpoint {
                                                                                              enrollmentHelper);
             Element resultElement;
             try {
-                enrollmentHelperService.doEnrollment(enrollmentHelper, EnrollmentEnum.UNENROLL, yukonUserContext);
+                enrollmentHelperService.doEnrollment(enrollmentHelper, EnrollmentEnum.UNENROLL, user);
                 resultElement = new Element("success", ns);
             } catch(NotFoundException e) {
                 resultElement = XMLFailureGenerator.generateFailure(enrollmentRequest, e, "NotFoundException", e.getMessage(), ns);

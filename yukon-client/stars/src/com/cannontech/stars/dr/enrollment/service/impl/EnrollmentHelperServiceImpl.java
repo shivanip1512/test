@@ -11,6 +11,7 @@ import com.cannontech.common.exception.DuplicateEnrollmentException;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.cache.StarsDatabaseCache;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
@@ -34,7 +35,6 @@ import com.cannontech.stars.dr.program.model.ProgramEnrollmentResultEnum;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
 import com.cannontech.stars.dr.program.service.ProgramEnrollmentService;
 import com.cannontech.stars.util.ECUtils;
-import com.cannontech.user.YukonUserContext;
 
 public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     
@@ -50,13 +50,13 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     private ProgramEnrollmentService programEnrollmentService;
     private StarsDatabaseCache starsDatabaseCache;
     
-    public void doEnrollment(EnrollmentHelper enrollmentHelper, EnrollmentEnum enrollmentEnum, YukonUserContext yukonUserContext){
+    public void doEnrollment(EnrollmentHelper enrollmentHelper, EnrollmentEnum enrollmentEnum, LiteYukonUser user){
         
-        CustomerAccount customerAccount = customerAccountDao.getByAccountNumber(enrollmentHelper.getAccountNumber(), yukonUserContext.getYukonUser());
+        CustomerAccount customerAccount = customerAccountDao.getByAccountNumber(enrollmentHelper.getAccountNumber(), user);
         List<ProgramEnrollment> enrollmentData = 
             enrollmentDao.getActiveEnrollmentsByAccountId(customerAccount.getAccountId());
 
-        ProgramEnrollment programEnrollment = buildProgrameEnrollment(enrollmentHelper, yukonUserContext);
+        ProgramEnrollment programEnrollment = buildProgrameEnrollment(enrollmentHelper, user);
         
         if (enrollmentEnum == EnrollmentEnum.ENROLL) {
             addProgramEnrollment(enrollmentData, programEnrollment, enrollmentHelper.isSeasonalLoad());
@@ -69,7 +69,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         ProgramEnrollmentResultEnum applyEnrollmentRequests = 
             programEnrollmentService.applyEnrollmentRequests(customerAccount,
                                                              enrollmentData,
-                                                             yukonUserContext);
+                                                             user);
         
         if (applyEnrollmentRequests.getFormatKey().equals(ProgramEnrollmentResultEnum.FAILURE)){
             throw new IllegalArgumentException("Program Enrollment Failed.");
@@ -92,13 +92,13 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         }
     }
 
-    private ProgramEnrollment buildProgrameEnrollment(EnrollmentHelper enrollmentHelper, YukonUserContext yukonUserContext){
+    private ProgramEnrollment buildProgrameEnrollment(EnrollmentHelper enrollmentHelper, LiteYukonUser user){
         
         LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getBySerialNumber(enrollmentHelper.getSerialNumber());
         /* This part of the method will get all the energy company ids that can have 
          * an appliance category this energy company can use.
          */
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(yukonUserContext.getYukonUser());
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
         List<Integer> energyCompanyIds = new ArrayList<Integer>();
         if(authDao.checkRoleProperty(energyCompany.getUserID(), EnergyCompanyRole.INHERIT_PARENT_APP_CATS )) {
             List<LiteStarsEnergyCompany> allAscendants = ECUtils.getAllAscendants(energyCompany);

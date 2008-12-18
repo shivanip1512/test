@@ -1,15 +1,15 @@
 package com.cannontech.yukon.api.stars.endpoint;
 
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
 import com.cannontech.stars.dr.enrollment.service.impl.EnrollmentHelperServiceImpl;
-import com.cannontech.user.YukonUserContext;
 
 class EnrollmentHelperEndpointServiceMock extends EnrollmentHelperServiceImpl {
 
     @Override
-    public void doEnrollment(EnrollmentHelper enrollmentHelper, EnrollmentEnum enrollmentEnum, YukonUserContext yukonUserContext) {
+    public void doEnrollment(EnrollmentHelper enrollmentHelper, EnrollmentEnum enrollmentEnum, LiteYukonUser user) {
         doEnrollment(enrollmentHelper.getProgramName());
     }
     

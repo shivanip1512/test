@@ -13,7 +13,6 @@ import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
 import com.cannontech.stars.dr.program.model.ProgramEnrollmentResultEnum;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
 import com.cannontech.stars.dr.program.service.impl.ProgramEnrollmentServiceImpl;
-import com.cannontech.user.YukonUserContext;
 
 public class EnrollmentHelperEndpointServiceMock extends EnrollmentHelperServiceImpl {
 
@@ -86,7 +85,7 @@ public class EnrollmentHelperEndpointServiceMock extends EnrollmentHelperService
         @Override
         public ProgramEnrollmentResultEnum applyEnrollmentRequests(CustomerAccount customerAccount, 
                                                                    List<ProgramEnrollment> requests, 
-                                                                   YukonUserContext yukonUserContext) {
+                                                                   LiteYukonUser user) {
             return null;
         }
     }

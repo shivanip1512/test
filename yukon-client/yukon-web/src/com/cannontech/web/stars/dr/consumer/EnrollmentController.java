@@ -107,7 +107,7 @@ public class EnrollmentController extends AbstractConsumerController {
         }
         
         ProgramEnrollmentResultEnum enrollmentResultEnum = 
-            programEnrollmentService.applyEnrollmentRequests(customerAccount, requestList, yukonUserContext);
+            programEnrollmentService.applyEnrollmentRequests(customerAccount, requestList, yukonUserContext.getYukonUser());
         map.addAttribute("enrollmentResult", enrollmentResultEnum);
         
         

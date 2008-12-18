@@ -11,8 +11,6 @@ import org.junit.Test;
 
 import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentResponse;
-import com.cannontech.user.YukonUserContext;
-import com.cannontech.yukon.api.stars.endpoint.UnenrollmentRequestEndpoint;
 import com.cannontech.yukon.api.stars.endpoint.endpointMappers.ProgramEnrollmentElementResponseMapper;
 import com.cannontech.yukon.api.util.NodeToElementMapperWrapper;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
@@ -41,10 +39,9 @@ public class UnenrollmentRequestEndpointTest {
         // init
         Element responseElement = null;
         SimpleXPathTemplate outputTemplate = null;
-        YukonUserContext userContext = null;
 
         Element failRequest = buildFailRequest("NOT_FOUND");
-        responseElement = impl.invoke(failRequest, userContext);
+        responseElement = impl.invoke(failRequest, null);
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
         
         // Check the response
@@ -68,10 +65,9 @@ public class UnenrollmentRequestEndpointTest {
         // init
         Element responseElement = null;
         SimpleXPathTemplate outputTemplate = null;
-        YukonUserContext userContext = null;
 
         Element failRequest = buildFailRequest("ILLEGAL_ARGUMENT");
-        responseElement = impl.invoke(failRequest, userContext);
+        responseElement = impl.invoke(failRequest, null);
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
         
         // Check the response
@@ -95,10 +91,9 @@ public class UnenrollmentRequestEndpointTest {
         // init
         Element responseElement = null;
         SimpleXPathTemplate outputTemplate = null;
-        YukonUserContext userContext = null;
         
         Element successRequest = buildSuccessSingleRequest();
-        responseElement = impl.invoke(successRequest, userContext);
+        responseElement = impl.invoke(successRequest, null);
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
         
         // Check the response
@@ -119,10 +114,9 @@ public class UnenrollmentRequestEndpointTest {
         // init
         Element responseElement = null;
         SimpleXPathTemplate outputTemplate = null;
-        YukonUserContext userContext = null;
 
         Element successRequest = buildSuccessMultipleRequest();
-        responseElement = impl.invoke(successRequest, userContext);
+        responseElement = impl.invoke(successRequest, null);
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
         
         // Check the response
@@ -149,10 +143,9 @@ public class UnenrollmentRequestEndpointTest {
         // init
         Element responseElement = null;
         SimpleXPathTemplate outputTemplate = null;
-        YukonUserContext userContext = null;
 
         Element successRequest = buildSuccessOptionalRequirementsRequest();
-        responseElement = impl.invoke(successRequest, userContext);
+        responseElement = impl.invoke(successRequest, null);
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
         
         // Check the response

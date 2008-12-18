@@ -220,7 +220,7 @@ public class LoadControlServiceInputsTestController extends MultiActionControlle
         enrollmentHelper.setApplianceCategoryName(ServletRequestUtils.getStringParameter(request, "applianceCategoryName"));
         enrollmentHelper.setSeasonalLoad(ServletRequestUtils.getBooleanParameter(request, "seasonalLoad", false));
         
-        enrollmentHelperService.doEnrollment(enrollmentHelper, EnrollmentEnum.ENROLL, yukonUserContext);
+        enrollmentHelperService.doEnrollment(enrollmentHelper, EnrollmentEnum.ENROLL, yukonUserContext.getYukonUser());
         
         return returnMav(request, results);
     }
@@ -243,7 +243,7 @@ public class LoadControlServiceInputsTestController extends MultiActionControlle
         enrollmentHelper.setApplianceKW(ServletRequestUtils.getFloatParameter(request, "applianceKW", 0));
         enrollmentHelper.setApplianceCategoryName(ServletRequestUtils.getStringParameter(request, "applianceCategoryName"));
 
-        enrollmentHelperService.doEnrollment(enrollmentHelper, EnrollmentEnum.UNENROLL, yukonUserContext);
+        enrollmentHelperService.doEnrollment(enrollmentHelper, EnrollmentEnum.UNENROLL, yukonUserContext.getYukonUser());
         
         return returnMav(request, results);
     }

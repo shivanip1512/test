@@ -52,7 +52,6 @@ import com.cannontech.stars.xml.serialize.StarsInventory;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsProgramSignUp;
 import com.cannontech.stars.xml.serialize.StarsSULMPrograms;
-import com.cannontech.user.YukonUserContext;
 
 public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
     private static final Logger log = YukonLogManager.getLogger(ProgramEnrollmentServiceImpl.class);
@@ -65,10 +64,9 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
 
     @Override
     public ProgramEnrollmentResultEnum applyEnrollmentRequests(final CustomerAccount customerAccount,
-            final List<ProgramEnrollment> requests, final YukonUserContext yukonUserContext) {
+            final List<ProgramEnrollment> requests, final LiteYukonUser user) {
 
         final int customerAccountId = customerAccount.getAccountId();
-        LiteYukonUser user = yukonUserContext.getYukonUser();
 
         LiteStarsEnergyCompany energyCompany = ecMappingDao.getCustomerAccountEC(customerAccount);
         LiteStarsCustAccountInformation liteCustomerAccount = 
