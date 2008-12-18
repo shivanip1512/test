@@ -146,7 +146,7 @@ INSERT INTO YukonRoleProperty VALUES(-20895,-201,'Opt Out Admin Status','true','
 INSERT INTO YukonRoleProperty VALUES(-20896,-201,'Opt Out Admin Change Enabled','true','Determines whether an operator can enable or disable Opt Outs for the rest of the day.');
 INSERT INTO YukonRoleProperty VALUES(-20897,-201,'Opt Out Admin Cancel Current','true','Determines whether an operator can cancel (reenable) ALL currently Opted Out devices.');
 INSERT INTO YukonRoleProperty VALUES(-20898,-201,'Opt Out Admin Change Counts','true','Determines whether an operator can change from Opt Outs count against limits today to Opt Outs do not count.'); 
-INSERT INTO YukonRoleProperty VALUES(-40056,-400,'Opt Out Limits','','Contains information on Opt Out limits.');
+INSERT INTO YukonRoleProperty VALUES(-40056,-400,'Opt Out Limits',' ','Contains information on Opt Out limits.');
 /* End YUK-6753 */
 
 /**************************************************************/

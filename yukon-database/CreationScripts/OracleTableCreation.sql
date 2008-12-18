@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/18/2008 1:53:47 PM                        */
+/* Created on:     12/18/2008 4:06:02 PM                        */
 /*==============================================================*/
 
 
@@ -9310,7 +9310,7 @@ INSERT INTO YukonRoleProperty VALUES(-40011,-400,'Change Login Password','true',
 INSERT INTO YukonRoleProperty VALUES(-40051,-400,'Hide Opt Out Box','false','Controls whether to show the opt out box on the programs opt out page');
 INSERT INTO YukonRoleProperty VALUES(-40052,-400,'Automatic Configuration','false','Controls whether to automatically send out config command when changing program enrollment');
 INSERT INTO YukonRoleProperty VALUES(-40055,-400,'Opt Out Rules','(none)','Defines the rules for opting out.');
-INSERT INTO YukonRoleProperty VALUES(-40056,-400,'Opt Out Limits','','Contains information on Opt Out limits.');
+INSERT INTO YukonRoleProperty VALUES(-40056,-400,'Opt Out Limits',' ','Contains information on Opt Out limits.');
 
 INSERT INTO YukonRoleProperty VALUES(-40100,-400,'Link FAQ','(none)','The customized FAQ link');
 INSERT INTO YukonRoleProperty VALUES(-40102,-400,'Link Thermostat Instructions','(none)','The customized thermostat instructions link');
