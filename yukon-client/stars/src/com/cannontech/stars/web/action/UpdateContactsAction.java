@@ -21,10 +21,12 @@ import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteFactory;
+import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.database.data.user.YukonGroup;
 import com.cannontech.database.db.customer.CustomerAdditionalContact;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
@@ -111,7 +113,8 @@ public class UpdateContactsAction implements ActionBase {
                     {
     					com.cannontech.database.data.user.YukonUser login = new com.cannontech.database.data.user.YukonUser();
     					LiteStarsEnergyCompany liteEC = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
-    					com.cannontech.database.data.lite.LiteYukonGroup[] custGroups = liteEC.getResidentialCustomerGroups();
+    					LiteYukonGroup[] custGroups = liteEC.getResidentialCustomerGroups();
+    					
     					String time = new Long(java.util.Calendar.getInstance().getTimeInMillis()).toString();
                         String firstInitial= "";
     					if(firstName != null)
@@ -121,9 +124,11 @@ public class UpdateContactsAction implements ActionBase {
     						newUserName = lastName.toLowerCase() + time.substring(time.length() - 2);
     					login.getYukonUser().setUsername(newUserName);
     					login.getYukonUser().setAuthType(AuthType.NONE);
-    					login.getYukonGroups().addElement(((com.cannontech.database.data.user.YukonGroup)LiteFactory.convertLiteToDBPers(custGroups[0])).getYukonGroup());
+    					for(LiteYukonGroup group : custGroups) {
+                            YukonGroup groupData = (com.cannontech.database.data.user.YukonGroup)LiteFactory.convertLiteToDBPers(group);
+                            login.getYukonGroups().addElement(groupData.getYukonGroup());
+                        }
     					login.getYukonUser().setStatus(UserUtils.STATUS_ENABLED);
-    					//login.setEnergyCompany()
     					login = Transaction.createTransaction(Transaction.INSERT, login).execute();
     					LiteYukonUser liteUser = new LiteYukonUser( login.getUserID().intValue() );
     					ServerUtils.handleDBChange(liteUser, DBChangeMsg.CHANGE_TYPE_ADD);
