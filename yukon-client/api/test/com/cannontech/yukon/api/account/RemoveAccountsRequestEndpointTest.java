@@ -64,7 +64,7 @@ public class RemoveAccountsRequestEndpointTest {
         /*
          * Test the success file 
          */
-        Resource successResource = new ClassPathResource("successfulRemoveAccountsRequest.xml", RemoveAccountsRequestEndpoint.class);
+        Resource successResource = new ClassPathResource("successfulRemoveAccountsRequest.xml", RemoveAccountsRequestEndpointTest.class);
         Element successInputElement = XmlUtils.createElementFromResource(successResource);
         LiteYukonUser user = new LiteYukonUser();
         Element successOutputElement = impl.invoke(successInputElement, user);
@@ -92,7 +92,7 @@ public class RemoveAccountsRequestEndpointTest {
          * Test the failure files
          */
         
-        Resource invalidAccountNumResource = new ClassPathResource("invalidAccountNumberRemoveAccountsRequest.xml", RemoveAccountsRequestEndpoint.class);
+        Resource invalidAccountNumResource = new ClassPathResource("invalidAccountNumberRemoveAccountsRequest.xml", RemoveAccountsRequestEndpointTest.class);
         Element invalidAccountNumInputElement = XmlUtils.createElementFromResource(invalidAccountNumResource);
         Element invalidAccountNumOutputElement = impl.invoke(invalidAccountNumInputElement, user);
         
