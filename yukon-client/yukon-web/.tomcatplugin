@@ -9,6 +9,7 @@
     <extraInfo></extraInfo>
     <webPath>ROOT</webPath>
     <webClassPathEntries>
+        <webClassPathEntry>/api/bin</webClassPathEntry>
         <webClassPathEntry>/billing/bin</webClassPathEntry>
         <webClassPathEntry>/cbc/bin</webClassPathEntry>
         <webClassPathEntry>/commander/bin</webClassPathEntry>

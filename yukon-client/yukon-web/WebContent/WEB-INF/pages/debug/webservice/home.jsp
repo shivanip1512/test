@@ -22,7 +22,7 @@
 
 			var url = '/spring/debug/webservice/xml/xmlTemplateChange';
             var args = {};
-            args.xmlTemplate = $('xmlTemplate').options[$('xmlTemplate').selectedIndex].value;
+            args.xmlTemplateIdx = $('xmlTemplate').selectedIndex;
             
             var onComplete = function(transport, json) {
             	$('xmlRequest').value = json.exampleXml;
@@ -72,7 +72,8 @@
     					</c:choose>
     				</c:forEach>
     			</select>
-    			<br><br>
+    			<br>
+				<input type="button" value="Submit Request" onclick="executeRequestForm()"> 
     		</td>
     		
     		<%-- URI --%>
@@ -108,15 +109,11 @@
     			</table>
     			
     		</td>
-    		<td align="right">
-    			<input type="button" value="Submit Request" onclick="executeRequestForm()"> 
-    			<br><br>
-    		</td>
     	</tr>
     	
     	<%-- REQUEST AREA --%>
     	<tr>
-    		<td colspan="3">
+    		<td colspan="2">
 		        <textarea id="xmlRequest" name="xmlRequest" class="xml">${xmlRequest}</textarea>
 		    </td>
     	</tr>
@@ -124,7 +121,7 @@
     	<%-- RESPONSE AREA --%>
     	<tr><td><B>RESPONSE</B></td></tr>
     	<tr>
-    		<td colspan="3">
+    		<td colspan="2">
 	    		<textarea id="xmlResponse" name="xmlResponse" class="xml">${xmlResponse}</textarea>
 			</td>
     	</tr>

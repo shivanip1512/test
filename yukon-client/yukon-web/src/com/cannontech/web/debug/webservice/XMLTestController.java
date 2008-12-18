@@ -1,12 +1,10 @@
 package com.cannontech.web.debug.webservice;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -20,10 +18,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.DirectoryFileFilter;
-import org.apache.commons.io.filefilter.FileFileFilter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -42,6 +37,7 @@ import com.cannontech.web.util.JsonView;
 public class XMLTestController extends MultiActionController {
     
 	private WebServiceTemplate webServiceTemplate;
+	private Resource[] exampleRequestXmls;
 	
 	// HOME
     public ModelAndView home(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -57,10 +53,8 @@ public class XMLTestController extends MultiActionController {
     // XML TEMPLATE CHANGE
     public ModelAndView xmlTemplateChange(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         
-    	String xmlTemplate = ServletRequestUtils.getRequiredStringParameter(request, "xmlTemplate");
-    	
-    	Resource templateResource = new ClassPathResource("/com/cannontech/web/debug/webservice/exampleXml/" + xmlTemplate, this.getClass());
-    	String exampleXml = FileUtils.readFileToString(templateResource.getFile());
+    	int xmlTemplateIdx = ServletRequestUtils.getRequiredIntParameter(request, "xmlTemplateIdx");
+    	String exampleXml = FileUtils.readFileToString(exampleRequestXmls[xmlTemplateIdx - 1].getFile());
     	
         ModelAndView mav = new ModelAndView(new JsonView());
         mav.addObject("exampleXml", exampleXml);
@@ -137,29 +131,20 @@ public class XMLTestController extends MultiActionController {
     }
 
     
-    
-    
-    
-    
-    @SuppressWarnings("unchecked")
     private List<String> getExampleFileNames() throws IOException {
     	
-    	Resource exampleXmlFolderResource = new ClassPathResource("/com/cannontech/web/debug/webservice/exampleXml", this.getClass());
-    	File exampleXmlDirectoryFile = exampleXmlFolderResource.getFile();
-    	Collection<File> listFiles = (Collection<File>)FileUtils.listFiles(exampleXmlDirectoryFile, FileFileFilter.FILE, DirectoryFileFilter.INSTANCE);
     	List<String> exampleFileNames = new ArrayList<String>();
-    	for (File f : listFiles) {
-    		exampleFileNames.add(f.getName());
+    	for (Resource r : exampleRequestXmls) {
+    		exampleFileNames.add(r.getFilename());
     	}
+    	
     	return exampleFileNames;
     }
     
     private List<String> getUriNames() throws IOException {
     	
     	List<String> uriNames = new ArrayList<String>();
-    	uriNames.add("http://127.0.0.1:8081/api/soap/loadManagement");
-    	uriNames.add("http://127.0.0.1:8081/api/soap/stars");
-    	uriNames.add("http://127.0.0.1:8081/api/soap/account");
+    	uriNames.add("http://127.0.0.1:8081/api/soap");
     	uriNames.add("http://www.weather.gov/forecasts/xml/SOAP_server/ndfdXMLserver.php");
 			
     	return uriNames;
@@ -168,5 +153,9 @@ public class XMLTestController extends MultiActionController {
     @Autowired
     public void setWebServiceTemplate(WebServiceTemplate webServiceTemplate) {
 		this.webServiceTemplate = webServiceTemplate;
+	}
+    
+    public void setExampleRequestXmls(Resource[] exampleRequestXmls) {
+		this.exampleRequestXmls = exampleRequestXmls;
 	}
 }
