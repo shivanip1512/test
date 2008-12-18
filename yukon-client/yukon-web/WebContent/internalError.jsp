@@ -9,7 +9,7 @@
 <jsp:directive.page import="com.cannontech.common.version.VersionTools"/>
 <jsp:directive.page import="com.cannontech.roles.application.WebClientRole"/>
 <jsp:directive.page import="org.apache.commons.lang.BooleanUtils"/>
-<jsp:directive.page import="com.cannontech.servlet.filter.ErrorHelperFilter"/>
+<jsp:directive.page import="com.cannontech.web.util.ErrorHelperFilter"/>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@page isErrorPage="true" %>
 

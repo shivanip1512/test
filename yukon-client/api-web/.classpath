@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/api"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/common"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/spring-webmvc.jar" sourcepath="Z:/java/Third-Party Sources/spring-framework-2.5.4-with-dependencies.zip">
@@ -37,21 +37,21 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.eclipse.jst.server.tomcat.runtimeTarget/Apache Tomcat v6.0"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.6.0_07"/>
-	<classpathentry kind="lib" path="/third-party/spring-ws-1.5.5-all.jar" sourcepath="Z:/java/Third-Party Sources/spring-ws-1.5.5-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-ws-1.5.5-all.jar" sourcepath="Z:/java/Third-Party Sources/spring-ws-1.5.5-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/third-party/hibernate3.jar" sourcepath="Z:/java/Third-Party Sources/hibernate-3.2.1.ga.zip">
+	<classpathentry exported="true" kind="lib" path="/third-party/hibernate3.jar" sourcepath="Z:/java/Third-Party Sources/hibernate-3.2.1.ga.zip">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/third-party/hibernate-annotations.jar" sourcepath="Z:/java/Third-Party Sources/hibernate-annotations-3.2.0.GA.zip">
+	<classpathentry exported="true" kind="lib" path="/third-party/hibernate-annotations.jar" sourcepath="Z:/java/Third-Party Sources/hibernate-annotations-3.2.0.GA.zip">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry combineaccessrules="false" kind="src" path="/web-common"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/web-common"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

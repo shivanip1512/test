@@ -101,6 +101,8 @@
         <!-- These groupings mean something to me. Talk to me if you rearrange. -Tmack -->
         <ant dir="${third-party}" target="${dotarget}" />
         <ant dir="${common}" target="${dotarget}" />
+    	
+        <ant dir="${web-common}" target="${dotarget}" />
 
           <ant dir="${billing}" target="${dotarget}" /> 
           <ant dir="${calchist}" target="${dotarget}" />
@@ -115,7 +117,6 @@
           <ant dir="${commander}" target="${dotarget}" />
           <ant dir="${commands}" target="${dotarget}" />
           <ant dir="${logger}" target="${dotarget}"/>
-          <ant dir="${custom}" target="${dotarget}" />
           <ant dir="${resource}" target="${dotarget}"/>
         
           <ant dir="${esub-editor}" target="${dotarget}"/>
@@ -123,6 +124,8 @@
           <ant dir="${loadcontrol}" target="${dotarget}" />
           <ant dir="${macs}" target="${dotarget}" />
           <ant dir="${stars}" target="${dotarget}"/>
+    	
+          <ant dir="${api}" target="${dotarget}"/>
         
           <ant dir="${tools}" target="${dotarget}" />
           <ant dir="${commercialcurtailment}" target="${dotarget}"/>

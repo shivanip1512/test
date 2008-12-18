@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Class-Path: ./ 
+ common.jar 
+ spring-webmvc.jar 
+ json-lib-0.7.1.jar
+ aspectjrt.jar 
+ aspectjweaver.jar 
