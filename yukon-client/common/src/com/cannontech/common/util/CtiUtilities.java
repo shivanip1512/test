@@ -40,6 +40,8 @@ import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
 import javax.swing.JComboBox;
 import javax.swing.JEditorPane;
 import javax.swing.text.BadLocationException;
@@ -768,6 +770,19 @@ public final static String getLogDirPath()
  */
 public final static String getYukonBase() 
 {
+	
+	// try a JNDI context
+	try {
+		Context env = (Context) new InitialContext().lookup("java:comp/env");
+		String jndiYukonBase = (String) env.lookup("yukon.base");
+		File file = new File(jndiYukonBase);
+		if (file.exists()) {
+			return file.getCanonicalPath();
+		}
+	} catch (Exception e) {
+		CTILogger.debug("Unable to use JNDI context for yukon.base: " + e.getMessage());
+	}
+	
 	final String fs = System.getProperty("file.separator");	
 	
 	//First try to use yukon.base
