@@ -41,6 +41,7 @@ yukon-client/export/build
 yukon-client/foreign/.cvsignore
 yukon-client/foreign/bin
 yukon-client/foreign/build
+yukon-client/lib
 yukon-client/loadcontrol/.cvsignore
 yukon-client/loadcontrol/bin
 yukon-client/loadcontrol/build
@@ -104,3 +105,4 @@ yukon-client/yukon-web/temp
 yukon-client/yukon-web/work
 yukon-client/yukonappserver/bin
 yukon-client/yukonappserver/build
+yukon-install/build
