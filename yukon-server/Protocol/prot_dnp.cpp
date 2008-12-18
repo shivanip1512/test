@@ -15,6 +15,7 @@
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
+#include "boost/scoped_ptr.hpp"
 
 #include "logger.h"
 #include "utility.h"
@@ -30,6 +31,8 @@
 
 namespace Cti       {
 namespace Protocol  {
+
+using boost::scoped_ptr;
 
 using namespace Cti::Protocol::DNP;
 
@@ -380,8 +383,6 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
     int  retVal;
     bool final = true;
 
-    const TimeCTO *cto = 0;
-
     retVal = _app_layer.decode(xfer, status);
 
     if( _app_layer.errorCondition() )
@@ -525,21 +526,20 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
             }
         }
 
+        scoped_ptr<const TimeCTO>     cto;
+        scoped_ptr<const Time>        time_sent;
+        scoped_ptr<const ObjectBlock> ob;
+
         //  and this is where the pointdata gets harvested
         while( !_object_blocks.empty() )
         {
-            const ObjectBlock *ob = _object_blocks.front();
+            ob.reset(_object_blocks.front());
 
             if( ob && !ob->empty() )
             {
                 if( ob->getGroup() == TimeCTO::Group )
                 {
-                    if( cto )
-                    {
-                        delete cto;
-                    }
-
-                    cto = CTIDBG_new TimeCTO(*(reinterpret_cast<const TimeCTO *>(ob->at(0).object)));
+                    cto.reset(CTIDBG_new TimeCTO(*(reinterpret_cast<const TimeCTO *>(ob->at(0).object))));
 
                     CtiTime t(cto->getSeconds());
 
@@ -555,16 +555,16 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
 
                     if( od.object )
                     {
-                        const DNP::Time *time = reinterpret_cast<const DNP::Time *>(od.object);
+                        time_sent.reset(CTIDBG_new Time(*(reinterpret_cast<const DNP::Time *>(od.object))));
                         string s;
 
-                        CtiTime t(time->getSeconds());
+                        CtiTime t(time_sent->getSeconds());
                         CtiTime now;
 
                         s = "Device time: ";
                         s.append(t.asString());
                         s.append(".");
-                        s.append(CtiNumStr((int)time->getMilliseconds()).zpad(3));
+                        s.append(CtiNumStr((int)time_sent->getMilliseconds()).zpad(3));
 
                         if( ((_last_complaint + ComplaintInterval) < now.seconds())
                             && ((t.seconds() - TimeDifferential) > now.seconds()
@@ -591,7 +591,7 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
                     pointlist_t points;
                     int count = ob->size();
 
-                    ob->getPoints(points, cto);
+                    ob->getPoints(points, cto.get(), time_sent.get());
 
                     recordPoints(ob->getGroup(), points);
 
@@ -600,19 +600,13 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
             }
 
             _object_blocks.pop();
-            delete ob;
         }
 
         if( final )
         {
             if( _command == Command_UnsolicitedInbound )
             {
-                stringlist_t::iterator itr;
-
-                for( itr = _string_results.begin(); itr != _string_results.end(); itr++ )
-                {
-                    delete *itr;
-                }
+                delete_container(_string_results);
 
                 _string_results.clear();
             }
@@ -639,11 +633,6 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
             //  set final = false in the above switch statement if you want to do anything crazy (like SBO)
             setCommand(Command_Complete);
         }
-    }
-
-    if( cto )
-    {
-        delete cto;
     }
 
     return retVal;

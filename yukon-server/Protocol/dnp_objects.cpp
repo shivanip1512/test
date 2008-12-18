@@ -806,7 +806,7 @@ int ObjectBlock::restoreBitObject( const unsigned char *buf, int bitoffset, int 
     return bitpos - bitoffset;
 }
 
-void ObjectBlock::getPoints( Interface::pointlist_t &points, const TimeCTO *cto ) const
+void ObjectBlock::getPoints( Interface::pointlist_t &points, const TimeCTO *cto, const Time *arrival ) const
 {
     CtiPointDataMsg *pMsg;
 
@@ -854,6 +854,14 @@ void ObjectBlock::getPoints( Interface::pointlist_t &points, const TimeCTO *cto 
                         }
 
                         i_itr++;
+                    }
+
+                    //  if we have a time of arrival AND the time wasn't set by an event point,
+                    //    set it to the time the DNP RTU claims to have sent it
+                    if( arrival && !(pMsg->getTags() & TAG_POINT_DATA_TIMESTAMP_VALID) )
+                    {
+                        pMsg->setTime(CtiTime(arrival->getSeconds()));
+                        pMsg->setTags(TAG_POINT_DATA_TIMESTAMP_VALID);
                     }
 
                     points.push_back(pMsg);

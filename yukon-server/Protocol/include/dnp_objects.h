@@ -38,6 +38,7 @@ namespace Protocol  {
 namespace DNP       {
 
 class TimeCTO;  //  forward declaration
+class Time;
 
 class Object
 {
@@ -140,7 +141,7 @@ public:
 
     int  restore( const unsigned char *buf, int len );
 
-    void getPoints( Interface::pointlist_t &points, const TimeCTO *cto ) const;
+    void getPoints( Interface::pointlist_t &points, const TimeCTO *cto, const Time *arrival ) const;
 };
 
 }
