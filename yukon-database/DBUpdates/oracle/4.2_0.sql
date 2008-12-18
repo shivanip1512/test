@@ -60,7 +60,17 @@ ALTER TABLE DynamicLMProgramDirect
 ADD CurrentLogId NUMBER NOT NULL DEFAULT 0;
 /* End YUK-6742 */ 
 
+/* Start YUK-6743 */ 
+UPDATE YukonRoleProperty 
+SET KeyName='Admin Change Login Username',Description='Controls access to change a customer login username'
+WHERE RolePropertyId = -20115;
+INSERT INTO YukonRoleProperty VALUES(-20119,-201,'Admin Change Login Password','true','Controls access to change a customer login password'); 
 
+UPDATE YukonRoleProperty 
+SET KeyName='Change Login Username',Description='Controls access for customers to change their own login username'
+WHERE RolePropertyId = -40009;
+INSERT INTO YukonRoleProperty VALUES(-40011,-400,'Change Login Password','true','Controls access for customers to change their own login password');  
+/* End YUK-6743 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
