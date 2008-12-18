@@ -21,7 +21,7 @@ public class ProgramEnrollmentElementRequestMapper implements ObjectMapper<Eleme
         enrollmentHelper.setLoadGroupName(template.evaluateAsString("//y:loadGroupName"));
         enrollmentHelper.setApplianceCategoryName(template.evaluateAsString("//y:applianceCategoryName"));
         enrollmentHelper.setApplianceKW(template.evaluateAsFloat("//y:appliancekW"));
-        enrollmentHelper.setRelay(template.evaluateAsString("//y:appliancekW"));
+        enrollmentHelper.setRelay(template.evaluateAsString("//y:relay"));
         enrollmentHelper.setSeasonalLoad(template.evaluateAsBooleanWithDefault("//y:seasonalLoad"));
         
         return enrollmentHelper;

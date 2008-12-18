@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.dao.DataAccessException;
 
 import com.cannontech.common.exception.DuplicateEnrollmentException;
 import com.cannontech.core.dao.AuthDao;
@@ -51,8 +52,14 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     private StarsDatabaseCache starsDatabaseCache;
     
     public void doEnrollment(EnrollmentHelper enrollmentHelper, EnrollmentEnum enrollmentEnum, LiteYukonUser user){
-        
-        CustomerAccount customerAccount = customerAccountDao.getByAccountNumber(enrollmentHelper.getAccountNumber(), user);
+        CustomerAccount customerAccount = null;
+        try {
+            customerAccount = customerAccountDao.getByAccountNumber(enrollmentHelper.getAccountNumber(),
+                                                                    user);
+        } catch (DataAccessException e) {
+            // convert to a better, Account not found exception
+            throw new NotFoundException("Account not found", e);
+        }
         List<ProgramEnrollment> enrollmentData = 
             enrollmentDao.getActiveEnrollmentsByAccountId(customerAccount.getAccountId());
 
@@ -84,8 +91,10 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
                 lmHardwareControlGroupDao.getOldConfigDataByInventoryIdAndGroupId(programEnrollment.getInventoryId(),
                                                                                   programEnrollment.getLmGroupId());
             if (lmHardwareConfigurations.size() == 1) {
-                applianceDao.updateApplianceKW(lmHardwareConfigurations.get(0).getApplianceId(),
-                                               enrollmentHelper.getApplianceKW());
+                if (enrollmentHelper.getApplianceKW() != null){
+                    applianceDao.updateApplianceKW(lmHardwareConfigurations.get(0).getApplianceId(),
+                                                   enrollmentHelper.getApplianceKW());
+                }
             } else {
                 throw new DuplicateEnrollmentException("A duplicate enrollment entry was found in your database.  Please fix as soon as possible.");
             }
@@ -128,8 +137,9 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         ProgramEnrollment programEnrollment = new ProgramEnrollment();
         programEnrollment.setInventoryId(lmHardwareBase.getInventoryId());
         programEnrollment.setProgramId(program.getProgramId());
-        programEnrollment.setApplianceKW(enrollmentHelper.getApplianceKW());
-        
+        if (enrollmentHelper.getApplianceKW() != null) {
+            programEnrollment.setApplianceKW(enrollmentHelper.getApplianceKW());
+        }
         if (applianceCategory != null) {
             programEnrollment.setApplianceCategoryId(applianceCategory.getApplianceCategoryId());
         } else {
