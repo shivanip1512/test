@@ -26,14 +26,5 @@
    
    <bean id="loadControlCommandService" class="com.cannontech.loadcontrol.service.impl.LoadControlCommandServiceImpl">
    </bean>
-    
-   <bean id="overrideService" class="com.cannontech.loadcontrol.service.impl.OverrideServiceImpl">
-   </bean>
-   
-<!-- 
-   <bean id="loadManagementService" class="com.cannontech.loadcontrol.LoadManagementStub" 
-         singleton="true">
-   </bean>
--->
 
 </beans>
