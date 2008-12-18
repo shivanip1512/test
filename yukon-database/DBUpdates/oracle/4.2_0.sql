@@ -32,6 +32,36 @@ alter table LMGroupXMLParameter
       references LMGroup (DeviceID); 
 /* End YUK-6710 */
 
+/* Start YUK-6742 */ 
+CREATE TABLE LMProgramGearHistory  (
+   GearHistId           NUMBER                          NOT NULL,
+   ProgramHistId        NUMBER                          NOT NULL,
+   EventTime            DATE                            NOT NULL,
+   Action               VARCHAR2(50)                    NOT NULL,
+   UserName             VARCHAR2(50)                    NOT NULL,
+   GearName             VARCHAR2(50)                    NOT NULL,
+   GearId               NUMBER                          NOT NULL,
+   Reason               VARCHAR2(50)                    NOT NULL,
+   CONSTRAINT PK_LMPROGRAMGEARHISTORY PRIMARY KEY (GearHistId)
+);
+
+CREATE TABLE LMProgramHistory  (
+   ProgramHistId        NUMBER                          NOT NULL,
+   ProgramName          VARCHAR2(50)                    NOT NULL,
+   ProgramId            NUMBER                          NOT NULL,
+   CONSTRAINT PK_LMPROGRAMHISTORY PRIMARY KEY (ProgramHistId)
+);
+
+ALTER TABLE LMProgramGearHistory
+   ADD CONSTRAINT FK_LMProgGearHist_LMProgHist FOREIGN KEY (ProgramHistId)
+      REFERENCES LMProgramHistory (ProgramHistId);
+
+ALTER TABLE DynamicLMProgramDirect 
+ADD CurrentLogId NUMBER NOT NULL DEFAULT 0;
+/* End YUK-6742 */ 
+
+
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

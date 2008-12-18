@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/17/2008 2:00:28 PM                        */
+/* Created on:     12/17/2008 4:40:18 PM                        */
 /*==============================================================*/
 
 
@@ -706,6 +706,10 @@ drop table LMProgramDirectGroup cascade constraints;
 drop table LMProgramEnergyExchange cascade constraints;
 
 drop table LMProgramEvent cascade constraints;
+
+drop table LMProgramGearHistory cascade constraints;
+
+drop table LMProgramHistory cascade constraints;
 
 drop table LMProgramWebPublishing cascade constraints;
 
@@ -4665,6 +4669,7 @@ create table DynamicLMProgramDirect  (
    NotifyInactiveTime   DATE                            not null,
    ConstraintOverride   CHAR(1)                         not null,
    AdditionalInfo       VARCHAR2(80)                    not null,
+   CurrentLogId         NUMBER                         default 0 not null,
    constraint PK_DYNAMICLMPROGRAMDIRECT primary key (DeviceID)
 );
 
@@ -6154,6 +6159,31 @@ create table LMProgramEvent  (
    AccountID            NUMBER                          not null,
    ProgramID            NUMBER,
    constraint PK_LMPROGRAMEVENT primary key (EventID)
+);
+
+/*==============================================================*/
+/* Table: LMProgramGearHistory                                  */
+/*==============================================================*/
+create table LMProgramGearHistory  (
+   GearHistId           NUMBER                          not null,
+   ProgramHistId        NUMBER,
+   EventTime            DATE                            not null,
+   Action               VARCHAR2(50)                    not null,
+   UserName             VARCHAR2(50)                    not null,
+   GearName             VARCHAR2(50)                    not null,
+   GearId               NUMBER                          not null,
+   Reason               VARCHAR2(50)                    not null,
+   constraint PK_LMPROGRAMGEARHISTORY primary key (GearHistId)
+);
+
+/*==============================================================*/
+/* Table: LMProgramHistory                                      */
+/*==============================================================*/
+create table LMProgramHistory  (
+   ProgramHistId        NUMBER                          not null,
+   ProgramName          VARCHAR2(50)                    not null,
+   ProgramId            NUMBER                          not null,
+   constraint PK_LMPROGRAMHISTORY primary key (ProgramHistId)
 );
 
 /*==============================================================*/
@@ -11587,6 +11617,10 @@ alter table LMProgramEvent
 alter table LMProgramEvent
    add constraint FK_LmCsEv_LmPrEv foreign key (EventID)
       references LMCustomerEventBase (EventID);
+
+alter table LMProgramGearHistory
+   add constraint FK_LMProgGearHist_LMProgHist foreign key (ProgramHistId)
+      references LMProgramHistory (ProgramHistId);
 
 alter table LMProgramWebPublishing
    add constraint FK_CsLEn_LPWbP foreign key (ChanceOfControlID)

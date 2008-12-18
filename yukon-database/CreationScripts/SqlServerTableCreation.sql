@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/17/2008 1:52:16 PM                        */
+/* Created on:     12/17/2008 4:38:37 PM                        */
 /*==============================================================*/
 
 
@@ -2594,6 +2594,20 @@ if exists (select 1
            where  id = object_id('LMProgramEvent')
             and   type = 'U')
    drop table LMProgramEvent
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMProgramGearHistory')
+            and   type = 'U')
+   drop table LMProgramGearHistory
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('LMProgramHistory')
+            and   type = 'U')
+   drop table LMProgramHistory
 go
 
 if exists (select 1
@@ -7172,6 +7186,7 @@ create table DynamicLMProgramDirect (
    NotifyInactiveTime   datetime             not null,
    ConstraintOverride   char(1)              not null,
    AdditionalInfo       varchar(80)          not null,
+   CurrentLogId         numeric              not null default 0,
    constraint PK_DYNAMICLMPROGRAMDIRECT primary key (DeviceID)
 )
 go
@@ -8774,6 +8789,33 @@ create table LMProgramEvent (
    AccountID            numeric              not null,
    ProgramID            numeric              null,
    constraint PK_LMPROGRAMEVENT primary key (EventID)
+)
+go
+
+/*==============================================================*/
+/* Table: LMProgramGearHistory                                  */
+/*==============================================================*/
+create table LMProgramGearHistory (
+   GearHistId           numeric              not null,
+   ProgramHistId        numeric              null,
+   EventTime            datetime             not null,
+   Action               varchar(50)          not null,
+   UserName             varchar(50)          not null,
+   GearName             varchar(50)          not null,
+   GearId               numeric              not null,
+   Reason               varchar(50)          not null,
+   constraint PK_LMPROGRAMGEARHISTORY primary key nonclustered (GearHistId)
+)
+go
+
+/*==============================================================*/
+/* Table: LMProgramHistory                                      */
+/*==============================================================*/
+create table LMProgramHistory (
+   ProgramHistId        numeric              not null,
+   ProgramName          varchar(50)          not null,
+   ProgramId            numeric              not null,
+   constraint PK_LMPROGRAMHISTORY primary key nonclustered (ProgramHistId)
 )
 go
 
@@ -14767,6 +14809,11 @@ go
 alter table LMProgramEvent
    add constraint FK_LmCsEv_LmPrEv foreign key (EventID)
       references LMCustomerEventBase (EventID)
+go
+
+alter table LMProgramGearHistory
+   add constraint FK_LMProgGearHist_LMProgHist foreign key (ProgramHistId)
+      references LMProgramHistory (ProgramHistId)
 go
 
 alter table LMProgramWebPublishing
