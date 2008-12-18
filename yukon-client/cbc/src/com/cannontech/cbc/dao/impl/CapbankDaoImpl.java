@@ -136,7 +136,7 @@ public class CapbankDaoImpl implements CapbankDao {
         String sql = "select deviceId from capbank where controlDeviceId = ? ";
         Integer capBankId = -1;
         try {
-            capBankId = simpleJdbcTemplate.queryForInt(sql, new Integer[] {paoId});
+            capBankId = simpleJdbcTemplate.queryForInt(sql, paoId);
         } catch (EmptyResultDataAccessException e) {
             return -1;
         }
