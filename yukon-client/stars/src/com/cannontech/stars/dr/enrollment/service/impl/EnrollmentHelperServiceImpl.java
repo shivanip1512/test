@@ -104,6 +104,11 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     private ProgramEnrollment buildProgrameEnrollment(EnrollmentHelper enrollmentHelper, LiteYukonUser user){
         
         LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getBySerialNumber(enrollmentHelper.getSerialNumber());
+        CustomerAccount accountByInventoryId = customerAccountDao.getAccountByInventoryId(lmHardwareBase.getInventoryId());
+        if (enrollmentHelper.getAccountNumber() != accountByInventoryId.getAccountNumber()) {
+            throw new IllegalArgumentException("The supplied piece of hardware does not belong to the supplied account.");
+        }
+            
         /* This part of the method will get all the energy company ids that can have 
          * an appliance category this energy company can use.
          */
