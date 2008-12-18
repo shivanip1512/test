@@ -470,9 +470,10 @@ public class AccountServiceImpl implements AccountService {
         /*
          * Update the address
          */
-        setAddressFieldsFromDTO(liteStreetAddress, streetAddress);
-        addressDao.update(liteStreetAddress);
-        
+        if(streetAddress != null && StringUtils.isNotBlank(streetAddress.getLocationAddress1())) {
+            setAddressFieldsFromDTO(liteStreetAddress, streetAddress);
+            addressDao.update(liteStreetAddress);
+        }
         /*
          * Update the billing address if supplied
          */
@@ -663,10 +664,7 @@ public class AccountServiceImpl implements AccountService {
             retrievedDto.setEmailAddress("");
         }
         
-        /*
-         * Apperently a dummy address row gets set even when one wasn't provided. 
-         */
-        LiteAddress address = addressDao.getByAddressId(primaryContact.getAddressID());
+        LiteAddress address = addressDao.getByAddressId(accountSite.getStreetAddressId());
         giveAddressFieldsToDTO(address, retrievedDto.getStreetAddress());
         LiteAddress billingAdress = addressDao.getByAddressId(customerAccount.getBillingAddressId());
         giveAddressFieldsToDTO(billingAdress, retrievedDto.getBillingAddress());
