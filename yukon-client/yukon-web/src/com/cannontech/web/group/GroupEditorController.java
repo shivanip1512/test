@@ -21,7 +21,6 @@ import com.cannontech.amr.meter.dao.GroupMetersDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
-import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
@@ -43,6 +42,7 @@ import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.roles.operator.DeviceActionsRole;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.bulk.model.DeviceCollectionCreationException;
 import com.cannontech.web.bulk.model.DeviceCollectionFactory;
 import com.cannontech.web.util.ExtTreeNode;
 
@@ -428,7 +428,7 @@ public class GroupEditorController extends MultiActionController {
         try {
         	DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
         	deviceCollectionDeviceGroupHelper.addCollectionToGroup(groupName, deviceCollection);
-        } catch (ObjectMappingException e) {
+        } catch (DeviceCollectionCreationException e) {
             mav.addObject("errorMessage", e.getMessage());
             return mav;
         }

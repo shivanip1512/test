@@ -17,9 +17,9 @@ public interface DeviceCollectionFactory {
      * parameters
      * @param request - Current request
      * @return The required device collection
-     * @throws ServletRequestBindingException
+     * @throws ServletRequestBindingException, DeviceCollectionCreationException
      */
     public DeviceCollection createDeviceCollection(HttpServletRequest request)
-            throws ServletRequestBindingException;
+            throws ServletRequestBindingException, DeviceCollectionCreationException;
 
 }
