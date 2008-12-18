@@ -92,6 +92,63 @@ ALTER TABLE MspLMInterfaceMapping
       ON DELETE CASCADE;
 /* End YUK-6726 */
 
+/* Start YUK-6753 */
+CREATE TABLE OptOutAdditional (
+   InventoryId          NUMERIC              NOT NULL,
+   CustomerAccountId    NUMERIC              NOT NULL,
+   ExtraOptOutCount     NUMERIC              NOT NULL,
+   CONSTRAINT PK_OPTOUTADDITIONAL PRIMARY KEY (InventoryId, CustomerAccountId)
+);
+
+CREATE TABLE OptOutEvent (
+   OptOutEventId        NUMERIC              NOT NULL,
+   InventoryId          NUMERIC              NOT NULL,
+   CustomerAccountId    NUMERIC              NOT NULL,
+   ScheduledDate        DATETIME             NOT NULL,
+   StartDate            DATETIME             NOT NULL,
+   StopDate             DATETIME             NOT NULL,
+   EventCounts          VARCHAR(25)          NOT NULL,
+   EventState           VARCHAR(25)          NOT NULL,
+   CONSTRAINT PK_OPTOUTEVENT PRIMARY KEY (OptOutEventId)
+);
+
+CREATE TABLE OptOutEventLog (
+   OptOutEventLogId     NUMERIC              NOT NULL,
+   InventoryId          NUMERIC              NOT NULL,
+   CustomerAccountId    NUMERIC              NOT NULL,
+   EventAction          VARCHAR(25)          NOT NULL,
+   LogDate              DATETIME             NOT NULL,
+   EventStartDate       DATETIME             NULL,
+   EventStopDate        DATETIME             NOT NULL,
+   LogUserId            NUMERIC              NOT NULL,
+   OptOutEventId        NUMERIC              NOT NULL,
+   EventCounts          VARCHAR(25)          NULL,
+   CONSTRAINT PK_OPTOUTEVENTLOG PRIMARY KEY (OptOutEventLogId)
+);
+
+CREATE TABLE OptOutTemporaryOverride (
+   OptOutTemporaryOverrideId  NUMERIC              NOT NULL,
+   UserId                     NUMERIC              NOT NULL,
+   EnergyCompanyId            NUMERIC              NOT NULL,
+   OptOutType                 VARCHAR(25)          NOT NULL,
+   StartDate                  DATETIME             NOT NULL,
+   StopDate                   DATETIME             NOT NULL,
+   OptOutValue                VARCHAR(10)          NOT NULL,
+   CONSTRAINT PK_OPTOUTTEMPORARYOVERRIDE PRIMARY KEY (OptOutTemporaryOverrideId)
+);
+
+ALTER TABLE OptOutEventLog
+   ADD CONSTRAINT FK_OptOutEvent_OptOutEventLog FOREIGN KEY (OptOutEventId)
+      REFERENCES OptOutEvent (OptOutEventId);
+
+INSERT INTO YukonRoleProperty VALUES(-1704,-8,'Opt Outs Count', 'true', 'Determines whether new opt outs count against the opt out limits.'); 
+INSERT INTO YukonRoleProperty VALUES(-20895,-201,'Opt Out Admin Status','true','Determines whether an operator can see current opt out status on the Opt Out Admin page.');
+INSERT INTO YukonRoleProperty VALUES(-20896,-201,'Opt Out Admin Change Enabled','true','Determines whether an operator can enable or disable Opt Outs for the rest of the day.');
+INSERT INTO YukonRoleProperty VALUES(-20897,-201,'Opt Out Admin Cancel Current','true','Determines whether an operator can cancel (reenable) ALL currently Opted Out devices.');
+INSERT INTO YukonRoleProperty VALUES(-20898,-201,'Opt Out Admin Change Counts','true','Determines whether an operator can change from Opt Outs count against limits today to Opt Outs do not count.'); 
+INSERT INTO YukonRoleProperty VALUES(-40056,-400,'Opt Out Limits','','Contains information on Opt Out limits.');
+/* End YUK-6753 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/18/2008 11:12:46 AM                       */
+/* Created on:     12/18/2008 1:53:47 PM                        */
 /*==============================================================*/
 
 
@@ -752,6 +752,14 @@ drop table NotificationDestination cascade constraints;
 drop table NotificationGroup cascade constraints;
 
 drop table OperatorLoginGraphList cascade constraints;
+
+drop table OptOutAdditional cascade constraints;
+
+drop table OptOutEvent cascade constraints;
+
+drop table OptOutEventLog cascade constraints;
+
+drop table OptOutTemporaryOverride cascade constraints;
 
 drop table PAOExclusion cascade constraints;
 
@@ -6517,6 +6525,62 @@ create table OperatorLoginGraphList  (
 );
 
 /*==============================================================*/
+/* Table: OptOutAdditional                                      */
+/*==============================================================*/
+create table OptOutAdditional  (
+   InventoryId          NUMBER                          not null,
+   CustomerAccountId    NUMBER                          not null,
+   ExtraOptOutCount     NUMBER                          not null,
+   constraint PK_OPTOUTADDITIONAL primary key (InventoryId, CustomerAccountId)
+);
+
+/*==============================================================*/
+/* Table: OptOutEvent                                           */
+/*==============================================================*/
+create table OptOutEvent  (
+   OptOutEventId        NUMBER                          not null,
+   InventoryId          NUMBER                          not null,
+   CustomerAccountId    NUMBER                          not null,
+   ScheduledDate        DATE                            not null,
+   StartDate            DATE                            not null,
+   StopDate             DATE                            not null,
+   EventCounts          VARCHAR2(25)                    not null,
+   EventState           VARCHAR2(25)                    not null,
+   constraint PK_OPTOUTEVENT primary key (OptOutEventId)
+);
+
+/*==============================================================*/
+/* Table: OptOutEventLog                                        */
+/*==============================================================*/
+create table OptOutEventLog  (
+   OptOutEventLogId     NUMBER                          not null,
+   InventoryId          NUMBER                          not null,
+   CustomerAccountId    NUMBER                          not null,
+   EventAction          VARCHAR2(25)                    not null,
+   LogDate              DATE                            not null,
+   EventStartDate       DATE,
+   EventStopDate        DATE                            not null,
+   LogUserId            NUMBER                          not null,
+   OptOutEventId        NUMBER                          not null,
+   EventCounts          VARCHAR2(25),
+   constraint PK_OPTOUTEVENTLOG primary key (OptOutEventLogId)
+);
+
+/*==============================================================*/
+/* Table: OptOutTemporaryOverride                               */
+/*==============================================================*/
+create table OptOutTemporaryOverride  (
+   OptOutTemporaryOverrideId NUMBER                          not null,
+   UserId               NUMBER                          not null,
+   EnergyCompanyId      NUMBER                          not null,
+   OptOutType           VARCHAR2(25)                    not null,
+   StartDate            DATE                            not null,
+   StopDate             DATE                            not null,
+   OptOutValue          VARCHAR2(10)                    not null,
+   constraint PK_OPTOUTTEMPORARYOVERRIDE primary key (OptOutTemporaryOverrideId)
+);
+
+/*==============================================================*/
 /* Table: PAOExclusion                                          */
 /*==============================================================*/
 create table PAOExclusion  (
@@ -8957,6 +9021,7 @@ INSERT INTO YukonRoleProperty VALUES(-1700,-8,'Device Display Template','DEVICE_
 INSERT INTO YukonRoleProperty VALUES(-1701,-8,'Alert Timeout Hours', '168', 'The number of hours that an alert should be held (zero = forever, decimal numbers are okay)'); 
 INSERT INTO YukonRoleProperty VALUES(-1702,-8,'Customer Info Importer File Location', ' ', 'File location of the automated consumer information import process.');
 INSERT INTO YukonRoleProperty VALUES(-1703,-8,'System Default TimeZone', ' ', 'System Default TimeZone (e.g. America/Denver, America/Chicago, America/Los_Angeles, or America/New_York)'); 
+INSERT INTO YukonRoleProperty VALUES(-1704,-8,'Opt Outs Count', 'true', 'Determines whether new opt outs count against the opt out limits.'); 
 
 /* TDC Role */
 insert into YukonRoleProperty values(-10100,-101,'loadcontrol_edit','00000000','(No settings yet)');
@@ -9108,76 +9173,79 @@ INSERT INTO YukonRoleProperty VALUES (-20210,-202,'High Bill Complaint','true','
 
 
 /* Operator Esubstation Drawings Role Properties */
-insert into YukonRoleProperty values(-20600,-206,'View Drawings','true','Controls viewing of Esubstations drawings');
-insert into YukonRoleProperty values(-20601,-206,'Edit Limits','false','Controls editing of point limits');
-insert into YukonRoleProperty values(-20602,-206,'Control','false','Controls control from Esubstation drawings');
+INSERT INTO YukonRoleProperty VALUES(-20600,-206,'View Drawings','true','Controls viewing of Esubstations drawings');
+INSERT INTO YukonRoleProperty VALUES(-20601,-206,'Edit Limits','false','Controls editing of point limits');
+INSERT INTO YukonRoleProperty VALUES(-20602,-206,'Control','false','Controls control from Esubstation drawings');
 
 /* Odds For Control Role Properties */
-insert into YukonRoleProperty values(-20700,-207,'Odds For Control Label','Odds for Control','The operator specific name for odds for control');
+INSERT INTO YukonRoleProperty VALUES(-20700,-207,'Odds For Control Label','Odds for Control','The operator specific name for odds for control');
 
 /* Operator Consumer Info Role Properties Part II */
-insert into YukonRoleProperty values(-20800,-201,'Link FAQ','(none)','The customized FAQ link');
-insert into YukonRoleProperty values(-20801,-201,'Link Thermostat Instructions','(none)','The customized thermostat instructions link');
+INSERT INTO YukonRoleProperty VALUES(-20800,-201,'Link FAQ','(none)','The customized FAQ link');
+INSERT INTO YukonRoleProperty VALUES(-20801,-201,'Link Thermostat Instructions','(none)','The customized thermostat instructions link');
 
-insert into YukonRoleProperty values(-20810,-201,'Text Control','control','Term for control');
-insert into YukonRoleProperty values(-20813,-201,'Text Opt Out Noun','opt out','Noun form of the term for opt out');
-insert into YukonRoleProperty values(-20814,-201,'Text Opt Out Verb','opt out of','Verbical form of the term for opt out');
-insert into YukonRoleProperty values(-20815,-201,'Text Opt Out Past','opted out','Past form of the term for opt out');
-insert into YukonRoleProperty values(-20816,-201,'Text Reenable','reenable','Term for reenable');
-insert into YukonRoleProperty values(-20819,-201,'Text Odds for Control','odds for control','Text for odds for control');
-insert into YukonRoleProperty values(-20820,-201,'Text Recommended Settings','Recommended Settings','Text of the Recommended Settings button on the thermostat schedule page');
+INSERT INTO YukonRoleProperty VALUES(-20810,-201,'Text Control','control','Term for control');
+INSERT INTO YukonRoleProperty VALUES(-20813,-201,'Text Opt Out Noun','opt out','Noun form of the term for opt out');
+INSERT INTO YukonRoleProperty VALUES(-20814,-201,'Text Opt Out Verb','opt out of','Verbical form of the term for opt out');
+INSERT INTO YukonRoleProperty VALUES(-20815,-201,'Text Opt Out Past','opted out','Past form of the term for opt out');
+INSERT INTO YukonRoleProperty VALUES(-20816,-201,'Text Reenable','reenable','Term for reenable');
+INSERT INTO YukonRoleProperty VALUES(-20819,-201,'Text Odds for Control','odds for control','Text for odds for control');
+INSERT INTO YukonRoleProperty VALUES(-20820,-201,'Text Recommended Settings','Recommended Settings','Text of the Recommended Settings button on the thermostat schedule page');
 
-insert into YukonRoleProperty values(-20830,-201,'Label Programs Control History','Control History','Text of the programs control history link');
-insert into YukonRoleProperty values(-20831,-201,'Label Programs Enrollment','Enrollment','Text of the programs enrollment link');
-insert into YukonRoleProperty values(-20832,-201,'Label Programs Opt Out','Opt Out','Text of the programs opt out link');
-insert into YukonRoleProperty values(-20833,-201,'Label Thermostat Schedule','Schedule','Text of the thermostat schedule link');
-insert into YukonRoleProperty values(-20834,-201,'Label Thermostat Manual','Manual','Text of the thermostat manual link');
-insert into YukonRoleProperty values(-20835,-201,'Label Account General','General','Text of the account general link');
-insert into YukonRoleProperty values(-20836,-201,'Label Account Contacts','Contacts','Text of the account contacts link');
-insert into YukonRoleProperty values(-20837,-201,'Label Account Residence','Residence','Text of the account residence link');
-insert into YukonRoleProperty values(-20838,-201,'Label Call Tracking','Call Tracking','Text of the call tracking link');
-insert into YukonRoleProperty values(-20839,-201,'Label Create Call','Create Call','Text of the create call link');
-insert into YukonRoleProperty values(-20840,-201,'Label Service Request','Service Request','Text of the service request link');
-insert into YukonRoleProperty values(-20841,-201,'Label Service History','Service History','Text of the service history link');
-insert into YukonRoleProperty values(-20842,-201,'Label Change Login','Change Login','Text of the change login link');
-insert into YukonRoleProperty values(-20843,-201,'Label FAQ','FAQ','Text of the FAQ link');
-insert into YukonRoleProperty values(-20844,-201,'Label Interval Data','Interval Data','Text of the interval data link');
-insert into YukonRoleProperty values(-20845,-201,'Label Thermostat Saved Schedules','Saved Schedules','Text of the thermostat saved schedules link');
-insert into YukonRoleProperty values(-20846,-201,'Label Alt Tracking #','Alt Tracking #','Text of the alternate tracking number label on a customer account');
+INSERT INTO YukonRoleProperty VALUES(-20830,-201,'Label Programs Control History','Control History','Text of the programs control history link');
+INSERT INTO YukonRoleProperty VALUES(-20831,-201,'Label Programs Enrollment','Enrollment','Text of the programs enrollment link');
+INSERT INTO YukonRoleProperty VALUES(-20832,-201,'Label Programs Opt Out','Opt Out','Text of the programs opt out link');
+INSERT INTO YukonRoleProperty VALUES(-20833,-201,'Label Thermostat Schedule','Schedule','Text of the thermostat schedule link');
+INSERT INTO YukonRoleProperty VALUES(-20834,-201,'Label Thermostat Manual','Manual','Text of the thermostat manual link');
+INSERT INTO YukonRoleProperty VALUES(-20835,-201,'Label Account General','General','Text of the account general link');
+INSERT INTO YukonRoleProperty VALUES(-20836,-201,'Label Account Contacts','Contacts','Text of the account contacts link');
+INSERT INTO YukonRoleProperty VALUES(-20837,-201,'Label Account Residence','Residence','Text of the account residence link');
+INSERT INTO YukonRoleProperty VALUES(-20838,-201,'Label Call Tracking','Call Tracking','Text of the call tracking link');
+INSERT INTO YukonRoleProperty VALUES(-20839,-201,'Label Create Call','Create Call','Text of the create call link');
+INSERT INTO YukonRoleProperty VALUES(-20840,-201,'Label Service Request','Service Request','Text of the service request link');
+INSERT INTO YukonRoleProperty VALUES(-20841,-201,'Label Service History','Service History','Text of the service history link');
+INSERT INTO YukonRoleProperty VALUES(-20842,-201,'Label Change Login','Change Login','Text of the change login link');
+INSERT INTO YukonRoleProperty VALUES(-20843,-201,'Label FAQ','FAQ','Text of the FAQ link');
+INSERT INTO YukonRoleProperty VALUES(-20844,-201,'Label Interval Data','Interval Data','Text of the interval data link');
+INSERT INTO YukonRoleProperty VALUES(-20845,-201,'Label Thermostat Saved Schedules','Saved Schedules','Text of the thermostat saved schedules link');
+INSERT INTO YukonRoleProperty VALUES(-20846,-201,'Label Alt Tracking #','Alt Tracking #','Text of the alternate tracking number label on a customer account');
 
-insert into YukonRoleProperty values(-20850,-201,'Title Programs Control History','PROGRAMS - CONTROL HISTORY','Title of the programs control history page');
-insert into YukonRoleProperty values(-20851,-201,'Title Program Control History','PROGRAM - CONTROL HISTORY','Title of the control history page of a particular program');
-insert into YukonRoleProperty values(-20852,-201,'Title Program Control Summary','PROGRAM - CONTROL SUMMARY','Title of the control summary page of a particular program');
-insert into YukonRoleProperty values(-20853,-201,'Title Programs Enrollment','PROGRAMS - ENROLLMENT','Title of the programs enrollment page');
-insert into YukonRoleProperty values(-20854,-201,'Title Programs Opt Out','PROGRAMS - OPT OUT','Title of the programs opt out page');
-insert into YukonRoleProperty values(-20855,-201,'Title Thermostat Schedule','THERMOSTAT - SCHEDULE','Title of the thermostat schedule page');
-insert into YukonRoleProperty values(-20856,-201,'Title Thermostat Manual','THERMOSTAT - MANUAL','Title of the thermostat manual page');
-insert into YukonRoleProperty values(-20857,-201,'Title Call Tracking','ACCOUNT - CALL TRACKING','Title of the call tracking page');
-insert into YukonRoleProperty values(-20858,-201,'Title Create Call','ACCOUNT - CREATE NEW CALL','Title of the create call page');
-insert into YukonRoleProperty values(-20859,-201,'Title Service Request','WORK ORDERS - SERVICE REQUEST','Title of the service request page');
-insert into YukonRoleProperty values(-20860,-201,'Title Service History','WORK ORDERS - SERVICE HISTORY','Title of the service history page');
-insert into YukonRoleProperty values(-20861,-201,'Title Change Login','ADMINISTRATION - CHANGE LOGIN','Title of the change login page');
-insert into YukonRoleProperty values(-20862,-201,'Title Create Trend','METERING - CREATE NEW TREND','Title of the create trend page');
-insert into YukonRoleProperty values(-20863,-201,'Title Thermostat Saved Schedules','THERMOSTAT - SAVED SCHEDULES','Title of the thermostat saved schedules page');
-insert into YukonRoleProperty values(-20864,-201,'Title Hardware Overriding','HARDWARE - OVERRIDING','Title of the hardware overriding page');
+INSERT INTO YukonRoleProperty VALUES(-20850,-201,'Title Programs Control History','PROGRAMS - CONTROL HISTORY','Title of the programs control history page');
+INSERT INTO YukonRoleProperty VALUES(-20851,-201,'Title Program Control History','PROGRAM - CONTROL HISTORY','Title of the control history page of a particular program');
+INSERT INTO YukonRoleProperty VALUES(-20852,-201,'Title Program Control Summary','PROGRAM - CONTROL SUMMARY','Title of the control summary page of a particular program');
+INSERT INTO YukonRoleProperty VALUES(-20853,-201,'Title Programs Enrollment','PROGRAMS - ENROLLMENT','Title of the programs enrollment page');
+INSERT INTO YukonRoleProperty VALUES(-20854,-201,'Title Programs Opt Out','PROGRAMS - OPT OUT','Title of the programs opt out page');
+INSERT INTO YukonRoleProperty VALUES(-20855,-201,'Title Thermostat Schedule','THERMOSTAT - SCHEDULE','Title of the thermostat schedule page');
+INSERT INTO YukonRoleProperty VALUES(-20856,-201,'Title Thermostat Manual','THERMOSTAT - MANUAL','Title of the thermostat manual page');
+INSERT INTO YukonRoleProperty VALUES(-20857,-201,'Title Call Tracking','ACCOUNT - CALL TRACKING','Title of the call tracking page');
+INSERT INTO YukonRoleProperty VALUES(-20858,-201,'Title Create Call','ACCOUNT - CREATE NEW CALL','Title of the create call page');
+INSERT INTO YukonRoleProperty VALUES(-20859,-201,'Title Service Request','WORK ORDERS - SERVICE REQUEST','Title of the service request page');
+INSERT INTO YukonRoleProperty VALUES(-20860,-201,'Title Service History','WORK ORDERS - SERVICE HISTORY','Title of the service history page');
+INSERT INTO YukonRoleProperty VALUES(-20861,-201,'Title Change Login','ADMINISTRATION - CHANGE LOGIN','Title of the change login page');
+INSERT INTO YukonRoleProperty VALUES(-20862,-201,'Title Create Trend','METERING - CREATE NEW TREND','Title of the create trend page');
+INSERT INTO YukonRoleProperty VALUES(-20863,-201,'Title Thermostat Saved Schedules','THERMOSTAT - SAVED SCHEDULES','Title of the thermostat saved schedules page');
+INSERT INTO YukonRoleProperty VALUES(-20864,-201,'Title Hardware Overriding','HARDWARE - OVERRIDING','Title of the hardware overriding page');
+INSERT INTO YukonRoleProperty VALUES(-20870,-201,'Description Opt Out','If you would like to temporarily opt out of all programs, select the time frame below, then click Submit.','Description on the programs opt out page');
 
-insert into YukonRoleProperty values(-20870,-201,'Description Opt Out','If you would like to temporarily opt out of all programs, select the time frame below, then click Submit.','Description on the programs opt out page');
-
-insert into YukonRoleProperty values(-20880,-201,'Heading Account','Account','Heading of the account links');
-insert into YukonRoleProperty values(-20881,-201,'Heading Metering','Metering','Heading of the metering links');
-insert into YukonRoleProperty values(-20882,-201,'Heading Programs','Programs','Heading of the program links');
-insert into YukonRoleProperty values(-20883,-201,'Heading Appliances','Appliances','Heading of the appliance links');
-insert into YukonRoleProperty values(-20884,-201,'Heading Hardware','Hardware','Heading of the hardware links');
-insert into YukonRoleProperty values(-20885,-201,'Heading Work Orders','Work Orders','Heading of the work order links');
-insert into YukonRoleProperty values(-20886,-201,'Heading Administration','Administration','Heading of the administration links');
-insert into YukonRoleProperty values(-20887,-201,'Sub-Heading Switches','Switches','Sub-heading of the switch links');
-insert into YukonRoleProperty values(-20888,-201,'Sub-Heading Thermostats','Thermostats','Sub-heading of the thermostat links');
-insert into YukonRoleProperty values(-20889,-201,'Sub-Heading Meters','Meters','Sub-heading of the meter links');
-insert into YukonRoleProperty values(-20890,-201,'Address State Label','State','Labelling for the address field which is usually state in the US or province in Canada');
-insert into YukonRoleProperty values(-20891,-201,'Address County Label','County','Labelling for the address field which is usually county in the US or postal code in Canada');
-insert into YukonRoleProperty values(-20892,-201,'Address PostalCode Label','Zip','Labelling for the address field which is usually zip code in the US or postal code in Canada');
-insert into YukonRoleProperty values(-20893,-201,'Inventory Checking Create','true','Allow creation of inventory if not found during Inventory Checking');
-insert into YukonRoleProperty values(-20894,-201,'Opt Out Today Only','false','Prevents operator side opt outs from being available for scheduling beyond the current day.');
+INSERT INTO YukonRoleProperty VALUES(-20880,-201,'Heading Account','Account','Heading of the account links');
+INSERT INTO YukonRoleProperty VALUES(-20881,-201,'Heading Metering','Metering','Heading of the metering links');
+INSERT INTO YukonRoleProperty VALUES(-20882,-201,'Heading Programs','Programs','Heading of the program links');
+INSERT INTO YukonRoleProperty VALUES(-20883,-201,'Heading Appliances','Appliances','Heading of the appliance links');
+INSERT INTO YukonRoleProperty VALUES(-20884,-201,'Heading Hardware','Hardware','Heading of the hardware links');
+INSERT INTO YukonRoleProperty VALUES(-20885,-201,'Heading Work Orders','Work Orders','Heading of the work order links');
+INSERT INTO YukonRoleProperty VALUES(-20886,-201,'Heading Administration','Administration','Heading of the administration links');
+INSERT INTO YukonRoleProperty VALUES(-20887,-201,'Sub-Heading Switches','Switches','Sub-heading of the switch links');
+INSERT INTO YukonRoleProperty VALUES(-20888,-201,'Sub-Heading Thermostats','Thermostats','Sub-heading of the thermostat links');
+INSERT INTO YukonRoleProperty VALUES(-20889,-201,'Sub-Heading Meters','Meters','Sub-heading of the meter links');
+INSERT INTO YukonRoleProperty VALUES(-20890,-201,'Address State Label','State','Labelling for the address field which is usually state in the US or province in Canada');
+INSERT INTO YukonRoleProperty VALUES(-20891,-201,'Address County Label','County','Labelling for the address field which is usually county in the US or postal code in Canada');
+INSERT INTO YukonRoleProperty VALUES(-20892,-201,'Address PostalCode Label','Zip','Labelling for the address field which is usually zip code in the US or postal code in Canada');
+INSERT INTO YukonRoleProperty VALUES(-20893,-201,'Inventory Checking Create','true','Allow creation of inventory if not found during Inventory Checking');
+INSERT INTO YukonRoleProperty VALUES(-20894,-201,'Opt Out Today Only','false','Prevents operator side opt outs from being available for scheduling beyond the current day.');
+INSERT INTO YukonRoleProperty VALUES(-20895,-201,'Opt Out Admin Status','true','Determines whether an operator can see current opt out status on the Opt Out Admin page.');
+INSERT INTO YukonRoleProperty VALUES(-20896,-201,'Opt Out Admin Change Enabled','true','Determines whether an operator can enable or disable Opt Outs for the rest of the day.');
+INSERT INTO YukonRoleProperty VALUES(-20897,-201,'Opt Out Admin Cancel Current','true','Determines whether an operator can cancel (reenable) ALL currently Opted Out devices.');
+INSERT INTO YukonRoleProperty VALUES(-20898,-201,'Opt Out Admin Change Counts','true','Determines whether an operator can change from Opt Outs count against limits today to Opt Outs do not count.'); 
 
 /* Operator Hardware Inventory Role Properties */
 insert into YukonRoleProperty values(-20900,-209,'Show All Inventory','true','Controls whether to allow showing all inventory');
@@ -9239,12 +9307,13 @@ INSERT INTO YukonRoleProperty VALUES(-40009,-400,'Change Login Username','true',
 INSERT INTO YukonRoleProperty VALUES(-40010,-400,'Thermostats All','false','Controls whether to allow programming multiple thermostats at one time');
 INSERT INTO YukonRoleProperty VALUES(-40011,-400,'Change Login Password','true','Controls access for customers to change their own login password'); 
 
-insert into YukonRoleProperty values(-40051,-400,'Hide Opt Out Box','false','Controls whether to show the opt out box on the programs opt out page');
-insert into YukonRoleProperty values(-40052,-400,'Automatic Configuration','false','Controls whether to automatically send out config command when changing program enrollment');
-insert into YukonRoleProperty values(-40055,-400,'Opt Out Rules','(none)','Defines the rules for opting out.');
+INSERT INTO YukonRoleProperty VALUES(-40051,-400,'Hide Opt Out Box','false','Controls whether to show the opt out box on the programs opt out page');
+INSERT INTO YukonRoleProperty VALUES(-40052,-400,'Automatic Configuration','false','Controls whether to automatically send out config command when changing program enrollment');
+INSERT INTO YukonRoleProperty VALUES(-40055,-400,'Opt Out Rules','(none)','Defines the rules for opting out.');
+INSERT INTO YukonRoleProperty VALUES(-40056,-400,'Opt Out Limits','','Contains information on Opt Out limits.');
 
-insert into YukonRoleProperty values(-40100,-400,'Link FAQ','(none)','The customized FAQ link');
-insert into YukonRoleProperty values(-40102,-400,'Link Thermostat Instructions','(none)','The customized thermostat instructions link');
+INSERT INTO YukonRoleProperty VALUES(-40100,-400,'Link FAQ','(none)','The customized FAQ link');
+INSERT INTO YukonRoleProperty VALUES(-40102,-400,'Link Thermostat Instructions','(none)','The customized thermostat instructions link');
 
 insert into YukonRoleProperty values(-40110,-400,'Text Control','control','Term for control');
 insert into YukonRoleProperty values(-40111,-400,'Text Controlled','controlled','Past form of the term for control');
@@ -11780,6 +11849,10 @@ alter table OperatorLoginGraphList
 alter table OperatorLoginGraphList
    add constraint FK_OpLgOpLgGrLs2 foreign key (OperatorLoginID)
       references YukonUser (UserID);
+
+alter table OptOutEventLog
+   add constraint FK_OptOutEvent_OptOutEventLog foreign key (OptOutEventId)
+      references OptOutEvent (OptOutEventId);
 
 alter table PAOExclusion
    add constraint FK_PAOEx_Pt foreign key (PointID)
