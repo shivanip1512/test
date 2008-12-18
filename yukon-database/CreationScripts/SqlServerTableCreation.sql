@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/18/2008 2:14:20 AM                        */
+/* Created on:     12/18/2008 11:16:14 AM                       */
 /*==============================================================*/
 
 
@@ -642,6 +642,15 @@ if exists (select 1
             and   indid > 0
             and   indid < 255)
    drop index MSPVendor.INDEX_1
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('MspLMInterfaceMapping')
+            and   name  = 'INDX_StratName_SubName_UNQ'
+            and   indid > 0
+            and   indid < 255)
+   drop index MspLMInterfaceMapping.INDX_StratName_SubName_UNQ
 go
 
 if exists (select 1
@@ -2720,6 +2729,13 @@ if exists (select 1
            where  id = object_id('MeterHardwareBase')
             and   type = 'U')
    drop table MeterHardwareBase
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('MspLMInterfaceMapping')
+            and   type = 'U')
+   drop table MspLMInterfaceMapping
 go
 
 if exists (select 1
@@ -9106,6 +9122,27 @@ create table MeterHardwareBase (
 go
 
 /*==============================================================*/
+/* Table: MspLMInterfaceMapping                                 */
+/*==============================================================*/
+create table MspLMInterfaceMapping (
+   MspLMInterfaceMappingId numeric              not null,
+   StrategyName         varchar(100)         not null,
+   SubstationName       varchar(100)         not null,
+   PAObjectId           numeric              not null,
+   constraint PK_MSPLMINTERFACEMAPPING primary key (MspLMInterfaceMappingId)
+)
+go
+
+/*==============================================================*/
+/* Index: INDX_StratName_SubName_UNQ                            */
+/*==============================================================*/
+create unique index INDX_StratName_SubName_UNQ on MspLMInterfaceMapping (
+StrategyName ASC,
+SubstationName ASC
+)
+go
+
+/*==============================================================*/
 /* Table: NotificationDestination                               */
 /*==============================================================*/
 create table NotificationDestination (
@@ -14957,6 +14994,12 @@ go
 alter table MeterHardwareBase
    add constraint FK_METERHARD_YUKONLSTNTRY foreign key (MeterTypeID)
       references YukonListEntry (EntryID)
+go
+
+alter table MspLMInterfaceMapping
+   add constraint FK_MspLMInterMap_YukonPAObj foreign key (PAObjectId)
+      references YukonPAObject (PAObjectID)
+         on delete cascade
 go
 
 alter table NotificationDestination

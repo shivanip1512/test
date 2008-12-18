@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/18/2008 2:07:27 AM                        */
+/* Created on:     12/18/2008 11:12:46 AM                       */
 /*==============================================================*/
 
 
@@ -162,6 +162,8 @@ drop index CstLdIn_LMHrdCfg_FK;
 drop index LmHrd_LmHrdCfg_FK;
 
 drop index INDEX_1;
+
+drop index INDX_StratName_SubName_UNQ;
 
 drop index Indx_NOTIFGRPNme;
 
@@ -742,6 +744,8 @@ drop table MSPInterface cascade constraints;
 drop table MSPVendor cascade constraints;
 
 drop table MeterHardwareBase cascade constraints;
+
+drop table MspLMInterfaceMapping cascade constraints;
 
 drop table NotificationDestination cascade constraints;
 
@@ -6456,6 +6460,25 @@ create table MeterHardwareBase  (
 );
 
 /*==============================================================*/
+/* Table: MspLMInterfaceMapping                                 */
+/*==============================================================*/
+create table MspLMInterfaceMapping  (
+   MspLMInterfaceMappingId NUMBER                          not null,
+   StrategyName         VARCHAR2(100)                   not null,
+   SubstationName       VARCHAR2(100)                   not null,
+   PAObjectId           NUMBER                          not null,
+   constraint PK_MSPLMINTERFACEMAPPING primary key (MspLMInterfaceMappingId)
+);
+
+/*==============================================================*/
+/* Index: INDX_StratName_SubName_UNQ                            */
+/*==============================================================*/
+create unique index INDX_StratName_SubName_UNQ on MspLMInterfaceMapping (
+   StrategyName ASC,
+   SubstationName ASC
+);
+
+/*==============================================================*/
 /* Table: NotificationDestination                               */
 /*==============================================================*/
 create table NotificationDestination  (
@@ -11736,6 +11759,11 @@ alter table MeterHardwareBase
 alter table MeterHardwareBase
    add constraint FK_METERHARD_YUKONLSTNTRY foreign key (MeterTypeID)
       references YukonListEntry (EntryID);
+
+alter table MspLMInterfaceMapping
+   add constraint FK_MspLMInterMap_YukonPAObj foreign key (PAObjectId)
+      references YukonPAObject (PAObjectID)
+      on delete cascade;
 
 alter table NotificationDestination
    add constraint FK_NotifDest_NotifGrp foreign key (NotificationGroupID)

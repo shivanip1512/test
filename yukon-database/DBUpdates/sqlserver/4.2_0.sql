@@ -72,6 +72,26 @@ WHERE RolePropertyId = -40009;
 INSERT INTO YukonRoleProperty VALUES(-40011,-400,'Change Login Password','true','Controls access for customers to change their own login password');  
 /* End YUK-6743 */
 
+/* Start YUK-6726 */
+CREATE TABLE MspLMInterfaceMapping (
+   MspLMInterfaceMappingId  NUMERIC              NOT NULL,
+   StrategyName             VARCHAR(100)         NOT NULL,
+   SubstationName           VARCHAR(100)         NOT NULL,
+   PAObjectId               NUMERIC              NOT NULL,
+   CONSTRAINT PK_MSPLMINTERFACEMAPPING PRIMARY KEY (MspLMInterfaceMappingId)
+);
+
+CREATE UNIQUE INDEX INDX_StratName_SubName_UNQ ON MspLMInterfaceMapping (
+   StrategyName ASC,
+   SubstationName ASC
+);
+
+ALTER TABLE MspLMInterfaceMapping
+   ADD CONSTRAINT FK_MspLMInterMap_YukonPAObj FOREIGN KEY (PAObjectId)
+      REFERENCES YukonPAObject (PAObjectId)
+      ON DELETE CASCADE;
+/* End YUK-6726 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
