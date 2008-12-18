@@ -15,9 +15,10 @@ import org.springframework.core.io.Resource;
 import org.w3c.dom.Node;
 
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.ObjectMapper;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.stars.dr.optout.model.OptOutEventState;
 import com.cannontech.stars.dr.optout.model.OverrideHistory;
 import com.cannontech.stars.dr.optout.model.OverrideStatus;
 import com.cannontech.yukon.api.loadManagement.endpoint.OverrideHistoryRequestEndpoint;
@@ -37,6 +38,9 @@ public class OverrideHistoryRequestEndpointTest {
     private static final String STOP_DATE_VALID = "2008-09-30T23:59:59Z";
     private static final String SCHEDULED_DATE_VALID = "2008-09-29T12:00:00Z";
     private static final String PROGRAM_VALID = "PROGRAM_VALID";    
+
+    private static final String ACCOUNT_INVALID = "ACCOUNT_INVALID";
+    private static final String PROGRAM_INVALID = "PROGRAM_INVALID";    
 
     //test response xml data
     static final String byAccountResponseStr = "/y:overrideHistoryByAccountNumberResponse";   
@@ -77,6 +81,7 @@ public class OverrideHistoryRequestEndpointTest {
         
         impl = new OverrideHistoryRequestEndpoint();
         impl.setOptOutService(mockOptOutService);
+        impl.setAuthDao(new MockAuthDao());
         impl.initialize();
     }
     
@@ -96,6 +101,10 @@ public class OverrideHistoryRequestEndpointTest {
             this.startTime = startTime;
             this.stopTime = stopTime;
             
+            if(accountNumber == ACCOUNT_INVALID) {
+            	throw new NotFoundException("Account invalid");
+            }
+            
             List<OverrideHistory> overrideHistoryList = createOverrideHistoryResults();
             return overrideHistoryList;
         }
@@ -108,6 +117,10 @@ public class OverrideHistoryRequestEndpointTest {
         	 this.programName = programName;            
              this.startTime = startTime;
              this.stopTime = stopTime;
+             
+             if(programName == PROGRAM_INVALID) {
+             	throw new NotFoundException("Account invalid");
+             }
 
              List<OverrideHistory> overrideHistoryList = createOverrideHistoryResults();
              return overrideHistoryList;
@@ -133,7 +146,7 @@ public class OverrideHistoryRequestEndpointTest {
             hist1.setSerialNumber(SERIAL_NUMBER1_VALID);
             hist1.setProgramName(PROGRAM1_VALID);
             hist1.setAccountNumber(ACCOUNT_VALID);
-            hist1.setStatus(OptOutEventState.START_OPT_OUT_SENT);
+            hist1.setStatus(OverrideStatus.Active);
             hist1.setScheduledDate(XmlUtils.parseDate(SCHEDULED_DATE_VALID));
             hist1.setStartDate(XmlUtils.parseDate(START_DATE_VALID));
             hist1.setStopDate(XmlUtils.parseDate(STOP_DATE_VALID));
@@ -146,7 +159,7 @@ public class OverrideHistoryRequestEndpointTest {
             hist2.setSerialNumber(SERIAL_NUMBER2_VALID);
             hist2.setProgramName(PROGRAM2_VALID);
             hist2.setAccountNumber(ACCOUNT_VALID);
-            hist2.setStatus(OptOutEventState.SCHEDULED);
+            hist2.setStatus(OverrideStatus.Scheduled);
             hist2.setScheduledDate(XmlUtils.parseDate(SCHEDULED_DATE_VALID));
             hist2.setStartDate(XmlUtils.parseDate(START_DATE_VALID));
             hist2.setStopDate(XmlUtils.parseDate(STOP_DATE_VALID));
@@ -157,6 +170,17 @@ public class OverrideHistoryRequestEndpointTest {
             
             return overrideHistoryList;            
         }
+    }
+    
+    private class MockAuthDao extends AuthDaoAdapter {
+    	
+    	@Override
+    	public void verifyTrueProperty(LiteYukonUser user,
+    			int... rolePropertyIds) throws NotAuthorizedException {
+    		if(user.getUserID() != 1) {
+    			throw new NotAuthorizedException("Mock auth dao not authorized");
+    		}
+    	}
     }
    
     @Test
@@ -171,8 +195,22 @@ public class OverrideHistoryRequestEndpointTest {
                                                            this.getClass());
         TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
         
+        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/OverrideHistoryByAccountNumberResponse.xsd",
+        		this.getClass());
+
+        //invoke test with unauthorized user
+        LiteYukonUser user = new LiteYukonUser();
+        user.setUserID(-1);
+        Element respElement = impl.invokeOverrideByAccount(reqElement, user);
+
+        TestUtils.validateAgainstSchema(respElement, respSchemaResource);
+        
+        SimpleXPathTemplate outputTemplate = XmlUtils.getXPathTemplateForElement(respElement);
+        TestUtils.runFailureAssertions(outputTemplate, "overrideHistoryByAccountNumberResponse", "UserNotAuthorized");
+        
         //invoke test
-        Element respElement = impl.invokeOverrideByAccount(reqElement, null);
+        user.setUserID(1);
+        respElement = impl.invokeOverrideByAccount(reqElement, user);
         
         //verify mockService was called with correct params
         Assert.assertEquals("Incorrect accountNumber.", ACCOUNT_VALID, mockOptOutService.getAccountNumber());
@@ -181,16 +219,14 @@ public class OverrideHistoryRequestEndpointTest {
         Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, XmlUtils.formatDate(mockOptOutService.getStopTime()));
         
         // verify the respElement is valid according to schema
-        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/OverrideHistoryByAccountNumberResponse.xsd",
-                                                            this.getClass());
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
 
         // create template and parse response data
-        SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(respElement);
-        TestUtils.runVersionAssertion(template, byAccountResponseStr, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
+        outputTemplate = XmlUtils.getXPathTemplateForElement(respElement);
+        TestUtils.runVersionAssertion(outputTemplate, byAccountResponseStr, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
        
-        List<OverrideHistory> overrideHistResults = template.evaluate(byAccountHistoryElementStr,
-                                                                      overrideHistNodeMapper);
+        List<OverrideHistory> overrideHistResults = outputTemplate.evaluate(byAccountHistoryElementStr,
+                                                                      		overrideHistNodeMapper);
 
         // verify data in the response
         assertTrue("Incorrect resultSize", overrideHistResults != null && overrideHistResults.size() == 2);
@@ -236,7 +272,17 @@ public class OverrideHistoryRequestEndpointTest {
         assertTrue("Incorrect overrideNumber",
                    overrideHist.getOverrideNumber() == OVERRIDE_NUMBER2_VALID);
         assertTrue("Incorrect countedAgainstLimit",
-                   !overrideHist.isCountedAgainstLimit());        
+                   !overrideHist.isCountedAgainstLimit());  
+        
+        
+//        //invoke test with invalid account
+//        respElement = impl.invokeOverrideByAccount(reqElement, user);
+//
+//        TestUtils.validateAgainstSchema(respElement, respSchemaResource);
+//        
+//        outputTemplate = XmlUtils.getXPathTemplateForElement(respElement);
+//        TestUtils.runFailureAssertions(outputTemplate, "overrideHistoryByAccountNumberResponse", "InvalidAccountNumber");
+    
     }
     
     @Test
@@ -251,8 +297,23 @@ public class OverrideHistoryRequestEndpointTest {
                                                            this.getClass());
         TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
         
+        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/OverrideHistoryByProgramNameResponse.xsd",
+        		this.getClass());
+
+        //invoke test with unauthorized user
+        LiteYukonUser user = new LiteYukonUser();
+        user.setUserID(-1);
+        Element respElement = impl.invokeOverrideByProgram(reqElement, user);
+
+        TestUtils.validateAgainstSchema(respElement, respSchemaResource);
+        
+        SimpleXPathTemplate outputTemplate = XmlUtils.getXPathTemplateForElement(respElement);
+        TestUtils.runFailureAssertions(outputTemplate, "overrideHistoryByProgramNameResponse", "UserNotAuthorized");
+        
+        
         //invoke test
-        Element respElement = impl.invokeOverrideByProgram(reqElement, null);
+        user.setUserID(1);
+        respElement = impl.invokeOverrideByProgram(reqElement, user);
         
         //verify mockService was called with correct params
         Assert.assertEquals("Incorrect programName.", PROGRAM_VALID, mockOptOutService.getProgramName());
@@ -260,8 +321,6 @@ public class OverrideHistoryRequestEndpointTest {
         Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, XmlUtils.formatDate(mockOptOutService.getStopTime()));
         
         // verify the respElement is valid according to schema
-        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/OverrideHistoryByProgramNameResponse.xsd",
-                                                            this.getClass());
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
 
         // create template and parse response data
@@ -317,6 +376,16 @@ public class OverrideHistoryRequestEndpointTest {
                    overrideHist.getOverrideNumber() == OVERRIDE_NUMBER2_VALID);
         assertTrue("Incorrect countedAgainstLimit",
                    !overrideHist.isCountedAgainstLimit());
+        
+//        //invoke test with invalid account
+//        respElement = impl.invokeOverrideByProgram(reqElement, user);
+//
+//        TestUtils.validateAgainstSchema(respElement, respSchemaResource);
+//        
+//        outputTemplate = XmlUtils.getXPathTemplateForElement(respElement);
+//        TestUtils.runFailureAssertions(outputTemplate, "overrideHistoryByProgramNameResponse", "InvalidProgramName");
+    
+        
     }
     
     private static class OverrideHistoryNodeMapper implements
@@ -331,7 +400,7 @@ public class OverrideHistoryRequestEndpointTest {
             overrideHist.setSerialNumber(template.evaluateAsString(serialNumberRespStr));
             overrideHist.setProgramName(template.evaluateAsString(programNameRespStr));
             overrideHist.setAccountNumber(template.evaluateAsString(accountNumberRespStr));
-            overrideHist.setStatus(OptOutEventState.valueOf(template.evaluateAsString(statusRespStr)));
+			overrideHist.setStatus(OverrideStatus.valueOf(template.evaluateAsString(statusRespStr)));
             overrideHist.setScheduledDate(template.evaluateAsDate(scheduledDateTimeRespStr));
             overrideHist.setStartDate(template.evaluateAsDate(startDateTimeRespStr));
             overrideHist.setStopDate(template.evaluateAsDate(stopDateTimeRespStr));

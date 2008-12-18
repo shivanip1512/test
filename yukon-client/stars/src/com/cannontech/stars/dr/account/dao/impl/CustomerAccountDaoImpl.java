@@ -7,12 +7,14 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.Validate;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -148,9 +150,15 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         sqlBuilder.append("AND ecta.EnergyCompanyID in (",energyCompanyIds,")");
         final String sql = sqlBuilder.toString();
         
-        CustomerAccount account = simpleJdbcTemplate.queryForObject(sql, 
-                                                                    rowMapper,
-                                                                    accountNumber);
+        CustomerAccount account = null;
+        try {
+			account = simpleJdbcTemplate.queryForObject(sql, 
+	                                                                    rowMapper,
+	                                                                    accountNumber);
+        } catch (EmptyResultDataAccessException e) {
+        	throw new NotFoundException("Account with account number: " + accountNumber + 
+        			" could not be found.");
+        }
         return account;
     }
     

@@ -8,6 +8,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.yukon.api.loadManagement.endpoint.CancelAllCurrentOverridesRequestEndpoint;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
@@ -29,6 +30,7 @@ public class CancelAllCurrentOverridesRequestEndpointTest {
     	
     	impl = new CancelAllCurrentOverridesRequestEndpoint();
     	impl.setOptOutService(mockOptOutService);
+    	impl.setAuthDao(new MockAuthDao());
         impl.initialize();
     }
     
@@ -52,6 +54,17 @@ public class CancelAllCurrentOverridesRequestEndpointTest {
     	
     }
     
+    private class MockAuthDao extends AuthDaoAdapter {
+    	
+    	@Override
+    	public void verifyTrueProperty(LiteYukonUser user,
+    			int... rolePropertyIds) throws NotAuthorizedException {
+    		if(user.getUserID() != 1) {
+    			throw new NotAuthorizedException("Mock auth dao not authorized");
+    		}
+    	}
+    }
+    
     @Test
     public void testInvokeSuccess() throws Exception {
         
@@ -63,14 +76,25 @@ public class CancelAllCurrentOverridesRequestEndpointTest {
         Resource reqSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/CancelAllCurrentOverridesRequest.xsd",
                                                            this.getClass());
         TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
+
+        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/CancelAllCurrentOverridesResponse.xsd",
+        		this.getClass());
         
-        //invoke test
+        //invoke test with unauthorized user
         LiteYukonUser user = new LiteYukonUser();
+        user.setUserID(-1);
         Element respElement = impl.invoke(reqElement, user);
+
+        TestUtils.validateAgainstSchema(respElement, respSchemaResource);
+        
+        SimpleXPathTemplate outputTemplate = XmlUtils.getXPathTemplateForElement(respElement);
+        TestUtils.runFailureAssertions(outputTemplate, "cancelAllCurrentOverridesResponse", "UserNotAuthorized");
+
+        //invoke test
+        user.setUserID(1);
+        respElement = impl.invoke(reqElement, user);
         
         // verify the respElement is valid according to schema
-        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/CancelAllCurrentOverridesResponse.xsd",
-                                                            this.getClass());
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
 
         Assert.assertEquals(

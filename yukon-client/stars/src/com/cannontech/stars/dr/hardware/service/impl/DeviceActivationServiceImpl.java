@@ -76,7 +76,7 @@ public class DeviceActivationServiceImpl implements DeviceActivationService {
             cacheService.updateInventoryCache(energyCompany, inventoryBase, account, eventBase);
 
             return updateResult;
-        } catch (DataAccessException e) {
+        } catch (NotFoundException e) {
             return false;
         }
     }

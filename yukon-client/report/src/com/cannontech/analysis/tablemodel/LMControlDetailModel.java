@@ -12,6 +12,7 @@ import org.apache.commons.lang.Validate;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.dr.account.dao.ApplianceAndProgramDao;
@@ -90,7 +91,7 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
                     CustomerAccount custAccount = customerAccountDao.getByAccountNumber(accountNumber, liteUser);
                     CustomerAccountWithNames customerAccountWithNames = customerAccountDao.getAccountWithNamesByCustomerId(custAccount.getCustomerId(), energyCompanyId);
                     accounts.add(customerAccountWithNames);
-                } catch(EmptyResultDataAccessException ex) {
+                } catch(NotFoundException ex) {
                     // No results from the given accountNumber.  
                 }
             }

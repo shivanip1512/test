@@ -4,6 +4,9 @@ import java.util.Date;
 import java.util.List;
 
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
+import com.cannontech.core.dao.AccountNotFoundException;
+import com.cannontech.core.dao.InventoryNotFoundException;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -12,16 +15,14 @@ import com.cannontech.stars.dr.optout.model.OptOutLimit;
 import com.cannontech.stars.dr.optout.model.OverrideHistory;
 import com.cannontech.stars.dr.optout.service.OptOutRequest;
 import com.cannontech.stars.dr.optout.service.OptOutService;
-import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 
 public class OptOutServiceAdapter implements OptOutService {
 
 	@Override
 	public void allowAdditionalOptOuts(String accountNumber,
 			String serialNumber, int additionalOptOuts, LiteYukonUser user)
-			throws ObjectInOtherEnergyCompanyException {
+			throws InventoryNotFoundException, AccountNotFoundException {
 		throw new UnsupportedOperationException("not implemented");
-		
 	}
 
 	@Override
@@ -59,28 +60,32 @@ public class OptOutServiceAdapter implements OptOutService {
 		throw new UnsupportedOperationException("not implemented");
 	}
 
+	
 	@Override
 	public int getOptOutDeviceCountForAccount(String accountNumber,
-			Date startTime, Date stopTime, LiteYukonUser user) {
+			Date startTime, Date stopTime, LiteYukonUser user)
+			throws NotFoundException {
 		throw new UnsupportedOperationException("not implemented");
 	}
 
 	@Override
 	public int getOptOutDeviceCountForProgram(String programName,
-			Date startTime, Date stopTime, LiteYukonUser user) {
+			Date startTime, Date stopTime, LiteYukonUser user)
+			throws NotFoundException {
 		throw new UnsupportedOperationException("not implemented");
 	}
 
 	@Override
 	public List<OverrideHistory> getOptOutHistoryByProgram(String programName,
-			Date startTime, Date stopTime, LiteYukonUser user) {
+			Date startTime, Date stopTime, LiteYukonUser user)
+			throws NotFoundException {
 		throw new UnsupportedOperationException("not implemented");
 	}
 
 	@Override
 	public List<OverrideHistory> getOptOutHistoryForAccount(
 			String accountNumber, Date startTime, Date stopTime,
-			LiteYukonUser user) {
+			LiteYukonUser user) throws NotFoundException {
 		throw new UnsupportedOperationException("not implemented");
 	}
 

@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.yukon.api.loadManagement.endpoint.ProhibitConsumerOverridesRequestEndpoint;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
@@ -28,6 +29,7 @@ public class ProhibitConsumerOverridesRequestEndpointTest {
         
         impl = new ProhibitConsumerOverridesRequestEndpoint();
         impl.setOptOutService(mockOptOutService);
+        impl.setAuthDao(new MockAuthDao());
         impl.initialize();
     }
     
@@ -47,6 +49,17 @@ public class ProhibitConsumerOverridesRequestEndpointTest {
     	}
     }
     
+    private class MockAuthDao extends AuthDaoAdapter {
+    	
+    	@Override
+    	public void verifyTrueProperty(LiteYukonUser user,
+    			int... rolePropertyIds) throws NotAuthorizedException {
+    		if(user.getUserID() != 1) {
+    			throw new NotAuthorizedException("Mock auth dao not authorized");
+    		}
+    	}
+    }
+    
     @Test
     public void testInvokeSuccess() throws Exception {
         
@@ -59,13 +72,26 @@ public class ProhibitConsumerOverridesRequestEndpointTest {
                                                            this.getClass());
         TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
         
-        //invoke test
+        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/ProhibitConsumerOverridesResponse.xsd",
+        		this.getClass());
+
+        //invoke test with unauthorized user
         LiteYukonUser user = new LiteYukonUser();
+        user.setUserID(-1);
         Element respElement = impl.invoke(reqElement, user);
+
+        TestUtils.validateAgainstSchema(respElement, respSchemaResource);
+        
+        SimpleXPathTemplate outputTemplate = XmlUtils.getXPathTemplateForElement(respElement);
+        TestUtils.runFailureAssertions(outputTemplate, "prohibitConsumerOverridesResponse", "UserNotAuthorized");
+
+        
+        //invoke test
+        user = new LiteYukonUser();
+        user.setUserID(1);
+        respElement = impl.invoke(reqElement, user);
         
         // verify the respElement is valid according to schema
-        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/ProhibitConsumerOverridesResponse.xsd",
-                                                            this.getClass());
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
 
         // create template and parse response data

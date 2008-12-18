@@ -4,13 +4,15 @@ import java.util.Date;
 import java.util.List;
 
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
+import com.cannontech.core.dao.AccountNotFoundException;
+import com.cannontech.core.dao.InventoryNotFoundException;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.optout.model.OptOutCountHolder;
 import com.cannontech.stars.dr.optout.model.OptOutLimit;
 import com.cannontech.stars.dr.optout.model.OverrideHistory;
-import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 
 /**
  * Interface for service which handles opt outs and canceling of opt outs
@@ -106,9 +108,10 @@ public interface OptOutService {
 	 * @param stopTime - End of time period
 	 * @param user - User requesting count
  	 * @return - Total count
+ 	 * @throws NotFoundException - if account number is not found
 	 */
 	public int getOptOutDeviceCountForAccount(String accountNumber, Date startTime,
-			Date stopTime, LiteYukonUser user);
+			Date stopTime, LiteYukonUser user) throws NotFoundException;
 
 	/**
 	 * Method to get the total number of devices that were opted out during the given time period
@@ -117,9 +120,10 @@ public interface OptOutService {
 	 * @param stopTime - End of time period
 	 * @param user - User requesting count
 	 * @return - Total count
+	 * @throws NotFoundException - if program name is invalid
 	 */
 	public int getOptOutDeviceCountForProgram(String programName, Date startTime, 
-			Date stopTime, LiteYukonUser user);
+			Date stopTime, LiteYukonUser user) throws NotFoundException;
 
 	/**
 	 * Method to allow additional opt outs for a given inventory
@@ -127,11 +131,12 @@ public interface OptOutService {
 	 * @param serialNumber - Serial number of device to add opt outs to
 	 * @param additionalOptOuts - Number of opt outs to add
 	 * @param user - User requesting additional opt outs
-	 * @throws ObjectInOtherEnergyCompanyException 
+	 * @throws InventoryNotFoundException - if serial number is not found
+	 * @throws AccountNotFoundException - if account number is not found
 	 */
 	public void allowAdditionalOptOuts(
 			String accountNumber, String serialNumber, int additionalOptOuts, LiteYukonUser user) 
-		throws ObjectInOtherEnergyCompanyException;
+		throws InventoryNotFoundException, AccountNotFoundException;
 
 	/**
 	 * Method to get opt out history by program for a given time period
@@ -140,9 +145,11 @@ public interface OptOutService {
 	 * @param stopTime - End of time period
 	 * @param user - User requesting history
 	 * @return List of opt out history
+	 * @throws NotFoundException - if program name is not valid
 	 */
 	public List<OverrideHistory> getOptOutHistoryByProgram(
-			String programName, Date startTime, Date stopTime, LiteYukonUser user);
+			String programName, Date startTime, Date stopTime, LiteYukonUser user)
+			throws NotFoundException;
 	
 	/**
 	 * Method to get a list of opt out history for a given account for all inventory on that account
@@ -151,7 +158,9 @@ public interface OptOutService {
 	 * @param stopTime - End of time period
 	 * @param user - User requesting history
 	 * @return List of opt out history
+	 * @throws NotFoundException - If account number is not found
 	 */
 	public List<OverrideHistory> getOptOutHistoryForAccount(
-			String accountNumber, Date startTime, Date stopTime, LiteYukonUser user);
+			String accountNumber, Date startTime, Date stopTime, LiteYukonUser user)
+			throws NotFoundException;
 }

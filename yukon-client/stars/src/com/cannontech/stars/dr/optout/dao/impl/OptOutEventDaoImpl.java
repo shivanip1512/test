@@ -34,6 +34,7 @@ import com.cannontech.stars.dr.optout.model.OptOutEventDto;
 import com.cannontech.stars.dr.optout.model.OptOutEventState;
 import com.cannontech.stars.dr.optout.model.OptOutLog;
 import com.cannontech.stars.dr.optout.model.OverrideHistory;
+import com.cannontech.stars.dr.optout.model.OverrideStatus;
 import com.cannontech.stars.dr.program.model.Program;
 
 /**
@@ -110,7 +111,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 
 		SqlStatementBuilder logSql = new SqlStatementBuilder();
 		logSql.append("INSERT INTO OptOutEventLog");
-		logSql.append("(OptOutEventLogId, InventoryId, CustomerAccountId, Action, LogDate");
+		logSql.append("(OptOutEventLogId, InventoryId, CustomerAccountId, EventAction, LogDate");
 		logSql.append(", EventStartDate, EventStopDate, LogUserId, OptOutEventId, EventCounts)");
 		logSql.append("VALUES (?,?,?,?,?,?,?,?,?,?)");
 		
@@ -675,7 +676,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 
 			String eventStateString = rs.getString("EventState");
 			OptOutEventState eventState = OptOutEventState.valueOf(eventStateString);
-			history.setStatus(eventState);
+			history.setStatus(OverrideStatus.valueOf(eventState));
 			
 			String eventCountsString = rs.getString("EventCounts");
 			OptOutCounts eventCounts = OptOutCounts.valueOf(eventCountsString);

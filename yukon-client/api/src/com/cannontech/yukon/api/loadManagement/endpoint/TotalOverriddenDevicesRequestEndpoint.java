@@ -11,9 +11,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
+import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.core.dao.AuthDao;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.stars.dr.optout.service.OptOutService;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
+import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlUtils;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.cannontech.yukon.api.util.YukonXml;
@@ -22,8 +27,10 @@ import com.cannontech.yukon.api.util.YukonXml;
 public class TotalOverriddenDevicesRequestEndpoint {
 
     private OptOutService optOutService;
+    private AuthDao authDao;
     
     private Namespace ns = YukonXml.getYukonNamespace();
+
     private static String byAccountAccountNumberStr = "/y:totalOverriddenDevicesByAccountNumberRequest/y:accountNumber";
     private static String byAccountStartDateTimeStr = "/y:totalOverriddenDevicesByAccountNumberRequest/y:startDateTime";
     private static String byAccountStopDateTimeStr = "/y:totalOverriddenDevicesByAccountNumberRequest/y:stopDateTime";
@@ -53,9 +60,32 @@ public class TotalOverriddenDevicesRequestEndpoint {
         Element resp = new Element("totalOverriddenDevicesByAccountNumberResponse", ns);
         XmlVersionUtils.addVersionAttribute(resp, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         
+        // Check authorization
+        try {
+        	authDao.verifyTrueProperty(user, ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_OPT_OUT);
+        } catch (NotAuthorizedException e) {
+        	Element fe = XMLFailureGenerator.generateFailure(
+        			totalOverriddenDevicesByAccountNumberRequest, 
+        			e, 
+        			"UserNotAuthorized", 
+        			"The user is not get total devices overriden.");
+        	resp.addContent(fe);
+        	return resp;
+        }
+        
         // run service
-        int totalDevices = 
-        	optOutService.getOptOutDeviceCountForAccount(accountNumber, startTime, stopTime, user);
+        int totalDevices = 0;
+        try {
+			totalDevices = optOutService.getOptOutDeviceCountForAccount(accountNumber, startTime, stopTime, user);
+        } catch (NotFoundException e) {
+        	Element fe = XMLFailureGenerator.generateFailure(
+        			totalOverriddenDevicesByAccountNumberRequest, 
+        			e, 
+        			"InvalidAccountNumber", 
+        			"No account with account number: " + accountNumber);
+        	resp.addContent(fe);
+        	return resp;
+        }
         
         // build response
         resp.addContent(XmlUtils.createLongElement("totalDevices", ns, totalDevices));
@@ -80,9 +110,32 @@ public class TotalOverriddenDevicesRequestEndpoint {
         Element resp = new Element("totalOverriddenDevicesByProgramNameResponse", ns);
         XmlVersionUtils.addVersionAttribute(resp, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         
+        // Check authorization
+        try {
+        	authDao.verifyTrueProperty(user, ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_OPT_OUT);
+        } catch (NotAuthorizedException e) {
+        	Element fe = XMLFailureGenerator.generateFailure(
+        			totalOverriddenDevicesByProgramNameRequest, 
+        			e, 
+        			"UserNotAuthorized", 
+        			"The user is not get total devices overriden.");
+        	resp.addContent(fe);
+        	return resp;
+        }
+        
         // run service
-        int totalDevices = 
-        	optOutService.getOptOutDeviceCountForProgram(programName, startTime, stopTime, user);
+        int totalDevices = 0;
+        try {
+			totalDevices = optOutService.getOptOutDeviceCountForProgram(programName, startTime, stopTime, user);
+        } catch (NotFoundException e) {
+        	Element fe = XMLFailureGenerator.generateFailure(
+        			totalOverriddenDevicesByProgramNameRequest, 
+        			e, 
+        			"InvalidProgramName", 
+        			"No program with name: " + programName);
+        	resp.addContent(fe);
+        	return resp;
+        }
         
         // build response
         resp.addContent(XmlUtils.createLongElement("totalDevices", ns, totalDevices));
@@ -93,6 +146,11 @@ public class TotalOverriddenDevicesRequestEndpoint {
     @Autowired
     public void setOptOutService(OptOutService optOutService) {
 		this.optOutService = optOutService;
+	}
+    
+    @Autowired
+    public void setAuthDao(AuthDao authDao) {
+		this.authDao = authDao;
 	}
     
 }

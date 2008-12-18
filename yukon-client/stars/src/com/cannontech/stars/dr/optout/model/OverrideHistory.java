@@ -8,7 +8,7 @@ public class OverrideHistory {
 	private String serialNumber;
 	private String programName;
 	private String accountNumber;
-	private OptOutEventState status;
+	private OverrideStatus status;
 	private Date scheduledDate;
 	private Date startDate;
 	private Date stopDate;
@@ -48,11 +48,11 @@ public class OverrideHistory {
 		this.accountNumber = accountNumber;
 	}
 
-	public OptOutEventState getStatus() {
+	public OverrideStatus getStatus() {
 		return status;
 	}
 
-	public void setStatus(OptOutEventState status) {
+	public void setStatus(OverrideStatus status) {
 		this.status = status;
 	}
 

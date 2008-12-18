@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.yukon.api.loadManagement.endpoint.TotalOverriddenDevicesRequestEndpoint;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
@@ -41,6 +42,7 @@ public class TotalOverriddenDevicesRequestEndpointTest {
         
         impl = new TotalOverriddenDevicesRequestEndpoint();
         impl.setOptOutService(mockOptOutService);
+        impl.setAuthDao(new MockAuthDao());
         impl.initialize();
     }
     
@@ -86,6 +88,17 @@ public class TotalOverriddenDevicesRequestEndpointTest {
             return programName;
         }
     }
+    
+    private class MockAuthDao extends AuthDaoAdapter {
+    	
+    	@Override
+    	public void verifyTrueProperty(LiteYukonUser user,
+    			int... rolePropertyIds) throws NotAuthorizedException {
+    		if(user.getUserID() < 1) {
+    			throw new NotAuthorizedException("Mock auth dao not authorized");
+    		}
+    	}
+    }
    
     @Test
     public void testInvokeDevicesByAccountSuccess() throws Exception {
@@ -99,11 +112,23 @@ public class TotalOverriddenDevicesRequestEndpointTest {
                                                            this.getClass());
         TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
         
-        
+        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/TotalOverriddenDevicesByAccountNumberResponse.xsd",
+        		this.getClass());
+
+        //invoke test with unauthorized user
         LiteYukonUser user = new LiteYukonUser();
-        user.setUserID(10);
-        //invoke test
+        user.setUserID(-1);
         Element respElement = impl.invokeDevicesByAccount(reqElement, user);
+
+        TestUtils.validateAgainstSchema(respElement, respSchemaResource);
+        
+        SimpleXPathTemplate outputTemplate = XmlUtils.getXPathTemplateForElement(respElement);
+        TestUtils.runFailureAssertions(outputTemplate, "totalOverriddenDevicesByAccountNumberResponse", "UserNotAuthorized");
+        
+        
+        //invoke test
+        user.setUserID(10);
+        respElement = impl.invokeDevicesByAccount(reqElement, user);
         
         //verify mockService was called with correct params
         Assert.assertEquals("Incorrect accountNumber.", ACCOUNT_VALID, mockOptOutService.getAccountNumber());
@@ -111,8 +136,6 @@ public class TotalOverriddenDevicesRequestEndpointTest {
         Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, XmlUtils.formatDate(mockOptOutService.getStopTime()));
         
         // verify the respElement is valid according to schema
-        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/TotalOverriddenDevicesByAccountNumberResponse.xsd",
-                                                            this.getClass());
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
 
         // create template and parse response data
@@ -123,6 +146,15 @@ public class TotalOverriddenDevicesRequestEndpointTest {
 
         // verify data in the response
         Assert.assertEquals("Incorrect totalDevices", user.getUserID(), totalDevicesResult);
+        
+//        //invoke test with invalid account
+//        respElement = impl.invokeDevicesByAccount(reqElement, user);
+//
+//        TestUtils.validateAgainstSchema(respElement, respSchemaResource);
+//        
+//        outputTemplate = XmlUtils.getXPathTemplateForElement(respElement);
+//        TestUtils.runFailureAssertions(outputTemplate, "totalOverriddenDevicesByAccountNumberResponse", "UserNotAuthorized");
+        
     }
     
     @Test
@@ -137,10 +169,23 @@ public class TotalOverriddenDevicesRequestEndpointTest {
                                                            this.getClass());
         TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
         
-        //invoke test
+        //invoke test with unauthorized user
         LiteYukonUser user = new LiteYukonUser();
-        user.setUserID(22);
+        user.setUserID(-1);
         Element respElement = impl.invokeDevicesByProgram(reqElement, user);
+
+        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/TotalOverriddenDevicesByProgramNameResponse.xsd",
+        		this.getClass());
+
+        TestUtils.validateAgainstSchema(respElement, respSchemaResource);
+        
+        SimpleXPathTemplate outputTemplate = XmlUtils.getXPathTemplateForElement(respElement);
+        TestUtils.runFailureAssertions(outputTemplate, "totalOverriddenDevicesByProgramNameResponse", "UserNotAuthorized");
+        
+        
+        //invoke test
+        user.setUserID(22);
+        respElement = impl.invokeDevicesByProgram(reqElement, user);
         
         //verify mockService was called with correct params
         Assert.assertEquals("Incorrect programName.", PROGRAM_VALID, mockOptOutService.getProgramName());
@@ -148,8 +193,6 @@ public class TotalOverriddenDevicesRequestEndpointTest {
         Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, XmlUtils.formatDate(mockOptOutService.getStopTime()));
         
         // verify the respElement is valid according to schema
-        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/TotalOverriddenDevicesByProgramNameResponse.xsd",
-                                                            this.getClass());
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
 
         // create template and parse response data
@@ -160,6 +203,20 @@ public class TotalOverriddenDevicesRequestEndpointTest {
 
         // verify data in the response
         Assert.assertEquals("Incorrect totalDevices", totalDevicesResult, user.getUserID());
+        
+//        //invoke test with invalid program
+//        LiteYukonUser user = new LiteYukonUser();
+//        user.setUserID(-1);
+//        Element respElement = impl.invokeDevicesByProgram(reqElement, user);
+//
+//        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/TotalOverriddenDevicesByProgramNameResponse.xsd",
+//        		this.getClass());
+//
+//        TestUtils.validateAgainstSchema(respElement, respSchemaResource);
+//        
+//        SimpleXPathTemplate outputTemplate = XmlUtils.getXPathTemplateForElement(respElement);
+//        TestUtils.runFailureAssertions(outputTemplate, "totalOverriddenDevicesByProgramNameResponse", "UserNotAuthorized");
+        
     }
     
 }

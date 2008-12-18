@@ -22,9 +22,12 @@ import com.cannontech.common.device.commands.CommandRequestRouteExecutor;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
+import com.cannontech.core.dao.AccountNotFoundException;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.EnergyCompanyDao;
+import com.cannontech.core.dao.InventoryNotFoundException;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.activity.ActivityLogActions;
@@ -468,7 +471,7 @@ public class OptOutServiceImpl implements OptOutService {
 	@Override
 	public List<OverrideHistory> getOptOutHistoryForAccount(
 			String accountNumber, Date startTime, Date stopTime,
-			LiteYukonUser user) {
+			LiteYukonUser user) throws NotFoundException {
 
 		List<OverrideHistory> historyList = new ArrayList<OverrideHistory>();
 		
@@ -498,7 +501,7 @@ public class OptOutServiceImpl implements OptOutService {
 	
 	@Override
 	public List<OverrideHistory> getOptOutHistoryByProgram(String programName,
-			Date startTime, Date stopTime, LiteYukonUser user) {
+			Date startTime, Date stopTime, LiteYukonUser user) throws NotFoundException {
 
 		LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(user);
 		Program program = programDao.getByProgramName(programName, 
@@ -528,7 +531,7 @@ public class OptOutServiceImpl implements OptOutService {
 	
 	@Override
 	public int getOptOutDeviceCountForAccount(String accountNumber, Date startTime,
-			Date stopTime, LiteYukonUser user) {
+			Date stopTime, LiteYukonUser user) throws NotFoundException {
 
 		CustomerAccount account = customerAccountDao.getByAccountNumber(accountNumber, user);
 		return optOutEventDao.getOptOutDeviceCountForAccount(account.getAccountId(), startTime, stopTime);
@@ -537,7 +540,6 @@ public class OptOutServiceImpl implements OptOutService {
 	@Override
 	public int getOptOutDeviceCountForProgram(String programName,
 			Date startTime, Date stopTime, LiteYukonUser user) {
-		
 		
 		LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(user);
 		Program program = programDao.getByProgramName(programName, 
@@ -551,12 +553,28 @@ public class OptOutServiceImpl implements OptOutService {
 	@Override
 	public void allowAdditionalOptOuts(String accountNumber,
 			String serialNumber, int additionalOptOuts, LiteYukonUser user) 
-		throws ObjectInOtherEnergyCompanyException {
+		throws InventoryNotFoundException, AccountNotFoundException {
 		
 		LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
-		CustomerAccount account = customerAccountDao.getByAccountNumber(accountNumber, user);
-		LiteInventoryBase inventory = 
-			starsSearchDao.searchLMHardwareBySerialNumber(serialNumber, energyCompany);
+		
+		CustomerAccount account = null;
+		try {
+			account = customerAccountDao.getByAccountNumber(accountNumber, user);
+		} catch (NotFoundException e) {
+			throw new AccountNotFoundException("Account not found", e);
+		}
+		
+		LiteInventoryBase inventory;
+		try {
+			inventory = starsSearchDao.searchLMHardwareBySerialNumber(serialNumber, energyCompany);
+		} catch (ObjectInOtherEnergyCompanyException e) {
+			throw new InventoryNotFoundException("Inventory with serial number: " + serialNumber + 
+			" is in another energy company.", e);
+		}
+		if(inventory == null) {
+			throw new InventoryNotFoundException("Inventory with serial number: " + serialNumber + 
+					" could not be found.");
+		}
 		
 		optOutAdditionalDao.addAdditonalOptOuts(
 				inventory.getInventoryID(), account.getAccountId(), additionalOptOuts);
