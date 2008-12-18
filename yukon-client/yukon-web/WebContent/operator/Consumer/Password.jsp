@@ -118,7 +118,7 @@ function deleteLogin(form) {
                     </td>
                     <td width="268"> 
                       <input type="text" name="Username" maxlength="20" size="20" value="<%= login.getUsername() %>" onchange="setContentChanged(true)"
-						<cti:checkNoProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN %>">
+						<cti:checkNoProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN_USERNAME %>">
 						  disabled
 						</cti:checkNoProperty>
 					  >
@@ -142,7 +142,7 @@ function deleteLogin(form) {
                     </td>
                     <td width="268"> 
                       <input type="password" name="Password2" maxlength="20" size="20"
-                        <cti:checkNoProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD %>">
+                      <cti:checkNoProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD %>">
                           disabled
                         </cti:checkNoProperty>
                       >

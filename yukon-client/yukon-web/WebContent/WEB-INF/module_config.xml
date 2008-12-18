@@ -326,7 +326,7 @@
               <link>/spring/stars/consumer/enrollment</link>
             </option>
             <dynamicOptions bean="optOutMenuOption">
-              <requireRoleProperty value="ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_OPT_OUT" />
+			  <requireRoleProperty value="ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_OPT_OUT" />
             </dynamicOptions>
           </links>
 	    </option>
@@ -352,7 +352,7 @@
           </links>
 	    </option>
 		<option id="administration">
-		  <requireRoleProperty value="ResidentialCustomerRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN, ResidentialCustomerRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD" />
+		  <requireRoleProperty value="ResidentialCustomerRole.CONSUMER_INFO_CHANGE_LOGIN_USERNAME, ResidentialCustomerRole.CONSUMER_INFO_CHANGE_LOGIN_PASSWORD" />
           <links>
 		    <option id="changeLogin">
               <link>/spring/stars/consumer/changelogin</link>
@@ -571,7 +571,7 @@
   <module name="stars">
     <skin name="purple"/>
   </module>
-
+    
   <module name="dr">
     <skin name="standard"/>
   </module>

@@ -21,7 +21,7 @@ public interface ConsumerInfoRole {
 	public static final int CONSUMER_INFO_HARDWARES_CREATE = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 12;
 	public static final int CONSUMER_INFO_HARDWARES_THERMOSTAT = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 13;
 	public static final int CONSUMER_INFO_WORK_ORDERS = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 14;
-	public static final int CONSUMER_INFO_ADMIN_CHANGE_LOGIN = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 15;
+	public static final int CONSUMER_INFO_ADMIN_CHANGE_LOGIN_USERNAME = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 15;
 	public static final int CONSUMER_INFO_ADMIN_FAQ = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 16;
 	public static final int CONSUMER_INFO_THERMOSTATS_ALL = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 17;
 	public static final int CONSUMER_INFO_METERING_CREATE = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 18;

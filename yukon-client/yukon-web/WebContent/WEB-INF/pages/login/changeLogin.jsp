@@ -8,7 +8,7 @@
 
 <div id="changeLogin">
 
-    <cti:checkProperty  property="ResidentialCustomerRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN">
+    <cti:checkProperty  property="ResidentialCustomerRole.CONSUMER_INFO_CHANGE_LOGIN_USERNAME">
     <cti:msg key="yukon.web.changelogin.changeUsername" var="changeUsernameTitle"/>
     <ct:boxContainer title="${changeUsernameTitle}" hideEnabled="false">
         <form action="${usernameActionUrl}" method="POST">
@@ -45,7 +45,7 @@
     </cti:checkProperty>
     <br>
 
-    <cti:checkProperty  property="ResidentialCustomerRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD">
+    <cti:checkProperty  property="ResidentialCustomerRole.CONSUMER_INFO_CHANGE_LOGIN_PASSWORD">
     <cti:msg key="yukon.web.changelogin.changePassword" var="changePasswordTitle"/>
     <ct:boxContainer title="${changePasswordTitle}" hideEnabled="false">
         <form action="${passwordActionUrl}" method="POST">

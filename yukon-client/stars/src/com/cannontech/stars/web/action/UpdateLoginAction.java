@@ -58,7 +58,10 @@ public class UpdateLoginAction implements ActionBase {
 		try {
 			StarsUpdateLogin updateLogin = new StarsUpdateLogin();
 			updateLogin.setUsername( req.getParameter("Username").trim() );
-			updateLogin.setPassword( req.getParameter("Password").trim() );
+			if (req.getParameter("Password") != null)
+			    updateLogin.setPassword( req.getParameter("Password").trim() );
+			else
+			    updateLogin.setPassword( "" );
 			if (req.getParameter("Status") != null)
 				updateLogin.setStatus( StarsLoginStatus.valueOf(req.getParameter("Status")) );
 			else
