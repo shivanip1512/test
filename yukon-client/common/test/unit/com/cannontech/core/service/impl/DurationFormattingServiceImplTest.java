@@ -1,6 +1,7 @@
 package com.cannontech.core.service.impl;
 
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import junit.framework.Assert;
 
@@ -41,71 +42,71 @@ public class DurationFormattingServiceImplTest {
     @Test
     public void test_format_DHMS() {
         String expected = "1 day 0 hours 0 minutes 0 seconds";
-        String result = service.formatDuration(86400, DurationFormat.DHMS, null);
+        String result = service.formatDuration(86400, TimeUnit.SECONDS, DurationFormat.DHMS, null);
         Assert.assertEquals(expected, result);
         
         expected = "1 day 1 hour 1 minute 1 second";
-        result = service.formatDuration(90061, DurationFormat.DHMS, null);
+        result = service.formatDuration(90061, TimeUnit.SECONDS, DurationFormat.DHMS, null);
         Assert.assertEquals(expected, result);
         
         expected = "0 days 15 hours 25 minutes 0 seconds";
-        result = service.formatDuration(55500, DurationFormat.DHMS, null);
+        result = service.formatDuration(55500, TimeUnit.SECONDS, DurationFormat.DHMS, null);
         Assert.assertEquals(expected, result);
     }
     
     @Test
     public void test_format_HMS() {
         String expected = "0 hours 5 minutes 59 seconds";
-        String result = service.formatDuration(359, DurationFormat.HMS, null);
+        String result = service.formatDuration(359, TimeUnit.SECONDS, DurationFormat.HMS, null);
         Assert.assertEquals(expected, result);
     
         expected = "2 hours 59 minutes 59 seconds";
-        result = service.formatDuration(10799, DurationFormat.HMS, null);
+        result = service.formatDuration(10799, TimeUnit.SECONDS, DurationFormat.HMS, null);
         Assert.assertEquals(expected, result);
 
         expected = "25 hours 0 minutes 5 seconds";
-        result = service.formatDuration(90005, DurationFormat.HMS, null);
+        result = service.formatDuration(90005, TimeUnit.SECONDS, DurationFormat.HMS, null);
         Assert.assertEquals(expected, result);
     }
     
     @Test
     public void test_format_HM() {
         String expected = "0 hours 0 minutes";
-        String result = service.formatDuration(0, DurationFormat.HM, null);
+        String result = service.formatDuration(0, TimeUnit.SECONDS, DurationFormat.HM, null);
         Assert.assertEquals(expected, result);
 
         expected = "0 hours 59 minutes";
-        result = service.formatDuration(3540, DurationFormat.HM, null);
+        result = service.formatDuration(3540, TimeUnit.SECONDS, DurationFormat.HM, null);
         Assert.assertEquals(expected, result);
         
         expected = "1 hour 1 minute";
-        result = service.formatDuration(3660, DurationFormat.HM, null);
+        result = service.formatDuration(3660, TimeUnit.SECONDS, DurationFormat.HM, null);
         Assert.assertEquals(expected, result);
     }
     
     @Test
     public void test_format_H() {
         String expected = "0 hours";
-        String result = service.formatDuration(3540, DurationFormat.H, null);
+        String result = service.formatDuration(3540, TimeUnit.SECONDS, DurationFormat.H, null);
         Assert.assertEquals(expected, result);
         
         expected = "1 hour";
-        result = service.formatDuration(3600, DurationFormat.H, null);
+        result = service.formatDuration(3600, TimeUnit.SECONDS, DurationFormat.H, null);
         Assert.assertEquals(expected, result);
     }
     
     @Test
     public void test_format_M() {
         String expected = "0 minutes";
-        String result = service.formatDuration(0, DurationFormat.M, null);
+        String result = service.formatDuration(0, TimeUnit.SECONDS, DurationFormat.M, null);
         Assert.assertEquals(expected, result);
         
         expected = "800 minutes";
-        result = service.formatDuration(48000, DurationFormat.M, null);
+        result = service.formatDuration(48000, TimeUnit.SECONDS, DurationFormat.M, null);
         Assert.assertEquals(expected, result);
 
         expected = "1 minute";
-        result = service.formatDuration(60, DurationFormat.M, null);
+        result = service.formatDuration(60, TimeUnit.SECONDS, DurationFormat.M, null);
         Assert.assertEquals(expected, result);
     }
     

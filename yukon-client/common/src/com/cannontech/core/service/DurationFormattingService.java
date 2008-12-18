@@ -1,6 +1,7 @@
 package com.cannontech.core.service;
 
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.user.YukonUserContext;
@@ -38,7 +39,8 @@ public interface DurationFormattingService {
      * @param yukonUserContext - Current user context
      * @return String representing duration in given format
      */
-    public String formatDuration(long duration, DurationFormat type, YukonUserContext yukonUserContext);
+    public String formatDuration(final long duration, TimeUnit unit, final DurationFormat type,
+            final YukonUserContext yukonUserContext);
 
     /**
      * Method to get a formatted string representation of a time period

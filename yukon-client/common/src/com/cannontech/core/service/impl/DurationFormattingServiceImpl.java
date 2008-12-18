@@ -1,6 +1,7 @@
 package com.cannontech.core.service.impl;
 
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import org.joda.time.DurationFieldType;
 import org.joda.time.Period;
@@ -16,12 +17,12 @@ public strictfp class DurationFormattingServiceImpl implements DurationFormattin
     private YukonUserContextMessageSourceResolver messageSourceResolver;
     
     @Override
-    public String formatDuration(final long duration, final DurationFormat type,
+    public String formatDuration(final long duration, TimeUnit unit, final DurationFormat type,
             final YukonUserContext yukonUserContext) {
     	
     	Date now = new Date();
     	long startInstant = now.getTime();
-    	long endInstant = startInstant + duration;
+    	long endInstant = startInstant + TimeUnit.MILLISECONDS.convert(duration, unit);
 
         MessageSourceAccessor messageSourceAccessor = 
         	messageSourceResolver.getMessageSourceAccessor(yukonUserContext);

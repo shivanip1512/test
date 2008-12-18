@@ -1,6 +1,7 @@
 package com.cannontech.web.taglib;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.jsp.JspException;
 
@@ -30,7 +31,7 @@ public class FormatDurationTag extends YukonTagSupport {
         if (!isTypeSet) throw new JspException("type is not set.");
         
         DurationFormat durationFormat = DurationFormat.valueOf(type);
-        String formattedDuration = durationFormattingService.formatDuration(value, durationFormat, getUserContext());
+        String formattedDuration = durationFormattingService.formatDuration(value, TimeUnit.MILLISECONDS, durationFormat, getUserContext());
         
         if (isVarSet) {
             getJspContext().setAttribute(var, formattedDuration);
