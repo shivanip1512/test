@@ -10,6 +10,7 @@ import com.cannontech.stars.dr.optout.model.OptOutCounts;
 import com.cannontech.stars.dr.optout.model.OptOutEvent;
 import com.cannontech.stars.dr.optout.model.OptOutEventDto;
 import com.cannontech.stars.dr.optout.model.OptOutLog;
+import com.cannontech.stars.dr.optout.model.OverrideHistory;
 
 /**
  * Dao class for persisting Opt out events
@@ -41,6 +42,26 @@ public interface OptOutEventDao {
 	 * @return List of opt out event history
 	 */
 	public List<OptOutEventDto> getOptOutHistoryForAccount(int customerAccountId, int... numberOfRecords);
+
+	/**
+	 * Method to get a list of opt out events by account and time period
+	 * @param accountId - Account to get history for
+	 * @param startDate - Start of time period
+	 * @param stopDate - End of time period
+	 * @return List of opt out history
+	 */
+	public List<OverrideHistory> getOptOutHistoryForAccount(
+			int accountId, Date startDate, Date stopDate);
+	
+	/**
+	 * Method to get a list of opt out events by inventory and time period
+	 * @param inventoryId - Inventory to get history for
+	 * @param startDate - Start of time period
+	 * @param stopDate - End of time period
+	 * @return List of opt out history
+	 */
+	public List<OverrideHistory> getOptOutHistoryForInventory(
+			int inventoryId, Date startDate, Date stopDate);
 
 	/**
 	 * Method to get the last (or current) opt out event that actually happened (ignoring canceled 
@@ -117,5 +138,14 @@ public interface OptOutEventDao {
 	 * @param counts - Count or Don't Count
 	 */
 	public void changeCurrentOptOutCountState(LiteStarsEnergyCompany energyCompany, OptOutCounts counts);
+
+	/**
+	 * Method to get the total number of opt outs for an account in a given time period
+	 * @param accountId - Account to get count for
+	 * @param startTime - Start of time period
+	 * @param stopTime - End of time period
+	 * @return Count of opted out devices
+	 */
+	public int getOptOutDeviceCountForAccount(int accountId, Date startTime, Date stopTime);
 	
 }

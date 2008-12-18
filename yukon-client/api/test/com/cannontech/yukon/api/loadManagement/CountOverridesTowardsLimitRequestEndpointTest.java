@@ -1,55 +1,54 @@
 package com.cannontech.yukon.api.loadManagement;
 
 import org.jdom.Element;
-import org.jdom.Namespace;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.stars.util.StarsInvalidArgumentException;
 import com.cannontech.yukon.api.loadManagement.endpoint.CountOverridesTowardsLimitRequestEndpoint;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XmlUtils;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
-import com.cannontech.yukon.api.util.YukonXml;
 import com.cannontech.yukon.api.utils.TestUtils;
 
 public class CountOverridesTowardsLimitRequestEndpointTest {
 
     private CountOverridesTowardsLimitRequestEndpoint impl;
-    private MockOverrideService mockOverrideService; 
+    private MockOptOutService mockOptOutService; 
     
-    private Namespace ns = YukonXml.getYukonNamespace();
-    private static final String USER_SUCCESS = "Success";
-    private static final String USER_FAILURE = "Failure";    
     private static final String RESP_ELEMENT_NAME = "countOverridesTowardsLimitResponse";
-    
-    //TODO Add/match with actual ErrorCodes thrown here
-    private static final String ERROR_CODE = "ERROR_CODE";
     
     @Before
     public void setUp() throws Exception {
         
-        mockOverrideService = new MockOverrideService();
+        mockOptOutService = new MockOptOutService();
         
         impl = new CountOverridesTowardsLimitRequestEndpoint();
-        impl.setOverrideService(mockOverrideService);
+        impl.setOptOutService(mockOptOutService);
         impl.initialize();
     }
     
-    private class MockOverrideService extends OverrideServiceAdapter {
+    private class MockOptOutService extends OptOutServiceAdapter {
         
-        @Override
-        public void countOverridesTowardsLimit(LiteYukonUser user) {
-
-            //TODO Match up here with expected exceptions that may be thrown            
-            if (!user.getUsername().equals(USER_SUCCESS)){
-                throw new StarsInvalidArgumentException("Invalid Arguments");
-            }
-            
-        }
+    	private Boolean lastValueCalled = null;
+    	
+    	public Boolean getLastValueCalled() {
+			return lastValueCalled;
+		}
+    	
+    	public void setLastValueCalled(Boolean lastValueCalled) {
+			this.lastValueCalled = lastValueCalled;
+		}
+    	
+    	@Override
+    	public void changeOptOutCountStateForToday(LiteYukonUser user,
+    			boolean optOutCounts) {
+    		this.lastValueCalled = optOutCounts;
+    	}
+    	
     }
     
     @Test
@@ -66,7 +65,6 @@ public class CountOverridesTowardsLimitRequestEndpointTest {
         
         //invoke test
         LiteYukonUser user = new LiteYukonUser();
-        user.setUsername(USER_SUCCESS);
         Element respElement = impl.invoke(reqElement, user);
         
         // verify the respElement is valid according to schema
@@ -74,6 +72,9 @@ public class CountOverridesTowardsLimitRequestEndpointTest {
                                                             this.getClass());
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
 
+        Assert.assertTrue("changeOptOutCountStateForToday called with false, expected true", 
+        		mockOptOutService.getLastValueCalled());
+        
         // create template and parse response data
         SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(respElement);
         TestUtils.runVersionAssertion(template, RESP_ELEMENT_NAME, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
@@ -81,33 +82,4 @@ public class CountOverridesTowardsLimitRequestEndpointTest {
         
     }
 
-    @Test
-    public void testInvokeFailure() throws Exception {
-        
-        // Init with Request XML
-        Resource resource = new ClassPathResource("CountOverridesTowardsLimitRequest.xml", this.getClass());
-        Element reqElement = XmlUtils.createElementFromResource(resource);
-        
-        // verify the reqElement is valid according to schema
-        Resource reqSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/CountOverridesTowardsLimitRequest.xsd",
-                                                           this.getClass());
-        TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
-        
-        //invoke test
-        LiteYukonUser user = new LiteYukonUser();
-        user.setUsername(USER_FAILURE);        
-        Element respElement = impl.invoke(reqElement, user);
-        
-        // verify the respElement is valid according to schema
-        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/CountOverridesTowardsLimitResponse.xsd",
-                                                            this.getClass());
-        TestUtils.validateAgainstSchema(respElement, respSchemaResource);
-
-        // create template and parse response data
-        SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(respElement);
-        TestUtils.runVersionAssertion(template, RESP_ELEMENT_NAME, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
-        //TODO Add/match with actual ErrorCodes thrown here        
-        TestUtils.runFailureAssertions(template, RESP_ELEMENT_NAME, ERROR_CODE);
-        
-    }    
 }

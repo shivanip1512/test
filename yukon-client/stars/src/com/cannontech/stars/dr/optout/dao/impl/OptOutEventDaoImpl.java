@@ -15,11 +15,16 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
+import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
 import com.cannontech.stars.dr.optout.model.OptOutAction;
@@ -28,6 +33,7 @@ import com.cannontech.stars.dr.optout.model.OptOutEvent;
 import com.cannontech.stars.dr.optout.model.OptOutEventDto;
 import com.cannontech.stars.dr.optout.model.OptOutEventState;
 import com.cannontech.stars.dr.optout.model.OptOutLog;
+import com.cannontech.stars.dr.optout.model.OverrideHistory;
 import com.cannontech.stars.dr.program.model.Program;
 
 /**
@@ -40,6 +46,8 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 	
 	private EnrollmentDao enrollmentDao;
 	private StarsInventoryBaseDao starsInventoryBaseDao;
+	private CustomerAccountDao customerAccountDao;
+	private YukonUserDao yukonUserDao;
 
 	@Override
 	@Transactional
@@ -195,6 +203,60 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 		}
 		
 		return eventList;
+	}
+	
+	@Override
+	@Transactional
+	public List<OverrideHistory> getOptOutHistoryForAccount(int accountId,
+			Date startDate, Date stopDate) {
+
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		sql.append("SELECT * ");
+		sql.append("FROM OptOutEvent ");
+		sql.append("WHERE CustomerAccountId = ? ");
+		sql.append("	AND ((StartDate >= ?");
+		sql.append("		  AND StartDate <= ?)");
+		sql.append("		OR (StartDate <= ?");
+		sql.append("		  AND (StopDate >= ?)))");
+		sql.append("ORDER BY StartDate DESC");
+		
+		List<OverrideHistory> historyList = simpleJdbcTemplate.query(
+													sql.toString(), 
+													new OverrideHistoryRowMapper(),
+													accountId,
+													startDate,
+													stopDate,
+													startDate,
+													startDate);
+		
+		return historyList;
+	}
+	
+	@Override
+	@Transactional
+	public List<OverrideHistory> getOptOutHistoryForInventory(int inventoryId,
+			Date startDate, Date stopDate) {
+
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		sql.append("SELECT * ");
+		sql.append("FROM OptOutEvent ");
+		sql.append("WHERE InventoryId = ? ");
+		sql.append("	AND ((StartDate >= ?");
+		sql.append("		  AND StartDate <= ?)");
+		sql.append("		OR (StartDate <= ?");
+		sql.append("		  AND (StopDate >= ?)))");
+		sql.append("ORDER BY StartDate DESC");
+		
+		List<OverrideHistory> historyList = simpleJdbcTemplate.query(
+													sql.toString(), 
+													new OverrideHistoryRowMapper(),
+													inventoryId,
+													startDate,
+													stopDate,
+													startDate,
+													startDate);
+		
+		return historyList;
 	}
 
 	@Override
@@ -375,6 +437,33 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 		
 		return currentOptOutCount;
 	}
+	
+	@Override
+	public int getOptOutDeviceCountForAccount(int accountId, Date startTime, Date stopTime) {
+
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		sql.append("SELECT DISTINCT InventoryId");
+		sql.append("FROM OptOutEvent");
+		sql.append("WHERE (EventState = ?");
+		sql.append("	   OR EventState = ?)");
+		sql.append("	AND ((StartDate >= ?");
+		sql.append("		  AND StartDate <= ?)");
+		sql.append("		OR (StopDate >= ?");
+		sql.append("			AND StopDate <= ?)");
+		sql.append("	AND CustomerAccountId = ?");
+		
+		List<Integer> optOutDeviceList = 
+			simpleJdbcTemplate.query(sql.toString(), new IntegerRowMapper(),
+					OptOutEventState.START_OPT_OUT_SENT.toString(),
+					OptOutEventState.CANCEL_SENT.toString(),
+					startTime,
+					stopTime,
+					startTime,
+					stopTime,
+					accountId);
+		
+		return optOutDeviceList.size();
+	}
 
 	@Override
 	public int getTotalNumberOfScheduledOptOuts(LiteStarsEnergyCompany energyCompany) {
@@ -440,6 +529,23 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 				now,
 				now,
 				energyCompany.getEnergyCompanyID());
+	}
+	
+	@Transactional
+	private int getFirstEventUser(int optOutEventId) {
+		
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		sql.append("SELECT ooelOuter.LogUserId");
+		sql.append("FROM OptOutEventLog ooelOuter");
+		sql.append("WHERE LogDate = ");
+		sql.append("	(SELECT MIN(LogDate) ");
+		sql.append("	 FROM OptOutEventLog");
+		sql.append("	 WHERE OptOutEventId = ?");
+		sql.append("	 GROUP BY OptOutEventId)");
+		
+		int userId = simpleJdbcTemplate.queryForInt(sql.toString(), optOutEventId);
+		
+		return userId;
 	}
 
 	/**
@@ -553,6 +659,48 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 		}
 		
 	}
+	
+	private class OverrideHistoryRowMapper implements ParameterizedRowMapper<OverrideHistory> {
+
+		@Override
+		public OverrideHistory mapRow(ResultSet rs, int rowNum)
+				throws SQLException {
+
+			OverrideHistory history = new OverrideHistory();
+
+			int accountId = rs.getInt("CustomerAccountId");
+			CustomerAccount account = customerAccountDao.getById(accountId);
+			history.setAccountNumber(account.getAccountNumber());
+			history.setOverrideNumber(rs.getInt("OptOutEventId"));
+
+			String eventStateString = rs.getString("EventState");
+			OptOutEventState eventState = OptOutEventState.valueOf(eventStateString);
+			history.setStatus(eventState);
+			
+			String eventCountsString = rs.getString("EventCounts");
+			OptOutCounts eventCounts = OptOutCounts.valueOf(eventCountsString);
+			history.setCountedAgainstLimit(eventCounts.getValue());
+			
+			history.setScheduledDate(rs.getTimestamp("ScheduledDate"));
+			history.setStartDate(rs.getTimestamp("StartDate"));
+			history.setStopDate(rs.getTimestamp("StopDate"));
+
+			int inventoryId = rs.getInt("InventoryId");
+			history.setInventoryId(inventoryId);
+			LiteStarsLMHardware inventory = 
+				(LiteStarsLMHardware) starsInventoryBaseDao.getById(inventoryId);
+			history.setSerialNumber(inventory.getManufacturerSerialNumber());
+
+			int eventId = rs.getInt("OptOutEventId");
+			int userId = getFirstEventUser(eventId);
+			LiteYukonUser liteYukonUser = yukonUserDao.getLiteYukonUser(userId);
+			history.setUserName(liteYukonUser.getUsername());
+			
+			return history;
+
+		}
+		
+	}
 
 	@Autowired
 	public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
@@ -573,6 +721,16 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 	public void setStarsInventoryBaseDao(
 			StarsInventoryBaseDao starsInventoryBaseDao) {
 		this.starsInventoryBaseDao = starsInventoryBaseDao;
+	}
+	
+	@Autowired
+	public void setCustomerAccountDao(CustomerAccountDao customerAccountDao) {
+		this.customerAccountDao = customerAccountDao;
+	}
+	
+	@Autowired
+	public void setYukonUserDao(YukonUserDao yukonUserDao) {
+		this.yukonUserDao = yukonUserDao;
 	}
 
 }

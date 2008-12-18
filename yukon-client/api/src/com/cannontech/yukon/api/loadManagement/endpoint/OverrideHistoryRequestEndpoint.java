@@ -1,6 +1,5 @@
 package com.cannontech.yukon.api.loadManagement.endpoint;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -14,11 +13,9 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.loadcontrol.service.OverrideService;
-import com.cannontech.loadcontrol.service.data.OverrideHistory;
-import com.cannontech.stars.util.StarsInvalidArgumentException;
+import com.cannontech.stars.dr.optout.model.OverrideHistory;
+import com.cannontech.stars.dr.optout.service.OptOutService;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
-import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlUtils;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.cannontech.yukon.api.util.YukonXml;
@@ -26,13 +23,12 @@ import com.cannontech.yukon.api.util.YukonXml;
 @Endpoint
 public class OverrideHistoryRequestEndpoint {
 
-	private OverrideService overrideService;
+	private OptOutService optOutService;
 	
     private Namespace ns = YukonXml.getYukonNamespace();
     private static String byAccountAccountNumberStr = "/y:overrideHistoryByAccountNumberRequest/y:accountNumber";
     private static String byAccountStartDateTimeStr = "/y:overrideHistoryByAccountNumberRequest/y:startDateTime";
     private static String byAccountStopDateTimeStr = "/y:overrideHistoryByAccountNumberRequest/y:stopDateTime";
-    private static String byAccountProgramNameStr = "/y:overrideHistoryByAccountNumberRequest/y:programName";
     
     private static String byProgramProgramNameStr = "/y:overrideHistoryByProgramNameRequest/y:programName";
     private static String byProgramStartDateTimeStr = "/y:overrideHistoryByProgramNameRequest/y:startDateTime";
@@ -54,27 +50,15 @@ public class OverrideHistoryRequestEndpoint {
         String accountNumber = template.evaluateAsString(byAccountAccountNumberStr);
         Date startTime = template.evaluateAsDate(byAccountStartDateTimeStr);
         Date stopTime = template.evaluateAsDate(byAccountStopDateTimeStr);
-        String programName = template.evaluateAsString(byAccountProgramNameStr);
         
         // init response
         Element resp = new Element("overrideHistoryByAccountNumberResponse", ns);
         XmlVersionUtils.addVersionAttribute(resp, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         
         // run service
-        //TODO catch and set any exceptions to throwable here
-        List<OverrideHistory> overrideHistoryList = new ArrayList<OverrideHistory>();
-        try {
-        	overrideHistoryList = overrideService.getOverrideHistoryByAccountNumber(accountNumber,
-                                                                                 programName,
-                                                                                 startTime,
-                                                                                 stopTime,
-                                                                                 user);
-        } catch (StarsInvalidArgumentException e) {
-            Element fe = XMLFailureGenerator.generateFailure(overrideHistoryByAccountNumberRequest, e, "ERROR_CODE", "ERROR_DESCRIPTION");
-            resp.addContent(fe);
-            return resp;
-        }
-        
+        List<OverrideHistory> overrideHistoryList = 
+        	optOutService.getOptOutHistoryForAccount(accountNumber, startTime, stopTime, user);
+
         // build response
         resp.addContent(buildHistoryEntriesElement(overrideHistoryList));
         return resp;
@@ -98,18 +82,8 @@ public class OverrideHistoryRequestEndpoint {
         XmlVersionUtils.addVersionAttribute(resp, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         
         // run service
-        //TODO catch and set any exceptions to throwable here
-        List<OverrideHistory> overrideHistoryList = new ArrayList<OverrideHistory>();
-        try {
-            overrideHistoryList = overrideService.getOverrideHistoryByProgramName(programName,
-                                                                               startTime,
-                                                                               stopTime,
-                                                                               user);
-        } catch (StarsInvalidArgumentException e) {
-            Element fe = XMLFailureGenerator.generateFailure(overrideHistoryByProgramNameRequest, e, "ERROR_CODE", "ERROR_DESCRIPTION");
-            resp.addContent(fe);
-            return resp;
-        }
+        List<OverrideHistory> overrideHistoryList = 
+            	optOutService.getOptOutHistoryByProgram(programName, startTime, stopTime, user);
         
         // build response
         resp.addContent(buildHistoryEntriesElement(overrideHistoryList));
@@ -139,7 +113,8 @@ public class OverrideHistoryRequestEndpoint {
     }
     
     @Autowired
-    public void setOverrideService(OverrideService overrideService) {
-		this.overrideService = overrideService;
+    public void setOptOutService(OptOutService optOutService) {
+		this.optOutService = optOutService;
 	}
+
 }

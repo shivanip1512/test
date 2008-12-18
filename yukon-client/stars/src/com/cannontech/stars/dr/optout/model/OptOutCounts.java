@@ -5,7 +5,17 @@ package com.cannontech.stars.dr.optout.model;
  */
 public enum OptOutCounts {
 
-	COUNT, DONT_COUNT;
+	COUNT{
+		@Override
+		public boolean getValue() {
+			return true;
+		}}, 
+	DONT_COUNT {
+		@Override
+		public boolean getValue() {
+			return true;
+		}
+	};
 
 	public static OptOutCounts valueOf(boolean counts) {
 		if (counts) {
@@ -14,5 +24,7 @@ public enum OptOutCounts {
 			return DONT_COUNT;
 		}
 	}
+	
+	public abstract boolean getValue();
 
 }

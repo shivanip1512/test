@@ -10,9 +10,7 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.loadcontrol.service.OverrideService;
-import com.cannontech.stars.util.StarsInvalidArgumentException;
-import com.cannontech.yukon.api.util.XMLFailureGenerator;
+import com.cannontech.stars.dr.optout.service.OptOutService;
 import com.cannontech.yukon.api.util.XmlUtils;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.cannontech.yukon.api.util.YukonXml;
@@ -20,7 +18,7 @@ import com.cannontech.yukon.api.util.YukonXml;
 @Endpoint
 public class CountOverridesTowardsLimitRequestEndpoint {
 
-	private OverrideService overrideService;
+	private OptOutService optOutService;
     private Namespace ns = YukonXml.getYukonNamespace();
     
     @PostConstruct
@@ -37,15 +35,7 @@ public class CountOverridesTowardsLimitRequestEndpoint {
         XmlVersionUtils.addVersionAttribute(resp, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         
         // run service
-        //TODO decide what exception(s) this might throw, add error code details
-        try {
-        	overrideService.countOverridesTowardsLimit(user);
-        } catch (StarsInvalidArgumentException e) {
-        	
-        	Element fe = XMLFailureGenerator.generateFailure(countOverridesTowardsLimitRequest, e, "ERROR_CODE", "ERROR_DESCRIPTION");
-            resp.addContent(fe);
-            return resp;
-        }
+        optOutService.changeOptOutCountStateForToday(user, true);
         
         resp.addContent(XmlUtils.createStringElement("success", ns, ""));
         
@@ -53,7 +43,8 @@ public class CountOverridesTowardsLimitRequestEndpoint {
     }
     
     @Autowired
-    public void setOverrideService(OverrideService overrideService) {
-		this.overrideService = overrideService;
+    public void setOptOutService(OptOutService optOutService) {
+		this.optOutService = optOutService;
 	}
+    
 }

@@ -24,12 +24,15 @@ import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.CustomerDao;
+import com.cannontech.core.dao.EnergyCompanyDao;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
@@ -37,8 +40,10 @@ import com.cannontech.roles.operator.InventoryRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
+import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
 import com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationService;
@@ -54,12 +59,16 @@ import com.cannontech.stars.dr.optout.model.OptOutEvent;
 import com.cannontech.stars.dr.optout.model.OptOutEventState;
 import com.cannontech.stars.dr.optout.model.OptOutLimit;
 import com.cannontech.stars.dr.optout.model.OptOutLog;
+import com.cannontech.stars.dr.optout.model.OverrideHistory;
 import com.cannontech.stars.dr.optout.model.ScheduledOptOutQuestion;
 import com.cannontech.stars.dr.optout.service.OptOutNotificationService;
 import com.cannontech.stars.dr.optout.service.OptOutRequest;
 import com.cannontech.stars.dr.optout.service.OptOutService;
 import com.cannontech.stars.dr.optout.service.OptOutStatusService;
+import com.cannontech.stars.dr.program.dao.ProgramDao;
+import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.util.InventoryUtils;
+import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.user.YukonUserContext;
@@ -81,6 +90,10 @@ public class OptOutServiceImpl implements OptOutService {
 	private LMHardwareControlGroupDao lmHardwareControlGroupDao;
 	private CustomerDao customerDao;
 	private RoleDao roleDao;
+	private ProgramDao programDao;
+	private EnergyCompanyDao energyCompanyDao;
+	private EnrollmentDao enrollmentDao;
+	private StarsSearchDao starsSearchDao;
 	
 	private final Logger logger = YukonLogManager.getLogger(OptOutServiceImpl.class);
 	
@@ -456,6 +469,104 @@ public class OptOutServiceImpl implements OptOutService {
 		
 	}
 	
+	@Override
+	public List<OverrideHistory> getOptOutHistoryForAccount(
+			String accountNumber, Date startTime, Date stopTime,
+			LiteYukonUser user) {
+
+		List<OverrideHistory> historyList = new ArrayList<OverrideHistory>();
+		
+		CustomerAccount account = customerAccountDao.getByAccountNumber(accountNumber, user);
+
+		List<OverrideHistory> inventoryHistoryList = 
+			optOutEventDao.getOptOutHistoryForInventory(account.getAccountId(), startTime, stopTime);
+		
+		for(OverrideHistory history : inventoryHistoryList) {
+			Integer inventoryId = history.getInventoryId();
+			
+			List<Program> programList = 
+				enrollmentDao.getEnrolledProgramIdsByInventory(inventoryId, startTime, stopTime);
+			
+			// Create a history entry for each enrolled program
+			for(Program program : programList) {
+				OverrideHistory copy = history.getACopy();
+				copy.setProgramName(program.getProgramName());
+				
+				historyList.add(copy);
+			}
+		}
+		
+		
+		return historyList;
+	}
+	
+	@Override
+	public List<OverrideHistory> getOptOutHistoryByProgram(String programName,
+			Date startTime, Date stopTime, LiteYukonUser user) {
+
+		LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(user);
+		Program program = programDao.getByProgramName(programName, 
+									Collections.singletonList(energyCompany.getEnergyCompanyID()));
+		
+		
+		List<OverrideHistory> historyList = new ArrayList<OverrideHistory>();
+		
+		List<Integer> optedOutInventory = 
+			enrollmentDao.getOptedOutInventory(program, startTime, stopTime);
+		
+		for(Integer inventoryId : optedOutInventory) {
+			
+			List<OverrideHistory> inventoryHistoryList = 
+				optOutEventDao.getOptOutHistoryForInventory(inventoryId, startTime, stopTime);
+
+			for(OverrideHistory history : inventoryHistoryList) {
+				history.setProgramName(programName);
+			}
+			
+			historyList.addAll(inventoryHistoryList);
+			
+		}
+		
+		return historyList;
+	}
+	
+	@Override
+	public int getOptOutDeviceCountForAccount(String accountNumber, Date startTime,
+			Date stopTime, LiteYukonUser user) {
+
+		CustomerAccount account = customerAccountDao.getByAccountNumber(accountNumber, user);
+		return optOutEventDao.getOptOutDeviceCountForAccount(account.getAccountId(), startTime, stopTime);
+	}
+	
+	@Override
+	public int getOptOutDeviceCountForProgram(String programName,
+			Date startTime, Date stopTime, LiteYukonUser user) {
+		
+		
+		LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(user);
+		Program program = programDao.getByProgramName(programName, 
+									Collections.singletonList(energyCompany.getEnergyCompanyID()));
+		List<Integer> optedOutInventory = 
+			enrollmentDao.getOptedOutInventory(program, startTime, stopTime);
+		
+		return optedOutInventory.size();
+	}
+	
+	@Override
+	public void allowAdditionalOptOuts(String accountNumber,
+			String serialNumber, int additionalOptOuts, LiteYukonUser user) 
+		throws ObjectInOtherEnergyCompanyException {
+		
+		LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
+		CustomerAccount account = customerAccountDao.getByAccountNumber(accountNumber, user);
+		LiteInventoryBase inventory = 
+			starsSearchDao.searchLMHardwareBySerialNumber(serialNumber, energyCompany);
+		
+		optOutAdditionalDao.addAdditonalOptOuts(
+				inventory.getInventoryID(), account.getAccountId(), additionalOptOuts);
+		
+	}
+	
 	/**
 	 * Helper method to parse a string into a list of opt out limits
 	 * @param optOutLimitString - String containing opt out limit data
@@ -760,6 +871,26 @@ public class OptOutServiceImpl implements OptOutService {
 	@Autowired
 	public void setRoleDao(RoleDao roleDao) {
 		this.roleDao = roleDao;
+	}
+	
+	@Autowired
+	public void setProgramDao(ProgramDao programDao) {
+		this.programDao = programDao;
+	}
+	
+	@Autowired
+	public void setEnergyCompanyDao(EnergyCompanyDao energyCompanyDao) {
+		this.energyCompanyDao = energyCompanyDao;
+	}
+	
+	@Autowired
+	public void setEnrollmentDao(EnrollmentDao enrollmentDao) {
+		this.enrollmentDao = enrollmentDao;
+	}
+	
+	@Autowired
+	public void setStarsSearchDao(StarsSearchDao starsSearchDao) {
+		this.starsSearchDao = starsSearchDao;
 	}
 	
 }

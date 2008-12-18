@@ -31,7 +31,6 @@ import com.cannontech.stars.dr.event.dao.LMHardwareEventDao;
 import com.cannontech.stars.dr.hardware.dao.LMConfigurationBaseDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareConfigurationDao;
 import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
-import com.cannontech.stars.util.StarsUtils;
 
 public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, InitializingBean {
     private static final ParameterizedRowMapper<LiteInventoryBase> smartInventoryRowMapper = new SmartLiteInventoryBaseRowMapper();
