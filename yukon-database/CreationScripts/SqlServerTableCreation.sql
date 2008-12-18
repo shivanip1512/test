@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/17/2008 4:38:37 PM                        */
+/* Created on:     12/17/2008 6:16:08 PM                        */
 /*==============================================================*/
 
 
@@ -8797,7 +8797,7 @@ go
 /*==============================================================*/
 create table LMProgramGearHistory (
    GearHistId           numeric              not null,
-   ProgramHistId        numeric              null,
+   ProgramHistId        numeric              not null,
    EventTime            datetime             not null,
    Action               varchar(50)          not null,
    UserName             varchar(50)          not null,

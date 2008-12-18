@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/17/2008 4:40:18 PM                        */
+/* Created on:     12/17/2008 6:15:04 PM                        */
 /*==============================================================*/
 
 
@@ -6166,7 +6166,7 @@ create table LMProgramEvent  (
 /*==============================================================*/
 create table LMProgramGearHistory  (
    GearHistId           NUMBER                          not null,
-   ProgramHistId        NUMBER,
+   ProgramHistId        NUMBER                          not null,
    EventTime            DATE                            not null,
    Action               VARCHAR2(50)                    not null,
    UserName             VARCHAR2(50)                    not null,
