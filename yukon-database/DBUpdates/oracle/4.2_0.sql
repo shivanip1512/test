@@ -34,27 +34,27 @@ ALTER TABLE LMGroupXMLParameter
 
 /* Start YUK-6742 */ 
 CREATE TABLE LMProgramGearHistory  (
-   GearHistId           NUMBER                          NOT NULL,
-   ProgramHistId        NUMBER                          NOT NULL,
-   EventTime            DATE                            NOT NULL,
-   Action               VARCHAR2(50)                    NOT NULL,
-   UserName             VARCHAR2(50)                    NOT NULL,
-   GearName             VARCHAR2(50)                    NOT NULL,
-   GearId               NUMBER                          NOT NULL,
-   Reason               VARCHAR2(50)                    NOT NULL,
-   CONSTRAINT PK_LMPROGRAMGEARHISTORY PRIMARY KEY (GearHistId)
+   LMProgramGearHistoryId  NUMBER                          NOT NULL,
+   LMProgramHistoryId      NUMBER                          NOT NULL,
+   EventTime               DATE                            NOT NULL,
+   Action                  VARCHAR2(50)                    NOT NULL,
+   UserName                VARCHAR2(64)                    NOT NULL,
+   GearName                VARCHAR2(30)                    NOT NULL,
+   GearId                  NUMBER                          NOT NULL,
+   Reason                  VARCHAR2(50)                    NOT NULL,
+   CONSTRAINT PK_LMPROGRAMGEARHISTORY PRIMARY KEY (LMProgramGearHistoryId)
 );
 
 CREATE TABLE LMProgramHistory  (
-   ProgramHistId        NUMBER                          NOT NULL,
-   ProgramName          VARCHAR2(50)                    NOT NULL,
+   LMProgramHistoryId   NUMBER                          NOT NULL,
+   ProgramName          VARCHAR2(60)                    NOT NULL,
    ProgramId            NUMBER                          NOT NULL,
-   CONSTRAINT PK_LMPROGRAMHISTORY PRIMARY KEY (ProgramHistId)
+   CONSTRAINT PK_LMPROGRAMHISTORY PRIMARY KEY (LMProgramHistoryId)
 );
 
 ALTER TABLE LMProgramGearHistory
-   ADD CONSTRAINT FK_LMProgGearHist_LMProgHist FOREIGN KEY (ProgramHistId)
-      REFERENCES LMProgramHistory (ProgramHistId);
+   ADD CONSTRAINT FK_LMProgGearHist_LMProgHist FOREIGN KEY (LMProgramHistoryId)
+      REFERENCES LMProgramHistory (LMProgramHistoryId);
 
 ALTER TABLE DynamicLMProgramDirect
 ADD CurrentLogId NUMBER DEFAULT 0 NOT NULL;

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/18/2008 4:06:02 PM                        */
+/* Created on:     12/19/2008 10:22:44 AM                       */
 /*==============================================================*/
 
 
@@ -6177,25 +6177,25 @@ create table LMProgramEvent  (
 /* Table: LMProgramGearHistory                                  */
 /*==============================================================*/
 create table LMProgramGearHistory  (
-   GearHistId           NUMBER                          not null,
-   ProgramHistId        NUMBER                          not null,
+   LMProgramGearHistoryId NUMBER                          not null,
+   LMProgramHistoryId   NUMBER                          not null,
    EventTime            DATE                            not null,
    Action               VARCHAR2(50)                    not null,
-   UserName             VARCHAR2(50)                    not null,
-   GearName             VARCHAR2(50)                    not null,
+   UserName             VARCHAR2(64)                    not null,
+   GearName             VARCHAR2(30)                    not null,
    GearId               NUMBER                          not null,
    Reason               VARCHAR2(50)                    not null,
-   constraint PK_LMPROGRAMGEARHISTORY primary key (GearHistId)
+   constraint PK_LMPROGRAMGEARHISTORY primary key (LMProgramGearHistoryId)
 );
 
 /*==============================================================*/
 /* Table: LMProgramHistory                                      */
 /*==============================================================*/
 create table LMProgramHistory  (
-   ProgramHistId        NUMBER                          not null,
-   ProgramName          VARCHAR2(50)                    not null,
+   LMProgramHistoryId   NUMBER                          not null,
+   ProgramName          VARCHAR2(60)                    not null,
    ProgramId            NUMBER                          not null,
-   constraint PK_LMPROGRAMHISTORY primary key (ProgramHistId)
+   constraint PK_LMPROGRAMHISTORY primary key (LMProgramHistoryId)
 );
 
 /*==============================================================*/
@@ -11713,8 +11713,8 @@ alter table LMProgramEvent
       references LMCustomerEventBase (EventID);
 
 alter table LMProgramGearHistory
-   add constraint FK_LMProgGearHist_LMProgHist foreign key (ProgramHistId)
-      references LMProgramHistory (ProgramHistId);
+   add constraint FK_LMProgGearHist_LMProgHist foreign key (LMProgramHistoryId)
+      references LMProgramHistory (LMProgramHistoryId);
 
 alter table LMProgramWebPublishing
    add constraint FK_CsLEn_LPWbP foreign key (ChanceOfControlID)

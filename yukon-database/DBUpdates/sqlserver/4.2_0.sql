@@ -34,27 +34,27 @@ ALTER TABLE LMGroupXMLParameter
 
 /* Start YUK-6742 */
 CREATE TABLE LMProgramGearHistory (
-   GearHistId           NUMERIC              NOT NULL,
-   ProgramHistId        NUMERIC              NOT NULL,
-   EventTime            DATETIME             NOT NULL,
-   Action               VARCHAR(50)          NOT NULL,
-   UserName             VARCHAR(50)          NOT NULL,
-   GearName             VARCHAR(50)          NOT NULL,
-   GearId               NUMERIC              NOT NULL,
-   Reason               VARCHAR(50)          NOT NULL,
-   CONSTRAINT PK_LMPROGRAMGEARHISTORY PRIMARY KEY NONCLUSTERED (GearHistId)
+   LMProgramGearHistoryId  NUMERIC              NOT NULL,
+   LMProgramHistoryId      NUMERIC              NOT NULL,
+   EventTime               DATETIME             NOT NULL,
+   Action                  VARCHAR(50)          NOT NULL,
+   UserName                VARCHAR(64)          NOT NULL,
+   GearName                VARCHAR(30)          NOT NULL,
+   GearId                  NUMERIC              NOT NULL,
+   Reason                  VARCHAR(50)          NOT NULL,
+   CONSTRAINT PK_LMPROGRAMGEARHISTORY PRIMARY KEY NONCLUSTERED (LMProgramGearHistoryId)
 );
 
 CREATE TABLE LMProgramHistory (
-   ProgramHistId        NUMERIC              NOT NULL,
-   ProgramName          VARCHAR(50)          NOT NULL,
+   LMProgramHistoryId   NUMERIC              NOT NULL,
+   ProgramName          VARCHAR(60)          NOT NULL,
    ProgramId            NUMERIC              NOT NULL,
-   CONSTRAINT PK_LMPROGRAMHISTORY PRIMARY KEY NONCLUSTERED (ProgramHistId)
+   CONSTRAINT PK_LMPROGRAMHISTORY PRIMARY KEY NONCLUSTERED (LMProgramHistoryId)
 );
 
 ALTER TABLE LMProgramGearHistory
-   ADD CONSTRAINT FK_LMProgGearHist_LMProgHist FOREIGN KEY (ProgramHistId)
-      REFERENCES LMProgramHistory (ProgramHistId);
+   ADD CONSTRAINT FK_LMProgGearHist_LMProgHist FOREIGN KEY (LMProgramHistoryId)
+      REFERENCES LMProgramHistory (LMProgramHistoryId);
 
 ALTER TABLE DynamicLMProgramDirect 
 ADD CurrentLogId NUMERIC NOT NULL DEFAULT 0;

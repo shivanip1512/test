@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/18/2008 4:04:48 PM                        */
+/* Created on:     12/19/2008 10:26:29 AM                       */
 /*==============================================================*/
 
 
@@ -8840,15 +8840,15 @@ go
 /* Table: LMProgramGearHistory                                  */
 /*==============================================================*/
 create table LMProgramGearHistory (
-   GearHistId           numeric              not null,
-   ProgramHistId        numeric              not null,
+   LMProgramGearHistoryId numeric              not null,
+   LMProgramHistoryId   numeric              not null,
    EventTime            datetime             not null,
    Action               varchar(50)          not null,
-   UserName             varchar(50)          not null,
-   GearName             varchar(50)          not null,
+   UserName             varchar(64)          not null,
+   GearName             varchar(30)          not null,
    GearId               numeric              not null,
    Reason               varchar(50)          not null,
-   constraint PK_LMPROGRAMGEARHISTORY primary key nonclustered (GearHistId)
+   constraint PK_LMPROGRAMGEARHISTORY primary key nonclustered (LMProgramGearHistoryId)
 )
 go
 
@@ -8856,10 +8856,10 @@ go
 /* Table: LMProgramHistory                                      */
 /*==============================================================*/
 create table LMProgramHistory (
-   ProgramHistId        numeric              not null,
-   ProgramName          varchar(50)          not null,
+   LMProgramHistoryId   numeric              not null,
+   ProgramName          varchar(60)          not null,
    ProgramId            numeric              not null,
-   constraint PK_LMPROGRAMHISTORY primary key nonclustered (ProgramHistId)
+   constraint PK_LMPROGRAMHISTORY primary key nonclustered (LMProgramHistoryId)
 )
 go
 
@@ -14944,8 +14944,8 @@ alter table LMProgramEvent
 go
 
 alter table LMProgramGearHistory
-   add constraint FK_LMProgGearHist_LMProgHist foreign key (ProgramHistId)
-      references LMProgramHistory (ProgramHistId)
+   add constraint FK_LMProgGearHist_LMProgHist foreign key (LMProgramHistoryId)
+      references LMProgramHistory (LMProgramHistoryId)
 go
 
 alter table LMProgramWebPublishing
