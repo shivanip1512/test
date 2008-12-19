@@ -33,14 +33,15 @@ public class DecrementOverrideLimitRequestEndpoint {
 	
     private static String accountNumberStr = "/y:decrementDeviceOverrideLimitRequest/y:accountNumber";
     private static String serialNumberStr = "/y:decrementDeviceOverrideLimitRequest/y:serialNumber";
+    private static String loadProgramNameStr = "/y:decrementDeviceOverrideLimitRequest/y:loadProgramName";    
     
     @PostConstruct
     public void initialize() throws JDOMException {
     }
     
-    @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="decrementDeviceOverrideLimitRequest")
-    public Element invokeDecrementCountToLimitBySerialNumberAndAccount(
-    		Element decrementDeviceOverrideLimitRequest, LiteYukonUser user) throws Exception {
+    @PayloadRoot(namespace = "http://yukon.cannontech.com/api", localPart = "decrementDeviceOverrideLimitRequest")
+    public Element invoke(Element decrementDeviceOverrideLimitRequest,
+            LiteYukonUser user) throws Exception {
         
         //Verify Request message version
         XmlVersionUtils.verifyYukonMessageVersion(decrementDeviceOverrideLimitRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
@@ -50,9 +51,10 @@ public class DecrementOverrideLimitRequestEndpoint {
         
         String accountNumber = template.evaluateAsString(accountNumberStr);
         String serialNumber = template.evaluateAsString(serialNumberStr);
+        String loadProgramName = template.evaluateAsString(loadProgramNameStr);        
         
         // init response
-        Element resp = new Element("totalOverriddenDevicesByAccountNumberResponse", ns);
+        Element resp = new Element("decrementDeviceOverrideLimitResponse", ns);
         XmlVersionUtils.addVersionAttribute(resp, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         
         // Check authorization
@@ -70,6 +72,7 @@ public class DecrementOverrideLimitRequestEndpoint {
         
         // run service
         try {
+            //TODO pass in loadProgramName as well?
         	optOutService.allowAdditionalOptOuts(accountNumber, serialNumber, 1, user);
         } catch (AccountNotFoundException e) {
         	Element fe = XMLFailureGenerator.generateFailure(
