@@ -23,7 +23,7 @@ using namespace std;
 #include "interp.h"
 #include "ctibase.h"
 
- RWRecursiveLock<RWMutexLock> CtiInterpreter::_mutex;
+CtiCriticalSection CtiInterpreter::_mutex;
 
 /*---------------------------------------------------------------------------
     Constructor
@@ -54,7 +54,7 @@ bool CtiInterpreter::evaluate(const string& command, bool block, void (*preEval)
     while( isSet( CtiThread::STARTING ) ||
           !isSet( CtiInterpreter::WAITING ) )
 
-    {        
+    {
         Sleep(200);
     }
 
@@ -77,7 +77,7 @@ bool CtiInterpreter::evaluate(const string& command, bool block, void (*preEval)
         if( block )
             _eval_barrier.wait();
     }
-                                     
+
     return true;
 }
 
@@ -89,7 +89,7 @@ bool CtiInterpreter::evaluateFile(const string& file, bool block )
     while( isSet( CtiThread::STARTING ) ||
           !isSet( CtiInterpreter::WAITING ) )
 
-    {        
+    {
         Sleep(200);
     }
 
@@ -103,7 +103,7 @@ bool CtiInterpreter::evaluateFile(const string& file, bool block )
         if( block )
             _eval_barrier.wait();
     }
-                                     
+
     return true;
 }
 
@@ -124,7 +124,7 @@ long CtiInterpreter::getScheduleId()
 ---------------------------------------------------------------------------*/
 bool CtiInterpreter::isEvaluating() const
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    CtiLockGuard<CtiCriticalSection> guard(_mutex);
 
     return _isevaluating;
 }
@@ -140,7 +140,7 @@ void CtiInterpreter::stopEval()
 
     while ( _isevaluating && isRunning() )
         rwSleep( 50 );
-    
+
     _dostop = false;
 }
 
@@ -167,7 +167,7 @@ void CtiInterpreter::run()
 
         for ( ; ; )
         {
-            {              
+            {
                 // Indicates we are ready, really only needed on the
                 // first pass, but _eval_b MUST be acquired before we
                 // set it or the first call to evaluate might not
@@ -203,15 +203,15 @@ void CtiInterpreter::run()
 
                        // check for interrupted as to not alarm the reader
                        if( strcmp(result,"interrupted") != 0)
-                       {                       
+                       {
                            CtiLockGuard< CtiLogger > guard(dout);
-                            
+
                            char* err = Tcl_GetVar(_interp, "errorInfo", 0 );
                            if( err != NULL )
                            {
-                                dout << CtiTime() << " [" << rwThreadId() << "] INTERPRETER ERROR: " << endl;                
+                                dout << CtiTime() << " [" << rwThreadId() << "] INTERPRETER ERROR: " << endl;
                                 dout << CtiTime() << " " << err << endl;
-                           }                                               
+                           }
                        }
                     }
                 }
@@ -219,29 +219,29 @@ void CtiInterpreter::run()
                 if( isSet( CtiInterpreter::EVALUATE_FILE ) )
                 {
                     int r = Tcl_EvalFile( _interp, (char*) _evalstring.c_str() );
-        		    if(r != 0)
-        		    {
+                    if(r != 0)
+                    {
                         char* result = Tcl_GetStringResult(_interp);
                         CtiLockGuard< CtiLogger > guard(dout);
-                            
+
                         char* err = Tcl_GetVar(_interp, "errorInfo", 0 );
                         if( err != NULL )
                         {
-                            dout << CtiTime() << " [" << rwThreadId() << "] INTERPRETER ERROR: " << endl;                
+                            dout << CtiTime() << " [" << rwThreadId() << "] INTERPRETER ERROR: " << endl;
                             dout << CtiTime() << " " << err << endl;
-                        }                   
-        		    }
+                        }
+                    }
                 }
 
                 set( CtiInterpreter::EVALUATE, false );
                 set( CtiInterpreter::EVALUATE_FILE, false );
-                _isevaluating = false;            
+                _isevaluating = false;
             }
 
             if( _block )
             {
                 _eval_barrier.wait();
-            }            
+            }
         }
 
         Tcl_DeleteInterp(_interp);
@@ -263,7 +263,7 @@ void CtiInterpreter::run()
         dout << CtiTime() << " _interp exiting" << endl;
     }
 }
-      
+
 
 
 /*-----------------------------------------------------------------------------
@@ -274,14 +274,14 @@ void CtiInterpreter::run()
 ---------------------------------------------------------------------------*/
 void CtiInterpreter::event_check_proc( ClientData clientData, int flags )
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    CtiLockGuard<CtiCriticalSection> guard(_mutex);
 
     //find the interpreter who is associated with this thread and
     //post an event the interpreters event queue if _dostop is set
     CtiInterpreter* _interp = (CtiInterpreter*) clientData;
 
     if ( _interp->_dostop )
-    {  
+    {
         int id = _interp->getID();
 
         Tcl_Event* event = (Tcl_Event*) Tcl_Alloc( sizeof( Tcl_Event) );
@@ -306,7 +306,7 @@ void CtiInterpreter::event_check_proc( ClientData clientData, int flags )
 ---------------------------------------------------------------------------*/
 int CtiInterpreter::event_proc(Tcl_Event* evtPtr, int flags )
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( _mutex);
+    //CtiLockGuard<CtiCriticalSection> guard(_mutex);
     return 1;
 }
 

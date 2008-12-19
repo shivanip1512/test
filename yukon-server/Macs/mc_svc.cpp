@@ -139,7 +139,7 @@ void CtiMCService::Run()
     dout.setOwnerInfo(CompileInfo);
     dout.setOutputFile("macs");
     dout.setOutputPath(gLogDirectory);
-    dout.setWriteInterval(0);
+    dout.setWriteInterval(1000);
     dout.setToStdOut(true);
     dout.start();
 

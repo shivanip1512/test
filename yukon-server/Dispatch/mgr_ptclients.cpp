@@ -146,12 +146,12 @@ struct non_updated_check
 };
 
 /**
- * If the store needs to be updated when this pointID or paoid 
- * changes, it will be updated by this function call. This 
- * probably means a dbchange has been received. 
- * 
- * @param pntID LONG 
- * @param pntType CtiPointType_t 
+ * If the store needs to be updated when this pointID or paoid
+ * changes, it will be updated by this function call. This
+ * probably means a dbchange has been received.
+ *
+ * @param pntID LONG
+ * @param pntType CtiPointType_t
  */
 void CtiPointClientManager::updatePoints(LONG pntID, LONG paoID, CtiPointType_t pntType)
 {
@@ -184,7 +184,7 @@ void CtiPointClientManager::updatePoints(LONG pntID, LONG paoID, CtiPointType_t 
 /**
  * Loads all of the data that is kept for every point. This
  * should be called on startup.
- * 
+ *
  */
 void CtiPointClientManager::loadAllStaticData()
 {
@@ -194,13 +194,13 @@ void CtiPointClientManager::loadAllStaticData()
 
 
 /**
- * This loads the specified points. In Dispatch, this should be 
- * called sparingly. This is not to be called when db changes 
- * occur. 
- * 
- * @param pntID LONG 
- * @param paoID LONG 
- * @param pntType CtiPointType_t 
+ * This loads the specified points. In Dispatch, this should be
+ * called sparingly. This is not to be called when db changes
+ * occur.
+ *
+ * @param pntID LONG
+ * @param paoID LONG
+ * @param pntType CtiPointType_t
  */
 void CtiPointClientManager::refreshList(LONG pntID, LONG paoID, CtiPointType_t pntType)
 {
@@ -227,11 +227,11 @@ void CtiPointClientManager::refreshList(LONG pntID, LONG paoID, CtiPointType_t p
 }
 
 /**
- * Loads the data from the database for all point id's 
- * requested. Recursively calls itself if more id's are 
- * requested than the max number allowed. 
- * 
- * @param ids const set<long>& 
+ * Loads the data from the database for all point id's
+ * requested. Recursively calls itself if more id's are
+ * requested than the max number allowed.
+ *
+ * @param ids const set<long>&
  */
 void CtiPointClientManager::refreshListByPointIDs(const set<long> &ids)
 {
@@ -262,7 +262,7 @@ void CtiPointClientManager::refreshListByPointIDs(const set<long> &ids)
         //refreshProperties(0, 0, ids);
     }
 
-    
+
 }
 
 //Load based on PAO assumes it is in add!
@@ -828,6 +828,8 @@ void CtiPointClientManager::writeRecordsToDB(list<CtiTablePointDispatch> &update
         dout << CtiTime() << " WRITING " << updateList.size() << " dynamic dispatch records. " << endl;
     }
 
+    int total = updateList.size();
+
     for(updateListIter = updateList.begin(); updateListIter != updateList.end(); updateListIter++)
     {
         count ++;
@@ -843,7 +845,7 @@ void CtiPointClientManager::writeRecordsToDB(list<CtiTablePointDispatch> &update
         if(count % 1000 == 0)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " WRITING dynamic dispatch records to DB, " << count << " records written. " << endl;
+            dout << CtiTime() << " WRITING dynamic dispatch records to DB, " << count << " of " << total << " records written. " << endl;
         }
     }
     updateList.clear();
@@ -1257,7 +1259,7 @@ bool CtiPointClientManager::hasReasonabilityLimits(CtiPointSPtr point)
     if( point )
     {
         coll_type::reader_lock_guard_t guard(getLock());
-    
+
         if(!_reasonabilityLimits.empty())
         {
             if(_reasonabilityLimits.find(point->getPointID()) != _reasonabilityLimits.end())
@@ -1281,7 +1283,7 @@ CtiPointClientManager::ReasonabilityLimitStruct CtiPointClientManager::getReason
     if( point )
     {
         coll_type::reader_lock_guard_t guard(getLock());
-    
+
         if(!_reasonabilityLimits.empty())
         {
             ReasonabilityLimitMap::iterator iter;
@@ -1303,7 +1305,7 @@ CtiTablePointLimit CtiPointClientManager::getPointLimit(CtiPointSPtr point, LONG
     if( point )
     {
         coll_type::reader_lock_guard_t guard(getLock());
-       
+
         PointLimitSet::iterator iter = _limits.find(retVal);
         if(iter != _limits.end())
         {
@@ -1315,12 +1317,12 @@ CtiTablePointLimit CtiPointClientManager::getPointLimit(CtiPointSPtr point, LONG
 }
 
 /**
- * Returns the stored alarming value, or a default alarming 
- * value for the given point. 
- * 
- * @param point CtiPointSPtr 
- * 
- * @return CtiTablePointAlarming 
+ * Returns the stored alarming value, or a default alarming
+ * value for the given point.
+ *
+ * @param point CtiPointSPtr
+ *
+ * @return CtiTablePointAlarming
  */
 CtiTablePointAlarming CtiPointClientManager::getAlarming(CtiPointSPtr point) const
 {
@@ -1329,7 +1331,7 @@ CtiTablePointAlarming CtiPointClientManager::getAlarming(CtiPointSPtr point) con
     if( point )
     {
         coll_type::reader_lock_guard_t guard(getLock());
-    
+
         PointAlarmingSet::iterator iter = _alarming.find(retVal);
         if(iter != _alarming.end())
         {
@@ -1365,12 +1367,12 @@ CtiDynamicPointDispatchSPtr CtiPointClientManager::getDynamic(CtiPointSPtr point
 }
 
 /**
- * Private function, allows the use of a point id instead of 
+ * Private function, allows the use of a point id instead of
  * requiring a pointer.
- * 
- * @param pointID long 
- * 
- * @return CtiDynamicPointDispatch* 
+ *
+ * @param pointID long
+ *
+ * @return CtiDynamicPointDispatch*
  */
 CtiDynamicPointDispatchSPtr CtiPointClientManager::getDynamic(unsigned long pointID) const
 {
@@ -1473,14 +1475,14 @@ CtiPointManager::ptr_type CtiPointClientManager::getOffsetTypeEqual(LONG pao, IN
 }
 
 /**
- * This looks up the point id from the database, then loads the 
- * point from the cache or the database. This can result in 
- * several database hits. 
- * 
- * @param pao LONG 
- * @param offset INT 
- * 
- * @return CtiPointManager::ptr_type 
+ * This looks up the point id from the database, then loads the
+ * point from the cache or the database. This can result in
+ * several database hits.
+ *
+ * @param pao LONG
+ * @param offset INT
+ *
+ * @return CtiPointManager::ptr_type
  */
 CtiPointManager::ptr_type CtiPointClientManager::getControlOffsetEqual(LONG pao, INT offset)
 {
@@ -1503,8 +1505,8 @@ CtiPointManager::ptr_type CtiPointClientManager::getControlOffsetEqual(LONG pao,
 
 /**
  * Adds the alarming table to the internal alarming stores
- * 
- * @param table CtiTablePointAlarming& 
+ *
+ * @param table CtiTablePointAlarming&
  */
 void CtiPointClientManager::addAlarming(CtiTablePointAlarming &table)
 {
@@ -1512,10 +1514,10 @@ void CtiPointClientManager::addAlarming(CtiTablePointAlarming &table)
 }
 
 /**
- * Removes the alarming entry from internal stores with the 
- * given point ID. 
- * 
- * @param pointID unsigned long 
+ * Removes the alarming entry from internal stores with the
+ * given point ID.
+ *
+ * @param pointID unsigned long
  */
 void CtiPointClientManager::removeAlarming(unsigned long pointID)
 {

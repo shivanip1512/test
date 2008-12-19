@@ -43,6 +43,7 @@
 #include "mutex.h"
 #include "ctdpcptrq.h"
 #include "logger.h"
+#include "critical_section.h"
 #include "guard.h"
 #include "thread.h"
 
@@ -92,7 +93,7 @@ private:
     string _evalstring;
     RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > _queue;
 
-    static RWRecursiveLock<RWMutexLock> _mutex;
+    static CtiCriticalSection _mutex;
 
     static const CHAR _loadcommand[];
 

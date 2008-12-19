@@ -88,6 +88,8 @@ unsigned char gUserMessageID = 0;
 
 void _MessageThrFunc()
 {
+    time_t last_cancellation_check = 0;
+
     try
     {
         while( 1 )
@@ -158,7 +160,12 @@ void _MessageThrFunc()
                 }
             }
 
-            rwRunnable().serviceCancellation();
+            if( ::time(0) != last_cancellation_check )
+            {
+                last_cancellation_check = ::time(0);
+
+                rwRunnable().serviceCancellation();
+            }
         }
     }
     catch( RWCancellation& )
@@ -1835,32 +1842,74 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
     PILReturnMap::iterator m_iter;
     string dev_name;
 
-    for( m_iter = good_map.begin();
-         m_iter != good_map.end();
-         m_iter++ )
+    if( !good_map.empty() )
     {
-        GetDeviceName(m_iter->first,dev_name);
-        Tcl_ListObjAppendElement(interp, good_list, Tcl_NewStringObj(dev_name.c_str(), -1));
+        int count = 0;
+
+        for( m_iter = good_map.begin();
+             m_iter != good_map.end();
+             m_iter++ )
+        {
+            if( !(++count % 10000) )
+            {
+                string current = "Writing good list, " + CtiNumStr(count) + " / " + CtiNumStr(good_map.size()) + " written";
+                WriteOutput(current.c_str());
+            }
+
+            GetDeviceName(m_iter->first,dev_name);
+            Tcl_ListObjAppendElement(interp, good_list, Tcl_NewStringObj(dev_name.c_str(), -1));
+        }
+
+        if( count % 10000 )
+        {
+            string current = "Writing good list, " + CtiNumStr(count) + " / " + CtiNumStr(good_map.size()) + " written";
+            WriteOutput(current.c_str());
+        }
     }
 
-    for( m_iter = bad_map.begin();
-         m_iter != bad_map.end();
-         m_iter++ )
+    if( !bad_map.empty() )
     {
-        GetDeviceName(m_iter->first,dev_name);
+        int count = 0;
 
-        Tcl_ListObjAppendElement(interp, bad_list, Tcl_NewStringObj(dev_name.c_str(), -1));
-        Tcl_ListObjAppendElement(interp, status_list,
-        Tcl_NewIntObj(m_iter->second.status));
+        for( m_iter = bad_map.begin();
+             m_iter != bad_map.end();
+             m_iter++ )
+        {
+            if( !(++count % 10000) )
+            {
+                string current = "Writing bad list, " + CtiNumStr(count) + " / " + CtiNumStr(bad_map.size()) + " written";
+                WriteOutput(current.c_str());
+            }
+
+            GetDeviceName(m_iter->first,dev_name);
+
+            Tcl_ListObjAppendElement(interp, bad_list, Tcl_NewStringObj(dev_name.c_str(), -1));
+            Tcl_ListObjAppendElement(interp, status_list,
+            Tcl_NewIntObj(m_iter->second.status));
+        }
+
+        if( count % 10000 )
+        {
+            string current = "Writing bad list, " + CtiNumStr(count) + " / " + CtiNumStr(bad_map.size()) + " written";
+            WriteOutput(current.c_str());
+        }
     }
 
     // any device id's left in this set must have timed out
     if( device_map.size() > 0 )
     {
+        int count = 0;
+
         for( m_iter = device_map.begin();
              m_iter != device_map.end();
              m_iter++ )
         {
+            if( !(++count % 10000) )
+            {
+                string current = "Writing orphans, " + CtiNumStr(count) + " / " + CtiNumStr(device_map.size()) + " written";
+                WriteOutput(current.c_str());
+            }
+
             CtiTableMeterReadLog result(0, m_iter->first, 0, ErrorMACSTimeout, m_iter->second.time);
             resultQueue.push_back(result);
             GetDeviceName(m_iter->first,dev_name);
@@ -1868,6 +1917,12 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
             Tcl_ListObjAppendElement(interp, bad_list, Tcl_NewStringObj(dev_name.c_str(), -1));
             Tcl_ListObjAppendElement(interp, status_list,
             Tcl_NewIntObj(m_iter->second.status));
+        }
+
+        if( count % 10000 )
+        {
+            string current = "Writing orphans, " + CtiNumStr(count) + " / " + CtiNumStr(device_map.size()) + " written";
+            WriteOutput(current.c_str());
         }
     }
 
@@ -2010,7 +2065,6 @@ void HandleReturnMessage(CtiReturnMsg* msg,
                     device_map.erase(pos);
                 }
 
-                
                 if( !bad_map.insert(PILReturnMap::value_type(dev_id,data)).second)
                 {
                     string warn("device already in bad list, id: ");
@@ -2334,7 +2388,6 @@ int CTICreateProcess(ClientData clientData, Tcl_Interp* interp, int argc, char* 
 //It is in no way thread safe.
 int WriteResultsToDatabase(std::deque<CtiTableMeterReadLog>& resultQueue, UINT requestLogId)
 {
-    int retVal = NORMAL;
     int endVal = 0;
 
     if( requestLogId > 0 )
@@ -2350,18 +2403,31 @@ int WriteResultsToDatabase(std::deque<CtiTableMeterReadLog>& resultQueue, UINT r
 
         conn.beginTransaction(connstr.c_str());
 
-        std::deque<CtiTableMeterReadLog>::iterator iter = resultQueue.begin();
-        int i = endVal - resultQueue.size() + 1;
         try
         {
-            for(; iter != resultQueue.end() && i <= endVal; )
-            {
-                iter->setLogID(i);
-                iter->setRequestLogID(requestLogId);
-                iter->Insert(conn);
-                iter++;
-                i++;
+            std::deque<CtiTableMeterReadLog>::iterator result_itr = resultQueue.begin(),
+                                                       result_end = resultQueue.end();
 
+            const int total = resultQueue.size();
+            int i = endVal - total + 1, count = 0;
+
+            for(; result_itr != result_end && i <= endVal; ++result_itr, ++i )
+            {
+                if( !(++count % 1000) )
+                {
+                    string current = "Writing results to DB, " + CtiNumStr(count) + " / " + CtiNumStr(total) + " written";
+                    WriteOutput(current.c_str());
+                }
+
+                result_itr->setLogID(i);
+                result_itr->setRequestLogID(requestLogId);
+                result_itr->Insert(conn);
+            }
+
+            if( count % 1000 )
+            {
+                string current = "Writing results to DB, " + CtiNumStr(count) + " / " + CtiNumStr(total) + " written";
+                WriteOutput(current.c_str());
             }
         }
         catch(...)
@@ -2377,5 +2443,5 @@ int WriteResultsToDatabase(std::deque<CtiTableMeterReadLog>& resultQueue, UINT r
 
     resultQueue.clear();
 
-    return retVal;
+    return NORMAL;
 }
