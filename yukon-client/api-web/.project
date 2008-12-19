@@ -3,13 +3,13 @@
 	<name>api-web</name>
 	<comment></comment>
 	<projects>
-		<project>common</project>
 		<project>api</project>
 		<project>web-common</project>
 		<project>yukonappserver</project>
 		<project>loadcontrol</project>
 		<project>stars</project>
 		<project>commercialcurtailment</project>
+		<project>common</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

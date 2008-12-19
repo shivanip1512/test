@@ -136,6 +136,7 @@
   	  	  <ant dir="${servlet}" target="${dotarget}"/>
           <ant dir="${notification}" target="${dotarget}"/>
           <ant dir="${services}" target="${dotarget}"/>
+          <ant dir="${api-web}" target="${dotarget}"/>
           <ant dir="${yukon-web}" target="${dotarget}"/>
     </target>
 	

@@ -3,9 +3,6 @@
     <wb-module deploy-name="api-web">
         <wb-resource deploy-path="/" source-path="/WebContent"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
-        <dependent-module deploy-path="/WEB-INF/lib" handle="module:/resource/common/common">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
         <dependent-module deploy-path="/WEB-INF/lib" handle="module:/resource/api/api">
             <dependency-type>uses</dependency-type>
         </dependent-module>
@@ -34,6 +31,9 @@
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/joda-time-1.6.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="common.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/common/common">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <property name="java-output-path"/>
