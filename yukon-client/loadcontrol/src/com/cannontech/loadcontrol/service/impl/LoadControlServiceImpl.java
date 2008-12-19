@@ -203,8 +203,7 @@ public class LoadControlServiceImpl implements LoadControlService {
     	int programId = loadControlProgramDao.getProgramIdByProgramName(programName);
     	validateProgramIsVisibleToUser(programName, programId, user);
         
-        //TODO everything else
-        List<ProgramControlHistory> programControlHistory = new ArrayList<ProgramControlHistory>();
+        List<ProgramControlHistory> programControlHistory = loadControlProgramDao.getProgramControlHistory(programId, fromTime, throughTime);
      
         return programControlHistory;
     }

@@ -1,8 +1,10 @@
 package com.cannontech.loadcontrol.dao;
 
+import java.util.Date;
 import java.util.List;
 
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.loadcontrol.service.data.ProgramControlHistory;
 import com.cannontech.loadcontrol.service.data.ProgramStartingGear;
 
 public interface LoadControlProgramDao {
@@ -61,4 +63,14 @@ public interface LoadControlProgramDao {
      * @return
      */
     public List<ProgramStartingGear> getProgramStartingGearsForScenarioId(int scenarioId);
+    
+    /**
+     * Get a list of ProgramControlHistory for a given program id.
+     * Each ProgramControlHistory contains information about the program start/stop.
+     * @param programId
+     * @param startDateTime
+     * @param stopDateTime
+     * @return
+     */
+    public List<ProgramControlHistory> getProgramControlHistory(int programId, Date startDateTime, Date stopDateTime);
 }

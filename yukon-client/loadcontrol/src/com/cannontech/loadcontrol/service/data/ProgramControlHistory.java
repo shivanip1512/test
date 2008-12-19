@@ -1,29 +1,38 @@
 package com.cannontech.loadcontrol.service.data;
 
+import java.util.Date;
 
 public class ProgramControlHistory {
 
-    private int programId;
-    private String programName;
-    private String bunchOfHistoryStuffAndThingsProbablyAndManyMoreFields;
-    
-    public int getProgramId() {
-        return programId;
-    }
-    public void setProgramId(int programId) {
-        this.programId = programId;
-    }
-    public String getProgramName() {
-        return programName;
-    }
-    public void setProgramName(String programName) {
-        this.programName = programName;
-    }
-    public String getBunchOfHistoryStuffAndThingsProbablyAndManyMoreFields() {
-        return bunchOfHistoryStuffAndThingsProbablyAndManyMoreFields;
-    }
-    public void setBunchOfHistoryStuffAndThingsProbablyAndManyMoreFields(
-            String bunchOfHistoryStuffAndThingsProbablyAndManyMoreFields) {
-        this.bunchOfHistoryStuffAndThingsProbablyAndManyMoreFields = bunchOfHistoryStuffAndThingsProbablyAndManyMoreFields;
-    }
+	private String programName;
+	private Date startDateTime;
+	private Date stopDateTime;
+	private String gearName;
+	
+	public String getProgramName() {
+		return programName;
+	}
+	public void setProgramName(String programName) {
+		this.programName = programName;
+	}
+	public Date getStartDateTime() {
+		return startDateTime;
+	}
+	public void setStartDateTime(Date startDateTime) {
+		this.startDateTime = startDateTime;
+	}
+	public Date getStopDateTime() {
+		return stopDateTime;
+	}
+	public void setStopDateTime(Date stopDateTime) {
+		this.stopDateTime = stopDateTime;
+	}
+	public String getGearName() {
+		return gearName;
+	}
+	public void setGearName(String gearName) {
+		this.gearName = gearName;
+	}
+	
+	
 }

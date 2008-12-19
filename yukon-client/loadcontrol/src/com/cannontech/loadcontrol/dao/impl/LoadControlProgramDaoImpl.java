@@ -2,16 +2,23 @@ package com.cannontech.loadcontrol.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.loadcontrol.dao.LMProgramGearHistory;
+import com.cannontech.loadcontrol.dao.LMProgramGearHistoryMapper;
 import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
 import com.cannontech.loadcontrol.dao.ProgramIdMapper;
+import com.cannontech.loadcontrol.service.data.ProgramControlHistory;
 import com.cannontech.loadcontrol.service.data.ProgramStartingGear;
 
 public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
@@ -107,6 +114,80 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
         List<ProgramStartingGear> programStartingGears = simpleJdbcTemplate.query(sql, programStartingGearMapper, scenarioId);
         return programStartingGears;
     }
+    
+    // kinda not so performance tuned, but the table is awkward to work with. 
+    // could probably be done with a really fancy query..
+    public List<ProgramControlHistory> getProgramControlHistory(int programId, Date startDateTime, Date stopDateTime) {
+        
+    	// get raw LMProgramHistory rows
+        String sql = "SELECT ph.ProgramId," +
+        			" ph.ProgramName," +
+        			" pgh.*" +
+                    " FROM LMProgramHistory ph" +
+                    " INNER JOIN LMProgramGearHistory pgh ON (ph.LMProgramHistoryId = pgh.LMProgramHistoryId)" +
+                    " WHERE ph.ProgramId = ?" +
+                    " AND pgh.EventTime > ?" +
+                    " AND pgh.EventTime <= ?" +
+                    " ORDER BY pgh.LMProgramHistoryId, pgh.LMProgramGearHistoryId";
+        List<LMProgramGearHistory> lmProgramGearHistory = simpleJdbcTemplate.query(sql, new LMProgramGearHistoryMapper(), programId, startDateTime, stopDateTime);
+        
+        // sort
+        ProgramControlHistory currentProgramHistoryRecord = null;
+        LinkedHashMap<Integer, ProgramControlHistory> histMap = new LinkedHashMap<Integer, ProgramControlHistory>();
+        
+        for (LMProgramGearHistory gearHist : lmProgramGearHistory) {
+        	
+        	Integer programHistoryId = gearHist.getProgramHistoryId();
+        	currentProgramHistoryRecord = histMap.get(programHistoryId);
+        	if (currentProgramHistoryRecord == null) {
+        		
+        		currentProgramHistoryRecord = new ProgramControlHistory();
+        		currentProgramHistoryRecord.setProgramName(gearHist.getProgramName());
+        		currentProgramHistoryRecord.setGearName(gearHist.getGearName());
+        	}
+        	
+        	boolean recordOk = true;
+        	String action = gearHist.getAction();
+        	Date eventTime = gearHist.getEventTime();
+        	if (action.equals("Start")) {
+        		
+        		currentProgramHistoryRecord.setStartDateTime(eventTime);
+        	
+        	} else if (action.equals("Stop")) {
+        		
+        		currentProgramHistoryRecord.setStopDateTime(eventTime);
+        		
+        		// has no start because startDateTime is in middle of control range? need to go find start
+        		if (currentProgramHistoryRecord.getStartDateTime() == null) {
+        			
+        			sql = "SELECT pgh.EventTime" +
+		           		 " FROM LMProgramGearHistory pgh" +
+		           		 " WHERE pgh.LMProgramHistoryId = ?" +
+		           		 " AND pgh.Action = 'Start'";
+        			
+        			// case for some crazy reason no Start exists for this stop, exclude record completely
+        			try {
+	        			eventTime = simpleJdbcTemplate.queryForObject(sql, Date.class, programHistoryId);
+	        			currentProgramHistoryRecord.setStartDateTime(eventTime);
+        			} catch (EmptyResultDataAccessException e) {
+        				recordOk = false;
+        			} catch (IncorrectResultSizeDataAccessException e) {
+        				recordOk = false;
+        			}
+        		}
+        	}
+        	
+        	// add/update record
+        	if (recordOk) {
+        		histMap.put(programHistoryId, currentProgramHistoryRecord);
+        	} else {
+        		histMap.remove(programHistoryId);
+        	}
+        }
+        
+        return new ArrayList<ProgramControlHistory>(histMap.values());
+    }
+    
     
     @Autowired
     public void setSimpleJdbcTemplate(SimpleJdbcOperations simpleJdbcTemplate) {

@@ -21,11 +21,12 @@ public class LoadControlServiceAdapter implements LoadControlService {
     }
 
     @Override
-    public List<ProgramControlHistory> getControlHistoryByProgramName(
-            String programName, Date fromTime, Date throughTime, LiteYukonUser user)
-            throws NotFoundException, NotAuthorizedException {
-        throw new UnsupportedOperationException("Not Implemented");
-    }
+    public java.util.List<ProgramControlHistory> getControlHistoryByProgramName(
+			String programName, Date fromTime, Date throughTime,
+			LiteYukonUser user) throws NotFoundException,
+			NotAuthorizedException {
+    	throw new UnsupportedOperationException("Not Implemented");
+	};
 
     @Override
     public ProgramStatus getProgramStatusByProgramName(String programName, LiteYukonUser user)

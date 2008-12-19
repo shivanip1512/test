@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.jdom.JDOMException;
 
-import com.cannontech.loadcontrol.service.data.ProgramControlHistory;
+import com.cannontech.loadcontrol.dao.LMProgramGearHistory;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
 import com.cannontech.loadcontrol.service.data.ScenarioProgramStartingGears;
 import com.cannontech.loadcontrol.service.data.ScenarioStatus;
@@ -116,7 +116,7 @@ public interface BGEIntegrationLoadControlXMLService {
     public ScenarioProgramStartingGears getScenarioProgramStartingGearsByScenarioName(String xml) throws IOException, JDOMException, ParseException, IllegalArgumentException;
     
     /**
-     * Returns a list of ProgramControlHistory objects for the given programName, within the given
+     * Returns a list of LMProgramGearHistory objects for the given programName, within the given
      * time period.
      * @param programName
      * @param fromTime inclusive
@@ -124,5 +124,5 @@ public interface BGEIntegrationLoadControlXMLService {
      * @return
      * @throws IllegalArgumentException if no program exists for given programName
      */
-    public List<ProgramControlHistory> getControlHistoryByProgramName(String xml) throws IOException, JDOMException, ParseException, IllegalArgumentException;
+    public List<LMProgramGearHistory> getControlHistoryByProgramName(String xml) throws IOException, JDOMException, ParseException, IllegalArgumentException;
 }
