@@ -118,11 +118,11 @@ while(paoIDs.hasMoreElements()){
 	if (logData.get(paoID) != null)
 	{
 	    int id = paoID.intValue();
-
+    String containerTitle = "Events for " + DaoFactory.getPaoDao().getLiteYukonPAO(id).getPaoName();
 %>
 
 	<cti:titledContainer
-		title="<%="Events for " + DaoFactory.getPaoDao().getLiteYukonPAO(id).getPaoName()%>">
+		title="<%=containerTitle%>">
 
 
 		<form id="resForm" action="feeders.jsp" method="post"><input
