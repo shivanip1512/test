@@ -43,7 +43,6 @@ public class TotalOverriddenDevicesRequestEndpointTest {
         impl = new TotalOverriddenDevicesRequestEndpoint();
         impl.setOptOutService(mockOptOutService);
         impl.setAuthDao(new MockAuthDao());
-        impl.initialize();
     }
     
     private class MockOptOutService extends OptOutServiceAdapter {

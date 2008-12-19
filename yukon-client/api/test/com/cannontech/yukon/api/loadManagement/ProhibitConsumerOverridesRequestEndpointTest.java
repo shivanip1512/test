@@ -30,7 +30,6 @@ public class ProhibitConsumerOverridesRequestEndpointTest {
         impl = new ProhibitConsumerOverridesRequestEndpoint();
         impl.setOptOutService(mockOptOutService);
         impl.setAuthDao(new MockAuthDao());
-        impl.initialize();
     }
     
     private class MockOptOutService extends OptOutServiceAdapter {

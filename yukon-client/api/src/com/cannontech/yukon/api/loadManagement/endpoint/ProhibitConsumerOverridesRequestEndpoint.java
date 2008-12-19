@@ -1,9 +1,6 @@
 package com.cannontech.yukon.api.loadManagement.endpoint;
 
-import javax.annotation.PostConstruct;
-
 import org.jdom.Element;
-import org.jdom.JDOMException;
 import org.jdom.Namespace;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
@@ -25,10 +22,6 @@ public class ProhibitConsumerOverridesRequestEndpoint {
     private OptOutService optOutService;
     private Namespace ns = YukonXml.getYukonNamespace();
 	private AuthDao authDao;
-    
-    @PostConstruct
-    public void initialize() throws JDOMException {
-    }
     
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="prohibitConsumerOverridesRequest")
     public Element invoke(Element prohibitConsumerOverridesRequest, LiteYukonUser user) throws Exception {
