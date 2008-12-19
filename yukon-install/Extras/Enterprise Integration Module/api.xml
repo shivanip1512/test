@@ -1,0 +1,4 @@
+<Context path="api" 
+         reloadable="true" 
+         docBase="C:\yukon\Server\API\Web Service Module/api-web.war" >
+</Context>
