@@ -167,5 +167,11 @@
       <sequence name="OptOutTempOverride">
         <table name="OptOutTemporaryOverride" identitycolumn="OptOutTemporaryOverrideId" initsequence="true"/>
       </sequence>
+      <sequence name="LMGearHistoryID">
+        <table name="LMProgramGearHistory" identitycolumn="LMProgramGearHistoryId" initsequence="true"/>
+      </sequence>
+      <sequence name="LMProgramHistoryID">
+        <table name="LMProgramHistory" identitycolumn="LMProgramHistoryId" initsequence="true"/>
+      </sequence>
   </sequencetable>
 </sequencetables>
