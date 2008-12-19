@@ -512,8 +512,8 @@ INT SynchronizedIdGen(string name, int count)
             }
             else
             {
-                RWMutexLock::LockGuard  guard(coutMux);
-                cout << "**** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint **** Problem reading sequence number: " << name << endl;
             }
         }
     }
