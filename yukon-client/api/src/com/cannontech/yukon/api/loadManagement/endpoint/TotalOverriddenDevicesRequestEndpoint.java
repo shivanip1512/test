@@ -51,38 +51,33 @@ public class TotalOverriddenDevicesRequestEndpoint {
         // init response
         Element resp = new Element("totalOverriddenDevicesByAccountNumberResponse", ns);
         XmlVersionUtils.addVersionAttribute(resp, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
-        
-        // Check authorization
-        try {
-        	authDao.verifyTrueProperty(user, ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_OPT_OUT);
-        } catch (NotAuthorizedException e) {
-        	Element fe = XMLFailureGenerator.generateFailure(
-        			totalOverriddenDevicesByAccountNumberRequest, 
-        			e, 
-        			"UserNotAuthorized", 
-        			"The user is not get total devices overriden.");
-        	resp.addContent(fe);
-        	return resp;
-        }
-        
+
         // run service
-        int totalDevices = 0;
+        Element resultElement;
         try {
-			totalDevices = optOutService.getOptOutDeviceCountForAccount(
-					accountNumber, startTime, stopTime, user);
+            // Check authorization
+            authDao.verifyTrueProperty(user,
+                                       ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_OPT_OUT);
+            int totalDevices = optOutService.getOptOutDeviceCountForAccount(accountNumber,
+                                                                            startTime,
+                                                                            stopTime,
+                                                                            user);
+            resultElement = XmlUtils.createLongElement("totalDevices",
+                                                       ns,
+                                                       totalDevices);
+        } catch (NotAuthorizedException e) {
+            resultElement = XMLFailureGenerator.generateFailure(totalOverriddenDevicesByAccountNumberRequest,
+                                                                e,
+                                                                "UserNotAuthorized",
+                                                                "The user is not authorized to get total devices overriden.");
         } catch (NotFoundException e) {
-        	Element fe = XMLFailureGenerator.generateFailure(
-        			totalOverriddenDevicesByAccountNumberRequest, 
-        			e, 
-        			"InvalidAccountNumber", 
-        			"No account with account number: " + accountNumber);
-        	resp.addContent(fe);
-        	return resp;
+            resultElement = XMLFailureGenerator.generateFailure(totalOverriddenDevicesByAccountNumberRequest,
+                                                                e,
+                                                                "InvalidAccountNumber",
+                                                                "No account with account number: " + accountNumber);
         }
-        
-        // build response
-        resp.addContent(XmlUtils.createLongElement("totalDevices", ns, totalDevices));
-        
+        // return response
+        resp.addContent(resultElement);
         return resp;
     }
     
@@ -110,37 +105,33 @@ public class TotalOverriddenDevicesRequestEndpoint {
         Element resp = new Element("totalOverriddenDevicesByProgramNameResponse", ns);
         XmlVersionUtils.addVersionAttribute(resp, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         
-        // Check authorization
-        try {
-        	authDao.verifyTrueProperty(user, ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_OPT_OUT);
-        } catch (NotAuthorizedException e) {
-        	Element fe = XMLFailureGenerator.generateFailure(
-        			totalOverriddenDevicesByProgramNameRequest, 
-        			e, 
-        			"UserNotAuthorized", 
-        			"The user is not get total devices overriden.");
-        	resp.addContent(fe);
-        	return resp;
-        }
-        
         // run service
-        int totalDevices = 0;
+        Element resultElement;
         try {
-			totalDevices = optOutService.getOptOutDeviceCountForProgram(
-					programName, startTime, stopTime, user);
+            // Check authorization
+            authDao.verifyTrueProperty(user,
+                                       ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_OPT_OUT);
+            int totalDevices = optOutService.getOptOutDeviceCountForProgram(programName,
+                                                                            startTime,
+                                                                            stopTime,
+                                                                            user);
+            resultElement = XmlUtils.createLongElement("totalDevices",
+                                                       ns,
+                                                       totalDevices);
+        } catch (NotAuthorizedException e) {
+            resultElement = XMLFailureGenerator.generateFailure(totalOverriddenDevicesByProgramNameRequest,
+                                                                e,
+                                                                "UserNotAuthorized",
+                                                                "The user is not authorized to get total devices overriden.");
         } catch (NotFoundException e) {
-        	Element fe = XMLFailureGenerator.generateFailure(
-        			totalOverriddenDevicesByProgramNameRequest, 
-        			e, 
-        			"InvalidProgramName", 
-        			"No program with name: " + programName);
-        	resp.addContent(fe);
-        	return resp;
+            resultElement = XMLFailureGenerator.generateFailure(totalOverriddenDevicesByProgramNameRequest,
+                                                                e,
+                                                                "InvalidProgramName",
+                                                                "No program with name: " + programName);
         }
         
         // build response
-        resp.addContent(XmlUtils.createLongElement("totalDevices", ns, totalDevices));
-        
+        resp.addContent(resultElement);
         return resp;
     }    
     

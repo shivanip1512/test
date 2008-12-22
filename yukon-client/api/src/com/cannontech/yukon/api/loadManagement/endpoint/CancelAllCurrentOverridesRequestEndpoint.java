@@ -32,25 +32,23 @@ public class CancelAllCurrentOverridesRequestEndpoint {
         Element resp = new Element("cancelAllCurrentOverridesResponse", ns);
         XmlVersionUtils.addVersionAttribute(resp, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         
-        // Check authorization
-        try {
-        	authDao.verifyTrueProperty(user, ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_OPT_OUT);
-        } catch (NotAuthorizedException e) {
-        	Element fe = XMLFailureGenerator.generateFailure(
-        			cancelAllCurrentOverridesRequest, 
-        			e, 
-        			"UserNotAuthorized", 
-        	"The user is not authorized to cancel all current overrides.");
-        	resp.addContent(fe);
-        	return resp;
-        }
-        
         // run service
-        optOutService.cancelAllOptOuts(user);
-        
+        Element resultElement;
+        try {
+            // Check authorization
+            authDao.verifyTrueProperty(user,
+                                       ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_OPT_OUT);
+            optOutService.cancelAllOptOuts(user);
+            resultElement = XmlUtils.createStringElement("success", ns, "");
+        } catch (NotAuthorizedException e) {
+            resultElement = XMLFailureGenerator.generateFailure(cancelAllCurrentOverridesRequest,
+                                                                e,
+                                                                "UserNotAuthorized",
+                                                                "The user is not authorized to cancel all current overrides.");
+        }
+
         // build response
-        resp.addContent(XmlUtils.createStringElement("success", ns, ""));
-        
+        resp.addContent(resultElement);
         return resp;
     }
     

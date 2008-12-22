@@ -1,9 +1,6 @@
 package com.cannontech.yukon.api.loadManagement.endpoint;
 
-import javax.annotation.PostConstruct;
-
 import org.jdom.Element;
-import org.jdom.JDOMException;
 import org.jdom.Namespace;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
@@ -29,15 +26,6 @@ public class DecrementOverrideLimitRequestEndpoint {
     private AuthDao authDao;
     
     private Namespace ns = YukonXml.getYukonNamespace();
-
-	
-    private static String accountNumberStr = "/y:decrementDeviceOverrideLimitRequest/y:accountNumber";
-    private static String serialNumberStr = "/y:decrementDeviceOverrideLimitRequest/y:serialNumber";
-    private static String loadProgramNameStr = "/y:decrementDeviceOverrideLimitRequest/y:loadProgramName";    
-    
-    @PostConstruct
-    public void initialize() throws JDOMException {
-    }
     
     @PayloadRoot(namespace = "http://yukon.cannontech.com/api", localPart = "decrementDeviceOverrideLimitRequest")
     public Element invoke(Element decrementDeviceOverrideLimitRequest,
@@ -49,52 +37,45 @@ public class DecrementOverrideLimitRequestEndpoint {
         // create template and parse data
         SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(decrementDeviceOverrideLimitRequest);
         
-        String accountNumber = template.evaluateAsString(accountNumberStr);
-        String serialNumber = template.evaluateAsString(serialNumberStr);
-        String loadProgramName = template.evaluateAsString(loadProgramNameStr);        
+        String accountNumber = template.evaluateAsString("/y:decrementDeviceOverrideLimitRequest/y:accountNumber");
+        String serialNumber = template.evaluateAsString("/y:decrementDeviceOverrideLimitRequest/y:serialNumber");
+        String loadProgramName = template.evaluateAsString("/y:decrementDeviceOverrideLimitRequest/y:loadProgramName");        
         
         // init response
         Element resp = new Element("decrementDeviceOverrideLimitResponse", ns);
         XmlVersionUtils.addVersionAttribute(resp, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
-        
-        // Check authorization
-        try {
-        	authDao.verifyTrueProperty(user, ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_OPT_OUT);
-        } catch (NotAuthorizedException e) {
-        	Element fe = XMLFailureGenerator.generateFailure(
-        			decrementDeviceOverrideLimitRequest, 
-        			e, 
-        			"UserNotAuthorized", 
-        			"The user is not authorized to change override limit for device.");
-        	resp.addContent(fe);
-        	return resp;
-        }
-        
+
         // run service
+        Element resultElement;
         try {
-            //TODO pass in loadProgramName as well?
-        	optOutService.allowAdditionalOptOuts(accountNumber, serialNumber, 1, user);
+            // Check authorization
+            authDao.verifyTrueProperty(user,
+                                       ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_OPT_OUT);
+            // TODO pass in loadProgramName as well?
+            optOutService.allowAdditionalOptOuts(accountNumber,
+                                                 serialNumber,
+                                                 1,
+                                                 user);
+            resultElement = XmlUtils.createStringElement("success", ns, "");
+        } catch (NotAuthorizedException e) {
+            resultElement = XMLFailureGenerator.generateFailure(decrementDeviceOverrideLimitRequest,
+                                                                e,
+                                                                "UserNotAuthorized",
+                                                                "The user is not authorized to change override limit for device.");
         } catch (AccountNotFoundException e) {
-        	Element fe = XMLFailureGenerator.generateFailure(
-        			decrementDeviceOverrideLimitRequest, 
-        			e, 
-        			"InvalidAccountNumber", 
-        			"No account with account number: " + accountNumber);
-        	resp.addContent(fe);
-        	return resp;
-        }  catch (InventoryNotFoundException e) {
-        	Element fe = XMLFailureGenerator.generateFailure(
-        			decrementDeviceOverrideLimitRequest, 
-        			e, 
-        			"InvalidSerialNumber", 
-        			"No inventory with serial number: " + serialNumber);
-        	resp.addContent(fe);
-        	return resp;
+            resultElement = XMLFailureGenerator.generateFailure(decrementDeviceOverrideLimitRequest,
+                                                                e,
+                                                                "InvalidAccountNumber",
+                                                                "No account with account number: " + accountNumber);
+        } catch (InventoryNotFoundException e) {
+            resultElement = XMLFailureGenerator.generateFailure(decrementDeviceOverrideLimitRequest,
+                                                                e,
+                                                                "InvalidSerialNumber",
+                                                                "No inventory with serial number: " + serialNumber);
         }
-        
+
         // build response
-        resp.addContent(XmlUtils.createStringElement("success", ns, ""));
-        
+        resp.addContent(resultElement);
         return resp;
     }
     

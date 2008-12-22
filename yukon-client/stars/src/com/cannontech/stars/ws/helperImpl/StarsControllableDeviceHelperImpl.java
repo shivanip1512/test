@@ -10,6 +10,7 @@ import org.springframework.dao.DataAccessException;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
@@ -94,15 +95,11 @@ public class StarsControllableDeviceHelperImpl implements
         try {
             custAcct = customerAccountDao.getByAccountNumber(getAccountNumber(deviceInfo),
                                                              energyCompany.getLiteID());
-        } catch (DataAccessException e) {
+        } catch (NotFoundException e) {
             // convert to a better, Account not found exception
             throw new StarsAccountNotFoundException(getAccountNumber(deviceInfo),
                                                     energyCompany.getName(),
                                                     e);
-        }
-        if (custAcct == null) {
-            throw new StarsAccountNotFoundException(getAccountNumber(deviceInfo),
-                                                    energyCompany.getName());
         }
         return custAcct;
     }

@@ -82,7 +82,6 @@ public class OverrideHistoryRequestEndpointTest {
         impl = new OverrideHistoryRequestEndpoint();
         impl.setOptOutService(mockOptOutService);
         impl.setAuthDao(new MockAuthDao());
-        impl.initialize();
     }
     
     private class MockOptOutService extends OptOutServiceAdapter {

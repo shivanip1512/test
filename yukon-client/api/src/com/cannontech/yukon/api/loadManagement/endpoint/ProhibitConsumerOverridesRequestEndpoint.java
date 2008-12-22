@@ -32,24 +32,23 @@ public class ProhibitConsumerOverridesRequestEndpoint {
         Element resp = new Element("prohibitConsumerOverridesResponse", ns);
         XmlVersionUtils.addVersionAttribute(resp, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         
-        // Check authorization
-        try {
-        	authDao.verifyTrueProperty(user, ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_OPT_OUT);
-        } catch (NotAuthorizedException e) {
-        	Element fe = XMLFailureGenerator.generateFailure(
-        			prohibitConsumerOverridesRequest, 
-        			e, 
-        			"UserNotAuthorized", 
-        			"The user is not authorized to prohibit overrides.");
-        	resp.addContent(fe);
-        	return resp;
-        }
-        
         // run service
-        optOutService.changeOptOutEnabledStateForToday(user, false);
-        
-        resp.addContent(XmlUtils.createStringElement("success", ns, ""));
-        
+        Element resultElement;
+        try {
+            // Check authorization
+            authDao.verifyTrueProperty(user,
+                                       ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_OPT_OUT);
+            optOutService.changeOptOutEnabledStateForToday(user, false);
+            resultElement = XmlUtils.createStringElement("success", ns, "");
+        } catch (NotAuthorizedException e) {
+            resultElement = XMLFailureGenerator.generateFailure(prohibitConsumerOverridesRequest,
+                                                                e,
+                                                                "UserNotAuthorized",
+                                                                "The user is not authorized to prohibit overrides.");
+        }
+
+        // return response
+        resp.addContent(resultElement);
         return resp;
     }
     

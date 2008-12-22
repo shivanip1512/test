@@ -52,14 +52,9 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     private StarsDatabaseCache starsDatabaseCache;
     
     public void doEnrollment(EnrollmentHelper enrollmentHelper, EnrollmentEnum enrollmentEnum, LiteYukonUser user){
-        CustomerAccount customerAccount = null;
-        try {
-            customerAccount = customerAccountDao.getByAccountNumber(enrollmentHelper.getAccountNumber(),
-                                                                    user);
-        } catch (DataAccessException e) {
-            // convert to a better, Account not found exception
-            throw new NotFoundException("Account not found", e);
-        }
+
+        CustomerAccount customerAccount = customerAccountDao.getByAccountNumber(enrollmentHelper.getAccountNumber(),
+                                                                                user);
         List<ProgramEnrollment> enrollmentData = 
             enrollmentDao.getActiveEnrollmentsByAccountId(customerAccount.getAccountId());
 

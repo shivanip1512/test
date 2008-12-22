@@ -302,9 +302,9 @@ public class AccountServiceImpl implements AccountService {
         CustomerAccount  account = null;
         try {
             account = customerAccountDao.getByAccountNumber(accountNumber, energyCompany.getEnergyCompanyID());
-        }catch(EmptyResultDataAccessException e ) {
+        }catch (NotFoundException e ) {
             log.error("Account " + accountNumber + " could not be deleted: Unable to find account for account#: " + accountNumber);
-            throw new InvalidAccountNumberException("Unable to find account for account#: " + accountNumber);
+            throw new InvalidAccountNumberException("Unable to find account for account#: " + accountNumber, e);
         }
         
         LiteStarsCustAccountInformation customerInfo = starsCustAccountInformationDao.getById(account.getAccountId(), energyCompany.getEnergyCompanyID());
@@ -456,7 +456,13 @@ public class AccountServiceImpl implements AccountService {
             throw new InvalidAccountNumberException("Unable to find account for account#: " + accountNumber);
         }
         
-        CustomerAccount account = customerAccountDao.getByAccountNumber(accountNumber, energyCompany.getEnergyCompanyID());
+        CustomerAccount  account = null;
+        try {
+            account = customerAccountDao.getByAccountNumber(accountNumber, energyCompany.getEnergyCompanyID());
+        }catch (NotFoundException e ) {
+            log.error("Account " + accountNumber + " could not be updated: Unable to find account for account#: " + accountNumber);
+            throw new InvalidAccountNumberException("Unable to find account for account#: " + accountNumber, e);
+        }        
         LiteCustomer liteCustomer = customerDao.getLiteCustomer(account.getCustomerId());
         AccountSite accountSite = accountSiteDao.getByAccountSiteId(account.getAccountSiteId());
         LiteSiteInformation liteSiteInformation = siteInformationDao.getSiteInfoById(accountSite.getSiteInformationId());
@@ -628,7 +634,16 @@ public class AccountServiceImpl implements AccountService {
     public AccountDto getAccountDto(String accountNumber, LiteYukonUser yukonUser) {
         AccountDto retrievedDto = new AccountDto();
         LiteStarsEnergyCompany ec = starsDatabaseCache.getEnergyCompanyByUser(yukonUser);
-        CustomerAccount customerAccount = customerAccountDao.getByAccountNumber(accountNumber, ec.getEnergyCompanyID());
+        
+        CustomerAccount customerAccount = null;
+        try {
+            customerAccount = customerAccountDao.getByAccountNumber(accountNumber,
+                                                                    ec.getEnergyCompanyID());
+        } catch (NotFoundException e) {
+            log.error("Unable to find account for account#: " + accountNumber);
+            throw new InvalidAccountNumberException("Unable to find account for account#: " + accountNumber,
+                                                    e);
+        }     
         AccountSite accountSite = accountSiteDao.getByAccountSiteId(customerAccount.getAccountSiteId());
         LiteSiteInformation siteInfo = siteInformationDao.getSiteInfoById(accountSite.getSiteInformationId());
         LiteCustomer customer = customerDao.getLiteCustomer(customerAccount.getCustomerId());

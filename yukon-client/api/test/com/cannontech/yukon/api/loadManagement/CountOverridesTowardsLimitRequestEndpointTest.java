@@ -30,7 +30,6 @@ public class CountOverridesTowardsLimitRequestEndpointTest {
         impl = new CountOverridesTowardsLimitRequestEndpoint();
         impl.setOptOutService(mockOptOutService);
         impl.setAuthDao(new MockAuthDao());
-        impl.initialize();
     }
     
     private class MockOptOutService extends OptOutServiceAdapter {

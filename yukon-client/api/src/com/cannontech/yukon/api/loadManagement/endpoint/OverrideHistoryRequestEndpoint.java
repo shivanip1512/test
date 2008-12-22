@@ -3,10 +3,7 @@ package com.cannontech.yukon.api.loadManagement.endpoint;
 import java.util.Date;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-
 import org.jdom.Element;
-import org.jdom.JDOMException;
 import org.jdom.Namespace;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
@@ -32,64 +29,50 @@ public class OverrideHistoryRequestEndpoint {
 	private AuthDao authDao;
 	
     private Namespace ns = YukonXml.getYukonNamespace();
-    private static String byAccountAccountNumberStr = "/y:overrideHistoryByAccountNumberRequest/y:accountNumber";
-    private static String byAccountStartDateTimeStr = "/y:overrideHistoryByAccountNumberRequest/y:startDateTime";
-    private static String byAccountStopDateTimeStr = "/y:overrideHistoryByAccountNumberRequest/y:stopDateTime";
-    
-    private static String byProgramProgramNameStr = "/y:overrideHistoryByProgramNameRequest/y:programName";
-    private static String byProgramStartDateTimeStr = "/y:overrideHistoryByProgramNameRequest/y:startDateTime";
-    private static String byProgramStopDateTimeStr = "/y:overrideHistoryByProgramNameRequest/y:stopDateTime";
 
-    @PostConstruct
-    public void initialize() throws JDOMException {
-    }
-    
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="overrideHistoryByAccountNumberRequest")
     public Element invokeOverrideByAccount(Element overrideHistoryByAccountNumberRequest, LiteYukonUser user) throws Exception {
         
-    	
         //Verify Request message version
     	XmlVersionUtils.verifyYukonMessageVersion(overrideHistoryByAccountNumberRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
     	
         // create template and parse data
         SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(overrideHistoryByAccountNumberRequest);
         
-        String accountNumber = template.evaluateAsString(byAccountAccountNumberStr);
-        Date startTime = template.evaluateAsDate(byAccountStartDateTimeStr);
-        Date stopTime = template.evaluateAsDate(byAccountStopDateTimeStr);
+        String accountNumber = template.evaluateAsString("/y:overrideHistoryByAccountNumberRequest/y:accountNumber");
+        Date startTime = template.evaluateAsDate("/y:overrideHistoryByAccountNumberRequest/y:startDateTime");
+        Date stopTime = template.evaluateAsDate("/y:overrideHistoryByAccountNumberRequest/y:stopDateTime");
         
         // init response
         Element resp = new Element("overrideHistoryByAccountNumberResponse", ns);
         XmlVersionUtils.addVersionAttribute(resp, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         
-        // Check authorization
-        try {
-        	authDao.verifyTrueProperty(user, ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_OPT_OUT);
-        } catch (NotAuthorizedException e) {
-        	Element fe = XMLFailureGenerator.generateFailure(
-        			overrideHistoryByAccountNumberRequest, 
-        			e, 
-        			"UserNotAuthorized", 
-        			"The user is not authorized to view override history.");
-        	resp.addContent(fe);
-        	return resp;
-        }
         // run service
+        Element resultElement;
         List<OverrideHistory> overrideHistoryList;
         try {
-			overrideHistoryList = optOutService.getOptOutHistoryForAccount(accountNumber, startTime, stopTime, user);
+            // Check authorization
+            authDao.verifyTrueProperty(user,
+                                       ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_OPT_OUT);
+            overrideHistoryList = optOutService.getOptOutHistoryForAccount(accountNumber,
+                                                                           startTime,
+                                                                           stopTime,
+                                                                           user);
+            resultElement = buildHistoryEntriesElement(overrideHistoryList);
+        } catch (NotAuthorizedException e) {
+            resultElement = XMLFailureGenerator.generateFailure(overrideHistoryByAccountNumberRequest,
+                                                                e,
+                                                                "UserNotAuthorized",
+                                                                "The user is not authorized to view override history.");
         } catch (NotFoundException e) {
-        	Element fe = XMLFailureGenerator.generateFailure(
-        			overrideHistoryByAccountNumberRequest, 
-        			e, 
-        			"InvalidAccountNumber", 
-        			"No account with account number: " + accountNumber);
-        	resp.addContent(fe);
-        	return resp;
+            resultElement = XMLFailureGenerator.generateFailure(overrideHistoryByAccountNumberRequest,
+                                                                e,
+                                                                "InvalidAccountNumber",
+                                                                "No account with account number: " + accountNumber);
         }
 
         // build response
-        resp.addContent(buildHistoryEntriesElement(overrideHistoryList));
+        resp.addContent(resultElement);
         return resp;
     }
     
@@ -102,43 +85,41 @@ public class OverrideHistoryRequestEndpoint {
         // create template and parse data
         SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(overrideHistoryByProgramNameRequest);
 
-        String programName = template.evaluateAsString(byProgramProgramNameStr);        
-        Date startTime = template.evaluateAsDate(byProgramStartDateTimeStr);
-        Date stopTime = template.evaluateAsDate(byProgramStopDateTimeStr);
+        String programName = template.evaluateAsString("/y:overrideHistoryByProgramNameRequest/y:programName");        
+        Date startTime = template.evaluateAsDate("/y:overrideHistoryByProgramNameRequest/y:startDateTime");
+        Date stopTime = template.evaluateAsDate("/y:overrideHistoryByProgramNameRequest/y:stopDateTime");
         
         // init response
         Element resp = new Element("overrideHistoryByProgramNameResponse", ns);
         XmlVersionUtils.addVersionAttribute(resp, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         
-        // Check authorization
-        try {
-        	authDao.verifyTrueProperty(user, ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_OPT_OUT);
-        } catch (NotAuthorizedException e) {
-        	Element fe = XMLFailureGenerator.generateFailure(
-        			overrideHistoryByProgramNameRequest, 
-        			e, 
-        			"UserNotAuthorized", 
-        			"The user is not authorized to view override history.");
-        	resp.addContent(fe);
-        	return resp;
-        }
-        
         // run service
+        Element resultElement;
         List<OverrideHistory> overrideHistoryList;
         try {
-			overrideHistoryList = optOutService.getOptOutHistoryByProgram(programName, startTime, stopTime, user);
+            // Check authorization
+            authDao.verifyTrueProperty(user,
+                                       ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_OPT_OUT);
+            overrideHistoryList = optOutService.getOptOutHistoryByProgram(programName,
+                                                                          startTime,
+                                                                          stopTime,
+                                                                          user);
+            resultElement = buildHistoryEntriesElement(overrideHistoryList);
+        } catch (NotAuthorizedException e) {
+            resultElement = XMLFailureGenerator.generateFailure(overrideHistoryByProgramNameRequest,
+                                                                e,
+                                                                "UserNotAuthorized",
+                                                                "The user is not authorized to view override history.");
+
         } catch (NotFoundException e) {
-        	Element fe = XMLFailureGenerator.generateFailure(
-        			overrideHistoryByProgramNameRequest, 
-        			e, 
-        			"InvalidProgramName", 
-        			"No program with name: " + programName);
-        	resp.addContent(fe);
-        	return resp;
+            resultElement = XMLFailureGenerator.generateFailure(overrideHistoryByProgramNameRequest,
+                                                                e,
+                                                                "InvalidProgramName",
+                                                                "No program with name: " + programName);
         }
-        
+
         // build response
-        resp.addContent(buildHistoryEntriesElement(overrideHistoryList));
+        resp.addContent(resultElement);
         return resp;
     }    
     

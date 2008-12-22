@@ -1,9 +1,6 @@
 package com.cannontech.yukon.api.loadManagement.endpoint;
 
-import javax.annotation.PostConstruct;
-
 import org.jdom.Element;
-import org.jdom.JDOMException;
 import org.jdom.Namespace;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
@@ -25,11 +22,7 @@ public class CountOverridesTowardsLimitRequestEndpoint {
 	private OptOutService optOutService;
     private Namespace ns = YukonXml.getYukonNamespace();
 	private AuthDao authDao;
-    
-    @PostConstruct
-    public void initialize() throws JDOMException {
-    }
-    
+
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="countOverridesTowardsLimitRequest")
     public Element invoke(Element countOverridesTowardsLimitRequest, LiteYukonUser user) throws Exception {
         
@@ -39,24 +32,23 @@ public class CountOverridesTowardsLimitRequestEndpoint {
         Element resp = new Element("countOverridesTowardsLimitResponse", ns);
         XmlVersionUtils.addVersionAttribute(resp, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         
-        // Check authorization
-        try {
-        	authDao.verifyTrueProperty(user, ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_OPT_OUT);
-        } catch (NotAuthorizedException e) {
-        	Element fe = XMLFailureGenerator.generateFailure(
-        			countOverridesTowardsLimitRequest, 
-        			e, 
-        			"UserNotAuthorized", 
-        			"The user is not authorized to change count state of overrides.");
-        	resp.addContent(fe);
-        	return resp;
-        }
-        
         // run service
-        optOutService.changeOptOutCountStateForToday(user, true);
-        
-        resp.addContent(XmlUtils.createStringElement("success", ns, ""));
-        
+        Element resultElement;
+        try {
+            // Check authorization
+            authDao.verifyTrueProperty(user,
+                                       ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_OPT_OUT);
+            optOutService.changeOptOutCountStateForToday(user, true);
+            resultElement = XmlUtils.createStringElement("success", ns, "");
+        } catch (NotAuthorizedException e) {
+            resultElement = XMLFailureGenerator.generateFailure(countOverridesTowardsLimitRequest,
+                                                                e,
+                                                                "UserNotAuthorized",
+                                                                "The user is not authorized to change count state of overrides.");
+        }
+
+        // return response
+        resp.addContent(resultElement);
         return resp;
     }
     
