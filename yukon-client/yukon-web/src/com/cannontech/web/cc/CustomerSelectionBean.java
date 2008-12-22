@@ -84,15 +84,6 @@ public class CustomerSelectionBean {
         return eventBean.doAfterCustomerPage();
     }
     
-    public String getLoad() {
-        SelectableCustomer sCustomer = (SelectableCustomer) customerListModel.getRowData();
-        try {
-            return eventBean.getStrategy().getCurrentLoad(sCustomer.getCustomer()).toPlainString();
-        } catch (PointException e) {
-            return "n/a";
-        }
-    }
-
     public String getLoadPointUpdaterStr() {
         SelectableCustomer sCustomer = (SelectableCustomer) customerListModel.getRowData();
         try {

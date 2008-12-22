@@ -1,6 +1,5 @@
 package com.cannontech.cc.service;
 
-import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
 
@@ -33,8 +32,6 @@ public interface CICurtailmentStrategy {
 
     public List<? extends BaseEvent> getEventsForProgram(Program program);
 
-    public BigDecimal getCurrentLoad(CICustomerStub customer) throws PointException;
-    
     public LitePoint getCurrentLoadPoint(CICustomerStub customer) throws PointException;
 
     public LitePoint getContractFirmDemandPoint(CICustomerStub customer) throws PointException;

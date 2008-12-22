@@ -1,7 +1,5 @@
 package com.cannontech.cc.service;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -152,14 +150,6 @@ public abstract class StrategyBase implements CICurtailmentStrategy {
     public abstract
     List<? extends BaseEvent> getEventsForProgram(Program program);
 
-    public BigDecimal getCurrentLoad(CICustomerStub customer) throws PointException {
-        LitePoint point = getCurrentLoadPoint(customer);
-        double interruptLoad = pointAccess.getPointValue(point);
-        
-        BigDecimal bigDecimal = new BigDecimal(interruptLoad, new MathContext(7));
-        return bigDecimal;
-    }
-    
     public LitePoint getCurrentLoadPoint(CICustomerStub customer) throws PointException {
         LitePoint point = pointTypeHelper.getPoint(customer, loadPoint);
         return point;
