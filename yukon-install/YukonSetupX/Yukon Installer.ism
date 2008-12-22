@@ -1441,7 +1441,7 @@
 		<row><td>ID_STRING21</td><td>1033</td><td>Yukon Base</td><td>0</td><td/><td>1125862957</td></row>
 		<row><td>ID_STRING22</td><td>1033</td><td>Yukon Login</td><td>0</td><td/><td>354127979</td></row>
 		<row><td>ID_STRING23</td><td>1033</td><td>Extras</td><td>0</td><td/><td>-1642312495</td></row>
-		<row><td>ID_STRING24</td><td>1033</td><td>NewFeature1</td><td>0</td><td/><td>-1642326576</td></row>
+		<row><td>ID_STRING24</td><td>1033</td><td>Enterprise Integration Module</td><td>0</td><td/><td>-1239674832</td></row>
 		<row><td>ID_STRING25</td><td>1033</td><td>NewFeature1</td><td>0</td><td/><td>-1642289712</td></row>
 		<row><td>ID_STRING3</td><td>1033</td><td>All Yukon server and client applications</td><td>0</td><td/><td>1620663024</td></row>
 		<row><td>ID_STRING4</td><td>1033</td><td>Only the client applications are installed</td><td>0</td><td/><td>1620673328</td></row>
