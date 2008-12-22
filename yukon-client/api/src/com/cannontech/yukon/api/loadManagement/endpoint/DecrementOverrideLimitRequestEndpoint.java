@@ -39,7 +39,6 @@ public class DecrementOverrideLimitRequestEndpoint {
         
         String accountNumber = template.evaluateAsString("/y:decrementDeviceOverrideLimitRequest/y:accountNumber");
         String serialNumber = template.evaluateAsString("/y:decrementDeviceOverrideLimitRequest/y:serialNumber");
-        String loadProgramName = template.evaluateAsString("/y:decrementDeviceOverrideLimitRequest/y:loadProgramName");        
         
         // init response
         Element resp = new Element("decrementDeviceOverrideLimitResponse", ns);
@@ -51,7 +50,6 @@ public class DecrementOverrideLimitRequestEndpoint {
             // Check authorization
             authDao.verifyTrueProperty(user,
                                        ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_OPT_OUT);
-            // TODO pass in loadProgramName as well?
             optOutService.allowAdditionalOptOuts(accountNumber,
                                                  serialNumber,
                                                  1,

@@ -7,7 +7,6 @@ import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
-import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.dao.AccountNotFoundException;
 import com.cannontech.core.dao.InventoryNotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -15,6 +14,7 @@ import com.cannontech.yukon.api.loadManagement.endpoint.DecrementOverrideLimitRe
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XmlUtils;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
+import com.cannontech.yukon.api.utils.LoadManagementTestUtils;
 import com.cannontech.yukon.api.utils.TestUtils;
 
 public class DecrementOverrideLimitRequestEndpointTest {
@@ -23,12 +23,13 @@ public class DecrementOverrideLimitRequestEndpointTest {
     private MockOptOutService mockOptOutService;
     
     //test request xml data
-    private static final String ACCOUNT_VALID = "ACCOUNT_VALID";
-    private static final String SERIAL_VALID = "SERIAL_VALID";    
-    private static final String PROGRAM_VALID = "PROGRAM_VALID";
+    private static final String ACCOUNT1 = "account1";
+    private static final String SERIAL1 = "serial1";    
+    private static final String INVALID_ACCOUNT = "INVALID_ACCOUNT";
+    private static final String INVALID_SERIAL = "INVALID_SERIAL";    
 
     //test response xml data
-    static final String responseElementStr = "/y:decrementDeviceOverrideLimitResponse";   
+    static final String RESP_ELEMENT_NAME = "decrementDeviceOverrideLimitResponse";   
     
     @Before
     public void setUp() throws Exception {
@@ -39,14 +40,87 @@ public class DecrementOverrideLimitRequestEndpointTest {
         impl.setOptOutService(mockOptOutService);
         impl.setAuthDao(new MockAuthDao());
     }
+   
+    @Test
+    public void testInvoke() throws Exception {
+
+    	// Load schemas
+    	Resource reqSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/DecrementDeviceOverrideLimitRequest.xsd",
+    			this.getClass());
+    	Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/DecrementDeviceOverrideLimitResponse.xsd",
+    			this.getClass());
+    	
+    	// test with unauthorized user
+    	//==========================================================================================
+    	Element requestElement = LoadManagementTestUtils.createDecrementLimitRequestElement(
+    			ACCOUNT1, SERIAL1, XmlVersionUtils.YUKON_MSG_VERSION_1_0, reqSchemaResource);
+        LiteYukonUser user = MockAuthDao.getUnAuthorizedUser();
+        Element respElement = impl.invoke(requestElement, user);
+
+        TestUtils.validateAgainstSchema(respElement, respSchemaResource);
+        
+        SimpleXPathTemplate outputTemplate = XmlUtils.getXPathTemplateForElement(respElement);
+        TestUtils.runFailureAssertions(outputTemplate, RESP_ELEMENT_NAME, "UserNotAuthorized");
+    	
+        // test with valid account, serial, authorized user
+        //==========================================================================================
+    	user = new LiteYukonUser();
+        respElement = impl.invoke(requestElement, user);
+        
+        // validate the response against schema
+        TestUtils.validateAgainstSchema(respElement, respSchemaResource);
+        
+        //verify mockService was called with correct params
+        Assert.assertEquals("Incorrect accountNumber.", ACCOUNT1, mockOptOutService.getAccountNumber());
+        Assert.assertEquals("Incorrect serialNumber.", SERIAL1, mockOptOutService.getSerialNumber());
+
+        //verify the results
+        outputTemplate = XmlUtils.getXPathTemplateForElement(respElement);
+        TestUtils.runVersionAssertion(outputTemplate, RESP_ELEMENT_NAME, XmlVersionUtils.YUKON_MSG_VERSION_1_0);        
+        TestUtils.runSuccessAssertion(outputTemplate, RESP_ELEMENT_NAME);
+
+        // test with invalid account, valid serial, authorized user
+        //==========================================================================================
+        requestElement = LoadManagementTestUtils.createDecrementLimitRequestElement(
+    			INVALID_ACCOUNT, SERIAL1, XmlVersionUtils.YUKON_MSG_VERSION_1_0, reqSchemaResource);
+        respElement = impl.invoke(requestElement, user);
+        
+        // validate the response against schema
+        TestUtils.validateAgainstSchema(respElement, respSchemaResource);
+        
+        //verify mockService was called with correct params
+        Assert.assertEquals("Incorrect accountNumber.", INVALID_ACCOUNT, mockOptOutService.getAccountNumber());
+        Assert.assertEquals("Incorrect serialNumber.", SERIAL1, mockOptOutService.getSerialNumber());
+        
+        //verify the results
+        outputTemplate = XmlUtils.getXPathTemplateForElement(respElement);
+        TestUtils.runVersionAssertion(outputTemplate, RESP_ELEMENT_NAME, XmlVersionUtils.YUKON_MSG_VERSION_1_0);        
+        TestUtils.runFailureAssertions(outputTemplate, RESP_ELEMENT_NAME, "InvalidAccountNumber");
+        
+        // test with valid account, invalid serial, authorized user
+        //==========================================================================================
+        requestElement = LoadManagementTestUtils.createDecrementLimitRequestElement(
+        		ACCOUNT1, INVALID_SERIAL, XmlVersionUtils.YUKON_MSG_VERSION_1_0, reqSchemaResource);
+        respElement = impl.invoke(requestElement, user);
+        
+        // validate the response against schema
+        TestUtils.validateAgainstSchema(respElement, respSchemaResource);
+        
+        //verify mockService was called with correct params
+        Assert.assertEquals("Incorrect accountNumber.", ACCOUNT1, mockOptOutService.getAccountNumber());
+        Assert.assertEquals("Incorrect serialNumber.", INVALID_SERIAL, mockOptOutService.getSerialNumber());
+        
+        //verify the results
+        outputTemplate = XmlUtils.getXPathTemplateForElement(respElement);
+        TestUtils.runVersionAssertion(outputTemplate, RESP_ELEMENT_NAME, XmlVersionUtils.YUKON_MSG_VERSION_1_0);        
+        TestUtils.runFailureAssertions(outputTemplate, RESP_ELEMENT_NAME, "InvalidSerialNumber");
+    }
     
     private class MockOptOutService extends OptOutServiceAdapter {
         
         private String accountNumber;
         private String serialNumber;
-        private String programName;
         
-        //TODO add in the programName parameter to this method
         @Override
         public void allowAdditionalOptOuts(String accountNumber,
                 String serialNumber, int additionalOptOuts, LiteYukonUser user)
@@ -54,7 +128,15 @@ public class DecrementOverrideLimitRequestEndpointTest {
             
             this.accountNumber = accountNumber;
             this.serialNumber = serialNumber;
-            this.programName = programName;
+            
+            if(INVALID_ACCOUNT.equals(accountNumber)) {
+        		throw new AccountNotFoundException("Account invalid");
+        	}
+        	
+        	if(INVALID_SERIAL.equals(serialNumber)) {
+        		throw new InventoryNotFoundException("Serial number invalid");
+        	}
+            
         }
 
         public String getAccountNumber() {
@@ -65,66 +147,6 @@ public class DecrementOverrideLimitRequestEndpointTest {
             return serialNumber;
         }
 
-        public String getProgramName() {
-            return programName;
-        }
-    }
-    
-    private class MockAuthDao extends AuthDaoAdapter {
-        
-        @Override
-        public void verifyTrueProperty(LiteYukonUser user,
-                int... rolePropertyIds) throws NotAuthorizedException {
-            if(user.getUserID() < 1) {
-                throw new NotAuthorizedException("Mock auth dao not authorized");
-            }
-        }
-    }
-   
-    @Test
-    public void testInvoke() throws Exception {
-        
-        // Init with Request XML
-        Resource resource = new ClassPathResource("DecrementDeviceOverrideLimitRequest.xml", this.getClass());
-        Element reqElement = XmlUtils.createElementFromResource(resource);
-        
-        // verify the reqElement is valid according to schema
-        Resource reqSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/DecrementDeviceOverrideLimitRequest.xsd",
-                                                           this.getClass());
-        TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
-        
-        //invoke test with unauthorized user
-        LiteYukonUser user = new LiteYukonUser();
-        user.setUserID(-1);
-        Element respElement = impl.invoke(reqElement, user);
-        
-        // validate the response against schema
-        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/DecrementDeviceOverrideLimitResponse.xsd",
-                                                            this.getClass());
-        TestUtils.validateAgainstSchema(respElement, respSchemaResource);
-        
-        //verify the results
-        SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(respElement);
-        TestUtils.runVersionAssertion(template, responseElementStr, XmlVersionUtils.YUKON_MSG_VERSION_1_0);        
-        TestUtils.runFailureAssertions(template, responseElementStr, "UserNotAuthorized");
-        
-        //invoke test
-        user.setUserID(10);
-        respElement = impl.invoke(reqElement, user);
-        
-        //verify mockService was called with correct params
-        Assert.assertEquals("Incorrect accountNumber.", ACCOUNT_VALID, mockOptOutService.getAccountNumber());
-        Assert.assertEquals("Incorrect serialNumber.", SERIAL_VALID, mockOptOutService.getSerialNumber());
-        //TODO enable the programName assertion, after it is added to service method
-        //Assert.assertEquals("Incorrect programName.", PROGRAM_VALID, mockOptOutService.getProgramName());        
-        
-        // verify the respElement is valid according to schema
-        TestUtils.validateAgainstSchema(respElement, respSchemaResource);
-
-        // create template and parse response data
-        template = XmlUtils.getXPathTemplateForElement(respElement);
-        TestUtils.runVersionAssertion(template, responseElementStr, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
-        TestUtils.runSuccessAssertion(template, responseElementStr);
     }
 }
 
