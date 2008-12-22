@@ -24,7 +24,6 @@ import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.dr.event.dao.LMCustomerEventBaseDao;
 import com.cannontech.stars.dr.event.dao.LMHardwareEventDao;
-import com.cannontech.stars.util.StarsUtils;
 
 public class LMHardwareEventDaoImpl implements LMHardwareEventDao,
         InitializingBean {
