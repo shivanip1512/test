@@ -20,6 +20,7 @@ import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.user.SystemUserContext;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.yukon.api.util.XmlUtils;
 import com.google.common.collect.ImmutableSet;
 
 public class FlexibleMethodEndpointAdapter extends AbstractMethodEndpointAdapter {
@@ -84,9 +85,15 @@ public class FlexibleMethodEndpointAdapter extends AbstractMethodEndpointAdapter
         Object result = methodEndpoint.invoke(arguments);
         
         if (result != null) {
+        	
+        	// response
             Element responseElement = (Element) result;
-            WebServiceMessage response = messageContext.getResponse();
-            transform(new JDOMSource(responseElement), response.getPayloadResult());
+            WebServiceMessage responseMessage = messageContext.getResponse();
+            
+            // copy request soap headers to response
+            XmlUtils.copySoapHeaders(messageContext.getRequest(), responseMessage);
+            
+            transform(new JDOMSource(responseElement), responseMessage.getPayloadResult());
         }
     }
     
@@ -95,4 +102,5 @@ public class FlexibleMethodEndpointAdapter extends AbstractMethodEndpointAdapter
     public void setYukonUserDao(YukonUserDao yukonUserDao) {
 		this.yukonUserDao = yukonUserDao;
 	}
+    
 }

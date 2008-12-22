@@ -26,13 +26,11 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import org.springframework.ws.WebServiceMessage;
 import org.springframework.ws.client.core.WebServiceMessageCallback;
 import org.springframework.ws.client.core.WebServiceTemplate;
-import org.springframework.ws.soap.SoapHeader;
-import org.springframework.ws.soap.SoapHeaderElement;
-import org.springframework.ws.soap.SoapMessage;
 
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.util.JsonView;
+import com.cannontech.yukon.api.util.XmlUtils;
 
 public class XMLTestController extends MultiActionController {
     
@@ -42,10 +40,13 @@ public class XMLTestController extends MultiActionController {
 	// HOME
     public ModelAndView home(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         
+    	YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+    	
     	ModelAndView mav = new ModelAndView("webservice/home.jsp");
     	mav.addObject("exampleFileNames", getExampleFileNames());
     	mav.addObject("uriNames", getUriNames());
     	mav.addObject("uri", getUriNames().get(0));
+    	mav.addObject("userName", userContext.getYukonUser().getUsername());
     	
     	return mav;
     }
@@ -61,6 +62,16 @@ public class XMLTestController extends MultiActionController {
         
         return mav;
     }
+    
+    public ModelAndView resetUserName(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        
+    	YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+    	
+        ModelAndView mav = new ModelAndView(new JsonView());
+        mav.addObject("userName", userContext.getYukonUser().getUsername());
+        
+        return mav;
+    }
 
     // EXECUTE REQUEST
     public ModelAndView executeRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -71,6 +82,7 @@ public class XMLTestController extends MultiActionController {
     	String selectedTemplateIndex = ServletRequestUtils.getRequiredStringParameter(request, "selectedTemplateIndex");
     	String selectedUriIndex = ServletRequestUtils.getRequiredStringParameter(request, "selectedUriIndex");
     	String uri = ServletRequestUtils.getRequiredStringParameter(request, "uri");
+    	String userName = ServletRequestUtils.getStringParameter(request, "userName", "");
     	
     	String xmlResponse;
     	try {
@@ -79,8 +91,7 @@ public class XMLTestController extends MultiActionController {
 	        Source requestSource = new StreamSource(new StringReader(xmlRequest));
 	        
 	        // request call back
-	        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-	        UserHeaderSettingCallback callback = new UserHeaderSettingCallback(userContext);
+	        UserHeaderSettingCallback callback = new UserHeaderSettingCallback(userName);
 	        
 	        // result
 	        Writer responseWriter = new StringWriter();
@@ -103,6 +114,7 @@ public class XMLTestController extends MultiActionController {
     	mav.addObject("xmlResponse", xmlResponse);
     	mav.addObject("selectedTemplateIndex", selectedTemplateIndex);
     	mav.addObject("selectedUriIndex", selectedUriIndex);
+    	mav.addObject("userName", userName);
     	
         return mav;
     }
@@ -110,23 +122,18 @@ public class XMLTestController extends MultiActionController {
     
     private class UserHeaderSettingCallback implements WebServiceMessageCallback {
 
-    	private YukonUserContext userContext;
+    	private String userName;
     	
-    	public UserHeaderSettingCallback(YukonUserContext userContext) {
+    	public UserHeaderSettingCallback(String userName) {
     	
-    		this.userContext = userContext;
+    		this.userName = userName;
     	}
     	
 		@Override
 		public void doWithMessage(WebServiceMessage message) throws IOException, TransformerException {
 			
-			SoapMessage soapMessage = ((SoapMessage)message);
-			SoapHeader soapHeader = soapMessage.getSoapHeader();
-
-			QName userElementName = new QName("http://yukon.cannontech.com/api", "user", "api");
-			SoapHeaderElement userHeaderElement = soapHeader.addHeaderElement(userElementName);
-			userHeaderElement.setText(this.userContext.getYukonUser().getUsername());
-			userHeaderElement.setMustUnderstand(false);
+			QName headerElementName = new QName("http://yukon.cannontech.com/api", "user", "api");
+			XmlUtils.addHeaderToMessage(message, headerElementName, this.userName, false);
 		}
     }
 

@@ -3,8 +3,10 @@ package com.cannontech.yukon.api.util;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
+import javax.xml.namespace.QName;
 import javax.xml.transform.dom.DOMSource;
 
 import org.apache.commons.lang.StringUtils;
@@ -22,6 +24,10 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.core.io.Resource;
+import org.springframework.ws.WebServiceMessage;
+import org.springframework.ws.soap.SoapHeader;
+import org.springframework.ws.soap.SoapHeaderElement;
+import org.springframework.ws.soap.SoapMessage;
 import org.w3c.dom.Node;
 
 public class XmlUtils {
@@ -176,5 +182,37 @@ public class XmlUtils {
         xmlOutputter.output(element, System.out);
         System.out.println();
         System.out.println();
+    }
+    
+    public static void addHeaderToMessage(WebServiceMessage message, QName headerElementName, String headerValue, boolean mustUnderstand) {
+    	
+    	SoapMessage soapMessage = ((SoapMessage)message);
+		SoapHeader soapHeader = soapMessage.getSoapHeader();
+
+		SoapHeaderElement headerElement = soapHeader.addHeaderElement(headerElementName);
+		headerElement.setText(headerValue);
+		headerElement.setMustUnderstand(mustUnderstand);
+    }
+    
+    @SuppressWarnings("unchecked")
+    public static void copySoapHeaders(WebServiceMessage fromMessage, WebServiceMessage toMessage) {
+    	
+    	// to
+        SoapMessage toSoapMessage = ((SoapMessage)toMessage);
+		SoapHeader toSoapHeader = toSoapMessage.getSoapHeader();
+		
+        // from
+		SoapMessage fromSoapMessage = ((SoapMessage)fromMessage);
+		SoapHeader fromSoapHeader = fromSoapMessage.getSoapHeader();
+		Iterator<SoapHeaderElement> fromHeaderElements = fromSoapHeader.examineAllHeaderElements();
+		while (fromHeaderElements.hasNext()) {
+			
+			SoapHeaderElement fromHeaderElement = fromHeaderElements.next();
+			
+			QName toHeaderElementName = new QName(fromHeaderElement.getName().getNamespaceURI(), fromHeaderElement.getName().getLocalPart(), fromHeaderElement.getName().getPrefix());
+			SoapHeaderElement toHeaderElement = toSoapHeader.addHeaderElement(toHeaderElementName);
+			toHeaderElement.setText(fromHeaderElement.getText());
+			toHeaderElement.setMustUnderstand(fromHeaderElement.getMustUnderstand());
+		}
     }
 }

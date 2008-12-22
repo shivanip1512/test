@@ -43,6 +43,15 @@
 			
 			$('executeRequestForm').submit();
 		}
+
+		function resetUserName() {
+
+            var onComplete = function(transport, json) {
+            	$('userName').value = json.userName;
+          	};
+            
+            new Ajax.Request('/spring/debug/webservice/xml/resetUserName', {'method': 'post', 'parameters': {}, 'onComplete': onComplete});
+		}
 		
 	</script>
     
@@ -56,24 +65,36 @@
     	
     	<%-- EXAMPLE FILE --%>
     		<td>
-    			<B>Request Type:</B>
+    		
+    			<table>
+    				<tr>
+    					<td><B>Request Type:</B></td>
+    					<td>
+    						<input type="hidden" id="selectedTemplateIndex" name="selectedTemplateIndex" value="${selectedTemplateIndex}">
+			    			<select id="xmlTemplate" name="xmlTemplate" onchange="xmlTemplateChange()">
+			    				<option value="">Choose...</option>
+			    				<c:forEach var="fileName" items="${exampleFileNames}" varStatus="status">
+			    					<c:choose>
+				    					<c:when test="${status.count == selectedTemplateIndex}">
+				    						<option value="${fileName}" selected>${fileName}</option>
+				    					</c:when>
+				    					<c:otherwise>
+				    						<option value="${fileName}">${fileName}</option>
+				    					</c:otherwise>
+			    					</c:choose>
+			    				</c:forEach>
+			    			</select>
+    					</td>
+    				</tr>
+    				<tr>
+    					<td><B>User Name:</B></td>
+    					<td>
+    						<input type="text" id="userName" name="userName" value="${userName}">
+    						<input type="button" onclick="resetUserName()" value="Reset User Name">
+    					</td>
+    				</tr>
+    			</table>
     			
-    			<input type="hidden" id="selectedTemplateIndex" name="selectedTemplateIndex" value="${selectedTemplateIndex}">
-    			<select id="xmlTemplate" name="xmlTemplate" onchange="xmlTemplateChange()">
-    				<option value="">Choose...</option>
-    				<c:forEach var="fileName" items="${exampleFileNames}" varStatus="status">
-    					<c:choose>
-	    					<c:when test="${status.count == selectedTemplateIndex}">
-	    						<option value="${fileName}" selected>${fileName}</option>
-	    					</c:when>
-	    					<c:otherwise>
-	    						<option value="${fileName}">${fileName}</option>
-	    					</c:otherwise>
-    					</c:choose>
-    				</c:forEach>
-    			</select>
-    			<br>
-				<input type="button" value="Submit Request" onclick="executeRequestForm()"> 
     		</td>
     		
     		<%-- URI --%>
@@ -115,7 +136,13 @@
     	<tr>
     		<td colspan="2">
 		        <textarea id="xmlRequest" name="xmlRequest" class="xml">${xmlRequest}</textarea>
+		        
+		        
+		        <%-- SUBMIT --%>
+		        <br>
+		    	<input type="button" value="Submit Request" onclick="executeRequestForm()"> 
 		    </td>
+		    
     	</tr>
     
     	<%-- RESPONSE AREA --%>
