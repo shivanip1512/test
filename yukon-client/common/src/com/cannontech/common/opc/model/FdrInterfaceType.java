@@ -27,7 +27,7 @@ public enum FdrInterfaceType {
 	WABASH(24),
 	TRISTATESUB(25),
 	OPC(26),
-	MULTISPEAK(27);
+	MULTISPEAK_LM(27);
 	
 	private final int pos;
 	
