@@ -13,6 +13,7 @@ import org.springframework.core.io.Resource;
 import org.w3c.dom.Node;
 
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
@@ -21,6 +22,7 @@ import com.cannontech.stars.util.StarsClientRequestException;
 import com.cannontech.stars.util.StarsInvalidArgumentException;
 import com.cannontech.stars.ws.dto.StarsControllableDeviceDTO;
 import com.cannontech.stars.ws.helper.StarsControllableDeviceHelper;
+import com.cannontech.yukon.api.loadManagement.AuthDaoAdapter;
 import com.cannontech.yukon.api.stars.endpoint.ControllableDevicesRequestEndPoint;
 import com.cannontech.yukon.api.stars.endpoint.ControllableDevicesRequestEndPoint.ErrorCodeMapper;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
@@ -38,6 +40,7 @@ public class ControllableDevicesRequestEndPointTest {
     private static final String updateDeviceReqResource = "ControllableDevicesRequestUpdate.xml";
     private static final String removeDeviceReqResource = "ControllableDevicesRequestRemove.xml";
 
+    private static final String USER_NOT_AUTHORIZED = ErrorCodeMapper.UserNotAuthorized.name();    
     private static final String ACCOUNT_NUM_NOT_FOUND = ErrorCodeMapper.AccountNotFound.name();
     private static final String ACCOUNT_NUM_INVALID_ARG = ErrorCodeMapper.InvalidArgument.name();
     private static final String ACCOUNT_NUM_ERROR = ErrorCodeMapper.ClientRequestError.name();
@@ -78,7 +81,7 @@ public class ControllableDevicesRequestEndPointTest {
 
         impl = new ControllableDevicesRequestEndPoint();
         impl.setStarsControllableDeviceHandler(mockHelper);
-        impl.initialize();
+        impl.setAuthDao(new MockAuthDao());
     }
 
     private class MockControllableDeviceHelper implements
@@ -132,8 +135,19 @@ public class ControllableDevicesRequestEndPointTest {
         }
     }
 
+    private class MockAuthDao extends AuthDaoAdapter {
+        
+        @Override
+        public void verifyTrueProperty(LiteYukonUser user,
+                int... rolePropertyIds) throws NotAuthorizedException {
+            if(user.getUserID() <= 0) {
+                throw new NotAuthorizedException("Mock auth dao not authorized");
+            }
+        }
+    }
+    
     @Test
-    public void testInvokeAddDevice() throws Exception {
+    public void testInvokeAddDeviceAuthUser() throws Exception {
 
         // init
         Resource resource = new ClassPathResource(newDeviceReqResource, this.getClass());
@@ -143,8 +157,10 @@ public class ControllableDevicesRequestEndPointTest {
         Resource reqSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/stars/schemas/NewControllableDevicesRequest.xsd", this.getClass());
         TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
         
-        //invoke test
-        Element respElement = impl.invokeAddDevice(reqElement, null);
+        //invoke test with authorized user
+        LiteYukonUser user = new LiteYukonUser();
+        user.setUserID(1);
+        Element respElement = impl.invokeAddDevice(reqElement, user);
         
         // verify the respElement is valid according to schema
         Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/stars/schemas/NewControllableDevicesResponse.xsd", this.getClass());
@@ -209,7 +225,47 @@ public class ControllableDevicesRequestEndPointTest {
     }
 
     @Test
-    public void testInvokeUpdateDevice() throws Exception {
+    public void testInvokeAddDeviceUnauthUser() throws Exception {
+
+        // init
+        Resource resource = new ClassPathResource(newDeviceReqResource, this.getClass());
+        Element reqElement = XmlUtils.createElementFromResource(resource);
+        
+        // verify the reqElement is valid according to schema
+        Resource reqSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/stars/schemas/NewControllableDevicesRequest.xsd", this.getClass());
+        TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
+        
+        //invoke test with unauthorized user
+        LiteYukonUser user = new LiteYukonUser();
+        user.setUserID(-1);
+        Element respElement = impl.invokeAddDevice(reqElement, user);
+        
+        // verify the respElement is valid according to schema
+        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/stars/schemas/NewControllableDevicesResponse.xsd", this.getClass());
+        TestUtils.validateAgainstSchema(respElement, respSchemaResource);
+
+        // create template and parse response data
+        SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(respElement);
+        TestUtils.runVersionAssertion(template, newDevicesRespStr, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
+
+        List<ControllableDeviceResult> deviceResults = template.evaluate(newDeviceRespElementStr,
+                                                                         deviceResultElementMapper);
+
+        // verify data in the response
+        assertTrue("Incorrect resultSize", deviceResults != null && deviceResults.size() == 4);
+        
+        // verify that all device requests failed with unauthorized user error
+        for (ControllableDeviceResult deviceResult : deviceResults) {
+            assertTrue("Success should be false", !deviceResult.isSuccess());
+            assertTrue("Incorrect errorCode",
+                       deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode()
+                                                                              .equals(USER_NOT_AUTHORIZED));
+            assertTrue("Missing errorDescription", deviceResult.getFailErrorDesc() != null);            
+        }
+    }
+    
+    @Test
+    public void testInvokeUpdateDeviceAuthUser() throws Exception {
 
         // init
         Resource resource = new ClassPathResource(updateDeviceReqResource, this.getClass());
@@ -219,8 +275,10 @@ public class ControllableDevicesRequestEndPointTest {
         Resource reqSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/stars/schemas/UpdateControllableDevicesRequest.xsd", this.getClass());
         TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
         
-        //invoke test        
-        Element respElement = impl.invokeUpdateDevice(reqElement, null);
+        //invoke test with authorized user
+        LiteYukonUser user = new LiteYukonUser();
+        user.setUserID(1);
+        Element respElement = impl.invokeUpdateDevice(reqElement, user);
         
         // verify the respElement is valid according to schema
         Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/stars/schemas/UpdateControllableDevicesResponse.xsd", this.getClass());
@@ -283,9 +341,49 @@ public class ControllableDevicesRequestEndPointTest {
         assertTrue("Error Code should be blank", StringUtils.isBlank(deviceResult.getFailErrorCode()));
         assertTrue("Error Description should be blank", StringUtils.isBlank(deviceResult.getFailErrorDesc()));
     }
+    
+    @Test
+    public void testInvokeUpdateDeviceUnauthUser() throws Exception {
+
+        // init
+        Resource resource = new ClassPathResource(updateDeviceReqResource, this.getClass());
+        Element reqElement = XmlUtils.createElementFromResource(resource);
+        
+        // verify the reqElement is valid according to schema
+        Resource reqSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/stars/schemas/UpdateControllableDevicesRequest.xsd", this.getClass());
+        TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
+        
+        //invoke test with authorized user
+        LiteYukonUser user = new LiteYukonUser();
+        user.setUserID(-1);
+        Element respElement = impl.invokeUpdateDevice(reqElement, user);
+        
+        // verify the respElement is valid according to schema
+        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/stars/schemas/UpdateControllableDevicesResponse.xsd", this.getClass());
+        TestUtils.validateAgainstSchema(respElement, respSchemaResource);
+        
+        // create template and parse response data
+        SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(respElement);
+        TestUtils.runVersionAssertion(template, updateDevicesRespStr, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
+        
+        List<ControllableDeviceResult> deviceResults = template.evaluate(updateDeviceRespElementStr,
+                                                                         deviceResultElementMapper);
+
+        // verify data in the response
+        assertTrue("Incorrect resultSize", deviceResults != null && deviceResults.size() == 4);
+        
+        // verify that all device requests failed with unauthorized user error
+        for (ControllableDeviceResult deviceResult : deviceResults) {
+            assertTrue("Success should be false", !deviceResult.isSuccess());
+            assertTrue("Incorrect errorCode",
+                       deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode()
+                                                                              .equals(USER_NOT_AUTHORIZED));
+            assertTrue("Missing errorDescription", deviceResult.getFailErrorDesc() != null);            
+        }        
+    }
 
     @Test
-    public void testInvokeRemoveDevice() throws Exception {
+    public void testInvokeRemoveDeviceAuthUser() throws Exception {
 
         // init
         Resource resource = new ClassPathResource(removeDeviceReqResource, this.getClass());
@@ -295,8 +393,10 @@ public class ControllableDevicesRequestEndPointTest {
         Resource reqSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/stars/schemas/RemoveControllableDevicesRequest.xsd", this.getClass());
         TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
         
-        //invoke test        
-        Element respElement = impl.invokeRemoveDevice(reqElement, null);
+        //invoke test with authorized user
+        LiteYukonUser user = new LiteYukonUser();
+        user.setUserID(1);
+        Element respElement = impl.invokeRemoveDevice(reqElement, user);
         
         // verify the respElement is valid according to schema
         Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/stars/schemas/RemoveControllableDevicesResponse.xsd", this.getClass());
@@ -358,6 +458,46 @@ public class ControllableDevicesRequestEndPointTest {
         assertTrue("Success should be true", deviceResult.isSuccess());
         assertTrue("Error Code should be blank", StringUtils.isBlank(deviceResult.getFailErrorCode()));
         assertTrue("Error Description should be blank", StringUtils.isBlank(deviceResult.getFailErrorDesc()));
+    }
+    
+    @Test
+    public void testInvokeRemoveDeviceUnauthUser() throws Exception {
+
+        // init
+        Resource resource = new ClassPathResource(removeDeviceReqResource, this.getClass());
+        Element reqElement = XmlUtils.createElementFromResource(resource);
+
+        // verify the reqElement is valid according to schema
+        Resource reqSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/stars/schemas/RemoveControllableDevicesRequest.xsd", this.getClass());
+        TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
+        
+        //invoke test with authorized user
+        LiteYukonUser user = new LiteYukonUser();
+        user.setUserID(-1);
+        Element respElement = impl.invokeRemoveDevice(reqElement, user);
+        
+        // verify the respElement is valid according to schema
+        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/stars/schemas/RemoveControllableDevicesResponse.xsd", this.getClass());
+        TestUtils.validateAgainstSchema(respElement, respSchemaResource);
+        
+        // create template and parse response data
+        SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(respElement);
+        TestUtils.runVersionAssertion(template, removeDevicesRespStr, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
+        
+        List<ControllableDeviceResult> deviceResults = template.evaluate(removeDeviceRespElementStr,
+                                                                         deviceResultElementMapper);
+
+        // verify data in the response
+        assertTrue("Incorrect resultSize", deviceResults != null && deviceResults.size() == 4);
+        
+        // verify that all device requests failed with unauthorized user error
+        for (ControllableDeviceResult deviceResult : deviceResults) {
+            assertTrue("Success should be false", !deviceResult.isSuccess());
+            assertTrue("Incorrect errorCode",
+                       deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode()
+                                                                              .equals(USER_NOT_AUTHORIZED));
+            assertTrue("Missing errorDescription", deviceResult.getFailErrorDesc() != null);            
+        }        
     }
 
     private static class ControllableDeviceResultMapper implements

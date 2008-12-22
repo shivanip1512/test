@@ -2,11 +2,8 @@ package com.cannontech.yukon.api.stars.endpoint;
 
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.log4j.Logger;
 import org.jdom.Element;
-import org.jdom.JDOMException;
 import org.jdom.Namespace;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
@@ -15,8 +12,11 @@ import org.w3c.dom.Node;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.ObjectMapper;
+import com.cannontech.core.dao.AuthDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.stars.dr.account.exception.StarsAccountNotFoundException;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceAlreadyAssignedException;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceAlreadyExistsException;
@@ -37,6 +37,7 @@ import com.cannontech.yukon.api.util.YukonXml;
 public class ControllableDevicesRequestEndPoint {
     private static Logger log = YukonLogManager.getLogger(ControllableDevicesRequestEndPoint.class);
     private StarsControllableDeviceHelper starsControllableDeviceHelper;
+    private AuthDao authDao;    
 
     private Namespace ns = YukonXml.getYukonNamespace();
 
@@ -75,10 +76,6 @@ public class ControllableDevicesRequestEndPoint {
         removeDeviceElementStr = removeDevicesReqStr + controllableDeviceListStr + controllableDeviceStr;
     }
 
-    @PostConstruct
-    public void initialize() throws JDOMException {
-    }
-
     @PayloadRoot(namespace = "http://yukon.cannontech.com/api", localPart = "newControllableDevicesRequest")
     public Element invokeAddDevice(Element newControllableDevicesRequest, LiteYukonUser user) {
         // check request xml version
@@ -92,7 +89,13 @@ public class ControllableDevicesRequestEndPoint {
         // run service
         for (StarsControllableDeviceDTO device : devices) {
             try {
+                // check authorization
+                authDao.verifyTrueProperty(user,
+                                           ConsumerInfoRole.CONSUMER_INFO_HARDWARES_CREATE);               
                 starsControllableDeviceHelper.addDeviceToAccount(device, user);
+            } catch (NotAuthorizedException e){
+                // store error and continue to process all devices
+                device.setThrowable(e);             
             } catch (StarsClientRequestException e) {
                 // store error and continue to process all devices
                 device.setThrowable(e);
@@ -119,7 +122,13 @@ public class ControllableDevicesRequestEndPoint {
         // run service
         for (StarsControllableDeviceDTO device : devices) {
             try {
+                // check authorization
+                authDao.verifyTrueProperty(user,
+                                           ConsumerInfoRole.CONSUMER_INFO_HARDWARES);
                 starsControllableDeviceHelper.updateDeviceOnAccount(device, user);
+            } catch (NotAuthorizedException e){
+                // store error and continue to process all devices
+                device.setThrowable(e);                
             } catch (StarsClientRequestException e) {
                 // store error and continue to process all devices
                 device.setThrowable(e);
@@ -146,7 +155,13 @@ public class ControllableDevicesRequestEndPoint {
         // run service
         for (StarsControllableDeviceDTO device : devices) {
             try {
+                // check authorization
+                authDao.verifyTrueProperty(user,
+                                           ConsumerInfoRole.CONSUMER_INFO_HARDWARES);
                 starsControllableDeviceHelper.removeDeviceFromAccount(device, user);
+            } catch (NotAuthorizedException e){
+                // store error and continue to process all devices
+                device.setThrowable(e);                
             } catch (StarsClientRequestException e) {
                 // store error and continue to process all devices
                 device.setThrowable(e);
@@ -208,6 +223,7 @@ public class ControllableDevicesRequestEndPoint {
     }
 
     enum ErrorCodeMapper {
+        UserNotAuthorized(NotAuthorizedException.class),
         AccountNotFound(StarsAccountNotFoundException.class), 
         DeviceAlreadyAssigned(StarsDeviceAlreadyAssignedException.class), 
         DeviceAlreadyExists(StarsDeviceAlreadyExistsException.class), 
@@ -266,4 +282,10 @@ public class ControllableDevicesRequestEndPoint {
             StarsControllableDeviceHelper starsControllableDeviceHandler) {
         this.starsControllableDeviceHelper = starsControllableDeviceHandler;
     }
+
+    @Autowired
+    public void setAuthDao(AuthDao authDao) {
+        this.authDao = authDao;
+    }
+    
 }
