@@ -28,6 +28,7 @@ import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.EnergyCompanyDao;
 import com.cannontech.core.dao.InventoryNotFoundException;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.activity.ActivityLogActions;
@@ -471,27 +472,63 @@ public class OptOutServiceImpl implements OptOutService {
 	@Override
 	public List<OverrideHistory> getOptOutHistoryForAccount(
 			String accountNumber, Date startTime, Date stopTime,
-			LiteYukonUser user) throws NotFoundException {
+			LiteYukonUser user, String programName) 
+		throws AccountNotFoundException, ProgramNotFoundException {
 
 		List<OverrideHistory> historyList = new ArrayList<OverrideHistory>();
 		
-		CustomerAccount account = customerAccountDao.getByAccountNumber(accountNumber, user);
+		CustomerAccount account = null;
+		try {
+			account = customerAccountDao.getByAccountNumber(accountNumber, user);
+		} catch (NotFoundException e) {
+			throw new AccountNotFoundException("Account not found", e);
+		}
 
 		List<OverrideHistory> inventoryHistoryList = 
 			optOutEventDao.getOptOutHistoryForAccount(account.getAccountId(), startTime, stopTime);
 		
-		for(OverrideHistory history : inventoryHistoryList) {
-			Integer inventoryId = history.getInventoryId();
+		// See if the optional programName parameter was set - if so, only create
+		// history objects for that program
+		if (programName != null) {
+			LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(user);
+			Program program = null;
+			try {
+				program = programDao.getByProgramName(programName, 
+											Collections.singletonList(energyCompany.getEnergyCompanyID()));
+			} catch (NotFoundException e) {
+				throw new ProgramNotFoundException("Program not found", e);
+			}
 			
-			List<Program> programList = 
-				enrollmentDao.getEnrolledProgramIdsByInventory(inventoryId, startTime, stopTime);
-			
-			// Create a history entry for each enrolled program
-			for(Program program : programList) {
-				OverrideHistory copy = history.getACopy();
-				copy.setProgramName(program.getProgramName());
+			List<Integer> optedOutInventory = 
+				enrollmentDao.getOptedOutInventory(program, startTime, stopTime);
+			for (OverrideHistory history : inventoryHistoryList) {
 				
-				historyList.add(copy);
+				// Only add the history for inventory that was opted out of the given program
+				Integer inventoryId = history.getInventoryId();
+				if(optedOutInventory.contains(inventoryId)) {
+					history.setProgramName(programName);
+					historyList.add(history);
+				}
+			}
+		} else {
+
+			// For each overrideHistory, get the programs the opted out device was in at the time and
+			// create a history object for each program
+			for(OverrideHistory history : inventoryHistoryList) {
+				Integer inventoryId = history.getInventoryId();
+				
+				List<Program> programList = 
+					enrollmentDao.getEnrolledProgramIdsByInventory(inventoryId, startTime, stopTime);
+				
+				// Create a history entry for each enrolled program
+				for(Program program : programList) {
+					
+					OverrideHistory copy = history.getACopy();
+					copy.setProgramName(program.getProgramName());
+						
+					historyList.add(copy);
+				}
+	
 			}
 		}
 		
@@ -510,9 +547,11 @@ public class OptOutServiceImpl implements OptOutService {
 		
 		List<OverrideHistory> historyList = new ArrayList<OverrideHistory>();
 		
+		// Get the opted out inventory by program and time period
 		List<Integer> optedOutInventory = 
 			enrollmentDao.getOptedOutInventory(program, startTime, stopTime);
 		
+		// For each inventory, get the opt out event and create the override history object
 		for(Integer inventoryId : optedOutInventory) {
 			
 			List<OverrideHistory> inventoryHistoryList = 

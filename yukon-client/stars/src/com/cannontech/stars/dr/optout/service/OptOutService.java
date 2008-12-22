@@ -7,6 +7,7 @@ import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.core.dao.AccountNotFoundException;
 import com.cannontech.core.dao.InventoryNotFoundException;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -149,7 +150,7 @@ public interface OptOutService {
 	 */
 	public List<OverrideHistory> getOptOutHistoryByProgram(
 			String programName, Date startTime, Date stopTime, LiteYukonUser user)
-			throws NotFoundException;
+		throws NotFoundException;
 	
 	/**
 	 * Method to get a list of opt out history for a given account for all inventory on that account
@@ -157,10 +158,14 @@ public interface OptOutService {
 	 * @param startTime - Start of time period
 	 * @param stopTime - End of time period
 	 * @param user - User requesting history
+	 * @param programName - Optional programName to narrow history to only that program - null if no
+	 * 		programName
 	 * @return List of opt out history
-	 * @throws NotFoundException - If account number is not found
+	 * @throws AccountNotFoundException - If account number is not found
+	 * @throws ProgramNotFoundException - If program name is not found
 	 */
 	public List<OverrideHistory> getOptOutHistoryForAccount(
-			String accountNumber, Date startTime, Date stopTime, LiteYukonUser user)
-			throws NotFoundException;
+			String accountNumber, Date startTime, Date stopTime, LiteYukonUser user, 
+			String programName)
+		throws AccountNotFoundException, ProgramNotFoundException;
 }

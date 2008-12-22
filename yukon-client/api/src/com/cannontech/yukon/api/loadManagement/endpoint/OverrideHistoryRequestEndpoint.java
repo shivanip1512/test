@@ -10,8 +10,10 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.core.dao.AccountNotFoundException;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.stars.dr.optout.model.OverrideHistory;
@@ -31,7 +33,7 @@ public class OverrideHistoryRequestEndpoint {
     private Namespace ns = YukonXml.getYukonNamespace();
 
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="overrideHistoryByAccountNumberRequest")
-    public Element invokeOverrideByAccount(Element overrideHistoryByAccountNumberRequest, LiteYukonUser user) throws Exception {
+    public Element invokeHistoryByAccount(Element overrideHistoryByAccountNumberRequest, LiteYukonUser user) throws Exception {
         
         //Verify Request message version
     	XmlVersionUtils.verifyYukonMessageVersion(overrideHistoryByAccountNumberRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
@@ -39,9 +41,14 @@ public class OverrideHistoryRequestEndpoint {
         // create template and parse data
         SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(overrideHistoryByAccountNumberRequest);
         
-        String accountNumber = template.evaluateAsString("/y:overrideHistoryByAccountNumberRequest/y:accountNumber");
-        Date startTime = template.evaluateAsDate("/y:overrideHistoryByAccountNumberRequest/y:startDateTime");
-        Date stopTime = template.evaluateAsDate("/y:overrideHistoryByAccountNumberRequest/y:stopDateTime");
+        String accountNumber = 
+        	template.evaluateAsString("/y:overrideHistoryByAccountNumberRequest/y:accountNumber");
+        String programName = 
+        	template.evaluateAsString("/y:overrideHistoryByAccountNumberRequest/y:programName");
+        Date startTime = 
+        	template.evaluateAsDate("/y:overrideHistoryByAccountNumberRequest/y:startDateTime");
+        Date stopTime = 
+        	template.evaluateAsDate("/y:overrideHistoryByAccountNumberRequest/y:stopDateTime");
         
         // init response
         Element resp = new Element("overrideHistoryByAccountNumberResponse", ns);
@@ -57,18 +64,24 @@ public class OverrideHistoryRequestEndpoint {
             overrideHistoryList = optOutService.getOptOutHistoryForAccount(accountNumber,
                                                                            startTime,
                                                                            stopTime,
-                                                                           user);
+                                                                           user,
+                                                                           programName);
             resultElement = buildHistoryEntriesElement(overrideHistoryList);
         } catch (NotAuthorizedException e) {
             resultElement = XMLFailureGenerator.generateFailure(overrideHistoryByAccountNumberRequest,
                                                                 e,
                                                                 "UserNotAuthorized",
                                                                 "The user is not authorized to view override history.");
-        } catch (NotFoundException e) {
+        } catch (AccountNotFoundException e) {
             resultElement = XMLFailureGenerator.generateFailure(overrideHistoryByAccountNumberRequest,
                                                                 e,
                                                                 "InvalidAccountNumber",
                                                                 "No account with account number: " + accountNumber);
+        } catch (ProgramNotFoundException e) {
+        	resultElement = XMLFailureGenerator.generateFailure(overrideHistoryByAccountNumberRequest,
+        			e,
+        			"InvalidProgramName",
+        			"No program with program name: " + programName);
         }
 
         // build response
@@ -77,7 +90,7 @@ public class OverrideHistoryRequestEndpoint {
     }
     
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="overrideHistoryByProgramNameRequest")
-    public Element invokeOverrideByProgram(Element overrideHistoryByProgramNameRequest, LiteYukonUser user) throws Exception {
+    public Element invokeHistoryByProgram(Element overrideHistoryByProgramNameRequest, LiteYukonUser user) throws Exception {
         
         //Verify Request message version
         XmlVersionUtils.verifyYukonMessageVersion(overrideHistoryByProgramNameRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0);

@@ -85,7 +85,7 @@ public class OptOutServiceAdapter implements OptOutService {
 	@Override
 	public List<OverrideHistory> getOptOutHistoryForAccount(
 			String accountNumber, Date startTime, Date stopTime,
-			LiteYukonUser user) throws NotFoundException {
+			LiteYukonUser user, String programName) throws NotFoundException {
 		throw new UnsupportedOperationException("not implemented");
 	}
 

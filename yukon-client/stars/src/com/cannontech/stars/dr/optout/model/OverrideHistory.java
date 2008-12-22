@@ -123,4 +123,94 @@ public class OverrideHistory {
 		return history;
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((accountNumber == null) ? 0 : accountNumber.hashCode());
+		result = prime * result + (countedAgainstLimit ? 1231 : 1237);
+		result = prime * result
+				+ ((inventoryId == null) ? 0 : inventoryId.hashCode());
+		result = prime * result
+				+ (int) (overrideNumber ^ (overrideNumber >>> 32));
+		result = prime * result
+				+ ((programName == null) ? 0 : programName.hashCode());
+		result = prime * result
+				+ ((scheduledDate == null) ? 0 : scheduledDate.hashCode());
+		result = prime * result
+				+ ((serialNumber == null) ? 0 : serialNumber.hashCode());
+		result = prime * result
+				+ ((startDate == null) ? 0 : startDate.hashCode());
+		result = prime * result + ((status == null) ? 0 : status.hashCode());
+		result = prime * result
+				+ ((stopDate == null) ? 0 : stopDate.hashCode());
+		result = prime * result
+				+ ((userName == null) ? 0 : userName.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		OverrideHistory other = (OverrideHistory) obj;
+		if (accountNumber == null) {
+			if (other.accountNumber != null)
+				return false;
+		} else if (!accountNumber.equals(other.accountNumber))
+			return false;
+		if (countedAgainstLimit != other.countedAgainstLimit)
+			return false;
+		if (inventoryId == null) {
+			if (other.inventoryId != null)
+				return false;
+		} else if (!inventoryId.equals(other.inventoryId))
+			return false;
+		if (overrideNumber != other.overrideNumber)
+			return false;
+		if (programName == null) {
+			if (other.programName != null)
+				return false;
+		} else if (!programName.equals(other.programName))
+			return false;
+		if (scheduledDate == null) {
+			if (other.scheduledDate != null)
+				return false;
+		} else if (!scheduledDate.equals(other.scheduledDate))
+			return false;
+		if (serialNumber == null) {
+			if (other.serialNumber != null)
+				return false;
+		} else if (!serialNumber.equals(other.serialNumber))
+			return false;
+		if (startDate == null) {
+			if (other.startDate != null)
+				return false;
+		} else if (!startDate.equals(other.startDate))
+			return false;
+		if (status == null) {
+			if (other.status != null)
+				return false;
+		} else if (!status.equals(other.status))
+			return false;
+		if (stopDate == null) {
+			if (other.stopDate != null)
+				return false;
+		} else if (!stopDate.equals(other.stopDate))
+			return false;
+		if (userName == null) {
+			if (other.userName != null)
+				return false;
+		} else if (!userName.equals(other.userName))
+			return false;
+		return true;
+	}
+	
+	
+
 }
