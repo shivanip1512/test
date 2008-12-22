@@ -483,7 +483,7 @@ public class OptOutServiceImpl implements OptOutService {
 		try {
 			account = customerAccountDao.getByAccountNumber(accountNumber, user);
 		} catch (NotFoundException e) {
-			throw new AccountNotFoundException("Account not found", e);
+			throw new AccountNotFoundException("Account not found: " + accountNumber, e);
 		}
 
 		List<OverrideHistory> inventoryHistoryList = 
@@ -579,7 +579,7 @@ public class OptOutServiceImpl implements OptOutService {
 		try {
 			account = customerAccountDao.getByAccountNumber(accountNumber, user);
 		} catch (NotFoundException e) {
-			throw new AccountNotFoundException("Account not found", e);
+			throw new AccountNotFoundException("Account not found: " + accountNumber, e);
 		}
 		List<Integer> optedOutInventory = 
 			optOutEventDao.getOptOutDeviceCountForAccount(account.getAccountId(), startTime, stopTime);
@@ -593,7 +593,7 @@ public class OptOutServiceImpl implements OptOutService {
 				program = programDao.getByProgramName(programName, 
 											Collections.singletonList(energyCompany.getEnergyCompanyID()));
 			} catch (NotFoundException e) {
-				throw new ProgramNotFoundException("Program not found", e);
+				throw new ProgramNotFoundException("Program not found: " + programName, e);
 			}
 			List<Integer> programInventory = 
 				enrollmentDao.getOptedOutInventory(program, startTime, stopTime);
@@ -633,7 +633,7 @@ public class OptOutServiceImpl implements OptOutService {
 		try {
 			account = customerAccountDao.getByAccountNumber(accountNumber, user);
 		} catch (NotFoundException e) {
-			throw new AccountNotFoundException("Account not found", e);
+			throw new AccountNotFoundException("Account not found: " + accountNumber, e);
 		}
 		
 		LiteInventoryBase inventory;

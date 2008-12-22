@@ -161,7 +161,7 @@ public class ProgramDaoImpl implements ProgramDao {
                                                      PAOGroups.STRING_CAT_LOADMANAGEMENT,
                                                      programName);
         } catch(EmptyResultDataAccessException ex){
-            throw new NotFoundException("The program name supplied does not exist.");
+            throw new NotFoundException("The program name supplied does not exist: " + programName);
         } catch(IncorrectResultSizeDataAccessException ex){
             throw new IllegalArgumentException("The program name supplied returned too many results.  This is normally an indicator of the same program being a part of two separate, but available appliance categories.  Please check your appliance categories.");            
         }
