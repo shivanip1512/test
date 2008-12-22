@@ -13,7 +13,6 @@ import org.springframework.core.io.Resource;
 import org.w3c.dom.Node;
 
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
-import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.dao.AccountNotFoundException;
 import com.cannontech.core.dao.NotFoundException;
@@ -38,11 +37,9 @@ public class OverrideHistoryRequestEndpointTest {
     private static final String ACCOUNT2 = "account2";
     private static final String PROGRAM1 = "program1";
     private static final String PROGRAM2 = "program2";
-    private static final int USER_ID = 1;    
 
     private static final String INVALID_ACCOUNT = "ACCOUNT_INVALID";
     private static final String INVALID_PROGRAM = "PROGRAM_INVALID";    
-    private static final int INVALID_USER_ID = -1;    
 
     private static final String START_DATE_VALID = "2008-09-30T12:00:00Z";
     private static final String STOP_DATE_VALID = "2008-09-30T23:59:59Z";
@@ -127,9 +124,8 @@ public class OverrideHistoryRequestEndpointTest {
     	Element requestElement = LoadManagementTestUtils.createOverrideHistoryByAccountRequestElement(
     			ACCOUNT1, null, START_DATE_VALID, STOP_DATE_VALID, VERSION_1, reqSchemaResource);
     	
-        LiteYukonUser user = new LiteYukonUser();
-        user.setUserID(INVALID_USER_ID);
-        Element respElement = impl.invokeHistoryByAccount(requestElement, user);
+    	LiteYukonUser unAuthorizedUser = MockAuthDao.getUnAuthorizedUser();
+        Element respElement = impl.invokeHistoryByAccount(requestElement, unAuthorizedUser);
 
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
         
@@ -140,7 +136,7 @@ public class OverrideHistoryRequestEndpointTest {
         
         // test with valid account, no program, valid user 
         //==========================================================================================
-        user.setUserID(USER_ID);
+        LiteYukonUser user = new LiteYukonUser();
         requestElement = LoadManagementTestUtils.createOverrideHistoryByAccountRequestElement(
     			ACCOUNT1, null, START_DATE_VALID, STOP_DATE_VALID, VERSION_1, reqSchemaResource);
         respElement = impl.invokeHistoryByAccount(requestElement, user);
@@ -253,9 +249,8 @@ public class OverrideHistoryRequestEndpointTest {
     	Element requestElement = LoadManagementTestUtils.createOverrideHistoryByProgramRequestElement(
     			PROGRAM1, START_DATE_VALID, STOP_DATE_VALID, VERSION_1, reqSchemaResource);
     	
-        LiteYukonUser user = new LiteYukonUser();
-        user.setUserID(INVALID_USER_ID);
-        Element respElement = impl.invokeHistoryByProgram(requestElement, user);
+        LiteYukonUser unAuthorizedUser = MockAuthDao.getUnAuthorizedUser();
+        Element respElement = impl.invokeHistoryByProgram(requestElement, unAuthorizedUser);
 
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
         
@@ -266,7 +261,7 @@ public class OverrideHistoryRequestEndpointTest {
         
         // test with valid program, user 
         //==========================================================================================
-        user.setUserID(USER_ID);
+        LiteYukonUser user = new LiteYukonUser();
         requestElement = LoadManagementTestUtils.createOverrideHistoryByProgramRequestElement(
     			PROGRAM1, START_DATE_VALID, STOP_DATE_VALID, VERSION_1, reqSchemaResource);
     	
@@ -290,7 +285,6 @@ public class OverrideHistoryRequestEndpointTest {
 
         // test with invalid program, valid user 
         //==========================================================================================
-        user.setUserID(USER_ID);
         requestElement = LoadManagementTestUtils.createOverrideHistoryByProgramRequestElement(
         		INVALID_PROGRAM, START_DATE_VALID, STOP_DATE_VALID, VERSION_1, reqSchemaResource);
         
@@ -410,17 +404,6 @@ public class OverrideHistoryRequestEndpointTest {
             return programName;
         }
         
-    }
-    
-    private class MockAuthDao extends AuthDaoAdapter {
-    	
-    	@Override
-    	public void verifyTrueProperty(LiteYukonUser user,
-    			int... rolePropertyIds) throws NotAuthorizedException {
-    		if(user.getUserID() == INVALID_USER_ID) {
-    			throw new NotAuthorizedException("Mock auth dao not authorized");
-    		}
-    	}
     }
     
     /**

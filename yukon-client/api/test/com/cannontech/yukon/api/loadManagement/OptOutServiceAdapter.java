@@ -7,6 +7,7 @@ import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.core.dao.AccountNotFoundException;
 import com.cannontech.core.dao.InventoryNotFoundException;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -60,11 +61,11 @@ public class OptOutServiceAdapter implements OptOutService {
 		throw new UnsupportedOperationException("not implemented");
 	}
 
-	
 	@Override
 	public int getOptOutDeviceCountForAccount(String accountNumber,
-			Date startTime, Date stopTime, LiteYukonUser user)
-			throws NotFoundException {
+			Date startTime, Date stopTime, LiteYukonUser user,
+			String programName) throws AccountNotFoundException,
+			ProgramNotFoundException {
 		throw new UnsupportedOperationException("not implemented");
 	}
 

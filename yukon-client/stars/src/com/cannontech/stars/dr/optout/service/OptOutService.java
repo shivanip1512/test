@@ -108,11 +108,15 @@ public interface OptOutService {
 	 * @param startTime - Start of time period
 	 * @param stopTime - End of time period
 	 * @param user - User requesting count
+	 * @param programName - Optional programName to narrow count to only that program - null if no
+	 		programName
  	 * @return - Total count
- 	 * @throws NotFoundException - if account number is not found
+ 	 * @throws AccountNotFoundException - If account number is not found
+	 * @throws ProgramNotFoundException - If program name is not found
 	 */
 	public int getOptOutDeviceCountForAccount(String accountNumber, Date startTime,
-			Date stopTime, LiteYukonUser user) throws NotFoundException;
+			Date stopTime, LiteYukonUser user, String programName) 
+		throws AccountNotFoundException, ProgramNotFoundException;
 
 	/**
 	 * Method to get the total number of devices that were opted out during the given time period

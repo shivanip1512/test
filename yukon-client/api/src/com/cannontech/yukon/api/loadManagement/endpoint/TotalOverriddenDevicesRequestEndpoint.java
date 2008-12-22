@@ -9,8 +9,10 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.core.dao.AccountNotFoundException;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.stars.dr.optout.service.OptOutService;
@@ -43,6 +45,8 @@ public class TotalOverriddenDevicesRequestEndpoint {
         
         String accountNumber = template.evaluateAsString(
         		"/y:totalOverriddenDevicesByAccountNumberRequest/y:accountNumber");
+        String programName = template.evaluateAsString(
+        	"/y:totalOverriddenDevicesByAccountNumberRequest/y:programName");
         Date startTime = template.evaluateAsDate(
         		"/y:totalOverriddenDevicesByAccountNumberRequest/y:startDateTime");
         Date stopTime = template.evaluateAsDate(
@@ -61,7 +65,8 @@ public class TotalOverriddenDevicesRequestEndpoint {
             int totalDevices = optOutService.getOptOutDeviceCountForAccount(accountNumber,
                                                                             startTime,
                                                                             stopTime,
-                                                                            user);
+                                                                            user,
+                                                                            programName);
             resultElement = XmlUtils.createLongElement("totalDevices",
                                                        ns,
                                                        totalDevices);
@@ -70,12 +75,18 @@ public class TotalOverriddenDevicesRequestEndpoint {
                                                                 e,
                                                                 "UserNotAuthorized",
                                                                 "The user is not authorized to get total devices overriden.");
-        } catch (NotFoundException e) {
+        } catch (AccountNotFoundException e) {
             resultElement = XMLFailureGenerator.generateFailure(totalOverriddenDevicesByAccountNumberRequest,
                                                                 e,
                                                                 "InvalidAccountNumber",
                                                                 "No account with account number: " + accountNumber);
+        } catch (ProgramNotFoundException e) {
+            resultElement = XMLFailureGenerator.generateFailure(totalOverriddenDevicesByAccountNumberRequest,
+                    e,
+                    "InvalidProgramName",
+                    "No program with name: " + programName);
         }
+        
         // return response
         resp.addContent(resultElement);
         return resp;

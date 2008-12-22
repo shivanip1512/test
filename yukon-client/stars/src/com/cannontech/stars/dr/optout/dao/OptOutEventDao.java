@@ -140,12 +140,12 @@ public interface OptOutEventDao {
 	public void changeCurrentOptOutCountState(LiteStarsEnergyCompany energyCompany, OptOutCounts counts);
 
 	/**
-	 * Method to get the total number of opt outs for an account in a given time period
+	 * Method to get the inventory ids of opt outed out inventory for an account in a given time period
 	 * @param accountId - Account to get count for
 	 * @param startTime - Start of time period
 	 * @param stopTime - End of time period
-	 * @return Count of opted out devices
+	 * @return Ids of opted out devices
 	 */
-	public int getOptOutDeviceCountForAccount(int accountId, Date startTime, Date stopTime);
+	public List<Integer> getOptOutDeviceCountForAccount(int accountId, Date startTime, Date stopTime);
 	
 }

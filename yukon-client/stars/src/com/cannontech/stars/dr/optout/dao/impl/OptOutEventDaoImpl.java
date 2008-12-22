@@ -440,7 +440,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 	}
 	
 	@Override
-	public int getOptOutDeviceCountForAccount(int accountId, Date startTime, Date stopTime) {
+	public List<Integer> getOptOutDeviceCountForAccount(int accountId, Date startTime, Date stopTime) {
 
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		sql.append("SELECT DISTINCT InventoryId");
@@ -463,7 +463,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 					stopTime,
 					accountId);
 		
-		return optOutDeviceList.size();
+		return optOutDeviceList;
 	}
 
 	@Override

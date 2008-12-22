@@ -152,4 +152,76 @@ public class LoadManagementTestUtils {
     	return requestElement;
     }
     
+ // OVERRIDEN DEVICES BY ACCOUNT REQUEST
+    public static Element createOverridenDevicesByAccountRequestElement(
+    		String accountNumber,
+    		String programName,
+    		String startDateTimeStr,
+    		String stopDateTimeStr,
+    		String version,
+    		Resource requestSchemaResource) {
+    	
+    	Element requestElement = null;
+    	Attribute versionAttribute = null;
+    	Element tmpElement = null;
+    	
+    	requestElement = new Element("totalOverriddenDevicesByAccountNumberRequest", ns);
+    	versionAttribute = new Attribute("version", version);
+    	requestElement.setAttribute(versionAttribute);
+    	
+    	tmpElement = XmlUtils.createStringElement("accountNumber", ns, accountNumber);
+    	requestElement.addContent(tmpElement);
+
+    	tmpElement = XmlUtils.createStringElement("startDateTime", ns, startDateTimeStr);
+    	requestElement.addContent(tmpElement);
+    	
+    	if (stopDateTimeStr != null) {
+    		tmpElement = XmlUtils.createStringElement("stopDateTime", ns, stopDateTimeStr);
+    		requestElement.addContent(tmpElement);
+    	}
+
+    	if(programName != null) {
+    		tmpElement = XmlUtils.createStringElement("programName", ns, programName);
+    		requestElement.addContent(tmpElement);
+    	}
+    	
+    	// validate request
+    	TestUtils.validateAgainstSchema(requestElement, requestSchemaResource);
+    	
+    	return requestElement;
+    }
+    
+    // OVERRIDEN DEVICES BY PROGRAM REQUEST
+    public static Element createOverridenDevicesByProgramRequestElement(
+    		String programName,
+    		String startDateTimeStr,
+    		String stopDateTimeStr,
+    		String version,
+    		Resource requestSchemaResource) {
+    	
+    	Element requestElement = null;
+    	Attribute versionAttribute = null;
+    	Element tmpElement = null;
+    	
+    	requestElement = new Element("totalOverriddenDevicesByProgramNameRequest", ns);
+    	versionAttribute = new Attribute("version", version);
+    	requestElement.setAttribute(versionAttribute);
+    	
+    	tmpElement = XmlUtils.createStringElement("programName", ns, programName);
+    	requestElement.addContent(tmpElement);
+    	
+    	tmpElement = XmlUtils.createStringElement("startDateTime", ns, startDateTimeStr);
+    	requestElement.addContent(tmpElement);
+    	
+    	if (stopDateTimeStr != null) {
+    		tmpElement = XmlUtils.createStringElement("stopDateTime", ns, stopDateTimeStr);
+    		requestElement.addContent(tmpElement);
+    	}
+    	
+    	// validate request
+    	TestUtils.validateAgainstSchema(requestElement, requestSchemaResource);
+    	
+    	return requestElement;
+    }
+    
 }

@@ -3,7 +3,9 @@ package com.cannontech.stars.dr.optout.service.impl;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.mail.MessagingException;
 
@@ -570,10 +572,41 @@ public class OptOutServiceImpl implements OptOutService {
 	
 	@Override
 	public int getOptOutDeviceCountForAccount(String accountNumber, Date startTime,
-			Date stopTime, LiteYukonUser user) throws NotFoundException {
+			Date stopTime, LiteYukonUser user, String programName)
+		throws  AccountNotFoundException, ProgramNotFoundException {
 
-		CustomerAccount account = customerAccountDao.getByAccountNumber(accountNumber, user);
-		return optOutEventDao.getOptOutDeviceCountForAccount(account.getAccountId(), startTime, stopTime);
+		CustomerAccount account = null;
+		try {
+			account = customerAccountDao.getByAccountNumber(accountNumber, user);
+		} catch (NotFoundException e) {
+			throw new AccountNotFoundException("Account not found", e);
+		}
+		List<Integer> optedOutInventory = 
+			optOutEventDao.getOptOutDeviceCountForAccount(account.getAccountId(), startTime, stopTime);
+		
+		int numberOfDevices = optedOutInventory.size();
+		
+		if(programName != null) {
+			LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(user);
+			Program program = null;
+			try {
+				program = programDao.getByProgramName(programName, 
+											Collections.singletonList(energyCompany.getEnergyCompanyID()));
+			} catch (NotFoundException e) {
+				throw new ProgramNotFoundException("Program not found", e);
+			}
+			List<Integer> programInventory = 
+				enrollmentDao.getOptedOutInventory(program, startTime, stopTime);
+
+			// Get the ids that are opted out for the account AND the program
+			Set<Integer> accountIdSet = new HashSet<Integer>(optedOutInventory);
+			Set<Integer> programIdSet = new HashSet<Integer>(programInventory);
+			accountIdSet.retainAll(programIdSet);
+
+			numberOfDevices = accountIdSet.size();
+		}
+		
+		return numberOfDevices;
 	}
 	
 	@Override
