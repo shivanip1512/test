@@ -92,7 +92,7 @@ public class XmlParameterTableModel extends AbstractTableModel
     }
 
     public void reset() {
-        columnNames.clear();
+        //columnNames.clear();
         rows.clear();
         fireTableChanged(null);
     }    

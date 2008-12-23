@@ -3,6 +3,7 @@ package com.cannontech.dbeditor.wizard.device.lmgroup;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.event.*;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.*;
@@ -45,6 +46,16 @@ public class LMGroupXMLEditorPanel extends DataInputPanel implements ActionListe
         this.xmlType = xmlType;
     }    
 	
+    public List<LmXmlParameter> getDefaultParameterList(XmlType type) {
+    	List<LmXmlParameter> list = new ArrayList<LmXmlParameter>();
+    	
+    	list.add(new LmXmlParameter(0,"UtilID",""));
+        list.add(new LmXmlParameter(0,"DeviceClass",""));
+        list.add(new LmXmlParameter(0,"Criticality",""));
+    	
+        return list;
+    }
+    
 	/**
 	 * Initialize the class.
 	 */
@@ -65,7 +76,7 @@ public class LMGroupXMLEditorPanel extends DataInputPanel implements ActionListe
             
         getParameterTable().setModel(new XmlParameterTableModel());
         ((XmlParameterTableModel)getParameterTable().getModel()).makeTable();
-
+        
         getParameterTable().getColumnModel().getColumn(1).setWidth(200);
         getParameterTable().getColumnModel().getColumn(1).setPreferredWidth(200);
         getParameterTable().revalidate();
@@ -196,7 +207,15 @@ public class LMGroupXMLEditorPanel extends DataInputPanel implements ActionListe
 			groupId = group.getPAObjectID();
 			
 			//Add parameter's from the database.
-			((XmlParameterTableModel)getParameterTable().getModel()).addRows(group.getParameterList());
+			((XmlParameterTableModel)getParameterTable().getModel()).reset();
+			
+			List<LmXmlParameter> list = group.getParameterList();
+			
+			if(list.isEmpty()) {
+				list = getDefaultParameterList(xmlType);
+			}
+			
+			((XmlParameterTableModel)getParameterTable().getModel()).addRows(list);
 			
 		}
 	}

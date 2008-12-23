@@ -3,7 +3,7 @@ package com.cannontech.database.data.device.lm;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.cannontech.core.dao.XmlLMGroupParametersDao;
+import com.cannontech.core.dao.LmXmlParameterDao;
 import com.cannontech.spring.YukonSpringHook;
 
 public class LMGroupXML extends LMGroupExpressCom {
@@ -24,7 +24,8 @@ public class LMGroupXML extends LMGroupExpressCom {
     }
     
     //Needs to be transient because this object gets serialized.
-    transient private XmlLMGroupParametersDao xmlLMGroupParametersDao = null;
+    transient private LmXmlParameterDao xmlLMGroupParameterDao = null;
+    
     private List<LmXmlParameter> parameterList;
 	private XmlType xmlType = XmlType.ZIGBEE;
 	
@@ -42,7 +43,8 @@ public class LMGroupXML extends LMGroupExpressCom {
         //Remove them all first. Then add them back in. 
         getDao().removeAllByGroupId(getGroupId());
         
-        for(LmXmlParameter param : parameterList) {  
+        for(LmXmlParameter param : parameterList) {
+        	param.setLmGroupId(getGroupId());
             getDao().add(param);
         }
     }
@@ -60,56 +62,26 @@ public class LMGroupXML extends LMGroupExpressCom {
         getDao().removeAllByGroupId(getGroupId());
         
         for(LmXmlParameter param : parameterList) {  
-            getDao().add(param);
+        	getDao().add(param);
         }
     }
     
     public void retrieve() throws java.sql.SQLException 
     {
+        super.retrieve();        
+     
+        List<LmXmlParameter> list = getDao().getParametersForGroup(getGroupId(),XmlType.ZIGBEE);
+        
         parameterList.clear();
-        
-        super.retrieve();
-        
-        List<LmXmlParameter> list = getDao().getParametersForGroup(getGroupId());
-        
-        if( list.size() == 0) {
-            //Determine the defaults for the type.
-            //Defaulting to ZIGBEE until we implement others.
-            list = getDefaultParametersForType(XmlType.ZIGBEE);
-        }
-        
         parameterList.addAll(list);
     }
  
-    /**
-     * Gets the default parameters for an xml interface type. Hardcoding to Zigbee for now.
-     * Changes to go into this function when we make this dynamic.
-     * 
-     * @param type
-     * @return
-     */
-    private List<LmXmlParameter> getDefaultParametersForType( XmlType type )
-    {
-        int id = super.getPAObjectID();
-          
-        List<LmXmlParameter> list = new ArrayList<LmXmlParameter>();
-
-        //For now we are hard coding ZIGBY.
-        if (type == XmlType.ZIGBEE) { 
-            list.add(new LmXmlParameter(id,"UtilID",""));
-            list.add(new LmXmlParameter(id,"DeviceClass",""));
-            list.add(new LmXmlParameter(id,"Criticality",""));
-        }
-        
-        return list;
-    }
-    
     public Integer getGroupId() {
         return super.getPAObjectID();
     }
     
     public List<LmXmlParameter> getParameterList() {
-        return parameterList;
+    	return parameterList;
     }
 
     public void setParameterList(List<LmXmlParameter> parameterList) {
@@ -121,11 +93,11 @@ public class LMGroupXML extends LMGroupExpressCom {
      * 
      * @return
      */
-    private XmlLMGroupParametersDao getDao() {
-        if (xmlLMGroupParametersDao == null) {
-            xmlLMGroupParametersDao = YukonSpringHook.getBean("xmlLMGroupParametersDao",XmlLMGroupParametersDao.class);
+    private LmXmlParameterDao getDao() {
+        if (xmlLMGroupParameterDao == null) {
+            xmlLMGroupParameterDao = YukonSpringHook.getBean("xmlLMGroupParameterDao",LmXmlParameterDao.class);
         }
-        return xmlLMGroupParametersDao;
+        return xmlLMGroupParameterDao;
     }
 
     public XmlType getXmlType() {

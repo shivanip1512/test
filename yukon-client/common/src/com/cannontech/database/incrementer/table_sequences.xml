@@ -78,6 +78,9 @@
       <sequence name="userpaopermissionid">
         <table name="UserPaoPermission" identitycolumn="userpaopermissionid"/>
       </sequence>
+      <sequence name="xmlParameterid">
+      	<table name="LMGroupXMLParameter" identitycolumn="xmlparamid" initsequence="true"/>
+      </sequence>
       <sequence name="grouppaopermissionid">
         <table name="GroupPaoPermission" identitycolumn="grouppaopermissionid"/>
       </sequence>

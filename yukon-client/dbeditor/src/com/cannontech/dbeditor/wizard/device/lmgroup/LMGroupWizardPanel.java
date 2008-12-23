@@ -339,14 +339,7 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 	{
 		getGolayEditorPanel().setFirstFocus();
         return getGolayEditorPanel();
-	}
-	else if ( currentInputPanel == getLMGroupExpressComEditorPanel()
-			 && getSwitchTypePanel().getTypeOfSwitchSelected() == PAOGroups.LM_GROUP_XML )
-	{
-		getLMGroupXMLEditorPanel().setFirstFocus();
-		return getLMGroupXMLEditorPanel();
-	}
-	
+	}	
 	
 	System.err.println(getClass() + "::getNextInputPanel() - currentInputPanel was not recognized.");
 	return null;
@@ -402,8 +395,7 @@ protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel
 		 	  || currentPanel == rippleMessageShedPanel
 		 	  || currentPanel == specialRippleMessagePanel
 		      || currentPanel == groupMacroLoadGroupsPanel
-		      || (currentPanel == lmGroupExpressComEditorPanel && (getSwitchTypePanel().getTypeOfSwitchSelected() != PAOGroups.LM_GROUP_XML ))
-		      || currentPanel == lmGroupXMLEditorPanel
+		      || currentPanel == lmGroupExpressComEditorPanel
 		      || currentPanel == lmGroupPointEditorPanel
 		      || currentPanel == aSA305EditorPanel
 			  || currentPanel == aSA205EditorPanel
