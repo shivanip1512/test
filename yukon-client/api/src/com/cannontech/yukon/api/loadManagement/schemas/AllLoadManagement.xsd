@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+            xmlns:yukon="http://yukon.cannontech.com/api" 
+            targetNamespace="http://yukon.cannontech.com/api"
+            elementFormDefault="qualified">
+            
+    <xsd:include schemaLocation="../../common/schemas/Types.xsd" />
+    <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd" />
+    <xsd:include schemaLocation="../../common/schemas/Failure.xsd" />
+
+    <xsd:include schemaLocation="CancelAllCurrentOverridesRequest.xsd" />
+    <xsd:include schemaLocation="CancelAllCurrentOverridesResponse.xsd" />
+    <xsd:include schemaLocation="CountOverridesTowardsLimitRequest.xsd" />
+    <xsd:include schemaLocation="CountOverridesTowardsLimitResponse.xsd" />
+    <xsd:include schemaLocation="CurrentlyActiveProgramsRequest.xsd" />
+    <xsd:include schemaLocation="CurrentlyActiveProgramsResponse.xsd" />
+    <xsd:include schemaLocation="DecrementDeviceOverrideLimitRequest.xsd" />
+    <xsd:include schemaLocation="DecrementDeviceOverrideLimitResponse.xsd" />
+    <xsd:include schemaLocation="ListScenarioProgramsRequest.xsd" />
+    <xsd:include schemaLocation="ListScenarioProgramsResponse.xsd" />
+    <xsd:include schemaLocation="OverrideHistoryByAccountNumberRequest.xsd" />
+    <xsd:include schemaLocation="OverrideHistoryByAccountNumberResponse.xsd" />
+    <xsd:include schemaLocation="OverrideHistoryByProgramNameRequest.xsd" />
+    <xsd:include schemaLocation="OverrideHistoryByProgramNameResponse.xsd" />
+    <xsd:include schemaLocation="OverrideHistoryTypes.xsd" />
+    <xsd:include schemaLocation="ProgramControlHistory.xsd" />
+    <xsd:include schemaLocation="ProgramControlHistoryRequest.xsd" />
+    <xsd:include schemaLocation="ProgramControlHistoryResponse.xsd" />
+    <xsd:include schemaLocation="ProgramStartRequest.xsd" />
+    <xsd:include schemaLocation="ProgramStartResponse.xsd" />
+    <xsd:include schemaLocation="ProgramStatus.xsd" />
+    <xsd:include schemaLocation="ProgramStatusRequest.xsd" />
+    <xsd:include schemaLocation="ProgramStatusResponse.xsd" />
+    <xsd:include schemaLocation="ProgramStopRequest.xsd" />
+    <xsd:include schemaLocation="ProgramStopResponse.xsd" />
+    <xsd:include schemaLocation="ProhibitConsumerOverridesRequest.xsd" />
+    <xsd:include schemaLocation="ProhibitConsumerOverridesResponse.xsd" />
+    <xsd:include schemaLocation="ScenarioProgram.xsd" />
+    <xsd:include schemaLocation="ScenarioStartRequest.xsd" />
+    <xsd:include schemaLocation="ScenarioStartResponse.xsd" />
+    <xsd:include schemaLocation="ScenarioStopRequest.xsd" />
+    <xsd:include schemaLocation="ScenarioStopResponse.xsd" />
+    <xsd:include schemaLocation="TotalOverriddenDevicesByAccountNumberRequest.xsd" />
+    <xsd:include schemaLocation="TotalOverriddenDevicesByAccountNumberResponse.xsd" />
+    <xsd:include schemaLocation="TotalOverriddenDevicesByProgramNameRequest.xsd" />
+    <xsd:include schemaLocation="TotalOverriddenDevicesByProgramNameResponse.xsd" />
+    <xsd:include schemaLocation="TotalOverriddenDevicesTypes.xsd" />
+	
+    
+</xsd:schema>

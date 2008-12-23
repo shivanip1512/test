@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+            xmlns:yukon="http://yukon.cannontech.com/api" 
+            targetNamespace="http://yukon.cannontech.com/api"
+            elementFormDefault="qualified">
+            
+    <xsd:include schemaLocation="../../common/schemas/Types.xsd"></xsd:include>
+    <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd"></xsd:include>
+    <xsd:include schemaLocation="../../common/schemas/Failure.xsd"></xsd:include>
+
+    <xsd:include schemaLocation="ControllableDevice.xsd"></xsd:include>
+    <xsd:include schemaLocation="ControllableDeviceResult.xsd"></xsd:include>
+    <xsd:include schemaLocation="EnrollmentRequest.xsd"></xsd:include>
+    <xsd:include schemaLocation="EnrollmentResponse.xsd"></xsd:include>
+    <xsd:include schemaLocation="NewControllableDevicesRequest.xsd"></xsd:include>
+    <xsd:include schemaLocation="NewControllableDevicesResponse.xsd"></xsd:include>
+    <xsd:include schemaLocation="ProgramEnrollment.xsd"></xsd:include>
+    <xsd:include schemaLocation="ProgramEnrollmentResult.xsd"></xsd:include>
+    <xsd:include schemaLocation="RemoveControllableDevicesRequest.xsd"></xsd:include>
+    <xsd:include schemaLocation="RemoveControllableDevicesResponse.xsd"></xsd:include>
+    <xsd:include schemaLocation="UnenrollmentRequest.xsd"></xsd:include>
+    <xsd:include schemaLocation="UnenrollmentResponse.xsd"></xsd:include>
+    <xsd:include schemaLocation="UpdateControllableDevicesRequest.xsd"></xsd:include>
+    <xsd:include schemaLocation="UpdateControllableDevicesResponse.xsd"></xsd:include>
+    
+</xsd:schema>

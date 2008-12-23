@@ -30,8 +30,7 @@
             <bean class="org.springframework.xml.xsd.commons.CommonsXsdSchemaCollection">
                 <property name="xsds">
                     <list>
-                        <value>classpath*:com/cannontech/yukon/api/loadManagement/schemas/*Request.xsd</value>
-                        <value>classpath*:com/cannontech/yukon/api/loadManagement/schemas/*Response.xsd</value>
+                        <value>classpath*:com/cannontech/yukon/api/loadManagement/schemas/AllLoadManagement.xsd</value>
                     </list>
                 </property>
                 <property name="inline" value="true" />
@@ -48,8 +47,7 @@
             <bean class="org.springframework.xml.xsd.commons.CommonsXsdSchemaCollection">
                 <property name="xsds">
                     <list>
-                        <value>classpath*:com/cannontech/yukon/api/stars/schemas/*Request.xsd</value>
-                        <value>classpath*:com/cannontech/yukon/api/stars/schemas/*Response.xsd</value>
+                        <value>classpath*:com/cannontech/yukon/api/stars/schemas/AllStars.xsd</value>
                     </list>
                 </property>
                 <property name="inline" value="true" />
@@ -57,16 +55,17 @@
         </property>
         <property name="portTypeName" value="starsPort" />
         <property name="locationUri" value="/soap/stars" />
+        <property name="targetNamespace" value="http://yukon.cannontech.com/service" />        
     </bean>
     
     <bean id="account"
         class="org.springframework.ws.wsdl.wsdl11.DefaultWsdl11Definition">
+ 
         <property name="schemaCollection">
             <bean class="org.springframework.xml.xsd.commons.CommonsXsdSchemaCollection">
                 <property name="xsds">
                     <list>
-                        <value>classpath*:com/cannontech/yukon/api/account/schemas/*Request.xsd</value>
-                        <value>classpath*:com/cannontech/yukon/api/account/schemas/*Response.xsd</value>
+                        <value>classpath*:com/cannontech/yukon/api/account/schemas/AllAccount.xsd</value>
                     </list>
                 </property>
                 <property name="inline" value="true" />
@@ -74,6 +73,7 @@
         </property>
         <property name="portTypeName" value="accountPort" />
         <property name="locationUri" value="/soap/account" />
+        <property name="targetNamespace" value="http://yukon.cannontech.com/service" />        
     </bean>
 
 </beans>
