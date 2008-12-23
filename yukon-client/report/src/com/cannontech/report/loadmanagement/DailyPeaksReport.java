@@ -10,10 +10,10 @@ import java.util.Calendar;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
-import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.database.db.point.RawPointHistory;
 import com.cannontech.report.ReportBase;
 import com.cannontech.report.ReportTypes;
@@ -255,7 +255,7 @@ public boolean retrieveReportData(String dbAlias)
 															((RawPointHistory)controlTimePeakVector.get(j)).getQuality(),
 															((RawPointHistory)controlTimePeakVector.get(j)).getTimeStamp(),
 															new Double(0.0),
-															new Integer(PointQualities.UNINTIALIZED_QUALITY),
+															new Integer(PointQuality.Uninitialized.getQuality()),
 															new java.util.GregorianCalendar(1990,1,1),
 															((TempControlAreaObject)controlAreaVector.get(i)).getThreshold());
 						}
@@ -274,7 +274,7 @@ public boolean retrieveReportData(String dbAlias)
 							{
 								dailyPeaksRec = new DailyPeaksRecord(((TempControlAreaObject)controlAreaVector.get(i)).getControlAreaName(),
 																new Double(0.0),
-																new Integer(PointQualities.UNINTIALIZED_QUALITY),
+																new Integer(PointQuality.Uninitialized.getQuality()),
 																new java.util.GregorianCalendar(1990,1,1),
 																((RawPointHistory)nonControlTimePeakVector.get(j)).getValue(),
 																((RawPointHistory)nonControlTimePeakVector.get(j)).getQuality(),

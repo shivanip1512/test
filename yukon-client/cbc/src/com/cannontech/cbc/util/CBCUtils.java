@@ -646,7 +646,7 @@ public final class CBCUtils {
     }
 
     public static boolean isPointQualNormal(PointQualityCheckable checkable, Integer type) {
-        return checkable.getCurrentPtQuality(type.intValue()) == PointQuality.Normal.getPointQualityValue();
+        return checkable.getCurrentPtQuality(type.intValue()) == PointQuality.Normal.getQuality();
     }
     
     public static boolean isController(LiteWrapper lite) {

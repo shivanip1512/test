@@ -1,11 +1,11 @@
 package com.cannontech.core.dao.impl;
 
 import com.cannontech.common.exception.PointDataException;
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dao.SimplePointAccessDao;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.dispatch.message.PointData;
 
@@ -36,8 +36,13 @@ public class SimplePointAccessDaoImpl implements SimplePointAccessDao {
         pointData.setId(point.getPointID());
         pointData.setValue(value);
         pointData.setType(PointTypes.ANALOG_POINT);
-        pointData.setQuality(PointQualities.NORMAL_QUALITY);
-        dynamicDataSource.putValue(pointData);
+        pointData.setQuality(PointQuality.Normal.getQuality());
+        writePointData(pointData);
+    }
+    
+    @Override
+    public void writePointData(PointData pointData) {
+    	dynamicDataSource.putValue(pointData);
     }
     
     public void setDynamicDataSource(DynamicDataSource dynamicDataSource) {

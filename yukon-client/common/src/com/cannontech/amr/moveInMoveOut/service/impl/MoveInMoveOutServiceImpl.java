@@ -31,6 +31,7 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.exception.MeterReadRequestException;
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
 import com.cannontech.core.dao.AuthDao;
@@ -38,7 +39,6 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.jobs.service.JobManager;
 import com.cannontech.jobs.support.YukonJobDefinition;
@@ -216,7 +216,7 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
         PointData pointData = new PointData();
         pointData.setId(pvh.getId());
         pointData.setType(pvh.getType());
-        pointData.setQuality(PointQualities.ESTIMATED_QUALITY);
+        pointData.setQuality(PointQuality.Estimated.getQuality());
         pointData.setTime(new Date(calculatedDate.getTime() + 1));
         pointData.setValue(calculatedValue);
         pointData.setTags(PointData.TAG_POINT_MUST_ARCHIVE);

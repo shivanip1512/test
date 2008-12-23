@@ -7,8 +7,8 @@ package com.cannontech.tdc.roweditor;
  */
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.unchanging.DoubleRangeDocument;
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.tdc.TDCMainFrame;
@@ -316,7 +316,7 @@ public void JButtonSendAction_actionPerformed(java.util.EventObject newEvent)
 			pt.setTime( new java.util.Date() );
 			pt.setType( getEditorData().getPointType() );
 			pt.setValue( Double.parseDouble( getJTextFieldValue().getText() ) );
-			pt.setQuality( PointQualities.MANUAL_QUALITY );		
+			pt.setQuality( PointQuality.Manual.getQuality() );		
 			pt.setStr("Manual change occurred from " + CtiUtilities.getUserName() + " using TDC");
 			pt.setUserName( CtiUtilities.getUserName() );
 

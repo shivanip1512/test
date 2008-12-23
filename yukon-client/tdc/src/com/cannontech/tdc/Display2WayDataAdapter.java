@@ -16,12 +16,11 @@ import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.gui.util.Colors;
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.point.CTIPointQuailtyException;
-import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.state.YukonImage;
 import com.cannontech.message.dispatch.message.PointData;
@@ -1924,15 +1923,13 @@ private void setCorrectRowValue( PointValues point, int location )
 
 		if ( getColumnTypeName().contains(CustomDisplay.COLUMN_TYPE_POINTQUALITY) )
 		{
-			try
-			{
+			try {
 	 			dataRow.setElementAt(
-			 			PointQualities.getQualityAbreviation( (int)point.getPointQuality() )
+	 					PointQuality.getPointQuality((int)point.getPointQuality()).getAbbreviation()
 			 				+ (TagUtils.isAlarmActive((int)point.getTags()) ? "-(ALM)" : ""),
 						getColumnTypeName().indexOf(CustomDisplay.COLUMN_TYPE_POINTQUALITY) ); 
 			}
-			catch( CTIPointQuailtyException ex )
-			{
+			catch( IllegalArgumentException ex ) {
 				handleException( ex );
 			}
 		}

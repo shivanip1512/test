@@ -6,7 +6,7 @@ package com.cannontech.report.loadmanagement;
  * @author: 
  */
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.database.data.point.CTIPointQuailtyException;
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.report.ReportRecordBase;
 public class DailyPeaksRecord implements ReportRecordBase
 {
@@ -72,11 +72,11 @@ public String dataToString()
 		}
 		returnBuffer.append(" ");
 
-		if( getPeakDataQuality().intValue() != com.cannontech.database.data.point.PointQualities.UNINTIALIZED_QUALITY )
+		if( getPeakDataQuality().intValue() != PointQuality.Uninitialized.getQuality() )
 		{
 			try
 			{
-				String peakQualityStr = com.cannontech.database.data.point.PointQualities.getQuality(getPeakDataQuality().intValue());
+				String peakQualityStr = PointQuality.getPointQuality(getPeakDataQuality().intValue()).getDescription(); 
 				if( peakQualityStr.length() <= 10 )
 				{
 					returnBuffer.append(peakQualityStr);
@@ -90,8 +90,7 @@ public String dataToString()
 					returnBuffer.append(" ");
 				}
 			}
-			catch( CTIPointQuailtyException ex )
-			{
+			catch( IllegalArgumentException ex ) {
 				CTILogger.error("Pt Quaility not found", ex );
 			}
 		}
@@ -130,11 +129,11 @@ public String dataToString()
 		}
 		returnBuffer.append(" ");
 
-		if( getOffPeakDataQuality().intValue() != com.cannontech.database.data.point.PointQualities.UNINTIALIZED_QUALITY )
+		if( getOffPeakDataQuality().intValue() != PointQuality.Uninitialized.getQuality())
 		{
 			try
 			{
-				String offPeakQualityStr = com.cannontech.database.data.point.PointQualities.getQuality(getOffPeakDataQuality().intValue());
+				String offPeakQualityStr = PointQuality.getPointQuality(getOffPeakDataQuality().intValue()).getDescription(); 
 				if( offPeakQualityStr.length() <= 10 )
 				{
 					returnBuffer.append(offPeakQualityStr);
@@ -148,8 +147,7 @@ public String dataToString()
 					returnBuffer.append(" ");
 				}
 			}
-			catch( CTIPointQuailtyException ex )
-			{
+			catch( IllegalArgumentException ex ) {
 				CTILogger.error("Pt Quaility not found", ex );
 			}
 		}

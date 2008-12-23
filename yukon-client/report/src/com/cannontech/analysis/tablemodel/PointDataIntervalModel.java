@@ -14,10 +14,9 @@ import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.MeterAndPointData;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.data.point.CTIPointQuailtyException;
-import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.spring.YukonSpringHook;
 
@@ -320,11 +319,9 @@ public class PointDataIntervalModel extends ReportModelBase
 				case QUALITY_COLUMN:
 				{
 					String qual = null;
-					try
-					{
-						qual = PointQualities.getQuality(mpData.getQuality().intValue());
-					}
-					catch (CTIPointQuailtyException e){
+					try {
+						qual = PointQuality.getPointQuality(mpData.getQuality().intValue()).getDescription();
+					} catch (IllegalArgumentException e){
 					}
 					return qual;
 				}

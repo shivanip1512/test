@@ -6,9 +6,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
-import com.cannontech.database.data.point.PointQualities;
 
 /**
 * * Import DSM/2 point history into the yukon database by inserting data directly into the rawpointhistory table.
@@ -218,7 +218,7 @@ private static int getQuality(short dsmQuality) {
 	if( (dsmQuality & (short) 0x0800) > 0 || 
 		(dsmQuality & (short) 0x2000) > 0 ) {
 		
-		yukonQuality = PointQualities.NON_UPDATED_QUALITY;			
+		yukonQuality = PointQuality.NonUpdated.getQuality();			
 	}
 	else {
 		short dqMask = (short) (dsmQuality & (short) 0x003F);
@@ -226,41 +226,41 @@ private static int getQuality(short dsmQuality) {
 		switch(dqMask) {
 
 			case 0: //NORMAL
-				yukonQuality = PointQualities.NORMAL_QUALITY;
+				yukonQuality = PointQuality.Normal.getQuality();
 			break;
 
 			case 1: //INVALID
-				yukonQuality = PointQualities.INVALID_QUALITY;
+				yukonQuality = PointQuality.Invalid.getQuality();
 			break;
 			
 			case 2:
-				yukonQuality = PointQualities.UNKNOWN_QUALITY;
+				yukonQuality = PointQuality.Unknown.getQuality();
 			break;
 			
 			case 3: //HIGH-LIMIT
 			case 4: //HIGH-WARN
-				yukonQuality = PointQualities.EXCEEDS_HIGH_QUALITY;	
+				yukonQuality = PointQuality.ExceedsHigh.getQuality();	
 			break;
 			
 			case 5: //LO-LIMIT
 			case 6: //LO-WARN
-				yukonQuality = PointQualities.EXCEEDS_LOW_QUALITY;
+				yukonQuality = PointQuality.ExceedsLow.getQuality();
 			break;
 			
 			case 16: //OVERFLOW
-				yukonQuality = PointQualities.OVERFLOW_QUALITY;
+				yukonQuality = PointQuality.Overflow.getQuality();
 			break;
 
 			case 17: //DEV FILLER
-				yukonQuality = PointQualities.DEVICE_FILLER_QUALITY;
+				yukonQuality = PointQuality.DeviceFiller.getQuality();
 			break;
 
 			case 18: //POWER FAIL
-				yukonQuality = PointQualities.POWERFAIL_QUALITY;
+				yukonQuality = PointQuality.Powerfail.getQuality();
 			break;
 
 			case 19: //PARTIAL
-				yukonQuality = PointQualities.PARTIAL_INTERVAL_QUALITY;
+				yukonQuality = PointQuality.PartialInterval.getQuality();
 			break;
 
 			case 20: //HARD ARM
@@ -269,12 +269,12 @@ private static int getQuality(short dsmQuality) {
 			case 23: //MS SHIFT
 			case 24: //PF SHIFT
 			case 25: //STATE CHG
-				yukonQuality = PointQualities.QUESTIONABLE_QUALITY;
+				yukonQuality = PointQuality.Questionable.getQuality();
 			break;
 			
 			default:
 				System.out.println("Unknown DSM2 DQ Status Mask: " + dqMask );
-				yukonQuality = PointQualities.UNKNOWN_QUALITY;							
+				yukonQuality = PointQuality.Unknown.getQuality();							
 		}
 	}		
 	

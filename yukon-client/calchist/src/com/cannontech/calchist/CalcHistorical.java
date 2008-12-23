@@ -12,6 +12,7 @@ import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.login.ClientSession;
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.LogWriter;
 import com.cannontech.common.version.VersionTools;
@@ -19,7 +20,6 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.lite.LitePointUnit;
 import com.cannontech.database.data.lite.LiteRawPointHistory;
-import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.point.calculation.CalcComponent;
@@ -1028,7 +1028,7 @@ public Vector parseAndCalculateRawPointHistories(Vector rawPointHistoryVectorOfV
 				pointDataMsg.setValue(value.doubleValue());
 				pointDataMsg.setTimeStamp(new Date(((LiteRawPointHistory) tempRawPointHistoryVector.get(0)).getTimeStamp()));
 				pointDataMsg.setTime(new Date(((LiteRawPointHistory) tempRawPointHistoryVector.get(0)).getTimeStamp()));
-				pointDataMsg.setQuality(PointQualities.NORMAL_QUALITY);
+				pointDataMsg.setQuality(PointQuality.Normal.getQuality());
 				pointDataMsg.setType(PointTypes.CALCULATED_POINT);
 				pointDataMsg.setTags(PointData.TAG_POINT_LP_NO_REPORT); //load profile tag setting
 				pointDataMsg.setStr("Calc Historical");

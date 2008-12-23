@@ -6,6 +6,7 @@ package com.cannontech.tdc.roweditor;
  * @author: 
  */
 import com.cannontech.clientutils.tags.TagUtils;
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.commandevents.ControlCommand;
@@ -505,7 +506,7 @@ public void JButtonSendAction_actionPerformed(java.util.EventObject newEvent)
 		pt.setValue( (double)getSelectedStateIntValue() );
 
 		
-		pt.setQuality( com.cannontech.database.data.point.PointQualities.MANUAL_QUALITY );		
+		pt.setQuality( PointQuality.Manual.getQuality());		
 		pt.setStr("Manual change occurred from " + com.cannontech.common.util.CtiUtilities.getUserName() + " using TDC");
 		pt.setUserName( com.cannontech.common.util.CtiUtilities.getUserName() );
 		

@@ -9,10 +9,10 @@ import com.cannontech.billing.record.WLT_40HeaderRecord0001;
 import com.cannontech.billing.record.WLT_40HeaderRecord0002;
 import com.cannontech.billing.record.WLT_40PulseDataRecord;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.point.RawPointHistory;
 
@@ -98,9 +98,9 @@ public void parseAndCalculatePulses(Double multiplier, Integer demandInterval, V
 			if( lastRPHTimestamp == null ||
 					currentRPH.getTimeStamp().getTime().getTime() != lastRPHTimestamp.getTime().getTime() )
 			{
-				if( currentRPH.getQuality().intValue() == PointQualities.NORMAL_QUALITY ||
-						currentRPH.getQuality().intValue() == PointQualities.PARTIAL_INTERVAL_QUALITY ||
-						currentRPH.getQuality().intValue() == PointQualities.POWERFAIL_QUALITY )
+				if( currentRPH.getQuality().intValue() == PointQuality.Normal.getQuality() ||
+						currentRPH.getQuality().intValue() == PointQuality.PartialInterval.getQuality() ||
+						currentRPH.getQuality().intValue() == PointQuality.Powerfail.getQuality())
 				{
 					intervalPulses = (int)(currentRPH.getValue().doubleValue()/(multiplier.doubleValue()*(3600/demandInterval.intValue())));
 					if( intervalPulses <= 9999 )
@@ -109,43 +109,23 @@ public void parseAndCalculatePulses(Double multiplier, Integer demandInterval, V
 					}
 				}
 
-				switch(currentRPH.getQuality().intValue())
-				{
-					case PointQualities.NORMAL_QUALITY:
-					{
-						if( intervalPulses <= 9999 )
-							quality = '0';
-						else {
-							quality = '1';
-							falseIntervals++;
-						}
-						break;
+				if( currentRPH.getQuality().intValue() == PointQuality.Normal.getQuality()) {
+					if( intervalPulses <= 9999 ) {
+						quality = '0';
 					}
-					case PointQualities.DEVICE_FILLER_QUALITY:
-					{
-						quality = '9';
-						falseIntervals++;
-						break;
-					}
-					/*case com.cannontech.database.data.point.PointQualities.MASTER_STATION_SHIFT_QUALITY:
-					case com.cannontech.database.data.point.PointQualities.RECORDER_SHIFT_QUALITY:
-					{//future addition to qualities
-						quality = 'A';
-						falseIntervals++;
-						break;
-					}*/
-					case PointQualities.POWERFAIL_QUALITY:
-					{
-						quality = '4';
-						falseIntervals++;
-						break;
-					}
-					default:
-					{
+					else {
 						quality = '1';
 						falseIntervals++;
-						break;
 					}
+				} else if (currentRPH.getQuality().intValue() == PointQuality.DeviceFiller.getQuality()) {
+					quality = '9';
+					falseIntervals++;
+				} else if( currentRPH.getQuality().intValue() == PointQuality.Powerfail.getQuality()) {
+					quality = '4';
+					falseIntervals++;
+				} else {
+					quality = '1';
+					falseIntervals++;
 				}
 
 				tempDataStatusZoneString = "";

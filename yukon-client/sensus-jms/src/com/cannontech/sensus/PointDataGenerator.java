@@ -8,11 +8,11 @@ import org.apache.log4j.Logger;
 import org.springframework.dao.DataAccessException;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.yukon.IServerConnection;
 
@@ -39,7 +39,7 @@ public class PointDataGenerator implements PointValueUpdater {
         if(holder.point.getPointID() != 0) {
             PointData pointData = new PointData();
             pointData.setId(holder.point.getPointID());
-            pointData.setQuality(PointQualities.NORMAL_QUALITY);
+            pointData.setQuality(PointQuality.Normal.getQuality());
             pointData.setType(type);
             double value = rawValue;
             value *= holder.multiplier;

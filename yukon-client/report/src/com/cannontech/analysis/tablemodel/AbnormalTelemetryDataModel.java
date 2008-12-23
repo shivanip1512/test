@@ -9,16 +9,15 @@ import java.util.Set;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowCallbackHandler;
 
+import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.data.pao.CapControlTypes;
-import com.cannontech.database.data.point.CTIPointQuailtyException;
-import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.SubBus;
 import com.cannontech.yukon.cbc.SubStation;
-import com.cannontech.cbc.cache.CapControlCache;
 
 public class AbnormalTelemetryDataModel extends BareReportModelBase<AbnormalTelemetryDataModel.ModelRow> implements CapControlFilterable {
     
@@ -78,8 +77,8 @@ public class AbnormalTelemetryDataModel extends BareReportModelBase<AbnormalTele
                 Integer quality = rs.getInt("quality");
                 Integer paoId = rs.getInt("paobjectid");
                 try {
-                    row.quality = PointQualities.getQuality(quality);
-                } catch (CTIPointQuailtyException e) {
+                    row.quality = PointQuality.getPointQuality(quality).getDescription();
+                } catch (IllegalArgumentException e) {
                     CTILogger.error("Invalid Point Quality",e);
                 }
                 

@@ -13,13 +13,13 @@ import java.util.GregorianCalendar;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.LogWriter;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.holiday.HolidaySchedule;
-import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.holiday.DateOfHoliday;
@@ -155,7 +155,7 @@ public class Baseline implements Serializable
 				pointDataMsg.setTimeStamp(cal.getTime());
 				pointDataMsg.setTime(cal.getTime());
 				
-				pointDataMsg.setQuality(PointQualities.NON_UPDATED_QUALITY);
+				pointDataMsg.setQuality(PointQuality.NonUpdated.getQuality());
 				pointDataMsg.setType(PointTypes.CALCULATED_POINT);
 				if( i+1 >= data.length() )
 					pointDataMsg.setTags(0x00000000); //represent the last PointData message in the group

@@ -3,11 +3,11 @@ package com.cannontech.database.data.lite;
 import java.sql.Timestamp;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
-import com.cannontech.database.data.point.PointQualities;
 
 /*
  * This class exists so Objects (specifically Vectors) of RawPointHistory do not need to be so heavy.
@@ -19,7 +19,7 @@ public class LiteRawPointHistory extends LiteBase
 	private int changeID = 0;
 	private int pointID = 0;
 	private long timeStamp = CtiUtilities.get1990GregCalendar().getTimeInMillis();
-	private int quality = PointQualities.INVALID_QUALITY;
+	private int quality = PointQuality.Invalid.getQuality();
 	private double value = 0.0;
 //	private short millis = 0;
 

@@ -9,9 +9,8 @@ import java.util.Vector;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.CommonUtils;
 import com.cannontech.clientutils.commonutils.ModifiedDate;
-import com.cannontech.database.data.point.CTIPointQuailtyException;
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.database.data.point.PointLogicalGroups;
-import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.database.db.point.Point;
 import com.cannontech.database.db.point.SystemLog;
 import com.cannontech.database.db.point.TAGLog;
@@ -753,11 +752,11 @@ public class ViewCreator
 				// set Quality
 				if( tableModel.getColumnTypeName().contains(CustomDisplay.COLUMN_TYPE_POINTQUALITY) )
 					newRow.setElementAt( 
-								PointQualities.getQuality(
-								Integer.parseInt(CommonUtils.createString(rowData[i][4]))), 
+								PointQuality.getPointQuality(
+								Integer.parseInt(CommonUtils.createString(rowData[i][4]))).getDescription(), 
 								tableModel.getColumnTypeName().indexOf(CustomDisplay.COLUMN_TYPE_POINTQUALITY));
 			}
-			catch( CTIPointQuailtyException ex )
+			catch( IllegalArgumentException ex )
 			{
 				CTILogger.error( "An error occurred with the point quality", ex );
 			}	

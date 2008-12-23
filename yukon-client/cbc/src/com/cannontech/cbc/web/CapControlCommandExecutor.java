@@ -4,8 +4,8 @@ import java.util.Date;
 
 import com.cannontech.capcontrol.CapBankOperationalState;
 import com.cannontech.cbc.cache.CapControlCache;
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.dispatch.message.PointData;
@@ -161,7 +161,7 @@ public class CapControlCommandExecutor
         // Send new point Here
         PointData pt = new PointData();
         pt.setId( bank.getStatusPointID().intValue() );
-        pt.setQuality( PointQualities.MANUAL_QUALITY );
+        pt.setQuality( PointQuality.Manual.getQuality() );
         pt.setStr("Manual change occurred using CBC Web Client");
         pt.setTime(now);
         pt.setTimeStamp(now);
@@ -289,7 +289,7 @@ public class CapControlCommandExecutor
         // Send new point Here
         PointData pt = new PointData();
         pt.setId( bank.getOperationAnalogPointID().intValue() );
-        pt.setQuality( PointQualities.MANUAL_QUALITY );
+        pt.setQuality( PointQuality.Manual.getQuality());
         pt.setStr("Capacitor Bank OP_COUNT change from CBC Client");
         pt.setTime(now);
         pt.setTimeStamp(now);

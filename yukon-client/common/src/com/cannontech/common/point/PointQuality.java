@@ -1,45 +1,59 @@
 package com.cannontech.common.point;
-import static com.cannontech.database.data.point.PointQualities.*;
-
 
 public enum PointQuality {
-    Unintialized(UNINTIALIZED_QUALITY),
-    InitDefault(INIT_DEFAULT_QUALITY),
-    InitLastKnown(INIT_LAST_KNOWN_QUALITY),
-    NonUpdated(NON_UPDATED_QUALITY),
-    Manual(MANUAL_QUALITY),
-    Normal(NORMAL_QUALITY),
-    ExceedsLow(EXCEEDS_LOW_QUALITY),
-    ExceedsHigh(EXCEEDS_HIGH_QUALITY),
-    Abnormal(ABNORMAL_QUALITY),
-    Unknown(UNKNOWN_QUALITY),
-    Invalid(INVALID_QUALITY),
-    PartialInterval(PARTIAL_INTERVAL_QUALITY),
-    DeviceFiller(DEVICE_FILLER_QUALITY),
-    Questionable(QUESTIONABLE_QUALITY),
-    Overflow(OVERFLOW_QUALITY),
-    Powerfail(POWERFAIL_QUALITY),
-    Unreasonable(UNREASONABLE_QUALITY),
-    Constant(CONSTANT_QUALITY),
-    Estimated(ESTIMATED_QUALITY);
+    Uninitialized(0, "Uninitialized", "Uninit"),
+    InitDefault(1, "Init Default", "Init-Def"),
+    InitLastKnown(2, "Init Last Known", "Init-Last"),
+    NonUpdated(3, "Non Updated", "Non"),
+    Manual(4, "Manual", "Man"),
+    Normal(5, "Normal", "Norm"),
+    ExceedsLow(6, "Exceeds Low", "Exc-Low"),
+    ExceedsHigh(7, "Exceeds High", "Exc-High"),
+    Abnormal(8, "Abnormal"),
+    Unknown(9, "Unknown"),
+    Invalid(10, "Invalid", "Inv"),
+    PartialInterval(11, "Partial Interval", "Part-Int"),
+    DeviceFiller(12, "Device Filler", "Dev-Fill"),
+    Questionable(13, "Questionable", "Quest"),
+    Overflow(14, "Overflow"),
+    Powerfail(15, "Power Fail", "Pow-Fail"),
+    Unreasonable(16, "Unreasonable", "Unr"),
+    Constant(17, "Constant", "Const"),
+    Estimated(18, "Estimated", "Est");
+
+    private final int quality;
+    private final String description;
+    private final String abbreviation;
+
+    PointQuality(int quality, String desc) {
+        this.quality = quality;
+        this.description = desc;
+        this.abbreviation = desc; 
+    }
+
+    PointQuality(int quality, String desc, String abbr) {
+        this.quality = quality;
+        this.description = desc;
+        this.abbreviation = abbr;
+    }
+    public final int getQuality() {
+		return quality;
+	}
     
-    private final int value;
-
-    PointQuality(int num) {
-        value = num;
-    }
-
-    public int getPointQualityValue() {
-        return value;
-    }
+    public final String getDescription() {
+		return description;
+	}
+    
+    public final String getAbbreviation() {
+		return abbreviation;
+	}
     
     public static PointQuality getPointQuality(int value) {
-    	for (PointQuality quality : values()) {
-			if (quality.value == value) {
-				return quality;
+    	for (PointQuality pointQuality : values()) {
+			if (pointQuality.quality == value) {
+				return pointQuality;
 			}
 		}
     	throw new IllegalArgumentException();
     }
 }
-

@@ -39,7 +39,7 @@ public class PointData extends com.cannontech.message.util.Message implements Po
 	/* DEFINED IN com.cannontech.database.data.point.PointTypes */
 
 	// point quality
-	/* DEFINED IN com.cannontech.database.data.point.PointQualities */
+	/* DEFINED IN com.cannontech.common.point.PointQuality */
 /**
  * PointData constructor comment.
  */

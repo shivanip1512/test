@@ -46,6 +46,7 @@ import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.gui.panel.CompositeJSplitPane;
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.gui.util.SortTableModelWrapper;
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
@@ -53,7 +54,6 @@ import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteTag;
 import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.graph.model.TrendModel;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -3888,7 +3888,7 @@ private void showRowEditor( Object source )
 	int selectedRow = getDisplayTable().getSelectedRow();
 	
 	if( getTableDataModel().getPointValue( selectedRow ).getPointQuality()
-		== PointQualities.CONSTANT_QUALITY )
+		== PointQuality.Constant.getQuality() )
 	{
 		JOptionPane.showMessageDialog( this, 
 			"Manual changes of points with a quality of CONSTANT is not allowed",

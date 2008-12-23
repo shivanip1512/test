@@ -17,10 +17,9 @@ import java.util.Vector;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.lm.DailyPeak;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.data.point.CTIPointQuailtyException;
-import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.database.db.device.lm.LMControlArea;
 import com.cannontech.database.db.device.lm.LMControlAreaTrigger;
 import com.cannontech.database.db.point.RawPointHistory;
@@ -369,8 +368,8 @@ public class DailyPeaksModel extends ReportModelBase
 					if( dp.getPeakDataQuality() != null)
 					{
 						try{
-							return PointQualities.getQuality(dp.getPeakDataQuality().intValue());
-						}catch( CTIPointQuailtyException ex ){}						
+							return PointQuality.getPointQuality(dp.getPeakDataQuality().intValue()).getDescription(); 
+						}catch( IllegalArgumentException ex ){}						
 					}
 					return dp.getPeakDataQuality();
 				}
@@ -386,8 +385,8 @@ public class DailyPeaksModel extends ReportModelBase
 				{
 					if( dp.getOffPeakDataQuality() != null)
 						try{
-							return PointQualities.getQuality(dp.getOffPeakDataQuality().intValue());
-						}catch( CTIPointQuailtyException ex ){}
+							return PointQuality.getPointQuality(dp.getOffPeakDataQuality().intValue()).getDescription(); 
+						}catch( IllegalArgumentException ex ){}
 					return dp.getOffPeakDataQuality();
 				}				
 				case OFF_PEAK_TIME_COLUMN:
