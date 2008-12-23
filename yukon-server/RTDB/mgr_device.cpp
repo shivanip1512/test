@@ -54,6 +54,7 @@
 #include "dev_grp_sa205.h"
 #include "dev_grp_sadigital.h"
 #include "dev_grp_versacom.h"
+#include "dev_grp_xml.h"
 #include "dev_grp_mct.h"
 #include "dev_mct_broadcast.h"
 #include "dev_xml.h"
@@ -810,7 +811,8 @@ void CtiDeviceManager::refreshList(id_range_t &paoids, const LONG deviceType)
                         rowFound |= loadDeviceType(paoid_subset, "RTC devices",            CtiDeviceRTC());
                         
                         //XML Transmitters
-                        rowFound |= loadDeviceType(paoid_subset, "Xml devices",            CtiDeviceXml());
+                        rowFound |= loadDeviceType(paoid_subset, "XML devices",            CtiDeviceXml());
+                        rowFound |= loadDeviceType(paoid_subset, "XML groups",             CtiDeviceGroupXml());
 
                         rowFound |= loadDeviceType(paoid_subset, "Emetcon groups",         CtiDeviceGroupEmetcon());
                         rowFound |= loadDeviceType(paoid_subset, "Versacom groups",        CtiDeviceGroupVersacom());
@@ -1204,7 +1206,6 @@ void CtiDeviceManager::refreshExclusions(id_range_t &paoids)
     }
 }
 
-
 void CtiDeviceManager::refreshIONMeterGroups(id_range_t &paoids)
 {
     RWDBConnection conn = getConnection();
@@ -1266,6 +1267,56 @@ void CtiDeviceManager::refreshIONMeterGroups(id_range_t &paoids)
     }
 }
 
+void CtiDeviceManager::refreshXmlGroupProperties(id_range_t &paoids, const int type)
+{
+    RWDBConnection conn = getConnection();
+    RWDBDatabase db = getDatabase();
+
+	if(DebugLevel & 0x00020000)
+	{
+		CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for XML Group Properties" << endl;
+	}
+
+	vector< CtiDeviceSPtr > devicesToUpdate;
+	getDevicesByType(type,devicesToUpdate);
+	
+	vector< CtiDeviceSPtr >::iterator itr = devicesToUpdate.begin();
+	
+	for( ;itr != devicesToUpdate.end(); ++itr)
+	{
+		RWDBSelector selector = db.selector();
+		RWDBTable keyTable;
+
+		CtiDeviceGroupXmlSPtr device = boost::static_pointer_cast<CtiDeviceGroupXml>(*itr);
+		device->getPropertiesSql(db,keyTable,selector);
+	
+		addIDClause(selector, keyTable["PAObjectID"], paoids);
+	
+		RWDBReader rdr = selector.reader(conn);
+	
+		if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+		{
+			CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+		}
+
+		if(rdr.status().errorCode() == RWDBStatus::ok)
+		{
+			device->clearProperties();
+			device->decodePropertiesSql(rdr);
+		}
+		else
+		{
+			CtiLockGuard<CtiLogger> doubt_guard(dout);
+			dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+			dout << "Error reading XML Properties from database: " << rdr.status().errorCode() << endl;
+			dout << selector.asString() << endl;
+		}
+	}
+    if(DebugLevel & 0x00020000)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for XML Properties" << endl;
+	} 
+}
 
 void CtiDeviceManager::refreshMacroSubdevices(id_range_t &paoids)
 {
@@ -1626,6 +1677,12 @@ void CtiDeviceManager::refreshDeviceProperties(id_range_t &paoids, int type)
     {
         DebugTimer timer("loading MCT configs");            refreshMCTConfigs     (paoids);
                                                             refreshMCT400Configs  (paoids);
+    }
+
+    if( !type || type == TYPE_LMGROUP_XML )
+    {
+        DebugTimer timer("loading XML Group properties");
+		refreshXmlGroupProperties(paoids, TYPE_LMGROUP_XML);
     }
 
     {  DebugTimer timer("loading device exclusions");       refreshExclusions     (paoids);  }
@@ -2031,7 +2088,7 @@ void CtiDeviceManager::refreshGroupHierarchy(LONG deviceID)
         vector< CtiDeviceSPtr > match_coll;
         vector< CtiDeviceGroupBaseSPtr > groupVec;
         getDevicesByType(TYPE_LMGROUP_EXPRESSCOM, match_coll);
-        
+        getDevicesByType(TYPE_LMGROUP_XML, match_coll);
         //This makes me so very unhappy.
         for( vector< CtiDeviceSPtr >::iterator iter = match_coll.begin(); iter != match_coll.end(); iter++ )
         {

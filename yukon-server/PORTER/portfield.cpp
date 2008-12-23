@@ -102,6 +102,7 @@
 #include "dev_ied.h"
 #include "dev_schlum.h"
 #include "dev_remote.h"
+#include "dev_grp_xml.h"
 #include "device_queue_interface.h"
 #include "dev_kv2.h"
 #include "dev_mct.h"  //  for the test addresses
@@ -1398,46 +1399,17 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         status = Port->outMess(trx, Device, traceList);
                         break;
                     }
-                    case TYPE_XML_XMIT:
+					case TYPE_XML_XMIT:
                     {
                         CtiDeviceXmlSPtr ds = boost::static_pointer_cast<CtiDeviceXml>(Device);
-                        int comm_status = NoError;
+						int xmlGroupId = OutMessage->DeviceIDofLMGroup;
+						CtiDeviceGroupXmlSPtr xmlGroupSptr = boost::static_pointer_cast<CtiDeviceGroupXml>(DeviceManager.getDeviceByID(xmlGroupId));
 
-                        if( !Device->isSingle() )
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - device \'" << Device->getName() << "\' is not a CtiDeviceSingle, aborting communication **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
-                        else if( status = ds->recvCommRequest(OutMessage) )
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - error \"" << status << "\" in recvCommRequest() for \"" << Device->getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
-                        else
-                        {
-                            while( !ds->isTransactionComplete() )
-                            {
-                                //generate must fill the trx with data.
-                                if( !(status = ds->generate(trx)) )
-                                {
-                                    //sends the message on the port.
-                                    comm_status = Port->outMess(trx, Device, traceList);
-
-                                    //Decode results of send.
-                                    status = ds->decode(trx, comm_status);
-                                }
-
-                                // Prepare for tracing
-                                if(trx.doTrace(comm_status))
-                                {
-                                    Port->traceXfer(trx, traceList, Device, comm_status);
-                                }
-
-                                DisplayTraceList(Port, traceList, true);
-                            }
-                        }
-
-                        break;
+						if(xmlGroupSptr)
+						{
+							ds->setParameters(xmlGroupSptr->getParameters());
+						}
+						//Break is intentionally left off here. The next block needs to execute
                     }
                     case TYPE_ION7330:
                     case TYPE_ION7700:
@@ -1456,7 +1428,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     case TYPE_MODBUS:
                     case TYPE_FOREIGNPORTER:
                     case TYPE_FMU:
-                    case TYPE_CCU721:
+					case TYPE_CCU721:
                     {
                         CtiDeviceSingleSPtr ds = boost::static_pointer_cast<CtiDeviceSingle>(Device);
                         int comm_status = NoError;
@@ -2356,7 +2328,8 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     case TYPE_TNPP:
                     case TYPE_MODBUS:
                     case TYPE_FMU:
-                    case TYPE_CCU721:
+					case TYPE_CCU721:
+					case TYPE_XML_XMIT:
                         break;
                     case TYPE_CCU700:
                     case TYPE_CCU710:

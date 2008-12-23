@@ -71,13 +71,14 @@ private:
 
     bool loadDeviceType(id_range_t &paoids, const string &device_name, const CtiDeviceBase &device, string type=string(), const bool include_type=true);
 
-    void refreshExclusions     (id_range_t &paoids);
-    void refreshIONMeterGroups (id_range_t &paoids);
-    void refreshMacroSubdevices(id_range_t &paoids);
-    void refreshMCTConfigs     (id_range_t &paoids);
-    void refreshMCT400Configs  (id_range_t &paoids);
-    void refreshDynamicPaoInfo (id_range_t &paoids);
-    bool refreshPointGroups    (id_range_t &paoids);
+    void refreshXmlGroupProperties  (id_range_t &paoids, const int type);
+    void refreshExclusions          (id_range_t &paoids);
+    void refreshIONMeterGroups      (id_range_t &paoids);
+    void refreshMacroSubdevices     (id_range_t &paoids);
+    void refreshMCTConfigs          (id_range_t &paoids);
+    void refreshMCT400Configs       (id_range_t &paoids);
+    void refreshDynamicPaoInfo      (id_range_t &paoids);
+    bool refreshPointGroups         (id_range_t &paoids);
 
 protected:
 

@@ -71,6 +71,7 @@ dev_grp_sa205.obj \
 dev_grp_sa305.obj \
 dev_grp_sadigital.obj \
 dev_grp_versacom.obj \
+dev_grp_xml.obj \
 dev_gwstat.obj \
 dev_ilex.obj \
 dev_ion.obj \

@@ -6,22 +6,24 @@
 
 class IM_EX_DEVDB CtiDeviceXml : public CtiDeviceRemote
 {
-	public:
+    public:
+    
+        typedef CtiDeviceRemote Inherited;
+    
+        CtiDeviceXml();
+        ~CtiDeviceXml();
+    
+        virtual int recvCommRequest(OUTMESS *OutMessage);
+    
+        virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
+        virtual void CtiDeviceXml::DecodeDatabaseReader(RWDBReader &rdr);
 
-		typedef CtiDeviceRemote Inherited;
-
-		CtiDeviceXml();
-		~CtiDeviceXml();
-
-		virtual int recvCommRequest(OUTMESS *OutMessage);
-
-		virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
-		virtual void CtiDeviceXml::DecodeDatabaseReader(RWDBReader &rdr);
-	protected:
-		virtual Cti::Protocol::Interface *getProtocol();
-
-	private:
-		Cti::Protocol::XmlProtocol * xmlProtocol;
+		void setParameters( std::vector< std::vector<string> >& params);
+    protected:
+        virtual Cti::Protocol::Interface * getProtocol();
+    
+    private:
+        Cti::Protocol::XmlProtocol _xmlProtocol;
 
 };
 

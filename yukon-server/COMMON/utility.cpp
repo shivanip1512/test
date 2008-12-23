@@ -929,8 +929,10 @@ bool isExpresscomGroup(INT Type)
     switch(Type)
     {
         case TYPE_LMGROUP_EXPRESSCOM:
+        case TYPE_LMGROUP_XML:
         {
             isit = true;
+            break;
         }
     }
 

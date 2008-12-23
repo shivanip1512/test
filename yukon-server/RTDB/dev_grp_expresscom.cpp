@@ -102,7 +102,7 @@ void CtiDeviceGroupExpresscom::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RW
     Inherited::getSQL(db, keyTable, selector);
     CtiTableExpresscomLoadGroup::getSQL(db, keyTable, selector);
 
-    selector.where( (rwdbUpper(keyTable["type"]) == RWDBExpr("EXPRESSCOM GROUP") || rwdbUpper(keyTable["type"]) == RWDBExpr("XML GROUP")) && selector.where() );
+    selector.where( rwdbUpper(keyTable["type"]) == RWDBExpr("EXPRESSCOM GROUP") && selector.where() );
 }
 
 void CtiDeviceGroupExpresscom::DecodeDatabaseReader(RWDBReader &rdr)

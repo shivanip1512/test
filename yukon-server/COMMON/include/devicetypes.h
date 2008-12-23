@@ -134,6 +134,7 @@
 #define TYPE_LMGROUP_RIPPLE                  2005
 #define TYPE_LMGROUP_POINT                   2010
 #define TYPE_LMGROUP_EXPRESSCOM              2015
+#define TYPE_LMGROUP_XML	                 2016
 #define TYPE_LMGROUP_MCT                     2020
 #define TYPE_LMGROUP_ENERGYPRO               2025
 

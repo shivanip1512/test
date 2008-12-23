@@ -58,6 +58,7 @@ CtiLMGroupPtr CtiLMGroupFactory::createLMGroup(RWDBReader& rdr)
         lm_group = CTIDBG_new CtiLMGroupPoint(rdr);
         break;
     case TYPE_LMGROUP_EXPRESSCOM:
+    case TYPE_LMGROUP_XML://having XML return expresscom, LM doesn't need anything more.
         lm_group = CTIDBG_new CtiLMGroupExpresscom(rdr);
         break;
     case TYPE_LMGROUP_MCT:

@@ -57,6 +57,7 @@
 #include "dev_grp_sa305.h"
 #include "dev_grp_sadigital.h"
 #include "dev_grp_versacom.h"
+#include "dev_grp_xml.h"
 #include "dev_davis.h"
 #include "dev_dlcbase.h"
 #include "dev_system.h"
@@ -250,6 +251,8 @@ DLLEXPORT CtiDeviceBase *createDeviceType(int type)
 
         case TYPE_LMGROUP_EXPRESSCOM:   NewDevice = CTIDBG_new CtiDeviceGroupExpresscom;    break;
 
+        case TYPE_LMGROUP_XML:          NewDevice = CTIDBG_new CtiDeviceGroupXml;    break;
+            
         case TYPE_LMGROUP_ENERGYPRO:    NewDevice = CTIDBG_new CtiDeviceGroupEnergyPro;     break;
 
         case TYPE_LMGROUP_MCT:          NewDevice = CTIDBG_new CtiDeviceGroupMCT;           break;

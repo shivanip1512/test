@@ -445,6 +445,22 @@ void CtiDeviceBase::DecodeDatabaseReader(RWDBReader &rdr)
     resetDirty();
 }
 
+
+void CtiDeviceBase::getPropertiesSql(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
+{
+
+}
+
+void CtiDeviceBase::decodePropertiesSql(RWDBReader &rdr)
+{
+
+}
+
+void CtiDeviceBase::clearProperties()
+{
+
+}
+
 /*
  *  Virtuals to let my inheritors play ball with me...
  *

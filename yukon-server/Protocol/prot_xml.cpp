@@ -9,209 +9,228 @@
 #include "numstr.h"
 #include <sstream>
 
-namespace Cti       {
-namespace Protocol  {
-
-using std::stringstream;
-
-
-XmlProtocol::XmlProtocol()
+namespace Cti
 {
-	complete = false;
-	checkDatabase = true;
-}
+    namespace Protocol
+    {
 
-/**
- * Generate the xfer message from the command string. 
- * 
- * @param xfer 
- * 
- * @return int 
- */
-int XmlProtocol::generate(CtiXfer &xfer)
-{
-	int retVal = NoError;
-	char tempArray[(sizeof(int)*8+1)];//makes sure this is big enough for any number
-	CtiCommandParser parser(commandString); 
+        using std::stringstream;
 
-	//grab by reference to save a copy.
-	CtiCommandParser::map_type parseMap = parser.Map();
-	XmlObject::XmlObjectSPtr xmlBaseObject(new XmlObject());
 
-	xmlBaseObject->setTagName("XML_COMMAND");
-	xmlBaseObject->insertParameter("command",string(itoa(parser.getCommand(),tempArray,10)));
-	xmlBaseObject->insertParameter("flags",string(itoa(parser.getFlags(),tempArray,10)));
+        XmlProtocol::XmlProtocol()
+        {
+            _complete = false;
+            _checkDatabase = true;
+        }
 
-	if(getCheckDatabase())
-	{
-		generateDataFromDatabase(xmlBaseObject);
-	}
+		/**
+		 * Generate the xfer message from the command string. 
+		 * 
+		 * @param xfer 
+		 * 
+		 * @return int 
+		 */
+        int XmlProtocol::generate(CtiXfer &xfer)
+        {
+            int retVal = NoError;
+            char tempArray[(sizeof(int)*8+1)];//makes sure this is big enough for any number
+            CtiCommandParser parser(_commandString); 
 
-	/* Add fields from the CMD Parse */
-	for (CtiCommandParser::map_itr_type itr = parseMap.begin(); itr != parseMap.end(); ++itr)
-	{
-		XmlObject::XmlObjectSPtr xmlChild(new XmlObject());
-		XmlObject::XmlObjectSPtr xmlData1(new XmlObject());
-		XmlObject::XmlObjectSPtr xmlData2(new XmlObject());
+            //grab by reference to save a copy.
+            CtiCommandParser::map_type parseMap = parser.Map();
+            XmlObject::XmlObjectSPtr xmlBaseObject(new XmlObject());
 
-		string paramName = itr->first;
-		string paramValue = (itr->second.getString().empty())?"(none)":itr->second.getString();
-		string data1 = CtiNumStr(itr->second.getInt());
-		string data2 = CtiNumStr(itr->second.getReal());
+            xmlBaseObject->setTagName("XML_COMMAND");
+            xmlBaseObject->insertParameter("command",string(itoa(parser.getCommand(),tempArray,10)));
+            xmlBaseObject->insertParameter("flags",string(itoa(parser.getFlags(),tempArray,10)));
 
-		xmlChild->insertParameter(paramName,paramValue);
-		xmlChild->setTagName("XML_DATA");
-		xmlData1->setTagName("INT");
-		xmlData2->setTagName("REAL");
+            if (getCheckDatabase())
+            {
+                generateDataFromDatabase(xmlBaseObject);
+            }
 
-		xmlData1->insertData(data1);
-		xmlData2->insertData(data2);
+            /* Add fields from the CMD Parse */
+            for (CtiCommandParser::map_itr_type itr = parseMap.begin(); itr != parseMap.end(); ++itr)
+            {
+                XmlObject::XmlObjectSPtr xmlChild(new XmlObject());
+                XmlObject::XmlObjectSPtr xmlData1(new XmlObject());
+                XmlObject::XmlObjectSPtr xmlData2(new XmlObject());
 
-		xmlChild->insertXmlNode(xmlData1);
-		xmlChild->insertXmlNode(xmlData2);
-		xmlBaseObject->insertXmlNode(xmlChild);
-	}
+                string paramName = itr->first;
+                string paramValue = (itr->second.getString().empty())?"(none)":itr->second.getString();
+                string data1 = CtiNumStr(itr->second.getInt());
+                string data2 = CtiNumStr(itr->second.getReal());
 
-	xmlObject = xmlBaseObject;
-	complete = true;
+                xmlChild->insertParameter(paramName,paramValue);
+                xmlChild->setTagName("XML_DATA");
+                xmlData1->setTagName("INT");
+                xmlData2->setTagName("REAL");
 
-	int size = 0;
-	BYTE * buf = generateByteBuffer(size);
+                xmlData1->insertData(data1);
+                xmlData2->insertData(data2);
 
-	xfer.setOutBuffer(buf);
-	xfer.setOutCount(size);
+                xmlChild->insertXmlNode(xmlData1);
+                xmlChild->insertXmlNode(xmlData2);
+                xmlBaseObject->insertXmlNode(xmlChild);
+            }
 
-	/* needed? */
-	xfer.setCRCFlag(0);
+            _xmlObject = xmlBaseObject;
+            _complete = true;
 
-	return retVal;
-}
+            int size = 0;
+            BYTE * buf = generateByteBuffer(size);
 
-void XmlProtocol::generateDataFromDatabase(XmlObject::XmlObjectSPtr xmlBaseObject)
-{
-	//Database Call here:
-	std::vector< std::vector<string> > params = getLmXmlParametersByGroupId(getGroupId());
-	std::vector< std::vector<string> >::iterator itr;
+            xfer.setOutBuffer(buf);
+            xfer.setOutCount(size);
 
-	/* Add fields from the database */
-	for( itr = params.begin(); itr != params.end(); ++itr)
-	{
-		if (itr->size() != 2)
+            /* needed? */
+            xfer.setCRCFlag(0);
+
+            return retVal;
+        }
+
+        void XmlProtocol::generateDataFromDatabase(XmlObject::XmlObjectSPtr xmlBaseObject)
+        {
+				
+			std::vector< std::vector<string> >::iterator itr;
+
+			/* Add fields from the database */
+			for ( itr = _params.begin(); itr != _params.end(); ++itr)
+			{
+				if (itr->size() != 2)
+				{
+					//incorrect number of fields in parameter. Skipping
+					CtiLockGuard<CtiLogger> doubt_guard(dout);
+					dout << CtiTime() << " Skipping due to incorrect number of fields in parameter. Expecting 2, got " << itr->size() << endl;
+				}
+				else
+				{
+					XmlObject::XmlObjectSPtr xmlChild(new XmlObject());
+					string paramName = (*itr)[0];
+					string paramValue = (*itr)[1];
+					xmlChild->insertParameter(paramName,paramValue);
+					xmlChild->setTagName("XML_DATA");
+					xmlBaseObject->insertXmlNode(xmlChild);
+				}
+			}
+			_params.clear();
+        }
+
+        BYTE* XmlProtocol::generateByteBuffer(int & size)
+        {   
+            BYTE * buffer = NULL;
+
+            if (_complete == true)
+            {
+                //generate buffer
+                stringstream ss(stringstream::out);
+                //Use String stream and compare to expected.
+                _xmlObject->outputXml(ss);
+
+                string output = ss.str();
+                size = output.size();
+
+                buffer = new BYTE [size];
+                memcpy(buffer,output.begin(),output.size());
+            }
+
+            return buffer;
+        }
+
+		int XmlProtocol::sendCommResult(INMESS *InMessage)
 		{
-			//incorrect number of fields in parameter. Skipping
-			CtiLockGuard<CtiLogger> doubt_guard(dout);
-			dout << CtiTime() << " Skipping due to incorrect number of fields in parameter. Expecting 2, got " << itr->size() << endl;
+			return NORMAL;
 		}
-		else
+
+        bool XmlProtocol::isTransactionComplete( void ) const 
+        {
+            return getComplete();
+        }
+
+		/* Not sure what happens in here.*/
+        int XmlProtocol::decode( CtiXfer &xfer, int status )
+        {
+            int retVal = NoError;
+
+            return retVal;
+        }
+
+        void XmlProtocol::setComplete(bool comp)
+        {
+            _complete = comp;
+        }
+
+        bool XmlProtocol::getComplete() const
+        {
+            return _complete;
+        }
+
+        void XmlProtocol::setXmlObject(XmlObject::XmlObjectSPtr & xmlPtr)
+        {
+            _xmlObject = xmlPtr;
+        }
+
+        XmlObject::XmlObjectSPtr & XmlProtocol::getXmlObject()
+        {
+            return _xmlObject;
+        }
+
+		/**
+		 * Take the OutMessage and form XML objects for generate to 
+		 * process. 
+		 * 
+		 * @param OutMessage 
+		 * 
+		 * @return int 
+		 */
+        int XmlProtocol::recvCommRequest( OUTMESS *OutMessage )
+        {
+            int retVal = NoError;
+
+            _commandString = string(OutMessage->Request.CommandStr);
+            _groupId = OutMessage->DeviceIDofLMGroup;
+
+            //Test success of on Strlen?
+
+            return retVal;
+        }
+
+        string& XmlProtocol::getCommandString()
+        {
+            return _commandString;
+        }
+
+        void XmlProtocol::setCheckDatabase(bool flag)
+        {
+            _checkDatabase = flag;
+        }
+
+        bool XmlProtocol::getCheckDatabase()
+        {
+            return _checkDatabase;
+        }
+
+        int XmlProtocol::getGroupId()
+        {
+            return _groupId;
+        }
+
+        void XmlProtocol::setGroupId(int gid)
+        {
+            _groupId = gid;
+        }
+
+		void XmlProtocol::reset()
 		{
-			XmlObject::XmlObjectSPtr xmlChild(new XmlObject());
-			string paramName = (*itr)[0];
-			string paramValue = (*itr)[1];
-			xmlChild->insertParameter(paramName,paramValue);
-			xmlChild->setTagName("XML_DATA");
-			xmlBaseObject->insertXmlNode(xmlChild);
+			_groupId = 0;
+			_commandString = "";
+			_complete = false;
 		}
-	}
-}
+		
+		void XmlProtocol::setParameters( std::vector< std::vector<string> >& params)
+		{
+			_params = std::vector< std::vector<string> >(params);
+		}
 
-BYTE* XmlProtocol::generateByteBuffer(int & size)
-{	
-	BYTE * buffer = NULL;
-
-	if (complete == true)
-	{
-		//generate buffer
-		stringstream ss(stringstream::out);
-		//Use String stream and compare to expected.
-		xmlObject->outputXml(ss);
-
-		string output = ss.str();
-		size = output.size();
-
-		buffer = new BYTE [size];
-		memcpy(buffer,output.begin(),output.size());
-	}
-
-	return buffer;
-}
-
-bool XmlProtocol::isTransactionComplete( void ) const 
-{
-	return getComplete();
-}
-
-/* Not sure what happens in here.*/
-int XmlProtocol::decode( CtiXfer &xfer, int status )
-{
-	int retVal = NoError;
-
-	return retVal;
-}
-
-void XmlProtocol::setComplete(bool comp)
-{
-	complete = comp;
-}
-
-bool XmlProtocol::getComplete() const
-{
-	return complete;
-}
-
-void XmlProtocol::setXmlObject(XmlObject::XmlObjectSPtr & xmlPtr)
-{
-	xmlObject = xmlPtr;
-}
-
-XmlObject::XmlObjectSPtr & XmlProtocol::getXmlObject()
-{
-	return xmlObject;
-}
-
-/**
- * Take the OutMessage and form XML objects for generate to 
- * process. 
- * 
- * @param OutMessage 
- * 
- * @return int 
- */
-int XmlProtocol::recvCommRequest( OUTMESS *OutMessage )
-{
-	int retVal = NoError;
-
-	commandString = string(OutMessage->Request.CommandStr);
-	groupId = OutMessage->DeviceIDofLMGroup;
-
-	//Test success of on Strlen?
-
-	return retVal;
-}
-
-string& XmlProtocol::getCommandString()
-{
-	return commandString;
-}
-
-void XmlProtocol::setCheckDatabase(bool flag)
-{
-	checkDatabase = flag;
-}
-
-bool XmlProtocol::getCheckDatabase()
-{
-	return checkDatabase;
-}
-
-int XmlProtocol::getGroupId()
-{
-	return groupId;
-}
-
-void XmlProtocol::setGroupId(int gid)
-{
-	groupId = gid;
-}
-
-}//end Protocol namespace
+    }//end Protocol namespace
 }//end Cti namespace

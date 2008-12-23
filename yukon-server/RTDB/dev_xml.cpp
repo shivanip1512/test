@@ -11,21 +11,16 @@ using namespace Cti;
 
 CtiDeviceXml::CtiDeviceXml()
 {
-	xmlProtocol = NULL;
+    _xmlProtocol.reset();
 }
 
 CtiDeviceXml::~CtiDeviceXml()
 {
-	if (xmlProtocol != NULL)
-	{
-		delete xmlProtocol;
-		xmlProtocol = NULL;
-	}
 }
 
 Cti::Protocol::Interface * CtiDeviceXml::getProtocol()
 {
-	return static_cast<Cti::Protocol::Interface*>(xmlProtocol);
+    return &_xmlProtocol;
 }
 
 /**
@@ -37,18 +32,12 @@ Cti::Protocol::Interface * CtiDeviceXml::getProtocol()
  */
 int CtiDeviceXml::recvCommRequest(OUTMESS *OutMessage)
 {
-	int retVal = NoError;
-	
-	if (xmlProtocol != NULL)
-	{
-		delete xmlProtocol;
-		xmlProtocol = NULL;
-	}
+    int retVal = NoError;
 
-	xmlProtocol = new Cti::Protocol::XmlProtocol();
-	xmlProtocol->recvCommRequest(OutMessage);
+    _xmlProtocol.reset();
+    retVal = _xmlProtocol.recvCommRequest(OutMessage);
 
-	return retVal;
+    return retVal;
 }
 
 void CtiDeviceXml::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
@@ -56,23 +45,22 @@ void CtiDeviceXml::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &
     Inherited::getSQL(db, keyTable, selector);
 
     selector.where( rwdbUpper(keyTable["type"]) == RWDBExpr("XML") && selector.where() );
+
+	std::cout << selector.asString();
 }
 
 void CtiDeviceXml::DecodeDatabaseReader(RWDBReader &rdr)
 {
     Inherited::DecodeDatabaseReader(rdr);
 
-    if( getDebugLevel() & DEBUGLEVEL_DATABASE )
+    if ( getDebugLevel() & DEBUGLEVEL_DATABASE )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << " Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 }
 
-/*
-int ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&tempOut, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+void CtiDeviceXml::setParameters( std::vector< std::vector<string> >& params)
 {
-
+	_xmlProtocol.setParameters(params);
 }
-*/
-

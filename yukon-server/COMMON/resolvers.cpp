@@ -566,9 +566,13 @@ INT resolveDeviceType(const string& _rwsTemp)
     {
         nRet = TYPE_LMGROUP_VERSACOM;
     }
-    else if(rwsTemp == "expresscom group" || rwsTemp == "xml group")
+    else if(rwsTemp == "expresscom group")
     {
         nRet = TYPE_LMGROUP_EXPRESSCOM;
+    }
+    else if(rwsTemp == "xml group")
+    {
+        nRet = TYPE_LMGROUP_XML;
     }
     else if(rwsTemp == "energypro group")
     {
@@ -1234,6 +1238,7 @@ bool resolveIsDeviceTypeSingle(INT Type)
         case TYPE_LMGROUP_RIPPLE:
         case TYPE_LMGROUP_VERSACOM:
         case TYPE_LMGROUP_EXPRESSCOM:
+        case TYPE_LMGROUP_XML:
         case TYPE_LMGROUP_ENERGYPRO:
         case TYPE_LMGROUP_MCT:
         case TYPE_LMGROUP_GOLAY:
