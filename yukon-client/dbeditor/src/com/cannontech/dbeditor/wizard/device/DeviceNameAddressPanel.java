@@ -459,10 +459,11 @@ public Object getValue(Object val)
 		else
 			((CarrierBase)device).getDeviceCarrierSettings().setAddress( address );
 	}
-   else if (val instanceof XmlTransmitter)
-   {
-       //((Series5Base)val).getSeries5().setSlaveAddress( address );
-   }
+    else if (val instanceof XmlTransmitter)
+    {
+        //This is empty because nothing special needs to be done, 
+    	//but we don't want to throw an error since it is valid
+    }
 	else  //didn't find it
 		throw new Error("Unable to determine device type when attempting to set the address");
 
