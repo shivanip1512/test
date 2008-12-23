@@ -26,7 +26,6 @@ import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.exception.DispatchNotConnectedException;
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.PointData;
@@ -273,7 +272,7 @@ public class OpcService implements OpcConnectionListener, DBChangeListener{
 	private void sendStatusUpdate(Integer statusPointId, double status) {
         PointData pointData = new PointData();
         pointData.setId(statusPointId);
-        pointData.setQuality(PointQualities.NORMAL_QUALITY);
+        pointData.setQuality(PointQuality.Normal.getQuality());
         pointData.setType(PointTypes.STATUS_POINT);
         pointData.setValue(status);
         pointData.setTimeStamp(new Date());
