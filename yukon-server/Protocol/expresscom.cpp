@@ -604,7 +604,7 @@ INT CtiProtocolExpresscom::thermostatSetpointControl(BYTE minTemp, BYTE maxTemp,
 
     if(minTemp != 0)
     {
-        flaghi |= 0x04;
+        flaghi |= 0x08;
         _message.push_back( minTemp );
     }
     if(maxTemp != 0)
