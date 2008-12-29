@@ -950,7 +950,7 @@ void CtiCapController::controlLoop()
                         if( areaChanges.size() > 0 )
                         {
                             CtiCCExecutorFactory f1;
-                            CtiCCExecutor* executor1 = f1.createExecutor(new CtiCCGeoAreasMsg((CtiCCArea_vec&)areaChanges));
+                            CtiCCExecutor* executor1 = f1.createExecutor(new CtiCCGeoAreasMsg(ccAreas));
                             try
                             {
                                 executor1->Execute();
