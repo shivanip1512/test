@@ -24,6 +24,7 @@
         <webClassPathEntry>/macs/bin</webClassPathEntry>
         <webClassPathEntry>/multispeak/bin</webClassPathEntry>
         <webClassPathEntry>/report/bin</webClassPathEntry>
+        <webClassPathEntry>/resource</webClassPathEntry>
         <webClassPathEntry>/servlet/bin</webClassPathEntry>
         <webClassPathEntry>/stars/bin</webClassPathEntry>
         <webClassPathEntry>/tdc/bin</webClassPathEntry>
