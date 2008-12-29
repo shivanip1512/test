@@ -458,7 +458,7 @@ public class AccountServiceImpl implements AccountService {
         CustomerAccount  account = null;
         try {
             account = customerAccountDao.getByAccountNumber(accountNumber, energyCompany.getEnergyCompanyID());
-        }catch (NotFoundException e ) {
+        } catch (NotFoundException e ) {
             log.error("Account " + accountNumber + " could not be updated: Unable to find account for account#: " + accountNumber);
             throw new InvalidAccountNumberException("Unable to find account for account#: " + accountNumber, e);
         }        

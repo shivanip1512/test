@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.Validate;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
@@ -138,7 +138,7 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
                                                         rowMapper,
                                                         accountNumber,
                                                         energyCompanyId);
-        } catch (IncorrectResultSizeDataAccessException e) {
+        } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Account with account number: " + accountNumber + " could not be found.", e);
         }
         return account;
@@ -160,7 +160,7 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
             account = simpleJdbcTemplate.queryForObject(sql, 
                                                         rowMapper,
                                                         accountNumber);
-        } catch (IncorrectResultSizeDataAccessException e) {
+        } catch (EmptyResultDataAccessException e) {
         	throw new NotFoundException("Account with account number: " + accountNumber + " could not be found.", e);
         }
         return account;

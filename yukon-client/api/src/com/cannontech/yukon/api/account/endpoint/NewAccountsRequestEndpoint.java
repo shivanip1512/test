@@ -5,7 +5,6 @@ import java.util.List;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
@@ -27,7 +26,6 @@ public class NewAccountsRequestEndpoint {
     private Namespace ns = YukonXml.getYukonNamespace();
     
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="newAccountsRequest")
-    @Transactional
     public Element invoke(Element newAccountsRequest, LiteYukonUser user) throws Exception {
         SimpleXPathTemplate requestTemplate = XmlUtils.getXPathTemplateForElement(newAccountsRequest);
         
@@ -44,10 +42,10 @@ public class NewAccountsRequestEndpoint {
                 accountService.addAccount(account, user);
                 newAccountResult.addContent(new Element("success", ns));
             } catch(AccountNumberUnavailableException e) {
-                Element fe = XMLFailureGenerator.generateFailure(newAccountsRequest, e, "AccountNumberUnavailableException", e.getMessage());
+                Element fe = XMLFailureGenerator.generateFailure(newAccountsRequest, e, "AccountNumberUnavailable", e.getMessage());
                 newAccountResult.addContent(fe);
             } catch(UserNameUnavailableException e) {
-                Element fe = XMLFailureGenerator.generateFailure(newAccountsRequest, e, "UserNameUnavailableException", e.getMessage());
+                Element fe = XMLFailureGenerator.generateFailure(newAccountsRequest, e, "UserNameUnavailable", e.getMessage());
                 newAccountResult.addContent(fe);
             }
     

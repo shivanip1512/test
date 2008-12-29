@@ -5,7 +5,6 @@ import java.util.List;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
@@ -27,7 +26,6 @@ public class RemoveAccountsRequestEndpoint {
     private Namespace ns = YukonXml.getYukonNamespace();
     
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="removeAccountsRequest")
-    @Transactional
     public Element invoke(Element removeAccountsRequest, LiteYukonUser user) throws Exception {
         SimpleXPathTemplate requestTemplate = XmlUtils.getXPathTemplateForElement(removeAccountsRequest);
         
@@ -43,7 +41,7 @@ public class RemoveAccountsRequestEndpoint {
             try {
                 accountService.deleteAccount(account, user);
             } catch(InvalidAccountNumberException e) {
-                Element fe = XMLFailureGenerator.generateFailure(removeAccountsRequest, e, "InvalidAccountNumberException", e.getMessage());
+                Element fe = XMLFailureGenerator.generateFailure(removeAccountsRequest, e, "InvalidAccountNumber", e.getMessage());
                 removeAccountResult.addContent(fe);
                 continue;
             }
@@ -62,19 +60,19 @@ public class RemoveAccountsRequestEndpoint {
         return customerAccountResult;
     }
     
-    @Autowired
-    public void setAccountService(AccountService accountService) {
-        this.accountService = accountService;
-    }
-}
+	private class RemoveAccountsRequestMapper implements ObjectMapper<Element, String> {
+	
+	    @Override
+	    public String map(Element removeAccountsRequestElement) throws ObjectMappingException {
+	        SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(removeAccountsRequestElement);
+	        
+	        String accountNumber = template.evaluateAsString("//y:accountNumber");
+	        return accountNumber;
+	    }
+	}
 
-class RemoveAccountsRequestMapper implements ObjectMapper<Element, String> {
-
-    @Override
-    public String map(Element removeAccountsRequestElement) throws ObjectMappingException {
-        SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(removeAccountsRequestElement);
-        
-        String accountNumber = template.evaluateAsString("//y:accountNumber");
-        return accountNumber;
-    }
+	@Autowired
+	public void setAccountService(AccountService accountService) {
+		this.accountService = accountService;
+	}
 }
