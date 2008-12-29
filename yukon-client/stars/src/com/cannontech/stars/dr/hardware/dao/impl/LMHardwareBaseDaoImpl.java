@@ -76,7 +76,7 @@ public class LMHardwareBaseDaoImpl implements LMHardwareBaseDao {
         try {
             return simpleJdbcTemplate.queryForObject(selectBySerialNumber, rowMapper, serialNumber);
         } catch(EmptyResultDataAccessException ex) {
-            throw new NotFoundException("The serial number supplied does not exist.");
+            throw new NotFoundException("The serial number supplied does not exist: " + serialNumber);
         }
     }
     

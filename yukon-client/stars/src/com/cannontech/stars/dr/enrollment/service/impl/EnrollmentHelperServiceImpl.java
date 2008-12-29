@@ -98,10 +98,13 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
 
     private ProgramEnrollment buildProgrameEnrollment(EnrollmentHelper enrollmentHelper, LiteYukonUser user){
         
-        LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getBySerialNumber(enrollmentHelper.getSerialNumber());
+        String serialNumber = enrollmentHelper.getSerialNumber();
+		LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getBySerialNumber(serialNumber);
         CustomerAccount accountByInventoryId = customerAccountDao.getAccountByInventoryId(lmHardwareBase.getInventoryId());
-        if (enrollmentHelper.getAccountNumber() != accountByInventoryId.getAccountNumber()) {
-            throw new IllegalArgumentException("The supplied piece of hardware does not belong to the supplied account.");
+        String accountNumber = enrollmentHelper.getAccountNumber();
+		if (accountNumber != accountByInventoryId.getAccountNumber()) {
+            throw new IllegalArgumentException("The supplied piece of hardware: " + serialNumber + 
+            		" does not belong to the supplied account: " + accountNumber);
         }
             
         /* This part of the method will get all the energy company ids that can have 
