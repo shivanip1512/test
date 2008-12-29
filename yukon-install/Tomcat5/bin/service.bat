@@ -41,8 +41,8 @@ set CATALINA_BASE=%CATALINA_HOME%
 set EXECUTABLE=%CATALINA_HOME%\bin\tomcat5.exe
 
 rem Set default Service name
-set SERVICE_NAME=Tomcat5
-set PR_DISPLAYNAME=Apache Tomcat
+set SERVICE_NAME=YukonWebApplicationService
+set PR_DISPLAYNAME=Yukon Web Application Service
 
 if "%1" == "" goto displayUsage
 if "%2" == "" goto setServiceName
@@ -74,7 +74,7 @@ echo Using JAVA_HOME:        %JAVA_HOME%
 rem Use the environment variables as an example
 rem Each command line option is prefixed with PR_
 
-set PR_DESCRIPTION=Apache Tomcat Server - http://tomcat.apache.org
+set PR_DESCRIPTION=Yukon web server
 set PR_INSTALL=%EXECUTABLE%
 set PR_LOGPATH=%CATALINA_BASE%\logs
 set PR_CLASSPATH=%CATALINA_HOME%\bin\bootstrap.jar
@@ -110,8 +110,8 @@ rem More extra parameters
 set PR_LOGPATH=%CATALINA_BASE%\logs
 set PR_STDOUTPUT=auto
 set PR_STDERROR=auto
-"%EXECUTABLE%" //US//%SERVICE_NAME% ++JvmOptions "-Djava.io.tmpdir=%CATALINA_BASE%\temp;-Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager;-Djava.util.logging.config.file=%CATALINA_BASE%\conf\logging.properties" --JvmMs 128 --JvmMx 256
-echo The service '%SERVICE_NAME%' has been installed.
+"%EXECUTABLE%" //US//%SERVICE_NAME% ++JvmOptions "-Djava.io.tmpdir=%CATALINA_BASE%\temp;-Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager;-Djava.util.logging.config.file=%CATALINA_BASE%\conf\logging.properties" --JvmMs 256 --JvmMx 384
+echo The service 'Yukon Web Application Service' has been installed.
 
 :end
 cd %CURRENT_DIR%
