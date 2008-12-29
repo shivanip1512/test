@@ -2132,8 +2132,6 @@ void CtiCCSubstationBusStore::doOpStatsThr()
     CtiTime opStatRefreshRate =  nextScheduledTimeAlignedOnRate( currentTime,  _OP_STATS_REFRESH_RATE );
 
     ULONG secondsFrom1901 = 0;
-    CtiMultiMsg* multiDispatchMsg = new CtiMultiMsg();
-    CtiMultiMsg_vec& pointChanges = multiDispatchMsg->getData();
 
     while(TRUE)
     {
@@ -2149,9 +2147,13 @@ void CtiCCSubstationBusStore::doOpStatsThr()
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - Controller refreshing OP STATS" << endl;
             }
+            
             {
-                multiDispatchMsg = new CtiMultiMsg();
-                pointChanges = multiDispatchMsg->getData();        
+                RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+
+                CtiMultiMsg* multiDispatchMsg = new CtiMultiMsg();
+                CtiMultiMsg_vec& pointChanges = multiDispatchMsg->getData();
+
                 resetAllOperationStats();
                 resetAllConfirmationStats();
                 reCalculateOperationStatsFromDatabase( );
@@ -2167,7 +2169,7 @@ void CtiCCSubstationBusStore::doOpStatsThr()
                 try
                 {
                     //send point changes to dispatch
-                    if( pointChanges.size() > 0 )
+                    if( multiDispatchMsg->getCount() > 0 )
                     {
                         multiDispatchMsg->resetTime(); // CGP 5/21/04 Update its time to current time.
                         CtiCapController::getInstance()->sendMessageToDispatch(multiDispatchMsg);
