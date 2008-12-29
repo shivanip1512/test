@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -213,14 +214,15 @@ public class OptOutOperatorController {
         
         // Validate the start date
         final Calendar now = dateFormattingService.getCalendar(yukonUserContext);
-        final Date today = TimeUtil.getMidnight(now.getTime());
+        TimeZone userTimeZone = yukonUserContext.getTimeZone();
+		final Date today = TimeUtil.getMidnight(now.getTime(), userTimeZone);
         boolean isValidStartDate = isValidStartDate(startDateObj, today);
         if (!isValidStartDate) {
         	result = new YukonMessageSourceResolvable(
         			"yukon.dr.operator.optoutresult.invalidStartDate");
         } else {
         	
-        	int hoursRemainingInDay = TimeUtil.getHoursTillMidnight(now.getTime());
+        	int hoursRemainingInDay = TimeUtil.getHoursTillMidnight(now.getTime(), userTimeZone);
             boolean isSameDay = DateUtils.isSameDay(startDateObj, today);
         	
         	String jsonQuestions = ServletRequestUtils.getStringParameter(

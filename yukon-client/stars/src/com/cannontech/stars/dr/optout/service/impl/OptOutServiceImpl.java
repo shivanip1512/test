@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TimeZone;
 
 import javax.mail.MessagingException;
 
@@ -32,6 +33,7 @@ import com.cannontech.core.dao.InventoryNotFoundException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.core.dao.RoleDao;
+import com.cannontech.core.service.SystemDateFormattingService;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteContact;
@@ -99,6 +101,7 @@ public class OptOutServiceImpl implements OptOutService {
 	private EnergyCompanyDao energyCompanyDao;
 	private EnrollmentDao enrollmentDao;
 	private StarsSearchDao starsSearchDao;
+	private SystemDateFormattingService systemDateFormattingService;
 	
 	private final Logger logger = YukonLogManager.getLogger(OptOutServiceImpl.class);
 	
@@ -366,8 +369,9 @@ public class OptOutServiceImpl implements OptOutService {
 	@Override
 	public void changeOptOutCountStateForToday(LiteYukonUser user, boolean optOutCounts) {
 
+		TimeZone systemTimeZone = systemDateFormattingService.getSystemTimeZone();
 		Date now = new Date();
-    	Date stopDate = TimeUtil.getMidnightTonight();
+    	Date stopDate = TimeUtil.getMidnightTonight(systemTimeZone);
     	
     	// Temporarily update count state
     	optOutTemporaryOverrideDao.setTemporaryOptOutCounts(user, now, stopDate, optOutCounts);
@@ -382,8 +386,9 @@ public class OptOutServiceImpl implements OptOutService {
 	@Override
 	public void changeOptOutEnabledStateForToday(LiteYukonUser user, boolean optOutsEnabled) {
 
+		TimeZone systemTimeZone = systemDateFormattingService.getSystemTimeZone();
 		Date now = new Date();
-    	Date stopDate = TimeUtil.getMidnightTonight();
+    	Date stopDate = TimeUtil.getMidnightTonight(systemTimeZone);
 		optOutTemporaryOverrideDao.setTemporaryOptOutEnabled(user, now, stopDate, optOutsEnabled);
 		
 	}
@@ -984,6 +989,12 @@ public class OptOutServiceImpl implements OptOutService {
 	@Autowired
 	public void setStarsSearchDao(StarsSearchDao starsSearchDao) {
 		this.starsSearchDao = starsSearchDao;
+	}
+	
+	@Autowired
+	public void setSystemDateFormattingService(
+			SystemDateFormattingService systemDateFormattingService) {
+		this.systemDateFormattingService = systemDateFormattingService;
 	}
 	
 }

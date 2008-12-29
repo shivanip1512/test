@@ -3,10 +3,12 @@ package com.cannontech.common.util;
 import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 import org.apache.commons.lang.Validate;
 import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.Hours;
 
 /**
@@ -318,12 +320,14 @@ public static int differenceMinutes(Date from, Date to) {
     
     /**
      * Method to get a date which represents midnight tonight (00:00:00.000 tomorrow)
+     * @param timeZone - Time zone to get midnight for
      * @return Midnight date
      */
-    public static Date getMidnightTonight() {
+    public static Date getMidnightTonight(TimeZone timeZone) {
     	
     	// Get midnight tonight using Joda
-		DateTime date = new DateTime();
+    	DateTimeZone dateTimeZone = DateTimeZone.forTimeZone(timeZone);
+		DateTime date = new DateTime(dateTimeZone);
 		DateMidnight dateMidnight = date.toDateMidnight();
 		DateMidnight midnightTonight = dateMidnight.plusDays(1);
 		Date midnight = new Date(midnightTonight.getMillis());
@@ -334,12 +338,14 @@ public static int differenceMinutes(Date from, Date to) {
     /**
      * Method to get a date which represents midnight today (last night at 00:00:00.000 today)
      * @param date - Date to get midnight for
+     * @param timeZone - Time zone for the date
      * @return Midnight date
      */
-    public static Date getMidnight(Date date) {
+    public static Date getMidnight(Date date, TimeZone timeZone) {
     	
     	// Get midnight last night using Joda
-    	DateTime dateTime = new DateTime(date.getTime());
+    	DateTimeZone dateTimeZone = DateTimeZone.forTimeZone(timeZone);
+    	DateTime dateTime = new DateTime(date.getTime(), dateTimeZone);
     	DateMidnight dateMidnight = dateTime.toDateMidnight();
     	Date midnight = new Date(dateMidnight.getMillis());
     	
@@ -349,12 +355,14 @@ public static int differenceMinutes(Date from, Date to) {
     /**
      * Method to get the count of hours left until midnight for the date given
      * @param date - Date to start with
+     * @param timeZone - Time zone for the date
      * @return Hours till midnight on the same day
      */
-    public static int getHoursTillMidnight(Date date){
+    public static int getHoursTillMidnight(Date date, TimeZone timeZone){
     	
     	// Get hours till midnight using Joda
-    	DateTime dateTime = new DateTime(date.getTime());
+    	DateTimeZone dateTimeZone = DateTimeZone.forTimeZone(timeZone);
+    	DateTime dateTime = new DateTime(date.getTime(), dateTimeZone);
     	DateMidnight dateMidnight = dateTime.toDateMidnight();
     	DateMidnight midnightTonight = dateMidnight.plusDays(1);
     	return Hours.hoursBetween(dateTime, midnightTonight).getHours();
