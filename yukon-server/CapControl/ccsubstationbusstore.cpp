@@ -2876,6 +2876,7 @@ void CtiCCSubstationBusStore::resetDailyOperations()
         currentSubstationBus->setCurrentDailyOperationsAndSendMsg(0, pointChanges);
         currentSubstationBus->setMaxDailyOpsHitFlag(FALSE);
         currentSubstationBus->setBusUpdatedFlag(TRUE);
+        currentSubstationBus->setCorrectionNeededNoBankAvailFlag(FALSE);
         CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
 
         for(int j=0;j<ccFeeders.size();j++)
@@ -2884,6 +2885,7 @@ void CtiCCSubstationBusStore::resetDailyOperations()
 
             currentFeeder->setCurrentDailyOperationsAndSendMsg(0, pointChanges);
             currentFeeder->setMaxDailyOpsHitFlag(FALSE);
+            currentFeeder->setCorrectionNeededNoBankAvailFlag(FALSE);
 
             CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
 
