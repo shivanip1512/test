@@ -7,13 +7,13 @@ public enum OptOutCounts {
 
 	COUNT{
 		@Override
-		public boolean getValue() {
+		public boolean isCounts() {
 			return true;
 		}}, 
 	DONT_COUNT {
 		@Override
-		public boolean getValue() {
-			return true;
+		public boolean isCounts() {
+			return false;
 		}
 	};
 
@@ -25,6 +25,6 @@ public enum OptOutCounts {
 		}
 	}
 	
-	public abstract boolean getValue();
+	public abstract boolean isCounts();
 
 }

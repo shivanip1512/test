@@ -21,6 +21,9 @@ public interface EnrollmentDao {
     /**
      * Method to get a list of inventory ids for inventory that was opted out for a given
      * program during a given time period
+     * @param program - Program to get opt outs for
+     * @param startDate - Start of time period to check for opt outs (inclusive)
+     * @param stopDate - End of time period to check for opt outs (inclusive)
      * @return List of inventory ids
      */
     public List<Integer> getOptedOutInventory(Program program, Date startDate, Date stopDate);
@@ -28,8 +31,8 @@ public interface EnrollmentDao {
     /**
      * Method to get opt out history by program and time period
      * @param program - Program to get history for
-     * @param startDate - Start of time period
-     * @param stopDate - End of time period
+     * @param startDate - Start of time period (inclusive)
+     * @param stopDate - End of time period (inclusive)
      * @return List of history
      */
     public List<LMHardwareControlGroup> getOptOutHistoryByProgram(
@@ -38,8 +41,8 @@ public interface EnrollmentDao {
     /**
      * Method to get a list of programs an inventory was enrolled in during a given time period
      * @param inventoryId - Inventory to get programs for
-     * @param startTime - Start of time period
-     * @param stopTime - End of time period
+     * @param startTime - Start of time period (inclusive)
+     * @param stopTime - End of time period (inclusive)
      */
 	public List<Program> getEnrolledProgramIdsByInventory(Integer inventoryId,
 			Date startTime, Date stopTime);

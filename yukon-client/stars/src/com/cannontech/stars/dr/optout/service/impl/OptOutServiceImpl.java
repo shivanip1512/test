@@ -14,6 +14,7 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -547,6 +548,8 @@ public class OptOutServiceImpl implements OptOutService {
 	public List<OverrideHistory> getOptOutHistoryByProgram(String programName,
 			Date startTime, Date stopTime, LiteYukonUser user) throws NotFoundException {
 
+		Validate.isTrue(startTime.before(stopTime), "Start time must be before stop time.");
+		
 		LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(user);
 		Program program = programDao.getByProgramName(programName, 
 									Collections.singletonList(energyCompany.getEnergyCompanyID()));
@@ -579,7 +582,9 @@ public class OptOutServiceImpl implements OptOutService {
 	public int getOptOutDeviceCountForAccount(String accountNumber, Date startTime,
 			Date stopTime, LiteYukonUser user, String programName)
 		throws  AccountNotFoundException, ProgramNotFoundException {
-
+		
+		Validate.isTrue(startTime.before(stopTime), "Start time must be before stop time.");
+		
 		CustomerAccount account = null;
 		try {
 			account = customerAccountDao.getByAccountNumber(accountNumber, user);
@@ -617,6 +622,8 @@ public class OptOutServiceImpl implements OptOutService {
 	@Override
 	public int getOptOutDeviceCountForProgram(String programName,
 			Date startTime, Date stopTime, LiteYukonUser user) {
+		
+		Validate.isTrue(startTime.before(stopTime), "Start time must be before stop time.");
 		
 		LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(user);
 		Program program = programDao.getByProgramName(programName, 

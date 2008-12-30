@@ -105,8 +105,8 @@ public interface OptOutService {
 	/**
 	 * Method to get the total number of devices that were opted out during the given time period
 	 * @param accountNumber - Account to get count for
-	 * @param startTime - Start of time period
-	 * @param stopTime - End of time period
+	 * @param startTime - Start of time period (inclusive)
+	 * @param stopTime - End of time period (inclusive)
 	 * @param user - User requesting count
 	 * @param programName - Optional programName to narrow count to only that program - null if no
 	 		programName
@@ -121,8 +121,8 @@ public interface OptOutService {
 	/**
 	 * Method to get the total number of devices that were opted out during the given time period
 	 * @param programName - Program to get count for
-	 * @param startTime - Start of time period
-	 * @param stopTime - End of time period
+	 * @param startTime - Start of time period (inclusive)
+	 * @param stopTime - End of time period (inclusive)
 	 * @param user - User requesting count
 	 * @return - Total count
 	 * @throws NotFoundException - if program name is invalid
@@ -146,8 +146,8 @@ public interface OptOutService {
 	/**
 	 * Method to get opt out history by program for a given time period
 	 * @param programName - Name of program to get history for
-	 * @param startTime - Start of time period
-	 * @param stopTime - End of time period
+	 * @param startTime - Start of time period (inclusive)
+	 * @param stopTime - End of time period (inclusive)
 	 * @param user - User requesting history
 	 * @return List of opt out history
 	 * @throws NotFoundException - if program name is not valid
@@ -159,8 +159,8 @@ public interface OptOutService {
 	/**
 	 * Method to get a list of opt out history for a given account for all inventory on that account
 	 * @param accountNumber - Account to get history for
-	 * @param startTime - Start of time period
-	 * @param stopTime - End of time period
+	 * @param startTime - Start of time period (inclusive)
+	 * @param stopTime - End of time period (inclusive)
 	 * @param user - User requesting history
 	 * @param programName - Optional programName to narrow history to only that program - null if no
 	 * 		programName

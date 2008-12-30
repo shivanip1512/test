@@ -99,18 +99,14 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
 		sql.append("WHERE pwp.WebsettingsID = ywc.ConfigurationID");
 		sql.append("	AND lmhcg.InventoryId = ?");
 		sql.append("	AND lmhcg.Type = ?");
-		sql.append("	AND ((lmhcg.GroupEnrollStart >= ?");
-		sql.append("		  AND lmhcg.GroupEnrollStart <= ?)");
-		sql.append("		OR (lmhcg.GroupEnrollStart <= ?");
-		sql.append("		  AND (lmhcg.GroupEnrollStop IS NULL OR lmhcg.GroupEnrollStop >= ?)))");
+		sql.append("	AND lmhcg.GroupEnrollStart <= ?");
+		sql.append("	AND (lmhcg.GroupEnrollStop IS NULL OR lmhcg.GroupEnrollStop >= ?)");
 		
 		List<Program> programList = 
 			simpleJdbcTemplate.query(sql.toString(), new ProgramRowMapper(simpleJdbcTemplate), 
 					inventoryId,
 					LMHardwareControlGroup.ENROLLMENT_ENTRY,
-					startTime,
 					stopTime,
-					startTime,
 					startTime);
 		
 		return programList;
@@ -127,17 +123,13 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
 		sql.append("	JOIN LMProgramWebPublishing pwp ON pwp.DeviceId = pdg.DeviceId");
 		sql.append("WHERE pwp.ProgramId = ?");
 		sql.append("	AND lmhcg.Type = ?");
-		sql.append("	AND ((lmhcg.OptOutStart >= ?");
-		sql.append("		  AND lmhcg.OptOutStart <= ?)");
-		sql.append("		OR (lmhcg.OptOutStart <= ?");
-		sql.append("		  AND (lmhcg.OptOutStop IS NULL OR lmhcg.OptOutStop >= ?)))");
+		sql.append("	AND lmhcg.OptOutStart <= ?");
+		sql.append("	AND (lmhcg.OptOutStop IS NULL OR lmhcg.OptOutStop >= ?)");
 		
 		List<Integer> inventoryIds = simpleJdbcTemplate.query(sql.toString(), new IntegerRowMapper(), 
 													program.getProgramId(),
 													LMHardwareControlGroup.OPT_OUT_ENTRY,
-													startDate,
 													stopDate,
-													startDate,
 													startDate);
 		return inventoryIds;
 	}
@@ -153,18 +145,14 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
 		sql.append("	JOIN LMProgramWebPublishing pwp ON pwp.DeviceId = pdg.DeviceId");
 		sql.append("WHERE pwp.ProgramId = ?");
 		sql.append("	AND lmhcg.Type = ?");
-		sql.append("	AND ((lmhcg.OptOutStart >= ?");
-		sql.append("		  AND lmhcg.OptOutStart <= ?)");
-		sql.append("		OR (lmhcg.OptOutStart <= ?");
-		sql.append("		  AND (lmhcg.OptOutStop IS NULL OR lmhcg.OptOutStop >= ?)))");
+		sql.append("	AND lmhcg.OptOutStart <= ?");
+		sql.append("	AND (lmhcg.OptOutStop IS NULL OR lmhcg.OptOutStop >= ?)");
 		
 		List<LMHardwareControlGroup> history = 
 			simpleJdbcTemplate.query(sql.toString(), new LMHardwareControlGroupRowMapper(), 
 				program.getProgramId(),
 				LMHardwareControlGroup.OPT_OUT_ENTRY,
-				startDate,
 				stopDate,
-				startDate,
 				startDate);
 
 		return history;
