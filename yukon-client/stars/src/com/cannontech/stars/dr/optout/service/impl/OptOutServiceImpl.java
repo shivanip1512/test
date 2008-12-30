@@ -822,11 +822,7 @@ public class OptOutServiceImpl implements OptOutService {
 		
 		// Send the command
 		String commandString = cmd.toString();
-		try {
-			commandRequestRouteExecutor.execute(inventory.getRouteID(), commandString, user);
-		} catch (Exception e) {
-			
-		}
+		commandRequestRouteExecutor.execute(inventory.getRouteID(), commandString, user);
 		
 	}
 	
@@ -882,11 +878,7 @@ public class OptOutServiceImpl implements OptOutService {
 		
 		// Send the command
 		String commandString = cmd.toString();
-		try {
-			commandRequestRouteExecutor.execute(inventory.getRouteID(), commandString, user);
-		} catch (Exception e) {
-			
-		}
+		commandRequestRouteExecutor.execute(inventory.getRouteID(), commandString, user);
 		
 	}
 	
