@@ -6,15 +6,16 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.dao.DataAccessException;
 
 import com.cannontech.common.exception.DuplicateEnrollmentException;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
+import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
@@ -24,9 +25,7 @@ import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
-import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
-import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
 import com.cannontech.stars.dr.loadgroup.dao.LoadGroupDao;
 import com.cannontech.stars.dr.loadgroup.model.LoadGroup;
@@ -36,6 +35,7 @@ import com.cannontech.stars.dr.program.model.ProgramEnrollmentResultEnum;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
 import com.cannontech.stars.dr.program.service.ProgramEnrollmentService;
 import com.cannontech.stars.util.ECUtils;
+import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 
 public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     
@@ -45,11 +45,11 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     private CustomerAccountDao customerAccountDao;
     private EnrollmentDao enrollmentDao;
     private LoadGroupDao loadGroupDao;
-    private LMHardwareBaseDao lmHardwareBaseDao;
     private LMHardwareControlGroupDao lmHardwareControlGroupDao;
     private ProgramDao programDao;
     private ProgramEnrollmentService programEnrollmentService;
     private StarsDatabaseCache starsDatabaseCache;
+    private StarsSearchDao starsSearchDao;    
     
     public void doEnrollment(EnrollmentHelper enrollmentHelper, EnrollmentEnum enrollmentEnum, LiteYukonUser user){
 
@@ -58,7 +58,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         List<ProgramEnrollment> enrollmentData = 
             enrollmentDao.getActiveEnrollmentsByAccountId(customerAccount.getAccountId());
 
-        ProgramEnrollment programEnrollment = buildProgrameEnrollment(enrollmentHelper, user);
+        ProgramEnrollment programEnrollment = buildProgrameEnrollment(enrollmentHelper, customerAccount, user);
         
         if (enrollmentEnum == EnrollmentEnum.ENROLL) {
             addProgramEnrollment(enrollmentData, programEnrollment, enrollmentHelper.isSeasonalLoad());
@@ -96,21 +96,28 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         }
     }
 
-    private ProgramEnrollment buildProgrameEnrollment(EnrollmentHelper enrollmentHelper, LiteYukonUser user){
+    private ProgramEnrollment buildProgrameEnrollment(EnrollmentHelper enrollmentHelper, CustomerAccount account, LiteYukonUser user){
+
+        //get the energyCompany for the user
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
         
-        String serialNumber = enrollmentHelper.getSerialNumber();
-		LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getBySerialNumber(serialNumber);
-        CustomerAccount accountByInventoryId = customerAccountDao.getAccountByInventoryId(lmHardwareBase.getInventoryId());
-        String accountNumber = enrollmentHelper.getAccountNumber();
-		if (accountNumber != accountByInventoryId.getAccountNumber()) {
-            throw new IllegalArgumentException("The supplied piece of hardware: " + serialNumber + 
-            		" does not belong to the supplied account: " + accountNumber);
+        LiteInventoryBase liteInv = null;
+        try {
+            liteInv = starsSearchDao.searchLMHardwareBySerialNumber(enrollmentHelper.getSerialNumber(), energyCompany);
+        } catch (ObjectInOtherEnergyCompanyException e) {
+            throw new RuntimeException(e);
         }
-            
+        if (liteInv == null) {
+            throw new IllegalArgumentException("The supplied piece of hardware not found: " + enrollmentHelper.getSerialNumber());
+        }        
+		if (liteInv.getAccountID() != account.getAccountId()) {
+            throw new IllegalArgumentException("The supplied piece of hardware: " + enrollmentHelper.getSerialNumber() + 
+            		" does not belong to the supplied account: " + enrollmentHelper.getAccountNumber());
+        }
+
         /* This part of the method will get all the energy company ids that can have 
          * an appliance category this energy company can use.
          */
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
         List<Integer> energyCompanyIds = new ArrayList<Integer>();
         if(authDao.checkRoleProperty(energyCompany.getUserID(), EnergyCompanyRole.INHERIT_PARENT_APP_CATS )) {
             List<LiteStarsEnergyCompany> allAscendants = ECUtils.getAllAscendants(energyCompany);
@@ -138,7 +145,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
          * used later on to enroll or unenroll.
          */
         ProgramEnrollment programEnrollment = new ProgramEnrollment();
-        programEnrollment.setInventoryId(lmHardwareBase.getInventoryId());
+        programEnrollment.setInventoryId(liteInv.getInventoryID());
         programEnrollment.setProgramId(program.getProgramId());
         if (enrollmentHelper.getApplianceKW() != null) {
             programEnrollment.setApplianceKW(enrollmentHelper.getApplianceKW());
@@ -279,11 +286,6 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     }
 
     @Autowired
-    public void setLmHardwareBaseDao(LMHardwareBaseDao lmHardwareBaseDao) {
-        this.lmHardwareBaseDao = lmHardwareBaseDao;
-    }
-    
-    @Autowired
     public void setLmHardwareControlGroupDao(
             LMHardwareControlGroupDao lmHardwareControlGroupDao) {
         this.lmHardwareControlGroupDao = lmHardwareControlGroupDao;
@@ -309,5 +311,9 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
         this.starsDatabaseCache = starsDatabaseCache;
     }
-
+    
+    @Autowired
+    public void setStarsSearchDao(StarsSearchDao starsSearchDao) {
+        this.starsSearchDao = starsSearchDao;
+    }
 }
