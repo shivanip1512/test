@@ -30,14 +30,13 @@ class CtiPCPtrQueue{
         std::list < T* > q;
         bool closed;
         boost::condition wait;
-        mutable boost::mutex mux;
+        mutable boost::mutex mux; // This mutex is not recursive.
 
     public:
         CtiPCPtrQueue(){
             closed = false;
         };
         ~CtiPCPtrQueue(){
-            boost::mutex::scoped_lock scoped_lock(mux);
             close();
             T* item;
             while( tryRead(item) )
