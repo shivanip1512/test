@@ -5,9 +5,9 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
-import com.cannontech.common.opc.model.FdrDirection;
-import com.cannontech.common.opc.model.FdrInterfaceType;
-import com.cannontech.common.opc.model.FdrTranslation;
+import com.cannontech.common.fdr.FdrDirection;
+import com.cannontech.common.fdr.FdrInterfaceType;
+import com.cannontech.common.fdr.FdrTranslation;
 import com.cannontech.importer.fdr.ImporterVirtualDevice;
 
 public class ProgressOpcImportParserImpl implements TranslationParse {

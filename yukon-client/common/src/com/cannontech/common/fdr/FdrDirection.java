@@ -1,4 +1,4 @@
-package com.cannontech.common.opc.model;
+package com.cannontech.common.fdr;
 
 /* for control options are not here because of the space. 
  * If we need to support those styles, we need to remove the spaces in the database*/

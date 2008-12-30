@@ -1,7 +1,8 @@
-package com.cannontech.common.opc.model;
+package com.cannontech.common.fdr;
 
 import java.util.HashMap;
 import java.util.Map;
+
 
 
 /** 
@@ -13,7 +14,7 @@ import java.util.Map;
 
 public class FdrTranslation {
 
-	private int id;
+	private int pointId;
 	private FdrDirection direction;
 	private FdrInterfaceType fdrInterfaceType;
 	private FdrInterfaceType destination;
@@ -26,12 +27,12 @@ public class FdrTranslation {
 		parameterMap = new HashMap<String,String>();
 	}
 	
-	public int getId() {
-		return id;
+	public int getPointId() {
+		return pointId;
 	}
-
-	public void setId(int id) {
-		this.id = id;
+	
+	public void setPointId(int pointId) {
+		this.pointId = pointId;
 	}
 
 	public FdrDirection getDirection() {
@@ -82,7 +83,7 @@ public class FdrTranslation {
 				+ ((destination == null) ? 0 : destination.hashCode());
 		result = prime * result
 				+ ((direction == null) ? 0 : direction.hashCode());
-		result = prime * result + id;
+		result = prime * result + pointId;
 		result = prime * result
 				+ ((fdrInterfaceType == null) ? 0 : fdrInterfaceType.hashCode());
 		result = prime * result
@@ -109,7 +110,7 @@ public class FdrTranslation {
 				return false;
 		} else if (!direction.equals(other.direction))
 			return false;
-		if (id != other.id)
+		if (pointId != other.pointId)
 			return false;
 		if (fdrInterfaceType == null) {
 			if (other.fdrInterfaceType != null)

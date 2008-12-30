@@ -9,9 +9,9 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.common.opc.model.FdrDirection;
-import com.cannontech.common.opc.model.FdrInterfaceType;
-import com.cannontech.common.opc.model.FdrTranslation;
+import com.cannontech.common.fdr.FdrDirection;
+import com.cannontech.common.fdr.FdrInterfaceType;
+import com.cannontech.common.fdr.FdrTranslation;
 import com.cannontech.core.dao.FdrTranslationDao;
 
 public class FdrTranslationDaoImpl implements FdrTranslationDao {
@@ -20,6 +20,7 @@ public class FdrTranslationDaoImpl implements FdrTranslationDao {
     private static final String selectByPointIdAndTypeSql;
     private static final String selectByPaoIdAndTypeSql;    
     private static final String selectByTypeSql;
+    private static final String selectByTypeAndTranslationSql;
     
     private static final ParameterizedRowMapper<FdrTranslation> rowMapper;
     private SimpleJdbcTemplate simpleJdbcTemplate;
@@ -40,13 +41,16 @@ public class FdrTranslationDaoImpl implements FdrTranslationDao {
                                 + "AND P.PAOBjectID = ? ";
         
         selectByTypeSql = "SELECT pointid,directiontype,interfacetype,destination,translation FROM fdrtranslation" 
-        	+ " WHERE interfacetype = ?";     
+        	+ " WHERE interfacetype = ?";
+        
+        selectByTypeAndTranslationSql = "SELECT pointid,directiontype,interfacetype,destination,translation FROM fdrtranslation" 
+        	+ " WHERE InterfaceType = ? and Translation = ?";
         
         rowMapper = new ParameterizedRowMapper<FdrTranslation>() {
             public FdrTranslation mapRow(ResultSet rs, int rowNum) throws SQLException {
             	
             	FdrTranslation fdrTranslation = new FdrTranslation();
-            	fdrTranslation.setId(rs.getInt("PointID"));
+            	fdrTranslation.setPointId(rs.getInt("PointID"));
             	
             	String direction = rs.getString("directiontype");
             	fdrTranslation.setDirection(FdrDirection.getEnum(direction));
@@ -82,7 +86,7 @@ public class FdrTranslationDaoImpl implements FdrTranslationDao {
     }
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public boolean add(FdrTranslation trans) {
-        int rowsAffected = simpleJdbcTemplate.update(insertSql, trans.getId(),
+        int rowsAffected = simpleJdbcTemplate.update(insertSql, trans.getPointId(),
                                                      trans.getDirection().toString(),
                                                      trans.getFdrInterfaceType().toString(),
                                                      trans.getDestination().toString(),
@@ -105,5 +109,10 @@ public class FdrTranslationDaoImpl implements FdrTranslationDao {
     @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
 	public List<FdrTranslation> getByInterfaceType(FdrInterfaceType type) {
     	return simpleJdbcTemplate.query(selectByTypeSql, rowMapper, type.toString() );
+	}
+    
+    @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
+	public List<FdrTranslation> getByInterfaceTypeAndTranslation(FdrInterfaceType type, String translation) {
+    	return simpleJdbcTemplate.query(selectByTypeAndTranslationSql, rowMapper, type.toString(), translation );
 	}
 }

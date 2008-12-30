@@ -1,4 +1,4 @@
-package com.cannontech.common.opc.model;
+package com.cannontech.common.fdr;
 
 public enum FdrInterfaceType {
 	INET(1),

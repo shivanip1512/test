@@ -6,7 +6,7 @@ import java.util.List;
 
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.opc.model.FdrTranslation;
+import com.cannontech.common.fdr.FdrTranslation;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.FdrTranslationDao;
@@ -234,8 +234,8 @@ public class FdrImporter {
                 LitePoint point = pointDao.getLitePointIdByDeviceId_Offset_PointType(deviceid,offset,type);
                 
                 int liteid = point.getLiteID();
-                fdr.setId(liteid);
-                if( fdr.getId() != 0) {
+                fdr.setPointId(liteid);
+                if( fdr.getPointId() != 0) {
                     try{
                         fdrDao.add(fdr);
                     }catch(DataAccessException e) {

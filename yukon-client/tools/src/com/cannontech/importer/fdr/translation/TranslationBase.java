@@ -3,7 +3,7 @@ package com.cannontech.importer.fdr.translation;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.cannontech.common.opc.model.FdrTranslation;
+import com.cannontech.common.fdr.FdrTranslation;
 import com.cannontech.importer.fdr.ImporterVirtualDevice;
 
 public class TranslationBase {

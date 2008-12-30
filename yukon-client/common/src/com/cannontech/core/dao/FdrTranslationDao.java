@@ -2,8 +2,11 @@ package com.cannontech.core.dao;
 
 import java.util.List;
 
-import com.cannontech.common.opc.model.FdrInterfaceType;
-import com.cannontech.common.opc.model.FdrTranslation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.cannontech.common.fdr.FdrInterfaceType;
+import com.cannontech.common.fdr.FdrTranslation;
 
 public interface FdrTranslationDao {
 
@@ -14,4 +17,7 @@ public interface FdrTranslationDao {
     public FdrTranslation getByPointIdAndType(int pointId, FdrInterfaceType type);
     
     public List<FdrTranslation> getByPaobjectIdAndType(int paoId, FdrInterfaceType type);
+    
+	public List<FdrTranslation> getByInterfaceTypeAndTranslation(FdrInterfaceType type, String translation);
+
 }

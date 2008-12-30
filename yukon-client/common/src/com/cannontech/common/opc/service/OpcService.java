@@ -12,9 +12,9 @@ import com.cannontech.common.config.UnknownKeyException;
 import com.cannontech.common.opc.OpcConnectionListener;
 import com.cannontech.common.opc.YukonOpcConnection;
 import com.cannontech.common.opc.impl.YukonOpcConnectionImpl;
-import com.cannontech.common.opc.model.FdrDirection;
-import com.cannontech.common.opc.model.FdrInterfaceType;
-import com.cannontech.common.opc.model.FdrTranslation;
+import com.cannontech.common.fdr.FdrDirection;
+import com.cannontech.common.fdr.FdrInterfaceType;
+import com.cannontech.common.fdr.FdrTranslation;
 import com.cannontech.common.opc.model.YukonOpcItem;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.ScheduledExecutor;
@@ -135,7 +135,7 @@ public class OpcService implements OpcConnectionListener, DBChangeListener{
 	    for( FdrTranslation t : statusPoints ) {
 	        String opcServerName = t.getParameter("Client");
 	        if( StringUtils.isNotBlank(opcServerName) ) {
-	            opcServerToStatusPointIdMap.put(opcServerName, t.getId());
+	            opcServerToStatusPointIdMap.put(opcServerName, t.getPointId());
 	        }
 	    }
 	}
@@ -154,7 +154,7 @@ public class OpcService implements OpcConnectionListener, DBChangeListener{
 			log.debug(" Add Item call");
 			processOpcTranslation(fdr);
 		} else {
-			log.warn(" Unhandled Fdr Direction: " + direction + " Translation Id: " + fdr.getId());
+			log.warn(" Unhandled Fdr Direction: " + direction + " Translation Id: " + fdr.getPointId());
 		}
 	}
 	
@@ -177,7 +177,7 @@ public class OpcService implements OpcConnectionListener, DBChangeListener{
 			return;
 		}
 		
-        int pointId = fdr.getId();
+        int pointId = fdr.getPointId();
         
         try {
             point = pointDao.getLitePoint(pointId);
@@ -303,7 +303,7 @@ public class OpcService implements OpcConnectionListener, DBChangeListener{
             
             try {
                 translation = fdrTranslationDao.getByPointIdAndType(pid, FdrInterfaceType.OPC);
-                log.debug(" Change to Point, " + translation.getId() +", involved with OPC");
+                log.debug(" Change to Point, " + translation.getPointId() +", involved with OPC");
                 translationList.add(translation);
             } catch (IncorrectResultSizeDataAccessException e) {
                 log.debug(" Point Change does not have an OPC translation attached to it. " + pid);
