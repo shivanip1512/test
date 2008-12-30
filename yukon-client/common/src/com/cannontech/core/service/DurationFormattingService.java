@@ -32,8 +32,8 @@ public interface DurationFormattingService {
     }
 
     /**
-     * Method to get a formatted string representation of a time duration - assumes the start of
-     * the duration is now.
+     * Method to get a formatted string representation of a time duration - uses simple math
+     * to calculate days, mins, seconds ignoring time zones and daylight savings
      * @param duration - Duration (in milliseconds) to format
      * @param type - Format type for the time duration
      * @param yukonUserContext - Current user context
