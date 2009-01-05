@@ -1,14 +1,12 @@
 package com.cannontech.core.authorization.service;
 
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
-import com.cannontech.core.dao.AuthDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.util.ReflectivePropertySearcher;
 
-public class RoleAndPropertyDescriptionService {
+public abstract class RoleAndPropertyDescriptionService {
     private static final String ROLEID_SUFFIX = ".ROLEID";
     private final ReflectivePropertySearcher propertySearcher = ReflectivePropertySearcher.getRoleProperty();
-    private AuthDao authDao;
 
     /**
      * This will check that the user has the given roles
@@ -50,7 +48,7 @@ public class RoleAndPropertyDescriptionService {
                     roleIdFqn += ROLEID_SUFFIX;
                 }
                 int intForFQN = propertySearcher.getIntForName(roleIdFqn);
-                boolean hasRole = authDao.checkRole(user, intForFQN);
+                boolean hasRole = checkRole(user, intForFQN);
                 if (hasRole != inverted) {
                     return true;
                 }
@@ -64,7 +62,7 @@ public class RoleAndPropertyDescriptionService {
             try {
                 String propertyIdFqn = classOrFieldName;
                 int intForFQN = propertySearcher.getIntForName(propertyIdFqn);
-                boolean hasProperty = authDao.checkRoleProperty(user, intForFQN);
+                boolean hasProperty = checkRoleProperty(user, intForFQN);
                 if (hasProperty != inverted) {
                     return true;
                 }
@@ -80,8 +78,8 @@ public class RoleAndPropertyDescriptionService {
         return false;  
     }
 
-    public void setAuthDao(AuthDao authDao) {
-        this.authDao = authDao;
-    }
+    protected abstract boolean checkRoleProperty(final LiteYukonUser user, int intForFQN);
+
+    protected abstract boolean checkRole(final LiteYukonUser user, int intForFQN);
 
 }

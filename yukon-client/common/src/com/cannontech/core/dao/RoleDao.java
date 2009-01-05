@@ -95,4 +95,18 @@ public interface RoleDao {
     
     public <E extends Enum<E>> E getGlobalRolePropertyValue(Class<E> class1, int rolePropertyID);
 
+    /**
+     * Returns true if the value of the role property is true, false otherwise.
+     * @param rolePropertyID
+     * @return
+     */
+    public boolean checkGlobalRoleProperty(int rolePropertyID);
+    
+    /**
+     * Returns true if the role exists, false otherwise.
+     * @param roleId
+     * @return
+     */
+    public boolean checkRole(int roleId);
+
 }

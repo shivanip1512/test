@@ -7,7 +7,7 @@ import javax.servlet.jsp.JspException;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.cannontech.common.exception.NotAuthorizedException;
-import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
+import com.cannontech.core.authorization.service.UserRoleAndPropertyDescriptionService;
 import com.cannontech.web.taglib.YukonTagSupport;
 
 /**
@@ -38,7 +38,7 @@ public class VerifyRolesAndPropertiesTag extends YukonTagSupport {
     private String value;
     
     // injected dependencies
-    private RoleAndPropertyDescriptionService descriptionService;
+    private UserRoleAndPropertyDescriptionService descriptionService;
     
     @Override
     public void doTag() throws JspException, IOException {
@@ -57,8 +57,7 @@ public class VerifyRolesAndPropertiesTag extends YukonTagSupport {
         return value;
     }
 
-    public void setDescriptionService(
-            RoleAndPropertyDescriptionService descriptionService) {
+    public void setDescriptionService(UserRoleAndPropertyDescriptionService descriptionService) {
         this.descriptionService = descriptionService;
     }
 

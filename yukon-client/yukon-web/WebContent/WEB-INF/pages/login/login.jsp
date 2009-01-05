@@ -110,14 +110,15 @@
                                 </td>
                             </tr>
                         </table>
-
-                        <cti:isStarsExist>
-                            <div class="loginHelp">
-                                <a href="<c:url value="/pwordreq.jsp"/>">
-			                        <cti:msg key="yukon.web.login.forgotPassword"></cti:msg>
-                                </a>
-                            </div>
-                        </cti:isStarsExist>
+                        <cti:checkGlobalProperty value="AuthenticationRole.HIDE_PASSWORD_RECOVERY">
+	                        <cti:isStarsExist>
+	                            <div class="loginHelp">
+	                                <a href="<c:url value="/pwordreq.jsp"/>">
+				                        <cti:msg key="yukon.web.login.forgotPassword"></cti:msg>
+	                                </a>
+	                            </div>
+	                        </cti:isStarsExist>
+                        </cti:checkGlobalProperty>
                         <input type="hidden" name="REDIRECTED_FROM" value="${param.REDIRECTED_FROM}">
                         <input type="hidden" name="ACTION" value="LOGIN">
                     </form>

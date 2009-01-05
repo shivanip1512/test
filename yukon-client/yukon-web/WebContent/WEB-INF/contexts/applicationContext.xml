@@ -606,7 +606,11 @@
     </bean>
     
     <bean id="verifyRolesAndPropertiesTagPrototype" class="com.cannontech.web.util.VerifyRolesAndPropertiesTag">
-        <property name="descriptionService" ref="roleAndPropertyDescriptionService"/>
+        <property name="descriptionService" ref="userRoleAndPropertyDescriptionService"/>
+    </bean>
+    
+    <bean id="checkGlobalRolesAndPropertiesTagPrototype" class="com.cannontech.web.taglib.CheckGlobalRolesAndPropertiesTag">
+        <property name="descriptionService" ref="globalRoleAndPropertyDescriptionService"/>
     </bean>
     
     <bean id="trendWidgetCachingParameterGrabber" abstract="true">

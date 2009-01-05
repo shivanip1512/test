@@ -14,6 +14,7 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.common.util.CommandExecutionException;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.RoleDao;
@@ -70,6 +71,11 @@ public class RoleDaoImpl implements RoleDao
 
 		return val;
 	}
+	
+	@Override
+	public boolean checkGlobalRoleProperty(int rolePropertyID) {
+        return !CtiUtilities.isFalse(getGlobalPropertyValue(rolePropertyID));
+    }
 
 	public LiteYukonRoleProperty getRoleProperty(int propid) {
         
@@ -224,6 +230,11 @@ public class RoleDaoImpl implements RoleDao
     @Required
     public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
         this.simpleJdbcTemplate = simpleJdbcTemplate;
+    }
+
+    @Override
+    public boolean checkRole(int roleId) {
+        return getLiteRole(roleId) != null;
     }
     
 }

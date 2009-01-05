@@ -59,4 +59,14 @@ public class RoleDaoAdapter implements RoleDao {
     public <E extends Enum<E>> E getGlobalRolePropertyValue(Class<E> class1, int rolePropertyID) {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public boolean checkGlobalRoleProperty(int rolePropertyID) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean checkRole(int roleId) {
+        throw new UnsupportedOperationException();
+    }
 }
