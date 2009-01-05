@@ -32,14 +32,30 @@ class CtiPCPtrQueue{
         boost::condition wait;
         mutable boost::mutex mux; // This mutex is not recursive.
 
+        // If there are elements in the queue, this returns true and the first element.
+        // If there are NO elements in the queue, this returns false and result = NULL.
+        bool getFront(T*& result)
+        {
+            if ( q.empty() ) {
+                result = NULL;
+                return false;
+            }
+            else{
+                result = q.front();
+                q.pop_front();
+                return true;
+            }
+        }
+
     public:
         CtiPCPtrQueue(){
             closed = false;
         };
         ~CtiPCPtrQueue(){
-            close();
+            boost::mutex::scoped_lock scoped_lock(mux);
+            closed = true;
             T* item;
-            while( tryRead(item) )
+            while( getFront(item) )
                 delete item;
         };
 
@@ -84,16 +100,9 @@ class CtiPCPtrQueue{
          */
         bool tryRead(T*& result){
             boost::mutex::scoped_lock scoped_lock(mux);
-            if ( q.empty() ) {
-                result = NULL;
-                return false;
-            }
-            else{
-                result = q.front();
-                q.pop_front();
-                return true;
-            }
+            return getFront(result);
         }
+
         /*  canRead will return true if the queue can be read from.
          *  It will return false if the queue is empty.
          */
