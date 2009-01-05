@@ -35,4 +35,4 @@ Class-Path: ./
  quartz-all-1.6.0.jar 
  aspectjrt.jar 
  aspectjweaver.jar 
- 
+ joda-time-1.6.jar
