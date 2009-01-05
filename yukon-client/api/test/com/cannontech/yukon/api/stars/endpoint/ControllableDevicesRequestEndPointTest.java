@@ -13,7 +13,6 @@ import org.springframework.core.io.Resource;
 import org.w3c.dom.Node;
 
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
-import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
@@ -22,7 +21,7 @@ import com.cannontech.stars.util.StarsClientRequestException;
 import com.cannontech.stars.util.StarsInvalidArgumentException;
 import com.cannontech.stars.ws.dto.StarsControllableDeviceDTO;
 import com.cannontech.stars.ws.helper.StarsControllableDeviceHelper;
-import com.cannontech.yukon.api.loadManagement.AuthDaoAdapter;
+import com.cannontech.yukon.api.loadManagement.MockAuthDao;
 import com.cannontech.yukon.api.stars.endpoint.ControllableDevicesRequestEndPoint;
 import com.cannontech.yukon.api.stars.endpoint.ControllableDevicesRequestEndPoint.ErrorCodeMapper;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
@@ -135,17 +134,6 @@ public class ControllableDevicesRequestEndPointTest {
         }
     }
 
-    private class MockAuthDao extends AuthDaoAdapter {
-        
-        @Override
-        public void verifyTrueProperty(LiteYukonUser user,
-                int... rolePropertyIds) throws NotAuthorizedException {
-            if(user.getUserID() <= 0) {
-                throw new NotAuthorizedException("Mock auth dao not authorized");
-            }
-        }
-    }
-    
     @Test
     public void testInvokeAddDeviceAuthUser() throws Exception {
 
@@ -159,7 +147,6 @@ public class ControllableDevicesRequestEndPointTest {
         
         //invoke test with authorized user
         LiteYukonUser user = new LiteYukonUser();
-        user.setUserID(1);
         Element respElement = impl.invokeAddDevice(reqElement, user);
         
         // verify the respElement is valid according to schema
@@ -236,8 +223,7 @@ public class ControllableDevicesRequestEndPointTest {
         TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
         
         //invoke test with unauthorized user
-        LiteYukonUser user = new LiteYukonUser();
-        user.setUserID(-1);
+        LiteYukonUser user = MockAuthDao.getUnAuthorizedUser();
         Element respElement = impl.invokeAddDevice(reqElement, user);
         
         // verify the respElement is valid according to schema
@@ -277,7 +263,6 @@ public class ControllableDevicesRequestEndPointTest {
         
         //invoke test with authorized user
         LiteYukonUser user = new LiteYukonUser();
-        user.setUserID(1);
         Element respElement = impl.invokeUpdateDevice(reqElement, user);
         
         // verify the respElement is valid according to schema
@@ -353,9 +338,8 @@ public class ControllableDevicesRequestEndPointTest {
         Resource reqSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/stars/schemas/UpdateControllableDevicesRequest.xsd", this.getClass());
         TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
         
-        //invoke test with authorized user
-        LiteYukonUser user = new LiteYukonUser();
-        user.setUserID(-1);
+        //invoke test with unauthorized user
+        LiteYukonUser user = MockAuthDao.getUnAuthorizedUser();
         Element respElement = impl.invokeUpdateDevice(reqElement, user);
         
         // verify the respElement is valid according to schema
@@ -395,7 +379,6 @@ public class ControllableDevicesRequestEndPointTest {
         
         //invoke test with authorized user
         LiteYukonUser user = new LiteYukonUser();
-        user.setUserID(1);
         Element respElement = impl.invokeRemoveDevice(reqElement, user);
         
         // verify the respElement is valid according to schema
@@ -471,9 +454,8 @@ public class ControllableDevicesRequestEndPointTest {
         Resource reqSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/stars/schemas/RemoveControllableDevicesRequest.xsd", this.getClass());
         TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
         
-        //invoke test with authorized user
-        LiteYukonUser user = new LiteYukonUser();
-        user.setUserID(-1);
+        //invoke test with unauthorized user
+        LiteYukonUser user = MockAuthDao.getUnAuthorizedUser();
         Element respElement = impl.invokeRemoveDevice(reqElement, user);
         
         // verify the respElement is valid according to schema
