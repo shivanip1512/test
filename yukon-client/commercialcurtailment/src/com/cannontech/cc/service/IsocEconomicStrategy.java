@@ -93,7 +93,8 @@ public class IsocEconomicStrategy extends BaseEconomicStrategy {
         try {
             int duration = builder.getEvent().getDuration() / 60;
             boolean exceededAllowedHours = isocCommonStrategy.hasCustomerExceededAllowedHours(customer, duration);
-            return !exceededAllowedHours;
+            boolean exceededAllowedHoursIn24HourPeriod = isocCommonStrategy.hasCustomerExceeded24HourPeriodHours(customer, builder.getEvent().getStopTime(), duration);
+            return !(exceededAllowedHours || exceededAllowedHoursIn24HourPeriod);
         } catch (PointException e) {
             CTILogger.warn("Silently dropping " + customer + " from event extension because of point access error.", e);
             return false;

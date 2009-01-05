@@ -64,17 +64,10 @@ public class IsocCommonStrategy extends StrategyGroupBase {
         return getTotalEventHours(customer, from, to);
     }
 
-    private double getTotalEventHoursIn24HourPeriod(CICustomerStub customer) {
-        //get first day this year
-        Date now = new Date();
-        TimeZone timeZone = TimeZone.getTimeZone(customer.getLite().getTimeZone());
-        Calendar cal = Calendar.getInstance(timeZone);
-        cal.setTime(now);
-        Date from = cal.getTime();
-        cal.add(Calendar.DATE, 1);
-        Date to = cal.getTime();
-        
-        return getTotalEventHours(customer, from, to);
+    private double getTotalEventHoursIn24HourPeriod(CICustomerStub customer, Date end24HourPeriod) {
+        //Total hours from the past 24 hours
+        Date beginPeriodDate = TimeUtil.addDays(end24HourPeriod, -1);
+        return getTotalEventHours(customer, beginPeriodDate, end24HourPeriod);
     }
 
     public double getTotalEventHours(CICustomerStub customer, Date from, Date to) {
@@ -97,12 +90,12 @@ public class IsocCommonStrategy extends StrategyGroupBase {
         return (actualHours + propossedEventLength) > allowedHours;
     }
 
-    public boolean hasCustomerExceeded24HourPeriodHours(CICustomerStub customer, int propossedEventLength) throws PointException {
+    public boolean hasCustomerExceeded24HourPeriodHours(CICustomerStub customer, Date end24HourPeriod, int propossedEventLength) throws PointException {
         double allowedHours = get24HourPeriodAllowedHours(customer);
         if (allowedHours == 0 || allowedHours == 1440)  // 0 and 1440(60*24) represent no 24 hour limit
             return false;
         // applies to 24 hour period
-        double actualHours = getTotalEventHoursIn24HourPeriod(customer);
+        double actualHours = getTotalEventHoursIn24HourPeriod(customer, end24HourPeriod);
         return (actualHours + propossedEventLength) > allowedHours;
     }
 
@@ -221,7 +214,7 @@ public class IsocCommonStrategy extends StrategyGroupBase {
                                    "has exceeded allowed hours");
         }
         int durationHours24HourPeriod = event.getDuration() / 60;
-        if (hasCustomerExceeded24HourPeriodHours(vCustomer.getCustomer(), durationHours24HourPeriod)) {
+        if (hasCustomerExceeded24HourPeriodHours(vCustomer.getCustomer(), event.getStopTime(), durationHours24HourPeriod)) {
             vCustomer.addExclusion(VerifiedCustomer.Status.EXCLUDE, 
                                    "has exceeded allowed hours in 24 hour period");
         }
