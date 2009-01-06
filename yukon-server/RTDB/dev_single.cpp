@@ -25,6 +25,9 @@
 #include "ctitime.h"
 #include "scanglob.h"
 
+// see bottom of file
+bool isDeviceWithGlobalAddress(const int deviceType, const int address);
+
 using namespace std;
 
 
@@ -186,7 +189,7 @@ INT CtiDeviceSingle::initiateAccumulatorScan(list< OUTMESS* > &outList, INT Scan
         {
             resetScanFlag(ScanForced);            // Reset this guy since we're doing it
 
-            if(getAddress() == RTUGLOBAL || getAddress() == CCUGLOBAL)
+            if (isDeviceWithGlobalAddress(getType(), getAddress()))
             {
                 // CAN NOT scan a global address.
                 setScanRate(ScanRateAccum, YUKONEOT);    // set him to the end of time!
@@ -324,7 +327,7 @@ INT CtiDeviceSingle::initiateIntegrityScan(list< OUTMESS* > &outList, INT ScanPr
             {
                 resetScanFlag(ScanForced);            // Reset this guy since we're doing it
 
-                if(getAddress() == RTUGLOBAL || getAddress() == CCUGLOBAL)
+                if (isDeviceWithGlobalAddress(getType(), getAddress()))
                 {
                     // CAN NOT scan a global address.
                     setScanRate(ScanRateIntegrity, YUKONEOT);    // set him to the end of time!
@@ -456,7 +459,7 @@ INT CtiDeviceSingle::initiateGeneralScan(list< OUTMESS* > &outList, INT ScanPrio
                 {
                     resetScanFlag(ScanForced);            // Reset this guy since we're doing it
 
-                    if(getAddress() == RTUGLOBAL || getAddress() == CCUGLOBAL)
+                    if (isDeviceWithGlobalAddress(getType(), getAddress()))
                     {
                         // CANNOT scan a global address.
                         setScanRate(ScanRateAccum, YUKONEOT);    // set him to the end of time!
@@ -598,7 +601,7 @@ INT CtiDeviceSingle::initiateLoadProfileScan(list< OUTMESS* > &outList, INT Scan
             {
                 resetScanFlag(ScanForced);            // Reset this guy since we're doing it
 
-                if(getAddress() == RTUGLOBAL || getAddress() == CCUGLOBAL)
+                if (isDeviceWithGlobalAddress(getType(), getAddress()))
                 {
                     // CAN NOT scan a global address.
                     setScanRate(ScanRateLoadProfile, YUKONEOT);    // set him to the end of time!
@@ -2025,5 +2028,44 @@ CtiDeviceSingle::decrementGroupMessageCount(long userID, long comID, int entries
             iterator->second = count;
         }
     }
+}
+
+/*
+    Use this predicate to identify globally addressable devices who are trying
+    to scan at their corresponding global address.  This is a no-no.
+    Currently the filter is pretty rough.  It blocks *all* global devices at *any*
+    global address.  Future improvement: segregate device to its exact address.
+*/
+bool isDeviceWithGlobalAddress(const int deviceType, const int address)
+{
+    bool retVal = false;
+
+    switch (address)
+    {
+        case RTUGLOBAL:
+        case CCUGLOBAL:
+
+            switch (deviceType)
+            {
+                case TYPE_CCU700:
+                case TYPE_CCU710:
+                case TYPE_CCU711:
+                case TYPE_ILEXRTU:
+                case TYPE_WELCORTU:
+                case TYPE_SES92RTU:
+                case TYPE_LCU415:
+                case TYPE_LCU415LG:
+                case TYPE_LCU415ER:
+                case TYPE_LCUT3026:
+                case TYPE_TCU5000:
+                case TYPE_TCU5500:
+                case TYPE_DAVIS:
+                case TYPE_VTU:
+
+                    retVal = true;
+            }
+    }
+ 
+    return retVal;
 }
 
