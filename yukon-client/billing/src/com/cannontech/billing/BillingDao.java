@@ -135,6 +135,11 @@ public class BillingDao {
                 }
 
                 Map<String, Integer> meterPositionNumberMap = new HashMap<String, Integer>();
+                Hashtable<Integer, Double> pointIdMultiplierHashTable = new Hashtable<Integer, Double>();
+                if (defaults.isRemoveMultiplier()) {
+                	//Don't do all the work against the point tables if we don't need to 
+                	pointIdMultiplierHashTable = retrievePointIDMultiplierHashTable();
+                }
 
                 int currentPointID = 0;
                 int currentDeviceID = 0;
@@ -152,7 +157,10 @@ public class BillingDao {
 
                     double multiplier = 1;
                     if (defaults.isRemoveMultiplier()) {
-                        multiplier = retrievePointIDMultiplierHashTable().get(new Integer(currentPointID)).doubleValue();
+                    	Double pointIdMult = pointIdMultiplierHashTable.get(new Integer(currentPointID));
+                    	if ( pointIdMult != null) {	//Possibility that status points might be returned...which don't have multipliers!
+                    		multiplier = pointIdMultiplierHashTable.get(new Integer(currentPointID)).doubleValue();
+                    	}
                     }
 
                     double reading = rset.getDouble(7) / multiplier;
@@ -461,7 +469,12 @@ public class BillingDao {
 
                 deviceList = new ArrayList<BillableDevice>();
                 Map<String, Integer> meterPositionNumberMap = new HashMap<String, Integer>();
-
+                Hashtable<Integer, Double> pointIdMultiplierHashTable = new Hashtable<Integer, Double>();
+                if (defaults.isRemoveMultiplier()) {
+                	//Don't do all the work against the point tables if we don't need to 
+                	pointIdMultiplierHashTable = retrievePointIDMultiplierHashTable();
+                }
+                
                 BillableDevice device = null;
                 while (rset.next()) {
                     String meterNumber = rset.getString(1);
@@ -473,7 +486,10 @@ public class BillingDao {
 
                     double multiplier = 1;
                     if (defaults.isRemoveMultiplier()) {
-                        multiplier = retrievePointIDMultiplierHashTable().get(new Integer(pointId)).doubleValue();
+                    	Double pointIdMult = pointIdMultiplierHashTable.get(new Integer(pointId));
+                    	if ( pointIdMult != null) {	//Possibility that status points might be returned...which don't have multipliers!
+                    		multiplier = pointIdMultiplierHashTable.get(new Integer(pointId)).doubleValue();
+                    	}
                     }
 
                     double reading = rset.getDouble(7) / multiplier;

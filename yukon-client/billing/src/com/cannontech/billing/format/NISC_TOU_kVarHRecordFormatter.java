@@ -43,17 +43,17 @@ public class NISC_TOU_kVarHRecordFormatter extends BillingFormatterBase {
         StringBuffer writeToFile = new StringBuffer();
 
         String rowData = null;
-        boolean addKwh = true;
+        boolean addTotalReadings = true;
 
         // Total kWh, Rate A kw and kvarh
         rowData = createRow(device,
                             1,
                             BillableField.rateADemand,
                             BillableField.rateAConsumption,
-                            addKwh);
+                            addTotalReadings);
         if (rowData != "") {
             writeToFile.append(rowData);
-            addKwh = false;
+            addTotalReadings = false;
         }
 
         // Rate B kw and kvarh
@@ -61,20 +61,20 @@ public class NISC_TOU_kVarHRecordFormatter extends BillingFormatterBase {
                             2,
                             BillableField.rateBDemand,
                             BillableField.rateBConsumption,
-                            addKwh);
+                            addTotalReadings);
         if (rowData != "") {
             writeToFile.append(rowData);
-            addKwh = false;
+            addTotalReadings = false;
         }
         // Rate C kw and kvarh
         rowData = createRow(device,
                             3,
                             BillableField.rateCDemand,
                             BillableField.rateCConsumption,
-                            addKwh);
+                            addTotalReadings);
         if (rowData != "") {
             writeToFile.append(rowData);
-            addKwh = false;
+            addTotalReadings = false;
         }
 
         // Rate D kw and kvarh
@@ -82,7 +82,7 @@ public class NISC_TOU_kVarHRecordFormatter extends BillingFormatterBase {
                             4,
                             BillableField.rateDDemand,
                             BillableField.rateDConsumption,
-                            addKwh);
+                            addTotalReadings);
         writeToFile.append(rowData);
 
         return writeToFile.toString();
@@ -97,11 +97,11 @@ public class NISC_TOU_kVarHRecordFormatter extends BillingFormatterBase {
      * @return String representing a billing file row
      */
     private String createRow(BillableDevice device, int touIndicator, BillableField kwField,
-            BillableField kvarhField, boolean includeKwh) {
+            BillableField kvarhField, boolean includeTotalReadings) {
 
         // Only write the row if kwh is included OR there is a value for kw or
         // kvarh
-        if ((includeKwh && device.getValue(ReadingType.ELECTRIC, BillableField.totalConsumption) != null)
+        if ((includeTotalReadings && device.getValue(ReadingType.ELECTRIC, BillableField.totalConsumption) != null)
                 || device.getValue(ReadingType.ELECTRIC, kwField) != null
                 || device.getValue(Channel.ONE, ReadingType.KVAR, kvarhField) != null) {
 
@@ -120,7 +120,7 @@ public class NISC_TOU_kVarHRecordFormatter extends BillingFormatterBase {
             writeToFile.append(touIndicator + ",");
 
             // Total kWh
-            if (includeKwh) {
+            if (includeTotalReadings) {
                 addToStringBufferWithPrecedingFiller(writeToFile,
                                                      format(device.getValue(ReadingType.ELECTRIC, BillableField.totalConsumption),
                                                             FORMAT_NODECIMAL),
@@ -150,15 +150,21 @@ public class NISC_TOU_kVarHRecordFormatter extends BillingFormatterBase {
             addToStringBuffer(writeToFile, format(device.getTimestamp(ReadingType.ELECTRIC, kwField), DATE_FORMAT), true);
 
             // Total kVarh
-            addToStringBufferWithPrecedingFiller(writeToFile,
-                                                 format(device.getValue(Channel.ONE,
-                                                                        ReadingType.KVAR,
-                                                                        kvarhField),
-                                                        KVARH_FORMAT_NODECIMAL),
-                                                 6,
-                                                 " ",
-                                                 false);
-
+            if (includeTotalReadings) {
+                addToStringBufferWithPrecedingFiller(writeToFile,
+                                                     format(device.getValue(Channel.ONE, ReadingType.KVAR, BillableField.totalConsumption),
+                                                            KVARH_FORMAT_NODECIMAL),
+                                                     6,
+                                                     " ",
+                                                     false);
+            } else {
+            	addToStringBufferWithPrecedingFiller(writeToFile,
+                        format(device.getValue(Channel.ONE, ReadingType.KVAR, kvarhField),
+                               KVARH_FORMAT_NODECIMAL),
+                        6,
+                        " ",
+                        false);
+            }
             writeToFile.append("\r\n");
 
             return writeToFile.toString();
