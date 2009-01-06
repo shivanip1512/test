@@ -1257,11 +1257,9 @@
 		<row><td>NewShortcut11</td><td>Yukon Commander</td></row>
 		<row><td>NewShortcut12</td><td>Tabular Data Console</td></row>
 		<row><td>NewShortcut13</td><td>Database Editor</td></row>
-		<row><td>NewShortcut14</td><td>Tomcat</td></row>
 		<row><td>NewShortcut15</td><td>ESub Editor</td></row>
 		<row><td>NewShortcut16</td><td>Alarm Monitor</td></row>
 		<row><td>NewShortcut17</td><td>Tomcat</td></row>
-		<row><td>NewShortcut18</td><td>Tomcat</td></row>
 		<row><td>NewShortcut2</td><td>Scanner</td></row>
 		<row><td>NewShortcut3</td><td>MACS Server</td></row>
 		<row><td>NewShortcut4</td><td>Message Dispatcher</td></row>
@@ -1533,11 +1531,9 @@
 		<row><td>NewShortcut1164356C2DE7B64CD78F64DD65A3F1C66C.exe</td><td/><td>&lt;TARGETDIR&gt;\Client\bin\CommanderIcon.ico</td><td/></row>
 		<row><td>NewShortcut1264356C2DE7B64CD78F64DD65A3F1C66C.exe</td><td/><td>&lt;TARGETDIR&gt;\Client\bin\tdcIcon.ico</td><td/></row>
 		<row><td>NewShortcut1364356C2DE7B64CD78F64DD65A3F1C66C.exe</td><td/><td>&lt;TARGETDIR&gt;\Client\bin\dbEditorIcon.ico</td><td/></row>
-		<row><td>NewShortcut1464356C2DE7B64CD78F64DD65A3F1C66C.exe</td><td/><td>&lt;TARGETDIR&gt;\Client\bin\YukonSetup.ico</td><td/></row>
 		<row><td>NewShortcut1564356C2DE7B64CD78F64DD65A3F1C66C</td><td/><td>&lt;TARGETDIR&gt;\Client\bin\esubEditorIcon.ico</td><td/></row>
 		<row><td>NewShortcut1664356C2DE7B64CD78F64DD65A3F1C66C.exe</td><td/><td>&lt;TARGETDIR&gt;\Client\bin\AlarmMonitor.ico</td><td/></row>
 		<row><td>NewShortcut1764356C2DE7B64CD78F64DD65A3F1C66C.jsp</td><td/><td>&lt;TARGETDIR&gt;\Client\bin\YukonSetup.ico</td><td>0</td></row>
-		<row><td>NewShortcut1864356C2DE7B64CD78F64DD65A3F1C66C.exe</td><td/><td>&lt;TARGETDIR&gt;\Client\bin\YukonLogin.ico</td><td/></row>
 		<row><td>NewShortcut664356C2DE7B64CD78F64DD65A3F1C66C.jsp</td><td/><td>&lt;TARGETDIR&gt;\Client\bin\YukonLogin.ico</td><td>0</td></row>
 	</table>
 
@@ -1741,11 +1737,9 @@ QwBEAAEATQBlAGQAaQBhAA==
 		<row><td>NewShortcut11</td><td>folder5</td><td>Yukon Commander</td><td/><td>&lt;TARGETDIR&gt;\Runtime\bin\javaw.exe</td><td>-Xmx256M -Dsun.java2d.noddraw=true -Dyukon.base=%YUKON_BASE% -jar "&lt;TARGETDIR&gt;\client\bin\yc.jar"</td><td/><td/><td>NewShortcut1164356C2DE7B64CD78F64DD65A3F1C66C.exe</td><td/><td>1</td><td>BIN</td><td/><td/><td/><td/><td/><td>Yukon Commander</td><td>18</td></row>
 		<row><td>NewShortcut12</td><td>folder5</td><td>Tabular Data Console</td><td/><td>&lt;TARGETDIR&gt;\Runtime\bin\javaw.exe</td><td>-Xmx256M -Dsun.java2d.noddraw=true -Dyukon.base=%YUKON_BASE% -jar "&lt;TARGETDIR&gt;\client\bin\tdc.jar"</td><td/><td/><td>NewShortcut1264356C2DE7B64CD78F64DD65A3F1C66C.exe</td><td/><td>1</td><td>BIN</td><td/><td/><td/><td/><td/><td>Tabular Data Console</td><td>18</td></row>
 		<row><td>NewShortcut13</td><td>folder5</td><td>Database Editor</td><td/><td>&lt;TARGETDIR&gt;\Runtime\bin\javaw.exe</td><td>-Xmx256M -Dsun.java2d.noddraw=true -Dyukon.base=%YUKON_BASE% -jar "&lt;TARGETDIR&gt;\client\bin\dbeditor.jar"</td><td/><td/><td>NewShortcut1364356C2DE7B64CD78F64DD65A3F1C66C.exe</td><td/><td>1</td><td>BIN</td><td/><td/><td/><td/><td/><td>Database Editor</td><td>18</td></row>
-		<row><td>NewShortcut14</td><td>DesktopFolder</td><td>##ID_STRING26##</td><td/><td>&lt;PROGRAMFILES&gt;\Internet Explorer\iexplore.exe</td><td>http://127.0.0.1:8080/setup.jsp</td><td/><td/><td>NewShortcut1464356C2DE7B64CD78F64DD65A3F1C66C.exe</td><td>0</td><td>1</td><td/><td/><td/><td/><td/><td/><td>New Yukon Setup</td><td>18</td></row>
 		<row><td>NewShortcut15</td><td>folder5</td><td>ESubstation Editor</td><td/><td>&lt;TARGETDIR&gt;\Runtime\bin\javaw.exe</td><td>-Xmx256M -Dsun.java2d.noddraw=true -Dyukon.base=%YUKON_BASE% -jar "&lt;TARGETDIR&gt;\client\bin\esub-editor.jar"</td><td/><td/><td>NewShortcut1564356C2DE7B64CD78F64DD65A3F1C66C</td><td/><td>1</td><td>BIN</td><td/><td/><td/><td/><td/><td>ESubstation Editor</td><td>18</td></row>
 		<row><td>NewShortcut16</td><td>folder5</td><td>Alarm Monitor</td><td/><td>&lt;TARGETDIR&gt;\Runtime\bin\javaw.exe</td><td>-Dsun.java2d.noddraw=true -Dyukon.base=%YUKON_BASE% -jar "&lt;TARGETDIR&gt;\client\bin\monitor.jar"</td><td/><td/><td>NewShortcut1664356C2DE7B64CD78F64DD65A3F1C66C.exe</td><td>0</td><td>1</td><td>BIN</td><td/><td/><td/><td/><td/><td>Alarm Monitor</td><td>18</td></row>
 		<row><td>NewShortcut17</td><td>DesktopFolder</td><td>Yukon Setup</td><td/><td>http://127.0.0.1:8080/setup.jsp</td><td/><td/><td/><td>NewShortcut1764356C2DE7B64CD78F64DD65A3F1C66C.jsp</td><td>0</td><td>1</td><td/><td/><td/><td/><td/><td/><td>Yukon Setup</td><td>19</td></row>
-		<row><td>NewShortcut18</td><td>DesktopFolder</td><td>##ID_STRING27##</td><td/><td>&lt;PROGRAMFILES&gt;\Internet Explorer\iexplore.exe</td><td>http://127.0.0.1:8080/login.jsp</td><td/><td/><td>NewShortcut1864356C2DE7B64CD78F64DD65A3F1C66C.exe</td><td>0</td><td>1</td><td/><td/><td/><td/><td/><td/><td>New Yukon Login</td><td>18</td></row>
 		<row><td>NewShortcut2</td><td>folder4</td><td>Scanner</td><td/><td>cmd.exe</td><td>/k scanner.exe</td><td/><td/><td/><td/><td>1</td><td>BIN1</td><td/><td/><td/><td/><td/><td>Scanner</td><td>18</td></row>
 		<row><td>NewShortcut3</td><td>folder4</td><td>MACS Server</td><td/><td>cmd.exe</td><td>/k macs.exe</td><td/><td/><td/><td/><td>1</td><td>BIN1</td><td/><td/><td/><td/><td/><td>Metering and Control Server</td><td>18</td></row>
 		<row><td>NewShortcut4</td><td>folder4</td><td>Message Dispatcher</td><td/><td>cmd.exe</td><td>/k dispatch.exe</td><td/><td/><td/><td/><td>1</td><td>BIN1</td><td/><td/><td/><td/><td/><td>Message Dispatcher</td><td>18</td></row>
