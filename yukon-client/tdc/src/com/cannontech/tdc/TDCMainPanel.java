@@ -3888,7 +3888,7 @@ private void showRowEditor( Object source )
 	int selectedRow = getDisplayTable().getSelectedRow();
 	
 	if( getTableDataModel().getPointValue( selectedRow ).getPointQuality()
-		== PointQuality.Constant.getQuality() )
+		== PointQuality.Constant)
 	{
 		JOptionPane.showMessageDialog( this, 
 			"Manual changes of points with a quality of CONSTANT is not allowed",

@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -82,7 +83,7 @@ public class PointChangePlayer2 {
 		msg.setId(pd.getId());
 		msg.setTime(new Date(ts));
 		msg.setTimeStamp(new Date(ts));
-		msg.setQuality(pd.getQuality());
+		msg.setPointQuality(pd.getPointQuality());
 		msg.setValue(pd.getValue());
 		msg.setType(pd.getType());	
 		
@@ -137,7 +138,7 @@ public class PointChangePlayer2 {
 			
 			pData.setId(id);
 			pData.setTime(new Date((long)ts * 1000L));
-			pData.setQuality(quality);
+			pData.setPointQuality(PointQuality.getPointQuality(quality));
 			pData.setValue(value);
 			
 			pData.setType(lp.getPointType());

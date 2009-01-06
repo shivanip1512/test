@@ -216,7 +216,7 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
         PointData pointData = new PointData();
         pointData.setId(pvh.getId());
         pointData.setType(pvh.getType());
-        pointData.setQuality(PointQuality.Estimated.getQuality());
+        pointData.setPointQuality(PointQuality.Estimated);
         pointData.setTime(new Date(calculatedDate.getTime() + 1));
         pointData.setValue(calculatedValue);
         pointData.setTags(PointData.TAG_POINT_MUST_ARCHIVE);

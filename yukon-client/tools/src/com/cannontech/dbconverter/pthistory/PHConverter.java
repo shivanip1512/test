@@ -347,13 +347,13 @@ private static void sendPointData(ClientConnection conn, int id, float multiplie
  */
 private static void setQuality(PointData pData, short dsmQuality) {
 
-	long yukonQuality;
+	PointQuality yukonQuality;
 	
 	//Bits 11, 13
 	if( (dsmQuality & (short) 0x0800) > 0 || 
 		(dsmQuality & (short) 0x2000) > 0 ) {
 		
-		yukonQuality = PointQuality.NonUpdated.getQuality();			
+		yukonQuality = PointQuality.NonUpdated;			
 	}
 	else {
 		short dqMask = (short) (dsmQuality & (short) 0x003F);
@@ -361,41 +361,41 @@ private static void setQuality(PointData pData, short dsmQuality) {
 		switch(dqMask) {
 
 			case 0: //NORMAL
-				yukonQuality = PointQuality.Normal.getQuality();
+				yukonQuality = PointQuality.Normal;
 			break;
 
 			case 1: //INVALID
-				yukonQuality = PointQuality.Invalid.getQuality();
+				yukonQuality = PointQuality.Invalid;
 			break;
 			
 			case 2:
-				yukonQuality = PointQuality.Unknown.getQuality();
+				yukonQuality = PointQuality.Unknown;
 			break;
 			
 			case 3: //HIGH-LIMIT
 			case 4: //HIGH-WARN
-				yukonQuality = PointQuality.ExceedsHigh.getQuality();	
+				yukonQuality = PointQuality.ExceedsHigh;	
 			break;
 			
 			case 5: //LO-LIMIT
 			case 6: //LO-WARN
-				yukonQuality = PointQuality.ExceedsLow.getQuality();
+				yukonQuality = PointQuality.ExceedsLow;
 			break;
 			
 			case 16: //OVERFLOW
-				yukonQuality = PointQuality.Overflow.getQuality();
+				yukonQuality = PointQuality.Overflow;
 			break;
 
 			case 17: //DEV FILLER
-				yukonQuality = PointQuality.DeviceFiller.getQuality();
+				yukonQuality = PointQuality.DeviceFiller;
 			break;
 
 			case 18: //POWER FAIL
-				yukonQuality = PointQuality.Powerfail.getQuality();
+				yukonQuality = PointQuality.Powerfail;
 			break;
 
 			case 19: //PARTIAL
-				yukonQuality =PointQuality.PartialInterval.getQuality();
+				yukonQuality =PointQuality.PartialInterval;
 			break;
 
 			case 20: //HARD ARM
@@ -404,16 +404,16 @@ private static void setQuality(PointData pData, short dsmQuality) {
 			case 23: //MS SHIFT
 			case 24: //PF SHIFT
 			case 25: //STATE CHG
-				yukonQuality = PointQuality.Questionable.getQuality();
+				yukonQuality = PointQuality.Questionable;
 			break;
 			
 			default:
 				System.out.println("Unknown DSM2 DQ Status Mask: " + dqMask );
-				yukonQuality = PointQuality.Unknown.getQuality();							
+				yukonQuality = PointQuality.Unknown;							
 		}
 	}		
 	
-	pData.setQuality(yukonQuality);	
+	pData.setPointQuality(yukonQuality);	
 }
 /**
  * Creation date: (2/26/2002 3:58:03 PM)

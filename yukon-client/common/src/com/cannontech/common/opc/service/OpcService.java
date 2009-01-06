@@ -272,7 +272,7 @@ public class OpcService implements OpcConnectionListener, DBChangeListener{
 	private void sendStatusUpdate(Integer statusPointId, double status) {
         PointData pointData = new PointData();
         pointData.setId(statusPointId);
-        pointData.setQuality(PointQuality.Normal.getQuality());
+        pointData.setPointQuality(PointQuality.Normal);
         pointData.setType(PointTypes.STATUS_POINT);
         pointData.setValue(status);
         pointData.setTimeStamp(new Date());

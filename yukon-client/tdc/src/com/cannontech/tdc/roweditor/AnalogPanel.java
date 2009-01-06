@@ -316,7 +316,7 @@ public void JButtonSendAction_actionPerformed(java.util.EventObject newEvent)
 			pt.setTime( new java.util.Date() );
 			pt.setType( getEditorData().getPointType() );
 			pt.setValue( Double.parseDouble( getJTextFieldValue().getText() ) );
-			pt.setQuality( PointQuality.Manual.getQuality() );		
+			pt.setPointQuality( PointQuality.Manual);		
 			pt.setStr("Manual change occurred from " + CtiUtilities.getUserName() + " using TDC");
 			pt.setUserName( CtiUtilities.getUserName() );
 

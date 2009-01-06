@@ -1028,7 +1028,7 @@ public Vector parseAndCalculateRawPointHistories(Vector rawPointHistoryVectorOfV
 				pointDataMsg.setValue(value.doubleValue());
 				pointDataMsg.setTimeStamp(new Date(((LiteRawPointHistory) tempRawPointHistoryVector.get(0)).getTimeStamp()));
 				pointDataMsg.setTime(new Date(((LiteRawPointHistory) tempRawPointHistoryVector.get(0)).getTimeStamp()));
-				pointDataMsg.setQuality(PointQuality.Normal.getQuality());
+				pointDataMsg.setPointQuality(PointQuality.Normal);
 				pointDataMsg.setType(PointTypes.CALCULATED_POINT);
 				pointDataMsg.setTags(PointData.TAG_POINT_LP_NO_REPORT); //load profile tag setting
 				pointDataMsg.setStr("Calc Historical");

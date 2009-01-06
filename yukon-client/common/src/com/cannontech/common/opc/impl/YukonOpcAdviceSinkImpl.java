@@ -94,7 +94,7 @@ public class YukonOpcAdviceSinkImpl extends OpcAdviseSink {
 
         PointData pointData = new PointData();
         pointData.setId(yOpcItem.getPointId());
-        pointData.setQuality(goodQuality ? PointQuality.Normal.getQuality(): PointQuality.Unknown.getQuality());
+        pointData.setPointQuality(goodQuality ? PointQuality.Normal: PointQuality.Unknown);
         pointData.setType(yOpcItem.getPointType());
         pointData.setValue(newValue);
         pointData.setTime(timeStamp);

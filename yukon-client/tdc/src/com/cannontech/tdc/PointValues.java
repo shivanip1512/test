@@ -10,6 +10,7 @@ import java.util.HashMap;
 
 import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.common.gui.util.Colors;
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
@@ -444,9 +445,9 @@ public String toString()
 		return getPointData().getSOE_Tag();
 	}
 
-	public long getPointQuality()
+	public PointQuality getPointQuality()
 	{
-		return getPointData().getQuality();
+		return getPointData().getPointQuality();
 	}
 
 	public long getTags()

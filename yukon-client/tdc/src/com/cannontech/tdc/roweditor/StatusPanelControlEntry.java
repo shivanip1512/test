@@ -506,7 +506,7 @@ public void JButtonSendAction_actionPerformed(java.util.EventObject newEvent)
 		pt.setValue( (double)getSelectedStateIntValue() );
 
 		
-		pt.setQuality( PointQuality.Manual.getQuality());		
+		pt.setPointQuality( PointQuality.Manual);		
 		pt.setStr("Manual change occurred from " + com.cannontech.common.util.CtiUtilities.getUserName() + " using TDC");
 		pt.setUserName( com.cannontech.common.util.CtiUtilities.getUserName() );
 		

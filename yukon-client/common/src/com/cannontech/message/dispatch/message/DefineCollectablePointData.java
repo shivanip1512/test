@@ -5,6 +5,7 @@ package com.cannontech.message.dispatch.message;
  * Creation date: (1/28/00 11:53:13 AM)
  * @author: 
  */
+import com.cannontech.common.point.PointQuality;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -65,7 +66,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 
 	pData.setId( vstr.extractInt() );
 	pData.setType( vstr.extractInt() );
-	pData.setQuality( vstr.extractUnsignedInt() );
+	pData.setPointQuality( PointQuality.getPointQuality((int)vstr.extractUnsignedInt()));
 	pData.setTags( vstr.extractUnsignedInt() );
 	pData.setAttributes( vstr.extractUnsignedInt() );
 	pData.setLimit( vstr.extractUnsignedInt() );
@@ -85,7 +86,7 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 
 	vstr.insertLong( pData.getId() );
 	vstr.insertInt( pData.getType() );
-	vstr.insertUnsignedInt( pData.getQuality() );
+	vstr.insertUnsignedInt( pData.getPointQuality().getQuality() );
 	vstr.insertUnsignedInt( pData.getTags() );
 	vstr.insertUnsignedInt( pData.getAttributes() );
 	vstr.insertUnsignedInt( pData.getLimit() );

@@ -155,7 +155,7 @@ public class Baseline implements Serializable
 				pointDataMsg.setTimeStamp(cal.getTime());
 				pointDataMsg.setTime(cal.getTime());
 				
-				pointDataMsg.setQuality(PointQuality.NonUpdated.getQuality());
+				pointDataMsg.setPointQuality(PointQuality.NonUpdated);
 				pointDataMsg.setType(PointTypes.CALCULATED_POINT);
 				if( i+1 >= data.length() )
 					pointDataMsg.setTags(0x00000000); //represent the last PointData message in the group

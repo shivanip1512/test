@@ -161,7 +161,7 @@ public class CapControlCommandExecutor
         // Send new point Here
         PointData pt = new PointData();
         pt.setId( bank.getStatusPointID().intValue() );
-        pt.setQuality( PointQuality.Manual.getQuality() );
+        pt.setPointQuality( PointQuality.Manual);
         pt.setStr("Manual change occurred using CBC Web Client");
         pt.setTime(now);
         pt.setTimeStamp(now);
@@ -289,7 +289,7 @@ public class CapControlCommandExecutor
         // Send new point Here
         PointData pt = new PointData();
         pt.setId( bank.getOperationAnalogPointID().intValue() );
-        pt.setQuality( PointQuality.Manual.getQuality());
+        pt.setPointQuality( PointQuality.Manual);
         pt.setStr("Capacitor Bank OP_COUNT change from CBC Client");
         pt.setTime(now);
         pt.setTimeStamp(now);

@@ -36,7 +36,7 @@ public class SimplePointAccessDaoImpl implements SimplePointAccessDao {
         pointData.setId(point.getPointID());
         pointData.setValue(value);
         pointData.setType(PointTypes.ANALOG_POINT);
-        pointData.setQuality(PointQuality.Normal.getQuality());
+        pointData.setPointQuality(PointQuality.Normal);
         writePointData(pointData);
     }
     

@@ -39,7 +39,7 @@ public class PointDataGenerator implements PointValueUpdater {
         if(holder.point.getPointID() != 0) {
             PointData pointData = new PointData();
             pointData.setId(holder.point.getPointID());
-            pointData.setQuality(PointQuality.Normal.getQuality());
+            pointData.setPointQuality(PointQuality.Normal);
             pointData.setType(type);
             double value = rawValue;
             value *= holder.multiplier;

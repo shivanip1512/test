@@ -20,6 +20,7 @@ import org.apache.log4j.Logger;
 import org.apache.commons.lang.Validate;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.message.dispatch.message.PointData;
 
@@ -82,7 +83,7 @@ public class CSV2PointData {
                 PointData pData = new PointData();
                 pData.setId(Integer.parseInt(split[0].trim()));
                 pData.setTime(Timestamp.valueOf(split[1].trim()));
-                pData.setQuality(Long.parseLong(split[2].trim()));
+                pData.setPointQuality(PointQuality.getPointQuality(Integer.parseInt(split[2].trim())));
                 pData.setValue(Double.parseDouble(split[3].trim()));
                 pData.setType(1);
                 list.add(pData);

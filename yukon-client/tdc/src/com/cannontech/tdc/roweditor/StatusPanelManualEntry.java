@@ -301,7 +301,7 @@ public void JButtonSendAction_actionPerformed(java.util.EventObject newEvent)
 		pt.setTime( new java.util.Date() );
 		pt.setType( getEditorData().getPointType() );
 		pt.setValue( (double)getJComboBoxValues().getSelectedIndex() );
-		pt.setQuality( PointQuality.Manual.getQuality() );		
+		pt.setPointQuality( PointQuality.Manual );		
 		pt.setStr("Manual change occurred from " + com.cannontech.common.util.CtiUtilities.getUserName() + " using TDC");
 		pt.setUserName( com.cannontech.common.util.CtiUtilities.getUserName() );
 		

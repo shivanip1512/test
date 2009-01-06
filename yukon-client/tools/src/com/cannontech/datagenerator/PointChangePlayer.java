@@ -8,6 +8,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
@@ -98,8 +99,9 @@ public class PointChangePlayer {
 			while( rset.next() ) {
 				PointData pch = new PointData();
 				pch.setType(PointTypes.ANALOG_POINT);
-				pch.setId(rset.getInt(1));				
-				pch.setQuality(rset.getInt(2));
+				pch.setId(rset.getInt(1));			
+				int pointQuality = rset.getInt(2);
+				pch.setPointQuality(PointQuality.getPointQuality(pointQuality));
 				pch.setValue(rset.getDouble(3));
 				changeList.add(pch);
 			}	
