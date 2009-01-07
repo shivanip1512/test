@@ -3,6 +3,7 @@ package com.cannontech.yukon.api.support;
 import java.lang.reflect.Method;
 import java.util.Set;
 
+import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 
 import org.jdom.Element;
@@ -14,13 +15,14 @@ import org.springframework.ws.context.MessageContext;
 import org.springframework.ws.server.endpoint.MethodEndpoint;
 import org.springframework.ws.server.endpoint.adapter.AbstractMethodEndpointAdapter;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.user.SystemUserContext;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.yukon.api.util.XmlUtils;
+import com.cannontech.yukon.api.util.YukonXml;
 import com.google.common.collect.ImmutableSet;
 
 public class FlexibleMethodEndpointAdapter extends AbstractMethodEndpointAdapter {
@@ -58,7 +60,8 @@ public class FlexibleMethodEndpointAdapter extends AbstractMethodEndpointAdapter
 				}
 			} else if (LiteYukonUser.class.equals(parameter)) {
 				
-				String userName = SoapHeaderElementExtractor.findElementValue(messageContext, "user");
+				QName userQName = new QName(YukonXml.getYukonNamespace().getURI(), "yukonUser");
+				String userName = SoapHeaderElementUtil.findElementValue(messageContext.getRequest(), userQName);
 				
 				if (userName != null) {
 					LiteYukonUser yukonUser = yukonUserDao.getLiteYukonUser(userName);
@@ -82,19 +85,28 @@ public class FlexibleMethodEndpointAdapter extends AbstractMethodEndpointAdapter
 			arguments[i] = thisArgument;
 		}
     	
-        Object result = methodEndpoint.invoke(arguments);
+        Object result;
+		try {
+			result = methodEndpoint.invoke(arguments);
+			if (result != null) {
+				
+				// response
+				Element responseElement = (Element) result;
+				WebServiceMessage responseMessage = messageContext.getResponse();
+				
+				QName extraHeaderName = new QName(YukonXml.getYukonNamespace().getURI(), "extra");
+				SoapHeaderElementUtil.copySoapHeaderFromRequestToResponse(messageContext, extraHeaderName);
+				
+				QName userHeaderName = new QName(YukonXml.getYukonNamespace().getURI(), "yukonUser");
+				SoapHeaderElementUtil.copySoapHeaderFromRequestToResponse(messageContext, userHeaderName);
+				
+				transform(new JDOMSource(responseElement), responseMessage.getPayloadResult());
+			}
+		} catch (Exception e) {
+			CTILogger.error("unable to envoke endpoint: " + methodEndpoint, e);
+			throw e;
+		}
         
-        if (result != null) {
-        	
-        	// response
-            Element responseElement = (Element) result;
-            WebServiceMessage responseMessage = messageContext.getResponse();
-            
-            // copy request soap headers to response
-            XmlUtils.copySoapHeaders(messageContext.getRequest(), responseMessage);
-            
-            transform(new JDOMSource(responseElement), responseMessage.getPayloadResult());
-        }
     }
     
     

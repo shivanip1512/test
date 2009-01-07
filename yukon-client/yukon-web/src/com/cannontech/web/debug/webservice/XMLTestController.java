@@ -132,7 +132,7 @@ public class XMLTestController extends MultiActionController {
 		@Override
 		public void doWithMessage(WebServiceMessage message) throws IOException, TransformerException {
 			
-			QName headerElementName = new QName("http://yukon.cannontech.com/api", "user", "api");
+			QName headerElementName = new QName("http://yukon.cannontech.com/api", "yukonUser", "api");
 			XmlUtils.addHeaderToMessage(message, headerElementName, this.userName, false);
 		}
     }

@@ -3,10 +3,14 @@ package com.cannontech.yukon.api.util;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.namespace.QName;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 
 import org.apache.commons.lang.StringUtils;
@@ -194,25 +198,11 @@ public class XmlUtils {
 		headerElement.setMustUnderstand(mustUnderstand);
     }
     
-    @SuppressWarnings("unchecked")
-    public static void copySoapHeaders(WebServiceMessage fromMessage, WebServiceMessage toMessage) {
-    	
-    	// to
-        SoapMessage toSoapMessage = ((SoapMessage)toMessage);
-		SoapHeader toSoapHeader = toSoapMessage.getSoapHeader();
-		
-        // from
-		SoapMessage fromSoapMessage = ((SoapMessage)fromMessage);
-		SoapHeader fromSoapHeader = fromSoapMessage.getSoapHeader();
-		Iterator<SoapHeaderElement> fromHeaderElements = fromSoapHeader.examineAllHeaderElements();
-		while (fromHeaderElements.hasNext()) {
-			
-			SoapHeaderElement fromHeaderElement = fromHeaderElements.next();
-			
-			QName toHeaderElementName = new QName(fromHeaderElement.getName().getNamespaceURI(), fromHeaderElement.getName().getLocalPart(), fromHeaderElement.getName().getPrefix());
-			SoapHeaderElement toHeaderElement = toSoapHeader.addHeaderElement(toHeaderElementName);
-			toHeaderElement.setText(fromHeaderElement.getText());
-			toHeaderElement.setMustUnderstand(fromHeaderElement.getMustUnderstand());
-		}
+    private static TransformerFactory transformerFactory = TransformerFactory.newInstance();
+
+    public static void transform(Source source, Result result) throws TransformerException {
+        Transformer transformer = transformerFactory.newTransformer();
+        transformer.transform(source, result);
     }
+
 }

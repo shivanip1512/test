@@ -25,52 +25,55 @@
     <bean id="loggingInterceptor" class="org.springframework.ws.soap.server.endpoint.interceptor.SoapEnvelopeLoggingInterceptor"/>
 
     <bean id="loadManagement"
-        class="org.springframework.ws.wsdl.wsdl11.DefaultWsdl11Definition">
+        class="com.cannontech.yukon.api.support.YukonWsdlDefinition">
         <property name="schemaCollection">
             <bean class="org.springframework.xml.xsd.commons.CommonsXsdSchemaCollection">
                 <property name="xsds">
                     <list>
-                        <value>classpath*:com/cannontech/yukon/api/loadManagement/schemas/AllLoadManagement.xsd</value>
+                        <value>classpath:com/cannontech/yukon/api/loadManagement/schemas/AllLoadManagement.xsd</value>
                     </list>
                 </property>
                 <property name="inline" value="true" />
             </bean>
         </property>
+        <property name="serviceName" value="loadManagementService" />
         <property name="portTypeName" value="loadManagementPort" />
         <property name="locationUri" value="/soap/loadManagement" />
         <property name="targetNamespace" value="http://yukon.cannontech.com/service" />
     </bean>
 
     <bean id="stars"
-        class="org.springframework.ws.wsdl.wsdl11.DefaultWsdl11Definition">
+        class="com.cannontech.yukon.api.support.YukonWsdlDefinition">
         <property name="schemaCollection">
             <bean class="org.springframework.xml.xsd.commons.CommonsXsdSchemaCollection">
                 <property name="xsds">
                     <list>
-                        <value>classpath*:com/cannontech/yukon/api/stars/schemas/AllStars.xsd</value>
+                        <value>classpath:com/cannontech/yukon/api/stars/schemas/AllStars.xsd</value>
                     </list>
                 </property>
                 <property name="inline" value="true" />
             </bean>
         </property>
+        <property name="serviceName" value="starsService" />
         <property name="portTypeName" value="starsPort" />
         <property name="locationUri" value="/soap/stars" />
         <property name="targetNamespace" value="http://yukon.cannontech.com/service" />        
     </bean>
-    
+
     <bean id="account"
-        class="org.springframework.ws.wsdl.wsdl11.DefaultWsdl11Definition">
+        class="com.cannontech.yukon.api.support.YukonWsdlDefinition">
  
         <property name="schemaCollection">
             <bean class="org.springframework.xml.xsd.commons.CommonsXsdSchemaCollection">
                 <property name="xsds">
                     <list>
-                        <value>classpath*:com/cannontech/yukon/api/account/schemas/AllAccount.xsd</value>
+                        <value>classpath:com/cannontech/yukon/api/account/schemas/AllAccount.xsd</value>
                     </list>
                 </property>
                 <property name="inline" value="true" />
             </bean>
         </property>
+        <property name="serviceName" value="accountService" />
         <property name="portTypeName" value="accountPort" />
         <property name="locationUri" value="/soap/account" />
         <property name="targetNamespace" value="http://yukon.cannontech.com/service" />        
