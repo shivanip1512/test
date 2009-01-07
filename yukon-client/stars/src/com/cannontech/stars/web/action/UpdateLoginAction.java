@@ -6,8 +6,12 @@ import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.exception.BadAuthenticationException;
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.authentication.service.AuthType;
 import com.cannontech.core.authentication.service.AuthenticationService;
+import com.cannontech.core.dao.AuthDao;
+import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
@@ -19,6 +23,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.AuthenticationRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.util.EventUtils;
@@ -57,11 +62,14 @@ public class UpdateLoginAction implements ActionBase {
 	public SOAPMessage build(HttpServletRequest req, HttpSession session) {
 		try {
 			StarsUpdateLogin updateLogin = new StarsUpdateLogin();
+		
 			updateLogin.setUsername( req.getParameter("Username").trim() );
+	        
 			if (req.getParameter("Password") != null)
 			    updateLogin.setPassword( req.getParameter("Password").trim() );
 			else
 			    updateLogin.setPassword( "" );
+
 			if (req.getParameter("Status") != null)
 				updateLogin.setStatus( StarsLoginStatus.valueOf(req.getParameter("Status")) );
 			else
@@ -87,17 +95,37 @@ public class UpdateLoginAction implements ActionBase {
 	 */
 	public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
 		StarsOperation respOper = new StarsOperation();
-        
+		AuthDao authDao = DaoFactory.getAuthDao();
+		ContactDao contactDao = DaoFactory.getContactDao();
+		AuthenticationService authenticationService = YukonSpringHook.getBean("authenticationService", AuthenticationService.class);
+		
 		try {
 			StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
 			StarsUpdateLogin updateLogin = reqOper.getStarsUpdateLogin();
             
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
+			LiteStarsCustAccountInformation liteAcctInfo = 
+			    (LiteStarsCustAccountInformation) session.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
+			LiteYukonUser previousYukonUser = contactDao.getYukonUser(liteAcctInfo.getCustomer().getPrimaryContactID());
 			
-			LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation)
-					session.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
-            
+			if (!authDao.checkRoleProperty(user.getUserID(), 
+			                               ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN_USERNAME) &&
+			    updateLogin.getUsername() != previousYukonUser.getUsername()) {
+			    throw new NotAuthorizedException("The supplied user is not authorized to use this functionality.");
+			}
+			
+			if (!authDao.checkRoleProperty(user.getUserID(), 
+	                                       ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD) && 
+	            updateLogin.getPassword().length() > 0){
+			    try {
+			        authenticationService.login(previousYukonUser.getUsername(), updateLogin.getPassword()); 
+			    } catch (BadAuthenticationException e){
+			        throw new NotAuthorizedException("The supplied user is not authorized to use this functionality.");
+			    }
+	        }
+	         
+			
 			try {
 				updateLogin( updateLogin, liteAcctInfo, energyCompany, false );
 			}
@@ -202,8 +230,7 @@ public class UpdateLoginAction implements ActionBase {
 		else
 			dbUser.setStatus( com.cannontech.user.UserUtils.STATUS_ENABLED );
         
-		dataUser = (com.cannontech.database.data.user.YukonUser)
-				Transaction.createTransaction( Transaction.INSERT, dataUser ).execute();
+		dataUser = Transaction.createTransaction( Transaction.INSERT, dataUser ).execute();
 		LiteYukonUser liteUser = new LiteYukonUser(
 				dbUser.getUserID().intValue(),
 				dbUser.getUsername(),

@@ -15,8 +15,10 @@ import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.authentication.service.AuthType;
 import com.cannontech.core.authentication.service.AuthenticationService;
+import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
@@ -24,7 +26,8 @@ import com.cannontech.util.ServletUtil;
 @Controller
 public class ChangeLoginController {
     public static final String LOGIN_ERROR_PARAM = "loginError";
-    private YukonUserDao yukonUserDao; 
+    private YukonUserDao yukonUserDao;
+    private AuthDao authDao;
     private AuthenticationService authenticationService;
     
     @RequestMapping(value = "/changelogin", method = RequestMethod.GET)
@@ -46,10 +49,14 @@ public class ChangeLoginController {
     public String updatePassword(String oldPassword, String newPassword, 
             String confirm, String redirectUrl, HttpServletRequest request) 
                 throws Exception {
-        
         final YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
         final LiteYukonUser user = yukonUserContext.getYukonUser();
         final AuthType type = user.getAuthType();
+        
+        boolean accessAllowed = authDao.checkRoleProperty(user, ResidentialCustomerRole.CONSUMER_INFO_CHANGE_LOGIN_PASSWORD);
+        if (!accessAllowed) {
+            throw new NotAuthorizedException("The supplied user is not authorized to use this functionality.");
+        }
         
         final boolean isValidPassword = isValidPassword(user.getUsername(), oldPassword);
         boolean supportsPasswordChange = authenticationService.supportsPasswordChange(type);
@@ -83,6 +90,11 @@ public class ChangeLoginController {
         
         final YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
         final LiteYukonUser user = yukonUserContext.getYukonUser();
+
+        boolean accessAllowed = authDao.checkRoleProperty(user, ResidentialCustomerRole.CONSUMER_INFO_CHANGE_LOGIN_USERNAME);
+        if (!accessAllowed) {
+            throw new NotAuthorizedException("The user was not authorized to call this function");
+        }
         
         final boolean isValidPassword = isValidPassword(user.getUsername(), oldPassword);
         final boolean hasRequiredFields = hasRequiredFields(username, oldPassword);
@@ -153,6 +165,11 @@ public class ChangeLoginController {
     @Autowired
     public void setYukonUserDao(YukonUserDao yukonUserDao) {
         this.yukonUserDao = yukonUserDao;
+    }
+
+    @Autowired
+    public void setAuthDao(AuthDao authDao){
+        this.authDao = authDao; 
     }
     
     @Autowired

@@ -117,11 +117,13 @@ function deleteLogin(form) {
                       <div align="right">New User Name: </div>
                     </td>
                     <td width="268"> 
-                      <input type="text" name="Username" maxlength="20" size="20" value="<%= login.getUsername() %>" onchange="setContentChanged(true)"
-						<cti:checkNoProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN_USERNAME %>">
-						  disabled
-						</cti:checkNoProperty>
-					  >
+                      <cti:checkNoProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN_USERNAME %>">
+                        <input type="hidden" name="Username" value="<%= login.getUsername() %>" />
+                        <%= login.getUsername() %>
+                      </cti:checkNoProperty>
+                      <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN_USERNAME %>">
+                        <input type="text" name="Username" maxlength="20" size="20" value="<%= login.getUsername() %>" onchange="setContentChanged(true)">
+                      </cti:checkProperty>
                     </td>
                   </tr>
                   <tr> 
