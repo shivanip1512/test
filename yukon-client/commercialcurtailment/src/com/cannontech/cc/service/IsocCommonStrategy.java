@@ -64,10 +64,10 @@ public class IsocCommonStrategy extends StrategyGroupBase {
         return getTotalEventHours(customer, from, to);
     }
 
-    private double getTotalEventHoursIn24HourPeriod(CICustomerStub customer, Date end24HourPeriod) {
+    private double getTotalEventHoursIn24HourPeriod(CICustomerStub customer, Date eventStopTime) {
         //Total hours from the past 24 hours
-        Date beginPeriodDate = TimeUtil.addDays(end24HourPeriod, -1);
-        return getTotalEventHours(customer, beginPeriodDate, end24HourPeriod);
+        Date beginPeriodDate = TimeUtil.addHours(eventStopTime, -24);
+        return getTotalEventHours(customer, beginPeriodDate, eventStopTime);
     }
 
     public double getTotalEventHours(CICustomerStub customer, Date from, Date to) {
@@ -90,12 +90,12 @@ public class IsocCommonStrategy extends StrategyGroupBase {
         return (actualHours + propossedEventLength) > allowedHours;
     }
 
-    public boolean hasCustomerExceeded24HourPeriodHours(CICustomerStub customer, Date end24HourPeriod, int propossedEventLength) throws PointException {
+    public boolean hasCustomerExceeded24HourPeriodHours(CICustomerStub customer, Date endStopTime, int propossedEventLength) throws PointException {
         double allowedHours = get24HourPeriodAllowedHours(customer);
         if (allowedHours == 0 || allowedHours == 1440)  // 0 and 1440(60*24) represent no 24 hour limit
             return false;
         // applies to 24 hour period
-        double actualHours = getTotalEventHoursIn24HourPeriod(customer, end24HourPeriod);
+        double actualHours = getTotalEventHoursIn24HourPeriod(customer, endStopTime);
         return (actualHours + propossedEventLength) > allowedHours;
     }
 

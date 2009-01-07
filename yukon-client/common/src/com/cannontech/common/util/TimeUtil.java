@@ -268,6 +268,10 @@ public static Date addDays(Date date, int days) {
     return TimeUtil.addUnit(date, Calendar.DAY_OF_YEAR, days);
 }
 
+public static Date addHours(Date date, int hours) {
+    return TimeUtil.addUnit(date, Calendar.HOUR_OF_DAY, hours);
+}
+
 /**
  * Method to add a given amount of the time unit passed in to the date passed in.  
  * (this will also work for subtraction if you pass in a negative amount)
