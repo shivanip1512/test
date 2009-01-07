@@ -111,7 +111,7 @@ public class UpdateLoginAction implements ActionBase {
 			
 			if (!authDao.checkRoleProperty(user.getUserID(), 
 			                               ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN_USERNAME) &&
-			    updateLogin.getUsername() != previousYukonUser.getUsername()) {
+			    !updateLogin.getUsername().equals(previousYukonUser.getUsername())) {
 			    throw new NotAuthorizedException("The supplied user is not authorized to use this functionality.");
 			}
 			
