@@ -29,7 +29,8 @@ CREATE UNIQUE INDEX INDX_LMGroupId_ParamName_UNQ ON LMGroupXMLParameter (
 
 ALTER TABLE LMGroupXMLParameter 
    ADD CONSTRAINT FK_LMGroupXml_LMGroup FOREIGN KEY (LMGroupId) 
-      REFERENCES LMGroup (DeviceId); 
+      REFERENCES LMGroup (DeviceId)
+      ON DELETE CASCADE; 
 /* End YUK-6710 */
 
 /* Start YUK-6742 */ 

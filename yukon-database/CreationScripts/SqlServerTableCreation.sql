@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/19/2008 10:26:29 AM                       */
+/* Created on:     1/7/2009 3:43:35 PM                          */
 /*==============================================================*/
 
 
@@ -14795,6 +14795,7 @@ go
 alter table LMGroupXMLParameter
    add constraint FK_LMGroupXml_LMGroup foreign key (LMGroupId)
       references LMGroup (DeviceID)
+         on delete cascade
 go
 
 alter table LMHardwareBase

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/19/2008 10:22:44 AM                       */
+/* Created on:     1/7/2009 3:47:39 PM                          */
 /*==============================================================*/
 
 
@@ -11593,7 +11593,8 @@ alter table LMGroupVersacom
 
 alter table LMGroupXMLParameter
    add constraint FK_LMGroupXml_LMGroup foreign key (LMGroupId)
-      references LMGroup (DeviceID);
+      references LMGroup (DeviceID)
+      on delete cascade;
 
 alter table LMHardwareBase
    add constraint FK_LMHrdB_Rt foreign key (RouteID)
