@@ -159,7 +159,7 @@ public class BillingDao {
                     if (defaults.isRemoveMultiplier()) {
                     	Double pointIdMult = pointIdMultiplierHashTable.get(new Integer(currentPointID));
                     	if ( pointIdMult != null) {	//Possibility that status points might be returned...which don't have multipliers!
-                    		multiplier = pointIdMultiplierHashTable.get(new Integer(currentPointID)).doubleValue();
+                    		multiplier = pointIdMult;
                     	}
                     }
 
@@ -488,7 +488,7 @@ public class BillingDao {
                     if (defaults.isRemoveMultiplier()) {
                     	Double pointIdMult = pointIdMultiplierHashTable.get(new Integer(pointId));
                     	if ( pointIdMult != null) {	//Possibility that status points might be returned...which don't have multipliers!
-                    		multiplier = pointIdMultiplierHashTable.get(new Integer(pointId)).doubleValue();
+                    		multiplier = pointIdMult;
                     	}
                     }
 
