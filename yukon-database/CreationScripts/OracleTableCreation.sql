@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/7/2009 3:47:39 PM                          */
+/* Created on:     1/7/2009 5:58:36 PM                          */
 /*==============================================================*/
 
 
@@ -1270,7 +1270,8 @@ INSERT INTO BillingFileFormats VALUES(-25, 'Itron Register Readings Export',1);
 INSERT INTO BillingFileFormats VALUES(-26, 'SIMPLE_TOU_DeviceName',1);
 INSERT INTO BillingFileFormats VALUES( 31, 'STANDARD',1);
 INSERT INTO BillingFileFormats VALUES(-32, 'NISC TOU (kVarH) Rates Only',1);
-INSERT INTO BillingFileFormats VALUES( 33, 'NISC Interval Readings', 1); 
+INSERT INTO BillingFileFormats VALUES( 33, 'NISC Interval Readings', 1);
+INSERT INTO BillingFileFormats VALUES( -34, 'Curtailment Events - Itron', 1);
 
 /*==============================================================*/
 /* Index: Indx_BillFile_FormType_UNQ                            */

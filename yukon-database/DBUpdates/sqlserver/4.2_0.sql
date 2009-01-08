@@ -150,6 +150,10 @@ INSERT INTO YukonRoleProperty VALUES(-20898,-201,'Opt Out Admin Change Counts','
 INSERT INTO YukonRoleProperty VALUES(-40056,-400,'Opt Out Limits',' ','Contains information on Opt Out limits.');
 /* End YUK-6753 */
 
+/* End YUK-6776 */
+INSERT INTO BillingFileFormats VALUES( -34, 'Curtailment Events - Itron', 1);
+/* End YUK-6776 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
