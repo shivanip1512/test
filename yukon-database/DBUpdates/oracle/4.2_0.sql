@@ -150,9 +150,29 @@ INSERT INTO YukonRoleProperty VALUES(-20898,-201,'Opt Out Admin Change Counts','
 INSERT INTO YukonRoleProperty VALUES(-40056,-400,'Opt Out Limits',' ','Contains information on Opt Out limits.');
 /* End YUK-6753 */
 
-/* End YUK-6776 */
+/* Start YUK-6776 */
 INSERT INTO BillingFileFormats VALUES( -34, 'Curtailment Events - Itron', 1);
 /* End YUK-6776 */
+
+/* Start YUK-6596 */
+ALTER TABLE PortTerminalServer
+ADD EncodingKey VARCHAR(64);
+
+UPDATE PortTerminalServer
+SET EncodingKey = '';
+
+ALTER TABLE PortTerminalServer
+MODIFY EncodingKey VARCHAR(64) NOT NULL;
+
+ALTER TABLE PortTerminalServer
+ADD EncodingType VARCHAR(50);
+
+UPDATE PortTerminalServer
+SET EncodingType = 'NONE';
+
+ALTER TABLE PortTerminalServer
+MODIFY EncodingType VARCHAR(50) NOT NULL;
+/* End YUK-6596 */
 
 /**************************************************************/
 /* VERSION INFO                                               */

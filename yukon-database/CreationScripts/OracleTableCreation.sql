@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/7/2009 5:58:36 PM                          */
+/* Created on:     1/8/2009 10:47:37 AM                         */
 /*==============================================================*/
 
 
@@ -6897,6 +6897,8 @@ create table PORTTERMINALSERVER  (
    PORTID               NUMBER                          not null,
    IPADDRESS            VARCHAR2(64)                    not null,
    SOCKETPORTNUMBER     NUMBER                          not null,
+   EncodingKey          VARCHAR2(64)                    not null,
+   EncodingType         VARCHAR2(50)                    not null,
    constraint PK_PORTTERMINALSERVER primary key (PORTID)
 );
 

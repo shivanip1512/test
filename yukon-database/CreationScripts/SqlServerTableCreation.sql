@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     1/7/2009 6:03:22 PM                          */
+/* Created on:     1/8/2009 10:44:46 AM                         */
 /*==============================================================*/
 
 
@@ -9615,6 +9615,8 @@ create table PORTTERMINALSERVER (
    PORTID               numeric              not null,
    IPADDRESS            varchar(64)          not null,
    SOCKETPORTNUMBER     numeric              not null,
+   EncodingKey          varchar(64)          not null,
+   EncodingType         varchar(50)          not null,
    constraint PK_PORTTERMINALSERVER primary key (PORTID)
 )
 go
