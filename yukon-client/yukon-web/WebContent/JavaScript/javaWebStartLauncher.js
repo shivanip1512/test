@@ -28,7 +28,7 @@ function jwsLaunch(url) {
   setTimeout(function() {
     if (cancelCheckAtStart != jwsCancelCheck) return;
     var thisApplet = document.getElementsByTagName("applet")[0];
-      if ((typeof thisApplet.getJavaVersion != 'undefined') && (thisApplet.getJavaVersion)) {
+    if (thisApplet.getJavaVersion) {
         var javaVersion = thisApplet.getJavaVersion();
         if (javaVersion.indexOf('.') != -1) {
           createCookie("javainstalled", "true");
