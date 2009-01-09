@@ -1,5 +1,6 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.user.UserUtils" %>
+<%@ page import="com.cannontech.database.data.lite.LiteYukonGroup" %>
 <%
 	int userID = -1;
 	if (request.getParameter("UserID") != null)
@@ -76,10 +77,17 @@ function validate(form) {
                         <td width="75%" class="TableCell"> 
                           <select name="OperatorGroup" onchange="setContentChanged(true)">
 <%
-		com.cannontech.database.data.lite.LiteYukonGroup[] operGroups = liteEC.getWebClientOperatorGroups();
+        List<LiteYukonGroup> usersGroups = DaoFactory.getYukonGroupDao().getGroupsForUser(liteUser);
+		LiteYukonGroup[] operGroups = liteEC.getWebClientOperatorGroups();
 		for (int i = 0; i < operGroups.length; i++) {
+		    boolean selected = usersGroups.contains(operGroups[i]);
 %>
-                            <option value="<%= operGroups[i].getGroupID() %>"><%= operGroups[i].getGroupName() %></option>
+                            <option 
+                            <% if(selected){ %>
+                                selected
+                            <%} %>
+                            value="<%= operGroups[i].getGroupID() %>" 
+                            ><%= operGroups[i].getGroupName() %></option>
 <%
 		}
 %>
