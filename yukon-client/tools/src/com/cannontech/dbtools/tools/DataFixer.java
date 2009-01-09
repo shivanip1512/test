@@ -1,4 +1,7 @@
 package com.cannontech.dbtools.tools;
+
+import java.sql.Types;
+
 /**
  * Reads all VARCHAR rows from every table, massages the 
  *   data, then updates the rows
@@ -136,11 +139,18 @@ public class DataFixer
 				   }
 				   else
 				   {
+                      int columnType = rMeta.getColumnType(h);
+                      Object object;
+                      if (columnType == Types.DATE || columnType == Types.TIMESTAMP) {
+                          object = rset2.getTimestamp(h);
+                      } else {
+                          object = rset2.getObject(h);
+                      }
 					  if (updateString == null)
 						 updateString =
-							" where " + rMeta.getColumnName(h) + " = " + DataFixer.substituteObject(rset2.getObject(h));
+							" where " + rMeta.getColumnName(h) + " = " + DataFixer.substituteObject(object);
 					  else
-						 updateString += " and " + rMeta.getColumnName(h)  + " = " + DataFixer.substituteObject(rset2.getObject(h));
+						 updateString += " and " + rMeta.getColumnName(h)  + " = " + DataFixer.substituteObject(object);
 				   }
 				}
 	

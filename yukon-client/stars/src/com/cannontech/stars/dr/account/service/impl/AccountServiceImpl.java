@@ -249,7 +249,7 @@ public class AccountServiceImpl implements AccountService {
             int subId = siteInformationDao.getSubstationIdByName(accountDto.getSiteInfo().getSubstationName());
             liteSiteInformation.setSubstationID(subId);
         }catch(NotFoundException e) {
-            log.error("Unable to find substation by name: " + accountDto.getSiteInfo().getSubstationName() , e);
+            log.warn("Unable to find substation by name: " + accountDto.getSiteInfo().getSubstationName());
         }
         liteSiteInformation.setFeeder(accountDto.getSiteInfo().getFeeder());
         liteSiteInformation.setPole(accountDto.getSiteInfo().getPole());

@@ -1,6 +1,7 @@
 package com.cannontech.dbtools.tools;
 
 import java.sql.Connection;
+import java.sql.Types;
 
 import com.cannontech.dbtools.diff.DBDiff;
 
@@ -155,7 +156,14 @@ public class DBTools
 					{
 						for( int i = 0; i < metaData.getColumnCount(); i++ )
 						{
-							pstmt.setObject( i+1, rset.getObject(i+1));							
+	                        int columnType = metaData.getColumnType(i+1);
+	                        Object object;
+	                        if (columnType == Types.DATE || columnType == Types.TIMESTAMP) {
+	                            object = rset.getTimestamp(i+1);
+	                        } else {
+	                            object = rset.getObject(i+1);
+	                        }						    
+							pstmt.setObject( i+1, object);							
 						}
 	
 						pstmt.execute();

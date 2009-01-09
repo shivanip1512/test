@@ -1,5 +1,7 @@
 package com.cannontech.ejb;
 import java.sql.Connection;
+import java.sql.ResultSetMetaData;
+import java.sql.Types;
 
 import org.apache.log4j.Logger;
 
@@ -211,8 +213,8 @@ public class SqlStatementBean implements ISQLStatement
 				{
 					rset = stmt.executeQuery(sql);
 
-					columnCount = rset.getMetaData().getColumnCount();
-					
+					ResultSetMetaData metaData = rset.getMetaData();					
+					columnCount = metaData.getColumnCount();
 					while( rset.next() )
 					{
 						java.util.Vector rowData = new java.util.Vector();
@@ -225,7 +227,13 @@ public class SqlStatementBean implements ISQLStatement
 							// if there were no objects to rows to retrieve??? So the bandaid 
 							// is to check for null and then below only add the current row's 
 							// data if something meaningful is in it.
-							Object o = rset.getObject(i);
+			                int columnType = metaData.getColumnType(i);
+			                Object o;
+			                if (columnType == Types.DATE || columnType == Types.TIMESTAMP) {
+			                    o = rset.getTimestamp(i);
+			                } else {
+			                    o = rset.getObject(i);
+			                }						    
 							
 							if( o != null )
 								nonNullRow = true; // at least 1 value in the row is not null

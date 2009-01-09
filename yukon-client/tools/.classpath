@@ -3,6 +3,7 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/SqlServer.jar"/>
+	<classpathentry kind="lib" path="/third-party/ojdbc6.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/acme.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/jaxm-api.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/saaj.jar"/>
@@ -16,7 +17,6 @@
 	<classpathentry exported="true" kind="lib" path="/third-party/struts.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/jfreechart.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/jcommon.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/classes12.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/jloox30.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/jtds.jar"/>
 	<classpathentry exported="true" kind="src" path="/common"/>

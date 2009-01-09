@@ -4,10 +4,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -67,7 +69,12 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
     @Override
     public LiteYukonGroup getLiteYukonGroupByName(String groupName) {
         String sql = "SELECT GroupId, GroupName FROM YukonGroup WHERE GroupName = ?";
-        LiteYukonGroup group = simpleJdbcTemplate.queryForObject(sql, new LiteYukonGroupMapper(), groupName);
+        LiteYukonGroup group;        
+        try {
+            group = simpleJdbcTemplate.queryForObject(sql, new LiteYukonGroupMapper(), groupName);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException("Login group name: " + groupName + " not found.", e);
+        }        
         return group;
     }
 }

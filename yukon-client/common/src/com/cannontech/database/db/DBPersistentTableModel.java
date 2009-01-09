@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.Vector;
 
 import javax.swing.event.TableModelEvent;
@@ -77,11 +78,18 @@ public void executeQuery() throws SQLException
 		
 		for( int i = 1; i <= numberOfColumns; i++ )
 		{
-		
+            int columnType = metaData.getColumnType(i);
+            Object object;
+            if (columnType == Types.DATE || columnType == Types.TIMESTAMP) {
+                object = rset.getTimestamp(i);
+            } else {
+                object = rset.getObject(i);
+            }
+            
 			if( tempColumnNames.contains(metaData.getColumnName(i)) )
-				newRow.addElement( com.cannontech.database.DatabaseTypes.convertDBToJavaType( rset.getObject(i) ));
+				newRow.addElement( com.cannontech.database.DatabaseTypes.convertDBToJavaType( object ));
 			else
-				newHiddenRow.addElement( com.cannontech.database.DatabaseTypes.convertDBToJavaType( rset.getObject(i) ));
+				newHiddenRow.addElement( com.cannontech.database.DatabaseTypes.convertDBToJavaType( object ));
 		}
 
 		rows.addElement(newRow);

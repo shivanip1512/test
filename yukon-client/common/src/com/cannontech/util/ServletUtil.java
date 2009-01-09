@@ -7,6 +7,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.sql.ResultSetMetaData;
+import java.sql.Types;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -203,7 +205,8 @@ public static Object[][] executeSQL(String dbAlias, String query) {
 		resultSet = statement.executeQuery( query );
 		Vector<Vector<Object>> rows = new Vector<Vector<Object>>();
 		int columnCount = 0;		
-		columnCount = resultSet.getMetaData().getColumnCount();
+		ResultSetMetaData metaData = resultSet.getMetaData();		
+		columnCount = metaData.getColumnCount();
 		
 		while( resultSet.next() )
 		{
@@ -212,7 +215,13 @@ public static Object[][] executeSQL(String dbAlias, String query) {
 						
 			for( int i = 1; i <= columnCount; i++ )
 			{
-				Object o = resultSet.getObject(i);
+                Object o;               
+                int columnType = metaData.getColumnType(i);
+                if (columnType == Types.DATE || columnType == Types.TIMESTAMP) {
+                    o = resultSet.getTimestamp(i);
+                } else {
+                    o = resultSet.getObject(i);
+                }			    
 
 				if( o != null )
 					nonNullRow = true; // at least 1 value in the row is not null
@@ -286,7 +295,8 @@ public static Object[][] executeSQL(String dbAlias, String query, Class<? extend
 		resultSet = statement.executeQuery( query );
 		Vector<Vector<Object>> rows = new Vector<Vector<Object>>();
 		int columnCount = 0;		
-		columnCount = resultSet.getMetaData().getColumnCount();
+		ResultSetMetaData metaData = resultSet.getMetaData();		
+		columnCount = metaData.getColumnCount();
 		
 		while( resultSet.next() )
 		{
@@ -330,7 +340,12 @@ public static Object[][] executeSQL(String dbAlias, String query, Class<? extend
 				}
 				else
 				{
-					o = resultSet.getObject(i);
+                    int columnType = metaData.getColumnType(i);
+                    if (columnType == Types.DATE || columnType == Types.TIMESTAMP) {
+                        o = resultSet.getTimestamp(i);
+                    } else {
+                        o = resultSet.getObject(i);
+                    }				    
 				}
 
 				if( o != null )
@@ -409,8 +424,9 @@ public static Object[][] executeSQL(HttpSession session, String query )
 		statement = connection.createStatement();
 		resultSet = statement.executeQuery( query );
 		Vector<Vector<Object>> rows = new Vector<Vector<Object>>();
-		int columnCount = 0;		
-		columnCount = resultSet.getMetaData().getColumnCount();
+		int columnCount = 0;
+		ResultSetMetaData metaData = resultSet.getMetaData();		
+		columnCount = metaData.getColumnCount();
 		
 		while( resultSet.next() )
 		{
@@ -419,7 +435,13 @@ public static Object[][] executeSQL(HttpSession session, String query )
 						
 			for( int i = 1; i <= columnCount; i++ )
 			{
-				Object o = resultSet.getObject(i);
+			    Object o;			    
+                int columnType = metaData.getColumnType(i);
+                if (columnType == Types.DATE || columnType == Types.TIMESTAMP) {
+                    o = resultSet.getTimestamp(i);
+                } else {
+                    o = resultSet.getObject(i);
+                }	    
 
 				if( o != null )
 					nonNullRow = true; // at least 1 value in the row is not null
@@ -497,9 +519,10 @@ public static Object[][] executeSQL(HttpSession session, String query, Class<? e
 		statement = connection.createStatement();
 		resultSet = statement.executeQuery( query );
 		Vector<Vector<Object>> rows = new Vector<Vector<Object>>();
-		int columnCount = 0;		
-		columnCount = resultSet.getMetaData().getColumnCount();
-		
+		int columnCount = 0;
+        ResultSetMetaData metaData = resultSet.getMetaData();		
+		columnCount = metaData.getColumnCount();
+
 		while( resultSet.next() )
 		{
 			Vector<Object> rowData = new Vector<Object>();
@@ -542,7 +565,12 @@ public static Object[][] executeSQL(HttpSession session, String query, Class<? e
 				}
 				else
 				{
-					o = resultSet.getObject(i);
+	                int columnType = metaData.getColumnType(i);
+	                if (columnType == Types.DATE || columnType == Types.TIMESTAMP) {
+	                    o = resultSet.getTimestamp(i);
+	                } else {
+	                    o = resultSet.getObject(i);
+	                }
 				}
 
 				if( o != null )

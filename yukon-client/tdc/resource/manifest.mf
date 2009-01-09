@@ -11,7 +11,7 @@ Class-Path: ./
  rwav.jar 
  jcfield401K.jar 
  jcpagelayout450K.jar 
- classes12.jar 
+ ojdbc6.jar 
  jtds.jar 
  SqlServer.jar 
  batik.jar 

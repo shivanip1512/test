@@ -4,7 +4,7 @@ Class-Path: ./
  common.jar 
  jradius-client.jar 
  rwav.jar 
- classes12.jar 
+ ojdbc6.jar 
  jtds.jar 
  SqlServer.jar 
  monitor.jar 

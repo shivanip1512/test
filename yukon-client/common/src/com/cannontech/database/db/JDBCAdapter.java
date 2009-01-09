@@ -114,14 +114,20 @@ public JDBCAdapter() {
 
 			// Get all rows.
 			rows = new Vector();
-		int rcount = 0;
+			int rcount = 0;
 			while (resultSet.next()) 
 			{
 				Vector newRow = new Vector();
 				for (int i = 1; i <= getColumnCount(); i++) 
 				{
-	   		         newRow.addElement(resultSet.getObject(i));
-	   	
+	                int columnType = metaData.getColumnType(i);
+	                Object object;
+	                if (columnType == Types.DATE || columnType == Types.TIMESTAMP) {
+	                    object = resultSet.getTimestamp(i);
+	                } else {
+	                    object = resultSet.getObject(i);
+	                }
+	   		        newRow.addElement(object);
 				}
 				
 				rows.addElement(newRow);

@@ -3,8 +3,10 @@ package com.cannontech.database;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
@@ -163,11 +165,20 @@ public final class SqlUtils {
 
             //Get all the rows
             Vector rows = new Vector();
+            ResultSetMetaData metaData = rset.getMetaData();            
             while (rset.next())
             {
                 Vector columns = new Vector();
-                for (int i = 1; i <= rset.getMetaData().getColumnCount(); i++)
-                    columns.addElement( rset.getObject(i) );
+                for (int i = 1; i <= metaData.getColumnCount(); i++) {
+                    int columnType = metaData.getColumnType(i);
+                    Object object;
+                    if (columnType == Types.DATE || columnType == Types.TIMESTAMP) {
+                        object = rset.getTimestamp(i);
+                    } else {
+                        object = rset.getObject(i);
+                    }
+                    columns.addElement( object );
+                }
 
                 rows.addElement(columns);
             }

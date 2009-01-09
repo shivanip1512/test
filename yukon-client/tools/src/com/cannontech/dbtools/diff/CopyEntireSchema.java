@@ -1,5 +1,7 @@
 package com.cannontech.dbtools.diff;
 
+import java.sql.Types;
+
 import com.cannontech.database.SqlUtils;
 import com.cannontech.dbtools.tools.ModifyConstraints;
 
@@ -118,7 +120,14 @@ public static void main(String[] args)
 				{
 					for( int i = 0; i < metaData.getColumnCount(); i++ )
 					{
-						pstmt.setObject( i+1, rset2.getObject(i+1));							
+		                int columnType = metaData.getColumnType(i+1);
+		                Object object;
+		                if (columnType == Types.DATE || columnType == Types.TIMESTAMP) {
+		                    object = rset2.getTimestamp(i+1);
+		                } else {
+		                    object = rset2.getObject(i+1);
+		                }
+						pstmt.setObject( i+1, object);							
 					}
 
 					pstmt.execute();

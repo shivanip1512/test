@@ -10,6 +10,11 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/ojdbc6.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="/third-party/acme.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
@@ -17,11 +22,6 @@
 		<accessrules>
 			<accessrule kind="discouraged" pattern="**"/>
 		</accessrules>
-	</classpathentry>
-	<classpathentry kind="lib" path="/third-party/classes12.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
-		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="/third-party/jaxm-api.jar">
 		<attributes>

@@ -9,7 +9,7 @@ Class-Path:
  acme.jar 
  yukonappserver.jar 
  jcfield401K.jar 
- classes12.jar 
+ ojdbc6.jar 
  jtds.jar 
  SqlServer.jar 
  ../log/ 

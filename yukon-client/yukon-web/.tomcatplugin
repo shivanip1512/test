@@ -44,7 +44,6 @@
         <webClassPathEntry>/third-party/bsh.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/castor-xml.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/cglib-2.1.3.jar</webClassPathEntry>
-        <webClassPathEntry>/third-party/classes12.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/commons-beanutils-1.7.0.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/commons-collections-3.2.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/commons-dbcp-1.2.1.jar</webClassPathEntry>
@@ -87,6 +86,7 @@
         <webClassPathEntry>/third-party/mx4j-jmx.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/mx4j-tools.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/mx4j.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/ojdbc6.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/poi.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/quartz-all-1.6.0.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/rwav.jar</webClassPathEntry>

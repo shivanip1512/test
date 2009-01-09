@@ -5,8 +5,10 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Vector;
@@ -258,11 +260,20 @@ public class DBPersistentBean implements IDBPersistent {
    
          //Get all the rows
          Vector<Vector <Object>> rows = new Vector<Vector <Object>>();
+         ResultSetMetaData metaData = rset.getMetaData();
          while (rset.next())
          {
             Vector<Object> columns = new Vector<Object>();
-            for (int i = 1; i <= rset.getMetaData().getColumnCount(); i++)
-                  columns.addElement( rset.getObject(i) );
+            for (int i = 1; i <= metaData.getColumnCount(); i++) {
+                int columnType = metaData.getColumnType(i);
+                Object object;
+                if (columnType == Types.DATE || columnType == Types.TIMESTAMP) {
+                    object = rset.getTimestamp(i);
+                } else {
+                    object = rset.getObject(i);
+                }
+                columns.addElement( object );
+            }
             
             rows.addElement(columns);
          }
@@ -333,12 +344,21 @@ public class DBPersistentBean implements IDBPersistent {
          rset = pstmt.executeQuery();
 
          Vector<Object> v = new Vector<Object>();
-         int columns = rset.getMetaData().getColumnCount();
+         ResultSetMetaData metaData = rset.getMetaData();
+         int columns = metaData.getColumnCount();
          if (rset.next())
             for (int k = 0; k < columns; k++)
             {
                //       if( rset.getObject(k+1) != null )
-               v.addElement(rset.getObject(k + 1));
+                int columnType = metaData.getColumnType(k+1);
+                Object object;
+                if (columnType == Types.DATE || columnType == Types.TIMESTAMP) {
+                    object = rset.getTimestamp(k + 1);
+                } else {
+                    object = rset.getObject(k + 1);
+                }
+
+                v.addElement(object);
             }
          
          returnObjects = new Object[v.size()];

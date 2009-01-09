@@ -10,7 +10,7 @@ Class-Path: ./
  dbeditor.jar 
  yukonappserver.jar 
  rwav.jar 
- classes12.jar 
+ ojdbc6.jar 
  jtds.jar 
  SqlServer.jar 
  ../images 

@@ -17,6 +17,6 @@ Class-Path: ./
  junit.jar 
  jtds.jar 
  SqlServer.jar 
- classes12.jar 
+ ojdbc6.jar 
  ../log/ 
  ../export/ 

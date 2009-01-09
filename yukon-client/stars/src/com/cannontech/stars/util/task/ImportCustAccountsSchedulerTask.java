@@ -20,6 +20,9 @@ public class ImportCustAccountsSchedulerTask implements YukonTask {
     private Integer energyCompanyId = null;
     private String email = null;
     private YukonUserContext userContext = null;
+
+    // Injected Dependencies
+    private StarsDatabaseCache starsDbCacheInstance;
     
     public void start() {
             try {
@@ -31,8 +34,6 @@ public class ImportCustAccountsSchedulerTask implements YukonTask {
     
     private void startTask() {
         logger.info("Starting cust account task.");
-        
-        StarsDatabaseCache starsDbCacheInstance = StarsDatabaseCache.getInstance();
         
         LiteStarsEnergyCompany liteStarsEnergyCompany = null;
         if(energyCompanyId != null){
@@ -81,6 +82,10 @@ public class ImportCustAccountsSchedulerTask implements YukonTask {
     @Override
     public void setUserContext(YukonUserContext userContext) {
         this.userContext = userContext;
+    }
+    
+    public void setStarsDbCacheInstance(StarsDatabaseCache starsDbCacheInstance) {
+        this.starsDbCacheInstance = starsDbCacheInstance;
     }
 
 }

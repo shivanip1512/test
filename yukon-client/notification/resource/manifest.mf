@@ -17,7 +17,7 @@ Class-Path: ./
  jtds.jar 
  jdom.jar 
  SqlServer.jar 
- classes12.jar 
+ ojdbc6.jar 
  spring.jar 
  hibernate3.jar 
  commons-discovery.jar 

@@ -282,6 +282,7 @@
     <bean id="importCustAccountsSchedulerTask"
         class="com.cannontech.stars.util.task.ImportCustAccountsSchedulerTask"
         scope="prototype">
+        <property name="starsDbCacheInstance" ref="starsDatabaseCache"/>
     </bean>
     
 </beans>

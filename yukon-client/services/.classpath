@@ -13,8 +13,8 @@
 	<classpathentry kind="lib" path="/third-party/rwav.jar"/>
 	<classpathentry kind="src" path="/trending"/>
 	<classpathentry kind="lib" path="/third-party/batik.jar"/>
-	<classpathentry kind="lib" path="/third-party/classes12.jar"/>
 	<classpathentry kind="lib" path="/third-party/SqlServer.jar"/>
+	<classpathentry kind="lib" path="/third-party/ojdbc6.jar"/>
 	<classpathentry kind="lib" path="/third-party/mx4j-jmx.jar"/>
 	<classpathentry kind="lib" path="/third-party/mx4j-tools.jar"/>
 	<classpathentry kind="src" path="/calchist"/>

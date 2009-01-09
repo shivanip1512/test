@@ -7,7 +7,7 @@ Class-Path: ./
  yukonappserver.jar 
  SqlServer.jar 
  jtds.jar 
- classes12.jar 
+ ojdbc6.jar 
  ../log/ 
  ../export/ 
  

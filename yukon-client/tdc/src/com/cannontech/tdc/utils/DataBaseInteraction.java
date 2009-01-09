@@ -10,6 +10,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.sql.Types;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
@@ -113,7 +114,13 @@ public static Object[][] queryResults( String query, Object[] parameters, boolea
 				
 				for (int i = 1; i <= columnCount; i++) 
 				{
-					Object res = resultSet.getObject(i);
+	                int columnType = metaData.getColumnType(i);
+	                Object res;
+	                if (columnType == Types.DATE || columnType == Types.TIMESTAMP) {
+	                    res = resultSet.getTimestamp(i);
+	                } else {
+	                    res = resultSet.getObject(i);
+	                }				    
 						
 					if ( res == null )
 						newRow.addElement("");

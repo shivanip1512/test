@@ -27,7 +27,7 @@
 		<include name="aspectjweaver.jar"/>
 		<include name="castor-xml.jar"/>
 		<include name="cglib-2.1.3.jar"/>
-		<include name="classes12.jar"/>
+		<include name="ojdbc6.jar"/>
 		<include name="commercialcurtailment.jar"/>
 		<include name="common.jar"/>
 		<include name="commons-codec-1.3.jar"/>

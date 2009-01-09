@@ -123,7 +123,14 @@ public class JDBCAdapter extends AbstractTableModel
     		 Vector newRow = new Vector();
     		 for (int i = 1; i <= getColumnCount(); i++)
     		 {
-    			newRow.addElement(resultSet.getObject(i));
+                 int columnType = metaData.getColumnType(i);
+                 Object object;
+                 if (columnType == Types.DATE || columnType == Types.TIMESTAMP) {
+                     object = resultSet.getTimestamp(i);
+                 } else {
+                     object = resultSet.getObject(i);
+                 }    		     
+    			 newRow.addElement(object);
     		 }
     		 rows.addElement(newRow);
     	  }
