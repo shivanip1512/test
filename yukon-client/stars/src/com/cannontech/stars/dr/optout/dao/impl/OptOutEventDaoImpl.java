@@ -505,12 +505,17 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		sql.append("UPDATE OptOutEvent");
 		sql.append("SET EventCounts = ?");
-		sql.append("FROM OptOutEvent ooe");
-		sql.append("	JOIN ECToAccountMapping ectam ON ooe.CustomerAccountId = ectam.AccountId");
-		sql.append("WHERE ooe.EventState = ?");
+		sql.append("WHERE EXISTS (");
+		sql.append("  SELECT ooe.OptOutEventId");
+		sql.append("  FROM OptOutEvent ooe");
+		sql.append("  JOIN ECToAccountMapping ectam ON ooe.CustomerAccountId = ectam.AccountId");
+		sql.append("  WHERE ooe.EventState = ?");
 		sql.append("	AND ooe.StartDate <= ?");
 		sql.append("	AND ooe.StopDate >= ?");
 		sql.append("	AND ectam.EnergyCompanyId = ?");
+		//this is the ANSI-equivalent of JOIN
+		sql.append("    AND OptOutEvent.OptOutEventId = ooe.OptOutEventId");
+		sql.append(")");
 		
 		simpleJdbcTemplate.update(sql.toString(), 
 				counts.toString(),
