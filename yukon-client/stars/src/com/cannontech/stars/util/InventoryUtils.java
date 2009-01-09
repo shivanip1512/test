@@ -9,13 +9,12 @@ package com.cannontech.stars.util;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
-import com.cannontech.common.constants.YukonSelectionList;
-import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.JdbcTemplateHelper;
@@ -87,6 +86,15 @@ public class InventoryUtils {
 		YukonListEntry entry = DaoFactory.getYukonListDao().getYukonListEntry( categoryID );
 		return (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_INV_CAT_MCT);
 	}
+	
+	public static boolean isValidHardwareSerialNumber(String serialNum) {
+        boolean valid = false;
+        //restrict the hardware serialNumber to 18-digit numeric value (long)
+        if (!StringUtils.isBlank(serialNum) && StringUtils.isNumeric(serialNum) && serialNum.length() <= 18) {
+            valid = true;
+        }
+        return valid;
+    }
 	
 	public static int getHardwareConfigType(int devTypeID) {
 		int devTypeDefID = DaoFactory.getYukonListDao().getYukonListEntry( devTypeID ).getYukonDefID();

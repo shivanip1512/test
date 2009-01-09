@@ -12,7 +12,6 @@ import org.w3c.dom.Node;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
-import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -85,17 +84,15 @@ public class ControllableDevicesRequestEndPoint {
         // create template and parse data
         SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(newControllableDevicesRequest);
         List<StarsControllableDeviceDTO> devices = template.evaluate(newDeviceElementStr, deviceElementMapper);
+
+        // check authorization
+        authDao.verifyTrueProperty(user,
+                                   ConsumerInfoRole.CONSUMER_INFO_HARDWARES_CREATE);
         
         // run service
         for (StarsControllableDeviceDTO device : devices) {
             try {
-                // check authorization
-                authDao.verifyTrueProperty(user,
-                                           ConsumerInfoRole.CONSUMER_INFO_HARDWARES_CREATE);               
                 starsControllableDeviceHelper.addDeviceToAccount(device, user);
-            } catch (NotAuthorizedException e){
-                // store error and continue to process all devices
-                device.setThrowable(e);             
             } catch (StarsClientRequestException e) {
                 // store error and continue to process all devices
                 device.setThrowable(e);
@@ -119,16 +116,14 @@ public class ControllableDevicesRequestEndPoint {
         SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(updateControllableDevicesRequest);
         List<StarsControllableDeviceDTO> devices = template.evaluate(updateDeviceElementStr, deviceElementMapper);        
 
+        // check authorization
+        authDao.verifyTrueProperty(user,
+                                   ConsumerInfoRole.CONSUMER_INFO_HARDWARES);
+        
         // run service
         for (StarsControllableDeviceDTO device : devices) {
             try {
-                // check authorization
-                authDao.verifyTrueProperty(user,
-                                           ConsumerInfoRole.CONSUMER_INFO_HARDWARES);
                 starsControllableDeviceHelper.updateDeviceOnAccount(device, user);
-            } catch (NotAuthorizedException e){
-                // store error and continue to process all devices
-                device.setThrowable(e);                
             } catch (StarsClientRequestException e) {
                 // store error and continue to process all devices
                 device.setThrowable(e);
@@ -152,16 +147,14 @@ public class ControllableDevicesRequestEndPoint {
         SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(removeControllableDevicesRequest);
         List<StarsControllableDeviceDTO> devices = template.evaluate(removeDeviceElementStr, deviceElementMapper);        
 
+        // check authorization
+        authDao.verifyTrueProperty(user,
+                                   ConsumerInfoRole.CONSUMER_INFO_HARDWARES);
+
         // run service
         for (StarsControllableDeviceDTO device : devices) {
             try {
-                // check authorization
-                authDao.verifyTrueProperty(user,
-                                           ConsumerInfoRole.CONSUMER_INFO_HARDWARES);
                 starsControllableDeviceHelper.removeDeviceFromAccount(device, user);
-            } catch (NotAuthorizedException e){
-                // store error and continue to process all devices
-                device.setThrowable(e);                
             } catch (StarsClientRequestException e) {
                 // store error and continue to process all devices
                 device.setThrowable(e);
@@ -223,7 +216,6 @@ public class ControllableDevicesRequestEndPoint {
     }
 
     enum ErrorCodeMapper {
-        UserNotAuthorized(NotAuthorizedException.class),
         AccountNotFound(StarsAccountNotFoundException.class), 
         DeviceAlreadyAssigned(StarsDeviceAlreadyAssignedException.class), 
         DeviceAlreadyExists(StarsDeviceAlreadyExistsException.class), 

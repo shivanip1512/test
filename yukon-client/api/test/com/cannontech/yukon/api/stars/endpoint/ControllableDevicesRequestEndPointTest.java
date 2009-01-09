@@ -13,6 +13,7 @@ import org.springframework.core.io.Resource;
 import org.w3c.dom.Node;
 
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
@@ -39,7 +40,6 @@ public class ControllableDevicesRequestEndPointTest {
     private static final String updateDeviceReqResource = "ControllableDevicesRequestUpdate.xml";
     private static final String removeDeviceReqResource = "ControllableDevicesRequestRemove.xml";
 
-    private static final String USER_NOT_AUTHORIZED = ErrorCodeMapper.UserNotAuthorized.name();    
     private static final String ACCOUNT_NUM_NOT_FOUND = ErrorCodeMapper.AccountNotFound.name();
     private static final String ACCOUNT_NUM_INVALID_ARG = ErrorCodeMapper.InvalidArgument.name();
     private static final String ACCOUNT_NUM_ERROR = ErrorCodeMapper.ClientRequestError.name();
@@ -211,7 +211,7 @@ public class ControllableDevicesRequestEndPointTest {
         assertTrue("Error Description should be blank", StringUtils.isBlank(deviceResult.getFailErrorDesc()));
     }
 
-    @Test
+    @Test(expected=NotAuthorizedException.class)
     public void testInvokeAddDeviceUnauthUser() throws Exception {
 
         // init
@@ -225,29 +225,6 @@ public class ControllableDevicesRequestEndPointTest {
         //invoke test with unauthorized user
         LiteYukonUser user = MockAuthDao.getUnAuthorizedUser();
         Element respElement = impl.invokeAddDevice(reqElement, user);
-        
-        // verify the respElement is valid according to schema
-        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/stars/schemas/NewControllableDevicesResponse.xsd", this.getClass());
-        TestUtils.validateAgainstSchema(respElement, respSchemaResource);
-
-        // create template and parse response data
-        SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(respElement);
-        TestUtils.runVersionAssertion(template, newDevicesRespStr, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
-
-        List<ControllableDeviceResult> deviceResults = template.evaluate(newDeviceRespElementStr,
-                                                                         deviceResultElementMapper);
-
-        // verify data in the response
-        assertTrue("Incorrect resultSize", deviceResults != null && deviceResults.size() == 4);
-        
-        // verify that all device requests failed with unauthorized user error
-        for (ControllableDeviceResult deviceResult : deviceResults) {
-            assertTrue("Success should be false", !deviceResult.isSuccess());
-            assertTrue("Incorrect errorCode",
-                       deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode()
-                                                                              .equals(USER_NOT_AUTHORIZED));
-            assertTrue("Missing errorDescription", deviceResult.getFailErrorDesc() != null);            
-        }
     }
     
     @Test
@@ -327,7 +304,7 @@ public class ControllableDevicesRequestEndPointTest {
         assertTrue("Error Description should be blank", StringUtils.isBlank(deviceResult.getFailErrorDesc()));
     }
     
-    @Test
+    @Test(expected=NotAuthorizedException.class)
     public void testInvokeUpdateDeviceUnauthUser() throws Exception {
 
         // init
@@ -341,29 +318,6 @@ public class ControllableDevicesRequestEndPointTest {
         //invoke test with unauthorized user
         LiteYukonUser user = MockAuthDao.getUnAuthorizedUser();
         Element respElement = impl.invokeUpdateDevice(reqElement, user);
-        
-        // verify the respElement is valid according to schema
-        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/stars/schemas/UpdateControllableDevicesResponse.xsd", this.getClass());
-        TestUtils.validateAgainstSchema(respElement, respSchemaResource);
-        
-        // create template and parse response data
-        SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(respElement);
-        TestUtils.runVersionAssertion(template, updateDevicesRespStr, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
-        
-        List<ControllableDeviceResult> deviceResults = template.evaluate(updateDeviceRespElementStr,
-                                                                         deviceResultElementMapper);
-
-        // verify data in the response
-        assertTrue("Incorrect resultSize", deviceResults != null && deviceResults.size() == 4);
-        
-        // verify that all device requests failed with unauthorized user error
-        for (ControllableDeviceResult deviceResult : deviceResults) {
-            assertTrue("Success should be false", !deviceResult.isSuccess());
-            assertTrue("Incorrect errorCode",
-                       deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode()
-                                                                              .equals(USER_NOT_AUTHORIZED));
-            assertTrue("Missing errorDescription", deviceResult.getFailErrorDesc() != null);            
-        }        
     }
 
     @Test
@@ -443,7 +397,7 @@ public class ControllableDevicesRequestEndPointTest {
         assertTrue("Error Description should be blank", StringUtils.isBlank(deviceResult.getFailErrorDesc()));
     }
     
-    @Test
+    @Test(expected=NotAuthorizedException.class)
     public void testInvokeRemoveDeviceUnauthUser() throws Exception {
 
         // init
@@ -457,29 +411,6 @@ public class ControllableDevicesRequestEndPointTest {
         //invoke test with unauthorized user
         LiteYukonUser user = MockAuthDao.getUnAuthorizedUser();
         Element respElement = impl.invokeRemoveDevice(reqElement, user);
-        
-        // verify the respElement is valid according to schema
-        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/stars/schemas/RemoveControllableDevicesResponse.xsd", this.getClass());
-        TestUtils.validateAgainstSchema(respElement, respSchemaResource);
-        
-        // create template and parse response data
-        SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(respElement);
-        TestUtils.runVersionAssertion(template, removeDevicesRespStr, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
-        
-        List<ControllableDeviceResult> deviceResults = template.evaluate(removeDeviceRespElementStr,
-                                                                         deviceResultElementMapper);
-
-        // verify data in the response
-        assertTrue("Incorrect resultSize", deviceResults != null && deviceResults.size() == 4);
-        
-        // verify that all device requests failed with unauthorized user error
-        for (ControllableDeviceResult deviceResult : deviceResults) {
-            assertTrue("Success should be false", !deviceResult.isSuccess());
-            assertTrue("Incorrect errorCode",
-                       deviceResult.getFailErrorCode() != null && deviceResult.getFailErrorCode()
-                                                                              .equals(USER_NOT_AUTHORIZED));
-            assertTrue("Missing errorDescription", deviceResult.getFailErrorDesc() != null);            
-        }        
     }
 
     private static class ControllableDeviceResultMapper implements

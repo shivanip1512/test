@@ -75,6 +75,8 @@ public class StarsControllableDeviceHelperImpl implements
         String serialNum = deviceInfo.getSerialNumber();
         if (StringUtils.isBlank(serialNum)) {
             throw new StarsInvalidArgumentException("Serial Number is required");
+        } else if (!InventoryUtils.isValidHardwareSerialNumber(serialNum)) {
+            throw new StarsInvalidArgumentException("Invalid Serial Number [" + serialNum + "], should be numeric upto 18-digits");        
         }
         return serialNum;
     }
