@@ -265,20 +265,23 @@ public abstract class BaseNotificationStrategy extends StrategyBase implements N
                 if (!canCustomersBeRemovedFromEvent(origEvent, user)) {
                     throw new EventModificationException("Event cannot be modified at this time by this user.");
                 }
+                
+                // determine customer to be removed
+                List<VerifiedPlainCustomer> customersToBeSplitOffList = builder.getRemoveCustomerList();
+                Set<CICustomerStub> customersToBeSplitOff = Sets.newHashSet();
+                for (VerifiedPlainCustomer verifiedPlainCustomer : customersToBeSplitOffList) {
+                	verifyRemoveCustomer(builder, verifiedPlainCustomer);
+                	if (!verifiedPlainCustomer.isIncludable()) {
+                		throw new EventModificationException("Event cannot be modified at this time for customer " + verifiedPlainCustomer);
+                	}
+                	customersToBeSplitOff.add(verifiedPlainCustomer.getCustomer());
+				}
 
                 // update state of original event
                 origEvent.setState(CurtailmentEventState.MODIFIED);
                 
                 // save
                 curtailmentEventDao.save(origEvent);
-                
-                // determine customer to be removed
-                List<VerifiedPlainCustomer> customersToBeSplitOffList = builder.getRemoveCustomerList();
-                Set<CICustomerStub> customersToBeSplitOff = Sets.newHashSet();
-                for (VerifiedPlainCustomer verifiedPlainCustomer : customersToBeSplitOffList) {
-					// possible check for actual inclusion in split would happen here
-                	customersToBeSplitOff.add(verifiedPlainCustomer.getCustomer());
-				}
 
                 // create new event
                 CurtailmentEvent splitEvent = new CurtailmentEvent();
