@@ -84,17 +84,23 @@
                                   <option value="0">(none)</option>
 <%
 		for (int j = 0; j < contactTypeList.size(); j++) {
-			YukonListEntry entry = (YukonListEntry) contactTypeList.get(j);
+			YukonListEntry entry = contactTypeList.get(j);
 			String selected = (entry.getEntryID() == contNotif.getNotifCatID()) ? "selected" : "";
 %>
                                   <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getEntryText() %></option>
 <%
 		}
+		String text = contNotif.getNotification();
+		if(contNotif.getNotifCatID() == YukonListEntryTypes.YUK_ENTRY_ID_PHONE ||
+		        contNotif.getNotifCatID() == YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE ||
+		        contNotif.getNotifCatID() == YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE){
+		    text = ServletUtils.formatPhoneNumberForDisplay(text);
+		}
 %>
                                 </select>
                               </td>
                               <td width="146">
-                                <input type="text" name="Notification" size="24" value="<%= StringEscapeUtils.escapeHtml(contNotif.getNotification()) %>" onchange="setContentChanged(true)">
+                                <input type="text" name="Notification" size="24" value="<%= StringEscapeUtils.escapeHtml(text) %>" onchange="setContentChanged(true)">
                               </td>
                             </tr>
 <%
@@ -107,7 +113,7 @@
                                   <option value="0">(none)</option>
 <%
 		for (int j = 0; j < contactTypeList.size(); j++) {
-			YukonListEntry entry = (YukonListEntry) contactTypeList.get(j);
+			YukonListEntry entry = contactTypeList.get(j);
 %>
                                   <option value="<%= entry.getEntryID() %>"><%= entry.getEntryText() %></option>
 <%
@@ -180,17 +186,23 @@
                                   <option value="0">(none)</option>
 <%
 			for (int k = 0; k < contactTypeList.size(); k++) {
-				YukonListEntry entry = (YukonListEntry) contactTypeList.get(k);
+				YukonListEntry entry = contactTypeList.get(k);
 				String selected = (entry.getEntryID() == contNotif.getNotifCatID()) ? "selected" : "";
 %>
                                   <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getEntryText() %></option>
 <%
 			}
+			String text = contNotif.getNotification();
+			if(contNotif.getNotifCatID() == YukonListEntryTypes.YUK_ENTRY_ID_PHONE ||
+			        contNotif.getNotifCatID() == YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE ||
+			        contNotif.getNotifCatID() == YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE){
+			    text = ServletUtils.formatPhoneNumberForDisplay(text);
+			}
 %>
                                 </select>
                               </td>
                               <td width="146">
-                                <input type="text" name="Notification" size="24" value="<%= StringEscapeUtils.escapeHtml(contNotif.getNotification()) %>" onchange="setContentChanged(true)">
+                                <input type="text" name="Notification" size="24" value="<%= StringEscapeUtils.escapeHtml(text) %>" onchange="setContentChanged(true)">
                               </td>
                             </tr>
 <%
@@ -203,7 +215,7 @@
                                   <option value="0">(none)</option>
 <%
 			for (int k = 0; k < contactTypeList.size(); k++) {
-				YukonListEntry entry = (YukonListEntry) contactTypeList.get(k);
+				YukonListEntry entry = contactTypeList.get(k);
 %>
                                   <option value="<%= entry.getEntryID() %>"><%= entry.getEntryText() %></option>
 <%
@@ -278,7 +290,7 @@
 	                                  <option value="0">(none)</option>
 	<%
 			for (int j = 0; j < contactTypeList.size(); j++) {
-				YukonListEntry entry = (YukonListEntry) contactTypeList.get(j);
+				YukonListEntry entry = contactTypeList.get(j);
 	%>
 	                                  <option value="<%= entry.getEntryID() %>"><%= entry.getEntryText() %></option>
 	<%

@@ -21,7 +21,8 @@
                             </option>
                         </c:forEach>
                     </select>
-                    <input name="notificationText_${count}" type="text" value="<spring:escapeBody htmlEscape="true">${notification.notification}</spring:escapeBody>"/>
+                    <cti:formatNotification var="notif" value="${notification.notification}" type="${notification.notificationCategoryID}" />
+                    <input name="notificationText_${count}" type="text" value="<spring:escapeBody htmlEscape="true">${notif}</spring:escapeBody>"/>
                     <input name="notificationId_${count}" type="hidden" value="${notification.liteID}"/>
                     
                     <cti:msg var="removeTitle" key="yukon.dr.consumer.contacts.removeNotificationTitle" />

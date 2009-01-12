@@ -57,5 +57,6 @@
 
   <bean id="phoneNumberFormattingService" class="com.cannontech.core.service.impl.PhoneNumberFormattingServiceImpl"/>
   
+  <bean id="contactNotificationFormattingService" class="com.cannontech.core.service.impl.ContactNotificationFormattingServiceImpl"/>
   
 </beans>

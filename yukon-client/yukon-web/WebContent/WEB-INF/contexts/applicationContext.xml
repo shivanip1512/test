@@ -702,6 +702,8 @@
     <bean id="formatDateTagPrototype" class="com.cannontech.web.taglib.FormatDateTag">
         <property name="dateFormattingService" ref="dateFormattingService"/>
     </bean>
+    
+    <bean id="formatNotificationTagPrototype" class="com.cannontech.web.taglib.FormatNotificationTag"/>
 
     <bean id="formatMillisTagPrototype" class="com.cannontech.web.taglib.FormatMillisTag">
         <property name="dateFormattingService" ref="dateFormattingService"/>
