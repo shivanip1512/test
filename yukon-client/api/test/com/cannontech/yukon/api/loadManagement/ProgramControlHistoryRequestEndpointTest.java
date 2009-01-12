@@ -25,6 +25,7 @@ public class ProgramControlHistoryRequestEndpointTest {
 
 	private ProgramControlHistoryRequestEndpoint impl;
     private MockLoadControlService mockService;
+    private static final String EMTPY_RETURN = "EMPTY";
     
     @Before
     public void setUp() throws Exception {
@@ -55,20 +56,21 @@ public class ProgramControlHistoryRequestEndpointTest {
             }
             
             List<ProgramControlHistory> histList = new ArrayList<ProgramControlHistory>();
-            
-            ProgramControlHistory h1 = new ProgramControlHistory();
-            h1.setProgramName("Program1");
-            h1.setStartDateTime(XmlUtils.parseDate("2008-10-13T12:30:00Z"));
-            h1.setStopDateTime(null);
-            h1.setGearName("Gear1");
-            histList.add(h1);
-            
-            ProgramControlHistory h2 = new ProgramControlHistory();
-            h2.setProgramName("Program2");
-            h2.setStartDateTime(XmlUtils.parseDate("2008-10-13T12:30:00Z"));
-            h2.setStopDateTime(XmlUtils.parseDate("2008-10-13T21:49:01Z"));
-            h2.setGearName("Gear2");
-            histList.add(h2);
+            if (!programName.equals(EMTPY_RETURN)){            
+                ProgramControlHistory h1 = new ProgramControlHistory();
+                h1.setProgramName("Program1");
+                h1.setStartDateTime(XmlUtils.parseDate("2008-10-13T12:30:00Z"));
+                h1.setStopDateTime(null);
+                h1.setGearName("Gear1");
+                histList.add(h1);
+
+                ProgramControlHistory h2 = new ProgramControlHistory();
+                h2.setProgramName("Program2");
+                h2.setStartDateTime(XmlUtils.parseDate("2008-10-13T12:30:00Z"));
+                h2.setStopDateTime(XmlUtils.parseDate("2008-10-13T21:49:01Z"));
+                h2.setGearName("Gear2");
+                histList.add(h2);
+            }
             
             return histList;
         }
@@ -94,7 +96,21 @@ public class ProgramControlHistoryRequestEndpointTest {
         Resource requestSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/ProgramControlHistoryRequest.xsd", this.getClass());
         Resource responseSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/ProgramControlHistoryResponse.xsd", this.getClass());
         
-        // no start time, no stop time
+        // start time, no stop time; to return empty list
+        //==========================================================================================
+        requestElement = LoadManagementTestUtils.createProgramControlHistoryRequestElement(EMTPY_RETURN, "2008-10-13T12:30:00Z", null, "1.0", requestSchemaResource);
+        
+        responseElement = impl.invoke(requestElement, null);
+        TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
+        
+        outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
+        
+        Assert.assertEquals("Incorrect number of controlHistoryEntries nodes.", 0, outputTemplate.evaluateAsLong("count(/y:programControlHistoryResponse/y:controlHistoryEntries/y:programControlHistory)").longValue());
+        
+        Assert.assertEquals("Incorrect startDateTime.", "2008-10-13T12:30:00Z", XmlUtils.formatDate(mockService.getStartTime()));
+        Assert.assertEquals("Incorrect stopDateTime.", null, mockService.getStopTime());
+        
+        // start time, no stop time
         //==========================================================================================
         requestElement = LoadManagementTestUtils.createProgramControlHistoryRequestElement("Program1", "2008-10-13T12:30:00Z", null, "1.0", requestSchemaResource);
         

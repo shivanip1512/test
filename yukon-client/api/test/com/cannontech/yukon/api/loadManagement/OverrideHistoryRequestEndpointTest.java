@@ -37,6 +37,7 @@ public class OverrideHistoryRequestEndpointTest {
     private static final String ACCOUNT2 = "account2";
     private static final String PROGRAM1 = "program1";
     private static final String PROGRAM2 = "program2";
+    private static final String EMTPY_RETURN = "EMPTY";
 
     private static final String INVALID_ACCOUNT = "ACCOUNT_INVALID";
     private static final String INVALID_PROGRAM = "PROGRAM_INVALID";    
@@ -133,10 +134,36 @@ public class OverrideHistoryRequestEndpointTest {
         TestUtils.runFailureAssertions(
         		outputTemplate, "overrideHistoryByAccountNumberResponse", "UserNotAuthorized");
         
+        // test with valid account, no program, valid user; to return empty list
+        //==========================================================================================
+        LiteYukonUser user = new LiteYukonUser();
+        requestElement = LoadManagementTestUtils.createOverrideHistoryByAccountRequestElement(
+                EMTPY_RETURN, null, START_DATE_VALID, STOP_DATE_VALID, VERSION_1, reqSchemaResource);
+        respElement = impl.invokeHistoryByAccount(requestElement, user);
+        
+        // verify the respElement is valid according to schema
+        TestUtils.validateAgainstSchema(respElement, respSchemaResource);
+
+        //verify mockService was called with correct params
+        Assert.assertEquals("Incorrect accountNumber.", EMTPY_RETURN, mockOptOutService.getAccountNumber());
+        Assert.assertNull(mockOptOutService.getProgramName());
+        Assert.assertEquals("Incorrect startDateTime.", START_DATE_VALID, XmlUtils.formatDate(mockOptOutService.getStartTime()));
+        Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, XmlUtils.formatDate(mockOptOutService.getStopTime()));
+
+        // create template and parse response data
+        outputTemplate = XmlUtils.getXPathTemplateForElement(respElement);
+        TestUtils.runVersionAssertion(outputTemplate, byAccountResponseStr, VERSION_1);
+       
+        // Check result xml values
+        List<OverrideHistory> expected = new ArrayList<OverrideHistory>();
+        
+        List<OverrideHistory> actual = 
+            outputTemplate.evaluate(byAccountHistoryElementStr, overrideHistNodeMapper);
+
+        Assert.assertEquals("Result list not as expected", expected, actual);        
         
         // test with valid account, no program, valid user 
         //==========================================================================================
-        LiteYukonUser user = new LiteYukonUser();
         requestElement = LoadManagementTestUtils.createOverrideHistoryByAccountRequestElement(
     			ACCOUNT1, null, START_DATE_VALID, STOP_DATE_VALID, VERSION_1, reqSchemaResource);
         respElement = impl.invokeHistoryByAccount(requestElement, user);
@@ -155,12 +182,11 @@ public class OverrideHistoryRequestEndpointTest {
         TestUtils.runVersionAssertion(outputTemplate, byAccountResponseStr, VERSION_1);
        
         // Check result xml values
-        List<OverrideHistory> expected = new ArrayList<OverrideHistory>();
+        expected = new ArrayList<OverrideHistory>();
         expected.add(history1);
         expected.add(history2);
         
-        List<OverrideHistory> actual = 
-        	outputTemplate.evaluate(byAccountHistoryElementStr, overrideHistNodeMapper);
+        actual = outputTemplate.evaluate(byAccountHistoryElementStr, overrideHistNodeMapper);
 
         Assert.assertEquals("Result list not as expected", expected, actual);
         
@@ -258,13 +284,12 @@ public class OverrideHistoryRequestEndpointTest {
         TestUtils.runFailureAssertions(
         		outputTemplate, "overrideHistoryByProgramNameResponse", "UserNotAuthorized");
         
-        
-        // test with valid program, user 
+        // test with valid program, user; to return empty list
         //==========================================================================================
         LiteYukonUser user = new LiteYukonUser();
         requestElement = LoadManagementTestUtils.createOverrideHistoryByProgramRequestElement(
-    			PROGRAM1, START_DATE_VALID, STOP_DATE_VALID, VERSION_1, reqSchemaResource);
-    	
+                EMTPY_RETURN, START_DATE_VALID, STOP_DATE_VALID, VERSION_1, reqSchemaResource);
+        
         respElement = impl.invokeHistoryByProgram(requestElement, user);
 
         // verify the respElement is valid according to schema
@@ -278,6 +303,27 @@ public class OverrideHistoryRequestEndpointTest {
                                                                       overrideHistNodeMapper);
         // Check result xml values
         List<OverrideHistory> expected = new ArrayList<OverrideHistory>();
+        
+        Assert.assertEquals("Result list not as expected", expected, actual);
+        
+        // test with valid program, user 
+        //==========================================================================================
+        user = new LiteYukonUser();
+        requestElement = LoadManagementTestUtils.createOverrideHistoryByProgramRequestElement(
+    			PROGRAM1, START_DATE_VALID, STOP_DATE_VALID, VERSION_1, reqSchemaResource);
+    	
+        respElement = impl.invokeHistoryByProgram(requestElement, user);
+
+        // verify the respElement is valid according to schema
+        TestUtils.validateAgainstSchema(respElement, respSchemaResource);
+
+        // create template and parse response data
+        template = XmlUtils.getXPathTemplateForElement(respElement);
+        TestUtils.runVersionAssertion(template, byProgramResponseStr, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
+       
+        actual = template.evaluate(byProgramHistoryElementStr, overrideHistNodeMapper);
+        // Check result xml values
+        expected = new ArrayList<OverrideHistory>();
         expected.add(history1);
         expected.add(history3);
         
@@ -354,7 +400,10 @@ public class OverrideHistoryRequestEndpointTest {
         			throw new UnsupportedOperationException(
         					"Program: " + programName + " not supported");
         		}
-        	} else {
+        	} else if (EMTPY_RETURN.equals(accountNumber)){
+        	    //return empty list
+        	}
+        	else {
         		throw new UnsupportedOperationException(
     					"Account Number: " + accountNumber + " not supported");
         	}
@@ -380,8 +429,8 @@ public class OverrideHistoryRequestEndpointTest {
         		overrideHistoryList.add(history1);
     			overrideHistoryList.add(history3);
     			
-        	} else if (PROGRAM1.equals(programName)) {
-        		overrideHistoryList.add(history2);
+        	} else if (EMTPY_RETURN.equals(programName)) {
+        		//return empty list
         		
         	} else {
         		throw new UnsupportedOperationException(

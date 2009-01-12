@@ -28,6 +28,7 @@ public class ListScenarioProgramsRequestEndpointTest {
     private MockLoadControlService mockService;
     
     private Namespace ns = YukonXml.getYukonNamespace();
+    private static final String EMTPY_RETURN_SCENARIO = "EMPTY";
     
     @Before
     public void setUp() throws Exception {
@@ -52,14 +53,16 @@ public class ListScenarioProgramsRequestEndpointTest {
                 throw new NotFoundException("");
             }
             
-            ProgramStartingGear programGear1 = new ProgramStartingGear(1, "Program1", "Gear1", 1);
-            ProgramStartingGear programGear2 = new ProgramStartingGear(2, "Program2", "Gear2", 1);
-            ProgramStartingGear programGear3 = new ProgramStartingGear(3, "Program3", "Gear3", 1);
-            
             List<ProgramStartingGear> programStartingGears = new ArrayList<ProgramStartingGear>();
-            programStartingGears.add(programGear1);
-            programStartingGears.add(programGear2);
-            programStartingGears.add(programGear3);
+            if (!scenarioName.equals(EMTPY_RETURN_SCENARIO)){            
+                ProgramStartingGear programGear1 = new ProgramStartingGear(1, "Program1", "Gear1", 1);
+                ProgramStartingGear programGear2 = new ProgramStartingGear(2, "Program2", "Gear2", 1);
+                ProgramStartingGear programGear3 = new ProgramStartingGear(3, "Program3", "Gear3", 1);
+
+                programStartingGears.add(programGear1);
+                programStartingGears.add(programGear2);
+                programStartingGears.add(programGear3);
+            }
             
             ScenarioProgramStartingGears scenarioProgramStartingGears = new ScenarioProgramStartingGears(scenarioName, programStartingGears);
             
@@ -82,6 +85,26 @@ public class ListScenarioProgramsRequestEndpointTest {
         SimpleXPathTemplate outputTemplate = null;
         Resource requestSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/ListScenarioProgramsRequest.xsd", this.getClass());
         Resource responseSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/ListScenarioProgramsResponse.xsd", this.getClass());
+        
+        // scenario name, empty program starting gears
+        //==========================================================================================
+        requestElement = new Element("listScenarioProgramsRequest", ns);
+        versionAttribute = new Attribute("version", "1.0");
+        requestElement.setAttribute(versionAttribute);
+        tmpElement = XmlUtils.createStringElement("scenarioName", ns, EMTPY_RETURN_SCENARIO);
+        requestElement.addContent(tmpElement);
+        TestUtils.validateAgainstSchema(requestElement, requestSchemaResource);
+        
+        responseElement = impl.invoke(requestElement, null);
+        TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
+        
+        outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
+        
+        Assert.assertNotNull("No scenarioName node present.", outputTemplate.evaluateAsNode("/y:listScenarioProgramsResponse/y:scenarioName"));
+        Assert.assertNotNull("No scenarioProgramsList node present.", outputTemplate.evaluateAsNode("/y:listScenarioProgramsResponse/y:scenarioProgramsList"));
+        Assert.assertEquals("Incorrect scenarioName", EMTPY_RETURN_SCENARIO, mockService.getScenarioName());
+        Assert.assertEquals("Incorrect number of scenarioProgramsList nodes.", 1, outputTemplate.evaluateAsLong("count(/y:listScenarioProgramsResponse/y:scenarioProgramsList)").longValue());
+        Assert.assertEquals("Incorrect number of scenarioProgram nodes.", 0, outputTemplate.evaluateAsLong("count(/y:listScenarioProgramsResponse/y:scenarioProgramsList/y:scenarioProgram)").longValue());
         
         // scenario name, 3 program starting gears
         //==========================================================================================

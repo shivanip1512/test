@@ -27,6 +27,8 @@ public class CurrentlyActiveProgramsRequestEndpointTest {
     private MockLoadControlService mockService;
     
     private Namespace ns = YukonXml.getYukonNamespace();
+    private static final String EMTPY_RETURN_USER = "EMPTY";
+    private static final String LIST_RETURN_USER = "LIST";
     
     @Before
     public void setUp() throws Exception {
@@ -44,11 +46,12 @@ public class CurrentlyActiveProgramsRequestEndpointTest {
         public List<ProgramStatus> getAllCurrentlyActivePrograms(LiteYukonUser user) {
             
             List<ProgramStatus> programStatuses = new ArrayList<ProgramStatus>();
-            
-            MockProgramStatus program1 = new MockProgramStatus("Program1", LMProgramBase.STATUS_ACTIVE, "2008-10-13T12:30:00Z", "2008-10-13T21:40:01Z", "Gear1");
-            MockProgramStatus program2 = new MockProgramStatus("Program2", LMProgramBase.STATUS_INACTIVE, "2008-10-14T13:45:01Z", null, "Gear2");
-            programStatuses.add(program1);
-            programStatuses.add(program2);
+            if (!user.getUsername().equals(EMTPY_RETURN_USER)){
+                MockProgramStatus program1 = new MockProgramStatus("Program1", LMProgramBase.STATUS_ACTIVE, "2008-10-13T12:30:00Z", "2008-10-13T21:40:01Z", "Gear1");
+                MockProgramStatus program2 = new MockProgramStatus("Program2", LMProgramBase.STATUS_INACTIVE, "2008-10-14T13:45:01Z", null, "Gear2");
+                programStatuses.add(program1);
+                programStatuses.add(program2);
+            }
             
             return programStatuses;
         }
@@ -64,6 +67,26 @@ public class CurrentlyActiveProgramsRequestEndpointTest {
         SimpleXPathTemplate outputTemplate = null;
         Resource requestSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/CurrentlyActiveProgramsRequest.xsd", this.getClass());
         Resource responseSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/loadManagement/schemas/CurrentlyActiveProgramsResponse.xsd", this.getClass());
+
+        // no programs, emtpy list
+        //==========================================================================================
+        requestElement = new Element("currentlyActiveProgramsRequest", ns);
+        versionAttribute = new Attribute("version", "1.0");
+        requestElement.setAttribute(versionAttribute);
+        TestUtils.validateAgainstSchema(requestElement, requestSchemaResource);
+        
+        // run and validate response against xsd
+        LiteYukonUser emptyReturnUser = new LiteYukonUser();
+        emptyReturnUser.setUsername(EMTPY_RETURN_USER);
+        responseElement = impl.invoke(requestElement, emptyReturnUser);
+        TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
+        
+        outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);
+        
+        // outputs
+        Assert.assertNotNull("No programStatuses node present.", outputTemplate.evaluateAsNode("/y:currentlyActiveProgramsResponse/y:programStatuses"));
+        Assert.assertEquals("Incorrect number of programStatuses nodes.", 1, outputTemplate.evaluateAsLong("count(/y:currentlyActiveProgramsResponse/y:programStatuses)").longValue());
+        Assert.assertEquals("Incorrect number of programStatus nodes.", 0, outputTemplate.evaluateAsLong("count(/y:currentlyActiveProgramsResponse/y:programStatuses/y:programStatus)").longValue());
         
         // 2 programs, one with no stop datetime
         //==========================================================================================
@@ -73,7 +96,9 @@ public class CurrentlyActiveProgramsRequestEndpointTest {
         TestUtils.validateAgainstSchema(requestElement, requestSchemaResource);
         
         // run and validate response against xsd
-        responseElement = impl.invoke(requestElement, null);
+        LiteYukonUser user = new LiteYukonUser();
+        user.setUsername(LIST_RETURN_USER);
+        responseElement = impl.invoke(requestElement, user);
         TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
         
         outputTemplate = XmlUtils.getXPathTemplateForElement(responseElement);

@@ -25,7 +25,7 @@
                                 <xsd:element
                                     name="programControlHistory"
                                     type="yukon:ProgramControlHistory"
-                                    maxOccurs="unbounded" />
+                                    minOccurs="0" maxOccurs="unbounded" />
                             </xsd:sequence>
                         </xsd:complexType>
                     </xsd:element>
