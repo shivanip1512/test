@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
+
+  <bean id="programService" class="com.cannontech.cc.service.ProgramServiceImpl" scope="singleton" dependency-check="objects">
+    <property name="energyCompanyDao" ref="energyCompanyDao"/>
+    <property name="baseEventDao" ref="baseEventDao"/>
+    <property name="programDao" ref="programDao"/>
+    <property name="programParameterDao" ref="programParameterDao"/>
+    <property name="groupDao" ref="groupDao"/>
+    <property name="programTypeDao" ref="programTypeDao"/>
+    <property name="availableProgramGroupDao" ref="availableProgramGroupDao"/>
+    <property name="programNotificationGroupDao" ref="programNotificationGroupDao"/>
+  </bean>
+  <bean id="groupService" class="com.cannontech.cc.service.GroupServiceImpl" scope="singleton" dependency-check="objects">
+    <property name="customerStubDao" ref="customerStubDao"/>
+    <property name="groupCustomerNotifDao" ref="groupCustomerNotifDao"/>
+    <property name="pointTypeHelper" ref="customerPointTypeHelper"/>
+    <property name="energyCompanyDao" ref="energyCompanyDao"/>
+    <property name="groupDao" ref="groupDao"/>
+  </bean>
+  <bean id="eventService" class="com.cannontech.cc.service.EventService" scope="singleton" dependency-check="objects">
+    <property name="baseEventDao" ref="baseEventDao"/>
+    <property name="strategyFactory" ref="strategyFactory"/>
+  </bean>
+  <bean id="customerPointService" class="com.cannontech.cc.service.CustomerPointService" dependency-check="objects">
+    <property name="customerStubDao" ref="customerStubDao"/>
+    <property name="pointTypeHelper" ref="customerPointTypeHelper"/>
+    <property name="pointAccess" ref="simplePointAccessDao"/>
+    <property name="pointTypeLookup" ref="customerPointTypeLookup"/>
+  </bean>
+  <bean id="customerLMProgramService" class="com.cannontech.cc.service.CustomerLMProgramService" dependency-check="objects">
+    <property name="lmDao" ref="lmDao"/>
+    <property name="lmDirectCustomerListDao" ref="lmDirectCustomerListDao"/>
+  </bean>
+  <bean id="customerEventService" class="com.cannontech.cc.service.CustomerEventService" dependency-check="objects">
+    <property name="customerDao" ref="customerDao"/>
+    <property name="customerStubDao" ref="customerStubDao"/>
+    <property name="baseEventDao" ref="baseEventDao"/>
+    <property name="eventService" ref="eventService"/>
+  </bean>
+  <bean id="economicService" class="com.cannontech.cc.service.EconomicService" dependency-check="objects">
+    <property name="customerStubDao" ref="customerStubDao"/>
+    <property name="economicEventDao" ref="economicEventDao"/>
+    <property name="strategyFactory" ref="strategyFactory"/>
+    <property name="economicEventNotifDao" ref="economicEventNotifDao"/>
+    <property name="economicEventParticipantDao" ref="economicEventParticipantDao"/>
+    <property name="customerDao" ref="customerDao"/>
+  </bean>
+  <bean id="strategyFactory" class="com.cannontech.cc.service.StrategyFactory" />
+  <bean id="notificationService" class="com.cannontech.cc.service.NotificationService" autowire="byType"/>
+  
+  <bean id="commercialCurtailmentStrategyBase" class="com.cannontech.cc.service.StrategyBase" abstract="true">
+    <property name="loadPoint" value="CurrentLoad"/>
+    <property name="contractFirmDemand" value="ContractFrmDmd"/>
+    
+    <property name="groupService" ref="groupService"/>
+    <property name="notificationProxy" ref="notificationProxy"/>
+    <property name="pointAccess" ref="simplePointAccessDao"/>
+    <property name="pointTypeHelper" ref="customerPointTypeHelper"/>
+    <property name="programService" ref="programService"/>
+    <property name="programDao" ref="programDao"/>
+    <property name="programParameterDao" ref="programParameterDao"/>
+  </bean>
+  
+  <bean id="genericNotification" class="com.cannontech.cc.service.BaseNotificationStrategy" dependency-check="objects"
+        abstract="true" parent="commercialCurtailmentStrategyBase">
+    <property name="methodKey" value="notification"/>
+    <property name="parameters">
+      <set>
+        <value>DEFAULT_EVENT_OFFSET_MINUTES</value>
+        <value>DEFAULT_NOTIFICATION_OFFSET_MINUTES</value>
+        <value>DEFAULT_EVENT_DURATION_MINUTES</value>
+        <value>MINIMUM_EVENT_DURATION_MINUTES</value>
+        <value>MINIMUM_NOTIFICATION_MINUTES</value>
+      </set>
+    </property>
+    <property name="curtailmentEventParticipantDao" ref="curtailmentEventParticipantDao"/>
+    <property name="curtailmentEventNotifDao" ref="curtailmentEventNotifDao"/>
+    <property name="transactionTemplate" ref="transactionTemplate"/>
+    <property name="curtailmentEventDao" ref="curtailmentEventDao"/>
+    <property name="programDao" ref="programDao"/>
+  </bean>
+  
+  <bean id="isocNotification" class="com.cannontech.cc.service.IsocNotificationStrategy" 
+        parent="genericNotification"
+        autowire="byType">
+    <property name="isocCommonStrategy" ref="isocCommonStrategy"/>
+  </bean>
+  
+  <bean id="genericDirect" class="com.cannontech.cc.service.BaseDirectStrategy" 
+        parent="genericNotification" abstract="true"
+        autowire="byType">
+    <property name="loadManagementService" ref="loadManagementService"/>
+    <property name="customerLMProgramService" ref="customerLMProgramService"/>
+  </bean>
+  
+  <bean id="isocDirect" class="com.cannontech.cc.service.IsocDirectStrategy" 
+        parent="genericDirect"
+        autowire="byType">
+    <property name="isocCommonStrategy" ref="isocCommonStrategy"/>
+  </bean>
+  
+  <bean id="isocSupersedeNotification" class="com.cannontech.cc.service.IsocSupersedeNotificationStrategy" 
+        parent="genericNotification"
+        autowire="byType">
+    <property name="isocCommonStrategy" ref="isocCommonStrategy"/>
+  </bean>
+  
+  <bean id="isocSupersedeDirect" class="com.cannontech.cc.service.IsocSupersedeDirectStrategy" 
+        parent="genericDirect"
+        autowire="byType">
+    <property name="isocCommonStrategy" ref="isocCommonStrategy"/>
+  </bean>
+  
+  
+  <bean id="genericEconomic" class="com.cannontech.cc.service.BaseEconomicStrategy" autowire="byType"
+        abstract="true" parent="commercialCurtailmentStrategyBase">
+    <property name="methodKey" value="economic"/>
+    <property name="notificationProxy" ref="notificationProxy"/>
+    <property name="parameters">
+      <set>
+        <value>DEFAULT_EVENT_OFFSET_MINUTES</value>
+        <value>DEFAULT_NOTIFICATION_OFFSET_MINUTES</value>
+        <value>DEFAULT_EVENT_DURATION_MINUTES</value>
+        <value>MINIMUM_EVENT_DURATION_MINUTES</value>
+        <value>DEFAULT_ENERGY_PRICE</value>
+        <value>MINIMUM_NOTIFICATION_MINUTES</value>
+      </set>
+    </property>
+  </bean>
+  
+  <bean id="genericAccounting" class="com.cannontech.cc.service.BaseAccountingStrategy"
+  	parent="commercialCurtailmentStrategyBase">
+    <property name="methodKey" value="accounting"/>
+    <property name="notificationProxy" ref="notificationProxy"/>
+    <property name="parameters">
+      <set>
+        <value>DEFAULT_EVENT_DURATION_MINUTES</value>
+      </set>
+    </property>
+    <property name="accountingEventDao" ref="accountingEventDao"/>
+    <property name="accountingEventParticipantDao" ref="accountingEventParticipantDao"/>
+    <property name="transactionTemplate" ref="transactionTemplate"/>
+  </bean>
+  
+  <bean id="isocSameDay" class="com.cannontech.cc.service.IsocEconomicStrategy" 
+        parent="genericEconomic"
+        autowire="byType">
+    <property name="isocCommonStrategy" ref="isocCommonStrategy"/>
+    <property name="parameters">
+      <set merge="true">
+        <value>CUSTOMER_ELECTION_CUTOFF_MINUTES</value>
+      </set>
+    </property>
+  </bean>
+  
+  
+  <bean id="customerPointTypeLookup" class="com.cannontech.support.CustomerPointTypeLookup" 
+   scope="prototype" autowire="byType">
+   <property name="applicablePointLookup">
+     <map>
+       <entry key="ISOC">
+         <set>
+           <value>ContractFrmDmd</value>
+           <value>AdvBuyThroughKw</value>
+           <value>AdvBuyThrough$</value>
+           <value>InterruptHours</value>
+           <value>MinimumNotice</value>
+           <value>ContractIntLoad</value>
+           <value>MinEventDuration</value>
+           <value>InterruptHrs24Hr</value>
+         </set>
+       </entry>
+       <entry key="ISOC-load">
+         <set>
+           <value>CurrentLoad</value>
+         </set>
+       </entry>
+     </map>
+   </property>
+  </bean>
+  
+  <bean id="isocCommonStrategy" class="com.cannontech.cc.service.IsocCommonStrategy" scope="singleton" autowire="byType">
+    <property name="strategyKeys">
+      <set>
+        <value>isocSameDay</value>
+        <value>isocNotification</value>
+        <value>isocSupersedeNotification</value>
+        <value>isocDirect</value>
+        <value>genericAccounting</value>
+      </set>
+    </property>
+    <property name="requiredPointGroup" value="ISOC"/>
+  </bean>
+  
+  
+  <bean id="yukonHibeDao" abstract="true" 
+        class="com.cannontech.hibernate.YukonBaseHibernateDao">
+    <property name="sessionFactory" ref="hibernateSessionFactory" />
+  </bean>
+  
+  <bean id="yukonJdbcDao" abstract="true" 
+        class="com.cannontech.core.dao.support.YukonBaseJdbcDao">
+    <property name="jdbcTemplate" ref="jdbcTemplate" />
+  </bean>
+  
+  <bean id="programDao" class="com.cannontech.cc.daohibe.ProgramDaoImpl" parent="yukonHibeDao">
+    <property name="programGroupDao" ref="availableProgramGroupDao"/>
+    <property name="programParameterDao" ref="programParameterDao"/>
+    <property name="programNotificationGroupDao" ref="programNotificationGroupDao"/>
+  </bean>
+  <bean id="programTypeDao" class="com.cannontech.cc.daohibe.ProgramTypeDaoImpl" parent="yukonHibeDao"/>
+  <bean id="groupDao" class="com.cannontech.cc.daohibe.GroupDaoImpl" parent="yukonHibeDao">
+    <property name="groupCustomerNotifDao" ref="groupCustomerNotifDao"/>
+    <property name="programGroupDao" ref="availableProgramGroupDao"/>
+  </bean>
+  <bean id="availableProgramGroupDao" class="com.cannontech.cc.daohibe.AvailableProgramGroupDaoImpl" parent="yukonHibeDao"/>
+  <bean id="groupCustomerNotifDao" class="com.cannontech.cc.daohibe.GroupCustomerNotifDaoImpl" parent="yukonHibeDao"/>
+  <bean id="customerStubDao" class="com.cannontech.cc.daohibe.CustomerStubDaoImpl" parent="yukonHibeDao"/>
+  <bean id="curtailmentEventDao" class="com.cannontech.cc.daohibe.CurtailmentEventDaoImpl" parent="yukonHibeDao">
+    <property name="curtailmentEventParticipantDao" ref="curtailmentEventParticipantDao"/>
+  </bean>
+  <bean id="curtailmentEventNotifDao" class="com.cannontech.cc.daohibe.CurtailmentEventNotifDaoImpl" parent="yukonHibeDao"/>
+  <bean id="curtailmentEventParticipantDao" class="com.cannontech.cc.daohibe.CurtailmentEventParticipantDaoImpl" parent="yukonHibeDao">
+    <property name="curtailmentEventNotifDao" ref="curtailmentEventNotifDao"/>
+  </bean>
+  <bean id="programParameterDao" class="com.cannontech.cc.daohibe.ProgramParameterDaoImpl" parent="yukonHibeDao"/>
+  <bean id="economicEventDao" class="com.cannontech.cc.daohibe.EconomicEventDaoImpl" parent="yukonHibeDao">
+    <property name="economicEventParticipantDao" ref="economicEventParticipantDao"/>
+  </bean>
+  <bean id="economicEventParticipantDao" class="com.cannontech.cc.daohibe.EconomicEventParticipantDaoImpl" parent="yukonHibeDao">
+    <property name="economicEventNotifDao" ref="economicEventNotifDao"/>
+  </bean>
+  <bean id="economicEventNotifDao" class="com.cannontech.cc.daohibe.EconomicEventNotifDaoImpl" parent="yukonHibeDao"/>
+  <bean id="economicEventParticipantSelectionDao" class="com.cannontech.cc.daohibe.EconomicEventParticipantSelectionDaoImpl" parent="yukonHibeDao"/>
+  <bean id="economicEventParticipantSelectionWindowDao" class="com.cannontech.cc.daohibe.EconomicEventParticipantSelectionWindowImpl" parent="yukonHibeDao"/>
+  <bean id="economicEventPricingDao" class="com.cannontech.cc.daohibe.EconomicEventPricingDaoImpl" parent="yukonHibeDao"/>
+  <bean id="economicEventPricingWindowDao" class="com.cannontech.cc.daohibe.EconomicEventPricingWindowDaoImpl" parent="yukonHibeDao"/>
+  <bean id="accountingEventDao" class="com.cannontech.cc.daohibe.AccountingEventDaoImpl" parent="yukonHibeDao">
+    <property name="accountingEventParticipantDao" ref="accountingEventParticipantDao"/>
+  </bean>
+  <bean id="accountingEventParticipantDao" class="com.cannontech.cc.daohibe.AccountingEventParticipantDaoImpl" parent="yukonHibeDao"/>
+  <bean id="programNotificationGroupDao" class="com.cannontech.cc.daojdbc.ProgramNotificationGroupDaoImpl" parent="yukonJdbcDao">
+    <property name="notificationGroupDao" ref="notificationGroupDao"/>
+  </bean>
+  <bean id="baseEventDao" class="com.cannontech.cc.dao.BaseEventDao" autowire="byType">
+    <property name="childDaos">
+      <set>
+        <ref bean="curtailmentEventDao"/>
+        <ref bean="economicEventDao"/>
+        <ref bean="accountingEventDao"/>
+      </set>
+    </property>
+  </bean>
+  
+  
+  <bean id="customerPointTypeHelper" class="com.cannontech.support.CustomerPointTypeHelper">
+      <property name="customerStubDao" ref="customerStubDao" />
+      <property name="pointTypeLookup" ref="customerPointTypeLookup" />
+      <property name="pointDao" ref="pointDao" />
+      <property name="pointAccessDao" ref="simplePointAccessDao" />
+      <property name="deviceDao" ref="deviceDao" />
+      <property name="dbPersistentDao" ref="dbPersistentDao" />
+  </bean>
+</beans>
