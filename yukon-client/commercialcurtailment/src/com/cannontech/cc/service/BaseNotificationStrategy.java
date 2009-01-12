@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.TimeZone;
 
 import org.springframework.transaction.TransactionStatus;
@@ -16,6 +17,7 @@ import com.cannontech.cc.dao.CurtailmentEventDao;
 import com.cannontech.cc.dao.CurtailmentEventNotifDao;
 import com.cannontech.cc.dao.CurtailmentEventParticipantDao;
 import com.cannontech.cc.model.BaseEvent;
+import com.cannontech.cc.model.CICustomerStub;
 import com.cannontech.cc.model.CurtailmentEvent;
 import com.cannontech.cc.model.CurtailmentEventParticipant;
 import com.cannontech.cc.model.GroupCustomerNotif;
@@ -33,6 +35,7 @@ import com.cannontech.common.util.TimeUtil;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.enums.CurtailmentEventAction;
 import com.cannontech.user.YukonUserContext;
+import com.google.common.collect.Sets;
 
 public abstract class BaseNotificationStrategy extends StrategyBase implements NotificationStrategy {
     private CurtailmentEventDao curtailmentEventDao;
@@ -99,7 +102,7 @@ public abstract class BaseNotificationStrategy extends StrategyBase implements N
                 verifiedCustomerList.add(vCustomer);
             }
         }
-        builder.setNewCustomerList(verifiedCustomerList);
+        builder.setRemoveCustomerList(verifiedCustomerList);
         return builder;
     }
 
@@ -255,28 +258,77 @@ public abstract class BaseNotificationStrategy extends StrategyBase implements N
 	//THIS METHOD IS INCOMPLETE (AND PROBABLY WRONG), IT HAS BEEN PLACED HERE AS A PLACEHOLDER
     public CurtailmentEvent splitEvent(final CurtailmentRemoveCustomerBuilder builder, final LiteYukonUser user) 
     throws EventModificationException {
-        final CurtailmentEvent event = builder.getOriginalEvent();
-        CTILogger.debug("Removing Customer event: " + event);
-        transactionTemplate.execute(new TransactionCallback(){
+        final CurtailmentEvent origEvent = builder.getOriginalEvent();
+        CTILogger.debug("Removing Customer event: " + origEvent);
+        final CurtailmentEvent splitEvent = (CurtailmentEvent)transactionTemplate.execute(new TransactionCallback(){
             public Object doInTransaction(TransactionStatus status) {
-                if (!canCustomersBeRemovedFromEvent(event, user)) {
+                if (!canCustomersBeRemovedFromEvent(origEvent, user)) {
                     throw new EventModificationException("Event cannot be modified at this time by this user.");
                 }
-                //TODO need to split event into two?
-//                event.setDuration(builder.getNewLength());
-//                event.setMessage(builder.getNewMessage());
 
-                event.setState(CurtailmentEventState.MODIFIED);
-                curtailmentEventDao.save(event);
+                // update state of original event
+                origEvent.setState(CurtailmentEventState.MODIFIED);
                 
-                return event;
+                // save
+                curtailmentEventDao.save(origEvent);
+                
+                // determine customer to be removed
+                List<VerifiedPlainCustomer> customersToBeSplitOffList = builder.getRemoveCustomerList();
+                Set<CICustomerStub> customersToBeSplitOff = Sets.newHashSet();
+                for (VerifiedPlainCustomer verifiedPlainCustomer : customersToBeSplitOffList) {
+					// possible check for actual inclusion in split would happen here
+                	customersToBeSplitOff.add(verifiedPlainCustomer.getCustomer());
+				}
+
+                // create new event
+                CurtailmentEvent splitEvent = new CurtailmentEvent();
+                Integer identifier = programDao.incrementAndReturnIdentifier(origEvent.getProgram());
+                splitEvent.setIdentifier(identifier);
+                
+                // copy fields from origEvent
+                splitEvent.setProgram(origEvent.getProgram());
+                splitEvent.setMessage(origEvent.getMessage());
+                splitEvent.setNotificationTime(origEvent.getNotificationTime());
+                
+                // set start to original start
+                splitEvent.setStartTime(origEvent.getStartTime());
+                
+                // set duration to now - start
+                Date splitStopTime = new Date(); // now
+                int splitDuration = TimeUtil.differenceMinutes(origEvent.getStartTime(), splitStopTime);
+                splitEvent.setDuration(splitDuration);
+                
+                // set state
+                splitEvent.setState(CurtailmentEventState.SPLIT);
+                
+                // save new event (must happen before we can add participants)
+                curtailmentEventDao.save(splitEvent);
+                
+                // remove customers from original event, add to split event
+                List<CurtailmentEventParticipant> allOrigEventParticipants = curtailmentEventParticipantDao.getForEvent(origEvent);
+                for (CurtailmentEventParticipant origEventParticipant : allOrigEventParticipants) {
+					if (customersToBeSplitOff.contains(origEventParticipant.getCustomer())) {
+						// remove from original event
+						curtailmentEventParticipantDao.delete(origEventParticipant);
+
+						// add to new event (to avoid hibernate weirdness, create new participant object
+						CurtailmentEventParticipant splitEventParticipant = new CurtailmentEventParticipant();
+						splitEventParticipant.setCustomer(origEventParticipant.getCustomer());
+						splitEventParticipant.setEvent(splitEvent);
+						splitEventParticipant.setNotifAttribs(origEventParticipant.getNotifAttribs());
+						curtailmentEventParticipantDao.save(splitEventParticipant);
+					}
+				}
+        
+                return splitEvent;
             } 
         });
-        CTILogger.info(event + " modified by " + user);
-        
-//        getNotificationProxy().sendCurtailmentNotification(event.getId(), CurtailmentEventAction.ADJUSTING);
-//        sendProgramNotifications(event, curtailmentEventParticipantDao.getForEvent(event), "adjusted");
-        return event;
+        //TODO - change to include both events.
+        CTILogger.info(origEvent + " split and " + splitEvent + " created by " + user);
+
+        getNotificationProxy().sendCurtailmentNotification(splitEvent.getId(), CurtailmentEventAction.ADJUSTING);
+        sendProgramNotifications(splitEvent, curtailmentEventParticipantDao.getForEvent(splitEvent), "split");
+        return origEvent;
     }
     
     @Transactional

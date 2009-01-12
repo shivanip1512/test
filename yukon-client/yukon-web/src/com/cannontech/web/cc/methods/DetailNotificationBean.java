@@ -1,7 +1,6 @@
 package com.cannontech.web.cc.methods;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.faces.model.DataModel;
@@ -97,7 +96,7 @@ public class DetailNotificationBean implements BaseDetailBean {
         removeBuilder = getStrategy().createRemoveBuilder(getEvent());
         
         removeCustomerList = new ArrayList<RemoveableCustomer>();
-        List<VerifiedPlainCustomer> availableCustomerList = removeBuilder.getNewCustomerList();
+        List<VerifiedPlainCustomer> availableCustomerList = removeBuilder.getRemoveCustomerList();
         for (VerifiedPlainCustomer vCustomer : availableCustomerList) {
             removeCustomerList.add(new RemoveableCustomer(vCustomer));
         }
@@ -211,19 +210,14 @@ public class DetailNotificationBean implements BaseDetailBean {
         return strategy.getConstraintStatus(rCustomer.getCustomer());
     }
     
-    public List<VerifiedPlainCustomer> getSelectedCustomers() {
-        List<VerifiedPlainCustomer> result = new LinkedList<VerifiedPlainCustomer>();
+    public String doCustomerRemoveComplete() {
         for (RemoveableCustomer remCustomer : removeCustomerList) {
-            if (remCustomer.isSelected()) {
+            if (!remCustomer.isSelected()) {
                 VerifiedPlainCustomer customer = remCustomer.getCustomerDelegate();
-                result.add(customer);
+                removeBuilder.getRemoveCustomerList().remove(customer);
             }
         }
-        return result;
-    }
-    
-    public String doCustomerRemoveComplete() {
-        if (getSelectedCustomers().isEmpty()) {
+        if (removeBuilder.getRemoveCustomerList().isEmpty()) {
             JSFUtil.addNullWarnMessage("At least one Customer must be selected.");
             return null;
         }

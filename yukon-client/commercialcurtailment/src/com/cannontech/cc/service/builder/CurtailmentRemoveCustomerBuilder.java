@@ -6,17 +6,17 @@ import com.cannontech.cc.model.CurtailmentEvent;
 
 public class CurtailmentRemoveCustomerBuilder extends EventBuilderBase {
     private CurtailmentEvent originalEvent;
-    private List<VerifiedPlainCustomer> newCustomerList;
+    private List<VerifiedPlainCustomer> removeCustomerList;
 
     public CurtailmentRemoveCustomerBuilder(CurtailmentEvent originalEvent) {
         this.originalEvent = originalEvent;
     }
     
-    public void setNewCustomerList(List<VerifiedPlainCustomer> newCustomerList) {
-        this.newCustomerList = newCustomerList;
+    public void setRemoveCustomerList(List<VerifiedPlainCustomer> removeCustomerList) {
+        this.removeCustomerList = removeCustomerList;
     }
-    public List<VerifiedPlainCustomer> getNewCustomerList() {
-        return newCustomerList;
+    public List<VerifiedPlainCustomer> getRemoveCustomerList() {
+        return removeCustomerList;
     }
     
     public CurtailmentEvent getOriginalEvent() {
