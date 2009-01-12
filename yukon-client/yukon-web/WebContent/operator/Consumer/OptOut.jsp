@@ -30,8 +30,12 @@
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
-<link rel="stylesheet" href="../../WebConfig/yukon/styles/calendarControl.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
+
+<!-- include calendar control stylesheet and .js file since this is NOT a standard page -->
+<link rel="stylesheet" href="../../WebConfig/yukon/styles/calendarControl.css" type="text/css">
+<script language="JavaScript" type="text/javascript"  src="/JavaScript/calendarControl.js"></script>
+
 </head>
 
 <body class="Background" leftmargin="0" topmargin="0" onload="initialize()">
