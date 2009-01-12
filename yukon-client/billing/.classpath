@@ -18,6 +18,5 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/yukonappserver"/>
 	<classpathentry kind="lib" path="/third-party/commons-discovery.jar"/>
 	<classpathentry kind="lib" path="/third-party/wsdl4j.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/commercialcurtailment"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

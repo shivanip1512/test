@@ -9,7 +9,6 @@ Class-Path: ./
  poi.jar 
  common.jar 
  yukonappserver.jar 
- commercialcurtailment.jar 
  jcpagelayout450K.jar 
  rwav.jar 
  acme.jar 

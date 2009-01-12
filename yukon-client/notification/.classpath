@@ -13,7 +13,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="/third-party/mx4j.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/commercialcurtailment"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/cbc"/>
 	<classpathentry kind="lib" path="/third-party/mail.jar"/>
 	<classpathentry kind="output" path="bin"/>

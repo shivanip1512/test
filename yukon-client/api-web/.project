@@ -8,7 +8,6 @@
 		<project>yukonappserver</project>
 		<project>loadcontrol</project>
 		<project>stars</project>
-		<project>commercialcurtailment</project>
 		<project>common</project>
 	</projects>
 	<buildSpec>

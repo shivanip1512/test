@@ -128,7 +128,6 @@
           <ant dir="${api}" target="${dotarget}"/>
         
           <ant dir="${tools}" target="${dotarget}" />
-          <ant dir="${commercialcurtailment}" target="${dotarget}"/>
 
           <ant dir="${multispeak}" target="${dotarget}"/>
           <ant dir="${foreign}" target="${dotarget}"/>

@@ -2,8 +2,7 @@ Manifest-Version: 1.0
 Main-Class: com.cannontech.billing.mainprograms.BillingFileFormatPanel
 Class-Path: ./ 
  common.jar 
- yukonappserver.jar
- commercialcurtailment.jar 
+ yukonappserver.jar 
  SqlServer.jar 
  activation.jar 
  axis.jar 
