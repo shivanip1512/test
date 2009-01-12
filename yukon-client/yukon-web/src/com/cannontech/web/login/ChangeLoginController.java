@@ -52,11 +52,7 @@ public class ChangeLoginController {
         final YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
         final LiteYukonUser user = yukonUserContext.getYukonUser();
         final AuthType type = user.getAuthType();
-        
-        boolean accessAllowed = authDao.checkRoleProperty(user, ResidentialCustomerRole.CONSUMER_INFO_CHANGE_LOGIN_PASSWORD);
-        if (!accessAllowed) {
-            throw new NotAuthorizedException("The supplied user is not authorized to use this functionality.");
-        }
+        authDao.verifyTrueProperty(user, ResidentialCustomerRole.CONSUMER_INFO_CHANGE_LOGIN_PASSWORD);
         
         final boolean isValidPassword = isValidPassword(user.getUsername(), oldPassword);
         boolean supportsPasswordChange = authenticationService.supportsPasswordChange(type);
@@ -90,11 +86,7 @@ public class ChangeLoginController {
         
         final YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
         final LiteYukonUser user = yukonUserContext.getYukonUser();
-
-        boolean accessAllowed = authDao.checkRoleProperty(user, ResidentialCustomerRole.CONSUMER_INFO_CHANGE_LOGIN_USERNAME);
-        if (!accessAllowed) {
-            throw new NotAuthorizedException("The user was not authorized to call this function");
-        }
+        authDao.verifyTrueProperty(user, ResidentialCustomerRole.CONSUMER_INFO_CHANGE_LOGIN_USERNAME);
         
         final boolean isValidPassword = isValidPassword(user.getUsername(), oldPassword);
         final boolean hasRequiredFields = hasRequiredFields(username, oldPassword);

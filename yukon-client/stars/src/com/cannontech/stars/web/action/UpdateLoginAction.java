@@ -4,10 +4,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
 
+import org.springframework.web.bind.ServletRequestUtils;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
-import com.cannontech.common.exception.BadAuthenticationException;
-import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.authentication.service.AuthType;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.AuthDao;
@@ -62,14 +62,31 @@ public class UpdateLoginAction implements ActionBase {
 	public SOAPMessage build(HttpServletRequest req, HttpSession session) {
 		try {
 			StarsUpdateLogin updateLogin = new StarsUpdateLogin();
+	        AuthDao authDao = DaoFactory.getAuthDao();
+			ContactDao contactDao = DaoFactory.getContactDao();
 		
-			updateLogin.setUsername( req.getParameter("Username").trim() );
-	        
-			if (req.getParameter("Password") != null)
-			    updateLogin.setPassword( req.getParameter("Password").trim() );
-			else
-			    updateLogin.setPassword( "" );
+			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
+            LiteStarsCustAccountInformation liteAcctInfo = 
+                (LiteStarsCustAccountInformation) session.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
+            LiteYukonUser previousYukonUser = contactDao.getYukonUser(liteAcctInfo.getCustomer().getPrimaryContactID());
 
+            if (!authDao.checkRoleProperty(user.getUserID(), 
+                                           ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN_USERNAME)) {
+                updateLogin.setUsername(previousYukonUser.getUsername());
+            } else {
+                String username = ServletRequestUtils.getRequiredStringParameter(req, "Username").trim();
+                updateLogin.setUsername(username);
+                
+            }
+            
+            if (!authDao.checkRoleProperty(user.getUserID(), 
+                                           ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD)) {
+                updateLogin.setPassword("");
+            } else {
+                String password = ServletRequestUtils.getRequiredStringParameter(req, "Password").trim();
+                updateLogin.setPassword(password);
+            }
+			
 			if (req.getParameter("Status") != null)
 				updateLogin.setStatus( StarsLoginStatus.valueOf(req.getParameter("Status")) );
 			else
@@ -95,36 +112,15 @@ public class UpdateLoginAction implements ActionBase {
 	 */
 	public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
 		StarsOperation respOper = new StarsOperation();
-		AuthDao authDao = DaoFactory.getAuthDao();
-		ContactDao contactDao = DaoFactory.getContactDao();
-		AuthenticationService authenticationService = YukonSpringHook.getBean("authenticationService", AuthenticationService.class);
-		
+
 		try {
 			StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
 			StarsUpdateLogin updateLogin = reqOper.getStarsUpdateLogin();
             
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-			LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
-			LiteStarsCustAccountInformation liteAcctInfo = 
-			    (LiteStarsCustAccountInformation) session.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
-			LiteYukonUser previousYukonUser = contactDao.getYukonUser(liteAcctInfo.getCustomer().getPrimaryContactID());
-			
-			if (!authDao.checkRoleProperty(user.getUserID(), 
-			                               ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN_USERNAME) &&
-			    !updateLogin.getUsername().equals(previousYukonUser.getUsername())) {
-			    throw new NotAuthorizedException("The supplied user is not authorized to use this functionality.");
-			}
-			
-			if (!authDao.checkRoleProperty(user.getUserID(), 
-	                                       ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD) && 
-	            updateLogin.getPassword().length() > 0){
-			    try {
-			        authenticationService.login(previousYukonUser.getUsername(), updateLogin.getPassword()); 
-			    } catch (BadAuthenticationException e){
-			        throw new NotAuthorizedException("The supplied user is not authorized to use this functionality.");
-			    }
-	        }
-	         
+            LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
+            LiteStarsCustAccountInformation liteAcctInfo = 
+                (LiteStarsCustAccountInformation) session.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
 			
 			try {
 				updateLogin( updateLogin, liteAcctInfo, energyCompany, false );

@@ -112,20 +112,19 @@ function deleteLogin(form) {
                         <% if (login.getStatus().getType() == StarsLoginStatus.ENABLED_TYPE) { %>checked<% } %>>
                       Login Enabled </td>
                   </tr>
+                  
+                  <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN_USERNAME %>">
                   <tr> 
                     <td width="128" class="TableCell"> 
                       <div align="right">New User Name: </div>
                     </td>
                     <td width="268"> 
-                      <cti:checkNoProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN_USERNAME %>">
-                        <input type="hidden" name="Username" value="<%= login.getUsername() %>" />
-                        <%= login.getUsername() %>
-                      </cti:checkNoProperty>
-                      <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN_USERNAME %>">
-                        <input type="text" name="Username" maxlength="20" size="20" value="<%= login.getUsername() %>" onchange="setContentChanged(true)">
-                      </cti:checkProperty>
+                      <input type="text" name="Username" maxlength="20" size="20" value="<%= login.getUsername() %>" onchange="setContentChanged(true)" />
                     </td>
                   </tr>
+                  </cti:checkProperty>
+
+                  <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD %>">
                   <tr> 
                     <td width="128" class="TableCell"> 
                       <div align="right">New Password:</div>
@@ -133,23 +132,25 @@ function deleteLogin(form) {
                     <td width="268"> 
                       <input type="password" name="Password" maxlength="20" size="20" onchange="setContentChanged(true)" 
                         <cti:checkNoProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD %>">
-                          disabled
+                          readonly
                         </cti:checkNoProperty>
                       >
                     </td>
                   </tr>
+                  </cti:checkProperty>
+
+                  <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD %>">
 				  <tr> 
                     <td width="128" class="TableCell"> 
                       <div align="right">Confirm Password:</div>
                     </td>
                     <td width="268"> 
-                      <input type="password" name="Password2" maxlength="20" size="20"
-                      <cti:checkNoProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD %>">
-                          disabled
-                        </cti:checkNoProperty>
-                      >
+                        <input type="password" name="Password2" maxlength="20" size="20" >
                     </td>
                   </tr>
+                  </cti:checkProperty>
+
+                  <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD %>">
                   <tr> 
                     <td width="128" class="TableCell">&nbsp;</td>
                     <td width="268"> 
@@ -158,6 +159,7 @@ function deleteLogin(form) {
                       </cti:checkProperty>
                     </td>
                   </tr>
+                  </cti:checkProperty>
                 </table>
               <br>
                 <table width="400" border="0" cellspacing="0" cellpadding="5" align="center" bgcolor="#FFFFFF">
