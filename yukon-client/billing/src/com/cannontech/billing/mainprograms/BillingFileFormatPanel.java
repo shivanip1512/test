@@ -30,6 +30,7 @@ import com.cannontech.spring.YukonSpringHook;
 
 public class BillingFileFormatPanel extends javax.swing.JPanel implements java.awt.event.ActionListener, java.awt.event.FocusListener, java.util.Observer
 {
+	private BillingFileDefaults billingFileDefaults = null;
 	private javax.swing.JComboBox ivjFileFormatComboBox = null;
 	private javax.swing.JLabel ivjFileFormatLabel = null;
 	private javax.swing.JPanel ivjFileFormatPanel = null;
@@ -184,8 +185,7 @@ private void generateFile()
 		getGenerateFileToggleButton().setText("Generate File");
 
 		//Interrupt billing file generation.
-        if( getBillingFile().getFileFormatBase() != null){
-            getBillingFile().getFileFormatBase().closeDBConnection();
+        if( getBillingFile().getSimpleBillingFormat() != null){
             update( billingFile, "User canceled billing process" );
         } //else //TODO - How to interrupt the BillingFormatter
 
@@ -199,13 +199,12 @@ private void generateFile()
 		
 	setBillingDefaults(defaults);
     try {
-        setBillingFormatter(getBillingDefaults().getFormatID());
+        setBillingFormatter(getBillingDefaults());
     } catch (Error e) {
         // We must be using a billing formatter instead.
     }
 
-	if( getBillingFile().getFileFormatBase() != null || getBillingFile().getBillingFormatter() != null)
-	{
+	if( getBillingFile().getSimpleBillingFormat() != null) {
 		getBillingFile().addObserver( this );
 
 		Thread billingThread = new Thread( getBillingFile(), "BillingFileThread" );
@@ -229,9 +228,11 @@ private void generateFile()
 		com.cannontech.clientutils.CTILogger.info(getBillingDefaults().getFormatID() + " unrecognized file format id");
 	}
 }
-public BillingFileDefaults getBillingDefaults()
-{
-	return billingFile.getBillingDefaults();
+public BillingFileDefaults getBillingDefaults() {
+	if( billingFileDefaults == null) {
+		billingFileDefaults = new BillingFileDefaults();
+	}
+	return billingFileDefaults;
 }
 /**
  * Return the JLabel1 property value.
@@ -446,7 +447,7 @@ private javax.swing.JComboBox getFileFormatComboBox() {
 
 			//set default value
 			ivjFileFormatComboBox.setSelectedItem((String)FileFormatTypes.getFormatType( getBillingDefaults().getFormatID() ));
-			setBillingFormatter(getBillingDefaults().getFormatID());
+			setBillingFormatter(getBillingDefaults());
 			//enableComponents();
 			
 			ivjFileFormatComboBox.addActionListener(this);
@@ -712,7 +713,7 @@ private javax.swing.JTree getGroupList() {
             ivjGroupTree.setModel(model);
 
 			//Select one/multiple billing groups.
-			List<String> selectedGroups = billingFile.getBillingDefaults().getDeviceGroups();
+			List<String> selectedGroups = getBillingDefaults().getDeviceGroups();
             for (String groupName : selectedGroups) {
                 DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
                 TreePath pathForGroup = modelFactory.getPathForGroup((TreeNode) model.getRoot(), group);
@@ -1146,8 +1147,6 @@ public BillingFileDefaults retrieveBillingDefaultsFromGui()
     
 	if( deviceGroups.isEmpty())
 	{
-		if ( getBillingFile().getFileFormatBase() != null)
-			getBillingFile().getFileFormatBase().closeDBConnection();
 		update( billingFile, "Please make a billing group selection." );
 		return null;
 	}
@@ -1173,18 +1172,14 @@ public BillingFileDefaults retrieveBillingDefaultsFromGui()
 }
 private void setBillingDefaults(BillingFileDefaults newDefaults)
 {
-	getBillingFile().setBillingDefaults(newDefaults);
-}
-private void setBillingFile(BillingFile newBillingFile)
-{
-	billingFile = newBillingFile;
+	this.billingFileDefaults = newDefaults;
 }
 /**
  * @param int formatID 
  */
-private void setBillingFormatter(int formatID)
+private void setBillingFormatter(BillingFileDefaults billingFileDefaults)
 {
-	getBillingFile().setBillingFormatter(formatID);
+	getBillingFile().setBillingFormatter(billingFileDefaults);
 }
 /**
  * Insert the method's description here.

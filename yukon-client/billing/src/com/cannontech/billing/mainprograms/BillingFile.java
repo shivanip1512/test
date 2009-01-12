@@ -5,30 +5,28 @@ package com.cannontech.billing.mainprograms;
  * Creation date: (5/7/2002 2:16:34 PM)
  * @author: 
  */
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Collections;
-import java.util.List;
 
-import com.cannontech.billing.BillingDao;
-import com.cannontech.billing.FileFormatBase;
-import com.cannontech.billing.FileFormatFactory;
 import com.cannontech.billing.FileFormatTypes;
-import com.cannontech.billing.device.base.BillableDevice;
-import com.cannontech.billing.format.BillingFormatter;
-import com.cannontech.billing.format.BillingFormatterFactory;
+import com.cannontech.billing.SimpleBillingFormat;
+import com.cannontech.billing.SimpleBillingFormatFactory;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.groups.service.FixedDeviceGroups;
+import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.authentication.service.AuthenticationService;
+import com.cannontech.core.authentication.service.impl.AuthenticationServiceImpl;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.user.SystemUserContext;
 import com.cannontech.util.ServletUtil;
 
 public class BillingFile extends java.util.Observable implements Runnable
 {
-	private BillingFileDefaults billingDefaults = null;
-	private FileFormatBase fileFormatBase = null;
+	private SimpleBillingFormat simpleBillingFormat = null;
     
-    private BillingFormatter billingFormatter = null;
-
     /**
 	 * BillingFile constructor comment.
 	 */
@@ -51,10 +49,12 @@ public class BillingFile extends java.util.Observable implements Runnable
 
 			char argDel = '=';
 			BillingFile billingFile = new BillingFile();
-			
+			BillingFileDefaults billingFileDefaults = new BillingFileDefaults();
 			//Default the billingEndDate for command line use to tomorrow (midnight tonight).  May be overridden by command arg "end"
-			billingFile.getBillingDefaults().setEndDate(ServletUtil.getTomorrow());
+			billingFileDefaults.setEndDate(ServletUtil.getTomorrow());
 			
+			String username = null;
+			String password = null;
 			for ( int i = 0; i < args.length; i++)
 			{
 				if( i == 0)	//first loop through, verify the char '=' is our delimiter, else try ':'
@@ -76,19 +76,19 @@ public class BillingFile extends java.util.Observable implements Runnable
 				{//BillingFileDefaults.formatID
 					String subString = arg.substring(startIndex);
 					if( subString.length() > 2 )	//we accept int values of 0 - 12ish...so far.  Anything longer must be the string value.
-						billingFile.getBillingDefaults().setFormatID(FileFormatTypes.getFormatID(subString));
+						billingFileDefaults.setFormatID(FileFormatTypes.getFormatID(subString));
 					else
-						billingFile.getBillingDefaults().setFormatID(Integer.valueOf(subString).intValue());
+						billingFileDefaults.setFormatID(Integer.valueOf(subString).intValue());
 				}
 				else if( argLowerCase.startsWith("dem"))
 				{//BillingFileDefaults.demandDaysPrevious
 					String subString = arg.substring(startIndex);
-					billingFile.getBillingDefaults().setDemandDaysPrev(Integer.valueOf(subString).intValue());
+					billingFileDefaults.setDemandDaysPrev(Integer.valueOf(subString).intValue());
 				}
 				else if( argLowerCase.startsWith("ene"))
 				{//BillingFileDefaults.energyDaysPrevious
 					String subString = arg.substring(startIndex);
-					billingFile.getBillingDefaults().setEnergyDaysPrev(Integer.valueOf(subString).intValue());
+					billingFileDefaults.setEnergyDaysPrev(Integer.valueOf(subString).intValue());
 				}
 				else if( argLowerCase.startsWith("coll") ||  argLowerCase.startsWith("group") )
 				{//BillingFileDefaults.billGroupTypeString=COLLECTIONGROUP
@@ -100,7 +100,7 @@ public class BillingFile extends java.util.Observable implements Runnable
                     } else {
                         group = FixedDeviceGroups.COLLECTIONGROUP.getGroup(subString);
                     }
-					billingFile.getBillingDefaults().setDeviceGroups(Collections.singletonList(group));
+                    billingFileDefaults.setDeviceGroups(Collections.singletonList(group));
 				}
 				else if( argLowerCase.startsWith("test") ||  argLowerCase.startsWith("alt") )
 				{//BillingFileDefaults.billGroupTypeString=TESTCOLLECTIONGROUP
@@ -112,7 +112,7 @@ public class BillingFile extends java.util.Observable implements Runnable
                     } else {
                         group = FixedDeviceGroups.TESTCOLLECTIONGROUP.getGroup(subString);
                     }
-                    billingFile.getBillingDefaults().setDeviceGroups(Collections.singletonList(group));
+                    billingFileDefaults.setDeviceGroups(Collections.singletonList(group));
 				}
 				else if( argLowerCase.startsWith("bill") )
 				{//BillingFileDefaults.billGroupTypeString.BILLINGGROUP
@@ -124,45 +124,57 @@ public class BillingFile extends java.util.Observable implements Runnable
                     } else {
                         group = FixedDeviceGroups.BILLINGGROUP.getGroup(subString);
                     }
-                    billingFile.getBillingDefaults().setDeviceGroups(Collections.singletonList(group));
+                    billingFileDefaults.setDeviceGroups(Collections.singletonList(group));
 				}
 				else if( argLowerCase.startsWith("end"))
 				{//BillingFileDefaults.endDate
 					String subString = arg.substring(startIndex);
 					com.cannontech.util.ServletUtil.parseDateStringLiberally(subString);
-					billingFile.getBillingDefaults().setEndDate(ServletUtil.parseDateStringLiberally(subString));
+					billingFileDefaults.setEndDate(ServletUtil.parseDateStringLiberally(subString));
 				}
 				else if( argLowerCase.startsWith("file") || argLowerCase.startsWith("dir"))
 				{//BillingFileDefaults.outputFileDir
 					String subString = arg.substring(startIndex);
 					if( subString.indexOf(':') > 0)	//they remembered the whole directory
-						billingFile.getBillingDefaults().setOutputFileDir(subString);
+						billingFileDefaults.setOutputFileDir(subString);
 					else if( subString.indexOf("\\") > -1 || subString.indexOf("//") > -1)	//they are trying to use a UNC name
-						billingFile.getBillingDefaults().setOutputFileDir(subString);					
+						billingFileDefaults.setOutputFileDir(subString);					
 					else	//try to help out and default the directory
-						billingFile.getBillingDefaults().setOutputFileDir(CtiUtilities.getExportDirPath() + subString);
+						billingFileDefaults.setOutputFileDir(CtiUtilities.getExportDirPath() + subString);
 				}
 				else if( argLowerCase.startsWith("mult"))
 				{//BillingFileDefuaults.removeMultiplier
 					String subString = arg.substring(startIndex);
 					if( subString.startsWith("t"))
-						billingFile.getBillingDefaults().setRemoveMultiplier(true);
+						billingFileDefaults.setRemoveMultiplier(true);
 					else
-						billingFile.getBillingDefaults().setRemoveMultiplier(false);
+						billingFileDefaults.setRemoveMultiplier(false);
 				}
 				else if( argLowerCase.startsWith("app"))
 				{
 					String subString = arg.substring(startIndex);
 					if( subString.startsWith("t"))
-						billingFile.getBillingDefaults().setAppendToFile(true);
+						billingFileDefaults.setAppendToFile(true);
 					else 
-						billingFile.getBillingDefaults().setAppendToFile(false);
+						billingFileDefaults.setAppendToFile(false);
+				}
+				else if( argLowerCase.startsWith("user"))
+				{
+					String subString = arg.substring(startIndex);
+					username = subString;
+				}
+				else if( argLowerCase.startsWith("pass"))
+				{
+					String subString = arg.substring(startIndex);
+					password = subString;
 				}
 			}
-			
-            billingFile.setBillingFormatter(billingFile.getBillingDefaults().getFormatID());
+
+			LiteYukonUser liteYukonUser = billingFile.getLiteYukonUser(username, password);
+			billingFileDefaults.setLiteYukonUser(liteYukonUser);
+            billingFile.setBillingFormatter(billingFileDefaults);
 			billingFile.run();
-			billingFile.getBillingDefaults().writeDefaultsFile();
+			billingFile.simpleBillingFormat.getBillingFileDefaults().writeDefaultsFile();
 		} 
 		catch (Throwable exception) {
 			CTILogger.error(exception);
@@ -175,153 +187,56 @@ public class BillingFile extends java.util.Observable implements Runnable
 	 */
 	public void run() 
 	{
-		if (billingFormatter != null) {
-
-            CTILogger.info("Valid entries are for meter data where: ");
-            CTILogger.info("  DEMAND readings > "
-                    + getBillingDefaults().getDemandStartDate() + " AND <= "
-                    + getBillingDefaults().getEndDate());
-            CTILogger.info("  ENERGY readings > "
-                    + getBillingDefaults().getEnergyStartDate() + " AND <= "
-                    + getBillingDefaults().getEndDate());
-
-            List<BillableDevice> deviceList = null;
-
-            if (!getBillingDefaults().getDeviceGroups().isEmpty()) {
-
-                deviceList = BillingDao.retrieveBillingData(getBillingDefaults());
-            }
-            try {
-                int validReadings = 0;
-                if (deviceList != null) {
-                    try {
-                        validReadings = billingFormatter.writeBillingFile(deviceList);
-                    } catch (IllegalArgumentException e) {
-                        setChanged();
-                        notify(e.getMessage());
-
-                    }
-                } else {
-                    setChanged();
-                    notify("Unsuccessfull database query");
-                }
-
-                setChanged();
-                notify("Successfully created the file : " + getBillingDefaults().getOutputFileDir()
-                        + "\n" + validReadings + " Valid Readings Reported.");
-            } 
-            catch (java.io.IOException ioe) {
-                setChanged();
-                notify("Unsuccessfull reading of file : " + getBillingDefaults().getOutputFileDir());
-                CTILogger.error(ioe);
-            }
-        }
-		else if( fileFormatBase != null ) {
-		    fileFormatBase.setBillingDefaults(getBillingDefaults());
-		    
-		    CTILogger.info("Valid entries are for meter data where: ");
-		    CTILogger.info("  DEMAND readings > " + getBillingDefaults().getDemandStartDate() + " AND <= " + getBillingDefaults().getEndDate());
-		    CTILogger.info("  ENERGY readings > " + getBillingDefaults().getEnergyStartDate() + " AND <= " + getBillingDefaults().getEndDate());
-		    
-		    boolean success = false;
-		    
-		    if (getBillingDefaults().getDeviceGroups().isEmpty())
-		        success = false;
-		    else
-		        success = fileFormatBase.retrieveBillingData();
-		    
-		    try
-		    {
-		        if( success ) {
-		            fileFormatBase.writeToFile();
-		        }
-		        else {
-		            setChanged();
-		            notify("Unsuccessfull database query" );
-		        }
-		        
-		        setChanged();
-		        notify("Successfully created the file : " + fileFormatBase.getOutputFileName() + "\n" + fileFormatBase.getRecordCount() + " Valid Readings Reported.");
-		    }
-		    catch(java.io.IOException ioe) {
-		        setChanged();
-		        notify("Unsuccessfull reading of file : " + fileFormatBase.getOutputFileName() );
-		        CTILogger.error(ioe);
-		    }
+	    try {
+			writeToFile();
+	    } catch(java.io.IOException ioe) {
+	        setChanged();
+	        CTILogger.error(ioe);
+	        notify("Unsuccessfull reading of file : " + simpleBillingFormat.getBillingFileDefaults().getOutputFileDir() );
 		}
 	}
-
+	/**
+	 * Writes the record string to the output file.
+	 */
+	private void writeToFile() throws java.io.IOException {
+		FileOutputStream out = new FileOutputStream( simpleBillingFormat.getBillingFileDefaults().getOutputFileDir(), 
+				simpleBillingFormat.getBillingFileDefaults().isAppendToFile() );
+		try {
+			encodeOutput(out);
+		} finally {
+			out.flush();
+			out.close();
+		}
+	}
 	/**
 	 * Method encodeOutput.
 	 * Retrieve all billingData and write to outputStream for a formatBase.
 	 * @param out
 	 * @throws IOException
 	 */
-	public void encodeOutput(java.io.OutputStream out) throws java.io.IOException
-	{
-        if( billingFormatter != null )
-        {
-            billingFormatter.setBillingFileDefaults(getBillingDefaults());
-    
-            CTILogger.info("Valid entries are for meter data where: ");
-            CTILogger.info("  DEMAND readings > " + getBillingDefaults().getDemandStartDate() + " AND <= " + getBillingDefaults().getEndDate());
-            CTILogger.info("  ENERGY readings > " + getBillingDefaults().getEnergyStartDate() + " AND <= " + getBillingDefaults().getEndDate());
-    
-            boolean success = false;
-            
-            List<BillableDevice> deviceList = null;
-            if (!getBillingDefaults().getDeviceGroups().isEmpty()) {
+	public void encodeOutput(java.io.OutputStream out) throws IOException {
+        CTILogger.info("Valid entries are for meter data where: ");
+        CTILogger.info("  DEMAND readings > " + simpleBillingFormat.getBillingFileDefaults().getDemandStartDate() + 
+        		" AND <= " + simpleBillingFormat.getBillingFileDefaults().getEndDate());
+        CTILogger.info("  ENERGY readings > " + simpleBillingFormat.getBillingFileDefaults().getEnergyStartDate() + 
+        		" AND <= " + simpleBillingFormat.getBillingFileDefaults().getEndDate());
 
-                deviceList = BillingDao.retrieveBillingData(getBillingDefaults());
-
-                //a 0 sized deviceList can still be a success.
-                success = deviceList.size() > 0;
-            }
-            
-            int validReadings = 0;
-            if (success) {
-                try {
-                    validReadings = billingFormatter.writeBillingFile(deviceList, out);
-                } catch (IllegalArgumentException e) {
-                    setChanged();
-                    notify(e.getMessage());
-                }
-            } else {
-                setChanged();
-                notify("Unsuccessfull database query");
-            }
-
-            setChanged();
-            notify("Successfully created the file : " + getBillingDefaults().getOutputFileDir()
-                    + "\n" + validReadings + " Valid Readings Reported.");
-            
-        } 
-        else if( fileFormatBase != null ) {
-			fileFormatBase.setBillingDefaults(getBillingDefaults());
-	
-			CTILogger.info("Valid entries are for meter data where: ");
-			CTILogger.info("  DEMAND readings > " + getBillingDefaults().getDemandStartDate() + " AND <= " + getBillingDefaults().getEndDate());
-			CTILogger.info("  ENERGY readings > " + getBillingDefaults().getEnergyStartDate() + " AND <= " + getBillingDefaults().getEndDate());
-	
-			boolean success = false;
-			
-			if (getBillingDefaults().getDeviceGroups().isEmpty())
-				success = false;
-			else
-				success = fileFormatBase.retrieveBillingData( );	
-
-			try
-			{
-				if( success ) {
-					fileFormatBase.writeToFile(out);
-				}
-				else  {
-					notify("Unsuccessfull database query" );
-				}
+		try {
+			boolean success = simpleBillingFormat.writeToFile(out);
+			if( !success) {
+				notify("Unsuccessfull database query" );
+			} else {
+	            setChanged();
+	            notify("Successfully created the file : " + simpleBillingFormat.getBillingFileDefaults().getOutputFileDir()
+	                    + "\n" + simpleBillingFormat.getReadingCount() + " Valid Readings Reported.");
 			}
-			catch(java.io.IOException ioe) {
-				CTILogger.error(ioe);
-			}
+
+		} catch (IllegalArgumentException e) {
+			CTILogger.error(e);
+            notify(e.getMessage());
+		} catch(IOException e) {
+			CTILogger.error(e);
+			notify(e.getMessage());
 		}
 	}
 	
@@ -335,59 +250,35 @@ public class BillingFile extends java.util.Observable implements Runnable
 		CTILogger.info(notifyString);
 	}
 
-	/**
-	 * Returns the billingDefaults.
-	 * If null, value is instantiated.
-	 * @return BillingFileDefaults
-	 */
-	public BillingFileDefaults getBillingDefaults()
-	{
-		if( billingDefaults == null)
-			billingDefaults = new BillingFileDefaults();
-		return billingDefaults;
-	}
-
-	/**
-	 * Returns the fileFormatBase.
-	 * @return FileFormatBase
-	 */
-	public FileFormatBase getFileFormatBase()
-	{
-		return fileFormatBase;
-	}
-
-	/**
-	 * Sets the billingDefaults.
-	 * @param billingDefaults The billingDefaults to set
-	 */
-	public void setBillingDefaults(BillingFileDefaults billingDefaults)
-	{
-		this.billingDefaults = billingDefaults;
-	}
-
-	/**
-	 * Sets the billingFormatter
-	 * @return
-	 */
-    public BillingFormatter getBillingFormatter() {
-        return billingFormatter;
-    }
-
     /**
-     * Sets the billingFormatter.  If the formatID is a legacy format, then 
-     * the fileFormatBase object will be set instead.
+     * Sets the simpleBillingFormat object using the billingFileDefaults (including formatId)
      * Sets the billingDefaults will be populated for the format object being used.
      * @param formatID
      */
-    public void setBillingFormatter(int formatID) {
-        this.billingFormatter = BillingFormatterFactory.createFileFormat(formatID);
+    public void setBillingFormatter(BillingFileDefaults billingFileDefaults) {
+    	int formatId = billingFileDefaults.getFormatID();
+        this.simpleBillingFormat = SimpleBillingFormatFactory.createFileFormat(formatId);
         
-        if (billingFormatter != null)
-            this.billingFormatter.setBillingFileDefaults(getBillingDefaults());
-        
-        else {  //we have an older format, use the legacy FileFormatBase object
-            this.fileFormatBase = FileFormatFactory.createFileFormat(formatID);
-            this.fileFormatBase.setBillingDefaults(getBillingDefaults());
-        }
+        this.simpleBillingFormat.setBillingFileDefaults(billingFileDefaults);
+    }
+    
+    public SimpleBillingFormat getSimpleBillingFormat() {
+		return simpleBillingFormat;
+	}
+    
+    private LiteYukonUser getLiteYukonUser(String username, String password) {
+		LiteYukonUser liteYukonUser = null;
+		if (username != null && password != null) {
+			try {
+				AuthenticationService authenticationService = YukonSpringHook.getBean("authenticationService", AuthenticationServiceImpl.class);
+				liteYukonUser = authenticationService.login(username, password);
+			}catch(BadAuthenticationException e) {
+				CTILogger.info("Username/Password not supplied, using system authentication");
+				CTILogger.info(e);
+				SystemUserContext systemUserContext = new SystemUserContext();
+				liteYukonUser = systemUserContext.getYukonUser();
+			}
+		}
+		return liteYukonUser;
     }
 }

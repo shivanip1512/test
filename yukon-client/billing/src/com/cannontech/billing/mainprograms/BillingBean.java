@@ -9,9 +9,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import com.cannontech.billing.FileFormatBase;
 import com.cannontech.billing.FileFormatTypes;
-import com.cannontech.billing.format.BillingFormatter;
+import com.cannontech.billing.SimpleBillingFormat;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.model.DeviceGroup;
@@ -30,6 +29,7 @@ public class BillingBean implements java.util.Observer
 		
 	public static final String BILLING_VERSION = VersionTools.getYUKON_VERSION();
 	private BillingFile billingFile = null;
+	private BillingFileDefaults billingFileDefaults = null;
 
 	private int fileFormat = FileFormatTypes.INVALID;
 	private int demandDaysPrev = -1;
@@ -43,7 +43,6 @@ public class BillingBean implements java.util.Observer
 	private int timer = 0;
 	private String timerString = "";
 	
-	private LiteYukonUser liteYukonUser = null;
 
 /**
  * BillingBean constructor comment.
@@ -86,11 +85,11 @@ public void generateFile(java.io.OutputStream out) throws java.io.IOException
 
 	if (defaults == null)
 		return;
-		
-	setBillingDefaults(defaults);
-    setBillingFormatter(defaults.getFormatID());
 
-	if( getBillingFormatter() != null || getFileFormatBase() != null )
+	defaults.setLiteYukonUser(getLiteYukonUser());
+    setBillingFormatter(defaults);
+
+	if( getSimpleBillingFormat() != null)
 	{
 		Date timerStart = new Date();
 		CTILogger.info("Started " + FileFormatTypes.getFormatType(getBillingDefaults().getFormatID()) +
@@ -127,10 +126,13 @@ private BillingFile getBillingFile()
 	return billingFile;
 }
 
-public BillingFileDefaults getBillingDefaults()
-{
-	return getBillingFile().getBillingDefaults();
+public BillingFileDefaults getBillingDefaults() {
+	if (this.billingFileDefaults == null) {
+		this.billingFileDefaults = new BillingFileDefaults();
+	}
+	return billingFileDefaults;
 }
+
 public int getFileFormat()
 {
 	if( fileFormat == FileFormatTypes.INVALID) {
@@ -252,37 +254,25 @@ public void setOutputFile(String newOutputFile)
 }
 
 /**
- * Returns the FileFormatBase object.  This is a legacey format object.
- * The billingFileFormatter should be used first, and only use this object
- * if the billingFileFormatter is null.
- * @return com.cannontech.billing.FileFormatBase
+ * Returns the SimpleBillingFormat object.
+ * @return SimpleBillingFormat
  */
-public FileFormatBase getFileFormatBase()
+public SimpleBillingFormat getSimpleBillingFormat()
 {
-	return getBillingFile().getFileFormatBase();
+	return getBillingFile().getSimpleBillingFormat();
 }
 
-/**
- * Returns the BillingFormatter object
- * @return com.cannontech.billing.format.BillingFormatter
- */
-public BillingFormatter getBillingFormatter()
-{
-    return getBillingFile().getBillingFormatter();
-}
-
-private void setBillingDefaults(BillingFileDefaults newDefaults)
-{
-	getBillingFile().setBillingDefaults(newDefaults);
+private void setBillingDefaults(BillingFileDefaults newDefaults) {
+	this.billingFileDefaults = newDefaults;
 }
 
 /**
  * Set 
  * @param int formatID
  */
-private void setBillingFormatter(int formatID)
+private void setBillingFormatter(BillingFileDefaults billingFileDefaults)
 {
-	getBillingFile().setBillingFormatter(formatID);
+	getBillingFile().setBillingFormatter(billingFileDefaults);
 }
 /**
  * Insert the method's description here.
@@ -303,10 +293,10 @@ public synchronized void update(java.util.Observable obs, Object data)
 	}
 }
 public LiteYukonUser getLiteYukonUser() {
-	return liteYukonUser;
+	return getBillingDefaults().getLiteYukonUser();
 }
 public void setLiteYukonUser(LiteYukonUser liteYukonUser) {
-	this.liteYukonUser = liteYukonUser;
+	getBillingDefaults().setLiteYukonUser(liteYukonUser);
 }
 public String getInputFile() {
 	if( inputFile == null)

@@ -18,6 +18,8 @@ import com.cannontech.database.PoolManager;
  */
 public class NCDC_HandheldFormat extends FileFormatBase
 {
+	private static final int validAccPtOffsets[] = { 1, 2, 3 };
+
 	private class InputRecord
 	{
 		public String location = null;	//0-24
@@ -73,7 +75,7 @@ public class NCDC_HandheldFormat extends FileFormatBase
 		};
 	
 		SQLStringBuilder builder = new SQLStringBuilder();
-		String sql = new String((builder.buildSQLStatement(SELECT_COLUMNS, FROM_TABLES, getBillingDefaults(), null, validAccPtOffsets)).toString());
+		String sql = new String((builder.buildSQLStatement(SELECT_COLUMNS, FROM_TABLES, getBillingFileDefaults(), null, validAccPtOffsets)).toString());
 			sql += " ORDER BY " 
 				+ SQLStringBuilder.PAO_PAOBJECTID + ", "
 				+ SQLStringBuilder.PT_POINTOFFSET + ", " 
@@ -96,7 +98,7 @@ public class NCDC_HandheldFormat extends FileFormatBase
 			else
 			{
 				pstmt = conn.prepareStatement(sql.toString());
-				pstmt.setTimestamp(1, new java.sql.Timestamp(getBillingDefaults().getEarliestStartDate().getTime()));
+				pstmt.setTimestamp(1, new java.sql.Timestamp(getBillingFileDefaults().getEarliestStartDate().getTime()));
 				rset = pstmt.executeQuery();
 	
 				//PT_POINTID, PT_POINTOFFSET, RPH_TIMESTAMP, RPH_VALUE, PAO_PAOBJECTID, PAO_PAONAME				
@@ -117,11 +119,11 @@ public class NCDC_HandheldFormat extends FileFormatBase
 				{
 					java.sql.Timestamp ts = rset.getTimestamp(3);
 					java.util.Date tsDate = new java.util.Date(ts.getTime());
-					if( tsDate.compareTo( getBillingDefaults().getEndDate()) <= 0) //ts <= maxtime, pass!
+					if( tsDate.compareTo( getBillingFileDefaults().getEndDate()) <= 0) //ts <= maxtime, pass!
 					{
 						pointID = rset.getInt(1);
 						double multiplier = 1;
-						if( getBillingDefaults().isRemoveMultiplier())
+						if( getBillingFileDefaults().isRemoveMultiplier())
 						{
 							multiplier = getPointIDMultiplierHashTable().get(new Integer(pointID)).doubleValue();
 						}
@@ -138,7 +140,7 @@ public class NCDC_HandheldFormat extends FileFormatBase
 							{
 								if (ptOffset == 1 || isKWH(ptOffset))
 								{
-									if( tsDate.compareTo( getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
+									if( tsDate.compareTo( getBillingFileDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
 										break inValidTimestamp;
 										
 									//** Get the last record and add to it the other pointOffsets' values. **//
@@ -150,7 +152,7 @@ public class NCDC_HandheldFormat extends FileFormatBase
 								}
 								else if (isKW(ptOffset))
 								{
-									if( tsDate.compareTo( getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
+									if( tsDate.compareTo( getBillingFileDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
 										break inValidTimestamp;
 										
 									//** Get the last record and add to it the other pointOffsets' values. **//
@@ -167,7 +169,7 @@ public class NCDC_HandheldFormat extends FileFormatBase
 								
 								if (ptOffset == 1 || isKWH(ptOffset))
 								{
-									if( tsDate.compareTo( getBillingDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
+									if( tsDate.compareTo( getBillingFileDefaults().getEnergyStartDate()) <= 0) //ts <= mintime, fail!
 										break inValidTimestamp;
 									
 									record.setKwhReading(new Double(value));
@@ -177,7 +179,7 @@ public class NCDC_HandheldFormat extends FileFormatBase
 								}
 								else if (isKW(ptOffset))
 								{
-									if( tsDate.compareTo( getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
+									if( tsDate.compareTo( getBillingFileDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
 										break inValidTimestamp;
 		
 									record.setKwReading(new Double(value));
@@ -247,7 +249,7 @@ public class NCDC_HandheldFormat extends FileFormatBase
 		Hashtable <String, InputRecord> inputRecordsHashTable = null;
 		
 		try {
-			java.io.FileReader inputRecordsFileReader = new java.io.FileReader(billingDefaults.getInputFileDir());
+			java.io.FileReader inputRecordsFileReader = new java.io.FileReader(billingFileDefaults.getInputFileDir());
 			java.io.BufferedReader readBuffer = new java.io.BufferedReader(inputRecordsFileReader);
 	
 			try {
@@ -264,13 +266,13 @@ public class NCDC_HandheldFormat extends FileFormatBase
 		}
 		catch(java.io.FileNotFoundException fnfe) {
 			CTILogger.info("****************************************************************************");
-			CTILogger.info("Cannot find "+getInputFileName()+".  Please create file and regenerate file.");
+			CTILogger.info("Cannot find "+getBillingFileDefaults().getInputFileDir()+".  Please create file and regenerate file.");
 			CTILogger.info("****************************************************************************");
 			return null;	//with null, we will have to exit!
 		}
 	
 		if(linesInFile != null) {	
-			CTILogger.info("Successfully read " + linesInFile.size()+ " lines from file " + getInputFileName()+".");
+			CTILogger.info("Successfully read " + linesInFile.size()+ " lines from file " + getBillingFileDefaults().getInputFileDir()+".");
 			java.util.Collections.sort(linesInFile);
 			int hashCapacity = (linesInFile.size() + 1);
 			inputRecordsHashTable = new Hashtable<String, InputRecord>(hashCapacity);
@@ -290,5 +292,40 @@ public class NCDC_HandheldFormat extends FileFormatBase
 			}
 		}
 		return inputRecordsHashTable;
+	}
+	
+	/**
+	 * Returns true if offset is a valid kw offset.
+	 * @return boolean
+	 * @param offset int
+	 */
+	public boolean isKW(int offset) {
+		switch (offset) {
+			case 2:
+			case 4:
+			case 6:
+			case 8:
+				return true;
+			default:
+				return false;
+		}
+	}
+	
+	/**
+	 * Returns true if offset is a valid kwh offset.
+	 * @return boolean
+	 * @param offset int
+	 */
+	public boolean isKWH(int offset) {
+		switch (offset) {
+			case 1:
+			case 3:
+			case 5:
+			case 7:
+			case 9:
+				return true;
+			default:
+				return false;
+		}
 	}
 }

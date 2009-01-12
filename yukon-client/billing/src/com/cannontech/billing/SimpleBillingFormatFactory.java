@@ -1,13 +1,38 @@
-package com.cannontech.billing.format;
+package com.cannontech.billing;
 
-import com.cannontech.billing.FileFormatTypes;
+import com.cannontech.billing.format.ATSRecordFormatter;
+import com.cannontech.billing.format.BigRiversElecCoopFormatter;
+import com.cannontech.billing.format.BillingFormatter;
+import com.cannontech.billing.format.CADPRecordFormatter;
+import com.cannontech.billing.format.CADPXL2RecordFormatter;
+import com.cannontech.billing.format.CTICSVRecordFormatter;
+import com.cannontech.billing.format.CTIStandard2RecordFormatter;
+import com.cannontech.billing.format.DAFFRONRecordFormatter;
+import com.cannontech.billing.format.ExtendedTOURecordFormatter;
+import com.cannontech.billing.format.ExtendedTOU_IncodeRecordFormatter;
+import com.cannontech.billing.format.IVUE_BI_T65RecordFormatter;
+import com.cannontech.billing.format.NCDCRecordFormatter;
+import com.cannontech.billing.format.NISCIntervalReadings;
+import com.cannontech.billing.format.NISCRecordFormatter;
+import com.cannontech.billing.format.NISC_NCDCRecordFormatter;
+import com.cannontech.billing.format.NISC_NoLimt_kWh_RecordFormatter;
+import com.cannontech.billing.format.NISC_TOU_kVarHRecordFormatter;
+import com.cannontech.billing.format.NISC_TOU_kVarH_RatesOnlyRecordFormatter;
+import com.cannontech.billing.format.OPURecordFormatter;
+import com.cannontech.billing.format.SEDC54RecordFormatter;
+import com.cannontech.billing.format.SEDCRecordFormatter;
+import com.cannontech.billing.format.SEDC_yyyyMMddRecordFormatter;
+import com.cannontech.billing.format.SimpleTOURecordFormatter;
+import com.cannontech.billing.format.SimpleTOU_DeviceNameRecordFormatter;
+import com.cannontech.billing.format.StandardRecordFormatter;
 import com.cannontech.billing.format.dynamic.DynamicBillingFormatter;
+import com.cannontech.billing.format.simple.CurtailmentEventsItronFormat;
 import com.cannontech.spring.YukonSpringHook;
 
 /**
  * Factory class to generate billing formatters
  */
-public final class BillingFormatterFactory {
+public final class SimpleBillingFormatFactory {
 
     /**
      * Method to get a new billing formatter whose type is based on the file
@@ -15,7 +40,7 @@ public final class BillingFormatterFactory {
      * @param type - file format type of formatter needed
      * @return A new instance of the billing formatter
      */
-    public final static BillingFormatter createFileFormat(int type) {
+    public final static SimpleBillingFormat createFileFormat(int type) {
         switch (type) {
         case FileFormatTypes.SEDC:
             return new SEDCRecordFormatter();
@@ -93,17 +118,21 @@ public final class BillingFormatterFactory {
             return new NISCIntervalReadings();
             
         case FileFormatTypes.WLT_40:
+			return new WLT_40Format();
+
         case FileFormatTypes.MV_90:
-        case FileFormatTypes.NCDC_HANDHELD:
-        case FileFormatTypes.MVRS:
-        	/*  return null if format not found - other formats will be handled
-                by the FileFormatFactory:
-                    case FileFormatTypes.WLT_40:
-                    case FileFormatTypes.MV_90:
-                    case FileFormatTypes.NCDC_HANDHELD:
-                    case FileFormatTypes.MVRS:
-        	 */
-        	return null;
+			return new MV_90Format();
+
+		case FileFormatTypes.NCDC_HANDHELD:
+			return new NCDC_HandheldFormat();
+			
+		case FileFormatTypes.MVRS:
+		case FileFormatTypes.MVRS_KETCHIKAN:
+			return new MVRSFormat();
+			
+		case FileFormatTypes.CURTAILMENT_EVENTS_ITRON:
+			return new CurtailmentEventsItronFormat();
+        	
         default:
         	// Assume dynamic format
         	

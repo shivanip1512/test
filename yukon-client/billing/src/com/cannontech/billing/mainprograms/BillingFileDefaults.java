@@ -10,7 +10,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Properties;
-import java.util.TimeZone;
 
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -20,6 +19,7 @@ import com.cannontech.billing.FileFormatTypes;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.groups.service.FixedDeviceGroups;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.util.ServletUtil;
 ;
 
@@ -57,7 +57,8 @@ public class BillingFileDefaults
 	private java.util.Date energyStartDate = null;
 	private java.util.Date demandStartDate = null;
     private List<String> deviceGroups;
-	
+    private LiteYukonUser liteYukonUser = null;
+    
 	/**
 	 * DynamicBilling constructor comment.
 	 */
@@ -488,5 +489,13 @@ public class BillingFileDefaults
 	public void setAppendToFile(boolean appendToFile)
 	{
 		this.appendToFile = appendToFile;
+	}
+	
+	public void setLiteYukonUser(LiteYukonUser liteYukonUser) {
+		this.liteYukonUser = liteYukonUser;
+	}
+	
+	public LiteYukonUser getLiteYukonUser() {
+		return liteYukonUser;
 	}
 }

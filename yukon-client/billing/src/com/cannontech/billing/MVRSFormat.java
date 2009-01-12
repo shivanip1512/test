@@ -1,6 +1,7 @@
 package com.cannontech.billing;
 
 
+
 /**
  * Insert the type's description here.
  * Creation date: (5/18/00 3:46:39 PM)

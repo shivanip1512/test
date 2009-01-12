@@ -60,6 +60,9 @@ public final class FileFormatTypes {
   	public static final int NISC_TOU_KVARH_RATES_ONLY = 32;
   	public static final int NISC_INTERVAL_READINGS = 33;
   	
+  	//Custom "billing" for C&I Events
+  	public static final int CURTAILMENT_EVENTS_ITRON = 34;
+  	
 	public static final String SEDC_STRING = "SEDC";
 	public static final String CADP_STRING = "CADP";
 	public static final String CADPXL2_STRING = "CADPXL2";
@@ -89,6 +92,7 @@ public final class FileFormatTypes {
 	public static final String STANDARD_STRING = "Standard";
 	public static final String NISC_TOU_KVARH_RATES_ONLY_STRING = "NISC TOU (kVarH) Rates Only";
 	public static final String NISC_INTERVAL_READINGS_STRING = "NISC Interval Readings";
+	public static final String CURTAILMENT_EVENTS_ITRON_STRING = "Curtailment Events - Itron";
 	
     private static final int[] defaultValidFormatIDs;
     private static final String[] defaultValidFormatTypes;

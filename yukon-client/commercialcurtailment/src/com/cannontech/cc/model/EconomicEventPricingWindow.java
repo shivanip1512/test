@@ -77,7 +77,14 @@ public class EconomicEventPricingWindow implements Comparable<EconomicEventPrici
         int totalOffset = getOffset() * event.getWindowLengthMinutes();
         return TimeUtil.addMinutes(event.getStartTime(), totalOffset);
     }
-    
+
+    @Transient
+    public Date getStopTime() {
+    	EconomicEvent event = getPricingRevision().getEvent();
+        int windowLength = event.getWindowLengthMinutes();
+        return TimeUtil.addMinutes(getStartTime(), windowLength);
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof EconomicEventPricingWindow == false) {

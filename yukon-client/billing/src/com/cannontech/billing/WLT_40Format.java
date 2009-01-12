@@ -2,6 +2,8 @@ package com.cannontech.billing;
 
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.cannontech.billing.record.BillingRecordBase;
 import com.cannontech.billing.record.StringRecord;
 import com.cannontech.billing.record.WLT_40HeaderRecord0000;
@@ -57,7 +59,7 @@ public void parseAndCalculatePulses(Double multiplier, Integer demandInterval, V
 			com.cannontech.clientutils.CTILogger.info( "Number of Raw Point History entries " + Integer.toString(rawPointHistoryVector.size()) );
 
 			expectedRPHTimestamp = new java.util.GregorianCalendar();
-			expectedRPHTimestamp.setTime(getBillingDefaults().getDemandStartDate());
+			expectedRPHTimestamp.setTime(getBillingFileDefaults().getDemandStartDate());
 		}
 		String tempDataStatusZoneString = null;
 		for(int i=0;i<rawPointHistoryVector.size();i++)
@@ -150,7 +152,7 @@ public void parseAndCalculatePulses(Double multiplier, Integer demandInterval, V
 		pulseMultiplierVector.addElement(multiplier);
 
 		java.util.GregorianCalendar stopRPHTimestamp = new java.util.GregorianCalendar();
-		stopRPHTimestamp.setTime(getBillingDefaults().getEndDate());
+		stopRPHTimestamp.setTime(getBillingFileDefaults().getEndDate());
 		if( expectedRPHTimestamp.getTime().getTime() < stopRPHTimestamp.getTime().getTime() )
 		{
 			tempDataStatusZoneString = "";
@@ -200,13 +202,9 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups)
 	java.io.RandomAccessFile file = null;
 	Vector<String> substationPointGroupVector = new Vector<String>( 40 );
 	java.io.File checkFile = null;
-	if( getInputFileName() != null &&
-		  getInputFileName().length() > 0 )
-	{
-		checkFile = new java.io.File( getInputFileName() );
-	}
-	else
-	{
+	if( StringUtils.isNotBlank(getBillingFileDefaults().getInputFileDir())) {
+		checkFile = new java.io.File( getBillingFileDefaults().getInputFileDir() );
+	} else {
 		checkFile = new java.io.File( "../config/mv90.dat" );
 	}
 	
@@ -298,8 +296,8 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups)
 						if( channelPointIdVector.get(j).intValue() > 0 )
 						{
 							preparedStatement.setInt(1,channelPointIdVector.get(j).intValue());
-							preparedStatement.setTimestamp(2,new java.sql.Timestamp(getBillingDefaults().getDemandStartDate().getTime()));
-							preparedStatement.setTimestamp(3,new java.sql.Timestamp(getBillingDefaults().getEndDate().getTime()));
+							preparedStatement.setTimestamp(2,new java.sql.Timestamp(getBillingFileDefaults().getDemandStartDate().getTime()));
+							preparedStatement.setTimestamp(3,new java.sql.Timestamp(getBillingFileDefaults().getEndDate().getTime()));
 							rset = preparedStatement.executeQuery();
 							tempRawPointHistoryVector = new Vector<RawPointHistory>();
 
@@ -374,10 +372,10 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups)
 				Vector<Integer> unitOfMeasureIdVector = new Vector<Integer>(channelPointIdVector.size());
 
 				java.util.GregorianCalendar tempGreg1 = new java.util.GregorianCalendar();
-				tempGreg1.setTime(getBillingDefaults().getDemandStartDate());
+				tempGreg1.setTime(getBillingFileDefaults().getDemandStartDate());
 				java.util.GregorianCalendar tempGreg2 = new java.util.GregorianCalendar();
-				tempGreg2.setTime(getBillingDefaults().getEndDate());
-				long milliseconds = getBillingDefaults().getEndDate().getTime() - getBillingDefaults().getDemandStartDate().getTime();
+				tempGreg2.setTime(getBillingFileDefaults().getEndDate());
+				long milliseconds = getBillingFileDefaults().getEndDate().getTime() - getBillingFileDefaults().getDemandStartDate().getTime();
 				int predictedIntervals = 0;
 
 				try
@@ -520,9 +518,9 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups)
 				header0001.setSegmentedIntervalsPerHour( new Integer( 3600/savedDemandInterval.intValue() ) );
 				header0001.setRequestedOutputIntervalsPerHour( new Integer( 3600/savedDemandInterval.intValue() ) );
 				java.util.GregorianCalendar tempGreg3 = new java.util.GregorianCalendar();
-				tempGreg3.setTime(getBillingDefaults().getDemandStartDate());
+				tempGreg3.setTime(getBillingFileDefaults().getDemandStartDate());
 				java.util.GregorianCalendar tempGreg4 = new java.util.GregorianCalendar();
-				tempGreg4.setTime(getBillingDefaults().getEndDate());
+				tempGreg4.setTime(getBillingFileDefaults().getEndDate());
 				int tempDstOffset = tempGreg3.get(java.util.Calendar.DST_OFFSET);
 				while( tempGreg3.getTime().getTime() < tempGreg4.getTime().getTime() )
 				{

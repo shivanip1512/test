@@ -59,15 +59,19 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
 		}
 		
 		String fileFormat = req.getParameter("fileFormat");
+        final int fileFormatValue = (fileFormat != null) ?
+                Integer.parseInt(fileFormat) : FileFormatTypes.INVALID;
+
 		String[] billGroupArray = req.getParameterValues("billGroup");
-        Validate.notNull(billGroupArray, "a billing group must be selected");
+		if (fileFormatValue != FileFormatTypes.CURTAILMENT_EVENTS_ITRON) {
+			Validate.notNull(billGroupArray, "a billing group must be selected");
+	        localBean.setBillGroup(Arrays.asList(billGroupArray));
+		}
 		String removeMultiplier = req.getParameter("removeMultiplier");
 		String demandDays = req.getParameter("demandDays");
 		String energyDays = req.getParameter("energyDays");
 		String endDate = req.getParameter("endDate");
 		
-        final int fileFormatValue = (fileFormat != null) ?
-                Integer.parseInt(fileFormat) : FileFormatTypes.INVALID;
                 
         final int demandDaysValue = (demandDays != null) ?
                 Integer.parseInt(demandDays) : 30;
@@ -76,7 +80,6 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
                 Integer.parseInt(energyDays) : 7;
                
         localBean.setFileFormat(fileFormatValue);
-        localBean.setBillGroup(Arrays.asList(billGroupArray));
 		localBean.setAppendToFile(false);
 		localBean.setRemoveMult(removeMultiplier != null);
 		localBean.setDemandDaysPrev(demandDaysValue);

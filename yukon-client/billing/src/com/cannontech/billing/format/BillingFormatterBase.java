@@ -1,6 +1,5 @@
 package com.cannontech.billing.format;
 
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.DecimalFormat;
@@ -9,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Iterator;
 import java.util.List;
 
+import com.cannontech.billing.BillingDao;
 import com.cannontech.billing.device.base.BillableDevice;
 import com.cannontech.billing.mainprograms.BillingFileDefaults;
 
@@ -36,21 +36,6 @@ public abstract class BillingFormatterBase implements BillingFormatter {
     private BillingFileDefaults billingFileDefaults = null;
     abstract public String dataToString(BillableDevice device);
 
-    public int writeBillingFile( List<BillableDevice> deviceList)
-            throws IOException {
-        this.readingCount = 0;  //reset the count
-        StringBuffer output = getBillingFileString(deviceList);
-
-        FileWriter outputFileWriter = new FileWriter(getBillingFileDefaults().getOutputFileDir(),
-                                                     getBillingFileDefaults().isAppendToFile());
-        outputFileWriter.write(output.toString());
-        outputFileWriter.flush();
-        outputFileWriter.close();
-
-        return this.readingCount;
-
-    }
-
     /**
      * Method to generate a String which is the entire billing file data for the
      * list of devices passed in
@@ -58,7 +43,7 @@ public abstract class BillingFormatterBase implements BillingFormatter {
      * @return String representation of the entire billing file data
      */
     public String getBillingFileDetailsString(List<BillableDevice> deviceList) {
-
+    	this.readingCount = 0;  //reset the count
         StringBuffer billingFileString = new StringBuffer();
         Iterator<BillableDevice> deviceListIter = deviceList.iterator();
         while (deviceListIter.hasNext()) {
@@ -208,14 +193,26 @@ public abstract class BillingFormatterBase implements BillingFormatter {
         return format.format(value);
     }
 
+    public void setReadingCount(int readingCount) {
+		this.readingCount = readingCount;
+	}
+    
+    @Override
+    public int getReadingCount() {
+        return readingCount;
+    }
+
+    @Override
 	public BillingFileDefaults getBillingFileDefaults() {
 		return billingFileDefaults;
 	}
 
+	@Override
 	public void setBillingFileDefaults(BillingFileDefaults billingFileDefaults) {
 		this.billingFileDefaults = billingFileDefaults;
 	}
 
+	@Override
     public int writeBillingFile( List<BillableDevice> deviceList, OutputStream out) throws IOException {
         StringBuffer output = getBillingFileString(deviceList);
         out.write(output.toString().getBytes());
@@ -223,12 +220,19 @@ public abstract class BillingFormatterBase implements BillingFormatter {
         return this.readingCount;
     }
     
-    public int getReadingCount() {
-        return readingCount;
-    }
+    @Override
+    public boolean writeToFile(OutputStream out) throws IOException, IllegalArgumentException {
 
-    public void setReadingCount(int readingCount) {
-        this.readingCount = readingCount;
+        List<BillableDevice> deviceList = null;
+        if (!getBillingFileDefaults().getDeviceGroups().isEmpty()) {
+            deviceList = BillingDao.retrieveBillingData(getBillingFileDefaults());
+        }
+
+        //a 0 sized deviceList can still be a success.  SN-I think the > 0 check can be removed
+        if (deviceList != null && deviceList.size() > 0) {
+            writeBillingFile(deviceList, out);
+            return true;
+        } 
+        return false;
     }
-    
 }

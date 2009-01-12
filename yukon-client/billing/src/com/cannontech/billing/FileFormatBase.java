@@ -8,7 +8,7 @@ package com.cannontech.billing;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import com.cannontech.billing.mainprograms.BillingFileDefaults;
+import com.cannontech.billing.format.simple.SimpleBillingFormatBase;
 import com.cannontech.billing.record.BillingRecordBase;
 import com.cannontech.billing.record.MVRSRecord;
 import com.cannontech.billing.record.MVRS_KetchikanRecord;
@@ -17,7 +17,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 
-public abstract class FileFormatBase
+public abstract class FileFormatBase extends SimpleBillingFormatBase implements SimpleBillingFormat
 {
 	//number of records
 	private int count = 0;
@@ -25,118 +25,14 @@ public abstract class FileFormatBase
 	//used to store every line of output that will be written to the file
 	// it holds Objects of type BillingRecordBase
 	private Vector<BillingRecordBase> recordVector = null;
-	public static BillingFileDefaults billingDefaults = null;
-	public Hashtable<Integer, Double> pointIDMultiplierHashTable = null;
+	private Hashtable<Integer, Double> pointIDMultiplierHashTable = null;
 	
-	public static final int validAnalogPtOffsets[] =
-	{
-		1, 2, 3, 4, 5, 6, 7, 8, 9, 21, 22, 23, 24, 25, 26, 27, 28
-	};
-	//Added offset 1 to AnalogPtOffsets for IED meters per David 3.0.30
-	
-	
-	public static final int kwAnalogOffsets[] =
-	{
-		2, 4, 6, 8
-	};
-	
-	public static final int kwhAnalogOffsets[] =
-	{
-		1, 3, 5, 7, 9
-	};
-	
-	public static final int kvarAnalogOffsets[] =
-	{
-		22, 24, 26, 28
-	};
-
-	public static final int kvarhAnalogOffsets[] =
-	{
-		21, 23, 25, 27
-	};
-	
-	public static final int validAccPtOffsets[] =
-	{
-		1, 2, 3
-	};
-
-    public static final int validTOUAccPtOffsets[] =
-	{
-        1, 2, 3, 101, 121, 141, 161
-	};
-	
-	public static final int validPeakDemandAccOffsets[] =
-	{
-		11 // 410, 470 (12, 13, 14 needs to be added for the other buckets at some time)
-	};
-
-    public static final int validTOUPeakDemandAccOffsets[] =
-	{
-	    11, 111, 131, 151, 171
-	};
-	
-	public static final int validProfileDemandAccOffsets[] =
-	{
-		101, 102, 103, 104
-	};
-	
-	// Added offset 21 for 470 frozen peak kw support
-	
-	
-	public static final int noOffsets_MASK = 0x0000;
-	public static final int validAnalogPtOffsets_MASK = 0x0001;
-	public static final int kwAnalogOffsets_MASK = 0x0002;
-	public static final int kwhAnalogOffsets_MASK = 0x0004;
-	public static final int kvarAnalogPtOffsets_MASK = 0x0008;
-	public static final int validAccPtOffsets_MASK = 0x0016;
-	public static final int kwDemandAccOffsets_MASK = 0x0032;
-	public static final int kvarhAnalogOffsets_MASK = 0x0064;
-
 	/**
 	 * FileFormatBase constructor comment.
 	 */
 	public FileFormatBase()
 	{
 		super();
-	}
-	
-	/**
-	 * Insert the method's description here.
-	 * Creation date: (8/31/2001 5:03:58 PM)
-	 */
-	// Override me if you want to manually close the DBConnection
-	public void closeDBConnection() 
-	{
-		com.cannontech.clientutils.CTILogger.info(this.getClass().getName() + ".closeDBConnection() must be overriden");
-	}
-
-	/**
-	 * Returns the billingDefault endDate as a string (dd-MMM-yyyy).
-	 * @return java.lang.String
-	 */
-	public String endDateString()
-	{
-		java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("dd-MMM-yyyy");
-		return format.format(getBillingDefaults().getEndDate());
-	}
-
-	/**
-	 * Returns the Billing File Defaults.
-	 * @return BillingFileDefaults
-	 */
-	public BillingFileDefaults getBillingDefaults()
-	{
-		return billingDefaults;
-	}
-	
-	/**
-	 * Returns the billingDefault inputFileDir string.
-	 * Creation date: (8/31/2001 2:34:47 PM)
-	 * @return java.lang.String
-	 */
-	public java.lang.String getInputFileName()
-	{
-		return getBillingDefaults().getInputFileDir();
 	}
 
 	/**
@@ -145,26 +41,26 @@ public abstract class FileFormatBase
 	 * Creation date: (11/29/00)
 	 * @return java.lang.StringBuffer
 	 */
-	public StringBuffer getOutputAsStringBuffer()
+	private StringBuffer getOutputAsStringBuffer()
 	{
 		StringBuffer returnBuffer = new StringBuffer();
-		setRecordCount(0);	//reset the count
+		this.count = 0;	//reset the count
 		
-		if( getBillingDefaults().getFormatID() == FileFormatTypes.MVRS ||
-				getBillingDefaults().getFormatID() == FileFormatTypes.MVRS_KETCHIKAN)//special case!!!
+		if( getBillingFileDefaults().getFormatID() == FileFormatTypes.MVRS ||
+				getBillingFileDefaults().getFormatID() == FileFormatTypes.MVRS_KETCHIKAN)//special case!!!
 		{
 			MVRSRecord mvrsRecord;
 			// create an instance of the record and call the dataToString, this reads a file instead
 			// of being a preloaded vector of records from the database.
-			if(getBillingDefaults().getFormatID() == FileFormatTypes.MVRS_KETCHIKAN)
+			if(getBillingFileDefaults().getFormatID() == FileFormatTypes.MVRS_KETCHIKAN)
 				mvrsRecord = new MVRS_KetchikanRecord();
 			else 
 				mvrsRecord = new MVRSRecord();
 
-			mvrsRecord.setInputFile(getBillingDefaults().getInputFileDir());
+			mvrsRecord.setInputFile(getBillingFileDefaults().getInputFileDir());
 			returnBuffer.append(mvrsRecord.dataToString());
 			//set the record format's record count, based on the number of meter records in the file
-			setRecordCount(mvrsRecord.getNumberMeters());
+			this.count = mvrsRecord.getNumberMeters();
 		}
 		else
 		{
@@ -180,23 +76,12 @@ public abstract class FileFormatBase
 	}
 
 	/**
-	 * Returns the billingDefault outputFileDir string.
-	 * Creation date: (8/31/2001 2:34:47 PM)
-	 * @return java.lang.String
-	 */
-	public java.lang.String getOutputFileName() 
-	{
-		return getBillingDefaults().getOutputFileDir();
-	}
-
-	/**
 	 * Returns a hashtable of pointid as key and multiplier as value.
 	 * @return java.util.Hashtable
 	 */
 	public Hashtable<Integer, Double> getPointIDMultiplierHashTable()
 	{
-		if( pointIDMultiplierHashTable == null)
-		{
+		if( pointIDMultiplierHashTable == null) {
 			pointIDMultiplierHashTable = retrievePointIDMultiplierHashTable();
 		}
 		return pointIDMultiplierHashTable;
@@ -209,106 +94,10 @@ public abstract class FileFormatBase
 	 */
 	public Vector<BillingRecordBase> getRecordVector()
 	{
-		if( recordVector == null )
+		if( recordVector == null ) {
 			recordVector = new Vector<BillingRecordBase>(150);
-			
+		}			
 		return recordVector;
-	}
-	
-	/**
-	 * Returns the flag that determines if offset is valid for the static kvarAnalogOffsets values.
-	 * Creation date: (3/11/2002 3:11:08 PM)
-	 * @return boolean
-	 * @param offset int
-	 */
-	public boolean isKVAR(int offset) 
-	{
-		for (int i = 0; i < kvarAnalogOffsets.length; i++)
-		{
-			if( offset == kvarAnalogOffsets[i])
-				return true;
-		}
-		return false;
-	}
-	
-
-	/**
-	 * Returns the flag that determines if offset is valid for the static kvarhAnalogOffsets values.
-	 * Creation date: (3/11/2002 3:11:08 PM)
-	 * @return boolean
-	 * @param offset int
-	 */
-	public boolean isKVARH(int offset) 
-	{
-		for (int i = 0; i < kvarhAnalogOffsets.length; i++)
-		{
-			if( offset == kvarhAnalogOffsets[i])
-				return true;
-		}
-		return false;
-	}
-	
-	/**
-	 * Returns the flag that determines if offset is valid for the static kwAnalogOffsets values.
-	 * Creation date: (3/11/2002 3:11:08 PM)
-	 * @return boolean
-	 * @param offset int
-	 */
-	public boolean isKW(int offset) 
-	{
-		for (int i = 0; i < kwAnalogOffsets.length; i++)
-		{
-			if( offset == kwAnalogOffsets[i])
-				return true;
-		}
-		return false;
-	}
-
-	/**
-	 * Returns the flag that determines if offset is valid for the static validProfileDemandAccOffsets values.
-	 * Creation date: (3/11/2002 3:11:08 PM)
-	 * @return boolean
-	 * @param offset int
-	 */
-	public boolean isKW_profileDemand(int offset) 
-	{
-		for (int i = 0; i < validProfileDemandAccOffsets.length; i++)
-		{
-			if( offset == validProfileDemandAccOffsets[i])
-				return true;
-		}
-		return false;
-	}
-	/**
-	 * Returns the flag that determines if offset is valid for the static validPeakDemandAccOffsets values.
-	 * Creation date: (3/11/2002 3:11:08 PM)
-	 * @return boolean
-	 * @param offset int
-	 */
-	public boolean isKW_peakDemand(int offset) 
-	{
-		for (int i = 0; i < validPeakDemandAccOffsets.length; i++)
-		{
-			if( offset == validPeakDemandAccOffsets[i])
-				return true;
-		}
-		return false;
-	}
-
-	/**
-	 * Returns the flag that determines if offset is valid for the static kwhAnalogOffsets values.
-	 * Creation date: (3/11/2002 3:11:08 PM)
-	 * @return boolean
-	 * @param offset int
-	 */
-	public boolean isKWH(int offset) 
-	{
-		for (int i = 0; i < kwhAnalogOffsets.length; i++)
-		{
-			if( offset == kwhAnalogOffsets[i])
-				return true;
-		}
-		return false;
 	}
 
 	/**
@@ -376,7 +165,8 @@ public abstract class FileFormatBase
 	 * Returns the number of records collected.
 	 * @return int
 	 */
-	public int getRecordCount()
+	@Override
+	public int getReadingCount()
 	{
 		if( count == 0 )
 		{
@@ -392,10 +182,6 @@ public abstract class FileFormatBase
 		return count;
 	}
 	
-	private void setRecordCount(int count_)
-	{
-		count = count_;
-	}
 	/**
 	 * Returns a hashtable of pointid as key and multiplier as value.
 	 * Collects the pointid/multiplier from the database.
@@ -451,36 +237,24 @@ public abstract class FileFormatBase
 	}
 	
 	/**
-	 * Set the billingFileDefaults field.
-	 * @param newBillingFileDefaults com.cannontech.billing.mainprograms.BillingFileDefaults
-	 */
-	public void setBillingDefaults(BillingFileDefaults newBillingDefaults)
-	{
-		billingDefaults = newBillingDefaults;
-	}
-	
-	/**
-	 * Writes the record string to the output file.
-	 */
-	public void writeToFile() throws java.io.IOException
-	{
-		java.io.FileWriter outputFileWriter = new java.io.FileWriter( getOutputFileName(), getBillingDefaults().isAppendToFile() );
-		outputFileWriter.write( getOutputAsStringBuffer().toString() );
-		outputFileWriter.flush();
-		outputFileWriter.close();
-	}
-
-	/**
 	 * Writes the record string to the output stream.
 	 * @param out java.io.OutputStream
 	 */
-	public void writeToFile(java.io.OutputStream out) throws java.io.IOException
-	{
-		out.write(getOutputAsStringBuffer().toString().getBytes());
+	@Override
+	public boolean writeToFile(java.io.OutputStream out) throws java.io.IOException {
+
+		if (getBillingFileDefaults().getDeviceGroups().isEmpty()) {
+			return false;
+		}
+
+		boolean success = retrieveBillingData( );
+		if( success ) {
+			out.write(getOutputAsStringBuffer().toString().getBytes());
+		}
+		return success;
 	}
 	
-	public String toString()
-	{
-		return FileFormatTypes.getFormatType(billingDefaults.getFormatID());
+	public String toString() {
+		return FileFormatTypes.getFormatType(billingFileDefaults.getFormatID());
 	}
 }

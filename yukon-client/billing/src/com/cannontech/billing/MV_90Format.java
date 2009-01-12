@@ -18,6 +18,8 @@ public class MV_90Format extends FileFormatBase
 {
 	java.sql.Connection dbConnection = null;
 	java.sql.PreparedStatement prepStatement = null;
+	
+	private static final int validProfileDemandAccOffsets[] = { 101, 102, 103, 104 };
 
 	/**
 	 * Default MV_90 constructor
@@ -54,7 +56,7 @@ public class MV_90Format extends FileFormatBase
 		};
 	
 		SQLStringBuilder builder = new SQLStringBuilder();
-		String sql = new String((builder.buildSQLStatement(SELECT_COLUMNS, FROM_TABLES, getBillingDefaults(), null, null, validProfileDemandAccOffsets)).toString());
+		String sql = new String((builder.buildSQLStatement(SELECT_COLUMNS, FROM_TABLES, getBillingFileDefaults(), null, null, validProfileDemandAccOffsets)).toString());
 			sql += " ORDER BY " 
 				+ SQLStringBuilder.DMG_METERNUMBER + ", " 
 				+ SQLStringBuilder.PT_POINTOFFSET + ", " 
@@ -76,7 +78,7 @@ public class MV_90Format extends FileFormatBase
 			else
 			{
 				pstmt = conn.prepareStatement(sql.toString());
-				pstmt.setTimestamp(1, new java.sql.Timestamp(getBillingDefaults().getDemandStartDate().getTime()));
+				pstmt.setTimestamp(1, new java.sql.Timestamp(getBillingFileDefaults().getDemandStartDate().getTime()));
 				rset = pstmt.executeQuery();
 				CTILogger.info(" * Start looping through return resultset");
 				
@@ -91,12 +93,12 @@ public class MV_90Format extends FileFormatBase
 					java.sql.Timestamp ts = rset.getTimestamp(3);
 					Date tsDate = new Date(ts.getTime());
 					
-					if( tsDate.compareTo( getBillingDefaults().getEndDate()) <= 0) //ts <= maxtime, CONTINUE ON!
+					if( tsDate.compareTo( getBillingFileDefaults().getEndDate()) <= 0) //ts <= maxtime, CONTINUE ON!
 					{
 						int pointID = rset.getInt(4);
 						Vector <Double> readingVector = null;
 						double multiplier = 1;
-						if( getBillingDefaults().isRemoveMultiplier())
+						if( getBillingFileDefaults().isRemoveMultiplier())
 						{
 							multiplier = getPointIDMultiplierHashTable().get(new Integer(pointID)).doubleValue();
 						}
@@ -109,7 +111,7 @@ public class MV_90Format extends FileFormatBase
 						inValidTimestamp:
 						if( lastTimeStamp.compareTo(ts) == 0)
 						{
-							if( tsDate.compareTo( getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
+							if( tsDate.compareTo( getBillingFileDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
 								break inValidTimestamp;
 								
 							//** Get the last record and add to it the other pointOffsets' values. **//
@@ -121,7 +123,7 @@ public class MV_90Format extends FileFormatBase
 						}
 						else
 						{
-							if( tsDate.compareTo( getBillingDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
+							if( tsDate.compareTo( getBillingFileDefaults().getDemandStartDate()) <= 0) //ts <= mintime, fail!
 								break inValidTimestamp;
 
 							MV_90Record mv90Rec = new MV_90Record(meterNumber);
@@ -131,7 +133,7 @@ public class MV_90Format extends FileFormatBase
 							{
 								mv90Rec.setNewMeterNumber(true);
 								lpDemandRate = retrieveLoadProfileDemandRate(deviceID);
-								lpDemandRateTimeStamp = new java.sql.Timestamp(getBillingDefaults().getDemandStartDate().getTime());
+								lpDemandRateTimeStamp = new java.sql.Timestamp(getBillingFileDefaults().getDemandStartDate().getTime());
 							}
 
 							//Increment the interval that rows MUST occur at.
@@ -139,7 +141,7 @@ public class MV_90Format extends FileFormatBase
 							while (lpDemandRateTimeStamp.compareTo(ts) < 0)
 							{
 								//If intervalTimeStamp is less than ts, we must enter 'dummy' data into recordVector.
-								if( lpDemandRateTimeStamp.compareTo(new java.sql.Timestamp(getBillingDefaults().getEndDate().getTime())) > 0) //ts <= maxtime, CONTINUE ON!
+								if( lpDemandRateTimeStamp.compareTo(new java.sql.Timestamp(getBillingFileDefaults().getEndDate().getTime())) > 0) //ts <= maxtime, CONTINUE ON!
 									break inValidTimestamp;
 
 								readingVector = new Vector<Double>(4);	//best guess capacity is 4
