@@ -180,6 +180,10 @@ ALTER COLUMN EncodingType VARCHAR(50) NOT NULL;
 go
 /* End YUK-6596 */
 
+/* Start YUK-6774 */
+INSERT INTO YukonRoleProperty VALUES(-1318,-4,'Hide Password Recovery','false','Controls access to password recovery (Forgot your password?) feature.');
+/* End YUK-6774 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

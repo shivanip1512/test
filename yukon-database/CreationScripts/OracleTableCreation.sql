@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/12/2009 11:37:42 AM                        */
+/* Created on:     1/12/2009 1:53:49 PM                         */
 /*==============================================================*/
 
 
@@ -8965,41 +8965,40 @@ insert into YukonRoleProperty values(-1112,-2,'applicable_point_type_key',' ','T
 insert into YukonRoleProperty values(-1113,-2,'Standard Page Style Sheet',' ','A comma separated list of URLs for CSS files that will be included on every Standard Page');
 insert into YukonRoleProperty values(-1114,-2,'Inherit Parent App Cats','true','If part of a member structure, should appliance categories be inherited from the parent.');
 
+INSERT INTO YukonRoleProperty VALUES(-1300,-4,'server_address','127.0.0.1','Authentication server machine address');
+INSERT INTO YukonRoleProperty VALUES(-1301,-4,'auth_port','1812','Authentication port.');
+INSERT INTO YukonRoleProperty VALUES(-1302,-4,'acct_port','1813','Accounting port.');
+INSERT INTO YukonRoleProperty VALUES(-1303,-4,'secret_key','cti','Client machine secret key value, defined by the server.');
+INSERT INTO YukonRoleProperty VALUES(-1304,-4,'auth_method','(none)','Authentication method. Possible values are (none) | PAP, [chap, others to follow soon]');
+INSERT INTO YukonRoleProperty VALUES(-1305,-4,'authentication_mode','Yukon','Authentication mode to use.  Valid values are:   Yukon | Radius');
+INSERT INTO YukonRoleProperty VALUES(-1306,-4,'auth_timeout','30','Number of seconds before the authentication process times out');
+INSERT INTO YukonRoleProperty VALUES(-1307,-4,'Default Authentication Type', 'PLAIN', 'Set the default authentication type to use {PLAIN,HASH_SHA,RADIUS,AD,LDAP,NONE}');
+INSERT INTO YukonRoleProperty VALUES(-1308,-4,'LDAP DN','dc=example,dc=com','LDAP Distinguished Name');
+INSERT INTO YukonRoleProperty VALUES(-1309,-4,'LDAP User Suffix','ou=users','LDAP User Suffix');
+INSERT INTO YukonRoleProperty VALUES(-1310,-4,'LDAP User Prefix','uid=','LDAP User Prefix');
+INSERT INTO YukonRoleProperty VALUES(-1311,-4,'LDAP Server Address','127.0.0.1','LDAP Server Address');
+INSERT INTO YukonRoleProperty VALUES(-1312,-4,'LDAP Server Port','389','LDAP Server Port');
+INSERT INTO YukonRoleProperty VALUES(-1313,-4,'LDAP Server Timeout','30','LDAP Server Timeout (in seconds)');
+INSERT INTO YukonRoleProperty VALUES(-1314,-4,'Active Directory Server Address','127.0.0.1','Active Directory Server Address');
+INSERT INTO YukonRoleProperty VALUES(-1315,-4,'Active Directory Server Port','389','Active Directory Server Port');
+INSERT INTO YukonRoleProperty VALUES(-1316,-4,'Active Directory Server Timeout','30','Active Directory Server Timeout (in seconds)');
+INSERT INTO YukonRoleProperty VALUES(-1317,-4,'Active Directory NT Domain Name','(none)','Active Directory NT DOMAIN NAME');
+INSERT INTO YukonRoleProperty VALUES(-1318,-4,'Hide Password Recovery','false','Controls access to password recovery (Forgot your password?) feature.');
 
-insert into YukonRoleProperty values(-1300,-4,'server_address','127.0.0.1','Authentication server machine address');
-insert into YukonRoleProperty values(-1301,-4,'auth_port','1812','Authentication port.');
-insert into YukonRoleProperty values(-1302,-4,'acct_port','1813','Accounting port.');
-insert into YukonRoleProperty values(-1303,-4,'secret_key','cti','Client machine secret key value, defined by the server.');
-insert into YukonRoleProperty values(-1304,-4,'auth_method','(none)','Authentication method. Possible values are (none) | PAP, [chap, others to follow soon]');
-insert into YukonRoleProperty values(-1305,-4,'authentication_mode','Yukon','Authentication mode to use.  Valid values are:   Yukon | Radius');
-insert into YukonRoleProperty values(-1306,-4,'auth_timeout','30','Number of seconds before the authentication process times out');
-insert into yukonroleproperty values(-1307,-4,'Default Authentication Type', 'PLAIN', 'Set the default authentication type to use {PLAIN,HASH_SHA,RADIUS,AD,LDAP,NONE}');
-insert into YukonRoleProperty values(-1308,-4,'LDAP DN','dc=example,dc=com','LDAP Distinguished Name');
-insert into YukonRoleProperty values(-1309,-4,'LDAP User Suffix','ou=users','LDAP User Suffix');
-insert into YukonRoleProperty values(-1310,-4,'LDAP User Prefix','uid=','LDAP User Prefix');
-insert into YukonRoleProperty values(-1311,-4,'LDAP Server Address','127.0.0.1','LDAP Server Address');
-insert into YukonRoleProperty values(-1312,-4,'LDAP Server Port','389','LDAP Server Port');
-insert into YukonRoleProperty values(-1313,-4,'LDAP Server Timeout','30','LDAP Server Timeout (in seconds)');
-insert into YukonRoleProperty values(-1314,-4,'Active Directory Server Address','127.0.0.1','Active Directory Server Address');
-insert into YukonRoleProperty values(-1315,-4,'Active Directory Server Port','389','Active Directory Server Port');
-insert into YukonRoleProperty values(-1316,-4,'Active Directory Server Timeout','30','Active Directory Server Timeout (in seconds)');
-insert into YukonRoleProperty values(-1317,-4,'Active Directory NT Domain Name','(none)','Active Directory NT DOMAIN NAME');
-
-
-insert into YukonRoleProperty values(-1401,-5,'call_timeout','30','The time-out in seconds given to each outbound call');
-insert into YukonRoleProperty values(-1402,-5,'call_response_timeout','240','The time-out in seconds given to each outbound call response');
-insert into YukonRoleProperty values(-1403,-5,'Call Prefix','(none)','Any number or numbers that must be dialed before a call can be placed.');
+INSERT INTO YukonRoleProperty VALUES(-1401,-5,'call_timeout','30','The time-out in seconds given to each outbound call');
+INSERT INTO YukonRoleProperty VALUES(-1402,-5,'call_response_timeout','240','The time-out in seconds given to each outbound call response');
+INSERT INTO YukonRoleProperty VALUES(-1403,-5,'Call Prefix','(none)','Any number or numbers that must be dialed before a call can be placed.');
 
 /* Billing Role Properties */
-insert into YukonRoleProperty values(-1500,-6,'wiz_activate','false','<description>');
-insert into YukonRoleProperty values(-1501,-6,'input_file','c:yukonclientbinBillingIn.txt','<description>');
+INSERT INTO YukonRoleProperty VALUES(-1500,-6,'wiz_activate','false','<description>');
+INSERT INTO YukonRoleProperty VALUES(-1501,-6,'input_file','c:yukonclientbinBillingIn.txt','<description>');
 
-insert into YukonRoleProperty values(-1503,-6,'Default File Format','CTI-CSV','The Default file formats.  See table BillingFileFormats.format for other valid values.');
-insert into YukonRoleProperty values(-1504,-6,'Demand Days Previous','30','Integer value for number of days for demand readings to query back from billing end date.');
-insert into YukonRoleProperty values(-1505,-6,'Energy Days Previous','7','Integer value for number of days for energy readings to query back from billing end date.');
-insert into YukonRoleProperty values(-1506,-6,'Append To File','false','Append to existing file.');
-insert into YukonRoleProperty values(-1507,-6,'Remove Multiplier','false','Remove the multiplier value from the reading.');
-insert into YukonRoleProperty values(-1508,-6,'Coop ID - CADP Only','(none)','CADP format requires a coop id number.');
+INSERT INTO YukonRoleProperty VALUES(-1503,-6,'Default File Format','CTI-CSV','The Default file formats.  See table BillingFileFormats.format for other valid values.');
+INSERT INTO YukonRoleProperty VALUES(-1504,-6,'Demand Days Previous','30','Integer value for number of days for demand readings to query back from billing end date.');
+INSERT INTO YukonRoleProperty VALUES(-1505,-6,'Energy Days Previous','7','Integer value for number of days for energy readings to query back from billing end date.');
+INSERT INTO YukonRoleProperty VALUES(-1506,-6,'Append To File','false','Append to existing file.');
+INSERT INTO YukonRoleProperty VALUES(-1507,-6,'Remove Multiplier','false','Remove the multiplier value from the reading.');
+INSERT INTO YukonRoleProperty VALUES(-1508,-6,'Coop ID - CADP Only','(none)','CADP format requires a coop id number.');
 
 /* Database Editor Role */
 insert into YukonRoleProperty values(-10000,-100,'point_id_edit','false','Controls whether point ids can be edited');
