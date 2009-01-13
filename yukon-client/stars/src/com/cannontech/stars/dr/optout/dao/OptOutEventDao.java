@@ -148,4 +148,19 @@ public interface OptOutEventDao {
 	 */
 	public List<Integer> getOptOutDeviceCountForAccount(int accountId, Date startTime, Date stopTime);
 	
+	/**
+	 * Method to get a list of opt outs that are scheduled to start before now.
+	 * @return List of scheduled opt outs
+	 */
+	public List<OptOutEvent> getScheduledOptOutsToBeStarted();
+
+	/**
+	 * Method to get a scheduled event that is over due to start (if one exists)
+	 * @param inventoryId - Inventory to get event for
+	 * @param customerAccountId - Account for inventory
+	 * @return Event if there is one
+	 */
+	public OptOutEvent getOverdueScheduledOptOut(Integer inventoryId,
+			int customerAccountId);
+	
 }

@@ -29,6 +29,12 @@ public interface EnrollmentDao {
     public List<Integer> getOptedOutInventory(Program program, Date startDate, Date stopDate);
     
     /**
+     * Method to get a list of all currently opted out inventory
+     * @return List of opted out inventory ids
+     */
+    public List<Integer> getCurrentlyOptedOutInventory();
+    
+    /**
      * Method to get opt out history by program and time period
      * @param program - Program to get history for
      * @param startDate - Start of time period (inclusive)

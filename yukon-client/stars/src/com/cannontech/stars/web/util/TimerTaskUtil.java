@@ -5,7 +5,6 @@ import java.util.concurrent.TimeUnit;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.stars.util.task.DailyTimerTask;
-import com.cannontech.stars.util.task.HourlyTimerTask;
 import com.cannontech.stars.util.task.LMCtrlHistTimerTask;
 import com.cannontech.stars.util.task.StarsTimerTask;
 
@@ -48,7 +47,6 @@ public class TimerTaskUtil {
 	public void startAllTimerTasks() {
 		runTimerTask( new DailyTimerTask());
 		
-		runTimerTask( new HourlyTimerTask());
         runTimerTask( new LMCtrlHistTimerTask());
         
 		CTILogger.info("Stars timer tasks started");

@@ -10,8 +10,11 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.optout.model.OptOutCountHolder;
+import com.cannontech.stars.dr.optout.model.OptOutEvent;
 import com.cannontech.stars.dr.optout.model.OptOutLimit;
 import com.cannontech.stars.dr.optout.model.OverrideHistory;
 import com.cannontech.stars.dr.optout.service.OptOutRequest;
@@ -104,6 +107,14 @@ public class OptOutServiceAdapter implements OptOutService {
 
 	@Override
 	public void resetOptOutLimitForInventory(Integer inventoryId, int accountId) {
+		throw new UnsupportedOperationException("not implemented");
+	}
+
+	@Override
+	public void cleanUpCancelledOptOut(LiteStarsLMHardware inventory,
+			LiteStarsEnergyCompany energyCompany, OptOutEvent event,
+			CustomerAccount customerAccount, LiteYukonUser user)
+			throws CommandCompletionException {
 		throw new UnsupportedOperationException("not implemented");
 	}
 

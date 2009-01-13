@@ -135,6 +135,24 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
 	}
 	
 	@Override
+	public List<Integer> getCurrentlyOptedOutInventory() {
+		
+		Date now = new Date();
+		
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		sql.append("SELECT DISTINCT lmhcg.InventoryId ");
+		sql.append("FROM LMHardwareControlGroup lmhcg");
+		sql.append("WHERE lmhcg.Type = ?");
+		sql.append("	AND lmhcg.OptOutStart <= ?");
+		sql.append("	AND lmhcg.OptOutStop IS NULL");
+		
+		List<Integer> inventoryIds = simpleJdbcTemplate.query(sql.toString(), new IntegerRowMapper(), 
+				LMHardwareControlGroup.OPT_OUT_ENTRY,
+				now);
+		return inventoryIds;
+	}
+	
+	@Override
 	public List<LMHardwareControlGroup> getOptOutHistoryByProgram(
 			Program program, Date startDate, Date stopDate) {
 

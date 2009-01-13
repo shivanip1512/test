@@ -253,7 +253,7 @@ public class OptOutController extends AbstractConsumerController {
     	this.checkOptOutsEnabled(user);
     	
     	// Make sure the event is the current user's event
-    	this.checkEventAgainstAccount(eventId, null);
+    	this.checkEventAgainstAccount(eventId, customerAccount);
     	
     	optOutService.cancelOptOut(Collections.singletonList(eventId), user);
         

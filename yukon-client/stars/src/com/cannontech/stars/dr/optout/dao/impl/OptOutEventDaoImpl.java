@@ -337,6 +337,37 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 		return event;
 	}
 	
+	@Override
+	public OptOutEvent getOverdueScheduledOptOut(Integer inventoryId,
+			int customerAccountId) {
+
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		sql.append("SELECT * ");
+		sql.append("FROM OptOutEvent ");
+		sql.append("WHERE InventoryId = ? ");
+		sql.append("	AND CustomerAccountId = ? ");
+		sql.append("	AND EventState = ? ");
+		sql.append("	AND StartDate <= ? ");
+		sql.append("	AND StopDate > ? ");
+		
+		OptOutEvent event = null;
+		try {
+			Date now = new Date();
+			event = simpleJdbcTemplate.queryForObject(sql.toString(), 
+													  new OptOutEventRowMapper(), 
+													  inventoryId,
+													  customerAccountId,
+													  OptOutEventState.SCHEDULED.toString(),
+													  now,
+													  now);
+		} catch(EmptyResultDataAccessException e) {
+			// no overdue scheduled event, return null
+			return null;
+		}
+		
+		return event;
+	}
+	
 
 	@Override
 	public List<OptOutEvent> getAllScheduledOptOutEvents(int customerAccountId) {
@@ -523,6 +554,27 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 				now,
 				now,
 				energyCompany.getEnergyCompanyID());
+	}
+	
+	@Override
+	public List<OptOutEvent> getScheduledOptOutsToBeStarted() {
+		
+		Date now = new Date();
+		
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		sql.append("SELECT *");
+		sql.append("FROM OptOutEvent");
+		sql.append("WHERE EventState = ?");
+		sql.append("	AND StartDate <= ?");
+		sql.append("	AND StopDate > ?");
+		
+		List<OptOutEvent> scheduledOptOuts = simpleJdbcTemplate.query(sql.toString(), 
+														new OptOutEventRowMapper(), 
+														OptOutEventState.SCHEDULED.toString(),
+														now,
+														now);
+		
+		return scheduledOptOuts;
 	}
 	
 	@Transactional

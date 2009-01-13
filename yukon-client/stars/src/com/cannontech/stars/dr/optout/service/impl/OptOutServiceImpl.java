@@ -117,14 +117,13 @@ public class OptOutServiceImpl implements OptOutService {
 		List<Integer> inventoryIdList = request.getInventoryIdList();
 		Date startDate = request.getStartDate();
 		boolean startNow = false;
+		Date now = new Date();
 		if(startDate == null) {
 			// Start now
-			request.setStartDate(new Date());
+			request.setStartDate(now);
 			startNow = true;
 		}
 		
-		
-		Date now = new Date();
 		boolean optOutCountsBoolean = optOutStatusService.getOptOutCounts(user);
 		OptOutCounts optOutCounts = OptOutCounts.valueOf(optOutCountsBoolean);
 		
@@ -168,32 +167,40 @@ public class OptOutServiceImpl implements OptOutService {
 					throw new AlreadyOptedOutException(inventoryId, customerAccountId);
 				}
 				
+				// Get any overdue scheduled opt out - that is the event we should be starting
+				OptOutEvent overdueEvent = 
+					optOutEventDao.getOverdueScheduledOptOut(inventoryId, customerAccountId);
+				if(overdueEvent != null) {
+					event.setEventId(overdueEvent.getEventId());
+					event.setScheduledDate(overdueEvent.getScheduledDate());
+				}
+				
 				event.setState(OptOutEventState.START_OPT_OUT_SENT);
 			
-	    		// Send the command to the field
-	    		this.sendOptOutRequest(
-	    				inventory, 
-	    				energyCompany, 
-	    				request.getDurationInHours(), 
-	    				user);
+				// Send the command to the field
+				this.sendOptOutRequest(
+						inventory, 
+						energyCompany, 
+						event.getDurationInHours(), 
+						user);
 
-	    		optOutEventDao.save(event, OptOutAction.START_OPT_OUT, user);
-	    		
-	    		// Update the LMHardwareControlGroup table
-	    		List<LMHardwareConfiguration> configurationList = 
-	    			lmHardwareControlGroupDao.getOldConfigDataByInventoryId(inventoryId);
-	    		
-	    		for(LMHardwareConfiguration configuration : configurationList) {
+				optOutEventDao.save(event, OptOutAction.START_OPT_OUT, user);
+				
+				// Update the LMHardwareControlGroup table
+				List<LMHardwareConfiguration> configurationList = 
+					lmHardwareControlGroupDao.getOldConfigDataByInventoryId(inventoryId);
+				
+				for(LMHardwareConfiguration configuration : configurationList) {
 		    		
-	    			int loadGroupId = configuration.getAddressingGroupId();
-	    			lmHardwareControlInformationService.startOptOut(
+					int loadGroupId = configuration.getAddressingGroupId();
+					lmHardwareControlInformationService.startOptOut(
 		    				inventoryId, 
 		    				loadGroupId, 
 		    				customerAccountId, 
 		    				user, 
 		    				event.getStartDate());
-	    		}
-	    		
+				}
+				
 			}
     		
 	    	// Log the event
@@ -290,12 +297,15 @@ public class OptOutServiceImpl implements OptOutService {
 			if(OptOutEventState.START_OPT_OUT_SENT == state && event.getStopDate().after(new Date())) {
 				// The opt out is active and the stop date is after now
 				
-				this.cancelOptOutNow(
-						inventory, 
-						energyCompany, 
-						event, 
-						customerAccount, 
-						user);
+				this.sendCancelCommandAndNotification(
+						inventory, energyCompany, user, event, customerAccount);
+				
+				// Update event state
+				event.setState(OptOutEventState.CANCEL_SENT);
+				event.setStopDate(new Date());
+				optOutEventDao.save(event, OptOutAction.CANCEL, user);
+				
+				this.cancelLMHardwareControlGroupOptOut(inventoryId, customerAccount, event, user);
 				
 			} else if (OptOutEventState.SCHEDULED == state) {
 				// The opt out is scheduled but not active
@@ -353,12 +363,16 @@ public class OptOutServiceImpl implements OptOutService {
 			CustomerAccount customerAccount = customerAccountDao.getAccountByInventoryId(inventoryId);
 			
 			try {
-				this.cancelOptOutNow(
-						inventory, 
-						energyCompany, 
-						event, 
-						customerAccount, 
-						user);
+				this.sendCancelCommandAndNotification(
+						inventory, energyCompany, user, event, customerAccount);
+				
+				// Update event state
+				event.setState(OptOutEventState.CANCEL_SENT);
+				event.setStopDate(new Date());
+				optOutEventDao.save(event, OptOutAction.CANCEL, user);
+				
+				this.cancelLMHardwareControlGroupOptOut(inventoryId, customerAccount, event, user);
+				
 			} catch (CommandCompletionException e) {
 				// Can't do much - tried to cancel opt out.  Log the error and 
 				// continue to cancel other opt outs
@@ -665,6 +679,97 @@ public class OptOutServiceImpl implements OptOutService {
 		
 	}
 	
+	@Override
+	public void cleanUpCancelledOptOut(LiteStarsLMHardware inventory,
+			LiteStarsEnergyCompany energyCompany, OptOutEvent event,
+			CustomerAccount customerAccount, LiteYukonUser user) 
+		throws CommandCompletionException {
+
+		this.sendCancelCommandAndNotification(
+				inventory, energyCompany, user, event, customerAccount);
+		
+		this.cancelLMHardwareControlGroupOptOut(
+				inventory.getInventoryID(), customerAccount, event, user);
+		
+	}
+	
+	/**
+	 * Helper method to send the opt out cancel command and cancel notification message
+	 * @param inventory - Inventory to cancel opt out on
+	 * @param energyCompany - Inventory's energy company
+	 * @param user - User requesting the cancel
+	 * @param event - Event being canceled
+	 * @param customerAccount - Inventory's account
+	 * @throws CommandCompletionException
+	 */
+	private void sendCancelCommandAndNotification(
+			LiteStarsLMHardware inventory, LiteStarsEnergyCompany energyCompany, LiteYukonUser user, 
+			OptOutEvent event, CustomerAccount customerAccount) 
+		throws CommandCompletionException {
+		
+		int inventoryId = inventory.getInventoryID();
+		int accountId = customerAccount.getAccountId();
+		
+		// Send the command to cancel opt out to the field
+		this.sendCancelRequest(inventory, energyCompany, user);
+		
+		ActivityLogger.logEvent(
+				user.getUserID(), 
+				accountId, 
+				energyCompany.getLiteID(), 
+				customerAccount.getCustomerId(),
+				ActivityLogActions.PROGRAM_REENABLE_ACTION, 
+				"Serial #:" + inventory.getManufacturerSerialNumber());
+		
+		// Send re-enable (cancel opt out) notification
+		try {
+			OptOutRequest request = new OptOutRequest();
+			request.setStartDate(event.getStartDate());
+			request.setInventoryIdList(Collections.singletonList(inventoryId));
+			request.setDurationInHours(event.getDurationInHours());
+			request.setQuestions(new ArrayList<ScheduledOptOutQuestion>());
+			
+			optOutNotificationService.sendReenableNotification(
+					customerAccount, 
+					energyCompany, 
+					request, 
+					user);
+		} catch (MessagingException e) {
+			// Not much we can do - tried to send notification
+			logger.error(e);
+		}
+	}
+
+	/**
+	 * Helper method to update the LMHardwareControlGroup opt out row when an opt out is complete
+	 * or canceled
+	 * @param inventoryId - Inventory to cancel opt out for
+	 * @param customerAccount - Intentory's account
+	 * @param event - Event being canceled
+	 * @param user - User requesting the cancel
+	 */
+	private void cancelLMHardwareControlGroupOptOut(
+			int inventoryId, CustomerAccount customerAccount, OptOutEvent event, LiteYukonUser user) {
+		
+		// Update the LMHardwareControlGroup table
+		List<LMHardwareConfiguration> configurationList = 
+			lmHardwareControlGroupDao.getOldConfigDataByInventoryId(inventoryId);
+		
+		int accountId = customerAccount.getAccountId();
+		for(LMHardwareConfiguration configuration : configurationList) {
+    		
+			int loadGroupId = configuration.getAddressingGroupId();
+			
+			lmHardwareControlInformationService.stopOptOut(
+					inventoryId, 
+					loadGroupId, 
+					accountId, 
+					user,
+					event.getStopDate());
+		}
+		
+	}
+	
 	/**
 	 * Helper method to parse a string into a list of opt out limits
 	 * @param optOutLimitString - String containing opt out limit data
@@ -692,76 +797,6 @@ public class OptOutServiceImpl implements OptOutService {
 		
 	}
 	
-	/**
-	 * Helper method to cancel a current opt out right now
-	 * @param inventory - Inventory to cancel opt out for
-	 * @param energyCompany - Inventory's energy company
-	 * @param event - Opt out event being canceled
-	 * @param customerAccount - Customer account for inventory
-	 * @param userContext - User canceling opt out 
-	 */
-	private void cancelOptOutNow(
-			LiteStarsLMHardware inventory, 
-			LiteStarsEnergyCompany energyCompany, 
-			OptOutEvent event, 
-			CustomerAccount customerAccount, 
-			LiteYukonUser user) 
-		throws CommandCompletionException {
-		
-		int inventoryId = inventory.getInventoryID();
-		
-		// Send the command to cancel opt out to the field
-		this.sendCancelRequest(inventory, energyCompany, user);
-		
-		event.setState(OptOutEventState.CANCEL_SENT);
-		event.setStopDate(new Date());
-		optOutEventDao.save(event, OptOutAction.CANCEL, user);
-		
-		// Update the LMHardwareControlGroup table
-		List<LMHardwareConfiguration> configurationList = 
-			lmHardwareControlGroupDao.getOldConfigDataByInventoryId(inventoryId);
-		
-		int accountId = customerAccount.getAccountId();
-		for(LMHardwareConfiguration configuration : configurationList) {
-    		
-			int loadGroupId = configuration.getAddressingGroupId();
-			
-			lmHardwareControlInformationService.stopOptOut(
-					inventoryId, 
-					loadGroupId, 
-					accountId, 
-					user,
-					event.getStopDate());
-		}
-		
-		ActivityLogger.logEvent(
-				user.getUserID(), 
-				accountId, 
-				energyCompany.getLiteID(), 
-				customerAccount.getCustomerId(),
-				ActivityLogActions.PROGRAM_REENABLE_ACTION, 
-				"Serial #:" + inventory.getManufacturerSerialNumber());
-		
-		// Send re-enable (cancel opt out) notification
-		try {
-			OptOutRequest request = new OptOutRequest();
-			request.setStartDate(event.getStartDate());
-			request.setInventoryIdList(Collections.singletonList(inventoryId));
-			request.setDurationInHours(event.getDurationInHours());
-			request.setQuestions(new ArrayList<ScheduledOptOutQuestion>());
-			
-			optOutNotificationService.sendReenableNotification(
-					customerAccount, 
-					energyCompany, 
-					request, 
-					user);
-		} catch (MessagingException e) {
-			// Not much we can do - tried to send notification
-			logger.error(e);
-		}
-		
-	}
-
 	/**
 	 * Helper method to send the opt out command out to the device
 	 * 
@@ -886,7 +921,6 @@ public class OptOutServiceImpl implements OptOutService {
 		// Send the command
 		String commandString = cmd.toString();
 		commandRequestRouteExecutor.execute(inventory.getRouteID(), commandString, user);
-		
 	}
 	
 	@Autowired

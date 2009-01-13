@@ -381,7 +381,10 @@ public class JobManagerImpl implements JobManager {
         YukonTask task = jobDefinition.createBean();
 
         InputRoot inputRoot = jobDefinition.getInputs();
-        InputUtil.applyProperties(inputRoot, task, job.getJobProperties());
+        if(inputRoot != null) {
+        	// Set the inputs if there are any
+        	InputUtil.applyProperties(inputRoot, task, job.getJobProperties());
+        }
 
         return task;
     }
