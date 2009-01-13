@@ -170,14 +170,7 @@ public final class SqlUtils {
             {
                 Vector columns = new Vector();
                 for (int i = 1; i <= metaData.getColumnCount(); i++) {
-                    int columnType = metaData.getColumnType(i);
-                    Object object;
-                    if (columnType == Types.DATE || columnType == Types.TIMESTAMP) {
-                        object = rset.getTimestamp(i);
-                    } else {
-                        object = rset.getObject(i);
-                    }
-                    columns.addElement( object );
+                    columns.addElement(getResultObject(rset, i));
                 }
 
                 rows.addElement(columns);
@@ -213,5 +206,17 @@ public final class SqlUtils {
             if( conn != null ) conn.close();
         }
         return returnObjects;
+    }
+    
+    public static Object getResultObject(ResultSet resultSet, int index)
+            throws SQLException {
+        int columnType = resultSet.getMetaData().getColumnType(index);
+        Object object;
+        if (columnType == Types.DATE || columnType == Types.TIMESTAMP) {
+            object = resultSet.getTimestamp(index);
+        } else {
+            object = resultSet.getObject(index);
+        }
+        return object;
     }
 }

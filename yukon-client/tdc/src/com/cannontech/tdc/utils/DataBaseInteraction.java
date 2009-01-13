@@ -10,11 +10,11 @@ import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
-import java.sql.Types;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.tdc.custom.CustomDisplay;
 
 public class DataBaseInteraction 
@@ -114,13 +114,7 @@ public static Object[][] queryResults( String query, Object[] parameters, boolea
 				
 				for (int i = 1; i <= columnCount; i++) 
 				{
-	                int columnType = metaData.getColumnType(i);
-	                Object res;
-	                if (columnType == Types.DATE || columnType == Types.TIMESTAMP) {
-	                    res = resultSet.getTimestamp(i);
-	                } else {
-	                    res = resultSet.getObject(i);
-	                }				    
+	                Object res = SqlUtils.getResultObject(resultSet, i);
 						
 					if ( res == null )
 						newRow.addElement("");

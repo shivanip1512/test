@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.SortedSet;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.dao.NotFoundException;
@@ -84,6 +85,7 @@ public class ImportCustAccountsSchedulerTask implements YukonTask {
         this.userContext = userContext;
     }
     
+    @Autowired
     public void setStarsDbCacheInstance(StarsDatabaseCache starsDbCacheInstance) {
         this.starsDbCacheInstance = starsDbCacheInstance;
     }

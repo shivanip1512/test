@@ -8,7 +8,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.sql.ResultSetMetaData;
-import java.sql.Types;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -39,6 +38,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.exception.NotLoggedInException;
 import com.cannontech.common.util.TimeUtil;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 /**
@@ -215,13 +215,7 @@ public static Object[][] executeSQL(String dbAlias, String query) {
 						
 			for( int i = 1; i <= columnCount; i++ )
 			{
-                Object o;               
-                int columnType = metaData.getColumnType(i);
-                if (columnType == Types.DATE || columnType == Types.TIMESTAMP) {
-                    o = resultSet.getTimestamp(i);
-                } else {
-                    o = resultSet.getObject(i);
-                }			    
+                Object o = SqlUtils.getResultObject(resultSet, i);;               
 
 				if( o != null )
 					nonNullRow = true; // at least 1 value in the row is not null
@@ -340,12 +334,7 @@ public static Object[][] executeSQL(String dbAlias, String query, Class<? extend
 				}
 				else
 				{
-                    int columnType = metaData.getColumnType(i);
-                    if (columnType == Types.DATE || columnType == Types.TIMESTAMP) {
-                        o = resultSet.getTimestamp(i);
-                    } else {
-                        o = resultSet.getObject(i);
-                    }				    
+                    o = SqlUtils.getResultObject(resultSet, i);                    
 				}
 
 				if( o != null )
@@ -435,13 +424,7 @@ public static Object[][] executeSQL(HttpSession session, String query )
 						
 			for( int i = 1; i <= columnCount; i++ )
 			{
-			    Object o;			    
-                int columnType = metaData.getColumnType(i);
-                if (columnType == Types.DATE || columnType == Types.TIMESTAMP) {
-                    o = resultSet.getTimestamp(i);
-                } else {
-                    o = resultSet.getObject(i);
-                }	    
+			    Object o = SqlUtils.getResultObject(resultSet, i);;			    
 
 				if( o != null )
 					nonNullRow = true; // at least 1 value in the row is not null
@@ -565,12 +548,7 @@ public static Object[][] executeSQL(HttpSession session, String query, Class<? e
 				}
 				else
 				{
-	                int columnType = metaData.getColumnType(i);
-	                if (columnType == Types.DATE || columnType == Types.TIMESTAMP) {
-	                    o = resultSet.getTimestamp(i);
-	                } else {
-	                    o = resultSet.getObject(i);
-	                }
+	                o = SqlUtils.getResultObject(resultSet, i);
 				}
 
 				if( o != null )

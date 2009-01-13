@@ -8,7 +8,6 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.sql.Types;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Vector;
@@ -265,14 +264,7 @@ public class DBPersistentBean implements IDBPersistent {
          {
             Vector<Object> columns = new Vector<Object>();
             for (int i = 1; i <= metaData.getColumnCount(); i++) {
-                int columnType = metaData.getColumnType(i);
-                Object object;
-                if (columnType == Types.DATE || columnType == Types.TIMESTAMP) {
-                    object = rset.getTimestamp(i);
-                } else {
-                    object = rset.getObject(i);
-                }
-                columns.addElement( object );
+                columns.addElement( SqlUtils.getResultObject(rset, i) );
             }
             
             rows.addElement(columns);
@@ -349,16 +341,7 @@ public class DBPersistentBean implements IDBPersistent {
          if (rset.next())
             for (int k = 0; k < columns; k++)
             {
-               //       if( rset.getObject(k+1) != null )
-                int columnType = metaData.getColumnType(k+1);
-                Object object;
-                if (columnType == Types.DATE || columnType == Types.TIMESTAMP) {
-                    object = rset.getTimestamp(k + 1);
-                } else {
-                    object = rset.getObject(k + 1);
-                }
-
-                v.addElement(object);
+                v.addElement(SqlUtils.getResultObject(rset, k+1));
             }
          
          returnObjects = new Object[v.size()];

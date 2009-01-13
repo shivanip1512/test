@@ -98,7 +98,7 @@ public class ModifyConstraints extends MessageFrameAdaptor
 			{
 				tableNames.add( rset.getString(1) );
 
-				constraintNames.add( rset.getObject(2) );
+				constraintNames.add( rset.getString(2) );
 			}
 	
 			stmt.close();

@@ -17,6 +17,8 @@ import java.util.Vector;
 
 import javax.swing.table.AbstractTableModel;
 
+import com.cannontech.database.SqlUtils;
+
 public class JDBCAdapter extends AbstractTableModel {
 	Connection          connection;
 	Statement           statement;
@@ -120,14 +122,7 @@ public JDBCAdapter() {
 				Vector newRow = new Vector();
 				for (int i = 1; i <= getColumnCount(); i++) 
 				{
-	                int columnType = metaData.getColumnType(i);
-	                Object object;
-	                if (columnType == Types.DATE || columnType == Types.TIMESTAMP) {
-	                    object = resultSet.getTimestamp(i);
-	                } else {
-	                    object = resultSet.getObject(i);
-	                }
-	   		        newRow.addElement(object);
+	   		        newRow.addElement(SqlUtils.getResultObject(resultSet, i));
 				}
 				
 				rows.addElement(newRow);

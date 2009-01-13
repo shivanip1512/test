@@ -1,8 +1,8 @@
 package com.cannontech.dbtools.tools;
 
 import java.sql.Connection;
-import java.sql.Types;
 
+import com.cannontech.database.SqlUtils;
 import com.cannontech.dbtools.diff.DBDiff;
 
 /**
@@ -115,7 +115,7 @@ public class DBTools
 			java.util.LinkedList tableNames = new java.util.LinkedList();
 	
 			while( rset.next() )
-				tableNames.add( rset.getObject(1) );
+				tableNames.add( rset.getString(1) );
 		
 			rset.close();
 			stmt1.close();
@@ -156,14 +156,7 @@ public class DBTools
 					{
 						for( int i = 0; i < metaData.getColumnCount(); i++ )
 						{
-	                        int columnType = metaData.getColumnType(i+1);
-	                        Object object;
-	                        if (columnType == Types.DATE || columnType == Types.TIMESTAMP) {
-	                            object = rset.getTimestamp(i+1);
-	                        } else {
-	                            object = rset.getObject(i+1);
-	                        }						    
-							pstmt.setObject( i+1, object);							
+							pstmt.setObject( i+1, SqlUtils.getResultObject(rset, i+1));							
 						}
 	
 						pstmt.execute();

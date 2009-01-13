@@ -1,6 +1,6 @@
 package com.cannontech.dbtools.tools;
 
-import java.sql.Types;
+import com.cannontech.database.SqlUtils;
 
 /**
  * Reads all VARCHAR rows from every table, massages the 
@@ -139,13 +139,7 @@ public class DataFixer
 				   }
 				   else
 				   {
-                      int columnType = rMeta.getColumnType(h);
-                      Object object;
-                      if (columnType == Types.DATE || columnType == Types.TIMESTAMP) {
-                          object = rset2.getTimestamp(h);
-                      } else {
-                          object = rset2.getObject(h);
-                      }
+                      Object object = SqlUtils.getResultObject(rset2, h);
 					  if (updateString == null)
 						 updateString =
 							" where " + rMeta.getColumnName(h) + " = " + DataFixer.substituteObject(object);

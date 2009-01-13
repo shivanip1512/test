@@ -1,12 +1,12 @@
 package com.cannontech.ejb;
 import java.sql.Connection;
 import java.sql.ResultSetMetaData;
-import java.sql.Types;
 
 import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.Transaction;
 import com.cannontech.yukon.ISQLStatement;
 
@@ -227,13 +227,7 @@ public class SqlStatementBean implements ISQLStatement
 							// if there were no objects to rows to retrieve??? So the bandaid 
 							// is to check for null and then below only add the current row's 
 							// data if something meaningful is in it.
-			                int columnType = metaData.getColumnType(i);
-			                Object o;
-			                if (columnType == Types.DATE || columnType == Types.TIMESTAMP) {
-			                    o = rset.getTimestamp(i);
-			                } else {
-			                    o = rset.getObject(i);
-			                }						    
+			                Object o = SqlUtils.getResultObject(rset, i);
 							
 							if( o != null )
 								nonNullRow = true; // at least 1 value in the row is not null

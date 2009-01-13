@@ -1,7 +1,5 @@
 package com.cannontech.dbtools.diff;
 
-import java.sql.Types;
-
 import com.cannontech.database.SqlUtils;
 import com.cannontech.dbtools.tools.ModifyConstraints;
 
@@ -78,7 +76,7 @@ public static void main(String[] args)
 		java.util.LinkedList tableNames = new java.util.LinkedList();
 
 		while( rset1.next() )
-			tableNames.add( rset1.getObject(1) );
+			tableNames.add( rset1.getString(1) );
 	
 		// Go through tableNames and copy all the data
 		java.util.Iterator iter = tableNames.iterator();
@@ -120,14 +118,7 @@ public static void main(String[] args)
 				{
 					for( int i = 0; i < metaData.getColumnCount(); i++ )
 					{
-		                int columnType = metaData.getColumnType(i+1);
-		                Object object;
-		                if (columnType == Types.DATE || columnType == Types.TIMESTAMP) {
-		                    object = rset2.getTimestamp(i+1);
-		                } else {
-		                    object = rset2.getObject(i+1);
-		                }
-						pstmt.setObject( i+1, object);							
+						pstmt.setObject( i+1, SqlUtils.getResultObject(rset2, i+1));							
 					}
 
 					pstmt.execute();
