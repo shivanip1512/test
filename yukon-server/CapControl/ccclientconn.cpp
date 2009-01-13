@@ -175,15 +175,6 @@ void CtiCCClientConnection::_sendthr()
     try
     {   
 
-        {
-            CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-            RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-
-            CtiCCExecutorFactory f;
-            CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::REQUEST_ALL_DATA));
-            executor->Execute();
-            delete executor;
-        }
         do
         {
             rwRunnable().serviceCancellation();
