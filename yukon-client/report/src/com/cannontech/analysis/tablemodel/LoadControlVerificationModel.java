@@ -1,6 +1,8 @@
 package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -8,14 +10,17 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowCallbackHandler;
+
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.PoolManager;
-import com.cannontech.database.SqlUtils;
+import com.cannontech.common.util.SqlFragmentSource;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.device.DynamicVerification;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * Created on Oct 20, 2005
@@ -120,84 +125,75 @@ public class LoadControlVerificationModel extends ReportModelBase
 		super();
 	}	
 
-	/**
-	 * Add SystemLog objects to data, retrieved from rset.
-	 * @param ResultSet rset
-	 */
-	public void addDataRow(ResultSet rset)
-	{
-		try
-		{
-			Integer logID = new Integer(rset.getInt(1));
-			java.sql.Timestamp dateTime = rset.getTimestamp(2);
-			Integer receiverID = new Integer(rset.getInt(3));
-			Integer transID = new Integer(rset.getInt(4));
-			String command = rset.getString(5);
-			String code = rset.getString(6);
-			Integer codesequence = new Integer(rset.getInt(7));
-			Character received = new Character(rset.getString(8).charAt(0));
-			String codeStatus = rset.getString(9);
+    /**
+     * Add SystemLog objects to data, retrieved from rset.
+     * @param ResultSet rset
+     * @throws SQLException 
+     */
+    public void addDataRow(ResultSet rset) throws SQLException
+    {
+        Integer logID = new Integer(rset.getInt(1));
+        java.sql.Timestamp dateTime = rset.getTimestamp(2);
+        Integer receiverID = new Integer(rset.getInt(3));
+        Integer transID = new Integer(rset.getInt(4));
+        String command = rset.getString(5);
+        String code = rset.getString(6);
+        Integer codesequence = new Integer(rset.getInt(7));
+        Character received = new Character(rset.getString(8).charAt(0));
+        String codeStatus = rset.getString(9);
 
-			Date dt = new Date(dateTime.getTime());
-			DynamicVerification dv = new DynamicVerification(logID, dt, receiverID, transID, command, code, codesequence, received, codeStatus);
- 
-            String receiverName = rset.getString(10);
-            String transmitterName = rset.getString(11);
-            TempVerification verification = new TempVerification();
-            verification.setReceiverName(receiverName);
-            verification.setTransmitterName(transmitterName);
-            verification.setVerification(dv);
-            
-			getData().add(verification);
-		}
-		catch(java.sql.SQLException e)
-		{
-			e.printStackTrace();
-		}
-	}
+        Date dt = new Date(dateTime.getTime());
+        DynamicVerification dv = new DynamicVerification(logID, dt, receiverID, transID, command, code, codesequence, received, codeStatus);
 
-	/**
-	 * Build the SQL statement to retrieve SystemLog data.
-	 * @return StringBuffer  an sqlstatement
-	 */
-	public StringBuffer buildSQLStatement()
-	{
-		StringBuffer sql = new StringBuffer("SELECT LOGID, TIMEARRIVAL, RECEIVERID, TRANSMITTERID, COMMAND, CODE, CODESEQUENCE, RECEIVED, CODESTATUS, "+
-                                            " REC.PAONAME, TRANS.PAONAME " + 
-			" FROM DYNAMICVERIFICATION, YUKONPAOBJECT REC, YUKONPAOBJECT TRANS " + 
-            " WHERE RECEIVERID = REC.PAOBJECTID " + 
-            " AND TRANSMITTERID = TRANS.PAOBJECTID ");
-			sql.append(" AND (TIMEARRIVAL > ?) AND (TIMEARRIVAL <= ?)");
-			
-//			Use transmitterIDs in query if they exist			
-			if( getTransmitterIDs() != null && getTransmitterIDs().length > 0)
-			{
-				sql.append(" AND TRANSMITTERID IN (" + getTransmitterIDs()[0]);
-			  	for (int i = 1; i < getTransmitterIDs().length; i++)
-					sql.append(", " + getTransmitterIDs()[i]);
-			  	sql.append(") ");
-			}
-			
-//			Use receiverIDs in query if they exist			
-			if( getReceiverIDs() != null && getReceiverIDs().length > 0)
-			{
-				sql.append(" AND RECEIVERID IN (" + getReceiverIDs()[0]);
-			  	for (int i = 1; i < getReceiverIDs().length; i++)
-					sql.append(", " + getReceiverIDs()[i]);
-			  	sql.append(") ");
-			}
-			
-			if( getCommand() != null)
-				sql.append(" AND COMMAND LIKE '%" + getCommand() + "%'" );
-			if( getCode() != null)
-				sql.append(" AND CODE LIKE '%" + getCode() + "%'" );
+        String receiverName = rset.getString(10);
+        String transmitterName = rset.getString(11);
+        TempVerification verification = new TempVerification();
+        verification.setReceiverName(receiverName);
+        verification.setTransmitterName(transmitterName);
+        verification.setVerification(dv);
 
-			sql.append(" ORDER BY CODESEQUENCE, TIMEARRIVAL ");
-			if( getSortOrder() == DESCENDING )
-				sql.append(" DESC " );
+        getData().add(verification);
+    }
 
-		return sql;
-	}
+    /**
+     * Build the SQL statement to retrieve SystemLog data.
+     * @return StringBuffer  an sqlstatement
+     */
+    public SqlFragmentSource buildSQLStatement()
+    {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT LOGID, TIMEARRIVAL, RECEIVERID, TRANSMITTERID, COMMAND, CODE, CODESEQUENCE, RECEIVED, CODESTATUS, ");
+        sql.append("REC.PAONAME, TRANS.PAONAME");
+        sql.append("FROM DYNAMICVERIFICATION, YUKONPAOBJECT REC, YUKONPAOBJECT TRANS ");
+        sql.append("WHERE RECEIVERID = REC.PAOBJECTID");
+        sql.append("AND TRANSMITTERID = TRANS.PAOBJECTID ");
+        sql.append("AND TIMEARRIVAL >").appendArgument(new Timestamp(getStartDate().getTime()));
+        sql.append("AND TIMEARRIVAL <=").appendArgument(new Timestamp(getStopDate().getTime()));
+
+        //            Use transmitterIDs in query if they exist            
+        if (getTransmitterIDs() != null && getTransmitterIDs().length > 0) {
+            sql.append("AND TRANSMITTERID IN (", getTransmitterIDs(), ")");
+        }
+
+        //            Use receiverIDs in query if they exist            
+        if (getReceiverIDs() != null && getReceiverIDs().length > 0) {
+            sql.append("AND RECEIVERID IN (", getReceiverIDs(), ")");
+        }
+
+        if (getCommand() != null) {
+            sql.append("AND COMMAND LIKE").appendArgument("%" + getCommand() + "%" );
+        }
+        if (getCode() != null) {
+            sql.append("AND CODE LIKE").appendArgument("%" + getCode() + "%" );
+        }
+
+        sql.append("ORDER BY CODESEQUENCE, TIMEARRIVAL");
+        if (getSortOrder() == DESCENDING ) {
+            sql.append(" DESC " );
+        }
+
+        return sql;
+    }
 	
 	@Override
 	public void collectData()
@@ -205,45 +201,15 @@ public class LoadControlVerificationModel extends ReportModelBase
 		//Reset all objects, new data being collected!
 		setData(null);
 				
-		int rowCount = 0;
-		StringBuffer sql = buildSQLStatement();
-		CTILogger.info(sql.toString());
+		SqlFragmentSource sql = buildSQLStatement();
+		JdbcTemplate jdbcTemplate = YukonSpringHook.getBean("jdbcTemplate", JdbcTemplate.class);
+		jdbcTemplate.query(sql.getSql(), sql.getArguments(), new RowCallbackHandler() {
+		    @Override
+		    public void processRow(ResultSet rs) throws SQLException {
+		        addDataRow(rs);
+		    }
+		});
 		
-		java.sql.Connection conn = null;
-		java.sql.PreparedStatement pstmt = null;
-		java.sql.ResultSet rset = null;
-	
-		try
-		{
-			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-	
-			if( conn == null )
-			{
-				CTILogger.error(getClass() + ":  Error getting database connection.");
-				return;
-			}
-			else
-			{
-				pstmt = conn.prepareStatement(sql.toString());
-				pstmt.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTime() ));
-				pstmt.setTimestamp(2, new java.sql.Timestamp( getStopDate().getTime()));
-				CTILogger.info("START DATE > " + getStartDate() + "  -  STOP DATE <= " + getStopDate());
-				rset = pstmt.executeQuery();
-				while( rset.next())
-				{
-					addDataRow(rset);
-				}
-			}
-		}
-				
-		catch( java.sql.SQLException e )
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			SqlUtils.close(rset, pstmt, conn );
-		}
 		CTILogger.info("Report Records Collected from Database: " + getData().size());
 		return;
 	}

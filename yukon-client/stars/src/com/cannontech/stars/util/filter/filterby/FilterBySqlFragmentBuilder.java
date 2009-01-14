@@ -12,6 +12,7 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.common.util.SqlFragmentHolder;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.stars.util.filter.DirectionAwareOrderBy;
 import com.cannontech.stars.util.filter.JoinTable;
@@ -121,7 +122,7 @@ public class FilterBySqlFragmentBuilder {
         return this;
     }
     
-    public SqlFragmentHolder build() {
+    public SqlFragmentSource build() {
         SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
         
         boolean isEmptySelectSql = StringUtils.isBlank(select);
@@ -155,6 +156,7 @@ public class FilterBySqlFragmentBuilder {
         String sql = sqlBuilder.toString();
         Object[] args = arguments.toArray();
         
+        // this code doesn't take advantage of the fact that SqlStatementBuilder is a SqlFragmentSource
         SqlFragmentHolder holder = new SqlFragmentHolder();
         holder.setSql(sql);
         holder.setArguments(args);

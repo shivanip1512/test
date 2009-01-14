@@ -22,7 +22,7 @@ import com.cannontech.common.bulk.processor.Processor;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
-import com.cannontech.common.util.SqlFragmentHolder;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.stars.util.DateRangeFilterWrapper;
@@ -62,7 +62,7 @@ public abstract class AbstractFilter<E extends LiteBase> implements Filter<E> {
         Collection<FilterBy> filterBys = filterByFactory.createFilterBys(filterWrapperList);
         applyFilterBySpecificSettings(energyCompanyIdList, filterBys);
         
-        SqlFragmentHolder sqlFragmentHolder = new FilterBySqlFragmentBuilder()
+        SqlFragmentSource sqlFragmentHolder = new FilterBySqlFragmentBuilder()
             .withSelect(getSelectCountSql())
             .withJoin(filterBys)
             .withWhere(filterBys)
@@ -109,7 +109,7 @@ public abstract class AbstractFilter<E extends LiteBase> implements Filter<E> {
         Collection<FilterBy> filterBys = filterByFactory.createFilterBys(filterWrapperList);
         applyFilterBySpecificSettings(energyCompanyIdList, filterBys);
         
-        SqlFragmentHolder sqlFragmentHolder = new FilterBySqlFragmentBuilder()
+        SqlFragmentSource sqlFragmentHolder = new FilterBySqlFragmentBuilder()
             .withSelect(getSelectIdSql())
             .withJoin(filterBys)
             .withWhere(filterBys)

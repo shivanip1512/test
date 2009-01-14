@@ -1,9 +1,12 @@
 package com.cannontech.common.util;
 
+import java.util.Arrays;
+import java.util.List;
 
-public class SqlFragmentHolder {
+
+public class SqlFragmentHolder implements SqlFragmentSource {
     private String sql;
-    private Object[] arguments;
+    private List<Object> arguments;
     
     public SqlFragmentHolder() {
         
@@ -18,11 +21,20 @@ public class SqlFragmentHolder {
     }
     
     public void setArguments(Object[] arguments) {
-        this.arguments = arguments;
+    	this.arguments = Arrays.asList(arguments);
     }
     
-    public Object[] getArguments() {
+    public void setArguments(List<Object> arguments) {
+    	this.arguments = arguments;
+    }
+    
+    public List<Object> getArgumentList() {
         return arguments;
+    }
+    
+    @Override
+    public Object[] getArguments() {
+    	return arguments.toArray();
     }
 
 }

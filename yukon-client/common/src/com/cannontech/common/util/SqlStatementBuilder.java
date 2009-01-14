@@ -8,8 +8,9 @@ import java.util.List;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 
-public class SqlStatementBuilder {
-    StringBuilder statement;
+public class SqlStatementBuilder implements SqlFragmentSource {
+    private StringBuilder statement;
+    private List<Object> arguments = new ArrayList<Object>(0); // usually not used
     
     public SqlStatementBuilder() {
         this("");
@@ -99,6 +100,18 @@ public class SqlStatementBuilder {
         statement.append(" ");
     }
     
+    public SqlStatementBuilder appendArgument(Object argument) {
+    	statement.append("? ");
+    	arguments.add(argument);
+    	return this;
+    }
+    
+    public SqlStatementBuilder appendFragment(SqlFragmentSource fragment) {
+    	statement.append(fragment.getSql().trim());
+    	appendSpace();
+    	arguments.addAll(fragment.getArgumentList());
+    	return this;
+    }
     
     public static String convertToSqlLikeList(Collection<?> ids) {
         String groupIdStr;
@@ -115,5 +128,18 @@ public class SqlStatementBuilder {
         return statement.toString();
     }
     
+    @Override
+    public String getSql() {
+    	return statement.toString();
+    }
+    
+    public List<Object> getArgumentList() {
+    	return arguments;
+    }
+    
+    @Override
+    public Object[] getArguments() {
+    	return arguments.toArray();
+    }
 
 }
