@@ -615,7 +615,7 @@ public class OptOutServiceImpl implements OptOutService {
 			throw new AccountNotFoundException("Account not found: " + accountNumber, e);
 		}
 		List<Integer> optedOutInventory = 
-			optOutEventDao.getOptOutDeviceCountForAccount(account.getAccountId(), startTime, stopTime);
+			optOutEventDao.getOptedOutDeviceIdsForAccount(account.getAccountId(), startTime, stopTime);
 		
 		int numberOfDevices = optedOutInventory.size();
 		

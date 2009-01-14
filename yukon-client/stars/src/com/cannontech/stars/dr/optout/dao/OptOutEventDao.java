@@ -146,7 +146,7 @@ public interface OptOutEventDao {
 	 * @param stopTime - End of time period
 	 * @return Ids of opted out devices
 	 */
-	public List<Integer> getOptOutDeviceCountForAccount(int accountId, Date startTime, Date stopTime);
+	public List<Integer> getOptedOutDeviceIdsForAccount(int accountId, Date startTime, Date stopTime);
 	
 	/**
 	 * Method to get a list of opt outs that are scheduled to start before now.
