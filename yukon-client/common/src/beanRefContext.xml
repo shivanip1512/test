@@ -35,7 +35,6 @@
         <constructor-arg index="0">
           <list>
             <value>com/cannontech/core/service/applicationContext.xml</value>
-            <value>com/cannontech/loadcontrol/applicationContext.xml</value>
             <value>com/cannontech/stars/starsContext.xml</value>
           </list>
         </constructor-arg>
@@ -64,6 +63,7 @@
                 <value>com/cannontech/core/dao/applicationContext.xml</value>
                 <value>com/cannontech/core/dynamic/applicationContext.xml</value>
                 <value>com/cannontech/core/service/dateContext.xml</value>
+                <value>com/cannontech/loadcontrol/applicationContext.xml</value>
             </list>
         </property>
     </bean>
@@ -74,6 +74,7 @@
         <property name="sourceList">
             <list merge="true">
                 <value>com/cannontech/hibernate/hibernateContext.xml</value>
+                
             </list>
         </property>
     </bean>
@@ -96,7 +97,6 @@
                 <value>com/cannontech/hibernate/hibernateContext.xml</value>
                 <value>com/cannontech/cc/applicationContext.xml</value>
                 <value>com/cannontech/notif/applicationContext.xml</value>
-                <value>com/cannontech/loadcontrol/applicationContext.xml</value>
                 <value>com/cannontech/core/service/applicationContext.xml</value>
             </list>
         </property>

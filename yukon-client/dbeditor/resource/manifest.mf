@@ -8,6 +8,7 @@ Class-Path:
  rwav.jar 
  acme.jar 
  yukonappserver.jar 
+ loadcontrol.jar 
  jcfield401K.jar 
  ojdbc6.jar 
  jtds.jar 

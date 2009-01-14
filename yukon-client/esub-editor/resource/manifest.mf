@@ -8,6 +8,7 @@ Class-Path: ./
  common.jar 
  graph.jar 
  dbeditor.jar 
+ loadcontrol.jar 
  yukonappserver.jar 
  rwav.jar 
  ojdbc6.jar 
