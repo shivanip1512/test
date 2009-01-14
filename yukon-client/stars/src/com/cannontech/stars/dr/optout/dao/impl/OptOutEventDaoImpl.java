@@ -101,13 +101,13 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 		log.setUserId(user.getUserID());
 		
 		// Add OptOutEventLog entry
-		logOptOutRequest(log);
+		saveOptOutLog(log);
 		
 	}
 	
 	@Override
 	@Transactional
-	public void logOptOutRequest(OptOutLog optOutLog) {
+	public void saveOptOutLog(OptOutLog optOutLog) {
 
 		SqlStatementBuilder logSql = new SqlStatementBuilder();
 		logSql.append("INSERT INTO OptOutEventLog");
@@ -270,7 +270,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 	
 
 	@Override
-	public OptOutEvent getLastEvent(int inventoryId, int customerAccountId) {
+	public OptOutEvent findLastEvent(int inventoryId, int customerAccountId) {
 		
 		// In English: 
 		// Select the event with a stop date equal to the maximum stop date for an event 

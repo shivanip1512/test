@@ -3,8 +3,8 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
 
-<c:set var="optOutUrl" value="/spring/stars/consumer/optout"/>
-<c:set var="actionUrl" value="${optOutUrl}/update"/>
+<c:url var="optOutUrl" value="/spring/stars/consumer/optout" />
+<c:url var="actionUrl" value="${optOutUrl}/update" />
 
 <cti:standardPage module="consumer" page="optout">
     <cti:standardMenu />

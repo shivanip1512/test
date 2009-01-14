@@ -2,6 +2,7 @@ package com.cannontech.stars.dr.optout.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.EnergyCompanyDao;
 import com.cannontech.core.dao.RoleDao;
@@ -38,9 +39,8 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
 			optOutCounts = optOutTemporaryOverrideDao.getOptOutCounts(energyCompany);
 		} catch (NoTemporaryOverrideException e) {
 			// Opt out counts is not temporarily overridden today - get role property value
-			optOutCounts = Boolean.valueOf(authDao.getRolePropertyValue(
-											user, 
-											ConfigurationRole.OPT_OUTS_COUNT));
+			optOutCounts = 
+				authDao.checkRoleProperty(user.getUserID(), ConfigurationRole.OPT_OUTS_COUNT);
 		}
 		
 		return optOutCounts;
@@ -61,8 +61,9 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
 			boolean isOperator = StarsUtils.isOperator(user);
 
 			if (isOperator) {
-				// If user is operator - check the first residential customer group
-				// for enabled value
+				// If user is operator - there is no way to determine the 'master' optout enabled
+				// state if there are multiple residential customer groups, so just grab the
+				// first one in the list and use that as the default current state
 				LiteStarsEnergyCompany operatorEnergyCompany = starsDatabaseCache
 						.getEnergyCompanyByUser(user);
 
@@ -77,15 +78,15 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
 							ConfigurationRole.OPT_OUTS_COUNT,
 							new Boolean(false).toString());
 
-					optOutEnabled = Boolean.valueOf(enabled);
+					optOutEnabled = !CtiUtilities.isFalse(enabled);
 				}
 
 			} else {
 				// Residential user - check role prop value
 
-				optOutEnabled = Boolean.valueOf(authDao.getRolePropertyValue(
-											user,
-											ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_OPT_OUT));
+				optOutEnabled = authDao.checkRoleProperty(
+											user.getUserID(), 
+											ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_OPT_OUT);
 			}
 		}
 		

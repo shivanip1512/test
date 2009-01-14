@@ -164,7 +164,10 @@ public class OptOutController extends AbstractConsumerController {
         String escaped = StringEscapeUtils.escapeHtml(jsonInventoryIds);
         map.addAttribute("jsonInventoryIds", escaped);
 
-        List<String> questions = OptOutControllerHelper.getConfirmQuestions(messageSourceResolver, yukonUserContext);
+        List<String> questions = OptOutControllerHelper.getConfirmQuestions(
+        		messageSourceResolver, 
+        		yukonUserContext,
+        		"yukon.dr.consumer.optoutconfirm.question.");
         if (questions.size() == 0) return "redirect:/spring/stars/consumer/optout/update";
 
         map.addAttribute("questions", questions);

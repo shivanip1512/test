@@ -6,7 +6,7 @@
 
 <link rel="stylesheet" href="../../WebConfig/yukon/styles/YukonGeneralStyles.css" type="text/css">
 
-<c:set var="actionUrl" value="/spring/stars/operator/optout/optoutQuestions"/>
+<c:url var="actionUrl" value="/spring/stars/operator/optout/optoutQuestions"/>
 
 <script type="text/javascript">
 function createJSON() {

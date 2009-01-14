@@ -68,13 +68,13 @@ public interface OptOutEventDao {
 	 * scheduled events) for the given inventory and account
 	 * @return Last or current event or null if no events
 	 */
-	public OptOutEvent getLastEvent(int inventoryId, int customerAccountId);
+	public OptOutEvent findLastEvent(int inventoryId, int customerAccountId);
 	
 	/**
-	 * Method to add an opt change to the OptOutEventLog table
-	 * @param optOutLog - Change to be logged
+	 * Method to save an OptOutLog
+	 * @param optOutLog - Change to be saved
 	 */
-	public void logOptOutRequest(OptOutLog optOutLog);
+	public void saveOptOutLog(OptOutLog optOutLog);
 	
 	/**
 	 * Method to get the active (hasn't been canceled) scheduled opt out event if one exists

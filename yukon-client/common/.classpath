@@ -225,7 +225,7 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/third-party/joda-time-1.6.jar" sourcepath="Z:/java/Third-Party Sources/joda-time-1.6-src.zip"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/joda-time-1.6.jar" sourcepath="Z:/java/Third-Party Sources/joda-time-1.6-src.zip"/>
 	<classpathentry kind="lib" path="/third-party/hibernate-annotations.jar" sourcepath="Z:/java/Third-Party Sources/hibernate-annotations-3.2.0.GA.zip"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

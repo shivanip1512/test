@@ -3,7 +3,6 @@ package com.cannontech.stars.dr.optout.dao.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
-import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -12,7 +11,6 @@ import com.cannontech.stars.dr.optout.dao.OptOutAdditionalDao;
 /**
  * Implementation class for OptOutAdditionalDao
  */
-@Repository("optOutAdditionalDao")
 public class OptOutAdditionalDaoImpl implements OptOutAdditionalDao {
 
 	private SimpleJdbcTemplate simpleJdbcTemplate;
@@ -46,31 +44,30 @@ public class OptOutAdditionalDaoImpl implements OptOutAdditionalDao {
 			int additionalOptOuts) {
 		
 		SqlStatementBuilder sql = new SqlStatementBuilder();
-		sql.append("SELECT ExtraOptOutCount");
+		sql.append("SELECT COUNT(*)");
 		sql.append("FROM OptOutAdditional");
 		sql.append("WHERE InventoryId = ?");
 		sql.append("	AND CustomerAccountId = ?");
 		
-		try {
-			simpleJdbcTemplate.queryForInt(sql.toString(), 
-					inventoryId, 
-					customerAccountId);
+		int rowCount = simpleJdbcTemplate.queryForInt(sql.toString(), 
+				inventoryId, 
+				customerAccountId);
 
-			// There are additional opt outs for this inventory/account
+		if(rowCount > 0) {
+			// There are already additional opt outs for this inventory/account
 			sql = new SqlStatementBuilder();
 			sql.append("UPDATE OptOutAdditional");
 			sql.append("SET ExtraOptOutCount = (ExtraOptOutCount + ?)");
 			sql.append("WHERE InventoryId = ?");
 			sql.append("	AND CustomerAccountId = ?");
-		
-		} catch (EmptyResultDataAccessException e) {
-			
-			// No additional opt outs for this inventory/account
+
+		} else {
+			// No additional opt outs exist for this inventory/account
 			sql = new SqlStatementBuilder();
 			sql.append("INSERT INTO OptOutAdditional");
 			sql.append("(ExtraOptOutCount, InventoryId, CustomerAccountId)");
 			sql.append("VALUES (?,?,?)");
-			
+
 		}
 		
 		simpleJdbcTemplate.update(sql.toString(), 

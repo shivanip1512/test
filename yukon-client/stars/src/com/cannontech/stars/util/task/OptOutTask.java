@@ -100,7 +100,7 @@ public class OptOutTask implements YukonTask {
         	// sure the inventory is no longer opted out
         	if(!optedOut) {
 	        	OptOutEvent lastEvent = 
-	        		optOutEventDao.getLastEvent(inventoryId, accountId);
+	        		optOutEventDao.findLastEvent(inventoryId, accountId);
 	        	
 	        	CustomerAccount account = customerAccountDao.getById(accountId);
 	        	LiteStarsEnergyCompany energyCompany = ecMappingDao.getInventoryEC(inventoryId);

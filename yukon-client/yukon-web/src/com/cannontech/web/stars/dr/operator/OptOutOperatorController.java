@@ -162,7 +162,9 @@ public class OptOutOperatorController {
             int durationInDays, String jsonInventoryIds, ModelMap map) {
     	
     	List<String> questions = OptOutControllerHelper.getConfirmQuestions(
-    			messageSourceResolver, yukonUserContext);
+    			messageSourceResolver, 
+    			yukonUserContext,
+    			"yukon.dr.operator.optoutconfirm.question.");
     	if (questions.size() == 0) {
     		return "redirect:/spring/stars/consumer/optout/doOptOut?startDate=" + startDate
 				+ "&duration=" + durationInDays + "&inventoryIds=" + jsonInventoryIds;
@@ -184,7 +186,10 @@ public class OptOutOperatorController {
         map.addAttribute("durationInDays", durationInDays);
         
         List<String> questions = 
-        	OptOutControllerHelper.getConfirmQuestions(messageSourceResolver, yukonUserContext);
+        	OptOutControllerHelper.getConfirmQuestions(
+        			messageSourceResolver, 
+        			yukonUserContext,
+        			"yukon.dr.operator.optoutconfirm.question.");
         map.addAttribute("questions", questions);
         
         String escaped = StringEscapeUtils.escapeHtml(jsonInventoryIds);

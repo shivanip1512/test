@@ -5,8 +5,8 @@
 
 <link rel="stylesheet" href="../../WebConfig/yukon/styles/YukonGeneralStyles.css" type="text/css">
 
-<c:set var="optOutUrl" value="/spring/stars/operator/optout"/>
-<c:set var="actionUrl" value="${optOutUrl}/update"/>
+<c:url var="optOutUrl" value="/spring/stars/operator/optout" />
+<c:url var="actionUrl" value="${optOutUrl}/update" />
 
 <script type="text/javascript">
 function createJSON() {
@@ -49,10 +49,10 @@ function createItem(element) {
 }
 </script>    
     
-    <h3><cti:msg key="yukon.dr.consumer.optoutconfirm.header"/></h3>
+    <h3><cti:msg key="yukon.dr.operator.optoutconfirm.header"/></h3>
     
     <div align="center">
-        <cti:msg key="yukon.dr.consumer.optoutconfirm.description"/>
+        <cti:msg key="yukon.dr.operator.optoutconfirm.description"/>
         
         <br>
         <br>
@@ -75,9 +75,9 @@ function createItem(element) {
             <div>
                 <br>
                 <span style="padding-right: 0.5em;">
-                    <input type="submit" value="<cti:msg key='yukon.dr.consumer.optoutconfirm.save'/>"></input>
+                    <input type="submit" value="<cti:msg key='yukon.dr.operator.optoutconfirm.save'/>"></input>
                 </span>    
-                <input type="button" value="<cti:msg key='yukon.dr.consumer.optoutconfirm.cancel'/>"
+                <input type="button" value="<cti:msg key='yukon.dr.operator.optoutconfirm.cancel'/>"
                        onclick="javascript:location.href='${optOutUrl}';"></input>
             </div>
     

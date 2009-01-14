@@ -187,6 +187,8 @@
 
     <bean id="optOutEventDao" class="com.cannontech.stars.dr.optout.dao.impl.OptOutEventDaoImpl"/>
 
+    <bean id="optOutAdditionalDao" class="com.cannontech.stars.dr.optout.dao.impl.OptOutAdditionalDaoImpl"/>
+
     <bean id="optOutTemporaryOverrideDao" class="com.cannontech.stars.dr.optout.dao.impl.OptOutTemporaryOverrideDaoImpl"/>
 
     <bean id="optOutNotificationService" class="com.cannontech.stars.dr.optout.service.impl.OptOutNotificationServiceImpl"/>

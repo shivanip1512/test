@@ -62,9 +62,8 @@ public class OptOutControllerHelper {
     }
     
     public static List<String> getConfirmQuestions(YukonUserContextMessageSourceResolver messageSourceResolver, 
-            YukonUserContext yukonUserContext) {
+            YukonUserContext yukonUserContext, String keyPrefix) {
         
-        final String keyPrefix = "yukon.dr.consumer.optoutconfirm.question.";
         final MessageSourceAccessor messageSourceAccessor = 
             messageSourceResolver.getMessageSourceAccessor(yukonUserContext);
         

@@ -17,6 +17,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +35,7 @@ import com.cannontech.core.dao.InventoryNotFoundException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.core.dao.RoleDao;
+import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.service.SystemDateFormattingService;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.activity.ActivityLogActions;
@@ -103,6 +105,7 @@ public class OptOutServiceImpl implements OptOutService {
 	private EnrollmentDao enrollmentDao;
 	private StarsSearchDao starsSearchDao;
 	private SystemDateFormattingService systemDateFormattingService;
+	private YukonUserDao yukonUserDao;
 	
 	private final Logger logger = YukonLogManager.getLogger(OptOutServiceImpl.class);
 	
@@ -248,7 +251,7 @@ public class OptOutServiceImpl implements OptOutService {
 				(LiteStarsLMHardware) starsInventoryBaseDao.getById(inventoryId);
 			LiteStarsEnergyCompany energyCompany = ecMappingDao.getInventoryEC(inventoryId);
 			
-			OptOutEvent lastEvent = optOutEventDao.getLastEvent(inventoryId, customerAccountId);
+			OptOutEvent lastEvent = optOutEventDao.findLastEvent(inventoryId, customerAccountId);
 			
 			int newDuration = TimeUtil.differenceInHours(new Date(), lastEvent.getStopDate());
 			
@@ -271,7 +274,7 @@ public class OptOutServiceImpl implements OptOutService {
 			log.setStopDate(lastEvent.getStopDate());
 			log.setUserId(user.getUserID());
 			
-			optOutEventDao.logOptOutRequest(log);
+			optOutEventDao.saveOptOutLog(log);
 			
 		} else {
 			throw new NotOptedOutException(inventoryId, customerAccountId);
@@ -418,6 +421,12 @@ public class OptOutServiceImpl implements OptOutService {
 		// Get the Opt Out limits for the user
 		CustomerAccount customerAccount = customerAccountDao.getById(customerAccountId);
 		LiteContact contact = customerDao.getPrimaryContact(customerAccount.getCustomerId());
+
+		// Get the consumer user's time zone for date calculation
+		int userId = contact.getLoginID();
+		LiteYukonUser user = yukonUserDao.getLiteYukonUser(userId);
+		TimeZone userTimeZone = authDao.getUserTimeZone(user);
+		DateTimeZone dateTimeZone = DateTimeZone.forTimeZone(userTimeZone);
 		
 		String optOutLimitString = 
 			authDao.getRolePropertyValue(contact.getLoginID(), ResidentialCustomerRole.OPT_OUT_LIMITS);
@@ -431,7 +440,7 @@ public class OptOutServiceImpl implements OptOutService {
 				optOutLimit = limit.getLimit();
 
 				// Get the first day of the start month of the limit at midnight
-				DateTime startDateTime = new DateTime();
+				DateTime startDateTime = new DateTime(dateTimeZone);
 				startDateTime = startDateTime.withMonthOfYear(limitStartMonth);
 				startDateTime = startDateTime.withDayOfMonth(1);
 				startDateTime = startDateTime.withTime(0, 0, 0, 0);
@@ -1028,6 +1037,11 @@ public class OptOutServiceImpl implements OptOutService {
 	public void setSystemDateFormattingService(
 			SystemDateFormattingService systemDateFormattingService) {
 		this.systemDateFormattingService = systemDateFormattingService;
+	}
+	
+	@Autowired
+	public void setYukonUserDao(YukonUserDao yukonUserDao) {
+		this.yukonUserDao = yukonUserDao;
 	}
 	
 }
