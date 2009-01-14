@@ -694,11 +694,12 @@ public class OptOutServiceImpl implements OptOutService {
 			CustomerAccount customerAccount, LiteYukonUser user) 
 		throws CommandCompletionException {
 
+		this.cancelLMHardwareControlGroupOptOut(
+				inventory.getInventoryID(), customerAccount, event, user);
+
 		this.sendCancelCommandAndNotification(
 				inventory, energyCompany, user, event, customerAccount);
 		
-		this.cancelLMHardwareControlGroupOptOut(
-				inventory.getInventoryID(), customerAccount, event, user);
 		
 	}
 	
