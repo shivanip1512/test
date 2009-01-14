@@ -1,6 +1,8 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.user.UserUtils" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonGroup" %>
+<%@ page import="com.cannontech.core.dao.YukonGroupDao" %>
+<%@ page import="java.util.Arrays" %>
 <%
 	int userID = -1;
 	if (request.getParameter("UserID") != null)
@@ -77,17 +79,31 @@ function validate(form) {
                         <td width="75%" class="TableCell"> 
                           <select name="OperatorGroup" onchange="setContentChanged(true)">
 <%
-        List<LiteYukonGroup> usersGroups = DaoFactory.getYukonGroupDao().getGroupsForUser(liteUser);
-		LiteYukonGroup[] operGroups = liteEC.getWebClientOperatorGroups();
-		for (int i = 0; i < operGroups.length; i++) {
-		    boolean selected = usersGroups.contains(operGroups[i]);
+        YukonGroupDao yukonGroupDao = DaoFactory.getYukonGroupDao();
+        List<LiteYukonGroup> usersGroups = yukonGroupDao.getGroupsForUser(liteUser);
+		List<LiteYukonGroup> operGroups = Arrays.asList(liteEC.getWebClientOperatorGroups());
+		List<LiteYukonGroup> copy = new ArrayList<LiteYukonGroup>(usersGroups);
+        for(LiteYukonGroup group : copy){
+            if(!operGroups.contains(group)){
+                usersGroups.remove(group);
+            }
+        }
+        LiteYukonGroup selectedGroup = null; 
+        if(!usersGroups.isEmpty()){
+            selectedGroup = usersGroups.get(usersGroups.size()-1);
+        }
+		for (LiteYukonGroup group : operGroups) {
+		    boolean selected = false;
+		    if(selectedGroup != null && selectedGroup.getGroupID() == group.getGroupID()){
+		        selected = true;
+		    }
 %>
                             <option 
                             <% if(selected){ %>
                                 selected
                             <%} %>
-                            value="<%= operGroups[i].getGroupID() %>" 
-                            ><%= operGroups[i].getGroupName() %></option>
+                            value="<%= group.getGroupID() %>" 
+                            ><%= group.getGroupName() %></option>
 <%
 		}
 %>
