@@ -36,7 +36,7 @@ public HEnergyExchangeProgramOffer[] getEnergyExchangeProgramOffers() {
 			offer.setDeviceId( rset.getLong(1) );
 			offer.setOfferId( rset.getLong(2) );
 			offer.setRunStatus( rset.getString(3) );
-			offer.setOfferDate( rset.getDate(4) );
+			offer.setOfferDate( rset.getTimestamp(4) );
 			
 			offerList.add(offer);
 		}

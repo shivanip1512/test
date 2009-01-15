@@ -228,9 +228,9 @@ public class InventoryBase extends DBPersistent {
 				inv.setAccountID( new Integer(rset.getInt(2)) );
 				inv.setInstallationCompanyID( new Integer(rset.getInt(3)) );
 				inv.setCategoryID( new Integer(rset.getInt(4)) );
-				inv.setReceiveDate( rset.getDate(5) );
-				inv.setInstallDate( rset.getDate(6) );
-				inv.setRemoveDate( rset.getDate(7) );
+				inv.setReceiveDate( rset.getTimestamp(5) );
+				inv.setInstallDate( rset.getTimestamp(6) );
+				inv.setRemoveDate( rset.getTimestamp(7) );
 				inv.setAlternateTrackingNumber( rset.getString(8) );
 				inv.setVoltageID( new Integer(rset.getInt(9)) );
 				inv.setNotes( rset.getString(10) );

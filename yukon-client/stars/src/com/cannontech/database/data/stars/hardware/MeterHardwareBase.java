@@ -103,9 +103,9 @@ public class MeterHardwareBase extends InventoryBase {
 				meterHardwareBase.getInventoryBase().setAccountID( new Integer(rset.getInt(2)) );
 				meterHardwareBase.getInventoryBase().setInstallationCompanyID( new Integer(rset.getInt(3)) );
 				meterHardwareBase.getInventoryBase().setCategoryID(  new Integer(rset.getInt(4)) );
-				meterHardwareBase.getInventoryBase().setReceiveDate(rset.getDate(5));
-				meterHardwareBase.getInventoryBase().setInstallDate(rset.getDate(6));
-				meterHardwareBase.getInventoryBase().setRemoveDate(rset.getDate(7));
+				meterHardwareBase.getInventoryBase().setReceiveDate(rset.getTimestamp(5));
+				meterHardwareBase.getInventoryBase().setInstallDate(rset.getTimestamp(6));
+				meterHardwareBase.getInventoryBase().setRemoveDate(rset.getTimestamp(7));
 				meterHardwareBase.getInventoryBase().setAlternateTrackingNumber(rset.getString(8));
 				meterHardwareBase.getInventoryBase().setVoltageID( new Integer(rset.getInt(9)) );
 				meterHardwareBase.getInventoryBase().setNotes(rset.getString(10));
@@ -165,9 +165,9 @@ public class MeterHardwareBase extends InventoryBase {
 				meterHardwareBase.getInventoryBase().setAccountID( new Integer(rset.getInt(2)) );
 				meterHardwareBase.getInventoryBase().setInstallationCompanyID( new Integer(rset.getInt(3)) );
 				meterHardwareBase.getInventoryBase().setCategoryID(  new Integer(rset.getInt(4)) );
-				meterHardwareBase.getInventoryBase().setReceiveDate(rset.getDate(5));
-				meterHardwareBase.getInventoryBase().setInstallDate(rset.getDate(6));
-				meterHardwareBase.getInventoryBase().setRemoveDate(rset.getDate(7));
+				meterHardwareBase.getInventoryBase().setReceiveDate(rset.getTimestamp(5));
+				meterHardwareBase.getInventoryBase().setInstallDate(rset.getTimestamp(6));
+				meterHardwareBase.getInventoryBase().setRemoveDate(rset.getTimestamp(7));
 				meterHardwareBase.getInventoryBase().setAlternateTrackingNumber(rset.getString(8));
 				meterHardwareBase.getInventoryBase().setVoltageID( new Integer(rset.getInt(9)) );
 				meterHardwareBase.getInventoryBase().setNotes(rset.getString(10));
@@ -225,9 +225,9 @@ public class MeterHardwareBase extends InventoryBase {
                 meterHardwareBase.getInventoryBase().setAccountID( new Integer(rset.getInt(2)) );
                 meterHardwareBase.getInventoryBase().setInstallationCompanyID( new Integer(rset.getInt(3)) );
                 meterHardwareBase.getInventoryBase().setCategoryID(  new Integer(rset.getInt(4)) );
-                meterHardwareBase.getInventoryBase().setReceiveDate(rset.getDate(5));
-                meterHardwareBase.getInventoryBase().setInstallDate(rset.getDate(6));
-                meterHardwareBase.getInventoryBase().setRemoveDate(rset.getDate(7));
+                meterHardwareBase.getInventoryBase().setReceiveDate(rset.getTimestamp(5));
+                meterHardwareBase.getInventoryBase().setInstallDate(rset.getTimestamp(6));
+                meterHardwareBase.getInventoryBase().setRemoveDate(rset.getTimestamp(7));
                 meterHardwareBase.getInventoryBase().setAlternateTrackingNumber(rset.getString(8));
                 meterHardwareBase.getInventoryBase().setVoltageID( new Integer(rset.getInt(9)) );
                 meterHardwareBase.getInventoryBase().setNotes(rset.getString(10));

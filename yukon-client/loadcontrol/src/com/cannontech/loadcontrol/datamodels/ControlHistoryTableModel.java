@@ -337,7 +337,7 @@ public class ControlHistoryTableModel extends javax.swing.table.AbstractTableMod
 			{
 				Vector values = new Vector(2);
 				
-				values.add( new ModifiedDate(rset.getDate(1).getTime()) );
+				values.add( new ModifiedDate(rset.getTimestamp(1).getTime()) );
 				values.add( new Double(rset.getDouble(2)) );
 
 				newRows.add( values ); 

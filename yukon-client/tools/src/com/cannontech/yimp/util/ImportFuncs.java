@@ -75,7 +75,7 @@ public class ImportFuncs
             String altGrp = rs.getString("AltGrp").trim();
             String templateName = rs.getString("TemplateName").trim();
             String errorMsg = rs.getString("ErrorMsg").trim();
-            Date dateTime = rs.getDate("DateTime");
+            Date dateTime = rs.getTimestamp("DateTime");
             String billGrp = rs.getString("BillGrp").trim();
             String substationName = rs.getString("SubstationName").trim();
             String failType = rs.getString("FailType").trim();

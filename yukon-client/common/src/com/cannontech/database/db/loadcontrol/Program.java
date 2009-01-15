@@ -64,8 +64,8 @@ public static Program[] getAllPrograms(Long userID, String databaseAlias) {
 			program.setProgramID( new Integer(rset.getInt(1)) );
 			program.setName( rset.getString(2) );
 			program.setState( rset.getString(3) );
-			program.setStartTimeStamp( rset.getDate(4) );
-			program.setStopTimeStamp( rset.getDate(5) );
+			program.setStartTimeStamp( rset.getTimestamp(4) );
+			program.setStopTimeStamp( rset.getTimestamp(5) );
 			program.setTotalControlTime( new Integer( rset.getInt(6 ) ));
 
 			results.add(program);
