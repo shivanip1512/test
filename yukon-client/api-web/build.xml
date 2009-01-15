@@ -76,6 +76,7 @@
 		<include name="wsdl4j.jar"/>
 		<include name="xercesImpl.jar"/>
 		<include name="XmlSchema-1.4.2.jar"/>
+		<include name="yc.jar"/>
 		<include name="yukonappserver.jar"/>
 	</fileset>
 

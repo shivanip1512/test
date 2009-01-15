@@ -586,8 +586,8 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 		sql.append("WHERE LogDate = ");
 		sql.append("	(SELECT MIN(LogDate) ");
 		sql.append("	 FROM OptOutEventLog");
-		sql.append("	 WHERE OptOutEventId = ?");
-		sql.append("	 GROUP BY OptOutEventId)");
+		sql.append("	 WHERE OptOutEventId = ooelOuter.OptOutEventId)");
+		sql.append("AND ooelOuter.OptOutEventId = ?");
 		
 		int userId = simpleJdbcTemplate.queryForInt(sql.toString(), optOutEventId);
 		
