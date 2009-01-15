@@ -75,7 +75,8 @@ public class OptOutTask implements YukonTask {
         	try {
 				optOutService.optOut(account, optOutRequest, user);
 			} catch (CommandCompletionException e) {
-				logger.error("Could not start scheduled opt out", e);
+				logger.error("Could not start scheduled opt out event with id: " 
+						+ event.getEventId(), e);
 			}
         	
         }
@@ -109,7 +110,8 @@ public class OptOutTask implements YukonTask {
 					optOutService.cleanUpCancelledOptOut(
 							inventory, energyCompany, lastEvent, account, user);
 				} catch (CommandCompletionException e) {
-					logger.error("Attempt to reenable device failed", e);
+					logger.error("Attempt to reenable inventory: " 
+							+ inventory.getInventoryID() + " failed", e);
 				}
         	}
         }

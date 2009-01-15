@@ -19,6 +19,7 @@ import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.ActivityLogger;
@@ -689,6 +690,7 @@ public class OptOutServiceImpl implements OptOutService {
 	}
 	
 	@Override
+	@Transactional(propagation = Propagation.NEVER)
 	public void cleanUpCancelledOptOut(LiteStarsLMHardware inventory,
 			LiteStarsEnergyCompany energyCompany, OptOutEvent event,
 			CustomerAccount customerAccount, LiteYukonUser user) 
