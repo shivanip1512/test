@@ -326,7 +326,6 @@ public abstract class BaseNotificationStrategy extends StrategyBase implements N
                 return splitEvent;
             } 
         });
-        //TODO - change to include both events.
         CTILogger.info(origEvent + " split and " + splitEvent + " created by " + user);
 
         getNotificationProxy().sendCurtailmentNotification(splitEvent.getId(), CurtailmentEventAction.ADJUSTING);
