@@ -21,7 +21,7 @@
                             </option>
                         </c:forEach>
                     </select>
-                    <cti:formatNotification var="notif" value="${notification.notification}" type="${notification.notificationCategoryID}" />
+                    <cti:formatNotification var="notif" value="${notification}"/>
                     <input name="notificationText_${count}" type="text" value="<spring:escapeBody htmlEscape="true">${notif}</spring:escapeBody>"/>
                     <input name="notificationId_${count}" type="hidden" value="${notification.liteID}"/>
                     

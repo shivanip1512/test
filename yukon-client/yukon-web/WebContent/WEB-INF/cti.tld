@@ -775,11 +775,6 @@
         <required>false</required>
         <rtexprvalue>true</rtexprvalue>
     </attribute>
-    <attribute>
-        <name>type</name>
-        <required>true</required>
-        <rtexprvalue>true</rtexprvalue>
-    </attribute>
   </tag>
   
     <tag>

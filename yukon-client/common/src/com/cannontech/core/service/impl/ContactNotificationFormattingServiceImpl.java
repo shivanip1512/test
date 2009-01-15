@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.service.ContactNotificationFormattingService;
 import com.cannontech.core.service.PhoneNumberFormattingService;
+import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.user.YukonUserContext;
 
 public class ContactNotificationFormattingServiceImpl implements ContactNotificationFormattingService{
@@ -13,12 +14,12 @@ public class ContactNotificationFormattingServiceImpl implements ContactNotifica
     private YukonListDao yukonListDao;
 
     @Override
-    public String formatNotification(String notif, int type, YukonUserContext context) throws IllegalArgumentException {
+    public String formatNotification(LiteContactNotification notif, YukonUserContext context) throws IllegalArgumentException {
         if (notif != null) {
-            if(yukonListDao.isPhoneNumber(type)) {
-                return phoneNumberFormattingService.formatPhoneNumber(notif, context);
+            if(yukonListDao.isPhoneNumber(notif.getNotificationCategoryID())) {
+                return phoneNumberFormattingService.formatPhoneNumber(notif.getNotification(), context);
             }else {
-                return notif;
+                return notif.getNotification();
             }
         } else {
             throw new IllegalArgumentException("Contact Notification object is null in ContactNotificationFormattingServiceImpl.formatNotification()");

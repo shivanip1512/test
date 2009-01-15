@@ -9,13 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.cannontech.core.service.ContactNotificationFormattingService;
+import com.cannontech.database.data.lite.LiteContactNotification;
 
 @Configurable(value = "formatNotificationTagPrototype", autowire = Autowire.BY_NAME)
 public class FormatNotificationTag extends YukonTagSupport {
     private ContactNotificationFormattingService formattingService;
     
-    private String value;
-    private int type;
+    private LiteContactNotification value;
     private boolean isValueSet = false; 
     
     private String var;
@@ -24,7 +24,7 @@ public class FormatNotificationTag extends YukonTagSupport {
     @Override
     public void doTag() throws JspException, IOException {
         if (!isValueSet) throw new JspException("value is not set.");
-        String formattedNotification = formattingService.formatNotification(value, type, getUserContext());
+        String formattedNotification = formattingService.formatNotification(value, getUserContext());
                 
         if (isVarSet) {
             getJspContext().setAttribute(var, formattedNotification);
@@ -34,13 +34,9 @@ public class FormatNotificationTag extends YukonTagSupport {
         getJspContext().getOut().print(formattedNotification);
     }
     
-    public void setValue(String value) {
+    public void setValue(LiteContactNotification value) {
         this.value = value;
         this.isValueSet = true;
-    }
-    
-    public void setType(int type) {
-        this.type = type;
     }
     
     public void setVar(String var) {

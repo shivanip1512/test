@@ -1,4 +1,7 @@
 <%@ include file="include/StarsHeader.jsp" %>
+<%@ page import="com.cannontech.database.data.lite.LiteContactNotification" %>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
 	List<YukonListEntry> contactTypeList = DaoFactory.getYukonListDao().getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_ID_CONTACT_TYPE).getYukonListEntries();
@@ -75,8 +78,8 @@
                         <td>
                           <table width="300" border="0" cellspacing="0" cellpadding="2" align="center" class="TableCell">
 <%
-	for (int i = 0; i < primContact.getContactNotificationCount(); i++) {
-		ContactNotification contNotif = primContact.getContactNotification(i);
+    List<LiteContactNotification> notifs = DaoFactory.getContactNotificationDao().getNotificationsForContact(primContact.getContactID());
+	for (LiteContactNotification notif : notifs) {
 %>
                             <tr>
                               <td width="146" align="right">
@@ -85,22 +88,17 @@
 <%
 		for (int j = 0; j < contactTypeList.size(); j++) {
 			YukonListEntry entry = contactTypeList.get(j);
-			String selected = (entry.getEntryID() == contNotif.getNotifCatID()) ? "selected" : "";
+			String selected = (entry.getEntryID() == notif.getNotificationCategoryID()) ? "selected" : "";
 %>
                                   <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getEntryText() %></option>
 <%
-		}
-		String text = contNotif.getNotification();
-		if(contNotif.getNotifCatID() == YukonListEntryTypes.YUK_ENTRY_ID_PHONE ||
-		        contNotif.getNotifCatID() == YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE ||
-		        contNotif.getNotifCatID() == YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE){
-		    text = ServletUtils.formatPhoneNumberForDisplay(text);
 		}
 %>
                                 </select>
                               </td>
                               <td width="146">
-                                <input type="text" name="Notification" size="24" value="<%= StringEscapeUtils.escapeHtml(text) %>" onchange="setContentChanged(true)">
+                                <cti:formatNotification var="notif" value="<%=notif %>" />
+                                <input type="text" name="Notification" size="24" value="<spring:escapeBody htmlEscape="true">${notif}</spring:escapeBody>" onchange="setContentChanged(true)">
                               </td>
                             </tr>
 <%
@@ -177,8 +175,8 @@
                         <td>
                           <table width="300" border="0" cellspacing="0" cellpadding="2" align="center" class="TableCell">
 <%
-		for (int j = 0; j < contact.getContactNotificationCount(); j++) {
-			ContactNotification contNotif = contact.getContactNotification(j);
+List<LiteContactNotification> additionalNotifs = DaoFactory.getContactNotificationDao().getNotificationsForContact(contact.getContactID());
+for (LiteContactNotification notif : additionalNotifs) {
 %>
                             <tr>
                               <td width="146" align="right">
@@ -187,22 +185,17 @@
 <%
 			for (int k = 0; k < contactTypeList.size(); k++) {
 				YukonListEntry entry = contactTypeList.get(k);
-				String selected = (entry.getEntryID() == contNotif.getNotifCatID()) ? "selected" : "";
+				String selected = (entry.getEntryID() == notif.getNotificationCategoryID()) ? "selected" : "";
 %>
                                   <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getEntryText() %></option>
 <%
-			}
-			String text = contNotif.getNotification();
-			if(contNotif.getNotifCatID() == YukonListEntryTypes.YUK_ENTRY_ID_PHONE ||
-			        contNotif.getNotifCatID() == YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE ||
-			        contNotif.getNotifCatID() == YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE){
-			    text = ServletUtils.formatPhoneNumberForDisplay(text);
 			}
 %>
                                 </select>
                               </td>
                               <td width="146">
-                                <input type="text" name="Notification" size="24" value="<%= StringEscapeUtils.escapeHtml(text) %>" onchange="setContentChanged(true)">
+                                <cti:formatNotification var="notif" value="<%=notif %>" />
+                                <input type="text" name="Notification" size="24" value="<spring:escapeBody htmlEscape="true">${notif}</spring:escapeBody>" onchange="setContentChanged(true)">
                               </td>
                             </tr>
 <%

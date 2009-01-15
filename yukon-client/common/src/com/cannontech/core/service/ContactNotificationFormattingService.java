@@ -1,17 +1,16 @@
 package com.cannontech.core.service;
 
+import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.user.YukonUserContext;
 
 public interface ContactNotificationFormattingService {
     
     /**
-     * Convert a ContactNotification to a string.
-     * The type dictates a suggested style, but not a specific format.
-     * 
+     * Convert a LiteContactNotification to a string.
      * @param notif
-     * @param type
+     * @param context
      * @return
      */
-    public String formatNotification(String notif, int type, YukonUserContext context);
+    public String formatNotification(LiteContactNotification notif, YukonUserContext context);
     
 }
