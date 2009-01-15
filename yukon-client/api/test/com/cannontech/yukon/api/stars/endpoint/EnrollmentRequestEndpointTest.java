@@ -80,7 +80,7 @@ public class EnrollmentRequestEndpointTest {
         Assert.assertEquals("1234567890", enrollmentResponses.get(0).getSerialNumber());
         Assert.assertEquals("ILLEGAL_ARGUMENT", enrollmentResponses.get(0).getLoadProgramName());
         Assert.assertEquals("load group name", enrollmentResponses.get(0).getLoadGroupName());
-        Assert.assertEquals("NotFoundException", enrollmentResponses.get(0).getFailureErrorCode());
+        Assert.assertEquals("IllegalArgumentException", enrollmentResponses.get(0).getFailureErrorCode());
         Assert.assertEquals("The load group supplied does not belong to the program supplied.", enrollmentResponses.get(0).getFailureErrorDescription());
 
     }
@@ -106,7 +106,7 @@ public class EnrollmentRequestEndpointTest {
         Assert.assertEquals("1234567890", enrollmentResponses.get(0).getSerialNumber());
         Assert.assertEquals("DUPLICATE_ENROLLMENT", enrollmentResponses.get(0).getLoadProgramName());
         Assert.assertEquals("load group name", enrollmentResponses.get(0).getLoadGroupName());
-        Assert.assertEquals("NotFoundException", enrollmentResponses.get(0).getFailureErrorCode());
+        Assert.assertEquals("DuplicateEnrollmentException", enrollmentResponses.get(0).getFailureErrorCode());
         Assert.assertEquals("The enrollment name supplied causes a duplicate enrollment.", enrollmentResponses.get(0).getFailureErrorDescription());
 
     }
