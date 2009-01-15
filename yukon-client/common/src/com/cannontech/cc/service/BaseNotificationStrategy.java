@@ -290,7 +290,7 @@ public abstract class BaseNotificationStrategy extends StrategyBase implements N
                 
                 // copy fields from origEvent
                 splitEvent.setProgram(origEvent.getProgram());
-                splitEvent.setMessage(origEvent.getMessage());
+                splitEvent.setMessage(origEvent.getMessage() + "[Split-OrigId:" + origEvent.getIdentifier() + "]");
                 splitEvent.setNotificationTime(origEvent.getNotificationTime());
                 
                 // set start to original start
