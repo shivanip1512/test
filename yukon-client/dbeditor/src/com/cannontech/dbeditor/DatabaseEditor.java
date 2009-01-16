@@ -2650,8 +2650,8 @@ public void selectionPerformed(WizardPanelEvent event)
 	
 
 	if((successfullInsertion || objTypeChange) && selectInTree) {
-	    if(selectWorked) {
-	        showEditorSelectedObject();
+	    if(selectWorked || objTypeChange) {
+	    	showEditorSelectedObject();
 	    }else {
 	        showEditor(newItem);
 	    }
