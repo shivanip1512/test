@@ -6,11 +6,13 @@
        xsi:schemaLocation="
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
-       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd"
+       
+       default-lazy-init="true">
 
    <bean id="loadControlClientConnectionFactory" class="com.cannontech.loadcontrol.LoadControlClientConnectionFactory" />
    <bean id="loadControlClientConnection" factory-bean="loadControlClientConnectionFactory" 
-         factory-method="createConnection" scope="singleton" />
+         factory-method="createConnection" scope="singleton" destroy-method="disconnect"/>
          
    <bean id="loadManagementService" class="com.cannontech.loadcontrol.LoadManagementProxy" 
          scope="singleton">

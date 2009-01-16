@@ -12,45 +12,11 @@
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
 
-    <bean id="com.cannontech.context.client"
-        class="org.springframework.context.support.ClassPathXmlApplicationContext" lazy-init="true">
-        <constructor-arg index="0" ref="com.cannontech.baseclient.list" />
-        <constructor-arg index="1" value="true" />
-        <constructor-arg index="2">
-            <null />
-        </constructor-arg>
-    </bean>
-
-    <bean id="com.cannontech.context.services"
-        class="org.springframework.context.support.ClassPathXmlApplicationContext" lazy-init="true">
-        <constructor-arg index="0" ref="com.cannontech.services.list" />
-        <constructor-arg index="1" value="true" />
-        <constructor-arg index="2">
-            <null />
-        </constructor-arg>
-    </bean>
-
-    <bean id="com.cannontech.context.baseapi"
+    <bean id="com.cannontech.context.common"
         class="org.springframework.context.support.ClassPathXmlApplicationContext" lazy-init="true">
         <constructor-arg index="0">
-          <list>
-            <value>com/cannontech/core/service/applicationContext.xml</value>
-            <value>com/cannontech/stars/starsContext.xml</value>
-          </list>
-        </constructor-arg>
-        <constructor-arg index="1">
-         <bean class="org.springframework.context.support.ClassPathXmlApplicationContext"
-             lazy-init="true">
-             <constructor-arg index="0" ref="com.cannontech.baseserver.list" />
-             <constructor-arg index="1"><null /></constructor-arg>
-         </bean>
-        </constructor-arg>
-    </bean>
-
-    <bean id="com.cannontech.context.common.list"
-        class="org.springframework.beans.factory.config.ListFactoryBean" abstract="true">
-        <property name="sourceList">
             <list>
+                <value>com/cannontech/hibernate/hibernateContext.xml</value>
                 <value>com/cannontech/mainContext.xml</value>
                 <value>com/cannontech/yukon/server/cache/cacheContext.xml</value>
                 <value>com/cannontech/common/device/deviceContext.xml</value>
@@ -64,42 +30,42 @@
                 <value>com/cannontech/core/dynamic/applicationContext.xml</value>
                 <value>com/cannontech/core/service/dateContext.xml</value>
                 <value>com/cannontech/loadcontrol/applicationContext.xml</value>
-            </list>
-        </property>
-    </bean>
-
-    <bean id="com.cannontech.baseserver.list"
-        class="org.springframework.beans.factory.config.ListFactoryBean"
-        parent="com.cannontech.context.common.list">
-        <property name="sourceList">
-            <list merge="true">
-                <value>com/cannontech/hibernate/hibernateContext.xml</value>
-                
-            </list>
-        </property>
-    </bean>
-
-    <bean id="com.cannontech.baseclient.list"
-        class="org.springframework.beans.factory.config.ListFactoryBean"
-        parent="com.cannontech.context.common.list">
-        <property name="sourceList">
-            <list merge="true">
-                <value>com/cannontech/nonHibernateTransactionContext.xml</value>
-            </list>
-        </property>
-    </bean>
-
-    <bean id="com.cannontech.services.list"
-        class="org.springframework.beans.factory.config.ListFactoryBean"
-        parent="com.cannontech.context.common.list">
-        <property name="sourceList">
-            <list merge="true">
-                <value>com/cannontech/hibernate/hibernateContext.xml</value>
                 <value>com/cannontech/cc/applicationContext.xml</value>
+            </list>
+        </constructor-arg>
+        <constructor-arg index="1" value="true" />
+        <constructor-arg index="2">
+            <null />
+        </constructor-arg>
+    </bean>
+
+    <bean id="com.cannontech.context.services"
+        class="org.springframework.context.support.ClassPathXmlApplicationContext" lazy-init="true">
+        <constructor-arg index="0">
+            <list merge="true">
                 <value>com/cannontech/notif/applicationContext.xml</value>
                 <value>com/cannontech/core/service/applicationContext.xml</value>
             </list>
-        </property>
+        </constructor-arg>
+        <constructor-arg index="1" value="true" />
+        <constructor-arg index="2">
+            <ref bean="com.cannontech.context.common"/>
+        </constructor-arg>
+    </bean>
+
+    <bean id="com.cannontech.context.baseapi"
+        class="org.springframework.context.support.ClassPathXmlApplicationContext"
+        lazy-init="true">
+        <constructor-arg index="0">
+            <list>
+                <value> com/cannontech/core/service/applicationContext.xml</value>
+                <value>com/cannontech/stars/starsContext.xml</value>
+            </list>
+        </constructor-arg>
+        <constructor-arg index="1" value="true" />
+        <constructor-arg index="2">
+            <ref bean="com.cannontech.context.common" />
+        </constructor-arg>
     </bean>
 
 </beans>
