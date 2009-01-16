@@ -7,13 +7,15 @@ import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
 
-import com.amdswireless.common.MessageEncoder;
-import com.amdswireless.messages.rx.AppMessageType1;
-import com.amdswireless.messages.rx.AppMessageType22;
-import com.amdswireless.messages.rx.AppMessageType5;
-import com.amdswireless.messages.rx.DataMessage;
+import com.sms.common.MessageEncoder;
+import com.sms.common.UnknownAppCodeException;
+import com.sms.messages.rx.AndorianMessage;
+import com.sms.messages.rx.AppMessageType1;
+import com.sms.messages.rx.AppMessageType22;
+import com.sms.messages.rx.AppMessageType5;
+import com.sms.messages.rx.DataMessage;
 
-public abstract class SensusMessageHandlerBase implements SensusMessageHandler {
+public abstract class SensusMessageHandlerBase implements SensusMessageHandler, SensusMessageObjectHandler {
 
 	private Logger log = Logger.getLogger(SensusMessageHandlerBase.class);
 
@@ -130,15 +132,28 @@ public abstract class SensusMessageHandlerBase implements SensusMessageHandler {
 	}
 
 	private void processMessage(char[] bytes) {
-		DataMessage message = getMessageEncoder().encodeMessage(bytes);
-		if (message instanceof AppMessageType5) {
+		try {
+            AndorianMessage andorianMessage = getMessageEncoder().encodeMessage(bytes);
+            if (andorianMessage instanceof DataMessage) {
+                DataMessage dataMessage = (DataMessage) andorianMessage;
+                processMessageObject(dataMessage);
+            } else {
+                log.debug("Received non-DataMessage: " + andorianMessage.getClass());
+            }
+        } catch (UnknownAppCodeException e) {
+            log.debug("Unable to encode message", e);
+        }
+	}
+
+    public void processMessageObject(DataMessage message) {
+        if (message instanceof AppMessageType5) {
 			processBindingMessage((AppMessageType5) message);
 		} else if (message instanceof AppMessageType22) {
 			processStatusMessage((AppMessageType22) message);
 		} else if (message instanceof AppMessageType1) {
 			processSetupMessage((AppMessageType1) message);
 		}
-	}
+    }
 
 	public String getBindingKeyRegEx() {
 		return bindingKeyRegEx;

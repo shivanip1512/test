@@ -7,12 +7,10 @@
         lazy-init="true">
      <constructor-arg>
        <list>
-         <value>com/cannontech/mainContext.xml</value>
-         <value>com/cannontech/yukon/server/cache/cacheContext.xml</value>
-         <value>com/cannontech/core/dao/applicationContext.xml</value>
-         <value>com/cannontech/core/dynamic/applicationContext.xml</value>
-         <value>com/cannontech/core/authentication/authContext.xml</value>
        </list>
+     </constructor-arg>
+     <constructor-arg>
+       <ref bean="com.cannontech.context.common"/> <!-- this is the parent -->
      </constructor-arg>
    </bean>
    

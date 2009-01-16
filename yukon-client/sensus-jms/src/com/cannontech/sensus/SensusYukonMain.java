@@ -1,5 +1,7 @@
 package com.cannontech.sensus;
 
+import java.lang.Thread.UncaughtExceptionHandler;
+
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
@@ -10,9 +12,22 @@ import com.cannontech.spring.YukonSpringHook;
 public class SensusYukonMain {
     
     public static void main(String[] args) {
-        System.setProperty("cti.app.name", "SensusFault");
-        Logger log = YukonLogManager.getLogger(SensusServer.class);
+        // see if a log name was passed in
+        String logName = System.getProperty("cti.app.name");
+        if (logName == null) {
+            System.setProperty("cti.app.name", "SensusFault");
+        }
+        
+        final Logger log = YukonLogManager.getLogger(SensusServer.class);
         log.info("Sensus starting...");      
+
+        Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+            
+            @Override
+            public void uncaughtException(Thread t, Throwable e) {
+                log.error("Uncaught exception in " + t, e);
+            }
+        });
 
         try {
             String mainContextString[] = new String[0];

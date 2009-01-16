@@ -24,7 +24,7 @@
 
   <!-- this is the Message Driven POJO (MDP) -->
   <bean id="sensusMessageListener" class="com.cannontech.sensus.SensusMessageListener">
-    <property name="sensusMessageHandlerSet">
+    <property name="sensusMessageObjectHandlerSet">
         <set>
         	<ref bean="sensusToGPUFFProcessor" />
         	<ref bean="cvsFileProcessor" />

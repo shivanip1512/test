@@ -3,4 +3,6 @@ Main-Class: com.cannontech.sensus.SensusMain
 Class-Path: ./ 
  common.jar 
  yukonappserver.jar 
+ tools.jar 
  apache-activemq-4.1.0-incubator.jar 
+ AMDSCommon.jar 

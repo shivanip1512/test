@@ -6,12 +6,12 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.amdswireless.messages.rx.AppMessageType1;
-import com.amdswireless.messages.rx.AppMessageType22;
-import com.amdswireless.messages.rx.AppMessageType5;
-import com.amdswireless.messages.rx.DataMessage;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.yukon.INotifConnection;
+import com.sms.messages.rx.AndorianMessage;
+import com.sms.messages.rx.AppMessageType1;
+import com.sms.messages.rx.AppMessageType22;
+import com.sms.messages.rx.AppMessageType5;
 
 public class FaultDetectProcessor extends SensusMessageHandlerBase {
     private Logger log = Logger.getLogger(FaultDetectProcessor.class);
@@ -36,6 +36,7 @@ public class FaultDetectProcessor extends SensusMessageHandlerBase {
 	private INotifConnection notificationProxy;
 	private Integer notificationGroup;
        
+    @Override
     protected void processStatusMessage(AppMessageType22 message) {
         int repId = message.getRepId();
         
@@ -110,7 +111,7 @@ public class FaultDetectProcessor extends SensusMessageHandlerBase {
 
     @Override
 	protected void processBindingMessage(AppMessageType5 message) {
-        String iconSerialNumber = message.getIconSerialNumber();
+        String iconSerialNumber = message.getCustomerMeterNumber(); 
         if (!iconSerialNumber.matches(getBindingKeyRegEx())) {
             log.debug("Ignoring binding message with iconSerialNumber='" + iconSerialNumber + "'");
             // return;
@@ -148,7 +149,7 @@ public class FaultDetectProcessor extends SensusMessageHandlerBase {
 			getFileHeaders(0x01) + "\n\r" + dataMessageToCSVString(message) + 
 	        ", \"" + getTxMode(message.getTransmitOperationalMode()) + "\"" + 
 	      	", \"" + getSuprRate(message.getSupervisoryTransmitMultiple()) + "\"" +
-	    	", " + DataMessage.cleanHex(message.getRawMessage());
+	    	", " + AndorianMessage.cleanHex(message.getRawMessage());
 
 			getNotificationProxy().sendNotification(getNotificationGroup(), subject, body);
 		}

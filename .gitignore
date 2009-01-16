@@ -60,6 +60,7 @@ yukon-client/palm/build
 yukon-client/report/bin
 yukon-client/report/build
 yukon-client/sensus-jms/bin
+yukon-client/sensus-jms/build
 yukon-client/services/bin
 yukon-client/services/build
 yukon-client/servlet/.cvsignore

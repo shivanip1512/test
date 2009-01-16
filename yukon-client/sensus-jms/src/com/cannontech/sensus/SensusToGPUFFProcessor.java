@@ -10,15 +10,16 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import com.amdswireless.messages.rx.AppMessageType1;
-import com.amdswireless.messages.rx.AppMessageType22;
-import com.amdswireless.messages.rx.AppMessageType5;
+import com.sms.messages.rx.AppMessageType1;
+import com.sms.messages.rx.AppMessageType22;
+import com.sms.messages.rx.AppMessageType5;
 
 public class SensusToGPUFFProcessor extends SensusMessageHandlerBase {
 	private Logger log = Logger.getLogger(SensusToGPUFFProcessor.class);
 	private Set< URL > udpTargetAddressSet;
 	
-	protected void processStatusMessage(AppMessageType22 message) {
+	@Override
+    protected void processStatusMessage(AppMessageType22 message) {
 		int repId = message.getRepId();
 
 		log.debug("Processing message for repId=" + repId + ": " + message);
@@ -50,7 +51,8 @@ public class SensusToGPUFFProcessor extends SensusMessageHandlerBase {
 		writePacket(prot.getBytes());
 	}
 
-	protected void processBindingMessage(AppMessageType5 message) {
+	@Override
+    protected void processBindingMessage(AppMessageType5 message) {
 		int repId = message.getRepId();
 
 		GPUFFProtocol prot = new GPUFFProtocol();
@@ -60,13 +62,14 @@ public class SensusToGPUFFProcessor extends SensusMessageHandlerBase {
 		prot.setSequence((short) message.getAppSeq());
 		prot.setCmLatitude(message.getLatitude());
 		prot.setCmLongitude(message.getLongitude());
-		prot.setCmName(message.getIconSerialNumber());
+		prot.setCmName(message.getCustomerMeterNumber()); //TODO
 		prot.buildDeviceCommissioningInfo();
 
 		writePacket(prot.getBytes());
 	}
 
-	protected void processSetupMessage(AppMessageType1 message) {
+	@Override
+    protected void processSetupMessage(AppMessageType1 message) {
 
 	}
 
