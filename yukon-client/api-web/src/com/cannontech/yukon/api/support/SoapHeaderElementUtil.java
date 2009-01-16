@@ -43,6 +43,9 @@ public class SoapHeaderElementUtil extends TransformerObjectSupport {
 	
 	public static String findElementValue(WebServiceMessage webServiceMessage, QName elementName) {
 		SoapHeaderElement headerElement = findElement(webServiceMessage, elementName);
+		if (headerElement == null) {
+			return null;
+		}
 		String value = headerElement.getText();
 		return value;
 	}
