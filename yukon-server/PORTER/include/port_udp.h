@@ -47,7 +47,7 @@ protected:
         unsigned char *data;
         int len;
         int used;
-    
+
         u_long  ip;
         u_short port;
     };
@@ -117,6 +117,7 @@ protected:
     void haltLog ( void );
     bool bindSocket( void );
 
+    string convertBytesToString( unsigned char *buf, int &position, int bytes_to_combine );
     unsigned int convertBytes( unsigned char *buf, int &position, int bytes_to_combine );
     bool getOutMessages( unsigned wait );
     bool getPackets    ( int wait );

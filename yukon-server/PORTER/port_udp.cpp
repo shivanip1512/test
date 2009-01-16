@@ -66,10 +66,10 @@ void UDPInterface::delete_dr_id_map_value( dr_id_map::value_type map_entry )
 }
 
 /**
- * This constructor will hit the database to determine any 
- * encoding filters on the UDP port. 
- * 
- * @param port 
+ * This constructor will hit the database to determine any
+ * encoding filters on the UDP port.
+ *
+ * @param port
  */
 UDPInterface::UDPInterface( CtiPortTCPIPDirectSPtr &port ) :
     _port(port)
@@ -429,6 +429,16 @@ bool UDPInterface::getOutMessages( unsigned wait )
     return om_ready;
 }
 
+string UDPInterface::convertBytesToString( unsigned char *buf, int &position, int bytes_to_combine )
+{
+    string str;
+    str.assign((char *)buf + position, bytes_to_combine);
+    if( str.find('\0') != string::npos ) str.erase(str.find_first_of('\0'));
+    position += bytes_to_combine;
+
+    return str;
+}
+
 /* Notice that the passed by reference variable "position" is incremented. */
 unsigned int UDPInterface::convertBytes( unsigned char *buf, int &position, int bytes_to_combine )
 {
@@ -489,9 +499,24 @@ bool UDPInterface::getPackets( int wait )
 
             if( p )
             {
+                if(gConfigParms.isTrue("PORTER_UDP_PACKET_DUMP"))
+                {
+                    string rawBytes;
+                    for(int xx = 0; xx < p->len; xx++)
+                    {
+                        if(xx == 0) rawBytes += CtiNumStr(p->data[xx]).hex().zpad(2).toString();
+                        else rawBytes += " " + CtiNumStr(p->data[xx]).hex().zpad(2).toString();
+                    }
+
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " Inbound Packet " << rawBytes << endl;
+                }
+
+
+
                 const int DNPHeaderLength   = 10,
                           GPUFFHeaderLength = 13;
-                
+
                 if( p->len >= DNPHeaderLength && p->data[0] == 0x05
                     && p->data[1] == 0x64 )
                 {
@@ -663,7 +688,7 @@ bool UDPInterface::getPackets( int wait )
                             dout << endl;
                         }
 
-                        int pos = 15, usedbytes = 0;
+                    int pos = 15, usedbytes = 0, fcn;
 
                         switch( devt )
                         {
@@ -672,8 +697,9 @@ bool UDPInterface::getPackets( int wait )
                             {
                                 while( pos < (len - (crc_included * 2)) )
                                 {
-                                    switch( p->data[pos++] )
-                                    {
+                                fcn = p->data[pos++];
+                                switch( fcn )
+                                {
                                         case 0x00:
                                         {
                                             bool request_ack    =  p->data[pos] & 0x80;
@@ -727,9 +753,11 @@ bool UDPInterface::getPackets( int wait )
                                         {
                                             unsigned char items_included = p->data[pos++];
                                             bool fault = p->data[pos] & 0x80;
+                                            bool event = p->data[pos] & 0x40;
                                             bool noPower = p->data[pos] & 0x20;
 
                                             add_to_csv_summary(keys, values, "fault", fault);
+                                            add_to_csv_summary(keys, values, "event", event);
                                             add_to_csv_summary(keys, values, "no power", noPower);
 
                                             pos++;
@@ -741,6 +769,7 @@ bool UDPInterface::getPackets( int wait )
                                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                                 dout << CtiTime() << " **** Checkpoint - FCI device values **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                                 dout << CtiTime() << " fault: " << fault << endl;
+                                                dout << CtiTime() << " event: " << event << endl;
                                                 dout << CtiTime() << " no power: " << noPower << endl;
                                             }
 
@@ -860,8 +889,7 @@ bool UDPInterface::getPackets( int wait )
                                             unsigned char flags = p->data[pos++];
 
                                             unsigned long time = 0;
-                                            int   rate,
-                                                  count;
+                                        int   rate, count;
                                             float reading;
 
                                             time = convertBytes( p->data, pos, 4);
@@ -885,7 +913,7 @@ bool UDPInterface::getPackets( int wait )
 
                                             for( int i = 0; i < count; i++ )
                                             {
-                                                reading = convertBytes( p->data, pos, 4);
+                                                reading = convertBytes( p->data, pos, 2);
 
                                                 reading /= 1000.0;
 
@@ -988,11 +1016,178 @@ bool UDPInterface::getPackets( int wait )
 
                                             break;
                                         }
+                                case 0x08:
+                                    {
+                                            // This is a configuration packet!
+                                        int total_len = p->data[pos++];    // This is the total length of the Information elements contained herein.
+                                        unsigned char *pConfig = &p->data[pos];    // This is a pointer to the config
+                                        int cfg_pos = 0;
+
+                                        int url_cnt = 0;
+                                        string stg;
+                                        string url_name;
+                                        string port_name;
+
+                                        add_to_csv_summary(keys, values, "config length", total_len);
+
+                                        while( cfg_pos < total_len )
+                                        {
+                                            unsigned char rsvd;    // Reserved byte
+                                            unsigned char ie_type = pConfig[cfg_pos++];    // Information Element Type
+                                            unsigned char ie_len = pConfig[cfg_pos++];    // Information Element Length
+
+                                            switch( ie_type )
+                                            {
+                                            case 0x01:
+                                                {
+                                                        // APN Device to Server Information Element
+                                                    unsigned char periodic = pConfig[cfg_pos++];    // Nonzero for periodic configuraiton reports.
+                                                    rsvd = pConfig[cfg_pos++];
+
+                                                    string apn = convertBytesToString(pConfig, cfg_pos, ie_len-2 );
+
+
+                                                    add_to_csv_summary(keys, values, "periodic cfg report", periodic);
+                                                    add_to_csv_summary(keys, values, "apn", apn);
+
+                                                    {
+                                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                        dout << "APN                            : " << apn << endl;
+                                                        dout << "periodic cfg reports           : " << (periodic ? true : false) << endl;
+                                                    }
+
+                                                    break;
+                                                }
+                                            case 0x02:
+                                                {
+                                                        // IP Target Information Device to Server
+                                                    rsvd = pConfig[cfg_pos++];
+                                                    rsvd = pConfig[cfg_pos++];
+
+                                                    string port = convertBytesToString(pConfig, cfg_pos, 6);
+                                                    string url  = convertBytesToString(pConfig, cfg_pos, ie_len - 8);
+
+                                                    url_name = "url" + CtiNumStr(url_cnt);
+                                                    port_name = "ip port" + CtiNumStr(url_cnt++);
+
+                                                    add_to_csv_summary(keys, values, url_name, url);
+                                                    add_to_csv_summary(keys, values, port_name, port);
+
+                                                    {
+                                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                        dout << "URL                            : " << url << endl;
+                                                        dout << "IP Port                        : " << port << endl;
+                                                    }
+
+
+                                                    break;
+                                                }
+                                            case 0x85:
+                                                {
+                                                        // Diagnostic.
+
+                                                    for( int i = 0; i < 32; i++ )
+                                                    {
+                                                        rsvd = pConfig[cfg_pos++];
+                                                        stg = "eDbg " + CtiNumStr(rsvd);
+                                                        rsvd = convertBytes(pConfig, cfg_pos, 1);
+                                                        // add_to_csv_summary(keys, values, stg, rsvd);
+                                                    }
+
+
+                                                    int guardbyte0       =  convertBytes(pConfig, cfg_pos, 1);
+                                                    int guardbyte1       =  convertBytes(pConfig, cfg_pos, 1);
+                                                    int firmware_major   =  convertBytes(pConfig, cfg_pos, 1);
+                                                    int firmware_minor   =  convertBytes(pConfig, cfg_pos, 1);
+                                                    int reset_count      =  convertBytes(pConfig, cfg_pos, 2);
+                                                    int SPI_errors       =  convertBytes(pConfig, cfg_pos, 2);
+                                                    int momentary_count  =  convertBytes(pConfig, cfg_pos, 1);
+                                                    int fault_count      =  convertBytes(pConfig, cfg_pos, 1);
+                                                    int all_clear_count  =  convertBytes(pConfig, cfg_pos, 1);
+                                                    int power_loss_count =  convertBytes(pConfig, cfg_pos, 1);
+                                                    int reset_momentary  =  convertBytes(pConfig, cfg_pos, 1);
+                                                    convertBytes(pConfig, cfg_pos, 1);  // Pop out one more to keep the number even.
+
+                                                    add_to_csv_summary(keys, values, "guardbyte0",              guardbyte0      );
+                                                    add_to_csv_summary(keys, values, "guardbyte1",              guardbyte1      );
+                                                    add_to_csv_summary(keys, values, "firmware major",          firmware_major  );
+                                                    add_to_csv_summary(keys, values, "firmware minor",          firmware_minor  );
+                                                    add_to_csv_summary(keys, values, "reset count",             reset_count     );
+                                                    add_to_csv_summary(keys, values, "SPI errors",              SPI_errors      );
+                                                    add_to_csv_summary(keys, values, "momentary count",         momentary_count );
+                                                    add_to_csv_summary(keys, values, "fault count",             fault_count     );
+                                                    add_to_csv_summary(keys, values, "all clear count",         all_clear_count );
+                                                    add_to_csv_summary(keys, values, "power loss count",        power_loss_count);
+                                                    add_to_csv_summary(keys, values, "reset momentary count",   reset_momentary );
+
+                                                    {
+                                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                        dout << "firmware major                 : " << firmware_major  << endl;
+                                                        dout << "firmware minor                 : " << firmware_minor  << endl;
+                                                        dout << "reset_count                    : " << reset_count     << endl;
+                                                        dout << "spi_errors                     : " << SPI_errors      << endl;
+                                                        dout << "momentary_count                : " << momentary_count << endl;
+                                                        dout << "fault_count                    : " << fault_count     << endl;
+                                                        dout << "all_clear_count                : " << all_clear_count << endl;
+                                                        dout << "power_loss_count               : " << power_loss_count<< endl;
+                                                        dout << "reset_momentary                : " << reset_momentary << endl << endl;
+                                                    }
+
+                                                    break;
+                                                }
+                                            case 0x81:
+                                                {
+                                                        // APN Server to Device Information Element
+                                                    {
+                                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                                    }
+
+                                                    break;
+                                                }
+                                            default:
+                                                {
+                                                    {
+                                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                        dout << CtiTime() << " **** ERROR Decoding IE_TYPE  **** " << (int)ie_type << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                                        dout << CtiTime() << "    Position " << (int)pos << " total config len " << (int)total_len << " Cfg Position " << (int)cfg_pos << endl;
+                                                    }
+                                                    cfg_pos = total_len;
+                                                    break;
+                                                }
                                     }
                                 }
 
+                                        pos += total_len;   // hop past the config.
+
+
+                                        break;
+                                    }
+                                default:
+                                    {
+                                            // We just consumed a GPUFF FCN we do not recognize.  All beds are off for the remainder of this message.
+                                        {
+                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                            dout << CtiTime() << " Unknown GPUFF FCN " << fcn << " - message processing aborted " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                        }
+                                        pos = len;
+                                        break;
+                                    }
+                                }
+                            }
+
                                 if( gConfigParms.getValueAsInt("FCI_CSV_SUMMARY") )
                                 {
+                                    string rawBytes = "\"";
+
+                                    for(int xx = 0; xx < p->len; xx++)
+                                    {
+                                        if(xx == 0) rawBytes += CtiNumStr(p->data[xx]).hex().zpad(2).toString();
+                                        else rawBytes += " " + CtiNumStr(p->data[xx]).hex().zpad(2).toString();
+                                    }
+                                    rawBytes += "\"";
+                                    add_to_csv_summary(keys, values, "raw data", rawBytes);
+
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                     dout << CtiTime() << " **** FCI CSV summary **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                     dout << keys   << endl;
@@ -1007,8 +1202,9 @@ bool UDPInterface::getPackets( int wait )
                             {
                                 while( pos < (len - (crc_included * 2)) )
                                 {
-                                    switch( p->data[pos++] )
-                                    {
+                                fcn = p->data[pos++];
+                                switch( fcn )
+                                {
                                         case 0x00:
                                         {
                                             bool request_ack    =  p->data[pos] & 0x80;
@@ -1051,10 +1247,14 @@ bool UDPInterface::getPackets( int wait )
                                         case 0x01:
                                         {
                                             unsigned char items_included = p->data[pos++];
-                                            bool fault = p->data[pos++] & 0x80;
 
                                             unsigned long time = 0;
-                                            float battery_voltage, temperature;
+                                            float battery_voltage, temperature, amps;
+
+                                            {
+                                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                dout << CtiTime() << " **** Checkpoint - GVAR(X): Device Values 0x01 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                            }
 
                                             if( items_included & 0x20 )
                                             {
@@ -1064,18 +1264,39 @@ bool UDPInterface::getPackets( int wait )
                                                 {
                                                     time = CtiTime::now().seconds() - time;
                                                 }
+
+                                                {
+                                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                    dout << CtiTime() << " time:          " << CtiTime(time) << endl;
+                                                }
                                             }
                                             if( items_included & 0x10 )
                                             {
                                                 battery_voltage = convertBytes( p->data, pos, 2);
-
                                                 battery_voltage /= 1000.0;
+                                                {
+                                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                    dout << CtiTime() << " battery:       " << string(CtiNumStr(battery_voltage))     << endl;
+                                                }
                                             }
                                             if( items_included & 0x08 )
                                             {
                                                 temperature = convertBytes( p->data, pos, 2);
                                                 temperature /= 100.0;
+                                                {
+                                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                    dout << CtiTime() << " temperature:   " << string(CtiNumStr(temperature))     << endl;
+                                                }
                                             }
+                                            if( items_included & 0x08 )
+                                            {
+                                                amps = convertBytes( p->data, pos, 2);
+                                                {
+                                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                    dout << CtiTime() << " amps:          " << string(CtiNumStr(amps))     << endl;
+                                                }
+                                            }
+
 
                                             break;
                                         }
@@ -1085,14 +1306,24 @@ bool UDPInterface::getPackets( int wait )
 
                                             unsigned long time = 0;
                                             int rate, count, reading;
+                                            float battery_voltage;
+
+                                            {
+                                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                dout << CtiTime() << " **** Checkpoint - GVAR(X): Neutral Current History Report 0x02 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                            }
 
                                             time = convertBytes( p->data, pos, 4);
-
                                             if( flags & 0x80 )
                                             {
                                                 time = CtiTime::now().seconds() - time;
                                             }
 
+                                            battery_voltage = convertBytes( p->data, pos, 2);
+                                            battery_voltage /= 1000.0;
+
+                                            if( !(rate = gConfigParms.getValueAsULong("CBNM_CURRENT_SURVEY_RATE", 0)) )
+                                            {
                                             switch( (p->data[pos  ] & 0xc0) >> 6 )
                                             {
                                                 case 0:  rate = 60 * 60;  break;
@@ -1100,16 +1331,45 @@ bool UDPInterface::getPackets( int wait )
                                                 case 2:  rate = 15 * 60;  break;
                                                 case 3:  rate =  5 * 60;  break;
                                             }
+                                            }
 
                                             count  = (p->data[pos++] & 0x3f) << 8;
                                             count |=  p->data[pos++];
 
+                                            {
+                                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                dout << CtiTime() << " time:          " << CtiTime(time) << endl;
+                                                dout << CtiTime() << " battery:       " << battery_voltage << endl;
+                                                dout << CtiTime() << " rate:          " << string(CtiNumStr(rate))     << endl;
+                                                dout << CtiTime() << " count:         " << string(CtiNumStr(count))     << endl;
+                                            }
+                                            //  get the timestamp ready
+                                            time -= rate * count;
+
                                             for( int i = 0; i < count; i++ )
                                             {
-                                                reading = convertBytes( p->data, pos, 2);
-                                                time -= rate;
+                                                time += rate;
+                                                reading = p->data[pos + (i * 2)] << 8 | p->data[pos + (i * 2) + 1];
+
+                                                {
+                                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                    dout << CtiTime() << " time:          " << CtiTime(time) << " amps: " << string(CtiNumStr(reading)) << endl;
+                                                }
                                             }
 
+                                            pos += count * 2;
+
+
+                                            break;
+                                        }
+                                default:
+                                    {
+                                            // We just consumed a GPUFF FCN we do not recognize.  All beds are off for the remainder of this message.
+                                        {
+                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                            dout << CtiTime() << " Unknown GPUFF FCN " << fcn << " - message processing aborted " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                        }
+                                        pos = len;
                                             break;
                                         }
                                     }
@@ -1405,7 +1665,7 @@ void UDPInterface::generateOutbounds( void )
                     to.sin_family           = AF_INET;
                     to.sin_addr.S_un.S_addr = htonl(dr->ip);
                     to.sin_port             = htons(dr->port);
-                    
+
                     /* This is not tested until I get a Lantronix device. */
                     vector<unsigned char> cipher;
                     _encodingFilter->encode((unsigned char *)dr->work.xfer.getOutBuffer(),dr->work.xfer.getOutCount(),cipher);
@@ -1613,18 +1873,26 @@ void UDPInterface::processInbounds( void )
                     {
                         if( p = dr->work.inbound.front() )
                         {
-                            unsigned len, cid, seq, devt, devr, ser, crc;
+                            unsigned len, cid, seq, devt, devr, ser, crc, last_seq;
                             bool crc_included, ack_required;
 
                             crc_included = p->data[2] & 0x80;
                             ack_required = p->data[2] & 0x40;
                             len  = ((p->data[2] & 0x03) << 8) | p->data[3];
-                            //  cid = 4 + 5
-                            //  seq = 6 + 7
+                            cid  = (p->data[4] << 8) | p->data[5];
+                            seq  = (p->data[6] << 8) | p->data[7];
+                            devt = (p->data[8] << 8) | p->data[9];
                             devt = (p->data[8] << 8) | p->data[9];
                             devr = p->data[10];
 
-                            int pos = 15, usedbytes = 0;
+
+                            last_seq = dr->device->getDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_Sequence);
+
+                            if( last_seq != seq )   // Is this a new message for this device?
+                            {
+                                dr->device->setDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_Sequence, seq);  // Save the current sequence.
+
+                                int pos = 15, usedbytes = 0, fcn;
 
                             CtiPointSPtr     point;
                             CtiPointDataMsg *pdm;
@@ -1638,8 +1906,9 @@ void UDPInterface::processInbounds( void )
                                 {
                                     while( pos < (len - (crc_included * 2)) )
                                     {
-                                        switch( p->data[pos++] )
-                                        {
+                                            fcn = p->data[pos++];
+                                            switch( fcn )
+                                            {
                                             case 0x00:
                                             {
                                                 bool request_ack    =  p->data[pos] & 0x80;
@@ -1902,8 +2171,8 @@ void UDPInterface::processInbounds( void )
                                                 }
 
                                                 // Toggle the momentary point true then false to allow an alarm to be recorded.
-                                                if( point = dr->device->getDevicePointOffsetTypeEqual(CtiDeviceGridAdvisor::FCI_Status_Momentary, StatusPointType) )
-                                                {
+                                                    if( momCount > 0 && (point = dr->device->getDevicePointOffsetTypeEqual(CtiDeviceGridAdvisor::FCI_Status_Momentary, StatusPointType)) )
+                                                    {
                                                     pdm = CTIDBG_new CtiPointDataMsg(point->getID(), true, NormalQuality, StatusPointType);
 
                                                     if( items_included & 0x20 ) {
@@ -1948,18 +2217,42 @@ void UDPInterface::processInbounds( void )
 
                                                 break;
                                             }
-                                        }
-                                    }
+                                                case 0x08:
+                                                {
+                                                    // This is a configuration packet!
+                                                    unsigned char total_len = p->data[pos++];   // This is the total length of the Information elements contained herein.
 
+                                                    {
+                                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                        dout << CtiTime() << " **** ACH: Process the configuration packet. **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                                    }
+
+                                                    pos += total_len;   // hop past the config.
+                                                    break;
+                                                }
+                                                default:
+                                                {
+                                                    // We just consumed a GPUFF FCN we do not recognize.  All beds are off for the remainder of this message.
+                                                    {
+                                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                        dout << CtiTime() << " Unknown GPUFF FCN " << fcn << " - message processing aborted " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                                    }
+                                                    pos = len;
                                     break;
                                 }
+                                            }
+                                        }
+
+                                        break;
+                                    }
 
                                 case 2:  //  Neutral Current Sensor
                                 {
                                     while( pos < (len - (crc_included * 2)) )
                                     {
-                                        switch( p->data[pos++] )
-                                        {
+                                            fcn = p->data[pos++];
+                                            switch( fcn )
+                                            {
                                             case 0x00:
                                             {
                                                 bool request_ack    =  p->data[pos] & 0x80;
@@ -2001,10 +2294,9 @@ void UDPInterface::processInbounds( void )
                                             case 0x01:
                                             {
                                                 unsigned char items_included = p->data[pos++];
-                                                bool fault = p->data[pos++] & 0x80;
 
                                                 unsigned long time = 0;
-                                                float battery_voltage, temperature;
+                                                    float battery_voltage, temperature, amps;
 
                                                 if( items_included & 0x20 )
                                                 {
@@ -2025,15 +2317,19 @@ void UDPInterface::processInbounds( void )
                                                     temperature = convertBytes( p->data, pos, 2);
                                                     temperature /= 100.0;
                                                 }
+                                                    if( items_included & 0x08 )
+                                                    {
+                                                        amps = convertBytes( p->data, pos, 2);
+                                                    }
 
                                                 break;
                                             }
                                             case 0x02:
                                             {
                                                 unsigned char flags = p->data[pos++];
-
                                                 unsigned long time = 0;
                                                 int rate, count, reading;
+                                                    float battery_voltage;
 
                                                 time = convertBytes( p->data, pos, 4);
 
@@ -2041,6 +2337,9 @@ void UDPInterface::processInbounds( void )
                                                 {
                                                     time = CtiTime::now().seconds() - time;
                                                 }
+
+                                                    battery_voltage = convertBytes( p->data, pos, 2);
+                                                    battery_voltage /= 1000.0;
 
                                                 if( !(rate = gConfigParms.getValueAsULong("CBNM_CURRENT_SURVEY_RATE", 0)) )
                                                 {
@@ -2057,6 +2356,13 @@ void UDPInterface::processInbounds( void )
                                                 count |=  p->data[pos++];
 
                                                 CtiPointSPtr point;
+
+                                                    if( point = dr->device->getDevicePointOffsetTypeEqual(CtiDeviceGridAdvisor::CBNM_Analog_BatteryVoltage, AnalogPointType) )
+                                                    {
+                                                        CtiPointDataMsg *pdm = CTIDBG_new CtiPointDataMsg(point->getID(), battery_voltage, NormalQuality, AnalogPointType, "", TAG_POINT_MUST_ARCHIVE);
+                                                        pdm->setTime(time);
+                                                        m->insert(pdm);
+                                                    }
 
                                                 if( point = dr->device->getDevicePointOffsetTypeEqual(CtiDeviceGridAdvisor::CBNM_Analog_CurrentSurvey, AnalogPointType) )
                                                 {
@@ -2085,6 +2391,16 @@ void UDPInterface::processInbounds( void )
 
                                                 break;
                                             }
+                                                default:
+                                                {
+                                                    // We just consumed a GPUFF FCN we do not recognize.  All beds are off for the remainder of this message.
+                                                    {
+                                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                        dout << CtiTime() << " Unknown GPUFF FCN " << fcn << " - message processing aborted " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                                    }
+                                                    pos = len;
+                                                    break;
+                                                }
                                         }
                                     }
 
@@ -2107,6 +2423,14 @@ void UDPInterface::processInbounds( void )
                             else
                             {
                                 delete m;
+                            }
+                            }
+                            else
+                            {
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << CtiTime() << " GPUFF device " << dr->device->getName() << " sequence number " << seq << " already processed." << endl;
+                                }
                             }
 
                             delete p->data;
