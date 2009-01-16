@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
@@ -75,6 +76,23 @@ public class CurtailmentEventsItronFormat extends SimpleBillingFormatBase {
 	private final String ACTIVE_FLAG = "Y";
 
 	private int detailRecordCount = 0;
+
+	private EnergyCompanyDao energyCompanyDao;
+	private CustomerStubDao customerStubDao;
+	private BaseEventDao baseEventDao;
+
+	@Required
+	public void setEnergyCompanyDao(EnergyCompanyDao energyCompanyDao) {
+		this.energyCompanyDao = energyCompanyDao;
+	}
+	@Required
+	public void setCustomerStubDao(CustomerStubDao customerStubDao) {
+		this.customerStubDao = customerStubDao;
+	}
+	@Required
+	public void setBaseEventDao(BaseEventDao baseEventDao) {
+		this.baseEventDao = baseEventDao;
+	}
 	
 	private String buildHeaderString() {
 		String header = new String();
@@ -195,10 +213,6 @@ public class CurtailmentEventsItronFormat extends SimpleBillingFormatBase {
 	}
 
 	private String getEvents() {
-		EnergyCompanyDao energyCompanyDao = YukonSpringHook.getBean("energyCompanyDao", EnergyCompanyDaoImpl.class);
-		CustomerStubDao customerStubDao = YukonSpringHook.getBean("customerStubDao", CustomerStubDaoImpl.class);
-		BaseEventDao baseEventDao = YukonSpringHook.getBean("baseEventDao", BaseEventDao.class);
-		
 		detailRecordCount = 0;
 		String eventString = new String();
 		LiteEnergyCompany liteEnergyCompany = energyCompanyDao.getEnergyCompany(getBillingFileDefaults().getLiteYukonUser());

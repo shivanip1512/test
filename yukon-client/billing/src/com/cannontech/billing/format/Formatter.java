@@ -1,27 +1,29 @@
 package com.cannontech.billing.format;
 
+import com.cannontech.billing.SimpleBillingFormat;
+
 public enum Formatter {
     ATS {
-        BillingFormatter getNew() {
+        SimpleBillingFormat getNew() {
             return new ATSRecordFormatter();
         }
     },
     NCDC {
-        BillingFormatter getNew() {
+        SimpleBillingFormat getNew() {
             return new NCDCRecordFormatter();
         }
     },
     DAFFRON {
-        BillingFormatter getNew() {
+        SimpleBillingFormat getNew() {
             return new DAFFRONRecordFormatter();
         }
     },
     SEDC54 {
-        BillingFormatter getNew() {
+        SimpleBillingFormat getNew() {
             return new SEDC54RecordFormatter();
         }
     };
 
     // Get new instance of the formatter
-    abstract BillingFormatter getNew();
+    abstract SimpleBillingFormat getNew();
 }

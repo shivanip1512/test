@@ -10,9 +10,9 @@ import java.util.List;
 
 import com.cannontech.billing.BillingDao;
 import com.cannontech.billing.device.base.BillableDevice;
-import com.cannontech.billing.mainprograms.BillingFileDefaults;
+import com.cannontech.billing.format.simple.SimpleBillingFormatBase;
 
-public abstract class BillingFormatterBase implements BillingFormatter {
+public abstract class BillingFormatterBase extends SimpleBillingFormatBase {
 
     public final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MM/dd/yyyy");
     public final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
@@ -33,7 +33,6 @@ public abstract class BillingFormatterBase implements BillingFormatter {
     public final DecimalFormat KW_FORMAT = new DecimalFormat("##0.000");
 
     private int readingCount = 0;
-    private BillingFileDefaults billingFileDefaults = null;
     abstract public String dataToString(BillableDevice device);
 
     /**
@@ -202,18 +201,7 @@ public abstract class BillingFormatterBase implements BillingFormatter {
         return readingCount;
     }
 
-    @Override
-	public BillingFileDefaults getBillingFileDefaults() {
-		return billingFileDefaults;
-	}
-
-	@Override
-	public void setBillingFileDefaults(BillingFileDefaults billingFileDefaults) {
-		this.billingFileDefaults = billingFileDefaults;
-	}
-
-	@Override
-    public int writeBillingFile( List<BillableDevice> deviceList, OutputStream out) throws IOException {
+    protected int writeBillingFile( List<BillableDevice> deviceList, OutputStream out) throws IOException {
         StringBuffer output = getBillingFileString(deviceList);
         out.write(output.toString().getBytes());
         

@@ -17,7 +17,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 
-public abstract class FileFormatBase extends SimpleBillingFormatBase implements SimpleBillingFormat
+public abstract class FileFormatBase extends SimpleBillingFormatBase
 {
 	//number of records
 	private int count = 0;

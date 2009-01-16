@@ -2,7 +2,6 @@ package com.cannontech.billing;
 
 import com.cannontech.billing.format.ATSRecordFormatter;
 import com.cannontech.billing.format.BigRiversElecCoopFormatter;
-import com.cannontech.billing.format.BillingFormatter;
 import com.cannontech.billing.format.CADPRecordFormatter;
 import com.cannontech.billing.format.CADPXL2RecordFormatter;
 import com.cannontech.billing.format.CTICSVRecordFormatter;
@@ -26,7 +25,6 @@ import com.cannontech.billing.format.SimpleTOURecordFormatter;
 import com.cannontech.billing.format.SimpleTOU_DeviceNameRecordFormatter;
 import com.cannontech.billing.format.StandardRecordFormatter;
 import com.cannontech.billing.format.dynamic.DynamicBillingFormatter;
-import com.cannontech.billing.format.simple.CurtailmentEventsItronFormat;
 import com.cannontech.spring.YukonSpringHook;
 
 /**
@@ -103,7 +101,7 @@ public final class SimpleBillingFormatFactory {
         	return new ExtendedTOU_IncodeRecordFormatter();
 
         case FileFormatTypes.ITRON_REGISTER_READINGS_EXPORT:
-            return YukonSpringHook.getBean("itronClientHandler", BillingFormatter.class);
+            return YukonSpringHook.getBean("itronClientHandler", SimpleBillingFormat.class);
             
         case FileFormatTypes.SIMPLE_TOU_DEVICE_NAME:
             return new SimpleTOU_DeviceNameRecordFormatter();
@@ -131,7 +129,7 @@ public final class SimpleBillingFormatFactory {
 			return new MVRSFormat();
 			
 		case FileFormatTypes.CURTAILMENT_EVENTS_ITRON:
-			return new CurtailmentEventsItronFormat();
+            return YukonSpringHook.getBean("curtailmentEventsItronFormat", SimpleBillingFormat.class);
         	
         default:
         	// Assume dynamic format
