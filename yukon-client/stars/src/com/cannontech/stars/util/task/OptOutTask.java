@@ -12,6 +12,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.jobs.support.YukonTask;
+import com.cannontech.message.util.ConnectionException;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
@@ -106,10 +107,14 @@ public class OptOutTask implements YukonTask {
 	        	CustomerAccount account = customerAccountDao.getById(accountId);
 	        	LiteStarsEnergyCompany energyCompany = ecMappingDao.getInventoryEC(inventoryId);
 	        	
+	        	// Don't kill the whole task if we can't re enable a single device
 		        try {
 					optOutService.cleanUpCancelledOptOut(
 							inventory, energyCompany, lastEvent, account, user);
 				} catch (CommandCompletionException e) {
+					logger.error("Attempt to reenable inventory: " 
+							+ inventory.getInventoryID() + " failed", e);
+				} catch (ConnectionException e) {
 					logger.error("Attempt to reenable inventory: " 
 							+ inventory.getInventoryID() + " failed", e);
 				}

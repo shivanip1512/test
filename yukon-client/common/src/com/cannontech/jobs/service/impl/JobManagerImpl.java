@@ -343,35 +343,30 @@ public class JobManagerImpl implements JobManager {
     }
 
     private void executeJob(final JobStatus<?> status) throws TransactionException {
-        transactionTemplate.execute(new TransactionCallback() {
-            public Object doInTransaction(TransactionStatus transactionStatus) {
-                // assume the best
-                status.setJobState(JobState.COMPLETED);
-                try {
-                    YukonTask task = instantiateTask(status.getJob());
-                    task.setUserContext(status.getJob().getUserContext());
-                    YukonTask existingTask = currentlyRunning.putIfAbsent(status.getJob(), task);
-                    if (existingTask != null) {
-                        // this should have been caught before the job was
-                        // executed
-                        throw new IllegalStateException("a task for " + status.getJob()
-                            + " is already running: " + existingTask);
-                    }
-                    task.start(); // this should block until task is complete
-                } catch (Exception e) {
-                    log.error("YukonTask failed", e);
-                    status.setJobState(JobState.FAILED);
-                    status.setMessage(e.toString());
-                } finally {
-                    currentlyRunning.remove(status.getJob());
-                }
+    	// assume the best
+    	status.setJobState(JobState.COMPLETED);
+    	try {
+    		YukonTask task = instantiateTask(status.getJob());
+    		task.setUserContext(status.getJob().getUserContext());
+    		YukonTask existingTask = currentlyRunning.putIfAbsent(status.getJob(), task);
+    		if (existingTask != null) {
+    			// this should have been caught before the job was
+    			// executed
+    			throw new IllegalStateException("a task for " + status.getJob()
+    					+ " is already running: " + existingTask);
+    		}
+    		task.start(); // this should block until task is complete
+    	} catch (Exception e) {
+    		log.error("YukonTask failed", e);
+    		status.setJobState(JobState.FAILED);
+    		status.setMessage(e.toString());
+    	} finally {
+    		currentlyRunning.remove(status.getJob());
+    	}
 
-                // record status in database
-                status.setStopTime(timeSource.getCurrentTime());
-                jobStatusDao.saveOrUpdate(status);
-                return null;
-            }
-        });
+    	// record status in database
+    	status.setStopTime(timeSource.getCurrentTime());
+    	jobStatusDao.saveOrUpdate(status);
     }
 
     public YukonTask instantiateTask(YukonJob job) {
