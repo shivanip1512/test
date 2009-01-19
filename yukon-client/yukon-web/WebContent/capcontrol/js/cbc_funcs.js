@@ -1048,6 +1048,6 @@ String.prototype.removeLeadTrailSpace = function () {
 }
 
 function resultsPost (param) {
-	redirect = 'results.jsp?'+param;
+	redirect = '/capcontrol/results.jsp?'+param;
 	post(redirect);
 }

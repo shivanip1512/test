@@ -3,11 +3,19 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:aop="http://www.springframework.org/schema/aop"
        xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
-       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
-       
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+
+    <context:annotation-config />
+
+    <bean id="annotationMapping" class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+        <property name="order" value="2"/>
+    </bean>
+
 	<bean
 		class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
 		<property name="urlMap">
@@ -47,6 +55,7 @@
                 </entry>
 			</map>
 		</property>
+		<property name="order" value="1"/>
 	</bean>
 	<!-- View Resolvers -->
 	<bean id="viewResolverJSFPages"
@@ -135,6 +144,8 @@
         <property name="authDao" ref="authDao" />
         <property name="stateDao" ref="stateDao"/>
     </bean>
+
+    <bean name="scheduleAssignmentController" class="com.cannontech.web.capcontrol.ScheduleAssignmentController"/>
 
     <bean id="onelinePopupMenuController" class="com.cannontech.web.capcontrol.OnelinePopupMenuController">
         <property name="methodNameResolver" ref="menuMethodNameResolver"/>

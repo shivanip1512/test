@@ -423,6 +423,9 @@
           <option id="schedules">
             <script>post('/editor/paoSchedListBase.jsf')</script>
           </option>
+          <option id="scheduleassignment">
+            <link>/spring/capcontrol/scheduleAssignments/schedule</link>
+          </option>
           <option id="strategies">
             <script>post('/editor/strategyList.jsf')</script>
           </option>
@@ -434,10 +437,10 @@
             <script>showRecentCmds('tabledata.jsp?type=RC')</script>
           </option>
           <option id="recentcapbankmoves">
-       		<link>movedCapBanks.jsp</link>  
+       		<link>/capcontrol/movedCapBanks.jsp</link>  
        	  </option>
        	  <option id="specialareas">
-       		<link>specialSubAreas.jsp</link>  
+       		<link>/capcontrol/specialSubAreas.jsp</link>  
        	  </option>
         </links>
       </option>

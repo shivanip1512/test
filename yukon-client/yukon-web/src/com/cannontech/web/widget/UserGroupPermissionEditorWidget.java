@@ -18,6 +18,7 @@ import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.util.TextView;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
@@ -91,7 +92,7 @@ public abstract class UserGroupPermissionEditorWidget<T> extends WidgetControlle
         String paoIdList = WidgetParameterHelper.getRequiredStringParameter(request, "paoIdsList");
         Integer paoId = Integer.valueOf(WidgetParameterHelper.getRequiredIntParameter(request, "paoId"));
 
-        List<Integer> idList = this.getPaoIdList(paoIdList);
+        List<Integer> idList = ServletUtil.getIntegerListFromString(paoIdList);
 
         // Remove pao
         idList.remove(paoId);
@@ -105,7 +106,7 @@ public abstract class UserGroupPermissionEditorWidget<T> extends WidgetControlle
         String paoIdList = WidgetParameterHelper.getRequiredStringParameter(request,"paoIdsList");
         Integer paoId = WidgetParameterHelper.getRequiredIntParameter(request, "newPaoId");
 
-        List<Integer> idList = this.getPaoIdList(paoIdList);
+        List<Integer> idList = ServletUtil.getIntegerListFromString(paoIdList);
 
         // Add pao
         if (!idList.contains(paoId)) {
@@ -125,7 +126,7 @@ public abstract class UserGroupPermissionEditorWidget<T> extends WidgetControlle
         T group = getAffected(request);
 
         if (editorService.savePermissions(group,
-                                          this.getPaoIdList(paoIdList),
+        								  ServletUtil.getIntegerListFromString(paoIdList),
                                           permission, allow)) {
             return new ModelAndView(new TextView("Save Successful"));
         }
@@ -153,25 +154,6 @@ public abstract class UserGroupPermissionEditorWidget<T> extends WidgetControlle
         String permissionStr = WidgetParameterHelper.getRequiredStringParameter(request, "permission");
         Permission permission = Permission.valueOf(permissionStr);
         return permission;
-    }
-
-    /**
-     * Helper method to convert a string of paoIds into a list
-     * @param paoIdList - String of comma separated paoIds
-     * @return Integer list of paoIds
-     */
-    protected List<Integer> getPaoIdList(String paoIdList) {
-
-        List<Integer> idList = new ArrayList<Integer>();
-
-        if (paoIdList != null && paoIdList.length() > 0) {
-            String[] ids = paoIdList.split(",");
-            for (String id : ids) {
-                idList.add(Integer.valueOf(id));
-            }
-        }
-        return idList;
-
     }
 
     /**

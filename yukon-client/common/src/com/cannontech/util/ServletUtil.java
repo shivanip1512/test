@@ -1560,5 +1560,22 @@ public static Date roundToMinute(Date toRound) {
 
         return returnMap;
     }
+    /**
+     * Helper method to convert a string of Integers into a list
+     * @param integerStringList - String of comma separated paoIds
+     * @return Integer list of paoIds
+     */
+    public static List<Integer> getIntegerListFromString(String integerStringList) {
 
+        List<Integer> idList = new ArrayList<Integer>();
+
+        if (integerStringList != null && integerStringList.length() > 0) {
+            String[] ids = integerStringList.split(",");
+            for (String id : ids) {
+                idList.add(Integer.valueOf(id));
+            }
+        }
+        return idList;
+
+    }
 }

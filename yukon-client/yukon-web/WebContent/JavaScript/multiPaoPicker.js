@@ -95,11 +95,6 @@ MultiPaoPicker.prototype = Object.extend(new PaoPicker(), {
 		}
 	},
 	
-	// override itemPicker.js
-	setDestItemIdFieldId: function( id ) {
-		// do nothing
-	},
-	
 	// This method is called when the user is done selecting paos
 	itemSelectionComplete: function() {
 	    
@@ -107,6 +102,7 @@ MultiPaoPicker.prototype = Object.extend(new PaoPicker(), {
 	    	alert('You have not selected any Devices.');	
 	    } else {
 		    $('itemPickerContainer').parentNode.removeChild($('itemPickerContainer'));
+		    this.setDestItemIdFieldId(this.selectedItems.pluck("paoId").join(","));
 			this.triggerEndAction(this.selectedItems);
 		    this.selectedItems = new Array();
 	    }
