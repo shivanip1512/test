@@ -101,7 +101,8 @@
 
 			try {
 				Class[] qTypes = { java.util.Date.class };
-				Object[][] result = com.cannontech.util.ServletUtil.executeSQL( dbAlias, "SELECT MAX(CURTAILMENTSTOPTIME) FROM LMCURTAILPROGRAMACTIVITY WHERE DEVICEID = " + request.getParameter("program"), qTypes );
+				int program = org.springframework.web.bind.ServletRequestUtils.getRequiredIntParameter(request, "program");
+		        Object[][] result = com.cannontech.util.ServletUtil.executeSQL( dbAlias, "SELECT MAX(CURTAILMENTSTOPTIME) FROM LMCURTAILPROGRAMACTIVITY WHERE DEVICEID = " + program, qTypes );
 
 				if (result != null && result.length > 0 )
 				{
@@ -172,7 +173,8 @@
 		}
 	}
 %>
-
+<%@page import="com.cannontech.spring.YukonSpringHook"%>
+<%@page import="org.springframework.jdbc.core.simple.SimpleJdbcTemplate"%>
 <html>
 <head>
 <META NAME="robots" CONTENT="noindex, nofollow">
