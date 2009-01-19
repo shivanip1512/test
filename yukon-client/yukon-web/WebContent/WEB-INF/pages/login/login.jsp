@@ -86,7 +86,7 @@
 			                        <cti:msg key="yukon.web.login.username"></cti:msg>
                                 </td>
                                 <td align="left" valign="bottom">
-                                    <input type="text" id="USERNAME" name="USERNAME" class="loginTextInput">
+                                    <input type="text" autocomplete="off" id="USERNAME" name="USERNAME" class="loginTextInput">
                                 </td>
                             </tr>
                             <tr>
@@ -94,7 +94,7 @@
 			                        <cti:msg key="yukon.web.login.password"></cti:msg>
                                 </td>
                                 <td align="left" valign="bottom">
-                                    <input type="password" name="PASSWORD">
+                                    <input type="password" autocomplete="off" name="PASSWORD">
                                 </td>
                             </tr>
                             <tr>
