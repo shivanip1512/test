@@ -226,56 +226,64 @@ public class UpdateDB
 
 		//previously generated list of valid commands
 		final File genDIR = new File( CtiUtilities.getLogDirPath() );
-		for( int i = 0; i < genDIR.listFiles().length; i++ )
-		{
-			File sqlFile = genDIR.listFiles()[i];
-			if( sqlFile.isDirectory() )
-				continue;
-
-			FileVersion fVers = getFileVersion(sqlFile);
-			if( fVers.getVersion() < DBMSDefines.MIN_VERSION
-				 || fVers.getVersion() < getDBVersion()
-				 || (fVers.getVersion() == getDBVersion() && fVers.getBuild() <= getDBBuild()) )
-			{
-				//getIMessageFrame().addOutput("  IGNORING file (Version mismatch): " + sqlFile );
-				continue;
-			}
-
-			if( isValidUpdateFile(sqlFile) )
-			{
-				CTILogger.debug("  GenDir - Adding file : " + sqlFile );
-                getIMessageFrame().addOutput("  Found valid file : " + sqlFile );
-				versions.add( fVers );
-			}
-
+		if(genDIR.listFiles() == null) {
+		    CTILogger.error("Could not find valid client log directory. ");
+		} else {
+    		for( int i = 0; i < genDIR.listFiles().length; i++ )
+    		{
+    			File sqlFile = genDIR.listFiles()[i];
+    			if( sqlFile.isDirectory() )
+    				continue;
+    
+    			FileVersion fVers = getFileVersion(sqlFile);
+    			if( fVers.getVersion() < DBMSDefines.MIN_VERSION
+    				 || fVers.getVersion() < getDBVersion()
+    				 || (fVers.getVersion() == getDBVersion() && fVers.getBuild() <= getDBBuild()) )
+    			{
+    				//getIMessageFrame().addOutput("  IGNORING file (Version mismatch): " + sqlFile );
+    				continue;
+    			}
+    
+    			if( isValidUpdateFile(sqlFile) )
+    			{
+    				CTILogger.debug("  GenDir - Adding file : " + sqlFile );
+                    getIMessageFrame().addOutput("  Found valid file : " + sqlFile );
+    				versions.add( fVers );
+    			}
+    
+    		}
 		}
 		
 
 		//dir to look in for new updates
 		final File userDIR = new File( rootDIR );
-		for( int i = 0; i < userDIR.listFiles().length; i++ )
-		{
-			File sqlFile = userDIR.listFiles()[i];
-			if( sqlFile.isDirectory() )
-				continue;
-
-			FileVersion fVers = getFileVersion(sqlFile);			
-			if( fVers.getVersion() < DBMSDefines.MIN_VERSION
-				 || fVers.getVersion() < getDBVersion()
-				 || (fVers.getVersion() == getDBVersion() && fVers.getBuild() <= getDBBuild()) )
-			{
-				//getIMessageFrame().addOutput("  IGNORING file (Version mismatch): " + sqlFile );
-				continue;
-			}
-
-			if( sqlFile.getAbsolutePath().toLowerCase().endsWith(DBMSDefines.SQL_EXT) 
-				 && !versions.contains(fVers) )
-			{
-				CTILogger.debug("  UserDIR - Adding file : " + sqlFile );
-                getIMessageFrame().addOutput("  Found valid file : " + sqlFile );
-                versions.add( fVers );
-			}
-
+		if(userDIR.listFiles() == null) {
+		    CTILogger.error("Could not find valid root log directory. ");
+		} else {
+    		for( int i = 0; i < userDIR.listFiles().length; i++ )
+    		{
+    			File sqlFile = userDIR.listFiles()[i];
+    			if( sqlFile.isDirectory() )
+    				continue;
+    
+    			FileVersion fVers = getFileVersion(sqlFile);			
+    			if( fVers.getVersion() < DBMSDefines.MIN_VERSION
+    				 || fVers.getVersion() < getDBVersion()
+    				 || (fVers.getVersion() == getDBVersion() && fVers.getBuild() <= getDBBuild()) )
+    			{
+    				//getIMessageFrame().addOutput("  IGNORING file (Version mismatch): " + sqlFile );
+    				continue;
+    			}
+    
+    			if( sqlFile.getAbsolutePath().toLowerCase().endsWith(DBMSDefines.SQL_EXT) 
+    				 && !versions.contains(fVers) )
+    			{
+    				CTILogger.debug("  UserDIR - Adding file : " + sqlFile );
+                    getIMessageFrame().addOutput("  Found valid file : " + sqlFile );
+                    versions.add( fVers );
+    			}
+    
+    		}
 		}
 
 
