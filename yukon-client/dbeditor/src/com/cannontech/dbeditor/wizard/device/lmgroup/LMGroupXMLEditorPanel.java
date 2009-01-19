@@ -49,9 +49,9 @@ public class LMGroupXMLEditorPanel extends DataInputPanel implements ActionListe
     public List<LmXmlParameter> getDefaultParameterList(XmlType type) {
     	List<LmXmlParameter> list = new ArrayList<LmXmlParameter>();
     	
-    	list.add(new LmXmlParameter(0,"UtilID",""));
-        list.add(new LmXmlParameter(0,"DeviceClass",""));
-        list.add(new LmXmlParameter(0,"Criticality",""));
+    	list.add(new LmXmlParameter(groupId,"UtilID",""));
+        list.add(new LmXmlParameter(groupId,"DeviceClass",""));
+        list.add(new LmXmlParameter(groupId,"Criticality",""));
     	
         return list;
     }

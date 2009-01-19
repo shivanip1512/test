@@ -29,14 +29,14 @@ public class LmXmlParameterDaoImpl implements LmXmlParameterDao {
     
     static{
         insertSql = "INSERT INTO LMGroupXMLParameter " +
-                    "( xmlparamId, lmgroupid, parametername, parametervalue ) " +
+                    "( LMXmlParameterId, lmgroupid, parametername, parametervalue ) " +
                     "VALUES (?,?,?,?)";
 
-        updateByParamId = "UPDATE LMGroupXMLParameter SET lmgroupid = ?, parametername = ?, parametervalue = ? WHERE xmlparamId = ?";
+        updateByParamId = "UPDATE LMGroupXMLParameter SET lmgroupid = ?, parametername = ?, parametervalue = ? WHERE LMXmlParameterId = ?";
         
         removeSql = "DELETE FROM LMGroupXMLParameter ";
         
-        selectByGroupIdSql = "SELECT xmlparamId, lmgroupid, parametername, parametervalue  FROM LMGroupXMLParameter" 
+        selectByGroupIdSql = "SELECT LMXmlParameterId, lmgroupid, parametername, parametervalue  FROM LMGroupXMLParameter" 
                     + " WHERE lmgroupid = ?";
         
         rowMapper = new ParameterizedRowMapper<LmXmlParameter>(){
@@ -44,7 +44,7 @@ public class LmXmlParameterDaoImpl implements LmXmlParameterDao {
                 
                 LmXmlParameter param = new LmXmlParameter();
                 
-                param.setXmlParamId(rs.getInt("xmlparamId"));
+                param.setXmlParamId(rs.getInt("LMXmlParameterId"));
                 param.setLmGroupId(rs.getInt("lmgroupid"));
                 param.setParameterName(rs.getString("parametername"));
                 param.setParameterValue(rs.getString("parametervalue"));
