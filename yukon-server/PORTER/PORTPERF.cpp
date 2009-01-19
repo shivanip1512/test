@@ -23,6 +23,7 @@ static CtiCriticalSection event_mux;
 
 static void processCollectedStats(bool force);
 static void statisticsRecord();
+static void ticklePerfThreadMonitor();
 
 struct statistics_event_t
 {
@@ -79,8 +80,7 @@ VOID PerfUpdateThread (PVOID Arg)
                         dout << CtiTime() << " Perf Update Thread. TID:  " << rwThreadId() << endl;
                     }
 
-                    // ThreadMonitor.tickle is also called in statisticsRecord(). If this changes, you must change it there as well!
-                    ThreadMonitor.tickle(new CtiThreadRegData(GetCurrentThreadId(), "Perf Update Thread", CtiThreadRegData::None, CtiThreadMonitor::StandardMonitorTime));
+                    ticklePerfThreadMonitor();
                     lastTickleTime = lastTickleTime.now();
                 }
 
@@ -342,7 +342,7 @@ void statisticsRecord()
 
                     if( !(++count % 1000) )
                     {
-                        ThreadMonitor.tickle(new CtiThreadRegData(GetCurrentThreadId(), "Perf Update Thread", CtiThreadRegData::None, CtiThreadMonitor::StandardMonitorTime));
+                        ticklePerfThreadMonitor();
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " statisticsRecord() : committed " << count << " / " << total << " statistics records." << endl;
                     }
@@ -366,7 +366,7 @@ void statisticsRecord()
 
                         if( !(++count % 1000) )
                         {
-                            ThreadMonitor.tickle(new CtiThreadRegData(GetCurrentThreadId(), "Perf Update Thread", CtiThreadRegData::None, CtiThreadMonitor::StandardMonitorTime));
+                            ticklePerfThreadMonitor();
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " statisticsRecord() : InsertDaily : committed " << count << " / " << total << " statistics records." << endl;
                         }
@@ -634,3 +634,7 @@ void processCollectedStats(bool force)
     }
 }
 
+void ticklePerfThreadMonitor()
+{
+    ThreadMonitor.tickle(new CtiThreadRegData(GetCurrentThreadId(), "Perf Update Thread", CtiThreadRegData::None, CtiThreadMonitor::StandardMonitorTime));
+}
