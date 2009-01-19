@@ -39,14 +39,6 @@ public class YukonSysTray implements SysTrayMenuListener, ActionListener, ISystr
 	private SysTrayMenuItem menuItemExit = null;
 	private SysTrayMenuItem menuItemAbout = null;
 
-	private SysTrayMenuItem menuItemLogout = null;
-
-	
-	private SysTrayMenuItem menuItemTDC = null;
-	private SysTrayMenuItem menuItemDBEditor = null;
-	private SysTrayMenuItem menuItemTrending = null;
-	private SysTrayMenuItem menuItemCommander = null;
-
 	private CheckableMenuItem chkMnuItemMute = null;
 	private SysTrayMenuItem menuItemProperties = null;
 
@@ -206,10 +198,6 @@ public class YukonSysTray implements SysTrayMenuListener, ActionListener, ISystr
 			getAlarmHandler().getAlarmClient().stop();
 
 			exitApp();
-		}
-		else if( e.getSource() == getMenuItemLogout() )
-		{
-            exitApp();
 		}		
 		else if( e.getSource() == getMenuItemAbout() )
 		{
@@ -234,71 +222,6 @@ public class YukonSysTray implements SysTrayMenuListener, ActionListener, ISystr
 		{
 			//do the properties action here
 		}
-		else if( e.getSource() == getMenuItemTDC() )
-		{
-			try
-			{
-				CTILogger.info( "Starting TDC with: " + ISystrayDefines.EXEC_TDC );
-				Process p = Runtime.getRuntime().exec(
-					ISystrayDefines.EXEC_TDC );
-
-				//start logging the stuff
-				new SystrayLogger(p, "TDC").start();
-			}
-			catch( Exception ex )
-			{
-				CTILogger.error( "Unable to start TDC application", ex );
-			}
-		}
-		else if( e.getSource() == getMenuItemDBEditor() )
-		{
-			try
-			{
-				CTILogger.info( "Starting DBEditor with: " + ISystrayDefines.EXEC_DBEDITOR );
-				Process p = Runtime.getRuntime().exec(
-					ISystrayDefines.EXEC_DBEDITOR );
-
-				//start logging the stuff
-				new SystrayLogger(p, "DBEditor").start();
-			}
-			catch( Exception ex )
-			{
-				CTILogger.error( "Unable to start DBEditor application", ex );
-			}
-		}
-		else if( e.getSource() == getMenuItemCommander() )
-		{
-			try
-			{
-				CTILogger.info( "Starting Commander with: " + ISystrayDefines.EXEC_COMMANDER );
-				Process p = Runtime.getRuntime().exec(
-					ISystrayDefines.EXEC_COMMANDER );
-
-				//start logging the stuff
-				new SystrayLogger(p, "Commander").start();
-			}
-			catch( Exception ex )
-			{
-				CTILogger.error( "Unable to start Commander application", ex );
-			}
-		}
-		else if( e.getSource() == getMenuItemTrending() )
-		{
-			try
-			{
-				CTILogger.info( "Starting Trending with: " + ISystrayDefines.EXEC_TRENDING );
-				Process p = Runtime.getRuntime().exec(
-					ISystrayDefines.EXEC_TRENDING );
-
-				//start logging the stuff
-				new SystrayLogger(p, "Trending").start();
-			}
-			catch( Exception ex )
-			{
-				CTILogger.error( "Unable to start Trending application", ex );
-			}
-		}
-
 	}
 
 	public void iconLeftClicked(SysTrayMenuEvent e)
@@ -321,31 +244,18 @@ public class YukonSysTray implements SysTrayMenuListener, ActionListener, ISystr
 
 		Vector cntrls = new Vector();
 		cntrls.add( getMenuItemMute() );
-		//cntrls.add( getMenuItemProperties() );
-
-		Vector apps = new Vector();
-		apps.add( getMenuItemTDC() );
-		apps.add( getMenuItemDBEditor() );
-		apps.add( getMenuItemTrending() );
-		apps.add( getMenuItemCommander() );
 
 		// create a submenu and insert the previously created items
-		SubMenu appSubMenu = new SubMenu("Applications", apps);
 		SubMenu cntrlSubMenu = new SubMenu("Controls", cntrls );
-
 
 		// insert items
 		yukonSysTray.addItem( getMenuItemExit() );
-		yukonSysTray.addItem( getMenuItemLogout() );
 		yukonSysTray.addSeparator();
 		yukonSysTray.addItem( getMenuItemAbout() );
 		yukonSysTray.addSeparator();
 		yukonSysTray.addItem( cntrlSubMenu );
-		yukonSysTray.addItem( appSubMenu );  //top component
-		
 		
 		initConnections();
-		
 
 		//start trying to connect for alarms immediately
 		getAlarmHandler();		
@@ -357,14 +267,7 @@ public class YukonSysTray implements SysTrayMenuListener, ActionListener, ISystr
 		AlarmFileWatchDog.getInstance().addActionListener( this );
 
 		getMenuItemExit().addSysTrayMenuListener(this);
-		getMenuItemAbout().addSysTrayMenuListener(this);
-		getMenuItemLogout().addSysTrayMenuListener(this);
-		
-		getMenuItemTDC().addSysTrayMenuListener(this);
-		getMenuItemDBEditor().addSysTrayMenuListener(this);
-		getMenuItemTrending().addSysTrayMenuListener(this);
-		getMenuItemCommander().addSysTrayMenuListener(this);
-		
+		getMenuItemAbout().addSysTrayMenuListener(this);		
 		getMenuItemMute().addSysTrayMenuListener(this);
 		getMenuItemProperties().addSysTrayMenuListener(this);
 	}
@@ -410,16 +313,6 @@ public class YukonSysTray implements SysTrayMenuListener, ActionListener, ISystr
 		return menuItemExit;
 	}
 
-	private SysTrayMenuItem getMenuItemLogout()
-	{
-		if( menuItemLogout == null )
-		{
-			menuItemLogout = new SysTrayMenuItem("End Session", "logout");
-		}
-		
-		return menuItemLogout;
-	}
-
 	private SysTrayMenuItem getMenuItemAbout()
 	{
 		if( menuItemAbout == null )
@@ -429,58 +322,4 @@ public class YukonSysTray implements SysTrayMenuListener, ActionListener, ISystr
 		
 		return menuItemAbout;
 	}
-
-	private SysTrayMenuItem getMenuItemDBEditor()
-	{
-		if( menuItemDBEditor == null )
-		{
-			menuItemDBEditor = new SysTrayMenuItem("DBEditor", "dbeditor");
-            
-            menuItemDBEditor.setEnabled(
-                    ClientSession.getInstance().checkRole(DBEditorRole.ROLEID) );            
-		}
-		
-		return menuItemDBEditor;
-	}
-
-	private SysTrayMenuItem getMenuItemTrending()
-	{
-		if( menuItemTrending == null )
-		{
-			menuItemTrending = new SysTrayMenuItem("Trending", "trending");
-
-            menuItemTrending.setEnabled(
-                    ClientSession.getInstance().checkRole(TrendingRole.ROLEID) );            
-		}
-		
-		return menuItemTrending;
-	}
-
-	private SysTrayMenuItem getMenuItemTDC()
-	{
-		if( menuItemTDC == null )
-		{
-			menuItemTDC = new SysTrayMenuItem("TDC", "TDC");
-
-            menuItemTDC.setEnabled(
-                    ClientSession.getInstance().checkRole(TDCRole.ROLEID) );
-		}
-		
-		return menuItemTDC;
-	}
-	
-	private SysTrayMenuItem getMenuItemCommander()
-	{
-		if( menuItemCommander == null )
-		{
-			menuItemCommander = new SysTrayMenuItem("Commander", "commander");
-
-            menuItemCommander.setEnabled(
-                    ClientSession.getInstance().checkRole(CommanderRole.ROLEID) );            
-        }
-		
-		return menuItemCommander;
-	}
-
-
 }
