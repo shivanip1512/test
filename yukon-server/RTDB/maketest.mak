@@ -55,6 +55,7 @@ test_mgr_point.obj \
 test_dev_ccu721.obj \
 test_dev_mct4xx.obj \
 test_dev_mct410.obj \
+test_dev_addr_global.obj \
 
 ALL:            $(TEST_OBJS) Makefile
 
@@ -474,4 +475,6 @@ test_dev_mct4xx.obj:	dev_mct4xx.h dev_mct.h dev_carrier.h \
 		rte_base.h pt_base.h pt_dyn_base.h pt_numeric.h
 test_mgr_point.obj:	mgr_point.h pt_base.h pt_dyn_base.h pt_status.h \
 		pt_analog.h pt_numeric.h pt_accum.h
+test_dev_addr_global.obj:	devicetypes.h dsm2.h dev_single.h
+
 #ENDUPDATE#

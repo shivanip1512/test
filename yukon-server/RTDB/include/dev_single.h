@@ -113,6 +113,8 @@ protected:
 
     virtual Cti::Protocol::Interface *getProtocol();
 
+    bool isDeviceAddressGlobal();
+
 private:
 
     typedef map< int, bool > ScanFlagsPending_t;

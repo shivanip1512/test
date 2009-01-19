@@ -26,7 +26,6 @@
 #include "scanglob.h"
 
 // see bottom of file
-bool isDeviceAddressGlobal(const int deviceType, const int address);
 
 using namespace std;
 
@@ -189,7 +188,7 @@ INT CtiDeviceSingle::initiateAccumulatorScan(list< OUTMESS* > &outList, INT Scan
         {
             resetScanFlag(ScanForced);            // Reset this guy since we're doing it
 
-            if (isDeviceAddressGlobal(getType(), getAddress()))
+            if ( isDeviceAddressGlobal() )
             {
                 // CAN NOT scan a global address.
                 setScanRate(ScanRateAccum, YUKONEOT);    // set him to the end of time!
@@ -327,7 +326,7 @@ INT CtiDeviceSingle::initiateIntegrityScan(list< OUTMESS* > &outList, INT ScanPr
             {
                 resetScanFlag(ScanForced);            // Reset this guy since we're doing it
 
-                if (isDeviceAddressGlobal(getType(), getAddress()))
+                if ( isDeviceAddressGlobal() )
                 {
                     // CAN NOT scan a global address.
                     setScanRate(ScanRateIntegrity, YUKONEOT);    // set him to the end of time!
@@ -459,7 +458,7 @@ INT CtiDeviceSingle::initiateGeneralScan(list< OUTMESS* > &outList, INT ScanPrio
                 {
                     resetScanFlag(ScanForced);            // Reset this guy since we're doing it
 
-                    if (isDeviceAddressGlobal(getType(), getAddress()))
+                    if ( isDeviceAddressGlobal() )
                     {
                         // CANNOT scan a global address.
                         setScanRate(ScanRateAccum, YUKONEOT);    // set him to the end of time!
@@ -601,7 +600,7 @@ INT CtiDeviceSingle::initiateLoadProfileScan(list< OUTMESS* > &outList, INT Scan
             {
                 resetScanFlag(ScanForced);            // Reset this guy since we're doing it
 
-                if (isDeviceAddressGlobal(getType(), getAddress()))
+                if ( isDeviceAddressGlobal() )
                 {
                     // CAN NOT scan a global address.
                     setScanRate(ScanRateLoadProfile, YUKONEOT);    // set him to the end of time!
@@ -2037,9 +2036,9 @@ CtiDeviceSingle::decrementGroupMessageCount(long userID, long comID, int entries
     device at every global address.
     Future improvement: Segregate each device to its exact address.
 */
-bool isDeviceAddressGlobal(const int deviceType, const int address)
+bool CtiDeviceSingle::isDeviceAddressGlobal()
 {
-    switch (deviceType)
+    switch ( getType() )
     {
         case TYPE_CCU700:
         case TYPE_CCU710:
@@ -2056,7 +2055,7 @@ bool isDeviceAddressGlobal(const int deviceType, const int address)
         case TYPE_DAVIS:
         case TYPE_VTU:
         {
-            switch (address)
+            switch ( getAddress() )
             {
                 case RTUGLOBAL:
                 case CCUGLOBAL:
