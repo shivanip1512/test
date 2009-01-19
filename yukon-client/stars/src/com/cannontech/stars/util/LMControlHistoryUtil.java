@@ -692,6 +692,7 @@ public class LMControlHistoryUtil {
              * L - Time log
              */
             if (lmCtrlHist.getActiveRestore().equals("N")) {
+                hist = new ControlHistory();
                 if (!StarsUtils.isDateEqual(date, lastStartTime)) {
                     // This is a new control
                     lastStartTime = date;
@@ -701,7 +702,6 @@ public class LMControlHistoryUtil {
                     else
                         histStartDate = date;
                     
-                    hist = new ControlHistory();
                     hist.setStartDateTime( histStartDate );
                     hist.setControlDuration( 0 );
                     starsCtrlHist.addControlHistory( hist );
