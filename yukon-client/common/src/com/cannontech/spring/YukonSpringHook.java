@@ -17,7 +17,7 @@ import com.cannontech.database.incrementer.NextValueHelper;
 public class YukonSpringHook {
     private static Logger log = YukonLogManager.getLogger(YukonSpringHook.class);
     public static String WEB_BEAN_FACTORY_KEY = "com.cannontech.context.web";
-    public static String CLIENT_BEAN_FACTORY_KEY = "com.cannontech.context.client";
+    public static String COMMON_BEAN_FACTORY_KEY = "com.cannontech.context.common";
     public static String SERVICES_BEAN_FACTORY_KEY = "com.cannontech.context.services";
     private static String defaultFactoryKey;
     private static String currentFactoryKey;
@@ -27,7 +27,7 @@ public class YukonSpringHook {
             defaultFactoryKey = WEB_BEAN_FACTORY_KEY;
         }
         else {
-            defaultFactoryKey = CLIENT_BEAN_FACTORY_KEY;
+            defaultFactoryKey = COMMON_BEAN_FACTORY_KEY;
         }
     }
     
