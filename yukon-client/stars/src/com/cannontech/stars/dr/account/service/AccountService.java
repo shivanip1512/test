@@ -4,6 +4,7 @@ import com.cannontech.common.bulk.field.impl.AccountDto;
 import com.cannontech.common.bulk.field.impl.UpdatableAccount;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.exception.AccountNumberUnavailableException;
 import com.cannontech.stars.dr.account.exception.InvalidAccountNumberException;
 import com.cannontech.stars.dr.account.exception.UserNameUnavailableException;
@@ -11,8 +12,9 @@ import com.cannontech.stars.dr.account.exception.UserNameUnavailableException;
 public interface AccountService {
 
     /**
-     * Mehtod to add an account. Throws AccountNumberUnavailableException if the account
-     * number is alread used for that energy company.
+     * Method to add an account. Throws AccountNumberUnavailableException if the account
+     * number is already used for that energy company.
+     * The energy company is for the user is retrieved, then addAccount(UpdatableAccount updatableAccount, LiteStarsEnergyCompany ec) is called.
      * @param updatableAccount
      * @param operator
      * @throws AccountNumberUnavailableException
@@ -20,26 +22,37 @@ public interface AccountService {
      */
     public void addAccount(UpdatableAccount updatableAccount, LiteYukonUser operator) throws AccountNumberUnavailableException, UserNameUnavailableException;
     
+    public void addAccount(UpdatableAccount updatableAccount, LiteStarsEnergyCompany ec) throws AccountNumberUnavailableException, UserNameUnavailableException;
+    
     /**
      * Method to update an account
+     * The energy company is for the user is retrieved, then updateAccount(UpdatableAccount updatableAccount, LiteStarsEnergyCompany ec) is called.
      * @param updatableAccount
      * @param user
      * @throws NotFoundException
      */
     public void updateAccount(UpdatableAccount updatableAccount, LiteYukonUser user) throws InvalidAccountNumberException;
+    
+    public void updateAccount(UpdatableAccount updatableAccount, LiteStarsEnergyCompany ec) throws InvalidAccountNumberException;
 
     /**
      * Method to delete an account
+     * The energy company is for the user is retrieved, then deleteAccount(String accountNumber, LiteStarsEnergyCompany ec) is called.
      * @param accountNumber
      * @param user
      */
     public void deleteAccount(String accountNumber, LiteYukonUser user);
     
+    public void deleteAccount(String accountNumber, LiteStarsEnergyCompany ec);
+    
     /**
-     * Method to return an account dto for an account number and energy company
+     * Method to return an account dto for an account number and energy company.
+     * The energy company is for the user is retrieved, then getAccountDto(String accountNumber, LiteStarsEnergyCompany ec) is called. 
      * @param accountNumber
      * @param yukonUser
      * @return
      */
     public AccountDto getAccountDto(String accountNumber, LiteYukonUser yukonUser);
+
+    public AccountDto getAccountDto(String accountNumber, LiteStarsEnergyCompany ec);
 }

@@ -14,13 +14,10 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.w3c.dom.Node;
 
-import com.cannontech.common.bulk.field.impl.AccountDto;
 import com.cannontech.common.bulk.field.impl.UpdatableAccount;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.exception.AccountNumberUnavailableException;
 import com.cannontech.stars.dr.account.exception.UserNameUnavailableException;
-import com.cannontech.stars.dr.account.service.AccountService;
 import com.cannontech.yukon.api.account.endpoint.NewAccountsRequestEndpoint;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XmlUtils;
@@ -32,7 +29,7 @@ public class NewAccountsRequestEndpointTest {
     @Before
     public void setUp() throws Exception {
         impl = new NewAccountsRequestEndpoint();
-        impl.setAccountService(new AccountService() {
+        impl.setAccountService(new AccountServiceAdapter() {
 
             @Override
             public void addAccount(UpdatableAccount updatableAccount, LiteYukonUser operator) throws AccountNumberUnavailableException, UserNameUnavailableException {
@@ -46,20 +43,7 @@ public class NewAccountsRequestEndpointTest {
                     }
                 }
             }
-
-            @Override
-            public void deleteAccount(String accountNumber, LiteYukonUser user) {
-            }
-
-            @Override
-            public AccountDto getAccountDto(String accountNumber, LiteYukonUser yukonUser) {
-                return null;
-            }
-
-            @Override
-            public void updateAccount(UpdatableAccount updatableAccount, LiteYukonUser user) throws NotFoundException {
-            }
-
+            
         });
 
     }

@@ -92,7 +92,7 @@ public class ApplianceDaoImpl implements ApplianceDao {
     
     @Override
     public List<Integer> getApplianceIdsForAccountId(int accountId){
-        String sql = "SELECT ApplianceId FROM ApplianceBase WHERE ApplianceId = ?";
+        String sql = "SELECT ApplianceId FROM ApplianceBase WHERE AccountId = ?";
         List<Integer> applianceIds = simpleJdbcTemplate.query(sql, new IntegerRowMapper(), accountId);
         return applianceIds;
     }

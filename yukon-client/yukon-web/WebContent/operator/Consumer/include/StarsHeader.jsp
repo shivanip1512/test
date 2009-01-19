@@ -193,59 +193,66 @@
 	    		
 	        accountInfo = ServletUtils.removeAccountInformation(session);
 	        if (accountInfo != null) { // ensure there is a new instance of StarsCustAccountInformation for each request
-	            accountInfo = liteEC.getStarsCustAccountInformation(accountInfo.getStarsCustomerAccount().getAccountID(), true);
-	            session.setAttribute(ServletUtils.TRANSIENT_ATT_CUSTOMER_ACCOUNT_INFO, accountInfo);
-	    			
-	            account = accountInfo.getStarsCustomerAccount();
-	            propAddr = account.getStreetAddress();
-	    		siteInfo = account.getStarsSiteInformation();
-	    		billAddr = account.getBillingAddress();
-	    		primContact = account.getPrimaryContact();
-	    		residence = accountInfo.getStarsResidenceInformation();
-	    		appliances = accountInfo.getStarsAppliances();
-	    		inventories = accountInfo.getStarsInventories();
-	    		programs = accountInfo.getStarsLMPrograms();
-	    		programHistory = programs.getStarsLMProgramHistory();
-	    		callHist = accountInfo.getStarsCallReportHistory();
-	    		serviceHist = accountInfo.getStarsServiceRequestHistory();
-	    		thermSchedules = accountInfo.getStarsSavedThermostatSchedules();
-	    		userLogin = accountInfo.getStarsUser();
 	            
-	    		try{
-	                Customer cust = (Customer) com.cannontech.database.data.lite.LiteFactory.createDBPersistent(
-	                                new LiteCustomer(account.getCustomerID()));
-	                
-	                Transaction<Customer> t = Transaction.createTransaction(Transaction.RETRIEVE, cust);
-	                cust = t.execute();
-	    
-	                custGraphs = cust.getGraphVector();
-	            } catch(TransactionException e){
-	                com.cannontech.clientutils.CTILogger.error(e.getMessage(), e);
-	            }
-	            
-	            // New enrollment, opt out, and control history tracking
-	            //-------------------------------------------------------------------------------
-	            final LMHardwareControlInformationService lmHardwareControlInformationService = YukonSpringHook.getBean("lmHardwareControlInformationService", LMHardwareControlInformationService.class);
-	            
-	            LiteStarsCustAccountInformation currentLiteAcctInfo = starsCustAccountInformationDao.getById(account.getAccountID(), liteEC.getEnergyCompanyID());
-	            List<LiteStarsAppliance> currentAppList = currentLiteAcctInfo.getAppliances();
-	            partialOptOutMap = new HashMap<Integer, List<Integer>>();
-	            for(int x = 0; x < currentAppList.size(); x++) {
-	                LiteStarsAppliance currentApp = currentAppList.get(x);
-	                List<Integer> inventoryNotOptedOut = lmHardwareControlInformationService.getInventoryNotOptedOutForThisLoadGroup(currentApp.getAddressingGroupID(), account.getAccountID());
-	                for(Integer invenId : inventoryNotOptedOut) {
-	                    if(currentApp.getInventoryID() == invenId) {
-	                        List<Integer> progInventory = partialOptOutMap.get(currentApp.getProgramID());
-	                        if(progInventory == null) {
-	                            partialOptOutMap.put(currentApp.getProgramID(), new ArrayList<Integer>());
-	                            progInventory = partialOptOutMap.get(currentApp.getProgramID());
-	                        }
-	                        if(! progInventory.contains(invenId))
-	                            progInventory.add(invenId);
-	                    }
-	                }
-	            }
-	            //-------------------------------------------------------------------------------
+	        	int acctId = accountInfo.getStarsCustomerAccount().getAccountID();
+	        	
+	        	accountInfo = liteEC.getStarsCustAccountInformation(acctId, true);
+	        
+	        	if (accountInfo != null) {
+	        
+		            session.setAttribute(ServletUtils.TRANSIENT_ATT_CUSTOMER_ACCOUNT_INFO, accountInfo);
+		    			
+		            account = accountInfo.getStarsCustomerAccount();
+		            propAddr = account.getStreetAddress();
+		    		siteInfo = account.getStarsSiteInformation();
+		    		billAddr = account.getBillingAddress();
+		    		primContact = account.getPrimaryContact();
+		    		residence = accountInfo.getStarsResidenceInformation();
+		    		appliances = accountInfo.getStarsAppliances();
+		    		inventories = accountInfo.getStarsInventories();
+		    		programs = accountInfo.getStarsLMPrograms();
+		    		programHistory = programs.getStarsLMProgramHistory();
+		    		callHist = accountInfo.getStarsCallReportHistory();
+		    		serviceHist = accountInfo.getStarsServiceRequestHistory();
+		    		thermSchedules = accountInfo.getStarsSavedThermostatSchedules();
+		    		userLogin = accountInfo.getStarsUser();
+		            
+		    		try{
+		                Customer cust = (Customer) com.cannontech.database.data.lite.LiteFactory.createDBPersistent(
+		                                new LiteCustomer(account.getCustomerID()));
+		                
+		                Transaction<Customer> t = Transaction.createTransaction(Transaction.RETRIEVE, cust);
+		                cust = t.execute();
+		    
+		                custGraphs = cust.getGraphVector();
+		            } catch(TransactionException e){
+		                com.cannontech.clientutils.CTILogger.error(e.getMessage(), e);
+		            }
+		            
+		            // New enrollment, opt out, and control history tracking
+		            //-------------------------------------------------------------------------------
+		            final LMHardwareControlInformationService lmHardwareControlInformationService = YukonSpringHook.getBean("lmHardwareControlInformationService", LMHardwareControlInformationService.class);
+		            
+		            LiteStarsCustAccountInformation currentLiteAcctInfo = starsCustAccountInformationDao.getById(account.getAccountID(), liteEC.getEnergyCompanyID());
+		            List<LiteStarsAppliance> currentAppList = currentLiteAcctInfo.getAppliances();
+		            partialOptOutMap = new HashMap<Integer, List<Integer>>();
+		            for(int x = 0; x < currentAppList.size(); x++) {
+		                LiteStarsAppliance currentApp = currentAppList.get(x);
+		                List<Integer> inventoryNotOptedOut = lmHardwareControlInformationService.getInventoryNotOptedOutForThisLoadGroup(currentApp.getAddressingGroupID(), account.getAccountID());
+		                for(Integer invenId : inventoryNotOptedOut) {
+		                    if(currentApp.getInventoryID() == invenId) {
+		                        List<Integer> progInventory = partialOptOutMap.get(currentApp.getProgramID());
+		                        if(progInventory == null) {
+		                            partialOptOutMap.put(currentApp.getProgramID(), new ArrayList<Integer>());
+		                            progInventory = partialOptOutMap.get(currentApp.getProgramID());
+		                        }
+		                        if(! progInventory.contains(invenId))
+		                            progInventory.add(invenId);
+		                    }
+		                }
+		            }
+		            //-------------------------------------------------------------------------------
+	        	}
 	        }
 	    
 	    	graphBean = (com.cannontech.graph.GraphBean) session.getAttribute(ServletUtil.ATT_GRAPH_BEAN);

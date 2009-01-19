@@ -13,13 +13,9 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.w3c.dom.Node;
 
-import com.cannontech.common.bulk.field.impl.AccountDto;
 import com.cannontech.common.bulk.field.impl.UpdatableAccount;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.stars.dr.account.exception.AccountNumberUnavailableException;
 import com.cannontech.stars.dr.account.exception.InvalidAccountNumberException;
-import com.cannontech.stars.dr.account.exception.UserNameUnavailableException;
-import com.cannontech.stars.dr.account.service.AccountService;
 import com.cannontech.stars.dr.account.service.AccountServiceHelper;
 import com.cannontech.yukon.api.account.endpoint.UpdateAccountsRequestEndpoint;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
@@ -32,21 +28,7 @@ public class UpdateAccountsRequestEndpointTest {
     @Before
     public void setUp() throws Exception {
         impl = new UpdateAccountsRequestEndpoint();
-        impl.setAccountService(new AccountService() {
-
-            @Override
-            public void addAccount(UpdatableAccount updatableAccount, LiteYukonUser operator) throws AccountNumberUnavailableException, UserNameUnavailableException {
-                
-            }
-
-            @Override
-            public void deleteAccount(String accountNumber, LiteYukonUser user) {
-            }
-
-            @Override
-            public AccountDto getAccountDto(String accountNumber, LiteYukonUser yukonUser) {
-                return null;
-            }
+        impl.setAccountService(new AccountServiceAdapter() {
 
             @Override
             public void updateAccount(UpdatableAccount updatableAccount, LiteYukonUser user) throws InvalidAccountNumberException {
@@ -54,7 +36,6 @@ public class UpdateAccountsRequestEndpointTest {
                     throw new InvalidAccountNumberException("INVALID ACCOUNT #");
                 }
             }
-
         });
         
         impl.setAccountServiceHelper(new AccountServiceHelper() {

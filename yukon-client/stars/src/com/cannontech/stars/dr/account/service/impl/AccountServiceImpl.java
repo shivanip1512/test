@@ -25,6 +25,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.core.service.SystemDateFormattingService;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteAddress;
@@ -92,10 +93,19 @@ public class AccountServiceImpl implements AccountService {
     private StarsCustAccountInformationDao starsCustAccountInformationDao;
     private DBPersistentDao dbPersistantDao;
     private StarsDatabaseCache starsDatabaseCache;
+    private SystemDateFormattingService systemDateFormattingService;
 
+    
+    // ADD ACCOUNT
+    public void addAccount(UpdatableAccount updatableAccount, LiteYukonUser operator) throws AccountNumberUnavailableException, UserNameUnavailableException {
+    	
+    	LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(operator);
+    	addAccount(updatableAccount, energyCompany);
+    }
+    
     @Override
     @Transactional
-    public void addAccount(UpdatableAccount updatableAccount, LiteYukonUser operator) throws AccountNumberUnavailableException, UserNameUnavailableException {
+    public void addAccount(UpdatableAccount updatableAccount, LiteStarsEnergyCompany energyCompany) throws AccountNumberUnavailableException, UserNameUnavailableException {
         AccountDto accountDto = updatableAccount.getAccountDto();
         String accountNumber = updatableAccount.getAccountNumber();
         
@@ -104,7 +114,6 @@ public class AccountServiceImpl implements AccountService {
             throw new InvalidAccountNumberException("The provided account number cannot be empty.");
         }
         
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(operator);
         LiteStarsCustAccountInformation accountInformation = energyCompany.searchAccountByAccountNo(accountNumber);
         
         if(accountInformation != null) {
@@ -211,7 +220,14 @@ public class AccountServiceImpl implements AccountService {
         }else {
             liteCustomer.setCustomerTypeID(CustomerTypes.CUSTOMER_RESIDENTIAL);
         }
-        liteCustomer.setTimeZone(authDao.getUserTimeZone(user).getID());
+        if (accountDto.getAltTrackingNumber() == null) {
+        	accountDto.setAltTrackingNumber(CtiUtilities.STRING_NONE);
+        }
+        if (user != null) {
+        	liteCustomer.setTimeZone(authDao.getUserTimeZone(user).getID());
+        } else {
+        	liteCustomer.setTimeZone(systemDateFormattingService.getSystemTimeZone().getID());
+        }
         liteCustomer.setCustomerNumber(CtiUtilities.STRING_NONE);
         liteCustomer.setRateScheduleID(CtiUtilities.NONE_ZERO_ID);
         liteCustomer.setAltTrackingNumber(accountDto.getAltTrackingNumber());
@@ -273,7 +289,8 @@ public class AccountServiceImpl implements AccountService {
         accountSite.setStreetAddressId(liteAddress.getAddressID());
         accountSite.setCustAtHome("N");
         accountSite.setCustomerStatus("A");
-        accountSite.setSiteNumber(accountDto.getMapNumber() == null ? " " : accountDto.getMapNumber());
+        accountSite.setSiteNumber(StringUtils.isBlank(accountDto.getMapNumber()) ? " " : accountDto.getMapNumber());
+        accountSite.setPropertyNotes(CtiUtilities.STRING_NONE);
         accountSiteDao.add(accountSite);
         
         /*
@@ -283,6 +300,7 @@ public class AccountServiceImpl implements AccountService {
         customerAccount.setAccountSiteId(accountSite.getAccountSiteId());
         customerAccount.setAccountNumber(accountNumber);
         customerAccount.setCustomerId(liteCustomer.getCustomerID());
+        customerAccount.setAccountNotes(CtiUtilities.STRING_NONE);
         if(liteBillingAddress != null) {
             customerAccount.setBillingAddressId(liteBillingAddress.getAddressID());
         }
@@ -304,11 +322,18 @@ public class AccountServiceImpl implements AccountService {
         log.info("Account: " + accountNumber + " added successfully.");
     }
 
+    
+    // DELETE ACCOUNT
+    public void deleteAccount(String accountNumber, LiteYukonUser user) {
+    	
+    	LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
+    	deleteAccount(accountNumber, energyCompany);
+    }
+    
     @Override
     @Transactional
-    public void deleteAccount(String accountNumber, LiteYukonUser user) {
+    public void deleteAccount(String accountNumber, LiteStarsEnergyCompany energyCompany) {
         
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
         CustomerAccount  account = null;
         try {
             account = customerAccountDao.getByAccountNumber(accountNumber, energyCompany.getEnergyCompanyID());
@@ -427,7 +452,7 @@ public class AccountServiceImpl implements AccountService {
                 userId != UserUtils.USER_YUKON_ID) {
             yukonUserDao.deleteUser(userId);
             starsDatabaseCache.deleteStarsYukonUser( userId );
-            dbPersistantDao.processDBChange(new DBChangeMsg(user.getLiteID(),
+            dbPersistantDao.processDBChange(new DBChangeMsg(energyCompany.getUserID(),
                                    DBChangeMsg.CHANGE_YUKON_USER_DB,
                                    DBChangeMsg.CAT_YUKON_USER,
                                    DBChangeMsg.CAT_YUKON_USER,
@@ -447,9 +472,17 @@ public class AccountServiceImpl implements AccountService {
         log.info("Account: " +accountNumber + " deleted successfully.");
     }
     
+    
+    // UPDATE ACCOUNT
+    public void updateAccount(UpdatableAccount updatableAccount, LiteYukonUser user) {
+    
+    	LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
+    	updateAccount(updatableAccount, energyCompany);
+    }
+    
     @Override
     @Transactional
-    public void updateAccount(UpdatableAccount updatableAccount, LiteYukonUser user) {
+    public void updateAccount(UpdatableAccount updatableAccount, LiteStarsEnergyCompany energyCompany) {
         AccountDto accountDto = updatableAccount.getAccountDto();
         String accountNumber = updatableAccount.getAccountNumber();
         
@@ -458,7 +491,6 @@ public class AccountServiceImpl implements AccountService {
             throw new InvalidAccountNumberException("The provided account number cannot be empty.");
         }
         
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
         LiteStarsCustAccountInformation accountInformation = energyCompany.searchAccountByAccountNo(accountNumber);
         
         if(accountInformation == null) {
@@ -614,7 +646,7 @@ public class AccountServiceImpl implements AccountService {
         /*
          * Update account site
          */
-        accountSite.setSiteNumber(accountDto.getMapNumber());
+        accountSite.setSiteNumber(StringUtils.isBlank(accountDto.getMapNumber()) ? CtiUtilities.STRING_NONE : accountDto.getMapNumber());
         accountSiteDao.update(accountSite);
         
         /*
@@ -645,8 +677,14 @@ public class AccountServiceImpl implements AccountService {
     
     @Override
     public AccountDto getAccountDto(String accountNumber, LiteYukonUser yukonUser) {
+    
+    	LiteStarsEnergyCompany ec = starsDatabaseCache.getEnergyCompanyByUser(yukonUser);
+    	return getAccountDto(accountNumber, ec);
+    }
+    
+    @Override
+    public AccountDto getAccountDto(String accountNumber, LiteStarsEnergyCompany ec) {
         AccountDto retrievedDto = new AccountDto();
-        LiteStarsEnergyCompany ec = starsDatabaseCache.getEnergyCompanyByUser(yukonUser);
         
         CustomerAccount customerAccount = null;
         try {
@@ -751,7 +789,11 @@ public class AccountServiceImpl implements AccountService {
     
     private void setAddressFieldsFromDTO(LiteAddress lite, Address address) {
         lite.setLocationAddress1(address.getLocationAddress1());
-        lite.setLocationAddress2(address.getLocationAddress2());
+        if (StringUtils.isBlank(address.getLocationAddress2())) {
+        	lite.setLocationAddress2(CtiUtilities.STRING_NONE);
+        } else {
+        	lite.setLocationAddress2(address.getLocationAddress2());
+        }
         lite.setCityName(address.getCityName());
         lite.setStateCode(address.getStateCode());
         lite.setZipCode(address.getZipCode());
@@ -896,4 +938,9 @@ public class AccountServiceImpl implements AccountService {
         this.starsDatabaseCache = starsDatabaseCache;
     }
     
+    @Autowired
+    public void setSystemDateFormattingService(
+			SystemDateFormattingService systemDateFormattingService) {
+		this.systemDateFormattingService = systemDateFormattingService;
+	}
 }

@@ -30,6 +30,7 @@ import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.bulk.field.impl.UpdatableAccount;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
@@ -55,12 +56,15 @@ import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
-import com.cannontech.stars.util.ImportProblem;
+import com.cannontech.stars.dr.account.service.AccountService;
+import com.cannontech.stars.service.StarsControllableDeviceDTOConversionService;
+import com.cannontech.stars.service.UpdatableAccountConversionService;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.WebClientException;
-import com.cannontech.stars.web.action.DeleteCustAccountAction;
 import com.cannontech.stars.web.util.ImportManagerUtil;
+import com.cannontech.stars.ws.dto.StarsControllableDeviceDTO;
+import com.cannontech.stars.ws.helper.StarsControllableDeviceHelper;
 import com.cannontech.tools.email.EmailMessage;
 import com.cannontech.user.UserUtils;
 
@@ -176,6 +180,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
     boolean insertSpecified = false;
     boolean seasonalLoad = false;
     int userID = UserUtils.USER_DEFAULT_ID;
+    LiteYukonUser currentUser;
     boolean firstFinishedPass = true;
     boolean automatedImport = false;
     
@@ -205,6 +210,16 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 	    YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
 	private final StarsSearchDao starsSearchDao = 
 		YukonSpringHook.getBean("starsSearchDao", StarsSearchDao.class);
+	private final AccountService accountService = 
+		YukonSpringHook.getBean("accountService", AccountService.class);
+	private final UpdatableAccountConversionService updatableAccountConversionService = 
+		YukonSpringHook.getBean("updatableAccountConversionService", UpdatableAccountConversionService.class);
+	private final StarsControllableDeviceDTOConversionService starsControllableDeviceDTOConversionService = 
+		YukonSpringHook.getBean("starsControllableDeviceDTOConversionService", StarsControllableDeviceDTOConversionService.class);
+	private final YukonUserDao yukonUserDao = 
+		YukonSpringHook.getBean("yukonUserDao", YukonUserDao.class);
+	private final StarsControllableDeviceHelper starsControllableDeviceHelper = 
+		YukonSpringHook.getBean("starsControllableDeviceHelper", StarsControllableDeviceHelper.class);
 	
 	public ImportCustAccountsTask() {
 		
@@ -219,6 +234,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 		this.preScan = preScan;
         if(userID != null)
             this.userID = userID.intValue();
+        this.currentUser = yukonUserDao.getLiteYukonUser(this.userID);
 	}
 
 	public ImportCustAccountsTask (LiteStarsEnergyCompany energyCompany, File custFile, File hwFile, String email, boolean preScan, Integer userID, boolean automatedImport) 
@@ -230,6 +246,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
         this.preScan = preScan;
         if(userID != null)
             this.userID = userID.intValue();
+        this.currentUser = yukonUserDao.getLiteYukonUser(this.userID);
         this.automatedImport = automatedImport;
 	}
 	
@@ -477,6 +494,12 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 					
                     // Nothing is done to existing Accounts when CUST_ACTION is set to INSERT.
                     if ((liteAcctInfo != null) && insertSpecified) {
+                    	
+                    	custFileErrors++;
+						String[] value = custLines.get(lineNoKey);
+						value[1] = "[line: " + lineNo + " error: INSERT account action, but account already exists.]";
+						custLines.put(lineNoKey, value);
+						addToLog(lineNoKey, value, importLog);
                         continue;
                     }
                     
@@ -615,7 +638,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 
 								if (removedUsernames.contains( username ))
 									removedUsernames.remove( username );
-								else if (DaoFactory.getYukonUserDao().getLiteYukonUser( username ) != null) {
+								else if (yukonUserDao.getLiteYukonUser( username ) != null) {
 									custFileErrors++;
 									String[] value = custLines.get(lineNoKey);
 									value[1] = "[line: " + lineNo + " error: Username already exists]";
@@ -721,6 +744,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
                                         programSignUp( new int[0][0], appFields, liteAcctInfo, liteInv, energyCompany );
                                 }
                                 
+								// IMPORT HARDWARE
 								liteInv = importHardware( hwFields, liteAcctInfo, energyCompany );
 
 								if (hwFields[ImportManagerUtil.IDX_PROGRAM_NAME].trim().length() > 0
@@ -1336,7 +1360,6 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 		throws Exception
 	{
 		LiteInventoryBase liteInv = null;
-		ImportProblem problem = new ImportProblem();
 		
 		for (int i = 0; i < liteAcctInfo.getInventories().size(); i++) {
 			int invID = liteAcctInfo.getInventories().get(i);
@@ -1347,23 +1370,48 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 			}
 		}
 		
-		if (hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION].equalsIgnoreCase( "REMOVE" )) {
-			if (liteInv == null)
-				throw new WebClientException("Cannot remove hardware, serial #" + hwFields[ImportManagerUtil.IDX_SERIAL_NO] + " not found in the customer account");
-			ImportManagerUtil.removeLMHardware( hwFields, liteAcctInfo, energyCompany, problem );
-			numHwRemoved++;
-		}
-		else if (liteInv == null) {
-			liteInv = ImportManagerUtil.insertLMHardware( hwFields, liteAcctInfo, energyCompany, true, problem );
-			numHwAdded++;
-		}
-		else if (!insertSpecified) {
-			liteInv = ImportManagerUtil.updateLMHardware( hwFields, liteInv, liteAcctInfo, energyCompany, problem );
-			numHwUpdated++;
-		}
+		try {
+			
+			if (hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION].equalsIgnoreCase( "REMOVE" )) {
+				if (liteInv == null)
+					throw new WebClientException("Cannot remove hardware, serial #" + hwFields[ImportManagerUtil.IDX_SERIAL_NO] + " not found in the customer account");
+				
+				// REMOVE HARDWARE
+				StarsControllableDeviceDTO dto = starsControllableDeviceDTOConversionService
+					.getDtoForHardware(liteAcctInfo.getCustomerAccount()
+							.getAccountNumber(), liteInv, energyCompany);
+				starsControllableDeviceHelper.removeDeviceFromAccount(dto, this.currentUser);
+				
+				numHwRemoved++;
+			}
+			else if (liteInv == null) {
+				
+				// ADD HARDWARE
+				StarsControllableDeviceDTO dto = starsControllableDeviceDTOConversionService.createNewDto(liteAcctInfo.getCustomerAccount()
+								.getAccountNumber(), hwFields, energyCompany);
+				liteInv = starsControllableDeviceHelper.addDeviceToAccount(dto, this.currentUser);
+				
+				numHwAdded++;
+			}
+			else if (!insertSpecified) {
+				
+				// UPDATE HARDWARE
+				StarsControllableDeviceDTO dto = starsControllableDeviceDTOConversionService
+						.getDtoForHardware(liteAcctInfo.getCustomerAccount()
+								.getAccountNumber(), liteInv, energyCompany);
+				starsControllableDeviceDTOConversionService.updateDtoWithHwFields(dto, hwFields, energyCompany);
+				liteInv = starsControllableDeviceHelper.updateDeviceOnAccount(dto, this.currentUser);
+				
+				numHwUpdated++;
+			}
 		
-		if (problem.getProblem() != null)
-			importLog.println( "WARNING at " + position + ": " + problem.getProblem() );
+		} catch (Exception e) {
+			if (automatedImport) {
+				importLog.println(e.getMessage());
+			} else {
+				throw e;
+			}
+		}
 		
 		numHwImported++;
 		return liteInv;
@@ -1374,40 +1422,46 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 	{
 		LiteStarsCustAccountInformation liteAcctInfo = energyCompany.searchAccountByAccountNo( custFields[ImportManagerUtil.IDX_ACCOUNT_NO] );
 		
-		if (custFields[ImportManagerUtil.IDX_ACCOUNT_ACTION].equalsIgnoreCase( "REMOVE" )) {
-			if (liteAcctInfo == null) {
-			    String errorStr = "Cannot delete customer account: account #" + custFields[ImportManagerUtil.IDX_ACCOUNT_NO] + " doesn't exist";
-			    automationCheck(errorStr);
-			}
-			DeleteCustAccountAction.deleteCustomerAccount( liteAcctInfo, energyCompany );
+		try {
 			
-			numAcctRemoved++;
-			numAcctImported++;
-			return null;
+			if (custFields[ImportManagerUtil.IDX_ACCOUNT_ACTION].equalsIgnoreCase( "REMOVE" )) {
+				if (liteAcctInfo == null) {
+				    String errorStr = "Cannot delete customer account: account #" + custFields[ImportManagerUtil.IDX_ACCOUNT_NO] + " doesn't exist";
+				    automationCheck(errorStr);
+				} else {
+					
+					// DELETE ACCOUNT
+					accountService.deleteAccount(liteAcctInfo.getCustomerAccount().getAccountNumber(), energyCompany);
+					
+					numAcctRemoved++;
+					numAcctImported++;
+					
+					return null;
+				}
+			}
+			
+			if (liteAcctInfo == null) {
+				
+				// ADD ACCOUNT
+				UpdatableAccount updatableAccount = updatableAccountConversionService.createNewUpdatableAccount(custFields, energyCompany);
+				accountService.addAccount(updatableAccount, energyCompany);
+				liteAcctInfo = energyCompany.searchAccountByAccountNo( custFields[ImportManagerUtil.IDX_ACCOUNT_NO] );
+				
+			    numAcctAdded++;
+			}
+			else if (!insertSpecified) {
+				
+				// UPDATE ACCOUNT
+				UpdatableAccount updatableAccount = updatableAccountConversionService.getUpdatedUpdatableAccount(liteAcctInfo, custFields, energyCompany);
+				accountService.updateAccount(updatableAccount, energyCompany);
+				
+			    numAcctUpdated++;
+			}
+
+		} catch (Exception e) {
+			automationCheck(e.getMessage());
 		}
 		
-		ImportProblem problem = new ImportProblem();
-
-		if (liteAcctInfo == null) {
-		    if (automatedImport) {
-		        try {
-		            liteAcctInfo = ImportManagerUtil.newCustomerAccount( custFields, energyCompany, false, problem, automatedImport );
-		        } catch (WebClientException wce) {
-		            importLog.println(wce.getMessage());
-		        }
-		    } else {
-		        liteAcctInfo = ImportManagerUtil.newCustomerAccount( custFields, energyCompany, false, problem, automatedImport );
-		    }
-		    numAcctAdded++;
-		}
-		else if (!insertSpecified) {
-		    ImportManagerUtil.updateCustomerAccount( custFields, liteAcctInfo, energyCompany, problem, automatedImport );
-		    numAcctUpdated++;
-		}
-
-		if (problem.getProblem() != null)
-		    importLog.println( "WARNING at " + position + ": " + problem.getProblem() );
-
 		numAcctImported++;
 		return liteAcctInfo;
 	}
@@ -1473,8 +1527,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
             }
         }
 
-        LiteYukonUser currentUser = ((YukonUserDao)YukonSpringHook.getBean("yukonUserDao")).getLiteYukonUser(userID);
-        ImportManagerUtil.programSignUp( programs, liteAcctInfo, liteInv, energyCompany, currentUser, automatedImport );
+        ImportManagerUtil.programSignUp( programs, liteAcctInfo, liteInv, energyCompany, this.currentUser, automatedImport );
 		
 		if (appFields[ImportManagerUtil.IDX_APP_TYPE].trim().length() > 0) {
 			int appID = -1;
