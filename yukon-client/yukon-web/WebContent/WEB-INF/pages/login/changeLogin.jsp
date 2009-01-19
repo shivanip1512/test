@@ -20,7 +20,7 @@
                         <cti:msg key="yukon.web.changelogin.username"/>
                     </td>
                     <td align="left">
-                        <input style="font-family: sans-serif;" maxlength="64" type="text" name="username" value="<spring:escapeBody htmlEscape="true">${user.username}</spring:escapeBody>" AUTOCOMPLETE=OFF></input>
+                        <input style="font-family: sans-serif;" maxlength="64" type="text" autocomplete="off" name="username" value="<spring:escapeBody htmlEscape="true">${user.username}</spring:escapeBody>" AUTOCOMPLETE=OFF></input>
                     </td>
                 </tr>
                 <tr>

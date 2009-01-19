@@ -119,7 +119,7 @@ function deleteLogin(form) {
                       <div align="right">New User Name: </div>
                     </td>
                     <td width="268"> 
-                      <input type="text" name="Username" maxlength="20" size="20" value="<%= login.getUsername() %>" onchange="setContentChanged(true)" />
+                      <input type="text" autocomplete="off" name="Username" maxlength="20" size="20" value="<%= login.getUsername() %>" onchange="setContentChanged(true)" />
                     </td>
                   </tr>
                   </cti:checkProperty>

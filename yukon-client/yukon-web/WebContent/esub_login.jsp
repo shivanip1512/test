@@ -58,7 +58,7 @@ self.name = "mainWin";
                     <div align="right"> User Name</div>
                   </td>
                   <td width="117" valign="bottom"> 
-                    <input type="text" name="USERNAME">
+                    <input type="text" autocomplete="off" name="USERNAME">
                   </td>
                 </tr>
                 <tr> 

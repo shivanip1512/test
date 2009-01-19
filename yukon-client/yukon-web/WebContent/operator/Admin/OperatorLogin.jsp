@@ -119,7 +119,7 @@ function validate(form) {
                       <tr> 
                         <td width="25%" align="right" class="TableCell">Username:</td>
                         <td width="75%" class="TableCell"> 
-                          <input type="text" name="Username" value="<%= liteUser.getUsername() %>" onchange="setContentChanged(true)">
+                          <input type="text" autocomplete="off" name="Username" value="<%= liteUser.getUsername() %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 

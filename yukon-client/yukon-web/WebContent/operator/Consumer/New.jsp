@@ -663,7 +663,7 @@ are present in page, session, etc. as an attribute. -->
                     <div align="right">User Name: </div>
                   </td>
                   <td width="200"> 
-                    <input type="text" name="Username" maxlength="20" size="20" value="<%= login.getUsername() %>" onchange="setContentChanged(true)">
+                    <input type="text" autocomplete="off" name="Username" maxlength="20" size="20" value="<%= login.getUsername() %>" onchange="setContentChanged(true)">
                   </td>
                 </tr>
                 <tr> 

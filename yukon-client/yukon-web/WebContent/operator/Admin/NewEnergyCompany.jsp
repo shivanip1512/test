@@ -218,7 +218,7 @@ function addCustomerGroup(form) {
                             <tr> 
                               <td width="25%" align="right">Username:</td>
                               <td width="75%"> 
-                                <input type="text" name="Username" size="30" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("Username")) %>" onchange="setContentChanged(true)">
+                                <input type="text" autocomplete="off" name="Username" size="30" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("Username")) %>" onchange="setContentChanged(true)">
                                 <span class="ErrorMsg">*</span> </td>
                             </tr>
                             <tr> 
@@ -246,7 +246,7 @@ function addCustomerGroup(form) {
                             <tr> 
                               <td width="25%" align="right">Username:</td>
                               <td width="75%"> 
-                                <input type="text" name="Username2" size="30" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("Username2")) %>" onchange="setContentChanged(true)">
+                                <input type="text" autocomplete="off" name="Username2" size="30" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("Username2")) %>" onchange="setContentChanged(true)">
                               </td>
                             </tr>
                             <tr> 

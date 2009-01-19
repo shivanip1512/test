@@ -104,7 +104,7 @@ if( loggingOut != null && loggingOut.equalsIgnoreCase("true"))
               <p align=RIGHT>&nbsp;<font size="-1" face="Arial">User Name:</font>
             </td>
             <td width="60%" height="20"> <font size="-1" face="Arial">
-              <input name="USERNAME" type="text" 
+              <input name="USERNAME" autocomplete="off" type="text" 
         size="20">
               </font> </td>
           </tr>

@@ -94,7 +94,7 @@
 	                		<tr> 
 	                  			<td align="right">Username:</td>
 	                  			<td align="left" valign="bottom"> 
-	                    			<input type="text" id="USERNAME" name="USERNAME" size="26">
+	                    			<input type="text" autocomplete="off" id="USERNAME" name="USERNAME" size="26">
 	                  			</td>
 	                		</tr>
 	                		<tr> 
