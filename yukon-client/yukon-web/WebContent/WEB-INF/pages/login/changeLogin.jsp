@@ -1,5 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
 
 <c:url var="actionUrl" value="/spring/login/changelogin"/>
@@ -19,7 +20,7 @@
                         <cti:msg key="yukon.web.changelogin.username"/>
                     </td>
                     <td align="left">
-                        <input style="font-family: sans-serif;" maxlength="64" type="text" name="username" value="${user.username}" AUTOCOMPLETE=OFF></input>
+                        <input style="font-family: sans-serif;" maxlength="64" type="text" name="username" value="<spring:escapeBody htmlEscape="true">${user.username}</spring:escapeBody>" AUTOCOMPLETE=OFF></input>
                     </td>
                 </tr>
                 <tr>
