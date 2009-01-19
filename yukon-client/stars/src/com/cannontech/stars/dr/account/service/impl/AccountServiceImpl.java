@@ -50,6 +50,8 @@ import com.cannontech.stars.dr.account.dao.AccountSiteDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.exception.AccountNumberUnavailableException;
 import com.cannontech.stars.dr.account.exception.InvalidAccountNumberException;
+import com.cannontech.stars.dr.account.exception.InvalidLoginGroupException;
+import com.cannontech.stars.dr.account.exception.InvalidSubstationNameException;
 import com.cannontech.stars.dr.account.exception.UserNameUnavailableException;
 import com.cannontech.stars.dr.account.model.AccountSite;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -130,9 +132,15 @@ public class AccountServiceImpl implements AccountService {
             user.setAuthType(defaultAuthType);
             List<LiteYukonGroup> groups = new ArrayList<LiteYukonGroup>();
             LiteYukonGroup defaultYukonGroup = yukonGroupDao.getLiteYukonGroup(YukonGroup.YUKON_GROUP_ID);
-            LiteYukonGroup operatorGroup = yukonGroupDao.getLiteYukonGroupByName(accountDto.getLoginGroup());
             groups.add(defaultYukonGroup);
-            groups.add(operatorGroup);
+            LiteYukonGroup operatorGroup = null;
+            try {
+                operatorGroup = yukonGroupDao.getLiteYukonGroupByName(accountDto.getLoginGroup());
+                groups.add(operatorGroup);
+            }catch (NotFoundException e) {
+                log.error("Account " + accountNumber + " could not be added: The provided login group "+ accountDto.getLoginGroup() + " doesn't exists.");
+                throw new InvalidLoginGroupException("The provided login group doesn't "+ accountDto.getLoginGroup() + " exists.");
+            }
             yukonUserDao.addLiteYukonUserWithPassword(user, accountDto.getPassword(), energyCompany.getEnergyCompanyID(), groups);
             dbPersistantDao.processDBChange(new DBChangeMsg(user.getLiteID(),
                 DBChangeMsg.CHANGE_YUKON_USER_DB,
@@ -245,11 +253,14 @@ public class AccountServiceImpl implements AccountService {
          * Create service info
          */
         LiteSiteInformation liteSiteInformation = new LiteSiteInformation();
-        try {
-            int subId = siteInformationDao.getSubstationIdByName(accountDto.getSiteInfo().getSubstationName());
-            liteSiteInformation.setSubstationID(subId);
-        }catch(NotFoundException e) {
-            log.warn("Unable to find substation by name: " + accountDto.getSiteInfo().getSubstationName());
+        if(StringUtils.isNotEmpty(accountDto.getSiteInfo().getSubstationName())) {
+            try {
+                int subId = siteInformationDao.getSubstationIdByName(accountDto.getSiteInfo().getSubstationName());
+                liteSiteInformation.setSubstationID(subId);
+            }catch(NotFoundException e) {
+                log.error("Unable to find substation by name: " + accountDto.getSiteInfo().getSubstationName());
+                throw new InvalidSubstationNameException("Unable to find substation by name: "+ accountDto.getSiteInfo().getSubstationName());
+            }
         }
         liteSiteInformation.setFeeder(accountDto.getSiteInfo().getFeeder());
         liteSiteInformation.setPole(accountDto.getSiteInfo().getPole());
@@ -609,11 +620,14 @@ public class AccountServiceImpl implements AccountService {
         /*
          * Update site information
          */
-        try {
-            int subId = siteInformationDao.getSubstationIdByName(accountDto.getSiteInfo().getSubstationName());
-            liteSiteInformation.setSubstationID(subId);
-        }catch(NotFoundException e) {
-            log.error("Unable to find substation by name: " + accountDto.getSiteInfo().getSubstationName() , e);
+        if(StringUtils.isNotEmpty(accountDto.getSiteInfo().getSubstationName())) {
+            try {
+                int subId = siteInformationDao.getSubstationIdByName(accountDto.getSiteInfo().getSubstationName());
+                liteSiteInformation.setSubstationID(subId);
+            }catch(NotFoundException e) {
+                log.error("Unable to find substation by name: " + accountDto.getSiteInfo().getSubstationName() , e);
+                throw new InvalidSubstationNameException("Unable to find substation by name: "+ accountDto.getSiteInfo().getSubstationName());
+            }
         }
         liteSiteInformation.setFeeder(accountDto.getSiteInfo().getFeeder());
         liteSiteInformation.setPole(accountDto.getSiteInfo().getPole());

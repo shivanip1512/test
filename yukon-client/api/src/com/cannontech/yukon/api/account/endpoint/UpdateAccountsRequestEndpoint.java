@@ -11,6 +11,7 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import com.cannontech.common.bulk.field.impl.UpdatableAccount;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.exception.InvalidAccountNumberException;
+import com.cannontech.stars.dr.account.exception.InvalidSubstationNameException;
 import com.cannontech.stars.dr.account.service.AccountService;
 import com.cannontech.stars.dr.account.service.AccountServiceHelper;
 import com.cannontech.yukon.api.util.NodeToElementMapperWrapper;
@@ -45,6 +46,9 @@ public class UpdateAccountsRequestEndpoint {
                 updateAccountResult.addContent(new Element("success", ns));
             } catch(InvalidAccountNumberException e) {
                 Element fe = XMLFailureGenerator.generateFailure(updateAccountsRequest, e, "InvalidAccountNumber", e.getMessage());
+                updateAccountResult.addContent(fe);
+            } catch(InvalidSubstationNameException e) {
+                Element fe = XMLFailureGenerator.generateFailure(updateAccountsRequest, e, "InvalidSubstationNamer", e.getMessage());
                 updateAccountResult.addContent(fe);
             }
     

@@ -11,8 +11,10 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import com.cannontech.common.bulk.field.impl.UpdatableAccount;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.exception.AccountNumberUnavailableException;
+import com.cannontech.stars.dr.account.exception.InvalidLoginGroupException;
 import com.cannontech.stars.dr.account.exception.UserNameUnavailableException;
 import com.cannontech.stars.dr.account.service.AccountService;
+import com.cannontech.stars.dr.account.exception.InvalidSubstationNameException;
 import com.cannontech.yukon.api.util.NodeToElementMapperWrapper;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
@@ -46,6 +48,12 @@ public class NewAccountsRequestEndpoint {
                 newAccountResult.addContent(fe);
             } catch(UserNameUnavailableException e) {
                 Element fe = XMLFailureGenerator.generateFailure(newAccountsRequest, e, "UserNameUnavailable", e.getMessage());
+                newAccountResult.addContent(fe);
+            } catch(InvalidLoginGroupException e) {
+                Element fe = XMLFailureGenerator.generateFailure(newAccountsRequest, e, "InvalidLoginGroup", e.getMessage());
+                newAccountResult.addContent(fe);
+            } catch(InvalidSubstationNameException e) {
+                Element fe = XMLFailureGenerator.generateFailure(newAccountsRequest, e, "InvalidSubstationName", e.getMessage());
                 newAccountResult.addContent(fe);
             }
     
