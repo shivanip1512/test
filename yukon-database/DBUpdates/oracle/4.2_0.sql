@@ -178,6 +178,11 @@ MODIFY EncodingType VARCHAR(50) NOT NULL;
 INSERT INTO YukonRoleProperty VALUES(-1318,-4,'Hide Password Recovery','false','Controls access to password recovery (Forgot your password?) feature.');
 /* End YUK-6774 */
 
+/* Start YUK-YUK-6854 */
+INSERT INTO FDRInterface VALUES(27, 'MULTISPEAK_LM', 'Receive', 'f');
+INSERT INTO FDRInterfaceOption VALUES(27, 'ObjectId', 1, 'Text', '(none)');
+/* End YUK-YUK-6854 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

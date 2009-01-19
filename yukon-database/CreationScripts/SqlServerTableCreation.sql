@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     1/12/2009 1:50:36 PM                         */
+/* Created on:     1/19/2009 4:52:41 PM                         */
 /*==============================================================*/
 
 
@@ -7584,31 +7584,31 @@ create table FDRInterface (
 )
 go
 
-insert into FDRInterface values ( 1, 'INET', 'Send,Send for control,Receive,Receive for control', 't' );
-insert into FDRInterface values ( 2, 'ACS', 'Send,Send for control,Receive,Receive for control', 'f' );
-insert into FDRInterface values ( 3, 'VALMET', 'Send,Send for control,Receive,Receive for control', 'f' );
-insert into FDRInterface values ( 4, 'CYGNET', 'Send,Send for control,Receive,Receive for control', 'f' );
-insert into FDRInterface values ( 5, 'STEC', 'Receive', 'f' );
-insert into FDRInterface values ( 6, 'RCCS', 'Send,Send for control,Receive,Receive for control', 't' );
-insert into FDRInterface values ( 7, 'TRISTATE', 'Receive', 'f' );
-insert into FDRInterface values ( 8, 'RDEX', 'Send,Send for control,Receive,Receive for control', 't' );
-insert into FDRInterface values ( 9, 'SYSTEM','Link Status','f');
-insert into FDRInterface values (10, 'DSM2IMPORT','Receive,Receive for control','f');
-insert into FDRInterface values (11, 'TELEGYR','Receive,Receive for control','f');
-insert into FDRInterface values (12, 'TEXTIMPORT','Receive,Receive for control','f');
-insert into FDRInterface values (13, 'TEXTEXPORT','Send','f');
-
-insert into fdrinterface values (16, 'LODESTAR_STD','Receive','f');
-insert into fdrinterface values (17, 'LODESTAR_ENH','Receive','f');
-insert into fdrinterface values (18, 'DSM2FILEIN', 'Receive,Receive for control', 'f');
-insert into FDRInterface values (19, 'XA21LM','Receive,Send', 't' );
-insert into fdrinterface values (20, 'BEPC','Send','f');
-insert into FDRInterface values (21, 'PI','Receive', 't' );
-insert into FDRInterface values (22, 'LIVEDATA','Receive', 'f' );
-insert into FDRInterface values (23, 'ACSMULTI', 'Send,Send for control,Receive,Receive for control', 't' );
-insert into FDRInterface values (24, 'WABASH', 'Send', 'f' );
+INSERT INTO FDRInterface VALUES ( 1, 'INET', 'Send,Send for control,Receive,Receive for control', 't' );
+INSERT INTO FDRInterface VALUES ( 2, 'ACS', 'Send,Send for control,Receive,Receive for control', 'f' );
+INSERT INTO FDRInterface VALUES ( 3, 'VALMET', 'Send,Send for control,Receive,Receive for control', 'f' );
+INSERT INTO FDRInterface VALUES ( 4, 'CYGNET', 'Send,Send for control,Receive,Receive for control', 'f' );
+INSERT INTO FDRInterface VALUES ( 5, 'STEC', 'Receive', 'f' );
+INSERT INTO FDRInterface VALUES ( 6, 'RCCS', 'Send,Send for control,Receive,Receive for control', 't' );
+INSERT INTO FDRInterface VALUES ( 7, 'TRISTATE', 'Receive', 'f' );
+INSERT INTO FDRInterface VALUES ( 8, 'RDEX', 'Send,Send for control,Receive,Receive for control', 't' );
+INSERT INTO FDRInterface VALUES ( 9, 'SYSTEM','Link Status','f');
+INSERT INTO FDRInterface VALUES (10, 'DSM2IMPORT','Receive,Receive for control','f');
+INSERT INTO FDRInterface VALUES (11, 'TELEGYR','Receive,Receive for control','f');
+INSERT INTO FDRInterface VALUES (12, 'TEXTIMPORT','Receive,Receive for control','f');
+INSERT INTO FDRInterface VALUES (13, 'TEXTEXPORT','Send','f');
+INSERT INTO FDRInterface VALUES (16, 'LODESTAR_STD','Receive','f');
+INSERT INTO FDRInterface VALUES (17, 'LODESTAR_ENH','Receive','f');
+INSERT INTO FDRInterface VALUES (18, 'DSM2FILEIN', 'Receive,Receive for control', 'f');
+INSERT INTO FDRInterface VALUES (19, 'XA21LM','Receive,Send', 't' );
+INSERT INTO FDRInterface VALUES (20, 'BEPC','Send','f');
+INSERT INTO FDRInterface VALUES (21, 'PI','Receive', 't' );
+INSERT INTO FDRInterface VALUES (22, 'LIVEDATA','Receive', 'f' );
+INSERT INTO FDRInterface VALUES (23, 'ACSMULTI', 'Send,Send for control,Receive,Receive for control', 't' );
+INSERT INTO FDRInterface VALUES (24, 'WABASH', 'Send', 'f' );
 INSERT INTO FDRInterface VALUES (25, 'TRISTATESUB', 'Receive,Send', 'f' );
 INSERT INTO FDRInterface VALUES (26, 'OPC', 'Receive', 'f');
+INSERT INTO FDRInterface VALUES (27, 'MULTISPEAK_LM', 'Receive', 'f'); 
 
 /*==============================================================*/
 /* Table: FDRInterfaceOption                                    */
@@ -7623,57 +7623,57 @@ create table FDRInterfaceOption (
 )
 go
 
-insert into FDRInterfaceOption values(1, 'Device', 1, 'Text', '(none)' );
-insert into FDRInterfaceOption values(1, 'Point', 2, 'Text', '(none)' );
-insert into FDRInterfaceOption values(1, 'Destination/Source', 3, 'Text', '(none)' );
-insert into FDRInterfaceOption values(2, 'Category', 1, 'Combo', 'PSEUDO,REAL,CALCULATED' );
-insert into FDRInterfaceOption values(2, 'Remote', 2, 'Text', '(none)' );
-insert into FDRInterfaceOption values(2, 'Point', 3, 'Text', '(none)' );
-insert into FDRInterfaceOption values(3, 'Point', 1, 'Text', '(none)' );
-insert into FDRInterfaceOption values(4, 'PointID', 1, 'Text', '(none)' );
-insert into FDRInterfaceOption values(5, 'Point', 1, 'Combo', 'SYSTEM LOAD,STEC LOAD' );
-insert into FDRInterfaceOption values(6, 'Device', 1, 'Text', '(none)' );
-insert into FDRInterfaceOption values(6, 'Point', 2, 'Text', '(none)' );
-insert into FDRInterfaceOption values(6, 'Destination/Source', 3, 'Text', '(none)' );
-insert into FDRInterfaceOption values(7, 'Point', 1, 'Combo', 'SYSTEM LOAD,30 MINUTE AVG' );
-insert into FDRInterfaceOption values(8, 'Translation', 1, 'Text', '(none)' );
-insert into FDRInterfaceOption values(8, 'Destination/Source', 2, 'Text', '(none)' );
-insert into FDRInterfaceOption values(9, 'Client',1,'Text','(none)');
-insert into FDRInterfaceOption values(10, 'Point',1,'Text','(none)');
-insert into FDRInterfaceOption values(11, 'Point', 1, 'Text', '(none)' );
-insert into FDRInterfaceOption values(11, 'Interval (sec)', 2, 'Text', '(none)' );
-insert into FDRInterfaceOption values(12, 'Point ID',1,'Text','(none)');
-insert into fdrinterfaceoption values(12,'DrivePath',2,'Text','(none)');
-insert into fdrinterfaceoption values(12,'Filename',3,'Text','(none)');
-insert into FDRInterfaceOption values(13, 'Point ID',1,'Text','(none)');
-
-insert into fdrinterfaceoption values(16, 'Customer',1,'Text','(none)');
-insert into fdrinterfaceoption values(16, 'Channel',2,'Text','(none)');
-insert into fdrinterfaceoption values(16, 'DrivePath',3,'Text','(none)');
-insert into fdrinterfaceoption values(16, 'Filename',4,'Text','(none)');
-insert into fdrinterfaceoption values(17, 'Customer',1,'Text','(none)');
-insert into fdrinterfaceoption values(17, 'Channel',2,'Text','(none)');
-insert into fdrinterfaceoption values(17, 'DrivePath',3,'Text','(none)');
-insert into fdrinterfaceoption values(17, 'Filename',4,'Text','(none)');
-insert into fdrinterfaceoption values(18, 'Option Number', 1, 'Combo', '1');
-insert into fdrinterfaceoption values(18, 'Point ID', 2, 'Text', '(none)');
-insert into FDRInterfaceOption values(19, 'Translation', 1, 'Text', '(none)' );
-insert into fdrinterfaceoption values(20, 'Point', 1, 'Combo', 'TOTAL LOAD KW' );
-insert into FDRInterfaceOption values(21, 'Tag Name', 1, 'Text', '(none)' );
-insert into FDRInterfaceOption values(21, 'Period (sec)', 2, 'Text', '(none)' );
-insert into FDRInterfaceOption values(22, 'Address', 1, 'Text', '(none)' );
-insert into FDRInterfaceOption values(22, 'Data Type', 2, 'Combo', 'Data_RealExtended,Data_DiscreteExtended,Data_StateExtended,Data_RealQ,Data_DiscreteQ,Data_State,Data_Discrete,Data_Real,Data_RealQTimeTag,Data_StateQTimeTag,Data_DiscreteQTimeTag' );
-insert into FDRInterfaceOption values(23, 'Category', 1, 'Combo', 'PSEUDO,REAL,CALCULATED' );
-insert into FDRInterfaceOption values(23, 'Remote', 2, 'Text', '(none)' );
-insert into FDRInterfaceOption values(23, 'Point', 3, 'Text', '(none)' );
-insert into FDRInterfaceOption values(23, 'Destination/Source', 4, 'Text', '(none)' );
-insert into FDRInterfaceOption values(24, 'SchedName', 1, 'Text', '(none)' );
-insert into FDRInterfaceOption values(24, 'Path', 2, 'Text', 'c:\yukon\server\export\' );
-insert into FDRInterfaceOption values(24, 'Filename', 3, 'Text', 'control.txt' );
-insert into FDRInterfaceOption values(25, 'Point', 1, 'Combo', 'Nucla 115/69 Xfmr.,Happy Canyon 661Idarado,Cascade 115/69 (T2),Ames Generation,Dallas Creek MW,Dallas Creek MV' );
+INSERT INTO FDRInterfaceOption VALUES(1, 'Device', 1, 'Text', '(none)' );
+INSERT INTO FDRInterfaceOption VALUES(1, 'Point', 2, 'Text', '(none)' );
+INSERT INTO FDRInterfaceOption VALUES(1, 'Destination/Source', 3, 'Text', '(none)' );
+INSERT INTO FDRInterfaceOption VALUES(2, 'Category', 1, 'Combo', 'PSEUDO,REAL,CALCULATED' );
+INSERT INTO FDRInterfaceOption VALUES(2, 'Remote', 2, 'Text', '(none)' );
+INSERT INTO FDRInterfaceOption VALUES(2, 'Point', 3, 'Text', '(none)' );
+INSERT INTO FDRInterfaceOption VALUES(3, 'Point', 1, 'Text', '(none)' );
+INSERT INTO FDRInterfaceOption VALUES(4, 'PointID', 1, 'Text', '(none)' );
+INSERT INTO FDRInterfaceOption VALUES(5, 'Point', 1, 'Combo', 'SYSTEM LOAD,STEC LOAD' );
+INSERT INTO FDRInterfaceOption VALUES(6, 'Device', 1, 'Text', '(none)' );
+INSERT INTO FDRInterfaceOption VALUES(6, 'Point', 2, 'Text', '(none)' );
+INSERT INTO FDRInterfaceOption VALUES(6, 'Destination/Source', 3, 'Text', '(none)' );
+INSERT INTO FDRInterfaceOption VALUES(7, 'Point', 1, 'Combo', 'SYSTEM LOAD,30 MINUTE AVG' );
+INSERT INTO FDRInterfaceOption VALUES(8, 'Translation', 1, 'Text', '(none)' );
+INSERT INTO FDRInterfaceOption VALUES(8, 'Destination/Source', 2, 'Text', '(none)' );
+INSERT INTO FDRInterfaceOption VALUES(9, 'Client',1,'Text','(none)');
+INSERT INTO FDRInterfaceOption VALUES(10, 'Point',1,'Text','(none)');
+INSERT INTO FDRInterfaceOption VALUES(11, 'Point', 1, 'Text', '(none)' );
+INSERT INTO FDRInterfaceOption VALUES(11, 'Interval (sec)', 2, 'Text', '(none)' );
+INSERT INTO FDRInterfaceOption VALUES(12, 'Point ID',1,'Text','(none)');
+INSERT INTO FDRInterfaceOption VALUES(12,'DrivePath',2,'Text','(none)');
+INSERT INTO FDRInterfaceOption VALUES(12,'Filename',3,'Text','(none)');
+INSERT INTO FDRInterfaceOption VALUES(13, 'Point ID',1,'Text','(none)');
+INSERT INTO FDRInterfaceOption VALUES(16, 'Customer',1,'Text','(none)');
+INSERT INTO FDRInterfaceOption VALUES(16, 'Channel',2,'Text','(none)');
+INSERT INTO FDRInterfaceOption VALUES(16, 'DrivePath',3,'Text','(none)');
+INSERT INTO FDRInterfaceOption VALUES(16, 'Filename',4,'Text','(none)');
+INSERT INTO FDRInterfaceOption VALUES(17, 'Customer',1,'Text','(none)');
+INSERT INTO FDRInterfaceOption VALUES(17, 'Channel',2,'Text','(none)');
+INSERT INTO FDRInterfaceOption VALUES(17, 'DrivePath',3,'Text','(none)');
+INSERT INTO FDRInterfaceOption VALUES(17, 'Filename',4,'Text','(none)');
+INSERT INTO FDRInterfaceOption VALUES(18, 'Option Number', 1, 'Combo', '1');
+INSERT INTO FDRInterfaceOption VALUES(18, 'Point ID', 2, 'Text', '(none)');
+INSERT INTO FDRInterfaceOption VALUES(19, 'Translation', 1, 'Text', '(none)' );
+INSERT INTO FDRInterfaceOption VALUES(20, 'Point', 1, 'Combo', 'TOTAL LOAD KW' );
+INSERT INTO FDRInterfaceOption VALUES(21, 'Tag Name', 1, 'Text', '(none)' );
+INSERT INTO FDRInterfaceOption VALUES(21, 'Period (sec)', 2, 'Text', '(none)' );
+INSERT INTO FDRInterfaceOption VALUES(22, 'Address', 1, 'Text', '(none)' );
+INSERT INTO FDRInterfaceOption VALUES(22, 'Data Type', 2, 'Combo', 'Data_RealExtended,Data_DiscreteExtended,Data_StateExtended,Data_RealQ,Data_DiscreteQ,Data_State,Data_Discrete,Data_Real,Data_RealQTimeTag,Data_StateQTimeTag,Data_DiscreteQTimeTag' );
+INSERT INTO FDRInterfaceOption VALUES(23, 'Category', 1, 'Combo', 'PSEUDO,REAL,CALCULATED' );
+INSERT INTO FDRInterfaceOption VALUES(23, 'Remote', 2, 'Text', '(none)' );
+INSERT INTO FDRInterfaceOption VALUES(23, 'Point', 3, 'Text', '(none)' );
+INSERT INTO FDRInterfaceOption VALUES(23, 'Destination/Source', 4, 'Text', '(none)' );
+INSERT INTO FDRInterfaceOption VALUES(24, 'SchedName', 1, 'Text', '(none)' );
+INSERT INTO FDRInterfaceOption VALUES(24, 'Path', 2, 'Text', 'c:\yukon\server\export\' );
+INSERT INTO FDRInterfaceOption VALUES(24, 'Filename', 3, 'Text', 'control.txt' );
+INSERT INTO FDRInterfaceOption VALUES(25, 'Point', 1, 'Combo', 'Nucla 115/69 Xfmr.,Happy Canyon 661Idarado,Cascade 115/69 (T2),Ames Generation,Dallas Creek MW,Dallas Creek MV' );
 INSERT INTO FDRInterfaceOption VALUES(26, 'Server Name', 1, 'Text', '(none)'); 
 INSERT INTO FDRInterfaceOption VALUES(26, 'OPC Group', 2, 'Text', '(none)'); 
 INSERT INTO FDRInterfaceOption VALUES(26, 'OPC Item', 3, 'Text', '(none)');
+INSERT INTO FDRInterfaceOption VALUES(27, 'ObjectId', 1, 'Text', '(none)'); 
 
 /*==============================================================*/
 /* Table: FDRTRANSLATION                                        */
