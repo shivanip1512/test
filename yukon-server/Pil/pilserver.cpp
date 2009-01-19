@@ -234,6 +234,29 @@ void CtiPILServer::mainThread()
                         delete MsgPtr;    // No one attached it to them, so we need to kill it!
                         MsgPtr = 0;
                     }
+                    else if(MsgPtr->isA() == MSG_MULTI)
+                    {
+                        //  split it out so we don't block processing all of the submessages
+                        const CtiMultiMsg_vec &subMessages = (static_cast<CtiMultiMsg *>(MsgPtr))->getData();
+
+                        CtiMultiMsg_vec::const_iterator msg_itr = subMessages.begin(),
+                                                        msg_end = subMessages.end();
+
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << TimeNow << " PIL breaking out a CtiMultiMsg with " << subMessages.size() << " submessages" << endl;
+                        }
+
+                        for( ; msg_itr != msg_end; ++msg_itr )
+                        {
+                            if( *msg_itr )
+                            {
+                                MainQueue_.putQueue( static_cast<CtiMessage *>(*msg_itr)->replicateMessage() );
+                            }
+                        }
+
+                        delete MsgPtr;
+                    }
                     else if((pExec = ExecFactory.getExecutor(MsgPtr)) != NULL)
                     {
                         try
@@ -656,8 +679,8 @@ void CtiPILServer::resultThread()
                                 for( ; retlist_itr != retlist_end; ++retlist_itr )
                                 {
                                     CtiMessage *&pMsg = *retlist_itr;
-                                    if(InMessage->Priority > 0) 
-                                    {    
+                                    if(InMessage->Priority > 0)
+                                    {
                                         pMsg->setMessagePriority(InMessage->Priority);
                                     }
 
@@ -674,7 +697,7 @@ void CtiPILServer::resultThread()
                         {
                             CtiMessage *pRet = retList.front();retList.pop_front();
                             if(InMessage->Priority > 0)
-                            {    
+                            {
                                 pRet->setMessagePriority(InMessage->Priority);
                             }
                             CtiConnection  *Conn = NULL;
@@ -1640,7 +1663,7 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
                     // Create a message for this one!
                     CtiRequestMsg *pNew = (CtiRequestMsg*)pReq->replicateMessage();
                     pNew->setConnectionHandle( pReq->getConnectionHandle() );
-                
+
                     //  put it back on the queue to be processed in order
                     _groupQueue.insert(pNew);
                 }
