@@ -141,11 +141,13 @@
 <cti:checkMultiRole roles="loadcontrol.DirectLoadcontrolRole.ROLEID,OddsForControlRole.ROLEID,CICurtailmentRole.ROLEID">
 
 	<tags:operationSection sectionName="Load Response" sectionImageName="LoadResponseLogo">
-		<cti:isPropertyTrue property="loadcontrol.DirectLoadcontrolRole.DIRECT_CONTROL">
-            <tags:sectionLink>
-            	<a href="LoadControl/oper_direct.jsp">Direct</a>
-            </tags:sectionLink>
-		</cti:isPropertyTrue>
+        <cti:checkRole role="loadcontrol.DirectLoadcontrolRole.ROLEID">
+			<cti:isPropertyTrue property="loadcontrol.DirectLoadcontrolRole.DIRECT_CONTROL">
+	            <tags:sectionLink>
+	            	<a href="LoadControl/oper_direct.jsp">Direct</a>
+	            </tags:sectionLink>
+			</cti:isPropertyTrue>
+		</cti:checkRole>
 		<cti:checkRole role="CICurtailmentRole.ROLEID"> 
             <tags:sectionLink>
             	<a href="<c:url value="/cc/programSelect.jsf"/>"><cti:getProperty property="com.cannontech.roles.operator.CICurtailmentRole.CURTAILMENT_LABEL"/></a>
