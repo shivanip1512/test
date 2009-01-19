@@ -12,7 +12,8 @@ public class LmXmlParameter implements Serializable{
     public LmXmlParameter() {}
     
     public LmXmlParameter(int groupId, String name, String value) {
-        this.parameterName = name;
+        this.lmGroupId = groupId;
+    	this.parameterName = name;
         this.parameterValue = value;
     }
     
