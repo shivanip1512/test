@@ -57,6 +57,7 @@ public class LoginFilter implements Filter {
             "/pwordreq.jsp", 
             "/**/prototype.js", 
             "/**/CtiMenu.js",
+            "/**/*.js",             
             "/**/*.css", 
             "/**/*.png", 
             "/**/*.gif", 
