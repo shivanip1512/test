@@ -6,12 +6,13 @@
    <bean id="com.cannontech.context.dbeditor" 
         class="org.springframework.context.support.ClassPathXmlApplicationContext"
         lazy-init="true">
-     <constructor-arg>
+     <constructor-arg index="0">
        <list>
 			<value>com/cannontech/billing/billingContext.xml</value>
        </list>
      </constructor-arg>
-     <constructor-arg>
+     <constructor-arg index="1" value="true" />
+     <constructor-arg index="2">
        <ref bean="com.cannontech.context.common"/> <!-- this is the parent -->
      </constructor-arg>
    </bean>
