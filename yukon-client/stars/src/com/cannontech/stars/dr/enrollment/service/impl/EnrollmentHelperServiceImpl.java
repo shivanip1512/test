@@ -108,7 +108,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
             throw new RuntimeException(e);
         }
         if (liteInv == null) {
-            throw new IllegalArgumentException("The supplied piece of hardware not found: " + enrollmentHelper.getSerialNumber());
+            throw new IllegalArgumentException("The supplied piece of hardware was not found: " + enrollmentHelper.getSerialNumber());
         }        
 		if (liteInv.getAccountID() != account.getAccountId()) {
             throw new IllegalArgumentException("The supplied piece of hardware: " + enrollmentHelper.getSerialNumber() + 
