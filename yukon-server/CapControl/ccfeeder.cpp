@@ -2625,7 +2625,6 @@ CtiRequestMsg* CtiCCFeeder::createForcedVarRequest(CtiCCCapBank* capBank, CtiMul
         action == CtiCCCapBank::CloseQuestionable ||
         action == CtiCCCapBank::CloseFail )
     {
-        //capBank->setControlStatus(CtiCCCapBank::Close);
         store->setControlStatusAndIncrementOpCount(pointChanges, CtiCCCapBank::Close, 
                                                                        capBank, TRUE);
         textInfo += "Close sent, ";
@@ -2635,7 +2634,6 @@ CtiRequestMsg* CtiCCFeeder::createForcedVarRequest(CtiCCCapBank* capBank, CtiMul
     {
         store->setControlStatusAndIncrementOpCount(pointChanges, CtiCCCapBank::Open, 
                                                                        capBank, TRUE);
-        //capBank->setControlStatus(CtiCCCapBank::Open);
         textInfo += "Open sent, ";
         textInfo += typeOfControl;
     }
@@ -3910,8 +3908,8 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
                         if( (ratioA < failurePercent*.01 && ratioB < failurePercent*.01 && ratioC < failurePercent*.01) && 
                              failurePercent != 0 && minConfirmPercent != 0 )
                         {
-                            store->setControlStatusAndIncrementOpCount(pointChanges, CtiCCCapBank::CloseFail, 
-                                                                       currentCapBank, FALSE);
+                            store->setControlStatusAndIncrementFailCount(pointChanges, CtiCCCapBank::CloseFail, 
+                                                                       currentCapBank);
                             if (currentCapBank->getControlStatusQuality() != CC_CommFail)
                                 currentCapBank->setControlStatusQuality(CC_Fail);
                         }
@@ -4091,9 +4089,8 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                             {
                                currentCapBank->setAssumedOrigVerificationState(CtiCCCapBank::Open);
                                setCurrentVerificationCapBankState(CtiCCCapBank::Open);
-                               store->setControlStatusAndIncrementOpCount(pointChanges, CtiCCCapBank::ClosePending, 
-                                                                       currentCapBank, FALSE);
-
+                               currentCapBank->setControlStatus(CtiCCCapBank::ClosePending);
+                               
                                assumedWrongFlag = TRUE;
                                change = 0 - change;
                             }
@@ -4468,8 +4465,7 @@ BOOL CtiCCFeeder::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& point
                         {
                            currentCapBank->setAssumedOrigVerificationState(CtiCCCapBank::Open);
                            setCurrentVerificationCapBankState(CtiCCCapBank::Open);
-                           store->setControlStatusAndIncrementOpCount(pointChanges, CtiCCCapBank::ClosePending, 
-                                                                       currentCapBank, FALSE);
+                           currentCapBank->setControlStatus(CtiCCCapBank::ClosePending);
 
                            assumedWrongFlag = TRUE;
                            changeA = 0 - changeA;

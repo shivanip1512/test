@@ -4801,9 +4801,7 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                                        {
                                            currentCapBank->setAssumedOrigVerificationState(CtiCCCapBank::Open);
                                            setCurrentVerificationCapBankState(CtiCCCapBank::Open);
-                                           store->setControlStatusAndIncrementOpCount(pointChanges, CtiCCCapBank::ClosePending,
-                                                                       currentCapBank, FALSE);
-
+                                           currentCapBank->setControlStatus(CtiCCCapBank::ClosePending);
 
                                            //return returnBoolean;
                                            change = 0 - change;
@@ -5297,9 +5295,7 @@ BOOL CtiCCSubstationBus::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec
                                    {
                                        currentCapBank->setAssumedOrigVerificationState(CtiCCCapBank::Open);
                                        setCurrentVerificationCapBankState(CtiCCCapBank::Open);
-                                       store->setControlStatusAndIncrementOpCount(pointChanges, CtiCCCapBank::ClosePending,
-                                                                           currentCapBank, FALSE);
-
+                                       currentCapBank->setControlStatus(CtiCCCapBank::ClosePending);
 
                                        changeA = 0 - changeA;
                                        changeB = 0 - changeB;

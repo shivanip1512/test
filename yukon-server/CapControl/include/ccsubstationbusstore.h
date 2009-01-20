@@ -261,6 +261,48 @@ public:
     void resetAllOperationStats();
     void resetAllConfirmationStats();
     void reCalculateConfirmationStatsFromDatabase( );
+    void reCalculateAllStats( );
+
+
+    template<class T> 
+    void setOperationSuccessPercents(const T &object, DOUBLE userDefOpPercent, DOUBLE dailyOpPercent,
+                                                              DOUBLE weeklyOpPercent, DOUBLE monthlyOpPercent)
+    {
+        object->getOperationStats().setUserDefOpSuccessPercent( userDefOpPercent );
+        object->getOperationStats().setDailyOpSuccessPercent(  dailyOpPercent );
+        object->getOperationStats().setWeeklyOpSuccessPercent( weeklyOpPercent );
+        object->getOperationStats().setMonthlyOpSuccessPercent( monthlyOpPercent );
+    };
+    
+    template<class T> 
+    void setConfirmationSuccessPercents(const T &object, DOUBLE userDefConfPercent, DOUBLE dailyConfPercent,
+                                                          DOUBLE weeklyConfPercent, DOUBLE monthlyConfPercent)
+    {
+        object->getConfirmationStats().setUserDefCommSuccessPercent( userDefConfPercent );
+        object->getConfirmationStats().setDailyCommSuccessPercent(  dailyConfPercent );
+        object->getConfirmationStats().setWeeklyCommSuccessPercent( weeklyConfPercent );
+        object->getConfirmationStats().setMonthlyCommSuccessPercent( monthlyConfPercent );
+    };
+    template<class T>
+    void incrementConfirmationPercentTotals(const T &object, DOUBLE &userDef, DOUBLE &daily,
+                                                          DOUBLE &weekly, DOUBLE &monthly) 
+    {
+    
+        userDef += object->getConfirmationStats().getUserDefCommSuccessPercent(); 
+        daily += object->getConfirmationStats().getDailyCommSuccessPercent();
+        weekly += object->getConfirmationStats().getWeeklyCommSuccessPercent();
+        monthly += object->getConfirmationStats().getMonthlyCommSuccessPercent();
+    };
+    template<class T>
+    void incrementOperationPercentTotals(const T &object, DOUBLE &userDef, DOUBLE &daily,
+                                                          DOUBLE &weekly, DOUBLE &monthly) 
+    {
+        userDef += object->getOperationStats().getUserDefOpSuccessPercent(); 
+        daily += object->getOperationStats().getDailyOpSuccessPercent();
+        weekly += object->getOperationStats().getWeeklyOpSuccessPercent();
+        monthly += object->getOperationStats().getMonthlyOpSuccessPercent();
+    };
+
     void cascadeStrategySettingsToChildren(LONG spAreaId, LONG areaId, LONG subBusId);
     
     
