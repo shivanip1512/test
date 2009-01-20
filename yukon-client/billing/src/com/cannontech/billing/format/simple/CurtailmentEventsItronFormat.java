@@ -234,7 +234,7 @@ public class CurtailmentEventsItronFormat extends SimpleBillingFormatBase {
 	@Override
 	public boolean writeToFile(OutputStream out) throws IOException {
 		out.write(getEvents().toString().getBytes());
-		return false;
+		return true;
 	}
 
 	@Override
