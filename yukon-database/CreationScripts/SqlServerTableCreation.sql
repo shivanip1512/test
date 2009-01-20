@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     1/20/2009 2:40:03 PM                         */
+/* Created on:     1/20/2009 3:17:53 PM                         */
 /*==============================================================*/
 
 
@@ -11917,6 +11917,7 @@ INSERT INTO YukonRoleProperty VALUES(-10907,-109,'Cap Control Reports Group','fa
 INSERT INTO YukonRoleProperty VALUES(-10908,-109,'Database Reports Group','true','Access to Database group reports.');
 INSERT INTO YukonRoleProperty VALUES(-10909,-109,'Stars Reports Group','true','Access to Stars group reports.');
 INSERT INTO YukonRoleProperty VALUES(-10910,-109,'Other Reports Group','true','Access to Other group reports.');
+/* YUK-6642 INSERT INTO YukonRoleProperty VALUES(-10911,-109,'Settlement Reports Group','false','Access to Settlement group reports.'); */ 
 INSERT INTO YukonRoleProperty VALUES(-10923,-109,'C&I Curtailment Reports Group','false','Access to C&I Curtailment group reports');
 
 /* Operator Consumer Info Role Properties */
