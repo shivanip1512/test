@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -13,7 +14,6 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.JdbcTemplateHelper;
-
 
 public class CapControlOperationsModel extends BareDatedReportModelBase<CapControlOperationsModel.ModelRow> implements CapControlFilterable {
     
@@ -66,11 +66,12 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
 
     public void doLoadData() {
         
-        StringBuffer sql = buildSQLStatement();
-        CTILogger.info(sql.toString()); 
+        String sql = buildSQLStatement();
+        CTILogger.info(sql); 
         
-        Timestamp[] dateRange = {new java.sql.Timestamp(getStartDate().getTime()), new java.sql.Timestamp(getStopDate().getTime())};
-        jdbcOps.query(sql.toString(), dateRange, new RowCallbackHandler() {
+        String qualities = getQualities();
+        Object[] args = {new java.sql.Timestamp(getStartDate().getTime()), new java.sql.Timestamp(getStopDate().getTime()), qualities};
+        jdbcOps.query(sql.toString(), args, new RowCallbackHandler() {
             public void processRow(ResultSet rs) throws SQLException {
                 
                 CapControlOperationsModel.ModelRow row = new CapControlOperationsModel.ModelRow();
@@ -96,9 +97,9 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
         CTILogger.info("Report Records Collected from Database: " + data.size());
     }
     
-    public StringBuffer buildSQLStatement()
+    public String buildSQLStatement()
     {
-        StringBuffer sql = new StringBuffer ("select yp3.paoName cbcName, yp.paoName bankName, el.datetime opTime, el.text operation, ");
+        SqlStatementBuilder sql = new SqlStatementBuilder("select yp3.paoName cbcName, yp.paoName bankName, el.datetime opTime, el.text operation, ");
         sql.append("el2.datetime confTime, el2.text confStatus, el2.capbankstateInfo bankStatusQuality, yp1.paoName feederName, yp1.paobjectId feederId,  yp2.paoName subName, ");
         sql.append("yp2.paobjectid subBusId, ca.paoname region, cb.bankSize bankSize, cb.controllertype protocol, p.value ipAddress, ");
         sql.append("cbc.serialnumber serialNum, da.slaveAddress slaveAddress "); 
@@ -129,10 +130,8 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
         sql.append("left outer join ccsubstationsubbuslist sbb on sbb.substationbusid = yp2.paobjectid ");
         sql.append("left outer join ccsubareaassignment saa on saa.substationbusid = sbb.substationid  ");
  	 	sql.append("join yukonpaobject ca on ca.paobjectid = saa.areaid ");
- 	 	String qualities = getQualities();
- 	 	sql.append("where el2.capbankstateInfo in (" + qualities+ ") ");
+ 	 	sql.append("where el2.capbankstateInfo in (?)");
  	 	
-        
         String result = null;
         
         if(capBankIds != null && !capBankIds.isEmpty()) {
@@ -194,20 +193,12 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
         }else if (orderBy .equalsIgnoreCase("Slave Address")) {
             sql.append("order by slaveAddress ");
         }
-        return sql;
+        return sql.toString();
     }
     
     private String getQualities() {
-        String list = "";
-        for (int i = 0; i < statusQualities.length; i ++) {
-            list+="'";
-            list+=statusQualities[i];
-            list+="'";
-            if(i != statusQualities.length -1) {
-                list+=",";
-            }
-        }
-        return list;
+        String qualities = SqlStatementBuilder.convertToSqlLikeList(Arrays.asList(statusQualities));
+        return qualities;
     }
 
     public void setCapBankIdsFilter(Set<Integer> capBankIds) {
