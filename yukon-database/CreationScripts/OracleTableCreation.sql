@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/19/2009 4:33:22 PM                         */
+/* Created on:     1/19/2009 6:19:05 PM                         */
 /*==============================================================*/
 
 
@@ -5035,6 +5035,7 @@ INSERT INTO FDRInterface VALUES (24, 'WABASH', 'Send', 'f' );
 INSERT INTO FDRInterface VALUES (25, 'TRISTATESUB', 'Receive,Send', 'f' );
 INSERT INTO FDRInterface VALUES (26, 'OPC', 'Receive', 'f');
 INSERT INTO FDRInterface VALUES (27, 'MULTISPEAK_LM', 'Receive', 'f'); 
+INSERT INTO FDRInterface VALUES (28, 'DNPSLAVE', 'Send', 't');
 
 /*==============================================================*/
 /* Table: FDRInterfaceOption                                    */
@@ -5098,7 +5099,11 @@ INSERT INTO FDRInterfaceOption VALUES(25, 'Point', 1, 'Combo', 'Nucla 115/69 Xfm
 INSERT INTO FDRInterfaceOption VALUES(26, 'Server Name', 1, 'Text', '(none)'); 
 INSERT INTO FDRInterfaceOption VALUES(26, 'OPC Group', 2, 'Text', '(none)'); 
 INSERT INTO FDRInterfaceOption VALUES(26, 'OPC Item', 3, 'Text', '(none)');
-INSERT INTO FDRInterfaceOption VALUES(27, 'ObjectId', 1, 'Text', '(none)'); 
+INSERT INTO FDRInterfaceOption VALUES(27, 'ObjectId', 1, 'Text', '(none)');
+INSERT INTO FDRInterfaceOption VALUES(28, 'MasterId', 1, 'Text', '(none)');
+INSERT INTO FDRInterfaceOption VALUES(28, 'SlaveId', 2, 'Text', '(none)');
+INSERT INTO FDRInterfaceOption VALUES(28, 'Offset', 3, 'Text', '(none)');
+INSERT INTO FDRInterfaceOption VALUES(28, 'Destination/Source', 4, 'Text', '(none)');
 
 /*==============================================================*/
 /* Table: FDRTRANSLATION                                        */

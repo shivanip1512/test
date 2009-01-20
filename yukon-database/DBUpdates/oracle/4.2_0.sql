@@ -183,6 +183,14 @@ INSERT INTO FDRInterface VALUES(27, 'MULTISPEAK_LM', 'Receive', 'f');
 INSERT INTO FDRInterfaceOption VALUES(27, 'ObjectId', 1, 'Text', '(none)');
 /* End YUK-YUK-6854 */
 
+/* Start YUK-6845 */
+INSERT INTO FDRInterface VALUES(28, 'DNPSLAVE', 'Send', 't');
+INSERT INTO FDRInterfaceOption VALUES(28, 'MasterId', 1, 'Text', '(none)');
+INSERT INTO FDRInterfaceOption VALUES(28, 'SlaveId', 2, 'Text', '(none)');
+INSERT INTO FDRInterfaceOption VALUES(28, 'Offset', 3, 'Text', '(none)');
+INSERT INTO FDRInterfaceOption VALUES(28, 'Destination/Source', 4, 'Text', '(none)');
+/* End YUK-YUK-6845 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
