@@ -237,6 +237,22 @@ ALTER TABLE Contact
 MODIFY ContLastName VARCHAR2(120);
 /* End YUK-6849 */
 
+/* Start YUK-2947 */
+ALTER TABLE LMDirectCustomerList DROP CONSTRAINT FK_CICSTB_LMPRDI;
+ALTER TABLE LMDirectCustomerList DROP CONSTRAINT FK_LMDIRECT_REFLMPDIR_LMPROGRA;
+COMMIT;
+
+ALTER TABLE LMDirectCustomerList
+   ADD CONSTRAINT FK_LMDirCustList_CICustBase FOREIGN KEY (CustomerId)
+      REFERENCES CICustomerBase (CustomerId)
+      ON DELETE CASCADE;
+
+ALTER TABLE LMDirectCustomerList
+   ADD CONSTRAINT FK_LMDirCustList_LMProgDir FOREIGN KEY (ProgramId)
+      REFERENCES LMProgramDirect (DeviceId)
+      ON DELETE CASCADE;
+/* End YUK-2947 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

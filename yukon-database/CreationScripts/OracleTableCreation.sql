@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/20/2009 10:52:13 AM                        */
+/* Created on:     1/20/2009 1:28:58 PM                         */
 /*==============================================================*/
 
 
@@ -11460,12 +11460,14 @@ alter table LMCustomerEventBase
       references YukonListEntry (EntryID);
 
 alter table LMDirectCustomerList
-   add constraint FK_CICstB_LMPrDi foreign key (CustomerID)
-      references CICustomerBase (CustomerID);
+   add constraint FK_LMDirCustList_CICustBase foreign key (CustomerID)
+      references CICustomerBase (CustomerID)
+      on delete cascade;
 
 alter table LMDirectCustomerList
-   add constraint FK_LMDIRECT_REFLMPDIR_LMPROGRA foreign key (ProgramID)
-      references LMProgramDirect (DeviceID);
+   add constraint FK_LMDirCustList_LMProgDir foreign key (ProgramID)
+      references LMProgramDirect (DeviceID)
+      on delete cascade;
 
 alter table LMDirectNotifGrpList
    add constraint FK_LMDi_DNGrpL foreign key (ProgramID)

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     1/20/2009 10:54:51 AM                        */
+/* Created on:     1/20/2009 1:21:18 PM                         */
 /*==============================================================*/
 
 
@@ -14631,13 +14631,15 @@ alter table LMCustomerEventBase
 go
 
 alter table LMDirectCustomerList
-   add constraint FK_CICstB_LMPrDi foreign key (CustomerID)
+   add constraint FK_LMDirCustList_CICustBase foreign key (CustomerID)
       references CICustomerBase (CustomerID)
+         on delete cascade
 go
 
 alter table LMDirectCustomerList
-   add constraint FK_LMDIRECT_REFLMPDIR_LMPROGRA foreign key (ProgramID)
+   add constraint FK_LMDirCustList_LMProgDir foreign key (ProgramID)
       references LMProgramDirect (DeviceID)
+         on delete cascade
 go
 
 alter table LMDirectNotifGrpList
