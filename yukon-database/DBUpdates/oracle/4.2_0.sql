@@ -156,22 +156,22 @@ INSERT INTO BillingFileFormats VALUES( -34, 'Curtailment Events - Itron', 1);
 
 /* Start YUK-6596 */
 ALTER TABLE PortTerminalServer
-ADD EncodingKey VARCHAR(64);
+ADD EncodingKey VARCHAR2(64);
 
 UPDATE PortTerminalServer
 SET EncodingKey = '';
 
 ALTER TABLE PortTerminalServer
-MODIFY EncodingKey VARCHAR(64) NOT NULL;
+MODIFY EncodingKey VARCHAR2(64) NOT NULL;
 
 ALTER TABLE PortTerminalServer
-ADD EncodingType VARCHAR(50);
+ADD EncodingType VARCHAR2(50);
 
 UPDATE PortTerminalServer
 SET EncodingType = 'NONE';
 
 ALTER TABLE PortTerminalServer
-MODIFY EncodingType VARCHAR(50) NOT NULL;
+MODIFY EncodingType VARCHAR2(50) NOT NULL;
 /* End YUK-6596 */
 
 /* Start YUK-6774 */
