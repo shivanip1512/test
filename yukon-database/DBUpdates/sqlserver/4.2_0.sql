@@ -260,6 +260,15 @@ ALTER TABLE LMDirectCustomerList
 GO
 /* End YUK-2947 */
 
+/* Start YUK-6858 */
+ALTER TABLE DynamicCCCapBank ADD PartialPhaseInfo VARCHAR(20);
+GO
+UPDATE DynamicCCCapBank SET PartialPhaseInfo = '(none)';
+GO
+ALTER TABLE DynamicCCCapBank ALTER COLUMN PartialPhaseInfo VARCHAR(20) NOT NULL;
+/* End YUK-6858 */
+
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

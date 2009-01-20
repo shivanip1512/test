@@ -253,6 +253,12 @@ ALTER TABLE LMDirectCustomerList
       ON DELETE CASCADE;
 /* End YUK-2947 */
 
+/* Start YUK-6858 */
+ALTER TABLE DynamicCCCapBank ADD PartialPhaseInfo varchar2(20);
+UPDATE DynamicCCCapBank SET PartialPhaseInfo = '(none)';
+ALTER TABLE DynamicCCCapBank MODIFY PartialPhaseInfo varchar2(20) NOT NULL; 
+/* End YUK-6858 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

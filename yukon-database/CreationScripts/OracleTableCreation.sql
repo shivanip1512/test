@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/20/2009 1:28:58 PM                         */
+/* Created on:     1/20/2009 2:37:09 PM                         */
 /*==============================================================*/
 
 
@@ -4451,6 +4451,7 @@ create table DynamicCCCapBank  (
    afterVar             VARCHAR2(48)                    not null,
    changeVar            VARCHAR2(48)                    not null,
    twoWayCBCLastControl NUMBER                          not null,
+   PartialPhaseInfo     VARCHAR2(20)                    not null,
    constraint PK_DYNAMICCCCAPBANK primary key (CapBankID)
 );
 

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     1/20/2009 1:21:18 PM                         */
+/* Created on:     1/20/2009 2:40:03 PM                         */
 /*==============================================================*/
 
 
@@ -6995,6 +6995,7 @@ create table DynamicCCCapBank (
    afterVar             varchar(48)          not null,
    changeVar            varchar(48)          not null,
    twoWayCBCLastControl numeric              not null,
+   PartialPhaseInfo     varchar(20)          not null,
    constraint PK_DYNAMICCCCAPBANK primary key (CapBankID)
 )
 go
