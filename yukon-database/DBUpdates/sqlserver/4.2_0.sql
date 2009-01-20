@@ -268,6 +268,11 @@ GO
 ALTER TABLE DynamicCCCapBank ALTER COLUMN PartialPhaseInfo VARCHAR(20) NOT NULL;
 /* End YUK-6858 */
 
+/* Start YUK-6558 */
+UPDATE YukonRoleProperty
+SET KeyName = 'Msp BillingCycle DeviceGroup'
+WHERE RolePropertyId = -1602;
+/* End YUK-6558 */
 
 /**************************************************************/
 /* VERSION INFO                                               */

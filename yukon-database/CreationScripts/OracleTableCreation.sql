@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/20/2009 3:21:19 PM                         */
+/* Created on:     1/20/2009 3:43:04 PM                         */
 /*==============================================================*/
 
 
@@ -9017,7 +9017,6 @@ INSERT INTO YukonRoleProperty VALUES(-1403,-5,'Call Prefix','(none)','Any number
 /* Billing Role Properties */
 INSERT INTO YukonRoleProperty VALUES(-1500,-6,'wiz_activate','false','<description>');
 INSERT INTO YukonRoleProperty VALUES(-1501,-6,'input_file','c:yukonclientbinBillingIn.txt','<description>');
-
 INSERT INTO YukonRoleProperty VALUES(-1503,-6,'Default File Format','CTI-CSV','The Default file formats.  See table BillingFileFormats.format for other valid values.');
 INSERT INTO YukonRoleProperty VALUES(-1504,-6,'Demand Days Previous','30','Integer value for number of days for demand readings to query back from billing end date.');
 INSERT INTO YukonRoleProperty VALUES(-1505,-6,'Energy Days Previous','7','Integer value for number of days for energy readings to query back from billing end date.');
@@ -9026,22 +9025,22 @@ INSERT INTO YukonRoleProperty VALUES(-1507,-6,'Remove Multiplier','false','Remov
 INSERT INTO YukonRoleProperty VALUES(-1508,-6,'Coop ID - CADP Only','(none)','CADP format requires a coop id number.');
 
 /* Database Editor Role */
-insert into YukonRoleProperty values(-10000,-100,'point_id_edit','false','Controls whether point ids can be edited');
-insert into YukonRoleProperty values(-10001,-100,'dbeditor_core','true','Controls whether the Core menu item in the View menu is displayed');
-insert into YukonRoleProperty values(-10002,-100,'dbeditor_lm','true','Controls whether the Loadmanagement menu item in the View menu is displayed');
-insert into YukonRoleProperty values(-10003,-100,'dbeditor_cap_control','true','Controls whether the Cap Control menu item in the View menu is displayed');
-insert into YukonRoleProperty values(-10004,-100,'dbeditor_system','true','Controls whether the System menu item in the View menu is displayed');
-insert into YukonRoleProperty values(-10005,-100,'utility_id_range','1-254','<description>');
-insert into YukonRoleProperty values(-10007,-100,'dbeditor_trans_exclusion','false','Allows the editor panel for the mutual exclusion of transmissions to be shown');
-insert into YukonRoleProperty values(-10008,-100,'permit_login_edit','true','Closes off all access to logins and login groups for non-administrators in the dbeditor');
-insert into YukonRoleProperty values(-10009,-100,'allow_user_roles','false','Allows the editor panel individual user roles to be shown');
-insert into YukonRoleProperty values(-10010,-100,'z_optional_product_dev','00000000','This feature is for development purposes only');
-insert into YukonRoleProperty values(-10011,-100,'allow_member_programs','false','Allows member management of LM Direct Programs through the DBEditor');
+INSERT INTO YukonRoleProperty VALUES(-10000,-100,'point_id_edit','false','Controls whether point ids can be edited');
+INSERT INTO YukonRoleProperty VALUES(-10001,-100,'dbeditor_core','true','Controls whether the Core menu item in the View menu is displayed');
+INSERT INTO YukonRoleProperty VALUES(-10002,-100,'dbeditor_lm','true','Controls whether the Loadmanagement menu item in the View menu is displayed');
+INSERT INTO YukonRoleProperty VALUES(-10003,-100,'dbeditor_cap_control','true','Controls whether the Cap Control menu item in the View menu is displayed');
+INSERT INTO YukonRoleProperty VALUES(-10004,-100,'dbeditor_system','true','Controls whether the System menu item in the View menu is displayed');
+INSERT INTO YukonRoleProperty VALUES(-10005,-100,'utility_id_range','1-254','<description>');
+INSERT INTO YukonRoleProperty VALUES(-10007,-100,'dbeditor_trans_exclusion','false','Allows the editor panel for the mutual exclusion of transmissions to be shown');
+INSERT INTO YukonRoleProperty VALUES(-10008,-100,'permit_login_edit','true','Closes off all access to logins and login groups for non-administrators in the dbeditor');
+INSERT INTO YukonRoleProperty VALUES(-10009,-100,'allow_user_roles','false','Allows the editor panel individual user roles to be shown');
+INSERT INTO YukonRoleProperty VALUES(-10010,-100,'z_optional_product_dev','00000000','This feature is for development purposes only');
+INSERT INTO YukonRoleProperty VALUES(-10011,-100,'allow_member_programs','false','Allows member management of LM Direct Programs through the DBEditor');
 
 /* MultiSpeak */
 INSERT INTO YukonRoleProperty VALUES(-1600,-7,'PAOName Alias','0','Defines a Yukon Pao (Device) Name field alias. Valid values(0-5): [0=Device Name, 1=Account Number, 2=Service Location, 3=Customer, 4=EA Location, 5=Grid Location]'); 
-insert into YukonRoleProperty values(-1601,-7,'Primary CIS Vendor','0','Defines the primary CIS vendor for CB interfaces.');
-insert into YukonRoleProperty values(-1602,-7,'Msp BillingCyle DeviceGroup','/Meters/Billing/','Defines the Device Group parent group name for the MultiSpeak billingCycle element. Valid values are ''/Meters/Billing/'', ''/Meters/Collection'', ''/Meters/Alternate''');
+INSERT INTO YukonRoleProperty VALUES(-1601,-7,'Primary CIS Vendor','0','Defines the primary CIS vendor for CB interfaces.');
+INSERT INTO YukonRoleProperty VALUES(-1602,-7,'Msp BillingCycle DeviceGroup','/Meters/Billing/','Defines the Device Group parent group name for the MultiSpeak billingCycle element. Valid values are ''/Meters/Billing/'', ''/Meters/Collection'', ''/Meters/Alternate''');
 
 /* Configuration */
 INSERT INTO YukonRoleProperty VALUES(-1700,-8,'Device Display Template','DEVICE_NAME','Defines the format for displaying devices. Available placeholders: DEVICE_NAME, METER_NUMBER, ID, ADDRESS');

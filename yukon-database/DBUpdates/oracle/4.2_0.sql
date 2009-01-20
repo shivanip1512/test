@@ -259,6 +259,12 @@ UPDATE DynamicCCCapBank SET PartialPhaseInfo = '(none)';
 ALTER TABLE DynamicCCCapBank MODIFY PartialPhaseInfo varchar2(20) NOT NULL; 
 /* End YUK-6858 */
 
+/* Start YUK-6558 */
+UPDATE YukonRoleProperty
+SET KeyName = 'Msp BillingCycle DeviceGroup'
+WHERE RolePropertyId = -1602;
+/* End YUK-6558 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
