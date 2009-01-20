@@ -229,6 +229,14 @@ SET Label = 'Read Peak (Channel 3)'
 WHERE CommandId = -139; 
 /* End YUK-6851 */
 
+/* Start YUK-6849 */
+ALTER TABLE Contact 
+MODIFY ContFirstName VARCHAR2(120);
+
+ALTER TABLE Contact 
+MODIFY ContLastName VARCHAR2(120);
+/* End YUK-6849 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

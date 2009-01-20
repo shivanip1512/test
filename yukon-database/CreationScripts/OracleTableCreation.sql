@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/20/2009 10:01:17 AM                        */
+/* Created on:     1/20/2009 10:52:13 AM                        */
 /*==============================================================*/
 
 
@@ -2304,8 +2304,8 @@ create unique index AK_KEY_CmdGrp_Name on CommandGroup (
 /*==============================================================*/
 create table Contact  (
    ContactID            NUMBER                          not null,
-   ContFirstName        VARCHAR2(20)                    not null,
-   ContLastName         VARCHAR2(32)                    not null,
+   ContFirstName        VARCHAR2(120)                   not null,
+   ContLastName         VARCHAR2(120)                   not null,
    LogInID              NUMBER                          not null,
    AddressID            NUMBER                          not null,
    constraint PK_CONTACT primary key (ContactID)

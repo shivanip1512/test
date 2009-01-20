@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     1/20/2009 9:59:58 AM                         */
+/* Created on:     1/20/2009 10:54:51 AM                        */
 /*==============================================================*/
 
 
@@ -4763,8 +4763,8 @@ go
 /*==============================================================*/
 create table Contact (
    ContactID            numeric              not null,
-   ContFirstName        varchar(20)          not null,
-   ContLastName         varchar(32)          not null,
+   ContFirstName        varchar(120)         not null,
+   ContLastName         varchar(120)         not null,
    LogInID              numeric              not null,
    AddressID            numeric              not null,
    constraint PK_CONTACT primary key (ContactID)
