@@ -220,6 +220,15 @@ SET KeyName = 'Dynamic Billing File Setup', DefaultValue = 'true', Description =
 WHERE RolePropertyId = -10600;
 /* End YUK-6846 */
 
+/* Start YUK-6610 */
+/* @error ignore-begin */
+CREATE UNIQUE INDEX INDX_IPAdd_SockPortNum_UNQ ON PortTerminalServer (
+   IPAddress ASC,
+   SocketPortNumber ASC
+);
+/* @error ignore-end */
+/* End YUK-6610 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

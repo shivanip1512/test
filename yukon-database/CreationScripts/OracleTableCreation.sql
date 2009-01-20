@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/19/2009 7:27:28 PM                         */
+/* Created on:     1/19/2009 7:56:58 PM                         */
 /*==============================================================*/
 
 
@@ -182,6 +182,8 @@ drop index INDX_POFFSET_POINTTYPE;
 drop index Indx_PointStGrpID;
 
 drop index INDX_UOMID_POINTID;
+
+drop index INDX_IPAdd_SockPortNum_UNQ;
 
 drop index Index_PointID;
 
@@ -6918,6 +6920,14 @@ create table PORTTERMINALSERVER  (
    EncodingKey          VARCHAR2(64)                    not null,
    EncodingType         VARCHAR2(50)                    not null,
    constraint PK_PORTTERMINALSERVER primary key (PORTID)
+);
+
+/*==============================================================*/
+/* Index: INDX_IPAdd_SockPortNum_UNQ                            */
+/*==============================================================*/
+create unique index INDX_IPAdd_SockPortNum_UNQ on PORTTERMINALSERVER (
+   IPADDRESS ASC,
+   SOCKETPORTNUMBER ASC
 );
 
 /*==============================================================*/

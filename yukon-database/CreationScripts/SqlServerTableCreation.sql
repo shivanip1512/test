@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     1/19/2009 7:22:10 PM                         */
+/* Created on:     1/19/2009 8:06:22 PM                         */
 /*==============================================================*/
 
 
@@ -732,6 +732,15 @@ if exists (select 1
             and   indid > 0
             and   indid < 255)
    drop index POINTUNIT.INDX_UOMID_POINTID
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('PORTTERMINALSERVER')
+            and   name  = 'INDX_IPAdd_SockPortNum_UNQ'
+            and   indid > 0
+            and   indid < 255)
+   drop index PORTTERMINALSERVER.INDX_IPAdd_SockPortNum_UNQ
 go
 
 if exists (select 1
@@ -9636,6 +9645,15 @@ create table PORTTERMINALSERVER (
    EncodingKey          varchar(64)          not null,
    EncodingType         varchar(50)          not null,
    constraint PK_PORTTERMINALSERVER primary key (PORTID)
+)
+go
+
+/*==============================================================*/
+/* Index: INDX_IPAdd_SockPortNum_UNQ                            */
+/*==============================================================*/
+create unique index INDX_IPAdd_SockPortNum_UNQ on PORTTERMINALSERVER (
+IPADDRESS ASC,
+SOCKETPORTNUMBER ASC
 )
 go
 
