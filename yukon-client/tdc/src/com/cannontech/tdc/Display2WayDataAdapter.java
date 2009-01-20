@@ -404,9 +404,6 @@ public void clearSystemViewerDisplay( boolean forceRepaint )
  */
 protected void createDummyPointValue( int location ) 
 {
-	if( location >= getRowCount() )
-		return;  // cant add it off the chart
-
 	if( location >= getRowCount() ) //Add the new value
 		pointValues.addElement( DUMMY_POINT_VALUES );
 	else
