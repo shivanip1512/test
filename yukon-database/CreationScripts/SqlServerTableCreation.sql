@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     1/19/2009 6:16:27 PM                         */
+/* Created on:     1/19/2009 6:49:47 PM                         */
 /*==============================================================*/
 
 
@@ -4728,6 +4728,10 @@ INSERT INTO Command VALUES(-151, 'putconfig xcom lcrmode Ex', 'Set LCR3100 Expre
 INSERT INTO Command VALUES(-152, 'putconfig xcom lcrmode V', 'Set LCR3100 Versacom mode', 'ExpresscomSerial'); 
 INSERT INTO Command VALUES(-153, 'putconfig xcom lcrmode Em', 'Set LCR3100 Emetcon mode', 'ExpresscomSerial'); 
 
+/* TOU */
+INSERT INTO Command VALUES(-154, 'getvalue tou kwh', 'Read Current TOU kWh for rates A, B, C, D.', 'MCT-410IL');
+INSERT INTO Command VALUES(-155, 'getvalue tou kwh frozen', 'Read Frozen TOU kWh for rates A, B, C, D.', 'MCT-410IL');
+
 
 /*==============================================================*/
 /* Table: CommandGroup                                          */
@@ -6909,16 +6913,25 @@ INSERT INTO DeviceTypeCommand VALUES (-725, -144, 'MCT-430A', 30, 'N', -1);
 INSERT INTO DeviceTypeCommand VALUES (-726, -144, 'MCT-430S4', 30, 'N', -1); 
 INSERT INTO DeviceTypeCommand VALUES (-727, -144, 'MCT-430SL', 30, 'N', -1); 
 
-INSERT INTO DEVICETYPECOMMAND VALUES (-728, -148, 'ExpresscomSerial', 25, 'N', -1); 
-INSERT INTO DEVICETYPECOMMAND VALUES (-729, -149, 'ExpresscomSerial', 26, 'Y', -1); 
-INSERT INTO DEVICETYPECOMMAND VALUES (-730, -150, 'ExpresscomSerial', 27, 'Y', -1); 
-INSERT INTO DEVICETYPECOMMAND VALUES (-731, -151, 'ExpresscomSerial', 28, 'Y', -1); 
-INSERT INTO DEVICETYPECOMMAND VALUES (-732, -152, 'ExpresscomSerial', 29, 'Y', -1); 
-INSERT INTO DEVICETYPECOMMAND VALUES (-733, -153, 'ExpresscomSerial', 30, 'Y', -1); 
+INSERT INTO DeviceTypeCommand VALUES (-728, -148, 'ExpresscomSerial', 25, 'N', -1); 
+INSERT INTO DeviceTypeCommand VALUES (-729, -149, 'ExpresscomSerial', 26, 'Y', -1); 
+INSERT INTO DeviceTypeCommand VALUES (-730, -150, 'ExpresscomSerial', 27, 'Y', -1); 
+INSERT INTO DeviceTypeCommand VALUES (-731, -151, 'ExpresscomSerial', 28, 'Y', -1); 
+INSERT INTO DeviceTypeCommand VALUES (-732, -152, 'ExpresscomSerial', 29, 'Y', -1); 
+INSERT INTO DeviceTypeCommand VALUES (-733, -153, 'ExpresscomSerial', 30, 'Y', -1); 
 
-INSERT INTO DEVICETYPECOMMAND VALUES (-734, -145, 'VersacomSerial', 24, 'Y', -1); 
-INSERT INTO DEVICETYPECOMMAND VALUES (-735, -146, 'VersacomSerial', 25, 'Y', -1); 
-INSERT INTO DEVICETYPECOMMAND VALUES (-736, -147, 'VersacomSerial', 26, 'Y', -1); 
+INSERT INTO DeviceTypeCommand VALUES (-734, -145, 'VersacomSerial', 24, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-735, -146, 'VersacomSerial', 25, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-736, -147, 'VersacomSerial', 26, 'Y', -1);
+
+INSERT INTO DeviceTypeCommand VALUES (-737, -154, 'MCT-410CL', 36, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-738, -154, 'MCT-410FL', 36, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-739, -154, 'MCT-410GL', 36, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-740, -154, 'MCT-410IL', 36, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-741, -155, 'MCT-410CL', 37, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-742, -155, 'MCT-410FL', 37, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-743, -155, 'MCT-410GL', 37, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-744, -155, 'MCT-410IL', 37, 'Y', -1);
 
 /*==============================================================*/
 /* Index: Indx_DevTypeCmd_GroupID                               */

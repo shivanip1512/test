@@ -197,6 +197,20 @@ INSERT INTO FDRInterfaceOption VALUES(28, 'Offset', 3, 'Text', '(none)');
 INSERT INTO FDRInterfaceOption VALUES(28, 'Destination/Source', 4, 'Text', '(none)');
 /* End YUK-YUK-6845 */
 
+/* Start YUK-6854 */
+INSERT INTO Command VALUES(-154, 'getvalue tou kwh', 'Read Current TOU kWh for rates A, B, C, D.', 'MCT-410IL');
+INSERT INTO Command VALUES(-155, 'getvalue tou kwh frozen', 'Read Frozen TOU kWh for rates A, B, C, D.', 'MCT-410IL');
+
+INSERT INTO DeviceTypeCommand VALUES(-737, -154, 'MCT-410CL', 36, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES(-738, -154, 'MCT-410FL', 36, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES(-739, -154, 'MCT-410GL', 36, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES(-740, -154, 'MCT-410IL', 36, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES(-741, -155, 'MCT-410CL', 37, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES(-742, -155, 'MCT-410FL', 37, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES(-743, -155, 'MCT-410GL', 37, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES(-744, -155, 'MCT-410IL', 37, 'Y', -1);
+/* End YUK-6854 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
