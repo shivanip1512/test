@@ -229,6 +229,12 @@ CREATE UNIQUE INDEX INDX_IPAdd_SockPortNum_UNQ ON PortTerminalServer (
 /* @error ignore-end */
 /* End YUK-6610 */
 
+/* Start YUK-6851 */
+UPDATE Command 
+SET Label = 'Read Peak (Channel 3)' 
+WHERE CommandId = -139; 
+/* End YUK-6851 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
