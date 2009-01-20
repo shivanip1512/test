@@ -103,7 +103,7 @@ public enum ReportTypes {
     
     EC_ACTIVITY_LOG_SUMMARY("Energy Company Activity Log Summary", ActivityModel.class, ReportGroup.STARS),
     EC_ACTIVITY_LOG_DETAIL("Energy Company Activity Log Detail", ActivityDetailModel.class, ReportGroup.STARS),
-    PROGRAM_DETAIL("Progam Detail", ProgramDetailModel.class, ReportGroup.STARS),
+    PROGRAM_DETAIL("Program Detail", ProgramDetailModel.class, ReportGroup.STARS),
     EC_WORK_ORDER("Work Order", WorkOrderModel.class, ReportGroup.STARS),
     STARS_LM_SUMMARY("STARS Load Management Summary", StarsLMSummaryModel.class, ReportGroup.STARS),
     STARS_LM_DETAIL("STARS Load Management Detail", StarsLMDetailModel.class, ReportGroup.STARS),
