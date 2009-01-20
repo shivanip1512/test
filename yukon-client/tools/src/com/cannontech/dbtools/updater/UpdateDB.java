@@ -227,7 +227,7 @@ public class UpdateDB
 		//previously generated list of valid commands
 		final File genDIR = new File( CtiUtilities.getLogDirPath() );
 		if(genDIR.listFiles() == null) {
-		    CTILogger.error("Could not find valid client log directory. ");
+		    CTILogger.error("Could not find valid client log directory: " + CtiUtilities.getLogDirPath());
 		} else {
     		for( int i = 0; i < genDIR.listFiles().length; i++ )
     		{
@@ -258,7 +258,7 @@ public class UpdateDB
 		//dir to look in for new updates
 		final File userDIR = new File( rootDIR );
 		if(userDIR.listFiles() == null) {
-		    CTILogger.error("Could not find valid root log directory. ");
+		    CTILogger.error("Could not find valid root log directory: " + rootDIR);
 		} else {
     		for( int i = 0; i < userDIR.listFiles().length; i++ )
     		{
