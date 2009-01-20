@@ -205,6 +205,15 @@ INSERT INTO DeviceTypeCommand VALUES(-743, -155, 'MCT-410GL', 37, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES(-744, -155, 'MCT-410IL', 37, 'Y', -1);
 /* End YUK-6850 */
 
+/* Start YUK-6846 */
+DELETE YukonUserRole 
+WHERE RolePropertyId = -10600;
+
+UPDATE YukonRoleProperty 
+SET KeyName = 'Dynamic Billing File Setup', DefaultValue = 'true', Description = 'Controls access to create, edit, and delete dynamic billing files.' 
+WHERE RolePropertyId = -10600;
+/* End YUK-6846 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

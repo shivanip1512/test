@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/19/2009 6:47:17 PM                         */
+/* Created on:     1/19/2009 7:27:28 PM                         */
 /*==============================================================*/
 
 
@@ -9082,52 +9082,50 @@ insert into yukonroleproperty values(-10317,-103,'Execute Manual Command', 'true
 
 
 /* Calc Historical Role Properties */
-insert into YukonRoleProperty values(-10400,-104,'interval','900','<description>');
-insert into YukonRoleProperty values(-10401,-104,'baseline_calctime','4','<description>');
-insert into YukonRoleProperty values(-10402,-104,'daysprevioustocollect','30','<description>');
+INSERT INTO YukonRoleProperty VALUES(-10400,-104,'interval','900','<description>');
+INSERT INTO YukonRoleProperty VALUES(-10401,-104,'baseline_calctime','4','<description>');
+INSERT INTO YukonRoleProperty VALUES(-10402,-104,'daysprevioustocollect','30','<description>');
 
 /* Web Graph Role Properties */
-insert into YukonRoleProperty values(-10500,-105,'home_directory','c:yukonclientwebgraphs','<description>');
-insert into YukonRoleProperty values(-10501,-105,'run_interval','900','<description>');
-
-insert into YukonRoleProperty values(-10600,-106,'Header Label','Billing','The header label for billing.');
+INSERT INTO YukonRoleProperty VALUES(-10500,-105,'home_directory','c:yukonclientwebgraphs','<description>');
+INSERT INTO YukonRoleProperty VALUES(-10501,-105,'run_interval','900','<description>');
+INSERT INTO YukonRoleProperty VALUES(-10600,-106,'Dynamic Billing File Setup','true','Controls access to create, edit, and delete dynamic billing files.'); 
 
 /* Esubstation Editor Role Properties */
-insert into YukonRoleProperty values(-10700,-107,'default','false','The default esub editor property');
+INSERT INTO YukonRoleProperty VALUES(-10700,-107,'default','false','The default esub editor property');
 
 /* Web Client Role Properties */
-insert into YukonRoleProperty values(-10800,-108,'home_url','/operator/Operations.jsp','The url to take the user immediately after logging into the Yukon web application');
-insert into YukonRoleProperty values(-10802,-108,'style_sheet','yukon/CannonStyle.css','The web client cascading style sheet.');
-insert into YukonRoleProperty values(-10803,-108,'nav_bullet_selected','yukon/Bullet.gif','The bullet used when an item in the nav is selected.');
-insert into YukonRoleProperty values(-10804,-108,'nav_bullet_expand','yukon/BulletExpand.gif','The bullet used when an item in the nav can be expanded to show submenu.');
-insert into YukonRoleProperty values(-10805,-108,'header_logo','yukon/DefaultHeader.gif','The main header logo');
-insert into YukonRoleProperty values(-10806,-108,'log_in_url','/login.jsp','The url where the user login from. It is used as the url to send the users to when they log off.');
-insert into YukonRoleProperty values(-10807,-108,'nav_connector_bottom','yukon/BottomConnector.gif','The connector icon in the nav used for showing the hardware tree structure, in front of the last hardware under each category');
-insert into YukonRoleProperty values(-10808,-108,'nav_connector_middle','yukon/MidConnector.gif','The connector icon in the nav used for showing the hardware tree structure, in front of every hardware except the last one under each category');
-insert into YukonRoleProperty values(-10810,-108, 'pop_up_appear_style','onmouseover', 'Style of the popups appearance when the user selects element in capcontrol.');
-insert into YukonRoleProperty values(-10811,-108, 'inbound_voice_home_url', '/voice/inboundOptOut.jsp', 'Home URL for inbound voice logins');
-insert into YukonRoleProperty values(-10812, -108,'Java Web Start Launcher Enabled', 'true', 'Allow access to the Java Web Start Launcher for client applications.');
-insert into YukonRoleProperty values(-10814, -108,'Suppress Error Page Details', 'false', 'Disable stack traces for this user.');
-insert into YukonRoleProperty values(-10815, -108,'Data Updater Delay (milliseconds)', '4000', 'The number of milliseconds between requests for the latest point values on pages that support the data updater.');
-insert into YukonRoleProperty values(-10816, -108,'Standard Page Style Sheet',' ','A comma separated list of URLs for CSS files that will be included on every Standard Page');
-insert into YukonRoleProperty values(-10817, -108,'Theme Name',' ','The name of the theme to be applied to this group');
-insert into YukonRoleProperty values(-10818, -108, 'View Alarms Alerts','false','Ability to receive point alarms as alerts');
+INSERT INTO YukonRoleProperty VALUES(-10800,-108,'home_url','/operator/Operations.jsp','The url to take the user immediately after logging into the Yukon web application');
+INSERT INTO YukonRoleProperty VALUES(-10802,-108,'style_sheet','yukon/CannonStyle.css','The web client cascading style sheet.');
+INSERT INTO YukonRoleProperty VALUES(-10803,-108,'nav_bullet_selected','yukon/Bullet.gif','The bullet used when an item in the nav is selected.');
+INSERT INTO YukonRoleProperty VALUES(-10804,-108,'nav_bullet_expand','yukon/BulletExpand.gif','The bullet used when an item in the nav can be expanded to show submenu.');
+INSERT INTO YukonRoleProperty VALUES(-10805,-108,'header_logo','yukon/DefaultHeader.gif','The main header logo');
+INSERT INTO YukonRoleProperty VALUES(-10806,-108,'log_in_url','/login.jsp','The url where the user login from. It is used as the url to send the users to when they log off.');
+INSERT INTO YukonRoleProperty VALUES(-10807,-108,'nav_connector_bottom','yukon/BottomConnector.gif','The connector icon in the nav used for showing the hardware tree structure, in front of the last hardware under each category');
+INSERT INTO YukonRoleProperty VALUES(-10808,-108,'nav_connector_middle','yukon/MidConnector.gif','The connector icon in the nav used for showing the hardware tree structure, in front of every hardware except the last one under each category');
+INSERT INTO YukonRoleProperty VALUES(-10810,-108, 'pop_up_appear_style','onmouseover', 'Style of the popups appearance when the user selects element in capcontrol.');
+INSERT INTO YukonRoleProperty VALUES(-10811,-108, 'inbound_voice_home_url', '/voice/inboundOptOut.jsp', 'Home URL for inbound voice logins');
+INSERT INTO YukonRoleProperty VALUES(-10812, -108,'Java Web Start Launcher Enabled', 'true', 'Allow access to the Java Web Start Launcher for client applications.');
+INSERT INTO YukonRoleProperty VALUES(-10814, -108,'Suppress Error Page Details', 'false', 'Disable stack traces for this user.');
+INSERT INTO YukonRoleProperty VALUES(-10815, -108,'Data Updater Delay (milliseconds)', '4000', 'The number of milliseconds between requests for the latest point values on pages that support the data updater.');
+INSERT INTO YukonRoleProperty VALUES(-10816, -108,'Standard Page Style Sheet',' ','A comma separated list of URLs for CSS files that will be included on every Standard Page');
+INSERT INTO YukonRoleProperty VALUES(-10817, -108,'Theme Name',' ','The name of the theme to be applied to this group');
+INSERT INTO YukonRoleProperty VALUES(-10818, -108, 'View Alarms Alerts','false','Ability to receive point alarms as alerts');
 INSERT INTO YukonRoleProperty VALUES(-10819, -108, 'Default TimeZone',' ','Default TimeZone (e.g. America/Denver, America/Chicago, America/Los_Angeles, or America/New_York)');
 
 /* Reporting Analysis role properties */
-insert into YukonRoleProperty values(-10900,-109,'Header Label','Reporting','The header label for reporting.');
-insert into YukonRoleProperty values(-10901,-109,'Download Reports Enable','true','Access to download the report files..');
-insert into YukonRoleProperty values(-10902,-109,'Download Reports Default Filename','report.txt','A default filename for the downloaded report.');
-insert into YukonRoleProperty values(-10903,-109,'Admin Reports Group','true','Access to administrative group reports.');
-insert into YukonRoleProperty values(-10904,-109,'AMR Reports Group','true','Access to AMR group reports.');
-insert into YukonRoleProperty values(-10905,-109,'Statistical Reports Group','true','Access to statistical group reports.');
-insert into YukonRoleProperty values(-10906,-109,'Load Management Reports Group','false','Access to Load Management group reports.');
-insert into YukonRoleProperty values(-10907,-109,'Cap Control Reports Group','false','Access to Cap Control group reports.');
-insert into YukonRoleProperty values(-10908,-109,'Database Reports Group','true','Access to Database group reports.');
-insert into YukonRoleProperty values(-10909,-109,'Stars Reports Group','true','Access to Stars group reports.');
-insert into YukonRoleProperty values(-10910,-109,'Other Reports Group','true','Access to Other group reports.');
-
-insert into YukonRoleProperty values(-10923,-109,'C&I Curtailment Reports Group','false','Access to C&I Curtailment group reports');
+INSERT INTO YukonRoleProperty VALUES(-10900,-109,'Header Label','Reporting','The header label for reporting.');
+INSERT INTO YukonRoleProperty VALUES(-10901,-109,'Download Reports Enable','true','Access to download the report files..');
+INSERT INTO YukonRoleProperty VALUES(-10902,-109,'Download Reports Default Filename','report.txt','A default filename for the downloaded report.');
+INSERT INTO YukonRoleProperty VALUES(-10903,-109,'Admin Reports Group','true','Access to administrative group reports.');
+INSERT INTO YukonRoleProperty VALUES(-10904,-109,'AMR Reports Group','true','Access to AMR group reports.');
+INSERT INTO YukonRoleProperty VALUES(-10905,-109,'Statistical Reports Group','true','Access to statistical group reports.');
+INSERT INTO YukonRoleProperty VALUES(-10906,-109,'Load Management Reports Group','false','Access to Load Management group reports.');
+INSERT INTO YukonRoleProperty VALUES(-10907,-109,'Cap Control Reports Group','false','Access to Cap Control group reports.');
+INSERT INTO YukonRoleProperty VALUES(-10908,-109,'Database Reports Group','true','Access to Database group reports.');
+INSERT INTO YukonRoleProperty VALUES(-10909,-109,'Stars Reports Group','true','Access to Stars group reports.');
+INSERT INTO YukonRoleProperty VALUES(-10910,-109,'Other Reports Group','true','Access to Other group reports.');
+INSERT INTO YukonRoleProperty VALUES(-10923,-109,'C&I Curtailment Reports Group','false','Access to C&I Curtailment group reports');
 
 /* Operator Consumer Info Role Properties */
 INSERT INTO YukonRoleProperty VALUES(-20101,-201,'Account General','true','Controls whether to show the general account information');
@@ -9613,9 +9611,9 @@ create table YukonUserGroup  (
    constraint PK_YUKONUSERGROUP primary key (UserID, GroupID)
 );
 
-insert into YukonUserGroup values(-1,-1);
-insert into YukonUserGroup values(-2,-1);
-insert into YukonUserGroup values(-2,-2);
+INSERT INTO YukonUserGroup VALUES(-1,-1);
+INSERT INTO YukonUserGroup VALUES(-2,-1);
+INSERT INTO YukonUserGroup VALUES(-2,-2);
 
 /*==============================================================*/
 /* Table: YukonUserRole                                         */
@@ -9665,8 +9663,6 @@ insert into YukonUserRole values(-172,-1,-103,-10302,'true');
 insert into YukonUserRole values(-173,-1,-103,-10303,'false');
 insert into YukonUserRole values(-174,-1,-103,-10304,'false');
 insert into YukonUserRole values(-175,-1,-103,-10305,'(none)');
-
-insert into YukonUserRole values(-190,-1,-106,-10600,'(none)');
 
 /* Esubstation Editor */
 insert into YukonUserRole values(-250,-1,-107,-10700,'(none)');
