@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/21/2009 4:48:13 PM                         */
+/* Created on:     1/21/2009 5:32:22 PM                         */
 /*==============================================================*/
 
 
@@ -6303,8 +6303,8 @@ create table LMThermostatSeason  (
    constraint PK_LMTHERMOSTATSEASON primary key (SeasonID)
 );
 
-INSERT INTO LMThermostatSeason VALUES (-1,-1,-1,'01-JUN-00',1);
-INSERT INTO LMThermostatSeason VALUES (-2,-1,-2,'15-OCT-00',2);
+INSERT INTO LMThermostatSeason VALUES (-1,-1,-1,'01-JUN-00','01-JUN-00');
+INSERT INTO LMThermostatSeason VALUES (-2,-1,-2,'15-OCT-00','15-OCT-00');
 
 /*==============================================================*/
 /* Table: LMThermostatSeasonEntry                               */
@@ -6319,30 +6319,30 @@ create table LMThermostatSeasonEntry  (
    constraint PK_LMTHERMOSTATSEASONENTRY primary key (EntryID)
 );
 
-INSERT INTO LMThermostatSeasonEntry VALUES (-24,-1,1171,21600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-23,-1,1171,30600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-22,-1,1171,61200,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-21,-1,1171,75600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-20,-1,1173,21600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-19,-1,1173,30600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-18,-1,1173,61200,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-17,-1,1173,75600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-16,-1,1174,21600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-15,-1,1174,30600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-14,-1,1174,61200,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-13,-1,1174,75600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-12,-2,1171,21600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-11,-2,1171,30600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-10,-2,1171,61200,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-9,-2,1171,75600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-8,-2,1173,21600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-7,-2,1173,30600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-6,-2,1173,61200,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-5,-2,1173,75600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-4,-2,1174,21600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-3,-2,1174,30600,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-2,-2,1174,61200,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-1,-2,1174,75600,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-24,-1,1171,21600,72,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-23,-1,1171,30600,72,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-22,-1,1171,61200,72,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-21,-1,1171,75600,72,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-20,-1,1173,21600,72,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-19,-1,1173,30600,72,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-18,-1,1173,61200,72,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-17,-1,1173,75600,72,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-16,-1,1174,21600,72,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-15,-1,1174,30600,72,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-14,-1,1174,61200,72,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-13,-1,1174,75600,72,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-12,-2,1171,21600,72,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-11,-2,1171,30600,72,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-10,-2,1171,61200,72,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-9,-2,1171,75600,72,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-8,-2,1173,21600,72,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-7,-2,1173,30600,72,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-6,-2,1173,61200,72,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-5,-2,1173,75600,72,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-4,-2,1174,21600,72,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-3,-2,1174,30600,72,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-2,-2,1174,61200,72,72);
+INSERT INTO LMThermostatSeasonEntry VALUES (-1,-2,1174,75600,72,72);
 
 /*==============================================================*/
 /* Table: LOGIC                                                 */
