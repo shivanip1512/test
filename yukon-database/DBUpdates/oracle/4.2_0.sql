@@ -285,6 +285,20 @@ CREATE UNIQUE INDEX INDX_SchId_PAOId_Com_UNQ ON PAOScheduleAssignment (
 );
 /* End YUK-6857 */
 
+/* Start YUK-6739 */
+INSERT INTO Command VALUES(-156, 'getvalue daily read channel 1 ?''MM/DD/YYYY''', 'Read Daily kWh, Peak kW, and Min/Max Voltage(Channel 1).', 'MCT-410IL');
+INSERT INTO Command VALUES(-157, 'getvalue daily read channel 1 ?''MM/DD/YYYY'' ?''MM/DD/YYYY''', 'Read Daily kWh for date range (Channel 1).', 'MCT-410IL');
+
+INSERT INTO DeviceTypeCommand VALUES(-745, -156, 'MCT-410CL', 38, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES(-746, -156, 'MCT-410FL', 38, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES(-747, -156, 'MCT-410GL', 38, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES(-748, -156, 'MCT-410IL', 38, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES(-749, -157, 'MCT-410CL', 39, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES(-750, -157, 'MCT-410FL', 39, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES(-751, -157, 'MCT-410GL', 39, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES(-752, -157, 'MCT-410IL', 39, 'Y', -1);
+/* End YUK-6739 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
