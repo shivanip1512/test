@@ -10707,8 +10707,8 @@ void CtiCCSubstationBusStore::reCalculateAllStats( )
             CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)_ccSubstationBuses->at(i);
         
             CtiFeeder_vec &ccFeeders = currentSubstationBus->getCCFeeders();
-            DOUBLE subBusUserDefTotal, subBusDailyTotal, subBusWeeklyTotal, subBusMonthlyTotal= 0;
-            DOUBLE subBusUserDefOpTotal, subBusDailyOpTotal, subBusWeeklyOpTotal, subBusMonthlyOpTotal = 0;
+            DOUBLE subBusUserDefTotal=0, subBusDailyTotal=0, subBusWeeklyTotal=0, subBusMonthlyTotal= 0;
+            DOUBLE subBusUserDefOpTotal=0, subBusDailyOpTotal=0, subBusWeeklyOpTotal=0, subBusMonthlyOpTotal = 0;
             LONG numOfFdrs = ccFeeders.size();
             for(LONG j=0; j < numOfFdrs; j++)
             {
@@ -10717,8 +10717,8 @@ void CtiCCSubstationBusStore::reCalculateAllStats( )
                 CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
         
                 LONG numOfBanks = ccCapBanks.size();
-                DOUBLE feederUserDefTotal, feederDailyTotal, feederWeeklyTotal, feederMonthlyTotal = 0;
-                DOUBLE feederUserDefOpTotal, feederDailyOpTotal, feederWeeklyOpTotal, feederMonthlyOpTotal = 0;
+                DOUBLE feederUserDefTotal=0, feederDailyTotal=0, feederWeeklyTotal=0, feederMonthlyTotal = 0;
+                DOUBLE feederUserDefOpTotal=0, feederDailyOpTotal=0, feederWeeklyOpTotal=0, feederMonthlyOpTotal = 0;
                 for(LONG k=0;k<numOfBanks;k++)
                 {
                     CtiCCCapBank* currentCapBank = (CtiCCCapBank*)(ccCapBanks[k]);
@@ -10764,8 +10764,8 @@ void CtiCCSubstationBusStore::reCalculateAllStats( )
         {
             CtiCCSubstation* currentStation = (CtiCCSubstation*)_ccSubstations->at(i);
             std::list <long>::iterator busIter = currentStation->getCCSubIds()->begin();
-            DOUBLE subUserDefTotal, subDailyTotal, subWeeklyTotal, subMonthlyTotal= 0;
-            DOUBLE subUserDefOpTotal, subDailyOpTotal, subWeeklyOpTotal, subMonthlyOpTotal = 0;
+            DOUBLE subUserDefTotal=0, subDailyTotal=0, subWeeklyTotal=0, subMonthlyTotal= 0;
+            DOUBLE subUserDefOpTotal=0, subDailyOpTotal=0, subWeeklyOpTotal=0, subMonthlyOpTotal = 0;
             LONG numOfBuses = currentStation->getCCSubIds()->size(); 
             while (busIter != currentStation->getCCSubIds()->end())
             {
@@ -10789,8 +10789,8 @@ void CtiCCSubstationBusStore::reCalculateAllStats( )
         {
             CtiCCArea* currentArea = (CtiCCArea*)_ccGeoAreas->at(i);
             std::list <long>::iterator subIter = currentArea->getSubStationList()->begin();
-            DOUBLE areaUserDefTotal, areaDailyTotal, areaWeeklyTotal, areaMonthlyTotal= 0;
-            DOUBLE areaUserDefOpTotal, areaDailyOpTotal, areaWeeklyOpTotal, areaMonthlyOpTotal = 0;
+            DOUBLE areaUserDefTotal=0, areaDailyTotal=0, areaWeeklyTotal=0, areaMonthlyTotal= 0;
+            DOUBLE areaUserDefOpTotal=0, areaDailyOpTotal=0, areaWeeklyOpTotal=0, areaMonthlyOpTotal = 0;
             LONG numOfSubs = currentArea->getSubStationList()->size();
             while (subIter != currentArea->getSubStationList()->end())
             {
@@ -10815,8 +10815,8 @@ void CtiCCSubstationBusStore::reCalculateAllStats( )
             CtiCCSpecial* currentSpArea = (CtiCCSpecial*)_ccSpecialAreas->at(i);
             std::list <long>::iterator subIter = currentSpArea->getSubstationIds()->begin();
         
-            DOUBLE areaUserDefTotal, areaDailyTotal, areaWeeklyTotal, areaMonthlyTotal= 0;
-            DOUBLE areaUserDefOpTotal, areaDailyOpTotal, areaWeeklyOpTotal, areaMonthlyOpTotal = 0;
+            DOUBLE areaUserDefTotal=0, areaDailyTotal=0, areaWeeklyTotal=0, areaMonthlyTotal= 0;
+            DOUBLE areaUserDefOpTotal=0, areaDailyOpTotal=0, areaWeeklyOpTotal=0, areaMonthlyOpTotal = 0;
             LONG numOfSubs = currentSpArea->getSubstationIds()->size();
             while (subIter != currentSpArea->getSubstationIds()->end())
             {
