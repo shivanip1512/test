@@ -3,6 +3,7 @@ package com.cannontech.common.login;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
+import java.net.URL;
 import java.util.prefs.Preferences;
 
 import javax.swing.JFrame;
@@ -19,6 +20,7 @@ public class ClientStartupHelper {
     private JFrame parentFrame = null; // can be null initially
     private int requiredRole;
     private SplashWindow splash;
+    private URL splashURL;
 
     public void doStartup() throws Exception {
         CTILogger.debug("starting doStartup");
@@ -35,7 +37,11 @@ public class ClientStartupHelper {
             
         });
         
-        splash = SplashWindow.createYukonSplash(parentFrame);
+        if( this.splashURL != null) {
+        	splash = SplashWindow.createYukonSplash(parentFrame, this.splashURL);
+        } else {
+        	splash = SplashWindow.createYukonSplash(parentFrame);
+        }
         ClientSession session = ClientSession.getInstance(); 
         boolean loggingIn = true;
         while(loggingIn){
@@ -132,4 +138,8 @@ public class ClientStartupHelper {
     public void setContext(String context) {
         YukonSpringHook.setDefaultContext(context);
     }
+    
+    public void setSplashURL(URL splashURL) {
+		this.splashURL = splashURL;
+	}    
 }

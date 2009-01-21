@@ -2,8 +2,6 @@ package com.cannontech.common.gui.util;
 
  import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -18,47 +16,30 @@ import java.net.URL;
 
 import javax.swing.JFrame;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 
  public class SplashWindow extends Window 
  {
-   private Image splashImage;   
-   private int imgWidth, imgHeight;
-   private int padding = 15;
-  
-   private FontMetrics fontMetrics;
-   
-   private URL imgURL;
-   private int borderSize;
-   private Color borderColor;
-   Toolkit tk;
-  
-   private String displayText = " ";
-   private Color textColor;
+	private Image splashImage;   
+	private int imgWidth = 0, imgHeight = 0;
+	private URL imgURL;
+	Toolkit tk;
+	private int borderSize = 2;
 
-   public static SplashWindow createYukonSplash(Frame frame) {
-       return new SplashWindow(frame,
-                        CtiUtilities.CTISMALL_GIF,
-                        "Loading " + CtiUtilities.getApplicationName() + "...",
-                        new Font("dialog", Font.BOLD, 14 ), 
-                        Color.black, 
-                        Color.blue, 
-                        2);
-   }
+	public static SplashWindow createYukonSplash(Frame frame, URL imgURL) {
+		return new SplashWindow(frame, imgURL);
+	}
+	
+	public static SplashWindow createYukonSplash(Frame frame) {
+		return createYukonSplash(frame, CtiUtilities.GENERIC_APPLICATION_SPLASH);
+	}
    
-	public SplashWindow(Frame f, String imgName, String displayText, Font displayFont, Color textColor, Color borderColor, int borderSize ) 
-	{
-		super( (f == null ? new JFrame() : f) );
-		initialize( f, SplashWindow.class.getResource(imgName), displayText, displayFont,
-                textColor, borderColor, borderSize ); 
-	} 
-
-    public SplashWindow(Frame f, URL imgURL_, String displayText, Font displayFont, Color textColor, Color borderColor, int borderSize ) 
-    {
+    public SplashWindow(Frame f, URL imgURL_) {
         super( (f == null ? new JFrame() : f) );
-        initialize( f, imgURL_, displayText, displayFont, textColor, borderColor, borderSize ); 
+        initialize( f, imgURL_); 
     } 
-
+    
 	/**
 	 * This method was created in VisualAge.
 	 * @param f java.awt.Frame
@@ -66,110 +47,58 @@ import com.cannontech.common.util.CtiUtilities;
 	 * @param borderColor java.awt.Color
 	 * @param borderSize int
 	 */
-	private void initialize( Frame f, URL imgURL_, String displayText, Font displayFont, Color textColor, Color borderColor, int borderSize) {
+	private void initialize( Frame f, URL imgURL_) {
 		this.imgURL = imgURL_;
-		this.textColor = textColor;
-		this.borderColor = borderColor;
-		this.borderSize = borderSize;
 		
 		tk = Toolkit.getDefaultToolkit();
-		 splashImage = loadSplashImage();
+		splashImage = loadSplashImage();
+
+        if (!javax.swing.SwingUtilities.isEventDispatchThread()) {
+        	javax.swing.SwingUtilities.invokeLater(new Runnable() {
+        		public void run() {
+        			showSplashScreen();
+        		}
+        	});
+        } else {
+        	showSplashScreen();
+        }
 	
-		 setFont( displayFont );
-		 fontMetrics = getFontMetrics(displayFont);
-	
-		 this.displayText = displayText;
-		 
-         if (!javax.swing.SwingUtilities.isEventDispatchThread()) {
-             javax.swing.SwingUtilities.invokeLater(new Runnable() {
-                 public void run() {
-                     showSplashScreen();
-                 }
-             });
-         } else {
-             showSplashScreen();
-         }
-	
-		 // Close the splash window when the parent frame is opened
-		 if( f != null )
-			 f.addWindowListener( new WindowAdapter()
-		 	 {
-				public void windowOpened(WindowEvent we )
-				{
-					setVisible(false);
-					dispose();
+		// Close the splash window when the parent frame is opened
+        if( f != null ) {
+        	f.addWindowListener( new WindowAdapter() {
+        		public void windowOpened(WindowEvent we ){
+        			setVisible(false);
+        			dispose();
 				}
-			 });
+        	});
+        }
 	}
 
-   public Image loadSplashImage() {
-	 MediaTracker tracker = new MediaTracker(this);
-	 Image result;
-	 result = tk.getImage( imgURL );
-	 tracker.addImage(result, 0);
-	 try { 
-	   tracker.waitForAll(); 
-	   }
-	 catch (Exception e) {
-	   com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	   }
-	 imgWidth = result.getWidth(this);
-	 imgHeight = result.getHeight(this);
-	 return (result);
-	 } 
+	public Image loadSplashImage() {
+		MediaTracker tracker = new MediaTracker(this);
+		Image result;
+		result = tk.getImage( imgURL);
+		tracker.addImage(result, 0);
+		try {
+			tracker.waitForAll();
+			
+		} catch (Exception e) {
+			CTILogger.error( e.getMessage(), e );
+		}
+		imgWidth = result.getWidth(this);
+		imgHeight = result.getHeight(this);
+		return (result);
+	} 
 
-	/**
-	 * Insert the method's description here.
-	 * Creation date: (3/17/00 3:28:12 PM)
-	 * @param args java.lang.String[]
-	 */
 	public static void main(String[] args) 
 	{
-		try
-		{
+		try {
 			javax.swing.JFrame f = new javax.swing.JFrame();
 			f.setSize(100,200);		
 			
-			com.cannontech.common.gui.util.SplashWindow splash = new com.cannontech.common.gui.util.SplashWindow(f, CtiUtilities.CTISMALL_GIF, "Hi, I'm loading...", new java.awt.Font("dialog", 0, 16), Color.black,  Color.black, 1  );
+			SplashWindow splash = new SplashWindow(f, CtiUtilities.GENERIC_APPLICATION_SPLASH);
 		
-			Thread.sleep(3000);
-			splash.setDisplayText("Hi, I'm still loading...");
-	
-			Thread.sleep(3000);
-			splash.setDisplayText("Geez, I'm still loading...");
-	
-			Thread.sleep(4000);
-			splash.setDisplayText("Geez, this must be a java application...");
-	
-			Thread.sleep(5000);
-			splash.setDisplayText("Almost done.....");
-	
-			Thread.sleep(3000);		
-			splash.setDisplayText("Just hang on.");
-	
-			Thread.sleep(500);
-			splash.setDisplayText("Just hang on....");
-	
-			Thread.sleep(500);
-			splash.setDisplayText("Just hang on......");
-	
-			Thread.sleep(500);
-			splash.setDisplayText("Just hang on........");
-	
-			Thread.sleep(500);
-			splash.setDisplayText("Just hang on..........");
-	
-			Thread.sleep(500);
-			splash.setDisplayText("Just hang on............");
-	
-			Thread.sleep(500);
-			splash.setDisplayText("Just hang on..............");
-	
-			Thread.sleep(500);
-			splash.setDisplayText("Just hang on................");
-			
-			Thread.sleep(1000);
-			
+
 			f.setVisible(true);
 		}
 		catch(Exception e )
@@ -183,35 +112,18 @@ import com.cannontech.common.util.CtiUtilities;
                             RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 	    g.setColor(Color.white);
 	    g.fillRect(borderSize, borderSize, getWidth() - (2 * borderSize), getHeight() - ( 2 * borderSize));
-	    g.drawImage(splashImage, borderSize + padding, borderSize + padding,
-	                imgWidth, imgHeight, this);
-
-	    g.setColor(textColor);
-	    g.drawString(displayText, (getWidth() / 2) - (fontMetrics.stringWidth(displayText)/2),
-	                 imgHeight + borderSize + 2*padding + fontMetrics.getHeight() );
+	    g.drawImage(splashImage, borderSize, borderSize, imgWidth, imgHeight, this);
 	}
  
-	/**
-	 * Insert the method's description here.
-	 * Creation date: (3/17/00 3:27:22 PM)
-	 * @param newDisplayText java.lang.String
-	 */
-	public void setDisplayText(java.lang.String newDisplayText) {
-		displayText = newDisplayText;
-		repaint();
-	}
-
-   public void showSplashScreen() {
-	 Dimension screenSize = tk.getScreenSize();
-	 setBackground(borderColor);
-
-	 int stringHeight = fontMetrics.getHeight();
-	 
-	 int w = imgWidth + (borderSize * 2) + (padding * 2);
-	 int h = imgHeight + (borderSize * 2) + (padding * 2) + (int) (stringHeight * 1.5 );
-	 int x = (screenSize.width - w) /2;
-	 int y = (screenSize.height - h) /2;
-	 setBounds(x, y, w, h);
-	 setVisible(true);
-	 } 
+	public void showSplashScreen() {
+	   Dimension screenSize = tk.getScreenSize();
+	   setBackground(Color.BLACK);
+	   
+	   int w = imgWidth + (borderSize * 2);
+	   int h = imgHeight + (borderSize * 2);
+	   int x = (screenSize.width - w) /2;
+	   int y = (screenSize.height - h) /2;
+	   setBounds(x, y, w, h);
+	   setVisible(true);
+	} 
 }
