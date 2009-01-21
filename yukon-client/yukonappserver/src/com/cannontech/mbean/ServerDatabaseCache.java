@@ -3134,16 +3134,6 @@ public synchronized List<LiteContact> getAllContactsList() {
     return allContacts;
 }
 
-public synchronized LiteContact[] getContactsByLastName(String lastName, boolean partialMatch) 
-{
-    return YukonUserContactLookup.loadContactsByLastName(lastName, partialMatch);
-}
-
-public synchronized LiteContact[] getContactsByFirstName(String firstName, boolean partialMatch) 
-{
-    return YukonUserContactLookup.loadContactsByFirstName(firstName, partialMatch);
-}
-
 public synchronized LiteContact[] getContactsByPhoneNumber(String phone, boolean partialMatch) 
 {
     return YukonUserContactLookup.loadContactsByPhoneNumber(phone, partialMatch);

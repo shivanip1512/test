@@ -125,34 +125,6 @@ public final class ContactDaoImpl implements ContactDao {
 	}
 
 	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.ContactDao#getContactsByFName(java.lang.String)
-     */
-	public LiteContact[] getContactsByFName( String firstName_ ) 
-	{
-		if( firstName_ == null )
-			return null;
-
-		synchronized( databaseCache )
-		{
-			return databaseCache.getContactsByFirstName(firstName_, false);
-		}
-	}
-	
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.ContactDao#getContactsByLName(java.lang.String, boolean)
-     */
-	public LiteContact[] getContactsByLName( String lastName_, boolean partialMatch ) 
-	{
-		if( lastName_ == null )
-			return null;
-
-        synchronized( databaseCache )
-        {
-            return databaseCache.getContactsByLastName(lastName_, partialMatch);
-        }
-	}
-    
-	/* (non-Javadoc)
      * @see com.cannontech.core.dao.ContactDao#retrieveContactIDsByLastName(java.lang.String, boolean)
      */
 	public int[] retrieveContactIDsByLastName(String lastName_, boolean partialMatch)
@@ -207,13 +179,6 @@ public final class ContactDaoImpl implements ContactDao {
         }
         return contactIDs;
     }
-	
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.ContactDao#getContactsByLName(java.lang.String)
-     */
-	public LiteContact[] getContactsByLName( String lastName_ ) {
-		return getContactsByLName( lastName_, false );
-	}
 	
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.ContactDao#getContactsByPhoneNo(java.lang.String, int[], boolean)

@@ -6,12 +6,19 @@
  */
 package com.cannontech.yukon.server.cache.bypass;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
+
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.db.contact.Contact;
 import com.cannontech.database.db.contact.ContactNotification;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * @author jdayton
@@ -80,98 +87,6 @@ public class YukonUserContactLookup
         }
           
         return ThreeTwoOneContact;
-    }
-    
-    /*
-     * Grab contacts straight from the DB using last name (or similar last name) 
-     */
-    public static LiteContact[] loadContactsByLastName(String lName, boolean partialMatch)
-    {
-        com.cannontech.database.SqlStatement stmt;
-        
-        /*
-         * Just get the ContactIDs first.  We'll want to do a retrieve so we get notifications, etc.
-         */
-        if(partialMatch)
-        {        
-            stmt = new com.cannontech.database.SqlStatement("SELECT CONTACTID FROM " +
-                                                           Contact.TABLE_NAME + " WHERE UPPER(CONTLASTNAME) LIKE '" + lName.toUpperCase() + "%'", "yukon");
-        }
-        else
-        {
-            stmt = new com.cannontech.database.SqlStatement("SELECT CONTACTID FROM " +
-                                                           Contact.TABLE_NAME + " WHERE UPPER(CONTLASTNAME) = '" + lName.toUpperCase() + "'", "yukon");
-        }
-        
-        LiteContact[] foundContacts;
-        
-        try
-        {
-            stmt.execute();
-            
-            foundContacts = new LiteContact[stmt.getRowCount()];
-            for( int j = 0; j < stmt.getRowCount(); j++ )
-            {
-                LiteContact newlyFound = new LiteContact(((java.math.BigDecimal) stmt.getRow(j)[0]).intValue());
-                newlyFound.retrieve(CtiUtilities.getDatabaseAlias());
-                foundContacts[j] = newlyFound;
-            }
-            
-            return foundContacts;
-        }
-        catch( Exception e )
-        {
-            com.cannontech.clientutils.CTILogger.error( "Error retrieving contacts with last name " + lName + ": " + e.getMessage(), e );
-        }
-        
-        foundContacts = new LiteContact[0];
-        return foundContacts;
-    }
-    
-    /*
-     * Grab contacts straight from the DB using last name (or similar last name) 
-     */
-    public static LiteContact[] loadContactsByFirstName(String fName, boolean partialMatch)
-    {
-        com.cannontech.database.SqlStatement stmt;
-        
-        /*
-         * Just get the ContactIDs first.  We'll want to do a retrieve so we get notifications, etc.
-         */
-        if(partialMatch)
-        {        
-            stmt = new com.cannontech.database.SqlStatement("SELECT CONTACTID FROM " +
-                                                           Contact.TABLE_NAME + " WHERE UPPER(CONTFIRSTNAME) LIKE '" + fName.toUpperCase() + "%'", "yukon");
-        }
-        else
-        {
-            stmt = new com.cannontech.database.SqlStatement("SELECT CONTACTID FROM " +
-                                                           Contact.TABLE_NAME + " WHERE UPPER(CONTFIRSTNAME) = '" + fName.toUpperCase() + "'", "yukon");
-        }
-        
-        LiteContact[] foundContacts;
-        
-        try
-        {
-            stmt.execute();
-            
-            foundContacts = new LiteContact[stmt.getRowCount()];
-            for( int j = 0; j < stmt.getRowCount(); j++ )
-            {
-                LiteContact newlyFound = new LiteContact(((java.math.BigDecimal) stmt.getRow(j)[0]).intValue());
-                newlyFound.retrieve(CtiUtilities.getDatabaseAlias());
-                foundContacts[j] = newlyFound;
-            }
-            
-            return foundContacts;
-        }
-        catch( Exception e )
-        {
-            com.cannontech.clientutils.CTILogger.error( "Error retrieving contacts with first name " + fName + ": " + e.getMessage(), e );
-        }
-        
-        foundContacts = new LiteContact[0];
-        return foundContacts;
     }
     
     public static LiteContact[] loadContactsByPhoneNumber(String phone, boolean partialMatch)

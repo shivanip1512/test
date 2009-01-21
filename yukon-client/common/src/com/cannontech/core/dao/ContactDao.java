@@ -30,34 +30,6 @@ public interface ContactDao {
             LiteContact liteContact, int notifCatID);
 
     /**
-     * Returns the LiteContact for firstName_.
-     * @return com.cannontech.database.data.lite.LiteContact
-     * @param contactID_ int
-     */
-    public LiteContact[] getContactsByFName(String firstName_);
-
-    /**
-     * Returns the LiteContact for lastName_.
-     * @return com.cannontech.database.data.lite.LiteContact
-     * @param contactID_ int
-     * @param partialMatch If true, lastName_ is to be matched partially from the first character
-     */
-    public LiteContact[] getContactsByLName(String lastName_,
-            boolean partialMatch);
-
-    /**
-     * Returns an array of contactIDS having lastName as partialMatch (true) or exact match (partialMatch=false).
-     * If lastName contains a comma, then the text following the comma is used for FIRSTNAME PARTIAL match 
-     * @param lastName_
-     * @param partialMatch
-     * @return
-     */
-    public int[] retrieveContactIDsByLastName(String lastName_,
-            boolean partialMatch);
-
-    public LiteContact[] getContactsByLName(String lastName_);
-
-    /**
      * @param phoneNo
      * @param phoneNotifCatIDs Array of notification category IDs, currently the options are:
      * YukonListEntryTypes.YUK_ENTRY_ID_PHONE, YUK_ENTRY_ID_HOME_PHONE, YUK_ENTRY_ID_WORK_PHONE,

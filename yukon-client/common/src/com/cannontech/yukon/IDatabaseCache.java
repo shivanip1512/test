@@ -242,10 +242,6 @@ public interface IDatabaseCache {
 
     public LiteContact getAContactByContactID(int contactID);
 
-    public LiteContact[] getContactsByLastName(String lastName, boolean partialMatch);
-
-    public LiteContact[] getContactsByFirstName(String firstName, boolean partialMatch);
-
     public LiteContact[] getContactsByPhoneNumber(String phone, boolean partialMatch);
 
     public LiteContact getContactsByEmail(String email);
