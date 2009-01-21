@@ -50,12 +50,12 @@ void CtiDeviceGroupXml::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelec
 void CtiDeviceGroupXml::getPropertiesSql(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
 {
     RWDBTable tbl = db.table("LMGroupXMLParameter");
-    selector << tbl["lmgroupid"] 
+    selector << tbl["LMGroupXMLParameterId"] 
 			 << tbl["parametername"] 
 			 << tbl["parametervalue"];
 	selector.from(tbl);
 
-    selector.where( rwdbUpper(tbl["lmgroupid"]) == RWDBExpr(getID()) && selector.where() );    
+    selector.where( rwdbUpper(tbl["LMGroupXMLParameterId"]) == RWDBExpr(getID()) && selector.where() );    
 }
 
 /**
