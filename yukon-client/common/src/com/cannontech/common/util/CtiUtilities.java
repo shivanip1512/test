@@ -101,8 +101,13 @@ public final class CtiUtilities
 	private static DecimalFormat numberFormatter = null;
 	
 	// image names
-    public static final URL CTISMALL_GIF =
-            CtiUtilities.class.getResource("/ctismall.gif");
+    public static final URL GENERIC_APPLICATION_SPLASH = CtiUtilities.class.getResource("/ApplicationLoading.gif");
+    
+    public static final URL DBEDITOR_SPLASH = CtiUtilities.class.getResource("/DBEditorSplash.gif");
+    public static final URL COMMANDER_SPLASH = CtiUtilities.class.getResource("/CommanderSplash.gif");
+    public static final URL TRENDING_SPLASH = CtiUtilities.class.getResource("/TrendingSplash.gif");
+    public static final URL TDC_SPLASH = CtiUtilities.class.getResource("/TDCSplash.gif");
+    
     public static final URL ALARM_AU =
         CtiUtilities.class.getResource("/alarm.au");
     
