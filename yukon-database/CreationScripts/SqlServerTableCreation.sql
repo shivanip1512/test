@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     1/21/2009 2:39:30 PM                         */
+/* Created on:     1/21/2009 3:03:43 PM                         */
 /*==============================================================*/
 
 
@@ -8963,8 +8963,8 @@ create table LMThermostatSeason (
    SeasonID             numeric              not null,
    ScheduleID           numeric              null,
    WebConfigurationID   numeric              null,
-   StartDate            datetime             null,
-   DisplayOrder         numeric              null,
+   CoolStartDate        datetime             null,
+   HeatStartDate        datetime             null,
    constraint PK_LMTHERMOSTATSEASON primary key (SeasonID)
 )
 go
@@ -8980,7 +8980,8 @@ create table LMThermostatSeasonEntry (
    SeasonID             numeric              not null,
    TimeOfWeekID         numeric              not null,
    StartTime            numeric              not null,
-   Temperature          numeric              null,
+   CoolTemperature      numeric              null,
+   HeatTemperature      numeric              null,
    constraint PK_LMTHERMOSTATSEASONENTRY primary key (EntryID)
 )
 go
@@ -12056,6 +12057,7 @@ INSERT INTO YukonRoleProperty VALUES(-20895,-201,'Opt Out Admin Status','true','
 INSERT INTO YukonRoleProperty VALUES(-20896,-201,'Opt Out Admin Change Enabled','true','Determines whether an operator can enable or disable Opt Outs for the rest of the day.');
 INSERT INTO YukonRoleProperty VALUES(-20897,-201,'Opt Out Admin Cancel Current','true','Determines whether an operator can cancel (reenable) ALL currently Opted Out devices.');
 INSERT INTO YukonRoleProperty VALUES(-20898,-201,'Opt Out Admin Change Counts','true','Determines whether an operator can change from Opt Outs count against limits today to Opt Outs do not count.'); 
+INSERT INTO YukonRoleProperty VALUES(-20899,-201,'Thermostat Schedule 5-2','false','Allows a user to select Weekday/Weekend in addition to Weekday/Saturday/Sunday for thermostat schedule editing.');
 
 /* Operator Hardware Inventory Role Properties */
 insert into YukonRoleProperty values(-20900,-209,'Show All Inventory','true','Controls whether to allow showing all inventory');
@@ -12125,59 +12127,56 @@ INSERT INTO YukonRoleProperty VALUES(-40056,-400,'Opt Out Limits',' ','Contains 
 INSERT INTO YukonRoleProperty VALUES(-40100,-400,'Link FAQ','(none)','The customized FAQ link');
 INSERT INTO YukonRoleProperty VALUES(-40102,-400,'Link Thermostat Instructions','(none)','The customized thermostat instructions link');
 
-insert into YukonRoleProperty values(-40110,-400,'Text Control','control','Term for control');
-insert into YukonRoleProperty values(-40111,-400,'Text Controlled','controlled','Past form of the term for control');
-insert into YukonRoleProperty values(-40112,-400,'Text Controlling','controlling','Present form of the term for control');
-insert into YukonRoleProperty values(-40113,-400,'Text Opt Out Noun','opt out','Noun form of the term for opt out');
-insert into YukonRoleProperty values(-40114,-400,'Text Opt Out Verb','opt out of','Verbical form of the term for opt out');
-insert into YukonRoleProperty values(-40115,-400,'Text Opt Out Past','opted out','Past form of the term for opt out');
-insert into YukonRoleProperty values(-40116,-400,'Text Odds for Control','odds for control','Text for odds for control');
-insert into YukonRoleProperty values(-40117,-400,'Text Recommended Settings','Recommended Settings','Text of the Recommended Settings button on the thermostat schedule page');
+INSERT INTO YukonRoleProperty VALUES(-40110,-400,'Text Control','control','Term for control');
+INSERT INTO YukonRoleProperty VALUES(-40111,-400,'Text Controlled','controlled','Past form of the term for control');
+INSERT INTO YukonRoleProperty VALUES(-40112,-400,'Text Controlling','controlling','Present form of the term for control');
+INSERT INTO YukonRoleProperty VALUES(-40113,-400,'Text Opt Out Noun','opt out','Noun form of the term for opt out');
+INSERT INTO YukonRoleProperty VALUES(-40114,-400,'Text Opt Out Verb','opt out of','Verbical form of the term for opt out');
+INSERT INTO YukonRoleProperty VALUES(-40115,-400,'Text Opt Out Past','opted out','Past form of the term for opt out');
+INSERT INTO YukonRoleProperty VALUES(-40116,-400,'Text Odds for Control','odds for control','Text for odds for control');
+INSERT INTO YukonRoleProperty VALUES(-40117,-400,'Text Recommended Settings','Recommended Settings','Text of the Recommended Settings button on the thermostat schedule page');
 
-insert into YukonRoleProperty values(-40130,-400,'Label Programs Control History','Control History','Text of the programs control history link');
-insert into YukonRoleProperty values(-40131,-400,'Label Programs Enrollment','Enrollment','Text of the programs enrollment link');
-insert into YukonRoleProperty values(-40132,-400,'Label Programs Opt Out','Opt Out','Text of the programs opt out link');
-insert into YukonRoleProperty values(-40133,-400,'Label Thermostat Schedule','Schedule','Text of the thermostat schedule link');
-insert into YukonRoleProperty values(-40134,-400,'Label Thermostat Manual','Manual','Text of the thermostat manual link');
-insert into YukonRoleProperty values(-40135,-400,'Label Account General','General','Text of the account general link');
-insert into YukonRoleProperty values(-40136,-400,'Label Contact Us','Contact Us','Text of the contact us link');
-insert into YukonRoleProperty values(-40137,-400,'Label FAQ','FAQ','Text of the FAQ link');
-insert into YukonRoleProperty values(-40138,-400,'Label Change Login','Change Login','Text of the change login link');
-insert into YukonRoleProperty values(-40139,-400,'Label Thermostat Saved Schedules','Saved Schedules','Text of the thermostat saved schedules link');
-
-insert into YukonRoleProperty values(-40150,-400,'Title General','WELCOME TO ENERGY COMPANY SERVICES!','Title of the general page');
-insert into YukonRoleProperty values(-40151,-400,'Title Programs Control History','PROGRAMS - CONTROL HISTORY','Title of the programs control history page');
-insert into YukonRoleProperty values(-40152,-400,'Title Program Control History','PROGRAM - CONTROL HISTORY','Title of the control history page of a particular program');
-insert into YukonRoleProperty values(-40153,-400,'Title Program Control Summary','PROGRAM - CONTROL SUMMARY','Title of the control summary page of a particular program');
-insert into YukonRoleProperty values(-40154,-400,'Title Programs Enrollment','PROGRAMS - ENROLLMENT','Title of the programs enrollment page');
-insert into YukonRoleProperty values(-40155,-400,'Title Programs Opt Out','PROGRAMS - OPT OUT','Title of the programs opt out page');
-insert into YukonRoleProperty values(-40156,-400,'Title Utility','QUESTIONS - UTILITY','Title of the utility page');
-insert into YukonRoleProperty values(-40157,-400,'Title Thermostat Schedule','THERMOSTAT - SCHEDULE','Title of the thermostat schedule page');
-insert into YukonRoleProperty values(-40158,-400,'Title Thermostat Manual','THERMOSTAT - MANUAL','Title of the thermostat manual page');
-insert into YukonRoleProperty values(-40159,-400,'Title Thermostat Saved Schedules','THERMOSTAT - SAVED SCHEDULES','Title of the thermostat saved schedules page');
-
-insert into YukonRoleProperty values(-40170,-400,'Description General','Thank you for participating in our Consumer Energy Services programs. By participating, you have helped to optimize our delivery of energy, stabilize rates, and reduce energy costs. Best of all, you are saving energy dollars!<br><br>This site is designed to help manage your programs on-line from anywhere with access to a Web browser.','Description on the general page');
-insert into YukonRoleProperty values(-40171,-400,'Description Opt Out','If you would like to temporarily opt out of all programs, select the time frame below, then click Submit.','Description on the programs opt out page');
-insert into YukonRoleProperty values(-40172,-400,'Description Enrollment','Select the check boxes and corresponding radio button of the programs you would like to be enrolled in.','Description on the program enrollment page');
-insert into YukonRoleProperty values(-40173,-400,'Description Utility',' <<COMPANY_ADDRESS>><br><<PHONE_NUMBER>><<FAX_NUMBER>><<EMAIL>>','Description on the contact us page. The special fields will be replaced by real information when displayed on the web.');
-
-insert into YukonRoleProperty values(-40180,-400,'Image Corner','yukon/Mom.jpg','Image at the upper-left corner');
-insert into YukonRoleProperty values(-40181,-400,'Image General','yukon/Family.jpg','Image on the general page');
-
-insert into YukonRoleProperty values(-40190,-400,'Heading Account','Account','Heading of the account links');
-insert into YukonRoleProperty values(-40191,-400,'Heading Thermostat','Thermostat','Heading of the thermostat links');
-insert into YukonRoleProperty values(-40192,-400,'Heading Metering','Metering','Heading of the metering links');
-insert into YukonRoleProperty values(-40193,-400,'Heading Programs','Programs','Heading of the program links');
-insert into YukonRoleProperty values(-40194,-400,'Heading Trending','Trending','Heading of the trending links');
-insert into YukonRoleProperty values(-40195,-400,'Heading Questions','Questions','Heading of the questions links');
-insert into YukonRoleProperty values(-40196,-400,'Heading Administration','Administration','Heading of the administration links');
-insert into YukonRoleProperty values(-40197,-400,'Contacts Access','false','Turns residential side contact access on or off.');
-insert into YukonRoleProperty values(-40198,-400,'Opt Out Today Only','false','Prevents residential side opt outs from being available for scheduling beyond the current day.');
-insert into YukonRoleProperty values(-40199,-400,'Sign Out Enabled','true','Allows end-users to see a sign-out link when accessing their account pages.'); 
+INSERT INTO YukonRoleProperty VALUES(-40130,-400,'Label Programs Control History','Control History','Text of the programs control history link');
+INSERT INTO YukonRoleProperty VALUES(-40131,-400,'Label Programs Enrollment','Enrollment','Text of the programs enrollment link');
+INSERT INTO YukonRoleProperty VALUES(-40132,-400,'Label Programs Opt Out','Opt Out','Text of the programs opt out link');
+INSERT INTO YukonRoleProperty VALUES(-40133,-400,'Label Thermostat Schedule','Schedule','Text of the thermostat schedule link');
+INSERT INTO YukonRoleProperty VALUES(-40134,-400,'Label Thermostat Manual','Manual','Text of the thermostat manual link');
+INSERT INTO YukonRoleProperty VALUES(-40135,-400,'Label Account General','General','Text of the account general link');
+INSERT INTO YukonRoleProperty VALUES(-40136,-400,'Label Contact Us','Contact Us','Text of the contact us link');
+INSERT INTO YukonRoleProperty VALUES(-40137,-400,'Label FAQ','FAQ','Text of the FAQ link');
+INSERT INTO YukonRoleProperty VALUES(-40138,-400,'Label Change Login','Change Login','Text of the change login link');
+INSERT INTO YukonRoleProperty VALUES(-40139,-400,'Label Thermostat Saved Schedules','Saved Schedules','Text of the thermostat saved schedules link');
+INSERT INTO YukonRoleProperty VALUES(-40150,-400,'Title General','WELCOME TO ENERGY COMPANY SERVICES!','Title of the general page');
+INSERT INTO YukonRoleProperty VALUES(-40151,-400,'Title Programs Control History','PROGRAMS - CONTROL HISTORY','Title of the programs control history page');
+INSERT INTO YukonRoleProperty VALUES(-40152,-400,'Title Program Control History','PROGRAM - CONTROL HISTORY','Title of the control history page of a particular program');
+INSERT INTO YukonRoleProperty VALUES(-40153,-400,'Title Program Control Summary','PROGRAM - CONTROL SUMMARY','Title of the control summary page of a particular program');
+INSERT INTO YukonRoleProperty VALUES(-40154,-400,'Title Programs Enrollment','PROGRAMS - ENROLLMENT','Title of the programs enrollment page');
+INSERT INTO YukonRoleProperty VALUES(-40155,-400,'Title Programs Opt Out','PROGRAMS - OPT OUT','Title of the programs opt out page');
+INSERT INTO YukonRoleProperty VALUES(-40156,-400,'Title Utility','QUESTIONS - UTILITY','Title of the utility page');
+INSERT INTO YukonRoleProperty VALUES(-40157,-400,'Title Thermostat Schedule','THERMOSTAT - SCHEDULE','Title of the thermostat schedule page');
+INSERT INTO YukonRoleProperty VALUES(-40158,-400,'Title Thermostat Manual','THERMOSTAT - MANUAL','Title of the thermostat manual page');
+INSERT INTO YukonRoleProperty VALUES(-40159,-400,'Title Thermostat Saved Schedules','THERMOSTAT - SAVED SCHEDULES','Title of the thermostat saved schedules page');
+INSERT INTO YukonRoleProperty VALUES(-40170,-400,'Description General','Thank you for participating in our Consumer Energy Services programs. By participating, you have helped to optimize our delivery of energy, stabilize rates, and reduce energy costs. Best of all, you are saving energy dollars!<br><br>This site is designed to help manage your programs on-line from anywhere with access to a Web browser.','Description on the general page');
+INSERT INTO YukonRoleProperty VALUES(-40171,-400,'Description Opt Out','If you would like to temporarily opt out of all programs, select the time frame below, then click Submit.','Description on the programs opt out page');
+INSERT INTO YukonRoleProperty VALUES(-40172,-400,'Description Enrollment','Select the check boxes and corresponding radio button of the programs you would like to be enrolled in.','Description on the program enrollment page');
+INSERT INTO YukonRoleProperty VALUES(-40173,-400,'Description Utility',' <<COMPANY_ADDRESS>><br><<PHONE_NUMBER>><<FAX_NUMBER>><<EMAIL>>','Description on the contact us page. The special fields will be replaced by real information when displayed on the web.');
+INSERT INTO YukonRoleProperty VALUES(-40180,-400,'Image Corner','yukon/Mom.jpg','Image at the upper-left corner');
+INSERT INTO YukonRoleProperty VALUES(-40181,-400,'Image General','yukon/Family.jpg','Image on the general page');
+INSERT INTO YukonRoleProperty VALUES(-40190,-400,'Heading Account','Account','Heading of the account links');
+INSERT INTO YukonRoleProperty VALUES(-40191,-400,'Heading Thermostat','Thermostat','Heading of the thermostat links');
+INSERT INTO YukonRoleProperty VALUES(-40192,-400,'Heading Metering','Metering','Heading of the metering links');
+INSERT INTO YukonRoleProperty VALUES(-40193,-400,'Heading Programs','Programs','Heading of the program links');
+INSERT INTO YukonRoleProperty VALUES(-40194,-400,'Heading Trending','Trending','Heading of the trending links');
+INSERT INTO YukonRoleProperty VALUES(-40195,-400,'Heading Questions','Questions','Heading of the questions links');
+INSERT INTO YukonRoleProperty VALUES(-40196,-400,'Heading Administration','Administration','Heading of the administration links');
+INSERT INTO YukonRoleProperty VALUES(-40197,-400,'Contacts Access','false','Turns residential side contact access on or off.');
+INSERT INTO YukonRoleProperty VALUES(-40198,-400,'Opt Out Today Only','false','Prevents residential side opt outs from being available for scheduling beyond the current day.');
+INSERT INTO YukonRoleProperty VALUES(-40199,-400,'Sign Out Enabled','true','Allows end-users to see a sign-out link when accessing their account pages.'); 
 INSERT INTO YukonRoleProperty VALUES(-40200,-400,'Create Login For Account','false','Allows a new login to be automatically created for each contact on a customer account.'); 
 INSERT INTO YukonRoleProperty VALUES(-40201,-400,'Opt Out Device Selection','false','Displays a second web page that allows for specific device selection when performing an opt out.'); 
 INSERT INTO YukonRoleProperty VALUES(-40202,-400,'Enroll Multiple Programs per Category','false','Enables you to enroll in multiple programs within an appliance category.'); 
 INSERT INTO YukonRoleProperty VALUES(-40203,-400,'Enrollment per Device','false','Displays a second web page that allows for enrollment by individual device per program.');
+INSERT INTO YukonRoleProperty VALUES(-40204,-400,'Thermostat Schedule 5-2','false','Allows a user to select Weekday/Weekend in addition to Weekday/Saturday/Sunday for thermostat schedule editing.');
 
 /* Capacitor Control role properties */
 insert into YukonRoleProperty values(-70000,-700,'Access','false','Sets accessibility to the CapControl module.');

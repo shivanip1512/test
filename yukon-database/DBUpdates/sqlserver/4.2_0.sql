@@ -274,6 +274,18 @@ SET KeyName = 'Msp BillingCycle DeviceGroup'
 WHERE RolePropertyId = -1602;
 /* End YUK-6558 */
 
+/* Start YUK-6860 */
+INSERT INTO YukonRoleProperty VALUES(-20899,-201,'Thermostat Schedule 5-2','false','Allows a user to select Weekday/Weekend in addition to Weekday/Saturday/Sunday for thermostat schedule editing.');
+INSERT INTO YukonRoleProperty VALUES(-40204,-400,'Thermostat Schedule 5-2','false','Allows a user to select Weekday/Weekend in addition to Weekday/Saturday/Sunday for thermostat schedule editing.');
+
+ALTER TABLE LMThermostatSeasonEntry ADD HeatTemperature numeric(18);
+EXEC sp_rename 'LMThermostatSeasonEntry.[Temperature]', 'CoolTemperature', 'COLUMN';
+
+ALTER TABLE LMThermostatSeason ADD HeatStartDate datetime;
+EXEC sp_rename 'LMThermostatSeason.[StartDate]', 'CoolStartDate', 'COLUMN';
+ALTER TABLE LMThermostatSeason DROP COLUMN DisplayOrder;
+/* End YUK-6860 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
