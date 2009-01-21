@@ -1684,6 +1684,18 @@ INT CtiDeviceMCT::executePutValue(CtiRequestMsg                  *pReq,
                     OutMessage->Buffer.BSt.Message[2] = 0;     //  meter num:  0
                     OutMessage->Buffer.BSt.Message[3] = 0x2b;  //  function:   S4 reset
                 }
+                else if( parse.getCommandStr().find(" a3") != string::npos )
+                {
+                    //  must search from most to least specific kv flavor - kv2c, then kv2, then kv
+                    OutMessage->Buffer.BSt.Function   = CtiDeviceMCT470::FuncWrite_IEDCommandWithData;
+                    OutMessage->Buffer.BSt.Length     = 6; //This command has verying lengths possible.
+                    OutMessage->Buffer.BSt.Message[0] = 0xff;  //  SPID
+                    OutMessage->Buffer.BSt.Message[1] = 2;     //  meter type: Elster Alpha A3
+                    OutMessage->Buffer.BSt.Message[2] = 0;     //  meter num:  1?
+                    OutMessage->Buffer.BSt.Message[3] = 0x09;  //  command 9
+                    OutMessage->Buffer.BSt.Message[4] = 0x01;  //  data length: 1
+                    OutMessage->Buffer.BSt.Message[5] = 0x01;  //  demand reset bit set
+                }
                 else if( parse.getCommandStr().find(" kv2c") != string::npos )
                 {
                     //  must search from most to least specific kv flavor - kv2c, then kv2, then kv
