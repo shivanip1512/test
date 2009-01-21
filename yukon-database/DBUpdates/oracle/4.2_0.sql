@@ -175,7 +175,7 @@ MODIFY EncodingType VARCHAR2(50) NOT NULL;
 /* End YUK-6596 */
 
 /* Start YUK-6774 */
-INSERT INTO YukonRoleProperty VALUES(-1318,-4,'Hide Password Recovery','false','Controls access to password recovery (Forgot your password?) feature.');
+INSERT INTO YukonRoleProperty VALUES(-1318,-4,'Enable Password Recovery','true','Controls access to password recovery (Forgot your password?) feature.');
 /* End YUK-6774 */
 
 /* Start YUK-6854 */

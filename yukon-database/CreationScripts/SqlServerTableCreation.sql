@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     1/20/2009 3:40:16 PM                         */
+/* Created on:     1/21/2009 2:39:30 PM                         */
 /*==============================================================*/
 
 
@@ -11793,7 +11793,7 @@ INSERT INTO YukonRoleProperty VALUES(-1314,-4,'Active Directory Server Address',
 INSERT INTO YukonRoleProperty VALUES(-1315,-4,'Active Directory Server Port','389','Active Directory Server Port');
 INSERT INTO YukonRoleProperty VALUES(-1316,-4,'Active Directory Server Timeout','30','Active Directory Server Timeout (in seconds)');
 INSERT INTO YukonRoleProperty VALUES(-1317,-4,'Active Directory NT Domain Name','(none)','Active Directory NT DOMAIN NAME');
-INSERT INTO YukonRoleProperty VALUES(-1318,-4,'Hide Password Recovery','false','Controls access to password recovery (Forgot your password?) feature.');
+INSERT INTO YukonRoleProperty VALUES(-1318,-4,'Enable Password Recovery','true','Controls access to password recovery (Forgot your password?) feature.');
 
 INSERT INTO YukonRoleProperty VALUES(-1401,-5,'call_timeout','30','The time-out in seconds given to each outbound call');
 INSERT INTO YukonRoleProperty VALUES(-1402,-5,'call_response_timeout','240','The time-out in seconds given to each outbound call response');
