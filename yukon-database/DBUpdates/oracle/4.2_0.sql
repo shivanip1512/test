@@ -277,6 +277,14 @@ ALTER TABLE LMThermostatSeason RENAME COLUMN StartDate TO CoolStartDate;
 ALTER TABLE LMThermostatSeason DROP COLUMN DisplayOrder;
 /* End YUK-6860 */
 
+/* Start YUK-6857 */
+CREATE UNIQUE INDEX INDX_SchId_PAOId_Com_UNQ ON PAOScheduleAssignment (
+   ScheduleId ASC,
+   PAOId ASC,
+   Command ASC
+);
+/* End YUK-6857 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     1/21/2009 3:03:43 PM                         */
+/* Created on:     1/21/2009 4:22:23 PM                         */
 /*==============================================================*/
 
 
@@ -678,6 +678,15 @@ if exists (select 1
             and   indid > 0
             and   indid < 255)
    drop index PAOSchedule.Indx_SchedName
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('PAOScheduleAssignment')
+            and   name  = 'INDX_SchId_PAOId_Com_UNQ'
+            and   indid > 0
+            and   indid < 255)
+   drop index PAOScheduleAssignment.INDX_SchId_PAOId_Com_UNQ
 go
 
 if exists (select 1
@@ -9355,6 +9364,16 @@ create table PAOScheduleAssignment (
    PaoID                numeric              not null,
    Command              varchar(128)         not null,
    constraint PK_PAOSCHEDULEASSIGNMENT primary key (EventID)
+)
+go
+
+/*==============================================================*/
+/* Index: INDX_SchId_PAOId_Com_UNQ                              */
+/*==============================================================*/
+create unique index INDX_SchId_PAOId_Com_UNQ on PAOScheduleAssignment (
+ScheduleID ASC,
+PaoID ASC,
+Command ASC
 )
 go
 

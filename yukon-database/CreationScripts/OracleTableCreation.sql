@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/21/2009 3:07:21 PM                         */
+/* Created on:     1/21/2009 4:10:15 PM                         */
 /*==============================================================*/
 
 
@@ -170,6 +170,8 @@ drop index Indx_NOTIFGRPNme;
 drop index Indx_PAOExclus;
 
 drop index Indx_SchedName;
+
+drop index INDX_SchId_PAOId_Com_UNQ;
 
 drop index INDX_PAOBJECTID;
 
@@ -6652,6 +6654,15 @@ create table PAOScheduleAssignment  (
    PaoID                NUMBER                          not null,
    Command              VARCHAR2(128)                   not null,
    constraint PK_PAOSCHEDULEASSIGNMENT primary key (EventID)
+);
+
+/*==============================================================*/
+/* Index: INDX_SchId_PAOId_Com_UNQ                              */
+/*==============================================================*/
+create unique index INDX_SchId_PAOId_Com_UNQ on PAOScheduleAssignment (
+   ScheduleID ASC,
+   PaoID ASC,
+   Command ASC
 );
 
 /*==============================================================*/
