@@ -25,8 +25,8 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=938>
-<meta name=layout-width content=974>
+<meta name=layout-height content=890>
+<meta name=layout-width content=1123>
 <meta name=x-ignored-words content="MCT;Config;config;Ke;Mp;Kh;Min;KYZ;DNP;SOE;comm;Login;IED;EMETCOM;MCTs;KWH;Y-intercept;kW;kWh;RTU;CBC;kVAr;KVAR;KVar;KW;KQ;KVa;COS;ArcTan;Q;Arctangent;QCosine;Y;C;A-B|;B-C|;C-A|;XOR;deadband;Deadband;LCR;Versacom;VERSACOM;TimeRefresh;SmartCycle;MasterCycle;Cnt;setpoint;Fahren;Abs;F;TA;TC;TE;TF;INET;ACS;VALMET;CYGMET;PointID;STEC;RCCS;TRISTATE;RDEX;TELGYR;TELEGYR;Clck;config.properties;billing_wiz_activate=;CBC's;Comm;ExpressCom;Dialup;CCU;IDLC;RTUs;TCUs;LCUs;DCD;IP;Telenetics;Sportster;dialup;SCADA;ILEX;Tx;RTS;ReEnable;downline;Dialback;Dialout;WCTP;LCU;TCU;SEDC;CADP;CTI-CSV;OPU;Owatonna;DAFRON;XL-Plus;Inc;DAFFRON;NCDC;NISC-Turtle;NISC-NCDC;Daffron;kVar;PortServer;ClassicBoard;Digi;Xyplex;e;Vars;LMT;EMETCON;IndividualFeeder;SubstationBus;BusOptimizedFeeder;Ctrl;login;FeederEditor;LM;ManualOnly;LastControlled;AlwaysFirstGroup;LeastControlTime;e-mails;Ack;d;CCUs;w;Failover;thumbwheel;SBO;RTU-WELCO;RTU-ILEX;Readmeter;xxx;TimeOut;support@cannontech.com.;requeuing;Requeue;e-mail;dialout;ExpressStat;T-STAT;username;CCU's;dialback;edicated;LSF;kickup;ATKU;RTU-DNP;SIXNET;Eventlog;putconfig;RTU-DART;Landis;Gyr;KV;TrueCycle;CBCs;CapBanks;LMGroup;EMTECON;setpoints;Fahrenh;SPID;GEO;PROG;logins;TOU;otification;fixVar;deselect;CTRL;LODESTAR_ENH;LOADSTAR_STD;TEXTEXPORT;TEXTIMPORT;ACSMULTI;BEPC;LIVEDATA;DrivePath;XA;IVR;Geq;Leq;arctangent;modulo;Modulo;Golay;C&amp;I;CurrentLoad;ContractIntLoad;MinimumNotice;InterruptHours;AdvBuyThrough$;AdvBuyThroughkW;ContractFrmDemand;Curtailable;Transponders;NCDC-Handheld;Handheld;NISC;kVarH;Ops;RTU-MODBUS;contact(s;Emails;LSW;MSW;SchedName;TRISTATESUB;FileName;c;Yukon\Server\Export\;control.txt;Timeout;Esub;Esubstation;Grp;E-mail;epeaters;SNPP;RTC;RTU-LMI;Logins;TCP;UDP;Calc;FDR;MACS;TDC;repeater(s;timeout;Tue;Thu;SIMPLE_TOU;EXTENDED_TOU;NISC's;group(s;meter(s;ss;VECTRON">
 
 
@@ -62,15 +62,16 @@
 		type=1
 		class=kadov-p><p style="margin-bottom: 9pt;">The physical address 
  can be changed in the <span style="font-weight: bold;">Physical Address</span> 
- text box. This text box only appears for certain devices. The <span style="font-weight: bold;">Physical 
- Address</span> text box is replaced by a <span style="font-weight: bold;">Master 
- Address</span> text box, which is the DNP address of the master station 
- for RTU-DART, RTU-DNP, RTU-MODBUS, and ION devices.<br>
-	<br>
-	The physical address is the factory-supplied address as labeled on 
- the device. For MCTs, this is the number on the faceplate, minus the leading 
- 1 and 0s. For instance, if the faceplate number on an MCT 310 is 100020464, 
- enter 20464 in this field.</p></li>
+ text box. The physical address is the factory-supplied address as labeled 
+ on the device. For MCTs, this is the number on the faceplate, minus the 
+ leading 1 and 0s. For instance, if the faceplate number on an MCT 310 
+ is 100020464, enter 20464 in this field.<br>
+	<span style="margin-bottom: 9pt;"><br>
+	This text box only appears for certain devices. The </span><span style="margin-bottom: 9pt; font-weight: bold;">Physical 
+ Address</span><span style="margin-bottom: 9pt;"> text box is replaced 
+ by a </span><span style="margin-bottom: 9pt; font-weight: bold;">Master 
+ Address</span><span style="margin-bottom: 9pt;"> or </span><span style="margin-bottom: 9pt; font-weight: bold;">Slave 
+ Address</span><span style="margin-bottom: 9pt;"> text box for some RTUs.</span></p></li>
 	
 	<li style="list-style: decimal;"
 		type=1
@@ -96,11 +97,11 @@
 	
 	<li style="list-style: decimal;"
 		type=1
-		class=kadov-p><p style="margin-bottom: 9pt;">The number of milliseconds 
- to wait can be changed in the <span style="font-weight: bold;">Post Communication 
- Wait</span> spin box. The post communication wait defines the length of 
- time to wait after communication before this device can be communicated 
- with again.</p></li>
+		class=kadov-p><p style="margin-bottom: 9pt;">For certain signal 
+ transmitters. the number of milliseconds to wait can be changed in the 
+ <span style="font-weight: bold;">Post Communication Wait</span> spin box. 
+ The post communication wait defines the length of time to wait after communication 
+ before this device can be communicated with again.</p></li>
 	
 	<li style="list-style: decimal;"
 		type=1
@@ -212,8 +213,9 @@
 		<li class=kadov-p><p>A different baud rate can be selected from 
  the <span style="font-weight: bold;">Baud Rate</span> drop-down list.</p></li>
 		
-		<li class=kadov-p><p style="margin-bottom: 9pt;">Click <span style="font-weight: bold;">OK</span> 
- to save the advanced dialup properties.</p></li>
+		<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span 
+ style="font-weight: bold;">OK</span> button to save the advanced dialup 
+ properties.</p></li>
 	</ol>
 </ol>
 
@@ -243,12 +245,13 @@
 <param name="Items" value="Editing a Device;Editing_a_Device.htm$$**$$" >
 <param name="Image" value="" >
 <param name="FontInfo" value="MS Sans Serif,8,0,," >
-<param name="_CURRENTFILEPATH" value="C:\Working\head\yukon-help\dbeditor\src\Device_General_Tab.htm" >
+<param name="_CURRENTFILEPATH" value="C:\YukonHelpSVN\4.1\dbeditor\src\Device_General_Tab.htm" >
 <param name="_ID" value="RelatedTopics" >
 <param name="UseMenu" value="-1" >
 <param name="Frame" value="_top" >
 <param name="Window" value="" >
-</object>--><OBJECT
+</object>-->
+<OBJECT
   CLASSID="clsid:ADB880A6-D8FF-11CF-9377-00AA003B7A11"
   ID="RelatedTopics"  TYPE="application/x-oleobject" >
   <PARAM  NAME="Command"  VALUE="Related Topics,MENU">
@@ -257,6 +260,7 @@
   <PARAM  NAME="Frame"  VALUE="_top">
   <PARAM  NAME="Item1"  VALUE="Editing a Device;Editing_a_Device.htm">
 </OBJECT>
+
 <!--Metadata type="DesignerControl" endspan-->
  </p>
 

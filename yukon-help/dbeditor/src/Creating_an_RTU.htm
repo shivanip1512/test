@@ -25,9 +25,9 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=833>
-<meta name=layout-width content=972>
-<meta name=x-ignored-words content="comm;RTU;RTU-WELCO;RTU-ILEX;KYZ;RTU-DNP;RTU-DART;dialback;dialup;Dialback;edicated;Dialup">
+<meta name=layout-height content=877>
+<meta name=layout-width content=1123>
+<meta name=x-ignored-words content="comm;RTU;RTU-WELCO;RTU-ILEX;KYZ;RTU-DNP;RTU-DART;dialback;dialup;Dialback;edicated;Dialup;RTU-MODBUS">
 
 
 <!--(Links)=========================================================-->
@@ -56,21 +56,20 @@
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Enter a name for the 
  RTU in the <span style="font-weight: bold;">Device Name</span> text box.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Enter an address in 
- the <span style="font-weight: bold;">Physical Address</span> text box. 
- The physical address is programmed into the device. The Physical Address 
- text box is replaced by a Master Address text box for RTU-DART and RTU-DNP 
- devices. There is no Physical Address for Davis Weather RTU devices.</p></li>
+	<li class=kadov-p><p style="margin-bottom: 9pt;">For RTU-DART devices, 
+ enter a master address in the <span style="font-weight: bold;">Master 
+ Address</span> text box.<br>
+	For RTU-DNP or RTU-MODBUS devices, enter a slave address in the <span 
+ style="font-weight: bold;">Slave Address</span> text box. <br>
+	For RTU-ILEX, RTU WELCO, and RTM devices, enter a physical address 
+ in the <span style="font-weight: bold;">Physical Address</span> text box. 
+ The physical address is programmed into the device. <br>
+	There is no address text box for Davis Weather RTU devices.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Click <span style="font-weight: bold;">Next</span>. 
- If you selected a Davis Weather RTU, enter a utility meter number into 
- the <span style="font-weight: bold;">Utility Meter Number</span> text 
- box and click <span style="font-weight: bold;">Next</span>. If you selected 
- RTU-DART, RTU-DNP, RTU-ILEX, or RTU-WELCO, skip to step 4.</p></li>
-	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Select the check box 
- of the scan categories you want to enable. The scan categories vary depending 
- on the type of RTU selected.</p></li>
+	<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span style="font-weight: bold;">Next 
+ </span>button<span style="font-weight: bold;"> </span>and select the check 
+ box of the scan categories you want to enable. The scan categories vary 
+ depending on the type of RTU selected.</p></li>
 </ol>
 
 <p style="margin-bottom: 9pt; margin-left: 40px;"><span style="margin-bottom: 9pt;">I</span>f 
@@ -78,10 +77,10 @@
  style="font-weight: bold;">General Data Collection</span> scan category.</p>
 
 <p style="margin-left: 40px;"><span style="margin-bottom: 9pt;">I</span>f 
- you selected RTU-DART or RTU-DNP, a dialog box appears with the following 
+ you selected an RTU-DART or RTU-DNP, a dialog box appears with the following 
  scan categories</p>
 
-<ul style="list-style: decimal;"
+<ol style="list-style: decimal;"
 	type=1>
 	
 	<ul>
@@ -97,12 +96,12 @@
  1, 2, 3 Scan</span> - collects the data on the device that has changed 
  since the last scan</p></li>
 	</ul>
-</ul>
+</ol>
 
-<p style="margin-left: 40px;">If you selected RTU-ILEX, a dialog box appears 
- with the following scan categories:</p>
+<p style="margin-left: 40px;">If you selected an RTU-ILEX, a dialog box 
+ appears with the following scan categories:</p>
 
-<ul style="list-style: decimal;"
+<ol style="list-style: decimal;"
 	type=1>
 	
 	<ul>
@@ -117,12 +116,27 @@
 			class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">Accumulator 
  Rate</span> - collects KYZ pulse points</p></li>
 	</ul>
-</ul>
+</ol>
 
-<p style="margin-left: 40px;">If you selected RTU-WELCO, a dialog box appears 
- with the following scan categories:</p>
+<p style="margin-left: 40px;">If you selected an RTU-MODBUS, a dialog box 
+ appears with the following scan category:</p>
 
-<ul style="list-style: decimal;"
+<ol style="list-style: decimal;"
+	type=1>
+	
+	<ul>
+		
+		<li style="list-style: disc;"
+			type=disc
+			class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">Integrity 
+ Rate</span> - collects all point values</p></li>
+	</ul>
+</ol>
+
+<p style="margin-left: 40px;">If you selected an RTU-WELCO, a dialog box 
+ appears with the following scan categories:</p>
+
+<ol style="list-style: decimal;"
 	type=1>
 	
 	<ul>
@@ -142,6 +156,25 @@
 			class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">Accumulator 
  Rate</span> - collects KYZ pulse points</p></li>
 	</ul>
+</ol>
+
+<p style="margin-left: 40px;">If you selected an RTM, a dialog box appears 
+ with the following scan category:</p>
+
+<ol style="list-style: decimal;"
+	type=1>
+	
+	<ul>
+		
+		<li style="list-style: disc;"
+			type=disc
+			class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">General 
+ Scan</span> - collects general data</p></li>
+	</ul>
+</ol>
+
+<ol style="list-style: decimal;"
+	type=1>
 	
 	<ol style="list-style: lower-alpha;"
 		type=a>
@@ -155,10 +188,10 @@
  or the Yukon Web interface.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 9pt;">Select a scan 
- group or enter a new scan group in the <span style="font-weight: bold;">Group</span> 
- drop-down list. This is used to group similar scans together.</p></li>
+ group from the <span style="font-weight: bold;">Group</span> drop-down 
+ list. This is used to group similar scans together.</p></li>
 	</ol>
-</ul>
+</ol>
 
 <ol start=5
 	style="list-style: decimal;"
@@ -182,10 +215,11 @@
  style="margin-bottom: 9pt;"> text box.</span></p></li>
 	</ol>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Click <span style="font-weight: bold;">Next</span>.</p></li>
+	<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span style="font-weight: bold;">Next</span> 
+ button.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Select a comm channel 
- from the drop-down list of comm channels</p></li>
+ for the RTU from the drop-down list of comm channels</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">The rest of this procedure 
  depends on the type of comm channel selected.</p></li>
@@ -196,18 +230,19 @@
 	<li style="list-style: disc;"
 		type=disc
 		class=kadov-p><p style="margin-bottom: 9pt; margin-left: 24px;">If 
- the comm channel is Dedicated, click <span style="font-weight: bold;">Finish</span>. 
- The new device appears in the Device Editor. For instructions on editing 
- a device, refer to the related topics.</p></li>
+ the comm channel is Dedicated, click the <span style="font-weight: bold;">Finish</span> 
+ button. The new device appears in the Device Editor. For instructions 
+ on editing a device, refer to the related topics.</p></li>
 	
 	<li style="list-style: disc;"
 		type=disc
 		class=kadov-p><p style="margin-bottom: 9pt; margin-left: 24px;">If 
- the comm channel is Dialup or Dialback, click <span style="font-weight: bold;">Next</span>,<span 
- style="font-weight: bold;"> </span>enter the phone number used to dial 
- this device or dial back from the device, and then click <span style="font-weight: bold;">Finish</span>. 
- The new device appears in the Device Editor. For instructions on editing 
- a device, refer to the related topics.</p></li>
+ the comm channel is Dialup or Dialback, click the <span style="font-weight: bold;">Next</span> 
+ button,<span style="font-weight: bold;"> </span>enter the phone number 
+ used to dial this device or dial back from the device, and then click 
+ the <span style="font-weight: bold;">Finish</span> button. The new device 
+ appears in the Device Editor. For instructions on editing a device, refer 
+ to the related topics.</p></li>
 </ul>
 
 &nbsp; 
@@ -236,7 +271,7 @@
 <param name="Items" value="Creating a Device;Creating_a_Device.htm$$**$$Editing a Device;Editing_a_Device.htm$$**$$" >
 <param name="Image" value="" >
 <param name="FontInfo" value="MS Sans Serif,8,0,," >
-<param name="_CURRENTFILEPATH" value="C:\Working\head\yukon-help\dbeditor\src\Creating_an_RTU.htm" >
+<param name="_CURRENTFILEPATH" value="C:\YukonHelpSVN\4.1\dbeditor\src\Creating_an_RTU.htm" >
 <param name="_ID" value="RelatedTopics" >
 <param name="UseMenu" value="-1" >
 <param name="Frame" value="_top" >

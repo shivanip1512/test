@@ -3521,6 +3521,11 @@
     <param name="Local" value="Creating_a_Signal_Transmitter.htm">
   </object>
   <li><object type="text/sitemap">
+    <param name="Name" value="Simple Thermostat Ramping">
+    <param name="Name" value="Simple Thermostat Ramping">
+    <param name="Local" value="Simple_Thermostat_Ramping.htm">
+  </object>
+  <li><object type="text/sitemap">
     <param name="Name" value="Smart Cycle Gear">
     <param name="Name" value="Cycle Gears">
     <param name="Local" value="Cycle_Gears.htm">
@@ -3672,15 +3677,15 @@
     <param name="Name" value="Creating a Load Group">
     <param name="Local" value="Creating_a_Load_Group.htm">
   </object>
-  <li><object type="text/sitemap">
-    <param name="Name" value="Thermostat Gear">
-    <param name="Name" value="Thermostat">
-    <param name="Local" value="Thermostat.htm">
-  </object>
   <ul>
     <li><object type="text/sitemap">
-      <param name="Name" value="Editing">
-      <param name="Name" value="Editing Thermostat">
+      <param name="Name" value="Editing a Simple Thermostat Ramping Gear">
+      <param name="Name" value="Editing a Simple Thermostat Ramping Gear">
+      <param name="Local" value="Editing_a_Simple_Thermostat_Ramping_Gear.htm">
+    </object>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Editing a Thermostat Ramping Gear">
+      <param name="Name" value="Editing a Thermostat Ramping Gear">
       <param name="Local" value="Editing_a_Thermostat_Gear.htm">
     </object>
     </ul>

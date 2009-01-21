@@ -837,5 +837,15 @@
 			<comments></comments>
 			<frameset>0</frameset>
 		</topic>
+		<topic>
+			<name>Simple_Thermostat_Ramping.htm</name>
+			<comments></comments>
+			<frameset>0</frameset>
+		</topic>
+		<topic>
+			<name>Editing_a_Simple_Thermostat_Ramping_Gear.htm</name>
+			<comments></comments>
+			<frameset>0</frameset>
+		</topic>
 	</topics>
 </rhpml>

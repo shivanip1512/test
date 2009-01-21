@@ -26,9 +26,9 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=755>
-<meta name=layout-width content=634>
-<meta name=x-ignored-words content="LM;ManualOnly;LastControlled;AlwaysFirstGroup;LeastControlTime;e-mails;Min;Ack">
+<meta name=layout-height content=692>
+<meta name=layout-width content=1123>
+<meta name=x-ignored-words content="LM;ManualOnly;LastControlled;AlwaysFirstGroup;LeastControlTime;e-mails;Min;Ack;allow_member_programs">
 
 
 <!--(Links)=========================================================-->
@@ -134,26 +134,30 @@ kadovFilePopupInit('a5');
 //--></script><!--}}end!kadov--> 
  - the Master Station sends commands to the LCR to perform cycling.</p></li>
 			
-			<li class=kadov-p><p style="font-weight: normal;"><a href="javascript:BSSCPopup('Editing_Cycle_Gears.htm');" id="a6">Smart Cycle</a><!--begin!kadov{{--><script type="text/javascript"
+			<li class=kadov-p><p style="font-weight: normal;"><a href="javascript:BSSCPopup('Editing_Cycle_Gears.htm');"
+	id=a6>Smart Cycle</a><!--begin!kadov{{--><script type="text/javascript"
 													language=JavaScript1.2><!--
 kadovFilePopupInit('a6');
 //--></script><!--}}end!kadov--> 
  - the LCR hardware performs cycling.</p></li>
 			
-			<li class=kadov-p><p style="font-weight: normal;"><a href="javascript:BSSCPopup('Editing_Cycle_Gears.htm');" id="a7">TrueCycle</a><!--begin!kadov{{--><script type="text/javascript"
+			<li class=kadov-p><p style="font-weight: normal;"><a href="javascript:BSSCPopup('Editing_Cycle_Gears.htm');"
+	id=a7>TrueCycle</a><!--begin!kadov{{--><script type="text/javascript"
 													language=JavaScript1.2><!--
 kadovFilePopupInit('a7');
 //--></script><!--}}end!kadov--> 
  - the LCR uses an algorithm to perform cycling.</p></li>
 			
-			<li class=kadov-p><p style="font-weight: normal;"><a href="javascript:BSSCPopup('Editing_Cycle_Gears.htm');" id="a8">Magnitude Cycle</a><!--begin!kadov{{--><script type="text/javascript"
+			<li class=kadov-p><p style="font-weight: normal;"><a href="javascript:BSSCPopup('Editing_Cycle_Gears.htm');"
+	id=a8>Magnitude Cycle</a><!--begin!kadov{{--><script type="text/javascript"
 														language=JavaScript1.2><!--
 kadovFilePopupInit('a8');
 //--></script><!--}}end!kadov--> 
  - uses an algorithm to perform cycling, which targets a percentage of 
  the max current the field device draws.</p></li>
 			
-			<li class=kadov-p><p style="font-weight: normal;"><a href="javascript:BSSCPopup('Editing_Cycle_Gears.htm');" id="a9">Target Cycle</a><!--begin!kadov{{--><script type="text/javascript"
+			<li class=kadov-p><p style="font-weight: normal;"><a href="javascript:BSSCPopup('Editing_Cycle_Gears.htm');"
+	id=a9>Target Cycle</a><!--begin!kadov{{--><script type="text/javascript"
 														language=JavaScript1.2><!--
 kadovFilePopupInit('a9');
 //--></script><!--}}end!kadov--> 
@@ -172,7 +176,15 @@ kadovFilePopupInit('a10');
 	language=JavaScript1.2><!--
 kadovFilePopupInit('a11');
 //--></script><!--}}end!kadov--> 
- - used to perform thermostat temperature ramping.</p></li>
+ - performs thermostat temperature ramping.</p></li>
+			
+			<li class=kadov-p><p><a href="javascript:BSSCPopup('Editing_a_Simple_Thermostat_Ramping_Gear.htm');"
+									id=a17>Simple Thermostat Ramping</a><!--begin!kadov{{--><script 
+ type="text/javascript"
+	language=JavaScript1.2><!--
+kadovFilePopupInit('a17');
+//--></script><!--}}end!kadov--> 
+ - performs simple thermostat temperature ramping.</p></li>
 			
 			<li class=kadov-p><p style="margin-bottom: 9pt; font-weight: normal;"><a 
  href="javascript:BSSCPopup('Editing_a_No_Control_Gear.htm');"
@@ -219,9 +231,9 @@ kadovFilePopupInit('a15');
 //--></script><!--}}end!kadov--> 
  tabbed page.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">If the Allow Member 
- Programs role property is enabled within the Database Editor role, click 
- the <span style="font-weight: bold;">Member Control</span> tab to display 
+	<li class=kadov-p><p style="margin-bottom: 9pt;">If the allow_member_programs 
+ role property within the Database Editor role is set to true , click the 
+ <span style="font-weight: bold;">Member Control</span> tab to display 
  the <a href="javascript:BSSCPopup('Load_Program_Member_Control_Tab.htm');"
 		id=a16>Member Control</a><!--begin!kadov{{--><script type="text/javascript"
 															language=JavaScript1.2><!--
@@ -229,9 +241,9 @@ kadovFilePopupInit('a16');
 //--></script><!--}}end!kadov--> 
  tabbed page.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Click <span style="font-weight: bold;">Apply</span> 
- to save the changes or <span style="font-weight: bold;">OK</span> to save 
- the changes and close the Load Program Editor.</p></li>
+	<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span style="font-weight: bold;">Apply</span> 
+ button to save the changes or <span style="font-weight: bold;">OK</span> 
+ button to save the changes and close the Load Program Editor.</p></li>
 </ol>
 
 &nbsp; 
@@ -260,12 +272,13 @@ kadovFilePopupInit('a16');
 <param name="Items" value="Creating a Customer;Creating_a_Customer.htm$$**$$Creating a Load Group;Creating_a_Load_Group.htm$$**$$Creating a Load Program;Creating_a_Load_Program.htm$$**$$Editing a Customer;Editing_a_Customer.htm$$**$$Editing a Load Group;Editing_a_Load_Group.htm$$**$$" >
 <param name="Image" value="" >
 <param name="FontInfo" value="MS Sans Serif,8,0,," >
-<param name="_CURRENTFILEPATH" value="C:\Working\head\yukon-help\dbeditor\src\Editing_a_Load_Program.htm" >
+<param name="_CURRENTFILEPATH" value="C:\YukonHelpSVN\4.1\dbeditor\src\Editing_a_Load_Program.htm" >
 <param name="_ID" value="RelatedTopics" >
 <param name="UseMenu" value="-1" >
 <param name="Frame" value="" >
 <param name="Window" value="" >
-</object>--><OBJECT
+</object>-->
+<OBJECT
   CLASSID="clsid:ADB880A6-D8FF-11CF-9377-00AA003B7A11"
   ID="RelatedTopics"  TYPE="application/x-oleobject" >
   <PARAM  NAME="Command"  VALUE="Related Topics,MENU">
@@ -277,6 +290,7 @@ kadovFilePopupInit('a16');
   <PARAM  NAME="Item4"  VALUE="Editing a Customer;Editing_a_Customer.htm">
   <PARAM  NAME="Item5"  VALUE="Editing a Load Group;Editing_a_Load_Group.htm">
 </OBJECT>
+
 <!--Metadata type="DesignerControl" endspan-->
  </p>
 

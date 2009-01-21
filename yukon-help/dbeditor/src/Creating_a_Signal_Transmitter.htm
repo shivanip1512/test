@@ -25,9 +25,9 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=852>
-<meta name=layout-width content=972>
-<meta name=x-ignored-words content="comm;Login;IED;EMETCOM;MCTs;MCT;KWH;Y-intercept;kW;kWh;TimeRefresh;SmartCycle;MasterCycle;LCR;Cnt;INET;ACS;VALMET;CYGMET;PointID;STEC;RCCS;TRISTATE;RDEX;deadband;Deadband;kVAr;RTU;CBC;VERSACOM;Comm;Dialup;CCU;IDLC;RTUs;TCUs;LCUs;DCD;SCADA;ILEX;Tx;RTS;Min;ReEnable;downline;KVAR;kVar;IP;PortServer;ClassicBoard;Digi;Xyplex;e;Vars;LMT;EMETCON;IndividualFeeder;SubstationBus;BusOptimizedFeeder;Ctrl;login;FeederEditor;LM;ManualOnly;LastControlled;AlwaysFirstGroup;LeastControlTime;e-mails;Ack;d;CCUs;TCU;w;Failover;dialup;thumbwheel;SBO;RTU-WELCO;RTU-ILEX;Readmeter;KW;C;xxx;LCU;TimeOut;support@cannontech.com.;Versacom;WCTP;KYZ;CCU's;dialback;edicated;Dialback">
+<meta name=layout-height content=897>
+<meta name=layout-width content=1123>
+<meta name=x-ignored-words content="comm;Login;IED;EMETCOM;MCTs;MCT;KWH;Y-intercept;kW;kWh;TimeRefresh;SmartCycle;MasterCycle;LCR;Cnt;INET;ACS;VALMET;CYGMET;PointID;STEC;RCCS;TRISTATE;RDEX;deadband;Deadband;kVAr;RTU;CBC;VERSACOM;Comm;Dialup;CCU;IDLC;RTUs;TCUs;LCUs;DCD;SCADA;ILEX;Tx;RTS;Min;ReEnable;downline;KVAR;kVar;IP;PortServer;ClassicBoard;Digi;Xyplex;e;Vars;LMT;EMETCON;IndividualFeeder;SubstationBus;BusOptimizedFeeder;Ctrl;login;FeederEditor;LM;ManualOnly;LastControlled;AlwaysFirstGroup;LeastControlTime;e-mails;Ack;d;CCUs;TCU;w;Failover;dialup;thumbwheel;SBO;RTU-WELCO;RTU-ILEX;Readmeter;KW;C;xxx;LCU;TimeOut;support@cannontech.com.;Versacom;WCTP;KYZ;CCU's;dialback;edicated;Dialback;SNPP">
 
 
 <!--(Links)=========================================================-->
@@ -57,15 +57,18 @@
  signal transmitter in the <span style="font-weight: bold;">Device Name</span> 
  text box.</p></li>
 	
-	<li class=kadov-p><p>Enter an address in the <span style="font-weight: bold;">Physical 
- Address</span> text box.</p></li>
+	<li class=kadov-p><p>If you selected a CCU, TCU, or LCU, enter an address 
+ in the <span style="font-weight: bold;">Physical Address</span> text box.</p></li>
 	
 	<ul style="list-style: disc;"
 		type=disc>
 		
+		<li class=kadov-p><p>For CCU-721s, the physical address is accessible 
+ from the front panel display.</p></li>
+		
 		<li class=kadov-p><p>For CCU-711s and older CCU-710s, the physical 
  address is located on the power supply dial inside the CCU enclosure. 
- If the CCU’s power supply does not have a dial setting, the physical address 
+ If the CCU power supply does not have a dial setting, the physical address 
  is zero.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 9pt;"><span style="margin-bottom: 9pt;">For 
@@ -75,9 +78,9 @@
 </ol>
 
 <p style="margin-left: 40px; margin-bottom: 0px;">If you selected Paging 
- Tap Terminal or SNPP Terminal as the device:</p>
+ Tap Terminal as the device:</p>
 
-<ol style="list-style: decimal;"
+<ul style="list-style: decimal;"
 	type=1>
 	
 	<ol style="list-style: lower-alpha;"
@@ -88,14 +91,35 @@
  box.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 0px;">If a password 
- is required to connect to the Paging Tap Terminal, select the <span style="font-weight: bold;">Password 
- Required</span> check box.</p></li>
+ is required to log into to the Paging account, select the <span style="font-weight: bold;">Password 
+ Required</span> check box and e<span style="margin-bottom: 9pt;">nter 
+ the password in the </span><span style="margin-bottom: 9pt; font-weight: bold;">Password</span><span 
+ style="margin-bottom: 9pt;"> text box.</span></p></li>
+	</ol>
+</ul>
+
+<p style="margin-left: 40px; margin-bottom: 0px;">If you selected SNPP 
+ Terminal as the device:</p>
+
+<ul style="list-style: decimal;"
+	type=1>
+	
+	<ol style="list-style: lower-alpha;"
+		type=a>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;">Enter a pager 
+ number in the <span style="font-weight: bold;">Pager Number</span> text 
+ box.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;">Enter the login 
+ to required to log into the SNPP account in the <span style="font-weight: bold;">Login</span> 
+ text box.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 9pt;">Enter the password 
- connect to the signal transmitter in the <span style="font-weight: bold;">Password</span> 
+ required to log into the SNPP account in the <span style="font-weight: bold;">Password</span> 
  text box.</p></li>
 	</ol>
-</ol>
+</ul>
 
 <p style="margin-left: 40px; margin-bottom: 0px;">If you selected WCTP 
  Terminal as the device:</p>
@@ -133,9 +157,9 @@
 	style="list-style: decimal;"
 	type=1>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Click <span style="font-weight: bold;">Next</span>. 
- Skip step 4 and 5 for Paging Tap Terminal, SNPP Terminal, and WCTP Terminal 
- signal transmitters.</p></li>
+	<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span style="font-weight: bold;">Next</span> 
+ button. Skip step 4 and 5 for Paging Tap Terminal, SNPP Terminal, and 
+ WCTP Terminal signal transmitters.</p></li>
 	
 	<li class=kadov-p><p>Select the check boxes of the scan categories 
  you want to enable. The categories vary depending on the type of signal 
@@ -181,8 +205,8 @@
  or the Yukon Web interface.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 9pt;">Select a scan 
- group or enter a new scan group in the <span style="font-weight: bold;">Group</span> 
- drop-down list. This is used to group similar scans together.</p></li>
+ group from the <span style="font-weight: bold;">Group</span> drop-down 
+ list. This is used to group similar scans together.</p></li>
 	</ol>
 	
 	<li class=kadov-p><p>Under the Optional Scan Window, select the <span 
@@ -204,15 +228,16 @@
 		
 		<li style="list-style: lower-alpha;"
 			type=a
-			class=kadov-p><p><span style="margin-bottom: 9pt;">Enter the 
- time at which the scan window stops in the </span><span style="margin-bottom: 9pt; font-weight: bold;">Close</span><span 
+			class=kadov-p><p style="margin-bottom: 9pt;"><span style="margin-bottom: 9pt;">Enter 
+ the time at which the scan window stops in the </span><span style="margin-bottom: 9pt; font-weight: bold;">Close</span><span 
  style="margin-bottom: 9pt;"> text box.</span></p></li>
 	</ol>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Click <span style="font-weight: bold;">Next</span>.</p></li>
+	<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span style="font-weight: bold;">Next</span> 
+ button.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Select a comm channel 
- from the drop-down list of comm channels.</p></li>
+	<li class=kadov-p><p style="margin-bottom: 9pt;">Select the comm channel 
+ for the signal transmitter from the drop-down list of comm channels.</p></li>
 	
 	<li class=kadov-p><p>The rest of this procedure depends on the type 
  of comm channel selected.</p></li>
@@ -220,17 +245,18 @@
 	<ul style="list-style: disc;"
 		type=disc>
 		
-		<li class=kadov-p><p>If the comm channel is Dedicated, click <span 
- style="font-weight: bold;">Finish</span>. The new signal transmitter appears 
- in the Device Editor. For instructions on using this editor, refer to 
- the related topics.</p></li>
+		<li class=kadov-p><p>If the comm channel is Dedicated, click the 
+ <span style="font-weight: bold;">Finish</span> button. The new signal 
+ transmitter appears in the Device Editor. For instructions on using this 
+ editor, refer to the related topics.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 9pt;">If the comm channel 
- is Dialup or Dialback, click <span style="font-weight: bold;">Next</span>,<span 
- style="font-weight: bold;"> </span>enter the phone number used to dial 
- this device or dial back from the device, and then click <span style="font-weight: bold;">Finish</span>. 
- The new signal transmitter appears in the Device Editor. For instructions 
- on using this editor, refer to the related topics.</p></li>
+ is Dialup or Dialback, click the <span style="font-weight: bold;">Next</span> 
+ button,<span style="font-weight: bold;"> </span>enter the phone number 
+ used to dial this device or dial back from the device, and then click 
+ the <span style="font-weight: bold;">Finish</span> button. The new signal 
+ transmitter appears in the Device Editor. For instructions on using this 
+ editor, refer to the related topics.</p></li>
 	</ul>
 </ol>
 
@@ -260,12 +286,13 @@
 <param name="Items" value="Creating a Device;Creating_a_Device.htm$$**$$Editing a Device;Editing_a_Device.htm$$**$$" >
 <param name="Image" value="" >
 <param name="FontInfo" value="MS Sans Serif,8,0,," >
-<param name="_CURRENTFILEPATH" value="C:\Working\head\yukon-help\dbeditor\src\Creating_a_Signal_Transmitter.htm" >
+<param name="_CURRENTFILEPATH" value="C:\YukonHelpSVN\4.1\dbeditor\src\Creating_a_Signal_Transmitter.htm" >
 <param name="_ID" value="RelatedTopics" >
 <param name="UseMenu" value="-1" >
 <param name="Frame" value="_top" >
 <param name="Window" value="" >
-</object>--><OBJECT
+</object>-->
+<OBJECT
   CLASSID="clsid:ADB880A6-D8FF-11CF-9377-00AA003B7A11"
   ID="RelatedTopics"  TYPE="application/x-oleobject" >
   <PARAM  NAME="Command"  VALUE="Related Topics,MENU">
@@ -275,6 +302,7 @@
   <PARAM  NAME="Item1"  VALUE="Creating a Device;Creating_a_Device.htm">
   <PARAM  NAME="Item2"  VALUE="Editing a Device;Editing_a_Device.htm">
 </OBJECT>
+
 <!--Metadata type="DesignerControl" endspan-->
  </p>
 
