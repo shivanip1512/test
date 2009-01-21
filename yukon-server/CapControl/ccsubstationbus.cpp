@@ -5373,6 +5373,7 @@ BOOL CtiCCSubstationBus::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec
                                    vResult = TRUE;
                                }
 
+                               currentCapBank->setPartialPhaseInfo(currentFeeder->getPhaseIndicatorString(currentCapBank->getControlStatus(), ratioA, ratioB, ratioC, minConfirmPercent, failPercent));
                                text = currentFeeder->createPhaseControlStatusUpdateText(currentCapBank->getControlStatus(), varAValue,
                                                               varBValue, varCValue, ratioA, ratioB, ratioC);
 
@@ -5553,7 +5554,7 @@ BOOL CtiCCSubstationBus::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec
                                    currentCapBank->setControlStatusQuality(CC_Normal);
                                    vResult = TRUE;
                                }
-
+                               currentCapBank->setPartialPhaseInfo(currentFeeder->getPhaseIndicatorString(currentCapBank->getControlStatus(), ratioA, ratioB, ratioC, minConfirmPercent, failPercent));
                                text = currentFeeder->createPhaseControlStatusUpdateText(currentCapBank->getControlStatus(), varAValue,
                                                               varBValue, varCValue, ratioA, ratioB, ratioC);
 

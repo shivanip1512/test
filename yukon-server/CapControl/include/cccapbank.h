@@ -158,6 +158,7 @@ public:
     const CtiTime& getIgnoreIndicatorTimeUpdated() const;
     const CtiTime& getUnsolicitedChangeTimeUpdated() const;
     BOOL getUnsolicitedPendingFlag() const;
+    const string&  getPartialPhaseInfo() const;
 
 
     int  getVCtrlIndex() const;
@@ -220,7 +221,7 @@ public:
     CtiCCCapBank& setControlStatusCommFailFlag(BOOL flag);
     CtiCCCapBank& setControlStatusNoControlFlag(BOOL flag);
     CtiCCCapBank& setControlStatusUnSolicitedFlag(BOOL flag);
-    CtiCCCapBank& setControlStatusQuality(CtiCCControlStatusQaulity quality);
+    CtiCCCapBank& setControlStatusQuality(CtiCCControlStatusQaulity quality, string partialPhaseInfo = "(none)");
     CtiCCCapBank& setReEnableOvUvFlag(BOOL flag);
     CtiCCCapBank& setLocalControlFlag(BOOL localControlFlag);
     CtiCCCapBank& setControlRecentlySentFlag(BOOL flag);
@@ -243,6 +244,7 @@ public:
     CtiCCCapBank& setIgnoreIndicatorTimeUpdated(const CtiTime& timestamp);
     CtiCCCapBank& setUnsolicitedChangeTimeUpdated(const CtiTime& timestamp);
     CtiCCCapBank& setUnsolicitedPendingFlag(BOOL flag);
+    CtiCCCapBank& setPartialPhaseInfo(const string& info);
 
     CtiCCCapBank& setVCtrlIndex(int vCtrlIndex);
     CtiCCCapBank& setAssumedOrigVerificationState(int assumedOrigCapBankPos);
@@ -384,6 +386,7 @@ private:
     LONG _reportedCBCLastControlReason;
     LONG _reportedCBCState;
     CtiTime _reportedCBCStateTime;
+    string _partialPhaseInfo;
 
     BOOL _ignoreFlag;
     LONG _ignoreReason;

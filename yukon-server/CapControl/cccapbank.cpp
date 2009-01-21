@@ -199,6 +199,10 @@ LONG CtiCCCapBank::getReportedCBCLastControlReason() const
     return _reportedCBCLastControlReason;
 }
 
+const string&  CtiCCCapBank::getPartialPhaseInfo() const
+{
+    return _partialPhaseInfo;
+}
 
 const CtiTime& CtiCCCapBank::getReportedCBCStateTime() const
 {
@@ -1335,10 +1339,11 @@ CtiCCCapBank& CtiCCCapBank::setReEnableOvUvFlag(BOOL flag)
     
     Sets the ControlStatusQuality ..
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setControlStatusQuality(CtiCCControlStatusQaulity quality)
+CtiCCCapBank& CtiCCCapBank::setControlStatusQuality(CtiCCControlStatusQaulity quality, string partialPhaseInfo)
 {
 
     _controlStatusQuality = quality;
+    _partialPhaseInfo = partialPhaseInfo;
     switch (quality)
     {
         case CC_Partial:
@@ -1569,7 +1574,17 @@ CtiCCCapBank& CtiCCCapBank::setReportedCBCLastControlReason(LONG value)
 
 }
 
+CtiCCCapBank& CtiCCCapBank::setPartialPhaseInfo(const string& info)
+{
+    if (!stringCompareIgnoreCase(_partialPhaseInfo,info))
+    {
+        _dirty = TRUE;
+    }
+    _partialPhaseInfo = info;
 
+    return *this;
+
+}
 CtiCCCapBank& CtiCCCapBank::setReportedCBCState(LONG value)
 {
     if (_reportedCBCState != value)
@@ -2165,6 +2180,7 @@ void CtiCCCapBank::restoreGuts(RWvistream& istrm)
     istrm >> _ovuvSituationFlag;
     istrm >> _controlStatusQuality;
     istrm >> _localControlFlag;
+    istrm >> _partialPhaseInfo;
     _laststatuschangetime = CtiTime(tempTime1);
 }
 
@@ -2177,40 +2193,40 @@ void CtiCCCapBank::saveGuts(RWvostream& ostrm ) const
 {
     RWCollectable::saveGuts( ostrm );
 
-    ostrm << _paoid
-    << _paocategory
-    << _paoclass
-    << _paoname
-    << _paotype
-    << _paodescription
-    << _disableflag
-    << _parentId
-    << _maxdailyops
-    << _maxopsdisableflag
-    << _alarminhibitflag
-    << _controlinhibitflag
-    << _operationalstate;
+    ostrm << _paoid;
+    ostrm << _paocategory;
+    ostrm << _paoclass;
+    ostrm << _paoname;
+    ostrm << _paotype;
+    ostrm << _paodescription;
+    ostrm << _disableflag;
+    ostrm << _parentId;
+    ostrm << _maxdailyops;
+    ostrm << _maxopsdisableflag;
+    ostrm << _alarminhibitflag;
+    ostrm << _controlinhibitflag;
+    ostrm << _operationalstate;
 
     ostrm << _controllertype;
 
-    ostrm << _controldeviceid
-    << _banksize
-    << _typeofswitch
-    << _switchmanufacture
-    << _maplocationid
-    << _reclosedelay
-    << _controlorder
-    << _statuspointid
-    << _controlstatus
-    << _operationanalogpointid
-    << _totaloperations
-    << _laststatuschangetime
-    << _tagscontrolstatus
-    << _originalfeederid
-    << _currentdailyoperations
-    << _ignoreFlag   
-    << _ignoreReason
-    << _ovUvDisabledFlag;
+    ostrm << _controldeviceid;
+    ostrm << _banksize;
+    ostrm << _typeofswitch;
+    ostrm << _switchmanufacture;
+    ostrm << _maplocationid;
+    ostrm <<  _reclosedelay;
+    ostrm <<  _controlorder;
+    ostrm <<  _statuspointid;
+    ostrm <<  _controlstatus;
+    ostrm <<  _operationanalogpointid;
+    ostrm <<  _totaloperations;
+    ostrm <<  _laststatuschangetime;
+    ostrm <<  _tagscontrolstatus;
+    ostrm <<  _originalfeederid;
+    ostrm <<  _currentdailyoperations;
+    ostrm <<  _ignoreFlag;   
+    ostrm << _ignoreReason;
+    ostrm << _ovUvDisabledFlag;
     ostrm << _triporder;
     ostrm << _closeorder;
     ostrm << _controlDeviceType;
@@ -2221,6 +2237,7 @@ void CtiCCCapBank::saveGuts(RWvostream& ostrm ) const
     ostrm << _ovuvSituationFlag;
     ostrm << _controlStatusQuality;
     ostrm << _localControlFlag;
+    ostrm << _partialPhaseInfo;
 }
 
 /*---------------------------------------------------------------------------
@@ -2299,6 +2316,7 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& right)
         _reportedCBCLastControlReason = right._reportedCBCLastControlReason;
         _reportedCBCState = right._reportedCBCState;
         _reportedCBCStateTime = right._reportedCBCStateTime;
+        _partialPhaseInfo = right._partialPhaseInfo;
 
         _ignoreFlag = right._ignoreFlag;
         _ignoreReason = right._ignoreReason;
@@ -2421,6 +2439,7 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
     setBeforeVarsString("none");
     setAfterVarsString("none");
     setPercentChangeString("none");
+    setPartialPhaseInfo("(none)");
 
     _sendAllCommandFlag = FALSE;
     setIgnoreReasonTimeUpdated(gInvalidCtiTime);
@@ -2498,6 +2517,7 @@ void CtiCCCapBank::setDynamicData(RWDBReader& rdr)
     rdr["aftervar"] >> _sAfterVars;   
     rdr["changevar"] >> _sPercentChange;
     rdr["twowaycbclastcontrol"] >> _reportedCBCLastControlReason;
+    rdr["partialphaseinfo"] >> _partialPhaseInfo;
 
     _insertDynamicDataFlag = FALSE;
     _dirty = FALSE;
@@ -2624,7 +2644,8 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
             << dynamicCCCapBankTable["beforevar"].assign( string2RWCString(_sBeforeVars) )
             << dynamicCCCapBankTable["aftervar"].assign( string2RWCString(_sAfterVars) )
             << dynamicCCCapBankTable["changevar"].assign( string2RWCString(_sPercentChange) )
-            << dynamicCCCapBankTable["twowaycbclastcontrol"].assign( _reportedCBCLastControlReason);
+            << dynamicCCCapBankTable["twowaycbclastcontrol"].assign( _reportedCBCLastControlReason)
+            << dynamicCCCapBankTable["partialphaseinfo"].assign(  string2RWCString(_partialPhaseInfo) );
 
             updater.execute( conn );
 
@@ -2671,7 +2692,8 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
             << _sBeforeVars
             << _sAfterVars
             << _sPercentChange
-            << _reportedCBCLastControlReason;
+            << _reportedCBCLastControlReason
+            << _partialPhaseInfo;
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
             {

@@ -50,6 +50,7 @@ extern unsigned long _RATE_OF_CHANGE_DEPTH;
 extern LONG _MAXOPS_ALARM_CATID;
 extern BOOL _RETRY_ADJUST_LAST_OP_TIME;
 extern ULONG _REFUSAL_TIMEOUT;
+extern BOOL _USE_PHASE_INDICATORS;
 
 RWDEFINE_COLLECTABLE( CtiCCFeeder, CTICCFEEDER_ID )
 
@@ -3798,12 +3799,10 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
                     ratioA = changeA/(currentCapBank->getBankSize() /3);
                     ratioB = changeB/(currentCapBank->getBankSize() /3);
                     ratioC = changeC/(currentCapBank->getBankSize() /3);
-                    if( ratioA < minConfirmPercent*.01 || 
-                        ratioB < minConfirmPercent*.01 || 
-                        ratioC < minConfirmPercent*.01  )
+                    if( !areAllPhasesSuccess(ratioA, ratioB, ratioC, minConfirmPercent) )
                     {
-                        if( (ratioA < failurePercent*.01 && ratioB < failurePercent*.01 && ratioC < failurePercent*.01) &&
-                             failurePercent != 0 && minConfirmPercent != 0 )
+                        if( shouldCapBankBeFailed(ratioA, ratioB, ratioC, failurePercent) &&
+                            failurePercent != 0 && minConfirmPercent != 0 )
                         {
                             //currentCapBank->setControlStatus(CtiCCCapBank::OpenFail);
                             store->setControlStatusAndIncrementFailCount(pointChanges, CtiCCCapBank::OpenFail, currentCapBank);
@@ -3813,14 +3812,13 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
                         else if( minConfirmPercent != 0 )
                         {
                             currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
-                            if ((ratioA < minConfirmPercent*.01 && ratioA >= failurePercent*.01) &&
-                                (ratioB < minConfirmPercent*.01 && ratioB >= failurePercent*.01) &&
-                                (ratioC < minConfirmPercent*.01 && ratioC >= failurePercent*.01))
+                            if (areAllPhasesQuestionable(ratioA, ratioB, ratioC, minConfirmPercent, failurePercent))
                             {
                                 currentCapBank->setControlStatusQuality(CC_Significant);
                             }
                             else 
                             {
+                                
                                 currentCapBank->setControlStatusQuality(CC_Partial);
                             }
                         }
@@ -3836,6 +3834,7 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
                         currentCapBank->setControlStatusQuality(CC_Normal);
                     }
 
+                    currentCapBank->setPartialPhaseInfo(getPhaseIndicatorString(currentCapBank->getControlStatus(), ratioA, ratioB, ratioC, minConfirmPercent, failurePercent));
                     text = createPhaseControlStatusUpdateText(currentCapBank->getControlStatus(), varAValue, 
                                                           varBValue, varCValue, ratioA, ratioB, ratioC);
 
@@ -3901,11 +3900,9 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
                     ratioB = changeB/(currentCapBank->getBankSize() /3);
                     ratioC = changeC/(currentCapBank->getBankSize() /3);
 
-                    if(  ratioA < minConfirmPercent*.01 || 
-                         ratioB < minConfirmPercent*.01 || 
-                         ratioC < minConfirmPercent*.01  )
+                    if(  !areAllPhasesSuccess(ratioA, ratioB, ratioC, minConfirmPercent)   )
                     {
-                        if( (ratioA < failurePercent*.01 && ratioB < failurePercent*.01 && ratioC < failurePercent*.01) && 
+                        if(  shouldCapBankBeFailed(ratioA, ratioB, ratioC, failurePercent) && 
                              failurePercent != 0 && minConfirmPercent != 0 )
                         {
                             store->setControlStatusAndIncrementFailCount(pointChanges, CtiCCCapBank::CloseFail, 
@@ -3916,9 +3913,7 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
                         else if( minConfirmPercent != 0 )
                         {
                             currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
-                            if ((ratioA < minConfirmPercent*.01 && ratioA >= failurePercent*.01) &&
-                                (ratioB < minConfirmPercent*.01 && ratioB >= failurePercent*.01) &&
-                                (ratioC < minConfirmPercent*.01 && ratioC >= failurePercent*.01))
+                            if (areAllPhasesQuestionable(ratioA, ratioB, ratioC, minConfirmPercent, failurePercent))
                             {
                                 currentCapBank->setControlStatusQuality(CC_Significant);
                             }
@@ -3938,6 +3933,7 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
                         currentCapBank->setControlStatus(CtiCCCapBank::Close);
                         currentCapBank->setControlStatusQuality(CC_Normal);
                     }
+                    currentCapBank->setPartialPhaseInfo(getPhaseIndicatorString(currentCapBank->getControlStatus(), ratioA, ratioB, ratioC, minConfirmPercent, failurePercent));
                     text = createPhaseControlStatusUpdateText(currentCapBank->getControlStatus(), varAValue, 
                                                           varBValue, varCValue, ratioA, ratioB, ratioC);
 
@@ -4477,11 +4473,9 @@ BOOL CtiCCFeeder::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& point
                     ratioA = changeA/(currentCapBank->getBankSize() /3);
                     ratioB = changeB/(currentCapBank->getBankSize() /3);
                     ratioC = changeC/(currentCapBank->getBankSize() /3);
-                    if( ratioA < minConfirmPercent*.01 || 
-                        ratioB < minConfirmPercent*.01 || 
-                        ratioC < minConfirmPercent*.01  )
+                    if( !areAllPhasesSuccess(ratioA, ratioB, ratioC, minConfirmPercent)  )
                     {
-                        if( (ratioA < failPercent*.01 && ratioB < failPercent*.01 && ratioC < failPercent*.01) &&
+                        if( shouldCapBankBeFailed(ratioA, ratioB, ratioC, failPercent) &&
                              failPercent != 0 && minConfirmPercent != 0 )
                         {
                            if (!assumedWrongFlag)
@@ -4503,9 +4497,7 @@ BOOL CtiCCFeeder::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& point
                                currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
                            additional = string("Feeder: ");
                            additional += getPAOName();
-                           if ((ratioA < minConfirmPercent*.01 && ratioA >= failPercent*.01) &&
-                               (ratioB < minConfirmPercent*.01 && ratioB >= failPercent*.01) &&
-                               (ratioC < minConfirmPercent*.01 && ratioC >= failPercent*.01))
+                           if (areAllPhasesQuestionable(ratioA, ratioB, ratioC, minConfirmPercent, failPercent))
                            {
                                currentCapBank->setControlStatusQuality(CC_Significant);
                            }
@@ -4539,6 +4531,7 @@ BOOL CtiCCFeeder::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& point
                        currentCapBank->setControlStatusQuality(CC_Normal);
                        vResult = TRUE;
                     }
+                    currentCapBank->setPartialPhaseInfo(getPhaseIndicatorString(currentCapBank->getControlStatus(), ratioA, ratioB, ratioC, minConfirmPercent, failPercent));
                     text = createPhaseControlStatusUpdateText(currentCapBank->getControlStatus(), varAValue, 
                                                           varBValue, varCValue, ratioA, ratioB, ratioC);
 
@@ -4613,12 +4606,10 @@ BOOL CtiCCFeeder::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& point
                     ratioA = changeA/(currentCapBank->getBankSize() /3);
                     ratioB = changeB/(currentCapBank->getBankSize() /3);
                     ratioC = changeC/(currentCapBank->getBankSize() /3);
-                    if( ratioA < minConfirmPercent*.01 || 
-                        ratioB < minConfirmPercent*.01 || 
-                        ratioC < minConfirmPercent*.01  )
+                    if( !areAllPhasesSuccess(ratioA, ratioB, ratioC, minConfirmPercent)  )
                     {
 
-                        if( (ratioA < failPercent*.01 && ratioB < failPercent*.01 && ratioC < failPercent*.01) &&
+                        if( shouldCapBankBeFailed(ratioA, ratioB, ratioC, failPercent) &&
                              failPercent != 0 && minConfirmPercent != 0 )
                         {
                            if (!assumedWrongFlag)
@@ -4640,9 +4631,7 @@ BOOL CtiCCFeeder::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& point
                     
                            additional = string("Feeder: ");
                            additional += getPAOName();
-                           if ((ratioA < minConfirmPercent*.01 && ratioA >= failPercent*.01) &&
-                               (ratioB < minConfirmPercent*.01 && ratioB >= failPercent*.01) &&
-                               (ratioC < minConfirmPercent*.01 && ratioC >= failPercent*.01))
+                           if (areAllPhasesQuestionable(ratioA, ratioB, ratioC, minConfirmPercent, failPercent))
                            {
                                currentCapBank->setControlStatusQuality(CC_Significant);
                            }
@@ -4675,6 +4664,7 @@ BOOL CtiCCFeeder::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& point
                        currentCapBank->setControlStatusQuality(CC_Normal);
                        vResult = TRUE;
                     }
+                    currentCapBank->setPartialPhaseInfo(getPhaseIndicatorString(currentCapBank->getControlStatus(), ratioA, ratioB, ratioC, minConfirmPercent, failPercent));
                     text = createPhaseControlStatusUpdateText(currentCapBank->getControlStatus(), varAValue, 
                                                    varBValue, varCValue, ratioA, ratioB, ratioC);
 
@@ -8336,4 +8326,171 @@ bool CtiCCFeeder::checkForRateOfChange(const CtiRegression& reg, const CtiRegres
         return reg.depthMet();
     }
     return false;
+}
+
+bool CtiCCFeeder::areAllPhasesSuccess(DOUBLE ratioA, DOUBLE ratioB, DOUBLE ratioC, DOUBLE confirmPercent)
+{
+    return ( isResponseSuccess(ratioA, confirmPercent) &&
+             isResponseSuccess(ratioB, confirmPercent) &&
+             isResponseSuccess(ratioC, confirmPercent) );
+}
+bool CtiCCFeeder::areAllPhasesQuestionable(DOUBLE ratioA, DOUBLE ratioB, DOUBLE ratioC, DOUBLE confirmPercent, DOUBLE failPercent)
+{
+    return (isResponseQuestionable(ratioA, confirmPercent, failPercent) &&
+            isResponseQuestionable(ratioB, confirmPercent, failPercent) &&
+            isResponseQuestionable(ratioC, confirmPercent, failPercent) );
+
+}
+bool CtiCCFeeder::isResponseQuestionable(DOUBLE ratio, DOUBLE confirmPercent, DOUBLE failPercent)
+{
+    return ((ratio < confirmPercent * .01) && (ratio >= failPercent * .01) );
+
+}
+bool CtiCCFeeder::isResponseFail(DOUBLE ratio,DOUBLE failPercent)
+{
+    return (ratio < failPercent * .01) ;
+}
+bool CtiCCFeeder::isResponseSuccess(DOUBLE ratio,DOUBLE confirmPercent)
+{
+    return (ratio >= confirmPercent * .01) ;
+
+}
+bool CtiCCFeeder::shouldCapBankBeFailed(DOUBLE ratioA, DOUBLE ratioB, DOUBLE ratioC, DOUBLE failPercent)
+{
+    bool retVal = false;
+    LONG numOfFails = 0;
+    retVal = isAnyPhaseFail(ratioA, ratioB, ratioC, failPercent, numOfFails);
+    if( !_USE_PHASE_INDICATORS && numOfFails != 3)  
+    {
+        //if _USE_PHASE_INDICATORS == false, all phases must be failed 
+        retVal = false;
+    }
+    return retVal;
+}
+
+
+bool CtiCCFeeder::isAnyPhaseFail(DOUBLE ratioA, DOUBLE ratioB, DOUBLE ratioC, DOUBLE failPercent, LONG &numFailedPhases)
+{
+    numFailedPhases = 0;
+
+    if (isResponseFail(ratioA, failPercent)) 
+    {
+        numFailedPhases += 1;
+    }
+    if (isResponseFail(ratioB, failPercent)) 
+    {
+        numFailedPhases += 1;
+    }
+    if (isResponseFail(ratioC, failPercent)) 
+    {
+        numFailedPhases += 1;
+    }
+    
+    return numFailedPhases != 0;
+}
+
+string CtiCCFeeder::getFailedPhasesString(DOUBLE ratioA, DOUBLE ratioB, DOUBLE ratioC, DOUBLE confirmPercent, DOUBLE failPercent)
+{
+    string retStr = "";
+    LONG numOfFail = 0;
+    if( isAnyPhaseFail(ratioA, ratioB, ratioC, failPercent, numOfFail) )
+    {
+        if( numOfFail == 3)
+        {    
+            retStr = "ABC";
+        }
+        else if( numOfFail == 2 )
+        {
+            if( isResponseFail(ratioA,failPercent) )
+            {
+                retStr += "A";
+            }
+            if( isResponseFail(ratioB,failPercent) )
+            {
+                retStr += "B";
+            }
+            if( isResponseFail(ratioC,failPercent) )
+            {
+                retStr += "C";
+            }
+        }
+        else if( numOfFail == 1 )
+        {
+            if( isResponseSuccess(ratioA, confirmPercent) ||
+                isResponseSuccess(ratioB, confirmPercent) ||
+                isResponseSuccess(ratioC, confirmPercent) )
+            {
+                if( isResponseFail(ratioA,failPercent) )
+                {
+                    retStr += "A";
+                }
+                else if( isResponseFail(ratioB,failPercent) )
+                {
+                    retStr += "B";
+                }
+                else 
+                {
+                    retStr += "C";
+                }
+            }
+            else 
+            {
+                if(isResponseQuestionable(ratioA, confirmPercent, failPercent))
+                {
+                    retStr += "A";
+                }
+                if(isResponseQuestionable(ratioB, confirmPercent, failPercent))
+                {
+                    retStr += "B";
+                }
+                if(isResponseQuestionable(ratioC, confirmPercent, failPercent))
+                {
+                    retStr += "C";
+                }
+            }
+        }
+    }
+    return retStr;
+}
+string CtiCCFeeder::getQuestionablePhasesString(DOUBLE ratioA, DOUBLE ratioB, DOUBLE ratioC, DOUBLE confirmPercent, DOUBLE failPercent)
+{
+    string retStr = "";
+    if( isResponseQuestionable(ratioA, confirmPercent, failPercent)  )
+    {
+        retStr += "A";
+    }
+    if( isResponseQuestionable(ratioB, confirmPercent, failPercent)  )
+    {
+        retStr += "B";
+    }
+    if( isResponseQuestionable(ratioC, confirmPercent, failPercent)  )
+    {
+        retStr += "C";
+    }
+    return retStr;
+}
+
+
+string CtiCCFeeder::getPhaseIndicatorString(LONG capState, DOUBLE ratioA, DOUBLE ratioB, DOUBLE ratioC, DOUBLE confirmPercent, DOUBLE failPercent) 
+{
+    string retStr = "(none)";
+    if( _USE_PHASE_INDICATORS )
+    {
+        if (capState == CtiCCCapBank::OpenQuestionable ||
+            capState == CtiCCCapBank::CloseQuestionable )
+        {
+            retStr = getQuestionablePhasesString(ratioA, ratioB, ratioC, confirmPercent, failPercent);
+        }
+        else if (capState == CtiCCCapBank::OpenFail ||
+                 capState == CtiCCCapBank::CloseFail )
+        {
+            retStr = getFailedPhasesString(ratioA, ratioB, ratioC, confirmPercent, failPercent);
+        }
+        else
+        {
+             retStr = "(none)";
+        }
+    }
+    
+    return retStr;
 }

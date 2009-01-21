@@ -7304,7 +7304,8 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
                     << dynamicCCCapBankTable["beforevar"]
                     << dynamicCCCapBankTable["aftervar"]
                     << dynamicCCCapBankTable["changevar"]
-                    << dynamicCCCapBankTable["twowaycbclastcontrol"];
+                    << dynamicCCCapBankTable["twowaycbclastcontrol"]
+                    << dynamicCCCapBankTable["partialphaseinfo"];
 
                     selector.from(dynamicCCCapBankTable);
                     selector.from(capBankTable);

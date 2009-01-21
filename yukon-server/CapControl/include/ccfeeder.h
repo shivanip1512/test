@@ -438,15 +438,16 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
 
     vector <CtiCCMonitorPointPtr>& getMultipleMonitorPoints() {return _multipleMonitorPoints;};
 
-    //void statusUpdateRateOfChange( CtiCCCapBank* capbank, bool openPending, double currentVarLoadPointValue );
-    //void statusUpdateConfirmPercent( CtiCCCapBank* capbank, bool openPending, long minConfirmPercent, long failurePercent, double change );
-
-    //Possible states
-    /*static const string Enabled;
-    static const string Disabled;*/
-
-    //static int PeakState;
-    //static int OffPeakState;
+    bool areAllPhasesSuccess(DOUBLE ratioA, DOUBLE ratioB, DOUBLE ratioC, DOUBLE confirmPercent);    
+    bool areAllPhasesQuestionable(DOUBLE ratioA, DOUBLE ratioB, DOUBLE ratioC, DOUBLE confirmPercent, DOUBLE failPercent);
+    bool shouldCapBankBeFailed(DOUBLE ratioA, DOUBLE ratioB, DOUBLE ratioC, DOUBLE failPercent);
+    bool isAnyPhaseFail(DOUBLE ratioA, DOUBLE ratioB, DOUBLE ratioC, DOUBLE failPercent, LONG &numFailedPhases);
+    bool isResponseQuestionable(DOUBLE ratio, DOUBLE confirmPercent, DOUBLE failPercent);
+    bool isResponseFail(DOUBLE ratio, DOUBLE failPercent);
+    bool isResponseSuccess(DOUBLE ratio, DOUBLE confirmPercent);
+    string getPhaseIndicatorString(LONG capState, DOUBLE ratioA, DOUBLE ratioB, DOUBLE ratioC, DOUBLE confirmPercent, DOUBLE failPercent);
+    string getQuestionablePhasesString(DOUBLE ratioA, DOUBLE ratioB, DOUBLE ratioC, DOUBLE confirmPercent, DOUBLE failPercent);
+    string getFailedPhasesString(DOUBLE ratioA, DOUBLE ratioB, DOUBLE ratioC, DOUBLE confirmPercent, DOUBLE failPercent);
 
 private:
 

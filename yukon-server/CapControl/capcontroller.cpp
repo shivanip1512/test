@@ -81,6 +81,7 @@ extern ULONG _OP_STATS_USER_DEF_PERIOD;
 extern ULONG _OP_STATS_REFRESH_RATE;
 extern BOOL _RETRY_ADJUST_LAST_OP_TIME;
 extern ULONG _REFUSAL_TIMEOUT;
+extern BOOL _USE_PHASE_INDICATORS;
 
 
 //DLLEXPORT BOOL  bGCtrlC = FALSE;
@@ -4093,6 +4094,25 @@ void CtiCapController::refreshCParmGlobals(bool force)
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - CAP_CONTROL_MAX_KVAR_TIMEOUT: " << _MAX_KVAR_TIMEOUT << endl;
         }
+
+        _USE_PHASE_INDICATORS = false;
+        strcpy(var, "CAP_CONTROL_USE_PHASE_INDICATORS");
+        if ( !(str = gConfigParms.getValueAsString(var)).empty() )
+        {
+            std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+            _USE_PHASE_INDICATORS = (str=="true"?TRUE:FALSE);
+            if ( _CC_DEBUG & CC_DEBUG_STANDARD)
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - " << var << ":  " << str << endl;
+            }
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        }
+
         _LOG_MAPID_INFO = FALSE;
 
         strcpy(var, "CAP_CONTROL_LOG_MAPID_INFO");
