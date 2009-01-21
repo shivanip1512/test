@@ -19,6 +19,7 @@ import com.cannontech.yukon.api.account.endpoint.RemoveAccountsRequestEndpoint;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XmlUtils;
 import com.cannontech.yukon.api.util.YukonXml;
+import com.cannontech.yukon.api.utils.TestUtils;
 
 public class RemoveAccountsRequestEndpointTest {
     private RemoveAccountsRequestEndpoint impl;
@@ -44,10 +45,22 @@ public class RemoveAccountsRequestEndpointTest {
         /*
          * Test the success file 
          */
+        
+        // Load schemas
+        Resource reqSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/account/schemas/RemoveAccountsRequest.xsd", this.getClass());
+        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/account/schemas/RemoveAccountsResponse.xsd", this.getClass());
+        
         Resource successResource = new ClassPathResource("successfulRemoveAccountsRequest.xml", RemoveAccountsRequestEndpointTest.class);
         Element successInputElement = XmlUtils.createElementFromResource(successResource);
+        
+        // Test request against schema definition
+        TestUtils.validateAgainstSchema(successInputElement, reqSchemaResource);
+        
         LiteYukonUser user = new LiteYukonUser();
         Element successOutputElement = impl.invoke(successInputElement, user);
+        
+        // Test response against schema definition
+        TestUtils.validateAgainstSchema(successOutputElement, respSchemaResource);
         
         Assert.assertNotNull("Missing output element from RemoveAccountsResponse.", successOutputElement);
         
@@ -74,7 +87,14 @@ public class RemoveAccountsRequestEndpointTest {
         
         Resource invalidAccountNumResource = new ClassPathResource("invalidAccountNumberRemoveAccountsRequest.xml", RemoveAccountsRequestEndpointTest.class);
         Element invalidAccountNumInputElement = XmlUtils.createElementFromResource(invalidAccountNumResource);
+        
+        // Test request against schema definition
+        TestUtils.validateAgainstSchema(invalidAccountNumInputElement, reqSchemaResource);
+        
         Element invalidAccountNumOutputElement = impl.invoke(invalidAccountNumInputElement, user);
+        
+        // Test response against schema definition
+        TestUtils.validateAgainstSchema(invalidAccountNumOutputElement, respSchemaResource);
         
         Assert.assertNotNull("Missing output element from RemoveAccountsResponse.", invalidAccountNumOutputElement);
 

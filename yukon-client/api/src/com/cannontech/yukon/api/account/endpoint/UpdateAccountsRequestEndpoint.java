@@ -2,6 +2,7 @@ package com.cannontech.yukon.api.account.endpoint;
 
 import java.util.List;
 
+import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,9 @@ public class UpdateAccountsRequestEndpoint {
                               new NodeToElementMapperWrapper<UpdatableAccount>(new AccountsRequestMapper()));
         
         Element updateAccountsResponse = new Element("updateAccountsResponse", ns);
+        Attribute versionAttribute = new Attribute("version", "1.0"); 
+        updateAccountsResponse.setAttribute(versionAttribute); 
+        
         Element updateAccountsResultList = new Element("accountResultList", ns);
         updateAccountsResponse.addContent(updateAccountsResultList);
         

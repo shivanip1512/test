@@ -21,6 +21,7 @@ import com.cannontech.yukon.api.account.endpoint.UpdateAccountsRequestEndpoint;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XmlUtils;
 import com.cannontech.yukon.api.util.YukonXml;
+import com.cannontech.yukon.api.utils.TestUtils;
 
 public class UpdateAccountsRequestEndpointTest {
     private UpdateAccountsRequestEndpoint impl;
@@ -53,10 +54,22 @@ public class UpdateAccountsRequestEndpointTest {
         /*
          * Test the success file 
          */
+        
+        // Load schemas
+        Resource reqSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/account/schemas/UpdateAccountsRequest.xsd", this.getClass());
+        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/account/schemas/UpdateAccountsResponse.xsd", this.getClass());
+        
         Resource successResource = new ClassPathResource("successfulUpdateAccountsRequest.xml", UpdateAccountsRequestEndpointTest.class);
         Element successInputElement = XmlUtils.createElementFromResource(successResource);
+        
+        // Test request against schema definition
+        TestUtils.validateAgainstSchema(successInputElement, reqSchemaResource);
+        
         LiteYukonUser user = new LiteYukonUser();
         Element successOutputElement = impl.invoke(successInputElement, user);
+        
+        // Test response against schema definition
+        TestUtils.validateAgainstSchema(successOutputElement, respSchemaResource);
         
         Assert.assertNotNull("Missing output element from UpdateAccountsResponse.", successOutputElement);
         
@@ -83,7 +96,14 @@ public class UpdateAccountsRequestEndpointTest {
         
         Resource dupAccountNumResource = new ClassPathResource("invalidUpdateAccountsRequest.xml", UpdateAccountsRequestEndpointTest.class);
         Element dupAccountNumInputElement = XmlUtils.createElementFromResource(dupAccountNumResource);
+        
+        // Test request against schema definition
+        TestUtils.validateAgainstSchema(dupAccountNumInputElement, reqSchemaResource);
+        
         Element dupAccountNumOutputElement = impl.invoke(dupAccountNumInputElement, user);
+        
+        // Test response against schema definition
+        TestUtils.validateAgainstSchema(dupAccountNumOutputElement, respSchemaResource);
         
         Assert.assertNotNull("Missing output element from UpdateAccountsResponse.", dupAccountNumOutputElement);
 
