@@ -170,8 +170,9 @@ public class SqlStatementBuilder implements SqlFragmentSource {
     
     public SqlStatementBuilder appendArgumentList(Collection<?> list) {
         if(list.isEmpty()) {
-            arguments.add("null");
-        }
+            statement.append("null");
+            return this;
+        } 
         Iterator<?> iter = list.iterator();
         while(iter.hasNext()) {
             Object argument = iter.next();
