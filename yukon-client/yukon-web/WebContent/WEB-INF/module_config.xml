@@ -270,7 +270,7 @@
 	   		    <link>/operator/Metering/Billing.jsp</link>
 	          </option>
 	          <option id="setup">
-	          	<requireRoleProperty value="application.BillingRole.ROLEID"/>
+	          	<requireRoleProperty value="application.BillingRole.DYNAMIC_BILLING_FILE_SETUP"/>
 	            <link>/spring/dynamicBilling/overview</link>
 	          </option>
           </links>	

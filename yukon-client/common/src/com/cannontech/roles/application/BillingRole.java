@@ -9,6 +9,6 @@ import com.cannontech.roles.ApplicationRoleDefs;
 public interface BillingRole {
 	public static final int ROLEID = ApplicationRoleDefs.BILLING_ROLEID;
 	
-	/* The label used for the header title */
-	public static final int HEADER_LABEL = ApplicationRoleDefs.BILLING_PROPERTYID_BASE;
+	/** Controls access to Dynamic Billing File Setup */
+	public static final int DYNAMIC_BILLING_FILE_SETUP = ApplicationRoleDefs.BILLING_PROPERTYID_BASE;
 }
