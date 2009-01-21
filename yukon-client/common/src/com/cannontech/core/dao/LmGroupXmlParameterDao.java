@@ -5,7 +5,7 @@ import java.util.List;
 import com.cannontech.database.data.device.lm.LmXmlParameter;
 import com.cannontech.database.data.device.lm.LMGroupXML.XmlType;
 
-public interface LmXmlParameterDao {
+public interface LmGroupXmlParameterDao {
 
     public List<LmXmlParameter> getParametersForGroup(int groupId, XmlType type);
     

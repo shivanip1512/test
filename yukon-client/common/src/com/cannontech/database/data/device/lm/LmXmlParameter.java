@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class LmXmlParameter implements Serializable{
 
-	private int xmlParamId;
+	private int xmlParameterId;
     private int lmGroupId;
     private String parameterName;
 	private String parameterValue;
@@ -41,12 +41,12 @@ public class LmXmlParameter implements Serializable{
         this.parameterValue = parameterValue;
     }
     
-    public int getXmlParamId() {
-		return xmlParamId;
+    public int getXmlParameterId() {
+		return xmlParameterId;
 	}
 
-	public void setXmlParamId(int xmlParamId) {
-		this.xmlParamId = xmlParamId;
+	public void setXmlParameterId(int xmlParameterId) {
+		this.xmlParameterId = xmlParameterId;
 	}
     
 }

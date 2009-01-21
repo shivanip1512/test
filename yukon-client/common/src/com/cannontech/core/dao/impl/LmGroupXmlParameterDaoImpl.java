@@ -2,7 +2,6 @@ package com.cannontech.core.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,12 +9,12 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.core.dao.LmXmlParameterDao;
+import com.cannontech.core.dao.LmGroupXmlParameterDao;
 import com.cannontech.database.data.device.lm.LmXmlParameter;
 import com.cannontech.database.data.device.lm.LMGroupXML.XmlType;
 import com.cannontech.database.incrementer.NextValueHelper;
 
-public class LmXmlParameterDaoImpl implements LmXmlParameterDao {
+public class LmGroupXmlParameterDaoImpl implements LmGroupXmlParameterDao {
     
     private static final String insertSql;
     private static final String updateByParamId;
@@ -29,14 +28,14 @@ public class LmXmlParameterDaoImpl implements LmXmlParameterDao {
     
     static{
         insertSql = "INSERT INTO LMGroupXMLParameter " +
-                    "( LMXmlParameterId, lmgroupid, parametername, parametervalue ) " +
+                    "( LMGroupXMLParameterId, lmgroupid, parametername, parametervalue ) " +
                     "VALUES (?,?,?,?)";
 
-        updateByParamId = "UPDATE LMGroupXMLParameter SET lmgroupid = ?, parametername = ?, parametervalue = ? WHERE LMXmlParameterId = ?";
+        updateByParamId = "UPDATE LMGroupXMLParameter SET lmgroupid = ?, parametername = ?, parametervalue = ? WHERE LMGroupXMLParameterId = ?";
         
         removeSql = "DELETE FROM LMGroupXMLParameter ";
         
-        selectByGroupIdSql = "SELECT LMXmlParameterId, lmgroupid, parametername, parametervalue  FROM LMGroupXMLParameter" 
+        selectByGroupIdSql = "SELECT LMGroupXMLParameterId, lmgroupid, parametername, parametervalue  FROM LMGroupXMLParameter" 
                     + " WHERE lmgroupid = ?";
         
         rowMapper = new ParameterizedRowMapper<LmXmlParameter>(){
@@ -44,7 +43,7 @@ public class LmXmlParameterDaoImpl implements LmXmlParameterDao {
                 
                 LmXmlParameter param = new LmXmlParameter();
                 
-                param.setXmlParamId(rs.getInt("LMXmlParameterId"));
+                param.setXmlParameterId(rs.getInt("LMGroupXMLParameterId"));
                 param.setLmGroupId(rs.getInt("lmgroupid"));
                 param.setParameterName(rs.getString("parametername"));
                 param.setParameterValue(rs.getString("parametervalue"));
@@ -67,7 +66,7 @@ public class LmXmlParameterDaoImpl implements LmXmlParameterDao {
     @Transactional(readOnly = false)
     public boolean update(LmXmlParameter param) {
         
-        int rowsAffected = simpleJdbcTemplate.update(updateByParamId,param.getLmGroupId(),param.getParameterName(),param.getParameterValue(), param.getXmlParamId());
+        int rowsAffected = simpleJdbcTemplate.update(updateByParamId,param.getLmGroupId(),param.getParameterName(),param.getParameterValue(), param.getXmlParameterId());
         
         boolean success = (rowsAffected == 1);
         return success;

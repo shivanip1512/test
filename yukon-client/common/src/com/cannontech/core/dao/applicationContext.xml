@@ -189,7 +189,7 @@
        <property name="nextValueHelper" ref="nextValueHelper" />
   </bean> 
   
-  <bean id="xmlLMGroupParameterDao" class="com.cannontech.core.dao.impl.LmXmlParameterDaoImpl"/> 
+  <bean id="xmlLMGroupParameterDao" class="com.cannontech.core.dao.impl.LmGroupXmlParameterDaoImpl"/> 
   <bean id="paoScheduleDao" class="com.cannontech.core.dao.impl.PaoScheduleDaoImpl"/>
 
 </beans>

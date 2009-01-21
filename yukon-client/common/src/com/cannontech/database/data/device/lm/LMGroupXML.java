@@ -3,7 +3,7 @@ package com.cannontech.database.data.device.lm;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.cannontech.core.dao.LmXmlParameterDao;
+import com.cannontech.core.dao.LmGroupXmlParameterDao;
 import com.cannontech.spring.YukonSpringHook;
 
 public class LMGroupXML extends LMGroupExpressCom {
@@ -24,7 +24,7 @@ public class LMGroupXML extends LMGroupExpressCom {
     }
     
     //Needs to be transient because this object gets serialized.
-    transient private LmXmlParameterDao xmlLMGroupParameterDao = null;
+    transient private LmGroupXmlParameterDao xmlLMGroupParameterDao = null;
     
     private List<LmXmlParameter> parameterList;
 	private XmlType xmlType = XmlType.ZIGBEE;
@@ -93,9 +93,9 @@ public class LMGroupXML extends LMGroupExpressCom {
      * 
      * @return
      */
-    private LmXmlParameterDao getDao() {
+    private LmGroupXmlParameterDao getDao() {
         if (xmlLMGroupParameterDao == null) {
-            xmlLMGroupParameterDao = YukonSpringHook.getBean("xmlLMGroupParameterDao",LmXmlParameterDao.class);
+            xmlLMGroupParameterDao = YukonSpringHook.getBean("xmlLMGroupParameterDao",LmGroupXmlParameterDao.class);
         }
         return xmlLMGroupParameterDao;
     }
