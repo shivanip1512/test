@@ -1686,7 +1686,6 @@ INT CtiDeviceMCT::executePutValue(CtiRequestMsg                  *pReq,
                 }
                 else if( parse.getCommandStr().find(" a3") != string::npos )
                 {
-                    //  must search from most to least specific kv flavor - kv2c, then kv2, then kv
                     OutMessage->Buffer.BSt.Function   = CtiDeviceMCT470::FuncWrite_IEDCommandWithData;
                     OutMessage->Buffer.BSt.Length     = 6; //This command has verying lengths possible.
                     OutMessage->Buffer.BSt.Message[0] = 0xff;  //  SPID
