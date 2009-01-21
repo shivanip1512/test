@@ -38,5 +38,5 @@ public interface AuthenticationRole {
     public static final int AD_SERVER_PORT = YukonRoleDefs.AUTHENTICATION_PROPERTYID_BASE - 15;
     public static final int AD_SERVER_TIMEOUT = YukonRoleDefs.AUTHENTICATION_PROPERTYID_BASE - 16;
     public static final int AD_NTDOMAIN = YukonRoleDefs.AUTHENTICATION_PROPERTYID_BASE - 17;
-    public static final int HIDE_PASSWORD_RECOVERY = YukonRoleDefs.AUTHENTICATION_PROPERTYID_BASE - 18;
+    public static final int ENABLE_PASSWORD_RECOVERY = YukonRoleDefs.AUTHENTICATION_PROPERTYID_BASE - 18;
 }
