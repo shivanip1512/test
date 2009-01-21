@@ -7,9 +7,11 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.util.HtmlUtils;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.FileUtil;
@@ -57,10 +59,11 @@ public class LogTailController extends LogController {
          */
         int numLines = ServletRequestUtils.getIntParameter(request, "numLines", 50);
         long offSet = ServletRequestUtils.getLongParameter(request, "offSet", 0);
-        String root = ServletRequestUtils.getStringParameter(request, "root", "/");
 
         // Gets the correct log file from the request
-        File logFile = getLogFile(request, root);
+        File logFile = getLogFile(request);
+        Validate.isTrue(logFile.isFile());
+        
         long lastModL = logFile.lastModified();
         long fileLengthL = logFile.length();
        
@@ -79,7 +82,9 @@ public class LogTailController extends LogController {
             logger.warn("Could not read log file: " + logFile);
         }
 
-        mav.addObject("logFilePath", root);
+        String fileName = ServletRequestUtils.getRequiredStringParameter(request, "file");
+        mav.addObject("file", HtmlUtils.htmlEscape(getFileNameParameter(request)));
+        mav.addObject("logFilePath", fileName);
         mav.addObject("numLines", numLines);
         
         return mav;

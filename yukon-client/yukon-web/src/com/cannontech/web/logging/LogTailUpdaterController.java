@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -51,7 +52,8 @@ public class LogTailUpdaterController extends LogController {
         jsonUpdates.put("logContent",jsonLogLines);
         jsonUpdates.put("numLines", linesPerUpdate);
         
-        File logFile = getLogFile(request, data.getString("filePath"));
+        File logFile = getLogFile(request);
+        Validate.isTrue(logFile.isFile());
         
         if((logFile!= null) && (logFile.canRead())){
             // Setting up the last modified variable for the JSON

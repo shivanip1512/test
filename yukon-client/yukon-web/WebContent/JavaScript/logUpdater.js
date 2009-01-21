@@ -61,7 +61,7 @@ function initiateCannonLogUpdate(url, periodSecs) {
 	        var requestData = $H();
 	        requestData.fileLength = fileLength;
 	        requestData.numLines = $('numLines').value;
-	        requestData.filePath = $('filePath').innerHTML;
+	        requestData.file = $('file').innerHTML;
          
         	var requestJson = requestData.toJSON();
 	        

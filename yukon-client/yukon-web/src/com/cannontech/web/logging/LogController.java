@@ -5,9 +5,9 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringUtils;
+import org.springframework.web.bind.ServletRequestBindingException;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.mvc.AbstractController;
-import org.springframework.web.util.UrlPathHelper;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.AuthDao;
@@ -27,46 +27,50 @@ public abstract class LogController extends AbstractController {
     protected File localDir = new File(CtiUtilities.getYukonBase(), "Server/Log");
     
     /**
-     * Gets the correct file obj from the request and returns it.
+     * Gets the correct file from the request and returns it.  In the case that the file
+     * is not in the log directory it will throw an IllegalArgumentException. 
      * 
      * @param request
      * @param root
      * @return
      * @throws IOException
+     * @throws ServletRequestBindingException 
      */
-    protected File getLogFile(HttpServletRequest request, String root) throws IOException {
+    protected File getLogFile(HttpServletRequest request) throws IOException {
         
-        File currentDir = null;
-        if(!root.equals("/")){
-            currentDir = new File(localDir, root);
-        }else{
-            currentDir = new File(localDir, "");
-        }
-        String fileName = this.getFileName(request);
-        File logFile = new File(currentDir, fileName);
+        String fileName = getFileNameParameter(request);
+        File logFile = new File(localDir, fileName);
+        
+        logFile = logFile.getCanonicalFile();
+        if (!logFile.exists() ||
+            !isFileUnderRoot(localDir, logFile)) throw new IllegalArgumentException();
         
         return logFile;
     }
 
-    /**
-     * Gets the given file name from the request object
-     * 
-     * @param request
-     * @return
-     * @throws IOException
-     */
-    protected String getFileName(HttpServletRequest request) throws IOException {
+	protected String getFileNameParameter(HttpServletRequest request) {
+		String fileName = ServletRequestUtils.getStringParameter(request, "file", "/");
+		return fileName;
+	}
 
-        //get requested url, convert to a file, get the filename
-        UrlPathHelper helper = new UrlPathHelper();
-        helper.setUrlDecode(true);
-        
-        String fileNameAndParams = helper.getPathWithinServletMapping(request);
-        String fileName = StringUtils.substringAfterLast(fileNameAndParams, "/");
-        
-        return fileName;
-    }
-    
+	/**
+	 * Checks to see if the file is under root, but is not root.
+	 * 
+	 * @param root
+	 * @param logFile
+	 * @return
+	 */
+    private boolean isFileUnderRoot(File root, File logFile) {
+		File file = logFile;
+		do {
+			if (file.equals(root)) {
+				return true;
+			}
+			file = file.getParentFile();
+		} while (file != null);
+		
+		return false;
+	}
 
     public void setLocalDir(File localDir) {
         this.localDir = localDir;

@@ -11,9 +11,11 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.util.HtmlUtils;
 
 import com.cannontech.common.util.LogSortUtil;
 import com.cannontech.common.version.VersionTools;
@@ -58,10 +60,9 @@ public class LogMenuController extends LogController {
         String sortType = ServletRequestUtils.getStringParameter(request,
                                                                  "sortType",
                                                                  "alphabetic");
-        String root = ServletRequestUtils.getStringParameter(request,
-                                                             "root",
-                                                             "/");
-
+        File logDir = getLogFile(request);
+        Validate.isTrue(logDir.isDirectory());
+        
         // boolean reverse = ServletRequestUtils.getBooleanParameter(request,
         // "reverse", false);
         List<File> localLogList = new ArrayList<File>();
@@ -69,8 +70,7 @@ public class LogMenuController extends LogController {
         SortedMap<String, List<String>> resultSet = new TreeMap<String, List<String>>();
 
         // lists to hold log file names
-        File currentDir = new File(localDir, root);
-        localLogList = populateFileList(currentDir);
+        localLogList = populateFileList(logDir);
 
         if (!localLogList.isEmpty()) {
             // Checks to see how the user wants the information setup
@@ -81,7 +81,7 @@ public class LogMenuController extends LogController {
             }
         }
 
-        // Seperates the directories from the logFiles
+        // Separates the directories from the logFiles
         if (resultSet.containsKey("Directories")) {
             dirSet = new ArrayList<String>(resultSet.get("Directories"));
             resultSet.remove("Directories");
@@ -89,7 +89,8 @@ public class LogMenuController extends LogController {
 
         // add local list to model
         mav.addObject("oldStateSort", sortType);
-        mav.addObject("oldStatePath", root);
+        mav.addObject("dirFile", logDir);
+        mav.addObject("file", HtmlUtils.htmlEscape(getFileNameParameter(request)));
         mav.addObject("dirList", dirSet);
         mav.addObject("localLogList", resultSet);
 

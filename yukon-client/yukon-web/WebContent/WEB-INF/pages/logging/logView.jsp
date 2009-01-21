@@ -6,8 +6,8 @@
 <cti:standardMenu/>
 <cti:breadCrumbs>
     <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
-    <cti:crumbLink url="/logging/" title="Log File Menu"  />
-    <cti:crumbLink url="/logging/tail/${logFileName}?root=${logFilePath}" title="Log Tailer"  />
+    <cti:crumbLink url="/logging/menu" title="Log File Menu"  />
+    <cti:crumbLink url="/logging/tail?file=${file}" title="Log Tailer"  />
     &gt; Log View
 </cti:breadCrumbs>
 

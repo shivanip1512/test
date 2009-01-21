@@ -15,12 +15,12 @@
 &nbsp&nbsp&nbsp JDBC URL: ${dbUrl}<br />
 &nbsp&nbsp&nbsp JDBC User: ${dbUser}<br />
 
-<h4>SortBy:: <a href="?root=${oldStatePath}&sortType=alphabetic" id="alphabetic" name="alphabetic">Alphabetic</a> or <a href="?root=${oldStatePath}&sortType=date" id="date" name="alphabetic">Date</a></h4>
+<h4>SortBy:: <a href="?file=${file}&sortType=alphabetic" id="alphabetic" name="alphabetic">Alphabetic</a> or <a href="?file=${file}&sortType=date" id="date" name="alphabetic">Date</a></h4>
 
 <!-- Display and link to the local log files -->
 <b id="dir" class="logLable">Directories</b><br/>
 <c:forEach var="dirName" items="${dirList}">
-	&nbsp&nbsp&nbsp<a href="?root=${oldStatePath}${dirName}&sortType=${oldStateSort}">${dirName}</a><br/>
+	&nbsp&nbsp&nbsp<a href="?file=${file}${dirName}&sortType=${oldStateSort}">${dirName}</a><br/>
 </c:forEach>
 <br />
 
@@ -28,7 +28,7 @@
 <c:forEach var="logSection" items="${localLogList}">
 	<b id="logLable" class="logLable">${logSection.key}</b><br/>
 	<c:forEach var="fileName" items="${logSection.value}">
-		&nbsp&nbsp&nbsp<a href='tail/<c:url value='${fileName}'/>?root=${oldStatePath}' >${fileName}</a><br/>
+		&nbsp&nbsp&nbsp<a href="tail?file=${file}${fileName}" >${fileName}</a><br/>
 	</c:forEach>
 	<br />
 </c:forEach>

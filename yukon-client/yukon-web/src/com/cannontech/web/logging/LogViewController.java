@@ -7,10 +7,12 @@ import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.util.HtmlUtils;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.service.DateFormattingService;
@@ -51,10 +53,10 @@ public class LogViewController extends LogController {
         
         ModelAndView mav = new ModelAndView("logView.jsp");
         
-        String root = ServletRequestUtils.getStringParameter(request, "root", "/");
-
         // Gets the correct log file from the request
-        File logFile = getLogFile(request, root);
+        File logFile = getLogFile(request);
+        Validate.isTrue(logFile.isFile());
+        
         FileReader fr = null;
         fr = new FileReader(logFile);   
             
@@ -72,7 +74,9 @@ public class LogViewController extends LogController {
             mav.addObject("fileLength", fileLength);
             mav.addObject("fileDateMod", lastMod);
             mav.addObject("logFileName", logFile.getName());
-            mav.addObject("logFilePath", root);
+            String fileName = ServletRequestUtils.getRequiredStringParameter(request, "file");
+            mav.addObject("logFilePath", fileName);
+            mav.addObject("file", HtmlUtils.htmlEscape(getFileNameParameter(request)));
             mav.addObject("logContents", logContents);
         } 
         return mav;

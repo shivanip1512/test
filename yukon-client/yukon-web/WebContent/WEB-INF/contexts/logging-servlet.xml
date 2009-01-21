@@ -46,19 +46,19 @@
           class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
           <property name="urlMap">
                <map>
-                    <entry key="/">
+                    <entry key="/menu">
                         <ref bean="logMenuController" />
                     </entry>
-                    <entry key="/view/*">
+                    <entry key="/view">
                         <ref bean="logViewController" />
                     </entry>  
-                    <entry key="/download/*">
+                    <entry key="/download">
                         <ref bean="logDownloadController" />
                     </entry>
-                    <entry key="/tail/update/*">
+                    <entry key="/tail/update">
                     	<ref bean="logTailUpdaterController" />
                     </entry>    
-                    <entry key="/tail/*">
+                    <entry key="/tail">
                         <ref bean="logTailController" />
                     </entry>
                     

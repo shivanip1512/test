@@ -5,15 +5,14 @@ import java.io.File;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
 import org.springframework.util.FileCopyUtils;
-import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.util.ServletUtil;
-import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 /**
@@ -41,9 +40,9 @@ public class LogDownloadController extends LogController {
         authDao.verifyRole(ServletUtil.getYukonUser(request), AdministratorRole.ROLEID);
         response.setContentType("text/plain");
         
-        String root = ServletRequestUtils.getStringParameter(request, "root", "/");
-
-        File logFile = getLogFile(request, root);
+        File logFile = getLogFile(request);
+        Validate.isTrue(logFile.isFile());
+        
         if(logFile != null){
             //set response header to the log filename
             response.setHeader("Content-Disposition", "attachment; filename=" + logFile.getName());
