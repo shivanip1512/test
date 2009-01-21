@@ -18,11 +18,13 @@
 #include "msg_pdata.h"
 
 #include "dbaccess.h"
-#include "ccid.h"
 #include "pointdefs.h"
 #include "logger.h"
 #include "resolvers.h"
+#include "ccid.h"
 #include "ccoperationstats.h"
+
+using namespace capcontrol;
 
 extern ULONG _CC_DEBUG;
 
@@ -346,10 +348,10 @@ CtiCCOperationStats& CtiCCOperationStats::incrementAllOpCounts()
     setWeeklyOpCount(_weeklyOpCount+1);
     setDailyOpCount(_dailyOpCount+1);
     setUserDefOpCount(_userDefOpCount+1);
-    _userDefOpSuccessPercent = calculateSuccessPercent(_userDefOpCount, _userDefConfFail);
-    _dailyOpSuccessPercent   = calculateSuccessPercent(_dailyOpCount, _dailyConfFail);
-    _weeklyOpSuccessPercent  = calculateSuccessPercent(_weeklyOpCount, _weeklyConfFail);
-    _monthlyOpSuccessPercent = calculateSuccessPercent(_monthlyOpCount, _monthlyConfFail);
+    _userDefOpSuccessPercent = calculateSuccessPercent(USER_DEF_CCSTATS);
+    _dailyOpSuccessPercent   = calculateSuccessPercent(DAILY_CCSTATS);  
+    _weeklyOpSuccessPercent  = calculateSuccessPercent(WEEKLY_CCSTATS); 
+    _monthlyOpSuccessPercent = calculateSuccessPercent(MONTHLY_CCSTATS);
 
     return *this;
 }
@@ -360,10 +362,10 @@ CtiCCOperationStats& CtiCCOperationStats::incrementAllOpFails()
     setWeeklyConfFail(_weeklyConfFail+1);
     setDailyConfFail(_dailyConfFail+1);
     setUserDefConfFail(_userDefConfFail+1);
-    _userDefOpSuccessPercent = calculateSuccessPercent(_userDefOpCount, _userDefConfFail);
-    _dailyOpSuccessPercent   = calculateSuccessPercent(_dailyOpCount, _dailyConfFail);
-    _weeklyOpSuccessPercent  = calculateSuccessPercent(_weeklyOpCount, _weeklyConfFail);
-    _monthlyOpSuccessPercent = calculateSuccessPercent(_monthlyOpCount, _monthlyConfFail);
+    _userDefOpSuccessPercent = calculateSuccessPercent(USER_DEF_CCSTATS);
+    _dailyOpSuccessPercent   = calculateSuccessPercent(DAILY_CCSTATS);
+    _weeklyOpSuccessPercent  = calculateSuccessPercent(WEEKLY_CCSTATS);
+    _monthlyOpSuccessPercent = calculateSuccessPercent(MONTHLY_CCSTATS);
 
     return *this;
 }
@@ -371,7 +373,7 @@ CtiCCOperationStats& CtiCCOperationStats::incrementAllOpFails()
 CtiCCOperationStats& CtiCCOperationStats::incrementMonthlyOpCounts()
 {  
     setMonthlyOpCount(_monthlyOpCount+1);
-    _monthlyOpSuccessPercent = calculateSuccessPercent(_monthlyOpCount, _monthlyConfFail);
+    _monthlyOpSuccessPercent = calculateSuccessPercent(MONTHLY_CCSTATS);
 
     return *this;
 }
@@ -379,7 +381,7 @@ CtiCCOperationStats& CtiCCOperationStats::incrementMonthlyOpCounts()
 CtiCCOperationStats& CtiCCOperationStats::incrementMonthlyOpFails()
 {
     setMonthlyConfFail(_monthlyConfFail+1);
-    _monthlyOpSuccessPercent = calculateSuccessPercent(_monthlyOpCount, _monthlyConfFail);
+    _monthlyOpSuccessPercent = calculateSuccessPercent(MONTHLY_CCSTATS);
 
     return *this;
 }
@@ -389,8 +391,8 @@ CtiCCOperationStats& CtiCCOperationStats::incrementWeeklyOpCounts()
 {  
     setMonthlyOpCount(_monthlyOpCount+1);
     setWeeklyOpCount(_weeklyOpCount+1);
-    _weeklyOpSuccessPercent  = calculateSuccessPercent(_weeklyOpCount, _weeklyConfFail);
-    _monthlyOpSuccessPercent = calculateSuccessPercent(_monthlyOpCount, _monthlyConfFail);
+    _weeklyOpSuccessPercent  = calculateSuccessPercent(WEEKLY_CCSTATS);
+    _monthlyOpSuccessPercent = calculateSuccessPercent(MONTHLY_CCSTATS);
 
     return *this;
 }
@@ -399,8 +401,8 @@ CtiCCOperationStats& CtiCCOperationStats::incrementWeeklyOpFails()
 {
     setMonthlyConfFail(_monthlyConfFail+1);
     setWeeklyConfFail(_weeklyConfFail+1);
-    _weeklyOpSuccessPercent  = calculateSuccessPercent(_weeklyOpCount, _weeklyConfFail);
-    _monthlyOpSuccessPercent = calculateSuccessPercent(_monthlyOpCount, _monthlyConfFail);
+    _weeklyOpSuccessPercent  = calculateSuccessPercent(WEEKLY_CCSTATS); 
+    _monthlyOpSuccessPercent = calculateSuccessPercent(MONTHLY_CCSTATS);
 
     return *this;
 }
@@ -410,9 +412,9 @@ CtiCCOperationStats& CtiCCOperationStats::incrementDailyOpCounts()
     setDailyOpCount(_dailyOpCount+1);
     setMonthlyOpCount(_monthlyOpCount+1);
     setWeeklyOpCount(_weeklyOpCount+1);
-    _dailyOpSuccessPercent   = calculateSuccessPercent(_dailyOpCount, _dailyConfFail);
-    _weeklyOpSuccessPercent  = calculateSuccessPercent(_weeklyOpCount, _weeklyConfFail);
-    _monthlyOpSuccessPercent = calculateSuccessPercent(_monthlyOpCount, _monthlyConfFail);
+    _dailyOpSuccessPercent   = calculateSuccessPercent(DAILY_CCSTATS);
+    _weeklyOpSuccessPercent  = calculateSuccessPercent(WEEKLY_CCSTATS); 
+    _monthlyOpSuccessPercent = calculateSuccessPercent(MONTHLY_CCSTATS);
 
     return *this;
 }
@@ -422,9 +424,9 @@ CtiCCOperationStats& CtiCCOperationStats::incrementDailyOpFails()
     setMonthlyConfFail(_monthlyConfFail+1);
     setWeeklyConfFail(_weeklyConfFail+1);
     setDailyConfFail(_dailyConfFail+1);
-    _dailyOpSuccessPercent   = calculateSuccessPercent(_dailyOpCount, _dailyConfFail);
-    _weeklyOpSuccessPercent  = calculateSuccessPercent(_weeklyOpCount, _weeklyConfFail);
-    _monthlyOpSuccessPercent = calculateSuccessPercent(_monthlyOpCount, _monthlyConfFail);
+    _dailyOpSuccessPercent   = calculateSuccessPercent(DAILY_CCSTATS);
+    _weeklyOpSuccessPercent  = calculateSuccessPercent(WEEKLY_CCSTATS); 
+    _monthlyOpSuccessPercent = calculateSuccessPercent(MONTHLY_CCSTATS);
 
     return *this;
 }
@@ -525,9 +527,44 @@ void CtiCCOperationStats::dumpDynamicData(RWDBConnection& conn, CtiTime& current
     }
 
 }
-DOUBLE CtiCCOperationStats::calculateSuccessPercent(LONG opCount, LONG failCount)
+DOUBLE CtiCCOperationStats::calculateSuccessPercent(ccStatsType type)
 {
     DOUBLE retVal = 100;
+    LONG opCount = 0;
+    LONG failCount = 0;
+
+    switch (type)
+    {
+        case USER_DEF_CCSTATS:
+        {
+            opCount = _userDefOpCount;
+            failCount = _userDefConfFail;
+            break;
+        }
+        case DAILY_CCSTATS:
+        {
+            opCount = _dailyOpCount;
+            failCount = _dailyConfFail;
+            break;
+        }
+        case WEEKLY_CCSTATS:
+        {
+            opCount = _weeklyOpCount;
+            failCount = _weeklyConfFail;
+            break;
+        }
+        case MONTHLY_CCSTATS:
+        {
+            opCount = _monthlyOpCount;
+            failCount = _monthlyConfFail;
+            break;
+        }
+        default: 
+            break;
+
+        
+    }
+    
     if (opCount > 0 && opCount >= failCount)
     {
         retVal = ((DOUBLE) (opCount - failCount) /(DOUBLE) opCount) * 100;
@@ -584,10 +621,10 @@ void CtiCCOperationStats::setDynamicData(RWDBReader& rdr)
     rdr["monthlyopcount"] >> _monthlyOpCount;
     rdr["monthlyconffail"] >> _monthlyConfFail;
     
-    _userDefOpSuccessPercent = calculateSuccessPercent(_userDefOpCount, _userDefConfFail);
-    _dailyOpSuccessPercent   = calculateSuccessPercent(_dailyOpCount, _dailyConfFail);
-    _weeklyOpSuccessPercent  = calculateSuccessPercent(_weeklyOpCount, _weeklyConfFail);
-    _monthlyOpSuccessPercent = calculateSuccessPercent(_monthlyOpCount, _monthlyConfFail);
+    _userDefOpSuccessPercent = calculateSuccessPercent(USER_DEF_CCSTATS); 
+    _dailyOpSuccessPercent   = calculateSuccessPercent(DAILY_CCSTATS);   
+    _weeklyOpSuccessPercent  = calculateSuccessPercent(WEEKLY_CCSTATS);  
+    _monthlyOpSuccessPercent = calculateSuccessPercent(MONTHLY_CCSTATS); 
 
     _insertDynamicDataFlag = FALSE;
     _dirty = false;

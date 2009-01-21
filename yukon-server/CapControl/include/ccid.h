@@ -85,6 +85,5 @@ class CtiTime;
 #define CC_DEBUG_UNSOLICITED       0x04000000
 
 
-
 extern CtiTime gInvalidCtiTime;
 extern ULONG gInvalidCtiTimeSeconds;

@@ -19,11 +19,12 @@
 #include "msg_pdata.h"
 
 #include "dbaccess.h"
-#include "ccid.h"
 #include "pointdefs.h"
 #include "logger.h"
 #include "resolvers.h"
 #include "ccconfirmationstats.h"
+
+using namespace capcontrol;
 
 extern ULONG _CC_DEBUG;
 
@@ -340,9 +341,43 @@ CtiCCConfirmationStats& CtiCCConfirmationStats::createPointDataMsgs(CtiMultiMsg_
 }
 
 
-DOUBLE CtiCCConfirmationStats::calculateSuccessPercent(LONG opCount, LONG failCount)
+DOUBLE CtiCCConfirmationStats::calculateSuccessPercent(ccStatsType type)
 {
     DOUBLE retVal = 0;
+    LONG opCount = 0;
+    LONG failCount = 0;
+
+    switch (type)
+    {
+        case USER_DEF_CCSTATS:
+        {
+            opCount = _userDefCommCount;
+            failCount = _userDefCommFail;
+            break;
+        }
+        case DAILY_CCSTATS:
+        {
+            opCount = _dailyCommCount;
+            failCount = _dailyCommFail;
+            break;
+        }
+        case WEEKLY_CCSTATS:
+        {
+            opCount = _weeklyCommCount;
+            failCount = _weeklyCommFail;
+            break;
+        }
+        case MONTHLY_CCSTATS:
+        {
+            opCount = _monthlyCommCount;
+            failCount = _monthlyCommFail;
+            break;
+        }
+        default: 
+            break;
+
+        
+    }
     if (opCount > 0 && opCount >= failCount)
     {
         retVal = ((DOUBLE) (opCount - failCount) /(DOUBLE) opCount) * 100;
@@ -439,59 +474,10 @@ int CtiCCConfirmationStats::operator!=(const CtiCCConfirmationStats& right) cons
 }
 
 
-CtiCCConfirmationStats& CtiCCConfirmationStats::incrementMonthlyCommCounts(LONG attempts)
-{  
-    setMonthlyCommCount(_monthlyCommCount+attempts);
-    _monthlyCommSuccessPercent = calculateSuccessPercent(_monthlyCommCount, _monthlyCommFail);
-
-    return *this;
-}
-
-CtiCCConfirmationStats& CtiCCConfirmationStats::incrementMonthlyCommFails(LONG errors)
-{
-    setMonthlyCommFail(_monthlyCommFail+errors);
-    _monthlyCommSuccessPercent = calculateSuccessPercent(_monthlyCommCount, _monthlyCommFail);
-
-    return *this;
-}
-
-
-CtiCCConfirmationStats& CtiCCConfirmationStats::incrementWeeklyCommCounts(LONG attempts)
-{  
-    setWeeklyCommCount(_weeklyCommCount+attempts);
-    _weeklyCommSuccessPercent  = calculateSuccessPercent(_weeklyCommCount, _weeklyCommFail);
-
-    return *this;
-}
-
-CtiCCConfirmationStats& CtiCCConfirmationStats::incrementWeeklyCommFails(LONG errors)
-{
-    setWeeklyCommFail(_weeklyCommFail+errors);
-    _weeklyCommSuccessPercent  = calculateSuccessPercent(_weeklyCommCount, _weeklyCommFail);
-
-    return *this;
-}
-
-CtiCCConfirmationStats& CtiCCConfirmationStats::incrementDailyCommCounts(LONG attempts)
-{  
-    setDailyCommCount(_dailyCommCount+attempts);
-    _dailyCommSuccessPercent   = calculateSuccessPercent(_dailyCommCount, _dailyCommFail);
-
-    return *this;
-}
-
-CtiCCConfirmationStats& CtiCCConfirmationStats::incrementDailyCommFails(LONG errors)
-{
-    setDailyCommFail(_dailyCommFail+errors);
-    _dailyCommSuccessPercent   = calculateSuccessPercent(_dailyCommCount, _dailyCommFail);
-
-    return *this;
-}
-
 CtiCCConfirmationStats& CtiCCConfirmationStats::incrementUserDefCommCounts(LONG attempts)
 {  
     setUserDefCommCount(_userDefCommCount+attempts);
-    _userDefCommSuccessPercent = calculateSuccessPercent(_userDefCommCount, _userDefCommFail);
+    _userDefCommSuccessPercent = calculateSuccessPercent(USER_DEF_CCSTATS);
 
     return *this;
 }
@@ -499,7 +485,7 @@ CtiCCConfirmationStats& CtiCCConfirmationStats::incrementUserDefCommCounts(LONG 
 CtiCCConfirmationStats& CtiCCConfirmationStats::incrementUserDefCommFails(LONG errors)
 {
     setUserDefCommFail(_userDefCommFail+errors);
-    _userDefCommSuccessPercent = calculateSuccessPercent(_userDefCommCount, _userDefCommFail);
+    _userDefCommSuccessPercent = calculateSuccessPercent(USER_DEF_CCSTATS);
 
     return *this;
 }

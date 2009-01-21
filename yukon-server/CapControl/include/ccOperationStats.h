@@ -30,8 +30,19 @@
 #include "observe.h"
 #include "types.h"
 
+namespace capcontrol
+{
+    typedef enum 
+    {
+        USER_DEF_CCSTATS = 0,
+        DAILY_CCSTATS,
+        WEEKLY_CCSTATS,
+        MONTHLY_CCSTATS
+    } ccStatsType;
+};
 
-                
+               
+
 class CtiCCOperationStats  
 {
 
@@ -94,7 +105,7 @@ public:
     
 
 
-    DOUBLE calculateSuccessPercent(LONG opCount, LONG failCount);
+    DOUBLE calculateSuccessPercent(capcontrol::ccStatsType type);
     BOOL setSuccessPercentPointId(LONG tempPointId, LONG tempPointOffset);
     CtiCCOperationStats& createPointDataMsgs(CtiMultiMsg_vec& pointChanges);
 

@@ -40,6 +40,7 @@
 #include "mgr_holiday.h"
 #include "utility.h"
 #include "thread_monitor.h"
+#include "ccoperationstats.h"
 
 #include "ctistring.h"
 #include <string>
@@ -10581,7 +10582,7 @@ void CtiCCSubstationBusStore::setControlStatusAndIncrementOpCount(CtiMultiMsg_ve
         area = findAreaByPAObjectID(station->getParentId());
     }
 
-    incrementOperationCounts(cap, feeder, subBus, station, area, spArea);
+    cap->getOperationStats().incrementAllOpCounts();
     createOperationStatPointDataMsgs(pointChanges, cap, feeder, subBus, station, area, spArea);
 
     return;
@@ -10724,24 +10725,16 @@ void CtiCCSubstationBusStore::reCalculateAllStats( )
                 {
                     CtiCCCapBank* currentCapBank = (CtiCCCapBank*)(ccCapBanks[k]);
                     //Confirmation Stats Total
-                    feederUserDefTotal += currentCapBank->getConfirmationStats().calculateSuccessPercent(currentCapBank->getConfirmationStats().getUserDefCommCount(),
-                                                                                                         currentCapBank->getConfirmationStats().getUserDefCommFail());
-                    feederDailyTotal += currentCapBank->getConfirmationStats().calculateSuccessPercent(currentCapBank->getConfirmationStats().getDailyCommCount(),
-                                                                                                         currentCapBank->getConfirmationStats().getDailyCommFail());
-                    feederWeeklyTotal += currentCapBank->getConfirmationStats().calculateSuccessPercent(currentCapBank->getConfirmationStats().getWeeklyCommCount(),
-                                                                                                         currentCapBank->getConfirmationStats().getWeeklyCommFail());
-                    feederMonthlyTotal += currentCapBank->getConfirmationStats().calculateSuccessPercent(currentCapBank->getConfirmationStats().getMonthlyCommCount(),
-                                                                                                         currentCapBank->getConfirmationStats().getMonthlyCommFail());
+                    feederUserDefTotal += currentCapBank->getConfirmationStats().calculateSuccessPercent(capcontrol::USER_DEF_CCSTATS);
+                    feederDailyTotal += currentCapBank->getConfirmationStats().calculateSuccessPercent(capcontrol::DAILY_CCSTATS);
+                    feederWeeklyTotal += currentCapBank->getConfirmationStats().calculateSuccessPercent(capcontrol::WEEKLY_CCSTATS);
+                    feederMonthlyTotal += currentCapBank->getConfirmationStats().calculateSuccessPercent(capcontrol::MONTHLY_CCSTATS);
         
                     //Operations Stats Total
-                    feederUserDefOpTotal += currentCapBank->getOperationStats().calculateSuccessPercent(currentCapBank->getOperationStats().getUserDefOpCount(),
-                                                                                                         currentCapBank->getOperationStats().getUserDefConfFail());
-                    feederDailyOpTotal += currentCapBank->getOperationStats().calculateSuccessPercent(currentCapBank->getOperationStats().getDailyOpCount(),
-                                                                                                         currentCapBank->getOperationStats().getDailyConfFail());
-                    feederWeeklyOpTotal += currentCapBank->getOperationStats().calculateSuccessPercent(currentCapBank->getOperationStats().getWeeklyOpCount(),
-                                                                                                         currentCapBank->getOperationStats().getWeeklyConfFail());
-                    feederMonthlyOpTotal += currentCapBank->getOperationStats().calculateSuccessPercent(currentCapBank->getOperationStats().getMonthlyOpCount(),
-                                                                                                         currentCapBank->getOperationStats().getMonthlyConfFail());
+                    feederUserDefOpTotal += currentCapBank->getOperationStats().calculateSuccessPercent(capcontrol::USER_DEF_CCSTATS);
+                    feederDailyOpTotal += currentCapBank->getOperationStats().calculateSuccessPercent(capcontrol::DAILY_CCSTATS);
+                    feederWeeklyOpTotal += currentCapBank->getOperationStats().calculateSuccessPercent(capcontrol::WEEKLY_CCSTATS);
+                    feederMonthlyOpTotal += currentCapBank->getOperationStats().calculateSuccessPercent(capcontrol::MONTHLY_CCSTATS);
         
                 }
                 setConfirmationSuccessPercents(currentFeeder, (feederUserDefTotal / numOfBanks), (feederDailyTotal / numOfBanks), 
@@ -11102,21 +11095,21 @@ void CtiCCSubstationBusStore::reCalculateConfirmationStatsFromDatabase( )
                         {
                             cap->getConfirmationStats().setMonthlyCommCount(attempts);
                             cap->getConfirmationStats().setMonthlyCommFail(errorTotal);
-                            successPercent = cap->getConfirmationStats().calculateSuccessPercent(attempts, errorTotal);
+                            successPercent = cap->getConfirmationStats().calculateSuccessPercent(capcontrol::MONTHLY_CCSTATS);
                             cap->getConfirmationStats().setMonthlyCommSuccessPercent(successPercent);
                         }
                         else if (!stringCompareIgnoreCase(statisticType, "Weekly") && cap != NULL )
                         {
                             cap->getConfirmationStats().setWeeklyCommCount(attempts);
                             cap->getConfirmationStats().setWeeklyCommFail(errorTotal);
-                            successPercent = cap->getConfirmationStats().calculateSuccessPercent(attempts, errorTotal);
+                            successPercent = cap->getConfirmationStats().calculateSuccessPercent(capcontrol::WEEKLY_CCSTATS);
                             cap->getConfirmationStats().setWeeklyCommSuccessPercent(successPercent);
                         }
                         else if (!stringCompareIgnoreCase(statisticType, "Daily") && cap != NULL )
                         {
                             cap->getConfirmationStats().setDailyCommCount(attempts);
                             cap->getConfirmationStats().setDailyCommFail(errorTotal);
-                            successPercent = cap->getConfirmationStats().calculateSuccessPercent(attempts, errorTotal);
+                            successPercent = cap->getConfirmationStats().calculateSuccessPercent(capcontrol::DAILY_CCSTATS);
                             cap->getConfirmationStats().setDailyCommSuccessPercent(successPercent);
                         }
                         else if (stringContainsIgnoreCase(statisticType, "Hour") && cap != NULL )
@@ -11191,7 +11184,7 @@ void CtiCCSubstationBusStore::setControlStatusAndIncrementFailCount(CtiMultiMsg_
         area = findAreaByPAObjectID(station->getParentId());
     }
 
-    incrementOperationFailCounts(cap, feeder, subBus, station, area, spArea);
+    cap->getOperationStats().incrementAllOpFails();
     createOperationStatPointDataMsgs(pointChanges, cap, feeder, subBus, station, area, spArea);
 
 
@@ -11252,59 +11245,6 @@ void CtiCCSubstationBusStore::createAllStatsPointDataMsgs(CtiMultiMsg_vec& point
     return;
 }
 
-
-
-/* Relating to Operation Statistics */
-void CtiCCSubstationBusStore::incrementOperationCounts(CtiCCCapBank* cap, CtiCCFeeder* feed, CtiCCSubstationBus* bus,
-                                                       CtiCCSubstation* station, CtiCCArea* area, CtiCCSpecial* spArea)
-{
-    if (cap != NULL)
-        cap->getOperationStats().incrementAllOpCounts();
-
-    if (feed != NULL)
-        feed->getOperationStats().incrementAllOpCounts();
-
-    if (bus != NULL)
-        bus->getOperationStats().incrementAllOpCounts();
-
-    if (station != NULL)
-        station->getOperationStats().incrementAllOpCounts();
-
-    if (area != NULL)
-        area->getOperationStats().incrementAllOpCounts();
-
-    if (spArea != NULL)
-        spArea->getOperationStats().incrementAllOpCounts();
-
-    return;
-
-}
-
-
-void CtiCCSubstationBusStore::incrementOperationFailCounts(CtiCCCapBank* cap, CtiCCFeeder* feed, CtiCCSubstationBus* bus,
-                                                       CtiCCSubstation* station, CtiCCArea* area, CtiCCSpecial* spArea)
-{
-    if (cap != NULL)
-        cap->getOperationStats().incrementAllOpFails();
-
-    if (feed != NULL)
-        feed->getOperationStats().incrementAllOpFails();
-
-    if (bus != NULL)
-        bus->getOperationStats().incrementAllOpFails();
-
-    if (station != NULL)
-        station->getOperationStats().incrementAllOpFails();
-
-    if (area != NULL)
-        area->getOperationStats().incrementAllOpFails();
-
-    if (spArea != NULL)
-        spArea->getOperationStats().incrementAllOpFails();
-
-    return;
-
-}
 
 void CtiCCSubstationBusStore::createOperationStatPointDataMsgs(CtiMultiMsg_vec& pointChanges, CtiCCCapBank* cap, CtiCCFeeder* feed, CtiCCSubstationBus* bus,
                                                        CtiCCSubstation* station, CtiCCArea* area, CtiCCSpecial* spArea)

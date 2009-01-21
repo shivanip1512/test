@@ -123,7 +123,6 @@ public:
 
     } CtiCapControlMapType;
 
-
     CtiCCSubstationBus_vec* getCCSubstationBuses(ULONG secondsFrom1901);
     CtiCCSubstation_vec* getCCSubstations(ULONG secondsFrom1901);
     CtiCCState_vec* getCCCapBankStates(ULONG secondsFrom1901);
@@ -362,12 +361,6 @@ public:
     bool removeKVAROperation( long capbankId );
 
     void resetAllOpStats();
-    void incrementOperationCounts(CtiCCCapBank* cap, CtiCCFeeder* feed, 
-                                  CtiCCSubstationBus* bus, CtiCCSubstation* station, 
-                                  CtiCCArea* area, CtiCCSpecial* spArea);
-    void incrementOperationFailCounts(CtiCCCapBank* cap, CtiCCFeeder* feed, 
-                                  CtiCCSubstationBus* bus, CtiCCSubstation* station, 
-                                  CtiCCArea* area, CtiCCSpecial* spArea);
     void createOperationStatPointDataMsgs(CtiMultiMsg_vec& pointChanges, CtiCCCapBank* cap, CtiCCFeeder* feed, CtiCCSubstationBus* bus,
                                   CtiCCSubstation* station, CtiCCArea* area, CtiCCSpecial* spArea);
     void createAllStatsPointDataMsgs(CtiMultiMsg_vec& pointChanges);

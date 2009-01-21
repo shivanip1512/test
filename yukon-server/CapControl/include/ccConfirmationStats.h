@@ -30,9 +30,9 @@
 #include "dbaccess.h"
 #include "observe.h"
 #include "types.h"
-
-
-                
+#include "ccoperationstats.h"  
+          
+          
 class CtiCCConfirmationStats  
 {
 
@@ -95,7 +95,7 @@ public:
     
 
 
-    DOUBLE calculateSuccessPercent(LONG commCount, LONG failCount);
+    DOUBLE calculateSuccessPercent(capcontrol::ccStatsType type);
     BOOL setSuccessPercentPointId(LONG tempPointId, LONG tempPointOffset);
     CtiCCConfirmationStats& createPointDataMsgs(CtiMultiMsg_vec& pointChanges);
 
