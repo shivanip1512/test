@@ -66,12 +66,10 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
 
     public void doLoadData() {
         
-        String sql = buildSQLStatement();
+        SqlStatementBuilder sql = buildSQLStatement();
         CTILogger.info(sql); 
         
-        String qualities = getQualities();
-        Object[] args = {new java.sql.Timestamp(getStartDate().getTime()), new java.sql.Timestamp(getStopDate().getTime()), qualities};
-        jdbcOps.query(sql.toString(), args, new RowCallbackHandler() {
+        jdbcOps.query(sql.getSql(), sql.getArguments(), new RowCallbackHandler() {
             public void processRow(ResultSet rs) throws SQLException {
                 
                 CapControlOperationsModel.ModelRow row = new CapControlOperationsModel.ModelRow();
@@ -97,13 +95,15 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
         CTILogger.info("Report Records Collected from Database: " + data.size());
     }
     
-    public String buildSQLStatement()
+    public SqlStatementBuilder buildSQLStatement()
     {
         SqlStatementBuilder sql = new SqlStatementBuilder("select yp3.paoName cbcName, yp.paoName bankName, el.datetime opTime, el.text operation, ");
         sql.append("el2.datetime confTime, el2.text confStatus, el2.capbankstateInfo bankStatusQuality, yp1.paoName feederName, yp1.paobjectId feederId,  yp2.paoName subName, ");
         sql.append("yp2.paobjectid subBusId, ca.paoname region, cb.bankSize bankSize, cb.controllertype protocol, p.value ipAddress, ");
         sql.append("cbc.serialnumber serialNum, da.slaveAddress slaveAddress "); 
-        sql.append("from ( select op.logid oid,  min(aaa.confid) cid  from (select logid, pointid from cceventlog where datetime > ? and datetime < ? and (text like '%Close sent,%' or text like '%Open sent,%' )) op ");
+        sql.append("from ( select op.logid oid,  min(aaa.confid) cid  from (select logid, pointid from cceventlog where datetime > ").appendArgument(new java.sql.Timestamp(getStartDate().getTime()));
+        sql.append(" and datetime < ").appendArgument(new java.sql.Timestamp(getStopDate().getTime()));
+        sql.append(" and (text like '%Close sent,%' or text like '%Open sent,%' )) op ");
         sql.append("left join (select el.logid opid, min(el2.logid) confid from cceventlog el ");
         sql.append("join cceventlog el2 on el2.pointid = el.pointid left outer join  (select a.logid aid, min(b.logid) next_aid "); 
         sql.append("from cceventlog a, cceventlog b where a.pointid = b.pointid ");
@@ -130,7 +130,8 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
         sql.append("left outer join ccsubstationsubbuslist sbb on sbb.substationbusid = yp2.paobjectid ");
         sql.append("left outer join ccsubareaassignment saa on saa.substationbusid = sbb.substationid  ");
  	 	sql.append("join yukonpaobject ca on ca.paobjectid = saa.areaid ");
- 	 	sql.append("where el2.capbankstateInfo in (?)");
+ 	 	sql.append("where el2.capbankstateInfo in (").appendArgumentList(Arrays.asList(statusQualities));
+ 	 	sql.append(")");
  	 	
         String result = null;
         
@@ -193,14 +194,9 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
         }else if (orderBy .equalsIgnoreCase("Slave Address")) {
             sql.append("order by slaveAddress ");
         }
-        return sql.toString();
+        return sql;
     }
     
-    private String getQualities() {
-        String qualities = SqlStatementBuilder.convertToSqlLikeList(Arrays.asList(statusQualities));
-        return qualities;
-    }
-
     public void setCapBankIdsFilter(Set<Integer> capBankIds) {
         this.capBankIds = capBankIds;
     }

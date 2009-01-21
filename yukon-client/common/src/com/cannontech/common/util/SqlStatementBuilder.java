@@ -3,6 +3,7 @@ package com.cannontech.common.util;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang.StringEscapeUtils;
@@ -165,6 +166,20 @@ public class SqlStatementBuilder implements SqlFragmentSource {
     	statement.append("? ");
     	arguments.add(argument);
     	return this;
+    }
+    
+    public SqlStatementBuilder appendArgumentList(Collection<?> list) {
+        Iterator<?> iter = list.iterator();
+        while(iter.hasNext()) {
+            Object argument = iter.next();
+            if(iter.hasNext()) {
+                statement.append("?, ");
+            } else {
+                statement.append("? ");
+            }
+            arguments.add(argument);
+        }
+        return this;
     }
     
     /**
