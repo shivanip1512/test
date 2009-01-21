@@ -92,6 +92,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
     capBank.setOvuvSituationFlag(new Boolean ((int)vstr.extractUnsignedInt() == 1) ? new Boolean(true) : new Boolean(false) );
     capBank.setControlStatusQuality( new Integer( (int)vstr.extractUnsignedInt() ) );
     capBank.setLocalControlFlag(new Boolean ((int)vstr.extractUnsignedInt() == 1) ? new Boolean(true) : new Boolean(false) );
+    capBank.setPartialPhaseInfo( (String) vstr.restoreObject( SimpleMappings.CString ) );
 	
 }
 /**
@@ -147,5 +148,6 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
     vstr.insertUnsignedInt( (capBank.getOvuvSituationFlag() == true)?1:0);
     vstr.insertUnsignedInt( capBank.getControlStatusQuality().intValue() );
     vstr.insertUnsignedInt( (capBank.getLocalControlFlag() == true)?1:0);
+    vstr.saveObject( capBank.getPartialPhaseInfo(), SimpleMappings.CString);
 }
 }

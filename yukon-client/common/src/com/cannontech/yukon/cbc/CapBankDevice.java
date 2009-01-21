@@ -55,8 +55,15 @@ public class CapBankDevice extends StreamableCapObject
     private String afterVars = new String();
     private String percentChange = new String();
     private Boolean localControlFlag = Boolean.FALSE;
+    private String partialPhaseInfo = new String();
 
 
+	public String getPartialPhaseInfo() {
+		return partialPhaseInfo;
+	}
+	public void setPartialPhaseInfo(String partialPhaseInfo) {
+		this.partialPhaseInfo = partialPhaseInfo;
+	}
 	public Boolean getMaxDailyOperationHitFlag() {
         return maxDailyOperationHitFlag;
     }
@@ -566,12 +573,16 @@ public class CapBankDevice extends StreamableCapObject
                 retVal = "-CF";
                 break;
             }
-			case CapControlConst.CC_FAIL_QUAL:
+			case CapControlConst.CC_FAIL_QUAL:				
 			case CapControlConst.CC_NO_CONTROL_QUAL:
 		    case CapControlConst.CC_NORMAL_QUAL:
 			default:
 				break;
 		}
+		if( getPartialPhaseInfo().compareTo("(none)") != 0) {
+			retVal = "-"+getPartialPhaseInfo();
+		}
+		
 		return retVal;
 		
 	}
