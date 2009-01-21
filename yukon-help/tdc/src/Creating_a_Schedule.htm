@@ -25,8 +25,8 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=770>
-<meta name=layout-width content=974>
+<meta name=layout-height content=814>
+<meta name=layout-width content=1123>
 <meta name=x-ignored-words content="Ack;nn;setpoint;maxrate;bfallback;afallback;afallbak;F;waypoint;xcom;noramp;restore|terminate;open|close|connect|disconnect;celsius;heat|cool|both;min;ExpressCom;CBC;RTU;MCT;dsd;hh;tcycle;ctrl;dsb;ta;tb;tc;te;tf;dsf;Tcl;PUTSTATUS;VERSACOM;cmd;cmd_parameters;PUTCONFIG;getvalue;GETVALUE;PUTVALUE;GETSTATUS;GETCONFIG;TDC;Unsilence;MACS;HH;MW;IEDSCAN;IED;PLC;ss;ddddd;PFCOUNT;kWh;kW;kvarh;kvar;KWH;KVARH;KVAH;ABCD;TOU;N;putconfig;fp;guid;positionally;aux;spec;MSB;u#;a#;s#;in|out;t;y|n;LEDs;y;reset_counters;rtc;lf;cl;LUF;rn;n;prop_time;cold_load;uninterpreted;putstatus;PutStatus;prop[agation;disp[lay;term[inate;inc[rement;rl;rrrrr;nnnn;LM;xxxx;LCR;altgroup;KYZ;powerfail;CVD;CCU;Unmute;Program(s;ReEnable;ACK;Unacked;SOE;DNP;SubBus;OpenQuestionable;CloseQuestionable;OpenFail;CloseFail;OpenPending;ClosePending;KVAR;renables;Unwaive;UofM;Ctrl;Timeout;iedscan;getconfig;lp|li;kyz;ied;lp;rolenum;func;rawfunc;group|uniq;intervals|interval;lp|disconnect|internal|external|ied;getstatus;lp|disconnect|internal|external;pfcount;lp|disconnect|internal|external|errors|pfcount|ied;eventlog;eventlog|update;errors|pfcount||offset|eventlog|update;errors|pfcount|offset;lp|disc|internal|external|ied;internal|external;a|b|c|d|t;kwh;kwh|kvark|kvah;kw|demand|kva|kvar;kwh|kvarh|kvah;kvh;kw;kvah;kva;kw|kva|kvar|demand|peak;kwh|kvar|kvah;minmax;minmax|peak;TDCs;locate|count;count|locate;ping[count;alarmable;uninitialized;timestamp;Uninit;Unintialized;FDR;IDLC;Part-Int;Dev-Fill;Unr;Min;display|terminate|increment;xcproptest;FisherPierce;on|off|auto;off|heat|cool|emheat;in|out|enable|disable;noclp|noled|bitP|bitL|cancel|;vdata;fromutility;fromutility|fromsect|fromclass|fromdivsion;fromsect;fromclass;fromdivsion;relaymask;assign|address;fromtility;EMETCON;fromdivision;C;setstate;timeout;timesync;spid;geo;uda;relay|load;offhours;emheat;noclp|noled|offhours;noclp;noled;timsync;li|lp;fixb;outb;inb;multi_role;fn;von;stfn;delay|class;enable|disable;SPEC;g;f;z;r;Spid;suBstation;splinteR;mult;onnoffpeak;onoffpeak|minmax;disconnect|connect;onoffpeak;RSSI;OverVoltage;rssi;zero|one;ovuv;UnderVoltage;one|two;on|off;putvalue;reset|reading;powerfail|ied;CapBank;CSV;freezecount;kw|kva|kvar|demand|peak|voltage;dnp;status|analog;day|hour|interval;yyyy;feeezecount;kVa;kVar;status|;c;kwha;IEDs">
 
 
@@ -71,8 +71,8 @@ if( typeof( kadovInitEffects ) != 'function' ) kadovInitEffects = new Function()
 <ol style="list-style: decimal;"
 	type=1>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Click <span style="font-weight: bold;">Create</span> 
- on the MACS Scheduler toolbar.</p></li>
+	<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span style="font-weight: bold;">Create</span> 
+ button on the MACS Scheduler toolbar.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Enter a name for the 
  schedule in the <span style="font-weight: bold;">Name</span> text box. 
@@ -81,7 +81,7 @@ if( typeof( kadovInitEffects ) != 'function' ) kadovInitEffects = new Function()
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Enter the name for 
  the schedule category in the <span style="font-weight: bold;">Category</span> 
- list or select a previously entered schedule category from the drop-down 
+ field or select a previously entered schedule category from the drop-down 
  list. This is the name that appears in the <span style="font-weight: bold;">Category 
  Name</span> column of the Metering and Control Scheduler table.</p></li>
 	
@@ -117,71 +117,85 @@ if( typeof( kadovInitEffects ) != 'function' ) kadovInitEffects = new Function()
  Read Retry</span> - template for reading usage information from meters 
  that were missed by the Meter Read script.</p></li>
 		
-		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">IED 
- Meter Read</span> - template for reading usage information from IEDs attached 
- to meters.</p></li>
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">360/370 
+ IED Meter Read</span> - template for reading usage information from IEDs 
+ attached to MCT-360/MCT-370 devices.</p></li>
 		
-		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">IED 
- Meter Read Retry</span> - template for reading usage information from 
- IEDs attached to meters that were missed by the IED Meter Read script.</p></li>
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">360/370 
+ IED Meter Read Retry</span> - template for reading usage information from 
+ IEDs attached to MCT-360/MCT-370 devices that were missed by the 360/370 
+ IED Meter Read script.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Outages 
  Meter Read</span> - template for reading outage information from meters.</p></li>
 		
-		<li class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">Voltage 
- Meter Read</span> - template for reading voltage information from meters.</p></li>
+		<li class=kadov-p><p><span style="font-weight: bold;">Voltage Meter 
+ Read</span> - template for reading voltage information from meters.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">400 
+ Series IED Meter Read</span> - template for reading usage information 
+ from IEDs attached to MCT-400 Series devices.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 9px;"><span style="font-weight: bold;">400 
+ Series IED Meter Read Retry</span> - template for reading usage information 
+ from IEDs attached to MCT-400 Series devices that were missed by the 400 
+ Series IED Meter Read script.</p></li>
 	</ul>
 	
-	<li class=kadov-p><p>Under the <span style="font-weight: bold;">Start 
- Policy</span>, select a start policy from the <span style="font-weight: bold;">Start 
- Type Policy</span> drop-down list. For the start type policy, select which 
- holiday schedule to use from the <span style="font-weight: bold;">Holiday</span> 
- drop-down list.</p></li>
+	<li class=kadov-p><p>Under the Start Policy, select a start policy 
+ from the <span style="font-weight: bold;">Start Type Policy</span> drop-down 
+ list.</p></li>
 	
 	<ul style="list-style: disc;"
 		type=disc>
 		
 		<li class=kadov-p><p><span style="font-weight: bold;">Manual</span> 
- - schedule starts manually. To start the schedule, select the <span style="font-weight: bold;">Start</span> 
- toolbar button or right-click on the schedule and select <span style="font-weight: bold;">Start</span>.</p></li>
+ - schedule starts manually by selecting Start within the MACS Scheduler 
+ window. To specify a holiday schedule, select the holiday schedule to 
+ use from the <span style="font-weight: bold;">Holiday</span> drop-down 
+ list.</p></li>
 		
 		<li class=kadov-p><p><span style="font-weight: bold;">Date Time</span> 
  - schedule starts on a specified date. Enter the time in the <span style="font-weight: bold;">Start 
- Time</span> text box and select a date from the drop-down list. Select 
- the <span style="font-weight: bold;">Every Year</span> check box to make 
- the schedule occur every year.</p></li>
+ Time</span> text box and select a date from the drop-down list. To make 
+ the schedule occur every year, select the <span style="font-weight: bold;">Every 
+ Year</span> check box. To specify a holiday schedule, select the holiday 
+ schedule to use from the <span style="font-weight: bold;">Holiday</span> 
+ drop-down list.</p></li>
 		
 		<li class=kadov-p><p><span style="font-weight: bold;">Date of Month 
  Time</span> - schedule starts on a specified day each month. Enter the 
  time in the <span style="font-weight: bold;">Start Time</span> text box 
- and the day of the month in the text box.</p></li>
+ and the day of the month in the text box. To specify a holiday schedule, 
+ select the holiday schedule to use from the <span style="font-weight: bold;">Holiday</span> 
+ drop-down list.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">Week 
  Day Time</span> - schedule starts on a specified day each week. Enter 
  the time in the <span style="font-weight: bold;">Start Time</span> text 
- box and select which days of the week the schedule runs. Select the <span 
- style="font-weight: bold;">Use Holiday</span> check box to force this 
- schedule to run on holidays.</p></li>
+ box and select which days of the week the schedule runs. To specify a 
+ holiday schedule, select the holiday schedule to use from the <span style="font-weight: bold;">Holiday</span> 
+ drop-down list.</p></li>
 	</ul>
 	
-	<li class=kadov-p><p>Under the <span style="font-weight: bold;">Stop 
- Policy</span>, select a stop policy from the <span style="font-weight: bold;">Stop 
- Type Policy</span> drop-down list.</p></li>
+	<li class=kadov-p><p>Under the Stop Policy, select a stop policy from 
+ the <span style="font-weight: bold;">Stop Type Policy</span> drop-down 
+ list.</p></li>
 	
 	<ul style="list-style: disc;"
 		type=disc>
 		
 		<li class=kadov-p><p><span style="font-weight: bold;">Manual</span> 
- - schedule stops manually. To stop the schedule, select the <span style="font-weight: bold;">Stop</span> 
- toolbar button or right-click on the schedule and select <span style="font-weight: bold;">Stop</span>.</p></li>
+ - schedule stops manually by selecting Stop within the MACS Scheduler 
+ window.</p></li>
 		
 		<li class=kadov-p><p><span style="font-weight: bold;">Absolute 
  Time</span> - schedule runs until a specified stop time. Enter the time 
  in the <span style="font-weight: bold;">Stop Time</span> text box.</p></li>
 		
 		<li class=kadov-p><p><span style="font-weight: bold;">Duration</span> 
- - schedule runs for a specified duration interval. Enter the duration 
- in minutes in the spin box.</p></li>
+ - schedule runs for a specified duration interval. Use the spin box to 
+ select the duration in minutes.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">Until 
  Complete</span> - schedule runs until the script is complete. (Visible 
@@ -243,7 +257,7 @@ kadovFilePopupInit('a3');
 <param name="Items" value="Editing a MACS Schedule;Editing_a_Schedule.htm$$**$$Using Metering and Control Scheduler;Metering_and_Control_Scheduler.htm$$**$$" >
 <param name="Image" value="" >
 <param name="FontInfo" value="MS Sans Serif,8,0,," >
-<param name="_CURRENTFILEPATH" value="C:\Working\head\yukon-help\tdc\src\Creating_a_Schedule.htm" >
+<param name="_CURRENTFILEPATH" value="C:\YukonHelpSVN\4.1\tdc\src\Creating_a_Schedule.htm" >
 <param name="_ID" value="RelatedTopics" >
 <param name="UseMenu" value="-1" >
 <param name="Frame" value="_top" >

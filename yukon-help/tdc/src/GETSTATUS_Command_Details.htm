@@ -25,8 +25,8 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=577>
-<meta name=layout-width content=692>
+<meta name=layout-height content=669>
+<meta name=layout-width content=1123>
 <meta name=x-ignored-words content="Ack;nn;TDC;Unsilence;MACS;HH;Tcl;MW;GETCONFIG;IEDSCAN;IED;PLC;ss;ddddd;GETSTATUS;MCT;PFCOUNT;GETVALUE;kWh;kW;kvarh;kvar;KWH;KVARH;KVAH;ABCD;TOU;N;VERSACOM;cmd;cmd_parameters;PUTCONFIG;putconfig;fp;guid;positionally;aux;spec;MSB;u#;a#;s#;in|out;t;y|n;LEDs;y;reset_counters;rtc;lf;cl;LUF;rn;n;prop_time;cold_load;uninterpreted;PUTSTATUS;putstatus;PutStatus;prop[agation;disp[lay;term[inate;inc[rement;rl;PUTVALUE;rrrrr;nnnn;LM;xxxx;LCR;altgroup;KYZ;powerfail;CVD;CCU;getvalue;Unmute;Unacked;ACK;SOE;DNP;SubBus;OpenQuestionable;CloseQuestionable;OpenFail;CloseFail;OpenPending;ClosePending;KVAR;renables;Unwaive;setpoint;maxrate;bfallback;afallback;afallbak;F;waypoint;xcom;noramp;restore|terminate;open|close|connect|disconnect;celsius;heat|cool|both;min;ExpressCom;CBC;RTU;dsd;hh;tcycle;ctrl;dsb;ta;tb;tc;te;tf;dsf;UofM;Ctrl;Timeout;iedscan;getconfig;lp|li;kyz;ied;lp;rolenum;func;rawfunc;group|uniq;intervals|interval;lp|disconnect|internal|external|ied;getstatus;lp|disconnect|internal|external;pfcount;lp|disconnect|internal|external|errors|pfcount|ied;eventlog;eventlog|update;errors|pfcount||offset|eventlog|update;errors|pfcount|offset;lp|disc|internal|external|ied;internal|external">
 
 
@@ -52,7 +52,7 @@
 <p>&nbsp;</p>
 
 <p style="font-weight: bold;">getstatus [lp] [disconnect] [internal|external] 
- [ied [link]] [pfcount] [eventlog] [update]</p>
+ [ied [link]] [errors] [pfcount] [offset number] [eventlog] [update] [freeze]</p>
 
 <p style="font-weight: bold;">&nbsp;</p>
 
@@ -73,8 +73,7 @@
 
 <tr style="x-cell-content-align: top;"
 	valign=top>
-<td style="width: 22.463%;
-			background-color: #000080;
+<td style="background-color: #000080;
 			border-left-color: #ffffff;
 			border-left-style: Solid;
 			border-left-width: 2px;
@@ -92,8 +91,7 @@
 	bgcolor=#000080
 	width=22.463%>
 <p style="color: #ffffff; font-weight: bold;">Argument </td>
-<td style="width: 77.537%;
-			background-color: #000080;
+<td style="background-color: #000080;
 			border-top-width: 2px;
 			border-top-style: Solid;
 			border-top-color: #ffffff;
@@ -113,8 +111,7 @@
 	valign=top>
 <td colspan=1
 	rowspan=1
-	style="width: 22.463%;
-			background-color: #c0c0c0;
+	style="background-color: #c0c0c0;
 			border-left-color: #ffffff;
 			border-left-style: Solid;
 			border-left-width: 2px;
@@ -131,8 +128,7 @@
 <p>lp</td>
 <td colspan=1
 	rowspan=1
-	style="width: 77.537%;
-			background-color: #c0c0c0;
+	style="background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -149,8 +145,7 @@
 	valign=top>
 <td colspan=1
 	rowspan=1
-	style="width: 22.463%;
-			background-color: #c0c0c0;
+	style="background-color: #c0c0c0;
 			border-left-color: #ffffff;
 			border-left-style: Solid;
 			border-left-width: 2px;
@@ -167,8 +162,7 @@
 <p>disconnect</td>
 <td colspan=1
 	rowspan=1
-	style="width: 77.537%;
-			background-color: #c0c0c0;
+	style="background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -186,8 +180,7 @@
 	valign=top>
 <td colspan=1
 	rowspan=1
-	style="width: 22.463%;
-			background-color: #c0c0c0;
+	style="background-color: #c0c0c0;
 			border-left-color: #ffffff;
 			border-left-style: Solid;
 			border-left-width: 2px;
@@ -204,8 +197,7 @@
 <p>internal</td>
 <td colspan=1
 	rowspan=1
-	style="width: 77.537%;
-			background-color: #c0c0c0;
+	style="background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -222,8 +214,7 @@
 	valign=top>
 <td colspan=1
 	rowspan=1
-	style="width: 22.463%;
-			background-color: #c0c0c0;
+	style="background-color: #c0c0c0;
 			border-left-color: #ffffff;
 			border-left-style: Solid;
 			border-left-width: 2px;
@@ -240,8 +231,7 @@
 <p>external</td>
 <td colspan=1
 	rowspan=1
-	style="width: 77.537%;
-			background-color: #c0c0c0;
+	style="background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -258,8 +248,7 @@
 	valign=top>
 <td colspan=1
 	rowspan=1
-	style="width: 22.463%;
-			background-color: #c0c0c0;
+	style="background-color: #c0c0c0;
 			border-left-color: #ffffff;
 			border-left-style: Solid;
 			border-left-width: 2px;
@@ -276,8 +265,7 @@
 <p>ied [link]</td>
 <td colspan=1
 	rowspan=1
-	style="width: 77.537%;
-			background-color: #c0c0c0;
+	style="background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -295,8 +283,41 @@
 	valign=top>
 <td colspan=1
 	rowspan=1
-	style="width: 22.463%;
-			background-color: #c0c0c0;
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.463%>
+<p>errors</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.537%>
+<p>Collects any internal error or state flags (power fail or firmware flags).</td></tr>
+
+<tr style="x-cell-content-align: top;"
+	valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
 			border-left-color: #ffffff;
 			border-left-style: Solid;
 			border-left-width: 2px;
@@ -313,8 +334,7 @@
 <p>pfcount</td>
 <td colspan=1
 	rowspan=1
-	style="width: 77.537%;
-			background-color: #c0c0c0;
+	style="background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -331,8 +351,42 @@
 	valign=top>
 <td colspan=1
 	rowspan=1
-	style="width: 22.463%;
-			background-color: #c0c0c0;
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.463%>
+<p>offset number</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.537%>
+<p>Collects a status from the specified offset for CBC, DNP, ION devices. 
+ Where number is the point physical point offset to collect.</td></tr>
+
+<tr style="x-cell-content-align: top;"
+	valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
 			border-left-color: #ffffff;
 			border-left-style: Solid;
 			border-left-width: 2px;
@@ -349,8 +403,7 @@
 <p>eventlog</td>
 <td colspan=1
 	rowspan=1
-	style="width: 77.537%;
-			background-color: #c0c0c0;
+	style="background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -367,8 +420,7 @@
 	valign=top>
 <td colspan=1
 	rowspan=1
-	style="width: 22.463%;
-			background-color: #c0c0c0;
+	style="background-color: #c0c0c0;
 			border-left-color: #ffffff;
 			border-left-style: Solid;
 			border-left-width: 2px;
@@ -385,8 +437,7 @@
 <p>update</td>
 <td colspan=1
 	rowspan=1
-	style="width: 77.537%;
-			background-color: #c0c0c0;
+	style="background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -398,6 +449,40 @@
 	bgcolor=#C0C0C0
 	width=77.537%>
 <p>Saves the data into the current/last reading table.</td></tr>
+
+<tr style="x-cell-content-align: top;"
+	valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.463%>
+<p>freeze</td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.537%>
+<p>Reads the last freeze time stamp and the current freeze counter data.</td></tr>
 </table>
 
 <h5 style="font-size: 11pt;"><span style="font-size: 11pt;">Examples</span></h5>
@@ -415,12 +500,15 @@
 
 <p style="font-weight: bold; margin-left: 12px;">getstatus ied</p>
 
-<p style="font-weight: bold; margin-left: 12px;"><span style="font-weight: bold;">getstatus 
- ied link</span></p>
+<p style="font-weight: bold; margin-left: 12px;">getstatus ied link<br>
+getstatus errors</p>
 
-<p style="font-weight: bold; margin-left: 12px;">getstatus pfcount</p>
+<p style="font-weight: bold; margin-left: 12px;">getstatus pfcount<br>
+getstatus offset 40</p>
 
 <p style="font-weight: bold; margin-left: 12px;">getstatus eventlog</p>
+
+<p style="font-weight: bold; margin-left: 12px;">getstatus freeze</p>
 
 </body>
 

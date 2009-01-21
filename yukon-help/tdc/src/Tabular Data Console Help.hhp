@@ -53,10 +53,9 @@ LOOP_Command_Details.htm
 CONTROL_Command_Details.htm
 Toolbar.htm
 Menu_Bar.htm
+PUTVALUE_Command_Details.htm
 GETVALUE_Command_Details.htm
 GETSTATUS_Command_Details.htm
-PUTVALUE_Command_Details.htm
-View_List.htm
 Point_Qualities.htm
 Message_Log.htm
 Data_Window.htm
@@ -65,6 +64,7 @@ View_Date.htm
 Starting_a_Control_Scenario.htm
 Creating_a_Script_Schedule_without_a_Script_Template.htm
 Load_Management.htm
+View_List.htm
 Stopping_a_Control_Scenario.htm
 eHelp.xml
 RoboHHRE.lng

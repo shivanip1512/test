@@ -25,8 +25,8 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=1448>
-<meta name=layout-width content=974>
+<meta name=layout-height content=1548>
+<meta name=layout-width content=1123>
 <meta name=x-ignored-words content="Tcl;PUTSTATUS;VERSACOM;cmd;cmd_parameters;PUTCONFIG;getvalue;GETVALUE;PUTVALUE;GETSTATUS;GETCONFIG;Ack;nn;TDC;Unsilence;MACS;HH;MW;IEDSCAN;IED;PLC;ss;ddddd;MCT;PFCOUNT;kWh;kW;kvarh;kvar;KWH;KVARH;KVAH;ABCD;TOU;N;putconfig;fp;guid;positionally;aux;spec;MSB;u#;a#;s#;in|out;t;y|n;LEDs;y;reset_counters;rtc;lf;cl;LUF;rn;n;prop_time;cold_load;uninterpreted;putstatus;PutStatus;prop[agation;disp[lay;term[inate;inc[rement;rl;rrrrr;nnnn;LM;xxxx;LCR;altgroup;KYZ;powerfail;CVD;CCU;Unmute;Program(s;ReEnable;ACK;Unacked;SOE;DNP;SubBus;OpenQuestionable;CloseQuestionable;OpenFail;CloseFail;OpenPending;ClosePending;KVAR;renables;Unwaive;setpoint;maxrate;bfallback;afallback;afallbak;F;waypoint;xcom;noramp;restore|terminate;open|close|connect|disconnect;celsius;heat|cool|both;min;ExpressCom;CBC;RTU;dsd;hh;tcycle;ctrl;dsb;ta;tb;tc;te;tf;dsf;UofM;Ctrl;Timeout;iedscan;getconfig;lp|li;kyz;ied;lp;rolenum;func;rawfunc;group|uniq;intervals|interval;lp|disconnect|internal|external|ied;getstatus;lp|disconnect|internal|external;pfcount;lp|disconnect|internal|external|errors|pfcount|ied;eventlog;eventlog|update;errors|pfcount||offset|eventlog|update;errors|pfcount|offset;lp|disc|internal|external|ied;internal|external;a|b|c|d|t;kwh;kwh|kvark|kvah;kw|demand|kva|kvar;kwh|kvarh|kvah;kvh;kw;kvah;kva;kw|kva|kvar|demand|peak;kwh|kvar|kvah;minmax;minmax|peak;TDCs;locate|count;count|locate;ping[count;alarmable;uninitialized;timestamp;Uninit;Unintialized;FDR;IDLC;Part-Int;Dev-Fill;Unr;Min;display|terminate|increment;xcproptest;FisherPierce;on|off|auto;off|heat|cool|emheat;in|out|enable|disable;noclp|noled|bitP|bitL|cancel|;vdata;fromutility;fromutility|fromsect|fromclass|fromdivsion;fromsect;fromclass;fromdivsion;relaymask;assign|address;fromtility;EMETCON;fromdivision;C;setstate;timeout;timesync;spid;geo;uda;relay|load;offhours;emheat;noclp|noled|offhours;noclp;noled;timsync;li|lp;fixb;outb;inb;multi_role;fn;von;stfn;delay|class;enable|disable;SPEC;g;f;z;r;Spid;suBstation;splinteR;mult;onnoffpeak;onoffpeak|minmax;disconnect|connect;onoffpeak;RSSI;OverVoltage;rssi;zero|one;ovuv;UnderVoltage;one|two;on|off;putvalue;reset|reading;powerfail|ied;CapBank;CSV;freezecount;kw|kva|kvar|demand|peak|voltage;dnp;status|analog;day|hour|interval;yyyy;feeezecount;kVa;kVar;status|;c;kwha">
 
 
@@ -53,10 +53,10 @@
 
 <p>&nbsp;</p>
 
-<p style="font-weight: bold;">getvalue daily read [channel (1|2|3)] mm/dd/yyyy 
- [mm/dd/yyyy]</p>
+<p style="font-weight: bold;">getvalue kwh [frozen]<br>
+getvalue daily read [channel (1|2|3)] mm/dd/yyyy [mm/dd/yyyy]</p>
 
-<p style="font-weight: bold;">getvalue [[ied] (kwh|kvarh|kvah)[a|b|c|d|t] 
+<p style="font-weight: bold;">getvalue [[ied] (kwh|kvarh|kvah) [a|b|c|d|t] 
  [update]] [frozen] [rate (a|b|c|d|t)] [update]]</p>
 
 <p style="font-weight: bold;">getvalue [[ied] (kwh|kvarh|kvah) [rate (a|b|c|d|t)] 
@@ -70,7 +70,8 @@
 <p style="font-weight: bold;">getvalue [ied dnp (collection [1-2]|status|analog 
  [1-5]|accumulator [1-4])]</p>
 
-<p style="font-weight: bold;">getvalue [lp channel (1|2|3|4) <span style="font-style: italic; font-weight: normal;">date</span> 
+<p style="font-weight: bold;">getvalue usage<br>
+getvalue [lp channel (1|2|3|4) <span style="font-style: italic; font-weight: normal;">date</span> 
  <span style="font-weight: normal; font-style: italic;">time</span>] [status] 
  [cancel] [background]</p>
 
@@ -102,27 +103,25 @@
 
 <tr style="x-cell-content-align: top;"
 	valign=top>
-<td style="width: 22.462%;
-			background-color: #000080;
-			border-left-color: #ffffff;
-			border-left-style: Solid;
-			border-left-width: 2px;
-			border-top-width: 2px;
-			border-top-style: Solid;
-			border-top-color: #ffffff;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
+<td style="background-color: #000080;
 			padding-right: 10px;
-			padding-left: 10px;"
+			padding-left: 10px;
+			border-top-color: #ffffff;
+			border-top-style: Solid;
+			border-top-width: 2px;
+			border-right-width: 2px;
+			border-right-style: Solid;
+			border-right-color: #ffffff;
+			border-bottom-color: #ffffff;
+			border-bottom-style: Solid;
+			border-bottom-width: 2px;
+			border-left-width: 2px;
+			border-left-style: Solid;
+			border-left-color: #ffffff;"
 	bgcolor=#000080
 	width=22.462%>
 <p style="color: #ffffff; font-weight: bold;">Argument </td>
-<td style="width: 77.538%;
-			background-color: #000080;
+<td style="background-color: #000080;
 			border-top-width: 2px;
 			border-top-style: Solid;
 			border-top-color: #ffffff;
@@ -142,26 +141,24 @@
 	valign=top>
 <td colspan=1
 	rowspan=1
-	style="width: 22.462%;
-			background-color: #c0c0c0;
-			border-left-color: #ffffff;
-			border-left-style: Solid;
-			border-left-width: 2px;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
+	style="background-color: #c0c0c0;
 			padding-right: 10px;
-			padding-left: 10px;"
+			padding-left: 10px;
+			border-right-width: 2px;
+			border-right-style: Solid;
+			border-right-color: #ffffff;
+			border-bottom-color: #ffffff;
+			border-bottom-style: Solid;
+			border-bottom-width: 2px;
+			border-left-width: 2px;
+			border-left-style: Solid;
+			border-left-color: #ffffff;"
 	bgcolor=#C0C0C0
 	width=22.462%>
 <p>daily read</td>
 <td colspan=1
 	rowspan=1
-	style="width: 77.538%;
-			background-color: #c0c0c0;
+	style="background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -188,26 +185,24 @@
 	valign=top>
 <td colspan=1
 	rowspan=1
-	style="width: 22.462%;
-			background-color: #c0c0c0;
-			border-left-color: #ffffff;
-			border-left-style: Solid;
-			border-left-width: 2px;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
+	style="background-color: #c0c0c0;
 			padding-right: 10px;
-			padding-left: 10px;"
+			padding-left: 10px;
+			border-right-width: 2px;
+			border-right-style: Solid;
+			border-right-color: #ffffff;
+			border-bottom-color: #ffffff;
+			border-bottom-style: Solid;
+			border-bottom-width: 2px;
+			border-left-width: 2px;
+			border-left-style: Solid;
+			border-left-color: #ffffff;"
 	bgcolor=#C0C0C0
 	width=22.462%>
 <p>ied </td>
 <td colspan=1
 	rowspan=1
-	style="width: 77.538%;
-			background-color: #c0c0c0;
+	style="background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -224,26 +219,24 @@
 	valign=top>
 <td colspan=1
 	rowspan=1
-	style="width: 22.462%;
-			background-color: #c0c0c0;
-			border-left-color: #ffffff;
-			border-left-style: Solid;
-			border-left-width: 2px;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
+	style="background-color: #c0c0c0;
 			padding-right: 10px;
-			padding-left: 10px;"
+			padding-left: 10px;
+			border-right-width: 2px;
+			border-right-style: Solid;
+			border-right-color: #ffffff;
+			border-bottom-color: #ffffff;
+			border-bottom-style: Solid;
+			border-bottom-width: 2px;
+			border-left-width: 2px;
+			border-left-style: Solid;
+			border-left-color: #ffffff;"
 	bgcolor=#C0C0C0
 	width=22.462%>
 <p>kwh</td>
 <td colspan=1
 	rowspan=1
-	style="width: 77.538%;
-			background-color: #c0c0c0;
+	style="background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -260,26 +253,24 @@
 	valign=top>
 <td colspan=1
 	rowspan=1
-	style="width: 22.462%;
-			background-color: #c0c0c0;
-			border-left-color: #ffffff;
-			border-left-style: Solid;
-			border-left-width: 2px;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
+	style="background-color: #c0c0c0;
 			padding-right: 10px;
-			padding-left: 10px;"
+			padding-left: 10px;
+			border-right-width: 2px;
+			border-right-style: Solid;
+			border-right-color: #ffffff;
+			border-bottom-color: #ffffff;
+			border-bottom-style: Solid;
+			border-bottom-width: 2px;
+			border-left-width: 2px;
+			border-left-style: Solid;
+			border-left-color: #ffffff;"
 	bgcolor=#C0C0C0
 	width=22.462%>
 <p>kvarh</td>
 <td colspan=1
 	rowspan=1
-	style="width: 77.538%;
-			background-color: #c0c0c0;
+	style="background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -296,26 +287,24 @@
 	valign=top>
 <td colspan=1
 	rowspan=1
-	style="width: 22.462%;
-			background-color: #c0c0c0;
-			border-left-color: #ffffff;
-			border-left-style: Solid;
-			border-left-width: 2px;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
+	style="background-color: #c0c0c0;
 			padding-right: 10px;
-			padding-left: 10px;"
+			padding-left: 10px;
+			border-right-width: 2px;
+			border-right-style: Solid;
+			border-right-color: #ffffff;
+			border-bottom-color: #ffffff;
+			border-bottom-style: Solid;
+			border-bottom-width: 2px;
+			border-left-width: 2px;
+			border-left-style: Solid;
+			border-left-color: #ffffff;"
 	bgcolor=#C0C0C0
 	width=22.462%>
 <p>kvah</td>
 <td colspan=1
 	rowspan=1
-	style="width: 77.538%;
-			background-color: #c0c0c0;
+	style="background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -332,26 +321,25 @@
 	valign=top>
 <td colspan=1
 	rowspan=1
-	style="width: 22.462%;
-			background-color: #c0c0c0;
-			border-left-color: #ffffff;
-			border-left-style: Solid;
-			border-left-width: 2px;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
+	style="background-color: #c0c0c0;
 			padding-right: 10px;
-			padding-left: 10px;"
+			padding-left: 10px;
+			border-right-width: 2px;
+			border-right-style: Solid;
+			border-right-color: #ffffff;
+			border-bottom-color: #ffffff;
+			border-bottom-style: Solid;
+			border-bottom-width: 2px;
+			border-left-width: 2px;
+			border-left-style: Solid;
+			border-left-color: #ffffff;"
 	bgcolor=#C0C0C0
 	width=22.462%>
-<p>rate (a|b|c|d|t)</td>
+<p>[a|b|c|d|t]<br>
+rate (a|b|c|d|t)</td>
 <td colspan=1
 	rowspan=1
-	style="width: 77.538%;
-			background-color: #c0c0c0;
+	style="background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -369,26 +357,24 @@
 	valign=top>
 <td colspan=1
 	rowspan=1
-	style="width: 22.462%;
-			background-color: #c0c0c0;
-			border-left-color: #ffffff;
-			border-left-style: Solid;
-			border-left-width: 2px;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
+	style="background-color: #c0c0c0;
 			padding-right: 10px;
-			padding-left: 10px;"
+			padding-left: 10px;
+			border-right-width: 2px;
+			border-right-style: Solid;
+			border-right-color: #ffffff;
+			border-bottom-color: #ffffff;
+			border-bottom-style: Solid;
+			border-bottom-width: 2px;
+			border-left-width: 2px;
+			border-left-style: Solid;
+			border-left-color: #ffffff;"
 	bgcolor=#C0C0C0
 	width=22.462%>
 <p>channel <span style="font-style: italic;"><!--kadov_tag{{<ignored>}}-->channel<!--kadov_tag{{</ignored>}}--></span></td>
 <td colspan=1
 	rowspan=1
-	style="width: 77.538%;
-			background-color: #c0c0c0;
+	style="background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -406,26 +392,24 @@
 	valign=top>
 <td colspan=1
 	rowspan=1
-	style="width: 22.462%;
-			background-color: #c0c0c0;
-			border-left-color: #ffffff;
-			border-left-style: Solid;
-			border-left-width: 2px;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
+	style="background-color: #c0c0c0;
 			padding-right: 10px;
-			padding-left: 10px;"
+			padding-left: 10px;
+			border-right-width: 2px;
+			border-right-style: Solid;
+			border-right-color: #ffffff;
+			border-bottom-color: #ffffff;
+			border-bottom-style: Solid;
+			border-bottom-width: 2px;
+			border-left-width: 2px;
+			border-left-style: Solid;
+			border-left-color: #ffffff;"
 	bgcolor=#C0C0C0
 	width=22.462%>
 <p>update</td>
 <td colspan=1
 	rowspan=1
-	style="width: 77.538%;
-			background-color: #c0c0c0;
+	style="background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -442,11 +426,24 @@
 	valign=top>
 <td colspan=1
 	rowspan=1
-	style="width: 22.462%;
-			background-color: #c0c0c0;
-			border-left-color: #ffffff;
-			border-left-style: Solid;
+	style="background-color: #c0c0c0;
+			padding-right: 10px;
+			padding-left: 10px;
+			border-right-width: 2px;
+			border-right-style: Solid;
+			border-right-color: #ffffff;
+			border-bottom-color: #ffffff;
+			border-bottom-style: Solid;
+			border-bottom-width: 2px;
 			border-left-width: 2px;
+			border-left-style: Solid;
+			border-left-color: #ffffff;"
+	bgcolor=#C0C0C0
+	width=22.462%>
+<p>usage </td>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -456,12 +453,31 @@
 			padding-right: 10px;
 			padding-left: 10px;"
 	bgcolor=#C0C0C0
+	width=77.538%>
+<p>Collects kWh data for all channels from a field device.</td></tr>
+
+<tr style="x-cell-content-align: top;"
+	valign=top>
+<td colspan=1
+	rowspan=1
+	style="background-color: #c0c0c0;
+			padding-right: 10px;
+			padding-left: 10px;
+			border-right-width: 2px;
+			border-right-style: Solid;
+			border-right-color: #ffffff;
+			border-bottom-color: #ffffff;
+			border-bottom-style: Solid;
+			border-bottom-width: 2px;
+			border-left-width: 2px;
+			border-left-style: Solid;
+			border-left-color: #ffffff;"
+	bgcolor=#C0C0C0
 	width=22.462%>
 <p>frozen</td>
 <td colspan=1
 	rowspan=1
-	style="width: 77.538%;
-			background-color: #c0c0c0;
+	style="background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -478,26 +494,24 @@
 	valign=top>
 <td colspan=1
 	rowspan=1
-	style="width: 22.462%;
-			background-color: #c0c0c0;
-			border-left-color: #ffffff;
-			border-left-style: Solid;
-			border-left-width: 2px;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
+	style="background-color: #c0c0c0;
 			padding-right: 10px;
-			padding-left: 10px;"
+			padding-left: 10px;
+			border-right-width: 2px;
+			border-right-style: Solid;
+			border-right-color: #ffffff;
+			border-bottom-color: #ffffff;
+			border-bottom-style: Solid;
+			border-bottom-width: 2px;
+			border-left-width: 2px;
+			border-left-style: Solid;
+			border-left-color: #ffffff;"
 	bgcolor=#C0C0C0
 	width=22.462%>
 <p>kw</td>
 <td colspan=1
 	rowspan=1
-	style="width: 77.538%;
-			background-color: #c0c0c0;
+	style="background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -514,26 +528,24 @@
 	valign=top>
 <td colspan=1
 	rowspan=1
-	style="width: 22.462%;
-			background-color: #c0c0c0;
-			border-left-color: #ffffff;
-			border-left-style: Solid;
-			border-left-width: 2px;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
+	style="background-color: #c0c0c0;
 			padding-right: 10px;
-			padding-left: 10px;"
+			padding-left: 10px;
+			border-right-width: 2px;
+			border-right-style: Solid;
+			border-right-color: #ffffff;
+			border-bottom-color: #ffffff;
+			border-bottom-style: Solid;
+			border-bottom-width: 2px;
+			border-left-width: 2px;
+			border-left-style: Solid;
+			border-left-color: #ffffff;"
 	bgcolor=#C0C0C0
 	width=22.462%>
 <p>kva</td>
 <td colspan=1
 	rowspan=1
-	style="width: 77.538%;
-			background-color: #c0c0c0;
+	style="background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -550,26 +562,24 @@
 	valign=top>
 <td colspan=1
 	rowspan=1
-	style="width: 22.462%;
-			background-color: #c0c0c0;
-			border-left-color: #ffffff;
-			border-left-style: Solid;
-			border-left-width: 2px;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
+	style="background-color: #c0c0c0;
 			padding-right: 10px;
-			padding-left: 10px;"
+			padding-left: 10px;
+			border-right-width: 2px;
+			border-right-style: Solid;
+			border-right-color: #ffffff;
+			border-bottom-color: #ffffff;
+			border-bottom-style: Solid;
+			border-bottom-width: 2px;
+			border-left-width: 2px;
+			border-left-style: Solid;
+			border-left-color: #ffffff;"
 	bgcolor=#C0C0C0
 	width=22.462%>
 <p>kvar</td>
 <td colspan=1
 	rowspan=1
-	style="width: 77.538%;
-			background-color: #c0c0c0;
+	style="background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -586,26 +596,24 @@
 	valign=top>
 <td colspan=1
 	rowspan=1
-	style="width: 22.462%;
-			background-color: #c0c0c0;
-			border-left-color: #ffffff;
-			border-left-style: Solid;
-			border-left-width: 2px;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
+	style="background-color: #c0c0c0;
 			padding-right: 10px;
-			padding-left: 10px;"
+			padding-left: 10px;
+			border-right-width: 2px;
+			border-right-style: Solid;
+			border-right-color: #ffffff;
+			border-bottom-color: #ffffff;
+			border-bottom-style: Solid;
+			border-bottom-width: 2px;
+			border-left-width: 2px;
+			border-left-style: Solid;
+			border-left-color: #ffffff;"
 	bgcolor=#C0C0C0
 	width=22.462%>
 <p>demand</td>
 <td colspan=1
 	rowspan=1
-	style="width: 77.538%;
-			background-color: #c0c0c0;
+	style="background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -622,26 +630,24 @@
 	valign=top>
 <td colspan=1
 	rowspan=1
-	style="width: 22.462%;
-			background-color: #c0c0c0;
-			border-left-color: #ffffff;
-			border-left-style: Solid;
-			border-left-width: 2px;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
+	style="background-color: #c0c0c0;
 			padding-right: 10px;
-			padding-left: 10px;"
+			padding-left: 10px;
+			border-right-width: 2px;
+			border-right-style: Solid;
+			border-right-color: #ffffff;
+			border-bottom-color: #ffffff;
+			border-bottom-style: Solid;
+			border-bottom-width: 2px;
+			border-left-width: 2px;
+			border-left-style: Solid;
+			border-left-color: #ffffff;"
 	bgcolor=#C0C0C0
 	width=22.462%>
 <p>peak</td>
 <td colspan=1
 	rowspan=1
-	style="width: 77.538%;
-			background-color: #c0c0c0;
+	style="background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -658,26 +664,24 @@
 	valign=top>
 <td colspan=1
 	rowspan=1
-	style="width: 22.462%;
-			background-color: #c0c0c0;
-			border-left-color: #ffffff;
-			border-left-style: Solid;
-			border-left-width: 2px;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
+	style="background-color: #c0c0c0;
 			padding-right: 10px;
-			padding-left: 10px;"
+			padding-left: 10px;
+			border-right-width: 2px;
+			border-right-style: Solid;
+			border-right-color: #ffffff;
+			border-bottom-color: #ffffff;
+			border-bottom-style: Solid;
+			border-bottom-width: 2px;
+			border-left-width: 2px;
+			border-left-style: Solid;
+			border-left-color: #ffffff;"
 	bgcolor=#C0C0C0
 	width=22.462%>
 <p>voltage</td>
 <td colspan=1
 	rowspan=1
-	style="width: 77.538%;
-			background-color: #c0c0c0;
+	style="background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -694,26 +698,24 @@
 	valign=top>
 <td colspan=1
 	rowspan=1
-	style="width: 22.462%;
-			background-color: #c0c0c0;
-			border-left-color: #ffffff;
-			border-left-style: Solid;
-			border-left-width: 2px;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
+	style="background-color: #c0c0c0;
 			padding-right: 10px;
-			padding-left: 10px;"
+			padding-left: 10px;
+			border-right-width: 2px;
+			border-right-style: Solid;
+			border-right-color: #ffffff;
+			border-bottom-color: #ffffff;
+			border-bottom-style: Solid;
+			border-bottom-width: 2px;
+			border-left-width: 2px;
+			border-left-style: Solid;
+			border-left-color: #ffffff;"
 	bgcolor=#C0C0C0
 	width=22.462%>
 <p>offset <span style="font-style: italic;">channel</span></td>
 <td colspan=1
 	rowspan=1
-	style="width: 77.538%;
-			background-color: #c0c0c0;
+	style="background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -730,19 +732,18 @@
 	valign=top>
 <td colspan=1
 	rowspan=1
-	style="width: 22.462%;
-			background-color: #c0c0c0;
-			border-left-color: #ffffff;
-			border-left-style: Solid;
-			border-left-width: 2px;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
+	style="background-color: #c0c0c0;
 			padding-right: 10px;
-			padding-left: 10px;"
+			padding-left: 10px;
+			border-right-width: 2px;
+			border-right-style: Solid;
+			border-right-color: #ffffff;
+			border-bottom-color: #ffffff;
+			border-bottom-style: Solid;
+			border-bottom-width: 2px;
+			border-left-width: 2px;
+			border-left-style: Solid;
+			border-left-color: #ffffff;"
 	bgcolor=#C0C0C0
 	width=22.462%>
 <p>ied dnp <br>
@@ -752,8 +753,7 @@ analog [1-5]|<br>
 accumulator [1-4])</td>
 <td colspan=1
 	rowspan=1
-	style="width: 77.538%;
-			background-color: #c0c0c0;
+	style="background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -772,26 +772,24 @@ accumulator [1-4])</td>
 	valign=top>
 <td colspan=1
 	rowspan=1
-	style="width: 22.462%;
-			background-color: #c0c0c0;
-			border-left-color: #ffffff;
-			border-left-style: Solid;
-			border-left-width: 2px;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
+	style="background-color: #c0c0c0;
 			padding-right: 10px;
-			padding-left: 10px;"
+			padding-left: 10px;
+			border-right-width: 2px;
+			border-right-style: Solid;
+			border-right-color: #ffffff;
+			border-bottom-color: #ffffff;
+			border-bottom-style: Solid;
+			border-bottom-width: 2px;
+			border-left-width: 2px;
+			border-left-style: Solid;
+			border-left-color: #ffffff;"
 	bgcolor=#C0C0C0
 	width=22.462%>
 <p>lp channel (1|4) <span style="font-style: italic;">date time</span></td>
 <td colspan=1
 	rowspan=1
-	style="width: 77.538%;
-			background-color: #c0c0c0;
+	style="background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -809,26 +807,24 @@ accumulator [1-4])</td>
 	valign=top>
 <td colspan=1
 	rowspan=1
-	style="width: 22.462%;
-			background-color: #c0c0c0;
-			border-left-color: #ffffff;
-			border-left-style: Solid;
-			border-left-width: 2px;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
+	style="background-color: #c0c0c0;
 			padding-right: 10px;
-			padding-left: 10px;"
+			padding-left: 10px;
+			border-right-width: 2px;
+			border-right-style: Solid;
+			border-right-color: #ffffff;
+			border-bottom-color: #ffffff;
+			border-bottom-style: Solid;
+			border-bottom-width: 2px;
+			border-left-width: 2px;
+			border-left-style: Solid;
+			border-left-color: #ffffff;"
 	bgcolor=#C0C0C0
 	width=22.462%>
 <p>lp peak (day|hour|interval) channel (1|2|3|4) mm/dd/yyyy (days)</td>
 <td colspan=1
 	rowspan=1
-	style="width: 77.538%;
-			background-color: #c0c0c0;
+	style="background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -847,26 +843,24 @@ accumulator [1-4])</td>
 	valign=top>
 <td colspan=1
 	rowspan=1
-	style="width: 22.462%;
-			background-color: #c0c0c0;
-			border-left-color: #ffffff;
-			border-left-style: Solid;
-			border-left-width: 2px;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
+	style="background-color: #c0c0c0;
 			padding-right: 10px;
-			padding-left: 10px;"
+			padding-left: 10px;
+			border-right-width: 2px;
+			border-right-style: Solid;
+			border-right-color: #ffffff;
+			border-bottom-color: #ffffff;
+			border-bottom-style: Solid;
+			border-bottom-width: 2px;
+			border-left-width: 2px;
+			border-left-style: Solid;
+			border-left-color: #ffffff;"
 	bgcolor=#C0C0C0
 	width=22.462%>
 <p>status</td>
 <td colspan=1
 	rowspan=1
-	style="width: 77.538%;
-			background-color: #c0c0c0;
+	style="background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -883,26 +877,24 @@ accumulator [1-4])</td>
 	valign=top>
 <td colspan=1
 	rowspan=1
-	style="width: 22.462%;
-			background-color: #c0c0c0;
-			border-left-color: #ffffff;
-			border-left-style: Solid;
-			border-left-width: 2px;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
+	style="background-color: #c0c0c0;
 			padding-right: 10px;
-			padding-left: 10px;"
+			padding-left: 10px;
+			border-right-width: 2px;
+			border-right-style: Solid;
+			border-right-color: #ffffff;
+			border-bottom-color: #ffffff;
+			border-bottom-style: Solid;
+			border-bottom-width: 2px;
+			border-left-width: 2px;
+			border-left-style: Solid;
+			border-left-color: #ffffff;"
 	bgcolor=#C0C0C0
 	width=22.462%>
 <p>cancel</td>
 <td colspan=1
 	rowspan=1
-	style="width: 77.538%;
-			background-color: #c0c0c0;
+	style="background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -919,26 +911,24 @@ accumulator [1-4])</td>
 	valign=top>
 <td colspan=1
 	rowspan=1
-	style="width: 22.462%;
-			background-color: #c0c0c0;
-			border-left-color: #ffffff;
-			border-left-style: Solid;
-			border-left-width: 2px;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
+	style="background-color: #c0c0c0;
 			padding-right: 10px;
-			padding-left: 10px;"
+			padding-left: 10px;
+			border-right-width: 2px;
+			border-right-style: Solid;
+			border-right-color: #ffffff;
+			border-bottom-color: #ffffff;
+			border-bottom-style: Solid;
+			border-bottom-width: 2px;
+			border-left-width: 2px;
+			border-left-style: Solid;
+			border-left-color: #ffffff;"
 	bgcolor=#C0C0C0
 	width=22.462%>
 <p>background</td>
 <td colspan=1
 	rowspan=1
-	style="width: 77.538%;
-			background-color: #c0c0c0;
+	style="background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -955,26 +945,24 @@ accumulator [1-4])</td>
 	valign=top>
 <td colspan=1
 	rowspan=1
-	style="width: 22.462%;
-			background-color: #c0c0c0;
-			border-left-color: #ffffff;
-			border-left-style: Solid;
-			border-left-width: 2px;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
+	style="background-color: #c0c0c0;
 			padding-right: 10px;
-			padding-left: 10px;"
+			padding-left: 10px;
+			border-right-width: 2px;
+			border-right-style: Solid;
+			border-right-color: #ffffff;
+			border-bottom-color: #ffffff;
+			border-bottom-style: Solid;
+			border-bottom-width: 2px;
+			border-left-width: 2px;
+			border-left-style: Solid;
+			border-left-color: #ffffff;"
 	bgcolor=#C0C0C0
 	width=22.462%>
 <p>minmax</td>
 <td colspan=1
 	rowspan=1
-	style="width: 77.538%;
-			background-color: #c0c0c0;
+	style="background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -991,26 +979,24 @@ accumulator [1-4])</td>
 	valign=top>
 <td colspan=1
 	rowspan=1
-	style="width: 22.462%;
-			background-color: #c0c0c0;
-			border-left-color: #ffffff;
-			border-left-style: Solid;
-			border-left-width: 2px;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
+	style="background-color: #c0c0c0;
 			padding-right: 10px;
-			padding-left: 10px;"
+			padding-left: 10px;
+			border-right-width: 2px;
+			border-right-style: Solid;
+			border-right-color: #ffffff;
+			border-bottom-color: #ffffff;
+			border-bottom-style: Solid;
+			border-bottom-width: 2px;
+			border-left-width: 2px;
+			border-left-style: Solid;
+			border-left-color: #ffffff;"
 	bgcolor=#C0C0C0
 	width=22.462%>
 <p>powerfail</td>
 <td colspan=1
 	rowspan=1
-	style="width: 77.538%;
-			background-color: #c0c0c0;
+	style="background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -1027,26 +1013,24 @@ accumulator [1-4])</td>
 	valign=top>
 <td colspan=1
 	rowspan=1
-	style="width: 22.462%;
-			background-color: #c0c0c0;
-			border-left-color: #ffffff;
-			border-left-style: Solid;
-			border-left-width: 2px;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
+	style="background-color: #c0c0c0;
 			padding-right: 10px;
-			padding-left: 10px;"
+			padding-left: 10px;
+			border-right-width: 2px;
+			border-right-style: Solid;
+			border-right-color: #ffffff;
+			border-bottom-color: #ffffff;
+			border-bottom-style: Solid;
+			border-bottom-width: 2px;
+			border-left-width: 2px;
+			border-left-style: Solid;
+			border-left-color: #ffffff;"
 	bgcolor=#C0C0C0
 	width=22.462%>
 <p>freezecount</td>
 <td colspan=1
 	rowspan=1
-	style="width: 77.538%;
-			background-color: #c0c0c0;
+	style="background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -1063,26 +1047,24 @@ accumulator [1-4])</td>
 	valign=top>
 <td colspan=1
 	rowspan=1
-	style="width: 22.462%;
-			background-color: #c0c0c0;
-			border-left-color: #ffffff;
-			border-left-style: Solid;
-			border-left-width: 2px;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
+	style="background-color: #c0c0c0;
 			padding-right: 10px;
-			padding-left: 10px;"
+			padding-left: 10px;
+			border-right-width: 2px;
+			border-right-style: Solid;
+			border-right-color: #ffffff;
+			border-bottom-color: #ffffff;
+			border-bottom-style: Solid;
+			border-bottom-width: 2px;
+			border-left-width: 2px;
+			border-left-style: Solid;
+			border-left-color: #ffffff;"
 	bgcolor=#C0C0C0
 	width=22.462%>
 <p>outage (1|2|3|4|5|6)</td>
 <td colspan=1
 	rowspan=1
-	style="width: 77.538%;
-			background-color: #c0c0c0;
+	style="background-color: #c0c0c0;
 			border-right-color: #ffffff;
 			border-right-style: Solid;
 			border-right-width: 2px;
@@ -1102,39 +1084,44 @@ accumulator [1-4])</td>
 
 <p style="font-weight: bold; margin-left: 12px;">getvalue kwh update</p>
 
-<p style="font-weight: bold; margin-left: 12px;">getvalue frozen</p>
-
-<p style="font-weight: bold; margin-left: 12px;">getvalue kwh rate a</p>
-
-<p style="font-weight: bold; margin-left: 12px;">getvalue kwh rate c frozen</p>
-
-<p style="font-weight: bold; margin-left: 12px;">getvalue kvarh update</p>
-
-<p style="font-weight: bold; margin-left: 12px;">getvalue ied kwha</p>
-
-<p style="font-weight: bold; margin-left: 12px;">getvalue ied kwh rate 
- b</p>
-
-<p style="font-weight: bold; margin-left: 12px;">getvalue ied demand</p>
-
-<p style="font-weight: bold; margin-left: 12px;">getvalue kvah rate b update</p>
-
-<p style="font-weight: bold; margin-left: 12px;">getvalue kvar demand</p>
+<p style="font-weight: bold; margin-left: 12px;">getvalue frozen<br>
+getvalue ied demand</p>
 
 <p style="font-weight: bold; margin-left: 12px;">getvalue ied dnp collection 
  1</p>
 
 <p style="font-weight: bold; margin-left: 12px;">getvalue ied dnp status</p>
 
-<p style="font-weight: bold; margin-left: 12px;">getvalue lp channel 1 
- 12/15/2006 12:00</p>
+<p style="font-weight: bold; margin-left: 12px;">getvalue ied kwha</p>
+
+<p style="font-weight: bold; margin-left: 12px;">getvalue ied kwh rate 
+ b<br>
+getvalue kwh</p>
+
+<p style="font-weight: bold; margin-left: 12px;">getvalue kwh frozen</p>
+
+<p style="font-weight: bold; margin-left: 12px;"><span style="font-weight: bold;">getvalue 
+ kwh rate a</span></p>
+
+<p style="font-weight: bold; margin-left: 12px;">getvalue kwh rate c frozen</p>
+
+<p style="font-weight: bold; margin-left: 12px;">getvalue kvarh update</p>
+
+<p style="font-weight: bold; margin-left: 12px;">getvalue kvah rate b update</p>
+
+<p style="font-weight: bold; margin-left: 12px;">getvalue kvar demand<br>
+getvalue kvarh update</p>
+
+<p style="font-weight: bold; margin-left: 12px;">getvalue usage<br>
+getvalue lp channel 1 12/15/2006 12:00</p>
 
 <p style="font-weight: bold; margin-left: 12px;">getvalue lp channel 1 
  12/15/2006 12/20/2006 12:00</p>
 
 <p style="font-weight: bold; margin-left: 12px;">getvalue lp status</p>
 
-<p style="font-weight: bold; margin-left: 12px;">getvalue frozen</p>
+<p style="font-weight: bold; margin-left: 12px;">getvalue peak frozen channel 
+ 2</p>
 
 <p style="font-weight: bold; margin-left: 12px;">getvalue peak frozen update</p>
 

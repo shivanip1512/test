@@ -12,23 +12,25 @@
 
 <!--(Meta)==========================================================-->
 
+<meta http-equiv=content-type content="text/html; charset=windows-1252">
+<meta name=date content="04 19, 2005 11:03:09 AM">
+<meta name=topic-status content="In Progress">
+<meta name=topic-priority content=0>
+<meta name=topic-time-estimate content=0>
+<meta name=topic-comment content>
+<meta name=topic-id content="Creating a Script Schedule">
 <meta name=generator content="RoboHELP by eHelp Corporation - www.ehelp.com">
 <meta name=generator-major-version content=0.1>
 <meta name=generator-minor-version content=1>
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=1024>
-<meta name=layout-width content=744>
-<meta name=date content="04 19, 2005 11:03:09 AM">
-<meta name=x-ignored-words content="Tcl;PUTSTATUS;VERSACOM;cmd;cmd_parameters;PUTCONFIG;getvalue;GETVALUE;PUTVALUE;GETSTATUS;GETCONFIG;Ack;TDC;Unsilence;Unmute;Unacked;ACK;SOE;DNP;MACS;HH;MW;SubBus;OpenQuestionable;CloseQuestionable;OpenFail;CloseFail;OpenPending;ClosePending;KVAR;renables;Unwaive;nn;setpoint;maxrate;bfallback;afallback;afallbak;F;waypoint;xcom;noramp;restore|terminate;open|close|connect|disconnect;celsius;heat|cool|both;min;ExpressCom;CBC;RTU;MCT;dsd;hh;tcycle;ctrl;dsb;ta;tb;tc;te;tf;dsf;UofM;Ctrl;Timeout;IED;TOU">
+<meta name=layout-height content=1103>
+<meta name=layout-width content=963>
+<meta name=x-ignored-words content="Tcl;PUTSTATUS;VERSACOM;cmd;cmd_parameters;PUTCONFIG;getvalue;GETVALUE;PUTVALUE;GETSTATUS;GETCONFIG;Ack;nn;TDC;Unsilence;MACS;HH;MW;IEDSCAN;IED;PLC;ss;ddddd;MCT;PFCOUNT;kWh;kW;kvarh;kvar;KWH;KVARH;KVAH;ABCD;TOU;N;putconfig;fp;guid;positionally;aux;spec;MSB;u#;a#;s#;in|out;t;y|n;LEDs;y;reset_counters;rtc;lf;cl;LUF;rn;n;prop_time;cold_load;uninterpreted;putstatus;PutStatus;prop[agation;disp[lay;term[inate;inc[rement;rl;rrrrr;nnnn;LM;xxxx;LCR;altgroup;KYZ;powerfail;CVD;CCU;Unmute;Program(s;ReEnable;ACK;Unacked;SubBus;OpenQuestionable;CloseQuestionable;OpenFail;CloseFail;OpenPending;ClosePending;KVAR;setpoint;maxrate;bfallback;afallback;afallbak;F;waypoint;xcom;noramp;restore|terminate;open|close|connect|disconnect;celsius;heat|cool|both;min;ExpressCom;CBC;RTU;dsd;hh;tcycle;ctrl;dsb;ta;tb;tc;te;tf;dsf;UofM;Ctrl;iedscan;getconfig;lp|li;kyz;ied;lp;rolenum;func;rawfunc;lp|disconnect|internal|external|ied;getstatus;lp|disconnect|internal|external;pfcount;lp|disconnect|internal|external|errors|pfcount|ied;eventlog;DNP;eventlog|update;errors|pfcount||offset|eventlog|update;errors|pfcount|offset;lp|disc|internal|external|ied;a|b|c|d|t;kwh;kwh|kvark|kvah;kw|demand|kva|kvar;kwh|kvarh|kvah;kvh;kw;kvah;kva;kw|kva|kvar|demand|peak;kwh|kvar|kvah;locate|count;count|locate;TDCs;alarmable;uninitialized;timestamp;Uninit;Unintialized;FDR;IDLC;Part-Int;Dev-Fill;Unr;Min;display|terminate|increment;xcproptest;FisherPierce;on|off|auto;off|heat|cool|emheat;in|out|enable|disable;noclp|noled|bitP|bitL|cancel|;vdata;fromutility;fromutility|fromsect|fromclass|fromdivsion;fromsect;fromclass;fromdivsion;relaymask;assign|address;fromtility;EMETCON;fromdivision;C;setstate;timeout;timesync;spid;geo;uda;relay|load;offhours;emheat;noclp|noled|offhours;noclp;noled;timsync;li|lp;fixb;outb;inb;multi_role;fn;von;stfn;delay|class;enable|disable;SPEC;RSSI;OverVoltage;rssi;zero|one;ovuv;UnderVoltage;putvalue;reset|reading;powerfail|ied;tou;SOE;renables;Unwaive;Timeout;group|uniq;intervals|interval;internal|external;minmax;minmax|peak;ping[count;g;f;z;r;Spid;suBstation;splinteR;mult;onnoffpeak;onoffpeak|minmax;disconnect|connect;onoffpeak;one|two;on|off;CapBank;CSV;freezecount;kw|kva|kvar|demand|peak|voltage;dnp;status|analog;day|hour|interval;yyyy;feeezecount;kVa;kVar;status|;c;kwha;IEDs;login;centron;timezone;SMTWRFSH;CENTRON;forward|reverse;hours|-hours;et|ct|mt|pt;SPID;bitmap;n.nn;MCTs;scan|dnp;ratio|parameters;group|unique;time[sync;getatatus;Itron;group(s">
 
 
- <meta name="topic-status" content="In Progress">
- <meta name="topic-priority" content="0">
- <meta name="topic-time-estimate" content="0">
- <meta name="topic-comment" content="">
- <meta name="topic-id" content="Creating a Script Schedule"><!--(Links)=========================================================-->
+<!--(Links)=========================================================-->
 
 <link rel=StyleSheet href=default.css>
 
@@ -64,9 +66,12 @@
 <ol style="list-style: decimal;"
 	type=1>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Select the meter collection 
- group to read from the <span style="font-weight: bold;">Group Name</span> 
- drop-down list.</p></li>
+	<li class=kadov-p><p style="margin-bottom: 9pt;">Select the group(s) 
+ to read with the MACS schedule.<br>
+	Choosing a top level group selects all groups under that directory. 
+ To select a group below a top level group, click the <span style="font-weight: bold;">+</span> 
+ button and select the sub group. To select more than one group, hold down 
+ the Ctrl or Shift keys while selecting groups.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Enter the number of 
  seconds for the meter read to complete in the <span style="font-weight: bold;">Porter 
@@ -105,7 +110,7 @@
  hours limit.</p></li>
 	</ol>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">If you selected the 
+	<li class=kadov-p><p style="margin-bottom: 9pt;">If you selected an 
  IED Meter Read or IED Meter Read Retry script template:</p></li>
 	
 	<ol style="list-style: lower-alpha;"
@@ -146,15 +151,21 @@
 	</ol>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">To generate a billing 
- file for the meter read, select the <span style="font-weight: bold;">Generate 
- Billing File</span> check box.</p></li>
+ file for the meter read:</p></li>
 	
 	<ol style="list-style: lower-alpha;"
 		type=a>
 		
 		<li class=kadov-p><p style="margin-bottom: 9pt; margin-left: 0px;">Select 
- the billing file format to use from the <span style="font-weight: bold;">File 
- Format</span> drop-down list.</p></li>
+ the <span style="font-weight: bold;">Generate Billing File</span> check 
+ box.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 9pt; margin-left: 0px;">Select 
+ the group(s) from which to generate the billing file.<br>
+		Choosing a top level group selects all groups under that directory. 
+ To select a group below a top level group, click the <span style="font-weight: bold;">+</span> 
+ button and select the sub group. To select more than one group, hold down 
+ the Ctrl or Shift keys while selecting groups.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 9pt; margin-left: 0px;">Enter 
  the number of previous days to search for demand readings in the <span 
@@ -182,10 +193,13 @@
 	<li class=kadov-p><p style="margin-bottom: 9pt;">The script is auto-generated 
  from the settings in the Meter Read and Options tab. </p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Click <span style="font-weight: bold;">Finish</span>. 
- The schedule appears in the Metering and Control Scheduler list.<br>
-	If you are editing the schedule, click <span style="font-weight: bold;">OK</span> 
- or <span style="font-weight: bold;">Apply</span> to save the changes.</p></li>
+	<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span style="font-weight: bold;">Finish</span> 
+ <!--kadov_tag{{<spaces>}}-->&nbsp;<!--kadov_tag{{</spaces>}}-->button 
+ to save the script. The schedule appears in the Metering and Control Scheduler 
+ list.<br>
+	If you are editing the schedule, click the <span style="font-weight: bold;">OK</span> 
+ button or <span style="font-weight: bold;">Apply</span> button to save 
+ the changes.</p></li>
 </ol>
 
 <p>&nbsp; </p>
@@ -201,23 +215,24 @@
 				margin-right: 0px;
 				vertical-align: baseline;"
 		align=bottom>
-<param name=_Version value="65536" >
-<param name=_ExtentX value="2117" >
-<param name=_ExtentY value="556" >
-<param name=_StockProps value="13" >
-<param name=ForeColor value="0" >
-<param name=BackColor value="13160660" >
-<param name=UseButton value="-1" >
-<param name=ControlLabel value="Related Topics" >
-<param name=UseIcon value="0" >
-<param name=Items value="Creating a MACS Schedule;Creating_a_Schedule.htm$$**$$Using Metering and Control Scheduler;Metering_and_Control_Scheduler.htm$$**$$" >
-<param name=Image value="" >
-<param name=FontInfo value="MS Sans Serif,8,0,," >
-<param name=_CURRENTFILEPATH value="C:\working\docs\Help\Yukon 3.1 Tabular Data Console Help\Creating_a_Script_Schedule.htm" >
-<param name=_ID value="RelatedTopics" >
-<param name=UseMenu value="-1" >
-<param name=Frame value="_top" >
-<param name=Window value="" >
+<param name="_Version" value="65536" >
+<param name="_ExtentX" value="2117" >
+<param name="_ExtentY" value="556" >
+<param name="_StockProps" value="13" >
+<param name="ForeColor" value="0" >
+<param name="BackColor" value="13160660" >
+<param name="UseButton" value="-1" >
+<param name="UseText" value="0" >
+<param name="ControlLabel" value="Related Topics" >
+<param name="UseIcon" value="0" >
+<param name="Items" value="Creating a MACS Schedule;Creating_a_Schedule.htm$$**$$Using Metering and Control Scheduler;Metering_and_Control_Scheduler.htm$$**$$" >
+<param name="Image" value="" >
+<param name="FontInfo" value="MS Sans Serif,8,0,," >
+<param name="_CURRENTFILEPATH" value="C:\YukonHelpSVN\4.1\tdc\src\Creating_a_Script_Schedule.htm" >
+<param name="_ID" value="RelatedTopics" >
+<param name="UseMenu" value="-1" >
+<param name="Frame" value="_top" >
+<param name="Window" value="" >
 </object>-->
 <OBJECT
   CLASSID="clsid:ADB880A6-D8FF-11CF-9377-00AA003B7A11"
@@ -231,7 +246,7 @@
 </OBJECT>
 
 <!--Metadata type="DesignerControl" endspan-->
-</p>
+ </p>
 
 <p style="margin-bottom: 9pt;">&nbsp;</p>
 

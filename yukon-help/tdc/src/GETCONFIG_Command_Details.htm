@@ -25,8 +25,8 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=1145>
-<meta name=layout-width content=974>
+<meta name=layout-height content=1129>
+<meta name=layout-width content=1123>
 <meta name=x-ignored-words content="Tcl;PUTSTATUS;VERSACOM;cmd;cmd_parameters;PUTCONFIG;getvalue;GETVALUE;PUTVALUE;GETSTATUS;GETCONFIG;Ack;nn;TDC;Unsilence;MACS;HH;MW;IEDSCAN;IED;PLC;ss;ddddd;MCT;PFCOUNT;kWh;kW;kvarh;kvar;KWH;KVARH;KVAH;ABCD;TOU;N;putconfig;fp;guid;positionally;aux;spec;MSB;u#;a#;s#;in|out;t;y|n;LEDs;y;reset_counters;rtc;lf;cl;LUF;rn;n;prop_time;cold_load;uninterpreted;putstatus;PutStatus;prop[agation;disp[lay;term[inate;inc[rement;rl;rrrrr;nnnn;LM;xxxx;LCR;altgroup;KYZ;powerfail;CVD;CCU;Unmute;Program(s;ReEnable;ACK;Unacked;SOE;DNP;SubBus;OpenQuestionable;CloseQuestionable;OpenFail;CloseFail;OpenPending;ClosePending;KVAR;renables;Unwaive;setpoint;maxrate;bfallback;afallback;afallbak;F;waypoint;xcom;noramp;restore|terminate;open|close|connect|disconnect;celsius;heat|cool|both;min;ExpressCom;CBC;RTU;dsd;hh;tcycle;ctrl;dsb;ta;tb;tc;te;tf;dsf;UofM;Ctrl;Timeout;iedscan;getconfig;lp|li;kyz;ied;lp;rolenum;func;rawfunc;group|uniq;intervals|interval;lp|disconnect|internal|external|ied;getstatus;lp|disconnect|internal|external;pfcount;lp|disconnect|internal|external|errors|pfcount|ied;eventlog;eventlog|update;errors|pfcount||offset|eventlog|update;errors|pfcount|offset;lp|disc|internal|external|ied;internal|external;a|b|c|d|t;kwh;kwh|kvark|kvah;kw|demand|kva|kvar;kwh|kvarh|kvah;kvh;kw;kvah;kva;kw|kva|kvar|demand|peak;kwh|kvar|kvah;minmax;minmax|peak;TDCs;locate|count;count|locate;ping[count;alarmable;uninitialized;timestamp;Uninit;Unintialized;FDR;IDLC;Part-Int;Dev-Fill;Unr;Min;display|terminate|increment;xcproptest;FisherPierce;on|off|auto;off|heat|cool|emheat;in|out|enable|disable;noclp|noled|bitP|bitL|cancel|;vdata;fromutility;fromutility|fromsect|fromclass|fromdivsion;fromsect;fromclass;fromdivsion;relaymask;assign|address;fromtility;EMETCON;fromdivision;C;setstate;timeout;timesync;spid;geo;uda;relay|load;offhours;emheat;noclp|noled|offhours;noclp;noled;timsync;li|lp;fixb;outb;inb;multi_role;fn;von;stfn;delay|class;enable|disable;SPEC;g;f;z;r;Spid;suBstation;splinteR;mult;onnoffpeak;onoffpeak|minmax;disconnect|connect;onoffpeak;RSSI;OverVoltage;rssi;zero|one;ovuv;UnderVoltage;one|two;on|off;putvalue;reset|reading;powerfail|ied;CapBank;CSV;freezecount;kw|kva|kvar|demand|peak|voltage;dnp;status|analog;day|hour|interval;yyyy;feeezecount;kVa;kVar;status|;c;kwha;tou;login;centron;timezone;SMTWRFSH;CENTRON;forward|reverse;hours|-hours;et|ct|mt|pt;SPID;bitmap;n.nn;MCTs;scan|dnp;ratio|parameters;group|unique;time[sync;getatatus;Itron">
 
 
@@ -36,8 +36,6 @@
 
 
 <!--(Misc)==========================================================-->
-
-<<<<<<< GETCONFIG_Command_Details.htm &lt;meta name=layout-height content=773>
 
 
 
@@ -728,8 +726,7 @@
 			padding-left: 10px;"
 	bgcolor=#C0C0C0
 	width=17.537%>
-<p>raw [func] start=0x<span style="font-style: italic;">hexnum </span>[<span 
- style="font-style: italic;">length</span>]</td>
+<p>centron (ratio|parameters)</td>
 <td colspan=1
 	rowspan=1
 	style="width: 82.463%;
@@ -744,10 +741,9 @@
 			padding-left: 10px;"
 	bgcolor=#C0C0C0
 	width=82.463%>
-<p>Downloads a raw block of data to a field device. The func option makes 
- the command download raw function information. The start parameter specifies 
- the starting location in hex. This command downloads a maximum length 
- of 13 bytes if a length is not specified.</td></tr>
+<p>The ratio option returns the Itron CENTRON multiplier ratio from an 
+ MCT-410cL and the parameters option returns the Itron CENTRON display 
+ parameters from an MCT-410cL.</td></tr>
 
 <tr style="x-cell-content-align: top;"
 	valign=top>
@@ -768,7 +764,8 @@
 			padding-left: 10px;"
 	bgcolor=#C0C0C0
 	width=17.537%>
-<p>centron (ratio|parameters)</td>
+<p>raw [func] start=0x<span style="font-style: italic;">hexnum </span>[<span 
+ style="font-style: italic;">length</span>]</td>
 <td colspan=1
 	rowspan=1
 	style="width: 82.463%;
@@ -783,9 +780,10 @@
 			padding-left: 10px;"
 	bgcolor=#C0C0C0
 	width=82.463%>
-<p>The ratio option returns the Itron CENTRON multiplier ratio from an 
- MCT-410cL and the parameters option returns the Itron CENTRON display 
- parameters from an MCT-410cL.</td></tr>
+<p>Downloads a raw block of data to a field device. The func option makes 
+ the command download raw function information. The start parameter specifies 
+ the starting location in hex. This command downloads a maximum length 
+ of 13 bytes if a length is not specified.</td></tr>
 </table>
 
 <h5 style="font-size: 11pt;">Examples</h5>
@@ -835,15 +833,14 @@
 
 <p style="font-weight: bold; margin-left: 12px;">getatatus ied dnp</p>
 
-<p style="font-weight: bold; margin-left: 12px;">getconfig ied dnp 20</p>
+<p style="font-weight: bold; margin-left: 12px;">getconfig ied dnp 20<br>
+getconfig centron ratio</p>
+
+<p style="font-weight: bold; margin-left: 12px;">getconfig centron parameters</p>
 
 <p style="font-weight: bold; margin-left: 12px;">getconfig raw start=0x20</p>
 
 <p style="font-weight: bold; margin-left: 12px;">getconfig raw func start=0x90</p>
-
-<p style="font-weight: bold; margin-left: 12px;">getconfig centron ratio</p>
-
-<p style="font-weight: bold; margin-left: 12px;">getconfig centron parameters</p>
 
 </body>
 
