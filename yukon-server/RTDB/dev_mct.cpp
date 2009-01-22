@@ -227,7 +227,7 @@ void CtiDeviceMCT::extractDynamicPaoInfo(const INMESS &InMessage)
     if( io == Emetcon::IO_Function_Read ||
         io == Emetcon::IO_Read )
     {
-        const unsigned long &length = InMessage.InLength;
+        const unsigned long &length = InMessage.Buffer.DSt.Length;
         bool function_read = (io == Emetcon::IO_Function_Read);
 
         int function = (function_read)?(InMessage.Return.ProtocolInfo.Emetcon.Function):(-1);
