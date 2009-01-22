@@ -10,6 +10,7 @@ INCLPATHS+= \
 -I$(SERVER)\include \
 -I$(MSG)\include \
 -I$(COMMON)\include \
+-I$(PROT)\include \
 -I$(CPARMS)\include \
 -I$(RW) \
 -I$(BOOST) \
@@ -34,6 +35,7 @@ INCLPATHS+= \
 ;$(DISPATCH)\include \
 ;$(MSG)\include \
 ;$(SIGNAL)\include \
+;$(PROT)\include \
 ;$(TCLINC) \
 ;$(RW)
 
@@ -62,7 +64,8 @@ fdrsinglesocket.obj \
 fdrsocketserver.obj \
 fdrscadaserver.obj \
 fdrclientserverconnection.obj \
-fdrscadahelper.obj
+fdrscadahelper.obj \
+fdrdnphelper.obj
 
 
 FDRTELEGYROBJS=\
@@ -83,6 +86,7 @@ $(COMPILEBASE)\lib\ctimsg.lib \
 $(COMPILEBASE)\lib\ctivg.lib \
 $(COMPILEBASE)\lib\ctisvr.lib \
 $(COMPILEBASE)\lib\cmdline.lib \
+$(COMPILEBASE)\lib\ctiprot.lib \
 wininet.lib
 
 TESTINTERFACEDLLOBJS=\
@@ -121,7 +125,8 @@ fdrpi.dll \
 fdrxa21lm.dll \
 fdrlivedata.dll \
 fdrwabash.dll \
-fdrtristatesub.dll
+fdrtristatesub.dll \
+fdrdnpslave.dll
 
 #  commented out because of bigtime Microsoft compiler problems.  i'm compiling
 #    all of the code into one .obj, because it can't handle the code being contained
@@ -317,6 +322,13 @@ fdrtristatesub.dll: fdrtristatesub.obj Makefile
                 @if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
                 @%cd $(CWD)
 
+fdrdnpslave.dll: fdrdnpslave.obj Makefile
+                @%cd $(OBJ)
+                @echo Building  ..\$@
+                $(CC) $(DLLFLAGS) fdrdnpslave.obj $(INCLPATHS) $(RWLIBS) $(BOOSTLIBS) $(CTIFDRLIBS) $(COMPILEBASE)\lib\cti_fdr.lib /Fe..\$@ $(LINKFLAGS)
+                @if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
+                @if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib
+                @%cd $(CWD)
 apiclilib.lib:
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
                 -if exist telegyr\lib\apiclilib.lib copy telegyr\lib\apiclilib.lib $(COMPILEBASE)\lib
@@ -463,6 +475,12 @@ fdrlivedata.obj : fdrlivedata.cpp
                 @echo Compiling: $< Output: ..\$@
                 @echo:
                 $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) $(INCLPATHS) -D_DLL_FDRLIVEDATAAPI -DWINDOWS -Fo$(OBJ)\  -c $<
+
+fdrdnpslave.obj : fdrdnpslave.cpp
+                @echo:
+                @echo Compiling: $< Output: ..\$@
+                @echo:
+                $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) $(INCLPATHS) -D_DLL_FDRDNPSLAVE -DWINDOWS -Fo$(OBJ)\  -c $<
 
 fdrxa21lm.obj : fdrxa21lm.cpp
                 @echo:

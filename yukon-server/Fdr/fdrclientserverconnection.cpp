@@ -7,6 +7,7 @@
 
 #include "fdrinterface.h"
 #include "fdrscadaserver.h"
+#include "prot_dnp.h"
 
 using namespace std;
 
@@ -19,7 +20,7 @@ int CtiFDRClientServerConnection::_nextConnectionNumber = 1;
  */
 CtiFDRClientServerConnection::CtiFDRClientServerConnection(const string& connectionName, 
                                      SOCKET theSocket,
-                                     CtiFDRScadaServer *aParent)
+                                     CtiFDRSocketServer *aParent)
 {
     _connectionName = connectionName;
     _connectionNumber = _nextConnectionNumber++;
@@ -468,7 +469,7 @@ void CtiFDRClientServerConnection::threadFunctionGetDataFrom( void )
 {
     RWRunnableSelf  pSelf = rwRunnable( );
     const unsigned int maxBufferSize = 8172;
-    const unsigned int magicInitialMessageSize = 4;
+    const unsigned int magicInitialMessageSize = _parentInterface->getMagicInitialMsgSize();
     CHAR            data[maxBufferSize];
     INT retVal=0;        
     ULONG   bytesRead=0,totalMsgSize=0;
@@ -503,7 +504,7 @@ void CtiFDRClientServerConnection::threadFunctionGetDataFrom( void )
             // figure out how many more bytes we now need
             unsigned long headerBytes = 
                 _parentInterface->getHeaderBytes(data, magicInitialMessageSize);
-            totalMsgSize = _parentInterface->getMessageSize(headerBytes);
+            totalMsgSize = _parentInterface->getMessageSize(data);
             if (totalMsgSize == 0)
             {
                 {

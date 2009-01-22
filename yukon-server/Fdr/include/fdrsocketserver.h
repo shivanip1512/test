@@ -28,11 +28,15 @@ class IM_EX_FDRBASE CtiFDRSocketServer : public CtiFDRInterface
 
         virtual int processMessageFromForeignSystem(
           CtiFDRClientServerConnection& connection, char* data, unsigned int size) = 0;
-
+        
         virtual bool loadTranslationLists(void);
         virtual bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send=false)=0;
         //Force Cleanup in sub classes from this point.
         virtual void cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint, bool recvList)=0;
+
+        virtual unsigned int getMessageSize(const char* data) = 0;
+        virtual unsigned long getHeaderBytes(const char* data, unsigned int size)= 0;
+        virtual unsigned int getMagicInitialMsgSize()=0;
 
         virtual BOOL init( void );
         virtual BOOL run( void );

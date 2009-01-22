@@ -35,8 +35,9 @@ class IM_EX_FDRBASE CtiFDRScadaServer : public CtiFDRSocketServer
 
         virtual int processMessageFromForeignSystem(
           CtiFDRClientServerConnection& connection, char* data, unsigned int size);
-        virtual unsigned int getMessageSize(unsigned long header) = 0;
+        virtual unsigned int getMessageSize(const char* data) = 0;
         virtual unsigned long getHeaderBytes(const char* data, unsigned int size);
+        virtual unsigned int getMagicInitialMsgSize()=0;
 
     protected:
 
@@ -50,7 +51,7 @@ class IM_EX_FDRBASE CtiFDRScadaServer : public CtiFDRSocketServer
                                          char* data, unsigned int size) {return false;};
         virtual bool processTimeSyncMessage(CtiFDRClientServerConnection& connection,
                                          char* data, unsigned int size) {return false;};
-
+        
 };
 
 

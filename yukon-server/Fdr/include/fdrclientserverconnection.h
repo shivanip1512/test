@@ -35,6 +35,7 @@
 #include "queues.h"
 
 class CtiFDRScadaServer;
+class CtiFDRSocketServer;
 
 /** Cti FDR Client Server Connection for Cti FDR Scada Server
  * This is the connection class for the CtiFDRScadaServer class.
@@ -50,7 +51,7 @@ class IM_EX_FDRBASE CtiFDRClientServerConnection
     public:
         CtiFDRClientServerConnection(const string& connectionName, 
                                      SOCKET theSocket,
-                                     CtiFDRScadaServer *aParent);
+                                     CtiFDRSocketServer *aParent);
         ~CtiFDRClientServerConnection();
     
         typedef string Destination;
@@ -103,7 +104,7 @@ class IM_EX_FDRBASE CtiFDRClientServerConnection
         SOCKET _socket;
         HCTIQUEUE _outboundQueue;
         
-        CtiFDRScadaServer* _parentInterface;
+        CtiFDRSocketServer* _parentInterface;
         
         bool _connectionFailed;
         bool _isRegistered;

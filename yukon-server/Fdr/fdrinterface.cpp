@@ -995,11 +995,19 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
                     {
                         // db change message reload if type if point
                         int changeId = ((CtiDBChangeMsg*)incomingMsg)->getId();
-                        bool changeType = ((CtiDBChangeMsg*)incomingMsg)->getTypeOfChange();
+                        int changeType = ((CtiDBChangeMsg*)incomingMsg)->getTypeOfChange();
 
                         if ( ((CtiDBChangeMsg*)incomingMsg)->getDatabase() == ChangePointDb)
                         {
-                            processFDRPointChange(changeId, changeType == ChangeTypeDelete);
+                            if (changeType == ChangeTypeDelete)
+                                processFDRPointChange(changeId, true);
+                            else
+                            {    
+                                processFDRPointChange(changeId, false);
+                                reRegisterWithDispatch();
+
+                            }
+
                         }
                         else if (((CtiDBChangeMsg*)incomingMsg)->getDatabase() == ChangePAODb)
                         {
@@ -1713,12 +1721,16 @@ void CtiFDRInterface::removeTranslationPoint(long pointId)
         if (recvMgr != NULL)
         {
             inRecv = recvMgr->removeFDRPointID(pointId);
-            cleanupTranslationPoint(inRecv,true);
+            if (inRecv.get() != NULL)
+                cleanupTranslationPoint(inRecv,true);
+
         }
         if (sendMgr != NULL)
         {
             inSend = sendMgr->removeFDRPointID(pointId);
-            cleanupTranslationPoint(inSend,false);
+            if (inSend.get() != NULL) 
+                cleanupTranslationPoint(inSend,false);
+
         }
     }
     printLists(" After remove of point ", pointId);

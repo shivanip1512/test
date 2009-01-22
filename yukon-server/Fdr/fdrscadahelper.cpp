@@ -347,3 +347,7 @@ static bool checkValueType(CtiPointType_t type)
 // first case) must be declared in the base DLL.
 #include "fdracsmulti.h"
 template class IM_EX_FDRBASE CtiFDRScadaHelper<CtiAcsId>;
+
+#include "fdrdnpslave.h"
+template class IM_EX_FDRBASE CtiFDRScadaHelper<CtiDnpId>;
+

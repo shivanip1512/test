@@ -125,6 +125,8 @@ Naming conventions for points are as follows:
 #define ACS_ERRROR_RTU_DISABLED     78
 #define ACS_ERRROR_PORT_DISABLED    83
 
+#define ACS_MULTI_HEADER_SIZE        4
+
 #pragma pack(push, acs_packing, 1)
 
 struct IM_EX_FDRBASE CtiAcsId
@@ -229,8 +231,8 @@ class IM_EX_FDRACSMULTI CtiFDRAcsMulti : public CtiFDRScadaServer
 
         virtual ~CtiFDRAcsMulti();
 
-        virtual unsigned int getMessageSize(unsigned long header);
-
+        virtual unsigned int getMessageSize(const char* data);
+        virtual unsigned int getMagicInitialMsgSize(){return ACS_MULTI_HEADER_SIZE;};
         virtual int readConfig( void );
 
         enum {ACS_Open = 0, ACS_Closed = 1, ACS_Invalid=99};

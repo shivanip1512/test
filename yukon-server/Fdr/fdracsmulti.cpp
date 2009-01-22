@@ -552,7 +552,7 @@ bool CtiFDRAcsMulti::buildForeignSystemHeartbeatMsg(char** buffer,
     return acs != NULL;
 }
 
-unsigned int CtiFDRAcsMulti::getMessageSize(unsigned long header)
+unsigned int CtiFDRAcsMulti::getMessageSize(const char* data)
 {
     return sizeof (ACSInterface_t);
 }
