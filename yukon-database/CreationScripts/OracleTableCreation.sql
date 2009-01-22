@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/21/2009 5:32:22 PM                         */
+/* Created on:     1/22/2009 10:41:11 AM                        */
 /*==============================================================*/
 
 
@@ -5945,11 +5945,11 @@ create table LMGroupVersacom  (
 /* Table: LMGroupXMLParameter                                   */
 /*==============================================================*/
 create table LMGroupXMLParameter  (
-   LMXmlParameterId     NUMBER                          not null,
+   LMGroupXMLParameterId NUMBER                          not null,
    LMGroupId            NUMBER                          not null,
    ParameterName        VARCHAR2(50)                    not null,
    ParameterValue       VARCHAR2(50)                    not null,
-   constraint PK_LMGROUPXMLPARAMETER primary key (LMXmlParameterId)
+   constraint PK_LMGROUPXMLPARAMETER primary key (LMGroupXMLParameterId)
 );
 
 /*==============================================================*/

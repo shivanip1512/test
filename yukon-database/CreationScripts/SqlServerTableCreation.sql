@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     1/21/2009 5:34:02 PM                         */
+/* Created on:     1/22/2009 10:38:35 AM                        */
 /*==============================================================*/
 
 
@@ -8601,11 +8601,11 @@ go
 /* Table: LMGroupXMLParameter                                   */
 /*==============================================================*/
 create table LMGroupXMLParameter (
-   LMXmlParameterId     numeric              not null,
+   LMGroupXMLParameterId numeric              not null,
    LMGroupId            numeric              not null,
    ParameterName        varchar(50)          not null,
    ParameterValue       varchar(50)          not null,
-   constraint PK_LMGROUPXMLPARAMETER primary key (LMXmlParameterId)
+   constraint PK_LMGROUPXMLPARAMETER primary key (LMGroupXMLParameterId)
 )
 go
 
