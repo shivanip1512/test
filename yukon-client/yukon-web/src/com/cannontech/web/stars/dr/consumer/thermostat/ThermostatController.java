@@ -22,7 +22,7 @@ import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 /**
- * Controller for Thermostat operations
+ * Controller for Consumer-side Thermostat operations
  */
 @CheckRole(ResidentialCustomerRole.ROLEID)
 @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_THERMOSTATS_ALL)

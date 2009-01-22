@@ -77,5 +77,82 @@
     <entry key="yukon.dr.operator.actionComplete.header">Message</entry>
     <entry key="yukon.dr.operator.actionComplete.ok">Ok</entry>
     
+        <!-- Time of week -->
+    <entry key="yukon.dr.operator.thermostat.schedule.WEEKDAY">Weekday</entry>
+    <entry key="yukon.dr.operator.thermostat.schedule.WEEKEND">Weekend</entry>
+    <entry key="yukon.dr.operator.thermostat.schedule.SATURDAY">Saturday</entry>
+    <entry key="yukon.dr.operator.thermostat.schedule.SUNDAY">Sunday</entry>
+    
+    
+    <!--  scheduleHints.jsp -->
+    <entry key="yukon.dr.operator.scheduleHints.header">Thermostat Schedule - Hints and Details</entry>
+    <entry key="yukon.dr.operator.scheduleHints.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
+    <entry key="yukon.dr.operator.scheduleHints.back">Back to Schedule</entry>
+    <entry key="yukon.dr.operator.scheduleHints.hint"><![CDATA[
+        <p>The schedule page allows you to set your ongoing temperature schedule. Four time frames are available for weekdays (Monday through Friday), Saturdays, and Sundays. Within each of these time frames, you may select your cooling and heating temperatures. Simply use the following procedures.</p>
+        <p><b>1)</b> Click<b> Weekday</b>, <b>Saturday</b>, or <b>Sunday</b> for the day(s) you would like to set. If you prefer to use the same settings for all days, set the<b> Weekday</b> page and check <b>Apply settings to Saturday and Sunday</b>.</p>
+        <p><b>2)</b> The utility recommended settings are displayed the first time the page is accessed. If at any time you would like to redisplay these settings, click the <b>Recommended Settings</b> button.</p>
+        <p><b>3)</b> Select<b> Cooling</b> or <b>Heating</b>. When <b>Cooling</b> is selected, the blue Cooling arrows are displayed to the left of each thermostat, while the Heating arrows are grayed to the right. When <b>Heating</b> is selected, the red Heating arrows are displayed to the right of each thermostat, while the Cooling arrows are grayed to the left.</p>
+        <p><b>4)</b> Slide the thermostats across the timeline to change time intervals for<b> Wake (W)</b>, <b>Leave (L)</b>, <b>Return (R)</b>, and<b> Sleep (S)</b>. Time frames are the same for both Cooling and Heating. Each of the time frames should be set to 1/2 hour before you would like the temperature to reach the selected level. Times may be entered directly in the text boxes.</p>
+        <p><b>5)</b> Slide the enabled (red or blue) arrows to the temperature you would like. The temperature is displayed at the top of each thermostat for each time frame. Temperatures may be set differently for Cooling and Heating.</p>
+        <p><b>6)</b> If you would like to temporarily change your thermostat, click on the<b> Manual</b> link at left or at the link provided at the top of the page. This page is also a convenient location for holding a temperature for a short amount of time that is different from your regular schedule. You may use this feature, for example, while away on vacation or while you have visiting guests.</p>
+    ]]></entry>
+    
+    <!--  thermostatSchedule.jsp -->
+    <entry key="yukon.dr.operator.thermostatSchedule.thermostatScheduleBackground">/WebConfig/yukon/ThermImages/TempBG2.gif</entry>
+    <entry key="yukon.dr.operator.thermostatSchedule.grayLeftArrow">/WebConfig/yukon/ThermImages/GrayArrowL.gif</entry>
+    <entry key="yukon.dr.operator.thermostatSchedule.grayRightArrow">/WebConfig/yukon/ThermImages/GrayArrowR.gif</entry>
+    <entry key="yukon.dr.operator.thermostatSchedule.blueArrow">/WebConfig/yukon/ThermImages/BlueArrow.gif</entry>
+    <entry key="yukon.dr.operator.thermostatSchedule.redArrow">/WebConfig/yukon/ThermImages/RedArrow.gif</entry>
+    <entry key="yukon.dr.operator.thermostatSchedule.thermW">/WebConfig/yukon/ThermImages/ThermW.gif</entry>
+    <entry key="yukon.dr.operator.thermostatSchedule.thermL">/WebConfig/yukon/ThermImages/ThermL.gif</entry>
+    <entry key="yukon.dr.operator.thermostatSchedule.thermR">/WebConfig/yukon/ThermImages/ThermR.gif</entry>
+    <entry key="yukon.dr.operator.thermostatSchedule.thermS">/WebConfig/yukon/ThermImages/ThermS.gif</entry>
+    <entry key="yukon.dr.operator.thermostatSchedule.thermO">/WebConfig/yukon/ThermImages/OcTherm.gif</entry>
+    <entry key="yukon.dr.operator.thermostatSchedule.thermU">/WebConfig/yukon/ThermImages/UnOcTherm.gif</entry>
+    <entry key="yukon.dr.operator.thermostatSchedule.degreesCelsius">&amp;deg;C</entry>
+    <entry key="yukon.dr.operator.thermostatSchedule.degreesFahrenheit">&amp;deg;F</entry>
+    
+    <entry key="yukon.dr.operator.thermostatSchedule.header">Thermostat - Schedule</entry>
+    <entry key="yukon.dr.operator.thermostatSchedule.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
+    <entry key="yukon.dr.operator.thermostatSchedule.label">{0}</entry>
+    <entry key="yukon.dr.operator.thermostatSchedule.multipleLabel">Multiple Thermostats</entry>
+    <entry key="yukon.dr.operator.thermostatSchedule.changeSelected">Change selected thermostats</entry>
+    <entry key="yukon.dr.operator.thermostatSchedule.weekday">Weekday</entry>
+    <entry key="yukon.dr.operator.thermostatSchedule.weekend">Weekend</entry>
+    <entry key="yukon.dr.operator.thermostatSchedule.saturday">Staturday</entry>
+    <entry key="yukon.dr.operator.thermostatSchedule.sunday">Sunday</entry>
+    <entry key="yukon.dr.operator.thermostatSchedule.scheduleMode">Schedule mode</entry>
+    <entry key="yukon.dr.operator.thermostatSchedule.scheduleModeAll">Same schedule all days of week</entry>
+    <entry key="yukon.dr.operator.thermostatSchedule.scheduleMode511">Weekday and Weekend schedules</entry>
+    <entry key="yukon.dr.operator.thermostatSchedule.scheduleMode52">Weekday, Saturday and Sunday schedules</entry>
+    <entry key="yukon.dr.operator.thermostatSchedule.instructions"></entry>
+    <entry key="yukon.dr.operator.thermostatSchedule.hints"><![CDATA[
+        <a href="{0}">Hints and details</a>
+    ]]></entry>        
+    <entry key="yukon.dr.operator.thermostatSchedule.temporaryAdjustments"><![CDATA[
+        <a href="{0}">Temporary adjustments</a>
+    ]]></entry>        
+    <entry key="yukon.dr.operator.thermostatSchedule.cooling">Cooling</entry>
+    <entry key="yukon.dr.operator.thermostatSchedule.heating">Heating</entry>
+    <entry key="yukon.dr.operator.thermostatSchedule.wake">Wake (W)</entry>
+    <entry key="yukon.dr.operator.thermostatSchedule.leave">Leave (L)</entry>
+    <entry key="yukon.dr.operator.thermostatSchedule.return">Return (R)</entry>
+    <entry key="yukon.dr.operator.thermostatSchedule.sleep">Sleep (S)</entry>
+    <entry key="yukon.dr.operator.thermostatSchedule.occupied">Occupied (O)</entry>
+    <entry key="yukon.dr.operator.thermostatSchedule.unoccupied">Unoccupied (U)</entry>
+    <entry key="yukon.dr.operator.thermostatSchedule.start">Start At:</entry>
+    <entry key="yukon.dr.operator.thermostatSchedule.coolTemp">Cooling Temp:</entry>
+    <entry key="yukon.dr.operator.thermostatSchedule.heatTemp">Heating Temp:</entry>
+    <entry key="yukon.dr.operator.thermostatSchedule.mode">Mode:</entry>
+    <entry key="yukon.dr.operator.thermostatSchedule.save">Save Schedule</entry>
+    <entry key="yukon.dr.operator.thermostatSchedule.saveApply">Save and Send Schedule</entry>
+    <entry key="yukon.dr.operator.thermostatSchedule.recommend">Recommended Settings</entry>
+    <entry key="yukon.dr.operator.thermostatSchedule.periodMessage"><![CDATA[**Sending this schedule will set your thermostat to use 4 daily periods:  Wake – Leave – Return – Sleep.  This will overwrite any local period adjustments you have made to your thermostat.]]></entry>
+    <entry key="yukon.dr.operator.thermostatSchedule.name">Thermostat Schedule Name:</entry>
+    <entry key="yukon.dr.operator.thermostatSchedule.noScheduleName">You must provide a schedule name.</entry>
+    <entry key="yukon.dr.operator.thermostatSchedule.saveScheduleText">Changes have been made to this schedule. To disregard these changes, click OK. To return to the page to save your changes, click Cancel.</entry>
+    <entry key="yukon.dr.operator.thermostatSchedule.modeChangeText"><![CDATA[You have chosen to change your thermostat scheduling mode.  If you have changed this setting locally on your thermostat, it will be replaced by this setting when you submit your schedule.  Do you wish to proceed?]]></entry>
+    
 
 </properties>

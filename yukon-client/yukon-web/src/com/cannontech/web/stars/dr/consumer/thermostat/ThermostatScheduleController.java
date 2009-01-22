@@ -46,7 +46,7 @@ import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 /**
- * Controller for Thermostat schedule operations
+ * Controller for Consumer-side Thermostat schedule operations
  */
 @CheckRole(ResidentialCustomerRole.ROLEID)
 @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_HARDWARES_THERMOSTAT)

@@ -14,7 +14,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.web.stars.dr.consumer.AbstractConsumerController;
 
 /**
- * Abstract controller for thermostats
+ * Base controller for Consumer-side Thermostat operations
  */
 public abstract class AbstractThermostatController extends
         AbstractConsumerController {

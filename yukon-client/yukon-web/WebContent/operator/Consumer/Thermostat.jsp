@@ -6,8 +6,6 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
-	StarsThermostatSettings thermoSettings = null;
-	StarsThermostatDynamicData curSettings = null;
 	int invID = 0;
 	int[] invIDs = new int[1];
 	
@@ -23,21 +21,13 @@
 		int thermNo = Integer.parseInt(request.getParameter("InvNo"));
 		StarsInventory thermostat = inventories.getStarsInventory(thermNo);
 		invID = thermostat.getInventoryID();
+		thermNoStr = "InvNo=" + thermNo;
+		
 		invIDs[0] = invID;
 	}
 	
 	String thermostatIds = StringUtils.join(ArrayUtils.toObject(invIDs), ",");
 
-	if (curSettings != null && ServletUtils.isGatewayTimeout(curSettings.getLastUpdatedTime())) {
-		if (request.getParameter("OmitTimeout") != null)
-			session.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_OMIT_GATEWAY_TIMEOUT, "true");
-		
-		if (session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_OMIT_GATEWAY_TIMEOUT) == null) {
-			session.setAttribute(ServletUtils.ATT_REFERRER, request.getRequestURI() + "?" + thermNoStr);
-			response.sendRedirect( "Timeout.jsp" );
-			return;
-		}
-	}
 %>
 <c:set var="thermostatIds" value="<%=thermostatIds%>" />
 
@@ -45,9 +35,10 @@
   <head>
     <title>Energy Services Operations Center</title>
       <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-        <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
-        <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
+      <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
+      <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
   </head>
+  
   <body class="Background" leftmargin="0" topmargin="0" onload="init()">
     <table width="760" border="0" cellspacing="0" cellpadding="0">
       <tr>

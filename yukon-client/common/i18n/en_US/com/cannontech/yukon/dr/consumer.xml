@@ -218,7 +218,7 @@
     <entry key="yukon.dr.consumer.thermostatSchedule.save">Save Schedule</entry>
     <entry key="yukon.dr.consumer.thermostatSchedule.saveApply">Save and Send Schedule</entry>
     <entry key="yukon.dr.consumer.thermostatSchedule.recommend">Recommended Settings</entry>
-    <entry key="yukon.dr.consumer.thermostatSchedule.periodMessage">**Sending this schedule will set your thermostat to use 4 daily periods:  Wake – Leave – Return – Sleep.  This will overwrite any local period adjustments you have made to your thermostat.</entry>
+    <entry key="yukon.dr.consumer.thermostatSchedule.periodMessage"><![CDATA[**Sending this schedule will set your thermostat to use 4 daily periods:  Wake – Leave – Return – Sleep.  This will overwrite any local period adjustments you have made to your thermostat.]]></entry>
     <entry key="yukon.dr.consumer.thermostatSchedule.name">Thermostat Schedule Name:</entry>
     <entry key="yukon.dr.consumer.thermostatSchedule.noScheduleName">You must provide a schedule name.</entry>
     <entry key="yukon.dr.consumer.thermostatSchedule.saveScheduleText">Changes have been made to this schedule. To disregard these changes, click OK. To return to the page to save your changes, click Cancel.</entry>
