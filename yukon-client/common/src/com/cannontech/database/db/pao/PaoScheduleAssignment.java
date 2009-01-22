@@ -1,18 +1,18 @@
 package com.cannontech.database.db.pao;
 
-import java.sql.Timestamp;
+import java.util.Date;
 
 public class PaoScheduleAssignment implements Comparable<PaoScheduleAssignment> {
 
-	int eventId;
-	int scheduleId;
-	int paoId;
-	String deviceName;
-	String commandName;
-	String scheduleName;
-	int commandId;
-	Timestamp lastRunTime;
-	Timestamp nextRunTime;
+	private int eventId;
+	private int scheduleId;
+	private int paoId;
+	private String deviceName;
+	private String commandName;
+	private String scheduleName;
+	private int commandId;
+	private Date lastRunTime;
+	private Date nextRunTime;
 	
 	
 	public PaoScheduleAssignment() {
@@ -75,19 +75,19 @@ public class PaoScheduleAssignment implements Comparable<PaoScheduleAssignment> 
 		this.eventId = eventId;
 	}
 
-	public Timestamp getLastRunTime() {
+	public Date getLastRunTime() {
 		return lastRunTime;
 	}
 
-	public void setLastRunTime(Timestamp lastRunTime) {
+	public void setLastRunTime(Date lastRunTime) {
 		this.lastRunTime = lastRunTime;
 	}
 
-	public Timestamp getNextRunTime() {
+	public Date getNextRunTime() {
 		return nextRunTime;
 	}
 
-	public void setNextRunTime(Timestamp nextRunTime) {
+	public void setNextRunTime(Date nextRunTime) {
 		this.nextRunTime = nextRunTime;
 	}
 
@@ -100,6 +100,72 @@ public class PaoScheduleAssignment implements Comparable<PaoScheduleAssignment> 
 		} else {
 			return ret;
 		}
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + commandId;
+		result = prime * result
+				+ ((commandName == null) ? 0 : commandName.hashCode());
+		result = prime * result
+				+ ((deviceName == null) ? 0 : deviceName.hashCode());
+		result = prime * result + eventId;
+		result = prime * result
+				+ ((lastRunTime == null) ? 0 : lastRunTime.hashCode());
+		result = prime * result
+				+ ((nextRunTime == null) ? 0 : nextRunTime.hashCode());
+		result = prime * result + paoId;
+		result = prime * result + scheduleId;
+		result = prime * result
+				+ ((scheduleName == null) ? 0 : scheduleName.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		PaoScheduleAssignment other = (PaoScheduleAssignment) obj;
+		if (commandId != other.commandId)
+			return false;
+		if (commandName == null) {
+			if (other.commandName != null)
+				return false;
+		} else if (!commandName.equals(other.commandName))
+			return false;
+		if (deviceName == null) {
+			if (other.deviceName != null)
+				return false;
+		} else if (!deviceName.equals(other.deviceName))
+			return false;
+		if (eventId != other.eventId)
+			return false;
+		if (lastRunTime == null) {
+			if (other.lastRunTime != null)
+				return false;
+		} else if (!lastRunTime.equals(other.lastRunTime))
+			return false;
+		if (nextRunTime == null) {
+			if (other.nextRunTime != null)
+				return false;
+		} else if (!nextRunTime.equals(other.nextRunTime))
+			return false;
+		if (paoId != other.paoId)
+			return false;
+		if (scheduleId != other.scheduleId)
+			return false;
+		if (scheduleName == null) {
+			if (other.scheduleName != null)
+				return false;
+		} else if (!scheduleName.equals(other.scheduleName))
+			return false;
+		return true;
 	}
 	
 	

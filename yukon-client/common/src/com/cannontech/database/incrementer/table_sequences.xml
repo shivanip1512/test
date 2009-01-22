@@ -81,6 +81,9 @@
       <sequence name="xmlParameterid">
       	<table name="LMGroupXMLParameter" identitycolumn="LMGroupXMLParameterId" initsequence="true"/>
       </sequence>
+      <sequence name="schedAssignemnt">
+      	<table name="PAOScheduleAssignment" identitycolumn="EventID" initsequence="true"/>
+      </sequence>
       <sequence name="grouppaopermissionid">
         <table name="GroupPaoPermission" identitycolumn="grouppaopermissionid"/>
       </sequence>

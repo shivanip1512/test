@@ -12,7 +12,7 @@
         
 <cti:standardPage title="Schedule Assignment" module="capcontrol">
 
-<script type="text/JavaScript" src="/capcontrol/js/cbc_funcs.js"></script>
+<script type="text/javascript" src="/capcontrol/js/cbc_funcs.js"></script>
 
 <cti:standardMenu/>
 <cti:breadCrumbs>
@@ -93,25 +93,23 @@ function selectionChange() {
 
 	var schedChosen = visibleSchedName != "All Schedules";
 	var commandChosen = visibleCommandName != "All Commands";
-	
+
 	for (var i=0; i < rows.length; i++) {
 		var row = rows[i];
 		var hidden = false;
-		var rowId = row.id;
-		if(row.id[0] == 's') {
+		var cells = row.getElementsByTagName('td');
+
+		if(cells[0].id == 'schedRow') {
+
 			if (!hidden && schedChosen) {
-				var rowSchedName = row.getElementsByTagName('td')[0].textContent;
-				rowSchedName = trim(rowSchedName);
-	
+				var rowSchedName = cells[1].innerHTML;
 				if(rowSchedName != visibleSchedName) {
 					hidden = true;
 				}
 			}
 	
 			if (!hidden && commandChosen) {
-				var rowCommand = row.getElementsByTagName('td')[3].textContent;
-				rowCommand = trim(rowCommand);
-	
+				var rowCommand = cells[4].innerHTML;
 				if(rowCommand != visibleCommandName) {
 					hidden = true;
 				}
@@ -128,9 +126,10 @@ function selectionChange() {
 	setAddPaoLink(schedChosen && commandChosen);
 }
 
+Event.observe(window, 'load', function() {
+	selectionChange();
+});
 </script>
-
-	<body onload="selectionChange();">
     
     <div id="paoTable">
 		<form id="myForm" method="post" action="addPao">
@@ -138,15 +137,15 @@ function selectionChange() {
 			<span id="pickerDisabled">Select a Schedule and Command to continue.</span>
 			<span id="pickerEnabled">
 				<cti:multiPaoPicker 
-				     paoIdField="newPaoId"
+				     paoIdField="paoIdList"
 				     constraint="com.cannontech.common.search.criteria.CBCSubBusCriteria"
 				     finalTriggerAction="addPao" 
-				     >Click here</cti:multiPaoPicker> to choose devices to add this Schedule/Command.
-	            <input id="newPaoId" name="newPaoId" type="hidden">
+				     >Choose Devices</cti:multiPaoPicker> to add this Schedule/Command.
+	            <input id="paoIdList" name="paoIdList" type="hidden">
             </span>
 			<br>
 			
-			<SELECT NAME="scheduleList" id="schedSelect" onChange="selectionChange()" >
+			<SELECT name="scheduleSelection" id="schedSelect" onChange="selectionChange()" >
 				<option value="All">All Schedules</option>
 				<c:forEach var="schedule" items="${scheduleList}">
 					<c:choose>
@@ -161,7 +160,7 @@ function selectionChange() {
 				</c:forEach>
 			</SELECT>
 			
-			<SELECT NAME="commandList" id="commandSelect" onChange="selectionChange()">
+			<SELECT name="commandSelection" id="commandSelect" onChange="selectionChange()">
 				<option value="all">All Commands</option>
 				<c:forEach var="command" items="${commandList}">
 					<c:choose>
@@ -186,17 +185,18 @@ function selectionChange() {
 		<table class="resultsTable" id="scheduledTable" width="90%" border="0" cellspacing="0" cellpadding="3" align="center">
 		<thead>
 			<tr id="header">
-				<th style="text-align:left">Schedule</th>
-				<th style="text-align:left">Last Run Time</th>
-				<th style="text-align:left">Next Run Time</th>
-				<th style="text-align:left">Command</th>
-				<th style="text-align:left">Device</th>
-				<th style="text-align:center">Delete</th>
+				<th>Schedule</th>
+				<th>Last Run Time</th>
+				<th>Next Run Time</th>
+				<th>Command</th>
+				<th>Device</th>
+				<th>Delete</th>
 			</tr>
 			</thead>
 			<tbody id="tableBody">
 			<c:forEach var="item" items="${itemList}">
 				<tr class="altRow" id="s_${item.eventId}" >
+					<td id="schedRow" style="display:none"/>
 					<td><c:out value="${item.scheduleName}" /></td>
 					<td><c:out value="${item.lastRunTime}" /></td>
 					<td><c:out value="${item.nextRunTime}" /></td>
@@ -211,6 +211,5 @@ function selectionChange() {
 			</tbody>
 		</table>
     </div>
-    </body>
     <br>
 </cti:standardPage>

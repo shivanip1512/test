@@ -62,22 +62,18 @@ public class ScheduleAssignmentController {
 	}
 	
 	@RequestMapping(method=RequestMethod.POST)
-	public String addPao(String scheduleList, String newPaoId, String commandList, ModelMap map) throws ServletException, Exception {
-		ScheduleCommand cmd = ScheduleCommand.valueOf(commandList);
+	public String addPao(String scheduleSelection, String paoIdList, String commandSelection, ModelMap map) throws ServletException, Exception {
+		ScheduleCommand cmd = ScheduleCommand.valueOf(commandSelection);
 		boolean failed = false;
 		String failedReason = "";
 		
-		Integer schedId = Integer.parseInt(scheduleList);
-		if( scheduleList != null && cmd != null) {
+		Integer schedId = Integer.parseInt(scheduleSelection);
+		if( scheduleSelection != null && cmd != null) {
 			//break String into paoIds
-			List<Integer> paoIdList = ServletUtil.getIntegerListFromString(newPaoId);
+			List<Integer> paoIds = ServletUtil.getIntegerListFromString(paoIdList);
 			List<PaoScheduleAssignment> assignments = new ArrayList<PaoScheduleAssignment>();
 			
-			for (Integer paoId : paoIdList) {
-				if( paoId == null) {
-					continue;
-				}
-				
+			for (Integer paoId : paoIds) {
 				PaoScheduleAssignment newAssignment = new PaoScheduleAssignment();
 				newAssignment.setCommandName(cmd.getCommandName());
 				newAssignment.setPaoId(paoId);
@@ -97,7 +93,7 @@ public class ScheduleAssignmentController {
 			failedReason = "A schedule and/or command was not chosen.";
 		}
 		
-		map.addAttribute("defSchedule", scheduleList);
+		map.addAttribute("defSchedule", scheduleSelection);
 		map.addAttribute("defCommand", cmd.toString());
 		map.addAttribute("failed", failed);
 		

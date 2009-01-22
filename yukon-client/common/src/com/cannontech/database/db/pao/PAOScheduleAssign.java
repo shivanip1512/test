@@ -6,6 +6,8 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * DB object for the table PAOSchedule
@@ -17,6 +19,7 @@ public class PAOScheduleAssign extends DBPersistent
 	private Integer paoID = null;
 	private String command = CtiUtilities.STRING_NONE;
 
+	NextValueHelper nextValueHelper = YukonSpringHook.getNextValueHelper();
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 
@@ -64,7 +67,7 @@ public class PAOScheduleAssign extends DBPersistent
 			return;
 
 		if( getEventID() == null )
-			setEventID( getNextEventID(getDbConnection()) );
+			setEventID( getNextEventID() );
 
 		Object addValues[] = {
 			getEventID(), getScheduleID(), getPaoID(),
@@ -176,33 +179,9 @@ public class PAOScheduleAssign extends DBPersistent
 	 * This method was created in VisualAge.
 	 * @return java.lang.Integer
 	 */
-	public final static Integer getNextEventID( java.sql.Connection conn )
+	public int getNextEventID()
 	{
-		if( conn == null )
-			throw new IllegalStateException("Database connection should not be null.");
-		
-			
-		java.sql.Statement stmt = null;
-		java.sql.ResultSet rset = null;
-			
-		try {
-			 stmt = conn.createStatement();
-			 rset = stmt.executeQuery( "SELECT Max(EventID)+1 FROM " + TABLE_NAME );	
-					
-			 //get the first returned result
-			 rset.next();
-			 return new Integer( rset.getInt(1) );
-		}
-		catch (java.sql.SQLException e) {
-			 e.printStackTrace();
-		}
-		finally 
-		{
-			SqlUtils.close(rset, stmt);
-		}
-			
-		//strange, should not get here
-		return new Integer(CtiUtilities.NONE_ZERO_ID);
+		return nextValueHelper.getNextValue("PAOScheduleAssignment");
 	}
 
 	/**

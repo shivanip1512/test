@@ -85,9 +85,7 @@ public class PaoScheduleDaoImpl implements PaoScheduleDao {
 	@Override
 	@Transactional(readOnly = false)
 	public boolean assignCommand(PaoScheduleAssignment pao) {
-		//NextValueHelper cannot be utilized until PAOScheduleAssign
-		int nextId = getNextEventId();
-		
+		int nextId = nextValueHelper.getNextValue("PAOScheduleAssignment");
 		int rowsAffected = simpleJdbcTemplate.update( assignCommandToSchedule, 
 				 									  nextId,
 				 									  pao.getScheduleId(),
