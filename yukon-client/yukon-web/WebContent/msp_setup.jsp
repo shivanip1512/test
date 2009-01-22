@@ -1,5 +1,5 @@
 <%@ page import="com.cannontech.multispeak.client.*" %>
-
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
@@ -98,7 +98,7 @@
 				      <input title="Enter the Application Name" type="text" name="mspAppName" value='<c:out value="${multispeakBean.selectedMspVendor.appName}"/>'>
 					</tags:nameValue>
 					<tags:nameValue name="MSP UserName">
-				      <input title="Enter the Username" type="text" name="mspUserName" value='<c:out value="${multispeakBean.selectedMspVendor.userName}"/>'>
+				      <input title="Enter the Username" type="text" name="mspUserName" value='<spring:escapeBody htmlEscape="true"><c:out value="${multispeakBean.selectedMspVendor.userName}"/></spring:escapeBody>'>
 					</tags:nameValue>
 					<tags:nameValue name="MSP Password">
 				      <input title="Enter the Password" type="text" name="mspPassword" value='<c:out value="${multispeakBean.selectedMspVendor.password}"/>'>
@@ -122,7 +122,7 @@
 				<br><br>
 				<tags:nameValueContainer style="width: 300px;float: left;">
 					<tags:nameValue name="UserName">
-				      <input title="Enter the Username for Outgoing Yukon messages" type="text" name="outUserName" value='<c:out value="${multispeakBean.selectedMspVendor.outUserName}"/>'>
+				      <input title="Enter the Username for Outgoing Yukon messages" type="text" name="outUserName" value='<spring:escapeBody htmlEscape="true"><c:out value="${multispeakBean.selectedMspVendor.outUserName}"/></spring:escapeBody>'>
 					</tags:nameValue>
 					<tags:nameValue name="Password">
 				      <input title="Enter the Password for Outgoing Yukon messages" type="text" name="outPassword" value='<c:out value="${multispeakBean.selectedMspVendor.outPassword}"/>'>

@@ -1,4 +1,5 @@
 <%@ include file="include/StarsHeader.jsp" %>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
 	StarsUser login = userLogin;
@@ -119,7 +120,7 @@ function deleteLogin(form) {
                       <div align="right">New User Name: </div>
                     </td>
                     <td width="268"> 
-                      <input type="text" autocomplete="off" name="Username" maxlength="20" size="20" value="<%= login.getUsername() %>" onchange="setContentChanged(true)" />
+                      <input type="text" autocomplete="off" name="Username" maxlength="20" size="20" value="<spring:escapeBody htmlEscape="true"><%= login.getUsername() %></spring:escapeBody>" onchange="setContentChanged(true)" />
                     </td>
                   </tr>
                   </cti:checkProperty>

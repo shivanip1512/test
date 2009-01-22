@@ -3,6 +3,7 @@
 <%@ page import="com.cannontech.database.data.lite.LiteYukonGroup" %>
 <%@ page import="com.cannontech.core.dao.YukonGroupDao" %>
 <%@ page import="java.util.Arrays" %>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%
 	int userID = -1;
 	if (request.getParameter("UserID") != null)
@@ -119,7 +120,7 @@ function validate(form) {
                       <tr> 
                         <td width="25%" align="right" class="TableCell">Username:</td>
                         <td width="75%" class="TableCell"> 
-                          <input type="text" autocomplete="off" name="Username" value="<%= liteUser.getUsername() %>" onchange="setContentChanged(true)">
+                          <input type="text" autocomplete="off" name="Username" value="<spring:escapeBody htmlEscape="true"><%= liteUser.getUsername() %></spring:escapeBody>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 

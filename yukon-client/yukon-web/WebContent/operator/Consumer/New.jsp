@@ -1,4 +1,5 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ include file="include/StarsHeader.jsp" %>
 <jsp:useBean id="accountBean" class="com.cannontech.stars.web.bean.AccountBean" scope="page"/>
 <%
@@ -663,7 +664,7 @@ are present in page, session, etc. as an attribute. -->
                     <div align="right">User Name: </div>
                   </td>
                   <td width="200"> 
-                    <input type="text" autocomplete="off" name="Username" maxlength="20" size="20" value="<%= login.getUsername() %>" onchange="setContentChanged(true)">
+                    <input type="text" autocomplete="off" name="Username" maxlength="20" size="20" value="<spring:escapeBody htmlEscape="true"><%= login.getUsername() %></spring:escapeBody>" onchange="setContentChanged(true)">
                   </td>
                 </tr>
                 <tr> 

@@ -2,6 +2,7 @@
 <%@ page import="com.cannontech.database.data.lite.LiteYukonGroup" %>
 <%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@ page import="com.cannontech.roles.yukon.SystemRole" %>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%
 	if (!DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_CREATE_ENERGY_COMPANY)) {
 		response.sendRedirect("../Operations.jsp");
@@ -218,7 +219,7 @@ function addCustomerGroup(form) {
                             <tr> 
                               <td width="25%" align="right">Username:</td>
                               <td width="75%"> 
-                                <input type="text" autocomplete="off" name="Username" size="30" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("Username")) %>" onchange="setContentChanged(true)">
+                                <input type="text" autocomplete="off" name="Username" size="30" value="<spring:escapeBody htmlEscape="true"><%= StarsUtils.forceNotNull(savedReq.getProperty("Username")) %></spring:escapeBody>" onchange="setContentChanged(true)">
                                 <span class="ErrorMsg">*</span> </td>
                             </tr>
                             <tr> 
@@ -246,7 +247,7 @@ function addCustomerGroup(form) {
                             <tr> 
                               <td width="25%" align="right">Username:</td>
                               <td width="75%"> 
-                                <input type="text" autocomplete="off" name="Username2" size="30" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("Username2")) %>" onchange="setContentChanged(true)">
+                                <input type="text" autocomplete="off" name="Username2" size="30" value="<spring:escapeBody htmlEscape="true"><%= StarsUtils.forceNotNull(savedReq.getProperty("Username2")) %></spring:escapeBody>" onchange="setContentChanged(true)">
                               </td>
                             </tr>
                             <tr> 
