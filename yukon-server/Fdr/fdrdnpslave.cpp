@@ -362,12 +362,11 @@ int CtiFDRDnpSlave::processScanSlaveRequest (CtiFDRClientServerConnection& conne
                 continue;
                     
             }
-            _dnpData.getInputPointList()->push_back(iPoint);
+            _dnpData.addInputPoint(iPoint);
         }
     }
 
     _dnpData.setAddresses(src.sh, dest.sh);
-    _dnpData.setOptions(DNPSlaveInterface::Options_SlaveResponse);
     _dnpData.setSlaveCommand(DNPSlaveInterface::Command_Class1230Read);
 
     
