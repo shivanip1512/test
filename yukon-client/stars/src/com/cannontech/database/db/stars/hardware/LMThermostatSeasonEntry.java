@@ -113,8 +113,17 @@ public class LMThermostatSeasonEntry extends DBPersistent {
 				entries[i].setSeasonID( new Integer(((java.math.BigDecimal) row[1]).intValue()) );
 				entries[i].setTimeOfWeekID( new Integer(((java.math.BigDecimal) row[2]).intValue()) );
 				entries[i].setStartTime( new Integer(((java.math.BigDecimal) row[3]).intValue()) );
-				entries[i].setCoolTemperature( new Integer(((java.math.BigDecimal) row[4]).intValue()) );
-				entries[i].setHeatTemperature( new Integer(((java.math.BigDecimal) row[5]).intValue()) );
+				
+				
+				Object coolTemp = row[4];
+				if(coolTemp != null ) {
+					entries[i].setCoolTemperature( new Integer(((java.math.BigDecimal) coolTemp).intValue()) );
+				}
+				
+				Object heatTemp = row[5];
+				if(heatTemp != null) {
+					entries[i].setHeatTemperature( new Integer(((java.math.BigDecimal) heatTemp).intValue()) );
+				}
 			}
 			
 			return entries;

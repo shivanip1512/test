@@ -93,10 +93,13 @@
 				}
 			}
 		}
-		if (isCooling)
-			schedule = coolSched;
-		else
-			schedule = heatSched;
+		if (isCooling) {
+            schedule = coolSched;
+            heatSched = coolSched;
+        } else {
+            schedule = heatSched;
+            coolSched = heatSched;
+        }
 	}
 	
 	if (dftThermoProgram != null) {
@@ -152,20 +155,14 @@ function setToDefault() {
 	form.time4.value = "<%= ampmTimeFormat.format(dftSchedule.getTime4().toDate()) %>";
 	
 	var temp1C, temp1H, temp2C, temp2H, temp3C, temp3H, temp4C, temp4H;
-	if (<%= isCooling %>) {
-		temp1C = <%= dftSchedule.getTemperature1() %>;
-		temp2C = <%= dftSchedule.getTemperature2() %>;
-		temp3C = <%= dftSchedule.getTemperature3() %>;
-		temp4C = <%= dftSchedule.getTemperature4() %>;
-		temp1H = temp2H = temp3H = temp4H = null;
-	}
-	else {
-		temp1H = <%= dftSchedule.getTemperature1() %>;
-		temp2H = <%= dftSchedule.getTemperature2() %>;
-		temp3H = <%= dftSchedule.getTemperature3() %>;
-		temp4H = <%= dftSchedule.getTemperature4() %>;
-		temp1C = temp2C = temp3C = temp4C = null;
-	}
+	temp1C = <%= dftSchedule.getCoolTemperature1() %>;
+	temp2C = <%= dftSchedule.getCoolTemperature2() %>;
+	temp3C = <%= dftSchedule.getCoolTemperature3() %>;
+	temp4C = <%= dftSchedule.getCoolTemperature4() %>;
+	temp1H = <%= dftSchedule.getHeatTemperature1() %>;
+	temp2H = <%= dftSchedule.getHeatTemperature2() %>;
+	temp3H = <%= dftSchedule.getHeatTemperature3() %>;
+	temp4H = <%= dftSchedule.getHeatTemperature4() %>;
 	
 	updateLayout(
 		<%= dftSchedule.getTime1().getHour() %>,<%= dftSchedule.getTime1().getMinute() %>,temp1C,temp1H,
@@ -191,10 +188,10 @@ function saveSchedule() {
 
 function init() {
 	updateLayout(
-		<%= schedule.getTime1().getHour() %>,<%= schedule.getTime1().getMinute() %>,<%= coolSched.getTemperature1() %>,<%= heatSched.getTemperature1() %>,
-		<%= schedule.getTime2().getHour() %>,<%= schedule.getTime2().getMinute() %>,<%= coolSched.getTemperature2() %>,<%= heatSched.getTemperature2() %>,
-		<%= schedule.getTime3().getHour() %>,<%= schedule.getTime3().getMinute() %>,<%= coolSched.getTemperature3() %>,<%= heatSched.getTemperature3() %>,
-		<%= schedule.getTime4().getHour() %>,<%= schedule.getTime4().getMinute() %>,<%= coolSched.getTemperature4() %>,<%= heatSched.getTemperature4() %>
+		<%= schedule.getTime1().getHour() %>,<%= schedule.getTime1().getMinute() %>,<%= coolSched.getCoolTemperature1() %>,<%= heatSched.getHeatTemperature1() %>,
+		<%= schedule.getTime2().getHour() %>,<%= schedule.getTime2().getMinute() %>,<%= coolSched.getCoolTemperature2() %>,<%= heatSched.getHeatTemperature2() %>,
+		<%= schedule.getTime3().getHour() %>,<%= schedule.getTime3().getMinute() %>,<%= coolSched.getCoolTemperature3() %>,<%= heatSched.getHeatTemperature3() %>,
+		<%= schedule.getTime4().getHour() %>,<%= schedule.getTime4().getMinute() %>,<%= coolSched.getCoolTemperature4() %>,<%= heatSched.getHeatTemperature4() %>
 	);
 	document.getElementById('MovingLayer1').style.display = ""; //not sure why these aren't "block"
 	document.getElementById('MovingLayer2').style.display = "";

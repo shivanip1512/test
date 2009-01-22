@@ -184,30 +184,25 @@ function setToDefault() {
 	form.time3.value = "<%= ampmTimeFormat.format(dftSchedule.getTime3().toDate()) %>";
 	form.time4.value = "<%= ampmTimeFormat.format(dftSchedule.getTime4().toDate()) %>";
 <%
-	boolean dftSkip1 = (dftSchedule.getTemperature1() == -1);
-	boolean dftSkip2 = (dftSchedule.getTemperature2() == -1);
-	boolean dftSkip3 = (dftSchedule.getTemperature3() == -1);
-	boolean dftSkip4 = (dftSchedule.getTemperature4() == -1);
-	int dftTemp1 = (dftSkip1)? 72 : dftSchedule.getTemperature1();
-	int dftTemp2 = (dftSkip2)? 72 : dftSchedule.getTemperature2();
-	int dftTemp3 = (dftSkip3)? 72 : dftSchedule.getTemperature3();
-	int dftTemp4 = (dftSkip4)? 72 : dftSchedule.getTemperature4();
+	boolean dftSkip1 = (dftSchedule.getCoolTemperature1() == -1);
+	boolean dftSkip2 = (dftSchedule.getCoolTemperature2() == -1);
+	boolean dftSkip3 = (dftSchedule.getCoolTemperature3() == -1);
+	boolean dftSkip4 = (dftSchedule.getCoolTemperature4() == -1);
+	int dftTemp1 = (dftSkip1)? 72 : dftSchedule.getCoolTemperature1();
+	int dftTemp2 = (dftSkip2)? 72 : dftSchedule.getCoolTemperature2();
+	int dftTemp3 = (dftSkip3)? 72 : dftSchedule.getCoolTemperature3();
+	int dftTemp4 = (dftSkip4)? 72 : dftSchedule.getCoolTemperature4();
 %>	
 	var temp1C, temp1H, temp2C, temp2H, temp3C, temp3H, temp4C, temp4H;
-	if (<%= isCooling %>) {
-		temp1C = <%= dftTemp1 %>;
-		temp2C = <%= dftTemp2 %>;
-		temp3C = <%= dftTemp3 %>;
-		temp4C = <%= dftTemp4 %>;
-		temp1H = temp2H = temp3H = temp4H = null;
-	}
-	else {
-		temp1H = <%= dftTemp1 %>;
-		temp2H = <%= dftTemp2 %>;
-		temp3H = <%= dftTemp3 %>;
-		temp4H = <%= dftTemp4 %>;
-		temp1C = temp2C = temp3C = temp4C = null;
-	}
+	temp1C = <%= dftTemp1 %>;
+	temp2C = <%= dftTemp2 %>;
+	temp3C = <%= dftTemp3 %>;
+	temp4C = <%= dftTemp4 %>;
+	temp1H = dftSchedule.getHeatTemperature1();
+	temp2H = dftSchedule.getHeatTemperature2();
+	temp3H = dftSchedule.getHeatTemperature3();
+	temp4H = dftSchedule.getHeatTemperature4();
+
 	updateLayout(
 		<%= dftSchedule.getTime1().getHour() %>,<%= dftSchedule.getTime1().getMinute() %>,temp1C,temp1H,
 		<%= dftSchedule.getTime2().getHour() %>,<%= dftSchedule.getTime2().getMinute() %>,temp2C,temp2H,
@@ -238,22 +233,22 @@ function saveSchedule() {
 
 function init() {
 <%	
-	boolean skip1 = (schedule.getTemperature1() == -1);
+	boolean skip1 = (schedule.getCoolTemperature1() == -1);
 	if (skip1) schedule.setTime1(dftSchedule.getTime1());
-	int ct1 = (skip1)? (dftSkip1? 72:dftCoolSched.getTemperature1()) : coolSched.getTemperature1();
-	int ht1 = (skip1)? (dftSkip1? 72:dftHeatSched.getTemperature1()) : heatSched.getTemperature1();
-	boolean skip2 = (schedule.getTemperature2() == -1);
+	int ct1 = (skip1)? (dftSkip1? 72:dftCoolSched.getCoolTemperature1()) : coolSched.getCoolTemperature1();
+	int ht1 = (skip1)? (dftSkip1? 72:dftHeatSched.getHeatTemperature1()) : heatSched.getHeatTemperature1();
+	boolean skip2 = (schedule.getCoolTemperature2() == -1);
 	if (skip2) schedule.setTime2(dftSchedule.getTime2());
-	int ct2 = (skip2)? (dftSkip2? 72:dftCoolSched.getTemperature2()) : coolSched.getTemperature2();
-	int ht2 = (skip2)? (dftSkip2? 72:dftHeatSched.getTemperature2()) : heatSched.getTemperature2();
-	boolean skip3 = (schedule.getTemperature3() == -1);
+	int ct2 = (skip2)? (dftSkip2? 72:dftCoolSched.getCoolTemperature2()) : coolSched.getCoolTemperature2();
+	int ht2 = (skip2)? (dftSkip2? 72:dftHeatSched.getHeatTemperature2()) : heatSched.getHeatTemperature2();
+	boolean skip3 = (schedule.getCoolTemperature3() == -1);
 	if (skip3) schedule.setTime3(dftSchedule.getTime3());
-	int ct3 = (skip3)? (dftSkip3? 72:dftCoolSched.getTemperature3()) : coolSched.getTemperature3();
-	int ht3 = (skip3)? (dftSkip3? 72:dftHeatSched.getTemperature3()) : heatSched.getTemperature3();
-	boolean skip4 = (schedule.getTemperature4() == -1);
+	int ct3 = (skip3)? (dftSkip3? 72:dftCoolSched.getCoolTemperature3()) : coolSched.getCoolTemperature3();
+	int ht3 = (skip3)? (dftSkip3? 72:dftHeatSched.getHeatTemperature3()) : heatSched.getHeatTemperature3();
+	boolean skip4 = (schedule.getCoolTemperature4() == -1);
 	if (skip4) schedule.setTime4(dftSchedule.getTime4());
-	int ct4 = (skip4)? (dftSkip4? 72:dftCoolSched.getTemperature4()) : coolSched.getTemperature4();
-	int ht4 = (skip4)? (dftSkip4? 72:dftHeatSched.getTemperature4()) : heatSched.getTemperature4();
+	int ct4 = (skip4)? (dftSkip4? 72:dftCoolSched.getCoolTemperature4()) : coolSched.getCoolTemperature4();
+	int ht4 = (skip4)? (dftSkip4? 72:dftHeatSched.getHeatTemperature4()) : heatSched.getHeatTemperature4();
 %>
 	updateLayout(
 		<%= schedule.getTime1().getHour() %>,<%= schedule.getTime1().getMinute() %>,<%= ct1 %>,<%= ht1 %>,
@@ -439,7 +434,7 @@ function init() {
                               <table border="0">
                                 <tr align="center"> 
                                   <td colspan="2"> 
-                                    <div id="temp1" class="TableCell2" onChange="setChanged()"><%= schedule.getTemperature1() %>&deg;<%= tempUnit %></div>
+                                    <div id="temp1" class="TableCell2" onChange="setChanged()"><%= schedule.getCoolTemperature1() %>&deg;<%= tempUnit %></div>
                                   </td>
                                 </tr>
                                 <tr> 
@@ -468,7 +463,7 @@ function init() {
                               <table border="0">
                                 <tr align="center"> 
                                   <td colspan="2"> 
-                                    <div id="temp2" class="TableCell2" onChange="setChanged()"><%= schedule.getTemperature2() %>&deg;<%= tempUnit %></div>
+                                    <div id="temp2" class="TableCell2" onChange="setChanged()"><%= schedule.getCoolTemperature2() %>&deg;<%= tempUnit %></div>
                                   </td>
                                 </tr>
                                 <tr> 
@@ -497,7 +492,7 @@ function init() {
                               <table border="0">
                                 <tr align="center"> 
                                   <td colspan="2"> 
-                                    <div id="temp3" class="TableCell2" onChange="setChanged()"><%= schedule.getTemperature3() %>&deg;<%= tempUnit %></div>
+                                    <div id="temp3" class="TableCell2" onChange="setChanged()"><%= schedule.getCoolTemperature3() %>&deg;<%= tempUnit %></div>
                                   </td>
                                 </tr>
                                 <tr> 
@@ -526,7 +521,7 @@ function init() {
                               <table border="0">
                                 <tr align="center"> 
                                   <td colspan="2"> 
-                                    <div id="temp4" class="TableCell2" onChange="setChanged()"><%= schedule.getTemperature4() %>&deg;<%= tempUnit %></div>
+                                    <div id="temp4" class="TableCell2" onChange="setChanged()"><%= schedule.getCoolTemperature4() %>&deg;<%= tempUnit %></div>
                                   </td>
                                 </tr>
                                 <tr> 
@@ -618,23 +613,23 @@ function init() {
                             <div align="right">Temp: </div>
                           </td>
 						  <td width="15%"> 
-                            <input id="temp1" type="text" size="3" name="temp1" onchange="setChanged()" value="<%= schedule.getTemperature1() %>">
+                            <input id="temp1" type="text" size="3" name="temp1" onchange="setChanged()" value="<%= schedule.getCoolTemperature1() %>">
                           </td>
                           <td class = "TableCell" width="10%"> 
                             <div align="right">Temp: </div></td>
 						  <td width="15%"> 
-                            <input id="temp2" type="text" size="3" name="temp2" onchange="setChanged()" value="<%= schedule.getTemperature2() %>">
+                            <input id="temp2" type="text" size="3" name="temp2" onchange="setChanged()" value="<%= schedule.getCoolTemperature2() %>">
                           </td>
                           <td class = "TableCell" width="10%"> 
                             <div align="right">Temp: </div>
                           </td>
 						  <td width="15%"> 
-                            <input id="temp3" type="text" size="3" name="temp3" onchange="setChanged()" value="<%= schedule.getTemperature3() %>">
+                            <input id="temp3" type="text" size="3" name="temp3" onchange="setChanged()" value="<%= schedule.getCoolTemperature3() %>">
                           </td>
                           <td class = "TableCell" width="10%"> 
                             <div align="right">Temp: </div></td>
 						  <td width="15%"> 
-                            <input id="temp4" type="text" size="3" name="temp4" onchange="setChanged()" value="<%= schedule.getTemperature4() %>">
+                            <input id="temp4" type="text" size="3" name="temp4" onchange="setChanged()" value="<%= schedule.getCoolTemperature4() %>">
                           </td>
 						</tr>
 					  </table>
