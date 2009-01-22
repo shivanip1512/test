@@ -417,14 +417,17 @@ public class LiteStarsThermostatSettings extends LiteBase {
 				
 				int hour = schedules[dim1][dim2][0];
 				int minute = schedules[dim1][dim2][1];
-				int temp = schedules[dim1][dim2][dim3];
+				int coolTemp = schedules[dim1][dim2][2];
+				int heatTemp = schedules[dim1][dim2][3];
 				if (hour == -1) {
 					hour = minute = 0;
-					temp = -1;
+					coolTemp = -1;
+					heatTemp = -1;
 				}
 				
 				entry.setStartTime( hour * 3600 + minute * 60 );
-				entry.setTemperature( temp );
+				entry.setCoolTemperature( coolTemp );
+				entry.setHeatTemperature( heatTemp );
 			}
 		}
 	}

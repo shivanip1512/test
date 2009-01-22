@@ -422,7 +422,8 @@ public class StarsLiteFactory {
 		liteSeasonEntry.setSeasonID( seasonEntry.getSeasonID().intValue() );
 		liteSeasonEntry.setTimeOfWeekID( seasonEntry.getTimeOfWeekID().intValue() );
 		liteSeasonEntry.setStartTime( seasonEntry.getStartTime().intValue() );
-		liteSeasonEntry.setTemperature( seasonEntry.getTemperature().intValue() );
+		liteSeasonEntry.setCoolTemperature( seasonEntry.getCoolTemperature().intValue() );
+		liteSeasonEntry.setHeatTemperature( seasonEntry.getHeatTemperature().intValue() );
 	}
 	
 	public static LiteLMThermostatSeason createLiteLMThermostatSeason(com.cannontech.database.data.stars.hardware.LMThermostatSeason season) {
@@ -989,7 +990,8 @@ public class StarsLiteFactory {
 		entry.setSeasonID( new Integer(liteEntry.getSeasonID()) );
 		entry.setTimeOfWeekID( new Integer(liteEntry.getTimeOfWeekID()) );
 		entry.setStartTime( new Integer(liteEntry.getStartTime()) );
-		entry.setTemperature( new Integer(liteEntry.getTemperature()) );
+		entry.setCoolTemperature( new Integer(liteEntry.getCoolTemperature()) );
+		entry.setHeatTemperature( new Integer(liteEntry.getHeatTemperature()) );
 	}
 	
 	public static void setLMThermostatSchedule(com.cannontech.database.db.stars.hardware.LMThermostatSchedule schedule, LiteLMThermostatSchedule liteSched) {
@@ -2245,19 +2247,23 @@ public class StarsLiteFactory {
 		
 		LiteLMThermostatSeasonEntry liteEntry = liteEntries.get(0);
 		starsSched.setTime1( new org.exolab.castor.types.Time(liteEntry.getStartTime() * 1000) );
-		starsSched.setTemperature1( liteEntry.getTemperature() );
+		starsSched.setCoolTemperature1( liteEntry.getCoolTemperature() );
+		starsSched.setHeatTemperature1( liteEntry.getHeatTemperature() );
 		
 		liteEntry = liteEntries.get(1);
 		starsSched.setTime2( new org.exolab.castor.types.Time(liteEntry.getStartTime() * 1000) );
-		starsSched.setTemperature2( liteEntry.getTemperature() );
+		starsSched.setCoolTemperature2( liteEntry.getCoolTemperature() );
+		starsSched.setHeatTemperature2( liteEntry.getHeatTemperature() );
 		
 		liteEntry = liteEntries.get(2);
 		starsSched.setTime3( new org.exolab.castor.types.Time(liteEntry.getStartTime() * 1000) );
-		starsSched.setTemperature3( liteEntry.getTemperature() );
+		starsSched.setCoolTemperature3( liteEntry.getCoolTemperature() );
+		starsSched.setHeatTemperature3( liteEntry.getHeatTemperature() );
 		
 		liteEntry = liteEntries.get(3);
 		starsSched.setTime4( new org.exolab.castor.types.Time(liteEntry.getStartTime() * 1000) );
-		starsSched.setTemperature4( liteEntry.getTemperature() );
+		starsSched.setCoolTemperature4( liteEntry.getCoolTemperature() );
+		starsSched.setHeatTemperature4( liteEntry.getHeatTemperature() );
 		
 		return starsSched;
 	}
@@ -2726,9 +2732,9 @@ public class StarsLiteFactory {
 		int time2 = starsSched.getTime2().getHour() * 3600 + starsSched.getTime2().getMinute() * 60 + starsSched.getTime2().getSeconds();
 		int time3 = starsSched.getTime3().getHour() * 3600 + starsSched.getTime3().getMinute() * 60 + starsSched.getTime3().getSeconds();
 		int time4 = starsSched.getTime4().getHour() * 3600 + starsSched.getTime4().getMinute() * 60 + starsSched.getTime4().getSeconds();
-		return ((liteSched[0].getStartTime() == time1) && (liteSched[0].getTemperature() == starsSched.getTemperature1())
-				&& (liteSched[1].getStartTime() == time2) && (liteSched[1].getTemperature() == starsSched.getTemperature2())
-				&& (liteSched[2].getStartTime() == time3) && (liteSched[2].getTemperature() == starsSched.getTemperature3())
-				&& (liteSched[3].getStartTime() == time4) && (liteSched[3].getTemperature() == starsSched.getTemperature4()));
+		return ((liteSched[0].getStartTime() == time1) && (liteSched[0].getCoolTemperature() == starsSched.getCoolTemperature1())&& (liteSched[0].getHeatTemperature() == starsSched.getHeatTemperature1())
+				&& (liteSched[1].getStartTime() == time2) && (liteSched[1].getCoolTemperature() == starsSched.getCoolTemperature2()) && (liteSched[1].getHeatTemperature() == starsSched.getHeatTemperature2())
+				&& (liteSched[2].getStartTime() == time3) && (liteSched[2].getCoolTemperature() == starsSched.getCoolTemperature3())&& (liteSched[2].getHeatTemperature() == starsSched.getHeatTemperature3())
+				&& (liteSched[3].getStartTime() == time4) && (liteSched[3].getCoolTemperature() == starsSched.getCoolTemperature4())&& (liteSched[3].getHeatTemperature() == starsSched.getHeatTemperature4()));
 	}
 }

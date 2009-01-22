@@ -18,7 +18,8 @@ public class StarsThermostatSchedule {
 
     private org.exolab.castor.types.Time _time1;
 
-    private int _temperature1;
+    private int coolTemperature1;
+    private int heatTemperature1;
 
     /**
      * keeps track of state for field: _temperature1
@@ -27,7 +28,8 @@ public class StarsThermostatSchedule {
 
     private org.exolab.castor.types.Time _time2;
 
-    private int _temperature2;
+    private int coolTemperature2;
+    private int heatTemperature2;
 
     /**
      * keeps track of state for field: _temperature2
@@ -36,7 +38,8 @@ public class StarsThermostatSchedule {
 
     private org.exolab.castor.types.Time _time3;
 
-    private int _temperature3;
+    private int coolTemperature3;
+    private int heatTemperature3;
 
     /**
      * keeps track of state for field: _temperature3
@@ -45,7 +48,8 @@ public class StarsThermostatSchedule {
 
     private org.exolab.castor.types.Time _time4;
 
-    private int _temperature4;
+    private int coolTemperature4;
+    private int heatTemperature4;
 
     /**
      * keeps track of state for field: _temperature4
@@ -81,40 +85,56 @@ public class StarsThermostatSchedule {
      * 
      * @return the value of field 'temperature1'.
     **/
-    public int getTemperature1()
+    public int getCoolTemperature1()
     {
-        return this._temperature1;
-    } //-- int getTemperature1() 
+        return this.coolTemperature1;
+    } //-- int getTemperature1()
+    
+    public int getHeatTemperature1() {
+		return heatTemperature1;
+	}
 
     /**
      * Returns the value of field 'temperature2'.
      * 
      * @return the value of field 'temperature2'.
     **/
-    public int getTemperature2()
+    public int getCoolTemperature2()
     {
-        return this._temperature2;
-    } //-- int getTemperature2() 
+        return this.coolTemperature2;
+    } //-- int getTemperature2()
+    
+    public int getHeatTemperature2() {
+		return heatTemperature2;
+	}
 
     /**
      * Returns the value of field 'temperature3'.
      * 
      * @return the value of field 'temperature3'.
     **/
-    public int getTemperature3()
+    public int getCoolTemperature3()
     {
-        return this._temperature3;
+        return this.coolTemperature3;
     } //-- int getTemperature3() 
 
+    public int getHeatTemperature3() {
+		return heatTemperature3;
+	}
+    
     /**
      * Returns the value of field 'temperature4'.
      * 
      * @return the value of field 'temperature4'.
     **/
-    public int getTemperature4()
+    public int getCoolTemperature4()
     {
-        return this._temperature4;
-    } //-- int getTemperature4() 
+        return this.coolTemperature4;
+    } //-- int getTemperature4()
+    
+    public int getHeatTemperature4() {
+		return heatTemperature4;
+	}
 
     /**
      * Returns the value of field 'time1'.
@@ -197,46 +217,70 @@ public class StarsThermostatSchedule {
     /**
      * Sets the value of field 'temperature1'.
      * 
-     * @param temperature1 the value of field 'temperature1'.
+     * @param coolTemperature1 the value of field 'temperature1'.
     **/
-    public void setTemperature1(int temperature1)
+    public void setCoolTemperature1(int coolTemperature1)
     {
-        this._temperature1 = temperature1;
+        this.coolTemperature1 = coolTemperature1;
         this._has_temperature1 = true;
     } //-- void setTemperature1(int) 
+
+    public void setHeatTemperature1(int heatTemperature1)
+    {
+    	this.heatTemperature1 = heatTemperature1;
+    	this._has_temperature1 = true;
+    } 
 
     /**
      * Sets the value of field 'temperature2'.
      * 
-     * @param temperature2 the value of field 'temperature2'.
+     * @param coolTemperature2 the value of field 'temperature2'.
     **/
-    public void setTemperature2(int temperature2)
+    public void setCoolTemperature2(int coolTemperature2)
     {
-        this._temperature2 = temperature2;
+        this.coolTemperature2 = coolTemperature2;
         this._has_temperature2 = true;
-    } //-- void setTemperature2(int) 
+    } //-- void setTemperature2(int)
+    
+    public void setHeatTemperature2(int heatTemperature2)
+    {
+    	this.heatTemperature2 = heatTemperature2;
+    	this._has_temperature2 = true;
+    } 
 
     /**
      * Sets the value of field 'temperature3'.
      * 
-     * @param temperature3 the value of field 'temperature3'.
+     * @param coolTemperature3 the value of field 'temperature3'.
     **/
-    public void setTemperature3(int temperature3)
+    public void setCoolTemperature3(int coolTemperature3)
     {
-        this._temperature3 = temperature3;
+        this.coolTemperature3 = coolTemperature3;
         this._has_temperature3 = true;
-    } //-- void setTemperature3(int) 
+    } //-- void setTemperature3(int)
+    
+    public void setHeatTemperature3(int heatTemperature3)
+    {
+    	this.heatTemperature3 = heatTemperature3;
+    	this._has_temperature3 = true;
+    } 
 
     /**
      * Sets the value of field 'temperature4'.
      * 
-     * @param temperature4 the value of field 'temperature4'.
+     * @param coolTemperature4 the value of field 'temperature4'.
     **/
-    public void setTemperature4(int temperature4)
+    public void setCoolTemperature4(int coolTemperature4)
     {
-        this._temperature4 = temperature4;
+        this.coolTemperature4 = coolTemperature4;
         this._has_temperature4 = true;
-    } //-- void setTemperature4(int) 
+    } //-- void setTemperature4(int)
+    
+    public void setHeatTemperature4(int heatTemperature4)
+    {
+    	this.heatTemperature4 = heatTemperature4;
+    	this._has_temperature4 = true;
+    } 
 
     /**
      * Sets the value of field 'time1'.

@@ -114,12 +114,8 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao, Initial
                 Integer startTime = defaultEntry.getStartTime();
                 entry.setStartTime(startTime / 60);
 
-                int temperature = defaultEntry.getTemperature();
-                if(isCoolSeason) {
-                	entry.setCoolTemperature(temperature);
-                } else {
-                	entry.setHeatTemperature(temperature);
-                }
+            	entry.setCoolTemperature(defaultEntry.getCoolTemperature());
+            	entry.setHeatTemperature(defaultEntry.getHeatTemperature());
 
                 int timeOfWeekId = defaultEntry.getTimeOfWeekID();
                 int timeOfWeekDefinitionId = YukonListEntryHelper.getYukonDefinitionId(energyCompany,

@@ -13,11 +13,11 @@ import com.cannontech.database.data.lite.LiteTypes;
  */
 public class LiteLMThermostatSeasonEntry extends LiteBase {
 	
-	private int entryID = com.cannontech.database.db.stars.hardware.LMThermostatSeasonEntry.NONE_INT;
 	private int seasonID = com.cannontech.database.db.stars.hardware.LMThermostatSeason.NONE_INT;
 	private int timeOfWeekID = com.cannontech.common.util.CtiUtilities.NONE_ZERO_ID;
 	private int startTime = 0;
-	private int temperature = 0;
+	private int coolTemperature = 0;
+	private int heatTemperature = 0;
 
 	public LiteLMThermostatSeasonEntry() {
 		super();
@@ -58,8 +58,12 @@ public class LiteLMThermostatSeasonEntry extends LiteBase {
 	 * Returns the temperature.
 	 * @return int
 	 */
-	public int getTemperature() {
-		return temperature;
+	public int getCoolTemperature() {
+		return coolTemperature;
+	}
+	
+	public int getHeatTemperature() {
+		return heatTemperature;
 	}
 
 	/**
@@ -90,8 +94,12 @@ public class LiteLMThermostatSeasonEntry extends LiteBase {
 	 * Sets the temperature.
 	 * @param temperature The temperature to set
 	 */
-	public void setTemperature(int temperature) {
-		this.temperature = temperature;
+	public void setCoolTemperature(int coolTemperature) {
+		this.coolTemperature = coolTemperature;
+	}
+	
+	public void setHeatTemperature(int heatTemperature) {
+		this.heatTemperature = heatTemperature;
 	}
 
 	/**

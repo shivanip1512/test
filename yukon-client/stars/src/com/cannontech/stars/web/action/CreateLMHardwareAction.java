@@ -239,8 +239,10 @@ public class CreateLMHardwareAction implements ActionBase {
 					StarsLiteFactory.setLMThermostatSeasonEntry( entry, liteEntry );
 					entry.setEntryID( null );
 					
-					if (isDftCommTstat && (j % 4 == 1 || j % 4 == 2))
-						entry.setTemperature( new Integer(-1) );
+					if (isDftCommTstat && (j % 4 == 1 || j % 4 == 2)) {
+						entry.setCoolTemperature( new Integer(-1) );
+						entry.setHeatTemperature( new Integer(-1) );
+					}
 					entries.add( entry );
 				}
 				else {

@@ -23,10 +23,11 @@ public class LMThermostatSeasonEntry extends DBPersistent {
 	private Integer seasonID = new Integer(LMThermostatSeason.NONE_INT);
 	private Integer timeOfWeekID = new Integer(com.cannontech.common.util.CtiUtilities.NONE_ZERO_ID);
 	private Integer startTime = new Integer(0);
-	private Integer temperature = new Integer(0);
+	private Integer coolTemperature = new Integer(0);
+	private Integer heatTemperature = new Integer(0);
 	
 	public static final String[] SETTER_COLUMNS = {
-		"SeasonID", "TimeOfWeekID", "StartTime", "Temperature"
+		"SeasonID", "TimeOfWeekID", "StartTime", "CoolTemperature", "HeatTemperature"
 	};
 	
 	public static final String[] CONSTRAINT_COLUMNS = { "EntryID" };
@@ -48,7 +49,8 @@ public class LMThermostatSeasonEntry extends DBPersistent {
 			setEntryID( nextValueHelper.getNextValue(TABLE_NAME) );
 			
 		Object[] addValues = {
-			getEntryID(), getSeasonID(), getTimeOfWeekID(), getStartTime(), getTemperature()
+			getEntryID(), getSeasonID(), getTimeOfWeekID(), getStartTime(), getCoolTemperature(), 
+			getHeatTemperature()
 		};
 		add( TABLE_NAME, addValues );
 	}
@@ -74,7 +76,8 @@ public class LMThermostatSeasonEntry extends DBPersistent {
 			setSeasonID( (Integer) results[0] );
 			setTimeOfWeekID( (Integer) results[1] );
 			setStartTime( (Integer) results[2] );
-			setTemperature( (Integer) results[3] );
+			setCoolTemperature( (Integer) results[3] );
+			setHeatTemperature( (Integer) results[4] );
 		}
 		else
             throw new Error(getClass() + " - Incorrect number of results retrieved");
@@ -86,7 +89,7 @@ public class LMThermostatSeasonEntry extends DBPersistent {
 	@Override
     public void update() throws SQLException {
 		Object[] setValues = {
-			getSeasonID(), getTimeOfWeekID(), getStartTime(), getTemperature()
+			getSeasonID(), getTimeOfWeekID(), getStartTime(), getCoolTemperature(), getHeatTemperature()
 		};
 		Object[] constraintValues = { getEntryID() };
 		update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
@@ -110,7 +113,8 @@ public class LMThermostatSeasonEntry extends DBPersistent {
 				entries[i].setSeasonID( new Integer(((java.math.BigDecimal) row[1]).intValue()) );
 				entries[i].setTimeOfWeekID( new Integer(((java.math.BigDecimal) row[2]).intValue()) );
 				entries[i].setStartTime( new Integer(((java.math.BigDecimal) row[3]).intValue()) );
-				entries[i].setTemperature( new Integer(((java.math.BigDecimal) row[4]).intValue()) );
+				entries[i].setCoolTemperature( new Integer(((java.math.BigDecimal) row[4]).intValue()) );
+				entries[i].setHeatTemperature( new Integer(((java.math.BigDecimal) row[5]).intValue()) );
 			}
 			
 			return entries;
@@ -169,8 +173,12 @@ public class LMThermostatSeasonEntry extends DBPersistent {
 	 * Returns the temperature.
 	 * @return Integer
 	 */
-	public Integer getTemperature() {
-		return temperature;
+	public Integer getCoolTemperature() {
+		return coolTemperature;
+	}
+	
+	public Integer getHeatTemperature() {
+		return heatTemperature;
 	}
 
 	/**
@@ -199,10 +207,14 @@ public class LMThermostatSeasonEntry extends DBPersistent {
 
 	/**
 	 * Sets the temperature.
-	 * @param temperature The temperature to set
+	 * @param coolTemperature The temperature to set
 	 */
-	public void setTemperature(Integer temperature) {
-		this.temperature = temperature;
+	public void setCoolTemperature(Integer coolTemperature) {
+		this.coolTemperature = coolTemperature;
+	}
+	
+	public void setHeatTemperature(Integer heatTemperature) {
+		this.heatTemperature = heatTemperature;
 	}
 
 	/**
