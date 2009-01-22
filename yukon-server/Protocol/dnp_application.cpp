@@ -19,6 +19,7 @@
 #include "dllbase.h"
 #include "logger.h"
 #include "numstr.h"
+#include "prot_dnp.h"
 #include "dnp_application.h"
 
 
@@ -67,7 +68,7 @@ void Application::setAddresses( unsigned short dstAddr, unsigned short srcAddr )
 void Application::setOptions( int options )
 {
     _transport.setOptions(options);
-    if( options == 0x40 )
+    if( options & DNPInterface::Options_SlaveResponse )
     {     
         _iin.all_stations=1;
         _iin.class_1=1;
@@ -231,7 +232,7 @@ void Application::initForSlaveOutput( void )
     _response.ind.class_3 = 1;
     _response.ctrl.seq = _seqno;
     
-    _response.func_code = 0x81;
+    _response.func_code = DNP::Application::ResponseResponse;
 
     while( !_out_object_blocks.empty() )
     {
@@ -369,9 +370,13 @@ int Application::generate( CtiXfer &xfer )
             {
                 //  _request was initialized by DNPInterface::generate()
                 if( _iin.raw != 0 )
+                {    
                     _transport.initForOutput((unsigned char *)&_response, _response_buf_len + RspHeaderSize, _dstAddr, _srcAddr);
+                }
                 else
+                {    
                     _transport.initForOutput((unsigned char *)&_request, _request_buf_len + ReqHeaderSize, _dstAddr, _srcAddr);
+                }
 
                 break;
             }

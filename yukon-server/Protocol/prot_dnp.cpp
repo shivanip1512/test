@@ -860,11 +860,11 @@ const char *DNPInterface::getControlResultString( int result_status ) const
 }
 
 
-DNPSlaveInterface::DNPSlaveInterface() :
-    _command(Command_Invalid)
+DNPSlaveInterface::DNPSlaveInterface() 
 {
-    setAddresses(DefaultSlaveAddress, DefaultMasterAddress);
-    _app_layer.completeSlave();
+   getApplicationLayer().completeSlave();
+   setOptions(DNPSlaveInterface::Options_SlaveResponse);
+
 }
 
 DNPSlaveInterface::DNPSlaveInterface(const DNPSlaveInterface &aRef)
@@ -872,47 +872,33 @@ DNPSlaveInterface::DNPSlaveInterface(const DNPSlaveInterface &aRef)
     *this = aRef;
 }
 
-DNPSlaveInterface::~DNPSlaveInterface()
-{
-}
-
 DNPSlaveInterface &DNPSlaveInterface::operator=(const DNPSlaveInterface &aRef)
 {
     if( this != &aRef )
     {
-        _app_layer     = aRef._app_layer;
-        _masterAddress = aRef._masterAddress;
-        _slaveAddress  = aRef._slaveAddress;
+        DNPInterface::operator=(aRef);
     }
 
     return *this;
 }
-void DNPSlaveInterface::setAddresses( unsigned short slaveAddress, unsigned short masterAddress )
-{
-    _slaveAddress = slaveAddress;
-    _masterAddress = masterAddress;
 
-    _app_layer.setAddresses(_slaveAddress, _masterAddress);
-    
-}
-void DNPSlaveInterface::setOptions( int options )
+
+DNPSlaveInterface::~DNPSlaveInterface()
 {
-    _options = options;
-    _app_layer.setOptions(options);
 }
 
 
 int DNPSlaveInterface::slaveGenerate( CtiXfer &xfer )
 {
-    if( _app_layer.isTransactionComplete() )
+    if( getApplicationLayer().isTransactionComplete() )
     {
-        switch( _command )
+        switch( getCommand() )
         {
             case Command_Class1230Read:
             case Command_Class123Read:
             {
-                _app_layer.setCommand(Application::ResponseResponse);
-                _app_layer.setOptions(0x40);
+                getApplicationLayer().setCommand(Application::ResponseResponse);
+                getApplicationLayer().setOptions(0x40);
                    ObjectBlock         *dob1;
                    ObjectBlock         *dob2;
                    ObjectBlock         *dob3;
@@ -935,7 +921,7 @@ int DNPSlaveInterface::slaveGenerate( CtiXfer &xfer )
                             ain = CTIDBG_new DNP::AnalogInput( DNP::AnalogInput::AI_16BitNoFlag );
                         
                             ain->setValue(ip.ain.value);
-                            ain->setOnLineFlag(ip.onLine);
+                            ain->setOnlineFlag(ip.onLine);
                             dob1->addObjectIndex(ain, ip.control_offset);
                         }
                         else if( ip.type == DigitalInput )
@@ -957,9 +943,9 @@ int DNPSlaveInterface::slaveGenerate( CtiXfer &xfer )
                     }
 
 
-                    _app_layer.addObjectBlock(dob1);
-                    _app_layer.addObjectBlock(dob2);
-                    _app_layer.addObjectBlock(dob3);
+                    getApplicationLayer().addObjectBlock(dob1);
+                    getApplicationLayer().addObjectBlock(dob2);
+                    getApplicationLayer().addObjectBlock(dob3);
                 
                 break;
             }
@@ -978,42 +964,48 @@ int DNPSlaveInterface::slaveGenerate( CtiXfer &xfer )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - invalid command " << _command << " in DNPSlaveInterface::generate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint - invalid command " << getCommand() << " in DNPSlaveInterface::generate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
-                _command = Command_Invalid;
+                setSlaveCommand(Command_Invalid);
             }
         }
        
         //  finalize the request
-        _app_layer.initForSlaveOutput();
+        getApplicationLayer().initForSlaveOutput();
         
     }
 
-    return _app_layer.generate(xfer);
+    return getApplicationLayer().generate(xfer);
 }
 
 void DNPSlaveInterface::slaveTransactionComplete()
 {
-    if( _app_layer.errorCondition() )
+    if( getApplicationLayer().errorCondition() )
     {
-        _string_results.push_back(CTIDBG_new string("Operation failed"));
+        getStringResults().push_back(CTIDBG_new string("Operation failed"));
     }
     setSlaveCommand(Command_Complete);
     
     return;
 }
 
+void DNPSlaveInterface::addInputPoint(const input_point &ip)
+{
+    _input_point_list.push_back(ip);
+    return;
+}
+
 bool DNPSlaveInterface::setSlaveCommand( Command command )
 {
-    _command = command;
+    setCommand(command);
 
-    if( _command == Command_Complete)
+    if( getCommand() == Command_Complete)
     {
         _input_point_list.clear();
-        _app_layer.completeSlave();
+        getApplicationLayer().completeSlave();
     }
-    return _command != Command_Invalid;
+    return getCommand() != Command_Invalid;
 }
 
 

@@ -97,6 +97,10 @@ protected:
     static const char const *ControlResultStr_HardwareError;
     static const char const *ControlResultStr_InvalidStatus;
 
+    DNP::Application& getApplicationLayer() {return _app_layer;};
+    Command getCommand(){return _command;};
+    stringlist_t getStringResults(){return _string_results;};
+
 public:
 
     DNPInterface();
@@ -187,7 +191,8 @@ public:
     {
         //  to be logically OR'd together - keep bit patterns unique
         Options_None            = 0x00,
-        Options_DatalinkConfirm = 0x01
+        Options_DatalinkConfirm = 0x01,
+        Options_SlaveResponse   = 0x40
     };
 
     enum
@@ -200,20 +205,13 @@ public:
 
 
 
-class IM_EX_PROT DNPSlaveInterface : public Interface
+class IM_EX_PROT DNPSlaveInterface : public DNPInterface
 {
-    enum   Command;
     struct input_point;
-
+    
 private:
 
-    DNP::Application _app_layer;  //  be explicit to ensure Slick doesn't confuse it with anything else :rolleyes:
-    unsigned short   _masterAddress, _slaveAddress;
-    int              _options;
-
-    Command              _command;
     vector<input_point> _input_point_list;
-    stringlist_t _string_results;
 
 protected:
 
@@ -227,12 +225,6 @@ public:
 
     DNPSlaveInterface &operator=(const DNPSlaveInterface &aRef);
 
-    void setAddresses( unsigned short slaveAddress, unsigned short masterAddress );
-    void setOptions( int options );
-
-    unsigned short getSlaveAddress() {return _slaveAddress;};
-    unsigned short getMasterAddress() {return _masterAddress;};
-
     bool setSlaveCommand( Command command );
     bool setSlaveCommand( Command command, input_point &point );
     
@@ -240,7 +232,7 @@ public:
     void slaveTransactionComplete();
 
 
-    vector<input_point>* getInputPointList(){return &_input_point_list;};
+    void addInputPoint(const input_point &ip);
 
     enum InputPointType
     {
@@ -280,46 +272,7 @@ public:
         unsigned long expiration;
         bool onLine;
     };
-
-    enum Command
-    {
-        Command_Invalid = 0,
-        Command_WriteTime,
-        Command_ReadTime,
-        Command_Class0Read,
-        Command_Class1Read,
-        Command_Class2Read,
-        Command_Class3Read,
-        Command_Class123Read,
-        Command_Class1230Read,
-        Command_SetAnalogOut,
-        Command_SetDigitalOut_Direct,
-        Command_SetDigitalOut_SBO_Select,
-        Command_SetDigitalOut_SBO_Operate,
-        Command_SetDigitalOut_SBO_SelectOnly,
-
-        Command_Loopback,  //  actually a time-delay request
-
-        Command_UnsolicitedEnable,
-        Command_UnsolicitedDisable,
-
-        Command_UnsolicitedInbound,  //  special case - just greases the wheels for the inbound message
-
-        Command_Complete
-    };
-
-    enum Options
-    {
-        //  to be logically OR'd together - keep bit patterns unique
-        Options_None            = 0x00,
-        Options_SlaveResponse   = 0x40
-    };
-
-    enum
-    {
-        DefaultMasterAddress =    5,
-        DefaultSlaveAddress  =    1
-    };
+   
 };
 
 }

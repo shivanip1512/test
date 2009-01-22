@@ -67,7 +67,7 @@ void Datalink::setOptions(int options)
     {
         _dl_confirm = true;
     }
-    if( options & DNPSlaveInterface::Options_SlaveResponse )
+    if( options & DNPInterface::Options_SlaveResponse )
     {
         _slave_response = true;
     }
@@ -396,12 +396,7 @@ void Datalink::constructDataPacket( Datalink::packet &packet, unsigned char *buf
     packet.header.fmt.destination = _dst;
     packet.header.fmt.source      = _src;
 
-    if( _slave_response )
-    {
-        packet.header.fmt.control.p.direction = 0;  //  from the slave
-    } 
-    else
-        packet.header.fmt.control.p.direction = 1;  //  from the master
+    packet.header.fmt.control.p.direction = (_slave_response)?(0):(1); 
 
     packet.header.fmt.control.p.primary   = 1;  //  we're primary
 
