@@ -304,4 +304,4 @@ INSERT INTO DeviceTypeCommand VALUES(-752, -157, 'MCT-410IL', 39, 'Y', -1);
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
 
-/* __YUKON_VERSION__ */
+INSERT INTO CTIDatabase VALUES('4.2', 'Matt K', '22-JAN-2009', 'Latest Update', 0 );
