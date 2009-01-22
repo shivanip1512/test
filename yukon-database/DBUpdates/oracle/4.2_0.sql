@@ -269,7 +269,7 @@ WHERE RolePropertyId = -1602;
 INSERT INTO YukonRoleProperty VALUES(-20899,-201,'Thermostat Schedule 5-2','false','Allows a user to select Weekday/Weekend in addition to Weekday/Saturday/Sunday for thermostat schedule editing.');
 INSERT INTO YukonRoleProperty VALUES(-40204,-400,'Thermostat Schedule 5-2','false','Allows a user to select Weekday/Weekend in addition to Weekday/Saturday/Sunday for thermostat schedule editing.');
 
-ALTER TABLE LMThermostatSeasonEntry ADD HeatTemperature numeric(18);
+ALTER TABLE LMThermostatSeasonEntry ADD HeatTemperature NUMBER;
 ALTER TABLE LMThermostatSeasonEntry RENAME COLUMN Temperature TO CoolTemperature;
 
 ALTER TABLE LMThermostatSeason ADD HeatStartDate date;
