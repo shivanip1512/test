@@ -4134,7 +4134,7 @@ public static void main(final java.lang.String[] args)
         ClientStartupHelper clientStartupHelper = new ClientStartupHelper();
         clientStartupHelper.setAppName("TDC");
         clientStartupHelper.setRequiredRole(TDCRole.ROLEID);
-        clientStartupHelper.setSplashURL(CtiUtilities.TDC_SPLASH);
+        clientStartupHelper.setSplashUrl(CtiUtilities.TDC_SPLASH);
 
         clientStartupHelper.doStartup();
 

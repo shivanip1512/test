@@ -2108,7 +2108,7 @@ public static void main(String[] args)
         ClientStartupHelper clientStartupHelper = new ClientStartupHelper();
         clientStartupHelper.setAppName("Trending");
         clientStartupHelper.setRequiredRole(TrendingRole.ROLEID);
-        clientStartupHelper.setSplashURL(CtiUtilities.TRENDING_SPLASH);
+        clientStartupHelper.setSplashUrl(CtiUtilities.TRENDING_SPLASH);
         
         // creates a stupid anonymous class to create a unique class name for the main frame
         // the ClientStartupHelper will use this for picking a Preference node

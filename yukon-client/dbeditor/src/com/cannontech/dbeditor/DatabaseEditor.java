@@ -2103,7 +2103,7 @@ public static void main(String[] args) {
         clientStartupHelper.setAppName("DBEditor");
         clientStartupHelper.setRequiredRole(DBEditorRole.ROLEID);
         clientStartupHelper.setContext("com.cannontech.context.dbeditor");
-        clientStartupHelper.setSplashURL(CtiUtilities.DBEDITOR_SPLASH);
+        clientStartupHelper.setSplashUrl(CtiUtilities.DBEDITOR_SPLASH);
 
         // creates a stupid anonymous class to create a unique class name for the main frame
         // the ClientStartupHelper will use this for picking a Preference node

@@ -1530,7 +1530,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 	        ClientStartupHelper clientStartupHelper = new ClientStartupHelper();
 	        clientStartupHelper.setAppName("Commander");
 	        clientStartupHelper.setRequiredRole(CommanderRole.ROLEID);
-	        clientStartupHelper.setSplashURL(CtiUtilities.COMMANDER_SPLASH);
+	        clientStartupHelper.setSplashUrl(CtiUtilities.COMMANDER_SPLASH);
 
 	        clientStartupHelper.doStartup();
 	

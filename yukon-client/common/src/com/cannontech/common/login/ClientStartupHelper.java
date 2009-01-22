@@ -20,7 +20,7 @@ public class ClientStartupHelper {
     private JFrame parentFrame = null; // can be null initially
     private int requiredRole;
     private SplashWindow splash;
-    private URL splashURL;
+    private URL splashUrl;
 
     public void doStartup() throws Exception {
         CTILogger.debug("starting doStartup");
@@ -37,8 +37,8 @@ public class ClientStartupHelper {
             
         });
         
-        if( this.splashURL != null) {
-        	splash = SplashWindow.createYukonSplash(parentFrame, this.splashURL);
+        if( this.splashUrl != null) {
+        	splash = SplashWindow.createYukonSplash(parentFrame, this.splashUrl);
         } else {
         	splash = SplashWindow.createYukonSplash(parentFrame);
         }
@@ -138,8 +138,8 @@ public class ClientStartupHelper {
     public void setContext(String context) {
         YukonSpringHook.setDefaultContext(context);
     }
-    
-    public void setSplashURL(URL splashURL) {
-		this.splashURL = splashURL;
-	}    
+
+    public void setSplashUrl(URL splashUrl) {
+		this.splashUrl = splashUrl;
+	}
 }
