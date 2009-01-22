@@ -251,7 +251,10 @@ void CtiPILServer::mainThread()
                         {
                             if( *msg_itr )
                             {
-                                MainQueue_.putQueue( static_cast<CtiMessage *>(*msg_itr)->replicateMessage() );
+                                CtiMessage *subMessage = static_cast<CtiMessage *>(*msg_itr)->replicateMessage();
+                                subMessage->setConnectionHandle(MsgPtr->getConnectionHandle());
+
+                                MainQueue_.putQueue(subMessage);
                             }
                         }
 
