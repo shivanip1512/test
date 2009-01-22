@@ -8343,7 +8343,7 @@ bool CtiCCFeeder::areAllPhasesQuestionable(DOUBLE ratioA, DOUBLE ratioB, DOUBLE 
 }
 bool CtiCCFeeder::isResponseQuestionable(DOUBLE ratio, DOUBLE confirmPercent, DOUBLE failPercent)
 {
-    return ((ratio < confirmPercent * .01) && (ratio >= failPercent * .01) );
+    return ( ! ( isResponseSuccess(ratio, confirmPercent) || isResponseFail(ratio, failPercent) ) ); 
 
 }
 bool CtiCCFeeder::isResponseFail(DOUBLE ratio,DOUBLE failPercent)
