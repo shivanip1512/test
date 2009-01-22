@@ -317,6 +317,12 @@ int Transport::getInputSize( void )
     return _payload_in.received;
 }
 
+void Transport::setIoStateComplete()
+{
+    _ioState = Complete;
+    _datalink.setIoStateComplete();
+}
+
 }
 }
 }

@@ -860,6 +860,172 @@ const char *DNPInterface::getControlResultString( int result_status ) const
 }
 
 
+DNPSlaveInterface::DNPSlaveInterface() :
+    _command(Command_Invalid)
+{
+    setAddresses(DefaultSlaveAddress, DefaultMasterAddress);
+    _app_layer.completeSlave();
+}
+
+DNPSlaveInterface::DNPSlaveInterface(const DNPSlaveInterface &aRef)
+{
+    *this = aRef;
+}
+
+DNPSlaveInterface::~DNPSlaveInterface()
+{
+}
+
+DNPSlaveInterface &DNPSlaveInterface::operator=(const DNPSlaveInterface &aRef)
+{
+    if( this != &aRef )
+    {
+        _app_layer     = aRef._app_layer;
+        _masterAddress = aRef._masterAddress;
+        _slaveAddress  = aRef._slaveAddress;
+    }
+
+    return *this;
+}
+void DNPSlaveInterface::setAddresses( unsigned short slaveAddress, unsigned short masterAddress )
+{
+    _slaveAddress = slaveAddress;
+    _masterAddress = masterAddress;
+
+    _app_layer.setAddresses(_slaveAddress, _masterAddress);
+    
+}
+void DNPSlaveInterface::setOptions( int options )
+{
+    _options = options;
+    _app_layer.setOptions(options);
+}
+
+
+int DNPSlaveInterface::slaveGenerate( CtiXfer &xfer )
+{
+    if( _app_layer.isTransactionComplete() )
+    {
+        switch( _command )
+        {
+            case Command_Class1230Read:
+            case Command_Class123Read:
+            {
+                _app_layer.setCommand(Application::ResponseResponse);
+                _app_layer.setOptions(0x40);
+                   ObjectBlock         *dob1;
+                   ObjectBlock         *dob2;
+                   ObjectBlock         *dob3;
+
+                   DNP::AnalogInput *ain;
+                   DNP::BinaryInput *bin;
+                   DNP::Counter *counterin;
+                    
+
+                    dob1 = CTIDBG_new ObjectBlock(ObjectBlock::ByteIndex_ShortQty);
+                    dob2 = CTIDBG_new ObjectBlock(ObjectBlock::ByteIndex_ShortQty);
+                    dob3 = CTIDBG_new ObjectBlock(ObjectBlock::ByteIndex_ShortQty);
+
+                    for ( int i = 0; i < _input_point_list.size(); i++ )
+                    {
+                        input_point &ip =  _input_point_list[i];
+
+                        if( ip.type == AnalogInputType )
+                        {
+                            ain = CTIDBG_new DNP::AnalogInput( DNP::AnalogInput::AI_16BitNoFlag );
+                        
+                            ain->setValue(ip.ain.value);
+                            ain->setOnLineFlag(ip.onLine);
+                            dob1->addObjectIndex(ain, ip.control_offset);
+                        }
+                        else if( ip.type == DigitalInput )
+                        {
+                            bin = CTIDBG_new DNP::BinaryInput( DNP::BinaryInput::BI_WithStatus);
+                        
+                            bin->setStateValue(ip.din.trip_close);
+                            bin->setOnLineFlag(ip.onLine);
+                            dob2->addObjectIndex(bin, ip.control_offset);
+                        }
+                        else if( ip.type == Counters )
+                        {
+                            counterin = CTIDBG_new DNP::Counter( DNP::Counter::C_Binary32Bit );
+                        
+                            counterin->setValue(ip.counterin.value);
+                            counterin->setOnLineFlag(ip.onLine);
+                            dob3->addObjectIndex(counterin, ip.control_offset);
+                        }
+                    }
+
+
+                    _app_layer.addObjectBlock(dob1);
+                    _app_layer.addObjectBlock(dob2);
+                    _app_layer.addObjectBlock(dob3);
+                
+                break;
+            }
+            case Command_UnsolicitedInbound:
+            case Command_WriteTime:
+            case Command_ReadTime:
+            case Command_Loopback:
+            case Command_UnsolicitedEnable:
+            case Command_UnsolicitedDisable:
+            case Command_SetAnalogOut:
+            case Command_SetDigitalOut_Direct:
+            case Command_SetDigitalOut_SBO_SelectOnly:
+            case Command_SetDigitalOut_SBO_Select:
+            case Command_SetDigitalOut_SBO_Operate:
+            default:
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - invalid command " << _command << " in DNPSlaveInterface::generate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                _command = Command_Invalid;
+            }
+        }
+       
+        //  finalize the request
+        _app_layer.initForSlaveOutput();
+        
+    }
+
+    return _app_layer.generate(xfer);
+}
+
+void DNPSlaveInterface::slaveTransactionComplete()
+{
+    if( _app_layer.errorCondition() )
+    {
+        _string_results.push_back(CTIDBG_new string("Operation failed"));
+    }
+    setSlaveCommand(Command_Complete);
+    
+    return;
+}
+
+bool DNPSlaveInterface::setSlaveCommand( Command command )
+{
+    _command = command;
+
+    if( _command == Command_Complete)
+    {
+        _input_point_list.clear();
+        _app_layer.completeSlave();
+    }
+    return _command != Command_Invalid;
+}
+
+
+bool DNPSlaveInterface::setSlaveCommand( Command command, input_point &point )
+{
+    _input_point_list.clear();
+
+    _input_point_list.push_back(point);
+
+    return setSlaveCommand(command);
+}
+
 
 const char const *DNPInterface::ControlResultStr_RequestAccepted      = "Request accepted";
 const char const *DNPInterface::ControlResultStr_ArmTimeout           = "Operate received after select timeout";

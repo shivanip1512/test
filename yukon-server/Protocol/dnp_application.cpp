@@ -67,6 +67,13 @@ void Application::setAddresses( unsigned short dstAddr, unsigned short srcAddr )
 void Application::setOptions( int options )
 {
     _transport.setOptions(options);
+    if( options == 0x40 )
+    {     
+        _iin.all_stations=1;
+        _iin.class_1=1;
+        _iin.class_2=1;
+        _iin.class_3=1; 
+    }
 }
 
 
@@ -206,6 +213,46 @@ void Application::initForOutput( void )
     _request_buf_len = pos;
 }
 
+void Application::initForSlaveOutput( void )
+{
+    unsigned pos = 0;
+
+    memset( &_response, 0, sizeof(_response) );
+
+    //  ACH: if we need to use multiple outbound application layer request packets, this will need to change
+
+    _response.ctrl.first       = 1;
+    _response.ctrl.final       = 1;
+    _response.ctrl.app_confirm = 0;
+    _response.ctrl.unsolicited = 0;
+    _response.ind.all_stations = 1;
+    _response.ind.class_1 = 1;
+    _response.ind.class_2 = 1;
+    _response.ind.class_3 = 1;
+    _response.ctrl.seq = _seqno;
+    
+    _response.func_code = 0x81;
+
+    while( !_out_object_blocks.empty() )
+    {
+        const ObjectBlock *ob = _out_object_blocks.front();
+        _out_object_blocks.pop();
+
+        ob->serialize(_response.buf + pos);
+        pos += ob->getSerializedLen();
+
+        delete ob;
+    }
+
+    _response_buf_len = pos;
+}
+
+void Application::completeSlave( void )
+{
+    _ioState = Complete;
+    _transport.setIoStateComplete();
+}
+
 
 void Application::eraseInboundObjectBlocks( void )
 {
@@ -321,7 +368,10 @@ int Application::generate( CtiXfer &xfer )
             case Output:
             {
                 //  _request was initialized by DNPInterface::generate()
-                _transport.initForOutput((unsigned char *)&_request, _request_buf_len + ReqHeaderSize, _dstAddr, _srcAddr);
+                if( _iin.raw != 0 )
+                    _transport.initForOutput((unsigned char *)&_response, _response_buf_len + RspHeaderSize, _dstAddr, _srcAddr);
+                else
+                    _transport.initForOutput((unsigned char *)&_request, _request_buf_len + ReqHeaderSize, _dstAddr, _srcAddr);
 
                 break;
             }

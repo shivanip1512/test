@@ -70,6 +70,7 @@ private:
     unsigned short _src, _dst;
 
     bool _dl_confirm;
+    bool _slave_response;
 
     //  datalink control statuses
     bool _send_confirm;
@@ -186,6 +187,8 @@ public:
         Error_BadLength,
         Error_UnknownMessage
     };
+
+    void setIoStateComplete();
 };
 
 }

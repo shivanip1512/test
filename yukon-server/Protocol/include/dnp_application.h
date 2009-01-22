@@ -167,7 +167,8 @@ public:
     void setCommand( FunctionCode fc );
     void addObjectBlock( const ObjectBlock *obj );
     void initForOutput( void );
-
+    void initForSlaveOutput( void );
+    void completeSlave( void );
     void initUnsolicited( void );
 
     //  comm functions

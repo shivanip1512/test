@@ -60,7 +60,9 @@ public:
     virtual int restore(const unsigned char *buf, int len);
     virtual int serialize(unsigned char *buf) const;
     virtual int getSerializedLen(void) const;
-
+    
+    void setValue(long value) {_counter = value;};
+    void setOnLineFlag(bool online) {_flag = (online?0x80:0x00);};
     virtual CtiPointDataMsg *getPoint( const TimeCTO *cto ) const;
 };
 

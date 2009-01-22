@@ -30,6 +30,7 @@ Datalink::Datalink()
     _io_state      = State_IO_Uninitialized;
     _control_state = State_Control_Ready;
     _dl_confirm    = false;
+    _slave_response = false;
 }
 
 Datalink::Datalink(const Datalink &aRef)
@@ -65,6 +66,10 @@ void Datalink::setOptions(int options)
     if( options & DNPInterface::Options_DatalinkConfirm )
     {
         _dl_confirm = true;
+    }
+    if( options & DNPSlaveInterface::Options_SlaveResponse )
+    {
+        _slave_response = true;
     }
 }
 
@@ -391,7 +396,13 @@ void Datalink::constructDataPacket( Datalink::packet &packet, unsigned char *buf
     packet.header.fmt.destination = _dst;
     packet.header.fmt.source      = _src;
 
-    packet.header.fmt.control.p.direction = 1;  //  from the master
+    if( _slave_response )
+    {
+        packet.header.fmt.control.p.direction = 0;  //  from the slave
+    } 
+    else
+        packet.header.fmt.control.p.direction = 1;  //  from the master
+
     packet.header.fmt.control.p.primary   = 1;  //  we're primary
 
     if( _dl_confirm )
@@ -1009,6 +1020,10 @@ bool Datalink::isTransactionComplete( void )
     return retVal;
 }
 
+void Datalink::setIoStateComplete()
+{
+    _io_state = State_IO_Complete;
+}
 
 bool Datalink::errorCondition( void )
 {

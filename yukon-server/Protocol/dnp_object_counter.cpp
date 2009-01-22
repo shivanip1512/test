@@ -44,7 +44,7 @@ int Counter::restore(const unsigned char *buf, int len)
 
 int Counter::serialize(unsigned char *buf) const
 {
-    return 0;
+    return serializeVariation(buf, getVariation());;
 }
 
 
@@ -54,6 +54,31 @@ int Counter::getSerializedLen(void) const
 
     switch(getVariation())
     {
+        case C_Binary32Bit:
+        case C_Delta32Bit:
+        {
+            retVal = 5;
+            break;
+        }
+
+        case C_Binary16Bit:
+        case C_Delta16Bit:
+        {
+            retVal = 3;
+            break;
+        }
+        case C_Binary32BitNoFlag:
+        case C_Delta32BitNoFlag:
+        {
+            retVal = 4;
+            break;
+        }
+        case C_Binary16BitNoFlag:
+        case C_Delta16BitNoFlag:
+        {
+            retVal = 2;
+            break;
+        }
         default:
         {
             {
@@ -139,12 +164,51 @@ int Counter::restoreVariation(const unsigned char *buf, int len, int variation)
 
 int Counter::serializeVariation(unsigned char *buf, int variation) const
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
+    int pos = 0;
 
-    return 0;
+    switch(variation)
+    {
+        case C_Binary32Bit:
+        case C_Delta32Bit:
+        {
+            buf[pos++] = _flag;
+            //  fall through
+        }
+        case C_Binary32BitNoFlag:
+        case C_Delta32BitNoFlag:
+        {
+            buf[pos++] =  _counter        & 0xff;
+            buf[pos++] = (_counter >>  8) & 0xff;
+            buf[pos++] = (_counter >> 16) & 0xff;
+            buf[pos++] = (_counter >> 24) & 0xff;
+
+            break;
+        }
+
+        case C_Binary16Bit:
+        case C_Delta16Bit:
+        {
+            buf[pos++] = _flag;
+            //  fall through
+        }
+        case C_Binary16BitNoFlag:
+        case C_Delta16BitNoFlag:
+        {
+            buf[pos++] =  _counter        & 0xff;
+            buf[pos++] = (_counter >>  8) & 0xff;
+
+            break;
+        }
+
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
+    }
+    return pos;
 }
 
 

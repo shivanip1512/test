@@ -104,6 +104,9 @@ public:
     bool errorCondition( void );
 
     int  getInputSize( void );
+
+
+    void setIoStateComplete();
 };
 
 }
