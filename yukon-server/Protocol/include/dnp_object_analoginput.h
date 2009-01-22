@@ -35,7 +35,7 @@ private:
 
     union aifu  //  analog in flag union, named for Slick's parsing pleasure
     {
-        struct aiflags
+        struct
         {
             unsigned char online       : 1;
             unsigned char restart      : 1;
@@ -45,7 +45,7 @@ private:
             unsigned char overrange    : 1;
             unsigned char refcheck     : 1;
             unsigned char reserved     : 1;
-        } aif;
+        };
 
         unsigned char raw;
     } _flags;
