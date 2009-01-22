@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.roles.yukon.AuthenticationRole;
 import com.cannontech.servlet.logic.RequestPword;
@@ -37,7 +38,7 @@ public class StarsPWordRequestController implements Controller {
         String returnURI = "";
         
         if(!DaoFactory.getRoleDao().checkGlobalRoleProperty(AuthenticationRole.ENABLE_PASSWORD_RECOVERY)) {
-            returnURI = INVALID_URI + "Password recovery is not allowed";
+            throw new NotAuthorizedException("Missing a required role or property to use this page.");
         }
         else if( !reqPword.isValidParams() )
         {
