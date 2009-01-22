@@ -8,6 +8,8 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="ext" tagdir="/WEB-INF/tags/ext" %>
 
+<cti:verifyRolesAndProperties value="application.BillingRole.ROLEID"/>
+
 <cti:standardPage module="amr" title="Billing">
 	<cti:standardMenu menuSelection="billing|generation"/>
 	<cti:breadCrumbs>

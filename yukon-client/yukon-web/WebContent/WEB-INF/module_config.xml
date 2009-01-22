@@ -264,9 +264,9 @@
    		   <link>/spring/meter/search</link>	
    		</option>
    		<option id="billing">
-   		   <links>
+   		  <requireRoleProperty value="application.BillingRole.ROLEID"/>
+   		  <links>
 	          <option id="generation">
-	            <requireRoleProperty value="application.BillingRole.ROLEID"/>
 	   		    <link>/operator/Metering/Billing.jsp</link>
 	          </option>
 	          <option id="setup">
