@@ -1,6 +1,7 @@
 package com.cannontech.core.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.NoSuchMessageException;
 
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.service.ContactNotificationFormattingService;
@@ -17,7 +18,11 @@ public class ContactNotificationFormattingServiceImpl implements ContactNotifica
     public String formatNotification(LiteContactNotification notif, YukonUserContext context) throws IllegalArgumentException {
         if (notif != null) {
             if(yukonListDao.isPhoneNumber(notif.getNotificationCategoryID())) {
-                return phoneNumberFormattingService.formatPhoneNumber(notif.getNotification(), context);
+                try {
+                    return phoneNumberFormattingService.formatPhoneNumber(notif.getNotification(), context);
+                } catch (NoSuchMessageException e) {
+                    return notif.getNotification();
+                }
             }else {
                 return notif.getNotification();
             }
