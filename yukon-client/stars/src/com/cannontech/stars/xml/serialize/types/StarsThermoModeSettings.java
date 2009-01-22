@@ -56,19 +56,9 @@ public class StarsThermoModeSettings implements java.io.Serializable {
     public static final StarsThermoModeSettings OFF = new StarsThermoModeSettings(OFF_TYPE, "Off");
 
     /**
-     * The Auto type
-    **/
-    public static final int AUTO_TYPE = 3;
-
-    /**
-     * The instance of the Auto type
-    **/
-    public static final StarsThermoModeSettings AUTO = new StarsThermoModeSettings(AUTO_TYPE, "Auto");
-
-    /**
      * The EmgHeat type
     **/
-    public static final int EMHEAT_TYPE = 4;
+    public static final int EMHEAT_TYPE = 3;
 
     /**
      * The instance of the EmgHeat type
@@ -122,7 +112,6 @@ public class StarsThermoModeSettings implements java.io.Serializable {
         members.put("Heat", HEAT);
         members.put("Cool", COOL);
         members.put("Off", OFF);
-        members.put("Auto", AUTO);
         members.put("EmHeat", EMHEAT);
         return members;
     } //-- java.util.Hashtable init() 
