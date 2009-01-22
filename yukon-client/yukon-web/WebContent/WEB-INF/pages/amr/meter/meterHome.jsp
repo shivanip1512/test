@@ -85,8 +85,6 @@
                     </cti:checkProperty>
                     </cti:checkRole>
                     
-					<cti:checkRole role="CommanderRole.ROLEID">
-                        
                         <!-- Actions: Profile -->
                         <c:choose>
                             <c:when test="${lpSupported && (profileCollection || profileCollectionScanning)}">
@@ -119,11 +117,13 @@
                         <br/>
                         
                         <!-- Actions: >Manual Commander -->
-						<c:url var="commanderUrl" value="/spring/amr/manualCommand/home">
-							<c:param name="deviceId" value="${deviceId}" />
-						</c:url>
-						<a href="${commanderUrl}">Manual Commander</a>
-						<br>
+						<cti:checkRole role="CommanderRole.ROLEID">
+							<c:url var="commanderUrl" value="/spring/amr/manualCommand/home">
+								<c:param name="deviceId" value="${deviceId}" />
+							</c:url>
+							<a href="${commanderUrl}">Manual Commander</a>
+							<br>
+						</cti:checkRole>
                         
                         <!-- Actions: Locate Route -->
                         <cti:checkProperty property="operator.DeviceActionsRole.LOCATE_ROUTE">
@@ -134,9 +134,8 @@
                         <a href="${routeLocateUrl}">Locate Route</a>
                         <br>
                         </cti:checkProperty>
-                        
-					</cti:checkRole>
-                    
+
+
                     <!-- Actions: Other Collection actions -->
                     <c:url var="collectionActionsUrl" value="/spring/bulk/collectionActions">
                         <c:param name="collectionType" value="idList" />
