@@ -161,9 +161,7 @@ function modeChange(mode) {
       document.getElementById(mode+modeExt).style.visibility = 'visible';
       document.MForm.mode.value = mode;
 		
-      if (mode == ('<%= StarsThermoModeSettings.AUTO.toString() %>')) {
-        document.MForm.tempDisplayField.style.color = "#000000";
-      } else if (mode == ('<%= StarsThermoModeSettings.COOL.toString() %>')) {
+      if (mode == ('<%= StarsThermoModeSettings.COOL.toString() %>')) {
         document.MForm.tempDisplayField.style.color = "#003399";
       } else if (mode == ('<%= StarsThermoModeSettings.HEAT.toString() %>')) {
         document.MForm.tempDisplayField.style.color = "#FF0000";
@@ -336,12 +334,8 @@ function prepareSubmit() {
                             <td width="135"> 
                               <table width="100%" border="0" height="56" cellspacing = "0" cellpadding = "0">
                                 <tr> 
-                                  <td width="60%" height="90" valign = "bottom"> 
-                                    <table width="35%" border="0" cellpadding = "2" cellspacing = "0" height="41">
-                                      <tr onclick="modeChange('<%= StarsThermoModeSettings.AUTO.toString() %>');setChanged();"> 
-                                        <td><img id="<%= StarsThermoModeSettings.AUTO.toString() %>Mode" src="<%=request.getContextPath()%>/WebConfig/yukon/ThermImages/ArrowBlue.gif" style="visibility:hidden"></td>
-                                        <td><img class="Clickable" src="<%=request.getContextPath()%>/WebConfig/yukon/ThermImages/Auto.gif"></td>
-                                      </tr>
+                                  <td width="60%"  height="59" valign="bottom"> 
+                                    <table width="35%" border="0" cellpadding="2" cellspacing="0" height="59">
                                       <tr onclick="modeChange('<%= StarsThermoModeSettings.COOL.toString() %>');setChanged();"> 
                                         <td><img id="<%= StarsThermoModeSettings.COOL.toString() %>Mode" src="<%=request.getContextPath()%>/WebConfig/yukon/ThermImages/ArrowBlue.gif" style="visibility:hidden"></td>
                                         <td><img class="Clickable" src="<%=request.getContextPath()%>/WebConfig/yukon/ThermImages/Cool.gif"></td>
@@ -353,6 +347,10 @@ function prepareSubmit() {
                                       <tr onclick="modeChange('<%= StarsThermoModeSettings.OFF.toString() %>');setChanged();"> 
                                         <td><img id="<%= StarsThermoModeSettings.OFF.toString() %>Mode" src="<%=request.getContextPath()%>/WebConfig/yukon/ThermImages/ArrowBlue.gif" style="visibility:hidden"></td>
                                         <td><img class="Clickable" src="<%=request.getContextPath()%>/WebConfig/yukon/ThermImages/Off.gif"></td>
+                                      </tr>
+                                      <tr> 
+                                        <td height="14"></td>
+                                        <td></td>
                                       </tr>
                                     </table>
                                   </td>

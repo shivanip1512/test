@@ -189,9 +189,13 @@
     <entry key="yukon.dr.consumer.thermostatSchedule.multipleLabel">Multiple Thermostats</entry>
     <entry key="yukon.dr.consumer.thermostatSchedule.changeSelected">Change selected thermostats</entry>
     <entry key="yukon.dr.consumer.thermostatSchedule.weekday">Weekday</entry>
+    <entry key="yukon.dr.consumer.thermostatSchedule.weekend">Weekend</entry>
     <entry key="yukon.dr.consumer.thermostatSchedule.saturday">Staturday</entry>
     <entry key="yukon.dr.consumer.thermostatSchedule.sunday">Sunday</entry>
-    <entry key="yukon.dr.consumer.thermostatSchedule.saturdayAndSunday">Apply settings to Saturday and Sunday</entry>
+    <entry key="yukon.dr.consumer.thermostatSchedule.scheduleMode">Schedule mode</entry>
+    <entry key="yukon.dr.consumer.thermostatSchedule.scheduleModeAll">Same schedule all days of week</entry>
+    <entry key="yukon.dr.consumer.thermostatSchedule.scheduleMode511">Weekday and Weekend schedules</entry>
+    <entry key="yukon.dr.consumer.thermostatSchedule.scheduleMode52">Weekday, Saturday and Sunday schedules</entry>
     <entry key="yukon.dr.consumer.thermostatSchedule.instructions"></entry>
     <entry key="yukon.dr.consumer.thermostatSchedule.hints"><![CDATA[
         <a href="{0}">Hints and details</a>
@@ -208,14 +212,17 @@
     <entry key="yukon.dr.consumer.thermostatSchedule.occupied">Occupied (O)</entry>
     <entry key="yukon.dr.consumer.thermostatSchedule.unoccupied">Unoccupied (U)</entry>
     <entry key="yukon.dr.consumer.thermostatSchedule.start">Start At:</entry>
-    <entry key="yukon.dr.consumer.thermostatSchedule.temp">Temp:</entry>
+    <entry key="yukon.dr.consumer.thermostatSchedule.coolTemp">Cooling Temp:</entry>
+    <entry key="yukon.dr.consumer.thermostatSchedule.heatTemp">Heating Temp:</entry>
     <entry key="yukon.dr.consumer.thermostatSchedule.mode">Mode:</entry>
     <entry key="yukon.dr.consumer.thermostatSchedule.save">Save Schedule</entry>
     <entry key="yukon.dr.consumer.thermostatSchedule.saveApply">Save and Send Schedule</entry>
     <entry key="yukon.dr.consumer.thermostatSchedule.recommend">Recommended Settings</entry>
+    <entry key="yukon.dr.consumer.thermostatSchedule.periodMessage">**Sending this schedule will set your thermostat to use 4 daily periods:  Wake – Leave – Return – Sleep.  This will overwrite any local period adjustments you have made to your thermostat.</entry>
     <entry key="yukon.dr.consumer.thermostatSchedule.name">Thermostat Schedule Name:</entry>
     <entry key="yukon.dr.consumer.thermostatSchedule.noScheduleName">You must provide a schedule name.</entry>
     <entry key="yukon.dr.consumer.thermostatSchedule.saveScheduleText">Changes have been made to this schedule. To disregard these changes, click OK. To return to the page to save your changes, click Cancel.</entry>
+    <entry key="yukon.dr.consumer.thermostatSchedule.modeChangeText"><![CDATA[You have chosen to change your thermostat scheduling mode.  If you have changed this setting locally on your thermostat, it will be replaced by this setting when you submit your schedule.  Do you wish to proceed?]]></entry>
     
     <!-- savedSchedules.jsp -->
     <entry key="yukon.dr.consumer.savedSchedules.header">Thermostat - Saved Schedules</entry>
@@ -239,6 +246,7 @@
     
     <!-- Time of week -->
     <entry key="yukon.dr.consumer.thermostat.schedule.WEEKDAY">Weekday</entry>
+    <entry key="yukon.dr.consumer.thermostat.schedule.WEEKEND">Weekend</entry>
     <entry key="yukon.dr.consumer.thermostat.schedule.SATURDAY">Saturday</entry>
     <entry key="yukon.dr.consumer.thermostat.schedule.SUNDAY">Sunday</entry>
 

@@ -14,7 +14,8 @@ public class ThermostatSeasonEntry {
 
     // Minutes from midnight
     private Integer startTime;
-    private Integer temperature;
+    private Integer coolTemperature;
+    private Integer heatTemperature;
 
     public Integer getId() {
         return id;
@@ -48,13 +49,21 @@ public class ThermostatSeasonEntry {
         this.startTime = startTime;
     }
 
-    public Integer getTemperature() {
-        return temperature;
+    public Integer getCoolTemperature() {
+        return coolTemperature;
     }
 
-    public void setTemperature(Integer temperature) {
-        this.temperature = temperature;
+    public void setCoolTemperature(Integer coolTemperature) {
+        this.coolTemperature = coolTemperature;
     }
+    
+    public Integer getHeatTemperature() {
+		return heatTemperature;
+	}
+    
+    public void setHeatTemperature(Integer heatTemperature) {
+		this.heatTemperature = heatTemperature;
+	}
 
     public Date getStartDate() {
 

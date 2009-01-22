@@ -190,7 +190,7 @@ public class StarsLiteFactory {
 		
 		for (int i = 0; i < contact.getContactNotifVect().size(); i++) {
 			com.cannontech.database.db.contact.ContactNotification notif =
-					(com.cannontech.database.db.contact.ContactNotification) contact.getContactNotifVect().get(i);
+					contact.getContactNotifVect().get(i);
 			
 			LiteContactNotification liteNotif = new LiteContactNotification(
 					notif.getContactNotifID().intValue(), liteContact.getContactID(),
@@ -413,8 +413,8 @@ public class StarsLiteFactory {
 		liteSeason.setSeasonID( season.getSeasonID().intValue() );
 		liteSeason.setScheduleID( season.getScheduleID().intValue() );
 		liteSeason.setWebConfigurationID( season.getWebConfigurationID().intValue() );
-		liteSeason.setStartDate( season.getStartDate().getTime() );
-		liteSeason.setDisplayOrder( season.getDisplayOrder().intValue() );
+		liteSeason.setCoolStartDate( season.getCoolStartDate().getTime() );
+		liteSeason.setHeatStartDate( season.getHeatStartDate().getTime() );
 	}
 
 	public static void setLiteLMThermostatSeasonEntry(LiteLMThermostatSeasonEntry liteSeasonEntry, com.cannontech.database.db.stars.hardware.LMThermostatSeasonEntry seasonEntry) {
@@ -847,7 +847,7 @@ public class StarsLiteFactory {
 		
 		contact.getContactNotifVect().removeAllElements();
 		for (int i = 0; i < liteContact.getLiteContactNotifications().size(); i++) {
-			LiteContactNotification liteNotif = (LiteContactNotification)
+			LiteContactNotification liteNotif = 
 					liteContact.getLiteContactNotifications().get(i);
 			
 			com.cannontech.database.db.contact.ContactNotification notif =
@@ -980,8 +980,8 @@ public class StarsLiteFactory {
 		season.setSeasonID( new Integer(liteSeason.getSeasonID()) );
 		season.setScheduleID( new Integer(liteSeason.getScheduleID()) );
 		season.setWebConfigurationID( new Integer(liteSeason.getWebConfigurationID()) );
-		season.setStartDate( new Date(liteSeason.getStartDate()) );
-		season.setDisplayOrder( new Integer(liteSeason.getDisplayOrder()) );
+		season.setCoolStartDate( new Date(liteSeason.getCoolStartDate()) );
+		season.setHeatStartDate( new Date(liteSeason.getHeatStartDate()) );
 	}
 	
 	public static void setLMThermostatSeasonEntry(com.cannontech.database.db.stars.hardware.LMThermostatSeasonEntry entry, LiteLMThermostatSeasonEntry liteEntry) {
@@ -1006,7 +1006,7 @@ public class StarsLiteFactory {
 		setLMThermostatSeason( season.getLMThermostatSeason(), liteSeason );
 		
 		for (int j = 0; j < liteSeason.getSeasonEntries().size(); j++) {
-			LiteLMThermostatSeasonEntry liteEntry = (LiteLMThermostatSeasonEntry) liteSeason.getSeasonEntries().get(j);
+			LiteLMThermostatSeasonEntry liteEntry = liteSeason.getSeasonEntries().get(j);
 			
 			com.cannontech.database.db.stars.hardware.LMThermostatSeasonEntry entry =
 					new com.cannontech.database.db.stars.hardware.LMThermostatSeasonEntry();
@@ -1024,7 +1024,7 @@ public class StarsLiteFactory {
 		setLMThermostatSchedule( schedule.getLmThermostatSchedule(), liteSched );
 		
 		for (int i = 0; i < liteSched.getThermostatSeasons().size(); i++) {
-			LiteLMThermostatSeason liteSeason = (LiteLMThermostatSeason) liteSched.getThermostatSeasons().get(i);
+			LiteLMThermostatSeason liteSeason = liteSched.getThermostatSeasons().get(i);
 			schedule.getThermostatSeasons().add( createLMThermostatSeason(liteSeason) );
 		}
 		
@@ -1229,7 +1229,7 @@ public class StarsLiteFactory {
 			account.getInventoryVector().add( liteAccount.getInventories().get(i) );
 		
 		for (int i = 0; i < liteAccount.getAppliances().size(); i++) {
-			LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAccount.getAppliances().get(i);
+			LiteStarsAppliance liteApp = liteAccount.getAppliances().get(i);
 			account.getApplianceVector().add( new Integer(liteApp.getApplianceID()) );
 		}
 		
@@ -1294,7 +1294,7 @@ public class StarsLiteFactory {
 		
 		starsContact.removeAllContactNotification();
 		for (int i = 0; i < liteContact.getLiteContactNotifications().size(); i++) {
-			LiteContactNotification liteContNotif = (LiteContactNotification) liteContact.getLiteContactNotifications().get(i);
+			LiteContactNotification liteContNotif = liteContact.getLiteContactNotifications().get(i);
 			ContactNotification starsContNotif = new ContactNotification();
 			setStarsContactNotification( starsContNotif, liteContNotif );
 			starsContact.addContactNotification( starsContNotif );
@@ -1347,10 +1347,6 @@ public class StarsLiteFactory {
 
 		// If the current mode is auto, then display that in the text area, and set mode to the last none-auto mode of the thermostat
 		StarsThermoModeSettings mode = StarsMsgUtils.getThermModeSetting( liteDynData.getSystemSwitch() );
-		if (mode != null && mode.getType() == StarsThermoModeSettings.AUTO_TYPE) {
-			mode = StarsMsgUtils.getThermModeSetting( liteDynData.getLastSystemSwitch() );
-			starsDynData.addInfoString( "Mode: AUTO" );
-		}
 		starsDynData.setMode( mode );
 		
 		if (liteDynData.getOutdoorTemperature() != Integer.MIN_VALUE) {
@@ -1385,7 +1381,7 @@ public class StarsLiteFactory {
 			starsThermProg.setScheduleName( liteSchedule.getScheduleName() );
 		starsThermProg.setThermostatType( StarsMsgUtils.getThermostatType(liteSchedule.getThermostatTypeID()) );
 		for (int i = 0; i < liteSchedule.getThermostatSeasons().size(); i++) {
-			LiteLMThermostatSeason liteSeason = (LiteLMThermostatSeason) liteSchedule.getThermostatSeasons().get(i);
+			LiteLMThermostatSeason liteSeason = liteSchedule.getThermostatSeasons().get(i);
 			StarsThermostatSeason starsSeason = createStarsThermostatSeason( liteSeason, energyCompany );
 			starsThermProg.addStarsThermostatSeason( starsSeason );
 		}
@@ -1401,7 +1397,7 @@ public class StarsLiteFactory {
 		
 		starsSettings.removeAllStarsThermostatManualEvent();
 		for (int i = 0; i < liteSettings.getThermostatManualEvents().size(); i++) {
-			LiteLMThermostatManualEvent liteEvent = (LiteLMThermostatManualEvent) liteSettings.getThermostatManualEvents().get(i);
+			LiteLMThermostatManualEvent liteEvent = liteSettings.getThermostatManualEvents().get(i);
 			starsSettings.addStarsThermostatManualEvent( StarsLiteFactory.createStarsThermostatManualEvent(liteEvent) );
 		}
 		
@@ -1485,7 +1481,7 @@ public class StarsLiteFactory {
 		StarsLMPrograms starsProgs = new StarsLMPrograms();
 		
 		for (int i = 0; i < liteAcctInfo.getPrograms().size(); i++) {
-			LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteAcctInfo.getPrograms().get(i);
+			LiteStarsLMProgram liteProg = liteAcctInfo.getPrograms().get(i);
 			starsProgs.addStarsLMProgram( createStarsLMProgram(liteProg, liteAcctInfo) );
 		}
 		
@@ -1497,25 +1493,25 @@ public class StarsLiteFactory {
 	public static StarsAppliances createStarsAppliances(List<LiteStarsAppliance> liteApps, LiteStarsEnergyCompany energyCompany) {
 		StarsAppliances starsApps = new StarsAppliances();
 		
-		TreeMap appMap = new TreeMap();
+		Map<String, List<StarsAppliance>> appMap = new TreeMap<String, List<StarsAppliance>>();
 		for (int i = 0; i < liteApps.size(); i++) {
 			LiteStarsAppliance liteApp = liteApps.get(i);
 			StarsAppliance starsApp = createStarsAppliance(liteApp, energyCompany);
 			
 			String description = energyCompany.getApplianceCategory( starsApp.getApplianceCategoryID() ).getDescription();
-			ArrayList list = (ArrayList) appMap.get( description );
+			List<StarsAppliance> list = appMap.get( description );
 			if (list == null) {
-				list = new ArrayList();
+				list = new ArrayList<StarsAppliance>();
 				appMap.put( description, list );
 			}
 			list.add( starsApp );
 		}
 		
-		Iterator it = appMap.values().iterator();
+		Iterator<List<StarsAppliance>> it = appMap.values().iterator();
 		while (it.hasNext()) {
-			ArrayList list = (ArrayList) it.next();
+			List<StarsAppliance> list = it.next();
 			for (int i = 0; i < list.size(); i++)
-				starsApps.addStarsAppliance( (StarsAppliance) list.get(i) );
+				starsApps.addStarsAppliance( list.get(i) );
 		}
 		
 		return starsApps;
@@ -1962,7 +1958,7 @@ public class StarsLiteFactory {
 			starsProg.setStatus( ServletUtils.OUT_OF_SERVICE );
 		
 		for (int i = liteAcctInfo.getProgramHistory().size() - 1; i >= 0; i--) {
-			LiteLMProgramEvent liteEvent = (LiteLMProgramEvent) liteAcctInfo.getProgramHistory().get(i);
+			LiteLMProgramEvent liteEvent = liteAcctInfo.getProgramHistory().get(i);
 			if (liteEvent.getProgramID() == liteProg.getProgramID()) {
 				YukonListEntry entry = DaoFactory.getYukonListDao().getYukonListEntry( liteEvent.getActionID() );
 				if (entry != null && entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_SIGNUP) {
@@ -1979,11 +1975,12 @@ public class StarsLiteFactory {
 		LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany)
 	{
 		StarsLMProgramHistory starsProgHist = new StarsLMProgramHistory();
-		ArrayList liteProgHist2 = new ArrayList( liteAcctInfo.getProgramHistory() );
-		TreeMap progHistMap = new TreeMap();
+		List<LiteLMProgramEvent> liteProgHist2 = 
+			new ArrayList<LiteLMProgramEvent>( liteAcctInfo.getProgramHistory() );
+		Map<Date, StarsLMProgramEvent> progHistMap = new TreeMap<Date, StarsLMProgramEvent>();
 		
 		for (int i = 0; i < liteProgHist2.size(); i++) {
-			LiteLMProgramEvent liteEvent = (LiteLMProgramEvent) liteProgHist2.get(i);
+			LiteLMProgramEvent liteEvent = liteProgHist2.get(i);
     		
 			StarsLMProgramEvent starsEvent = new StarsLMProgramEvent();
 			setStarsLMCustomerEvent( starsEvent, liteEvent );
@@ -1993,9 +1990,9 @@ public class StarsLiteFactory {
 				// Get opt out duration (in number of hours)
 				boolean foundDuration = false;
 				
-				Iterator it = liteProgHist2.listIterator(i + 1);
+				Iterator<LiteLMProgramEvent> it = liteProgHist2.listIterator(i + 1);
 				while (it.hasNext()) {
-					LiteLMProgramEvent liteEvent2 = (LiteLMProgramEvent) it.next();
+					LiteLMProgramEvent liteEvent2 = it.next();
 					if (liteEvent2.getProgramID() != liteEvent.getProgramID())
 						continue;
 					
@@ -2024,7 +2021,7 @@ public class StarsLiteFactory {
 				if (!foundDuration) continue;
 			}
 			
-			StarsLMProgramEvent starsEvent2 = (StarsLMProgramEvent) progHistMap.get( starsEvent.getEventDateTime() );
+			StarsLMProgramEvent starsEvent2 = progHistMap.get( starsEvent.getEventDateTime() );
 			if (starsEvent2 == null)	// No other events happened at the same time
 				progHistMap.put( starsEvent.getEventDateTime(), starsEvent );
 			else {	// Found events happened at the same time
@@ -2050,12 +2047,12 @@ public class StarsLiteFactory {
 		OptOutEventQueue queue = OptOutEventQueue.getInstance();
 		if (queue != null) {
 			OptOutEventQueue.OptOutEvent[] optoutEvents = queue.findOptOutEvents( liteAcctInfo.getAccountID() );
-			ArrayList events = new ArrayList();
+			List<StarsLMProgramEvent> events = new ArrayList<StarsLMProgramEvent>();
 			
 			for (int i = 0; i < optoutEvents.length; i++) {
 				StarsLMProgramEvent relatedEvent = null;
 				for (int j = 0; j < events.size(); j++) {
-					StarsLMProgramEvent event = (StarsLMProgramEvent) events.get(j);
+					StarsLMProgramEvent event = events.get(j);
 					if (Math.abs(event.getEventDateTime().getTime() - optoutEvents[i].getStartDateTime()) < 1000
 						&& event.getDuration() == optoutEvents[i].getPeriod())
 					{
@@ -2074,12 +2071,12 @@ public class StarsLiteFactory {
 						// Opt out event for all programs
 						relatedEvent.removeAllProgramID();
 						for (int j = 0; j < liteAcctInfo.getPrograms().size(); j++)
-							relatedEvent.addProgramID( ((LiteStarsLMProgram)liteAcctInfo.getPrograms().get(j)).getProgramID() );
+							relatedEvent.addProgramID( (liteAcctInfo.getPrograms().get(j)).getProgramID() );
 					}
 					else {
 						// Opt out event for a hardware
 						for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
-							LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
+							LiteStarsAppliance liteApp = liteAcctInfo.getAppliances().get(j);
 							if (liteApp.getInventoryID() == optoutEvents[i].getInventoryID() && liteApp.getProgramID() > 0) {
 								boolean programAdded = false;
 								for (int k = 0; k < relatedEvent.getProgramIDCount(); k++) {
@@ -2228,7 +2225,7 @@ public class StarsLiteFactory {
 				com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 		
 		synchronized (cache) {
-			java.util.List userGroups = (java.util.List) cache.getYukonUserGroupMap().get( liteUser );
+			List<LiteYukonGroup> userGroups = cache.getYukonUserGroupMap().get( liteUser );
 			for (int i = 0; i < custGroups.length; i++) {
 				if (userGroups.contains( custGroups[i] )) {
 					starsUser.setGroupID( custGroups[i].getGroupID() );
@@ -2279,24 +2276,26 @@ public class StarsLiteFactory {
 		else
 			starsSeason.setMode( StarsThermoModeSettings.HEAT );
 		
-		Hashtable towTable = new Hashtable();
+		Hashtable<Integer, List<LiteLMThermostatSeasonEntry>> towTable = 
+			new Hashtable<Integer, List<LiteLMThermostatSeasonEntry>>();
 		for (int j = 0; j < liteSeason.getSeasonEntries().size(); j++) {
-			LiteLMThermostatSeasonEntry liteEntry = (LiteLMThermostatSeasonEntry) liteSeason.getSeasonEntries().get(j);
+			LiteLMThermostatSeasonEntry liteEntry = liteSeason.getSeasonEntries().get(j);
 			Integer towID = new Integer( liteEntry.getTimeOfWeekID() );
 			
-			ArrayList liteEntryList = (ArrayList) towTable.get( towID );
+			List<LiteLMThermostatSeasonEntry> liteEntryList = towTable.get( towID );
 			if (liteEntryList == null) {
-				liteEntryList = new ArrayList();
+				liteEntryList = new ArrayList<LiteLMThermostatSeasonEntry>();
 				towTable.put( towID, liteEntryList );
 			}
 			liteEntryList.add( liteEntry );
 		}
 		
-		Iterator it = towTable.entrySet().iterator();
+		Iterator<Map.Entry<Integer, List<LiteLMThermostatSeasonEntry>>> it = 
+			towTable.entrySet().iterator();
 		while (it.hasNext()) {
-			Map.Entry entry = (Map.Entry) it.next();
-			Integer towID = (Integer) entry.getKey();
-			ArrayList liteEntries = (ArrayList) entry.getValue();
+			Map.Entry<Integer, List<LiteLMThermostatSeasonEntry>> entry = it.next();
+			Integer towID = entry.getKey();
+			List<LiteLMThermostatSeasonEntry> liteEntries = entry.getValue();
 			
 			StarsThermostatSchedule starsSched = createStarsThermostatSchedule( towID.intValue(), liteEntries );
 			if (starsSched != null)
@@ -2606,10 +2605,11 @@ public class StarsLiteFactory {
 		return starsList;
 	}
 	
-	public static StarsCustomerSelectionLists createStarsCustomerSelectionLists(ArrayList selectionLists) {
+	public static StarsCustomerSelectionLists createStarsCustomerSelectionLists(
+			List<YukonSelectionList> selectionLists) {
 		StarsCustomerSelectionLists starsCustSelLists = new StarsCustomerSelectionLists();
 		for (int i = 0; i < selectionLists.size(); i++) {
-			YukonSelectionList list = (YukonSelectionList) selectionLists.get(i);
+			YukonSelectionList list = selectionLists.get(i);
 			starsCustSelLists.addStarsCustSelectionList( StarsLiteFactory.createStarsCustSelectionList(list) );
 		}
         
@@ -2642,7 +2642,7 @@ public class StarsLiteFactory {
 		
 		if (event.getInventoryID() != 0) {
 			for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) {
-				LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(i);
+				LiteStarsAppliance liteApp = liteAcctInfo.getAppliances().get(i);
 				if (liteApp.getInventoryID() == event.getInventoryID() && liteApp.getProgramID() > 0) {
 					boolean programAdded = false;
 					for (int j = 0; j < starsEvent.getProgramIDCount(); j++) {
@@ -2658,7 +2658,7 @@ public class StarsLiteFactory {
 		}
 		else {
 			for (int i = 0; i < liteAcctInfo.getPrograms().size(); i++) {
-				LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteAcctInfo.getPrograms().get(i);
+				LiteStarsLMProgram liteProg = liteAcctInfo.getPrograms().get(i);
 				starsEvent.addProgramID( liteProg.getProgramID() );
 			}
 		}
@@ -2674,7 +2674,7 @@ public class StarsLiteFactory {
 			return false;
 		
 		for (int i = 0; i < liteContact.getLiteContactNotifications().size(); i++) {
-			LiteContactNotification liteNotif = (LiteContactNotification) liteContact.getLiteContactNotifications().get(i);
+			LiteContactNotification liteNotif = liteContact.getLiteContactNotifications().get(i);
 			StarsContactNotification starsNotif = ServletUtils.getContactNotification( starsContact, liteNotif.getNotificationCategoryID() );
 			if (starsNotif == null
 				|| liteNotif.isDisabled() != starsNotif.getDisabled()

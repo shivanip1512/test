@@ -7,7 +7,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
@@ -33,7 +32,6 @@ import com.cannontech.stars.dr.event.dao.LMCustomerEventBaseDao;
 import com.cannontech.stars.dr.hardware.model.HardwareType;
 import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.model.ScheduleDropDownItem;
-import com.cannontech.stars.dr.thermostat.model.ThermostatMode;
 import com.cannontech.stars.dr.thermostat.model.ThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.model.ThermostatSeason;
 import com.cannontech.stars.dr.thermostat.model.ThermostatSeasonEntry;
@@ -92,15 +90,19 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao, Initial
         int typeDefinitionId = type.getDefinitionId();
         LiteLMThermostatSchedule defaultSchedule = energyCompany.getDefaultThermostatSchedule(typeDefinitionId);
 
+        ThermostatSeason season = new ThermostatSeason();
+
         List<LiteLMThermostatSeason> defaultSeasonList = defaultSchedule.getThermostatSeasons();
         for (LiteLMThermostatSeason defaultSeason : defaultSeasonList) {
 
-            ThermostatSeason season = new ThermostatSeason();
+        	int webConfigurationID = defaultSeason.getWebConfigurationID();
+        	boolean isCoolSeason = webConfigurationID == StarsMsgUtils.YUK_WEB_CONFIG_ID_COOL;
 
-            long startDate = defaultSeason.getStartDate();
-            season.setStartDate(new Date(startDate));
+        	long coolStartDate = defaultSeason.getCoolStartDate();
+        	long heatStartDate = defaultSeason.getHeatStartDate();
+        	season.setCoolStartDate(new Date(coolStartDate));
+        	season.setHeatStartDate(new Date(heatStartDate));
 
-            int webConfigurationID = defaultSeason.getWebConfigurationID();
             season.setWebConfigurationId(webConfigurationID);
 
             List<LiteLMThermostatSeasonEntry> defaultEntryList = defaultSeason.getSeasonEntries();
@@ -113,7 +115,11 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao, Initial
                 entry.setStartTime(startTime / 60);
 
                 int temperature = defaultEntry.getTemperature();
-                entry.setTemperature(temperature);
+                if(isCoolSeason) {
+                	entry.setCoolTemperature(temperature);
+                } else {
+                	entry.setHeatTemperature(temperature);
+                }
 
                 int timeOfWeekId = defaultEntry.getTimeOfWeekID();
                 int timeOfWeekDefinitionId = YukonListEntryHelper.getYukonDefinitionId(energyCompany,
@@ -125,7 +131,7 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao, Initial
                 season.addSeasonEntry(entry);
             }
 
-            schedule.addSeason(season);
+            schedule.setSeason(season);
         }
 
         return schedule;
@@ -145,11 +151,8 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao, Initial
                                                                         new ThermostatScheduleMapper(energyCompany),
                                                                         scheduleId);
 
-        List<ThermostatSeason> seasons = this.getSeasons(schedule.getId(), energyCompany);
-
-        for (ThermostatSeason season : seasons) {
-            schedule.addSeason(season);
-        }
+        ThermostatSeason season = this.getSeason(schedule.getId(), energyCompany);
+        schedule.setSeason(season);
 
         return schedule;
     }
@@ -174,11 +177,8 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao, Initial
         }
 
         if (schedule != null) {
-            List<ThermostatSeason> seasons = this.getSeasons(schedule.getId(), energyCompany);
-
-            for (ThermostatSeason season : seasons) {
-                schedule.addSeason(season);
-            }
+            ThermostatSeason season = this.getSeason(schedule.getId(), energyCompany);
+            schedule.setSeason(season);
         }
 
         return schedule;
@@ -264,35 +264,22 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao, Initial
                                   inventoryId,
                                   scheduleId);
 
-        Map<ThermostatMode, ThermostatSeason> seasonMap = schedule.getSeasonMap();
+        ThermostatSeason season = schedule.getSeason();
 
         // Save cool season
-        ThermostatSeason coolSeason = seasonMap.get(ThermostatMode.COOL);
-        coolSeason.setScheduleId(scheduleId);
+        season.setScheduleId(scheduleId);
 
         // Cool season is hard-coded to June 15th
         Calendar cal = new GregorianCalendar(1970, 6, 15);
         Date coolDate = cal.getTime();
-        coolSeason.setStartDate(coolDate);
+        season.setCoolStartDate(coolDate);
 
-        int coolWebConfigurationId = StarsMsgUtils.YUK_WEB_CONFIG_ID_COOL;
-        coolSeason.setWebConfigurationId(coolWebConfigurationId);
-
-        this.saveSeason(coolSeason, 1, energyCompany);
-
-        // Save heat season
-        ThermostatSeason heatSeason = seasonMap.get(ThermostatMode.HEAT);
-        heatSeason.setScheduleId(scheduleId);
-
-        // Cool season is hard-coded to October 15th
+        // Heat season is hard-coded to October 15th
         cal = new GregorianCalendar(1970, 10, 15);
         Date heatDate = cal.getTime();
-        heatSeason.setStartDate(heatDate);
-
-        int heatWebConfigurationId = StarsMsgUtils.YUK_WEB_CONFIG_ID_HEAT;
-        heatSeason.setWebConfigurationId(heatWebConfigurationId);
-
-        this.saveSeason(heatSeason, 2, energyCompany);
+        season.setHeatStartDate(heatDate);
+        
+        this.saveSeason(season, energyCompany);
 
     }
 
@@ -353,25 +340,29 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao, Initial
      * @param scheduleId - Id of schedule in question
      * @return List of seasons
      */
-    private List<ThermostatSeason> getSeasons(int scheduleId, LiteStarsEnergyCompany energyCompany) {
+    private ThermostatSeason getSeason(int scheduleId, LiteStarsEnergyCompany energyCompany) {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT * from LMThermostatSeason");
         sql.append("WHERE ScheduleId = ?");
-        sql.append("ORDER BY DisplayOrder");
 
         List<ThermostatSeason> seasons = simpleJdbcTemplate.query(sql.toString(),
                                                                   new ThermostatSeasonMapper(),
                                                                   scheduleId);
 
-        for (ThermostatSeason season : seasons) {
-            List<ThermostatSeasonEntry> seasonEntries = this.getSeasonEntries(season.getId(), energyCompany);
-            for (ThermostatSeasonEntry entry : seasonEntries) {
-                season.addSeasonEntry(entry);
-            }
+        // Only use the first season - there should only be one season except for the leagacy
+        // schedules in the db
+        ThermostatSeason returnSeason = null;
+        if(seasons.size() > 0) {
+        	returnSeason = seasons.get(0);
+        	List<ThermostatSeasonEntry> seasonEntries = 
+        		this.getSeasonEntries(returnSeason.getId(), energyCompany);
+        	for (ThermostatSeasonEntry entry : seasonEntries) {
+        		returnSeason.addSeasonEntry(entry);
+        	}
         }
-
-        return seasons;
+        
+        return returnSeason;
     }
 
     /**
@@ -398,11 +389,9 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao, Initial
     /**
      * Helper method to save a thermostat season
      * @param season - Season to save
-     * @param displayOrder - Display order for the season
      * @param energyCompany - Current energy company
      */
-    private void saveSeason(ThermostatSeason season, int displayOrder,
-            LiteStarsEnergyCompany energyCompany) {
+    private void saveSeason(ThermostatSeason season, LiteStarsEnergyCompany energyCompany) {
 
         Integer seasonId = season.getId();
         SqlStatementBuilder seasonSql = new SqlStatementBuilder();
@@ -413,19 +402,21 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao, Initial
             season.setId(seasonId);
 
             seasonSql.append("INSERT INTO LMThermostatSeason");
-            seasonSql.append("(ScheduleId, WebConfigurationId, StartDate, DisplayOrder, SeasonId)");
+            seasonSql.append("(ScheduleId, WebConfigurationId");
+            seasonSql.append(", CoolStartDate, HeatStartDate, SeasonId)");
             seasonSql.append("VALUES (?,?,?,?,?)");
         } else {
             seasonSql.append("UPDATE LMThermostatSeason");
-            seasonSql.append("SET ScheduleId = ?, WebConfigurationId = ?, StartDate = ?, DisplayOrder = ?");
+            seasonSql.append("SET ScheduleId = ?, WebConfigurationId = ?");
+            seasonSql.append(", CoolStartDate = ?, HeatStartDate = ?");
             seasonSql.append("WHERE SeasonId = ?");
         }
 
         simpleJdbcTemplate.update(seasonSql.toString(),
                                   season.getScheduleId(),
                                   season.getWebConfigurationId(),
-                                  season.getStartDate(),
-                                  displayOrder,
+                                  season.getCoolStartDate(),
+                                  season.getHeatStartDate(),
                                   seasonId);
 
         // Save each of the season entries for the season
@@ -442,12 +433,14 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao, Initial
                 entry.setId(entryId);
 
                 entrySql.append("INSERT INTO LMThermostatSeasonEntry");
-                entrySql.append("(SeasonId, TimeOfWeekId, StartTime, Temperature, EntryId)");
+                entrySql.append("(SeasonId, TimeOfWeekId, StartTime");
+                entrySql.append(", CoolTemperature, HeatTemperature, EntryId)");
                 entrySql.append("VALUES (?,?,?,?,?)");
 
             } else {
                 entrySql.append("UPDATE LMThermostatSeasonEntry");
-                entrySql.append("SET SeasonId = ?, TimeOfWeekId = ?, StartTime = ?, Temperature = ?");
+                entrySql.append("SET SeasonId = ?, TimeOfWeekId = ?, StartTime = ?");
+                entrySql.append(", CoolTemperature = ?, HeatTemperature = ?");
                 entrySql.append("WHERE EntryId = ?");
             }
 
@@ -458,7 +451,6 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao, Initial
                                                                    YukonSelectionListDefs.YUK_LIST_NAME_TIME_OF_WEEK,
                                                                    timeOfWeek.getDefinitionId());
 
-            Integer temperature = entry.getTemperature();
             // Start time is seconds from midnight in db
             Integer startTime = entry.getStartTime() * 60;
 
@@ -466,7 +458,8 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao, Initial
                                       seasonId,
                                       timeOfWeekId,
                                       startTime,
-                                      temperature,
+                                      entry.getCoolTemperature(),
+                                      entry.getHeatTemperature(),
                                       entryId);
 
         }
@@ -525,13 +518,15 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao, Initial
             int id = rs.getInt("SeasonId");
             int scheduleId = rs.getInt("ScheduleId");
             int webConfigurationId = rs.getInt("WebConfigurationId");
-            Date startDate = rs.getTimestamp("StartDate");
+            Date coolStartDate = rs.getTimestamp("CoolStartDate");
+            Date heatStartDate = rs.getTimestamp("HeatStartDate");
 
             ThermostatSeason season = new ThermostatSeason();
             season.setId(id);
             season.setScheduleId(scheduleId);
             season.setWebConfigurationId(webConfigurationId);
-            season.setStartDate(startDate);
+            season.setCoolStartDate(coolStartDate);
+            season.setHeatStartDate(heatStartDate);
 
             return season;
         }
@@ -558,7 +553,8 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao, Initial
             int seasonId = rs.getInt("SeasonId");
             int timeOfWeekId = rs.getInt("TimeOfWeekId");
             int startTime = rs.getInt("StartTime");
-            int temperature = rs.getInt("Temperature");
+            int coolTemperature = rs.getInt("CoolTemperature");
+            int heatTemperature = rs.getInt("HeatTemperature");
 
             ThermostatSeasonEntry entry = new ThermostatSeasonEntry();
             entry.setId(id);
@@ -572,8 +568,8 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao, Initial
 
 			// Start time is seconds from midnight in db
             entry.setStartTime(startTime / 60);
-
-            entry.setTemperature(temperature);
+          	entry.setCoolTemperature(coolTemperature);
+          	entry.setHeatTemperature(heatTemperature);
 
             return entry;
         }

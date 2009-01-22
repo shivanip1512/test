@@ -19,8 +19,8 @@ public class LiteLMThermostatSeason extends LiteBase {
 	
 	private int scheduleID = CtiUtilities.NONE_ZERO_ID;
 	private int webConfigurationID = CtiUtilities.NONE_ZERO_ID;
-	private long startDate = 0;
-	private int displayOrder = 0;
+	private long coolStartDate = 0;
+	private long heatStartDate = 0;
 	private List<LiteLMThermostatSeasonEntry> seasonEntries = null;
 	
 	public LiteLMThermostatSeason() {
@@ -43,14 +43,6 @@ public class LiteLMThermostatSeason extends LiteBase {
 	}
 
 	/**
-	 * Returns the displayOrder.
-	 * @return int
-	 */
-	public int getDisplayOrder() {
-		return displayOrder;
-	}
-
-	/**
 	 * Returns the scheduleID.
 	 * @return int
 	 */
@@ -62,8 +54,12 @@ public class LiteLMThermostatSeason extends LiteBase {
 	 * Returns the startDate.
 	 * @return long
 	 */
-	public long getStartDate() {
-		return startDate;
+	public long getCoolStartDate() {
+		return coolStartDate;
+	}
+	
+	public long getHeatStartDate() {
+		return heatStartDate;
 	}
 
 	/**
@@ -72,14 +68,6 @@ public class LiteLMThermostatSeason extends LiteBase {
 	 */
 	public int getWebConfigurationID() {
 		return webConfigurationID;
-	}
-
-	/**
-	 * Sets the displayOrder.
-	 * @param displayOrder The displayOrder to set
-	 */
-	public void setDisplayOrder(int displayOrder) {
-		this.displayOrder = displayOrder;
 	}
 
 	/**
@@ -92,10 +80,14 @@ public class LiteLMThermostatSeason extends LiteBase {
 
 	/**
 	 * Sets the startDate.
-	 * @param startDate The startDate to set
+	 * @param coolStartDate The startDate to set
 	 */
-	public void setStartDate(long startDate) {
-		this.startDate = startDate;
+	public void setCoolStartDate(long coolStartDate) {
+		this.coolStartDate = coolStartDate;
+	}
+	
+	public void setHeatStartDate(long heatStartDate) {
+		this.heatStartDate = heatStartDate;
 	}
 
 	/**

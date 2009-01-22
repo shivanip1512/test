@@ -7,7 +7,12 @@ var arrowBottomBnd = -32;
 var thermometerLen = 100;
 var arrowTopBnd = arrowBottomBnd - thermometerLen;
 
-var thermMode = 'C';	// Thermostat mode flag, 'C'/'H'
+var heatMode = 'H';
+var coolMode = 'C';
+
+var currentTimePeriod = 'WEEKDAY';
+var currentScheduleMode = 'WEEKDAY_SAT_SUN';
+
 var tempUnit = 'F';     // Temperature mode, 'F'/'C'
 var lowerLimit = 45;  //always specified in fahrenheit
 var upperLimit = 88;  //always specified in fahrenheit
@@ -18,26 +23,21 @@ var tempCArrows = ['', 'div1C', 'div2C', 'div3C', 'div4C'];
 var tempHArrows = ['', 'div1H', 'div2H', 'div3H', 'div4H'];
 var timeFields = ['', 'time1', 'time2', 'time3', 'time4'];
 var timeMinFields = ['', 'time1min', 'time2min', 'time3min', 'time4min'];
-var tempFields = ['', 'temp1', 'temp2', 'temp3', 'temp4'];
-var tempDisplayFields = ['', 'tempdisp1', 'tempdisp2', 'tempdisp3', 'tempdisp4'];
-var tempDisplayFahrenheitFields = ['tempdisp1F', 'tempdisp2F', 'tempdisp3F', 'tempdisp4F'];
-var tempDisplayCelsiusFields = ['tempdisp1C', 'tempdisp2C', 'tempdisp3C', 'tempdisp4C'];
-var tempInputFields = ['', 'tempin1', 'tempin2', 'tempin3', 'tempin4'];
+var tempCFields = ['', 'tempC1', 'tempC2', 'tempC3', 'tempC4'];
+var tempHFields = ['', 'tempH1', 'tempH2', 'tempH3', 'tempH4'];
+var tempHInputFields = ['', 'tempHin1', 'tempHin2', 'tempHin3', 'tempHin4'];
+var tempCInputFields = ['', 'tempCin1', 'tempCin2', 'tempCin3', 'tempCin4'];
 var checkboxes = ['', 'WakeEnabled', 'LeaveEnabled', 'ReturnEnabled', 'SleepEnabled'];
 
 function updateLayout(hour1, min1, temp1C, temp1H, hour2, min2, temp2C, temp2H, hour3, min3, temp3C, temp3H, hour4, min4, temp4C, temp4H) {
   moveLayer(1, hour1, min1);
   moveTempArrows(1, temp1C, temp1H);
-  showEitherTemp(1, temp1C, temp1H);
   moveLayer(2, hour2, min2);
   moveTempArrows(2, temp2C, temp2H);
-  showEitherTemp(2, temp2C, temp2H);
   moveLayer(3, hour3, min3);
   moveTempArrows(3, temp3C, temp3H);
-  showEitherTemp(3, temp3C, temp3H);
   moveLayer(4, hour4, min4);
   moveTempArrows(4, temp4C, temp4H);
-  showEitherTemp(4, temp4C, temp4H);
 }
 
 
@@ -77,14 +77,6 @@ function showTimeUnoccupied() {
   showTime(s,txt,4);
 }
 
-function showEitherTemp(idx, tempCool, tempHeat) {
-  if (thermMode == 'C') {
-    showTemp(idx, tempCool);
-  } else {
-    showTemp(idx, tempHeat);
-  }
-}
-
 function showTime(s, txt, idx) {
   var curPos = parseInt(s.style.left, 10);
   
@@ -95,28 +87,28 @@ function showTime(s, txt, idx) {
   
 }
 
-function handleUpdateTemp(idx) {
-  var a = document.getElementById((thermMode == 'C')? tempCArrows[idx] : tempHArrows[idx]);
+function handleUpdateCoolTemp(idx) {
+  var a = document.getElementById(tempCArrows[idx]);
   var curPos = parseInt(a.style.top, 10);
   var temp = Math.floor((arrowBottomBnd - curPos) / thermometerLen * (upperLimit - lowerLimit)) + lowerLimit;
-  showTemp(idx, temp);
+  showTemp(idx, temp, coolMode);
 }
 
-function showTemp(idx, tempF) {
-  var div = document.getElementById(tempDisplayFields[idx]);
-  div.innerHTML = getConvertedTemp(tempF, tempUnit);
-  $(tempInputFields[idx]).value = getConvertedTemp(tempF, tempUnit);
-  $(tempFields[idx]).value = tempF;
+function handleUpdateHeatTemp(idx, mode) {
+	var a = document.getElementById(tempHArrows[idx]);
+	var curPos = parseInt(a.style.top, 10);
+	var temp = Math.floor((arrowBottomBnd - curPos) / thermometerLen * (upperLimit - lowerLimit)) + lowerLimit;
+	showTemp(idx, temp, heatMode);
+}
+
+function showTemp(idx, tempF, mode) {
   
-  var fSpan = $(tempDisplayFahrenheitFields[idx-1]);
-  var cSpan = $(tempDisplayCelsiusFields[idx-1]);
-  if(tempUnit == 'F') {
-    fSpan.show();
-    cSpan.hide();
-  } else {
-    fSpan.hide();
-    cSpan.show();
-  }  
+  var inputFields = (mode == coolMode) ? tempCInputFields : tempHInputFields;
+  $(inputFields[idx]).value = getConvertedTemp(tempF, tempUnit);
+
+  var showTempFields = (mode == coolMode) ? tempCFields : tempHFields;
+  $(showTempFields[idx]).value = tempF;
+  
 }
 
 function moveTempArrow(divIdArrow, newTemp) {
@@ -134,11 +126,11 @@ function moveTempArrow(divIdArrow, newTemp) {
 function moveTempArrows(idx, tempC, tempH) {
   if (tempC) {
     moveTempArrow(tempCArrows[idx], tempC);
-    showTemp(idx, tempC);
+    showTemp(idx, tempC, coolMode);
   }
   if (tempH) {
     moveTempArrow(tempHArrows[idx], tempH);
-    showTemp(idx, tempH);
+    showTemp(idx, tempH, heatMode);
   }
 }
 
@@ -256,12 +248,13 @@ function timeChange(t, idx) {
   moveLayer(idx, hour, minute);
 }
 
-function tempChange(idx) {
-  var fields = (thermMode == 'C') ? tempCArrows : tempHArrows;
-  validateTemp(tempInputFields[idx]);
-  var temp = getFahrenheitTemp($(tempInputFields[idx]).value, tempUnit);
+function tempChange(idx, mode) {
+  var fields = (mode == coolMode) ? tempCArrows : tempHArrows;
+  var inputFields = (mode == coolMode) ? tempCInputFields : tempHInputFields;
+  validateTemp(inputFields[idx]);
+  var temp = getFahrenheitTemp($(inputFields[idx]).value, tempUnit);
   moveTempArrow(fields[idx], temp);
-  showTemp(idx, temp);
+  showTemp(idx, temp, mode);
 } 
 
 
@@ -277,14 +270,23 @@ function setTempUnits(newUnit){
     tempUnitField.value = newUnit;
     tempUnit = newUnit;
 
-    convertFieldTemp('tempin1', currentTempUnit, newUnit);
-    handleUpdateTemp(1);
-    convertFieldTemp('tempin2', currentTempUnit, newUnit);
-    handleUpdateTemp(2);
-    convertFieldTemp('tempin3', currentTempUnit, newUnit);
-    handleUpdateTemp(3);
-    convertFieldTemp('tempin4', currentTempUnit, newUnit);
-    handleUpdateTemp(4);
+    convertFieldTemp('tempCin1', currentTempUnit, newUnit);
+    handleUpdateCoolTemp(1);
+    convertFieldTemp('tempCin2', currentTempUnit, newUnit);
+    handleUpdateCoolTemp(2);
+    convertFieldTemp('tempCin3', currentTempUnit, newUnit);
+    handleUpdateCoolTemp(3);
+    convertFieldTemp('tempCin4', currentTempUnit, newUnit);
+    handleUpdateCoolTemp(4);
+
+    convertFieldTemp('tempHin1', currentTempUnit, newUnit);
+    handleUpdateHeatTemp(1);
+    convertFieldTemp('tempHin2', currentTempUnit, newUnit);
+    handleUpdateHeatTemp(2);
+    convertFieldTemp('tempHin3', currentTempUnit, newUnit);
+    handleUpdateHeatTemp(3);
+    convertFieldTemp('tempHin4', currentTempUnit, newUnit);
+    handleUpdateHeatTemp(4);
     
     if('C' == newUnit) {
         $('celsiusLink').hide();
@@ -318,104 +320,35 @@ function convertFieldTemp(fieldId, currentUnit, newUnit){
     
 }
 
-function updateMode(mode) {
-
-    $('mode').value = mode;
-    var cool = (mode == 'COOL');
-
-    if(!alertSaveSchedule()) {
-        if(!cool) {
-            $('coolRadio').checked = "checked";
-        } else {
-            $('heatRadio').checked = "checked";
-        }
-        return;
-    }
-
-    
-    // Save the current settings for the mode we were just on
-    getCurrentSchedule(currentTimePeriod, (cool)? 'HEAT' : 'COOL');
-    
-    // Show/hide the blue/red/gray arrows based on mode
-    if(cool) {
-        thermMode = 'C';
-    
-        $('arrow1C').show();
-        $('arrow1C_Gray').hide();
-        $('arrow1H').hide();
-        $('arrow1H_Gray').show();
-
-        $('arrow2C').show();
-        $('arrow2C_Gray').hide();
-        $('arrow2H').hide();
-        $('arrow2H_Gray').show();
-
-        $('arrow3C').show();
-        $('arrow3C_Gray').hide();
-        $('arrow3H').hide();
-        $('arrow3H_Gray').show();
-
-        $('arrow4C').show();
-        $('arrow4C_Gray').hide();
-        $('arrow4H').hide();
-        $('arrow4H_Gray').show();
-    } else {
-        thermMode = 'H';
-        
-        $('arrow1C').hide();
-        $('arrow1C_Gray').show();
-        $('arrow1H').show();
-        $('arrow1H_Gray').hide();
-        
-        $('arrow2C').hide();
-        $('arrow2C_Gray').show();
-        $('arrow2H').show();
-        $('arrow2H_Gray').hide();
-        
-        $('arrow3C').hide();
-        $('arrow3C_Gray').show();
-        $('arrow3H').show();
-        $('arrow3H_Gray').hide();
-        
-        $('arrow4C').hide();
-        $('arrow4C_Gray').show();
-        $('arrow4H').show();
-        $('arrow4H_Gray').hide();
-    
-    }
-   
-    // Load the settings for the new mode
-    setCurrentSchedule(currentTimePeriod);
-     
-}
-
-function getCurrentSchedule(timePeriod, currentCoolHeat) {
+function getCurrentSchedule(timePeriod) {
 
     var timeTempArray = $A();
 
-    // Get each time/temp pair from UI
+    // Get each time/temp/temp set from UI for cool AND heat
     for(var i=1;i<5;i++) {
-        var time = $F('time' + i + 'min');
-        var temp = $F('tempin' + i);
-        var timeTemp = $H();
+    	var timeTemp = $H();
+
+    	var time = $F('time' + i + 'min');
         timeTemp.time = time;
-        timeTemp.temp = temp;
+        
+        var tempC = $F('tempCin' + i);
+        timeTemp.coolTemp = tempC;
+
+        var tempH = $F('tempHin' + i);
+        timeTemp.heatTemp = tempH;
+
         timeTempArray[i-1] = timeTemp;
     }
 
-    // Add array of time/temp to schedules for current heatCool and timePeriod   
-    var coolHeat = currentCoolHeat;     
-    if(coolHeat == null) {
-        coolHeat = $RF('coolRadio');
-    }
-    var timePeriodHash = schedules[coolHeat];
+    // Add array of cool time/temp to schedules for current timePeriod   
+    var timePeriodHash = schedules['season'];
     if(timePeriodHash == null) {
-        timePeriodHash = $H();
+    	timePeriodHash = $H();
     }
 
     timePeriodHash[timePeriod] = timeTempArray;
 
-    schedules[coolHeat] = timePeriodHash; 
+    schedules['season'] = timePeriodHash; 
 
     // Store the json string into the form field        
     $('schedules').value = schedules.toJSON();
@@ -425,8 +358,7 @@ function getCurrentSchedule(timePeriod, currentCoolHeat) {
 function setCurrentSchedule(timePeriod) {
 
     // Get the array of time/temp for the current coolHeat setting and timePeriod
-    var coolHeat = $RF('coolRadio');
-    var timeTempArray = schedules[coolHeat][timePeriod];
+    var timeTempArray = schedules['season'][timePeriod];
 
     // Set the time/temp values
     if(timeTempArray != null) {
@@ -434,60 +366,27 @@ function setCurrentSchedule(timePeriod) {
             var timeVal = timeTempArray[i-1].time;
             $('time' + i + 'min').value = timeVal;
             $('time' + i).value = timeValToStr(timeVal);
-            $('tempin' + i).value = timeTempArray[i-1].temp;
+            $('tempCin' + i).value = timeTempArray[i-1].coolTemp;
+            $('tempHin' + i).value = timeTempArray[i-1].heatTemp;
         }
         
-    
         // Update the slidey bar UI
-        tempChange(1);
         timeChange($('time1'),1);
-        tempChange(2);
         timeChange($('time2'),2);
-        tempChange(3);
         timeChange($('time3'),3);
-        tempChange(4);
         timeChange($('time4'),4);
+
+        tempChange(1, coolMode);
+        tempChange(2, coolMode);
+        tempChange(3, coolMode);
+        tempChange(4, coolMode);
+    	
+    	tempChange(1, heatMode);
+    	tempChange(2, heatMode);
+    	tempChange(3, heatMode);
+    	tempChange(4, heatMode);
     }
     
-}
-
-function switchSchedule(timePeriod) {
-
-    if(!alertSaveSchedule()) {
-        return;
-    }
-
-    $('weekdayText').hide();
-    $('saturdayText').hide();
-    $('sundayText').hide();
-    $('weekdayLink').hide();
-    $('saturdayLink').hide();
-    $('sundayLink').hide();
-    $('applyToWeekendSpan').hide();
-
-    if(timePeriod == 'WEEKDAY') {
-        $('weekdayText').show();
-        $('saturdayLink').show();
-        $('sundayLink').show();
-        $('applyToWeekendSpan').show();
-    } else if(timePeriod == 'SATURDAY') {
-        $('weekdayLink').show();
-        $('saturdayText').show();
-        $('sundayLink').show();
-    } else if(timePeriod == 'SUNDAY') {
-        $('weekdayLink').show();
-        $('saturdayLink').show();
-        $('sundayText').show();
-    }
-    
-    $('timeOfWeek').value = timePeriod;
-    
-    // Store the current settings and update the UI to the settings for the selected timePeriod
-    getCurrentSchedule(currentTimePeriod);
-    setCurrentSchedule(timePeriod);
-    
-    currentTimePeriod = timePeriod;
-
 }
 
 // Function to get the current value of a radio button group
@@ -502,27 +401,84 @@ function $RF(radioId) {
     return (checked) ? $F(checked) : null;
 }
 
-function applySettingsToWeekend(input) {
+function changeTimePeriod(timePeriod) {
 
-    var apply = $F(input);
-    if(apply == null) {
-        apply = false;
+    if(!alertSaveSchedule()) {
+        return;
     }
+
+    $('timeOfWeek').value = timePeriod;
     
-    if(apply) {
-        
-        $('saturdayText').hide();
-        $('sundayText').hide();
-        $('saturdayLink').hide();
-        $('sundayLink').hide();
-        
-        getCurrentSchedule('SATURDAY');
-        getCurrentSchedule('SUNDAY');
-        
-    } else {
-        $('saturdayLink').show();
-        $('sundayLink').show();
+    // Store the current settings and update the UI to the settings for the selected timePeriod
+    getCurrentSchedule(currentTimePeriod);
+    setCurrentSchedule(timePeriod);
+    
+    currentTimePeriod = timePeriod;
+
+    updateTimePeriodUI();
+}
+
+function changeScheduleMode() {
+
+	if(!alertModeChange()) {
+		// reselect the last mode
+		$(currentScheduleMode).checked = "checked";
+		
+        return;
     }
+	
+    var mode = $RF('allRadio');
+    
+    currentScheduleMode = mode;
+
+    // Always default to weekday selected when mode changes
+    changeTimePeriod('WEEKDAY');
+    
+}
+
+function updateTimePeriodUI() {
+	
+	// Hide everything
+	$('weekdayText').hide();
+	$('weekdayLink').hide();
+	$('saturdayText').hide();
+	$('saturdayLink').hide();
+	$('sundayText').hide();
+	$('sundayLink').hide();
+	$('weekendText').hide();
+	$('weekendLink').hide();
+
+	if(currentScheduleMode == 'ALL') {
+
+		$('weekdayText').show();
+        
+    } else if(currentScheduleMode == 'WEEKDAY_SAT_SUN') {
+
+    	if(currentTimePeriod == 'WEEKDAY') {
+	    	$('weekdayText').show();
+	    	$('saturdayLink').show();
+	    	$('sundayLink').show();
+    	} else if(currentTimePeriod == 'SATURDAY') {
+    		$('weekdayLink').show();
+    		$('saturdayText').show();
+    		$('sundayLink').show();
+    	} else if(currentTimePeriod == 'SUNDAY') {
+    		$('weekdayLink').show();
+    		$('saturdayLink').show();
+    		$('sundayText').show();
+    	}
+
+    } else if(currentScheduleMode == 'WEEKDAY_WEEKEND') {
+
+    	if(currentTimePeriod == 'WEEKDAY') {
+	    	$('weekdayText').show();
+	    	$('weekendLink').show();
+    	} else if(currentTimePeriod == 'WEEKEND') {
+    		$('weekdayLink').show();
+    		$('weekendText').show();
+    	}
+    }
+	
 }
 
 function validateTemp(input) {

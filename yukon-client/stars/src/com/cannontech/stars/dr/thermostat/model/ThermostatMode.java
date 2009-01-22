@@ -12,7 +12,6 @@ public enum ThermostatMode implements ListEntryEnum {
     COOL(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_COOL, "cool"), 
     HEAT(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_HEAT, "heat"), 
     OFF(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_OFF, "off"), 
-    AUTO(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_AUTO, "auto"), 
     EMERGENCY_HEAT(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_EMERGENCY_HEAT,
             "emergencyheat");
 

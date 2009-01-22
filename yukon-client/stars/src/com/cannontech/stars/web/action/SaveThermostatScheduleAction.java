@@ -109,6 +109,7 @@ public class SaveThermostatScheduleAction implements ActionBase {
 				YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
 			
 			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getById(saveSchedule.getInventoryID());
+			StarsLiteFactory.extendLiteInventoryBase(liteHw, energyCompany);
 			LiteLMThermostatSchedule liteNewSched = liteHw.getThermostatSettings().getThermostatSchedule();
 			
 			LiteLMThermostatSchedule liteOldSched = null;

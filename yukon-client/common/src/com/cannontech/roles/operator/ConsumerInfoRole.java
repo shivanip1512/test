@@ -102,4 +102,5 @@ public interface ConsumerInfoRole {
     public static final int OPT_OUT_ADMIN_CHANGE_ENABLE = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 96;
     public static final int OPT_OUT_ADMIN_CANCEL_CURRENT = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 97;
     public static final int OPT_OUT_ADMIN_CHANGE_COUNTS = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 98;
+    public static final int THERMOSTAT_SCHEDULE_5_2 = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 99;
 }

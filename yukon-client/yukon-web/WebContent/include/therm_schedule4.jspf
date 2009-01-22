@@ -137,7 +137,6 @@
 </script>
 <script language = "JavaScript">
 // Set global variable in thermostat2.js
-thermMode = '<%= isCooling ? "C" : "H" %>';
 tempUnit = '<%= tempUnit %>';
 
 function switchSettings(day, mode, thermType) {
@@ -223,10 +222,15 @@ function init() {
 			  <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?<%= thermNoStr %>&day=<%= daySetting.toString() %>&mode=<%= modeSetting.toString() %>&type=<%=thermType %>">
 			  <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?<%= thermNoStr %>&day=<%= daySetting.toString() %>&mode=<%= modeSetting.toString() %>&type=<%=thermType %>">
               <input type="hidden" name="<%= ServletUtils.CONFIRM_ON_MESSAGE_PAGE %>">
-              <input type="hidden" name="temp1" id="temp1">
-              <input type="hidden" name="temp2" id="temp2">
-              <input type="hidden" name="temp3" id="temp3">
-              <input type="hidden" name="temp4" id="temp4">
+              <input type="hidden" name="tempCool1" id="tempCool1">
+              <input type="hidden" name="tempCool2" id="tempCool2">
+              <input type="hidden" name="tempCool3" id="tempCool3">
+              <input type="hidden" name="tempCool4" id="tempCool4">
+              <input type="hidden" name="tempHeat1" id="tempHeat1">
+              <input type="hidden" name="tempHeat2" id="tempHeat2">
+              <input type="hidden" name="tempHeat3" id="tempHeat3">
+              <input type="hidden" name="tempHeat4" id="tempHeat4">
+
 <%	if (allTherm) { %>
               <table width="80%" border="0" cellspacing="0" cellpadding="0">
                 <tr> 
@@ -237,10 +241,11 @@ function init() {
 <%	} %>
               <table width="80%" border="1" cellspacing = "0" cellpadding = "2">
                 <tr> 
-                    <td align = "center"  valign = "bottom" class = "Background"> 
+                    <td align = "center"  valign = "bottom" class="Background"> 
                       <table width="478" border="0" height="8" valign = "bottom" >
                         <tr> 
-                          <td class = "TableCell1" align = "left" width="54%"> 
+                          <td class="TableCell1" align="center" width="54%">
+                            <input type="radio" name="scheduleType" value="5-1-1" /> 
                             <% if (daySetting.getType() == StarsThermoDaySettings.WEEKDAY_TYPE) { %>
                             <b><span class="Header2">Weekday</span></b> 
                             <% } else { %>
@@ -258,16 +263,23 @@ function init() {
                             <% } else { %>
                             <span class="Clickable" onclick="if (warnUnsavedChanges()) switchSettings('<%= StarsThermoDaySettings.SUNDAY.toString() %>', '<%= modeSetting.toString() %>', '<%= thermType %>')">Sunday</span> 
                             <% } %>
-                          <td class = "Background" align = "right" width="46%"> 
+                          </td>
+                          <td class="TableCell1" align="center" width="46%"> 
+                            <input type="radio" name="scheduleType" value="5-2" />
+                            <span class="TableCell1"> Weekday </span>
+                            &nbsp;&nbsp; 
+                            <% if (daySetting.getType() == StarsThermoDaySettings.WEEKEND_TYPE) { %>
+                            <b><span class="Header2">Weekend</span> </b>
+                            <% } else { %>
+                            <span class="Clickable" onclick="if (warnUnsavedChanges()) switchSettings('<%= StarsThermoDaySettings.WEEKEND.toString() %>', '<%= modeSetting.toString() %>', '<%= thermType %>')">Weekend</span> 
+                            <% } %>
+                            
 <%
 	String visible = (daySetting.getType() == StarsThermoDaySettings.WEEKDAY_TYPE)? "visible" : "hidden";
 	String checked = (String) session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_APPLY_TO_WEEKEND);
 	if (checked == null || isRecommended) checked = "";
 %>
-                            <span style="visibility:<%= visible %>"> 
-                            <input type="checkbox" name="ApplyToWeekend" value="true" <%= checked %> onclick="setContentChanged(true)">
-                            <span class="TableCell1">Apply settings to Saturday 
-                            and Sunday </span></span> 
+                          </td>
                         </tr>
                       </table>
                     </td>
@@ -282,6 +294,11 @@ function init() {
                     
 <% if (!isRecommended) { %>
                       <table width="478" border="0">
+                        <tr>
+                          <div align="center"> 
+                            <input name="weekSchedule" type="checkbox" value="true" /> Apply same schedule to all days of the week 
+                          </div>
+                        </tr>
                         <tr> 
                           <td class = "TableCell" width="71%" height="4" align = "center" valign="middle" > 
                             <div align="left"> 
@@ -313,33 +330,11 @@ function init() {
                         </tr>
                       </table>
 <% } %>
-                      <table width="175" border="0" cellspacing="0" cellpadding="0">
-                        <tr>
-                          <td width="68"> 
-                            <div align="right"><span class="TableCell"><font color="#003366">Cooling</font> 
-                              <img src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/BlueArrow.gif"> 
-                              </span> </div>
-                          </td>
-                          <td width="31"><span class="TableCell"> 
-                            <input type="radio" name="radiobutton" value="radiobutton" <% if (isCooling) { %>checked<% } else { %>onclick="if (warnUnsavedChanges()) switchSettings('<%= daySetting.toString() %>', '<%= StarsThermoModeSettings.COOL.toString() %>', '<%= thermType %>')"<% } %>>
-                            </span></td>
-						  <td width="20"> 
-                            <input type="radio" name="radiobutton" value="radiobutton" <% if (!isCooling) { %>checked<% } else { %>onclick="if (warnUnsavedChanges()) switchSettings('<%= daySetting.toString() %>', '<%= StarsThermoModeSettings.HEAT.toString() %>', '<%= thermType %>')"<% } %>>
-                          </td>
-                          <td width="56"><img src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/RedArrow.gif"> 
-                            <span class="TableCell"><font color="#FF0000">Heating</font></span></td>
-                        </tr>
-                      </table>
                       <table width="478" height="186" background="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/TempBG2.gif" style="background-repeat: no-repeat" border="0" cellspacing="0" cellpadding="0">
                         <tr>
                           <td width="50">
                             <div id="MovingLayer1" style="position:relative; width:30px; height:162px; left:0px; z-index:1; top:5px; display:none" onMouseDown = "beginDrag(event,0,0,getRightBound(1),getLeftBound(1),'showTimeWake()','horizontal','MovingLayer1');setContentChanged(true);">
                               <table border="0">
-                                <tr align="center"> 
-                                  <td colspan="2"> 
-                                    <div id="tempdisp1" class="TableCell2""></div>
-                                  </td>
-                                </tr>
                                 <tr> 
                                   <td align="center" colspan="2"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/ThermW.gif" width="16" height="131"> 
                                   </td>
@@ -347,14 +342,12 @@ function init() {
                                 <tr> 
                                   <td width="50%"> 
                                     <div id="div1C" align="left" style="position:relative; left:0px; top:-115px"> 
-                                      <img id="arrow1C" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/BlueArrow.gif" <% if (isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'handleUpdateTemp(1)','vertical','div1C');setContentChanged(true);"<% } %> style="visibility:<%= visibleC %>"><br>
-                                      <img id="arrow1C_Gray" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/GrayArrowL.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleH %>"> 
+                                      <img id="arrow1C" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/BlueArrow.gif" onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'handleUpdateTemp(1)','vertical','div1C');setContentChanged(true);">
                                     </div>
                                   </td>
                                   <td width="50%"> 
                                     <div id="div1H" align="right" style="position:relative; left:0px; top:-115px"> 
-                                      <img id="arrow1H" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/RedArrow.gif" <% if (!isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'handleUpdateTemp(1)','vertical','div1H');setContentChanged(true);"<% } %> style="visibility:<%= visibleH %>"><br>
-                                      <img id="arrow1H_Gray" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/GrayArrowR.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleC %>"> 
+                                      <img id="arrow1H" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/RedArrow.gif" onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'handleUpdateTemp(5)','vertical','div1H');setContentChanged(true);">
                                     </div>
                                   </td>
                                 </tr>
@@ -364,11 +357,6 @@ function init() {
                           <td width="50">
                             <div id="MovingLayer2" style="position:relative; width:30px; height:162px; left:0px; z-index:2; top:5px; display:none" onMouseDown = "beginDrag(event,0,0,getRightBound(2),getLeftBound(2),'showTimeLeave()','horizontal','MovingLayer2');setContentChanged(true);"> 
                               <table border="0">
-                                <tr align="center"> 
-                                  <td colspan="2"> 
-                                    <div id="tempdisp2" class="TableCell2"></div>
-                                  </td>
-                                </tr>
                                 <tr> 
                                   <td align="center" colspan="2"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/ThermL.gif" width="16" height="131"> 
                                   </td>
@@ -376,14 +364,12 @@ function init() {
                                 <tr> 
                                   <td width="50%"> 
                                     <div id="div2C" align="left" style="position:relative; left:0px; top:-115px"> 
-                                      <img id="arrow2C" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/BlueArrow.gif" <% if (isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'handleUpdateTemp(2)','vertical','div2C');setContentChanged(true);"<% } %> style="visibility:<%= visibleC %>"><br>
-                                      <img id="arrow2C_Gray" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/GrayArrowL.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleH %>"> 
+                                      <img id="arrow2C" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/BlueArrow.gif" onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'handleUpdateTemp(2)','vertical','div2C');setContentChanged(true);"> 
                                     </div>
                                   </td>
                                   <td width="50%"> 
                                     <div id="div2H" align="right" style="position:relative; left:0px; top:-115px"> 
-                                      <img id="arrow2H" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/RedArrow.gif" <% if (!isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'handleUpdateTemp(2)','vertical','div2H');setContentChanged(true);"<% } %> style="visibility:<%= visibleH %>"><br>
-                                      <img id="arrow2H_Gray" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/GrayArrowR.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleC %>"> 
+                                      <img id="arrow2H" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/RedArrow.gif" onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'handleUpdateTemp(6)','vertical','div2H');setContentChanged(true);">
                                     </div>
                                   </td>
                                 </tr>
@@ -393,11 +379,6 @@ function init() {
                           <td width="50">
                             <div id="MovingLayer3" style="position:relative; width:30px; height:162px; left:0px; z-index:3; top:5px; display:none" onMouseDown = "beginDrag(event,0,0,getRightBound(3),getLeftBound(3),'showTimeReturn()','horizontal','MovingLayer3');setContentChanged(true);"> 
                               <table border="0">
-                                <tr align="center"> 
-                                  <td colspan="2"> 
-                                    <div id="tempdisp3" class="TableCell2"></div>
-                                  </td>
-                                </tr>
                                 <tr> 
                                   <td align="center" colspan="2"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/ThermR.gif" width="16" height="131"> 
                                   </td>
@@ -405,14 +386,12 @@ function init() {
                                 <tr> 
                                   <td width="50%"> 
                                     <div id="div3C" align="left" style="position:relative; left:0px; top:-115px"> 
-                                      <img id="arrow3C" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/BlueArrow.gif" <% if (isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'handleUpdateTemp(3)','vertical','div3C');setContentChanged(true);"<% } %> style="visibility:<%= visibleC %>"><br>
-                                      <img id="arrow3C_Gray" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/GrayArrowL.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleH %>"> 
+                                      <img id="arrow3C" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/BlueArrow.gif" onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'handleUpdateTemp(3)','vertical','div3C');setContentChanged(true);">
                                     </div>
                                   </td>
                                   <td width="50%"> 
                                     <div id="div3H" align="right" style="position:relative; left:0px; top:-115px"> 
-                                      <img id="arrow3H" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/RedArrow.gif" <% if (!isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'handleUpdateTemp(3)','vertical','div3H');setContentChanged(true);"<% } %> style="visibility:<%= visibleH %>"><br>
-                                      <img id="arrow3H_Gray" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/GrayArrowR.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleC %>"> 
+                                      <img id="arrow3H" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/RedArrow.gif" onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'handleUpdateTemp(7)','vertical','div3H');setContentChanged(true);">
                                     </div>
                                   </td>
                                 </tr>
@@ -422,11 +401,6 @@ function init() {
                           <td width="50">
                             <div id="MovingLayer4" style="position:relative; width:30px; height:162px; left:0px; z-index:4; top:5px; display:none" onMouseDown = "beginDrag(event,0,0,getRightBound(4),getLeftBound(4),'showTimeSleep()','horizontal','MovingLayer4');setContentChanged(true);"> 
                               <table border="0">
-                                <tr align="center"> 
-                                  <td colspan="2"> 
-                                    <div id="tempdisp4" class="TableCell2"></div>
-                                  </td>
-                                </tr>
                                 <tr> 
                                   <td align="center" colspan="2"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/ThermS.gif" width="16" height="131"> 
                                   </td>
@@ -434,14 +408,12 @@ function init() {
                                 <tr> 
                                   <td width="50%"> 
                                     <div id="div4C" align="left" style="position:relative; left:0px; top:-115px"> 
-                                      <img id="arrow4C" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/BlueArrow.gif" <% if (isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'handleUpdateTemp(4)','vertical','div4C');setContentChanged(true);"<% } %> style="visibility:<%= visibleC %>"><br>
-                                      <img id="arrow4C_Gray" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/GrayArrowL.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleH %>"> 
+                                      <img id="arrow4C" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/BlueArrow.gif" onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'handleUpdateTemp(4)','vertical','div4C');setContentChanged(true);">
                                     </div>
                                   </td>
                                   <td width="50%"> 
                                     <div id="div4H" align="right" style="position:relative; left:0px; top:-115px"> 
-                                      <img id="arrow4H" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/RedArrow.gif" <% if (!isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'handleUpdateTemp(4)','vertical','div4H');setContentChanged(true);"<% } %> style="visibility:<%= visibleH %>"><br>
-                                      <img id="arrow4H_Gray" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/GrayArrowR.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleC %>"> 
+                                      <img id="arrow4H" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/RedArrow.gif" onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'handleUpdateTemp(8)','vertical','div4H');setContentChanged(true);">
                                     </div>
                                   </td>
                                 </tr>
@@ -488,30 +460,58 @@ function init() {
                             <input id="time4" type="text" size="8" value="<%= ampmTimeFormat.format(schedule.getTime4().toDate()) %>" name="time4" onchange="setContentChanged(true);timeChange(this,4);">
                           </td>
                         </tr>
+                        
                         <tr>
-                          <td class = "TableCell" width="10%">
-                            <div align="right">Temp:</div>
+                          <td class="TableCell" width="10%">
+                            <div align="right">Cooling Temp:</div>
                           </td>
-                          <td class = "TableCell" width="15%">  
-                            <input id="tempin1" type="text" size="3" value="" name="tempin1" onchange="setContentChanged(true);tempChange(1);">&deg;<%= tempUnit %>
+                          <td class="TableCell" width="15%">  
+                            <input id="coolTemp1" type="text" size="3" value="" name="coolTemp1" onchange="setContentChanged(true);tempChange(1);">&deg;<%= tempUnit %>
                           </td>
-                          <td class = "TableCell" width="10%">
-                            <div align="right">Temp: </div>
+                          <td class="TableCell" width="10%">
+                            <div align="right">Cooling Temp: </div>
                           </td>
-                          <td class = "TableCell" width="15%"> 
-                            <input id="tempin2" type="text" size="3" value="" name="tempin2" onchange="setContentChanged(true);tempChange(2);">&deg;<%= tempUnit %>
+                          <td class="TableCell" width="15%"> 
+                            <input id="coolTemp2" type="text" size="3" value="" name="coolTemp2" onchange="setContentChanged(true);tempChange(2);">&deg;<%= tempUnit %>
                           </td>
-                          <td class = "TableCell" width="10%">
-                            <div align="right">Temp: </div>
+                          <td class="TableCell" width="10%">
+                            <div align="right">Cooling Temp: </div>
                           </td>
-                          <td class = "TableCell" width="15%"> 
-                            <input id="tempin3" type="text" size="3" value="" name="tempin3" onchange="setContentChanged(true);tempChange(3);">&deg;<%= tempUnit %>
+                          <td class="TableCell" width="15%"> 
+                            <input id="coolTemp3" type="text" size="3" value="" name="coolTemp3" onchange="setContentChanged(true);tempChange(3);">&deg;<%= tempUnit %>
                           </td>
-                          <td class = "TableCell" width="10%">
-                            <div align="right">Temp: </div>
+                          <td class="TableCell" width="10%">
+                            <div align="right">Cooling Temp: </div>
                           </td>
-                          <td class = "TableCell" width="15%"> 
-                            <input id="tempin4" type="text" size="3" value="" name="tempin4" onchange="setContentChanged(true);tempChange(4);">&deg;<%= tempUnit %>
+                          <td class="TableCell" width="15%"> 
+                            <input id="coolTemp4" type="text" size="3" value="" name="coolTemp4" onchange="setContentChanged(true);tempChange(4);">&deg;<%= tempUnit %>
+                          </td>
+                        </tr>
+                        
+                        <tr>
+                          <td class="TableCell" width="10%">
+                            <div align="right">Heating Temp:</div>
+                          </td>
+                          <td class="TableCell" width="15%">  
+                            <input id="heatTemp1" type="text" size="3" value="" name="heatTemp1" onchange="setContentChanged(true);tempChange(5);">&deg;<%= tempUnit %>
+                          </td>
+                          <td class="TableCell" width="10%">
+                            <div align="right">Heating Temp: </div>
+                          </td>
+                          <td class="TableCell" width="15%"> 
+                            <input id="heatTemp2" type="text" size="3" value="" name="heatTemp2" onchange="setContentChanged(true);tempChange(6);">&deg;<%= tempUnit %>
+                          </td>
+                          <td class="TableCell" width="10%">
+                            <div align="right">Heating Temp: </div>
+                          </td>
+                          <td class="TableCell" width="15%"> 
+                            <input id="heatTemp3" type="text" size="3" value="" name="heatTemp3" onchange="setContentChanged(true);tempChange(7);">&deg;<%= tempUnit %>
+                          </td>
+                          <td class="TableCell" width="10%">
+                            <div align="right">Heating Temp: </div>
+                          </td>
+                          <td class="TableCell" width="15%"> 
+                            <input id="heatTemp4" type="text" size="3" value="" name="heatTemp4" onchange="setContentChanged(true);tempChange(8);">&deg;<%= tempUnit %>
                           </td>
                         </tr>
                       </table>

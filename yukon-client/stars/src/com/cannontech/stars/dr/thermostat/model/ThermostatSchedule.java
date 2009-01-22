@@ -1,8 +1,5 @@
 package com.cannontech.stars.dr.thermostat.model;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.stars.dr.hardware.model.HardwareType;
 
@@ -17,7 +14,7 @@ public class ThermostatSchedule {
     private Integer accountId;
     private Integer inventoryId;
 
-    private Map<ThermostatMode, ThermostatSeason> seasonMap = new HashMap<ThermostatMode, ThermostatSeason>();
+    private ThermostatSeason season = null;
 
     public Integer getId() {
         return id;
@@ -59,21 +56,12 @@ public class ThermostatSchedule {
         this.inventoryId = inventoryId;
     }
 
-    public Map<ThermostatMode, ThermostatSeason> getSeasonMap() {
-        return seasonMap;
+    public ThermostatSeason getSeason() {
+        return season;
     }
 
-    public void setSeasonMap(Map<ThermostatMode, ThermostatSeason> seasonMap) {
-        this.seasonMap = seasonMap;
-    }
-
-    public void addSeason(ThermostatSeason season) {
-        ThermostatMode thermostatMode = season.getThermostatMode();
-        this.seasonMap.put(thermostatMode, season);
-    }
-
-    public ThermostatSeason getSeason(ThermostatMode mode) {
-        return this.seasonMap.get(mode);
+    public void setSeason(ThermostatSeason season) {
+        this.season = season;
     }
 
 }

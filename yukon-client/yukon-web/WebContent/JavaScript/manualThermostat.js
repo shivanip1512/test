@@ -120,17 +120,12 @@
     function setMode(mode){
         $('mode').value = mode;
         
-        $('autoArrowMode').hide();
         $('coolArrow').hide();
         $('heatArrow').hide();
         $('emHeatArrow').hide();
         $('offArrow').hide();
 
-        if('AUTO' == mode) {
-            $('autoArrowMode').show();
-            $('temperature').setStyle({color: 'black'});
-            $('temperature').enable();
-        } else if('COOL' == mode) {
+        if('COOL' == mode) {
             $('coolArrow').show();
             $('temperature').setStyle({color: 'blue'});
             $('temperature').enable();

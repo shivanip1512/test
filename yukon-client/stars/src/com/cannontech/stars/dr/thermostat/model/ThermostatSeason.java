@@ -16,7 +16,8 @@ public class ThermostatSeason {
     private Integer id;
     private Integer scheduleId;
     private Integer webConfigurationId;
-    private Date startDate;
+    private Date coolStartDate;
+    private Date heatStartDate;
 
     private Map<TimeOfWeek, List<ThermostatSeasonEntry>> seasonEntryMap = new HashMap<TimeOfWeek, List<ThermostatSeasonEntry>>();
 
@@ -44,13 +45,21 @@ public class ThermostatSeason {
         this.webConfigurationId = webConfigurationId;
     }
 
-    public Date getStartDate() {
-        return startDate;
+    public Date getCoolStartDate() {
+        return coolStartDate;
     }
 
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
+    public void setCoolStartDate(Date coolStartDate) {
+        this.coolStartDate = coolStartDate;
     }
+    
+    public Date getHeatStartDate() {
+		return heatStartDate;
+	}
+    
+    public void setHeatStartDate(Date heatStartDate) {
+		this.heatStartDate = heatStartDate;
+	}
 
     public Map<TimeOfWeek, List<ThermostatSeasonEntry>> getSeasonEntryMap() {
         return seasonEntryMap;
@@ -93,9 +102,9 @@ public class ThermostatSeason {
 
     public void setThermostatMode(ThermostatMode mode) {
 
-        if (ThermostatMode.COOL == mode) {
+        if (mode.equals(ThermostatMode.COOL)) {
             this.webConfigurationId = StarsMsgUtils.YUK_WEB_CONFIG_ID_COOL;
-        } else if (ThermostatMode.HEAT == mode) {
+        } else if (mode.equals(ThermostatMode.HEAT)) {
             this.webConfigurationId = StarsMsgUtils.YUK_WEB_CONFIG_ID_HEAT;
         } else {
             throw new IllegalArgumentException("Thermostat mode: " + mode + " is not a valid mode for a thermostat season.");

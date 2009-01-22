@@ -69,7 +69,6 @@ public class LiteStarsThermostatSettings extends LiteBase {
 		int thermModeCoolID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_COOL ).getEntryID();
 		int thermModeHeatID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_HEAT ).getEntryID();
 		int thermModeOffID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_OFF ).getEntryID();
-		int thermModeAutoID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_AUTO ).getEntryID();
 		
 		for (int i = 0; i < data.length; i++) {
 			try {
@@ -105,11 +104,7 @@ public class LiteStarsThermostatSettings extends LiteBase {
 					else if (mode.equalsIgnoreCase("OFF"))
 						thermMode = thermModeOffID;
 					dynamicData.setLastSystemSwitch( thermMode );
-					
-					if (st.hasMoreTokens() && st.nextToken().equalsIgnoreCase("(AUTO)"))
-						dynamicData.setSystemSwitch( thermModeAutoID );
-					else
-						dynamicData.setSystemSwitch( thermMode );
+					dynamicData.setSystemSwitch( thermMode );
 				}
 				else if (dataType == YukonListEntryTypes.YUK_DEF_ID_GED_DISPLAYED_TEMP) {
 					StringTokenizer st = new StringTokenizer( dataValue, "," );

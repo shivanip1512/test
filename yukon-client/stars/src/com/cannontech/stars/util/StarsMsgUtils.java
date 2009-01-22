@@ -97,9 +97,7 @@ public class StarsMsgUtils {
 		
 		if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_DEFAULT)
 			return null;
-		if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_AUTO){
-            return StarsThermoModeSettings.AUTO;
-		} else if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_COOL) {
+		if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_COOL) {
 			return StarsThermoModeSettings.COOL;
 		} else if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_HEAT) {
 			return StarsThermoModeSettings.HEAT;
@@ -114,9 +112,7 @@ public class StarsMsgUtils {
 	public static int getThermOptionOpStateID(StarsThermoModeSettings setting, LiteStarsEnergyCompany energyCompany) {
 		if (setting == null)
 			return energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_DEFAULT).getEntryID();
-		if (setting.getType() == StarsThermoModeSettings.AUTO_TYPE) {
-			return energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_AUTO).getEntryID();
-		} else if (setting.getType() == StarsThermoModeSettings.COOL_TYPE) {
+		if (setting.getType() == StarsThermoModeSettings.COOL_TYPE) {
             return energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_COOL).getEntryID();
 		} else if (setting.getType() == StarsThermoModeSettings.HEAT_TYPE) {
 			return energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_HEAT).getEntryID();

@@ -4,8 +4,8 @@ import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEvent;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEventResult;
-import com.cannontech.stars.dr.thermostat.model.ThermostatMode;
 import com.cannontech.stars.dr.thermostat.model.ThermostatSchedule;
+import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleUpdateResult;
 import com.cannontech.stars.dr.thermostat.model.TimeOfWeek;
 import com.cannontech.user.YukonUserContext;
@@ -30,30 +30,28 @@ public interface ThermostatService {
      * Method used to save updates to a thermostat schedule
      * @param account - Account schedule is on
      * @param schedule - Schedule to be updated
-     * @param mode - Thermostat mode in the schedule to be updated
      * @param timeOfWeek - Time of week in the schedule to be updated
      * @param applyToAll - True if schedule should be applied to all time of
      *            weeks
      * @param userContext - User context for user updating schedule
      */
     public void updateSchedule(CustomerAccount account,
-            ThermostatSchedule schedule, ThermostatMode mode,
-            TimeOfWeek timeOfWeek, boolean applyToAll,
+            ThermostatSchedule schedule, TimeOfWeek timeOfWeek, boolean applyToAll,
             YukonUserContext userContext);
 
     /**
      * Method used to send a schedule to a thermostat
      * @param account - Account thermostat is on
      * @param schedule - Schedule to be sent
-     * @param mode - Thermostat mode in the schedule to be sent
      * @param timeOfWeek - Time of week in the schedule to be sent
+     * @param thermostatScheduleMode - Current schedule mode 
      * @param applyToAll - True if schedule should be applied to all time of
      *            weeks
      * @param userContext - User context for user sending schedule
      */
     public ThermostatScheduleUpdateResult sendSchedule(CustomerAccount account,
-            ThermostatSchedule schedule, ThermostatMode mode,
-            TimeOfWeek timeOfWeek, boolean applyToAll,
+            ThermostatSchedule schedule, TimeOfWeek timeOfWeek, 
+            ThermostatScheduleMode thermostatScheduleMode, boolean applyToAll, 
             YukonUserContext userContext);
 
     /**

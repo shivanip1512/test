@@ -25,11 +25,11 @@ public class LMThermostatSeason extends DBPersistent {
 	private Integer seasonID = null;
 	private Integer scheduleID = new Integer(CtiUtilities.NONE_ZERO_ID);
 	private Integer webConfigurationID = new Integer(CtiUtilities.NONE_ZERO_ID);
-	private Date startDate = new Date(0);
-	private Integer displayOrder = new Integer(0);
+	private Date coolStartDate = new Date(0);
+	private Date heatStartDate = new Date(0);
 	
 	public static final String[] SETTER_COLUMNS = {
-		"ScheduleID", "WebConfigurationID", "StartDate", "DisplayOrder"
+		"ScheduleID", "WebConfigurationID", "CoolStartDate", "HeatStartDate"
 	};
 	
 	public static final String[] CONSTRAINT_COLUMNS = { "SeasonID" };
@@ -52,7 +52,7 @@ public class LMThermostatSeason extends DBPersistent {
 			
 		Object[] addValues = {
 			getSeasonID(), getScheduleID(), getWebConfigurationID(),
-			getStartDate(), getDisplayOrder()
+			getCoolStartDate(), getHeatStartDate()
 		};
 		add( TABLE_NAME, addValues );
 	}
@@ -77,8 +77,15 @@ public class LMThermostatSeason extends DBPersistent {
 		if (results.length == SETTER_COLUMNS.length) {
 			setScheduleID( (Integer) results[0] );
 			setWebConfigurationID( (Integer) results[1] );
-			setStartDate( new Date(((java.sql.Timestamp) results[2]).getTime()) );
-			setDisplayOrder( (Integer) results[3] );
+			
+			Object coolStart = results[2];
+			if(coolStart != null) {
+				setCoolStartDate( new Date(((java.sql.Timestamp) coolStart).getTime()) );
+			}
+			Object heatStart = results[3];
+			if(heatStart != null) {
+				setHeatStartDate( new Date(((java.sql.Timestamp) heatStart).getTime()) );
+			}
 		}
 		else
             throw new Error(getClass() + " - Incorrect number of results retrieved");
@@ -90,15 +97,14 @@ public class LMThermostatSeason extends DBPersistent {
 	@Override
     public void update() throws SQLException {
 		Object[] setValues = {
-			getScheduleID(), getWebConfigurationID(), getStartDate(), getDisplayOrder()
+			getScheduleID(), getWebConfigurationID(), getCoolStartDate(), getHeatStartDate()
 		};
 		Object[] constraintValues = { getSeasonID() };
 		update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 	}
 	
 	public static LMThermostatSeason[] getAllLMThermostatSeasons(int scheduleID) {
-		String sql = "SELECT * FROM " + TABLE_NAME + " WHERE ScheduleID = " + scheduleID
-				   + " ORDER BY DisplayOrder";
+		String sql = "SELECT * FROM " + TABLE_NAME + " WHERE ScheduleID = " + scheduleID;
 		SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
 		
 		try {
@@ -112,8 +118,8 @@ public class LMThermostatSeason extends DBPersistent {
 				seasons[i].setSeasonID( new Integer(((java.math.BigDecimal) row[0]).intValue()) );
 				seasons[i].setScheduleID(  new Integer(((java.math.BigDecimal) row[1]).intValue()) );
 				seasons[i].setWebConfigurationID(  new Integer(((java.math.BigDecimal) row[2]).intValue()) );
-				seasons[i].setStartDate( (Date) row[3] );
-				seasons[i].setDisplayOrder(  new Integer(((java.math.BigDecimal) row[4]).intValue()) );
+				seasons[i].setCoolStartDate( (Date) row[3] );
+				seasons[i].setHeatStartDate( (Date) row[4] );
 			}
 			
 			return seasons;
@@ -123,14 +129,6 @@ public class LMThermostatSeason extends DBPersistent {
 		}
 		
 		return null;
-	}
-
-	/**
-	 * Returns the displayOrder.
-	 * @return Integer
-	 */
-	public Integer getDisplayOrder() {
-		return displayOrder;
 	}
 
 	/**
@@ -153,8 +151,12 @@ public class LMThermostatSeason extends DBPersistent {
 	 * Returns the startDate.
 	 * @return Date
 	 */
-	public Date getStartDate() {
-		return startDate;
+	public Date getCoolStartDate() {
+		return coolStartDate;
+	}
+	
+	public Date getHeatStartDate() {
+		return heatStartDate;
 	}
 
 	/**
@@ -163,14 +165,6 @@ public class LMThermostatSeason extends DBPersistent {
 	 */
 	public Integer getWebConfigurationID() {
 		return webConfigurationID;
-	}
-
-	/**
-	 * Sets the displayOrder.
-	 * @param displayOrder The displayOrder to set
-	 */
-	public void setDisplayOrder(Integer displayOrder) {
-		this.displayOrder = displayOrder;
 	}
 
 	/**
@@ -191,10 +185,14 @@ public class LMThermostatSeason extends DBPersistent {
 
 	/**
 	 * Sets the startDate.
-	 * @param startDate The startDate to set
+	 * @param coolStartDate The startDate to set
 	 */
-	public void setStartDate(Date startDate) {
-		this.startDate = startDate;
+	public void setCoolStartDate(Date coolStartDate) {
+		this.coolStartDate = coolStartDate;
+	}
+	
+	public void setHeatStartDate(Date heatStartDate) {
+		this.heatStartDate = heatStartDate;
 	}
 
 	/**

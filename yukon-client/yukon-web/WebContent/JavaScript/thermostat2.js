@@ -7,7 +7,6 @@ var arrowBottomBnd = -32;
 var thermometerLen = 100;
 var arrowTopBnd = arrowBottomBnd - thermometerLen;
 
-var thermMode = 'C';	// Thermostat mode flag, 'C'/'H'
 var tempUnit = 'F';     // Temperature mode, 'F'/'C'
 var lowerLimit = 45;  //always specified in fahrenheit
 var upperLimit = 88;  //always specified in fahrenheit
@@ -15,25 +14,34 @@ var upperLimit = 88;  //always specified in fahrenheit
 var thermostats = ['', 'MovingLayer1', 'MovingLayer2', 'MovingLayer3', 'MovingLayer4'];
 var tempCArrows = ['', 'div1C', 'div2C', 'div3C', 'div4C'];
 var tempHArrows = ['', 'div1H', 'div2H', 'div3H', 'div4H'];
+var tempArrows = tempCArrows.concat(tempHArrows.slice(1,5));
 var timeFields = ['', 'time1', 'time2', 'time3', 'time4'];
-var tempFields = ['', 'temp1', 'temp2', 'temp3', 'temp4'];
-var tempDisplayFields = ['', 'tempdisp1', 'tempdisp2', 'tempdisp3', 'tempdisp4'];
-var tempInputFields = ['', 'tempin1', 'tempin2', 'tempin3', 'tempin4'];
+var tempFields = ['', 'tempCool1', 'tempCool2', 'tempCool3', 'tempCool4', 'tempHeat1', 'tempHeat2', 'tempHeat3', 'tempHeat4'];
+var tempInputFields = ['', 'coolTemp1', 'coolTemp2', 'coolTemp3', 'coolTemp4', 'heatTemp1', 'heatTemp2', 'heatTemp3', 'heatTemp4'];
 var checkboxes = ['', 'WakeEnabled', 'LeaveEnabled', 'ReturnEnabled', 'SleepEnabled'];
 
 function updateLayout(hour1, min1, temp1C, temp1H, hour2, min2, temp2C, temp2H, hour3, min3, temp3C, temp3H, hour4, min4, temp4C, temp4H) {
+
   moveLayer(1, hour1, min1);
-  moveTempArrows(1, temp1C, temp1H);
-  showEitherTemp(1, temp1C, temp1H);
+  updateTemp(1, temp1C);
+  updateTemp(5, temp1H);
+
   moveLayer(2, hour2, min2);
-  moveTempArrows(2, temp2C, temp2H);
-  showEitherTemp(2, temp2C, temp2H);
+  updateTemp(2, temp2C);
+  updateTemp(6, temp2H);
+
   moveLayer(3, hour3, min3);
-  moveTempArrows(3, temp3C, temp3H);
-  showEitherTemp(3, temp3C, temp3H);
+  updateTemp(3, temp3C);
+  updateTemp(7, temp3H);
+  
   moveLayer(4, hour4, min4);
-  moveTempArrows(4, temp4C, temp4H);
-  showEitherTemp(4, temp4C, temp4H);
+  updateTemp(4, temp4C);
+  updateTemp(8, temp4H);
+}
+
+function updateTemp(idx, tempF) {
+  moveTempArrow(tempArrows[idx], tempF);
+  showTemp(idx, tempF);
 }
 
 
@@ -73,29 +81,19 @@ function showTimeUnoccupied() {
   showTime(s,txt,4);
 }
 
-function showEitherTemp(idx, tempCool, tempHeat) {
-  if (thermMode == 'C') {
-    showTemp(idx, tempCool);
-  } else {
-    showTemp(idx, tempHeat);
-  }
-}
-
 function showTime(s, txt, idx) {
   var curPos = parseInt(s.style.left, 10);
   txt.value = timeValToStr(Math.floor((curPos + (idx - 1) * layerHorDist - layerLeftBnd) / tenMinEqlLen) * 10);
 }
 
 function handleUpdateTemp(idx) {
-  var a = document.getElementById((thermMode == 'C')? tempCArrows[idx] : tempHArrows[idx]);
+  var a = document.getElementById(tempArrows[idx]);
   var curPos = parseInt(a.style.top, 10);
   var temp = Math.floor((arrowBottomBnd - curPos) / thermometerLen * (upperLimit - lowerLimit)) + lowerLimit;
   showTemp(idx, temp);
 }
 
 function showTemp(idx, tempF) {
-  var div = document.getElementById(tempDisplayFields[idx]);
-  div.innerHTML = getConvertedTemp(tempF, tempUnit) + '&deg;' + tempUnit;
   document.getElementById(tempInputFields[idx]).value = getConvertedTemp(tempF, tempUnit);
   document.getElementById(tempFields[idx]).value = tempF;
 }
@@ -125,10 +123,10 @@ function moveTempArrows(idx, tempC, tempH) {
 
 
 function moveLayer(idx, hour, minute) {
-var layer = document.getElementById(thermostats[idx]);
-var offset = (hour * 6 + Math.floor(minute / 10)) * tenMinEqlLen;
-var left = layerLeftBnd + offset - (idx-1) * layerHorDist;
-layer.style.left = left + 'px';
+  var layer = document.getElementById(thermostats[idx]);
+  var offset = (hour * 6 + Math.floor(minute / 10)) * tenMinEqlLen;
+  var left = layerLeftBnd + offset - (idx-1) * layerHorDist;
+  layer.style.left = left + 'px';
 }
 
 
@@ -287,8 +285,9 @@ function timeChange(t, idx) {
 }
 
 function tempChange(idx) {
-  var fields = (thermMode == 'C') ? tempCArrows : tempHArrows;
+//  var fields = (thermMode == 'C') ? tempCArrows : tempHArrows;
   var temp = getFahrenheitTemp(document.getElementById(tempInputFields[idx]).value, tempUnit);
-  moveTempArrow(fields[idx], temp);
-  showTemp(idx, temp);
+  updateTemp(idx, temp);
+//  moveTempArrow(fields[idx], temp);
+//  showTemp(idx, temp);
 } 

@@ -14,7 +14,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.CommandRequestRouteExecutor;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
-import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -34,6 +33,7 @@ import com.cannontech.stars.dr.thermostat.model.ThermostatManualEvent;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEventResult;
 import com.cannontech.stars.dr.thermostat.model.ThermostatMode;
 import com.cannontech.stars.dr.thermostat.model.ThermostatSchedule;
+import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleUpdateResult;
 import com.cannontech.stars.dr.thermostat.model.ThermostatSeason;
 import com.cannontech.stars.dr.thermostat.model.ThermostatSeasonEntry;
@@ -168,8 +168,7 @@ public class ThermostatServiceImpl implements ThermostatService {
 
     @Override
     public void updateSchedule(CustomerAccount account,
-            ThermostatSchedule schedule, ThermostatMode mode,
-            TimeOfWeek timeOfWeek, boolean applyToAll,
+            ThermostatSchedule schedule, TimeOfWeek timeOfWeek, boolean applyToAll,
             YukonUserContext userContext) {
 
         Thermostat thermostat = null;
@@ -183,7 +182,6 @@ public class ThermostatServiceImpl implements ThermostatService {
         ThermostatSchedule scheduleToSave = this.getScheduleToSave(account,
                                                                    thermostat,
                                                                    schedule,
-                                                                   mode,
                                                                    timeOfWeek,
                                                                    applyToAll);
         thermostatScheduleDao.save(scheduleToSave);
@@ -192,9 +190,8 @@ public class ThermostatServiceImpl implements ThermostatService {
 
     @Override
     public ThermostatScheduleUpdateResult sendSchedule(CustomerAccount account,
-            ThermostatSchedule schedule, ThermostatMode mode,
-            TimeOfWeek timeOfWeek, boolean applyToAll,
-            YukonUserContext userContext) {
+            ThermostatSchedule schedule, TimeOfWeek timeOfWeek, ThermostatScheduleMode scheduleMode,
+            boolean applyToAll, YukonUserContext userContext) {
 
         Integer thermostatId = schedule.getInventoryId();
         Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
@@ -226,10 +223,15 @@ public class ThermostatServiceImpl implements ThermostatService {
             return error;
         }
 
+        HardwareType type = thermostat.getType();
+        if(HardwareType.UTILITY_PRO.equals(type)) {
+        	// TODO add code to send initial command with schedule mode to Utility pro only
+        }
+        
+        
         // Build the command to send to the thermostat
         String updateScheduleCommand = this.buildUpdateScheduleCommand(thermostat,
                                                                        schedule,
-                                                                       mode,
                                                                        timeOfWeek,
                                                                        applyToAll);
 
@@ -250,11 +252,9 @@ public class ThermostatServiceImpl implements ThermostatService {
         // Log the schedule update in the activity log
         LiteStarsEnergyCompany energyCompany = ecMappingDao.getCustomerAccountEC(account);
 
-        ThermostatSeason season = schedule.getSeason(mode);
-        List<ThermostatSeasonEntry> entryList = season.getSeasonEntries(timeOfWeek);
+        
         this.logUpdateScheduleActivity(thermostat,
-                                       entryList,
-                                       mode,
+                                       schedule,
                                        timeOfWeek,
                                        yukonUser.getUserID(),
                                        account.getAccountId(),
@@ -331,7 +331,6 @@ public class ThermostatServiceImpl implements ThermostatService {
      * command for only the mode and time of week specified)
      * @param thermostat - Thermostat to update
      * @param schedule - Full thermostat schedule
-     * @param mode - Thermostat mode for schedule to update
      * @param timeOfWeek - Time of week for schedule to update
      * @param applyToAll - True if schedule should be applied to all days
      * @return Command string in format:
@@ -341,10 +340,9 @@ public class ThermostatServiceImpl implements ThermostatService {
      *         </p>
      */
     private String buildUpdateScheduleCommand(Thermostat thermostat,
-            ThermostatSchedule schedule, ThermostatMode mode,
-            TimeOfWeek timeOfWeek, boolean applyToAll) {
+            ThermostatSchedule schedule, TimeOfWeek timeOfWeek, boolean applyToAll) {
 
-        ThermostatSeason season = schedule.getSeason(mode);
+        ThermostatSeason season = schedule.getSeason();
         List<ThermostatSeasonEntry> seasonEntries = season.getSeasonEntries(timeOfWeek);
 
         StringBuilder commandString = new StringBuilder();
@@ -367,9 +365,10 @@ public class ThermostatServiceImpl implements ThermostatService {
 
             Date startDate = entry.getStartDate();
 
-            Integer temperature = entry.getTemperature();
+            Integer coolTemperature = entry.getCoolTemperature();
+            Integer heatTemperature = entry.getHeatTemperature();
 
-            if (temperature == -1) {
+            if (coolTemperature == -1 && heatTemperature == -1) {
                 // temp of -1 means ignore this time/temp pair - used when only
                 // sending two time/temp values
                 commandString.append("HH:MM,");
@@ -380,20 +379,8 @@ public class ThermostatServiceImpl implements ThermostatService {
 
                 String startTimeString = SCHEDULE_START_TIME_FORMAT.format(startDate);
                 commandString.append(startTimeString + ",");
-
-                if (mode.equals(ThermostatMode.COOL)) {
-                    // Default heat temp
-                    commandString.append("ff,");
-
-                    // Cool temp
-                    commandString.append(temperature);
-                } else {
-                    // Heat temp
-                    commandString.append(temperature + ",");
-
-                    // Default cool temp
-                    commandString.append("ff");
-                }
+                commandString.append(heatTemperature + ",");
+                commandString.append(coolTemperature);
             }
 
             // No trailing comma on the last season entry cool temp
@@ -416,14 +403,13 @@ public class ThermostatServiceImpl implements ThermostatService {
      * @param account - Account for thermostat
      * @param thermostat - Thermostat to update schedule for
      * @param updatedSchedule - The schedule containing the updates
-     * @param mode - The mode to be updated
      * @param timeOfWeek - Time of week to be updated
      * @param applyToWeekend - True if updates apply to saturday and sunday
      * @return The updated schedule to be saved
      */
     private ThermostatSchedule getScheduleToSave(CustomerAccount account,
             Thermostat thermostat, ThermostatSchedule updatedSchedule,
-            ThermostatMode mode, TimeOfWeek timeOfWeek, boolean applyToWeekend) {
+            TimeOfWeek timeOfWeek, boolean applyToWeekend) {
 
         ThermostatSchedule schedule;
         HardwareType thermostatType = updatedSchedule.getThermostatType();
@@ -455,10 +441,10 @@ public class ThermostatServiceImpl implements ThermostatService {
         schedule.setAccountId(accountId);
 
         // Get the season that is being updated
-        ThermostatSeason updatedSeason = updatedSchedule.getSeason(mode);
+        ThermostatSeason updatedSeason = updatedSchedule.getSeason();
 
         // Update the season entries for the given time of week
-        ThermostatSeason season = schedule.getSeason(mode);
+        ThermostatSeason season = schedule.getSeason();
         List<ThermostatSeasonEntry> updatedEntries = updatedSeason.getSeasonEntries(timeOfWeek);
         List<ThermostatSeasonEntry> entries = season.getSeasonEntries(timeOfWeek);
         this.updateScheduleEntries(updatedEntries, entries);
@@ -496,8 +482,11 @@ public class ThermostatServiceImpl implements ThermostatService {
             Integer startTime = entry.getStartTime();
             originalEntry.setStartTime(startTime);
 
-            Integer temperature = entry.getTemperature();
-            originalEntry.setTemperature(temperature);
+            Integer coolTemperature = entry.getCoolTemperature();
+            originalEntry.setCoolTemperature(coolTemperature);
+            
+            Integer heatTemperature = entry.getHeatTemperature();
+            originalEntry.setHeatTemperature(heatTemperature);
         }
     }
 
@@ -541,66 +530,78 @@ public class ThermostatServiceImpl implements ThermostatService {
 
     /**
      * Helper method to log an update schedule activity
-     * @param thermostat - Thermsotat that was updated
-     * @param entryList - List of season entries that were sent to thermostat
-     * @param mode - Heating / Cooling mode of update
+     * @param thermostat - Thermostat that was updated
+     * @param schedule - Schedule that was sent to thermostat
      * @param timeOfWeek - Time of week update applies to
      * @param userId - Id of user that did update
      * @param accountId - Account for updated thermostat
-     * @param customerId - Customer for updated Thermsotat
+     * @param customerId - Customer for updated Thermostat
      * @param energyCompanyId - Energy company for updated thermostat
      */
     private void logUpdateScheduleActivity(Thermostat thermostat,
-            List<ThermostatSeasonEntry> entryList, ThermostatMode mode,
-            TimeOfWeek timeOfWeek, int userId, int accountId, int customerId,
-            int energyCompanyId) {
+            ThermostatSchedule schedule, TimeOfWeek timeOfWeek, int userId, 
+            int accountId, int customerId, int energyCompanyId) {
 
         String tempUnit = "F";
 
         StringBuilder logMessage = new StringBuilder();
         logMessage.append("Serial #:" + thermostat.getSerialNumber() + ", ");
-        logMessage.append("Mode:" + mode.toString() + ", ");
         logMessage.append("Day:" + timeOfWeek.toString() + ", ");
+
+        ThermostatSeason season = schedule.getSeason();
+        List<ThermostatSeasonEntry> entryList = season.getSeasonEntries(timeOfWeek);
 
         if (HardwareType.COMMERCIAL_EXPRESSSTAT.equals(thermostat.getType())) {
 
             ThermostatSeasonEntry occupiedEntry = entryList.get(0);
             Date occupiedStart = occupiedEntry.getStartDate();
             String occupiedDate = SCHEDULE_START_TIME_FORMAT.format(occupiedStart);
-            Integer occupiedTemp = occupiedEntry.getTemperature();
-            logMessage.append("Occupied:" + occupiedDate + "," + occupiedTemp + tempUnit + ", ");
+            Integer coolOccupiedTemp = occupiedEntry.getCoolTemperature();
+            Integer heatOccupiedTemp = occupiedEntry.getHeatTemperature();
+            logMessage.append("Occupied:" + occupiedDate + "," + coolOccupiedTemp + tempUnit + 
+            		"," + heatOccupiedTemp + tempUnit + ", ");
 
             ThermostatSeasonEntry unOccupiedEntry = entryList.get(3);
             Date unOccupiedStart = unOccupiedEntry.getStartDate();
             String unOccupiedDate = SCHEDULE_START_TIME_FORMAT.format(unOccupiedStart);
-            Integer unOccupiedTemp = unOccupiedEntry.getTemperature();
-            logMessage.append("Unoccupied:" + unOccupiedDate + "," + unOccupiedTemp + tempUnit);
+            Integer coolUnOccupiedTemp = unOccupiedEntry.getCoolTemperature();
+            Integer heatUnOccupiedTemp = unOccupiedEntry.getHeatTemperature();
+            logMessage.append("Unoccupied:" + unOccupiedDate + "," + coolUnOccupiedTemp + tempUnit +
+            		"," + heatUnOccupiedTemp + tempUnit);
 
         } else {
 
             ThermostatSeasonEntry wakeEntry = entryList.get(0);
             Date wakeStart = wakeEntry.getStartDate();
             String wakeDate = SCHEDULE_START_TIME_FORMAT.format(wakeStart);
-            Integer wakeTemp = wakeEntry.getTemperature();
-            logMessage.append("Wake:" + wakeDate + "," + wakeTemp + tempUnit + ", ");
+            Integer wakeCoolTemp = wakeEntry.getCoolTemperature();
+            Integer wakeHeatTemp = wakeEntry.getHeatTemperature();
+            logMessage.append("Wake:" + wakeDate + "," + wakeCoolTemp + tempUnit + 
+            		"," + wakeHeatTemp + tempUnit + ", ");
 
             ThermostatSeasonEntry leaveEntry = entryList.get(1);
             Date leaveStart = leaveEntry.getStartDate();
             String leaveDate = SCHEDULE_START_TIME_FORMAT.format(leaveStart);
-            Integer leaveTemp = leaveEntry.getTemperature();
-            logMessage.append("Leave:" + leaveDate + "," + leaveTemp + tempUnit + ", ");
+            Integer leaveCoolTemp = leaveEntry.getCoolTemperature();
+            Integer leaveHeatTemp = leaveEntry.getHeatTemperature();
+            logMessage.append("Leave:" + leaveDate + "," + leaveCoolTemp + tempUnit + 
+            		"," + leaveHeatTemp + tempUnit + ", ");
 
             ThermostatSeasonEntry returnEntry = entryList.get(2);
             Date returnStart = returnEntry.getStartDate();
             String returnDate = SCHEDULE_START_TIME_FORMAT.format(returnStart);
-            Integer returnTemp = returnEntry.getTemperature();
-            logMessage.append("Return:" + returnDate + "," + returnTemp + tempUnit + ", ");
+            Integer returnCoolTemp = returnEntry.getCoolTemperature();
+            Integer returnHeatTemp = returnEntry.getHeatTemperature();
+            logMessage.append("Return:" + returnDate + "," + returnCoolTemp + tempUnit + 
+            		"," + returnHeatTemp + tempUnit + ", ");
 
             ThermostatSeasonEntry sleepEntry = entryList.get(3);
             Date sleepStart = sleepEntry.getStartDate();
             String sleepDate = SCHEDULE_START_TIME_FORMAT.format(sleepStart);
-            Integer sleepTemp = sleepEntry.getTemperature();
-            logMessage.append("Sleep:" + sleepDate + "," + sleepTemp + tempUnit + ", ");
+            Integer sleepCoolTemp = sleepEntry.getCoolTemperature();
+            Integer sleepHeatTemp = sleepEntry.getHeatTemperature();
+            logMessage.append("Sleep:" + sleepDate + "," + sleepCoolTemp + tempUnit + 
+            		"," + sleepHeatTemp + tempUnit + ", ");
 
         }
 

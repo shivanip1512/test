@@ -143,6 +143,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 			
 			for (int i = 0; i < invIDs.length; i++) {
 				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getById(invIDs[i]);
+				StarsLiteFactory.extendLiteInventoryBase(liteHw, energyCompany);
 				
 				if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL) {
 					String errorMsg = null;
@@ -474,15 +475,22 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 			updateSched.setInventoryIDs( invIDStr.toString() );
 		}
 	    
-		StarsThermoModeSettings mode = StarsThermoModeSettings.valueOf( req.getParameter("mode") );
+//		StarsThermoModeSettings mode = StarsThermoModeSettings.valueOf( req.getParameter("mode") );
 		StarsThermoDaySettings day = StarsThermoDaySettings.valueOf( req.getParameter("day") );
 		
-		StarsThermostatSeason season = new StarsThermostatSeason();
-		season.setMode( mode );
-		updateSched.addStarsThermostatSeason( season );
-		StarsThermostatSchedule schedule = new StarsThermostatSchedule();
-		schedule.setDay( day );
-		season.addStarsThermostatSchedule( schedule );
+		StarsThermostatSeason seasonCool = new StarsThermostatSeason();
+		seasonCool.setMode( StarsThermoModeSettings.COOL );
+		updateSched.addStarsThermostatSeason( seasonCool );
+		StarsThermostatSchedule scheduleCool = new StarsThermostatSchedule();
+		scheduleCool.setDay( day );
+		seasonCool.addStarsThermostatSchedule( scheduleCool );
+
+		StarsThermostatSeason seasonHeat = new StarsThermostatSeason();
+        seasonHeat.setMode( StarsThermoModeSettings.HEAT );
+        updateSched.addStarsThermostatSeason( seasonHeat );
+        StarsThermostatSchedule scheduleHeat = new StarsThermostatSchedule();
+        scheduleHeat.setDay( day );
+		seasonHeat.addStarsThermostatSchedule( scheduleHeat );
 	    
 		Calendar cal = Calendar.getInstance();
 	    
@@ -492,28 +500,28 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 				throw new WebClientException("Invalid time format '" + req.getParameter("time1") + "'");
 	        
 			cal.setTime( time1 );
-			schedule.setTime1( new org.exolab.castor.types.Time(
+			scheduleCool.setTime1( new org.exolab.castor.types.Time(
 					(cal.get(Calendar.HOUR_OF_DAY) * 3600 + cal.get(Calendar.MINUTE) * 60) * 1000) );
-			schedule.setTemperature1( Integer.parseInt(req.getParameter("temp1")) );
+			scheduleCool.setTemperature1( Integer.parseInt(req.getParameter("tempCool1")) );
 		}
 		else {
-			schedule.setTime1( new org.exolab.castor.types.Time(0) );
-			schedule.setTemperature1( -1 );
+			scheduleCool.setTime1( new org.exolab.castor.types.Time(0) );
+			scheduleCool.setTemperature1( -1 );
 		}
-	    
+		
 		if (req.getParameter("time2") != null) {
 			Date time2 = ServletUtils.parseTime(req.getParameter("time2"), TimeZone.getDefault());
 			if (time2 == null)
 				throw new WebClientException("Invalid time format '" + req.getParameter("time2") + "'");
 	        
 			cal.setTime( time2 );
-			schedule.setTime2( new org.exolab.castor.types.Time(
+			scheduleCool.setTime2( new org.exolab.castor.types.Time(
 					(cal.get(Calendar.HOUR_OF_DAY) * 3600 + cal.get(Calendar.MINUTE) * 60) * 1000) );
-			schedule.setTemperature2( Integer.parseInt(req.getParameter("temp2")) );
-		}
+			scheduleCool.setTemperature2( Integer.parseInt(req.getParameter("tempCool2")) );
+        }
 		else {
-			schedule.setTime2( new org.exolab.castor.types.Time(0) );
-			schedule.setTemperature2( -1 );
+			scheduleCool.setTime2( new org.exolab.castor.types.Time(0) );
+			scheduleCool.setTemperature2( -1 );
 		}
 	    
 		if (req.getParameter("time3") != null) {
@@ -522,13 +530,13 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 				throw new WebClientException("Invalid time format '" + req.getParameter("time3") + "'");
 	        
 			cal.setTime( time3 );
-			schedule.setTime3( new org.exolab.castor.types.Time(
+			scheduleCool.setTime3( new org.exolab.castor.types.Time(
 					(cal.get(Calendar.HOUR_OF_DAY) * 3600 + cal.get(Calendar.MINUTE) * 60) * 1000) );
-			schedule.setTemperature3( Integer.parseInt(req.getParameter("temp3")) );
-		}
+			scheduleCool.setTemperature3( Integer.parseInt(req.getParameter("tempCool3")) );
+        }
 		else {
-			schedule.setTime3( new org.exolab.castor.types.Time(0) );
-			schedule.setTemperature3( -1 );
+			scheduleCool.setTime3( new org.exolab.castor.types.Time(0) );
+			scheduleCool.setTemperature3( -1 );
 		}
 	    
 		if (req.getParameter("time4") != null) {
@@ -537,13 +545,13 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 				throw new WebClientException("Invalid time format '" + req.getParameter("time4") + "'");
 	        
 			cal.setTime( time4 );
-			schedule.setTime4( new org.exolab.castor.types.Time(
+			scheduleCool.setTime4( new org.exolab.castor.types.Time(
 					(cal.get(Calendar.HOUR_OF_DAY) * 3600 + cal.get(Calendar.MINUTE) * 60) * 1000) );
-			schedule.setTemperature4( Integer.parseInt(req.getParameter("temp4")) );
-		}
+			scheduleCool.setTemperature4( Integer.parseInt(req.getParameter("tempCool4")) );
+        }
 		else {
-			schedule.setTime4( new org.exolab.castor.types.Time(0) );
-			schedule.setTemperature4( -1 );
+			scheduleCool.setTime4( new org.exolab.castor.types.Time(0) );
+			scheduleCool.setTemperature4( -1 );
 		}
 		
 		String type = req.getParameter("type");
@@ -553,26 +561,26 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 			String applyToWeekendStr = req.getParameter( "ApplyToWeekend" );
 			
 			if (applyToWeekdaysStr != null && applyToWeekendStr != null) {
-				schedule.setDay( StarsThermoDaySettings.ALL );
+				scheduleCool.setDay( StarsThermoDaySettings.ALL );
 			}
 			else if (applyToWeekdaysStr != null) {
 				if (ServletUtils.isWeekday( day )) {
-					schedule.setDay( StarsThermoDaySettings.WEEKDAY );
+					scheduleCool.setDay( StarsThermoDaySettings.WEEKDAY );
 				}
 				else {
-					StarsThermostatSchedule schedule2 = StarsFactory.newStarsThermostatSchedule( schedule );
+					StarsThermostatSchedule schedule2 = StarsFactory.newStarsThermostatSchedule( scheduleCool );
 					schedule2.setDay( StarsThermoDaySettings.WEEKDAY );
-					season.addStarsThermostatSchedule( schedule2 );
+					seasonCool.addStarsThermostatSchedule( schedule2 );
 				}
 			}
 			else if (applyToWeekendStr != null) {
 				if (!ServletUtils.isWeekday( day )) {
-					schedule.setDay( StarsThermoDaySettings.WEEKEND );
+					scheduleCool.setDay( StarsThermoDaySettings.WEEKEND );
 				}
 				else {
-					StarsThermostatSchedule schedule2 = StarsFactory.newStarsThermostatSchedule( schedule );
+					StarsThermostatSchedule schedule2 = StarsFactory.newStarsThermostatSchedule( scheduleCool );
 					schedule2.setDay( StarsThermoDaySettings.WEEKEND );
-					season.addStarsThermostatSchedule( schedule2 );
+					seasonCool.addStarsThermostatSchedule( schedule2 );
 				}
 			}
 		}
@@ -580,7 +588,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 			// This is a one-way thermostat or the default thermostat
 			if (ServletUtils.isWeekday( day )) {
 				if (req.getParameter("ApplyToWeekend") != null)
-					schedule.setDay( StarsThermoDaySettings.ALL );
+					scheduleCool.setDay( StarsThermoDaySettings.ALL );
 			}
 		}
         
@@ -641,7 +649,8 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 					LMThermostatSeason season = new LMThermostatSeason();
 					season.setScheduleID( new Integer(liteSchedule.getScheduleID()) );
 					season.setWebConfigurationID( new Integer(webConfigID) );
-					season.setStartDate( new Date(liteDftSeason.getStartDate()) );
+					season.setCoolStartDate( new Date(liteDftSeason.getCoolStartDate()) );
+					season.setHeatStartDate( new Date(liteDftSeason.getHeatStartDate()) );
 					season.setDbConnection( conn );
 					season.add();
 					
@@ -653,7 +662,8 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 					LMThermostatSeason season2 = new LMThermostatSeason();
 					season2.setScheduleID( new Integer(liteSchedule.getScheduleID()) );
 					season2.setWebConfigurationID( new Integer(liteDftSeason2.getWebConfigurationID()) );
-					season2.setStartDate( new Date(liteDftSeason2.getStartDate()) );
+					season2.setCoolStartDate( new Date(liteDftSeason2.getCoolStartDate()) );
+					season2.setHeatStartDate( new Date(liteDftSeason2.getHeatStartDate()) );
 					season2.setDbConnection( conn );
 					season2.add();
 					
