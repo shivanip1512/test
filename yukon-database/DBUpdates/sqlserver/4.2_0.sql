@@ -160,7 +160,7 @@ ADD EncodingKey VARCHAR(64);
 go
 
 UPDATE PortTerminalServer
-SET EncodingKey='';
+SET EncodingKey=' ';
 go
 
 ALTER TABLE PortTerminalServer

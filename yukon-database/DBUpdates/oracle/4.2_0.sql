@@ -159,7 +159,7 @@ ALTER TABLE PortTerminalServer
 ADD EncodingKey VARCHAR2(64);
 
 UPDATE PortTerminalServer
-SET EncodingKey = '';
+SET EncodingKey = ' ';
 
 ALTER TABLE PortTerminalServer
 MODIFY EncodingKey VARCHAR2(64) NOT NULL;
