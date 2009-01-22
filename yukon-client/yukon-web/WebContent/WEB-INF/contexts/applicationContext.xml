@@ -609,6 +609,10 @@
         <property name="descriptionService" ref="userRoleAndPropertyDescriptionService"/>
     </bean>
     
+    <bean id="verifyGlobalRolesAndPropertiesTagPrototype" class="com.cannontech.web.util.VerifyGlobalRolesAndPropertiesTag">
+        <property name="descriptionService" ref="globalRoleAndPropertyDescriptionService"/>
+    </bean>
+    
     <bean id="checkGlobalRolesAndPropertiesTagPrototype" class="com.cannontech.web.taglib.CheckGlobalRolesAndPropertiesTag">
         <property name="descriptionService" ref="globalRoleAndPropertyDescriptionService"/>
     </bean>

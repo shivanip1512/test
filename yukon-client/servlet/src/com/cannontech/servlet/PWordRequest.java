@@ -9,6 +9,8 @@ package com.cannontech.servlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.roles.yukon.AuthenticationRole;
 import com.cannontech.servlet.logic.RequestPword;
 import com.cannontech.util.ServletUtil;
 
@@ -46,8 +48,11 @@ public class PWordRequest extends javax.servlet.http.HttpServlet
         reqPword.setEnergyCompany( energyComp );
 
 		String returnURI = "";
-
-		if( !reqPword.isValidParams() )
+		
+		if(!DaoFactory.getRoleDao().checkGlobalRoleProperty(AuthenticationRole.ENABLE_PASSWORD_RECOVERY)) {
+            returnURI = INVALID_URI + "Password recovery is not allowed";
+        }
+		else if( !reqPword.isValidParams() )
 		{
 			//not enough info, return error
 			returnURI = INVALID_URI + "More information needs to be entered";

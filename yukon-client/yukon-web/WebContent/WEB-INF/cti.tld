@@ -981,6 +981,17 @@
     </attribute>
   </tag>
   
+  <tag>
+    <name>verifyGlobalRolesAndProperties</name>
+    <tag-class>com.cannontech.web.util.VerifyGlobalRolesAndPropertiesTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>value</name>
+      <required>true</required> 
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
     <tag>
         <name>msg</name>
         <tag-class>com.cannontech.web.i18n.MsgTag</tag-class>

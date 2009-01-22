@@ -54,6 +54,7 @@ public class LoginFilter implements Filter {
             "/voice/inboundLogin.jsp",  
             "/soap/**", 
             "/servlet/PWordRequest",
+            "/servlet/StarsPWordRequest",
             "/pwordreq.jsp", 
             "/**/prototype.js", 
             "/**/CtiMenu.js",

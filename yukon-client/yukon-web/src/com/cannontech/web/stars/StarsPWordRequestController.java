@@ -6,6 +6,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.roles.yukon.AuthenticationRole;
 import com.cannontech.servlet.logic.RequestPword;
 import com.cannontech.servlet.logic.StarsRequestPword;
 import com.cannontech.util.ServletUtil;
@@ -15,6 +17,7 @@ public class StarsPWordRequestController implements Controller {
     private static final String SUCCESS_URI = "/pwordreq.jsp?success=true";
     
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        
         String userName = ServletUtil.getParameter( request, "USERNAME");
         String email = ServletUtil.getParameter( request, "EMAIL");
         String fName = ServletUtil.getParameter( request, "FIRST_NAME");
@@ -32,8 +35,11 @@ public class StarsPWordRequestController implements Controller {
         reqPword.setEnergyCompany( energyComp );
 
         String returnURI = "";
-
-        if( !reqPword.isValidParams() )
+        
+        if(!DaoFactory.getRoleDao().checkGlobalRoleProperty(AuthenticationRole.ENABLE_PASSWORD_RECOVERY)) {
+            returnURI = INVALID_URI + "Password recovery is not allowed";
+        }
+        else if( !reqPword.isValidParams() )
         {
             //not enough info, return error
             returnURI = INVALID_URI + "More information needs to be entered";
