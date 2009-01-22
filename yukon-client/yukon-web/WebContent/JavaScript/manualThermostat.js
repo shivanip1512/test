@@ -77,6 +77,7 @@
     function setTempUnits(newUnit){
     
         var tempUnitField = $('temperatureUnit');
+        var tempUnitFieldRun = $('temperatureUnitRun');
         var currentTempUnit = $F(tempUnitField);
 
         if(newUnit == currentTempUnit){
@@ -84,6 +85,7 @@
         }
     
         tempUnitField.value = newUnit;
+        tempUnitFieldRun.value = newUnit;
         tempUnit = newUnit;
     
         convertFieldTemp('temperature', currentTempUnit, newUnit);

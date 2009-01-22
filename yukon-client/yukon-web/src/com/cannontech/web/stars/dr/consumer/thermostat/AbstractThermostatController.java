@@ -10,7 +10,7 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
-import com.cannontech.clientutils.CTILogger;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.stars.dr.consumer.AbstractConsumerController;
 
 /**
@@ -38,15 +38,8 @@ public abstract class AbstractThermostatController extends
 
         // If thermostatIds exists, split and create Integer list
         if (!StringUtils.isBlank(thermostatIds)) {
-            String[] ids = thermostatIds.split(",");
-            for (String id : ids) {
-                try {
-                    int idInt = Integer.parseInt(id.trim());
-                    idList.add(idInt);
-                } catch(NumberFormatException nfe) {
-                    CTILogger.error(nfe);
-                }
-            }
+        	List<Integer> tempIdList = ServletUtil.getIntegerListFromString(thermostatIds);
+        	idList.addAll(tempIdList);
         }
 
         return idList;

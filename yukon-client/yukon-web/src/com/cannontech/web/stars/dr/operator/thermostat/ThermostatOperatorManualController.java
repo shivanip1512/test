@@ -45,9 +45,10 @@ public class ThermostatOperatorManualController extends AbstractThermostatOperat
     
     @RequestMapping(value = "/operator/thermostat/view", method = RequestMethod.GET)
     public String view(@ModelAttribute("thermostatIds") List<Integer> thermostatIds,
+    		@ModelAttribute("customerAccount") CustomerAccount customerAccount,
             LiteYukonUser user, ModelMap map) throws Exception {
 
-    	// TODO security check here!!!!!!
+    	this.checkInventoryAgainstAccount(thermostatIds, customerAccount);
         
         // Get the first (or only) thermostat and add to model
         Thermostat thermostat = inventoryDao.getThermostatById(thermostatIds.get(0));
@@ -83,7 +84,7 @@ public class ThermostatOperatorManualController extends AbstractThermostatOperat
     		String mode, String fan, String temperatureUnit, LiteYukonUser user,
             HttpServletRequest request, ModelMap map) throws Exception {
 
-    	// TODO security check here!!!!!!
+    	this.checkInventoryAgainstAccount(thermostatIds, customerAccount);
         
         ThermostatManualEventResult message = null;
         boolean failed = false;
@@ -104,11 +105,9 @@ public class ThermostatOperatorManualController extends AbstractThermostatOperat
             boolean runProgram = runProgramButtonClicked != null;
 
             // Convert to fahrenheit temperature
-            if ("c".equalsIgnoreCase(temperatureUnit)) {
-                temperature = (int) CtiUtilities.convertTemperature(temperature,
-                                                                    CtiUtilities.CELSIUS_CHARACTER,
-                                                                    CtiUtilities.FAHRENHEIT_CHARACTER);
-            }
+            temperature = (int) CtiUtilities.convertTemperature(temperature,
+            		temperatureUnit,
+            		CtiUtilities.FAHRENHEIT_CHARACTER);
 
             // Build up manual event from submitted params
             ThermostatManualEvent event = new ThermostatManualEvent();
@@ -157,10 +156,11 @@ public class ThermostatOperatorManualController extends AbstractThermostatOperat
 
     @RequestMapping(value = "/operator/manualComplete", method = RequestMethod.GET)
     public String manualComplete(@ModelAttribute("thermostatIds") List<Integer> thermostatIds,
+    		@ModelAttribute("customerAccount") CustomerAccount customerAccount,
             String message, LiteYukonUser user, ModelMap map, HttpServletRequest request) 
     	throws Exception {
 
-    	// TODO security check here!!!!!!
+    	this.checkInventoryAgainstAccount(thermostatIds, customerAccount);
         
         ThermostatManualEventResult resultMessage = ThermostatManualEventResult.valueOf(message);
         String key = resultMessage.getDisplayKey();

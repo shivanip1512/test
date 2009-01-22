@@ -62,10 +62,7 @@ public class ThermostatOperatorScheduleController extends AbstractThermostatOper
             Integer scheduleId, YukonUserContext yukonUserContext, ModelMap map, 
             HttpServletRequest request) {
 
-//        LiteYukonUser user = yukonUserContext.getYukonUser();
-//TODO        accountCheckerService.checkThermostatSchedule(user, scheduleId);
-//        accountCheckerService.checkInventory(user, 
-//                                             thermostatIds.toArray(new Integer[thermostatIds.size()]));
+    	this.checkInventoryAgainstAccount(thermostatIds, account);
         
         ThermostatSchedule schedule = null;
         ThermostatSchedule defaultSchedule = null;
@@ -155,9 +152,7 @@ public class ThermostatOperatorScheduleController extends AbstractThermostatOper
             String scheduleName, YukonUserContext yukonUserContext, 
             HttpServletRequest request, ModelMap map) throws ServletRequestBindingException {
 
-//        LiteYukonUser user = yukonUserContext.getYukonUser();
-//TODO        accountCheckerService.checkThermostatSchedule(user, scheduleId);
-//        accountCheckerService.checkInventory(user, thermostatIds.toArray(new Integer[thermostatIds.size()]));
+    	this.checkInventoryAgainstAccount(thermostatIds, account);
         
         String scheduleString = ServletRequestUtils.getRequiredStringParameter(request, "schedules");
 
@@ -255,12 +250,12 @@ public class ThermostatOperatorScheduleController extends AbstractThermostatOper
 
     @RequestMapping(value = "/operator/thermostat/schedule/complete", method = RequestMethod.GET)
     public String updateComplete(@ModelAttribute("thermostatIds") List<Integer> thermostatIds,
+    		@ModelAttribute("customerAccount") CustomerAccount customerAccount,
             String message, LiteYukonUser user, ModelMap map, HttpServletRequest request) 
     	throws Exception {
 
-//TODO        accountCheckerService.checkInventory(user, 
-//                                             thermostatIds.toArray(new Integer[thermostatIds.size()]));
-        
+    	this.checkInventoryAgainstAccount(thermostatIds, customerAccount);
+    	
         ThermostatScheduleUpdateResult resultMessage = ThermostatScheduleUpdateResult.valueOf(message);
         String key = resultMessage.getDisplayKey();
 
@@ -292,7 +287,10 @@ public class ThermostatOperatorScheduleController extends AbstractThermostatOper
     
     @RequestMapping(value = "/operator/thermostat/schedule/hints", method = RequestMethod.GET)
     public String hints(@ModelAttribute("thermostatIds") List<Integer> thermostatIds,
+    		@ModelAttribute("customerAccount") CustomerAccount customerAccount,
             ModelMap map, HttpServletRequest request) {
+    	
+    	this.checkInventoryAgainstAccount(thermostatIds, customerAccount);
     	
     	Integer thermostatId = null;
     	if(thermostatIds.size() > 0) {
@@ -309,8 +307,7 @@ public class ThermostatOperatorScheduleController extends AbstractThermostatOper
             @ModelAttribute("thermostatIds") List<Integer> thermostatIds,
             LiteYukonUser user, ModelMap map) throws Exception {
 
-//TODO        accountCheckerService.checkInventory(user, 
-//                                             thermostatIds.toArray(new Integer[thermostatIds.size()]));
+    	this.checkInventoryAgainstAccount(thermostatIds, account);
 
         Thermostat thermostat = inventoryDao.getThermostatById(thermostatIds.get(0));
         HardwareType type = thermostat.getType();
@@ -323,11 +320,12 @@ public class ThermostatOperatorScheduleController extends AbstractThermostatOper
     }
     
     @RequestMapping(value = "/operator/thermostat/schedule/saved", method = RequestMethod.POST, params = "delete")
-    public String delete(HttpServletRequest request, @ModelAttribute("customerAccount") CustomerAccount account,
-    		String thermostatIds, Integer scheduleId, LiteYukonUser user, ModelMap map) throws Exception {
-    	
-//    	List<Integer> thermostatIdsList = getThermostatIds(request);
-//TODO    	accountCheckerService.checkInventory(user, thermostatIdsList.toArray(new Integer[thermostatIdsList.size()]));
+    public String delete(HttpServletRequest request, 
+    		@ModelAttribute("customerAccount") CustomerAccount account,
+    		@ModelAttribute("thermostatIds") List<Integer> thermostatIds,
+    		Integer scheduleId, LiteYukonUser user, ModelMap map) throws Exception {
+
+    	this.checkInventoryAgainstAccount(thermostatIds, account);
     	
     	thermostatScheduleDao.delete(scheduleId);
 
@@ -337,7 +335,12 @@ public class ThermostatOperatorScheduleController extends AbstractThermostatOper
     }
     
     @RequestMapping(value = "/operator/thermostat/schedule/saved", method = RequestMethod.POST, params = "view")
-    public String viewSchedule(String thermostatIds, Integer scheduleId, ModelMap map) throws Exception {
+    public String viewSchedule(@ModelAttribute("thermostatIds") List<Integer> thermostatIds, 
+    		@ModelAttribute("customerAccount") CustomerAccount account,
+    		Integer scheduleId, ModelMap map) throws Exception {
+    	
+    	this.checkInventoryAgainstAccount(thermostatIds, account);
+    	
     	map.addAttribute("scheduleId", scheduleId);
     	map.addAttribute("thermostatIds", thermostatIds);
     	return "redirect:/spring/stars/operator/thermostat/schedule/view";
@@ -440,10 +443,10 @@ public class ThermostatOperatorScheduleController extends AbstractThermostatOper
                 
                 // Set temp to default farenheit if null
                 if(coolTemperature == null) {
-                	coolTemperature = 72;
+                	coolTemperature = (isFahrenheit)?72:22;
                 }
                 if(heatTemperature == null) {
-                	heatTemperature = 72;
+                	heatTemperature = (isFahrenheit)?72:22;
                 }
 
                 timeTemp.put("coolTemp", coolTemperature);

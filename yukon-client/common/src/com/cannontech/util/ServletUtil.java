@@ -1299,11 +1299,12 @@ public static Date roundToMinute(Date toRound) {
      * @param newValue the value of the new parameter
      * @return a full path and query string
      */
-    public static String tweakRequestURI(HttpServletRequest request, String newParameter, String newValue) {
+    @SuppressWarnings("unchecked")
+	public static String tweakRequestURI(HttpServletRequest request, String newParameter, String newValue) {
         StringBuffer result = new StringBuffer();
         result.append(request.getRequestURI());
         result.append("?");
-        Map parameterMap = new HashMap(request.getParameterMap());
+        Map<String, String[]> parameterMap = new HashMap<String, String[]>(request.getParameterMap());
         if(newValue == null) {
             parameterMap.remove(newParameter);
         }
@@ -1572,7 +1573,7 @@ public static Date roundToMinute(Date toRound) {
         if (integerStringList != null && integerStringList.length() > 0) {
             String[] ids = integerStringList.split(",");
             for (String id : ids) {
-                idList.add(Integer.valueOf(id));
+                idList.add(Integer.valueOf(id.trim()));
             }
         }
         return idList;

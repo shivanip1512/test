@@ -12,13 +12,16 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
-import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.database.data.lite.stars.LiteInventoryBase;
+import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsInventories;
 import com.cannontech.stars.xml.serialize.StarsInventory;
+import com.cannontech.util.ServletUtil;
 
 /**
  * Base controller for Operator-side Thermostat operations
@@ -26,6 +29,7 @@ import com.cannontech.stars.xml.serialize.StarsInventory;
 public abstract class AbstractThermostatOperatorController {
 
 	private CustomerAccountDao customerAccountDao;
+	private StarsInventoryBaseDao starsInventoryBaseDao;
 	
 	@ModelAttribute("thermostatIds")
     public List<Integer> getThermostatIds(HttpServletRequest request)
@@ -46,15 +50,8 @@ public abstract class AbstractThermostatOperatorController {
 
         // If thermostatIds exists, split and create Integer list
         if (!StringUtils.isBlank(thermostatIds)) {
-            String[] ids = thermostatIds.split(",");
-            for (String id : ids) {
-                try {
-                    int idInt = Integer.parseInt(id.trim());
-                    idList.add(idInt);
-                } catch(NumberFormatException nfe) {
-                    CTILogger.error(nfe);
-                }
-            }
+        	List<Integer> tempIdList = ServletUtil.getIntegerListFromString(thermostatIds);
+        	idList.addAll(tempIdList);
         }
 
         return idList;
@@ -73,6 +70,13 @@ public abstract class AbstractThermostatOperatorController {
         return account;
     }
     
+    /**
+     * Helper method to get the legacy 'inventory number' for use with leagcy stars operator
+     * urls
+     * @param request - Current request
+     * @param thermostatId - Id to get number for
+     * @return Inventory number
+     */
     protected int getInventoryNumber(HttpServletRequest request, int thermostatId) {
     	
     	StarsCustAccountInformation accountInfo = 
@@ -90,10 +94,31 @@ public abstract class AbstractThermostatOperatorController {
         
         return count;
     }
-
+    
+    /**
+     * Helper method to make sure the inventory being used belongs to the current account 
+     */
+    public void checkInventoryAgainstAccount(List<Integer> inventoryIdList, CustomerAccount customerAccount){
+    	
+    	for(Integer inventoryId : inventoryIdList) {
+    	
+	    	LiteInventoryBase inventory = starsInventoryBaseDao.getById(inventoryId);
+	    	int accountId = customerAccount.getAccountId();
+			if(inventory.getAccountID() != accountId) {
+	    		throw new NotAuthorizedException("The Inventory with id: " + inventoryId + 
+	    				" does not belong to the current customer account with id: " + accountId);
+	    	}
+    	}
+    }
 
     @Autowired
     public void setCustomerAccountDao(CustomerAccountDao customerAccountDao) {
 		this.customerAccountDao = customerAccountDao;
+	}
+    
+    @Autowired
+    public void setStarsInventoryBaseDao(
+			StarsInventoryBaseDao starsInventoryBaseDao) {
+		this.starsInventoryBaseDao = starsInventoryBaseDao;
 	}
 }

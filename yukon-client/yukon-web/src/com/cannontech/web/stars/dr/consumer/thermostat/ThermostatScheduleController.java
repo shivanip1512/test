@@ -425,10 +425,10 @@ public class ThermostatScheduleController extends AbstractThermostatController {
                 
                 // Set temp to default farenheit if null
                 if(coolTemperature == null) {
-                	coolTemperature = 72;
+                	coolTemperature = (isFahrenheit)?72:22;
                 }
                 if(heatTemperature == null) {
-                	heatTemperature = 72;
+                	heatTemperature = (isFahrenheit)?72:22;;
                 }
 
                 timeTemp.put("coolTemp", coolTemperature);

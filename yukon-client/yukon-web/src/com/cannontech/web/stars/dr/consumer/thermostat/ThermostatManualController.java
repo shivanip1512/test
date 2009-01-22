@@ -34,7 +34,7 @@ import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 /**
- * Controller for Manual thermostat operations
+ * Controller for Consumer-side Manual thermostat operations
  */
 @CheckRole(ResidentialCustomerRole.ROLEID)
 @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_HARDWARES_THERMOSTAT)
@@ -130,11 +130,9 @@ public class ThermostatManualController extends AbstractThermostatController {
             boolean runProgram = runProgramButtonClicked != null;
 
             // Convert to fahrenheit temperature
-            if ("c".equalsIgnoreCase(temperatureUnit)) {
-                temperature = (int) CtiUtilities.convertTemperature(temperature,
-                                                                    CtiUtilities.CELSIUS_CHARACTER,
-                                                                    CtiUtilities.FAHRENHEIT_CHARACTER);
-            }
+            temperature = (int) CtiUtilities.convertTemperature(temperature,
+            		temperatureUnit,
+            		CtiUtilities.FAHRENHEIT_CHARACTER);
 
             // Build up manual event from submitted params
             ThermostatManualEvent event = new ThermostatManualEvent();

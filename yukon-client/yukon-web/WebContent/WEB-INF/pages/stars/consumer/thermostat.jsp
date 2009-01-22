@@ -230,6 +230,7 @@
                 <form action="/spring/stars/consumer/thermostat/manual" method="post" >
                     <input name="thermostatIds" type="hidden" value="${thermostatIds}" />
                     <cti:msg var="runProgramText" key="yukon.dr.consumer.thermostat.runProgram" />
+                    <input id="temperatureUnitRun" type="hidden" name="temperatureUnit" value="F">
                     <input name="runProgram" type="submit" value="${runProgramText}" />
                 </form>
             </td>
