@@ -4132,16 +4132,19 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 pointname += string(1, (char)('A' + rate));
                 pointname += " peak";
 
-                if( is_valid_time(peak_time) )
+                if( !is_valid_time(peak_time) )
                 {
-                    insertPointDataReport(AnalogPointType, offset + rate * 2,
-                                          ReturnMsg, pi, pointname, peak_time);
+                    pi.quality = InvalidQuality;
+                    pi.description = "Bad peak kW timestamp";
+
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint - invalid time (" << std::hex << peak_time << ") in IED peak decode for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
                 }
-                else
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - invalid time (" << std::hex << peak_time << ") in IED peak decode for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+
+                insertPointDataReport(AnalogPointType, offset + rate * 2,
+                                      ReturnMsg, pi, pointname, peak_time);
             }
         }
 
