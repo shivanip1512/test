@@ -1090,12 +1090,12 @@ public class StarsAdminUtil {
 			throw new WebClientException( "Username '" + username + "' already exists" );
 		
 		if (password.length() != 0) {
-			if (!username.equalsIgnoreCase( liteUser.getUsername() ))
-				throw new WebClientException( "Password cannot be empty" );
 			if (!authenticationService.supportsPasswordSet(liteUser.getAuthType())) {
                 throw new WebClientException( "Password cannot be changed when authentication type is " + liteUser.getAuthType() );
             }
             authenticationService.setPassword(liteUser, password);
+		} else {
+		    throw new WebClientException( "Password cannot be empty" );
 		}
 		
 		com.cannontech.database.data.user.YukonUser user = new com.cannontech.database.data.user.YukonUser();
