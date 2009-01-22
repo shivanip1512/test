@@ -860,6 +860,23 @@ const char *DNPInterface::getControlResultString( int result_status ) const
 }
 
 
+DNP::Application& DNPInterface::getApplicationLayer() 
+{
+    return _app_layer;
+}
+
+DNPInterface::Command DNPInterface::getCommand()
+{
+    return _command;
+}
+
+void DNPInterface::addStringResults(string *s)
+{
+    _string_results.push_back(s);
+    return;
+}
+
+
 DNPSlaveInterface::DNPSlaveInterface() 
 {
    getApplicationLayer().completeSlave();
@@ -983,7 +1000,7 @@ void DNPSlaveInterface::slaveTransactionComplete()
 {
     if( getApplicationLayer().errorCondition() )
     {
-        getStringResults().push_back(CTIDBG_new string("Operation failed"));
+        addStringResults(CTIDBG_new string("Operation failed"));
     }
     setSlaveCommand(Command_Complete);
     

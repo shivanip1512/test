@@ -139,6 +139,16 @@ int BinaryInput::serialize(unsigned char *buf) const
 }
 
 
+void BinaryInput::setStateValue(long value) 
+{
+    _bi.flags.state = value;
+}
+
+void BinaryInput::setOnLineFlag(bool online) 
+{
+    _bi.flags.online = online;
+}
+
 int BinaryInput::getSerializedLen(void) const
 {
     int retVal;

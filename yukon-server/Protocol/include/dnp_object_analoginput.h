@@ -45,7 +45,7 @@ private:
             unsigned char overrange    : 1;
             unsigned char refcheck     : 1;
             unsigned char reserved     : 1;
-        };
+        } aif;
 
         unsigned char raw;
     } _flags;
@@ -78,8 +78,8 @@ public:
 
     virtual CtiPointDataMsg *getPoint( const TimeCTO *cto ) const;
 
-    void setValue(long value) {_value = value;};
-    void setOnlineFlag(bool online) {_flags.raw = (online?0x80:0x00);};
+    void setValue(long value);
+    void setOnlineFlag(bool online);
 };
 
 

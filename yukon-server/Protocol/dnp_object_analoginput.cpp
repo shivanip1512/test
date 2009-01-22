@@ -176,6 +176,14 @@ int AnalogInput::serializeVariation(unsigned char *buf, int variation) const
     return pos;
 }
 
+void AnalogInput::setValue(long value) 
+{
+    _value = value;
+}
+void AnalogInput::setOnlineFlag(bool online) 
+{
+    _flags.aif.online = online;
+}
 
 int AnalogInput::getSerializedLen(void) const
 {

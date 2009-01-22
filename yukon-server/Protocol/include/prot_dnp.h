@@ -97,9 +97,9 @@ protected:
     static const char const *ControlResultStr_HardwareError;
     static const char const *ControlResultStr_InvalidStatus;
 
-    DNP::Application& getApplicationLayer() {return _app_layer;};
-    Command getCommand(){return _command;};
-    stringlist_t getStringResults(){return _string_results;};
+    DNP::Application& getApplicationLayer();
+    Command getCommand();
+    void addStringResults(string *s);
 
 public:
 

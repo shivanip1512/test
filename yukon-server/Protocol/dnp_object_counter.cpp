@@ -48,6 +48,16 @@ int Counter::serialize(unsigned char *buf) const
 }
 
 
+void Counter::setValue(long value) 
+{
+    _counter = value;
+}
+
+void Counter::setOnLineFlag(bool online) 
+{
+    _flag = (online?0x80:0x00);
+}
+
 int Counter::getSerializedLen(void) const
 {
     int retVal;

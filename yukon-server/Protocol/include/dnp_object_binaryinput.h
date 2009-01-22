@@ -71,8 +71,8 @@ public:
     virtual int serialize(unsigned char *buf) const;
     virtual int getSerializedLen(void) const;
 
-    void setStateValue(long value) {_bi.flags.state = value;};
-    void setOnLineFlag(bool online) {_bi.flags.online = online;};
+    void setStateValue(long value);
+    void setOnLineFlag(bool online);
     virtual CtiPointDataMsg *getPoint( const TimeCTO *cto ) const;
 };
 
