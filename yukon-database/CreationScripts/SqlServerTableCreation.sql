@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     1/22/2009 10:38:35 AM                        */
+/* Created on:     1/22/2009 2:58:02 PM                         */
 /*==============================================================*/
 
 
@@ -8987,8 +8987,7 @@ create table LMThermostatSeason (
 )
 go
 
-INSERT INTO LMThermostatSeason VALUES (-1,-1,-1,'01-JUN-00','01-JUN-00');
-INSERT INTO LMThermostatSeason VALUES (-2,-1,-2,'15-OCT-00','15-OCT-00');
+INSERT INTO LMThermostatSeason VALUES (-1,-1,-2,'01-JUN-00','15-OCT-00');
 
 /*==============================================================*/
 /* Table: LMThermostatSeasonEntry                               */
@@ -9016,18 +9015,6 @@ INSERT INTO LMThermostatSeasonEntry VALUES (-16,-1,1174,21600,72,72);
 INSERT INTO LMThermostatSeasonEntry VALUES (-15,-1,1174,30600,72,72);
 INSERT INTO LMThermostatSeasonEntry VALUES (-14,-1,1174,61200,72,72);
 INSERT INTO LMThermostatSeasonEntry VALUES (-13,-1,1174,75600,72,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-12,-2,1171,21600,72,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-11,-2,1171,30600,72,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-10,-2,1171,61200,72,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-9,-2,1171,75600,72,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-8,-2,1173,21600,72,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-7,-2,1173,30600,72,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-6,-2,1173,61200,72,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-5,-2,1173,75600,72,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-4,-2,1174,21600,72,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-3,-2,1174,30600,72,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-2,-2,1174,61200,72,72);
-INSERT INTO LMThermostatSeasonEntry VALUES (-1,-2,1174,75600,72,72);
 
 /*==============================================================*/
 /* Table: LOGIC                                                 */
