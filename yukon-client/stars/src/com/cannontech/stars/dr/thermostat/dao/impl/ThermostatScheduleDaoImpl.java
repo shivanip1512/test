@@ -435,7 +435,7 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao, Initial
                 entrySql.append("INSERT INTO LMThermostatSeasonEntry");
                 entrySql.append("(SeasonId, TimeOfWeekId, StartTime");
                 entrySql.append(", CoolTemperature, HeatTemperature, EntryId)");
-                entrySql.append("VALUES (?,?,?,?,?)");
+                entrySql.append("VALUES (?,?,?,?,?,?)");
 
             } else {
                 entrySql.append("UPDATE LMThermostatSeasonEntry");
