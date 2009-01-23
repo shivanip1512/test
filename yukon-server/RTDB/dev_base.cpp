@@ -445,18 +445,33 @@ void CtiDeviceBase::DecodeDatabaseReader(RWDBReader &rdr)
     resetDirty();
 }
 
-
-void CtiDeviceBase::getPropertiesSql(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
+/**
+ * Setup the selector for the parameters
+ *
+ * @param db
+ * @param keyTable
+ * @param selector
+ */
+void CtiDeviceBase::getParametersSelector(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
 
 }
 
-void CtiDeviceBase::decodePropertiesSql(RWDBReader &rdr)
+/**
+ * Process parameters from the database
+ *
+ * @param rdr
+ */
+void CtiDeviceBase::decodeParameters(RWDBReader &rdr)
 {
 
 }
 
-void CtiDeviceBase::clearProperties()
+/**
+ * Any cleanup needed to prepare for new parameters.
+ *
+ */
+void CtiDeviceBase::clearParameters()
 {
 
 }

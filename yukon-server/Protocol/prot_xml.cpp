@@ -20,21 +20,21 @@ namespace Cti
         XmlProtocol::XmlProtocol()
         {
             _complete = false;
-            _checkDatabase = true;
+            _generateParameters = true;
         }
 
-		/**
-		 * Generate the xfer message from the command string. 
-		 * 
-		 * @param xfer 
-		 * 
-		 * @return int 
-		 */
+        /**
+         * Generate the xfer message from the command string.
+         *
+         * @param xfer
+         *
+         * @return int
+         */
         int XmlProtocol::generate(CtiXfer &xfer)
         {
             int retVal = NoError;
             char tempArray[(sizeof(int)*8+1)];//makes sure this is big enough for any number
-            CtiCommandParser parser(_commandString); 
+            CtiCommandParser parser(_commandString);
 
             //grab by reference to save a copy.
             CtiCommandParser::map_type parseMap = parser.Map();
@@ -44,9 +44,9 @@ namespace Cti
             xmlBaseObject->insertParameter("command",string(itoa(parser.getCommand(),tempArray,10)));
             xmlBaseObject->insertParameter("flags",string(itoa(parser.getFlags(),tempArray,10)));
 
-            if (getCheckDatabase())
+            if (getGenerateParameters())
             {
-                generateDataFromDatabase(xmlBaseObject);
+                generateParameters(xmlBaseObject);
             }
 
             /* Add fields from the CMD Parse */
@@ -89,37 +89,26 @@ namespace Cti
             return retVal;
         }
 
-        void XmlProtocol::generateDataFromDatabase(XmlObject::XmlObjectSPtr xmlBaseObject)
+        void XmlProtocol::generateParameters(XmlObject::XmlObjectSPtr xmlBaseObject)
         {
-				
-			std::vector< std::vector<string> >::iterator itr;
 
-			/* Add fields from the database */
-			for ( itr = _params.begin(); itr != _params.end(); ++itr)
-			{
-				if (itr->size() != 2)
-				{
-					//incorrect number of fields in parameter. Skipping
-					CtiLockGuard<CtiLogger> doubt_guard(dout);
-					dout << CtiTime() << " Skipping due to incorrect number of fields in parameter. Expecting 2, got " << itr->size() << endl;
-				}
-				else
-				{
-					XmlObject::XmlObjectSPtr xmlChild(new XmlObject());
-					string paramName = (*itr)[0];
-					string paramValue = (*itr)[1];
-					xmlChild->insertParameter(paramName,paramValue);
-					xmlChild->setTagName("XML_DATA");
-					xmlBaseObject->insertXmlNode(xmlChild);
-				}
-			}
-			_params.clear();
+            std::vector<std::pair<string,string> >::iterator itr;
+
+            /* Add fields from the database */
+            for ( itr = _params.begin(); itr != _params.end(); ++itr)
+            {
+                XmlObject::XmlObjectSPtr xmlChild(new XmlObject());
+                string paramName = (*itr).first;
+                string paramValue = (*itr).second;
+                xmlChild->insertParameter(paramName,paramValue);
+                xmlChild->setTagName("XML_DATA");
+                xmlBaseObject->insertXmlNode(xmlChild);
+            }
+            _params.clear();
         }
 
         BYTE* XmlProtocol::generateByteBuffer(int & size)
-        {   
-            BYTE * buffer = NULL;
-
+        {
             if (_complete == true)
             {
                 //generate buffer
@@ -130,24 +119,24 @@ namespace Cti
                 string output = ss.str();
                 size = output.size();
 
-                buffer = new BYTE [size];
-                memcpy(buffer,output.begin(),output.size());
+                _buffer.reset(new BYTE [size]);
+                std::copy(output.begin(),output.end(),_buffer.get());
             }
 
-            return buffer;
+            return _buffer.get();
         }
 
-		int XmlProtocol::sendCommResult(INMESS *InMessage)
-		{
-			return NORMAL;
-		}
+        int XmlProtocol::sendCommResult(INMESS *InMessage)
+        {
+            return NORMAL;
+        }
 
-        bool XmlProtocol::isTransactionComplete( void ) const 
+        bool XmlProtocol::isTransactionComplete( void ) const
         {
             return getComplete();
         }
 
-		/* Not sure what happens in here.*/
+        /* Not sure what happens in here.*/
         int XmlProtocol::decode( CtiXfer &xfer, int status )
         {
             int retVal = NoError;
@@ -175,14 +164,14 @@ namespace Cti
             return _xmlObject;
         }
 
-		/**
-		 * Take the OutMessage and form XML objects for generate to 
-		 * process. 
-		 * 
-		 * @param OutMessage 
-		 * 
-		 * @return int 
-		 */
+        /**
+         * Take the OutMessage and form XML objects for generate to
+         * process.
+         *
+         * @param OutMessage
+         *
+         * @return int
+         */
         int XmlProtocol::recvCommRequest( OUTMESS *OutMessage )
         {
             int retVal = NoError;
@@ -200,14 +189,14 @@ namespace Cti
             return _commandString;
         }
 
-        void XmlProtocol::setCheckDatabase(bool flag)
+        void XmlProtocol::setGenerateParameters(bool flag)
         {
-            _checkDatabase = flag;
+            _generateParameters = flag;
         }
 
-        bool XmlProtocol::getCheckDatabase()
+        bool XmlProtocol::getGenerateParameters()
         {
-            return _checkDatabase;
+            return _generateParameters;
         }
 
         int XmlProtocol::getGroupId()
@@ -220,17 +209,17 @@ namespace Cti
             _groupId = gid;
         }
 
-		void XmlProtocol::reset()
-		{
-			_groupId = 0;
-			_commandString = "";
-			_complete = false;
-		}
-		
-		void XmlProtocol::setParameters( std::vector< std::vector<string> >& params)
-		{
-			_params = std::vector< std::vector<string> >(params);
-		}
+        void XmlProtocol::reset()
+        {
+            _groupId = 0;
+            _commandString = "";
+            _complete = false;
+        }
+
+        void XmlProtocol::setParameters( std::vector<std::pair<string,string> >& params)
+        {
+            _params = std::vector<std::pair<string,string> >(params);
+        }
 
     }//end Protocol namespace
 }//end Cti namespace

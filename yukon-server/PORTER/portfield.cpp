@@ -1399,17 +1399,17 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         status = Port->outMess(trx, Device, traceList);
                         break;
                     }
-					case TYPE_XML_XMIT:
+                    case TYPE_XML_XMIT:
                     {
                         CtiDeviceXmlSPtr ds = boost::static_pointer_cast<CtiDeviceXml>(Device);
-						int xmlGroupId = OutMessage->DeviceIDofLMGroup;
-						CtiDeviceGroupXmlSPtr xmlGroupSptr = boost::static_pointer_cast<CtiDeviceGroupXml>(DeviceManager.getDeviceByID(xmlGroupId));
+                        int xmlGroupId = OutMessage->DeviceIDofLMGroup;
+                        CtiDeviceGroupXmlSPtr xmlGroupSptr = boost::static_pointer_cast<CtiDeviceGroupXml>(DeviceManager.getDeviceByID(xmlGroupId));
 
-						if(xmlGroupSptr)
-						{
-							ds->setParameters(xmlGroupSptr->getParameters());
-						}
-						//Break is intentionally left off here. The next block needs to execute
+                        if(xmlGroupSptr)
+                        {
+                            ds->setParameters(xmlGroupSptr->getParameters());
+                        }
+                        //Break is intentionally left off here. The next block needs to execute
                     }
                     case TYPE_ION7330:
                     case TYPE_ION7700:
@@ -1428,7 +1428,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     case TYPE_MODBUS:
                     case TYPE_FOREIGNPORTER:
                     case TYPE_FMU:
-					case TYPE_CCU721:
+                    case TYPE_CCU721:
                     {
                         CtiDeviceSingleSPtr ds = boost::static_pointer_cast<CtiDeviceSingle>(Device);
                         int comm_status = NoError;
@@ -2328,8 +2328,8 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     case TYPE_TNPP:
                     case TYPE_MODBUS:
                     case TYPE_FMU:
-					case TYPE_CCU721:
-					case TYPE_XML_XMIT:
+                    case TYPE_CCU721:
+                    case TYPE_XML_XMIT:
                         break;
                     case TYPE_CCU700:
                     case TYPE_CCU710:

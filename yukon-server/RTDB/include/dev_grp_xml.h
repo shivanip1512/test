@@ -5,26 +5,26 @@
 
 class IM_EX_DEVDB CtiDeviceGroupXml : public CtiDeviceGroupExpresscom
 {
-	public:
+    public:
 
-		typedef CtiDeviceGroupExpresscom Inherited;
-		typedef CtiDeviceGroupBase Inherited2;
+        typedef CtiDeviceGroupExpresscom Inherited;
+        typedef CtiDeviceGroupBase Inherited2;
 
-		CtiDeviceGroupXml();
-		~CtiDeviceGroupXml();
-		CtiDeviceGroupXml& operator=(const CtiDeviceGroupXml& aRef);
+        CtiDeviceGroupXml();
+        ~CtiDeviceGroupXml();
+        CtiDeviceGroupXml& operator=(const CtiDeviceGroupXml& aRef);
 
-		std::vector< std::vector<string> > getParameters();
-		void setParameters( std::vector< std::vector<string> > parameters );
+        std::vector<std::pair<string,string> > getParameters();
+        void setParameters( std::vector<std::pair<string,string> >& parameters );
 
-		virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
+        virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
 
-		virtual void getPropertiesSql(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
-		virtual void decodePropertiesSql(RWDBReader &rdr);
+        virtual void getParametersSelector(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
+        virtual void decodeParameters(RWDBReader &rdr);
 
-		virtual void clearProperties();
-	private:
-		std::vector< std::vector<string> > _parameters;
+        virtual void clearParameters();
+    private:
+        std::vector<std::pair<string,string> > _parameters;
 };
 
 typedef shared_ptr<CtiDeviceGroupXml> CtiDeviceGroupXmlSPtr;

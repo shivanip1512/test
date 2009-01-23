@@ -809,7 +809,7 @@ void CtiDeviceManager::refreshList(id_range_t &paoids, const LONG deviceType)
                         rowFound |= loadDeviceType(paoid_subset, "CBC devices",            CtiDeviceCBC());
                         rowFound |= loadDeviceType(paoid_subset, "FMU devices",            CtiDeviceFMU(),         "FMU");
                         rowFound |= loadDeviceType(paoid_subset, "RTC devices",            CtiDeviceRTC());
-                        
+
                         //XML Transmitters
                         rowFound |= loadDeviceType(paoid_subset, "XML devices",            CtiDeviceXml());
                         rowFound |= loadDeviceType(paoid_subset, "XML groups",             CtiDeviceGroupXml());
@@ -1267,55 +1267,55 @@ void CtiDeviceManager::refreshIONMeterGroups(id_range_t &paoids)
     }
 }
 
-void CtiDeviceManager::refreshXmlGroupProperties(id_range_t &paoids, const int type)
+void CtiDeviceManager::refreshDeviceParameters(id_range_t &paoids, const int type)
 {
     RWDBConnection conn = getConnection();
     RWDBDatabase db = getDatabase();
 
-	if(DebugLevel & 0x00020000)
-	{
-		CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for XML Group Properties" << endl;
-	}
+    if(DebugLevel & 0x00020000)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Device Properties for type " << type << endl;
+    }
 
-	vector< CtiDeviceSPtr > devicesToUpdate;
-	getDevicesByType(type,devicesToUpdate);
-	
-	vector< CtiDeviceSPtr >::iterator itr = devicesToUpdate.begin();
-	
-	for( ;itr != devicesToUpdate.end(); ++itr)
-	{
-		RWDBSelector selector = db.selector();
-		RWDBTable keyTable;
+    vector< CtiDeviceSPtr > devicesToUpdate;
+    getDevicesByType(type,devicesToUpdate);
 
-		CtiDeviceGroupXmlSPtr device = boost::static_pointer_cast<CtiDeviceGroupXml>(*itr);
-		device->getPropertiesSql(db,keyTable,selector);
-	
-		addIDClause(selector, keyTable["PAObjectID"], paoids);
-	
-		RWDBReader rdr = selector.reader(conn);
-	
-		if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
-		{
-			CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
-		}
+    vector< CtiDeviceSPtr >::iterator itr = devicesToUpdate.begin();
 
-		if(rdr.status().errorCode() == RWDBStatus::ok)
-		{
-			device->clearProperties();
-			device->decodePropertiesSql(rdr);
-		}
-		else
-		{
-			CtiLockGuard<CtiLogger> doubt_guard(dout);
-			dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-			dout << "Error reading XML Properties from database: " << rdr.status().errorCode() << endl;
-			dout << selector.asString() << endl;
-		}
-	}
+    for( ;itr != devicesToUpdate.end(); ++itr)
+    {
+        RWDBSelector selector = db.selector();
+        RWDBTable keyTable;
+
+        CtiDeviceSPtr device = *itr;
+        device->getParametersSelector(db,keyTable,selector);
+
+        addIDClause(selector, keyTable["PAObjectID"], paoids);
+
+        RWDBReader rdr = selector.reader(conn);
+
+        if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+        }
+
+        if(rdr.status().errorCode() == RWDBStatus::ok)
+        {
+            device->clearParameters();
+            device->decodeParameters(rdr);
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << "Error reading XML Properties from database: " << rdr.status().errorCode() << endl;
+            dout << selector.asString() << endl;
+        }
+    }
     if(DebugLevel & 0x00020000)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for XML Properties" << endl;
-	} 
+    }
 }
 
 void CtiDeviceManager::refreshMacroSubdevices(id_range_t &paoids)
@@ -1665,28 +1665,37 @@ void CtiDeviceManager::refreshDeviceProperties(id_range_t &paoids, int type)
 {
     if( !type || type == TYPE_MACRO )
     {
-        DebugTimer timer("loading macro subdevices");       refreshMacroSubdevices(paoids);
+        DebugTimer timer("loading macro subdevices");
+        refreshMacroSubdevices(paoids);
     }
 
     if( !type || isION(type) )
     {
-        DebugTimer timer("loading ION meter groups");       refreshIONMeterGroups (paoids);
+        DebugTimer timer("loading ION meter groups");
+        refreshIONMeterGroups(paoids);
     }
 
     if( !type || isMCT(type) )
     {
-        DebugTimer timer("loading MCT configs");            refreshMCTConfigs     (paoids);
-                                                            refreshMCT400Configs  (paoids);
+        DebugTimer timer("loading MCT configs");
+        refreshMCTConfigs(paoids);
+        refreshMCT400Configs(paoids);
     }
 
-    if( !type || type == TYPE_LMGROUP_XML )
     {
-        DebugTimer timer("loading XML Group properties");
-		refreshXmlGroupProperties(paoids, TYPE_LMGROUP_XML);
+        DebugTimer timer("loading Device Paramers");
+        refreshDeviceParameters(paoids, type);
     }
 
-    {  DebugTimer timer("loading device exclusions");       refreshExclusions     (paoids);  }
-    {  DebugTimer timer("loading dynamic device data");     refreshDynamicPaoInfo (paoids);  }
+    {
+        DebugTimer timer("loading device exclusions");
+        refreshExclusions(paoids);
+    }
+
+    {
+        DebugTimer timer("loading dynamic device data");
+        refreshDynamicPaoInfo(paoids);
+    }
 }
 
 

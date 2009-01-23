@@ -71,7 +71,7 @@ private:
 
     bool loadDeviceType(id_range_t &paoids, const string &device_name, const CtiDeviceBase &device, string type=string(), const bool include_type=true);
 
-    void refreshXmlGroupProperties  (id_range_t &paoids, const int type);
+    void refreshDeviceParameters    (id_range_t &paoids, const int type);
     void refreshExclusions          (id_range_t &paoids);
     void refreshIONMeterGroups      (id_range_t &paoids);
     void refreshMacroSubdevices     (id_range_t &paoids);

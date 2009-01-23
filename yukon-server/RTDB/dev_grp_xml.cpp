@@ -20,7 +20,7 @@ CtiDeviceGroupXml::~CtiDeviceGroupXml()
 
 CtiDeviceGroupXml& CtiDeviceGroupXml::operator=(const CtiDeviceGroupXml& aRef)
 {
-	if(this != &aRef)
+    if(this != &aRef)
     {
         Inherited::operator=(aRef);
         //_parameters = aRef.getParameters();
@@ -29,14 +29,14 @@ CtiDeviceGroupXml& CtiDeviceGroupXml::operator=(const CtiDeviceGroupXml& aRef)
     return *this;
 }
 
-std::vector< std::vector<string> > CtiDeviceGroupXml::getParameters()
+std::vector<std::pair<string,string> > CtiDeviceGroupXml::getParameters()
 {
-	return _parameters;
+    return _parameters;
 }
 
-void CtiDeviceGroupXml::setParameters( std::vector< std::vector<string> > parameters )
+void CtiDeviceGroupXml::setParameters( std::vector<std::pair<string,string> >& parameters )
 {
-	_parameters = parameters;
+    _parameters = std::vector<std::pair<string,string> >(parameters);
 }
 
 void CtiDeviceGroupXml::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
@@ -47,27 +47,24 @@ void CtiDeviceGroupXml::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelec
     selector.where( rwdbUpper(keyTable["type"]) == RWDBExpr("XML GROUP") && selector.where() );
 }
 
-void CtiDeviceGroupXml::getPropertiesSql(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
+void CtiDeviceGroupXml::getParametersSelector(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
 {
     RWDBTable tbl = db.table("LMGroupXMLParameter");
-    selector << tbl["LMGroupXMLParameterId"] 
-			 << tbl["parametername"] 
-			 << tbl["parametervalue"];
-	selector.from(tbl);
+    selector << tbl["LMGroupXMLParameterId"]
+             << tbl["parametername"]
+             << tbl["parametervalue"];
+    selector.from(tbl);
 
-    selector.where( rwdbUpper(tbl["LMGroupXMLParameterId"]) == RWDBExpr(getID()) && selector.where() );    
+    selector.where( rwdbUpper(tbl["LMGroupXMLParameterId"]) == RWDBExpr(getID()) && selector.where() );
 }
 
-/**
- * Prep for a new list of properties.
- * 
- */
-void CtiDeviceGroupXml::clearProperties()
+
+void CtiDeviceGroupXml::clearParameters()
 {
     _parameters.clear();
 }
 
-void CtiDeviceGroupXml::decodePropertiesSql(RWDBReader &rdr)
+void CtiDeviceGroupXml::decodeParameters(RWDBReader &rdr)
 {
     string param;
     string value;
@@ -77,17 +74,13 @@ void CtiDeviceGroupXml::decodePropertiesSql(RWDBReader &rdr)
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
-    
+
     while(rdr())
     {
         //Decode properties here.
         rdr["parametername"] >> param;
         rdr["parametervalue"] >> value;
-        
-        std::vector<string> parameterPair;
-        parameterPair.push_back(param);
-        parameterPair.push_back(value);
 
-        _parameters.push_back(parameterPair);
+        _parameters.push_back(std::make_pair(param,value));
     }
 }

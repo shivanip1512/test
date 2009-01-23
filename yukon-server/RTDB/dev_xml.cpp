@@ -11,7 +11,6 @@ using namespace Cti;
 
 CtiDeviceXml::CtiDeviceXml()
 {
-    _xmlProtocol.reset();
 }
 
 CtiDeviceXml::~CtiDeviceXml()
@@ -24,11 +23,11 @@ Cti::Protocol::Interface * CtiDeviceXml::getProtocol()
 }
 
 /**
- * 
- * 
- * @param OutMessage 
- * 
- * @return int 
+ *
+ *
+ * @param OutMessage
+ *
+ * @return int
  */
 int CtiDeviceXml::recvCommRequest(OUTMESS *OutMessage)
 {
@@ -45,8 +44,6 @@ void CtiDeviceXml::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &
     Inherited::getSQL(db, keyTable, selector);
 
     selector.where( rwdbUpper(keyTable["type"]) == RWDBExpr("XML") && selector.where() );
-
-	std::cout << selector.asString();
 }
 
 void CtiDeviceXml::DecodeDatabaseReader(RWDBReader &rdr)
@@ -60,7 +57,7 @@ void CtiDeviceXml::DecodeDatabaseReader(RWDBReader &rdr)
     }
 }
 
-void CtiDeviceXml::setParameters( std::vector< std::vector<string> >& params)
+void CtiDeviceXml::setParameters( std::vector<std::pair<string,string> >& params)
 {
-	_xmlProtocol.setParameters(params);
+    _xmlProtocol.setParameters(params);
 }
