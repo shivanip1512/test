@@ -91,7 +91,7 @@ public class IsocEconomicStrategy extends BaseEconomicStrategy {
     protected boolean canCustomerParticipateInExtension(EconomicBuilder builder,
                                                         CICustomerStub customer) {
         try {
-            int duration = builder.getEvent().getDuration() / 60;
+            double duration = (double)builder.getEvent().getDuration() / 60;
             boolean exceededAllowedHours = isocCommonStrategy.hasCustomerExceededAllowedHours(customer, duration);
             boolean exceededAllowedHoursIn24HourPeriod = isocCommonStrategy.hasCustomerExceeded24HourPeriodHours(customer, builder.getEvent().getStopTime(), duration);
             return !(exceededAllowedHours || exceededAllowedHoursIn24HourPeriod);

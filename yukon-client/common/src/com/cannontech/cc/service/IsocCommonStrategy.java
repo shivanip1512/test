@@ -83,14 +83,14 @@ public class IsocCommonStrategy extends StrategyGroupBase {
         return totalHours;
     }
     
-    public boolean hasCustomerExceededAllowedHours(CICustomerStub customer, int propossedEventLength) throws PointException {
+    public boolean hasCustomerExceededAllowedHours(CICustomerStub customer, double propossedEventLength) throws PointException {
         double allowedHours = getAllowedHours(customer);
         // applies to current year
         double actualHours = getTotalEventHours(customer);
         return (actualHours + propossedEventLength) > allowedHours;
     }
 
-    public boolean hasCustomerExceeded24HourPeriodHours(CICustomerStub customer, Date endStopTime, int propossedEventLength) throws PointException {
+    public boolean hasCustomerExceeded24HourPeriodHours(CICustomerStub customer, Date endStopTime, double propossedEventLength) throws PointException {
         double allowedHours = get24HourPeriodAllowedHours(customer);
         if (allowedHours == 0 || allowedHours == 1440)  // 0 and 1440(60*24) represent no 24 hour limit
             return false;
@@ -208,12 +208,12 @@ public class IsocCommonStrategy extends StrategyGroupBase {
     }
 
     public void checkAllowedHours(VerifiedCustomer vCustomer, BaseEvent event) throws PointException {
-        int durationHours = event.getDuration() / 60;
+        double durationHours = (double)event.getDuration() / 60;
         if (hasCustomerExceededAllowedHours(vCustomer.getCustomer(), durationHours)) {
             vCustomer.addExclusion(VerifiedCustomer.Status.EXCLUDE, 
                                    "has exceeded allowed hours");
         }
-        int durationHours24HourPeriod = event.getDuration() / 60;
+        double durationHours24HourPeriod = (double)event.getDuration() / 60;
         if (hasCustomerExceeded24HourPeriodHours(vCustomer.getCustomer(), event.getStopTime(), durationHours24HourPeriod)) {
             vCustomer.addExclusion(VerifiedCustomer.Status.EXCLUDE, 
                                    "has exceeded allowed hours in 24 hour period");
