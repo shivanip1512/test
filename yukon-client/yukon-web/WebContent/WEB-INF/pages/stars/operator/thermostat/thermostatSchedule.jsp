@@ -5,11 +5,6 @@
 <%@ taglib tagdir="/WEB-INF/tags/dr" prefix="dr"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 
-<link rel="stylesheet" href="../../WebConfig/yukon/styles/YukonGeneralStyles.css" type="text/css">
-<link rel="stylesheet" href="../../WebConfig/yukon/styles/StandardStyles.css" type="text/css">
-<link rel="stylesheet" href="../../WebConfig/yukon/styles/StarsConsumerStyles.css" type="text/css">
-<link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
-
     <!-- Add language specific time formatter -->
     <cti:msg var="timeFormatter" key="yukon.common.timeFormatter" />
     <script language="JavaScript" type="text/javascript"  src="${timeFormatter}"></script>

@@ -4,10 +4,6 @@
 <%@ taglib tagdir="/WEB-INF/tags/dr" prefix="dr"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 
-<link rel="stylesheet" href="../../WebConfig/yukon/styles/YukonGeneralStyles.css" type="text/css">
-<link rel="stylesheet" href="../../WebConfig/yukon/styles/StandardStyles.css" type="text/css">
-<link rel="stylesheet" href="../../WebConfig/yukon/styles/StarsConsumerStyles.css" type="text/css">
-    
     <script language="JavaScript" type="text/javascript"  src="/JavaScript/temp_conversion.js"></script>
     <script language="JavaScript" type="text/javascript"  src="/JavaScript/manualThermostat.js"></script>
     
