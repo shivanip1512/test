@@ -1722,14 +1722,18 @@ void CtiFDRInterface::removeTranslationPoint(long pointId)
         {
             inRecv = recvMgr->removeFDRPointID(pointId);
             if (inRecv.get() != NULL)
+            {    
                 cleanupTranslationPoint(inRecv,true);
+            }
 
         }
         if (sendMgr != NULL)
         {
             inSend = sendMgr->removeFDRPointID(pointId);
             if (inSend.get() != NULL) 
+            {    
                 cleanupTranslationPoint(inSend,false);
+            }
 
         }
     }

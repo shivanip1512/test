@@ -65,35 +65,19 @@ struct IM_EX_FDRBASE CtiDnpId
     CtiFDRClientServerConnection::Destination MasterServerName;
     bool operator<(const CtiDnpId& other) const
     {
-        if (MasterServerName == other.MasterServerName)
-        {
-            if (MasterId == other.MasterId)
-            {
-                if (SlaveId == other.SlaveId)
-                {
-                    if (PointType == other.PointType)
-                    {
-                        return Offset < other.Offset;
-                    }
-                    else
-                    {
-                        return PointType < other.PointType;
-                    }
-                }
-                else
-                {
-                    return SlaveId < other.SlaveId;
-                }
-            }
-            else
-            {
-                return MasterId < other.MasterId;
-            }
-        }
-        else
-        {
-            return MasterServerName < other.MasterServerName;
-        }
+        if( MasterServerName < other.MasterServerName )  return true;
+        if( MasterServerName > other.MasterServerName )  return false;
+        
+        if( MasterId < other.MasterId )  return true;
+        if( MasterId > other.MasterId )  return false;
+        
+        if( SlaveId < other.SlaveId )  return true;
+        if( SlaveId > other.SlaveId )  return false;
+        
+        if( PointType < other.PointType )  return true;
+        if( PointType > other.PointType )  return false;
+        
+        return Offset < other.Offset; 
     }
 
 };

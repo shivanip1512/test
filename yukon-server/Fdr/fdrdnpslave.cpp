@@ -341,10 +341,7 @@ int CtiFDRDnpSlave::processScanSlaveRequest (CtiFDRClientServerConnection& conne
 
             if (dnpId.PointType == StatusPointType )
             {
-                if (fdrPoint->getValue() == 0)
-                    iPoint.din.trip_close = DNP::BinaryOutputControl::TripClose::Trip;
-                else
-                    iPoint.din.trip_close =  DNP::BinaryOutputControl::TripClose::Close;
+                iPoint.din.trip_close = (fdrPoint->getValue() == 0)?(DNP::BinaryOutputControl::Trip):(DNP::BinaryOutputControl::Close); 
                 iPoint.type = Cti::Protocol::DNPSlaveInterface::InputPointType::DigitalInput;
             }
             else if (dnpId.PointType == AnalogPointType )
@@ -425,13 +422,22 @@ CtiDnpId CtiFDRDnpSlave::ForeignToYukonId(CtiFDRDestination pointDestination)
     dnpId.MasterId = atoi(masterId.c_str());
     dnpId.SlaveId = atoi(slaveId.c_str());
 
-    if (!stringCompareIgnoreCase(pointType.c_str(), dnpPointStatusString)) 
+    if (!stringCompareIgnoreCase(pointType, dnpPointStatusString)) 
+    {    
         dnpId.PointType = StatusPointType;
-    else if (!stringCompareIgnoreCase(pointType.c_str(), dnpPointAnalogString)) 
+    }
+    else if (!stringCompareIgnoreCase(pointType, dnpPointAnalogString)) 
+    {    
         dnpId.PointType = AnalogPointType;
-    else if (!stringCompareIgnoreCase(pointType.c_str(), dnpPointCounterString)) 
+    }
+    else if (!stringCompareIgnoreCase(pointType, dnpPointCounterString)) 
+    {    
         dnpId.PointType = PulseAccumulatorPointType;
-    else dnpId.PointType = InvalidPointType;
+    }
+    else
+    { 
+        dnpId.PointType = InvalidPointType;
+    }
 
     dnpId.Offset = atoi(dnpOffset.c_str());
     dnpId.MasterServerName = pointDestination.getDestination();
