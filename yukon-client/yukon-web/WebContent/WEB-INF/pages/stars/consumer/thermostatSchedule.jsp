@@ -169,12 +169,14 @@
                                     <label class="timePeriodText" for="allRadio">
                                         <cti:msg key="yukon.dr.consumer.thermostatSchedule.scheduleModeAll" />
                                     </label><br>
-                                    <cti:checkProperty property="ResidentialCustomerRole.THERMOSTAT_SCHEDULE_5_2">
-	                                    <input id="WEEKDAY_WEEKEND" type="radio" name="scheduleMode" value="WEEKDAY_WEEKEND" onclick="changeScheduleMode()" ${scheduleMode == 'WEEKDAY_WEEKEND' ? 'checked' : '' } />
-	                                    <label class="timePeriodText" for="52Radio">
-	                                        <cti:msg key="yukon.dr.consumer.thermostatSchedule.scheduleMode511" />
-	                                    </label><br>
-	                                </cti:checkProperty>
+                                    <c:if test="${thermostatType == 'UTILITY_PRO'}">
+	                                    <cti:checkProperty property="ResidentialCustomerRole.THERMOSTAT_SCHEDULE_5_2">
+		                                    <input id="WEEKDAY_WEEKEND" type="radio" name="scheduleMode" value="WEEKDAY_WEEKEND" onclick="changeScheduleMode()" ${scheduleMode == 'WEEKDAY_WEEKEND' ? 'checked' : '' } />
+		                                    <label class="timePeriodText" for="52Radio">
+		                                        <cti:msg key="yukon.dr.consumer.thermostatSchedule.scheduleMode511" />
+		                                    </label><br>
+		                                </cti:checkProperty>
+		                            </c:if>
                                     <input id="WEEKDAY_SAT_SUN" type="radio" name="scheduleMode" value="WEEKDAY_SAT_SUN" onclick="changeScheduleMode()" ${scheduleMode == 'WEEKDAY_SAT_SUN' ? 'checked' : '' } />
                                     <label class="timePeriodText" for="511Radio">
                                         <cti:msg key="yukon.dr.consumer.thermostatSchedule.scheduleMode52" />
