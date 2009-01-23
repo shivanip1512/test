@@ -172,13 +172,13 @@
 	                                    <cti:checkProperty property="ResidentialCustomerRole.THERMOSTAT_SCHEDULE_5_2">
 		                                    <input id="WEEKDAY_WEEKEND" type="radio" name="scheduleMode" value="WEEKDAY_WEEKEND" onclick="changeScheduleMode()" ${scheduleMode == 'WEEKDAY_WEEKEND' ? 'checked' : '' } />
 		                                    <label class="timePeriodText" for="52Radio">
-		                                        <cti:msg key="yukon.dr.operator.thermostatSchedule.scheduleMode511" />
+		                                        <cti:msg key="yukon.dr.operator.thermostatSchedule.scheduleMode52" />
 		                                    </label><br>
 		                                </cti:checkProperty>
 		                            </c:if>
                                     <input id="WEEKDAY_SAT_SUN" type="radio" name="scheduleMode" value="WEEKDAY_SAT_SUN" onclick="changeScheduleMode()" ${scheduleMode == 'WEEKDAY_SAT_SUN' ? 'checked' : '' } />
                                     <label class="timePeriodText" for="511Radio">
-                                        <cti:msg key="yukon.dr.operator.thermostatSchedule.scheduleMode52" />
+                                        <cti:msg key="yukon.dr.operator.thermostatSchedule.scheduleMode511" />
                                     </label><br>
                                 </td>
                                 <td align="right"> 

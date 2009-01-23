@@ -118,6 +118,8 @@ public class StarsMsgUtils {
 			return energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_HEAT).getEntryID();
 		} else if (setting.getType() == StarsThermoModeSettings.OFF_TYPE) {
 			return energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_OFF).getEntryID();
+		} else if (setting.getType() == StarsThermoModeSettings.EMHEAT_TYPE) {
+			return energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_EMERGENCY_HEAT).getEntryID();
 		}
 		return 0;
 	}

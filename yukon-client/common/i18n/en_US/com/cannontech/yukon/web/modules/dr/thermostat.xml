@@ -124,8 +124,8 @@
     <entry key="yukon.dr.operator.thermostatSchedule.sunday">Sunday</entry>
     <entry key="yukon.dr.operator.thermostatSchedule.scheduleMode">Schedule mode</entry>
     <entry key="yukon.dr.operator.thermostatSchedule.scheduleModeAll">Same schedule all days of week</entry>
-    <entry key="yukon.dr.operator.thermostatSchedule.scheduleMode511">Weekday and Weekend schedules</entry>
-    <entry key="yukon.dr.operator.thermostatSchedule.scheduleMode52">Weekday, Saturday and Sunday schedules</entry>
+    <entry key="yukon.dr.operator.thermostatSchedule.scheduleMode52">Weekday and Weekend schedules</entry>
+    <entry key="yukon.dr.operator.thermostatSchedule.scheduleMode511">Weekday, Saturday and Sunday schedules</entry>
     <entry key="yukon.dr.operator.thermostatSchedule.instructions"></entry>
     <entry key="yukon.dr.operator.thermostatSchedule.hints"><![CDATA[
         <a href="{0}">Hints and details</a>

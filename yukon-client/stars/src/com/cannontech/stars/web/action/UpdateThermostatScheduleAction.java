@@ -475,7 +475,6 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 			updateSched.setInventoryIDs( invIDStr.toString() );
 		}
 	    
-//		StarsThermoModeSettings mode = StarsThermoModeSettings.valueOf( req.getParameter("mode") );
 		StarsThermoDaySettings day = StarsThermoDaySettings.valueOf( req.getParameter("day") );
 		
 		StarsThermostatSeason seasonCool = new StarsThermostatSeason();

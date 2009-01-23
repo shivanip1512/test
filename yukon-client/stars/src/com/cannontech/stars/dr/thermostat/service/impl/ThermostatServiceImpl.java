@@ -189,6 +189,7 @@ public class ThermostatServiceImpl implements ThermostatService {
     }
 
     @Override
+    @Transactional
     public ThermostatScheduleUpdateResult sendSchedule(CustomerAccount account,
             ThermostatSchedule schedule, TimeOfWeek timeOfWeek, ThermostatScheduleMode scheduleMode,
             boolean applyToAll, YukonUserContext userContext) {
