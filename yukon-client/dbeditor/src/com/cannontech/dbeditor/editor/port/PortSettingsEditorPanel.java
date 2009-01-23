@@ -1339,8 +1339,9 @@ public boolean isInputValid() {
     
     boolean ret = true;
     boolean udpPort = getIPAddressTextField().getText().equalsIgnoreCase("UDP");
+    boolean encodingEnabled = getEncodingCheckBox().isSelected();
     
-    if (udpPort) {
+    if (udpPort && encodingEnabled) {
 	    if (!Validator.isHex(getEncodingTextField().getText())) {
 	        ret = false;
 	        setErrorString("Encryption key must be in Hex format and 16 bytes long. (32 hex values)");
