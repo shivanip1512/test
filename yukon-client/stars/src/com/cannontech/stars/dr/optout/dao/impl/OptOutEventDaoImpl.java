@@ -217,6 +217,8 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 		sql.append("WHERE CustomerAccountId = ? ");
 		sql.append("	AND StartDate <= ?");
 		sql.append("	AND StopDate >= ?");
+		sql.append("	AND (EventState = ? ");
+		sql.append("		OR EventState = ?) ");
 		sql.append("ORDER BY StartDate DESC");
 		
 		List<OverrideHistory> historyList = simpleJdbcTemplate.query(
@@ -224,7 +226,9 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 													new OverrideHistoryRowMapper(),
 													accountId,
 													stopDate,
-													startDate);
+													startDate,
+													OptOutEventState.START_OPT_OUT_SENT.toString(),
+													OptOutEventState.CANCEL_SENT.toString());
 		
 		return historyList;
 	}
@@ -240,6 +244,8 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 		sql.append("WHERE InventoryId = ? ");
 		sql.append("	AND StartDate <= ?");
 		sql.append("	AND StopDate >= ?");
+		sql.append("	AND (EventState = ? ");
+		sql.append("		OR EventState = ?) ");
 		sql.append("ORDER BY StartDate DESC");
 		
 		List<OverrideHistory> historyList = simpleJdbcTemplate.query(
@@ -247,7 +253,9 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 													new OverrideHistoryRowMapper(),
 													inventoryId,
 													stopDate,
-													startDate);
+													startDate,
+													OptOutEventState.START_OPT_OUT_SENT.toString(),
+													OptOutEventState.CANCEL_SENT.toString());
 		
 		return historyList;
 	}
@@ -471,7 +479,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 		sql.append("WHERE (EventState = ?");
 		sql.append("	   OR EventState = ?)");
 		sql.append("	AND StartDate <= ?");
-		sql.append("	AND StopDate >= ?))");
+		sql.append("	AND StopDate >= ?");
 		sql.append("	AND CustomerAccountId = ?");
 		
 		List<Integer> optOutDeviceList = 
