@@ -51,7 +51,7 @@ BOOST_AUTO_UNIT_TEST(test_dev_mct410_extractDynamicPaoInfo)
     readKeyStore.insert(read_key_info_t(-1, Memory_MeterAlarmMaskPos,        Memory_MeterAlarmMaskLen,       Keys::Key_MCT_MeterAlarmMask));
     */
 
-    im.InLength = 13;
+    im.Buffer.DSt.Length = 13;
     im.Return.ProtocolInfo.Emetcon.Function = 0;
     im.Return.ProtocolInfo.Emetcon.IO = Cti::Protocol::Emetcon::IO_Read;
 
@@ -64,10 +64,10 @@ BOOST_AUTO_UNIT_TEST(test_dev_mct410_extractDynamicPaoInfo)
     //  unavailable - only the first byte available in the range 0x00 - 0x0c
     BOOST_CHECK(!dev.hasDynamicInfo(Keys::Key_MCT_MeterAlarmMask));
 
-    BOOST_CHECK_EQUAL(dev.getDynamicInfo(Keys::Key_MCT_Options),         0xfd);
-    BOOST_CHECK_EQUAL(dev.getDynamicInfo(Keys::Key_MCT_Configuration),   0xfc);
-    BOOST_CHECK_EQUAL(dev.getDynamicInfo(Keys::Key_MCT_EventFlagsMask1), 0xf4);
-    BOOST_CHECK_EQUAL(dev.getDynamicInfo(Keys::Key_MCT_EventFlagsMask2), 0xf3);
+    BOOST_CHECK_EQUAL(dev.getDynamicInfo(Keys::Key_MCT_Options),         static_cast<long>(0xfd));
+    BOOST_CHECK_EQUAL(dev.getDynamicInfo(Keys::Key_MCT_Configuration),   static_cast<long>(0xfc));
+    BOOST_CHECK_EQUAL(dev.getDynamicInfo(Keys::Key_MCT_EventFlagsMask1), static_cast<long>(0xf4));
+    BOOST_CHECK_EQUAL(dev.getDynamicInfo(Keys::Key_MCT_EventFlagsMask2), static_cast<long>(0xf3));
 
     /*
     readKeyStore.insert(read_key_info_t(FuncRead_TOUDaySchedulePos,    0, 2, Keys::Key_MCT_DayTable));
@@ -75,7 +75,7 @@ BOOST_AUTO_UNIT_TEST(test_dev_mct410_extractDynamicPaoInfo)
     readKeyStore.insert(read_key_info_t(FuncRead_TOUDaySchedulePos,   10, 1, Keys::Key_MCT_TimeZoneOffset));
     */
 
-    im.InLength = 3;
+    im.Buffer.DSt.Length = 3;
     im.Return.ProtocolInfo.Emetcon.Function = 0xad; //  FuncRead_TOUDaySchedulePos;  it's protected, so instead of inheriting it, it's a magic number
     im.Return.ProtocolInfo.Emetcon.IO = Cti::Protocol::Emetcon::IO_Function_Read;
 
@@ -86,7 +86,7 @@ BOOST_AUTO_UNIT_TEST(test_dev_mct410_extractDynamicPaoInfo)
     //  outside the collected range
     BOOST_CHECK(!dev.hasDynamicInfo(Keys::Key_MCT_TimeZoneOffset));
 
-    BOOST_CHECK_EQUAL(dev.getDynamicInfo(Keys::Key_MCT_DayTable),       0xfffe);
-    BOOST_CHECK_EQUAL(dev.getDynamicInfo(Keys::Key_MCT_DefaultTOURate), 0xfd);
+    BOOST_CHECK_EQUAL(dev.getDynamicInfo(Keys::Key_MCT_DayTable),       static_cast<long>(0xfffe));
+    BOOST_CHECK_EQUAL(dev.getDynamicInfo(Keys::Key_MCT_DefaultTOURate), static_cast<long>(0xfd));
 }
 
