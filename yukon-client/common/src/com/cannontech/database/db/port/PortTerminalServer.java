@@ -67,7 +67,7 @@ public PortTerminalServer( Integer portNumber, String ipAddress, Integer socketP
  */
 public void add() throws java.sql.SQLException {
 
-	Object addValues[] = { getPortID(), getIpAddress(), getSocketPortNumber(), getEncodingType().toString(), getEncodingKey() };
+	Object addValues[] = { getPortID(), getIpAddress(), getSocketPortNumber(), getEncodingKey(), getEncodingType().toString() };
 	
 	add( "PortTerminalServer", addValues );
 }
