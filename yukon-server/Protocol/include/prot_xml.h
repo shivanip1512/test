@@ -15,7 +15,7 @@ namespace Cti
     namespace Protocol
     {
 
-        class IM_EX_PROT XmlProtocol : public Cti::Protocol::Interfacerte_public boost::noncopyable
+        class IM_EX_PROT XmlProtocol : public Cti::Protocol::Interface, public boost::noncopyable
         {
             public:
                 XmlProtocol();

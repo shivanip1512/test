@@ -1407,6 +1407,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                         if(xmlGroupSptr)
                         {
+                            //Setting paramters this way because OutMessage cannot hold them. This would normally be done in the route.
                             ds->setParameters(xmlGroupSptr->getParameters());
                         }
                         //Break is intentionally left off here. The next block needs to execute
