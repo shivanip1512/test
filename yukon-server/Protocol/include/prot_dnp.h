@@ -205,7 +205,7 @@ public:
 
 
 
-class IM_EX_PROT DNPSlaveInterface : public DNPInterface
+class IM_EX_PROT DNPSlaveInterface : public DNPInterface, boost::noncopyable 
 {
     struct input_point;
     
@@ -219,11 +219,8 @@ protected:
 public:
 
     DNPSlaveInterface();
-    DNPSlaveInterface(const DNPSlaveInterface &aRef);
-
+    
     virtual ~DNPSlaveInterface();
-
-    DNPSlaveInterface &operator=(const DNPSlaveInterface &aRef);
 
     bool setSlaveCommand( Command command );
     bool setSlaveCommand( Command command, input_point &point );

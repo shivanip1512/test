@@ -884,22 +884,6 @@ DNPSlaveInterface::DNPSlaveInterface()
 
 }
 
-DNPSlaveInterface::DNPSlaveInterface(const DNPSlaveInterface &aRef)
-{
-    *this = aRef;
-}
-
-DNPSlaveInterface &DNPSlaveInterface::operator=(const DNPSlaveInterface &aRef)
-{
-    if( this != &aRef )
-    {
-        DNPInterface::operator=(aRef);
-    }
-
-    return *this;
-}
-
-
 DNPSlaveInterface::~DNPSlaveInterface()
 {
 }

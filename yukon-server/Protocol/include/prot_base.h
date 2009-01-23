@@ -41,7 +41,6 @@ public:
 
     typedef std::vector< CtiPointDataMsg * > pointlist_t;
     typedef std::vector< string * >          stringlist_t;
-    typedef std::vector< long * >            pointidlist_t;
 
     Interface();
     Interface(const Interface &aRef);
