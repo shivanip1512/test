@@ -12,7 +12,7 @@
 %>
 
 <%@ include file="include/oper_header.jspf" %>  
-
+<cti:verifyRolesAndProperties value="loadcontrol.DirectLoadcontrolRole,"/>
 <%@ page import="com.cannontech.message.macs.message.Schedule" %>
 <%@ page import="com.cannontech.loadcontrol.data.LMProgramBase" %>
 <%@ page import="com.cannontech.loadcontrol.data.LMProgramDirect" %>
