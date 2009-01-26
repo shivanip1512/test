@@ -1590,7 +1590,7 @@ void CtiLMManualControlRequestExecutor::StartDirectProgram(CtiLMProgramDirectSPt
     CtiTime startTime = start;
 
     lmProgramDirect->setManualControlReceivedFlag(FALSE);
-    if( !lmProgramDirect->isControlling() )
+    if( _controlMsg->getCommand() != CtiLMManualControlRequest::CHANGE_GEAR )
     {
         //If this is a gear change, we are already controlling, dont set to scheduled!
         lmProgramDirect->setProgramState(CtiLMProgramBase::ScheduledState);
@@ -1662,41 +1662,6 @@ void CtiLMManualControlRequestExecutor::StopDirectProgram(CtiLMProgramDirectSPtr
         lmProgramDirect->setManualControlReceivedFlag(TRUE);
         controlArea->setUpdatedFlag(TRUE);
     }
-}
-
-void CtiLMManualControlRequestExecutor::ChangeProgramGear(CtiLMProgramDirectSPtr lmProgramDirect, CtiLMControlArea* controlArea,
-                                                          const CtiTime& start, const CtiTime& stop, LONG nextGear)
-{
-    CtiTime startTime = start;
-
-    lmProgramDirect->setManualControlReceivedFlag(FALSE);
-    lmProgramDirect->setProgramState(CtiLMProgramBase::ScheduledState);
-
-    lmProgramDirect->setDirectStartTime(startTime);
-    lmProgramDirect->setStartedControlling(startTime);
-
-    // Let any notification groups know if they care
-    // lmProgramDirect->scheduleNotification(start, stop);
-
-    if( stop.seconds() < CtiTime(CtiDate(1,1,1991),0,0,0).seconds() )//saves us from stopping immediately after starting if client is dumb enough to send us a stop time of 1990
-    {
-        CtiTime pluggedStopTime(lmProgramDirect->getDirectStartTime());
-        pluggedStopTime = pluggedStopTime.addDays(1);
-        lmProgramDirect->setDirectStopTime(pluggedStopTime);
-    }
-    else
-    {
-        lmProgramDirect->setDirectStopTime(stop);
-    }
-
-    lmProgramDirect->setCurrentGearNumber(_controlMsg->getStartGear()-1);
-    if( _controlMsg->getStartPriority() > controlArea->getCurrentStartPriority() )
-    {
-        controlArea->setCurrentStartPriority(_controlMsg->getStartPriority());
-    }
-
-    lmProgramDirect->setManualControlReceivedFlag(TRUE);
-    controlArea->setUpdatedFlag(TRUE);
 }
 
 void CtiLMManualControlRequestExecutor::StartCurtailmentProgram(CtiLMProgramCurtailmentSPtr lmProgramCurtailment, CtiLMControlArea* controlArea,
