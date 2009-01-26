@@ -33,7 +33,6 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 import javax.xml.xpath.XPathFactoryConfigurationException;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.xml.namespace.SimpleNamespaceContext;
 import org.springframework.xml.transform.TransformerObjectSupport;
 import org.springframework.xml.transform.TraxUtils;
@@ -252,7 +251,7 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
             return null;
         }
         
-        if (!StringUtils.isBlank(dateStr)) {
+        if (dateStr != null) {
             return XmlUtils.parseDate(dateStr.trim());
         }
         
