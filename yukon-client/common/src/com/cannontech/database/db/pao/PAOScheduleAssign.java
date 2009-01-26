@@ -19,8 +19,6 @@ public class PAOScheduleAssign extends DBPersistent
 	private Integer paoID = null;
 	private String command = CtiUtilities.STRING_NONE;
 
-	NextValueHelper nextValueHelper = YukonSpringHook.getNextValueHelper();
-
 	public static final String SETTER_COLUMNS[] = 
 	{ 
 		"ScheduleID", "PaoID", "Command"
@@ -181,6 +179,8 @@ public class PAOScheduleAssign extends DBPersistent
 	 */
 	public int getNextEventID()
 	{
+		NextValueHelper nextValueHelper = YukonSpringHook.getNextValueHelper();
+
 		return nextValueHelper.getNextValue("PAOScheduleAssignment");
 	}
 
