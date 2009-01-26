@@ -1267,31 +1267,25 @@ void CtiDeviceManager::refreshIONMeterGroups(id_range_t &paoids)
     }
 }
 
-void CtiDeviceManager::refreshDeviceParameters(id_range_t &paoids, const int type)
+void CtiDeviceManager::refreshDeviceParameters(id_range_t &paoids, int type)
 {
-    RWDBConnection conn = getConnection();
-    RWDBDatabase db = getDatabase();
-
-    if(DebugLevel & 0x00020000)
+    if(!type || type == TYPE_LMGROUP_XML)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Device Properties for type " << type << endl;
-    }
+        //When there are more devices, move these outside of the if.
+        RWDBConnection conn = getConnection();
+        RWDBDatabase db = getDatabase();
 
-    vector< CtiDeviceSPtr > devicesToUpdate;
-    getDevicesByType(type,devicesToUpdate);
+        if(DebugLevel & 0x00020000)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for XML Parameters for type " << endl;
+        }
 
-    vector< CtiDeviceSPtr >::iterator itr = devicesToUpdate.begin();
+        CtiDeviceGroupXml xmlDevice;
 
-    for( ;itr != devicesToUpdate.end(); ++itr)
-    {
         RWDBSelector selector = db.selector();
         RWDBTable keyTable;
 
-        CtiDeviceSPtr device = *itr;
-        device->getParametersSelector(db,keyTable,selector);
-
-        addIDClause(selector, keyTable["PAObjectID"], paoids);
-
+        xmlDevice.getParametersSelector(db,keyTable,selector);
         RWDBReader rdr = selector.reader(conn);
 
         if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
@@ -1301,20 +1295,33 @@ void CtiDeviceManager::refreshDeviceParameters(id_range_t &paoids, const int typ
 
         if(rdr.status().errorCode() == RWDBStatus::ok)
         {
-            device->clearParameters();
-            device->decodeParameters(rdr);
+            int prevDev = -1;
+            CtiDeviceSPtr device;
+            while(rdr())
+            {
+                int deviceId = -1;
+                rdr["lmgroupid"] >> deviceId;
+                if (prevDev != deviceId)
+                {
+                    prevDev = deviceId;
+                    device = getDeviceByID(deviceId);
+                    //If the list is not ordered, this will be unpredictable in outcome.
+                    //It might clear half of the already built up list.
+                    device->clearParameters();
+                    if (!device)
+                    {
+                        continue;
+                    }
+                }
+                device->decodeParameters(rdr);
+            }
         }
-        else
+
+        if(DebugLevel & 0x00020000)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "Error reading XML Properties from database: " << rdr.status().errorCode() << endl;
-            dout << selector.asString() << endl;
+            dout << " Done looking for XML Properties" << endl;
         }
-    }
-    if(DebugLevel & 0x00020000)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for XML Properties" << endl;
     }
 }
 
@@ -1683,7 +1690,7 @@ void CtiDeviceManager::refreshDeviceProperties(id_range_t &paoids, int type)
     }
 
     {
-        DebugTimer timer("loading Device Paramers");
+        DebugTimer timer("loading Device Parameters");
         refreshDeviceParameters(paoids, type);
     }
 

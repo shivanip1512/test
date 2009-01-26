@@ -138,7 +138,7 @@ public:
     virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
     virtual void DecodeDatabaseReader(RWDBReader &rdr);
 
-    static void getParametersSelector(RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &selector);
+    virtual void getParametersSelector(RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &selector);
     virtual void decodeParameters(RWDBReader &rdr);
     virtual void clearParameters();
 
