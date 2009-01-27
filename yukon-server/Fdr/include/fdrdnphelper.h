@@ -19,7 +19,7 @@
 
 class CtiFDRSocketServer;
 
-/** Scada Helper Class
+/** DNP Helper Class
  * This class is parameterized over an ID type. This ID should be
  * thought of as a translation of the translation string. For example,
  * DNPconverts the translation string into an DnpID struct that
@@ -49,5 +49,5 @@ class IM_EX_FDRBASE CtiFDRDNPHelper
 };
 
 
-#endif  //  #ifndef __FDRSCADAHELPER_H__
+#endif  //  #ifndef __FDRDNPHELPER_H__
 

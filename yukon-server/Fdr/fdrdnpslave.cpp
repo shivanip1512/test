@@ -228,7 +228,9 @@ bool CtiFDRDnpSlave::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bo
 
         CtiDnpId dnpId = ForeignToYukonId(pointDestination);
         if (!dnpId.valid)
+        {    
             return foundPoint;
+        }
 
         if (isSend)
         {
@@ -241,7 +243,9 @@ bool CtiFDRDnpSlave::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bo
 void CtiFDRDnpSlave::cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint, bool recvList)
 {
     if (recvList)
+    {    
         return;
+    }
     for (int x = 0; x < translationPoint->getDestinationList().size(); x++)
     {
         CtiFDRDestination pointDestination = translationPoint->getDestinationList()[x];
@@ -250,7 +254,9 @@ void CtiFDRDnpSlave::cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint,
               
         CtiDnpId dnpId = ForeignToYukonId(pointDestination);
         if (!dnpId.valid)
+        {    
             return;
+        }
 
         if (!_helper->getIdForDestination(pointDestination, dnpId))
         {
@@ -264,11 +270,13 @@ void CtiFDRDnpSlave::cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint,
     }
 }
 
+/******************************************************************************************************** 
+  not used intentionally
+*********************************************************************************************************/
 bool CtiFDRDnpSlave::buildForeignSystemMessage(const CtiFDRDestination& destination,
                                                char** buffer,
                                                unsigned int& bufferSize)
 {
-    bufferSize = 0;
     return false;
 }
 

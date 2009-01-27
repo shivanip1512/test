@@ -1,23 +1,21 @@
 
 /*
- *    FILE NAME: fdracs.h
+ *    FILE NAME: fdrdnplave.h
  *
- *    DATE: 03/07/2001
+ *    DATE: 01/20/2009
  *
- *    AUTHOR: David Sutton
+ *    AUTHOR: Julie Richter
  *
- *    PURPOSE: Interface to the ACS scada systemm (class header)
+ *    PURPOSE: Interface implenting DNP Slave Response (class header)
  *
  *    DESCRIPTION: This class implements an interface that exchanges point data
- *                 from an ACS scada system.  The data is both status and Analog data.
- *                 Information is exchanged using sockets opened on a predefined socket
- *                 number and also pre-defined messages between the systems.  See the
- *                 design document for more information
+ *                 from an DNP slave device.  The data is status, Analog and counter data.
+
  *    History:
  *      $Log$
  * *
  *
- *    Copyright (C) 2005 Cannon Technologies, Inc.  All rights reserved.
+ *    Copyright (C) 2009 Cooper Power Systems.  All rights reserved.
  *
  */
 
@@ -113,9 +111,6 @@ class IM_EX_FDRDNPSLAVE CtiFDRDnpSlave : public CtiFDRSocketServer
         virtual bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool send);
         virtual void cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint, bool recvList);
 
-        /*virtual bool buildForeignSystemHeartbeatMsg(char** buffer,
-                                                    unsigned int& bufferSize);
-        */
         virtual bool buildForeignSystemMessage(const CtiFDRDestination& destination,
                                                char** buffer,
                                                unsigned int& bufferSize);
