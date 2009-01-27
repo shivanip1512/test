@@ -23,6 +23,5 @@
     <div class="content boxContainer_content">
         <jsp:doBody/>
     </div>    
-                
 </div>
 </div>
