@@ -15,7 +15,6 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.multispeak.dao.SubstationToRouteMappingDao;
 import com.cannontech.multispeak.db.Route;
-import com.cannontech.multispeak.db.Route;
 
 public class RouteActionController extends  MultiActionController {
     private SubstationToRouteMappingDao strmDao;
@@ -29,7 +28,7 @@ public class RouteActionController extends  MultiActionController {
         final List avList = (id != null) ? 
                 strmDao.getAvailableRoutesBySubstationId(id) : strmDao.getAll();
 
-        mav.setViewName("routeView.jsp");
+        mav.setViewName("routemapping/routeView.jsp");
         mav.addObject("list", routeList);
         mav.addObject("avlist", avList);
         return mav;

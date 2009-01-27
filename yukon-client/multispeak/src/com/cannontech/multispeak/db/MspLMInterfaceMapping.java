@@ -1,20 +1,23 @@
 package com.cannontech.multispeak.db;
 
+
 public class MspLMInterfaceMapping {
     private int mspLMInterfaceMappingId;
     private String strategyName;
     private String substationName;
     private int paobjectId;
+    private String paoName;
     
     public MspLMInterfaceMapping() { }
 
     public MspLMInterfaceMapping(int mspLMInterfaceMappingId,
-			String strategyName, String substationName, int paobjectId) {
+			String strategyName, String substationName, int paobjectId, String paoName) {
 		super();
 		this.mspLMInterfaceMappingId = mspLMInterfaceMappingId;
 		this.strategyName = strategyName;
 		this.substationName = substationName;
 		this.paobjectId = paobjectId;
+		this.paoName = paoName;
 	}
 
     public int getMspLMInterfaceMappingId() {
@@ -47,6 +50,15 @@ public class MspLMInterfaceMapping {
 
 	public void setPaobjectId(int paobjectId) {
 		this.paobjectId = paobjectId;
+	}
+	
+
+	public String getPaoName() {
+		return paoName;
+	}
+
+	public void setPaoName(String paoName) {
+		this.paoName = paoName;
 	}
 
 	@Override

@@ -12,7 +12,6 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import com.cannontech.multispeak.dao.SubstationDao;
 import com.cannontech.multispeak.dao.SubstationToRouteMappingDao;
 import com.cannontech.multispeak.db.Substation;
-import com.cannontech.multispeak.db.Substation;
 
 public class SubstationActionController extends  MultiActionController {
     private SubstationDao substationDao;
@@ -72,7 +71,7 @@ public class SubstationActionController extends  MultiActionController {
     public ModelAndView view(HttpServletRequest request, HttpServletResponse response) {
         final ModelAndView mav = new ModelAndView();
         final List<Substation> list = substationDao.getAll();
-        mav.setViewName("substationView.jsp");
+        mav.setViewName("routemapping/substationView.jsp");
         mav.addObject("list", list);
         return mav;
     }

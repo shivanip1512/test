@@ -590,8 +590,12 @@
     	  <option id="interfaces">
     		<link>/msp_setup.jsp?init</link>
     	  </option>
-    	  <option id="mappings">
+    	  <option id="route_mappings">
     		<link>/spring/multispeak/setup/routemapping/mappings</link>
+    	  </option>
+    	  <option id="lm_mappings">
+    		<link>/spring/multispeak/setup/lmMappings/home</link>
+    		<requireRoleProperty value="MultispeakRole.MSP_LM_MAPPING_SETUP"/>
     	  </option>
     	</links>
       </option>

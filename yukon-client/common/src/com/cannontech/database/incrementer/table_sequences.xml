@@ -179,5 +179,8 @@
       <sequence name="LMProgramHistoryID">
         <table name="LMProgramHistory" identitycolumn="LMProgramHistoryId" initsequence="true"/>
       </sequence>
+      <sequence name="MSPLMIFaceMapping">
+        <table name="MSPLMINTERFACEMAPPING" identitycolumn="MSPLMINTERFACEMAPPINGID" initsequence="true"/>
+      </sequence>
   </sequencetable>
 </sequencetables>

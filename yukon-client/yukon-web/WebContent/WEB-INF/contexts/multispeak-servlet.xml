@@ -15,13 +15,14 @@
 				<prop key="/setup/routemapping/substation">substationController</prop>
 				<prop key="/setup/routemapping/route">routeController</prop>
 				<prop key="/setup/routemapping/mappings">mappings</prop>
+				<prop key="/setup/lmMappings/*">lmMappingsController</prop>
 			</props>
 		</property>
 	</bean>
 
 	<bean id="mappings"
 		class="org.springframework.web.servlet.mvc.ParameterizableViewController">
-		<property name="viewName" value="mappings.jsp" />
+		<property name="viewName" value="routemapping/mappings.jsp" />
 	</bean>
 
 	<bean id="viewResolver"
@@ -29,7 +30,7 @@
 		<property name="viewClass"
 			value="org.springframework.web.servlet.view.JstlView" />
 		<property name="prefix"
-			value="/WEB-INF/pages/multispeak/setup/routemapping/" />
+			value="/WEB-INF/pages/multispeak/setup/" />
 	</bean>
 
 	<bean id="substationController"
@@ -53,6 +54,9 @@
 		<property name="methodNameResolver">
 			<ref bean="methodNameResolver" />
 		</property>
+	</bean>
+	
+	<bean id="lmMappingsController" class="com.cannontech.web.multispeak.LMMappingsController">
 	</bean>
 
 	<bean id="methodNameResolver"

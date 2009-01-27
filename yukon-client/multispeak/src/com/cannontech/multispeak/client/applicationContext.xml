@@ -96,6 +96,9 @@
 
   <bean id="mspObjectDao" class="com.cannontech.multispeak.dao.impl.MspObjectDaoImpl">
   </bean>
+  
+  <bean id="mspLMInterfaceMappingDao" class="com.cannontech.multispeak.dao.impl.MspLMInterfaceMappingDaoImpl">
+  </bean>
 
   <bean id="mspValidationService" class="com.cannontech.multispeak.service.impl.MspValidationServiceImpl">
   	<property name="mr_server" ref="mr_server"/>
