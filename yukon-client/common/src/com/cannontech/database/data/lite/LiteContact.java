@@ -116,6 +116,9 @@ public class LiteContact extends LiteBase
 	 */
 	public String toString() 
 	{
+	    if(getContLastName().equalsIgnoreCase("") && getContFirstName().equalsIgnoreCase("")) {
+	        return CtiUtilities.STRING_NONE + "," + CtiUtilities.STRING_NONE;
+	    }
 		if( getContLastName() == null )
 		{
 			if( getContFirstName() == null )

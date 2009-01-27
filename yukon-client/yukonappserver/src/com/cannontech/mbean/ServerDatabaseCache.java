@@ -1382,7 +1382,9 @@ private synchronized LiteBase handleContactChange( int changeType, int id )
     }
     case DBChangeMsg.CHANGE_TYPE_UPDATE:
     {
+        LiteContact oldContact = allContactsMap.get(id);
         allContactsMap.remove(id);
+        getAllContactsList().remove(oldContact);
         LiteContact lc = getAContactByContactID(id);
         lBase = lc;
         
