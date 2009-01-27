@@ -198,8 +198,8 @@ Event.observe(window, 'load', function() {
 				<tr class="altRow" id="s_${item.eventId}" >
 					<td id="schedRow" style="display:none"/>
 					<td><c:out value="${item.scheduleName}" /></td>
-					<td><c:out value="${item.lastRunTime}" /></td>
-					<td><c:out value="${item.nextRunTime}" /></td>
+					<td><cti:formatDate value="${item.lastRunTime}" type="DATEHM" /></td>
+					<td><cti:formatDate value="${item.nextRunTime}" type="DATEHM" /></td>
 					<td><c:out value="${item.commandName}" /></td>
 					<td><c:out value="${item.deviceName}" /></td>
 					<td align="center">
