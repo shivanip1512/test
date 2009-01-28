@@ -1,23 +1,20 @@
+<%@ page import="org.apache.commons.lang.StringUtils" %>
+<%@ page import="org.apache.commons.lang.ArrayUtils" %>
+
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+
 <%@ include file="include/StarsHeader.jsp" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
 	int thermNo = Integer.parseInt(request.getParameter("InvNo"));
 	StarsInventory thermostat = inventories.getStarsInventory(thermNo);
 	String thermNoStr = "InvNo=" + thermNo;
-	String scheduleURL = request.getContextPath() + "/operator/Consumer/ThermSchedule.jsp?" + thermNoStr;
 	
-	StarsThermostatDynamicData curSettings = thermostat.getLMHardware().getStarsThermostatSettings().getStarsThermostatDynamicData();
-	if (curSettings != null && ServletUtils.isGatewayTimeout(curSettings.getLastUpdatedTime())) {
-		if (request.getParameter("OmitTimeout") != null)
-			session.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_OMIT_GATEWAY_TIMEOUT, "true");
-		
-		if (session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_OMIT_GATEWAY_TIMEOUT) == null) {
-			session.setAttribute(ServletUtils.ATT_REFERRER, request.getRequestURI() + "?" + thermNoStr);
-			response.sendRedirect( "Timeout.jsp" );
-			return;
-		}
-	}
+	String thermostatIds = String.valueOf(thermostat.getInventoryID());
 %>
+
+<c:set var="thermostatIds" value="<%=thermostatIds%>" />
+
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -56,7 +53,12 @@
               <%@ include file="include/InfoSearchBar.jspf" %>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
-			  <%@ include file="../../include/saved_schedules.jspf" %>
+		
+		      <c:url var="thermostatUrl" value="/spring/stars/operator/thermostat/schedule/view/saved">
+                <c:param name="thermostatIds" value="${thermostatIds}" />
+              </c:url>	  
+			  <jsp:include page="${thermostatUrl}" />
+			  
               <p align="center" class="MainText">&nbsp; </p>
             </div>
           </td>

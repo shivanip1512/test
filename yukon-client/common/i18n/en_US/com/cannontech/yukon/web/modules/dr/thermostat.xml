@@ -148,11 +148,19 @@
     <entry key="yukon.dr.operator.thermostatSchedule.save">Save Schedule</entry>
     <entry key="yukon.dr.operator.thermostatSchedule.saveApply">Save and Send Schedule</entry>
     <entry key="yukon.dr.operator.thermostatSchedule.recommend">Recommended Settings</entry>
-    <entry key="yukon.dr.operator.thermostatSchedule.periodMessage"><![CDATA[**Sending this schedule will set your thermostat to use 4 daily periods:  Wake – Leave – Return – Sleep.  This will overwrite any local period adjustments you have made to your thermostat.]]></entry>
+    <entry key="yukon.dr.operator.thermostatSchedule.periodMessage"><![CDATA[**Sending this schedule will set your thermostat to use 4 daily periods:  Wake, Leave, Return, Sleep.  This will overwrite any local period adjustments you have made to your thermostat.]]></entry>
     <entry key="yukon.dr.operator.thermostatSchedule.name">Thermostat Schedule Name:</entry>
     <entry key="yukon.dr.operator.thermostatSchedule.noScheduleName">You must provide a schedule name.</entry>
     <entry key="yukon.dr.operator.thermostatSchedule.saveScheduleText">Changes have been made to this schedule. To disregard these changes, click OK. To return to the page to save your changes, click Cancel.</entry>
     <entry key="yukon.dr.operator.thermostatSchedule.modeChangeText"><![CDATA[You have chosen to change your thermostat scheduling mode.  If you have changed this setting locally on your thermostat, it will be replaced by this setting when you submit your schedule.  Do you wish to proceed?]]></entry>
+    
+    <!-- savedSchedules.jsp -->
+    <entry key="yukon.dr.operator.savedSchedules.header">Thermostat - Saved Schedules</entry>
+    <entry key="yukon.dr.operator.savedSchedules.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
+    <entry key="yukon.dr.operator.savedSchedules.chooseSchedule">Select a schedule to view:</entry>
+    <entry key="yukon.dr.operator.savedSchedules.viewSchedule">View Schedule</entry>
+    <entry key="yukon.dr.operator.savedSchedules.deleteSchedule">Delete Schedule</entry>
+    <entry key="yukon.dr.operator.savedSchedules.noSchedules">There are no saved schedules.</entry>
     
 
 </properties>

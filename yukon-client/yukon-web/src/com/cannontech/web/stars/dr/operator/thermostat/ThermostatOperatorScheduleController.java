@@ -313,7 +313,8 @@ public class ThermostatOperatorScheduleController extends AbstractThermostatOper
         HardwareType type = thermostat.getType();
         
         int accountId = account.getAccountId();
-        List<ScheduleDropDownItem> schedules = thermostatScheduleDao.getSavedThermostatSchedulesByAccountId(accountId, type);
+        List<ScheduleDropDownItem> schedules = 
+        	thermostatScheduleDao.getSavedThermostatSchedulesByAccountId(accountId, type);
         map.addAttribute("schedules", schedules);
 
         return "operator/thermostat/savedSchedules.jsp";
@@ -329,21 +330,27 @@ public class ThermostatOperatorScheduleController extends AbstractThermostatOper
     	
     	thermostatScheduleDao.delete(scheduleId);
 
-    	map.addAttribute("thermostatIds", thermostatIds);
+    	// There is only 1 thermostat on this page
+    	int thermostatId = thermostatIds.get(0);
+    	int inventoryNumber = this.getInventoryNumber(request, thermostatId);
     	
-    	return "redirect:/spring/stars/operator/thermostat/schedule/view/saved";
+    	map.addAttribute("scheduleId", scheduleId);
+    	return "redirect:/operator/Consumer/SavedSchedules.jsp?InvNo=" + inventoryNumber;
     }
     
     @RequestMapping(value = "/operator/thermostat/schedule/saved", method = RequestMethod.POST, params = "view")
     public String viewSchedule(@ModelAttribute("thermostatIds") List<Integer> thermostatIds, 
     		@ModelAttribute("customerAccount") CustomerAccount account,
-    		Integer scheduleId, ModelMap map) throws Exception {
+    		Integer scheduleId, ModelMap map, HttpServletRequest request) throws Exception {
     	
     	this.checkInventoryAgainstAccount(thermostatIds, account);
     	
+    	// There is only 1 thermostat on this page
+    	int thermostatId = thermostatIds.get(0);
+    	int inventoryNumber = this.getInventoryNumber(request, thermostatId);
+    	
     	map.addAttribute("scheduleId", scheduleId);
-    	map.addAttribute("thermostatIds", thermostatIds);
-    	return "redirect:/spring/stars/operator/thermostat/schedule/view";
+    	return "redirect:/operator/Consumer/ThermSchedule.jsp?InvNo=" + inventoryNumber;
     }
 
     /**

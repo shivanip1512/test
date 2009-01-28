@@ -37,7 +37,6 @@ import com.cannontech.stars.dr.thermostat.model.ThermostatSeason;
 import com.cannontech.stars.dr.thermostat.model.ThermostatSeasonEntry;
 import com.cannontech.stars.dr.thermostat.model.TimeOfWeek;
 import com.cannontech.stars.dr.util.YukonListEntryHelper;
-import com.cannontech.stars.util.StarsMsgUtils;
 
 /**
  * Implementation class for ThermostatScheduleDao
@@ -96,7 +95,6 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao, Initial
         for (LiteLMThermostatSeason defaultSeason : defaultSeasonList) {
 
         	int webConfigurationID = defaultSeason.getWebConfigurationID();
-        	boolean isCoolSeason = webConfigurationID == StarsMsgUtils.YUK_WEB_CONFIG_ID_COOL;
 
         	long coolStartDate = defaultSeason.getCoolStartDate();
         	long heatStartDate = defaultSeason.getHeatStartDate();
