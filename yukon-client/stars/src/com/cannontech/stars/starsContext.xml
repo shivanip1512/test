@@ -95,9 +95,9 @@
 
     <bean id="accountCheckerService" class="com.cannontech.stars.core.service.impl.AccountCheckerServiceImpl"/>
     
-    <bean id="updatableAccountConversionService" class="com.cannontech.stars.service.impl.UpdatableAccountConversionServiceImpl"/>
+    <bean id="updatableAccountConverter" class="com.cannontech.stars.service.impl.UpdatableAccountConverterImpl"/>
 
-	<bean id="starsControllableDeviceDTOConversionService" class="com.cannontech.stars.service.impl.StarsControllableDeviceDTOConversionServiceImpl"/>
+	<bean id="starsControllableDeviceDTOConverter" class="com.cannontech.stars.service.impl.StarsControllableDeviceDTOConverterImpl"/>
 
     <bean id="deviceActivationService"
         class="com.cannontech.stars.dr.hardware.service.impl.DeviceActivationServiceImpl">

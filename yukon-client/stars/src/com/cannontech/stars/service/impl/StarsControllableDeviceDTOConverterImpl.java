@@ -13,14 +13,14 @@ import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteServiceCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
-import com.cannontech.stars.service.StarsControllableDeviceDTOConversionService;
+import com.cannontech.stars.service.StarsControllableDeviceDTOConverter;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.web.util.ImportManagerUtil;
 import com.cannontech.stars.ws.dto.StarsControllableDeviceDTO;
 import com.cannontech.util.ServletUtil;
 
-public class StarsControllableDeviceDTOConversionServiceImpl implements
-		StarsControllableDeviceDTOConversionService {
+public class StarsControllableDeviceDTOConverterImpl implements
+		StarsControllableDeviceDTOConverter {
 
 	private YukonListDao yukonListDao;
 	

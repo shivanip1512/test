@@ -11,10 +11,10 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.core.dao.SiteInformationDao;
 import com.cannontech.stars.dr.account.service.AccountService;
-import com.cannontech.stars.service.UpdatableAccountConversionService;
+import com.cannontech.stars.service.UpdatableAccountConverter;
 import com.cannontech.stars.web.util.ImportManagerUtil;
 
-public class UpdatableAccountConversionServiceImpl implements UpdatableAccountConversionService {
+public class UpdatableAccountConverterImpl implements UpdatableAccountConverter {
 
 	private AccountService accountService;
 	private SiteInformationDao siteInformationDao;

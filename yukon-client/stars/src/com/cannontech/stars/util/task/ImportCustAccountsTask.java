@@ -57,8 +57,8 @@ import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.dr.account.service.AccountService;
-import com.cannontech.stars.service.StarsControllableDeviceDTOConversionService;
-import com.cannontech.stars.service.UpdatableAccountConversionService;
+import com.cannontech.stars.service.StarsControllableDeviceDTOConverter;
+import com.cannontech.stars.service.UpdatableAccountConverter;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.WebClientException;
@@ -67,6 +67,7 @@ import com.cannontech.stars.ws.dto.StarsControllableDeviceDTO;
 import com.cannontech.stars.ws.helper.StarsControllableDeviceHelper;
 import com.cannontech.tools.email.EmailMessage;
 import com.cannontech.user.UserUtils;
+import com.cannontech.util.ServletUtil;
 
 /**
  * @author yao
@@ -212,10 +213,10 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 		YukonSpringHook.getBean("starsSearchDao", StarsSearchDao.class);
 	private final AccountService accountService = 
 		YukonSpringHook.getBean("accountService", AccountService.class);
-	private final UpdatableAccountConversionService updatableAccountConversionService = 
-		YukonSpringHook.getBean("updatableAccountConversionService", UpdatableAccountConversionService.class);
-	private final StarsControllableDeviceDTOConversionService starsControllableDeviceDTOConversionService = 
-		YukonSpringHook.getBean("starsControllableDeviceDTOConversionService", StarsControllableDeviceDTOConversionService.class);
+	private final UpdatableAccountConverter updatableAccountConverter = 
+		YukonSpringHook.getBean("updatableAccountConverter", UpdatableAccountConverter.class);
+	private final StarsControllableDeviceDTOConverter starsControllableDeviceDTOConverter = 
+		YukonSpringHook.getBean("starsControllableDeviceDTOConverter", StarsControllableDeviceDTOConverter.class);
 	private final YukonUserDao yukonUserDao = 
 		YukonSpringHook.getBean("yukonUserDao", YukonUserDao.class);
 	private final StarsControllableDeviceHelper starsControllableDeviceHelper = 
@@ -1377,9 +1378,18 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 					throw new WebClientException("Cannot remove hardware, serial #" + hwFields[ImportManagerUtil.IDX_SERIAL_NO] + " not found in the customer account");
 				
 				// REMOVE HARDWARE
-				StarsControllableDeviceDTO dto = starsControllableDeviceDTOConversionService
+				StarsControllableDeviceDTO dto = starsControllableDeviceDTOConverter
 					.getDtoForHardware(liteAcctInfo.getCustomerAccount()
 							.getAccountNumber(), liteInv, energyCompany);
+				
+				if (!StringUtils.isBlank(hwFields[ImportManagerUtil.IDX_REMOVE_DATE])) {
+					Date removeDate = ServletUtil.parseDateStringLiberally(hwFields[ImportManagerUtil.IDX_REMOVE_DATE], energyCompany.getDefaultTimeZone());
+					if (removeDate == null) {
+						removeDate = StarsUtils.starsDateFormat.parse(hwFields[ImportManagerUtil.IDX_REMOVE_DATE]);
+					}
+					dto.setFieldRemoveDate(removeDate);
+				}
+				
 				starsControllableDeviceHelper.removeDeviceFromAccount(dto, this.currentUser);
 				
 				numHwRemoved++;
@@ -1387,7 +1397,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 			else if (liteInv == null) {
 				
 				// ADD HARDWARE
-				StarsControllableDeviceDTO dto = starsControllableDeviceDTOConversionService.createNewDto(liteAcctInfo.getCustomerAccount()
+				StarsControllableDeviceDTO dto = starsControllableDeviceDTOConverter.createNewDto(liteAcctInfo.getCustomerAccount()
 								.getAccountNumber(), hwFields, energyCompany);
 				liteInv = starsControllableDeviceHelper.addDeviceToAccount(dto, this.currentUser);
 				
@@ -1396,10 +1406,10 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 			else if (!insertSpecified) {
 				
 				// UPDATE HARDWARE
-				StarsControllableDeviceDTO dto = starsControllableDeviceDTOConversionService
+				StarsControllableDeviceDTO dto = starsControllableDeviceDTOConverter
 						.getDtoForHardware(liteAcctInfo.getCustomerAccount()
 								.getAccountNumber(), liteInv, energyCompany);
-				starsControllableDeviceDTOConversionService.updateDtoWithHwFields(dto, hwFields, energyCompany);
+				starsControllableDeviceDTOConverter.updateDtoWithHwFields(dto, hwFields, energyCompany);
 				liteInv = starsControllableDeviceHelper.updateDeviceOnAccount(dto, this.currentUser);
 				
 				numHwUpdated++;
@@ -1443,7 +1453,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 			if (liteAcctInfo == null) {
 				
 				// ADD ACCOUNT
-				UpdatableAccount updatableAccount = updatableAccountConversionService.createNewUpdatableAccount(custFields, energyCompany);
+				UpdatableAccount updatableAccount = updatableAccountConverter.createNewUpdatableAccount(custFields, energyCompany);
 				accountService.addAccount(updatableAccount, energyCompany);
 				liteAcctInfo = energyCompany.searchAccountByAccountNo( custFields[ImportManagerUtil.IDX_ACCOUNT_NO] );
 				
@@ -1452,7 +1462,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 			else if (!insertSpecified) {
 				
 				// UPDATE ACCOUNT
-				UpdatableAccount updatableAccount = updatableAccountConversionService.getUpdatedUpdatableAccount(liteAcctInfo, custFields, energyCompany);
+				UpdatableAccount updatableAccount = updatableAccountConverter.getUpdatedUpdatableAccount(liteAcctInfo, custFields, energyCompany);
 				accountService.updateAccount(updatableAccount, energyCompany);
 				
 			    numAcctUpdated++;

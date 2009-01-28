@@ -97,6 +97,8 @@ public class AccountServiceImpl implements AccountService {
 
     
     // ADD ACCOUNT
+    @Override
+    @Transactional
     public void addAccount(UpdatableAccount updatableAccount, LiteYukonUser operator) throws AccountNumberUnavailableException, UserNameUnavailableException {
     	
     	LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(operator);
@@ -324,6 +326,8 @@ public class AccountServiceImpl implements AccountService {
 
     
     // DELETE ACCOUNT
+    @Override
+    @Transactional
     public void deleteAccount(String accountNumber, LiteYukonUser user) {
     	
     	LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
@@ -474,6 +478,8 @@ public class AccountServiceImpl implements AccountService {
     
     
     // UPDATE ACCOUNT
+    @Override
+    @Transactional
     public void updateAccount(UpdatableAccount updatableAccount, LiteYukonUser user) {
     
     	LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);

@@ -6,7 +6,7 @@ import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.ws.dto.StarsControllableDeviceDTO;
 
-public interface StarsControllableDeviceDTOConversionService {
+public interface StarsControllableDeviceDTOConverter {
 
 	/**
 	 * Creates a new device DTO based off a customer account number, and an array of hardware data as supplied by the IportCustAccountsTask. 
