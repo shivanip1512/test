@@ -91,7 +91,7 @@ void ScannableDeviceManager::refresh(LONG paoID, string category, string devicet
             }
         }
 
-        map<int, vector<long> >::iterator itr, itr_end = type_paoids.end();
+        map<int, vector<long> >::const_iterator itr, itr_end = type_paoids.end();
 
         for( itr = type_paoids.begin(); itr != itr_end; ++itr )
         {

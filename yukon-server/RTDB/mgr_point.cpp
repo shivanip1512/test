@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.68 $
-* DATE         :  $Date: 2008/11/17 17:34:40 $
+* REVISION     :  $Revision: 1.65.2.1 $
+* DATE         :  $Date: 2008/11/20 16:49:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -344,7 +344,7 @@ void CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType_t pntType
         {
             coll_type::writer_lock_guard_t guard(getLock());
 
-            _paoids_loaded.insert(paoID);
+            _paoids_loaded.insert((const long)paoID);
         }
         else if( !pntID )
         {
@@ -645,10 +645,10 @@ void CtiPointManager::updateAccess(long pointid, time_t time_now)
     //  insert the pointid into the current timeslice's set
     if( timeslice_itr == _lru_timeslices.end() )
     {
-        timeslice_itr = _lru_timeslices.insert(make_pair(time_index, set<long>())).first;
+        timeslice_itr = _lru_timeslices.insert(make_pair( (long) time_index, set<long>())).first;
     }
 
-    timeslice_itr->second.insert(pointid);
+    timeslice_itr->second.insert( (const long) pointid);
 
     //  update the point's iterator
     _lru_points[pointid] = _lru_timeslices.find(time_now / 10);
@@ -669,14 +669,14 @@ void CtiPointManager::addPoint( CtiPointBase *point )
         updateAccess(point->getID());
 
         //  add it into the offset lookup map
-        _type_offsets.insert(std::make_pair(pao_offset_t(point->getDeviceID(), point->getPointOffset()), point->getPointID()));
+        _type_offsets.insert(std::make_pair(pao_offset_t(point->getDeviceID(), (long) point->getPointOffset()), point->getPointID()));
         _pao_pointids.insert(std::make_pair(point->getDeviceID(), point->getPointID()));
 
         //  if it's a control point, add it into the control offset lookup map
         if( point->getType() == StatusPointType &&
             point->getControlOffset() )
         {
-            _control_offsets.insert(std::make_pair(pao_offset_t(point->getDeviceID(), point->getControlOffset()), point->getPointID()));
+            _control_offsets.insert(std::make_pair(pao_offset_t(point->getDeviceID(), (long) point->getControlOffset()), point->getPointID()));
         }
     }
 }

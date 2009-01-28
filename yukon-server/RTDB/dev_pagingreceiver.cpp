@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_pagerreceive.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2008/10/28 19:21:42 $
+* REVISION     :  $Revision: 1.8.2.2 $
+* DATE         :  $Date: 2008/11/20 16:49:21 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,8 +17,6 @@
 
 #include <map>
 #include <string>
-
-#include <windows.h>
 
 #include "cparms.h"
 #include "dsm2.h"
@@ -191,7 +189,7 @@ int CtiDevicePagingReceiver::generate(CtiXfer &xfer)
 
                     setCurrentState(ReadResult);
                     setPreviousState(SendWhatStringPointerPointsTo);
-                    if(_cmdVectorIterator == &_commandVector.back())
+                    if( * _cmdVectorIterator == _commandVector.back())
                     {
                         setPreviousState(SendCapcodeNumber);// ADD_CODE_HERE
                         break;

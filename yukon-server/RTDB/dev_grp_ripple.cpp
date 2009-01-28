@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_grp_ripple.cpp-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2008/10/29 18:16:46 $
+* REVISION     :  $Revision: 1.29.2.1 $
+* DATE         :  $Date: 2008/11/19 15:21:27 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -63,14 +63,14 @@ CtiDeviceGroupRipple& CtiDeviceGroupRipple::operator=(const CtiDeviceGroupRipple
 
 CtiDeviceGroupRipple& CtiDeviceGroupRipple::setRippleTable(const CtiTableRippleLoadGroup& aRef)
 {
-    LockGuard gd(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     _rippleTable = aRef;
     return *this;
 }
 
 LONG CtiDeviceGroupRipple::getRouteID()
 {
-    LockGuard gd(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     return _rippleTable.getRouteID();
 }
 

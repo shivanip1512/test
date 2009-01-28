@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.78 $
-* DATE         :  $Date: 2008/11/17 17:34:41 $
+* REVISION     :  $Revision: 1.77.2.2 $
+* DATE         :  $Date: 2008/11/21 17:55:24 $
 *
 * HISTORY      :
 * $Log: port_base.cpp,v $
@@ -19,7 +19,6 @@
 * Modified mgr_point's point access update function to alleviate an unnecessary set creation/destruction with every access
 * Added isEmpty() calls in a few places to prevent unnecessary iterator creation
 * Other misc speedups (variable removal/relocation)
-*
 * Revision 1.77  2008/10/28 19:21:43  mfisher
 * YUK-6589 Scanner should not load non-scannable devices
 * refreshList() now takes a list of paoids, which may be empty if it's a full reload
@@ -499,7 +498,7 @@ INT CtiPort::queueInit(HANDLE hQuit)
 
     if(_portQueue == NULL)
     {
-        LockGuard gd(monitor());
+        CtiLockGuard<CtiMutex> guard(_classMutex);
 
         /* create the queue for this port */
         if( (status = CreateQueue (&_portQueue, QUE_PRIORITY, hQuit)) != NORMAL )
@@ -522,7 +521,7 @@ INT CtiPort::queueDeInit()
     INT status = NORMAL;
 
     // RWMutexLock::LockGuard( getMux() );      // 072503 CGP - What the !@$$@#??
-    LockGuard gd(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
 
     /* create the queue for this port */
     CloseQueue( _portQueue );
@@ -1547,7 +1546,7 @@ INT CtiPort::portMaxCommFails() const
 
 bool CtiPort::adjustCommCounts( INT CommResult )
 {
-    LockGuard  guard(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     bool bAdjust = false;
     bool bStateChange = false;
     bool success = (CommResult == NORMAL);
@@ -1912,7 +1911,7 @@ INT CtiPort::writeShareQueue(ULONG Request, LONG DataSize, PVOID Data, ULONG Pri
 
     if(!_portShareQueue)
     {
-        LockGuard gd(monitor());
+        CtiLockGuard<CtiMutex> guard(_classMutex);
 
         /* create the queue for this port */
         if( (status = CreateQueue (&_portShareQueue, QUE_PRIORITY, hQuit)) != NORMAL )

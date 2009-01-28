@@ -3,6 +3,11 @@
 #ifndef DSM2ERR_H
 #define DSM2ERR_H
 
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
+
 #include <windows.h>
 
 #include "dlldefs.h"

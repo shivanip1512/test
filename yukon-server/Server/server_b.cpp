@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/server_b.cpp-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2007/07/10 20:56:43 $
+* REVISION     :  $Revision: 1.25.14.1 $
+* DATE         :  $Date: 2008/11/17 19:46:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,9 +19,9 @@
 #include "numstr.h"
 #include "logger.h"
 #include "utility.h"
-
+#include "id_svr.h"
+ 
 using namespace std;
-
 
 DLLEXPORT bool isQuestionable(CtiServer::ptr_type &ptr, void* narg)
 {
@@ -330,8 +330,8 @@ int  CtiServer::commandMsgHandler(CtiCommandMsg *Cmd)
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << "Unhandled command message " << Cmd->getOperation() << " sent to Main.." << endl;
             }
-        }
-    }
+        } 
+      }
 
     return status;
 }

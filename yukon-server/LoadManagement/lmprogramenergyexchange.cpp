@@ -702,7 +702,8 @@ CtiLMEnergyExchangeOffer* CtiLMProgramEnergyExchange::getOfferWithId(LONG offeri
 ---------------------------------------------------------------------------*/
 CtiLMProgramBaseSPtr CtiLMProgramEnergyExchange::replicate() const
 {
-    return (CTIDBG_new CtiLMProgramEnergyExchange(*this));
+    CtiLMProgramBaseSPtr retVal = CtiLMProgramBaseSPtr(CTIDBG_new CtiLMProgramEnergyExchange(*this));
+    return retVal;
 }
 
 /*---------------------------------------------------------------------------

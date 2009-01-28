@@ -47,7 +47,6 @@
         12-99       NT and functionalized                         CGP
 
    -------------------------------------------------------------------- */
-#include <windows.h>
 #include <process.h>
 #include <iostream>
 #include <iomanip>
@@ -510,7 +509,7 @@ VOID PortThread(void *pid)
 bool RemoteReset(CtiDeviceSPtr &Device, CtiPortSPtr Port)
 {
     bool didareset = false;
-    extern LoadRemoteRoutes(CtiDeviceSPtr &RemoteRecord);
+    extern INT LoadRemoteRoutes(CtiDeviceSPtr RemoteRecord);
 
     if(Port->getPortID() == Device->getPortID() && !Device->isInhibited() )
     {
@@ -688,7 +687,7 @@ INT PostCommQueuePeek(CtiPortSPtr Port, CtiDeviceSPtr &Device)
 
 struct primeTRXInfo
 {
-    operator()(CtiDeviceSPtr &RemoteDevice)
+    void operator()(CtiDeviceSPtr &RemoteDevice)
     {
         if(RemoteDevice->hasTrxInfo())
         {
@@ -1227,7 +1226,7 @@ struct preload_offset_t
     CtiTime time;
     LONG deviceid;
 
-    operator<(const preload_offset_t &rhs) const { return time < rhs.time || (time == rhs.time && deviceid < rhs.deviceid); }
+    bool operator<(const preload_offset_t &rhs) const { return time < rhs.time || (time == rhs.time && deviceid < rhs.deviceid); }
 };
 
 void processPreloads(CtiPortSPtr Port)
@@ -1328,7 +1327,7 @@ void processPreloads(CtiPortSPtr Port)
 
 struct statistics_handler
 {
-    operator()(OUTMESS &om)
+    void operator()(OUTMESS &om)
     {
         om.MessageFlags |= MessageFlag_StatisticsRequested;
 
@@ -4263,7 +4262,7 @@ INT ProcessPortPooling(CtiPortSPtr Port)
 
 struct commFailDevice
 {
-    operator()( CtiDeviceSPtr &device )
+    void operator()( CtiDeviceSPtr &device )
     {
         bool commsuccess = false;
         if( device->adjustCommCounts(commsuccess, false) )

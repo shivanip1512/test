@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/message.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2007/12/10 23:02:57 $
+* REVISION     :  $Revision: 1.13.10.1 $
+* DATE         :  $Date: 2008/11/10 20:47:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -177,7 +177,7 @@ VOID* CtiMessage::getConnectionHandle()
 
 VOID CtiMessage::setMessagePriority(INT n)   { MessagePriority = n & 0x0000000f; }
 INT  CtiMessage::getMessagePriority() const  { return MessagePriority;           }
-INT  CtiMessage::getSOE() const;
+
 
 CtiTime CtiMessage::getMessageTime() const    { return MessageTime;}
 CtiMessage&  CtiMessage::setMessageTime(const CtiTime &mTime)
@@ -219,7 +219,7 @@ bool CtiMessage::isValid()
 
 string CtiMessage::typeString() const
 {
-    string rstr(CtiNumStr(isA()));
+    string rstr = string(CtiNumStr(isA()));
     /*
     #define MSG_BASE                          1500
     #define MSG_NULL                          (MSG_BASE)

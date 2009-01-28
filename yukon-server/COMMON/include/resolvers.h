@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/resolvers.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2008/07/08 22:56:58 $
+* REVISION     :  $Revision: 1.8.4.2 $
+* DATE         :  $Date: 2008/11/12 17:27:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/

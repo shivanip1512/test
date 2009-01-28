@@ -71,13 +71,13 @@ using namespace std;
 
 extern CtiRouteManager    RouteManager;
 
-LoadRemoteRoutes(CtiDeviceSPtr &Dev);
-LoadPortRoutes (USHORT Port);
+INT LoadRemoteRoutes(CtiDeviceSPtr Dev);
+INT LoadPortRoutes (USHORT Port);
 
 
 struct loadRemoteRoutes
 {
-    operator()(CtiDeviceSPtr &Dev)
+    void operator()(CtiDeviceSPtr &Dev)
     {
         if( Dev && !Dev->isInhibited() )
         {
@@ -87,7 +87,7 @@ struct loadRemoteRoutes
 };
 
 /* Routine to load routes on all remotes on a port */
-LoadPortRoutes (USHORT Port)
+INT LoadPortRoutes (USHORT Port)
 {
     vector<CtiDeviceManager::ptr_type> devices;
 
@@ -99,7 +99,7 @@ LoadPortRoutes (USHORT Port)
 }
 
 /* Routine to load routes into specified CCU */
-LoadRemoteRoutes(CtiDeviceSPtr &Dev)
+INT LoadRemoteRoutes(CtiDeviceSPtr Dev)
 {
     USHORT            Index;
     USHORT            RouteCount;

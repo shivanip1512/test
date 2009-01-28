@@ -11,8 +11,8 @@
 
 #include <boost/thread/thread.hpp>
 #include <boost/test/unit_test.hpp>
-#include <boost/test/auto_unit_test.hpp>
 #include "ctipcptrqueue.h"
+#include "boostutil.h"
 using namespace std;
 
 
@@ -22,7 +22,7 @@ int threadTest = 0;
 CtiPCPtrQueue<int> threadQ;
 boost::mutex mutex;
 
-BOOST_AUTO_UNIT_TEST(test_writeread)
+BOOST_AUTO_TEST_CASE(test_writeread)
 {
     CtiPCPtrQueue<int> *q = new CtiPCPtrQueue<int>();
     int *itemOne, *itemTwo, *temp1, *temp2, *garbage;
@@ -103,7 +103,7 @@ BOOST_AUTO_UNIT_TEST(test_writeread)
 
 }
 
-BOOST_AUTO_UNIT_TEST(test_tryRead)
+BOOST_AUTO_TEST_CASE(test_tryRead)
 {
     CtiPCPtrQueue<int> *q = new CtiPCPtrQueue<int>();
     int *itemOne, *itemTwo, *temp1, *temp2, *gar;
@@ -156,7 +156,7 @@ void readOne()//for MultiThread Test
    }
 }
 
-BOOST_AUTO_UNIT_TEST(test_timeOutMultiThread)
+BOOST_AUTO_TEST_CASE(test_timeOutMultiThread)
 {//first three should read fine, Last should time out.
     boost::thread_group threads;
     int *one   = new int(1),

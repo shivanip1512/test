@@ -6,14 +6,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/exe_cmd.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/02/17 19:02:58 $
+* REVISION     :  $Revision: 1.7.34.1 $
+* DATE         :  $Date: 2008/11/13 17:23:38 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-#include <windows.h>
 #include <iostream>
 #include <exception>
 using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore

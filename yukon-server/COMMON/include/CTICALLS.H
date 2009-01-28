@@ -9,8 +9,13 @@
    #include <sys\timeb.h>
 
    #ifdef _WIN32
-      #include <windows.h>
-      #include "os2_2w32.h"
+ 
+     #if !defined (NOMINMAX)
+     #define NOMINMAX
+     #endif
+
+     #include <windows.h>
+     #include "os2_2w32.h"
    #endif
 
 /*****************************************************************************
@@ -65,6 +70,10 @@
 
    #ifndef FLOAT
       #define FLOAT float
+   #endif
+
+  #ifndef DOUBLE
+      #define DOUBLE double
    #endif
 
    #ifndef VOID

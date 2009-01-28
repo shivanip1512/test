@@ -1,16 +1,17 @@
-#define BOOST_AUTO_TEST_MAIN "Test fifo_multiset"
-
-#include <boost/thread/thread.hpp>
-#include <boost/test/unit_test.hpp>
-#include <boost/test/auto_unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
 
 #include <iostream>
 #include "fifo_multiset.h"
 
-using namespace std;
+#include <boost/test/floating_point_comparison.hpp>
+
+#define BOOST_TEST_MAIN "Test fifo_multiset"
+#include <boost/test/unit_test.hpp>
+                     
+#include "boostutil.h"
 
 using boost::unit_test_framework::test_suite;
+
+using namespace std;
 
 struct fun_pair : public pair<int, int>
 {
@@ -22,7 +23,7 @@ struct fun_pair : public pair<int, int>
     };
 };
 
-BOOST_AUTO_UNIT_TEST(test_fifo_multiset_order)
+BOOST_AUTO_TEST_CASE(test_fifo_multiset_order)
 {
     fifo_multiset<fun_pair> fifo_multiset_test;
 
@@ -70,7 +71,7 @@ BOOST_AUTO_UNIT_TEST(test_fifo_multiset_order)
     BOOST_CHECK_EQUAL(itr->second, 6);
 }
 
-BOOST_AUTO_UNIT_TEST(test_fifo_multiset_insert_erase)
+BOOST_AUTO_TEST_CASE(test_fifo_multiset_insert_erase)
 {
     fifo_multiset<fun_pair> fifo_multiset_test;
 
@@ -119,7 +120,7 @@ struct priority_t
     int Priority;
 };
 
-BOOST_AUTO_UNIT_TEST(test_ptr_priority_sort)
+BOOST_AUTO_TEST_CASE(test_ptr_priority_sort)
 {
     fifo_multiset<priority_t *, ptr_priority_sort<priority_t> > priority_test;
 

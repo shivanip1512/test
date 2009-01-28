@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_server.cpp-arc  $
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2008/06/30 21:23:26 $
+* REVISION     :  $Revision: 1.32.4.1 $
+* DATE         :  $Date: 2008/11/21 20:56:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -293,7 +293,7 @@ bool CtiMCServer::init()
 
     if( status )
     {
-        RWRecursiveLock<class RWMutexLock>::LockGuard map_guard(_schedule_manager.getMux() );
+        CtiLockGuard<CtiMutex> map_guard(_schedule_manager.getMux() );
         CtiLockGuard<CtiLogger> dout_guard(dout);
         dout << CtiTime() << " Loaded " << _schedule_manager.getMap().size() << " schedules from the database." << endl;
     }
@@ -516,7 +516,7 @@ void CtiMCServer::stopScript(long sched_id)
 
     // find the schedule and reset its manual start + stop times
     {
-        RWRecursiveLock<RWMutexLock>::LockGuard guard( _schedule_manager.getMux() );
+        CtiLockGuard<CtiMutex> guard( _schedule_manager.getMux() );
         CtiMCSchedule* sched = _schedule_manager.findSchedule( sched_id );
         sched->setManualStartTime( CtiTime( (unsigned long) 0 ));
         sched->setManualStopTime( CtiTime( (unsigned long) 0 ));
@@ -601,7 +601,7 @@ void CtiMCServer::checkRunningScripts()
             CtiMCSchedule* sched = NULL;
 
             {
-                RWRecursiveLock<RWMutexLock>::LockGuard guard( _schedule_manager.getMux() );
+                CtiLockGuard<CtiMutex> guard( _schedule_manager.getMux() );
                 sched = _schedule_manager.findSchedule( iter->first );
             }
 
@@ -637,7 +637,7 @@ bool CtiMCServer::processMessage(CtiMessage* msg)
                 dout << CtiTime() << " Received AddSchedule message" << endl;
             }
 
-            RWRecursiveLock<RWMutexLock>::LockGuard guard( _schedule_manager.getMux() );
+            CtiLockGuard<CtiMutex> guard( _schedule_manager.getMux() );
 
             CtiMCAddSchedule* add_msg = (CtiMCAddSchedule*) msg;
 
@@ -690,7 +690,7 @@ bool CtiMCServer::processMessage(CtiMessage* msg)
                     dout << CtiTime() << " Received UpdateSchedule message" << endl;
                 }
 
-                RWRecursiveLock<RWMutexLock>::LockGuard guard( _schedule_manager.getMux() );
+                CtiLockGuard<CtiMutex> guard( _schedule_manager.getMux() );
 
                 CtiMCUpdateSchedule* update_msg = (CtiMCUpdateSchedule*) msg;
 
@@ -754,7 +754,7 @@ bool CtiMCServer::processMessage(CtiMessage* msg)
             if( id == CtiMCRetrieveSchedule::AllSchedules )
             {
                 //send all the schedules to the client that requested them
-                RWRecursiveLock<RWMutexLock>::LockGuard guard( _schedule_manager.getMux() );
+                CtiLockGuard<CtiMutex> guard( _schedule_manager.getMux() );
 
                 CtiMCScheduleManager::MapIterator itr = _schedule_manager.getMap().begin();
                 CtiMultiMsg* multi = new CtiMultiMsg();
@@ -775,7 +775,7 @@ bool CtiMCServer::processMessage(CtiMessage* msg)
             }
             else
             {
-                RWRecursiveLock<RWMutexLock>::LockGuard guard( _schedule_manager.getMux() );
+                CtiLockGuard<CtiMutex> guard( _schedule_manager.getMux() );
                 CtiMCSchedule* sched = _schedule_manager.findSchedule(id);
 
                 if( sched != NULL )
@@ -803,7 +803,7 @@ bool CtiMCServer::processMessage(CtiMessage* msg)
                 string sched_name;
 
                 {
-                    RWRecursiveLock<RWMutexLock>::LockGuard guard( _schedule_manager.getMux() );
+                    CtiLockGuard<CtiMutex> guard( _schedule_manager.getMux() );
 
                     CtiMCSchedule* sched = _schedule_manager.findSchedule(id);
 
@@ -866,7 +866,7 @@ bool CtiMCServer::processMessage(CtiMessage* msg)
                     dout << CtiTime() << " Received Override Request message" << endl;
                 }
 
-                RWRecursiveLock<RWMutexLock>::LockGuard guard( _schedule_manager.getMux() );
+                CtiLockGuard<CtiMutex> guard( _schedule_manager.getMux() );
 
                 CtiMCOverrideRequest* request_msg = (CtiMCOverrideRequest*) msg;
                 CtiMCSchedule* sched = _schedule_manager.findSchedule( request_msg->getID() );
@@ -1047,7 +1047,7 @@ bool CtiMCServer::processEvent(const ScheduledEvent& event)
         dout << CtiTime() << " timestamp:    " << event.timestamp << endl << endl;
     }
 
-    RWRecursiveLock<class RWMutexLock>::LockGuard guard(_schedule_manager.getMux() );
+    CtiLockGuard<CtiMutex> guard(_schedule_manager.getMux() );
     CtiMCSchedule* sched = _schedule_manager.findSchedule( event.sched_id );
 
     if( sched == NULL )

@@ -14,12 +14,11 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_state.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/12/20 17:16:09 $
+* REVISION     :  $Revision: 1.4.24.1 $
+* DATE         :  $Date: 2008/11/18 20:11:29 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#include <rw/thr/monitor.h>
 #include <rw/thr/recursiv.h>
 #include <rw\thr\mutex.h>
 
@@ -30,7 +29,7 @@
 
 #include "dlldefs.h"
 
-class IM_EX_CTIYUKONDB CtiTableState : public RWMonitor< RWRecursiveLock< RWMutexLock > >
+class IM_EX_CTIYUKONDB CtiTableState
 {
 
 protected:
@@ -44,7 +43,7 @@ protected:
    // LONG _bkgColor
 
 private:
-
+    mutable CtiMutex _classMutex;
 public:
 
    CtiTableState(LONG id = -1, LONG raw = 0);

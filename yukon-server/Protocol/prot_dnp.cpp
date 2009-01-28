@@ -1020,14 +1020,14 @@ bool DNPSlaveInterface::setSlaveCommand( Command command, input_point &point )
 }
 
 
-const char const *DNPInterface::ControlResultStr_RequestAccepted      = "Request accepted";
-const char const *DNPInterface::ControlResultStr_ArmTimeout           = "Operate received after select timeout";
-const char const *DNPInterface::ControlResultStr_NoSelect             = "Operate without select";
-const char const *DNPInterface::ControlResultStr_FormattingError      = "Format error(s) in control";
-const char const *DNPInterface::ControlResultStr_PointNotControllable = "Control not supported on this point";
-const char const *DNPInterface::ControlResultStr_QueueFullPointActive = "Queue full, or point already active";
-const char const *DNPInterface::ControlResultStr_HardwareError        = "Control hardware problems";
-const char const *DNPInterface::ControlResultStr_InvalidStatus        = "Unknown/undefined error";
+const char * const DNPInterface::ControlResultStr_RequestAccepted      = "Request accepted";
+const char * const DNPInterface::ControlResultStr_ArmTimeout           = "Operate received after select timeout";
+const char * const DNPInterface::ControlResultStr_NoSelect             = "Operate without select";
+const char * const DNPInterface::ControlResultStr_FormattingError      = "Format error(s) in control";
+const char * const DNPInterface::ControlResultStr_PointNotControllable = "Control not supported on this point";
+const char * const DNPInterface::ControlResultStr_QueueFullPointActive = "Queue full, or point already active";
+const char * const DNPInterface::ControlResultStr_HardwareError        = "Control hardware problems";
+const char * const DNPInterface::ControlResultStr_InvalidStatus        = "Unknown/undefined error";
 
 }
 }

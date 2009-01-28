@@ -6,14 +6,19 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/message.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2006/09/26 14:09:21 $
+* REVISION     :  $Revision: 1.10.22.2 $
+* DATE         :  $Date: 2008/11/13 17:23:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #ifndef __CTIMESSAGE_H__
 #define __CTIMESSAGE_H__
 #pragma warning( disable : 4786 )
+
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
 
 #include <windows.h>
 #include <iostream>
@@ -119,7 +124,7 @@ public:
 // This will be used to sort these things in a CtiQueue.
 namespace std
 {
-  struct greater<CtiMessage*>
+  template <> struct greater<CtiMessage*>
   {
     bool operator()(CtiMessage const* p1, CtiMessage const* p2)
     {

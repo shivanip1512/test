@@ -68,6 +68,7 @@ allclean:   clean test
 
 copy:
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+                mt.exe -manifest $(BIN)\$(@B).exe.manifest -outputresource:$(BIN)\$(@B).exe;1
                 -copy bin\*.exe $(YUKONOUTPUT)
 
 
@@ -97,6 +98,7 @@ id_ctiprot.obj:    id_ctiprot.cpp include\id_ctiprot.h id_vinfo.h
 	.\obj\$(@B).obj -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOSTLIBS) $(BOOSTTESTLIBS) $(RWLIBS) $(PROTLIBS) $(LINKFLAGS)
 
 	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+	mt.exe -manifest $(BIN)\$(@B).exe.manifest -outputresource:$(BIN)\$(@B).exe;1
 	-copy $(BIN)\$(@B).exe $(YUKONOUTPUT)
 	-@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
 	-if exist $(BIN)\$(@B).lib copy $(BIN)\$(@B).lib $(COMPILEBASE)\lib

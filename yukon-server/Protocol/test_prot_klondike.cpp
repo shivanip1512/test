@@ -3,7 +3,15 @@
  *
  */
 
+#include <boost/test/floating_point_comparison.hpp>
+
+#define BOOST_TEST_MAIN "Test fifo_multiset"
 #include <boost/test/unit_test.hpp>
+
+
+#include "boostutil.h"
+
+using boost::unit_test_framework::test_suite;
 
 #define _WIN32_WINNT 0x0400
 
@@ -12,13 +20,11 @@
 #include "dev_ccu721.h"  //  for timesync writes
 
 #define BOOST_AUTO_TEST_MAIN "Test Klondike Protocol"
-#include <boost/test/auto_unit_test.hpp>
 using boost::unit_test_framework::test_suite;
 
 using namespace std;
 
 using namespace Cti::Protocol;
-
 
 class Test_Wrap : public Wrap
 {
@@ -90,7 +96,7 @@ void do_xfer(Test_Klondike &tk, Test_Wrap &tw, CtiXfer &xfer, string outbound, s
 
     // check what was assigned into our Test_Wrap object
     BOOST_CHECK_EQUAL(tw.sent.size(), outbound.size());
-    BOOST_CHECK(!memcmp(tw.sent.begin(), outbound.begin(), outbound.size()));  //  the remaining 4 bytes are the time, which can vary
+    BOOST_CHECK(!memcmp( &*(tw.sent.begin()), &*outbound.begin(), outbound.size()));  //  the remaining 4 bytes are the time, which can vary
 
     BOOST_CHECK_EQUAL(tk.decode(xfer, 0), NoError);
     BOOST_CHECK(!tk.errorCondition());
@@ -104,8 +110,13 @@ void do_xfer(Test_Klondike &tk, Test_Wrap &tw, CtiXfer &xfer, string outbound, s
     BOOST_CHECK_EQUAL(tw.sent.size(), 0);
 
     //  assign our inbound data into the Test_Wrap object
-    tw.received.assign(reinterpret_cast<unsigned char *>(inbound.begin()),
-                       reinterpret_cast<unsigned char *>(inbound.end()));
+    inbound.c_str();
+
+    string::const_iterator iter = inbound.begin();
+    for( ;iter != inbound.end(); iter++ )
+    {
+        tw.received.push_back(*iter);
+    }
 
     BOOST_CHECK_EQUAL(tk.decode(xfer, 0), NoError);
     BOOST_CHECK(!tk.errorCondition());
@@ -115,7 +126,7 @@ void do_xfer(Test_Klondike &tk, Test_Wrap &tw, CtiXfer &xfer, string outbound, s
 }
 
 
-BOOST_AUTO_UNIT_TEST(test_prot_klondike)
+BOOST_AUTO_TEST_CASE(test_prot_klondike)
 {
     Test_Klondike  test_klondike;
     Test_Wrap test_wrap;

@@ -8,16 +8,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct210.cpp-arc  $
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2008/10/29 18:16:45 $
+* REVISION     :  $Revision: 1.33.2.2 $
+* DATE         :  $Date: 2008/11/20 16:49:25 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
-
-
-
-#include <windows.h>
 
 #include "devicetypes.h"
 #include "dev_mct210.h"
@@ -84,7 +80,7 @@ bool CtiDeviceMCT210::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 {
     bool found = false;
 
-    CommandSet::iterator itr = _commandStore.find(CommandStore(cmd));
+    CommandSet::const_iterator itr = _commandStore.find(CommandStore(cmd));
 
     if( itr != _commandStore.end() )
     {

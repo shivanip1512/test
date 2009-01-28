@@ -109,6 +109,7 @@ porter.exe:     $(BASEOBJS) Makefile
                 $(RWCPPINVOKE) $(CFLAGS) $(BASEOBJS) id_porter.obj $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ -link $(LIBS) $(RWLIBS) $(PORTERLIBS) $(BOOSTLIBS) $(LINKFLAGS)
                 @echo:
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+               mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
                -@copy ..\$@ $(YUKONOUTPUT)
                 @echo Done building Target ..\$@
                 @echo:
@@ -119,6 +120,7 @@ traceset.exe:   traceset.obj
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
 traceset.obj -link $(LIBS) $(COMPILEBASE)\lib\portglob.lib
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+               mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
                -@copy ..\$@ $(YUKONOUTPUT)
                 @%cd $(CWD)
 

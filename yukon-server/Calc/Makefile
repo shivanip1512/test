@@ -31,6 +31,4 @@ $(BIN)\*.lib \
 $(BIN)\*.dll \
 $(BIN)\*.exe
 
-
-
-allclean:       clean all
+allclean:       clean all  

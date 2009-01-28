@@ -14,7 +14,7 @@
 *****************************************************************************/
 #ifndef  __CCU710_H__
 #define  __CCU710_H__
-#include "Winsock2.h"
+#include "winsock.h"
 #include <iostream>
 #include "EmetconWord.h"
 

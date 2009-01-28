@@ -1058,7 +1058,7 @@ int CtiLMProgramCurtailment::operator!=(const CtiLMProgramCurtailment& right) co
 ---------------------------------------------------------------------------*/
 CtiLMProgramBaseSPtr CtiLMProgramCurtailment::replicate() const
 {
-    return(CTIDBG_new CtiLMProgramCurtailment(*this));
+    return CtiLMProgramBaseSPtr(CTIDBG_new CtiLMProgramCurtailment(*this));
 }
 
 /*---------------------------------------------------------------------------

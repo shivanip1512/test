@@ -1,7 +1,9 @@
-#define BOOST_AUTO_TEST_MAIN "Test utility.h"
-
 #include "yukon.h"
-#include <boost/test/auto_unit_test.hpp>
+
+#define BOOST_AUTO_TEST_MAIN "Test xmlobject"
+
+#include <boost/assert.hpp>
+
 #include <boost/test/unit_test.hpp>
 using boost::unit_test_framework::test_suite;
 
@@ -14,7 +16,7 @@ using boost::unit_test_framework::test_suite;
 using std::string;
 using std::stringstream;
 
-BOOST_AUTO_UNIT_TEST(test_generating_xml_2)
+BOOST_AUTO_TEST_CASE(test_generating_xml_2)
 {
 	/* Expected Result 
 	<TestTag name="tag1" addr="here">
@@ -52,7 +54,7 @@ BOOST_AUTO_UNIT_TEST(test_generating_xml_2)
 	BOOST_CHECK_EQUAL(expected,output);
 }
 
-BOOST_AUTO_UNIT_TEST(test_generating_xml_3)
+BOOST_AUTO_TEST_CASE(test_generating_xml_3)
 {
 	/* Expected Result 
 	<TestTag name="tag1" addr="here">
@@ -92,7 +94,7 @@ BOOST_AUTO_UNIT_TEST(test_generating_xml_3)
 	BOOST_CHECK_EQUAL(expected,output);
 }
 
-BOOST_AUTO_UNIT_TEST(test_generating_xml_insertData)
+BOOST_AUTO_TEST_CASE(test_generating_xml_insertData)
 {
 	/* Expected Result 
 	<TestTag>

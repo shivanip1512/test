@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_welco.h-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2008/06/06 20:28:44 $
+* REVISION     :  $Revision: 1.14.4.1 $
+* DATE         :  $Date: 2008/11/17 23:06:32 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,7 +20,7 @@
 
 
 #include <windows.h>
-#include "ctitypes.h"
+
 #include "types.h"
 #include "os2_2w32.h"
 #include "dsm2.h"

@@ -12,3 +12,14 @@ copy:
 	       -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
                -@if not exist $(COMPILEBASE)\lib\clrdump.lib copy .\DLL\clrdump.lib $(COMPILEBASE)\lib
 	       
+               -@if not exist $(YUKONOUTPUT)\thr$(BUILDTYPE).dll copy $(RWWORKSPACE)\lib\*.dll $(YUKONOUTPUT)
+               -@if not exist $(YUKONOUTPUT)\msvcp90$(MICROSOFTDLL).dll copy $(SOURCEBASE)\yukon-3rdparty\Microsoft\msvc*90$(MICROSOFTDLL).dll $(YUKONOUTPUT)
+               
+
+clean:
+        -del \
+$(YUKONOUTPUT)\ClrDump.dll \
+$(YUKONOUTPUT)\dbghelp.dll \
+$(YUKONOUTPUT)\*15d.dll \
+$(YUKONOUTPUT)\*12d.dll \
+$(YUKONOUTPUT)\msvcp90*.dll \

@@ -5,7 +5,9 @@
 # Define this environment variable to make life easier.
 # it should point at the workspace you are currently using up to the ...\rw directory.
 
-!IFNDEF RWBUILDLEVEL
+!IFDEF DEBUG
+RWBUILDLEVEL=15
+!ELSE
 RWBUILDLEVEL=12
 !ENDIF
 
@@ -17,11 +19,11 @@ RWOSFAMILY=PC
 RWOS=WINNT
 RWCOMPILER=MSVC
 
-RWWORKSPACE=$(RW)\include           # Env. Variable "RW" MUST be defined
+RWWORKSPACE=$(SOURCEBASE)\yukon-3rdparty\RogueWave\$(BUILDTYPE)
+RW = $(RWWORKSPACE)
 
 # Rogue Wave header file include path.
 RWINCL=-I. -I$(RWWORKSPACE)
-
 
 # Command to invoke compiler.
 CC=cl $(COMPILEONLY)
@@ -84,11 +86,11 @@ RWLINKFLAGS=$(RWINCL)
 
 #       Libraries to link in
 RWLIBS=\
-net$(BUILDTYPE).lib \
-tls$(BUILDTYPE).lib \
-thr$(BUILDTYPE).lib \
-int$(BUILDTYPE).lib \
-dbt$(BUILDTYPE).lib \
+$(RWWORKSPACE)\lib\net$(BUILDTYPE).lib \
+$(RWWORKSPACE)\lib\tls$(BUILDTYPE).lib \
+$(RWWORKSPACE)\lib\thr$(BUILDTYPE).lib \
+$(RWWORKSPACE)\lib\int$(BUILDTYPE).lib \
+$(RWWORKSPACE)\lib\dbt$(BUILDTYPE).lib \
 $(RWOSLIBS)
 
 

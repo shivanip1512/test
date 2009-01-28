@@ -15,17 +15,21 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_ci_cust.h-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2005/12/20 17:16:07 $
+* REVISION     :  $Revision: 1.2.24.2 $
+* DATE         :  $Date: 2008/11/18 20:11:29 $
 *
 * Copyright (c) 1999-2003 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
 
 #include <windows.h>
 
 #include <rw/db/db.h>
 #include <rw/thr/recursiv.h>
-#include <rw/thr/monitor.h>
 
 #include "dlldefs.h"
 #include "yukon.h"
@@ -39,7 +43,7 @@ using std::iterator;
 
 
 
-class IM_EX_CTIYUKONDB CtiTableCICustomerBase : public RWMonitor< RWRecursiveLock< RWMutexLock > >
+class IM_EX_CTIYUKONDB CtiTableCICustomerBase
 {
 public:
 
@@ -53,7 +57,7 @@ protected:
    set< int > _contactNotificationIDs; // this customers contacts contactNotificationIDs *digest that*
 
 private:
-
+    mutable CtiMutex _classMutex;
 public:
    CtiTableCICustomerBase(LONG id = -1);
    CtiTableCICustomerBase(const CtiTableCICustomerBase& aRef);

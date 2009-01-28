@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanglob.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2007/07/10 21:05:20 $
+* REVISION     :  $Revision: 1.10.14.2 $
+* DATE         :  $Date: 2008/11/21 16:14:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -16,7 +16,7 @@
 
 /* Global definitions for the scanner */
 
-#include <windows.h>       // These next few are required for Win32
+// These next few are required for Win32
 #include <iostream>
 using namespace std;
 

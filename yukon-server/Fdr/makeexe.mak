@@ -68,9 +68,10 @@ fdr.exe:    $(FDROBJS) makeexe.mak
         @echo:
         @echo Compiling ..\$@
         @%cd $(OBJ)
-        $(RWCPPINVOKE) /Fm $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) -o ..\$@ \
+        $(RWCPPINVOKE) /Fm $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
         $(FDROBJS) -link $(RWLIBS) $(BOOSTLIBS) $(FDRLIBS)
            -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+           mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
            -copy ..\$@ $(YUKONOUTPUT)
         @%cd $(CWD)
 
@@ -78,6 +79,7 @@ fdr.exe:    $(FDROBJS) makeexe.mak
 
 copy:
            -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+           mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
            -@if exist bin\*.exe copy bin\*.exe $(YUKONOUTPUT)
 
 

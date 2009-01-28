@@ -43,6 +43,11 @@
         02-03-94 Fixed various broadcast issues                     WRO
 
    -------------------------------------------------------------------- */
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
+
 #include <windows.h>
 #include <process.h>
 #include "os2_2w32.h"
@@ -305,9 +310,9 @@ VOID QueueThread (VOID *Arg)
 
 
 /* Routine to process results from CCU's */
-CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
+INT CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
 {
-    extern LoadRemoteRoutes(CtiDeviceSPtr &RemoteRecord);
+    extern INT LoadRemoteRoutes(CtiDeviceSPtr RemoteRecord);
 
     CtiDeviceCCU *ccu = (CtiDeviceCCU *)Dev.get();
 
@@ -644,7 +649,7 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
 
         if(AlgStatus[DEST_DLC] != ALGO_RUNNING && ccu->checkAlgorithmReset(DEST_DLC) )  /* Check the DLC algorithm status */
         {
-            IDLCFunction (Dev, 0, DEST_DLC, START);
+            IDLCFunction (Dev, 0, DEST_DLC, START_ALGORITHM);
 
             if(Dev)   /* Now send a message to logger */
             {
@@ -1204,7 +1209,7 @@ static ULONG sleepTime = 15000L;
 
 struct kick
 {
-    operator()(CtiDeviceSPtr &ccu_device)
+    void operator()(CtiDeviceSPtr &ccu_device)
     {
         if( ccu_device->getType() == TYPE_CCU721 )
         {
@@ -1225,7 +1230,7 @@ struct kick
         }
         else if( ccu_device->getType() == TYPE_CCU711 )
         {
-            RWRecursiveLock<RWMutexLock>::LockGuard   devguard(ccu_device->getMux());                  // Protect our device!
+            CtiLockGuard<CtiMutex> devguard(ccu_device->getMux());                  // Protect our device!
             CtiTransmitter711Info *pInfo = (CtiTransmitter711Info*)ccu_device->getTrxInfo();
 
             LONG FreeQents = 0;
@@ -1362,7 +1367,7 @@ VOID KickerThread (VOID *Arg)
 
 /* Routine to flush the 711 queue's for a given CCU */
 /* Dequeues only those entries marked as having been slated for queing (likely on the port queue) and INUSE */
-QueueFlush (CtiDeviceSPtr Dev)
+INT QueueFlush (CtiDeviceSPtr Dev)
 {
     USHORT QueTabEnt;
 
@@ -1397,7 +1402,7 @@ QueueFlush (CtiDeviceSPtr Dev)
 }
 
 
-BuildLGrpQ (CtiDeviceSPtr Dev)
+INT BuildLGrpQ (CtiDeviceSPtr Dev)
 {
     ULONG Length;
     ULONG Count;
@@ -1717,7 +1722,7 @@ BuildLGrpQ (CtiDeviceSPtr Dev)
     return(NORMAL);
 }
 
-BuildActinShed (CtiDeviceSPtr Dev)
+INT BuildActinShed (CtiDeviceSPtr Dev)
 {
     ULONG Length;
     ULONG Count;
@@ -1845,7 +1850,7 @@ BuildActinShed (CtiDeviceSPtr Dev)
 
 /* Routine to take messages off because of errant LGRPQ */
 /* Dequeues only those entries marked as having QueueEntrySequence equal to the inbound message sequence*/
-DeQueue (INMESS *InMessage)
+INT DeQueue (INMESS *InMessage)
 {
     INT status = NORMAL;
     INT SocketError = NORMAL;

@@ -48,7 +48,7 @@ private:
    typedef std::set<CtiTablePointAlarming>          PointAlarmingSet;
    typedef std::multimap<long, CtiTablePointPropertySPtr> PointPropertyMap;
    typedef std::map<long, CtiDynamicPointDispatchSPtr>  DynamicPointDispatchMap;
-   typedef DynamicPointDispatchMap::iterator            DynamicPointDispatchIterator;
+   typedef DynamicPointDispatchMap::const_iterator      DynamicPointDispatchIterator;
    typedef std::map<long, CtiPointConnection>           PointConnectionMap;
 
    // The weak pointers contained in this map are no longer guaranteed to exist.
@@ -62,7 +62,7 @@ private:
    PointPropertyMap         _properties;
    PointConnectionMap       _pointConnectionMap;
 
-   typedef std::pair<PointPropertyMap::iterator, PointPropertyMap::iterator> PointPropertyRange;
+   typedef std::pair<PointPropertyMap::const_iterator, PointPropertyMap::const_iterator> PointPropertyRange;
 
    // Store for the dynamic data on a point. It reflects dynamic database data.
    // This should be is removed from on point deletion but not expiration.

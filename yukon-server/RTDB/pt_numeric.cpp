@@ -6,15 +6,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/pt_numeric.cpp-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2008/10/29 18:16:45 $
+* REVISION     :  $Revision: 1.23.2.2 $
+* DATE         :  $Date: 2008/11/18 20:11:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
-
-
-#include <windows.h>
 
 #include "pt_numeric.h"
 #include "tbl_pt_alarm.h"
@@ -212,7 +209,7 @@ DOUBLE CtiPointNumeric::computeValueForUOM(DOUBLE Value) const
 
     if( digits > 0 )
     {
-        Value = fmod(Value, pow(10,digits));
+        Value = fmod(Value, pow(10.0,digits));
     }
 
     return Value;

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2008/04/25 21:45:14 $
+* REVISION     :  $Revision: 1.4.6.2 $
+* DATE         :  $Date: 2008/11/20 17:17:13 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -48,11 +48,13 @@ private:
 //    stringlist_t _string_results;
 //    pointlist_t  _point_results;
 
+public:
     enum Retries
     {
         Retries_Default = 1
     };
 
+private:
     enum IOState
     {
         IOState_Uninitialized = 0,

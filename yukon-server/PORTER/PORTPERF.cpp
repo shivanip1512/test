@@ -1,4 +1,52 @@
+/*-----------------------------------------------------------------------------*
+*
+* File:   PORTPERF
+*
+* Date:   7/17/2001
+*
+* PVCS KEYWORDS:
+* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTPERF.cpp-arc  $
+** REVISION     :  $Revision: 1.49.2.1 $
+* DATE         :  $Date: 2008/11/13 17:23:44 $
+*
+* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
+*-----------------------------------------------------------------------------*/
 #include "yukon.h"
+
+
+/*---------------------------------------------------------------------
+    Copyright (c) 1990-1993 Cannon Technologies, Inc. All rights reserved.
+
+    Programmer:
+        William R. Ockert
+
+    FileName:
+        PORTPERF.C
+
+    Purpose:
+        Perform midnight and roll statistic updates
+
+    The following procedures are contained in this module:
+        PerfThread                      PerfUpdateThread
+
+    Initial Date:
+        Unknown
+
+    Revision History:
+        Unknown prior to 8-93
+        9-7-93   Converted to 32 bit                                WRO
+        11-1-93  Modified to keep statistics temporarily in memory  TRH
+        2-28-94  Added enviroment variables for update frequency    WRO
+        6-11-96  Fixed Remote previous day statistics               WRO
+
+   -------------------------------------------------------------------- */
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
+
+#include <windows.h>
+#include <process.h>
 
 #include <deque>
 
@@ -563,14 +611,12 @@ void collect_ids(InputIterator id_itr, InputIterator id_end, OutputIterator out)
 template<class Key, class Value>
 struct map_compare
 {
-    operator()(const Key &lhs, const pair<Key, Value> &rhs) const
-    {
-        return lhs < rhs.first;
-    }
-    operator()(const pair<Key, Value> &lhs, const Key &rhs) const
-    {
-        return lhs.first < rhs;
-    }
+    typedef pair<Key, Value> Pair;
+
+    bool operator()(const Key  &lhs, const Key  &rhs) const  {  return lhs < rhs;  };
+    bool operator()(const Key  &lhs, const Pair &rhs) const  {  return lhs < rhs.first;  };
+    bool operator()(const Pair &lhs, const Key  &rhs) const  {  return lhs.first < rhs;  };
+    bool operator()(const Pair &lhs, const Pair &rhs) const  {  return lhs.first < rhs.first;  };
 };
 
 void processCollectedStats(bool force)

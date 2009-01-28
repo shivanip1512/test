@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct22X.cpp-arc  $
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2007/11/12 17:06:44 $
+* REVISION     :  $Revision: 1.28.10.1 $
+* DATE         :  $Date: 2008/11/20 16:49:25 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -71,7 +71,7 @@ bool CtiDeviceMCT22X::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 {
    bool found = false;
 
-   CommandSet::iterator itr = _commandStore.find(CommandStore(cmd));
+   CommandSet::const_iterator itr = _commandStore.find(CommandStore(cmd));
 
    if( itr != _commandStore.end() )
    {

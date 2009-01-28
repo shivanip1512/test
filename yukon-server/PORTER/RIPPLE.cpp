@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/RIPPLE.cpp-arc  $
-* REVISION     :  $Revision: 1.44 $
-* DATE         :  $Date: 2008/10/29 19:18:45 $
+* REVISION     :  $Revision: 1.44.2.2 $
+* DATE         :  $Date: 2008/11/21 16:14:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -40,6 +40,11 @@
 
 
    -------------------------------------------------------------------- */
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
+
 #include <windows.h>
 #include <process.h>
 #include "os2_2w32.h"
@@ -88,8 +93,8 @@ bool ResetLCUsForControl(CtiDeviceSPtr splcu);
 BOOL LCUsAreDoneTransmitting(CtiDeviceSPtr splcu);
 INT LCUProcessResultCode(CtiDeviceSPtr splcu, CtiDeviceSPtr GlobalLCUDev, OUTMESS *OutMessage, INT resultCode);
 
-SendBitPatternToLogger (const CHAR *DeviceName, const BYTE *Telegraph, int len);
-SendDOToLogger (const CHAR *DeviceName, const BYTE *Telegraph);
+INT SendBitPatternToLogger (const CHAR *DeviceName, const BYTE *Telegraph, int len);
+INT SendDOToLogger (const CHAR *DeviceName, const BYTE *Telegraph);
 /*
  *  Assumes lcu is the global LCU.
  */
@@ -296,7 +301,7 @@ void applyStageTime(const long key, CtiDeviceSPtr Dev, void* vpTXlcu)
 
 /* Routine to check an LCU message and set flags prior to sending */
 /* LCUDevice is the LCU which we are about to transmit through    */
-LCUPreSend(OUTMESS *&OutMessage, CtiDeviceSPtr Dev)
+INT LCUPreSend(OUTMESS *&OutMessage, CtiDeviceSPtr Dev)
 {
     BOOL           lcuWasSending = FALSE;
     BOOL           commandTimeout = FALSE;
@@ -340,7 +345,7 @@ BOOL Block;
 BOOL OverRetry;
 
 /* Routine to decode result of LCU handshake */
-LCUResultDecode (OUTMESS *OutMessage, INMESS *InMessage, CtiDeviceSPtr Dev, ULONG Result, bool mayqueuescans)
+INT LCUResultDecode (OUTMESS *OutMessage, INMESS *InMessage, CtiDeviceSPtr Dev, ULONG Result, bool mayqueuescans)
 {
     INT status = Result;
 
@@ -519,7 +524,7 @@ LCUResultDecode (OUTMESS *OutMessage, INMESS *InMessage, CtiDeviceSPtr Dev, ULON
 
 
 /* Routine to send a ripple bit pattern to the logger */
-SendBitPatternToLogger (const CHAR *DeviceName, const BYTE *Telegraph, int len)
+INT SendBitPatternToLogger (const CHAR *DeviceName, const BYTE *Telegraph, int len)
 {
     PCHAR Source = "Rbp";
     CHAR Message[100];
@@ -576,7 +581,7 @@ SendBitPatternToLogger (const CHAR *DeviceName, const BYTE *Telegraph, int len)
 
 
 /* Routine to send double orders to Logger */
-SendDOToLogger (const CHAR *DeviceName, const BYTE *Telegraph)
+INT SendDOToLogger (const CHAR *DeviceName, const BYTE *Telegraph)
 {
     PCHAR Source = "Rdo";
     CHAR Message[200];
@@ -777,7 +782,7 @@ SendDOToLogger (const CHAR *DeviceName, const BYTE *Telegraph)
 
 /* Routine to set $_MPC related status points */
 //MPCPointSet( int status, CtiDeviceBase *dev )
-MPCPointSet( int status, CtiDeviceBase *dev, bool setter )
+INT MPCPointSet( int status, CtiDeviceBase *dev, bool setter )
 {
     CtiPointDataMsg *pData = NULL;
 

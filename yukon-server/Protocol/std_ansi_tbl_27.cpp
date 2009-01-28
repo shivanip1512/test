@@ -62,7 +62,7 @@ CtiAnsiTable27::CtiAnsiTable27( BYTE *dataBlob, UINT8 nbrPresentDemands, UINT8 n
         dataBlob += sizeof( unsigned char);
     }
     _presentValueSelect = new UINT8[_nbrPresentValues];
-    for (i = 0; i < _nbrPresentValues; i++)
+    for (int i = 0; i < _nbrPresentValues; i++)
     {
         memcpy(( void *)&_presentValueSelect[i], dataBlob, sizeof( unsigned char ));
         dataBlob += sizeof( unsigned char);
@@ -153,7 +153,7 @@ void CtiAnsiTable27::printResult( const string& deviceName )
         CtiLockGuard< CtiLogger > doubt_guard( dout );
         dout << endl<<"         Value Src Indices: ";
     }
-    for (i = 0; i < _nbrPresentValues; i++)
+    for (int i = 0; i < _nbrPresentValues; i++)
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
         dout << " "<<_presentValueSelect[i];

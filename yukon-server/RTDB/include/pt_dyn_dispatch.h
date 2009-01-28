@@ -9,15 +9,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_dyn_dispatch.h-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2008/11/11 21:51:43 $
+* REVISION     :  $Revision: 1.11.2.1 $
+* DATE         :  $Date: 2008/11/13 17:23:39 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #ifndef __PT_DYN_DISPATCH_H__
 #define __PT_DYN_DISPATCH_H__
 #pragma warning( disable : 4786)
-
 #include <windows.h>
 #include <boost/shared_ptr.hpp>
 using boost::shared_ptr;

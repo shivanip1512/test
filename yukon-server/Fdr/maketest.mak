@@ -115,6 +115,11 @@ deps:
 	.\obj\$(@B).obj -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOSTLIBS) $(CTIFDRDLL) $(BOOSTTESTLIBS) $(RWLIBS) $(CTIFDRLIBS) $(FDRLIBS) $(LINKFLAGS)
 
 	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+
+	mt.exe -manifest $(BIN)\$(@B).exe.manifest -outputresource:$(BIN)\$(@B).exe;1
+
+	#@set  # this would run the shell command-line instruction "set" showing the environment variabless.
+
 	-copy $(BIN)\$(@B).exe $(YUKONOUTPUT)
 	-@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
 	-if exist $(BIN)\$(@B).lib copy $(BIN)\$(@B).lib $(COMPILEBASE)\lib

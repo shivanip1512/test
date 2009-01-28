@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2007/12/03 15:20:11 $
+* REVISION     :  $Revision: 1.25.10.2 $
+* DATE         :  $Date: 2008/11/18 20:11:29 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -34,11 +34,6 @@
 namespace Cti       {
 namespace Protocol  {
 
-using std::list;
-using std::map;
-
-using DNP::Application::object_block_queue;
-
 class IM_EX_PROT DNPInterface : public Interface
 {
     enum   Command;
@@ -54,7 +49,7 @@ private:
     Command              _command;
     vector<output_point> _command_parameters;
 
-    object_block_queue _object_blocks;
+    DNP::Application::object_block_queue _object_blocks;
 
     stringlist_t _string_results;
     pointlist_t  _point_results;
@@ -88,14 +83,14 @@ private:
 
 protected:
 
-    static const char const *ControlResultStr_RequestAccepted;
-    static const char const *ControlResultStr_ArmTimeout;
-    static const char const *ControlResultStr_NoSelect;
-    static const char const *ControlResultStr_FormattingError;
-    static const char const *ControlResultStr_PointNotControllable;
-    static const char const *ControlResultStr_QueueFullPointActive;
-    static const char const *ControlResultStr_HardwareError;
-    static const char const *ControlResultStr_InvalidStatus;
+    static const char * const ControlResultStr_RequestAccepted;
+    static const char * const ControlResultStr_ArmTimeout;
+    static const char * const ControlResultStr_NoSelect;
+    static const char * const ControlResultStr_FormattingError;
+    static const char * const ControlResultStr_PointNotControllable;
+    static const char * const ControlResultStr_QueueFullPointActive;
+    static const char * const ControlResultStr_HardwareError;
+    static const char * const ControlResultStr_InvalidStatus;
 
     DNP::Application& getApplicationLayer();
     Command getCommand();

@@ -145,7 +145,7 @@ allclean:   clean all
 
 # The lines below accomplish the ID'ing of the project!
 id:
-            @cid .\include\id_ctibase.h id_vinfo.h
+            # @cid .\include\id_ctibase.h id_vinfo.h
             @$(MAKE) -nologo -f $(_InputFile) id_ctibase.obj
 
 id_ctibase.obj:    id_ctibase.cpp include\id_ctibase.h id_vinfo.h
@@ -285,7 +285,7 @@ pending_stat_operation.obj:	yukon.h precompiled.h ctidbgmem.h logger.h \
 		dlldefs.h thread.h mutex.h guard.h numstr.h clrdump.h \
 		ctitime.h CtiPCPtrQueue.h utility.h queues.h cticalls.h \
 		os2_2w32.h types.h sorted_vector.h pending_stat_operation.h \
-		ctitypes.h dsm2.h cticonnect.h netports.h
+		dsm2.h cticonnect.h netports.h
 pexec.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		types.h cticalls.h ctinexus.h netports.h cticonnect.h \
 		queues.h dsm2.h mutex.h guard.h numstr.h clrdump.h dsm2err.h \

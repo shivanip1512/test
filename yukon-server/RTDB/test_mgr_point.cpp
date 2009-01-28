@@ -8,12 +8,14 @@
  */
 
 
-#include <boost/test/unit_test.hpp>
+#include <boost/test/floating_point_comparison.hpp>
 
+#define BOOST_TEST_MAIN "Test mgr_point"
+#include <boost/test/unit_test.hpp>
 #include <string>
 #include <iostream>
 
-//  for the winsock2.h inclusion by mgr_point.h (?!)
+//  for the winsock.h inclusion by mgr_point.h (?!)
 #define _WIN32_WINNT 0x0400
 
 #include "mgr_point.h"
@@ -23,7 +25,6 @@
 
 
 #define BOOST_AUTO_TEST_MAIN "Test Point Manager"
-#include <boost/test/auto_unit_test.hpp>
 using boost::unit_test_framework::test_suite;
 
 enum
@@ -62,7 +63,7 @@ T *make_point(long deviceid, long pointid, CtiPointType_t type, int offset)
 }
 
 
-BOOST_AUTO_UNIT_TEST(test_mgr_point_get_control_offset)
+BOOST_AUTO_TEST_CASE(test_mgr_point_get_control_offset)
 {
     Test_CtiPointManager manager;
     Test_CtiPointStatus  *point_status1,
@@ -92,7 +93,7 @@ BOOST_AUTO_UNIT_TEST(test_mgr_point_get_control_offset)
 }
 
 
-BOOST_AUTO_UNIT_TEST(test_mgr_point_changes)
+BOOST_AUTO_TEST_CASE(test_mgr_point_changes)
 {
     Test_CtiPointManager manager;
     Test_CtiPointStatus  *point_status1;  //  status point so we can check control offset
@@ -156,7 +157,7 @@ BOOST_AUTO_UNIT_TEST(test_mgr_point_changes)
 }
 
 
-BOOST_AUTO_UNIT_TEST(test_mgr_point_get_type_offset)
+BOOST_AUTO_TEST_CASE(test_mgr_point_get_type_offset)
 {
     Test_CtiPointManager manager;
 
@@ -186,7 +187,7 @@ BOOST_AUTO_UNIT_TEST(test_mgr_point_get_type_offset)
 }
 
 /*
-BOOST_AUTO_UNIT_TEST(test_mgr_point_get_equal_by_pao)
+BOOST_AUTO_TEST_CASE(test_mgr_point_get_equal_by_pao)
 {
     Test_CtiPointManager manager;
 

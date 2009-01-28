@@ -130,7 +130,7 @@ private:
             om(om_)
         { };
 
-        operator>(const queue_entry_t &rhs) const   {  return priority > rhs.priority;  };
+        bool operator>(const queue_entry_t &rhs) const   {  return priority > rhs.priority;  };
     };
 
     typedef fifo_multiset<queue_entry_t, std::greater<queue_entry_t> > local_work_t;

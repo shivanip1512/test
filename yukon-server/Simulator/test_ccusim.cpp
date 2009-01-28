@@ -1,4 +1,4 @@
-#include <winsock2.h>
+#include <winsock.h>
 /*-----------------------------------------------------------------------------*
 *
 * File:   test_ccusim.cpp
@@ -19,8 +19,9 @@
 #include <time.h>
 #include <locale>
 
+#define BOOST_AUTO_TEST_MAIN "Test ccuSim"
+
 #include <boost/test/unit_test.hpp>
-#include <boost/test/auto_unit_test.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 
@@ -113,7 +114,7 @@ bool TestTransaction(CCU711 &testCCU, string inBuf, string expectedOutput)
     return ret;
 }
 
-BOOST_AUTO_UNIT_TEST( test_LLP_Data_Generation )
+BOOST_AUTO_TEST_CASE( test_LLP_Data_Generation )
 {
     CtiTime time;
     bool valueInsideRange = true;
@@ -137,7 +138,7 @@ BOOST_AUTO_UNIT_TEST( test_LLP_Data_Generation )
     std::cout << "Done Testing LoadProfile Generation." << std::endl;
 }
 
-BOOST_AUTO_UNIT_TEST( test_loadProfile_largeMessage)
+BOOST_AUTO_TEST_CASE( test_loadProfile_largeMessage)
 {
     //This message caused a bug because it went over 10 messages. 
     //This max is set to 20 now.. which should be fine since 255 bytes is the max message...
@@ -159,7 +160,7 @@ BOOST_AUTO_UNIT_TEST( test_loadProfile_largeMessage)
     TestTransaction(testCCU,input,output);
 }
 
-BOOST_AUTO_UNIT_TEST( test_getValueKwh_noqueue )
+BOOST_AUTO_TEST_CASE( test_getValueKwh_noqueue )
 {
     /*
     Porter Copy paste. Cloning this transaction.

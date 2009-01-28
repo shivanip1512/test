@@ -9,14 +9,19 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVICE/INCLUDE/cservice.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 16:00:52 $
+* REVISION     :  $Revision: 1.3.90.1 $
+* DATE         :  $Date: 2008/11/13 17:23:38 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
 #define NUMEVENTS 4
 #define MAX_SERVICE_LEN 256
+
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
 
 #include <windows.h>
 #include "dlldefs.h"

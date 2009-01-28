@@ -50,7 +50,7 @@ public:
         */
     public:
 
-        typedef Inherited::iterator set_itr;
+        typedef typename Inherited::iterator set_itr;
 
         iterator(set_itr itr) : set_itr(itr) { }
         iterator() : set_itr() { }
@@ -66,22 +66,22 @@ public:
         iterator  operator++(int)  {  return (*(static_cast<set_itr *>(this)))++; }
     };
 
-    class const_iterator : public Inherited::iterator
+    class const_iterator : public Inherited::const_iterator
     {
     public:
 
-        typedef Inherited::iterator set_itr;
+        typedef typename Inherited::const_iterator set_citr;
 
-        const_iterator(set_itr itr) : set_itr(itr) { }
-        const_iterator() : set_itr() { }
+        const_iterator(set_citr itr) : set_citr(itr) { }
+        const_iterator() : set_citr() { }
 
-        operator bool() const              {  return (*(static_cast<const set_itr *>(this)))->first;  }
-        const Element &operator*()  const  {  return (*(static_cast<const set_itr *>(this)))->first;  }
+        operator bool() const              {  return (*(static_cast<const set_citr *>(this)))->first;  }
+        const Element &operator*()  const  {  return (*(static_cast<const set_citr *>(this)))->first;  }
 
-        const Element *operator->() const  {  return &((*(static_cast<const set_itr *>(this)))->first);  }
+        const Element *operator->() const  {  return &((*(static_cast<const set_citr *>(this)))->first);  }
 
-        const_iterator &operator++()     {  ++(*(static_cast<set_itr *>(this)));  return *this; }
-        const_iterator  operator++(int)  {  return (*(static_cast<set_itr *>(this)))++; }
+        const_iterator &operator++()     {  ++(*(static_cast<set_citr *>(this)));  return *this; }
+        const_iterator  operator++(int)  {  return (*(static_cast<set_citr *>(this)))++; }
     };
 
     iterator begin()  {  return iterator(Inherited::begin());  }

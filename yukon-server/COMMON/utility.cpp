@@ -1,7 +1,6 @@
 #include "yukon.h"
 // includes /////////////////////////////////////////////////////
 
-#include <windows.h>
 #include <iomanip>
 #include <iostream>
 #include <ctime>
@@ -18,7 +17,6 @@ using namespace std;
 
 #include <rw\re.h>
 
-#include <windows.h>
 #include <string>
 #include <vector>
 #include <stdio.h>

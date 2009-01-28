@@ -14,14 +14,19 @@
  *
  * PVCS KEYWORDS:
  *    ARCHIVE      :  $Archive:     $
- *    REVISION     :  $Revision: 1.9 $
- *    DATE         :  $Date: 2008/10/29 18:16:48 $
+ *    REVISION     :  $Revision: 1.9.2.2 $
+ *    DATE         :  $Date: 2008/11/18 20:11:30 $
  *
  * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
  *    History:
  */
 
-#include <windows.h>    //  NOTE:  if porting this to non-WIN32, make sure to replace this
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
+
+#include <windows.h>    
 #include <rw/db/status.h>
 #include <vector>
 #include <map>

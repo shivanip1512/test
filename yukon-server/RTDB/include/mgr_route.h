@@ -27,7 +27,6 @@
 
 #include "repeaterrole.h"
 #include "rte_base.h"
-#include "rtdb.h"
 #include "dlldefs.h"
 #include "slctdev.h"
 #include "smartmap.h"

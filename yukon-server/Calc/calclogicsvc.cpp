@@ -1,7 +1,6 @@
 #include "yukon.h"
 
 #include <crtdbg.h>
-#include <windows.h>
 #include <iostream>
 
 #include <conio.h>
@@ -145,7 +144,7 @@ void CtiCalcLogicService::Run( )
     ThreadMonitor.start(); //ecs 1/4/2005
     CtiTime LastThreadMonitorTime;
 
-    pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::PointOffsets::Calc);
+    pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::Calc);
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1575,7 +1574,7 @@ void CtiCalcLogicService::updateCalcData()
             dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
         calcThread->resumeThreads();
-        calcThread->interruptThreads( CtiCalculateThread::CtiCalcThreadInterruptReason::Shutdown );
+        calcThread->interruptThreads( CtiCalculateThread::Shutdown );
         calcThread->joinThreads();//lets try killing them completely, then reloading?
         resumeInputThread();
         _restart = true;

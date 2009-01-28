@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2006/09/21 21:31:38 $
+* REVISION     :  $Revision: 1.12.22.1 $
+* DATE         :  $Date: 2008/11/17 23:06:32 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,7 +26,6 @@ using std::map;
 using std::vector;
 
 #include "cmdparse.h"
-#include "ctitypes.h"
 #include "dev_ied.h"
 #include "dlldefs.h"
 #include "dsm2.h"

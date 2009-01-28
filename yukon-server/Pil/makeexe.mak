@@ -80,9 +80,10 @@ piltest.exe:    $(TESTOBJS) Makefile
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) -o ..\$@ \
+                $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
 $(TESTOBJS) -link $(RWLIBS) $(BOOSTLIBS) $(TESTLIBS)
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+                mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
                -copy ..\$@ $(YUKONOUTPUT)
                 @%cd $(CWD)
 
@@ -90,14 +91,16 @@ parsetest.exe:    $(PARSETESTOBJS) Makefile
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) -o ..\$@ \
+                $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
 $(PARSETESTOBJS) -link $(RWLIBS) $(BOOSTLIBS) $(PARSETESTLIBS)
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+               mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
                -copy ..\$@ $(YUKONOUTPUT)
                 @%cd $(CWD)
 
 copy:
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+               mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
                -@if exist bin\*.exe copy bin\*.exe $(YUKONOUTPUT)
 
 

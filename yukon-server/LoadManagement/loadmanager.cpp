@@ -535,7 +535,7 @@ void CtiLoadManager::controlLoop()
                         }
                         tempCount = 0;
 
-                        for( changeIter = _CHANGED_PROGRAM_LIST.begin(); changeIter != _CHANGED_PROGRAM_LIST.end(); changeIter++ )
+                        for( ChangeListIter changeIter = _CHANGED_PROGRAM_LIST.begin(); changeIter != _CHANGED_PROGRAM_LIST.end(); changeIter++ )
                         {
                             CtiLMProgramBaseSPtr tempProgram = store->getLMProgram(*changeIter);
 
@@ -558,7 +558,7 @@ void CtiLoadManager::controlLoop()
                         }
                         tempCount = 0;
 
-                        for( changeIter = _CHANGED_CONTROL_AREA_LIST.begin(); changeIter != _CHANGED_CONTROL_AREA_LIST.end(); changeIter++ )
+                        for(ChangeListIter  changeIter = _CHANGED_CONTROL_AREA_LIST.begin(); changeIter != _CHANGED_CONTROL_AREA_LIST.end(); changeIter++ )
                         {
                             CtiLMControlArea* tempControlArea = store->getLMControlArea(*changeIter);
 

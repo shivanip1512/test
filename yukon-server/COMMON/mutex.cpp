@@ -94,12 +94,12 @@ void CtiMutex::release()
 #endif
 }
 
-#ifdef _DEBUG
+/// #ifdef _DEBUG
 DWORD CtiMutex::lastAcquiredByTID() const
 {
     return _threadID[0];
 }
-#endif
+/// #endif
 
 void CtiMutex::reset()
 {

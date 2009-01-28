@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/INCLUDE/test_queue.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2008/10/17 14:03:17 $
+* REVISION     :  $Revision: 1.7.2.1 $
+* DATE         :  $Date: 2008/11/12 17:27:31 $
 *
 * Copyright (c) 2007 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -15,7 +15,6 @@
 
 #include <boost/thread/thread.hpp>
 #include <boost/test/unit_test.hpp>
-#include <boost/test/auto_unit_test.hpp>
 #include <boost/test/floating_point_comparison.hpp>
 #include <boost/bind.hpp>
 #include <iostream>
@@ -44,7 +43,7 @@ struct instance_counter
 int instance_counter::counter;
 
 
-BOOST_AUTO_UNIT_TEST(test_queue_timing)
+BOOST_AUTO_TEST_CASE(test_queue_timing)
 {
     CtiQueue<int, std::less<int> > testQueue;
 
@@ -83,7 +82,7 @@ void setInsertOrder(test_element *&dataStruct, void* d)
     dataStruct->insertOrder = (int)d;
 }
 
-BOOST_AUTO_UNIT_TEST(test_queue_sort)
+BOOST_AUTO_TEST_CASE(test_queue_sort)
 {
     CtiQueue<test_element, greater<test_element> > greaterQueue;
     CtiQueue<test_element, less<test_element> > lessQueue;
@@ -121,7 +120,7 @@ BOOST_AUTO_UNIT_TEST(test_queue_sort)
     element = lessQueue.getQueue();  BOOST_CHECK_EQUAL(element->value, 2);                                               delete element;
 }
 
-BOOST_AUTO_UNIT_TEST(test_queue_apply)
+BOOST_AUTO_TEST_CASE(test_queue_apply)
 {
     CtiQueue<test_element, greater<test_element> > greaterQueue;
 
@@ -143,7 +142,7 @@ BOOST_AUTO_UNIT_TEST(test_queue_apply)
 
 //  This inserts 100,000 objects into a queue and makes sure it does not take
 //  an unreasonable amount of time
-BOOST_AUTO_UNIT_TEST(test_queue_sort_speed)
+BOOST_AUTO_TEST_CASE(test_queue_sort_speed)
 {
     CtiQueue<test_element, greater<test_element> > greaterQueue;
 
@@ -164,7 +163,7 @@ BOOST_AUTO_UNIT_TEST(test_queue_sort_speed)
 }
 
 
-BOOST_AUTO_UNIT_TEST(test_fifo_queue_timing)
+BOOST_AUTO_TEST_CASE(test_fifo_queue_timing)
 {
     CtiFIFOQueue<int> testQueue;
 
@@ -189,7 +188,7 @@ BOOST_AUTO_UNIT_TEST(test_fifo_queue_timing)
 }
 
 
-BOOST_AUTO_UNIT_TEST(test_fifoqueue_single_threaded)
+BOOST_AUTO_TEST_CASE(test_fifoqueue_single_threaded)
 {
     CtiFIFOQueue<instance_counter> q;
 
@@ -258,25 +257,28 @@ void read_fail(CtiFIFOQueue<T> &q)
 {
     T *element = q.getQueue(50);
 
-    BOOST_CHECK_EQUAL(element, 0);
+    BOOST_CHECK_EQUAL(element, (T*)0);
 }
 
-BOOST_AUTO_UNIT_TEST(test_fifoqueue_multi_threaded)
+BOOST_AUTO_TEST_CASE(test_fifoqueue_multi_threaded)
 {
     CtiFIFOQueue<int> q;
-    boost::thread_group threads;
 
     q.putQueue(new int(3));
 
-    threads.create_thread(boost::bind(read_success<int>, boost::ref(q), 3));
-    threads.create_thread(boost::bind(read_success<int>, boost::ref(q), 4));
-    threads.create_thread(boost::bind(read_success<int>, boost::ref(q), 5));
+    boost::thread t1(boost::bind(read_success<int>, boost::ref(q), 3)),
+                  t2(boost::bind(read_success<int>, boost::ref(q), 3)),
+                  t3(boost::bind(read_success<int>, boost::ref(q), 3));
 
-    q.putQueue(new int(4));
-    q.putQueue(new int(5));
+    q.putQueue(new int(3));
+    q.putQueue(new int(3));
 
-    threads.create_thread(boost::bind(read_fail<int>, boost::ref(q)));
+    t1.join();
+    t2.join();
+    t3.join();
 
-    threads.join_all();
+    boost::thread t4(boost::bind(read_fail<int>, boost::ref(q)));
+
+    t4.join();
 }
 

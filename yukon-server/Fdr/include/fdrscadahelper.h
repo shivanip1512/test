@@ -8,6 +8,11 @@
 #ifndef __FDRSCADAHELPER_H__
 #define __FDRSCADAHELPER_H__
 
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
+
 #include <windows.h>
 
 #include <map>

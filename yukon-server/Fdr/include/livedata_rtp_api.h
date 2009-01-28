@@ -118,7 +118,7 @@ public:
 
   void exit();
 
-  class LiveDataException : exception {
+  class LiveDataException : std::exception {
   public:
     LiveDataException(std::string errMsg) : exception("LiveDataException") {}
   };

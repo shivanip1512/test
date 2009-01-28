@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/exchange.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2007/10/23 17:03:07 $
+* REVISION     :  $Revision: 1.10.10.1 $
+* DATE         :  $Date: 2008/11/12 17:27:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,7 +23,6 @@
 #include <rw/rwerr.h>
 
 #include <rw/thr/recursiv.h>
-#include <rw/thr/monitor.h>
 
 #include <rw/toolpro/portal.h>
 #include <rw/toolpro/portstrm.h>
@@ -32,14 +31,16 @@
 
 #include <rw/defs.h>
 #include <rw/pstream.h>
+#include <boost/utility.hpp>
 
 #include "dlldefs.h"
 #include "dllbase.h"
 #include "logger.h"
+#include "mutex.h"
 
 #define MULTIBUFFEREDEXCHANGE
 
-class IM_EX_CTIBASE CtiExchange : public RWMonitor< RWRecursiveLock< RWMutexLock > >
+class IM_EX_CTIBASE CtiExchange : public boost::noncopyable
 {
 private:
 
@@ -48,8 +49,7 @@ private:
     RWPortalStreambuf *soubuf;
     RWpostream        *oStream;
     RWpistream        *iStream;
-
-    CtiExchange();
+    mutable CtiMutex _classMutex;
 
 public:
     CtiExchange(RWSocketPortal portal);
@@ -57,7 +57,7 @@ public:
 
     RWBoolean   valid() const
     {
-        LockGuard grd(monitor());
+        CtiLockGuard<CtiMutex> guard( (_classMutex) );
 
         RWBoolean bValid = false;
 
@@ -80,14 +80,14 @@ public:
 
     RWBoolean   bad() const
     {
-        LockGuard grd(monitor());
+        CtiLockGuard<CtiMutex> guard( (_classMutex));
         return(oStream->bad() || iStream->bad());
     }
 
 
     RWpistream & In()
     {
-        LockGuard grd(monitor());
+        CtiLockGuard<CtiMutex> guard( (_classMutex));
 
         if(iStream != NULL)
         {
@@ -115,7 +115,7 @@ public:
 
     RWpostream & Out()
     {
-        LockGuard grd(monitor());
+        CtiLockGuard<CtiMutex> guard( (_classMutex));
         if(oStream->bad())
         {
             {
@@ -131,7 +131,7 @@ public:
 
     RWInetHost getPeerHost() const
     {
-        LockGuard grd(monitor());
+        CtiLockGuard<CtiMutex> guard( (_classMutex));
         /*
          *  get the host from the RWSockAddr via a conversion to RWInetAddr
          */
@@ -154,7 +154,7 @@ public:
 
     RWInetPort getPeerPort() const
     {
-        LockGuard grd(monitor());
+        CtiLockGuard<CtiMutex> guard( (_classMutex));
         /*
          *  get the port from the RWSockAddr via a conversion to RWInetAddr
          */

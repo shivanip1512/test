@@ -3,9 +3,11 @@
  *    Copyright (C) 2005 Cannon Technologies, Inc.  All rights reserved.
  *
  */
+
 #include "yukon.h"
 
-#include <windows.h>
+#include <WinSock2.h> 
+
 #include <iostream>
 
 using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore

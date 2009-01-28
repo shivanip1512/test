@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2008/04/25 21:45:14 $
+* REVISION     :  $Revision: 1.26.6.1 $
+* DATE         :  $Date: 2008/11/17 23:06:32 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -382,13 +382,13 @@ public:
 
     bool isTransactionComplete( void ) const;
 
-    int sendCommRequest( OUTMESS *&OutMessage, list< OUTMESS* > &outList );
-    int recvCommResult ( INMESS   *InMessage,  list< OUTMESS* > &outList );
+    int sendCommRequest( OUTMESS *&OutMessage, std::list< OUTMESS* > &outList );
+    int recvCommResult ( INMESS   *InMessage,  std::list< OUTMESS* > &outList );
 
     int recvCommRequest( OUTMESS *OutMessage );
     int sendCommResult ( INMESS  *InMessage  );
 
-    void getInboundData( list< CtiPointDataMsg* > &pointList, list< CtiSignalMsg* > &signalList, string &returnedInfo );
+    void getInboundData( std::list< CtiPointDataMsg* > &pointList, std::list< CtiSignalMsg* > &signalList, string &returnedInfo );
     void clearInboundData( void );
 
     bool   hasPointUpdate     ( CtiPointType_t pointType, int offset ) const;

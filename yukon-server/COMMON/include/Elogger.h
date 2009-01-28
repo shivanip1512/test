@@ -14,6 +14,11 @@
     #define NORMAL      0
 #endif
 
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
+
 #include <windows.h>
 #include <iostream>
 #include <string.h>

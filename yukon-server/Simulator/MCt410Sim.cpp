@@ -138,14 +138,14 @@ unsigned char* Mct410Sim::generateEmetconWordResponse(int& responseSize, int fun
         resp[ctr++] = ack;
 
         word2.getBytes(buf,defaultWordSize);
-        for (i = 0; i < defaultWordSize; i++)
+        for (int i = 0; i < defaultWordSize; i++)
         {
             resp[ctr++] = buf[i];
         }
         resp[ctr++] = ack;
 
         word3.getBytes(buf,defaultWordSize);
-        for (i = 0; i < defaultWordSize; i++)
+        for (int i = 0; i < defaultWordSize; i++)
         {
             resp[ctr++] = buf[i];
         }
@@ -185,21 +185,21 @@ unsigned char* Mct410Sim::generateEmetconWordResponse(int& responseSize, int fun
         delete [] ptr;
 
         word1.getBytes(buf,defaultWordSize);
-        for (i = 0; i < defaultWordSize; i++)
+        for (int i = 0; i < defaultWordSize; i++)
         {
             resp[ctr++] = buf[i];
         }
         resp[ctr++] = ack;
 
         word2.getBytes(buf,defaultWordSize);
-        for (i = 0; i < defaultWordSize; i++)
+        for (int i = 0; i < defaultWordSize; i++)
         {
             resp[ctr++] = buf[i];
         }
         resp[ctr++] = ack;
 
         word3.getBytes(buf,defaultWordSize);
-        for (i = 0; i < defaultWordSize; i++)
+        for (int i = 0; i < defaultWordSize; i++)
         {
             resp[ctr++] = buf[i];
         }
@@ -226,14 +226,14 @@ unsigned char* Mct410Sim::generateEmetconWordResponse(int& responseSize, int fun
         word2.insertData(buf,5);
 
         word1.getBytes(buf,defaultWordSize);
-        for (i = 0; i < defaultWordSize; i++)
+        for (int i = 0; i < defaultWordSize; i++)
         {
             resp[ctr++] = buf[i];
         }
         resp[ctr++] = ack;
 
         word2.getBytes(buf,defaultWordSize);
-        for (i = 0; i < defaultWordSize; i++)
+        for (int i = 0; i < defaultWordSize; i++)
         {
             resp[ctr++] = buf[i];
         }

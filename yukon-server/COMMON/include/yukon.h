@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/yukon.h-arc  $
-* REVISION     :  $Revision: 1.64 $
-* DATE         :  $Date: 2008/08/13 19:08:34 $
+* REVISION     :  $Revision: 1.64.2.4 $
+* DATE         :  $Date: 2008/11/13 17:23:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,6 +20,8 @@
 #include "ctidbgmem.h"      // defines CTIDBG_new for memory tracking!
 
 #include <rw\thr\mutex.h>
+
+#include <iterator> // allows one to use _outit
 
 // YUKONEOT is needed to make ALL timezones operate correctly wrt the "end-of-time"
 //Changed YUKONEOT to LONG_MAX from ULONG to account for CtiTime not being unsigned   -TS

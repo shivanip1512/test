@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_repeater.h-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2006/09/18 17:25:09 $
+* REVISION     :  $Revision: 1.14.22.1 $
+* DATE         :  $Date: 2008/11/20 16:49:27 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,10 +20,13 @@
 
 
 #include "dev_dlcbase.h"
+#include "dev_grp.h"
 
 class IM_EX_DEVDB CtiDeviceRepeater900 : public CtiDeviceDLCBase
 {
 private:
+
+   typedef CtiDeviceDLCBase Inherited;
 
    static const CommandSet _commandStore;
    static CommandSet initCommandStore();

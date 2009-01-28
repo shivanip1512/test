@@ -6,15 +6,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTERSU.cpp-arc  $
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2008/10/29 19:19:21 $
+* REVISION     :  $Revision: 1.33.2.2 $
+* DATE         :  $Date: 2008/11/21 16:14:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-
-#include <windows.h>
 #include <process.h>
 #include <iostream>
 
@@ -102,7 +100,7 @@ void AddCommErrorEntry(OUTMESS *OutMessage, INMESS *InMessage, INT ErrorCode)
 }
 
 /* Routine to send error message back to originating process */
-SendError (OUTMESS *&OutMessage, USHORT ErrorCode, INMESS *PassedInMessage)
+INT SendError (OUTMESS *&OutMessage, USHORT ErrorCode, INMESS *PassedInMessage)
 {
     INMESS InMessage;
     ULONG BytesWritten;

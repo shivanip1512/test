@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct.h-arc  $
-* REVISION     :  $Revision: 1.68 $
-* DATE         :  $Date: 2008/10/15 17:13:34 $
+* REVISION     :  $Revision: 1.68.2.1 $
+* DATE         :  $Date: 2008/11/19 15:21:28 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -86,7 +86,7 @@ protected:
 
     struct read_key_info_t
     {
-        read_key_info_t(int func, int off, int len, CtiTableDynamicPaoInfo::Keys k=CtiTableDynamicPaoInfo::Key_Invalid) :
+        read_key_info_t(int func, int off, int len, CtiTableDynamicPaoInfo::PaoInfoKeys k=CtiTableDynamicPaoInfo::Key_Invalid) :
             function(func),
             offset(off),
             length(len),
@@ -95,7 +95,7 @@ protected:
 
         int function, length, offset;
 
-        CtiTableDynamicPaoInfo::Keys key;
+        CtiTableDynamicPaoInfo::PaoInfoKeys key;
 
         bool read_key_info_t::operator<(const read_key_info_t &rhs) const
         {

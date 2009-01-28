@@ -8,14 +8,19 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_710.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2008/07/08 22:54:57 $
+* REVISION     :  $Revision: 1.8.4.1 $
+* DATE         :  $Date: 2008/11/13 17:23:50 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
 #ifndef  __CTILOCALCONNECT_H__
 #define  __CTILOCALCONNECT_H__
+
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
 
 #include <windows.h>
 #include <limits.h>

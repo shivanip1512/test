@@ -58,7 +58,7 @@ enum
     point2_offset,
 };
 
-BOOST_AUTO_UNIT_TEST(test_alarming)
+BOOST_AUTO_TEST_CASE(test_alarming)
 {
     Test_CtiPointClientManager manager;
     BOOST_CHECK(manager.entries() == 0);
@@ -124,7 +124,7 @@ BOOST_AUTO_UNIT_TEST(test_alarming)
     BOOST_CHECK(alarm.getAutoAckStates() == 0);
 }
 
-BOOST_AUTO_UNIT_TEST(test_dynamic)
+BOOST_AUTO_TEST_CASE(test_dynamic)
 {
     Test_CtiPointClientManager manager;
     BOOST_CHECK(manager.entries() == 0);

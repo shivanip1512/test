@@ -45,10 +45,10 @@ public:
     virtual bool hasQuality() {return false;};
     virtual PointQuality_t getQuality(char *buffer) {return NormalQuality;};
   
-  private:
+  protected:
     // there is no good time to delete these,
     // they will just live as long as the program runs
-    ~Base() {};
+    virtual ~Base() {};
   
   };
 

@@ -78,6 +78,7 @@ capcontrol.exe:     $(BASEOBJS) Makefile
               $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
 $(BASEOBJS) -link $(LIBS) $(RWLIBS) $(BOOSTLIBS) $(LINKFLAGS)
               @echo:
+	      mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
               -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
               -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
               @%cd $(CWD)

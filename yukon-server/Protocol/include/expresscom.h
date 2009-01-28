@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2008/08/08 21:06:50 $
+* REVISION     :  $Revision: 1.21.2.1 $
+* DATE         :  $Date: 2008/11/13 17:23:42 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,6 +24,11 @@
 #include "ctistring.h"
 
 #ifdef _WINDOWS
+
+    #if !defined (NOMINMAX)
+    #define NOMINMAX
+    #endif
+
     #include <windows.h>
 #endif
 

@@ -6,15 +6,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/pointtest.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2007/11/02 20:12:56 $
+* REVISION     :  $Revision: 1.7.10.1 $
+* DATE         :  $Date: 2008/11/13 17:23:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-
-#include <windows.h>
 #include <iostream>
 using namespace std;
 

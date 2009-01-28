@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_lm_controlhist.cpp-arc  $
-* REVISION     :  $Revision: 1.42 $
-* DATE         :  $Date: 2008/04/30 21:15:39 $
+* REVISION     :  $Revision: 1.42.6.1 $
+* DATE         :  $Date: 2008/11/18 20:11:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -592,7 +592,7 @@ RWDBStatus CtiTableLMControlHistory::Insert(RWDBConnection &conn)
     getPAOID() <<
     CtiTime(getStartTime()) <<
     getSoeTag() <<
-    (getStopTime().seconds() - getStartTime().seconds()) <<     // getControlDuration() <<
+    (LONG )( getStopTime().seconds() - getStartTime().seconds() ) <<     // getControlDuration() <<
     (getControlType().empty() ? "(none)" : getControlType()) <<
     getCurrentDailyTime() <<
     getCurrentMonthlyTime() <<
@@ -648,7 +648,7 @@ RWDBStatus CtiTableLMControlHistory::Update()
     table["startdatetime"].assign(toRWDBDT(getStartTime()) ) <<
     table["stopdatetime"].assign(toRWDBDT(getStopTime()) ) <<
     table["soe_tag"].assign( getSoeTag() ) <<
-    table["controlduration"].assign( (getStopTime().seconds() - getStartTime().seconds()) ) <<
+    table["controlduration"].assign( (LONG) (getStopTime().seconds() - getStartTime().seconds()) ) <<
     table["controltype"].assign( getControlType().c_str() ) <<
     table["currentdailytime"].assign( getCurrentDailyTime() ) <<
     table["currentmonthlytime"].assign( getCurrentMonthlyTime() ) <<
@@ -947,7 +947,7 @@ RWDBStatus CtiTableLMControlHistory::UpdateDynamic(RWDBConnection &conn)
     table["startdatetime"].assign(toRWDBDT(getStartTime()) ) <<
     table["stopdatetime"].assign(toRWDBDT(getStopTime()) ) <<
     table["soe_tag"].assign( getSoeTag() ) <<
-    table["controlduration"].assign( (getStopTime().seconds() - getStartTime().seconds()) ) <<
+    table["controlduration"].assign( (LONG) (getStopTime().seconds() - getStartTime().seconds()) ) <<
     table["controltype"].assign( (getControlType().empty() ? "(none)" : string2RWCString(getControlType())) ) <<
     table["currentdailytime"].assign( getCurrentDailyTime() ) <<
     table["currentmonthlytime"].assign( getCurrentMonthlyTime() ) <<
@@ -982,7 +982,7 @@ RWDBStatus CtiTableLMControlHistory::InsertDynamic(RWDBConnection &conn)
     getLMControlHistoryID() <<
     CtiTime(getStartTime()) <<
     getSoeTag() <<
-    (getStopTime().seconds() - getStartTime().seconds()) <<
+    ((LONG )( getStopTime().seconds() - getStartTime().seconds()) ) <<
     (getControlType().empty() ? "(none)" : getControlType()) <<
     getCurrentDailyTime() <<
     getCurrentMonthlyTime() <<

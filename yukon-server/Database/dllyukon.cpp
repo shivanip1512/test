@@ -6,14 +6,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/dllyukon.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2007/04/25 15:51:04 $
+* REVISION     :  $Revision: 1.8.16.1 $
+* DATE         :  $Date: 2008/11/13 17:23:49 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-#include <windows.h>
 #include <iostream>
 using namespace std;
 

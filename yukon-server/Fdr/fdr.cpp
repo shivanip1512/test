@@ -4,8 +4,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2007/07/10 21:07:09 $
+* REVISION     :  $Revision: 1.10.14.1 $
+* DATE         :  $Date: 2008/11/13 17:23:46 $
 *
 *
 * AUTHOR: Matt Fisher
@@ -24,7 +24,6 @@
 #include "yukon.h"
 
 #include <crtdbg.h>
-#include <windows.h>
 #include <iostream>
 
 #include <conio.h>

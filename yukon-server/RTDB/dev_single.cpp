@@ -5,8 +5,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.71 $
-* DATE         :  $Date: 2008/10/30 15:44:16 $
+* REVISION     :  $Revision: 1.71.2.1 $
+* DATE         :  $Date: 2008/11/20 16:49:20 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -110,7 +110,7 @@ void CtiDeviceSingle::validateScanTimes(bool force)
 {
     CtiTime Now;
 
-    LockGuard guard(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
 
     for(int rate = 0; rate < ScanRateInvalid; rate++)
     {
@@ -1019,7 +1019,7 @@ CtiDeviceSingle& CtiDeviceSingle::setLastLPTime( const CtiTime& aTime )
 {
     if(useScanFlags())
     {
-        LockGuard guard(monitor());
+        CtiLockGuard<CtiMutex> guard(_classMutex);
         getScanData().setLastLPTime(aTime);
     }
     return *this;
@@ -1028,12 +1028,12 @@ CtiDeviceSingle& CtiDeviceSingle::setLastLPTime( const CtiTime& aTime )
 
 CtiTime CtiDeviceSingle::getNextScan(INT a)
 {
-    LockGuard guard(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     return getScanData().getNextScan(a);
 }
 CtiDeviceSingle& CtiDeviceSingle::setNextScan(INT a, const CtiTime &b)
 {
-    LockGuard guard(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
 
     scheduleSignaledAlternateScan(a);
 
@@ -1082,7 +1082,7 @@ CtiTime CtiDeviceSingle::nextRemoteScan() const
 
 void CtiDeviceSingle::invalidateScanRates()
 {
-    LockGuard guard(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
 
     for(int i = 0; i < ScanRateInvalid; i++)
     {
@@ -1097,7 +1097,7 @@ void CtiDeviceSingle::invalidateScanRates()
 
 void CtiDeviceSingle::deleteNonUpdatedScanRates()
 {
-    LockGuard guard(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
 
     for(int i = 0; i < ScanRateInvalid; i++)
     {
@@ -1164,7 +1164,7 @@ _useScanFlags(0)
 {
     int i;
     _lastExpirationCheckTime = _lastExpirationCheckTime.now();
-    LockGuard guard(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
 
     for(i = 0; i < ScanRateInvalid; i++)
     {
@@ -1181,7 +1181,7 @@ CtiDeviceSingle::CtiDeviceSingle(const CtiDeviceSingle& aRef)
         dout << CtiTime() << " **** This is expensive. **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    LockGuard guard(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
 
     for(i = 0; i < ScanRateInvalid; i++)
     {
@@ -1196,7 +1196,7 @@ CtiDeviceSingle::~CtiDeviceSingle()
 {
     int i;
 
-    LockGuard guard(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
 
     for(i = 0; i < ScanRateInvalid; i++)
     {
@@ -1228,7 +1228,7 @@ CtiDeviceSingle& CtiDeviceSingle::operator=(const CtiDeviceSingle& aRef)
     if(this != &aRef)
     {
         Inherited::operator=(aRef);
-        LockGuard guard(monitor());
+        CtiLockGuard<CtiMutex> guard(_classMutex);
 
         for(i = 0; i < ScanRateInvalid; i++)
         {
@@ -1244,9 +1244,10 @@ CtiDeviceSingle& CtiDeviceSingle::operator=(const CtiDeviceSingle& aRef)
 
         if(aRef.isScanDataValid())
         {
-            _scanData = (const)aRef.getScanData();
+            _scanData = *(aRef.getScanData());
         }
     }
+	CtiLockGuard<CtiMutex> guard(_classMutex);
     return *this;
 }
 
@@ -1265,7 +1266,7 @@ BOOL CtiDeviceSingle::isRateValid(const INT i) const
 
 LONG CtiDeviceSingle::getScanRate(int rate) const
 {
-    LockGuard guard(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
 
     if(rate >= 0 && rate < ScanRateInvalid && _scanRateTbl[rate] != NULL)
     {
@@ -1296,7 +1297,7 @@ LONG CtiDeviceSingle::getScanRate(int rate) const
 
 void CtiDeviceSingle::setScanRate(int a, LONG b)
 {
-    LockGuard guard(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     if(_scanRateTbl[a] != NULL)
     {
         _scanRateTbl[a]->setScanRate(b);
@@ -1309,13 +1310,13 @@ CtiTableDeviceScanRate  CtiDeviceSingle::getRateTable(const INT i) const
 }
 CtiTableDeviceScanRate& CtiDeviceSingle::getRateTable(const INT i)
 {
-    LockGuard guard(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
 
     return(*(_scanRateTbl[i]));
 }
 CtiDeviceSingle&     CtiDeviceSingle::setRateTables(const INT i, const CtiTableDeviceScanRate* aScanRate)
 {
-    LockGuard guard(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
 
     if(_scanRateTbl[i] == NULL)
     {
@@ -1340,7 +1341,7 @@ BOOL CtiDeviceSingle::isWindowOpen(CtiTime &aNow, CtiTime &opensAt, CtiDeviceWin
         {
             if(_windowVector[x].getType() == windowType)
             {
-                CtiTime lastMidnight(CtiDate());
+                CtiTime lastMidnight = CtiTime(CtiDate());
                 CtiTime open  (lastMidnight.seconds()+_windowVector[x].getOpen());
                 CtiTime close (open.seconds()+_windowVector[x].getDuration());
 
@@ -1380,7 +1381,7 @@ void CtiDeviceSingle::checkSignaledAlternateRateForExpiration()
     {
         if(_windowVector[x].getType() == DeviceWindowSignaledAlternateRate)
         {
-            CtiTime lastMidnight(CtiDate());
+            CtiTime lastMidnight = CtiTime(CtiDate());
             CtiTime open  (lastMidnight.seconds()+_windowVector[x].getOpen());
             CtiTime close (open.seconds()+_windowVector[x].getDuration());
             CtiTime now;
@@ -1410,7 +1411,7 @@ BOOL CtiDeviceSingle::isAlternateRateActive( bool &bScanIsScheduled, CtiTime &aN
     // loop the vector
     for(int x=0; x <_windowVector.size(); x++)
     {
-        CtiTime lastMidnight(CtiDate());
+        CtiTime lastMidnight = CtiTime(CtiDate());
         CtiTime open  (lastMidnight.seconds()+_windowVector[x].getOpen());
         CtiTime close (open.seconds()+_windowVector[x].getDuration());
 
@@ -1443,7 +1444,7 @@ BOOL CtiDeviceSingle::isAlternateRateActive( bool &bScanIsScheduled, CtiTime &aN
 CtiTime CtiDeviceSingle::getNextWindowOpen() const
 {
     CtiTime now;
-    CtiTime lastMidnight(CtiDate());
+    CtiTime lastMidnight = CtiTime(CtiDate());
     CtiTime windowOpens = CtiTime(YUKONEOT);
 
     try
@@ -1473,7 +1474,7 @@ void CtiDeviceSingle::applySignaledRateChange(LONG aOpen, LONG aDuration)
     bool found=false;
 
     CtiTime now;
-    CtiTime lastMidnight(CtiDate());
+    CtiTime lastMidnight = CtiTime(CtiDate());
 
     if(aOpen == -1 || aDuration == 0 || (lastMidnight.seconds()+aOpen+aDuration > now.seconds()))
     {
@@ -1549,7 +1550,7 @@ void CtiDeviceSingle::DecodeDatabaseReader(RWDBReader &rdr)
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
     _scanData.setDeviceID(getID());
 
-    LockGuard guard(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1559,7 +1560,7 @@ void CtiDeviceSingle::DecodeDatabaseReader(RWDBReader &rdr)
 
 void CtiDeviceSingle::DecodeScanRateDatabaseReader(RWDBReader &rdr)
 {
-    LockGuard guard(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
 
     string rwsTemp;
 
@@ -1592,7 +1593,7 @@ void CtiDeviceSingle::DecodeScanRateDatabaseReader(RWDBReader &rdr)
 }
 void CtiDeviceSingle::DecodeDeviceWindowDatabaseReader(RWDBReader &rdr)
 {
-    LockGuard guard(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
@@ -1635,7 +1636,7 @@ void CtiDeviceSingle::DumpData()
     int i;
     Inherited::DumpData();
 
-    LockGuard guard(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
 
     for(i = 0; i < ScanRateInvalid; i++)
     {
@@ -1660,7 +1661,7 @@ CtiTableDeviceScanData& CtiDeviceSingle::getScanData()
     setUseScanFlags(TRUE);
     validateScanData();
 
-    LockGuard guard(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     return _scanData;
 }
 
@@ -1671,7 +1672,7 @@ const CtiTableDeviceScanData* CtiDeviceSingle::getScanData() const
 
 BOOL     CtiDeviceSingle::setUseScanFlags(BOOL b)
 {
-    LockGuard guard(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     return _useScanFlags = b;
 }
 BOOL     CtiDeviceSingle::resetUseScanFlags(BOOL b)
@@ -1688,7 +1689,7 @@ INT CtiDeviceSingle::validateScanData()
 {
     INT status = NORMAL;
 
-    LockGuard guard(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
 
     if( !isScanFlagSet(ScanDataValid) )
     {
@@ -1877,7 +1878,7 @@ BOOL CtiDeviceSingle::scheduleSignaledAlternateScan( int rate ) const
 {
     BOOL status = FALSE;
     CtiTime now;
-    CtiTime lastMidnight(CtiDate());
+    CtiTime lastMidnight = CtiTime(CtiDate());
 
     // loop the vector
     for(int x=0; x <_windowVector.size(); x++)
@@ -1972,7 +1973,7 @@ int CtiDeviceSingle::getGroupMessageCount(long userID, long comID)
     return retVal;
 }
 
-CtiDeviceSingle::incrementGroupMessageCount(long userID, long comID, int entries /*=1*/ )
+void CtiDeviceSingle::incrementGroupMessageCount(long userID, long comID, int entries /*=1*/ )
 {
     channelWithID temp;
     temp.channel = comID;
@@ -2006,7 +2007,7 @@ CtiDeviceSingle::incrementGroupMessageCount(long userID, long comID, int entries
     }
 }
 
-CtiDeviceSingle::decrementGroupMessageCount(long userID, long comID, int entries /*=1*/ )
+void CtiDeviceSingle::decrementGroupMessageCount(long userID, long comID, int entries /*=1*/ )
 {
     int count;
     channelWithID temp;

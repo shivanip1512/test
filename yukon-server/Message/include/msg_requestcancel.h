@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/msg_queuedata.h-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2007/02/22 17:49:48 $
+* REVISION     :  $Revision: 1.1.22.1 $
+* DATE         :  $Date: 2008/11/13 17:23:45 $
 *
 * Copyright (c) 2007 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,6 +17,11 @@
 
 #ifndef __MSG_REQUESTCANCEL_H__
 #define __MSG_REQUESTCANCEL_H__
+
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
 
 #include <windows.h>
 #include <rw/rwset.h>

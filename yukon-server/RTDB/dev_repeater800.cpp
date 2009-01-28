@@ -8,16 +8,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2008/10/29 18:16:45 $
+* REVISION     :  $Revision: 1.22.2.2 $
+* DATE         :  $Date: 2008/11/20 16:49:21 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-
-
-#include <windows.h>
 #include "devicetypes.h"
 #include "dev_repeater800.h"
 #include "logger.h"
@@ -66,7 +63,7 @@ bool CtiDeviceRepeater800::getOperation( const UINT &cmd, USHORT &function, USHO
 {
     bool found = false;
 
-    CommandSet::iterator itr = _commandStore.find(CommandStore(cmd));
+    CommandSet::const_iterator itr = _commandStore.find(CommandStore(cmd));
 
     if( itr != _commandStore.end() )
     {
@@ -152,7 +149,7 @@ INT CtiDeviceRepeater800::decodeGetValuePFCount(INMESS *InMessage, CtiTime &Time
             string resultString, pointString;
             double value;
 
-            LockGuard guard(monitor());               // Lock the MCT device!
+            CtiLockGuard<CtiMutex> guard(_classMutex);               // Lock the MCT device!
             CtiPointSPtr pPoint;
 
             if( pPoint = getDevicePointOffsetTypeEqual(20, PulseAccumulatorPointType) )

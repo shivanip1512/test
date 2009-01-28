@@ -7,6 +7,11 @@
 #ifndef __FDRSCADASERVER_H__
 #define __FDRSCADASERVER_H__
 
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
+
 #include <windows.h>
 
 #include "dlldefs.h"

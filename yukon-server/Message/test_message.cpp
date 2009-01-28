@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2008/08/15 14:47:39 $
+* REVISION     :  $Revision: 1.1.2.1 $
+* DATE         :  $Date: 2008/11/10 20:47:13 $
 *
 * Copyright (c) 2008 Cannon Technologies. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,13 +19,12 @@
 #define BOOST_AUTO_TEST_MAIN "Test Message"
 
 #include <boost/test/unit_test.hpp>
-#include <boost/test/auto_unit_test.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 using boost::unit_test_framework::test_suite;
 using namespace std;
 
-BOOST_AUTO_UNIT_TEST(test_messagequeue)
+BOOST_AUTO_TEST_CASE(test_messagequeue)
 {
     CtiQueue<CtiMessage, std::greater<CtiMessage> > test_queue;
 

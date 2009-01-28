@@ -10,7 +10,11 @@
  * 
  */
 
+#include <boost/test/floating_point_comparison.hpp>
+
+#define BOOST_TEST_MAIN "Test dev_grp"
 #include <boost/test/unit_test.hpp>
+
 
 #include <string>
 #include <rw/rwdate.h>
@@ -26,10 +30,9 @@
 #include "devicetypes.h"
 
 #define BOOST_AUTO_TEST_MAIN "Test Device Group Base"
-#include <boost/test/auto_unit_test.hpp>
 using boost::unit_test_framework::test_suite;
 
-BOOST_AUTO_UNIT_TEST(test_dev_group_dynamic_text)
+BOOST_AUTO_TEST_CASE(test_dev_group_dynamic_text)
 {
     CtiDeviceGroupExpresscom group; // CtiDeviceGroupBase cant be instanciated
 
@@ -44,7 +47,7 @@ BOOST_AUTO_UNIT_TEST(test_dev_group_dynamic_text)
 
 }
 
-BOOST_AUTO_UNIT_TEST(test_dev_group_parent_child)
+BOOST_AUTO_TEST_CASE(test_dev_group_parent_child)
 {
     CtiDeviceGroupBaseSPtr group(CTIDBG_new CtiDeviceGroupExpresscom()); // Expresscom is the only one who does this right now.
     CtiDeviceGroupBaseSPtr child1(CTIDBG_new CtiDeviceGroupExpresscom());
@@ -87,7 +90,7 @@ T *make_point(CtiPointType_t type, int pointid, int deviceid)
     return new_point;
 }
 
-BOOST_AUTO_UNIT_TEST(test_expresscom_contol_notification)
+BOOST_AUTO_TEST_CASE(test_expresscom_contol_notification)
 {
     CtiDeviceGroupExpresscom* expresscomGrpPtr;
     CtiDeviceGroupBaseSPtr parent = CtiDeviceGroupBaseSPtr(CTIDBG_new CtiDeviceGroupExpresscom());
@@ -144,7 +147,7 @@ BOOST_AUTO_UNIT_TEST(test_expresscom_contol_notification)
     vgList.clear();
 }
 
-BOOST_AUTO_UNIT_TEST(test_expresscom_address_comparison)
+BOOST_AUTO_TEST_CASE(test_expresscom_address_comparison)
 {
     CtiDeviceGroupExpresscom* parentGrpPtr;
     CtiDeviceGroupExpresscom* childGrpPtr;

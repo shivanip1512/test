@@ -11,7 +11,6 @@
 #define BOOST_AUTO_TEST_MAIN "Test Lantronix Encryption"
 
 #include <boost/test/unit_test.hpp>
-#include <boost/test/auto_unit_test.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 
@@ -24,7 +23,7 @@
 using boost::unit_test_framework::test_suite;
 using namespace std;
 
-BOOST_AUTO_UNIT_TEST(test_decode_pre_encoded)
+BOOST_AUTO_TEST_CASE(test_decode_pre_encoded)
 {
 	const int eSize = 66;
 	const int size = 42;
@@ -51,7 +50,7 @@ BOOST_AUTO_UNIT_TEST(test_decode_pre_encoded)
 	/* decode will change the passed array, and return the new size. */
 	bool ret = filter->decode(cEncoded, eSize, plainText);
 
-	string decodedPlaintext((char*)plainText.begin(),plainText.size());
+	string decodedPlaintext(reinterpret_cast<char *>(&*plainText.begin()),plainText.size());
 
 	BOOST_REQUIRE(ret == true);
 
@@ -60,7 +59,7 @@ BOOST_AUTO_UNIT_TEST(test_decode_pre_encoded)
 	delete filter;
 }
 
-BOOST_AUTO_UNIT_TEST(test_encode_pre_encoded)
+BOOST_AUTO_TEST_CASE(test_encode_pre_encoded)
 {
 	/*IV is the first 16 bytes. 2 for length. the remaining are the data*/
 	const int eSize = 66;
@@ -104,7 +103,7 @@ BOOST_AUTO_UNIT_TEST(test_encode_pre_encoded)
 	delete filter;
 }
 
-BOOST_AUTO_UNIT_TEST(test_setKey)
+BOOST_AUTO_TEST_CASE(test_setKey)
 {
 	unsigned char* result;
 	string sKey("0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e");
@@ -121,7 +120,7 @@ BOOST_AUTO_UNIT_TEST(test_setKey)
 	delete filter;
 }
 
-BOOST_AUTO_UNIT_TEST(test_setIV)
+BOOST_AUTO_TEST_CASE(test_setIV)
 {
 	unsigned char origIV[] = {0xed, 0x3d, 0x13, 0xc9, 0x39, 0x54, 0x5f, 0xdf, 0x30, 0x08, 0x56, 0x93, 0x7c, 0x1e, 0xa2, 0xa9};
 	unsigned char * result;

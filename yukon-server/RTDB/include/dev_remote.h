@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_remote.h-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2008/10/28 19:21:44 $
+* REVISION     :  $Revision: 1.21.2.1 $
+* DATE         :  $Date: 2008/11/18 20:11:29 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -66,7 +66,7 @@ public:
 
         if(this != &aRef)
         {
-            LockGuard guard(monitor());
+            CtiLockGuard<CtiMutex> guard(_classMutex);
 
             Direct = aRef.getDirect();
 
@@ -96,26 +96,26 @@ public:
     }
     CtiDeviceRemote& setDirect( const CtiTableDeviceDirectComm & aDirect )
     {
-        LockGuard guard(monitor());
+        CtiLockGuard<CtiMutex> guard(_classMutex);
         Direct = aDirect;
         return *this;
     }
 
     CtiTableDeviceDialup*  getDialup()
     {
-        LockGuard guard(monitor());
+        CtiLockGuard<CtiMutex> guard(_classMutex);
         return pDialup;
     }
 
     const CtiTableDeviceDialup  getDialup() const
     {
-        LockGuard guard(monitor());
+        CtiLockGuard<CtiMutex> guard(_classMutex);
         return *pDialup;
     }
 
     CtiDeviceRemote& setDialup( CtiTableDeviceDialup *aDialup )
     {
-        LockGuard guard(monitor());
+        CtiLockGuard<CtiMutex> guard(_classMutex);
         if(pDialup != NULL)
         {
             delete pDialup;

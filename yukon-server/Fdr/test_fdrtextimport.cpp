@@ -1,4 +1,4 @@
-#include <winsock2.h>
+#include <winsock.h>
 /*
     File test_fdrTextImport.cpp
 
@@ -21,7 +21,6 @@
 #include <locale>
 
 #include <boost/test/unit_test.hpp>
-#include <boost/test/auto_unit_test.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 #include "fdrtextimport.h"
@@ -33,12 +32,12 @@
 using boost::unit_test_framework::test_suite;
 using namespace std;
 
-BOOST_AUTO_UNIT_TEST( test_ReportUnfinished )
+BOOST_AUTO_TEST_CASE( test_ReportUnfinished )
 {
     std::cout << "TextImport Unit Testing is not complete " << std::endl;
 }
 
-BOOST_AUTO_UNIT_TEST(test_foreignToYukonQuality)
+BOOST_AUTO_TEST_CASE(test_foreignToYukonQuality)
 {
     CtiFDR_TextImport import;
     USHORT quality = import.ForeignToYukonQuality('f');
@@ -47,7 +46,7 @@ BOOST_AUTO_UNIT_TEST(test_foreignToYukonQuality)
     std::cout << "test_foreignToYukonQuality is not finished " << std::endl;
 }
 
-BOOST_AUTO_UNIT_TEST( test_parseFile_OneFile )
+BOOST_AUTO_TEST_CASE( test_parseFile_OneFile )
 {
     /*
     CtiFDR_TextImport import;
@@ -108,7 +107,7 @@ BOOST_AUTO_UNIT_TEST( test_parseFile_OneFile )
     BOOST_CHECK_EQUAL(true, true );
 }
 
-BOOST_AUTO_UNIT_TEST( test_parseFile_ThreeFile )
+BOOST_AUTO_TEST_CASE( test_parseFile_ThreeFile )
 {
     /*
     CtiFDR_TextImport import;
@@ -172,7 +171,7 @@ BOOST_AUTO_UNIT_TEST( test_parseFile_ThreeFile )
     BOOST_CHECK_EQUAL(true, true );
 }
 
-BOOST_AUTO_UNIT_TEST( test_validateAndDecodeLine )
+BOOST_AUTO_TEST_CASE( test_validateAndDecodeLine )
 {
     //BOOST_CHECK_EQUAL(1,0);
     std::cout << "test_validateAndDecodeLine not finished\n";

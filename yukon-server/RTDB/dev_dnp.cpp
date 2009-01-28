@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.66 $
-* DATE         :  $Date: 2008/10/29 18:16:46 $
+* REVISION     :  $Revision: 1.66.2.1 $
+* DATE         :  $Date: 2008/11/13 17:23:40 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,9 +17,6 @@
 
 #include <map>
 #include <string>
-
-
-#include <windows.h>
 
 #include "dsm2.h"
 #include "porter.h"

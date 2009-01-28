@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_unit.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2008/08/25 19:47:32 $
+* REVISION     :  $Revision: 1.11.2.1 $
+* DATE         :  $Date: 2008/11/18 20:11:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -57,7 +57,6 @@ CtiTablePointUnit& CtiTablePointUnit::operator=(const CtiTablePointUnit& aRef)
 CtiTablePointUnit::~CtiTablePointUnit()
 {}
 
-CtiTablePointUnit& CtiTablePointUnit::operator=(const CtiTablePointUnit& aRef);
 
 void CtiTablePointUnit::DecodeDatabaseReader(RWDBReader &rdr)
 {

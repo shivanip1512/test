@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mgr_mcsched.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2006/08/09 05:03:17 $
+* REVISION     :  $Revision: 1.15.24.1 $
+* DATE         :  $Date: 2008/11/21 20:56:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,7 +25,7 @@ ostream& operator<<( ostream& ostrm, CtiMCScheduleManager& mgr )
     CtiMCSchedule *sched = NULL;
     try
     {
-        RWRecursiveLock<class RWMutexLock>::LockGuard guard(mgr.getMux() );
+        CtiLockGuard<CtiMutex> guard(mgr.getMux() );
 
         ostrm << " " << mgr.getMap().size() << " schedules are loaded." << endl;
 
@@ -36,7 +36,7 @@ ostream& operator<<( ostream& ostrm, CtiMCScheduleManager& mgr )
             sched = (*itr).second;
 
             {
-                RWRecursiveLock<class RWMutexLock>::LockGuard sched_guard(sched->getMux());
+                CtiLockGuard<CtiMutex> sched_guard(sched->getMux());
                 ostrm << CtiTime() << endl << *sched << endl;
             }
         }
@@ -95,7 +95,7 @@ bool CtiMCScheduleManager::refreshAllSchedules()
     {
         // Lock down our working map and attempt to copy in the
         // schedules from our temporary map
-        RWRecursiveLock<RWMutexLock>::LockGuard guard( getMux() );
+        CtiLockGuard<CtiMutex> guard( getMux() );
 
         // clean up the old schedules and replace them with
         // the new ones
@@ -136,7 +136,7 @@ bool CtiMCScheduleManager::updateAllSchedules()
 {
     bool ret_val = true;
 
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( getMux() );
+    CtiLockGuard<CtiMutex> guard( getMux() );
 
     CtiMCScheduleManager::MapIterator itr = getMap().begin();
     CtiMCSchedule* sched;
@@ -146,7 +146,7 @@ bool CtiMCScheduleManager::updateAllSchedules()
         sched = (*itr).second;
 
         {
-            RWRecursiveLock<class RWMutexLock>::LockGuard sched_guard(sched->getMux());
+            CtiLockGuard<CtiMutex> sched_guard(sched->getMux());
 
             // Is this schedule already persisted in the database?
             if( !sched->getUpdatedFlag() )
@@ -208,7 +208,7 @@ bool CtiMCScheduleManager::updateAllSchedules()
 */
 CtiMCSchedule* CtiMCScheduleManager::addSchedule(const CtiMCSchedule& sched)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( getMux() );
+    CtiLockGuard<CtiMutex> guard( getMux() );
 
     // Don't allow a new schedule with the same name as any existing schedule
     if( getID(sched.getScheduleName()) != -1)
@@ -242,7 +242,7 @@ bool CtiMCScheduleManager::updateSchedule(const CtiMCSchedule& sched)
 
     if( id > 0 )
     {
-        RWRecursiveLock<RWMutexLock>::LockGuard guard( getMux() );
+        CtiLockGuard<CtiMutex> guard( getMux() );
 
         //Don't allow a schedule to have the same name as any existing schedule
     long temp_id = getID(sched.getScheduleName());
@@ -268,7 +268,7 @@ bool CtiMCScheduleManager::deleteSchedule(long sched_id)
 {
     bool ret_val = false;
 
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( getMux() );
+    CtiLockGuard<CtiMutex> guard( getMux() );
 
     
     CtiMCSchedule* to_delete; 
@@ -320,7 +320,7 @@ bool CtiMCScheduleManager::deleteSchedule(long sched_id)
 
 CtiMCSchedule* CtiMCScheduleManager::findSchedule(long id)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( getMux() );
+    CtiLockGuard<CtiMutex> guard( getMux() );
 
     MapIterator itr = Map.find(id);
     if ( itr != Map.end() ) {
@@ -338,7 +338,7 @@ CtiMCSchedule* CtiMCScheduleManager::findSchedule(long id)
 
 long CtiMCScheduleManager::getID(const string& name)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard( getMux() );
+    CtiLockGuard<CtiMutex> guard( getMux() );
 
     CtiMCScheduleManager::MapIterator itr = Map.begin();
 

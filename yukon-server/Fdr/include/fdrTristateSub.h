@@ -21,7 +21,12 @@
 #ifndef __FDRTriStateSub_H__
 #define __FDRTriStateSub_H__
 
-#include <windows.h>    //  NOTE:  if porting this to non-WIN32, make sure to replace this
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
+
+#include <windows.h>    
 
 #include "dlldefs.h"
 
@@ -65,8 +70,8 @@ class __declspec(dllexport) FDRTriStateSub : public CtiFDRFtpInterface
         virtual BOOL stop( void );
 
         StringMessageContainer generateMessage( Boost_char_tokenizer& tokens );
-        std::list<std::string> readInFile( istream io );
-        list<StringMessageContainer> processData( list<string>& stringList );
+        std::list<std::string> readInFile( istream & io );
+        std::list<StringMessageContainer> processData( std::list<string>& stringList );
 
         static const CHAR * KEY_PORT_NUMBER;
         static const CHAR * KEY_TRIES;

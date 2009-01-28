@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.36 $
-*    DATE         :  $Date: 2008/10/02 23:57:15 $
+*    REVISION     :  $Revision: 1.36.2.1 $
+*    DATE         :  $Date: 2008/11/13 17:23:47 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -151,7 +151,6 @@
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-#include <windows.h>
 #include <wininet.h>
 #include <fcntl.h>
 #include <io.h>

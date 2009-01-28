@@ -53,6 +53,7 @@ tabletest.exe:  $(BASEOBJS) Makefile
 $(BASEOBJS) -link $(LIBS) $(RWLIBS) $(BOOSTLIBS) $(TABLETESTLIBS)
                 @echo:
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+               mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
                -@copy ..\$@ $(YUKONOUTPUT)
                 @echo Done building Target ..\$@
                 @%cd $(CWD)
@@ -65,6 +66,7 @@ almtest.exe:    almtest.obj Makefile
 almtest.obj -link $(LIBS) $(RWLIBS) $(BOOSTLIBS) $(TABLETESTLIBS) $(COMPILEBASE)\lib\ctidbsrc.lib
                 @echo:
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+               mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
                -@copy ..\$@ $(YUKONOUTPUT)
                 @echo Done building Target ..\$@
                 @%cd $(CWD)

@@ -6,15 +6,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/dispmain.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2007/07/23 15:36:17 $
+* REVISION     :  $Revision: 1.12.12.3 $
+* DATE         :  $Date: 2008/11/20 20:37:41 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-
-#include <windows.h>
 #include <iostream>
 using namespace std;
 
@@ -30,7 +28,10 @@ using namespace std;
 #include "logger.h"
 #include "utility.h"
 
-#include "clrdump.h"
+extern "C"
+{
+	#include "clrdump.h"
+}
 #include "dbghelp.h"
 
 extern INT DispatchMainFunction(INT, CHAR**);
@@ -43,8 +44,8 @@ int main(int argc, char* argv[] )
 
    HANDLE hExclusion = INVALID_HANDLE_VALUE;
 
-   RegisterFilter( L"CALC_LOGIC_MAIN.DMP", MiniDumpWithDataSegs );
-   SetFilterOptions( CLRDMP_OPT_CALLDEFAULTHANDLER );
+   ///RegisterFilter( ( wchar_t *) L"CALC_LOGIC_MAIN.DMP", MiniDumpWithDataSegs );
+   ///SetFilterOptions( (DWORD) CLRDMP_OPT_CALLDEFAULTHANDLER );
 
    if( (hExclusion = OpenEvent(EVENT_ALL_ACCESS, FALSE, szName)) != NULL )
    {

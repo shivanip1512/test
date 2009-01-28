@@ -91,7 +91,6 @@ private:
     long _scheduleId;
 
     string _evalstring;
-    RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > _queue;
 
     static CtiCriticalSection _mutex;
 

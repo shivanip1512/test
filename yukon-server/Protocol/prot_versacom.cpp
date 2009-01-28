@@ -6,15 +6,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2008/04/22 21:40:01 $
+* REVISION     :  $Revision: 1.34.6.1 $
+* DATE         :  $Date: 2008/11/13 17:23:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-
-#include <windows.h>
 #include <iomanip>
 #include <iostream>
 #include <boost/regex.hpp>

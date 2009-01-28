@@ -11,14 +11,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/UTILITY/wpsccfgparse.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/12/20 17:21:24 $
+* REVISION     :  $Revision: 1.7.24.1 $
+* DATE         :  $Date: 2008/11/13 17:23:38 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
-
-#include <windows.h>
 #include <winbase.h>
 #include <fstream>
 #include <iostream>

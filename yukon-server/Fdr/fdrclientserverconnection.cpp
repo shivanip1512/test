@@ -1,5 +1,7 @@
 #include "yukon.h"
 
+#include <WinSock2.h> 
+
 #include <ctime>
 
 #include "logger.h"
@@ -211,7 +213,7 @@ ULONG CtiFDRClientServerConnection::getDebugLevel()
     return _parentInterface->getDebugLevel();
 }
 
-ostream CtiFDRClientServerConnection::logNow() 
+ostream& CtiFDRClientServerConnection::logNow() 
 {
     return _parentInterface->logNow() << "" << getName() << "#" << getConnectionNumber() << ": ";
 }

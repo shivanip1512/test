@@ -1,6 +1,5 @@
 #include "yukon.h"
 
-#include <windows.h>
 #include <iostream>
 using namespace std;
 #include <memory.h>
@@ -70,7 +69,7 @@ IM_EX_CTIBASE INT GetIndividualRequestStartPos(HCTIQUEUE QueueHandle, ULONG Requ
         }
 
         /* Walk up the priorities until we find one that has a last */
-        for(i = iter->second.Priority + 1; i <= MAXPRIORITY; i++)
+        for(int i = iter->second.Priority + 1; i <= MAXPRIORITY; i++)
         {
             if(QueueHandle->Last[i] != NULL)
             {
@@ -228,7 +227,8 @@ IM_EX_CTIBASE INT AdjustPriority(HCTIQUEUE QueueHandle, ULONG RequestID, INT &Nu
                 }
 
                 /* Walk up the priorities until we find one that has a last */
-                for(int i = newPriority; i < MAXPRIORITY; i++)
+				int i = newPriority; 
+                for(i = newPriority; i < MAXPRIORITY; i++)
                 {
                     if(QueueHandle->Last[i] != NULL)
                     {
@@ -817,11 +817,11 @@ IM_EX_CTIBASE INT PeekQueue (HCTIQUEUE QueueHandle,
 
 
 /* Routine to read an entry from the queue */
-IM_EX_CTIBASE INT ReadQueue (HCTIQUEUE QueueHandle, PREQUESTDATA RequestData, PULONG  DataSize, PPVOID Data, ULONG Element, BOOL32 WaitFlag, PBYTE Priority, ULONG *pElementCount)
+INT ReadQueue (HCTIQUEUE QueueHandle, PREQUESTDATA RequestData, PULONG  DataSize, PPVOID Data, ULONG Element, BOOL32 WaitFlag, PBYTE Priority, ULONG *pElementCount)
 {
     PQUEUEENT Entry;
     PQUEUEENT Previous = NULL;
-    ULONG i;
+    ULONG i = 0; 
 
     if(QueueHandle == (HCTIQUEUE) NULL)
     {

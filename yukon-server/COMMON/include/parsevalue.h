@@ -22,7 +22,7 @@ protected:
 
    std::string      _str;
    INT            _int;
-   DOUBLE         _dbl;
+   double         _dbl;
 
    union {
       UINT flag;
@@ -54,7 +54,7 @@ public:
       if(_int != INT_MIN)
       {
          _iValid = TRUE;
-         _dbl    = (DOUBLE)_int;
+         _dbl    = (double)_int;
          _dValid = TRUE;
       }
    }
@@ -62,7 +62,7 @@ public:
    CtiParseValue(INT i) :
       flag(0),
       _int(i),
-      _dbl((DOUBLE)i)
+      _dbl((double)i)
    {
       _iValid = TRUE;
       _dValid = TRUE;
@@ -71,13 +71,13 @@ public:
    CtiParseValue(UINT ui) :
       flag(0),
       _int((INT)ui),
-      _dbl((DOUBLE)ui)
+      _dbl((double)ui)
    {
       _iValid = TRUE;
       _dValid = TRUE;
    }
 
-   CtiParseValue(DOUBLE real) :
+   CtiParseValue(double real) :
       flag(0),
       _dbl(real),
       _int((INT)real)
@@ -136,9 +136,9 @@ public:
    }
 
    UINT           isRealValid() const                 { return _dValid; }
-   DOUBLE         getReal() const                     { return _dbl; }
-   DOUBLE&        getReal()                           { return _dbl; }
-   CtiParseValue& setReal(const DOUBLE aDbl)
+   double         getReal() const                     { return _dbl; }
+   double&        getReal()                           { return _dbl; }
+   CtiParseValue& setReal(const double aDbl)
    {
       _dbl = aDbl;
       return *this;

@@ -44,7 +44,6 @@
         2-2-94   Updated SECTN loads                                WRO
 
    -------------------------------------------------------------------- */
-#include <windows.h>
 #include <process.h>
 #include <iostream>
 
@@ -68,7 +67,7 @@
 using namespace std;
 
 /* Routine to generate preamble for general IDLC message */
-PreIDLC (PBYTE   Message,        /* resulting command string */
+INT PreIDLC (PBYTE   Message,        /* resulting command string */
          USHORT  Length,         /* length of message to follow */
          USHORT  Remote,         /* ccu Remote */
          USHORT  Reply,          /* expected reply frame number */
@@ -110,7 +109,7 @@ PreIDLC (PBYTE   Message,        /* resulting command string */
 
 
 /* RTU IDLC preamble builder */
-PreUnSequenced (PBYTE  Message,        /* resulting command string */
+INT PreUnSequenced (PBYTE  Message,        /* resulting command string */
                 USHORT Length,         /* length of message to follow */
                 USHORT Port,
                 USHORT Remote,         /* ccu address */
@@ -199,7 +198,7 @@ PreUnSequenced (PBYTE  Message,        /* resulting command string */
 
 
 /* routine to place CRC at passed location in generated IDLC command */
-PostIDLC (PBYTE    Message,       /* message and result */
+INT PostIDLC (PBYTE    Message,       /* message and result */
           USHORT   Length)        /* length of the message */
 
 {
@@ -217,7 +216,7 @@ PostIDLC (PBYTE    Message,       /* message and result */
 
 /* Routine to check for valid response from a IDLC CCU */
 
-GenReply (PBYTE Reply,            /* reply message */
+INT GenReply (PBYTE Reply,            /* reply message */
           USHORT  Length,         /* reply message length */
           PUSHORT ReqNum,         /* request number */
           PUSHORT RepNum,         /* reply number */
@@ -282,7 +281,7 @@ GenReply (PBYTE Reply,            /* reply message */
 
 
 /* Routine to check for valid response from a IDLC RTU */
-RTUReply (PBYTE Reply, USHORT Length)
+INT RTUReply (PBYTE Reply, USHORT Length)
 
 {
    USHORT Save;
@@ -301,7 +300,7 @@ RTUReply (PBYTE Reply, USHORT Length)
 
 
 /* function gets length from unsequeced rtu frame */
-RTUReplyHeader (USHORT Type, USHORT RemoteAddress, PBYTE  Message, PULONG ReadLength)
+INT RTUReplyHeader (USHORT Type, USHORT RemoteAddress, PBYTE  Message, PULONG ReadLength)
 {
    USHORT Length1, Length2;
 
@@ -339,7 +338,7 @@ RTUReplyHeader (USHORT Type, USHORT RemoteAddress, PBYTE  Message, PULONG ReadLe
 
 
 /* Routine to test for an idlc reject frame */
-IDLCRej (PBYTE Reply, PUSHORT ReqNum)
+INT IDLCRej (PBYTE Reply, PUSHORT ReqNum)
 {
    USHORT Save;
 
@@ -366,7 +365,7 @@ IDLCRej (PBYTE Reply, PUSHORT ReqNum)
 
 
 /* Routine to generate retransmit request for idlc */
-IDLCSRej (PBYTE Message,      /* resulting command */
+INT IDLCSRej (PBYTE Message,      /* resulting command */
           USHORT Remote,         /* ccu address */
           USHORT SeqNum)         /* expected sequence number */
 
@@ -388,7 +387,7 @@ IDLCSRej (PBYTE Message,      /* resulting command */
 
 
 /* Routine to generate an idlc reset command for a given ccu */
-IDLCSArm (PBYTE Message, USHORT Remote)
+INT IDLCSArm (PBYTE Message, USHORT Remote)
 {
    /* framing */
    Message[0] = 0x7e;
@@ -408,7 +407,7 @@ IDLCSArm (PBYTE Message, USHORT Remote)
 
 /* function to check for a correct reset acknowledge and reset framing */
 
-IDLCua (PBYTE Response, PUSHORT ReqNum, PUSHORT RepNum)
+INT IDLCua (PBYTE Response, PUSHORT ReqNum, PUSHORT RepNum)
 {
    USHORT Store;
 
@@ -431,7 +430,7 @@ IDLCua (PBYTE Response, PUSHORT ReqNum, PUSHORT RepNum)
 
 
 /* Routine to decode the Algorithm status part of the message */
-IDLCAlgStat (PBYTE Message, PUSHORT Status)
+INT IDLCAlgStat (PBYTE Message, PUSHORT Status)
 {
     int retval = NORMAL;
 

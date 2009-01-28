@@ -26,7 +26,7 @@ using std::string;
 // What this means is when using class C (a <(C compare)> b) == true, a will come off the list first.
 // If a and b are identical (a<C>b and b<C>a == false) then the ordering is depending on insertion order
 template <class T,  class C>
-class IM_EX_CTIBASE CtiQueue
+class CtiQueue
 {
 public:
     struct QueueDataStruct
@@ -105,7 +105,7 @@ public:
         xt_eot.nsec = 0;
     }
 
-    virtual ~CtiQueue()
+   virtual ~CtiQueue()
     {
         lock_t scoped_lock(mux, xt_eot);
         resetCollection();
@@ -207,9 +207,10 @@ public:
             boost::xtime_get(&xt, boost::TIME_UTC);
             xt.sec  += (time/1000);
             xt.nsec += (time%1000)*1000000;
-            lock_t scoped_lock(mux,xt);
 
-            if(scoped_lock.locked())
+            lock_t scoped_lock(mux,xt); //This now does the lock!
+
+            if( scoped_lock.owns_lock() )
             {
                 if(getCollection().empty())
                 {
@@ -422,7 +423,7 @@ public:
 
 // Template Queuing class
 template <class T>
-class IM_EX_CTIBASE CtiFIFOQueue
+class CtiFIFOQueue
 {
 private:
 
@@ -516,9 +517,9 @@ public:
             xt.sec  += (time/1000);
             xt.nsec += (time%1000)*1000000;
 
-            lock_t scoped_lock(mux,xt);
+            lock_t scoped_lock(mux,xt);  //This now does the lock!
 
-            if(scoped_lock.locked())
+            if( scoped_lock.owns_lock() )
             {
 
                 if(_col.empty())

@@ -70,7 +70,7 @@ RWDBStatus CtiTableLMProgramHistory::Insert()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    if( _action == LMHistoryActions::Start )
+    if( _action == Start )
     {
         RWDBTable table = getDatabase().table( "LMProgramHistory" );
         RWDBInserter inserter = table.inserter();

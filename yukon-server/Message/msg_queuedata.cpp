@@ -7,14 +7,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/msg_queuedata.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2007/02/22 17:46:41 $
+* REVISION     :  $Revision: 1.3.20.1 $
+* DATE         :  $Date: 2008/11/13 17:23:45 $
 *
 * Copyright (c) 2007 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-#include <windows.h>
 #include <iostream>
 #include <iomanip>
 using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore

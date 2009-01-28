@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2008/10/28 19:21:39 $
+* REVISION     :  $Revision: 1.2.2.1 $
+* DATE         :  $Date: 2008/11/12 17:27:31 $
 *
 * Copyright (c) 2007 Cannon Technologies. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,7 +18,6 @@
 #define BOOST_AUTO_TEST_MAIN "Test Logger"
 
 #include <boost/test/unit_test.hpp>
-#include <boost/test/auto_unit_test.hpp>
 
 using boost::unit_test_framework::test_suite;
 using namespace std;
@@ -41,7 +40,7 @@ public:
                 {  return Inherited::dayFilename(day_of_month);  };
 };
 
-BOOST_AUTO_UNIT_TEST(test_logger)
+BOOST_AUTO_TEST_CASE(test_logger)
 {
     Test_CtiLogger l;
 

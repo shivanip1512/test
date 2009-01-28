@@ -7,13 +7,11 @@
  *
  * PVCS KEYWORDS:
  * ARCHIVE      :  $Archive$
- * REVISION     :  $Revision: 1.9 $
- * DATE         :  $Date: 2008/09/23 15:14:58 $
+ * REVISION     :  $Revision: 1.9.2.1 $
+ * DATE         :  $Date: 2008/11/13 17:23:47 $
  */
 #include "yukon.h"
 
-
-#include <windows.h>
 #include <math.h>
 #include <stdlib.h>
 #include <iostream>

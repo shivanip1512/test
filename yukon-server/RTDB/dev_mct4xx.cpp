@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.94 $
-* DATE         :  $Date: 2008/10/30 21:20:38 $
+* REVISION     :  $Revision: 1.93.2.3 $
+* DATE         :  $Date: 2008/11/20 16:49:21 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,8 +17,6 @@
 
 #include <boost/regex.hpp>
 #include <limits>
-
-#include <windows.h>
 
 #include "dev_mct4xx.h"
 #include "dev_mct470.h"  //  for sspec information
@@ -98,7 +96,7 @@ CtiDeviceMCT4xx &CtiDeviceMCT4xx::operator=(const CtiDeviceMCT4xx &aRef)
     if(this != &aRef)
     {
         Inherited::operator=(aRef);
-        LockGuard guard(monitor());            // Protect this device!
+        CtiLockGuard<CtiMutex> guard(_classMutex);            // Protect this device!
     }
     return *this;
 }
@@ -600,7 +598,7 @@ INT CtiDeviceMCT4xx::executeGetValue( CtiRequestMsg        *pReq,
             //  reset it, that way it'll end immediately
             _llpInterest.time_end = 0;
 
-            setDynamicInfo(Keys::Key_MCT_LLPInterest_RequestEnd, _llpInterest.time_end);
+            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestEnd, _llpInterest.time_end);
 
             CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
 
@@ -648,7 +646,7 @@ INT CtiDeviceMCT4xx::executeGetValue( CtiRequestMsg        *pReq,
                 }
                 else if( !cmd.compare("lp") )
                 {
-                    const bool requestAlreadyInProgress = InterlockedCompareExchange((PVOID *)&_llpInterest.in_progress, (PVOID)true, (PVOID)false);
+                    const bool requestAlreadyInProgress = InterlockedCompareExchange(&_llpInterest.in_progress, true, false);
 
                     if( requestAlreadyInProgress && _llpInterest.user_id != pReq->UserMessageId() )
                     {
@@ -888,7 +886,7 @@ INT CtiDeviceMCT4xx::executeGetValue( CtiRequestMsg        *pReq,
                 else if( !cmd.compare("peak") )
                 {
                     CtiString cmdString = parse.getCommandStr();
-                    if( InterlockedCompareExchange((PVOID *)&_llpPeakInterest.in_progress, (PVOID)true, (PVOID)false) &&
+                    if( InterlockedCompareExchange(&_llpPeakInterest.in_progress, true, false) &&
                         !cmdString.contains("read") )
                     {
                         if( errRet )
@@ -902,8 +900,8 @@ INT CtiDeviceMCT4xx::executeGetValue( CtiRequestMsg        *pReq,
                     }
                     else
                     {
-                        if( getDynamicInfo(Keys::Key_MCT_SSpec) == CtiDeviceMCT410::Sspec
-                            && getDynamicInfo(Keys::Key_MCT_SSpecRevision) < CtiDeviceMCT410::SspecRev_NewLLP_Min )
+                        if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) == CtiDeviceMCT410::Sspec
+                            && getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < CtiDeviceMCT410::SspecRev_NewLLP_Min )
                         {
                             CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
 
@@ -3519,7 +3517,7 @@ INT CtiDeviceMCT4xx::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
                kwh_time;
     string     result_string;
 
-    CtiTableDynamicPaoInfo::Keys key_peak_timestamp;
+    CtiTableDynamicPaoInfo::PaoInfoKeys key_peak_timestamp;
 
     CtiCommandParser parse(InMessage->Return.CommandStr);
 
@@ -3709,7 +3707,7 @@ INT CtiDeviceMCT4xx::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
             }
             else
             {
-                setDynamicInfo(key_peak_timestamp, kw_time.seconds());
+                setDynamicInfo(key_peak_timestamp, (unsigned long) kw_time.seconds());
             }
         }
         else
@@ -3970,7 +3968,7 @@ void CtiDeviceMCT4xx::createTOUDayScheduleString(string &schedule, long (&times)
         schedule += CtiNumStr(times[i]);
         schedule += ', ';
     }
-    for( i=0; i<5; i++ )
+    for( int i=0; i<5; i++ )
     {
         schedule += CtiNumStr(rates[i]);
         schedule += ', ';

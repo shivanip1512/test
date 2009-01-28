@@ -6,29 +6,26 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/exchange.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/02/10 23:23:44 $
+* REVISION     :  $Revision: 1.6.34.2 $
+* DATE         :  $Date: 2008/11/13 17:23:51 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-#include <windows.h>
 #include <iostream>
 using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
 #include <rw/toolpro/winsock.h>
 #include <rw/toolpro/neterr.h>
 #include <rw/toolpro/inetaddr.h>
-#include <rw\thr\mutex.h>
 
 #include "exchange.h"
 #include "dlldefs.h"
-extern RWMutexLock coutMux;
 
 CtiExchange::CtiExchange(RWSocketPortal portal) : Portal_(new RWSocketPortal(portal))
 {
-    LockGuard grd(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     try
     {
         sinbuf  = new RWPortalStreambuf(*Portal_);
@@ -45,7 +42,7 @@ CtiExchange::CtiExchange(RWSocketPortal portal) : Portal_(new RWSocketPortal(por
 
 CtiExchange::~CtiExchange()
 {
-    LockGuard grd(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     try
     {
         // Attempt to keep the delete of sinbuf/soutbuf from blocking us!

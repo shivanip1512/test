@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/INCLUDE/server_b.h-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2008/10/07 20:30:51 $
+* REVISION     :  $Revision: 1.15.2.1 $
+* DATE         :  $Date: 2008/11/13 17:23:38 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -16,6 +16,11 @@
 
 #ifndef __SERVER_B_H__
 #define __SERVER_B_H__
+
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
 
 #include <windows.h>
 #include <iostream>

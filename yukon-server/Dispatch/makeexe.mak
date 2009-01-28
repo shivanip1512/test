@@ -88,6 +88,7 @@ vgsinktest.exe
 
 VGLIBS=\
 advapi32.lib \
+$(COMPILEBASE)\lib\clrdump.lib \
 $(COMPILEBASE)\lib\ctibase.lib \
 $(COMPILEBASE)\lib\cticparms.lib \
 $(COMPILEBASE)\lib\ctimsg.lib \
@@ -95,21 +96,15 @@ $(COMPILEBASE)\lib\ctivg.lib \
 $(COMPILEBASE)\lib\ctisvr.lib \
 $(COMPILEBASE)\lib\cmdline.lib \
 $(COMPILEBASE)\lib\service.lib \
-$(COMPILEBASE)\lib\clrdump.lib \
-
-
 
 TESTLIBS=\
+$(COMPILEBASE)\lib\clrdump.lib \
 $(COMPILEBASE)\lib\ctibase.lib \
 $(COMPILEBASE)\lib\cticparms.lib \
 $(COMPILEBASE)\lib\ctimsg.lib \
 $(COMPILEBASE)\lib\ctivg.lib \
 $(COMPILEBASE)\lib\ctisvr.lib \
 $(COMPILEBASE)\lib\ctipntdb.lib \
-$(COMPILEBASE)\lib\clrdump.lib \
-
-
-
 
 
 ALL:            $(CTIPROGS)
@@ -119,9 +114,10 @@ dispatch.exe:   $(VGOBJS) makeexe.mak
                 @echo:
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) -o ..\$@ \
+                $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
 $(VGOBJS) id_vg.obj -link $(RWLIBS) $(BOOSTLIBS) $(VGLIBS)
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+                mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
                -copy ..\$@ $(YUKONOUTPUT)
                 @%cd $(CWD)
 
@@ -130,9 +126,10 @@ pcmtest.exe:    $(PCMOBJS) makeexe.mak
                 @echo:
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) -o ..\$@ \
+                $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
 $(PCMOBJS) -link $(RWLIBS) $(BOOSTLIBS) $(TESTLIBS)
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+                mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
                -copy ..\$@ $(YUKONOUTPUT)
                 @%cd $(CWD)
 
@@ -140,9 +137,10 @@ vgsrctest.exe:  $(TESTOBJS) makeexe.mak
                 @echo:
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) -o ..\$@ \
+                $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
 $(TESTOBJS) -link $(BOOSTLIBS) $(RWLIBS) $(TESTLIBS)
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+               mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
                -copy ..\$@ $(YUKONOUTPUT)
                 @%cd $(CWD)
 
@@ -150,9 +148,10 @@ vgsinktest.exe: $(TEST2OBJS) makeexe.mak
                 @echo:
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) -o ..\$@ \
+                $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
 $(TEST2OBJS) -link $(RWLIBS) $(BOOSTLIBS) $(TESTLIBS)
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+               mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
                -copy ..\$@ $(YUKONOUTPUT)
                 @%cd $(CWD)
 
@@ -161,9 +160,10 @@ sigsinktest.exe: $(SIGTESTOBJS) makeexe.mak
                 @echo:
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) -o ..\$@ \
+                $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
 $(SIGTESTOBJS) -link $(RWLIBS) $(BOOSTLIBS) $(TESTLIBS)
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+               mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
                -copy ..\$@ $(YUKONOUTPUT)
                 @%cd $(CWD)
 
@@ -171,9 +171,10 @@ poker.exe: $(PORTERPOKE) makeexe.mak
                 @echo:
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) -o ..\$@ \
+                $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
 $(PORTERPOKE) -link $(RWLIBS) $(BOOSTLIBS) $(TESTLIBS)
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+               mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
                -copy ..\$@ $(YUKONOUTPUT)
                 @%cd $(CWD)
 
@@ -181,9 +182,10 @@ cbctest.exe: $(CBCOBJS) makeexe.mak
                 @echo:
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) -o ..\$@ \
+                $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
 $(CBCOBJS) -link $(RWLIBS) $(BOOSTLIBS) $(TESTLIBS)
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+               mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
                -copy ..\$@ $(YUKONOUTPUT)
                 @%cd $(CWD)
 
@@ -192,9 +194,10 @@ sigsrctest.exe: $(SIGSRCTESTOBJS) makeexe.mak
                 @echo:
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) -o ..\$@ \
+                $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
 $(SIGSRCTESTOBJS) -link $(RWLIBS) $(BOOSTLIBS) $(TESTLIBS)
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+               mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
                -copy ..\$@ $(YUKONOUTPUT)
                 @%cd $(CWD)
 
@@ -202,9 +205,10 @@ cmdtest.exe: $(CMDTESTOBJS) makeexe.mak
                 @echo:
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) -o ..\$@ \
+                $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
 $(CMDTESTOBJS) -link $(RWLIBS) $(BOOSTLIBS) $(TESTLIBS)
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+               mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
                -copy ..\$@ $(YUKONOUTPUT)
                 @%cd $(CWD)
 
@@ -212,14 +216,16 @@ tstest.exe:     $(TSTEST) makeexe.mak
                 @$(MAKE) -nologo -f $(_InputFile) id
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) -o ..\$@ \
+                $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
 $(TSTEST) tstest.obj -link $(RWLIBS) $(BOOSTLIBS) $(VGLIBS)
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+               mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
                -copy ..\$@ $(YUKONOUTPUT)
                 @%cd $(CWD)
 
 copy:
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+               mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
                -@if exist bin\*.exe copy bin\*.exe $(YUKONOUTPUT)
 
 

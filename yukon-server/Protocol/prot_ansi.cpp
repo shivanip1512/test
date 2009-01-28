@@ -605,7 +605,7 @@ bool CtiProtocolANSI::decode( CtiXfer &xfer, int status )
                     return true;
                 }
 
-                if (_scanOperation == ANSI_SCAN_OPERATION::demandReset && _tables[_index].tableID == 1) //1 = demand reset
+                if (_scanOperation == demandReset && _tables[_index].tableID == 1) //1 = demand reset
                 {
                      int i = proc09RemoteReset(1);
                      if (i)
@@ -904,7 +904,7 @@ void CtiProtocolANSI::convertToTable(  )
                       }
 
 
-                      if (_scanOperation == ANSI_SCAN_OPERATION::demandReset)
+                      if (_scanOperation == demandReset)
                       {
                           getApplicationLayer().setWriteSeqNbr( 0 );
                       }

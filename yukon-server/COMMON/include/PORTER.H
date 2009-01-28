@@ -55,7 +55,7 @@ struct REMOTEPERF
 #define CLCLD           24
 #define CLRAL           1
 #define CLRDY           2
-#define START           3
+#define START_ALGORITHM 3
 #define HOPRO           5
 #define ENPRO           6
 #define COLD            16

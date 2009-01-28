@@ -1,6 +1,5 @@
 
 #include "yukon.h"
-#include <windows.h>
 #include <wininet.h>
 #include <fcntl.h>
 #include <io.h>
@@ -222,15 +221,15 @@ int FDRTriStateSub::decodeFile()
     if( file.is_open() ){
     
         //if ok call readInFile
-        list<string> strs = readInFile(file);
+        std::list<string> strs = readInFile(file);
         file.close();
         remove(getLocalFileName().c_str());
-        //pass returned list to processData if not empty
+        //pass returned std::list to processData if not empty
         if( !(strs.size() > 0) )
             return 1;
 
-        list<StringMessageContainer> msgs = processData( strs );
-        //Check Size of boths Lists, they shoudl be the same, if messages is smaller, 
+        std::list<StringMessageContainer> msgs = processData( strs );
+        //Check Size of both  Lists, they should be the same, if messages is smaller, 
         //there were errors with some input.
 
         /* eof is getting in as a string. fix before this test will work
@@ -240,7 +239,7 @@ int FDRTriStateSub::decodeFile()
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " Error, all data did not translate. Expected: " << strs.size()<< " Translated: " << msgs.size() << "\n";
-                list<StringMessageContainer>::iterator itr = msgs.begin();
+                std::list<StringMessageContainer>::iterator itr = msgs.begin();
                 for( ; itr != msgs.end() ; itr++ )
                     dout << itr->getName() << "\n";
                 dout << endl;
@@ -250,7 +249,7 @@ int FDRTriStateSub::decodeFile()
 
         //Find Point(s) to send to *see tristate* 
         //send messages returned from process data.
-        list<StringMessageContainer>::iterator itr = msgs.begin();
+        std::list<StringMessageContainer>::iterator itr = msgs.begin();
         for( ;itr != msgs.end(); itr++ ){
             bool flag = findTranslationNameInList ( itr->getName(), getReceiveFromList(), point);
             if ((flag == true) &&
@@ -296,9 +295,9 @@ int FDRTriStateSub::decodeFile()
     }else
         return 1; //fail() is called if we return bad
 }
-list<string> FDRTriStateSub::readInFile( istream io )
+std::list<string> FDRTriStateSub::readInFile( istream & io )
 {
-    list<string> stringList;
+    std::list<string> stringList;
     io.seekg(0,ios::end);
     int length = io.tellg();
     io.seekg(0,ios::beg);
@@ -328,16 +327,16 @@ list<string> FDRTriStateSub::readInFile( istream io )
     for( ; tokIter != tokens.end(); tokIter++ ){
         stringList.push_back(string(*tokIter));
     }
-    //return the list for processing.
+    //return the std::list for processing.
     return stringList;
 }
 
-list<StringMessageContainer> FDRTriStateSub::processData( list<string>& stringList )
+std::list<StringMessageContainer> FDRTriStateSub::processData( std::list<string>& stringList )
 {
-    list<StringMessageContainer> msgs;
+    std::list<StringMessageContainer> msgs;
     StringMessageContainer msg;
 
-    list<string>::iterator itr = stringList.begin();
+    std::list<string>::iterator itr = stringList.begin();
 
     for( ; itr != stringList.end() ; itr++ ){
         string str = *itr;
@@ -361,7 +360,7 @@ list<StringMessageContainer> FDRTriStateSub::processData( list<string>& stringLi
             msgs.push_back(msg);
 
     }
-    //return list
+    //return std::list
     return msgs;
 }
 

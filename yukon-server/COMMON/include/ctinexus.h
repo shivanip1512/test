@@ -1,6 +1,13 @@
 #ifndef  __CTINEXUSS_H__
 #define  __CTINEXUSS_H__
 
+#include <winsock.h>
+
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
+
 #include <windows.h>
 #include <limits.h>
 

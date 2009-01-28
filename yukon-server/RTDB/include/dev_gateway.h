@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2006/09/21 21:31:38 $
+* REVISION     :  $Revision: 1.9.22.2 $
+* DATE         :  $Date: 2008/11/17 23:06:32 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,6 +17,11 @@
 #pragma warning( disable : 4786)
 #ifndef __DEV_GATEWAY_H__
 #define __DEV_GATEWAY_H__
+
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
 
 #include <windows.h>
 #include <iostream>
@@ -26,7 +31,6 @@ using std::vector;
 using std::map;
 using std::iostream;
 
-#include "ctitypes.h"
 #include "cmdparse.h"
 #include "dlldefs.h"
 #include "dev_gwstat.h"

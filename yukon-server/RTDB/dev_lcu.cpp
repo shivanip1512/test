@@ -6,16 +6,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_lcu.cpp-arc  $
-* REVISION     :  $Revision: 1.45 $
-* DATE         :  $Date: 2008/10/29 18:16:46 $
+* REVISION     :  $Revision: 1.45.2.2 $
+* DATE         :  $Date: 2008/11/19 15:21:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-
-
-#include <windows.h>
 #include <iostream>
 #include <iomanip>
 
@@ -1524,7 +1521,7 @@ void CtiDeviceLCU::initLCUGlobals()
 // delete and set to new val.
 CtiDeviceLCU& CtiDeviceLCU::setLastControlMessage(const OUTMESS *pOutMessage)
 {
-    LockGuard guard(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     resetFlags(LCUWASGLOBAL); // This is set whenever a global message is added to non-global devices
 
     if(_lastControlMessage != NULL)
@@ -1551,7 +1548,7 @@ OUTMESS* CtiDeviceLCU::getLastControlMessage()
 // set NULL, we've writen it into a queue
 OUTMESS*  CtiDeviceLCU::releaseLastControlMessage()
 {
-    LockGuard guard(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     OUTMESS* lcm = _lastControlMessage;
     _lastControlMessage = NULL;
     return lcm;
@@ -1560,7 +1557,7 @@ OUTMESS*  CtiDeviceLCU::releaseLastControlMessage()
 // delete and set NULL
 void CtiDeviceLCU::deleteLastControlMessage()
 {
-    LockGuard guard(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     resetFlags(LCUWASGLOBAL); // This is set whenever a global message is added to non-global devices
 
     if(_lastControlMessage != NULL)
@@ -1595,13 +1592,13 @@ CtiDeviceLCU& CtiDeviceLCU::setStageTime(const CtiTime& aTime)
 
 UINT CtiDeviceLCU::setFlags( const UINT mask )
 {
-    LockGuard guard(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     _lcuFlags |= mask;
     return _lcuFlags;
 }
 UINT CtiDeviceLCU::resetFlags( const UINT mask )
 {
-    LockGuard guard(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     _lcuFlags &= ~(mask);
     return _lcuFlags;
 }
@@ -1612,7 +1609,7 @@ UINT CtiDeviceLCU::getFlags()
 
 bool CtiDeviceLCU::isFlagSet(UINT flags) const
 {
-    LockGuard guard(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     return(_lcuFlags & flags);
 }
 
@@ -1635,7 +1632,7 @@ CtiDeviceLCU& CtiDeviceLCU::setNumberStarted( const UINT ui )
 
 BOOL CtiDeviceLCU::isStagedUp(const CtiTime &tRef)
 {
-    LockGuard guard(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
 
     switch( _lcuType )
     {

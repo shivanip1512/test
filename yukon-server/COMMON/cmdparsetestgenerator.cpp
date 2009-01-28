@@ -12,7 +12,7 @@
 #include "yukon.h"
 
 #include <crtdbg.h>
-#include <windows.h>
+
 #include <iostream>
 #include <fstream>
 

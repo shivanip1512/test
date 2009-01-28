@@ -33,6 +33,7 @@ ctish.exe:     $(OBJS) Makefile
 $(OBJS) -link $(LIBS) $(RWLIBS) $(BOOSTLIBS)
                 @echo:
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+               mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
                -@copy ..\$@ $(YUKONOUTPUT)
                 @echo Done building Target $@
                 @echo:

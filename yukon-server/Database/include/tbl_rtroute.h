@@ -30,7 +30,7 @@
 
 IM_EX_CTIBASE INT getDebugLevel(void);
 
-class IM_EX_CTIYUKONDB CtiTableRoute : public CtiMemDBObject
+class CtiTableRoute : public CtiMemDBObject
 {
 protected:
 

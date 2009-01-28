@@ -5,16 +5,12 @@
 * Date:   6/17/2002
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2008/08/14 15:57:39 $
+* REVISION     :  $Revision: 1.12.2.1 $
+* DATE         :  $Date: 2008/11/13 17:23:39 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
-
-
-
-#include <windows.h>
 
 #include "cmdparse.h"
 #include "connection.h"

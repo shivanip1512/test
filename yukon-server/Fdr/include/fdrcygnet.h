@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2008/10/29 18:16:48 $
+* REVISION     :  $Revision: 1.9.2.2 $
+* DATE         :  $Date: 2008/11/18 20:11:30 $
 *    DESCRIPTION: This class implements an interface that retrieves point data
 *                 from a Foreign System.  The data is status and Analog data.
 *                 This interface only receives at this time.  It links with
@@ -22,7 +22,12 @@
 #ifndef __FDRCYGNET_H__
 #define __FDRCYGNET_H__
 
-#include <windows.h>    //  NOTE:  if porting this to non-WIN32, make sure to replace this
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
+
+#include <windows.h>    
 
 #include "dlldefs.h"
 #include "fdrinterface.h"

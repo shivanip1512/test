@@ -8,10 +8,17 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2008/10/28 19:21:44 $
+* REVISION     :  $Revision: 1.8.2.1 $
+* DATE         :  $Date: 2008/11/19 15:21:28 $
 * HISTORY      :
 * $Log: dev_grp_sa305.h,v $
+* Revision 1.8.2.1  2008/11/19 15:21:28  jmarks
+* [YUKRV-525] Comment: YUK-5273 Upgrade Yukon tool chain to Visual Studio 2005/2008
+*
+* * Responded to reviewer comments
+* * Changed monitor's version to MUTEX version
+* * Other changes for compilation
+*
 * Revision 1.8  2008/10/28 19:21:44  mfisher
 * YUK-6589 Scanner should not load non-scannable devices
 * refreshList() now takes a list of paoids, which may be empty if it's a full reload
@@ -66,6 +73,8 @@ public:
     } CtiSACommand_t;
 
 private:
+
+   typedef CtiDeviceGroupBase Inherited;
 
     CtiSACommand_t _lastSACommandType;
 

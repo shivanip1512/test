@@ -23,7 +23,7 @@
 #include "logger.h"
 #include "SharedFunctions.h"
 #include <queue>
-#include <Winsock2.h>
+#include <winsock.h>
 
 #include "EmetconWordBase.h"
 #include "EmetconWordC.h"

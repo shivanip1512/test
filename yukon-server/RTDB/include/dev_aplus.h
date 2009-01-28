@@ -14,9 +14,13 @@
 #pragma warning( disable : 4786 )
 
 
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
+
 #include <windows.h>
 
-#include "ctitypes.h"
 #include "types.h"
 #include "os2_2w32.h"
 #include "dsm2.h"

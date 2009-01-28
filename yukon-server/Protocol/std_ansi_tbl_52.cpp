@@ -75,7 +75,7 @@ CtiAnsiTable52::CtiAnsiTable52( BYTE *dataBlob, int timefmat )
 
 
     ULONG timeNow = CtiTime().seconds();
-    _meterServerTimeDifference = abs(timeNow - CtiTime(clock_table.clock_calendar).seconds());
+    _meterServerTimeDifference = (int)abs((int)(timeNow - CtiTime(clock_table.clock_calendar).seconds()));
 
 }
 

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_grp_ripple.h-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2008/10/28 19:21:43 $
+* REVISION     :  $Revision: 1.12.2.1 $
+* DATE         :  $Date: 2008/11/19 15:21:28 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -66,7 +66,7 @@ public:
     void contributeToBitPattern(BYTE *bptr, bool shed) const;
 };
 
-inline CtiTableRippleLoadGroup CtiDeviceGroupRipple::getRippleTable() const     { LockGuard gd(monitor()); return _rippleTable;}
-inline CtiTableRippleLoadGroup& CtiDeviceGroupRipple::getRippleTable()          { LockGuard gd(monitor()); return _rippleTable;}
+inline CtiTableRippleLoadGroup CtiDeviceGroupRipple::getRippleTable() const     { CtiLockGuard<CtiMutex> guard(_classMutex); return _rippleTable;}
+inline CtiTableRippleLoadGroup& CtiDeviceGroupRipple::getRippleTable()          { CtiLockGuard<CtiMutex> guard(_classMutex); return _rippleTable;}
 
 #endif // #ifndef __DEV_GRP_RIPPLE_H__

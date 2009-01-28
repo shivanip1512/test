@@ -1390,7 +1390,7 @@ CtiCCFeeder& CtiCCFeeder::setCurrentVarLoadPointValue(DOUBLE currentvarval, CtiT
     }
     _currentvarloadpointvalue = currentvarval;
     if( _RATE_OF_CHANGE && !getRecentlyControlledFlag() ){
-        regression.appendWithoutFill(std::make_pair(timestamp.seconds(),currentvarval));
+        regression.appendWithoutFill(std::make_pair((double)timestamp.seconds(),currentvarval));
         if(_CC_DEBUG & CC_DEBUG_RATE_OF_CHANGE)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -6025,7 +6025,7 @@ CtiCCFeeder& CtiCCFeeder::setPhaseAValue(DOUBLE value, CtiTime timestamp)
     _phaseAvalue = value;
     if( _RATE_OF_CHANGE && !getRecentlyControlledFlag() )
     {
-        regressionA.appendWithoutFill(std::make_pair(timestamp.seconds(),value));
+        regressionA.appendWithoutFill(std::make_pair((double)timestamp.seconds(),value));
         if(_CC_DEBUG & CC_DEBUG_RATE_OF_CHANGE)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -6048,7 +6048,7 @@ CtiCCFeeder& CtiCCFeeder::setPhaseBValue(DOUBLE value, CtiTime timestamp)
     _phaseBvalue = value;
     if( _RATE_OF_CHANGE && !getRecentlyControlledFlag() )
     {
-        regressionB.appendWithoutFill(std::make_pair(timestamp.seconds(),value));
+        regressionB.appendWithoutFill(std::make_pair((double)timestamp.seconds(),value));
         if(_CC_DEBUG & CC_DEBUG_RATE_OF_CHANGE)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -6071,7 +6071,7 @@ CtiCCFeeder& CtiCCFeeder::setPhaseCValue(DOUBLE value, CtiTime timestamp)
     _phaseCvalue = value;
     if( _RATE_OF_CHANGE && !getRecentlyControlledFlag() )
     {
-        regressionC.appendWithoutFill(std::make_pair(timestamp.seconds(),value));
+        regressionC.appendWithoutFill(std::make_pair((double)timestamp.seconds(),value));
         if(_CC_DEBUG & CC_DEBUG_RATE_OF_CHANGE)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -6709,7 +6709,7 @@ BOOL CtiCCFeeder::areAllMonitorPointsNewEnough(const CtiTime& currentDateTime)
                    dout << CtiTime() << " ALL MONITOR POINTS ARE NEW ENOUGH on Feeder: " <<getPAOName() << endl;
                 }
                 BOOL scanInProgress = FALSE;
-                for (i = 0; i < _multipleMonitorPoints.size(); i++)
+                for (int i = 0; i < _multipleMonitorPoints.size(); i++)
                 {
                     CtiCCMonitorPoint* point = (CtiCCMonitorPoint*)_multipleMonitorPoints[i];
                     if (point->getScanInProgress())
@@ -8239,9 +8239,10 @@ BOOL CtiCCFeeder::checkForAndProvideNeededFallBackControl(const CtiTime& current
             int capCount = 0;
             long ptId = iter->first;
 
-            CtiCCCapBankPtr bank = CtiCCSubstationBusStore::getInstance()->findCapBankByPointID(iter->first, capCount)->second;;
-            if (bank != NULL)
+            multimap< long, CtiCCCapBankPtr >::iterator bankIter, end;
+            if (CtiCCSubstationBusStore::getInstance()->findCapBankByPointID(iter->first, bankIter, end))
             {
+                CtiCCCapBankPtr bank = bankIter->second;
                 if (bank->getParentId() == getPAOId())
                 {
                     request = createForcedVarRequest(bank, pointChanges, ccEvents, iter->second, "LikeDay Control");

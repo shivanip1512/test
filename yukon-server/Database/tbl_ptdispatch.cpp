@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_ptdispatch.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2008/10/08 20:44:58 $
+* REVISION     :  $Revision: 1.18.2.1 $
+* DATE         :  $Date: 2008/11/18 20:11:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -89,7 +89,7 @@ CtiTablePointDispatch& CtiTablePointDispatch::operator=(const CtiTablePointDispa
     return *this;
 }
 
-int CtiTablePointDispatch::operator==(const CtiTablePointDispatch& right) const
+bool CtiTablePointDispatch::operator==(const CtiTablePointDispatch& right) const
 {
     return( getPointID() == right.getPointID() );
 }

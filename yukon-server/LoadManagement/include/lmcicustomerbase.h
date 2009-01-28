@@ -75,7 +75,7 @@ private:
     DOUBLE _customerdemandlevel;
     DOUBLE _curtailamount;
     string _curtailmentagreement;
-    string _timezone;
+    string _time_zone;
     LONG _customerorder;
 };
 #endif

@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2005/12/20 17:25:49 $
+* REVISION     :  $Revision: 1.2.24.2 $
+* DATE         :  $Date: 2008/11/13 17:23:50 $
 *
 *   This object represents a single operation to a thermostat
 *
@@ -21,11 +21,14 @@
 #ifndef __PENDING_STAT_OPERATION_H__
 #define __PENDING_STAT_OPERATION_H__
 
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
+
 #include <windows.h>
 #include <vector>
 
-
-#include "ctitypes.h"
 #include "dsm2.h"
 #include "dlldefs.h"
 

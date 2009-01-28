@@ -42,7 +42,6 @@
 #pragma warning( disable : 4786)
 
 #include "dlldefs.h"
-#include "ctitypes.h"
 #include "types.h"
 #include "std_ansi_tbl_base.h"
 

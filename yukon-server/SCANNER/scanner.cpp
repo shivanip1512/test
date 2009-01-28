@@ -6,15 +6,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.82 $
-* DATE         :  $Date: 2008/10/29 20:49:42 $
+* REVISION     :  $Revision: 1.82.2.2 $
+* DATE         :  $Date: 2008/11/21 16:14:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-
-#include <windows.h>       // These next few are required for Win32
+// These next few are required for Win32
 #include <process.h>
 #include <vector>
 
@@ -886,7 +885,7 @@ VOID NexusThread (VOID *Arg)
     IM_EX_CTIBASE extern CTINEXUS PorterNexus;
 
     /* Misc. definitions */
-    ULONG       i;
+    ULONG       i = 0;
     /* Define the various time variable */
     CtiTime      TimeNow;
 

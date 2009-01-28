@@ -6,16 +6,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/include/config_device.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2008/04/14 21:21:36 $
+* REVISION     :  $Revision: 1.4.6.4 $
+* DATE         :  $Date: 2008/11/21 16:14:54 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #ifndef  __CTICONNECT_H__
 #define  __CTICONNECT_H__
 #include "yukon.h"
-
-#include <windows.h>
 
 #include "dlldefs.h"
 #include "netports.h"

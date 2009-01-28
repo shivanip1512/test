@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2008/10/20 18:48:01 $
+* REVISION     :  $Revision: 1.13.2.1 $
+* DATE         :  $Date: 2008/11/21 16:14:54 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -185,7 +185,7 @@ public:
 
     void run();
 
-    push_back(CtiMessage *msg);
+    void push_back(CtiMessage *msg);
 
     static const char *tickle_packet;
 };

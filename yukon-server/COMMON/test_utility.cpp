@@ -1,7 +1,6 @@
 #define BOOST_AUTO_TEST_MAIN "Test utility.h"
 
 #include "yukon.h"
-#include <boost/test/auto_unit_test.hpp>
 #include <boost/test/unit_test.hpp>
 using boost::unit_test_framework::test_suite;
 
@@ -23,7 +22,7 @@ struct instance_counter
 
 int instance_counter::counter;
 
-BOOST_AUTO_UNIT_TEST(test_delete_container)
+BOOST_AUTO_TEST_CASE(test_delete_container)
 {
     std::vector<instance_counter *> test_vector;
     const int max_size = 4;
@@ -54,7 +53,7 @@ BOOST_AUTO_UNIT_TEST(test_delete_container)
 }
 
 
-BOOST_AUTO_UNIT_TEST(test_delete_assoc_container)
+BOOST_AUTO_TEST_CASE(test_delete_assoc_container)
 {
     std::map<int, instance_counter *> test_map;
     const int max_size = 4;
@@ -85,7 +84,7 @@ BOOST_AUTO_UNIT_TEST(test_delete_assoc_container)
 }
 
 
-BOOST_AUTO_UNIT_TEST(test_stringCompareIgnoreCase)
+BOOST_AUTO_TEST_CASE(test_stringCompareIgnoreCase)
 {
     BOOST_CHECK(!stringCompareIgnoreCase("cat", "cat"));
     BOOST_CHECK(!stringCompareIgnoreCase("Cat", "cat"));
@@ -102,7 +101,7 @@ BOOST_AUTO_UNIT_TEST(test_stringCompareIgnoreCase)
     BOOST_CHECK( stringCompareIgnoreCase("CAT", ""));
 }
 
-BOOST_AUTO_UNIT_TEST(test_stringContainsIgnoreCase)
+BOOST_AUTO_TEST_CASE(test_stringContainsIgnoreCase)
 {
     BOOST_CHECK_EQUAL(stringContainsIgnoreCase("dog",      "cat"), 0);
     BOOST_CHECK_EQUAL(stringContainsIgnoreCase("doggie",   "cat"), 0);
@@ -118,7 +117,7 @@ BOOST_AUTO_UNIT_TEST(test_stringContainsIgnoreCase)
 }
 
 
-BOOST_AUTO_UNIT_TEST(test_in_place_trim)
+BOOST_AUTO_TEST_CASE(test_in_place_trim)
 {
     string test;
 
@@ -147,7 +146,7 @@ BOOST_AUTO_UNIT_TEST(test_in_place_trim)
     BOOST_CHECK_EQUAL(test, "I am a right-justified string.");
 }
 
-BOOST_AUTO_UNIT_TEST(test_find_expired_om)
+BOOST_AUTO_TEST_CASE(test_find_expired_om)
 {
     QUEUEENT ent;
     PQUEUEENT queEnt = &ent;
@@ -172,7 +171,7 @@ BOOST_AUTO_UNIT_TEST(test_find_expired_om)
     BOOST_CHECK(!findExpiredOutMessage((void *)&historicalTime, queEnt));
 }
 
-BOOST_AUTO_UNIT_TEST(test_csv_output_iterator)
+BOOST_AUTO_TEST_CASE(test_csv_output_iterator)
 {
     std::ostringstream ostr;
     std::vector<long> source;
@@ -191,7 +190,7 @@ BOOST_AUTO_UNIT_TEST(test_csv_output_iterator)
     BOOST_CHECK_EQUAL(ostr.str(), "1,1,2,3,5,8");
 }
 
-BOOST_AUTO_UNIT_TEST(test_isExpresscomGroup)
+BOOST_AUTO_TEST_CASE(test_isExpresscomGroup)
 {
     //True cases
     bool ret = isExpresscomGroup(TYPE_LMGROUP_EXPRESSCOM);

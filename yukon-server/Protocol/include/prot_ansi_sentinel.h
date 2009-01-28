@@ -13,6 +13,11 @@
 #define __PROT_ANSI_SENTINEL_H__
 #pragma warning( disable : 4786)
 
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
+
 #include <windows.h>
 #include "prot_ansi.h"
 

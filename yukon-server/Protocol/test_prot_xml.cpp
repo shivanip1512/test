@@ -1,5 +1,8 @@
 
 #include "yukon.h"
+
+#define BOOST_AUTO_TEST_MAIN "Test prot_xml"
+
 #include <boost/test/unit_test.hpp>
 
 #include <string>
@@ -11,13 +14,11 @@
 using std::string;
 using std::stringstream;
 
-#define BOOST_AUTO_TEST_MAIN "Test XML Protocol"
-#include <boost/test/auto_unit_test.hpp>
 using boost::unit_test_framework::test_suite;
 
 using namespace Cti::Protocol;
 
-BOOST_AUTO_UNIT_TEST(test_prot_xml_recvComm)
+BOOST_AUTO_TEST_CASE(test_prot_xml_recvComm)
 {
     int groupId = 42;
     string commandString = "control shed 60m";
@@ -40,7 +41,7 @@ BOOST_AUTO_UNIT_TEST(test_prot_xml_recvComm)
     delete OutMessage;
 }
 
-BOOST_AUTO_UNIT_TEST(test_prot_xml_genereate_xmloutput)
+BOOST_AUTO_TEST_CASE(test_prot_xml_genereate_xmloutput)
 {
     string commandString = "control shed 60m";
     XmlObject::XmlObjectSPtr xml;
@@ -74,7 +75,7 @@ BOOST_AUTO_UNIT_TEST(test_prot_xml_genereate_xmloutput)
     BOOST_CHECK_EQUAL(expected,output);
 }
 
-BOOST_AUTO_UNIT_TEST(test_prot_xml_generate_xfer)
+BOOST_AUTO_TEST_CASE(test_prot_xml_generate_xfer)
 {
     string commandString = "control shed 60m";
     string expected = "<XML_COMMAND command=\"8\" flags=\"1024\"><XML_DATA sa_dlc_mode=\"(none)\"><INT>1</INT><REAL>1.000</REAL></XML_DATA><XML_DATA sa_f0bit=\"(none)\"><INT>0</INT><REAL>0.000</REAL></XML_DATA><XML_DATA sa_f1bit=\"(none)\"><INT>0</INT><REAL>0.000</REAL></XML_DATA><XML_DATA shed=\"(none)\"><INT>3600</INT><REAL>3600.000</REAL></XML_DATA><XML_DATA type=\"versacom\"><INT>0</INT><REAL>0.000</REAL></XML_DATA></XML_COMMAND>";

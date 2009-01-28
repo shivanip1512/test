@@ -177,7 +177,7 @@ public:
 
     void addRegressionVal( const CtiTime &time, double value )
     {
-        _regress.appendWithoutFill(std::make_pair(time.seconds(), value));
+        _regress.appendWithoutFill(std::make_pair((double)time.seconds(), value));
         _isPrimed = true;
     }
 
@@ -216,7 +216,7 @@ protected:
 
         if( _useRegression )
         {
-            _regress.append(std::make_pair(_pointTime.seconds(), _pointValue));
+            _regress.append(std::make_pair((double)_pointTime.seconds(), _pointValue));
         }
     };
 
@@ -231,7 +231,7 @@ protected:
 
         if( _useRegression )
         {
-            _regress.append(std::make_pair(_pointTime.seconds(), _pointValue));
+            _regress.append(std::make_pair((double)_pointTime.seconds(), _pointValue));
         }
     };
 

@@ -9,10 +9,26 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_ansi_kv2.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2008/10/21 16:30:31 $
+* REVISION     :  $Revision: 1.7.2.1 $
+* DATE         :  $Date: 2008/11/13 17:23:43 $
 *    History:
       $Log: prot_ansi_kv2.h,v $
+      Revision 1.7.2.1  2008/11/13 17:23:43  jmarks
+      YUK-5273 Upgrade Yukon tool chain to Visual Studio 2005/2008
+
+      Responded to reviewer comments again.
+
+      I eliminated excess references to windows.h .
+
+      This still left over 100 references to it where "yukon.h" or "precompiled.h" was not obviously included.  Some other chaining of references could still be going on, and of course it is potentially possible that not all the files in the project that include windows.h actually need it - I didn't check for that.
+
+      None-the-less, I than added the NOMINMAX define right before each place where windows.h is still included.
+      Special note:  std::min<LONG>(TimeOut, 500); is still required for compilation.
+
+      In this process I occasionally deleted a few empty lines, and when creating the define, also added some.
+
+      This may not have affected every file in the project, but while mega-editing it certainly seemed like it did.
+
       Revision 1.7  2008/10/21 16:30:31  mfisher
       YUK-6615 ANSI table class names and filenames are difficult to read
       Renamed classes and filenames
@@ -42,6 +58,11 @@
 #ifndef __PROT_ANSI_KV2_H__
 #define __PROT_ANSI_KV2_H__
 #pragma warning( disable : 4786)
+
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
 
 #include <windows.h>
 #include "prot_ansi.h"

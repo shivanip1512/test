@@ -10,7 +10,6 @@
  */
 #define BOOST_AUTO_TEST_MAIN "Test RW Utils"
 
-#include <boost/test/auto_unit_test.hpp>
 #include <boost/test/unit_test.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/date_time/local_time_adjustor.hpp>
@@ -26,7 +25,7 @@
 
 using boost::unit_test_framework::test_suite;
 
-BOOST_AUTO_UNIT_TEST(test_to_rwdbdt)
+BOOST_AUTO_TEST_CASE(test_to_rwdbdt)
 {
     CtiTime nowCtiTime;
     RWDBDateTime rwdbdt = toRWDBDT(nowCtiTime);
@@ -65,7 +64,7 @@ BOOST_AUTO_UNIT_TEST(test_to_rwdbdt)
     BOOST_CHECK_EQUAL( rwdbdt.second(), nowCtiTime.second() );
 }
 
-BOOST_AUTO_UNIT_TEST(test_to_boost_date)
+BOOST_AUTO_TEST_CASE(test_to_boost_date)
 {
     RWDate rw_date = RWDate();
     date d = to_boost_date(rw_date);
@@ -74,7 +73,7 @@ BOOST_AUTO_UNIT_TEST(test_to_boost_date)
     BOOST_CHECK_EQUAL( rw_date.year(), d.year() );
 }
 
-BOOST_AUTO_UNIT_TEST(test_to_boost_ptime)
+BOOST_AUTO_TEST_CASE(test_to_boost_ptime)
 {
     typedef boost::date_time::c_local_adjustor<ptime> local_adj;
     RWDBDateTime rw_date_time;
@@ -94,7 +93,7 @@ BOOST_AUTO_UNIT_TEST(test_to_boost_ptime)
 }
 
 
-BOOST_AUTO_UNIT_TEST(test_stringCompareIgnoreCase)
+BOOST_AUTO_TEST_CASE(test_stringCompareIgnoreCase)
 {
     std::string s1 = "My Compare";
     std::string s2 = "my cOmParE";

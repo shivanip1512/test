@@ -18,7 +18,7 @@ all:
         @%cd $(COMPILEBASE)\cparms
         @$(MAKE) -nologo
         @%cd $(COMPILEBASE)\common
-        @cid .\include\id_build.h
+        # @cid .\include\id_build.h #TEMPORARILY COMMENT OUT
         @echo:
         @title Building in $(COMPILEBASE)\common
         @echo Building in $(COMPILEBASE)\common
@@ -141,6 +141,7 @@ all:
         @echo:
         @title Building in $(COMPILEBASE)\calc
         @echo Building in $(COMPILEBASE)\calc
+
         @echo:
         @$(MAKE) -nologo
         @%cd $(COMPILEBASE)\capcontrol

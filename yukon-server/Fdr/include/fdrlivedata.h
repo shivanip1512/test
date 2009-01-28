@@ -10,13 +10,18 @@
  * Author: Tom Mack
  *
  * PVCS KEYWORDS:
- *    REVISION     :  $Revision: 1.7 $
- *    DATE         :  $Date: 2008/10/29 18:16:48 $
+ *    REVISION     :  $Revision: 1.7.2.2 $
+ *    DATE         :  $Date: 2008/11/18 20:11:30 $
  *    History:
  *      $History:$
  */
 
-#include <windows.h>    //  NOTE:  if porting this to non-WIN32, make sure to replace this
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
+
+#include <windows.h>    
 #include <rw/db/status.h>
 #include <vector>
 #include <list>

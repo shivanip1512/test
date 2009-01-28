@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2002/04/16 15:58:42 $
+* REVISION     :  $Revision: 1.3.90.1 $
+* DATE         :  $Date: 2008/11/13 17:23:45 $
 *
 * Copyright 1997 Visual Systems, Inc.
 *
@@ -23,6 +23,12 @@
 #ifndef OS2
     // disable the level 4 warnings in windows.h
     #pragma warning ( disable: 4201 4514 )
+    
+    #if !defined (NOMINMAX)
+    #define NOMINMAX
+    #endif
+
+
     #include <windows.h>
 #endif
 #endif

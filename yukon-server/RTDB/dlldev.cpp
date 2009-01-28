@@ -6,14 +6,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dlldev.cpp-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2008/10/28 19:21:43 $
+* REVISION     :  $Revision: 1.22.2.2 $
+* DATE         :  $Date: 2008/11/20 16:49:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
-
-#include <windows.h>
 
 #include "utility.h"
 
@@ -24,7 +22,6 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
         case DLL_PROCESS_ATTACH:
         {
             identifyProject(CompileInfo);
-
             break;
         }
         case DLL_THREAD_ATTACH:

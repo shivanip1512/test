@@ -90,7 +90,7 @@ Klondike::command_state_map_t::command_state_map_t()
 
 bool Klondike::nextCommandState()
 {
-    command_state_map_t::iterator itr = _command_states.find(_current_command.command);
+    command_state_map_t::const_iterator itr = _command_states.find(_current_command.command);
 
     //  find our proposed next state
     if( itr != _command_states.end() && _current_command.state < itr->second.size() )
@@ -892,7 +892,7 @@ void Klondike::processResponse(const byte_buffer_t &inbound)
                 for( int entry = 0; entry < queue_entries_read; entry++ )
                 {
                     //  queue_response_t's constructor increments the inbound iterator
-                    queue_response_t q(inbound_itr);
+                    queue_response_t q( (const unsigned char *&)inbound_itr);
 
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1071,7 +1071,7 @@ struct report_waiting_requests
     ostringstream &_stream;
 
     template<class T>
-    operator()(const T &waiting)
+    void operator()(const T &waiting)
     {
         if( waiting.om )
         {
@@ -1097,7 +1097,7 @@ struct report_pending_requests
     ostringstream &_stream;
 
     template<class T>
-    operator()(const T &pending)
+    void operator()(const T &pending)
     {
         if( pending.second->om )
         {
@@ -1125,7 +1125,7 @@ struct report_remote_requests
     ostringstream &_stream;
 
     template<class T>
-    operator()(const T &remote)
+    void operator()(const T &remote)
     {
         if( remote.second.om )
         {
@@ -1211,7 +1211,7 @@ struct store_max_priority
     store_max_priority(unsigned base_priority) : max_priority(base_priority) { };
 
     template<class T>
-    operator()(T element)
+    void operator()(T element)
     {
         max_priority = max(max_priority, element.second.priority);
     }

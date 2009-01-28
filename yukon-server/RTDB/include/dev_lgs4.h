@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2008/06/06 20:28:44 $
+* REVISION     :  $Revision: 1.14.4.2 $
+* DATE         :  $Date: 2008/11/17 23:06:32 $
 *
 * Copyright (c) 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,8 +19,13 @@
 #pragma warning( disable : 4786 )
 
 
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
+
 #include <windows.h>
-#include "ctitypes.h"
+
 #include "types.h"
 #include "os2_2w32.h"
 #include "dsm2.h"

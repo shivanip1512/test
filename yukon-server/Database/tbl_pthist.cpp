@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pthist.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/12/20 17:16:07 $
+* REVISION     :  $Revision: 1.7.24.1 $
+* DATE         :  $Date: 2008/11/18 20:11:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -42,15 +42,16 @@ CtiTablePointHistory::~CtiTablePointHistory()
 {
 }
 
-CtiTablePointHistory::operator=(const CtiTablePointHistory& right)
+CtiTablePointHistory& CtiTablePointHistory::operator=(const CtiTablePointHistory& right)
 {
     setPointID( right.getPointID() );
     setTimeStamp( right.getTimeStamp() );
     setQuality( right.getQuality() );
     setValue( right.getValue() );
+    return *this;
 }
 
-int CtiTablePointHistory::operator==(const CtiTablePointHistory& right) const
+bool CtiTablePointHistory::operator==(const CtiTablePointHistory& right) const
 {
     return( getPointID() == right.getPointID() &&
             getTimeStamp() == right.getTimeStamp() );

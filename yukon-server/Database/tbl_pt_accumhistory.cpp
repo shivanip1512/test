@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_accumhistory.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/12/20 17:16:07 $
+* REVISION     :  $Revision: 1.8.24.1 $
+* DATE         :  $Date: 2008/11/18 20:11:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -50,7 +50,7 @@ CtiTablePointAccumulatorHistory& CtiTablePointAccumulatorHistory::operator=(cons
     return *this;
 }
 
-int CtiTablePointAccumulatorHistory::operator==(const CtiTablePointAccumulatorHistory& right) const
+bool CtiTablePointAccumulatorHistory::operator==(const CtiTablePointAccumulatorHistory& right) const
 {
     return( getPointID() == right.getPointID() );
 }
@@ -182,8 +182,3 @@ CtiTablePointAccumulatorHistory& CtiTablePointAccumulatorHistory::setPresentPuls
     setDirty(TRUE);
     return *this;
 }
-CtiTablePointAccumulatorHistory::CtiTablePointAccumulatorHistory(LONG pid,ULONG prevpulsecount,ULONG pulsecount);
-
-CtiTablePointAccumulatorHistory::CtiTablePointAccumulatorHistory(const CtiTablePointAccumulatorHistory& aRef);
-CtiTablePointAccumulatorHistory::~CtiTablePointAccumulatorHistory();
-

@@ -1,7 +1,6 @@
 #include "yukon.h"
 
 #include <crtdbg.h>
-#include <windows.h>
 #include <iostream>
 using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 

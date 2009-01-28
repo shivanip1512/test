@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2008/10/28 19:21:42 $
+* REVISION     :  $Revision: 1.17.2.1 $
+* DATE         :  $Date: 2008/11/19 15:21:28 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -84,27 +84,25 @@ void CtiDeviceGroupMCT::DecodeDatabaseReader( RWDBReader &rdr )
 
 LONG CtiDeviceGroupMCT::getAddress() const
 {
-    using CtiTableLMGroupMCT::AddressLevels;
-
     int address = 0;
 
     switch( _lmGroupMCT.getAddressLevel() )
     {
-        case AddressLevels::Addr_Bronze:
+        case CtiTableLMGroupMCT::Addr_Bronze:
         {
             address = BaseAddress_Bronze + _lmGroupMCT.getAddress();
 
             break;
         }
 
-        case AddressLevels::Addr_Lead:
+        case CtiTableLMGroupMCT::Addr_Lead:
         {
             address = BaseAddress_LeadLoad + _lmGroupMCT.getAddress();
 
             break;
         }
 
-        case AddressLevels::Addr_Unique:
+        case CtiTableLMGroupMCT::Addr_Unique:
         {
             address = _lmGroupMCT.getMCTUniqueAddress();
 

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_dr87.h-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2008/06/06 20:28:01 $
+* REVISION     :  $Revision: 1.12.4.2 $
+* DATE         :  $Date: 2008/11/17 23:06:32 $
 *
 * Copyright (c) 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,11 +19,15 @@
 #pragma warning( disable : 4786 )
 
 
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
+
 #include <windows.h>
 #include <iostream>
 #include <vector>
 
-#include "ctitypes.h"
 #include "types.h"
 #include "os2_2w32.h"
 #include "dsm2.h"

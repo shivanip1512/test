@@ -31,7 +31,7 @@
    -------------------------------------------------------------------- */
 #include "yukon.h"
 
-#include <windows.h>       // These next few are required for Win32
+// These next few are required for Win32
 #include <process.h>
 #include <iostream>
 using namespace std;
@@ -260,7 +260,7 @@ IM_EX_CTIBASE INT LoopBack (USHORT Port, USHORT Remote)
    ULONG BytesWritten;
    REQUESTDATA ReadResult;
    BYTE ReadPriority;
-   ULONG ReadLength;
+   ULONG ReadLength = 0; 
    ULONG QueueElements;
 
    OutMessage.Port = Port;

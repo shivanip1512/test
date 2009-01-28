@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT470.h-arc  $
-* REVISION     :  $Revision: 1.48 $
-* DATE         :  $Date: 2008/08/15 13:08:05 $
+* REVISION     :  $Revision: 1.48.2.1 $
+* DATE         :  $Date: 2008/11/19 15:21:28 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -108,7 +108,7 @@ private:
 
     void decodeDNPRealTimeRead(BYTE *buffer, int readNumber, string &resultString, CtiReturnMsg *ReturnMsg, INMESS *InMessage);
     void getBytesFromString(string &values, BYTE* buffer, int buffLen, int &numValues, int fillCount, int bytesPerValue);
-    int sendDNPConfigMessages(int startMCTID,  list< OUTMESS * > &outList, OUTMESS *&OutMessage, string &dataA, string &dataB, CtiTableDynamicPaoInfo::Keys key, bool force, bool verifyOnly);
+    int sendDNPConfigMessages(int startMCTID,  list< OUTMESS * > &outList, OUTMESS *&OutMessage, string &dataA, string &dataB, CtiTableDynamicPaoInfo::PaoInfoKeys key, bool force, bool verifyOnly);
 
     bool computeMultiplierFactors(double multiplier, unsigned &numerator, unsigned &denominator) const;
     string describeChannel(unsigned char channel_config) const;
@@ -374,7 +374,7 @@ protected:
     };
 
     bool isLPDynamicInfoCurrent(void);
-    void requestDynamicInfo(CtiTableDynamicPaoInfo::Keys key, OUTMESS *&OutMessage, list< OUTMESS* > &outList);
+    void requestDynamicInfo(CtiTableDynamicPaoInfo::PaoInfoKeys key, OUTMESS *&OutMessage, list< OUTMESS* > &outList);
 
     void sendIntervals(OUTMESS *&OutMessage, list< OUTMESS* > &outList);
 

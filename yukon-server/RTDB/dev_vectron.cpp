@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_vectron.cpp-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2008/10/29 20:06:27 $
+* REVISION     :  $Revision: 1.18.2.1 $
+* DATE         :  $Date: 2008/11/20 16:49:20 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2311,13 +2311,13 @@ INT CtiDeviceVectron::reformatDataBuffer(BYTE *aInMessBuffer, ULONG &aTotalBytes
     workBuffer[0] &= 0x0F;
 
     ptr->Real.register1.data.demand.rateE.Cumulative =
-    (FLOAT)((BCDtoBase10 (workBuffer,4) / pow (10,7)) * pow (2,(USHORT)ptr->Byte.register1RateE[0] >> 4));
+    (FLOAT)( (float)(BCDtoBase10 (workBuffer,4) / pow (10.0F,7.0F)) * pow (2.0F, (float)((USHORT)ptr->Byte.register1RateE[0] >> 4)));
 
     memcpy (&workBuffer[0],&ptr->Byte.register1RateE[4],4);
     workBuffer[0] &= 0x0F;
 
     ptr->Real.register1.data.demand.rateE.PeakValue =
-    (FLOAT)((BCDtoBase10 (workBuffer,4) / pow (10,7)) * pow (2,(USHORT)ptr->Byte.register1RateE[4] >> 4));
+    (FLOAT)((float)(BCDtoBase10 (workBuffer,4) / pow (10.0F,7.0F)) * pow (2.0F,(float)((USHORT)ptr->Byte.register1RateE[4] >> 4)));
 
     ptr->Real.register1.data.demand.rateE.Month = (USHORT)(BCDtoBase10 (&ptr->Byte.register1RateE[8],1));
     ptr->Real.register1.data.demand.rateE.Day = (USHORT)(BCDtoBase10 (&ptr->Byte.register1RateE[9],1));
@@ -2329,7 +2329,7 @@ INT CtiDeviceVectron::reformatDataBuffer(BYTE *aInMessBuffer, ULONG &aTotalBytes
     workBuffer[0] &= 0x0F;
 
     ptr->Real.register1.data.demand.rateA.PeakValue =
-    (FLOAT)((BCDtoBase10 (workBuffer,4) / pow (10,7)) * pow (2,(USHORT)ptr->Byte.register1RateA[0] >> 4));
+    (FLOAT)((FLOAT) (BCDtoBase10 (workBuffer,4) / pow (10.0F,7.0F)) * pow (2.0F,(USHORT)ptr->Byte.register1RateA[0] >> 4));
 
     ptr->Real.register1.data.demand.rateA.Month = (USHORT)(BCDtoBase10 (&ptr->Byte.register1RateA[4],1));
     ptr->Real.register1.data.demand.rateA.Day = (USHORT)(BCDtoBase10 (&ptr->Byte.register1RateA[5],1));
@@ -2341,7 +2341,7 @@ INT CtiDeviceVectron::reformatDataBuffer(BYTE *aInMessBuffer, ULONG &aTotalBytes
     workBuffer[0] &= 0x0F;
 
     ptr->Real.register1.data.demand.rateB.PeakValue =
-    (FLOAT)((BCDtoBase10 (workBuffer,4) / pow (10,7)) * pow (2,(USHORT)ptr->Byte.register1RateB[0] >> 4));
+    (FLOAT)((FLOAT)(BCDtoBase10 (workBuffer,4) / pow (10.0F,7.0F)) * pow (2.0F,(FLOAT)((USHORT)ptr->Byte.register1RateB[0] >> 4)));
 
     ptr->Real.register1.data.demand.rateB.Month = (USHORT)(BCDtoBase10 (&ptr->Byte.register1RateB[4],1));
     ptr->Real.register1.data.demand.rateB.Day = (USHORT)(BCDtoBase10 (&ptr->Byte.register1RateB[5],1));
@@ -2353,7 +2353,7 @@ INT CtiDeviceVectron::reformatDataBuffer(BYTE *aInMessBuffer, ULONG &aTotalBytes
     workBuffer[0] &= 0x0F;
 
     ptr->Real.register1.data.demand.rateC.PeakValue =
-    (FLOAT)((BCDtoBase10 (workBuffer,4) / pow (10,7)) * pow (2,(USHORT)ptr->Byte.register1RateC[0] >> 4));
+    (FLOAT)((FLOAT)(BCDtoBase10 (workBuffer,4) / pow(10.0F,7.0F)) * pow(2.0F,(FLOAT)((USHORT)ptr->Byte.register1RateC[0] >> 4)));
 
     ptr->Real.register1.data.demand.rateC.Month = (USHORT)(BCDtoBase10 (&ptr->Byte.register1RateC[4],1));
     ptr->Real.register1.data.demand.rateC.Day = (USHORT)(BCDtoBase10 (&ptr->Byte.register1RateC[5],1));
@@ -2365,7 +2365,7 @@ INT CtiDeviceVectron::reformatDataBuffer(BYTE *aInMessBuffer, ULONG &aTotalBytes
     workBuffer[0] &= 0x0F;
 
     ptr->Real.register1.data.demand.rateD.PeakValue =
-    (FLOAT)((BCDtoBase10 (workBuffer,4) / pow (10,7)) * pow (2,(USHORT)ptr->Byte.register1RateD[0] >> 4));
+    (FLOAT)((FLOAT)(BCDtoBase10 (workBuffer,4) / pow (10.0F,7.0F)) * pow (2.0F,(FLOAT)((USHORT)ptr->Byte.register1RateD[0] >> 4)));
 
     ptr->Real.register1.data.demand.rateD.Month = (USHORT)(BCDtoBase10 (&ptr->Byte.register1RateD[4],1));
     ptr->Real.register1.data.demand.rateD.Day = (USHORT)(BCDtoBase10 (&ptr->Byte.register1RateD[5],1));
@@ -2387,7 +2387,7 @@ INT CtiDeviceVectron::reformatDataBuffer(BYTE *aInMessBuffer, ULONG &aTotalBytes
         workBuffer[0] &= 0x0F;
 
         ptr->Real.register2.data.demand.rateE.PeakValue =
-        (FLOAT)((BCDtoBase10 (workBuffer,4) / pow (10,7)) * pow (2,(USHORT)ptr->Byte.register2Info1[0] >> 4));
+        (FLOAT)((FLOAT)(BCDtoBase10 (workBuffer,4) / pow (10.0F,7.0F)) * pow (2.0F,(FLOAT) ((USHORT)ptr->Byte.register2Info1[0] >> 4)));
 
         ptr->Real.register2.data.demand.rateE.Month = (USHORT)(BCDtoBase10 (&ptr->Byte.register2Info1[4],1));
         ptr->Real.register2.data.demand.rateE.Day = (USHORT)(BCDtoBase10 (&ptr->Byte.register2Info1[5],1));
@@ -2399,14 +2399,14 @@ INT CtiDeviceVectron::reformatDataBuffer(BYTE *aInMessBuffer, ULONG &aTotalBytes
         workBuffer[0] &= 0x0F;
 
         ptr->Real.register2.data.demand.rateE.Cumulative =
-        (FLOAT)((BCDtoBase10 (workBuffer,4) / pow (10,7)) * pow (2,(USHORT)ptr->Byte.register2Info2[8] >> 4));
+        (FLOAT)((FLOAT)(BCDtoBase10 (workBuffer,4) / pow (10.0F,7.0F)) * pow (2.0F,(FLOAT)((USHORT)ptr->Byte.register2Info2[8] >> 4)));
 
         //rate A
         memcpy (&workBuffer[0],&ptr->Byte.register2Info2[0],4);
         workBuffer[0] &= 0x0F;
 
         ptr->Real.register2.data.demand.rateA.PeakValue =
-        (FLOAT)((BCDtoBase10 (workBuffer,4) / pow (10,7)) * pow (2,(USHORT)ptr->Byte.register2Info2[0] >> 4));
+        (FLOAT)((FLOAT)(BCDtoBase10 (workBuffer,4) / pow (10.0F,7.0F)) * pow (2.0F,(FLOAT)((USHORT)ptr->Byte.register2Info2[0] >> 4)));
 
         ptr->Real.register2.data.demand.rateA.Month = (USHORT)(BCDtoBase10 (&ptr->Byte.register2Info2[4],1));
         ptr->Real.register2.data.demand.rateA.Day = (USHORT)(BCDtoBase10 (&ptr->Byte.register2Info2[5],1));
@@ -2418,7 +2418,7 @@ INT CtiDeviceVectron::reformatDataBuffer(BYTE *aInMessBuffer, ULONG &aTotalBytes
         workBuffer[0] &= 0x0F;
 
         ptr->Real.register2.data.demand.rateB.PeakValue =
-        (FLOAT)((BCDtoBase10 (workBuffer,4) / pow (10,7)) * pow (2,(USHORT)ptr->Byte.register2Info2[14] >> 4));
+        (FLOAT)((FLOAT)(BCDtoBase10 (workBuffer,4) / pow (10.0F,7.0F)) * pow (2.0F,(FLOAT)((USHORT)ptr->Byte.register2Info2[14] >> 4)));
 
         ptr->Real.register2.data.demand.rateB.Month = (USHORT)(BCDtoBase10 (&ptr->Byte.register2Info2[18],1));
         ptr->Real.register2.data.demand.rateB.Day = (USHORT)(BCDtoBase10 (&ptr->Byte.register2Info2[19],1));
@@ -2431,11 +2431,11 @@ INT CtiDeviceVectron::reformatDataBuffer(BYTE *aInMessBuffer, ULONG &aTotalBytes
     else
     {
         // energy
-        ptr->Real.register2.data.energy.rateE = VectronBCDtoDouble (&ptr->Byte.register2Info1[1],7) / pow (10,8);
-        ptr->Real.register2.data.energy.rateA = VectronBCDtoDouble (&ptr->Byte.register2Info2[0],7) / pow (10,8);
-        ptr->Real.register2.data.energy.rateB = VectronBCDtoDouble (&ptr->Byte.register2Info2[7],7) / pow (10,8);
-        ptr->Real.register2.data.energy.rateC = VectronBCDtoDouble (&ptr->Byte.register2Info2[14],7) / pow (10,8);
-        ptr->Real.register2.data.energy.rateD = VectronBCDtoDouble (&ptr->Byte.register2Info2[21],7) / pow (10,8);
+        ptr->Real.register2.data.energy.rateE = VectronBCDtoDouble (&ptr->Byte.register2Info1[1],7) / pow (10.0F,8.0F);
+        ptr->Real.register2.data.energy.rateA = VectronBCDtoDouble (&ptr->Byte.register2Info2[0],7) / pow (10.0F,8.0F);
+        ptr->Real.register2.data.energy.rateB = VectronBCDtoDouble (&ptr->Byte.register2Info2[7],7) / pow (10.0F,8.0F);
+        ptr->Real.register2.data.energy.rateC = VectronBCDtoDouble (&ptr->Byte.register2Info2[14],7) / pow (10.0F,8.0F);
+        ptr->Real.register2.data.energy.rateD = VectronBCDtoDouble (&ptr->Byte.register2Info2[21],7) / pow (10.0F,8.0F);
 
         ptr->Real.register2.configFlag  = 0;
     }
@@ -2455,7 +2455,7 @@ INT CtiDeviceVectron::reformatDataBuffer(BYTE *aInMessBuffer, ULONG &aTotalBytes
         workBuffer[0] &= 0x0F;
 
         ptr->Real.register3.data.demand.rateE.PeakValue =
-        (FLOAT)((BCDtoBase10 (workBuffer,4) / pow (10,7)) * pow (2,(USHORT)ptr->Byte.register3Info1[0] >> 4));
+        (FLOAT)((FLOAT)(BCDtoBase10 (workBuffer,4) / pow (10.0F,7.0F)) * pow (2,(FLOAT)((USHORT)ptr->Byte.register3Info1[0] >> 4)));
 
         ptr->Real.register3.data.demand.rateE.Month = (USHORT)(BCDtoBase10 (&ptr->Byte.register3Info1[4],1));
         ptr->Real.register3.data.demand.rateE.Day = (USHORT)(BCDtoBase10 (&ptr->Byte.register3Info1[5],1));
@@ -2468,7 +2468,7 @@ INT CtiDeviceVectron::reformatDataBuffer(BYTE *aInMessBuffer, ULONG &aTotalBytes
     else
     {
         // energy
-        ptr->Real.register3.data.energy.rateE = VectronBCDtoDouble (&ptr->Byte.register3Info1[0],7) / pow (10,8);
+        ptr->Real.register3.data.energy.rateE = VectronBCDtoDouble (&ptr->Byte.register3Info1[0],7) / pow (10.0F,8.0F);
 
         ptr->Real.register3.configFlag  = 0;
     }
@@ -2488,7 +2488,7 @@ INT CtiDeviceVectron::reformatDataBuffer(BYTE *aInMessBuffer, ULONG &aTotalBytes
         workBuffer[0] &= 0x0F;
 
         ptr->Real.register4.data.demand.rateE.PeakValue =
-        (FLOAT)((BCDtoBase10 (workBuffer,4) / pow (10,7)) * pow (2,(USHORT)ptr->Byte.register4Info1[0] >> 4));
+        (FLOAT)((FLOAT)(BCDtoBase10 (workBuffer,4) / pow (10.0F,7.0F)) * pow (2.0F,(FLOAT)((USHORT)ptr->Byte.register4Info1[0] >> 4)));
 
         ptr->Real.register4.data.demand.rateE.Month = (USHORT)(BCDtoBase10 (&ptr->Byte.register4Info1[4],1));
         ptr->Real.register4.data.demand.rateE.Day = (USHORT)(BCDtoBase10 (&ptr->Byte.register4Info1[5],1));
@@ -2500,7 +2500,7 @@ INT CtiDeviceVectron::reformatDataBuffer(BYTE *aInMessBuffer, ULONG &aTotalBytes
     }
     else
     {
-        ptr->Real.register4.data.energy.rateE = VectronBCDtoDouble (&ptr->Byte.register4Info1[0],7) / pow (10,8);
+        ptr->Real.register4.data.energy.rateE = VectronBCDtoDouble (&ptr->Byte.register4Info1[0],7) / pow (10.0F,8.0F);
         ptr->Real.register4.configFlag = 0;
     }
 

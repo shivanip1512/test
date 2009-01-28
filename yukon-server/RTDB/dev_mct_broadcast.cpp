@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2008/10/28 19:21:42 $
+* REVISION     :  $Revision: 1.29.2.1 $
+* DATE         :  $Date: 2008/11/20 16:49:21 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -455,7 +455,7 @@ bool CtiDeviceMCTBroadcast::getOperation( const UINT &cmd, USHORT &function, USH
 {
     bool found = false;
 
-    CommandSet::iterator itr = _commandStore.find(CommandStore(cmd));
+    CommandSet::const_iterator itr = _commandStore.find(CommandStore(cmd));
 
     if( itr != _commandStore.end() )    // It's prego!
     {

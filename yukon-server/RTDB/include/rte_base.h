@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/rte_base.h-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2008/10/28 19:21:44 $
+* REVISION     :  $Revision: 1.16.2.1 $
+* DATE         :  $Date: 2008/11/18 20:11:29 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -41,7 +41,7 @@ using std::list;
 class CtiRequestMsg;    // Use forward declaration #include "msg_pcrequest.h"
 class CtiReturnMsg;
 
-class IM_EX_DEVDB CtiRouteBase : public CtiMemDBObject, public RWMonitor< RWRecursiveLock< RWMutexLock > >
+class IM_EX_DEVDB CtiRouteBase : public CtiMemDBObject
 {
 protected:
 
@@ -49,6 +49,7 @@ protected:
     CtiTableCommRoute _tblComm;
 
 private:
+    mutable CtiMutex _classMutex;
 
 public:
     typedef CtiMemDBObject Inherited;
@@ -100,7 +101,7 @@ public:
 
     virtual void DecodeDatabaseReader(RWDBReader &rdr)
     {
-        LockGuard gd(monitor());
+        CtiLockGuard<CtiMutex> guard(_classMutex);
         _tblPAO.DecodeDatabaseReader(rdr);
         _tblComm.DecodeDatabaseReader(rdr);
     }

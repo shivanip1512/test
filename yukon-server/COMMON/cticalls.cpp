@@ -1,6 +1,5 @@
 #include "yukon.h"
 
-#include <windows.h>
 #include <stdio.h>
 #include <string.h>
 #include <rw\thr\mutex.h>
@@ -408,7 +407,7 @@ APIRET IM_EX_CTIBASE CTICloseEventSem(PHEV phev)
 }
 
 
-APIRET IM_EX_CTIBASE CTIResetEventSem(HEV hev, PULONG pulPostCt)
+APIRET  CTIResetEventSem(HEV hev, PULONG pulPostCt)
 {
 #if __OS2__
    return(DosResetEventSem(hev, pulPostCnt));

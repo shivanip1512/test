@@ -38,7 +38,7 @@ INCLPATHS+= \
 
 
 CALCTESTOBJS= \
-test_calc.obj
+test_calc.obj \
 
 CALCLIBS=\
 $(COMPILEBASE)\lib\ctibase.lib \
@@ -68,7 +68,7 @@ calctest:  $(CALCTESTOBJS) makeexe.mak
 copy:
            -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
            -@if exist bin\*.exe copy bin\*.exe $(YUKONOUTPUT)
-
+	   #copy 
 
 deps:
         scandeps -Output maketest.mak test_*.cpp
@@ -76,13 +76,16 @@ deps:
 
 
 clean:
-    -del *.obj
-    -del *.pch
-    -del *.pdb
-    -del *.sdb
-    -del *.adb
-    -del *.ilk
-    -del *.exe
+        -del \
+test*.pdb \
+$(OBJ)\test*.obj \
+$(BIN)\test*.pdb \
+$(BIN)\test*.pch \
+$(BIN)\test*.ilk \
+$(BIN)\test*.exp \
+$(BIN)\test*.lib \
+$(BIN)\test*.dll \
+$(BIN)\test*.exe
 
 
 ########################### Conversions ##############################
@@ -103,6 +106,7 @@ clean:
 	.\obj\$(@B).obj -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOSTLIBS) $(CALCOBJS) $(BOOSTTESTLIBS) $(RWLIBS) $(CALCLIBS) $(LINKFLAGS)
 
 	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+	mt.exe -manifest $(BIN)\$(@B).exe.manifest -outputresource:$(BIN)\$(@B).exe;1
 	-copy $(BIN)\$(@B).exe $(YUKONOUTPUT)
 	-@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
 	-if exist $(BIN)\$(@B).lib copy $(BIN)\$(@B).lib $(COMPILEBASE)\lib
@@ -123,4 +127,6 @@ test_calc.obj:	yukon.h precompiled.h ctidbgmem.h calc.h ctiqueues.h \
 		rtdb.h dllbase.h dsm2.h cticonnect.h netports.h pointdefs.h \
 		regression.h tbl_pt_limit.h dbmemobject.h dbaccess.h sema.h \
 		resolvers.h pointtypes.h db_entry_defines.h desolvers.h
+
 #ENDUPDATE#
+

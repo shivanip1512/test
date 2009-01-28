@@ -73,7 +73,7 @@ const string& CtiLMCICustomerBase::getCurtailmentAgreement() const
 
 const string& CtiLMCICustomerBase::getTimeZone() const
 {
-    return _timezone;
+    return (const std::string &) _timezone;
 }
 
 LONG CtiLMCICustomerBase::getCustomerOrder() const
@@ -116,7 +116,22 @@ CtiLMCICustomerBase& CtiLMCICustomerBase::setCurtailmentAgreement(const string& 
 
 CtiLMCICustomerBase& CtiLMCICustomerBase::setTimeZone(const string& timezone)
 {
-    _timezone = timezone;
+
+    char * timezone_cstr;
+
+    //string str2 ("Please split this phrase into tokens");
+
+    timezone_cstr = new char [timezone.size()+1];
+    strcpy (timezone_cstr, timezone.c_str());
+
+    // timezone_cstrnow contains a c-string copy of timezone
+
+    char end_ptr_CHAR =  '\0'; 
+    char * end_ptr = (&(end_ptr_CHAR));
+    const int DECIMAL_BASE = 10; 
+    long long_timezone = strtol(timezone_cstr, &end_ptr, DECIMAL_BASE);
+
+    _timezone = long_timezone;
     return *this;
 }
 
@@ -178,7 +193,7 @@ CtiLMCICustomerBase& CtiLMCICustomerBase::operator=(const CtiLMCICustomerBase& r
         _customerdemandlevel    = right._customerdemandlevel;
         _curtailamount          = right._curtailamount;
         _curtailmentagreement   = right._curtailmentagreement;
-        _timezone               = right._timezone;
+        _time_zone              = right._time_zone;
         _customerorder          = right._customerorder;
     }
 

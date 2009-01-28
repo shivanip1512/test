@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/mc_sched.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2007/08/07 21:04:32 $
+* REVISION     :  $Revision: 1.8.12.1 $
+* DATE         :  $Date: 2008/11/21 20:56:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -152,7 +152,7 @@ public:
     CtiMCSchedule& setRepeatInterval(long repeat_interval);
 
     // CGP 022802 DBMEMOBJ lost his monitor.
-    MutexType& getMux()  { return mutex();}
+    CtiMutex& getMux()  { return _classMutex;}
 
     // For RW Streaming
     virtual void saveGuts(RWvostream &aStream) const;
@@ -175,6 +175,7 @@ protected:
 private:
 
     bool isValidTime(const CtiTime& t) const;
+    mutable CtiMutex _classMutex;
 };
 
 std::ostream& operator<<( std::ostream& ostrm, CtiMCSchedule& sched );

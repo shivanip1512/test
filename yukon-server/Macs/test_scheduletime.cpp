@@ -13,7 +13,6 @@
 #include "yukon.h"
 
 #include <boost/test/unit_test.hpp>
-#include <boost/test/auto_unit_test.hpp>
 
 #include <string>
 #include <rw/rwdate.h>
@@ -32,7 +31,7 @@
 using boost::unit_test_framework::test_suite;
 using namespace std;
 
-BOOST_AUTO_UNIT_TEST(test_MACS_calc_date_time_start)
+BOOST_AUTO_TEST_CASE(test_MACS_calc_date_time_start)
 {
     CtiMCScheduleManager schedMgr;
     Test_CtiMCScheduler scheduler = Test_CtiMCScheduler::Test_CtiMCScheduler(schedMgr);
@@ -75,7 +74,7 @@ BOOST_AUTO_UNIT_TEST(test_MACS_calc_date_time_start)
     schedule.setStartMonth(3);//Months are 1-12
     schedule.setStartDay(9);// 3/9/2008 is first day of DST (change on this day)
     tempDate = CtiDate(9, 3, 2008);
-    expectedResult = CtiTime(CtiTime::specialvalues::not_a_time);
+    expectedResult = CtiTime(CtiTime::not_a_time);
 
     scheduler.testCalcDateTimeStart(inDst, schedule, startTime);
     BOOST_CHECK_EQUAL(expectedResult, startTime);

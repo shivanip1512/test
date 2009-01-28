@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct4xx.h-arc  $
-* REVISION     :  $Revision: 1.43 $
-* DATE         :  $Date: 2008/08/21 18:40:41 $
+* REVISION     :  $Revision: 1.43.2.2 $
+* DATE         :  $Date: 2008/11/20 16:49:28 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -74,7 +74,7 @@ protected:
         {
         }
 
-        operator<(const error_info &rhs) const
+        bool operator<(const error_info &rhs) const
         {
             return error < rhs.error;
         }
@@ -203,7 +203,7 @@ protected:
         unsigned offset;
         unsigned channel;
 
-        long in_progress;
+        volatile long in_progress;
 
         unsigned retry;
         bool failed;
@@ -281,7 +281,7 @@ protected:
     INT decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList);
     INT decodeScanLoadProfile    (INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList);
 
-    virtual INT decodeGetStatusFreeze( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
+    virtual INT decodeGetStatusFreeze( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList ) = 0; // pure virtual, hence this is an abstract class 
 
     static const char *PutConfigPart_basic;
     static const char *PutConfigPart_all;

@@ -21,6 +21,11 @@
 #pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 
 
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
+
 #include <windows.h>
 #include <iostream>
 #include <functional>
@@ -38,19 +43,19 @@ using boost::shared_ptr;
 #include "readers_writer_lock.h"
 
 template < class T >
-class IM_EX_CTIBASE CtiSmartMap
+class CtiSmartMap
 {
 public:
 
     typedef std::map< long, shared_ptr< T > >   coll_type;     // This is the collection type!
-    typedef coll_type::value_type               val_type;
-    typedef coll_type::iterator                 spiterator;
-    typedef std::pair<spiterator, bool>         insert_pair;
-    typedef shared_ptr< T >                     ptr_type;
+    typedef typename coll_type::value_type               val_type;
+    typedef typename coll_type::iterator                 spiterator;
+    typedef typename std::pair<spiterator, bool>         insert_pair;
+    typedef typename shared_ptr< T >                     ptr_type;
 
-    typedef Cti::readers_writer_lock_t          lock_t;
-    typedef lock_t::reader_lock_guard_t         reader_lock_guard_t;
-    typedef lock_t::writer_lock_guard_t         writer_lock_guard_t;
+    typedef typename Cti::readers_writer_lock_t          lock_t;
+    typedef typename lock_t::reader_lock_guard_t         reader_lock_guard_t;
+    typedef typename lock_t::writer_lock_guard_t         writer_lock_guard_t;
 
 protected:
 

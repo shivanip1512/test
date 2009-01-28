@@ -19,7 +19,12 @@
 #ifndef __FDRINET_H__
 #define __FDRINET_H__
 
-#include <windows.h>    //  NOTE:  if porting this to non-WIN32, make sure to replace this
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
+
+#include <windows.h>    
 #include <vector>
 
 #include "dlldefs.h"

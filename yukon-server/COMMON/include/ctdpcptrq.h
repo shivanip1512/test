@@ -16,15 +16,11 @@
 #ifndef CTICOUNTEDPCPTRQUEUE_H
 #define CTICOUNTEDPCPTRQUEUE_H
 
-#include <rw/thr/countptr.h>
-#include <rw/thr/mutex.h>
-#include <rw/thr/prodcons.h>
-
 #include "dlldefs.h"
 #include "CtiPCPtrQueue.h"
 
 template<class Type>
-class IM_EX_CTIBASE CtiCountedPCPtrQueue : public CtiPCPtrQueue<Type>, public RWCountingBody<RWMutexLock>
+class CtiCountedPCPtrQueue : public CtiPCPtrQueue<Type>
 {
 public:
     virtual ~CtiCountedPCPtrQueue()

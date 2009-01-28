@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct_lmt2.cpp-arc  $
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2007/11/12 17:04:59 $
+* REVISION     :  $Revision: 1.37.10.1 $
+* DATE         :  $Date: 2008/11/20 16:49:21 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -66,7 +66,7 @@ bool CtiDeviceMCT_LMT2::getOperation( const UINT &cmd, BSTRUCT &bst) const
 {
    bool found = false;
 
-   CommandSet::iterator itr = _commandStore.find(CommandStore(cmd));
+   CommandSet::const_iterator itr = _commandStore.find(CommandStore(cmd));
 
    if( itr != _commandStore.end() )    // It's prego!
    {

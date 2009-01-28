@@ -53,6 +53,7 @@ public:
     bool contains(const string& s, caseCompare cc=CtiString::exact) const;
     string match(const boost::regex& re, size_t start=0) const;
     string match(const char* re, size_t start=0) const;
+    string match(const CtiString& s, size_t start = 0) const;
     string& replace(const boost::regex& re, char* s, scopeType scope=CtiString::one);
     string& replace(const boost::regex& re, string s, scopeType scope=CtiString::one);
     string& replace(char* e, char* s, scopeType scope=CtiString::one);

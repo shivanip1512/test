@@ -1,7 +1,5 @@
 #include "yukon.h"
 
-
-#include <windows.h>
 #include <iostream>
 using namespace std;
 

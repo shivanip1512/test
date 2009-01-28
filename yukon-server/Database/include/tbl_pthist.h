@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_pthist.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/12/20 17:16:08 $
+* REVISION     :  $Revision: 1.4.24.1 $
+* DATE         :  $Date: 2008/11/18 20:11:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,7 +25,7 @@
 #include "ctibase.h"
 #include "ctitime.h"
 
-class IM_EX_CTIYUKONDB CtiTablePointHistory : public CtiMemDBObject
+class CtiTablePointHistory : public CtiMemDBObject
 {
 
 protected:
@@ -45,8 +45,8 @@ public:
 
     virtual ~CtiTablePointHistory();
 
-    virtual operator=(const CtiTablePointHistory&);
-    virtual operator==(const CtiTablePointHistory&) const;
+    virtual CtiTablePointHistory& operator=(const CtiTablePointHistory&);
+    virtual bool operator==(const CtiTablePointHistory&) const;
 
     virtual string getTableName() const;
 

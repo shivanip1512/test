@@ -9,14 +9,19 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/trx_info.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2008/10/07 18:17:35 $
+* REVISION     :  $Revision: 1.11.2.1 $
+* DATE         :  $Date: 2008/11/13 17:23:39 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #ifndef __TRX_INFO_H__
 #define __TRX_INFO_H__
 #pragma warning( disable : 4786)
+
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
 
 #include <windows.h>
 

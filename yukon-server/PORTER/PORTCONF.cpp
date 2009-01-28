@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTCONF.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2008/10/29 18:16:47 $
+* REVISION     :  $Revision: 1.15.2.2 $
+* DATE         :  $Date: 2008/11/21 16:14:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -43,7 +43,6 @@
 
 
    -------------------------------------------------------------------- */
-#include <windows.h>
 #include <process.h>
 #include "os2_2w32.h"
 #include "cticalls.h"
@@ -549,75 +548,75 @@ VOID VConfigThread (VOID *Arg)
             }
 
             /* Check for this record in the verscom configuration file */
-            if(!(VConfigGetEqual (&VConfigRecord)))
-            {
-               /* Load 'er up */
-               VSt.CommandType =  VCONFIG;
-
-               /* Do the new auxilary ID */
-               VSt.VConfig.Data[0] = (UCHAR)VConfigRecord.UtilityID;
-               memset (&VSt.VConfig.Data[1], 0, sizeof (VSt.VConfig.Data) - 1);
-               VSt.VConfig.ConfigType = VCONFIG_AUXID;
-               VSend (&VSt,
-                      Route,
-                      TRUE);
-
-               /* Do a new Section address */
-               VSt.VConfig.Data[0] = (UCHAR)VConfigRecord.Section;
-               memset (&VSt.VConfig.Data[1], 0, sizeof (VSt.VConfig.Data) - 1);
-               VSt.VConfig.ConfigType = VCONFIG_SECTION;
-               VSend (&VSt, Route, TRUE);
-
-
-               /* Do a new Class address */
-               /* Invert The Address */
-               IAddress = 0;
-               for(i = 0; i < 16; i++)
-               {
-                  IAddress |= ((VConfigRecord.Class >> i) & 0x00000001) << (15 - i);
-               }
-
-               VSt.VConfig.Data[0] = HIBYTE (IAddress);
-               VSt.VConfig.Data[1] = LOBYTE (IAddress);
-               memset (&VSt.VConfig.Data[2], 0, sizeof (VSt.VConfig.Data) - 2);
-               VSt.VConfig.ConfigType = VCONFIG_CLASS;
-               VSend (&VSt, Route, TRUE);
-
-
-               /* Do a new Division address */
-               /* Invert The Address */
-               IAddress = 0;
-               for(i = 0; i < 16; i++)
-               {
-                  IAddress |= ((VConfigRecord.Division >> i) & 0x00000001) << (15 - i);
-               }
-
-               VSt.VConfig.Data[0] = HIBYTE (IAddress);
-               VSt.VConfig.Data[1] = LOBYTE (IAddress);
-               memset (&VSt.VConfig.Data[2], 0, sizeof (VSt.VConfig.Data) - 2);
-               VSt.VConfig.ConfigType = VCONFIG_DIVISION;
-               VSend (&VSt, Route, TRUE);
-
-               ConfigsDone++;
-
-               /* Check if we are to send this one to the logger */
-               if(VSt.Address != 0)
-               {
-                  sprintf (Buffer, "%012d        %20.20s",
-                           VSt.Address,
-                           VConfigRecord.VConfigName);
-
-                  SendTextToLogger ("Cfg", Buffer);
-               }
-
-
-            }
-            else
-            {
-               sprintf (Buffer, "Invalid Config      %20.20s", VConfigRecord.VConfigName);
-               SendTextToLogger ("Inf", Buffer);
-               printf ("Configuration not found\n");
-            }
+// //             if(!(VConfigGetEqual (&VConfigRecord)))
+// //             {
+// //                /* Load 'er up */
+// //                VSt.CommandType =  VCONFIG;
+// //
+// //                /* Do the new auxilary ID */
+// //                VSt.VConfig.Data[0] = (UCHAR)VConfigRecord.UtilityID;
+// //                memset (&VSt.VConfig.Data[1], 0, sizeof (VSt.VConfig.Data) - 1);
+// //                VSt.VConfig.ConfigType = VCONFIG_AUXID;
+// //                VSend (&VSt,
+// //                       Route,
+// //                       TRUE);
+// //
+// //                /* Do a new Section address */
+// //                VSt.VConfig.Data[0] = (UCHAR)VConfigRecord.Section;
+// //                memset (&VSt.VConfig.Data[1], 0, sizeof (VSt.VConfig.Data) - 1);
+// //                VSt.VConfig.ConfigType = VCONFIG_SECTION;
+// //                VSend (&VSt, Route, TRUE);
+// //
+// //
+// //                /* Do a new Class address */
+// //                /* Invert The Address */
+// //                IAddress = 0;
+// //                for(i = 0; i < 16; i++)
+// //                {
+// //                   IAddress |= ((VConfigRecord.Class >> i) & 0x00000001) << (15 - i);
+// //                }
+// //
+// //                VSt.VConfig.Data[0] = HIBYTE (IAddress);
+// //                VSt.VConfig.Data[1] = LOBYTE (IAddress);
+// //                memset (&VSt.VConfig.Data[2], 0, sizeof (VSt.VConfig.Data) - 2);
+// //                VSt.VConfig.ConfigType = VCONFIG_CLASS;
+// //                VSend (&VSt, Route, TRUE);
+// //
+// //
+// //                /* Do a new Division address */
+// //                /* Invert The Address */
+// //                IAddress = 0;
+// //                for(i = 0; i < 16; i++)
+// //                {
+// //                   IAddress |= ((VConfigRecord.Division >> i) & 0x00000001) << (15 - i);
+// //                }
+// //
+// //                VSt.VConfig.Data[0] = HIBYTE (IAddress);
+// //                VSt.VConfig.Data[1] = LOBYTE (IAddress);
+// //                memset (&VSt.VConfig.Data[2], 0, sizeof (VSt.VConfig.Data) - 2);
+// //                VSt.VConfig.ConfigType = VCONFIG_DIVISION;
+// //                VSend (&VSt, Route, TRUE);
+// //
+// //                ConfigsDone++;
+// //
+// //                /* Check if we are to send this one to the logger */
+// //                if(VSt.Address != 0)
+// //                {
+// //                   sprintf (Buffer, "%012d        %20.20s",
+// //                            VSt.Address,
+// //                            VConfigRecord.VConfigName);
+// //
+// //                   SendTextToLogger ("Cfg", Buffer);
+// //                }
+// //
+// //
+// //             }
+// //             else
+// //             {
+// //                sprintf (Buffer, "Invalid Config      %20.20s", VConfigRecord.VConfigName);
+// //                SendTextToLogger ("Inf", Buffer);
+// //                printf ("Configuration not found\n");
+// //             }
          }
       }
 
@@ -649,7 +648,7 @@ VOID VConfigThread (VOID *Arg)
 
 
 /* Routine to build up message to send out */
-VSend (VSTRUCT *VSt,
+INT VSend (VSTRUCT *VSt,
        PCHAR   Route,
        USHORT  CheckTimed)
 
@@ -757,7 +756,7 @@ VSend (VSTRUCT *VSt,
 
 
 /* Routine to actually send the message */
-VSend2 (VSTRUCT *VSt, CtiRouteSPtr RouteRecord)
+INT VSend2 (VSTRUCT *VSt, CtiRouteSPtr RouteRecord)
 
 {
    ULONG i;
@@ -796,7 +795,7 @@ VSend2 (VSTRUCT *VSt, CtiRouteSPtr RouteRecord)
 }
 
 
-GetString (FILE *File, PCHAR Buffer, ULONG Length)
+INT GetString (FILE *File, PCHAR Buffer, ULONG Length)
 {
    ULONG i;
    CHAR Save;

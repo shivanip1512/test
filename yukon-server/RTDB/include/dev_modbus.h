@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_cbc.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2008/10/28 19:21:44 $
+* REVISION     :  $Revision: 1.8.2.1 $
+* DATE         :  $Date: 2008/11/20 16:49:28 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -34,7 +34,7 @@ class IM_EX_DEVDB Modbus : public CtiDeviceRemote
 private:
 
     typedef CtiDeviceRemote Inherited;
-
+ 
     struct pseudo_info
     {
         bool is_pseudo;

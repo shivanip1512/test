@@ -436,7 +436,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     void setDynamicData(RWDBReader& rdr);
     void setStrategyValues(CtiCCStrategyPtr strategy);
 
-    vector <CtiCCMonitorPointPtr>& getMultipleMonitorPoints() {return _multipleMonitorPoints;};
+    std::vector <CtiCCMonitorPointPtr>& getMultipleMonitorPoints() {return _multipleMonitorPoints;};
 
     bool areAllPhasesSuccess(DOUBLE ratioA, DOUBLE ratioB, DOUBLE ratioC, DOUBLE confirmPercent);    
     bool areAllPhasesQuestionable(DOUBLE ratioA, DOUBLE ratioB, DOUBLE ratioC, DOUBLE confirmPercent, DOUBLE failPercent);
@@ -588,7 +588,7 @@ private:
     string doubleToString(DOUBLE doubleVal, LONG decimalPlaces);
 
     std::list <long> _pointIds;
-    vector <CtiCCMonitorPointPtr> _multipleMonitorPoints;
+    std::vector <CtiCCMonitorPointPtr> _multipleMonitorPoints;
 
     bool checkForRateOfChange(const CtiRegression& reg, const CtiRegression& regA, const CtiRegression& regB, const CtiRegression& regC);
     CtiRegression regression;

@@ -162,8 +162,6 @@
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-#include <windows.h>
-
 #include "counter.h"
 #include "cparms.h"
 #include "dllvg.h"
@@ -2044,7 +2042,7 @@ CtiPendingOpThread::CtiPendingOpSet_t::iterator CtiPendingOpThread::erasePending
     if( point )
     {
         CtiDynamicPointDispatchSPtr pDyn = PointMgr.getDynamic(point);
-        if( pDyn )
+        if( pDyn != NULL )
         {
             pDyn->getDispatch().resetTags( TAG_CONTROL_PENDING );
         }

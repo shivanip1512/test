@@ -759,7 +759,7 @@ BOOL CtiLMControlArea::isControlStillNeeded()
     }
 
     LONG triggersStillTripped = 0;
-    for( i=0;i<_lmcontrolareatriggers.size();i++ )
+    for(int i=0;i<_lmcontrolareatriggers.size();i++ )
     {
         CtiLMControlAreaTrigger* currentTrigger = (CtiLMControlAreaTrigger*)_lmcontrolareatriggers[i];
         if( !stringCompareIgnoreCase(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::ThresholdTriggerType) )

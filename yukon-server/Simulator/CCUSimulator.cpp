@@ -14,10 +14,10 @@
 *****************************************************************************/
 #include "yukon.h"
 
-#include <windows.h>
 #include <iostream>
 #include <vector>
 
+#include "boostutil.h"
 #include <boost/thread/thread.hpp>
 #include <boost/thread/mutex.hpp>
 #include <boost/bind.hpp>

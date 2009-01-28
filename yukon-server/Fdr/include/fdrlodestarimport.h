@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.16 $
-*    DATE         :  $Date: 2008/10/02 23:57:15 $
+*    REVISION     :  $Revision: 1.16.2.2 $
+*    DATE         :  $Date: 2008/11/18 20:11:30 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -91,7 +91,12 @@
 #define __FDRLODESTARIMPORT_H__
 
 
-#include <windows.h>    //  NOTE:  if porting this to non-WIN32, make sure to replace this
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
+
+#include <windows.h>    
 
 #include "dlldefs.h"
 #include "fdrtextfilebase.h"

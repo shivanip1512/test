@@ -11,8 +11,6 @@
 *
 * Copyright (c) 2003 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-
-#include <windows.h>
 #include <iostream>
 #include <iomanip>
 using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore

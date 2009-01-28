@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_ngroup.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/12/20 17:16:07 $
+* REVISION     :  $Revision: 1.5.24.1 $
+* DATE         :  $Date: 2008/11/18 20:11:29 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,7 +24,6 @@
 
 #include <rw/db/db.h>
 #include <rw/thr/recursiv.h>
-#include <rw/thr/monitor.h>
 
 #include "dlldefs.h"
 #include "tbl_alm_ndest.h"
@@ -33,7 +32,7 @@
 using std::set;
 using std::vector;
 
-class IM_EX_CTIYUKONDB CtiTableNotificationGroup : public RWMonitor< RWRecursiveLock< RWMutexLock > >
+class IM_EX_CTIYUKONDB CtiTableNotificationGroup
 {
 protected:
 
@@ -44,7 +43,7 @@ protected:
 
 
 private:
-
+    mutable CtiMutex _classMutex;
 public:
 
    CtiTableNotificationGroup( LONG gid = 0L);

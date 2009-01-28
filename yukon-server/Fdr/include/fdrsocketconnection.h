@@ -3,6 +3,8 @@
 #ifndef __FDRSOCKETCONNECTION_H__
 #define __FDRSOCKETCONNECTION_H__
 
+#include <winsock.h>
+
 #include "dlldefs.h"
 #include "queues.h"
 

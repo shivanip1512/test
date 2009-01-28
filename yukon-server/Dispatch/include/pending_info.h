@@ -14,11 +14,16 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/pending_info.h-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2006/06/16 20:05:17 $
+* REVISION     :  $Revision: 1.15.24.1 $
+* DATE         :  $Date: 2008/11/13 17:23:48 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
+
 #include <windows.h>
 #include <limits.h>
 #include "ctitime.h"

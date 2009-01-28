@@ -11,7 +11,6 @@
 #define BOOST_AUTO_TEST_MAIN "Test CCCapBank"
 
 #include <boost/test/unit_test.hpp>
-#include <boost/test/auto_unit_test.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 
@@ -31,7 +30,7 @@
 using boost::unit_test_framework::test_suite;
 using namespace std;
 
-BOOST_AUTO_UNIT_TEST(test_get_bank_size)
+BOOST_AUTO_TEST_CASE(test_get_bank_size)
 {
     CtiCCSubstationBus bus;
     bus.setPAOId(1);

@@ -6,16 +6,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_grp_emetcon.cpp-arc  $
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2008/10/28 19:21:41 $
+* REVISION     :  $Revision: 1.27.2.1 $
+* DATE         :  $Date: 2008/11/13 17:23:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
-
-
-
-#include <windows.h>
 
 #include "dsm2.h"
 #include "porter.h"

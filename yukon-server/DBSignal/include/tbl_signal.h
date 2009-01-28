@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DBSIGNAL/INCLUDE/tbl_signal.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2007/03/22 17:22:40 $
+* REVISION     :  $Revision: 1.7.20.1 $
+* DATE         :  $Date: 2008/11/13 17:23:49 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -15,6 +15,11 @@
 #pragma warning( disable : 4786)
 #ifndef __TBL_SIGNAL_H__
 #define __TBL_SIGNAL_H__
+
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
 
 #include <windows.h>
 #include "ctitime.h"

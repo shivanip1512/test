@@ -13,14 +13,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_pt_accumhistory.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/12/20 17:16:08 $
+* REVISION     :  $Revision: 1.5.24.2 $
+* DATE         :  $Date: 2008/11/18 20:11:29 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
 #include "yukon.h"
-#include <windows.h>
 #include <rw/db/datetime.h>
 #include <string>
 #include "dbmemobject.h"
@@ -47,7 +46,7 @@ public:
    virtual ~CtiTablePointAccumulatorHistory();
    CtiTablePointAccumulatorHistory& operator=(const CtiTablePointAccumulatorHistory& aRef);
 
-   operator==(const CtiTablePointAccumulatorHistory&) const;
+   bool operator==(const CtiTablePointAccumulatorHistory&) const;
 
    virtual std::string getTableName() const;
 

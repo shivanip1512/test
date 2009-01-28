@@ -191,9 +191,9 @@ void readers_writer_lock_t::set_reader_id(thread_id_t tid)
         for( ; i < MaxThreadCount; ++i )
         {
             //  try to exchange - if someone else got there first, the exchange will fail and the return will be nonzero
-            if( !InterlockedCompareExchange(reinterpret_cast<PVOID *>(_reader_ids + i),
-                                            reinterpret_cast<PVOID>(tid),
-                                            reinterpret_cast<PVOID>(0)) )
+            if( !InterlockedCompareExchange(reinterpret_cast<volatile LONG *>(_reader_ids + i),
+                                            (long)(tid),
+                                            (long)(0)) )
             {
                 break;
             }

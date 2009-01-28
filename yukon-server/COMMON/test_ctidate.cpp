@@ -10,7 +10,14 @@
  */
 
 
+#include <boost/test/floating_point_comparison.hpp>
+
+#define BOOST_TEST_MAIN "Test CtiDate"
+#define BOOST_AUTO_TEST_MAIN "Test CtiDate"
+
 #include <boost/test/unit_test.hpp>
+
+#include "boostutil.h"
 
 #include <string>
 #include <rw/rwdate.h>
@@ -21,11 +28,9 @@
 #include "ctidate.h"
 #include "ctitime.h"
 
-#define BOOST_AUTO_TEST_MAIN "Test CtiDate"
-#include <boost/test/auto_unit_test.hpp>
 using boost::unit_test_framework::test_suite;
 
-BOOST_AUTO_UNIT_TEST(test_ctidate_methods)
+BOOST_AUTO_TEST_CASE(test_ctidate_methods)
 {
     // check the function match between CtiTime and RWTime
     for( int i = 1; i < 12; i++ )
@@ -133,29 +138,7 @@ BOOST_AUTO_UNIT_TEST(test_ctidate_methods)
 }
 
 
-BOOST_AUTO_UNIT_TEST(test_ctidate_constructors)
-{
-    CtiDate epoch(1, 1, 1970);
-
-    BOOST_CHECK_EQUAL(CtiDate(  0,  0,    0), epoch);
-
-    //  test cases from YUK-4620
-    BOOST_CHECK_EQUAL(CtiDate( 47,  9, 2006), epoch);
-    BOOST_CHECK_EQUAL(CtiDate(126, 13, 2006), epoch);
-    BOOST_CHECK_EQUAL(CtiDate(148, 10, 2006), epoch);
-    BOOST_CHECK_EQUAL(CtiDate( 42, 14, 2006), epoch);
-    BOOST_CHECK_EQUAL(CtiDate(129,  6, 2006), epoch);
-
-    /*
-    CtiDate::CtiDate(unsigned int days, unsigned int year);
-    CtiDate::CtiDate(const CtiTime& ct);
-    CtiDate::CtiDate(const CtiDate& cd);
-    CtiDate& CtiDate::operator=(const CtiDate& cd);
-    */
-}
-
-
-BOOST_AUTO_UNIT_TEST(test_ctidate_operators)
+BOOST_AUTO_TEST_CASE(test_ctidate_operators)
 {
     // check the operators
     CtiDate d = CtiDate();
@@ -207,7 +190,7 @@ BOOST_AUTO_UNIT_TEST(test_ctidate_operators)
 
 }
 
-BOOST_AUTO_UNIT_TEST(test_ctidate_daysfrom1970)
+BOOST_AUTO_TEST_CASE(test_ctidate_daysfrom1970)
 {
     CtiDate zeroTest(1, 1, 1970);
     CtiDate oneTest (2, 1, 1970);

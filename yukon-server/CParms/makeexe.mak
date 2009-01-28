@@ -26,10 +26,11 @@ cparmtest.exe:  cparmtest.obj Makefile
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) -I$(RW) -I$(COMMINC) $(RWLINKFLAGS) -o ..\$@ \
+                $(RWCPPINVOKE) -I$(RW) -I$(COMMINC) $(RWLINKFLAGS) /Fe..\$@ \
 cparmtest.obj \
 -link $(COMPILEBASE)\lib\cparms.lib $(COMPILEBASE)\lib\cticparms.lib $(RWLIBS) $(BOOSTLIBS)
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+                mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
                 -@if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                 @echo:
                 @echo Done building Target $@
@@ -41,9 +42,10 @@ conftest.exe:   $(TESTOBJS) Makefile
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) -o ..\$@ \
+                $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
 $(TESTOBJS) -link $(COMPILEBASE)\lib\cparms.lib $(RWLIBS) $(BOOSTLIBS)
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+                 mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
                 -@if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                 @echo:
                 @echo Done building Target ..\$@

@@ -32,6 +32,22 @@ Interface, a Multi-Platform PI Toolkit.
 -------------------------------------------------------------------------------
 
 $Log: piapi.h,v $
+Revision 1.1.36.1  2008/11/13 17:23:45  jmarks
+YUK-5273 Upgrade Yukon tool chain to Visual Studio 2005/2008
+
+Responded to reviewer comments again.
+
+I eliminated excess references to windows.h .
+
+This still left over 100 references to it where "yukon.h" or "precompiled.h" was not obviously included.  Some other chaining of references could still be going on, and of course it is potentially possible that not all the files in the project that include windows.h actually need it - I didn't check for that.
+
+None-the-less, I than added the NOMINMAX define right before each place where windows.h is still included.
+Special note:  std::min<LONG>(TimeOut, 500); is still required for compilation.
+
+In this process I occasionally deleted a few empty lines, and when creating the define, also added some.
+
+This may not have affected every file in the project, but while mega-editing it certainly seemed like it did.
+
 Revision 1.1  2005/02/14 16:38:42  tmack
 Initial checkin for FDR interface to Pi.
 
@@ -138,6 +154,11 @@ Migrated History
 #endif
 
 #if defined(_WINDOWS) || defined(WIN32)
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
+
 #include <windows.h>
 #define PIINT32 int32 WINAPI
 #define PIVOID  void WINAPI

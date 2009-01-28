@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2008/04/25 21:45:14 $
+* REVISION     :  $Revision: 1.6.6.1 $
+* DATE         :  $Date: 2008/11/17 23:06:32 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -138,7 +138,7 @@ int Modbus::generate( CtiXfer &xfer )
 
             strncpy((char *)xfer.getOutBuffer(),char_start,1);
 
-            for(x=0;x<i;x++)
+            for(int x=0;x<i;x++)
             {
                 //Genius!!
                 strncat((char *)xfer.getOutBuffer(),CtiNumStr(tempBuffer[x]).zpad(2).hex().toString().c_str(),2);//create ascii from bitwise data

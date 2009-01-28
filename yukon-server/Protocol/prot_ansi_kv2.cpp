@@ -8,10 +8,28 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/prot_ansi_kv2.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2008/10/21 16:30:31 $
+* REVISION     :  $Revision: 1.10.2.1 $
+* DATE         :  $Date: 2008/11/17 23:06:31 $
 *    History:
       $Log: prot_ansi_kv2.cpp,v $
+      Revision 1.10.2.1  2008/11/17 23:06:31  jmarks
+      YUK-5273 Upgrade Yukon tool chain to Visual Studio 2005/2008
+      **************************************************************************************************************
+      Removed "CTITYPES.H" from every file in the project, so far there were no
+      known side-effects or even compile errors, however, they could still happen.
+
+      Also, made many other changes for compiling.
+
+      The project now apparently compiles until reching the database
+      subdirectory, however, I have seen cases where there is apparent
+      regressing and need to re-work things.
+
+      However, enough changes have happened, that I felt it was good to
+      committ.
+      **************************************************************************************************************
+      Possibly other misc. changes since last commit.
+      *******************************************************
+ 
       Revision 1.10  2008/10/21 16:30:31  mfisher
       YUK-6615 ANSI table class names and filenames are difficult to read
       Renamed classes and filenames
@@ -145,7 +163,7 @@ int CtiProtocolANSI_kv2::calculateLPDataBlockStartIndex(ULONG lastLPTime)
 
 
     currentTime.now();
-    nbrIntervals =  (abs(currentTime.seconds() - lastLPTime)/60) / getMaxIntervalTime();
+    nbrIntervals =  (int)(abs((long)(currentTime.seconds() - lastLPTime))/60) / getMaxIntervalTime();
     if (nbrIntervals > (((nbrBlksSet-1) * nbrIntsPerBlock) + nbrValidInts))
     {
         nbrIntervals = (((nbrBlksSet-1) * nbrIntsPerBlock) + nbrValidInts);

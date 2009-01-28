@@ -3,12 +3,13 @@
  *
  */
 
-#include <boost/test/unit_test.hpp>
-
 #include "dev_mct410.h"
 
-#define BOOST_AUTO_TEST_MAIN "Test MCT_410 Device"
-#include <boost/test/auto_unit_test.hpp>
+#include <boost/test/floating_point_comparison.hpp>
+
+#define BOOST_TEST_MAIN "Test dev_mct410"
+#include <boost/test/unit_test.hpp>
+
 using boost::unit_test_framework::test_suite;
 
 class test_CtiDeviceMCT410 : public CtiDeviceMCT410
@@ -20,10 +21,9 @@ public:
     };
 };
 
-BOOST_AUTO_UNIT_TEST(test_dev_mct410_extractDynamicPaoInfo)
+BOOST_AUTO_TEST_CASE(test_dev_mct410_extractDynamicPaoInfo)
 {
     test_CtiDeviceMCT410 dev;
-    using CtiTableDynamicPaoInfo::Keys;
 
     INMESS im;
 
@@ -43,12 +43,12 @@ BOOST_AUTO_UNIT_TEST(test_dev_mct410_extractDynamicPaoInfo)
     im.Buffer.DSt.Message[12] = 0xf2;
 
     /*
-    readKeyStore.insert(read_key_info_t(-1, Memory_OptionsPos,               Memory_OptionsLen,              Keys::Key_MCT_Options));
-    readKeyStore.insert(read_key_info_t(-1, Memory_ConfigurationPos,         Memory_ConfigurationLen,        Keys::Key_MCT_Configuration));
+    readKeyStore.insert(read_key_info_t(-1, Memory_OptionsPos,               Memory_OptionsLen,              CtiTableDynamicPaoInfo::Key_MCT_Options));
+    readKeyStore.insert(read_key_info_t(-1, Memory_ConfigurationPos,         Memory_ConfigurationLen,        CtiTableDynamicPaoInfo::Key_MCT_Configuration));
 
-    readKeyStore.insert(read_key_info_t(-1, Memory_EventFlagsMask1Pos,       Memory_EventFlagsMask1Len,      Keys::Key_MCT_EventFlagsMask1));
-    readKeyStore.insert(read_key_info_t(-1, Memory_EventFlagsMask2Pos,       Memory_EventFlagsMask2Len,      Keys::Key_MCT_EventFlagsMask2));
-    readKeyStore.insert(read_key_info_t(-1, Memory_MeterAlarmMaskPos,        Memory_MeterAlarmMaskLen,       Keys::Key_MCT_MeterAlarmMask));
+    readKeyStore.insert(read_key_info_t(-1, Memory_EventFlagsMask1Pos,       Memory_EventFlagsMask1Len,      CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask1));
+    readKeyStore.insert(read_key_info_t(-1, Memory_EventFlagsMask2Pos,       Memory_EventFlagsMask2Len,      CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask2));
+    readKeyStore.insert(read_key_info_t(-1, Memory_MeterAlarmMaskPos,        Memory_MeterAlarmMaskLen,       CtiTableDynamicPaoInfo::Key_MCT_MeterAlarmMask));
     */
 
     im.Buffer.DSt.Length = 13;
@@ -57,22 +57,22 @@ BOOST_AUTO_UNIT_TEST(test_dev_mct410_extractDynamicPaoInfo)
 
     dev.test_extractDynamicPaoInfo(im);
 
-    BOOST_CHECK(dev.hasDynamicInfo(Keys::Key_MCT_Options));
-    BOOST_CHECK(dev.hasDynamicInfo(Keys::Key_MCT_Configuration));
-    BOOST_CHECK(dev.hasDynamicInfo(Keys::Key_MCT_EventFlagsMask1));
-    BOOST_CHECK(dev.hasDynamicInfo(Keys::Key_MCT_EventFlagsMask2));
+    BOOST_CHECK(dev.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Options));
+    BOOST_CHECK(dev.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration));
+    BOOST_CHECK(dev.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask1));
+    BOOST_CHECK(dev.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask2));
     //  unavailable - only the first byte available in the range 0x00 - 0x0c
-    BOOST_CHECK(!dev.hasDynamicInfo(Keys::Key_MCT_MeterAlarmMask));
+    BOOST_CHECK(!dev.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_MeterAlarmMask));
 
-    BOOST_CHECK_EQUAL(dev.getDynamicInfo(Keys::Key_MCT_Options),         static_cast<long>(0xfd));
-    BOOST_CHECK_EQUAL(dev.getDynamicInfo(Keys::Key_MCT_Configuration),   static_cast<long>(0xfc));
-    BOOST_CHECK_EQUAL(dev.getDynamicInfo(Keys::Key_MCT_EventFlagsMask1), static_cast<long>(0xf4));
-    BOOST_CHECK_EQUAL(dev.getDynamicInfo(Keys::Key_MCT_EventFlagsMask2), static_cast<long>(0xf3));
+    BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Options),         0xfd);
+    BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration),   0xfc);
+    BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask1), 0xf4);
+    BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask2), 0xf3);
 
     /*
-    readKeyStore.insert(read_key_info_t(FuncRead_TOUDaySchedulePos,    0, 2, Keys::Key_MCT_DayTable));
-    readKeyStore.insert(read_key_info_t(FuncRead_TOUDaySchedulePos,    2, 1, Keys::Key_MCT_DefaultTOURate));
-    readKeyStore.insert(read_key_info_t(FuncRead_TOUDaySchedulePos,   10, 1, Keys::Key_MCT_TimeZoneOffset));
+    readKeyStore.insert(read_key_info_t(FuncRead_TOUDaySchedulePos,    0, 2, CtiTableDynamicPaoInfo::Key_MCT_DayTable));
+    readKeyStore.insert(read_key_info_t(FuncRead_TOUDaySchedulePos,    2, 1, CtiTableDynamicPaoInfo::Key_MCT_DefaultTOURate));
+    readKeyStore.insert(read_key_info_t(FuncRead_TOUDaySchedulePos,   10, 1, CtiTableDynamicPaoInfo::Key_MCT_TimeZoneOffset));
     */
 
     im.Buffer.DSt.Length = 3;
@@ -81,12 +81,12 @@ BOOST_AUTO_UNIT_TEST(test_dev_mct410_extractDynamicPaoInfo)
 
     dev.test_extractDynamicPaoInfo(im);
 
-    BOOST_CHECK(dev.hasDynamicInfo(Keys::Key_MCT_DayTable));
-    BOOST_CHECK(dev.hasDynamicInfo(Keys::Key_MCT_DefaultTOURate));
+    BOOST_CHECK(dev.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DayTable));
+    BOOST_CHECK(dev.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DefaultTOURate));
     //  outside the collected range
-    BOOST_CHECK(!dev.hasDynamicInfo(Keys::Key_MCT_TimeZoneOffset));
+    BOOST_CHECK(!dev.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_TimeZoneOffset));
 
-    BOOST_CHECK_EQUAL(dev.getDynamicInfo(Keys::Key_MCT_DayTable),       static_cast<long>(0xfffe));
-    BOOST_CHECK_EQUAL(dev.getDynamicInfo(Keys::Key_MCT_DefaultTOURate), static_cast<long>(0xfd));
+    BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DayTable),       0xfffe);
+    BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DefaultTOURate), 0xfd);
 }
 

@@ -9,7 +9,10 @@
 #include "ctidate.h"
 #include "ctitime.h"
 
+const int SECONDS_PER_MINUTE = 60;
+const int MINUTES_PER_HOUR = 60;
 
+const int HOURS_PER_DAY = 24;
 
 typedef boost::date_time::us_dst_rules<boost::gregorian::date, boost::posix_time::time_duration> us_dst_rules;
 boost::mutex ctime_mutex;
@@ -74,7 +77,7 @@ CtiTime::CtiTime(unsigned hour, unsigned minute, unsigned second) :
   _seconds(maketm(CtiDate::now(), hour, minute, second))
 {}
 
-CtiTime::CtiTime(const CtiDate& d, unsigned hour, unsigned minute, unsigned second) :
+CtiTime::CtiTime(CtiDate& d, unsigned hour, unsigned minute, unsigned second) :
   _seconds(0)
 {
     if(d.isValid()) {
@@ -134,7 +137,7 @@ CtiTime& CtiTime::addSeconds(const int secs)
 
 CtiTime& CtiTime::addMinutes(const int mins)
 {
-    return addSeconds(mins*60);
+    return addSeconds(mins*SECONDS_PER_MINUTE );
 }
 
 /*
@@ -147,17 +150,17 @@ CtiTime CtiTime::addDays(const int days, bool DSTflag)
     if (DSTflag) {
 
         CtiTime DSTtest = *this;
-        DSTtest.addSeconds(days*24*60*60);
+        DSTtest.addSeconds(days*HOURS_PER_DAY*SECONDS_PER_MINUTE *MINUTES_PER_HOUR);
 
         if ( DSTtest.isDST() == isDST() )
-            return addSeconds(days*24*60*60);
+            return addSeconds(days*HOURS_PER_DAY*SECONDS_PER_MINUTE *MINUTES_PER_HOUR);
         if ( isDST() ) {
-            return addSeconds( days*24*60*60 + 3600 );
+            return addSeconds( days*HOURS_PER_DAY*SECONDS_PER_MINUTE *MINUTES_PER_HOUR + SECONDS_PER_MINUTE *MINUTES_PER_HOUR );
         }else
-            return addSeconds( days*24*60*60 - 3600 );
+            return addSeconds( days*HOURS_PER_DAY*SECONDS_PER_MINUTE *MINUTES_PER_HOUR - SECONDS_PER_MINUTE *MINUTES_PER_HOUR );
 
     }else{
-        return addSeconds(days*24*60*60);
+        return addSeconds(days*HOURS_PER_DAY*SECONDS_PER_MINUTE *MINUTES_PER_HOUR);
     }
 
 }
@@ -273,7 +276,7 @@ CtiTime CtiTime::asGMT() const
     GetTimeZoneInformation(&tzinfo);
 
     //  Biases are in minutes
-    t.addSeconds((tzinfo.Bias + (ctm.tm_isdst?tzinfo.DaylightBias:tzinfo.StandardBias)) * 60);
+    t.addSeconds((tzinfo.Bias + (ctm.tm_isdst?tzinfo.DaylightBias:tzinfo.StandardBias)) * SECONDS_PER_MINUTE );
 
     return t;
 }
@@ -398,14 +401,14 @@ void CtiTime::resetToNow()
 CtiTime CtiTime::beginDST(unsigned year)
 {
     boost::gregorian::date d = us_dst_rules::local_dst_start_day(year);
-    boost::posix_time::time_duration td = us_dst_rules::dst_start_offset();
-    return CtiTime(CtiDate(d.day(), d.month(), d.year()), td.hours() + 1, td.minutes(), td.seconds());
+    boost::posix_time::time_duration td = us_dst_rules::dst_offset(); 
+    return CtiTime(CtiDate(d.day(), d.month(), d.year()), td.hours() + 2, td.minutes(), td.seconds());  
 }
 CtiTime CtiTime::endDST(unsigned int year)
 {
     boost::gregorian::date d = us_dst_rules::local_dst_end_day(year);
-    boost::posix_time::time_duration td = us_dst_rules::dst_start_offset();
-    return CtiTime(CtiDate(d.day(), d.month(), d.year()), td.hours(), td.minutes(), td.seconds()) - 60*60;
+    boost::posix_time::time_duration td = us_dst_rules::dst_offset(); 
+    return CtiTime(CtiDate(d.day(), d.month(), d.year()), td.hours(), td.minutes(), td.seconds()) - SECONDS_PER_MINUTE*MINUTES_PER_HOUR; 
 }
 
 

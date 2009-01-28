@@ -14,8 +14,6 @@
 #include "yukon.h"
 #pragma warning( disable : 4786 )
 
-
-#include <windows.h>
 #include <iomanip>
 #include <iostream>
 #include <exception>
@@ -33,7 +31,6 @@
 
 #include "collectable.h"
 #include "counter.h"
-#include "monitor.h"
 #include "cparms.h"
 #include "guard.h"
 #include <list>
@@ -933,7 +930,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
 
                 if(pPt )      // I know about the point...
                 {
-                    acknowledgeCommandMsg(pPt, Cmd, alarmcondition);
+                    acknowledgeCommandMsg(pPt, (const CtiCommandMsg *&)*&Cmd, alarmcondition);
                 }
             }
 
@@ -1000,7 +997,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                                     did = pPoint->getDeviceID();
                                 }
 
-                                bool is_a_control = writeControlMessageToPIL(did, rawstate, boost::static_pointer_cast<CtiPointStatus>(pPoint), Cmd);
+                                bool is_a_control = writeControlMessageToPIL(did, rawstate, boost::static_pointer_cast<CtiPointStatus>(pPoint), (const CtiCommandMsg *&) *&Cmd);
 
                                 CtiPointDataMsg *pPseudoValPD = 0;
                                 PtVerifyTriggerSPtr verificationPtr;
@@ -5758,9 +5755,9 @@ void CtiVanGogh::VGAppMonitorThread()
 {
     CtiTime LastThreadMonitorTime;
     int checkCount = 0;
-    CtiThreadMonitor::State previous;
+    CtiThreadMonitor::State previous = CtiThreadMonitor::Normal;
     CtiPointDataMsg vgStatusPoint;
-    long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::PointOffsets::Dispatch);
+    long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::Dispatch);
 
     //on startup wait for 15 minutes!
     for(int i=0;i<180 && !bGCtrlC;i++)
@@ -5803,7 +5800,7 @@ void CtiVanGogh::VGAppMonitorThread()
                             if((pDynPt->getTimeStamp()).seconds()<(compareTime))
                             {
                                 //its been more than 15 minutes, set the alarms!!!
-                                CtiMessage* pData = (CtiMessage *)CTIDBG_new CtiPointDataMsg(*pointListWalker, CtiThreadMonitor::State::Dead, NormalQuality, StatusPointType, "Thread has not responded for 15 minutes.");
+                                CtiMessage* pData = (CtiMessage *)CTIDBG_new CtiPointDataMsg(*pointListWalker, CtiThreadMonitor::Dead, NormalQuality, StatusPointType, "Thread has not responded for 15 minutes.");
                                 pData->setSource(DISPATCH_APPLICATION_NAME);
                                 MainQueue_.putQueue(pData);
                             }
@@ -5813,7 +5810,7 @@ void CtiVanGogh::VGAppMonitorThread()
             }
 
             //no need to process very often, wait say.... randomly ill pick 3 minutes or so
-            for(i=0;i<=36 && !bGCtrlC;i++)
+            for(int i=0;i<=36 && !bGCtrlC;i++)
             {
                 rwSleep(5000);//5 second sleep
 
@@ -7689,7 +7686,7 @@ bool CtiVanGogh::processInputFunction(CHAR Char)
                     {
                         dout << " Priority               " << i << " has " << msgPrioritys.get(i) << endl;
                     }
-                    for(i = 1; i <= 15; i++)
+                    for(int i = 1; i <= 15; i++)
                     {
                         if(i <= 10)
                             dout << " Message times          " << i*50 << " ms = " << msgTimes.get(i) << endl;

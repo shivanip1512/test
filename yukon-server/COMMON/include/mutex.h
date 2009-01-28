@@ -15,6 +15,11 @@
 
 
 #ifdef _WINDOWS
+    
+    #if !defined (NOMINMAX)
+    #define NOMINMAX
+    #endif
+
     #include <windows.h>
 #endif
 
@@ -33,17 +38,17 @@ public:
     void reset();
 
 
-#ifdef _DEBUG
+/// #ifdef _DEBUG
     DWORD lastAcquiredByTID() const;
-#endif
+/// #endif
 
 private:
 
 #ifdef _WINDOWS
     HANDLE hMutex;
-#ifdef _DEBUG
+/// #ifdef _DEBUG
     DWORD  _threadID[3];
-#endif
+/// #endif
 #endif
 };
 #endif

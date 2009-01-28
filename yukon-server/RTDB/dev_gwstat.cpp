@@ -10,8 +10,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2008/07/08 22:56:58 $
+* REVISION     :  $Revision: 1.23.4.1 $
+* DATE         :  $Date: 2008/11/19 15:21:27 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2839,7 +2839,7 @@ int CtiDeviceGatewayStat::processParse(SOCKET msgsock, CtiCommandParser &parse, 
             {
                 {
                     CtiPendingStatOperation op( getDeviceSerialNumber(), operation );
-                    op.setOutMessage( OutMessage );
+                    op.setOutMessage((const CtiOutMessage *&) OutMessage );
 
                     addOperation(op);
                 }
@@ -4547,7 +4547,7 @@ void CtiDeviceGatewayStat::postAnalogOutputPoint(UINT Type, UINT pointoffset, do
         {
             string valReport = printListAsString(Type);
 
-            LockGuard guard(monitor());
+            CtiLockGuard<CtiMutex> guard(_classMutex);
 
             // This point exists and is in the DB.  Let's process and create an rsvpToDispatch.
             if(!_pMulti)
@@ -4574,7 +4574,7 @@ void CtiDeviceGatewayStat::postAnalogOutputPoint(UINT Type, UINT pointoffset, do
  */
 CtiMessage* CtiDeviceGatewayStat::rsvpToDispatch(bool clearMessage)
 {
-    LockGuard guard(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
 
     CtiMultiMsg *pTemp = _pMulti;
     _pMulti = 0;

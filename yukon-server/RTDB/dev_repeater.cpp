@@ -8,16 +8,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.45 $
-* DATE         :  $Date: 2008/10/29 18:16:45 $
+* REVISION     :  $Revision: 1.45.2.2 $
+* DATE         :  $Date: 2008/11/20 16:49:20 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-
-
-#include <windows.h>
 #include <rw\ctoken.h>
 
 #include "devicetypes.h"
@@ -44,10 +41,10 @@ CtiDeviceRepeater900::~CtiDeviceRepeater900() { }
 
 CtiDeviceRepeater900& CtiDeviceRepeater900::operator=(const CtiDeviceRepeater900& aRef)
 {
-   if(this != &aRef)
-   {
-      Inherited::operator=(aRef);
-   }
+    if(this != &aRef)  
+    {
+       Inherited::operator=(aRef);
+    }
    return *this;
 }
 
@@ -70,7 +67,7 @@ bool CtiDeviceRepeater900::getOperation( const UINT &cmd, USHORT &function, USHO
 {
     bool found = false;
 
-    CommandSet::iterator itr = _commandStore.find(CommandStore(cmd));
+    CommandSet::const_iterator itr = _commandStore.find(CommandStore(cmd));
 
     if( itr != _commandStore.end() )
     {

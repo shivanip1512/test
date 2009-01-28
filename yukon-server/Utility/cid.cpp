@@ -1,5 +1,5 @@
 #include "yukon.h"
-#include <windows.h>
+
 #include <iostream>
 #include <vector>
 #include <boost/regex.hpp>

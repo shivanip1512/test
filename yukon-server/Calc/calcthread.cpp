@@ -1179,7 +1179,7 @@ void CtiCalculateThread::calcThread( void )
     }
 
     //  scream at the other threads, tell them it's time for dinner
-    interruptThreads( CtiCalcThreadInterruptReason::Shutdown );
+    interruptThreads( Shutdown );
     joinThreads();
 }
 

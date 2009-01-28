@@ -1847,33 +1847,38 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                             int capCount = 0;
                             int areaCount = 0;
                             int saCount = 0;
-                            if (CtiCCSubstationBusStore::getInstance()->findSubBusByPointID(dbChange->getId(), subCount) != NULL)
+                            multimap< long, CtiCCSubstationBusPtr >::iterator subBusBegin,  subBusEnd;
+                            multimap< long, CtiCCFeederPtr >::iterator        feederBegin,  feederEnd;
+                            multimap< long, CtiCCCapBankPtr >::iterator       capBankBegin, capBankEnd;
+                            multimap< long, CtiCCAreaPtr >::iterator          areaBegin,    areaEnd;
+                            multimap< long, CtiCCSpecialPtr >::iterator       sAreaBegin,   sAreaEnd;
+                            if (CtiCCSubstationBusStore::getInstance()->findSubBusByPointID(dbChange->getId(), subBusBegin, subBusEnd))
                             {
-                                CtiCCSubstationBusPtr sub = CtiCCSubstationBusStore::getInstance()->findSubBusByPointID(dbChange->getId(), subCount)->second;
+                                CtiCCSubstationBusPtr sub = subBusBegin->second;
                                 objType = CtiCCSubstationBusStore::SubBus;
                                 changeId = sub->getPAOId();
                             }
-                            else if (CtiCCSubstationBusStore::getInstance()->findFeederByPointID(dbChange->getId(), feedCount) != NULL)
+                            else if (CtiCCSubstationBusStore::getInstance()->findFeederByPointID(dbChange->getId(), feederBegin, feederEnd))
                             {
-                                CtiCCFeederPtr feed = CtiCCSubstationBusStore::getInstance()->findFeederByPointID(dbChange->getId(), feedCount)->second;
+                                CtiCCFeederPtr feed = feederBegin->second;
                                 objType = CtiCCSubstationBusStore::Feeder;
                                 changeId = feed->getPAOId();
                             }
-                            else if (CtiCCSubstationBusStore::getInstance()->findCapBankByPointID(dbChange->getId(), capCount) != NULL)
+                            else if (CtiCCSubstationBusStore::getInstance()->findCapBankByPointID(dbChange->getId(), capBankBegin, capBankEnd))
                             {
-                                CtiCCCapBankPtr cap = CtiCCSubstationBusStore::getInstance()->findCapBankByPointID(dbChange->getId(), capCount)->second;
+                                CtiCCCapBankPtr cap = capBankBegin->second;
                                 objType = CtiCCSubstationBusStore::CapBank;
                                 changeId = cap->getPAOId();
                             }
-                            else if (CtiCCSubstationBusStore::getInstance()->findAreaByPointID(dbChange->getId(), areaCount) != NULL)
+                            else if (CtiCCSubstationBusStore::getInstance()->findAreaByPointID(dbChange->getId(), areaBegin, areaEnd))
                             {
-                                CtiCCAreaPtr area = CtiCCSubstationBusStore::getInstance()->findAreaByPointID(dbChange->getId(), areaCount)->second;
+                                CtiCCAreaPtr area = areaBegin->second;
                                 objType = CtiCCSubstationBusStore::Area;
                                 changeId = area->getPAOId();
                             }
-                            else if (CtiCCSubstationBusStore::getInstance()->findSpecialAreaByPointID(dbChange->getId(), saCount) != NULL)
+                            else if (CtiCCSubstationBusStore::getInstance()->findSpecialAreaByPointID(dbChange->getId(), sAreaBegin, sAreaEnd))
                             {
-                                CtiCCSpecialPtr specialArea = CtiCCSubstationBusStore::getInstance()->findSpecialAreaByPointID(dbChange->getId(), saCount)->second;
+                                CtiCCSpecialPtr specialArea = sAreaBegin->second;
                                 objType = CtiCCSubstationBusStore::SpecialArea;
                                 changeId = specialArea->getPAOId();
                             }
@@ -2169,9 +2174,10 @@ void CtiCapController::pointDataMsgByArea( long pointID, double value, unsigned 
 
 
     CtiCCArea* currentArea = NULL;
-    int areaCount = 0;
-    std::multimap< long, CtiCCAreaPtr >::iterator areaIter = store->findAreaByPointID(pointID, areaCount);
-    while (areaCount > 0)
+    std::multimap< long, CtiCCAreaPtr >::iterator areaIter, end;
+    store->findAreaByPointID(pointID, areaIter, end);
+
+    while (areaIter != end)
     {
         try
         {
@@ -2216,8 +2222,6 @@ void CtiCapController::pointDataMsgByArea( long pointID, double value, unsigned 
             dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
         }
         areaIter++;
-        areaCount--;
-
     }
 }
 void CtiCapController::pointDataMsgBySpecialArea( long pointID, double value, unsigned quality, unsigned tags, CtiTime& timestamp, ULONG secondsFrom1901 )
@@ -2227,9 +2231,10 @@ void CtiCapController::pointDataMsgBySpecialArea( long pointID, double value, un
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
     CtiCCSpecial* currentSpArea = NULL;
-    int saCount = 0;
-    std::multimap< long, CtiCCSpecialPtr >::iterator saIter = store->findSpecialAreaByPointID(pointID, saCount);
-    while (saCount > 0)
+    std::multimap< long, CtiCCSpecialPtr >::iterator saIter, end;
+    store->findSpecialAreaByPointID(pointID, saIter, end);
+
+    while (saIter != end)
     {
         try
         {
@@ -2274,7 +2279,6 @@ void CtiCapController::pointDataMsgBySpecialArea( long pointID, double value, un
             dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
         }
         saIter++;
-        saCount--;
     }
 }
 void CtiCapController::pointDataMsgBySubstation( long pointID, double value, unsigned quality, unsigned tags, CtiTime& timestamp, ULONG secondsFrom1901 )
@@ -2285,9 +2289,10 @@ void CtiCapController::pointDataMsgBySubstation( long pointID, double value, uns
 
     CtiCCSubstation* currentStation = NULL;
     CtiCCArea* currentArea = NULL;
-    int sCount = 0;
-    std::multimap< long, CtiCCSubstationPtr >::iterator stationIter = store->findSubstationByPointID(pointID, sCount);
-    while (sCount > 0)
+    std::multimap< long, CtiCCSubstationPtr >::iterator stationIter, end;
+    store->findSubstationByPointID(pointID, stationIter, end);
+
+    while (stationIter != end)
     {
         try
         {
@@ -2346,7 +2351,6 @@ void CtiCapController::pointDataMsgBySubstation( long pointID, double value, uns
             dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
         }
         stationIter++;
-        sCount--;
     }
 } 
 
@@ -2362,9 +2366,10 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
     CtiCCSubstation* currentStation = NULL;
     CtiCCArea* currentArea = NULL;
 
-    int subCount = 0;
-    std::multimap< long, CtiCCSubstationBusPtr >::iterator subIter = store->findSubBusByPointID(pointID, subCount);
-    while (subCount > 0)
+    std::multimap< long, CtiCCSubstationBusPtr >::iterator subIter, end;
+    store->findSubBusByPointID(pointID, subIter, end);
+
+    while (subIter != end)
     {
         try
         {
@@ -2798,7 +2803,6 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
         }
-        subCount--;
         subIter++;
     }
 
@@ -2811,11 +2815,11 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
     CtiCCSubstationBus* currentSubstationBus = NULL;
-
-    int feederCount = 0;
-    std::multimap< long, CtiCCFeederPtr >::iterator feedIter = store->findFeederByPointID(pointID, feederCount);
     CtiCCFeederPtr currentFeeder = NULL;
-    while (feederCount > 0)
+    std::multimap< long, CtiCCFeederPtr >::iterator feedIter, end;
+    store->findFeederByPointID(pointID, feedIter, end);
+    
+    while (feedIter != end)
     {   
         currentFeeder = feedIter->second;
         try
@@ -3022,7 +3026,6 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
             dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
         }
         feedIter++;
-        feederCount--;
     }
 
     /*if( pointChanges.size() > 0 )
@@ -3040,11 +3043,11 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
 
     CtiCCSubstationBus* currentSubstationBus = NULL;
     CtiCCFeeder* currentFeeder = NULL;
-    int capCount = 0;
-    std::multimap< long, CtiCCCapBankPtr >::iterator capIter = store->findCapBankByPointID(pointID, capCount);
     CtiCCCapBankPtr currentCapBank = NULL;
-
-    while (capCount > 0)
+    std::multimap< long, CtiCCCapBankPtr >::iterator capIter, end;
+    store->findCapBankByPointID(pointID, capIter, end);
+    
+    while (capIter != end)
     {                  
         try
         {
@@ -3358,8 +3361,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
         }
-        currentCapBank++;
-        capCount--;
+        capIter++;
     }
 }
 

@@ -9,11 +9,29 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_kv2.h-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2008/10/29 18:16:48 $
+* REVISION     :  $Revision: 1.17.2.1 $
+* DATE         :  $Date: 2008/11/17 23:06:32 $
 *
 *    History:
       $Log: dev_kv2.h,v $
+      Revision 1.17.2.1  2008/11/17 23:06:32  jmarks
+      YUK-5273 Upgrade Yukon tool chain to Visual Studio 2005/2008
+      **************************************************************************************************************
+      Removed "CTITYPES.H" from every file in the project, so far there were no
+      known side-effects or even compile errors, however, they could still happen.
+
+      Also, made many other changes for compiling.
+
+      The project now apparently compiles until reching the database
+      subdirectory, however, I have seen cases where there is apparent
+      regressing and need to re-work things.
+
+      However, enough changes have happened, that I felt it was good to
+      committ.
+      **************************************************************************************************************
+      Possibly other misc. changes since last commit.
+      *******************************************************
+      
       Revision 1.17  2008/10/29 18:16:48  mfisher
       YUK-6374 Remove unused DSM/2 remnants
       Removed many orphaned function headers and structure definitions
@@ -71,7 +89,7 @@
 #include "dlldefs.h"
 #include "prot_ansi_kv2.h"
 #include "dsm2.h"
-#include "ctitypes.h"
+
 #include "types.h"
 #include "dllyukon.h"
 

@@ -7,11 +7,27 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2006/09/26 13:53:24 $
+* REVISION     :  $Revision: 1.6.22.1 $
+* DATE         :  $Date: 2008/11/13 17:23:49 $
 *
 * HISTORY      :
 * $Log: tbl_dv_rtc.cpp,v $
+* Revision 1.6.22.1  2008/11/13 17:23:49  jmarks
+* YUK-5273 Upgrade Yukon tool chain to Visual Studio 2005/2008
+*
+* Responded to reviewer comments again.
+*
+* I eliminated excess references to windows.h .
+*
+* This still left over 100 references to it where "yukon.h" or "precompiled.h" was not obviously included.  Some other chaining of references could still be going on, and of course it is potentially possible that not all the files in the project that include windows.h actually need it - I didn't check for that.
+*
+* None-the-less, I than added the NOMINMAX define right before each place where windows.h is still included.
+* Special note:  std::min<LONG>(TimeOut, 500); is still required for compilation.
+*
+* In this process I occasionally deleted a few empty lines, and when creating the define, also added some.
+*
+* This may not have affected every file in the project, but while mega-editing it certainly seemed like it did.
+*
 * Revision 1.6  2006/09/26 13:53:24  mfisher
 * standardizing the code for the "Decoding" printout
 *
@@ -47,9 +63,6 @@
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
-
-#include <windows.h>
-
 
 //#include <rw/db/table.h>
 //#include <rw/db/reader.h>

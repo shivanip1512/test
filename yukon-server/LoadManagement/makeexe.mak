@@ -97,6 +97,7 @@ loadmanagement.exe:     $(BASEOBJS) Makefile
 $(BASEOBJS) -link $(LIBS) $(RWLIBS) $(BOOSTLIBS) $(LINKFLAGS)
               @echo:
               -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+              mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
               -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
               @%cd $(CWD)
               @echo Done building Target ..\$@
@@ -104,6 +105,7 @@ $(BASEOBJS) -link $(LIBS) $(RWLIBS) $(BOOSTLIBS) $(LINKFLAGS)
 
 copy:       $(TARGS)
            -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+           mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
            -if exist bin\*.exe copy bin\*.exe $(YUKONOUTPUT)
 
 deps:

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_sched.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2008/10/28 19:21:40 $
+* REVISION     :  $Revision: 1.11.2.1 $
+* DATE         :  $Date: 2008/11/21 20:56:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -207,7 +207,7 @@ bool CtiMCSchedule::Update()
         dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    if( getScheduleID != 0 )
+    if( getScheduleID() != 0 )
     {
         ret = ( _pao_table.Update().errorCode() == RWDBStatus::ok );
     }

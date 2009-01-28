@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2008/09/15 17:59:17 $
+* REVISION     :  $Revision: 1.18.2.2 $
+* DATE         :  $Date: 2008/11/12 17:27:30 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -27,6 +27,8 @@
 #include "cticalls.h"
 #include <boost/shared_ptr.hpp>
 #include "boostutil.h"
+
+#include <functional>
 
 using boost::shared_ptr;
 
@@ -119,7 +121,7 @@ private:
 // This will be used to sort these things in a CtiQueue.
 namespace std
 {
-  struct greater<CtiThreadRegData*>
+  template <> struct greater<CtiThreadRegData*>
   {
     bool operator()(CtiThreadRegData const* p1, CtiThreadRegData const* p2)
     {

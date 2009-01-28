@@ -8,11 +8,10 @@
  * Author: Tom Mack
  *
  * ARCHIVE      :  $Archive$
- * REVISION     :  $Revision: 1.7 $
- * DATE         :  $Date: 2008/10/02 23:57:15 $
+ * REVISION     :  $Revision: 1.7.2.1 $
+ * DATE         :  $Date: 2008/11/13 17:23:47 $
  */
 
-#include <windows.h>
 #include <math.h>
 #include <stdlib.h>
 #include <iostream>
@@ -299,7 +298,7 @@ void CtiFDRPiPoll::doUpdates()
       {
         // remove local offset (might not be thread-safe)
         struct tm *temp = NULL;
-        temp = CtiTime::gmtime_r(&timeArray[i]);
+        temp = CtiTime::gmtime_r(reinterpret_cast<const time_t *> (&timeArray[i]) );
         time_t timeStamp = mktime(temp);
         // if 'alwaysSendValues' send the time we were supposed to poll, this has the
         // effect of always sending the values

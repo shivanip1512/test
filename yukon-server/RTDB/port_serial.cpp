@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2008/10/28 19:21:43 $
+* REVISION     :  $Revision: 1.4.2.1 $
+* DATE         :  $Date: 2008/11/20 16:49:20 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,7 +28,7 @@ void CtiPortSerial::DecodeDatabaseReader(RWDBReader &rdr)
 {
     Inherited::DecodeDatabaseReader(rdr);
 
-    LockGuard gd(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     _tblPortSettings.DecodeDatabaseReader(rdr);       // get the base class handled
     _tblPortTimings.DecodeDatabaseReader(rdr);       // get the base class handled
 }

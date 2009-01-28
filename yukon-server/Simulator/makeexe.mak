@@ -73,8 +73,9 @@ ccu_simulator.exe:      $(CCU_SIMULATOR_OBJS) makeexe.mak
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(CFLAGS) $(RWLINKFLAGS) $(INCLPATHS) -o ..\$@ $(CCU_SIMULATOR_OBJS) -link $(CCU_SIMULATOR_LIBS) $(RWLIBS) $(BOOSTLIBS)
+                $(RWCPPINVOKE) $(CFLAGS) $(RWLINKFLAGS) $(INCLPATHS) /Fe..\$@ $(CCU_SIMULATOR_OBJS) -link $(CCU_SIMULATOR_LIBS) $(RWLIBS) $(BOOSTLIBS)
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+                mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
                 -@copy ..\$@ $(YUKONOUTPUT)
                 @echo:
                 @echo Done building Target ..\$@
@@ -83,6 +84,7 @@ ccu_simulator.exe:      $(CCU_SIMULATOR_OBJS) makeexe.mak
 
 copy:           $(CTIPROGS)
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+                mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
                 -@if exist bin\*.exe copy bin\*.exe $(YUKONOUTPUT)
 
 

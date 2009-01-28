@@ -11,8 +11,8 @@
  *
  *
  * PVCS KEYWORDS:
- * REVISION     :  $Revision: 1.36 $
- * DATE         :  $Date: 2008/11/17 17:34:41 $
+ * REVISION     :  $Revision: 1.35.2.2 $
+ * DATE         :  $Date: 2008/11/21 17:55:24 $
  *
  *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
@@ -95,10 +95,9 @@ protected:
     public:
 
         typedef long value_type;
-        typedef value_type *iterator;
-        typedef const value_type *const_iterator;
+        typedef std::vector<value_type>::const_iterator const_iterator;
 
-        id_range_t()
+/*        id_range_t()
             : _itr_begin(0),
               _itr_end  (0)
             {};
@@ -106,8 +105,8 @@ protected:
             : _val(val),
               _itr_begin(&_val),
               _itr_end  (&_val + 1)
-            {};
-        id_range_t(std::vector<long>::const_iterator begin, std::vector<long>::const_iterator end)
+            {};*/
+        id_range_t(id_range_t::const_iterator begin, id_range_t::const_iterator end)
             : _itr_begin(begin),
               _itr_end  (end)
             {};
@@ -125,7 +124,7 @@ protected:
 
     typedef id_range_t::const_iterator id_itr_t;
 
-    void refreshList(id_range_t &paoids = id_range_t(), const long deviceType = 0);
+    void refreshList(id_range_t &paoids, const long deviceType = 0);
 
     //  should probably be moved to some more common location eventually (utility.cpp?)
     static void addIDClause(RWDBSelector &selector, RWDBColumn &id_column, id_range_t &paoids);

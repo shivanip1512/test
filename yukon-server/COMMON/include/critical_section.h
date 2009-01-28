@@ -31,17 +31,17 @@ public:
     bool tryAcquire();
     void release();
 
-#ifdef _DEBUG
+/// #ifdef _DEBUG
     DWORD lastAcquiredByTID() const;
-#endif
+/// #endif
 
 private:
 
 #ifdef _WINDOWS
     CRITICAL_SECTION _critical_section;
-#ifdef _DEBUG
+/// #ifdef _DEBUG
     DWORD  _threadID;
-#endif
+/// #endif
 #endif
 };
 #endif

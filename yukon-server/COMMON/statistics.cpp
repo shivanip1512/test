@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2008/08/14 18:26:11 $
+* REVISION     :  $Revision: 1.30.2.3 $
+* DATE         :  $Date: 2008/11/14 20:08:51 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -629,7 +629,7 @@ RWDBStatus::ErrorCode  CtiStatistics::PruneDaily(RWDBConnection &conn)
 
 void CtiStatistics::computeHourInterval(int hournumber, pair<CtiTime, CtiTime> &myinterval)
 {
-    CtiTime startdt(CtiDate());
+    CtiTime startdt = CtiTime(CtiDate());
     startdt = startdt + (hournumber * 3600);
     CtiTime stopdt(startdt + 3600);
 

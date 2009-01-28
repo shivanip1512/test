@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2008/10/31 19:42:34 $
+* REVISION     :  $Revision: 1.17.2.1 $
+* DATE         :  $Date: 2008/11/19 15:21:28 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -590,7 +590,7 @@ void CCU721::writeAWord( byte_buffer_t &buf, const ASTRUCT &ASt )
 {
     buf.insert(buf.end(), AWORDLEN, 0);
 
-    A_Word(buf.end() - AWORDLEN, ASt);
+    A_Word( &*(buf.end() - AWORDLEN), ASt);
 }
 
 void CCU721::writeBWord( byte_buffer_t &buf, const BSTRUCT &BSt )
@@ -609,7 +609,7 @@ void CCU721::writeBWord( byte_buffer_t &buf, const BSTRUCT &BSt )
 
     //  we insert relative to the end so that we can append to any buffer given to us
     buf.insert(buf.end(), BWORDLEN, 0);
-    B_Word(buf.end() - BWORDLEN, BSt, words);
+    B_Word( &* (buf.end() - BWORDLEN), BSt, words);
 
     if( BSt.IO == Emetcon::IO_Write ||
         BSt.IO == Emetcon::IO_Function_Write )
@@ -618,7 +618,7 @@ void CCU721::writeBWord( byte_buffer_t &buf, const BSTRUCT &BSt )
 
         //  I really don't know why C_Words takes a const pointer to unsigned char instead of a pointer to const unsigned char...
         BSTRUCT tmpBSt = BSt;
-        C_Words(buf.end() - CWORDLEN * words, tmpBSt.Message, tmpBSt.Length, 0);
+        C_Words( &*(buf.end() - CWORDLEN * words), tmpBSt.Message, tmpBSt.Length, 0);
     }
 }
 
@@ -674,9 +674,9 @@ int CCU721::decodeDWords(const unsigned char *input, unsigned input_length, unsi
         switch( i )
         {
             //  old code is stuck in its non-const ways
-            case 1:  status = D1_Word (input_buffer.begin(),                &DSt->Message[0], &DSt->RepVar, &DSt->Address, &DSt->Power, &DSt->Alarm);  break;
-            case 2:  status = D23_Word(input_buffer.begin() + DWORDLEN,     &DSt->Message[3], &DSt->TSync, &unused);  break;
-            case 3:  status = D23_Word(input_buffer.begin() + DWORDLEN * 2, &DSt->Message[8], &unused, &unused);  break;
+            case 1:  status = D1_Word ( &* input_buffer.begin(),                  &DSt->Message[0], &DSt->RepVar, &DSt->Address, &DSt->Power, &DSt->Alarm);  break;
+            case 2:  status = D23_Word( &* (input_buffer.begin() + DWORDLEN),     &DSt->Message[3], &DSt->TSync, &unused);  break;
+            case 3:  status = D23_Word( &* (input_buffer.begin() + DWORDLEN * 2), &DSt->Message[8], &unused, &unused);  break;
         }
     }
 

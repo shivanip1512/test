@@ -7,7 +7,7 @@
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/mgr_ptclients.cpp-arc  $
 * REVISION     :  $Revision: 1.57 $
-* DATE         :  $Date: 2008/11/19 16:13:25 $
+* DATE         :  $Date: 2008/11/20 20:37:41 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -241,7 +241,7 @@ void CtiPointClientManager::refreshListByPointIDs(const set<long> &ids)
     {
         set<long> tempIds;
 
-        for( set<long>::iterator iter = ids.begin(); iter != ids.end(); )
+        for( set<long>::const_iterator iter = ids.begin(); iter != ids.end(); )
         {
             tempIds.insert(*iter);
             iter++;
@@ -1286,7 +1286,7 @@ CtiPointClientManager::ReasonabilityLimitStruct CtiPointClientManager::getReason
 
         if(!_reasonabilityLimits.empty())
         {
-            ReasonabilityLimitMap::iterator iter;
+            ReasonabilityLimitMap::const_iterator iter;
             iter = _reasonabilityLimits.find(point->getPointID());
             if(iter != _reasonabilityLimits.end())
             {
@@ -1306,7 +1306,7 @@ CtiTablePointLimit CtiPointClientManager::getPointLimit(CtiPointSPtr point, LONG
     {
         coll_type::reader_lock_guard_t guard(getLock());
 
-        PointLimitSet::iterator iter = _limits.find(retVal);
+        PointLimitSet::const_iterator iter = _limits.find(retVal);
         if(iter != _limits.end())
         {
             retVal = *iter;
@@ -1332,7 +1332,7 @@ CtiTablePointAlarming CtiPointClientManager::getAlarming(CtiPointSPtr point) con
     {
         coll_type::reader_lock_guard_t guard(getLock());
 
-        PointAlarmingSet::iterator iter = _alarming.find(retVal);
+        PointAlarmingSet::const_iterator iter = _alarming.find(retVal);
         if(iter != _alarming.end())
         {
             retVal = *iter;

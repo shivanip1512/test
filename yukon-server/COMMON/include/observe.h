@@ -17,6 +17,11 @@
 #ifndef CTIOBSERVE_H
 #define CTIOBSERVE_H
 
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
+
 #include <windows.h>
 
 #include "types.h"

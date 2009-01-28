@@ -10,7 +10,6 @@
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-#include <windows.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -332,7 +331,7 @@ string CtiDeviceWctpTerminal::getDescription(const CtiCommandParser & parse) con
 
 CHAR* CtiDeviceWctpTerminal::getOutBuffer()
 {
-    LockGuard gd(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
 
     if(_outBuffer == NULL)
     {
@@ -345,7 +344,7 @@ CHAR* CtiDeviceWctpTerminal::getOutBuffer()
 
 CHAR* CtiDeviceWctpTerminal::getInBuffer()
 {
-    LockGuard gd(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
 
     if(_inBuffer == NULL)
     {
@@ -358,7 +357,7 @@ CHAR* CtiDeviceWctpTerminal::getInBuffer()
 
 CHAR* CtiDeviceWctpTerminal::getXMLBuffer()
 {
-    LockGuard gd(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
 
     if(_xmlBuffer == NULL)
     {
@@ -371,7 +370,7 @@ CHAR* CtiDeviceWctpTerminal::getXMLBuffer()
 
 void CtiDeviceWctpTerminal::destroyBuffers()
 {
-    LockGuard gd(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
 
     try
     {
@@ -424,7 +423,7 @@ SAXWctpHandler* CtiDeviceWctpTerminal::getWctpHandler()
 
 CHAR* CtiDeviceWctpTerminal::removeDocType(const CHAR *src, CHAR *dst)
 {
-    CHAR *p1 = strstr(src, "<!DOCTYPE");
+    CHAR *p1 = (CHAR *)strstr(src, "<!DOCTYPE");
     if(p1 == NULL)
     {
         strcpy(dst, src);
@@ -434,7 +433,7 @@ CHAR* CtiDeviceWctpTerminal::removeDocType(const CHAR *src, CHAR *dst)
     strncpy(dst, src, p1 - src);
     dst[p1 - src] = 0;
 
-    CHAR *p2 = strstr(src, "<wctp-Operation");
+    CHAR *p2 = (CHAR *)strstr(src, "<wctp-Operation");
     if(p2 != NULL)
         strcat(dst, p2);
     return dst;

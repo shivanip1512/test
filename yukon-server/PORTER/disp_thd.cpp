@@ -6,15 +6,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/disp_thd.cpp-arc  $
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2008/10/22 21:16:43 $
+* REVISION     :  $Revision: 1.34.2.1 $
+* DATE         :  $Date: 2008/11/13 17:23:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-
-#include <windows.h>
 #include <iomanip>
 #include <iostream>
 
@@ -95,7 +93,7 @@ void DispatchMsgHandlerThread(VOID *Arg)
     UINT           changeCnt = 0;
     UCHAR          checkCount = 0;
     CtiDBChangeMsg *pChg = NULL;
-    long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::PointOffsets::Porter);
+    long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::Porter);
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);

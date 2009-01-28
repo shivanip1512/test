@@ -37,7 +37,7 @@ bool LantronixEncryptionImpl::decode(const unsigned char* const cipher, long buf
 
 	AES_KEY aeskey;
 	AES_set_decrypt_key(_key,128,&aeskey);
-	AES_cbc_encrypt(cipher+UDPHEADERSIZE,plainText.begin(),bufLen,&aeskey,iv, AES_DECRYPT);
+	AES_cbc_encrypt(cipher+UDPHEADERSIZE,&*plainText.begin(),bufLen,&aeskey,iv, AES_DECRYPT);
 	
 	//Shrink to fit.
 	plainText.resize(dataLength);
@@ -66,7 +66,7 @@ bool LantronixEncryptionImpl::encode(const unsigned char* const pText, long pTex
 	cText.resize(size);
 
 	//Copy in IV
-	memcpy(cText.begin(),_iv,16);
+	memcpy(&*cText.begin(),_iv,16);
 
 	//Set plaintext length into buffer
 	cText[16] = pTextLen >> 8;
@@ -74,7 +74,7 @@ bool LantronixEncryptionImpl::encode(const unsigned char* const pText, long pTex
 
 	AES_KEY aeskey;
 	AES_set_encrypt_key(_key,128,&aeskey);
-	AES_cbc_encrypt(pText,cText.begin()+UDPHEADERSIZE,size-UDPHEADERSIZE,&aeskey,_iv, AES_ENCRYPT);
+	AES_cbc_encrypt(pText,&*(cText.begin()+UDPHEADERSIZE),size-UDPHEADERSIZE,&aeskey,_iv, AES_ENCRYPT);
 	
 	return true;
 }

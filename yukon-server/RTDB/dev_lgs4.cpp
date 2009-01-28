@@ -1549,11 +1549,11 @@ FLOAT S4Float (UCHAR byteArray[3])
     {
         // check for set bits
         if (mantissa & (0x01 << (15-i)))
-            tmp += (1 / pow (2,i));
+            tmp += (1.0 / pow (2.0,i));
     }
 
     // add the exponent
-    tmp = tmp * pow (2, (USHORT)exponent - 128);
+    tmp = tmp * pow ((float)2, (int) ((USHORT)exponent - 128));
 
     if (mantissa & (0x01 << 15))
         tmp = -tmp;
@@ -1757,15 +1757,15 @@ INT CtiDeviceLandisGyrS4::reformatDataBuffer(BYTE *aInMessBuffer, ULONG &aTotalB
     (DOUBLE) (S4UShort(ptr->Byte.rateECoincidentDemand) * ptr->Real.kFactor / 1000.0) * (60 / ptr->Real.demandInterval);
 
     ptr->Real.rateAPowerFactorAtMax =
-    (FLOAT)S4BCDtoBase10(ptr->Byte.rateAPowerFactorAtMax,      2) / (pow (10,findImpliedDecimal (ptr->Byte.rateAPowerFactorAtMax)));
+    (FLOAT)S4BCDtoBase10(ptr->Byte.rateAPowerFactorAtMax,      2) / (pow (10.0,findImpliedDecimal (ptr->Byte.rateAPowerFactorAtMax)));
     ptr->Real.rateBPowerFactorAtMax =
-    (FLOAT)S4BCDtoBase10(ptr->Byte.rateBPowerFactorAtMax,      2) / (pow (10,findImpliedDecimal (ptr->Byte.rateBPowerFactorAtMax)));
+    (FLOAT)S4BCDtoBase10(ptr->Byte.rateBPowerFactorAtMax,      2) / (pow (10.0,findImpliedDecimal (ptr->Byte.rateBPowerFactorAtMax)));
     ptr->Real.rateCPowerFactorAtMax =
-    (FLOAT)S4BCDtoBase10(ptr->Byte.rateCPowerFactorAtMax,      2) / (pow (10,findImpliedDecimal (ptr->Byte.rateCPowerFactorAtMax)));
+    (FLOAT)S4BCDtoBase10(ptr->Byte.rateCPowerFactorAtMax,      2) / (pow (10.0,findImpliedDecimal (ptr->Byte.rateCPowerFactorAtMax)));
     ptr->Real.rateDPowerFactorAtMax =
-    (FLOAT)S4BCDtoBase10(ptr->Byte.rateDPowerFactorAtMax,      2) / (pow (10,findImpliedDecimal (ptr->Byte.rateDPowerFactorAtMax)));
+    (FLOAT)S4BCDtoBase10(ptr->Byte.rateDPowerFactorAtMax,      2) / (pow (10.0,findImpliedDecimal (ptr->Byte.rateDPowerFactorAtMax)));
     ptr->Real.rateEPowerFactorAtMax =
-    (FLOAT)S4BCDtoBase10(ptr->Byte.rateEPowerFactorAtMax,      2) / (pow (10,findImpliedDecimal (ptr->Byte.rateEPowerFactorAtMax)));
+    (FLOAT)S4BCDtoBase10(ptr->Byte.rateEPowerFactorAtMax,      2) / (pow (10.0,findImpliedDecimal (ptr->Byte.rateEPowerFactorAtMax)));
 
     ptr->Real.rateAkWh = S4BCDtoDouble(ptr->Byte.rateAkWh,      6) * (ptr->Real.kFactor) / 1000.0;
     ptr->Real.rateBkWh = S4BCDtoDouble(ptr->Byte.rateBkWh,      6) * (ptr->Real.kFactor) / 1000.0;
@@ -1793,7 +1793,7 @@ INT CtiDeviceLandisGyrS4::reformatDataBuffer(BYTE *aInMessBuffer, ULONG &aTotalB
     (DOUBLE) (S4UShort(ptr->Byte.maxkM3) * ptr->Real.kFactor / 1000.0) * (60 / ptr->Real.demandInterval);
 
     ptr->Real.powerFactorAtMaxkM3 =
-    (FLOAT)S4BCDtoBase10(ptr->Byte.powerFactorAtMaxkM3,      2) / (pow (10,findImpliedDecimal (ptr->Byte.powerFactorAtMaxkM3)));
+    (FLOAT)S4BCDtoBase10(ptr->Byte.powerFactorAtMaxkM3,      2) / (pow (10.0,findImpliedDecimal (ptr->Byte.powerFactorAtMaxkM3)));
 
     ptr->Real.coincidentkM3atMaxDemand =
     (DOUBLE) (S4UShort(ptr->Byte.coincidentkM3atMaxDemand) * ptr->Real.kFactor / 1000.0) * (60 / ptr->Real.demandInterval);

@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_scandata.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2005/12/20 17:16:06 $
+* REVISION     :  $Revision: 1.13.24.1 $
+* DATE         :  $Date: 2008/11/18 20:11:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -309,8 +309,6 @@ CtiTableDeviceScanData::CtiTableDeviceScanData(const CtiTableDeviceScanData& aRe
 {
     *this = aRef;
 }
-
-CtiTableDeviceScanData::~CtiTableDeviceScanData();
 
 
 CtiTableDeviceScanData& CtiTableDeviceScanData::operator=(const CtiTableDeviceScanData& aRef)

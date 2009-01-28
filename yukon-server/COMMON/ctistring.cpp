@@ -27,7 +27,7 @@ bool CtiString::contains(const string& s, caseCompare cc) const{
 }
 
 string CtiString::match(const boost::regex& re, size_t start) const{
-    boost::cmatch what;
+    boost::smatch what;
     string t = substr(start);
     if(boost::regex_search(t, what, re))
     {
@@ -35,6 +35,13 @@ string CtiString::match(const boost::regex& re, size_t start) const{
     } else {
         return string("");
     }
+}
+
+
+string CtiString::match(const CtiString& s, size_t start) const{
+    boost::regex e1;
+    e1.assign((string)s);
+    return match(e1, start);
 }
 
 
@@ -118,7 +125,7 @@ void CtiString::toUpper(){
 
 
 size_t CtiString::index(boost::regex& re, size_t* ext, size_t i) {
-    boost::cmatch what;
+    boost::smatch what;
     string t = substr(i);
     if(boost::regex_search(t, what, re))
     {

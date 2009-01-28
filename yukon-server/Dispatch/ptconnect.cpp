@@ -30,7 +30,7 @@ using namespace std;
 
 CtiPointConnection& CtiPointConnection::operator=(const CtiPointConnection &aRef)
 {
-   LockGuard guard(monitor());
+   CtiLockGuard<CtiMutex> guard(_classMutex);
 
    if(this != &aRef)
    {
@@ -49,7 +49,7 @@ int CtiPointConnection::PostPointChangeToConnections(const CtiPointDataMsg &ChgM
       CtiServer::ptr_type CtiM = *itr;
       try
       {
-         LockGuard guard(monitor());
+         CtiLockGuard<CtiMutex> guard(_classMutex);
 
          // Copy constructor...
          CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg(ChgMsg);
@@ -120,6 +120,11 @@ CtiPointConnection::CtiPointConnection()
 {
 }
 
+//Copy constructor copies nothing!
+CtiPointConnection::CtiPointConnection(const CtiPointConnection& aRef)
+{
+}
+
 CtiPointConnection::~CtiPointConnection()
 {
     // Blow away everything. // Connection Managers must be deleted by VanGogh
@@ -129,12 +134,12 @@ CtiPointConnection::~CtiPointConnection()
 
 void CtiPointConnection::AddConnectionManager(CtiServer::ptr_type cm)
 {
-   LockGuard guard(monitor());
+   CtiLockGuard<CtiMutex> guard(_classMutex);
    ConnectionManagerCollection.insert(cm);
 }
 void CtiPointConnection::RemoveConnectionManager(CtiServer::ptr_type cm)
 {
-   LockGuard guard(monitor());
+   CtiLockGuard<CtiMutex> guard(_classMutex);
    bool present = false;
    CollectionType::iterator itr = ConnectionManagerCollection.begin();
    while(itr != ConnectionManagerCollection.end() ){
@@ -147,13 +152,9 @@ void CtiPointConnection::RemoveConnectionManager(CtiServer::ptr_type cm)
 
 bool CtiPointConnection::IsEmpty()
 {
-   LockGuard guard(monitor());
+   CtiLockGuard<CtiMutex> guard(_classMutex);
    return ConnectionManagerCollection.empty();
 }
-
-int CtiPointConnection::PostPointChangeToConnections(const CtiPointDataMsg& Msg);
-
-CtiPointConnection& CtiPointConnection::operator=(const CtiPointConnection &aRef);
 
 CtiPointConnection::CollectionType& CtiPointConnection::getManagerList()
 {

@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_tap.h-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2008/10/28 19:21:44 $
+* REVISION     :  $Revision: 1.15.2.1 $
+* DATE         :  $Date: 2008/11/20 16:49:28 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -59,7 +59,7 @@ protected:
 public:
 
    CtiDeviceTapPagingTerminal();
-   CtiDeviceTapPagingTeminal(const CtiDeviceTapPagingTerminal& aRef);
+   CtiDeviceTapPagingTerminal(const CtiDeviceTapPagingTerminal& aRef);
    virtual ~CtiDeviceTapPagingTerminal();
 
    CtiDeviceTapPagingTerminal& operator=(const CtiDeviceTapPagingTerminal& aRef);

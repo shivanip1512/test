@@ -194,7 +194,7 @@ string CtiDate::asStringUSFormat() const
 {
     //  date format "mm/dd/yyyy" 11 bytes needed
     char time_str[11];
-    CtiTime tempTime(*this, 0, 0, 0);
+    CtiTime tempTime((CtiDate &)(*this), 0, 0, 0);
     ctitime_t seconds = tempTime.seconds();
     strftime(time_str, 11, "%m/%d/%Y", localtime(&seconds));
     time_str[10] = 0;

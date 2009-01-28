@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.78 $
-* DATE         :  $Date: 2008/11/17 17:34:40 $
+* REVISION     :  $Revision: 1.77.2.2 $
+* DATE         :  $Date: 2008/11/19 15:21:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -36,7 +36,7 @@ CtiRouteSPtr CtiDeviceBase::getRoute(LONG RteId) const
 {
     CtiRouteSPtr Rte;
 
-    LockGuard  guard(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
 
     if(_routeMgr != NULL)
     {
@@ -90,7 +90,7 @@ INT CtiDeviceBase::ExecuteRequest(CtiRequestMsg                *pReq,
     INT      status = NORMAL;
     LONG     Id;
 
-    LockGuard  guard(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
 
     OUTMESS  *OutMessageTemplate = NULL;   // This memory MUST be cleaned up after the NEXUS WRITE!
 
@@ -155,7 +155,7 @@ INT CtiDeviceBase::ExecuteRequest(CtiRequestMsg                *pReq,
 
 void CtiDeviceBase::propagateRequest(OUTMESS *pOM, CtiRequestMsg *pReq )
 {
-    LockGuard  guard(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
 
     if(pOM != NULL && pReq != NULL)
     {
@@ -405,7 +405,7 @@ CtiDeviceBase& CtiDeviceBase::operator=(const CtiDeviceBase& aRef)
     {
         Inherited::operator=(aRef);
 
-        LockGuard  guard(monitor());
+        CtiLockGuard<CtiMutex> guard(_classMutex);
 
         if(_pointMgr != NULL)
         {
@@ -542,7 +542,7 @@ CtiDeviceBase&    CtiDeviceBase::setLogOnNeeded(BOOL b)
 
 CtiDeviceBase& CtiDeviceBase::setCommFailCount(const INT i)
 {
-    LockGuard guard(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     if(i < 0)
         _commFailCount = INT_MAX;               // Never ever roll over into negative numbers...
     else
@@ -553,25 +553,25 @@ CtiDeviceBase& CtiDeviceBase::setCommFailCount(const INT i)
 
 CtiDeviceBase& CtiDeviceBase::setAttemptCount(const INT i)
 {
-    LockGuard guard(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     _attemptCount = i;
     return  *this;
 }
 CtiDeviceBase& CtiDeviceBase::setAttemptFailCount(const INT i)
 {
-    LockGuard guard(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     _attemptFailCount = i;
     return  *this;
 }
 CtiDeviceBase& CtiDeviceBase::setAttemptRetryCount(const INT i)
 {
-    LockGuard guard(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     _attemptRetryCount = i;
     return  *this;
 }
 CtiDeviceBase& CtiDeviceBase::setAttemptSuccessCount(const INT i)
 {
-    LockGuard guard(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     _attemptSuccessCount = i;
     return  *this;
 }
@@ -588,7 +588,7 @@ bool CtiDeviceBase::isCommFailed() const
 
 bool CtiDeviceBase::adjustCommCounts( bool &isCommFail, bool retry )
 {
-    LockGuard  guard(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     bool bAdjust = false;
     bool bStateChange = false;
     bool success = isCommFail;      // On entry, isCommFail is (CommResult == NORMAL)
@@ -633,13 +633,13 @@ bool CtiDeviceBase::adjustCommCounts( bool &isCommFail, bool retry )
 
 const CtiTableDeviceBase& CtiDeviceBase::getDeviceBase() const
 {
-    LockGuard gd(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     return _deviceBase;
 }
 
 CtiDeviceBase& CtiDeviceBase::setDeviceBase(const CtiTableDeviceBase& tbldevbase)
 {
-    LockGuard gd(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     _deviceBase = tbldevbase;
 
     return *this;
@@ -647,7 +647,7 @@ CtiDeviceBase& CtiDeviceBase::setDeviceBase(const CtiTableDeviceBase& tbldevbase
 
 int CtiDeviceBase::incResponsesOnTrxID(int trxid)
 {
-    LockGuard gd(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
 
     if(trxid == getCurrentTrxID())
     {
@@ -667,14 +667,14 @@ int CtiDeviceBase::incResponsesOnTrxID(int trxid)
 
 CtiDeviceBase& CtiDeviceBase::setResponsesOnTrxID(int cnt)
 {
-    LockGuard gd(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     _responsesOnTrxID = cnt;
     return *this;
 }
 
 CtiDeviceBase& CtiDeviceBase::setTrxID(int trx)
 {
-    LockGuard gd(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     _currTrxID = trx;
     return *this;
 }
@@ -722,7 +722,7 @@ void CtiDeviceBase::setOutMessageTargetID( LONG &omtid )
 }
 
 
-INT CtiDeviceBase::checkForInhibitedDevice(list< CtiMessage* > &retList, const OUTMESS *&OutMessage)
+INT CtiDeviceBase::checkForInhibitedDevice(list< CtiMessage* > &retList, const OUTMESS *OutMessage)
 {
     int status = NORMAL;
 
@@ -778,10 +778,8 @@ bool CtiDeviceBase::isTAP() const
 }
 
 
-using CtiTableDynamicPaoInfo::Keys;
-
 //  this dynamic stuff might need to move to tbl_pao - it is dynamicpaoinfo, after all
-bool CtiDeviceBase::hasDynamicInfo(Keys k) const
+bool CtiDeviceBase::hasDynamicInfo(PaoInfoKeys k) const
 {
     return (_paoInfo.find(CtiTableDynamicPaoInfo(getID(), k)) != _paoInfo.end());
 }
@@ -810,7 +808,7 @@ bool CtiDeviceBase::setDynamicInfo(const CtiTableDynamicPaoInfo &info)
 
 //  helper function for overloads
 template <class T>
-bool setInfo(set<CtiTableDynamicPaoInfo> &s, long paoid, Keys k, const T &value)
+bool setInfo(set<CtiTableDynamicPaoInfo> &s, long paoid, CtiTableDynamicPaoInfo::PaoInfoKeys k, const T &value)
 {
     std::pair<std::set<CtiTableDynamicPaoInfo>::iterator, bool> set_result;
     bool record_added = false;
@@ -822,38 +820,38 @@ bool setInfo(set<CtiTableDynamicPaoInfo> &s, long paoid, Keys k, const T &value)
     return set_result.second;
 }
 
-bool CtiDeviceBase::setDynamicInfo(Keys k, const string &value)
+bool CtiDeviceBase::setDynamicInfo(PaoInfoKeys k, const string &value)
 {
     return setInfo(_paoInfo, getID(), k, value);
 }
-bool CtiDeviceBase::setDynamicInfo(Keys k, const int &value)
+bool CtiDeviceBase::setDynamicInfo(PaoInfoKeys k, const int &value)
 {
     return setInfo(_paoInfo, getID(), k, value);
 }
-bool CtiDeviceBase::setDynamicInfo(Keys k, const unsigned int &value)
+bool CtiDeviceBase::setDynamicInfo(PaoInfoKeys k, const unsigned int &value)
 {
     return setInfo(_paoInfo, getID(), k, value);
 }
-bool CtiDeviceBase::setDynamicInfo(Keys k, const long &value)
+bool CtiDeviceBase::setDynamicInfo(PaoInfoKeys k, const long &value)
 {
     return setInfo(_paoInfo, getID(), k, value);
 }
-bool CtiDeviceBase::setDynamicInfo(Keys k, const unsigned long &value)
+bool CtiDeviceBase::setDynamicInfo(PaoInfoKeys k, const unsigned long &value)
 {
     return setInfo(_paoInfo, getID(), k, value);
 }
-bool CtiDeviceBase::setDynamicInfo(Keys k, const double &value)
+bool CtiDeviceBase::setDynamicInfo(PaoInfoKeys k, const double &value)
 {
     return setInfo(_paoInfo, getID(), k, value);
 }
-bool CtiDeviceBase::setDynamicInfo(Keys k, const CtiTime &value)
+bool CtiDeviceBase::setDynamicInfo(PaoInfoKeys k, const CtiTime &value)
 {
-    return setInfo(_paoInfo, getID(), k, value.seconds());
+    return setInfo(_paoInfo, getID(), k, (unsigned long) value.seconds());
 }
 
 //  helper function for overloads
 template <class T>
-bool getInfo(const set<CtiTableDynamicPaoInfo> &s, long paoid, Keys k, T &destination)
+bool getInfo(const set<CtiTableDynamicPaoInfo> &s, long paoid, CtiTableDynamicPaoInfo::PaoInfoKeys k, T &destination)
 {
     bool success = false;
 
@@ -868,23 +866,23 @@ bool getInfo(const set<CtiTableDynamicPaoInfo> &s, long paoid, Keys k, T &destin
     return success;
 }
 
-bool CtiDeviceBase::getDynamicInfo(Keys k,        string &destination) const    {   return getInfo(_paoInfo, getID(), k, destination);  }
-bool CtiDeviceBase::getDynamicInfo(Keys k,           int &destination) const    {   return getInfo(_paoInfo, getID(), k, destination);  }
-bool CtiDeviceBase::getDynamicInfo(Keys k,          long &destination) const    {   return getInfo(_paoInfo, getID(), k, destination);  }
-bool CtiDeviceBase::getDynamicInfo(Keys k, unsigned long &destination) const    {   return getInfo(_paoInfo, getID(), k, destination);  }
-bool CtiDeviceBase::getDynamicInfo(Keys k,        double &destination) const    {   return getInfo(_paoInfo, getID(), k, destination);  }
-bool CtiDeviceBase::getDynamicInfo(Keys k,       CtiTime &destination) const
+bool CtiDeviceBase::getDynamicInfo(PaoInfoKeys k,        string &destination) const    {   return getInfo(_paoInfo, getID(), k, destination);  }
+bool CtiDeviceBase::getDynamicInfo(PaoInfoKeys k,           int &destination) const    {   return getInfo(_paoInfo, getID(), k, destination);  }
+bool CtiDeviceBase::getDynamicInfo(PaoInfoKeys k,          long &destination) const    {   return getInfo(_paoInfo, getID(), k, destination);  }
+bool CtiDeviceBase::getDynamicInfo(PaoInfoKeys k, unsigned long &destination) const    {   return getInfo(_paoInfo, getID(), k, destination);  }
+bool CtiDeviceBase::getDynamicInfo(PaoInfoKeys k,        double &destination) const    {   return getInfo(_paoInfo, getID(), k, destination);  }
+bool CtiDeviceBase::getDynamicInfo(PaoInfoKeys k,       CtiTime &destination) const
 {
     ctitime_t seconds;
 
-    bool retval = getInfo(_paoInfo, getID(), k, seconds);
+    bool retval = getInfo(_paoInfo, getID(), k, (unsigned long&)seconds);
 
     destination = seconds;
 
     return retval;
 }
 
-long CtiDeviceBase::getDynamicInfo(Keys k) const
+long CtiDeviceBase::getDynamicInfo(PaoInfoKeys k) const
 {
     long l = std::numeric_limits<long>::min();
 

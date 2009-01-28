@@ -76,7 +76,7 @@ CtiAnsiTable28::CtiAnsiTable28( BYTE *dataBlob, UINT8 nbrPresentDemands, UINT8 n
 
     }
     _presentValue = new double[_nbrPresentValues];
-    for (i = 0; i < _nbrPresentValues; i++)
+    for (int i = 0; i < _nbrPresentValues; i++)
     {
         bytes = toDoubleParser( dataBlob, _presentValue[i], _format1 );
         dataBlob += bytes;
@@ -170,7 +170,7 @@ void CtiAnsiTable28::printResult( const string& deviceName )
         CtiLockGuard< CtiLogger > doubt_guard( dout );
         dout << endl<<"         Value Data: ";
     }
-    for (i = 0; i < _nbrPresentValues; i++)
+    for (int i = 0; i < _nbrPresentValues; i++)
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
         dout << " "<<_presentValue[i];

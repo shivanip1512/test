@@ -40,7 +40,6 @@
 #include "mgr_holiday.h"
 #include "utility.h"
 #include "thread_monitor.h"
-#include "ccoperationstats.h"
 
 #include "ctistring.h"
 #include <string>
@@ -262,105 +261,57 @@ CtiCCState_vec* CtiCCSubstationBusStore::getCCCapBankStates(ULONG secondsFrom190
 
   Attempts to locate a subbus given a point id.
   The given point could be any of the points.
-  Returns 0 if no subbus is found.
+  Returns false if no subbus is found.
   This member exists mostly for efficiency in updating subbuses when point
   data shows up.
 ----------------------------------------------------------------------------*/
-multimap< long, CtiCCSpecialPtr >::iterator CtiCCSubstationBusStore::findSpecialAreaByPointID(long point_id, int &saCount)
+bool CtiCCSubstationBusStore::findSpecialAreaByPointID(long point_id, multimap< long, CtiCCSpecialPtr >::iterator &begin, multimap< long, CtiCCSpecialPtr >::iterator &end)
 {
-    multimap< long, CtiCCSpecialPtr >::iterator iter = _pointid_specialarea_map.lower_bound(point_id);
-    saCount = _pointid_specialarea_map.count(point_id);
+    begin = _pointid_specialarea_map.lower_bound(point_id);
+    end   = _pointid_specialarea_map.upper_bound(point_id);
 
-    if (saCount > 0)
-    {
-        if (iter != _pointid_specialarea_map.end())
-            return iter;
-        else
-            return NULL;
-    }
-    else
-        return NULL;
+    return begin != end;
 }
 
-multimap< long, CtiCCAreaPtr >::iterator CtiCCSubstationBusStore::findAreaByPointID(long point_id, int &areaCount)
+bool CtiCCSubstationBusStore::findAreaByPointID(long point_id, multimap< long, CtiCCAreaPtr >::iterator &begin, multimap< long, CtiCCAreaPtr >::iterator &end)
 {
-    multimap< long, CtiCCAreaPtr >::iterator iter = _pointid_area_map.lower_bound(point_id);
-    areaCount = _pointid_area_map.count(point_id);
+    begin = _pointid_area_map.lower_bound(point_id);
+    end   = _pointid_area_map.upper_bound(point_id);
 
-    if (areaCount > 0)
-    {
-        if (iter != _pointid_area_map.end())
-            return iter;
-        else
-            return NULL;
-    }
-    else
-        return NULL;
+    return begin != end;
 }
 
-multimap< long, CtiCCSubstationPtr >::iterator CtiCCSubstationBusStore::findSubstationByPointID(long point_id, int &subCount)
+bool CtiCCSubstationBusStore::findSubstationByPointID(long point_id, multimap< long, CtiCCSubstationPtr >::iterator &begin, multimap< long, CtiCCSubstationPtr >::iterator &end)
 {
-    multimap< long, CtiCCSubstationPtr >::iterator iter = _pointid_station_map.lower_bound(point_id);
-    subCount = _pointid_station_map.count(point_id);
+    begin = _pointid_station_map.lower_bound(point_id);
+    end   = _pointid_station_map.upper_bound(point_id);
 
-    if (subCount > 0)
-    {
-        if (iter != _pointid_station_map.end())
-            return iter;
-        else
-            return NULL;
-    }
-    else
-        return NULL;
+    return begin != end;
 }
 
-multimap< long, CtiCCSubstationBusPtr >::iterator CtiCCSubstationBusStore::findSubBusByPointID(long point_id, int &subCount)
+bool CtiCCSubstationBusStore::findSubBusByPointID(long point_id, multimap< long, CtiCCSubstationBusPtr >::iterator &begin, multimap< long, CtiCCSubstationBusPtr >::iterator &end)
 {
-    multimap< long, CtiCCSubstationBusPtr >::iterator iter = _pointid_subbus_map.lower_bound(point_id);
-    subCount = _pointid_subbus_map.count(point_id);
+    begin = _pointid_subbus_map.lower_bound(point_id);
+    end   = _pointid_subbus_map.upper_bound(point_id);
 
-    if (subCount > 0)
-    {
-        if (iter != _pointid_subbus_map.end())
-            return iter;
-        else
-            return NULL;
-    }
-    else
-        return NULL;
+    return begin != end;
 }
 
 
-multimap< long, CtiCCFeederPtr >::iterator CtiCCSubstationBusStore::findFeederByPointID(long point_id, int &feedCount)
+bool CtiCCSubstationBusStore::findFeederByPointID(long point_id, multimap< long, CtiCCFeederPtr >::iterator &begin, multimap< long, CtiCCFeederPtr >::iterator &end)
 {
-    multimap< long, CtiCCFeederPtr >::iterator iter = _pointid_feeder_map.lower_bound(point_id);
-    feedCount = _pointid_feeder_map.count(point_id);
-    if (feedCount > 0)
-    {
-        if (iter != _pointid_feeder_map.end())
-            return iter;
-        else
-            return NULL;
-    }
-    else
-        return NULL;
+    begin = _pointid_feeder_map.lower_bound(point_id);
+    end   = _pointid_feeder_map.upper_bound(point_id);
 
+    return begin != end;
 }
 
-multimap< long, CtiCCCapBankPtr >::iterator CtiCCSubstationBusStore::findCapBankByPointID(long point_id, int &capCount)
+bool CtiCCSubstationBusStore::findCapBankByPointID(long point_id, multimap< long, CtiCCCapBankPtr >::iterator &begin, multimap< long, CtiCCCapBankPtr >::iterator &end)
 {
-    multimap< long, CtiCCCapBankPtr >::iterator iter = _pointid_capbank_map.lower_bound(point_id);
-    capCount = _pointid_capbank_map.count(point_id);
-    if (capCount > 0)
-    {
-        if (iter != _pointid_capbank_map.end())
-            return iter;
-        else
-            return NULL;
-    }
-    else
-        return NULL;
-
+    begin = _pointid_capbank_map.lower_bound(point_id);
+    end   = _pointid_capbank_map.upper_bound(point_id);
+    
+    return begin != end;
 }
 
 int CtiCCSubstationBusStore::getNbrOfAreasWithPointID(long point_id)
@@ -840,7 +791,7 @@ void CtiCCSubstationBusStore::reset()
         multimap< long, CtiCCSubstationBusPtr > temp_point_subbus_map;
         multimap< long, CtiCCFeederPtr > temp_point_feeder_map;
         multimap< long, CtiCCCapBankPtr > temp_point_capbank_map;
-        map< long, CtiCCStrategyPtr > temp_strategyid_strategy_map;
+        std::map< long, CtiCCStrategyPtr > temp_strategyid_strategy_map;
 
         map< long, long > temp_capbank_subbus_map;
         map< long, long > temp_capbank_feeder_map;
@@ -10846,8 +10797,6 @@ void CtiCCSubstationBusStore::reCalculateOperationStatsFromDatabase( )
                 CtiDate oneMonthAgo = CtiDate() -  30; //today - 30 days
                 CtiDate lastWeek = CtiDate() -  7;
                 CtiDate yesterday = CtiDate() -  1;
-                INT capCount = 0;
-
 
                 RWDBDatabase db = getDatabase();
                 RWDBTable ccEventLog = db.table("cceventlog");
@@ -10902,8 +10851,9 @@ void CtiCCSubstationBusStore::reCalculateOperationStatsFromDatabase( )
                         rdr["feederid"] >> feederid;
 
                         CtiCCCapBankPtr cap = NULL;
-                        if (findCapBankByPointID(pointId, capCount) != NULL)
-                            cap = findCapBankByPointID(pointId, capCount)->second;
+                        multimap< long, CtiCCCapBankPtr >::iterator capBeginIter, capEndIter;
+                        if (findCapBankByPointID(pointId, capBeginIter, capEndIter))
+                            cap = capBeginIter->second;
                         
                         if (logDateTime >= userDefWindow && cap != NULL )
                         {
@@ -10983,8 +10933,9 @@ void CtiCCSubstationBusStore::reCalculateOperationStatsFromDatabase( )
                         rdr["feederid"] >> feederid;
 
                         CtiCCCapBankPtr cap = NULL;
-                        if (findCapBankByPointID(pointId, capCount) != NULL)
-                            cap = findCapBankByPointID(pointId, capCount)->second;
+                        multimap< long, CtiCCCapBankPtr >::iterator capBeginIter, capEndIter;
+                        if (findCapBankByPointID(pointId, capBeginIter, capEndIter))
+                            cap = capBeginIter->second;
                         
                         if (logDateTime >= userDefWindow && cap != NULL )
                         {

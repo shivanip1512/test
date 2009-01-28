@@ -37,7 +37,7 @@ CtiAnsiTable33::CtiAnsiTable33( BYTE *dataBlob, UINT8 nbrPriDispLists, UINT16 nb
     }
 
     _priDispListTable.priDispSources = new UINT16[_nbrPriDispListItems];
-    for (i = 0; i < _nbrPriDispListItems; i++)
+    for (int i = 0; i < _nbrPriDispListItems; i++)
     {
          memcpy((void *)&_priDispListTable.priDispSources[i], dataBlob, sizeof(UINT16));
          dataBlob += sizeof(UINT16);    //2 bytes

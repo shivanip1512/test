@@ -1,6 +1,7 @@
 #include "yukon.h"
 
-#include <windows.h>
+#include <WinSock2.h>
+
 #include "logger.h"
 #include "guard.h"
 #include "fdrsocketlayer.h"

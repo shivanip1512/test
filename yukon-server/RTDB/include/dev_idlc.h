@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2008/10/28 19:21:44 $
+* REVISION     :  $Revision: 1.17.2.3 $
+* DATE         :  $Date: 2008/11/18 20:11:29 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,8 +19,13 @@
 #pragma warning( disable : 4786)
 
 
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
+
 #include <windows.h>
-#include "ctitypes.h"
+
 #include "types.h"
 #include "os2_2w32.h"
 #include "dsm2.h"
@@ -103,7 +108,7 @@ public:
 
     CtiDeviceIDLC& setIDLC( const CtiTableDeviceIDLC &aRef )
     {
-        LockGuard guard(monitor());
+        CtiLockGuard<CtiMutex> guard(_classMutex);
         _idlc = aRef;
         return *this;
     }

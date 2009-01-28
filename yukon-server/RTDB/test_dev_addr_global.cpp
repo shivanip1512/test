@@ -3,17 +3,16 @@
  *
  */
 
-#include <boost/test/unit_test.hpp>
-
 #define _WIN32_WINNT 0x0400
 
 #include "devicetypes.h"
 #include "dsm2.h"
 #include "dev_single.h"
 
-#define BOOST_AUTO_TEST_MAIN "Testing isDeviceAddressGlobal"
-#include <boost/test/auto_unit_test.hpp>
-using boost::unit_test_framework::test_suite;
+#include <boost/test/floating_point_comparison.hpp>
+
+#define BOOST_TEST_MAIN "Testing isDeviceAddressGlobal"
+#include <boost/test/unit_test.hpp>
 
 using namespace std;
 
@@ -43,7 +42,7 @@ public:
 };
 
 
-BOOST_AUTO_UNIT_TEST(test_is_device_address_global)
+BOOST_AUTO_TEST_CASE(test_is_device_address_global)
 {
     Test_DevAddressGlobal   test(TYPE_LCU415, CCUGLOBAL); 
 

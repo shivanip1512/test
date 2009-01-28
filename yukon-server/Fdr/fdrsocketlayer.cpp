@@ -1,6 +1,5 @@
 #include "yukon.h"
 
-#include <windows.h>
 #include "logger.h"
 #include "guard.h"
 

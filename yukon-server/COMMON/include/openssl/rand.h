@@ -64,6 +64,11 @@
 #include <openssl/e_os2.h>
 
 #if defined(OPENSSL_SYS_WINDOWS)
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
+
 #include <windows.h>
 #endif
 

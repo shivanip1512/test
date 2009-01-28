@@ -423,10 +423,10 @@ char CtiLogger::fill() const
     }
 }
 
-#ifdef _DEBUG
+/// #ifdef _DEBUG
 DWORD CtiLogger::lastAcquiredByTID() const
 {
     return _log_mux.lastAcquiredByTID();
 }
-#endif
+/// #endif
 

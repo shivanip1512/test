@@ -11,11 +11,10 @@
  * Author: Tom Mack
  *
  * ARCHIVE      :  $Archive$
- * REVISION     :  $Revision: 1.6 $
- * DATE         :  $Date: 2008/10/02 23:57:15 $
+ * REVISION     :  $Revision: 1.6.2.1 $
+ * DATE         :  $Date: 2008/11/13 17:23:47 $
  */
 
-#include <windows.h>
 #include <math.h>
 #include <stdlib.h>
 #include <iostream>

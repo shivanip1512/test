@@ -32,7 +32,7 @@ CtiCriticalSection CtiInterpreter::_mutex;
     and sets the temporary file name used to obtain results
 ---------------------------------------------------------------------------*/
 CtiInterpreter::CtiInterpreter()
-: _isevaluating(false), _queue(0), _dostop(false), _block(false), _eval_barrier(2), _interp(NULL), preEvalFunction(NULL), postEvalFunction(NULL)
+: _isevaluating(false), _dostop(false), _block(false), _eval_barrier(2), _interp(NULL), preEvalFunction(NULL), postEvalFunction(NULL)
 {
     set( CtiInterpreter::EVALUATE, false);
     set( CtiInterpreter::EVALUATE_FILE, false );

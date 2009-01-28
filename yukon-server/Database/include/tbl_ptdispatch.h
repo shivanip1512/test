@@ -63,7 +63,7 @@ private:
     virtual ~CtiTablePointDispatch();
 
     virtual CtiTablePointDispatch& operator=(const CtiTablePointDispatch&);
-    virtual operator==(const CtiTablePointDispatch&) const;
+    virtual bool operator==(const CtiTablePointDispatch&) const;
 
     static string getTableName();
 

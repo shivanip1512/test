@@ -1,5 +1,5 @@
 #include "yukon.h"
-#include <windows.h>
+
 #include "dllbase.h"
 #include "tbl_signal.h"
 

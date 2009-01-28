@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.50 $
-* DATE         :  $Date: 2008/10/30 15:44:16 $
+* REVISION     :  $Revision: 1.50.2.2 $
+* DATE         :  $Date: 2008/11/20 16:49:27 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,6 +18,11 @@
 #define __PORT_BASE_H__
 #pragma warning( disable : 4786)
 
+
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
 
 #include <windows.h>
 #include <list>
@@ -53,7 +58,7 @@ typedef void (*CTI_PORTTHREAD_FUNC_PTR)(void*);
 typedef CTI_PORTTHREAD_FUNC_PTR (*CTI_PORTTHREAD_FUNC_FACTORY_PTR)(int);
 class CtiTraceMsg;
 
-class IM_EX_PRTDB CtiPort : public CtiMemDBObject, public RWMonitor< RWRecursiveLock< RWMutexLock > >
+class IM_EX_PRTDB CtiPort : public CtiMemDBObject
 {
 public:
 
@@ -286,6 +291,7 @@ protected:
 
 
     mutable CtiLogger _portLog;
+    mutable CtiMutex  _classMutex;
 
     // Port pooling constructs.
     CtiPortSPtr _parentPort;                // Record parent port if any to this child

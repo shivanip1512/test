@@ -6,14 +6,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/pttrigger.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2008/10/13 16:25:18 $
+* REVISION     :  $Revision: 1.5.2.1 $
+* DATE         :  $Date: 2008/11/18 20:11:28 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
-#ifndef __PTTRIGGER_H__
-#define __PTTRIGGER_H__
 #include "yukon.h"
+
 #include <boost/shared_ptr.hpp>
 #include "boostutil.h"
 using boost::shared_ptr;
@@ -36,8 +35,6 @@ CtiPointTriggerManager::~CtiPointTriggerManager()
     _verificationIDMap.clear();
     _triggerIDMap.clear();
 }
-
-CtiPointTriggerManager& CtiPointTriggerManager::operator=(const CtiPointTriggerManager &aRef);
 
 void CtiPointTriggerManager::refreshList(long ptID, CtiPointManager& pointMgr)
 {

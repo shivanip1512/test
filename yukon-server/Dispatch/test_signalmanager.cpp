@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/INCLUDE/test_queue.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2008/04/10 21:04:49 $
+* REVISION     :  $Revision: 1.3.6.1 $
+* DATE         :  $Date: 2008/11/10 20:47:12 $
 *
 * Copyright (c) 2008 Cannon Technologies All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -16,7 +16,6 @@
 
 #include <boost/thread/thread.hpp>
 #include <boost/test/unit_test.hpp>
-#include <boost/test/auto_unit_test.hpp>
 #include <boost/test/floating_point_comparison.hpp>
 #include "yukon.h"
 #include "tbl_pt_alarm.h"
@@ -26,7 +25,7 @@ using namespace std;
 
 using boost::unit_test_framework::test_suite;
 
-BOOST_AUTO_UNIT_TEST(test_signalmanager_signal_add)
+BOOST_AUTO_TEST_CASE(test_signalmanager_signal_add)
 {
     CtiSignalManager manager;
     BOOST_CHECK(manager.empty());
@@ -64,7 +63,7 @@ BOOST_AUTO_UNIT_TEST(test_signalmanager_signal_add)
 // Please note this alarm also tests a bug with the two maps that are now in the signal manager.
 // If you change it be sure to leave in the double checks for entries and pointMapEntries
 // Or even better dont change it and create a new test.
-BOOST_AUTO_UNIT_TEST(test_signalmanager_alarming)
+BOOST_AUTO_TEST_CASE(test_signalmanager_alarming)
 {
     CtiSignalManager manager;
     BOOST_CHECK(manager.empty());
@@ -132,7 +131,7 @@ BOOST_AUTO_UNIT_TEST(test_signalmanager_alarming)
     BOOST_CHECK_EQUAL(manager.pointMapEntries(), 1);
 }
 
-BOOST_AUTO_UNIT_TEST(test_signalmanager_getters)
+BOOST_AUTO_TEST_CASE(test_signalmanager_getters)
 {
     CtiSignalManager manager;
     CtiSignalMsg *testMessage1, *testMessage2;

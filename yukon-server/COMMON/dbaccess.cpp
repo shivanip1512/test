@@ -15,7 +15,6 @@
 -----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-#include <windows.h>
 #include <set>
 #include "ctidbgmem.h"      // defines CTIDBG_new for memory tracking!
 #include "types.h"

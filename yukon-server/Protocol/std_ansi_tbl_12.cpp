@@ -292,28 +292,28 @@ DOUBLE CtiAnsiTable12::getResolvedMultiplier( int aOffset )
         switch (getRawMultiplier(aOffset))
         {
             case multiplier_10_to_0:
-                ret= pow(10,0);
+                ret= pow(10.0,0);
                 break;
             case multiplier_10_to_2:
-                ret= pow(10,2);
+                ret= pow(10.0,2);
                 break;
             case multiplier_10_to_3:
-                ret= pow(10,3);
+                ret= pow(10.0,3);
                 break;
             case multiplier_10_to_6:
-                ret= pow(10,6);
+                ret= pow(10.0,6);
                 break;
             case multiplier_10_to_9:
-                ret= pow(10,9);
+                ret= pow(10.0,9);
                 break;
             case multiplier_10_to_minus_2:
-                ret= pow(10,-2);
+                ret= pow(10.0,-2);
                 break;
             case multiplier_10_to_minus_3:
-                ret= pow(10,-3);
+                ret= pow(10.0,-3);
                 break;
             case multiplier_10_to_minus_6:
-                ret= pow(10,-6);
+                ret= pow(10.0,-6);
                 break;
             case multiplier_unknown:
             default:

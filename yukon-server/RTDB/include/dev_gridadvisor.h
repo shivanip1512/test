@@ -13,6 +13,11 @@
 #define __DEV_GRIDADVISOR_H__
 #pragma warning( disable : 4786 )
 
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
+
 #include <windows.h>
 #include "dev_dnp.h"
 #include "tbl_dv_address.h"

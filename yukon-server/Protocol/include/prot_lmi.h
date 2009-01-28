@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2008/04/25 21:45:14 $
+* REVISION     :  $Revision: 1.27.6.1 $
+* DATE         :  $Date: 2008/11/17 23:06:32 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -242,11 +242,11 @@ public:
     LMICommand getCommand() const;
 
     //  client-side (Scanner, PIL) functions
-    int sendCommRequest(OUTMESS *&OutMessage, list< OUTMESS* > &outList);
-    int recvCommResult (INMESS   *InMessage,  list< OUTMESS* > &outList);
+    int sendCommRequest(OUTMESS *&OutMessage, std::list< OUTMESS* > &outList);
+    int recvCommResult (INMESS   *InMessage,  std::list< OUTMESS* > &outList);
 
     bool hasInboundData();
-    void getInboundData(list< CtiPointDataMsg* > &pointList, string &info);
+    void getInboundData(std::list< CtiPointDataMsg* > &pointList, string &info);
 
     //  porter-side (portfield, specificially) functions
     int recvCommRequest(OUTMESS *OutMessage);

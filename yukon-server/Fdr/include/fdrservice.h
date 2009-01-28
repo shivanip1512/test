@@ -23,6 +23,11 @@
 
 
 /** include files **/
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
+
 #include <windows.h>
 
 #include "dlldefs.h"

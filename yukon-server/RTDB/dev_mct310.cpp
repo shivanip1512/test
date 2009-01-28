@@ -8,16 +8,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.66 $
-* DATE         :  $Date: 2008/10/29 18:16:45 $
+* REVISION     :  $Revision: 1.66.2.2 $
+* DATE         :  $Date: 2008/11/20 16:49:24 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-
-
-#include <windows.h>
 #include "devicetypes.h"
 #include "dev_mct310.h"
 #include "logger.h"
@@ -156,7 +153,7 @@ bool CtiDeviceMCT310::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 {
     bool found = false;
 
-    CommandSet::iterator itr = _commandStore.find( CommandStore( cmd ) );
+    CommandSet::const_iterator itr = _commandStore.find( CommandStore( cmd ) );
 
     //  the 310IL/IDL is the only 310 that supports load profile, and i didn't want to add a seperate class for the one action
     if( cmd == Emetcon::Scan_LoadProfile &&

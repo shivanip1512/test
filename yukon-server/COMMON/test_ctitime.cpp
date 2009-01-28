@@ -12,7 +12,6 @@
 #define BOOST_AUTO_TEST_MAIN "Test CtiTime"
 
 #include <boost/test/unit_test.hpp>
-#include <boost/test/auto_unit_test.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 
@@ -36,14 +35,14 @@ using namespace boost::posix_time;
 using namespace std;
 
 /*
-BOOST_AUTO_UNIT_TEST(test_ptime)
+BOOST_AUTO_TEST_CASE(test_ptime)
 {
     ptime pt = from_time_t((time_t)0);
     std::cout << to_simple_string(pt) << std::endl;
 }*/
 
 /* I dont think this belongs in the unit test - Jess*/
-/*BOOST_AUTO_UNIT_TEST(test_rwtime_methods)
+/*BOOST_AUTO_TEST_CASE(test_rwtime_methods)
 {
     int timeduration = 60*60;
     RWTime rt1;
@@ -82,7 +81,7 @@ BOOST_AUTO_UNIT_TEST(test_ptime)
 
 
 
-BOOST_AUTO_UNIT_TEST(test_ctitime_methods)
+BOOST_AUTO_TEST_CASE(test_ctitime_methods)
 {
 
     // check the functionality match between CtiTime and RWTime
@@ -153,7 +152,7 @@ BOOST_AUTO_UNIT_TEST(test_ctitime_methods)
     BOOST_CHECK_EQUAL( rw3.isValid(), d3.isValid() );
 }
 
-BOOST_AUTO_UNIT_TEST(test_ctitime_specials)
+BOOST_AUTO_TEST_CASE(test_ctitime_specials)
 {
 
     //check boost special values
@@ -215,7 +214,7 @@ BOOST_AUTO_UNIT_TEST(test_ctitime_specials)
 }
 
 
-BOOST_AUTO_UNIT_TEST(test_ctitime_operators)
+BOOST_AUTO_TEST_CASE(test_ctitime_operators)
 {
     // check the == operator
     CtiTime d;
@@ -263,7 +262,7 @@ BOOST_AUTO_UNIT_TEST(test_ctitime_operators)
 }
 
 
-BOOST_AUTO_UNIT_TEST(test_ctitime_DST)
+BOOST_AUTO_TEST_CASE(test_ctitime_DST)
 {
     //explicitly create a time 1:00, then add 1 hour to it, which results the boundary of DST
     CtiTime ict(CtiTime::beginDST(2005).date(), 1, 0 ,0 );
@@ -330,7 +329,7 @@ BOOST_AUTO_UNIT_TEST(test_ctitime_DST)
 
 }
 /*
-BOOST_AUTO_UNIT_TEST(test_locale)
+BOOST_AUTO_TEST_CASE(test_locale)
 {
     using namespace boost::gregorian;
     using namespace boost::posix_time;

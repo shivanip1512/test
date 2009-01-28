@@ -1,7 +1,7 @@
 #include "yukon.h"
 
+#include <winsock.h>
 
-#include <windows.h>
 #include <iostream>
 using namespace std;
 

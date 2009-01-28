@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2008/10/29 18:16:48 $
+* REVISION     :  $Revision: 1.23.2.1 $
+* DATE         :  $Date: 2008/11/17 23:06:32 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -23,7 +23,7 @@
 #include "dev_meter.h"
 #include "dlldefs.h"
 #include "dsm2.h"
-#include "ctitypes.h"
+
 #include "types.h"
 #include "pt_numeric.h"
 #include "connection.h"

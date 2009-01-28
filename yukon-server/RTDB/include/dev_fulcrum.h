@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_fulcrum.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2007/11/12 17:04:11 $
+* REVISION     :  $Revision: 1.11.10.2 $
+* DATE         :  $Date: 2008/11/17 23:06:32 $
 *
 * Copyright (c) 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,8 +19,13 @@
 #pragma warning( disable : 4786 )
 
 
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
+
 #include <windows.h>
-#include "ctitypes.h"
+
 #include "types.h"
 #include "os2_2w32.h"
 #include "dsm2.h"

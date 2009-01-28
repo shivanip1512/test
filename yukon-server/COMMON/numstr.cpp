@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2008/08/15 19:01:04 $
+* REVISION     :  $Revision: 1.15.2.1 $
+* DATE         :  $Date: 2008/11/12 17:27:31 $
 *
 * Copyright (c) 2007 Cannon Technologies. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,7 +21,6 @@
 #include "numstr.h"
 
 using namespace std;
-using CtiNumStr::DataTypes;
 
 CtiNumStr::CtiNumStr( double d, int precision ) : _dataType(DataType_FloatingPoint)  {  init(precision);  _float =  d;  }
 CtiNumStr::CtiNumStr( float  f, int precision ) : _dataType(DataType_FloatingPoint)  {  init(precision);  _float =  f;  }
@@ -193,9 +192,13 @@ CtiNumStr::operator string() const
             {
                 if( _fmt == Format_Exponential )
                 {
-                    int exp = floor(log10(_float));
+                    int exp = 0;
+                    if( _float != 0 )
+                    {
+                        exp = floor(log10(_float));
+                    }
 
-                    stream << setw(padding - 5) << (int)((_float / pow(10, exp)) + ((_float < 0)?(-0.5):(0.5)));
+                    stream << setw(padding - 5) << (int)((_float / pow((double)10, exp)) + ((_float < 0)?(-0.5):(0.5)));
 
                     stream << setw(0) << "e" << showpos << internal <<  setw(4) << setfill('0') << exp;
                 }

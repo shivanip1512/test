@@ -9,10 +9,22 @@
 
 #pragma warning( disable : 4786)
 
+#if !defined(_WIN32_WINNT)
 #define _WIN32_WINNT 0x0500
+#endif 
+
+#define WIN32_LEAN_AND_MEAN 
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
+
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
 
 #include <windows.h>
-#include <winsock2.h>
 
 #include <stdlib.h>
 #include <stdio.h>

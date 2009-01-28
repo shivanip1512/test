@@ -8,14 +8,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.128 $
-* DATE         :  $Date: 2008/10/29 18:16:45 $
+* REVISION     :  $Revision: 1.128.2.3 $
+* DATE         :  $Date: 2008/11/20 16:49:22 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-#include <windows.h>
 #include "devicetypes.h"
 #include "tbl_ptdispatch.h"
 #include "dev_mct470.h"
@@ -175,99 +174,99 @@ CtiDeviceMCT470::read_key_store_t CtiDeviceMCT470::initReadKeyStore()
 //  The SSPEC is set in decodeGetConfigModel().
 //    This code assumes that the values are contiguous, which the SSPEC is not.
 /*
-    readKeyStore.insert(read_key_info_t(-1, Memory_SSpecPos,                  Memory_SSpecLen,                 Keys::Key_MCT_SSpec));
-    readKeyStore.insert(read_key_info_t(-1, Memory_RevisionPos,               Memory_RevisionLen,              Keys::Key_MCT_SSpecRevision));
+    readKeyStore.insert(read_key_info_t(-1, Memory_SSpecPos,                  Memory_SSpecLen,                 CtiTableDynamicPaoInfo::Key_MCT_SSpec));
+    readKeyStore.insert(read_key_info_t(-1, Memory_RevisionPos,               Memory_RevisionLen,              CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision));
 */
-    readKeyStore.insert(read_key_info_t(-1, Memory_OptionsPos,                Memory_OptionsLen,               Keys::Key_MCT_Options));
-    readKeyStore.insert(read_key_info_t(-1, Memory_ConfigurationPos,          Memory_ConfigurationLen,         Keys::Key_MCT_Configuration));
-    readKeyStore.insert(read_key_info_t(-1, Memory_EventFlagsMask1Pos,        Memory_EventFlagsMask1Len,       Keys::Key_MCT_EventFlagsMask1));
-    readKeyStore.insert(read_key_info_t(-1, Memory_EventFlagsMask2Pos,        Memory_EventFlagsMask2Len,       Keys::Key_MCT_EventFlagsMask2));
-    readKeyStore.insert(read_key_info_t(-1, Memory_AddressBronzePos,          Memory_AddressBronzeLen,         Keys::Key_MCT_AddressBronze));
-    readKeyStore.insert(read_key_info_t(-1, Memory_AddressLeadPos,            Memory_AddressLeadLen,           Keys::Key_MCT_AddressLead));
-    readKeyStore.insert(read_key_info_t(-1, Memory_AddressCollectionPos,      Memory_AddressCollectionLen,     Keys::Key_MCT_AddressCollection));
-    readKeyStore.insert(read_key_info_t(-1, Memory_AddressSPIDPos,            Memory_AddressSPIDLen,           Keys::Key_MCT_AddressServiceProviderID));
-    readKeyStore.insert(read_key_info_t(-1, Memory_DemandIntervalPos,         Memory_DemandIntervalLen,        Keys::Key_MCT_DemandInterval));
-    readKeyStore.insert(read_key_info_t(-1, Memory_LoadProfileInterval1Pos,   Memory_LoadProfileInterval1Len,  Keys::Key_MCT_LoadProfileInterval));
-    readKeyStore.insert(read_key_info_t(-1, Memory_LoadProfileInterval2Pos,   Memory_LoadProfileInterval2Len,  Keys::Key_MCT_LoadProfileInterval2));
-    readKeyStore.insert(read_key_info_t(-1, Memory_TimeAdjustTolerancePos,    Memory_TimeAdjustToleranceLen,   Keys::Key_MCT_TimeAdjustTolerance));
-    readKeyStore.insert(read_key_info_t(-1, Memory_DSTBeginPos,               Memory_DSTBeginLen,              Keys::Key_MCT_DSTStartTime));
-    readKeyStore.insert(read_key_info_t(-1, Memory_DSTEndPos,                 Memory_DSTEndLen,                Keys::Key_MCT_DSTEndTime));
-    readKeyStore.insert(read_key_info_t(-1, Memory_TimeZoneOffsetPos,         Memory_TimeZoneOffsetLen,        Keys::Key_MCT_TimeZoneOffset));
-    readKeyStore.insert(read_key_info_t(-1, Memory_TOUDayTablePos,            Memory_TOUDayTableLen,           Keys::Key_MCT_DayTable));
-    readKeyStore.insert(read_key_info_t(-1, Memory_TOUDailySched1Pos,         Memory_TOUDailySched1Len,        Keys::Key_MCT_DaySchedule1));
-    readKeyStore.insert(read_key_info_t(-1, Memory_TOUDailySched2Pos,         Memory_TOUDailySched2Len,        Keys::Key_MCT_DaySchedule2));
-    readKeyStore.insert(read_key_info_t(-1, Memory_TOUDailySched3Pos,         Memory_TOUDailySched3Len,        Keys::Key_MCT_DaySchedule3));
-    readKeyStore.insert(read_key_info_t(-1, Memory_TOUDailySched4Pos,         Memory_TOUDailySched4Len,        Keys::Key_MCT_DaySchedule4));
-    readKeyStore.insert(read_key_info_t(-1, Memory_TOUDefaultRatePos,         Memory_TOUDefaultRateLen,        Keys::Key_MCT_DefaultTOURate));
-    readKeyStore.insert(read_key_info_t(-1, Memory_Holiday1Pos,               Memory_Holiday1Len,              Keys::Key_MCT_Holiday1));
-    readKeyStore.insert(read_key_info_t(-1, Memory_Holiday2Pos,               Memory_Holiday2Len,              Keys::Key_MCT_Holiday2));
-    readKeyStore.insert(read_key_info_t(-1, Memory_Holiday3Pos,               Memory_Holiday3Len,              Keys::Key_MCT_Holiday3));
-    readKeyStore.insert(read_key_info_t(-1, Memory_KRatio1Pos,                Memory_KRatio1Len,               Keys::Key_MCT_LoadProfileKRatio1));
-    readKeyStore.insert(read_key_info_t(-1, Memory_MeteringRatio1Pos,         Memory_MeteringRatio1Len,        Keys::Key_MCT_LoadProfileMeterRatio1));
-    readKeyStore.insert(read_key_info_t(-1, Memory_ChannelConfig1Pos,         Memory_ChannelConfig1Len,        Keys::Key_MCT_LoadProfileChannelConfig1));
-    readKeyStore.insert(read_key_info_t(-1, Memory_KRatio2Pos,                Memory_KRatio2Len,               Keys::Key_MCT_LoadProfileKRatio2));
-    readKeyStore.insert(read_key_info_t(-1, Memory_MeteringRatio2Pos,         Memory_MeteringRatio2Len,        Keys::Key_MCT_LoadProfileMeterRatio2));
-    readKeyStore.insert(read_key_info_t(-1, Memory_ChannelConfig2Pos,         Memory_ChannelConfig2Len,        Keys::Key_MCT_LoadProfileChannelConfig2));
-    readKeyStore.insert(read_key_info_t(-1, Memory_KRatio3Pos,                Memory_KRatio3Len,               Keys::Key_MCT_LoadProfileKRatio3));
-    readKeyStore.insert(read_key_info_t(-1, Memory_MeteringRatio3Pos,         Memory_MeteringRatio3Len,        Keys::Key_MCT_LoadProfileMeterRatio3));
-    readKeyStore.insert(read_key_info_t(-1, Memory_ChannelConfig3Pos,         Memory_ChannelConfig3Len,        Keys::Key_MCT_LoadProfileChannelConfig3));
-    readKeyStore.insert(read_key_info_t(-1, Memory_KRatio4Pos,                Memory_KRatio4Len,               Keys::Key_MCT_LoadProfileKRatio4));
-    readKeyStore.insert(read_key_info_t(-1, Memory_MeteringRatio4Pos,         Memory_MeteringRatio4Len,        Keys::Key_MCT_LoadProfileMeterRatio4));
-    readKeyStore.insert(read_key_info_t(-1, Memory_ChannelConfig4Pos,         Memory_ChannelConfig4Len,        Keys::Key_MCT_LoadProfileChannelConfig4));
-    readKeyStore.insert(read_key_info_t(-1, Memory_RelayATimerPos,            Memory_RelayATimerLen,           Keys::Key_MCT_RelayATimer));
-    readKeyStore.insert(read_key_info_t(-1, Memory_RelayBTimerPos,            Memory_RelayBTimerLen,           Keys::Key_MCT_RelayBTimer));
-    readKeyStore.insert(read_key_info_t(-1, Memory_TableReadIntervalPos,      Memory_TableReadIntervalLen,     Keys::Key_MCT_PrecannedTableReadInterval));
-    readKeyStore.insert(read_key_info_t(-1, Memory_PrecannedMeterNumPos,      Memory_PrecannedMeterNumLen,     Keys::Key_MCT_PrecannedMeterNumber));
-    readKeyStore.insert(read_key_info_t(-1, Memory_PrecannedTableTypePos,     Memory_PrecannedTableTypeLen,    Keys::Key_MCT_PrecannedTableType));
+    readKeyStore.insert(read_key_info_t(-1, Memory_OptionsPos,                Memory_OptionsLen,               CtiTableDynamicPaoInfo::Key_MCT_Options));
+    readKeyStore.insert(read_key_info_t(-1, Memory_ConfigurationPos,          Memory_ConfigurationLen,         CtiTableDynamicPaoInfo::Key_MCT_Configuration));
+    readKeyStore.insert(read_key_info_t(-1, Memory_EventFlagsMask1Pos,        Memory_EventFlagsMask1Len,       CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask1));
+    readKeyStore.insert(read_key_info_t(-1, Memory_EventFlagsMask2Pos,        Memory_EventFlagsMask2Len,       CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask2));
+    readKeyStore.insert(read_key_info_t(-1, Memory_AddressBronzePos,          Memory_AddressBronzeLen,         CtiTableDynamicPaoInfo::Key_MCT_AddressBronze));
+    readKeyStore.insert(read_key_info_t(-1, Memory_AddressLeadPos,            Memory_AddressLeadLen,           CtiTableDynamicPaoInfo::Key_MCT_AddressLead));
+    readKeyStore.insert(read_key_info_t(-1, Memory_AddressCollectionPos,      Memory_AddressCollectionLen,     CtiTableDynamicPaoInfo::Key_MCT_AddressCollection));
+    readKeyStore.insert(read_key_info_t(-1, Memory_AddressSPIDPos,            Memory_AddressSPIDLen,           CtiTableDynamicPaoInfo::Key_MCT_AddressServiceProviderID));
+    readKeyStore.insert(read_key_info_t(-1, Memory_DemandIntervalPos,         Memory_DemandIntervalLen,        CtiTableDynamicPaoInfo::Key_MCT_DemandInterval));
+    readKeyStore.insert(read_key_info_t(-1, Memory_LoadProfileInterval1Pos,   Memory_LoadProfileInterval1Len,  CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval));
+    readKeyStore.insert(read_key_info_t(-1, Memory_LoadProfileInterval2Pos,   Memory_LoadProfileInterval2Len,  CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval2));
+    readKeyStore.insert(read_key_info_t(-1, Memory_TimeAdjustTolerancePos,    Memory_TimeAdjustToleranceLen,   CtiTableDynamicPaoInfo::Key_MCT_TimeAdjustTolerance));
+    readKeyStore.insert(read_key_info_t(-1, Memory_DSTBeginPos,               Memory_DSTBeginLen,              CtiTableDynamicPaoInfo::Key_MCT_DSTStartTime));
+    readKeyStore.insert(read_key_info_t(-1, Memory_DSTEndPos,                 Memory_DSTEndLen,                CtiTableDynamicPaoInfo::Key_MCT_DSTEndTime));
+    readKeyStore.insert(read_key_info_t(-1, Memory_TimeZoneOffsetPos,         Memory_TimeZoneOffsetLen,        CtiTableDynamicPaoInfo::Key_MCT_TimeZoneOffset));
+    readKeyStore.insert(read_key_info_t(-1, Memory_TOUDayTablePos,            Memory_TOUDayTableLen,           CtiTableDynamicPaoInfo::Key_MCT_DayTable));
+    readKeyStore.insert(read_key_info_t(-1, Memory_TOUDailySched1Pos,         Memory_TOUDailySched1Len,        CtiTableDynamicPaoInfo::Key_MCT_DaySchedule1));
+    readKeyStore.insert(read_key_info_t(-1, Memory_TOUDailySched2Pos,         Memory_TOUDailySched2Len,        CtiTableDynamicPaoInfo::Key_MCT_DaySchedule2));
+    readKeyStore.insert(read_key_info_t(-1, Memory_TOUDailySched3Pos,         Memory_TOUDailySched3Len,        CtiTableDynamicPaoInfo::Key_MCT_DaySchedule3));
+    readKeyStore.insert(read_key_info_t(-1, Memory_TOUDailySched4Pos,         Memory_TOUDailySched4Len,        CtiTableDynamicPaoInfo::Key_MCT_DaySchedule4));
+    readKeyStore.insert(read_key_info_t(-1, Memory_TOUDefaultRatePos,         Memory_TOUDefaultRateLen,        CtiTableDynamicPaoInfo::Key_MCT_DefaultTOURate));
+    readKeyStore.insert(read_key_info_t(-1, Memory_Holiday1Pos,               Memory_Holiday1Len,              CtiTableDynamicPaoInfo::Key_MCT_Holiday1));
+    readKeyStore.insert(read_key_info_t(-1, Memory_Holiday2Pos,               Memory_Holiday2Len,              CtiTableDynamicPaoInfo::Key_MCT_Holiday2));
+    readKeyStore.insert(read_key_info_t(-1, Memory_Holiday3Pos,               Memory_Holiday3Len,              CtiTableDynamicPaoInfo::Key_MCT_Holiday3));
+    readKeyStore.insert(read_key_info_t(-1, Memory_KRatio1Pos,                Memory_KRatio1Len,               CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio1));
+    readKeyStore.insert(read_key_info_t(-1, Memory_MeteringRatio1Pos,         Memory_MeteringRatio1Len,        CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio1));
+    readKeyStore.insert(read_key_info_t(-1, Memory_ChannelConfig1Pos,         Memory_ChannelConfig1Len,        CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig1));
+    readKeyStore.insert(read_key_info_t(-1, Memory_KRatio2Pos,                Memory_KRatio2Len,               CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio2));
+    readKeyStore.insert(read_key_info_t(-1, Memory_MeteringRatio2Pos,         Memory_MeteringRatio2Len,        CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio2));
+    readKeyStore.insert(read_key_info_t(-1, Memory_ChannelConfig2Pos,         Memory_ChannelConfig2Len,        CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig2));
+    readKeyStore.insert(read_key_info_t(-1, Memory_KRatio3Pos,                Memory_KRatio3Len,               CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio3));
+    readKeyStore.insert(read_key_info_t(-1, Memory_MeteringRatio3Pos,         Memory_MeteringRatio3Len,        CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio3));
+    readKeyStore.insert(read_key_info_t(-1, Memory_ChannelConfig3Pos,         Memory_ChannelConfig3Len,        CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig3));
+    readKeyStore.insert(read_key_info_t(-1, Memory_KRatio4Pos,                Memory_KRatio4Len,               CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio4));
+    readKeyStore.insert(read_key_info_t(-1, Memory_MeteringRatio4Pos,         Memory_MeteringRatio4Len,        CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio4));
+    readKeyStore.insert(read_key_info_t(-1, Memory_ChannelConfig4Pos,         Memory_ChannelConfig4Len,        CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig4));
+    readKeyStore.insert(read_key_info_t(-1, Memory_RelayATimerPos,            Memory_RelayATimerLen,           CtiTableDynamicPaoInfo::Key_MCT_RelayATimer));
+    readKeyStore.insert(read_key_info_t(-1, Memory_RelayBTimerPos,            Memory_RelayBTimerLen,           CtiTableDynamicPaoInfo::Key_MCT_RelayBTimer));
+    readKeyStore.insert(read_key_info_t(-1, Memory_TableReadIntervalPos,      Memory_TableReadIntervalLen,     CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableReadInterval));
+    readKeyStore.insert(read_key_info_t(-1, Memory_PrecannedMeterNumPos,      Memory_PrecannedMeterNumLen,     CtiTableDynamicPaoInfo::Key_MCT_PrecannedMeterNumber));
+    readKeyStore.insert(read_key_info_t(-1, Memory_PrecannedTableTypePos,     Memory_PrecannedTableTypeLen,    CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableType));
 
 //  function reads
 
-    readKeyStore.insert(read_key_info_t(FuncRead_ChannelSetupDataPos,      0, 1, Keys::Key_MCT_LoadProfileChannelConfig1));
-    readKeyStore.insert(read_key_info_t(FuncRead_ChannelSetupDataPos,      1, 1, Keys::Key_MCT_LoadProfileChannelConfig2));
-    readKeyStore.insert(read_key_info_t(FuncRead_ChannelSetupDataPos,      2, 1, Keys::Key_MCT_LoadProfileChannelConfig3));
-    readKeyStore.insert(read_key_info_t(FuncRead_ChannelSetupDataPos,      3, 1, Keys::Key_MCT_LoadProfileChannelConfig4));
-    readKeyStore.insert(read_key_info_t(FuncRead_ChannelSetupDataPos,      4, 1, Keys::Key_MCT_LoadProfileInterval));
-    readKeyStore.insert(read_key_info_t(FuncRead_ChannelSetupDataPos,      5, 1, Keys::Key_MCT_LoadProfileInterval2));
+    readKeyStore.insert(read_key_info_t(FuncRead_ChannelSetupDataPos,      0, 1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig1));
+    readKeyStore.insert(read_key_info_t(FuncRead_ChannelSetupDataPos,      1, 1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig2));
+    readKeyStore.insert(read_key_info_t(FuncRead_ChannelSetupDataPos,      2, 1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig3));
+    readKeyStore.insert(read_key_info_t(FuncRead_ChannelSetupDataPos,      3, 1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig4));
+    readKeyStore.insert(read_key_info_t(FuncRead_ChannelSetupDataPos,      4, 1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval));
+    readKeyStore.insert(read_key_info_t(FuncRead_ChannelSetupDataPos,      5, 1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval2));
 
-    readKeyStore.insert(read_key_info_t(FuncRead_LoadProfileChannel12Pos,  0, 1, Keys::Key_MCT_LoadProfileChannelConfig1));
-    readKeyStore.insert(read_key_info_t(FuncRead_LoadProfileChannel12Pos,  1, 2, Keys::Key_MCT_LoadProfileMeterRatio1));
-    readKeyStore.insert(read_key_info_t(FuncRead_LoadProfileChannel12Pos,  3, 2, Keys::Key_MCT_LoadProfileKRatio1));
-    readKeyStore.insert(read_key_info_t(FuncRead_LoadProfileChannel12Pos,  5, 1, Keys::Key_MCT_LoadProfileChannelConfig2));
-    readKeyStore.insert(read_key_info_t(FuncRead_LoadProfileChannel12Pos,  6, 2, Keys::Key_MCT_LoadProfileMeterRatio2));
-    readKeyStore.insert(read_key_info_t(FuncRead_LoadProfileChannel12Pos,  8, 2, Keys::Key_MCT_LoadProfileKRatio2));
+    readKeyStore.insert(read_key_info_t(FuncRead_LoadProfileChannel12Pos,  0, 1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig1));
+    readKeyStore.insert(read_key_info_t(FuncRead_LoadProfileChannel12Pos,  1, 2, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio1));
+    readKeyStore.insert(read_key_info_t(FuncRead_LoadProfileChannel12Pos,  3, 2, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio1));
+    readKeyStore.insert(read_key_info_t(FuncRead_LoadProfileChannel12Pos,  5, 1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig2));
+    readKeyStore.insert(read_key_info_t(FuncRead_LoadProfileChannel12Pos,  6, 2, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio2));
+    readKeyStore.insert(read_key_info_t(FuncRead_LoadProfileChannel12Pos,  8, 2, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio2));
 
-    readKeyStore.insert(read_key_info_t(FuncRead_LoadProfileChannel34Pos,  0, 1, Keys::Key_MCT_LoadProfileChannelConfig3));
-    readKeyStore.insert(read_key_info_t(FuncRead_LoadProfileChannel34Pos,  1, 2, Keys::Key_MCT_LoadProfileMeterRatio3));
-    readKeyStore.insert(read_key_info_t(FuncRead_LoadProfileChannel34Pos,  3, 2, Keys::Key_MCT_LoadProfileKRatio3));
-    readKeyStore.insert(read_key_info_t(FuncRead_LoadProfileChannel34Pos,  5, 1, Keys::Key_MCT_LoadProfileChannelConfig4));
-    readKeyStore.insert(read_key_info_t(FuncRead_LoadProfileChannel34Pos,  6, 2, Keys::Key_MCT_LoadProfileMeterRatio4));
-    readKeyStore.insert(read_key_info_t(FuncRead_LoadProfileChannel34Pos,  8, 2, Keys::Key_MCT_LoadProfileKRatio4));
+    readKeyStore.insert(read_key_info_t(FuncRead_LoadProfileChannel34Pos,  0, 1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig3));
+    readKeyStore.insert(read_key_info_t(FuncRead_LoadProfileChannel34Pos,  1, 2, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio3));
+    readKeyStore.insert(read_key_info_t(FuncRead_LoadProfileChannel34Pos,  3, 2, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio3));
+    readKeyStore.insert(read_key_info_t(FuncRead_LoadProfileChannel34Pos,  5, 1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig4));
+    readKeyStore.insert(read_key_info_t(FuncRead_LoadProfileChannel34Pos,  6, 2, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio4));
+    readKeyStore.insert(read_key_info_t(FuncRead_LoadProfileChannel34Pos,  8, 2, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio4));
 
-    readKeyStore.insert(read_key_info_t(FuncRead_PrecannedTablePos,        0, 1, Keys::Key_MCT_PrecannedTableReadInterval));
-    readKeyStore.insert(read_key_info_t(FuncRead_PrecannedTablePos,        1, 1, Keys::Key_MCT_PrecannedMeterNumber));
-    readKeyStore.insert(read_key_info_t(FuncRead_PrecannedTablePos,        2, 1, Keys::Key_MCT_PrecannedTableType));
+    readKeyStore.insert(read_key_info_t(FuncRead_PrecannedTablePos,        0, 1, CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableReadInterval));
+    readKeyStore.insert(read_key_info_t(FuncRead_PrecannedTablePos,        1, 1, CtiTableDynamicPaoInfo::Key_MCT_PrecannedMeterNumber));
+    readKeyStore.insert(read_key_info_t(FuncRead_PrecannedTablePos,        2, 1, CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableType));
 
-    readKeyStore.insert(read_key_info_t(FuncRead_LLPStatusPos,             4, 1, Keys::Key_MCT_LLPChannel1Len));
-    readKeyStore.insert(read_key_info_t(FuncRead_LLPStatusPos,             5, 1, Keys::Key_MCT_LLPChannel2Len));
-    readKeyStore.insert(read_key_info_t(FuncRead_LLPStatusPos,             6, 1, Keys::Key_MCT_LLPChannel3Len));
-    readKeyStore.insert(read_key_info_t(FuncRead_LLPStatusPos,             7, 1, Keys::Key_MCT_LLPChannel4Len));
+    readKeyStore.insert(read_key_info_t(FuncRead_LLPStatusPos,             4, 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel1Len));
+    readKeyStore.insert(read_key_info_t(FuncRead_LLPStatusPos,             5, 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel2Len));
+    readKeyStore.insert(read_key_info_t(FuncRead_LLPStatusPos,             6, 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel3Len));
+    readKeyStore.insert(read_key_info_t(FuncRead_LLPStatusPos,             7, 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel4Len));
 
-    readKeyStore.insert(read_key_info_t(FuncRead_IED_CRCPos,               1, 1, Keys::Key_MCT_LLPChannel1Len));
-    readKeyStore.insert(read_key_info_t(FuncRead_IED_CRCPos,               2, 1, Keys::Key_MCT_LLPChannel2Len));
-    readKeyStore.insert(read_key_info_t(FuncRead_IED_CRCPos,               3, 1, Keys::Key_MCT_LLPChannel3Len));
-    readKeyStore.insert(read_key_info_t(FuncRead_IED_CRCPos,               4, 1, Keys::Key_MCT_LLPChannel4Len));
-    readKeyStore.insert(read_key_info_t(FuncRead_IED_CRCPos,               5, 1, Keys::Key_MCT_LLPChannel4Len));
-    readKeyStore.insert(read_key_info_t(FuncRead_IED_CRCPos,               6, 1, Keys::Key_MCT_LLPChannel4Len));
-    readKeyStore.insert(read_key_info_t(FuncRead_IED_CRCPos,               7, 1, Keys::Key_MCT_LLPChannel4Len));
-    readKeyStore.insert(read_key_info_t(FuncRead_IED_CRCPos,               8, 1, Keys::Key_MCT_LLPChannel4Len));
-    readKeyStore.insert(read_key_info_t(FuncRead_IED_CRCPos,               9, 1, Keys::Key_MCT_LLPChannel4Len));
-    readKeyStore.insert(read_key_info_t(FuncRead_IED_CRCPos,              10, 1, Keys::Key_MCT_LLPChannel4Len));
-    readKeyStore.insert(read_key_info_t(FuncRead_IED_CRCPos,              11, 1, Keys::Key_MCT_LLPChannel4Len));
-    readKeyStore.insert(read_key_info_t(FuncRead_IED_CRCPos,              12, 1, Keys::Key_MCT_LLPChannel4Len));
+    readKeyStore.insert(read_key_info_t(FuncRead_IED_CRCPos,               1, 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel1Len));
+    readKeyStore.insert(read_key_info_t(FuncRead_IED_CRCPos,               2, 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel2Len));
+    readKeyStore.insert(read_key_info_t(FuncRead_IED_CRCPos,               3, 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel3Len));
+    readKeyStore.insert(read_key_info_t(FuncRead_IED_CRCPos,               4, 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel4Len));
+    readKeyStore.insert(read_key_info_t(FuncRead_IED_CRCPos,               5, 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel4Len));
+    readKeyStore.insert(read_key_info_t(FuncRead_IED_CRCPos,               6, 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel4Len));
+    readKeyStore.insert(read_key_info_t(FuncRead_IED_CRCPos,               7, 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel4Len));
+    readKeyStore.insert(read_key_info_t(FuncRead_IED_CRCPos,               8, 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel4Len));
+    readKeyStore.insert(read_key_info_t(FuncRead_IED_CRCPos,               9, 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel4Len));
+    readKeyStore.insert(read_key_info_t(FuncRead_IED_CRCPos,              10, 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel4Len));
+    readKeyStore.insert(read_key_info_t(FuncRead_IED_CRCPos,              11, 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel4Len));
+    readKeyStore.insert(read_key_info_t(FuncRead_IED_CRCPos,              12, 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel4Len));
 
-    readKeyStore.insert(read_key_info_t(FuncRead_TOUDaySchedulePos,        0, 2, Keys::Key_MCT_DayTable));
-    readKeyStore.insert(read_key_info_t(FuncRead_TOUDaySchedulePos,        2, 1, Keys::Key_MCT_DefaultTOURate));
-    readKeyStore.insert(read_key_info_t(FuncRead_TOUDaySchedulePos,       10, 1, Keys::Key_MCT_TimeZoneOffset));
+    readKeyStore.insert(read_key_info_t(FuncRead_TOUDaySchedulePos,        0, 2, CtiTableDynamicPaoInfo::Key_MCT_DayTable));
+    readKeyStore.insert(read_key_info_t(FuncRead_TOUDaySchedulePos,        2, 1, CtiTableDynamicPaoInfo::Key_MCT_DefaultTOURate));
+    readKeyStore.insert(read_key_info_t(FuncRead_TOUDaySchedulePos,       10, 1, CtiTableDynamicPaoInfo::Key_MCT_TimeZoneOffset));
 
     return readKeyStore;
 }
@@ -408,13 +407,13 @@ bool CtiDeviceMCT470::isLPDynamicInfoCurrent( void )
 
     //  grab these two because we'll use them later...
     //    also, the return value is identical to hasDynamicInfo, so we'll just use it the same
-    retval &= getDynamicInfo(Keys::Key_MCT_SSpec,         sspec);
-    retval &= getDynamicInfo(Keys::Key_MCT_SSpecRevision, sspec_rev);
+    retval &= getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec,         sspec);
+    retval &= getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, sspec_rev);
 
-    retval &= hasDynamicInfo(Keys::Key_MCT_Configuration);
+    retval &= hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration);
 
     //  note that we're verifying this against the interval that's in the database - more things will be used this way in the future
-    retval &= (getDynamicInfo(Keys::Key_MCT_LoadProfileInterval) == getLoadProfile().getLoadProfileDemandRate());
+    retval &= (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval) == getLoadProfile().getLoadProfileDemandRate());
 
     //  we don't use the second load profile rate yet
     //retval |= (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval2) == getLoadProfile().getVoltageProfileDemandRate());
@@ -427,15 +426,15 @@ bool CtiDeviceMCT470::isLPDynamicInfoCurrent( void )
         //    we would've done with it.  everything pre-rev E is development only, and needs to be treated with kid gloves
 
         //  we will need to verify this eventually, and if it doesn't match the 470 config, we'll reconfig the 470 (and complain)
-        retval &= hasDynamicInfo(Keys::Key_MCT_LoadProfileConfig);
-        retval &= hasDynamicInfo(Keys::Key_MCT_IEDLoadProfileInterval);
+        retval &= hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig);
+        retval &= hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_IEDLoadProfileInterval);
     }
 
     return retval;
 }
 
 
-void CtiDeviceMCT470::requestDynamicInfo(CtiTableDynamicPaoInfo::Keys key, OUTMESS *&OutMessage, list< OUTMESS* > &outList )
+void CtiDeviceMCT470::requestDynamicInfo(CtiTableDynamicPaoInfo::PaoInfoKeys key, OUTMESS *&OutMessage, list< OUTMESS* > &outList )
 {
     bool valid = true;
 
@@ -458,7 +457,7 @@ void CtiDeviceMCT470::requestDynamicInfo(CtiTableDynamicPaoInfo::Keys key, OUTME
         dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" requesting key (" << key << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    if( key == Keys::Key_MCT_SSpec || key == Keys::Key_MCT_Configuration )
+    if( key == CtiTableDynamicPaoInfo::Key_MCT_SSpec || key == CtiTableDynamicPaoInfo::Key_MCT_Configuration )
     {
         strncpy(newOutMessage->Request.CommandStr, "getconfig model", COMMAND_STR_SIZE );
         newOutMessage->Sequence  = Emetcon::GetConfig_Model;     // Helps us figure it out later!
@@ -466,18 +465,18 @@ void CtiDeviceMCT470::requestDynamicInfo(CtiTableDynamicPaoInfo::Keys key, OUTME
     else
     {
         //  the ideal case - the correct, non-development sspec
-        if( (getDynamicInfo(Keys::Key_MCT_SSpec)         == Sspec       &&
-             getDynamicInfo(Keys::Key_MCT_SSpecRevision) >= SspecRev_Min &&
-             getDynamicInfo(Keys::Key_MCT_SSpecRevision) <= SspecRev_Max)
-            || getDynamicInfo(Keys::Key_MCT_SSpec) == MCT430A_Sspec
-            || getDynamicInfo(Keys::Key_MCT_SSpec) == MCT430S_Sspec )
+        if( (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec)         == Sspec       &&
+             getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) >= SspecRev_Min &&
+             getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) <= SspecRev_Max)
+            || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) == MCT430A_Sspec
+            || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) == MCT430S_Sspec )
         {
             switch( key )
             {
                 //  all of these three are retrieved by this read
-                case Keys::Key_MCT_IEDLoadProfileInterval:
-                case Keys::Key_MCT_LoadProfileInterval:
-                case Keys::Key_MCT_LoadProfileConfig:
+                case CtiTableDynamicPaoInfo::Key_MCT_IEDLoadProfileInterval:
+                case CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval:
+                case CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig:
                 {
                     strncpy(newOutMessage->Request.CommandStr, "getconfig channels", COMMAND_STR_SIZE );
                     newOutMessage->Sequence = Emetcon::GetConfig_ChannelSetup;     // Helps us figure it out later!
@@ -500,7 +499,7 @@ void CtiDeviceMCT470::requestDynamicInfo(CtiTableDynamicPaoInfo::Keys key, OUTME
         {
             switch( key )
             {
-                case Keys::Key_MCT_LoadProfileInterval:
+                case CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval:
                 {
                     strncpy(newOutMessage->Request.CommandStr, "getconfig intervals", COMMAND_STR_SIZE );
                     newOutMessage->Sequence = Emetcon::GetConfig_Intervals;     // Helps us figure it out later!
@@ -514,8 +513,8 @@ void CtiDeviceMCT470::requestDynamicInfo(CtiTableDynamicPaoInfo::Keys key, OUTME
                 }
                 //  we don't care about these keys, since this sspec should only be used for pulse inputs...
                 //    they only matter for IED reads
-                case Keys::Key_MCT_LoadProfileConfig:
-                case Keys::Key_MCT_IEDLoadProfileInterval:
+                case CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig:
+                case CtiTableDynamicPaoInfo::Key_MCT_IEDLoadProfileInterval:
                 {
                     delete newOutMessage;
                     newOutMessage = 0;
@@ -692,23 +691,23 @@ long CtiDeviceMCT470::getLoadProfileInterval( unsigned channel )
 
     if( channel < LPChannels )
     {
-        if( getDynamicInfo(Keys::Key_MCT_LoadProfileConfig, config) )
+        if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig, config) )
         {
             if( config.length() > channel * 3 )
             {
                 if( config[channel*3] == '1' )
                 {
                     //  leaves it untouched (i.e., -1) if it doesn't have it
-                    getDynamicInfo(Keys::Key_MCT_IEDLoadProfileInterval, retval);
+                    getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_IEDLoadProfileInterval, retval);
                 }
                 //  uncomment when we care about LP interval #2
                 /*else if( config.at(channel * 3 + 2) == '1' )
                 {
-                    getDynamicInfo(Keys::Key_MCT_LoadProfileInterval2, retval);
+                    getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval2, retval);
                 }*/
                 else
                 {
-                    getDynamicInfo(Keys::Key_MCT_LoadProfileInterval, retval);
+                    getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval, retval);
                 }
             }
             else
@@ -916,15 +915,15 @@ CtiDeviceMCT470::point_info CtiDeviceMCT470::getLoadProfileData(unsigned channel
 
     ValueType470 vt = ValueType_LoadProfile_PulseDemand;
 
-    if( getDynamicInfo(Keys::Key_MCT_LoadProfileConfig, config) )
+    if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig, config) )
     {
         if( config.length() > channel * 3 )
         {
             if( config[channel*3] == '1' )
             {
-                if( hasDynamicInfo(Keys::Key_MCT_Configuration) )
+                if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) )
                 {
-                    switch( getDynamicInfo(Keys::Key_MCT_Configuration) >> 4 )
+                    switch( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) >> 4 )
                     {
                         case IED_Type_Alpha_A3:     vt = ValueType_LoadProfile_IED_Alpha_A3;    break;
                         case IED_Type_Alpha_PP:     vt = ValueType_LoadProfile_IED_Alpha_PP;    break;
@@ -940,7 +939,7 @@ CtiDeviceMCT470::point_info CtiDeviceMCT470::getLoadProfileData(unsigned channel
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" is reporting an invalid IED type (" << (getDynamicInfo(Keys::Key_MCT_Configuration) >> 4) << "); aborting decode **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" is reporting an invalid IED type (" << (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) >> 4) << "); aborting decode **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
                         }
                     }
@@ -1001,57 +1000,57 @@ INT CtiDeviceMCT470::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
         {
             _lastConfigRequest = Now.seconds();
 
-            if( !hasDynamicInfo(Keys::Key_MCT_SSpec) )
+            if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) )
             {
-                requestDynamicInfo(Keys::Key_MCT_SSpec, OutMessage, outList);
+                requestDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec, OutMessage, outList);
             }
-            else if( !hasDynamicInfo(Keys::Key_MCT_Configuration) )
+            else if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) )
             {
-                requestDynamicInfo(Keys::Key_MCT_Configuration, OutMessage, outList);
+                requestDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration, OutMessage, outList);
             }
             //  check if we're the IED sspec
-            else if( (getDynamicInfo(Keys::Key_MCT_SSpec)   == Sspec
-                        && getDynamicInfo(Keys::Key_MCT_SSpecRevision) >= SspecRev_Min
-                        && getDynamicInfo(Keys::Key_MCT_SSpecRevision) <= SspecRev_Max)
-                     || getDynamicInfo(Keys::Key_MCT_SSpec) == MCT430A_Sspec
-                     || getDynamicInfo(Keys::Key_MCT_SSpec) == MCT430S_Sspec )
+            else if( (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec)   == Sspec
+                        && getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) >= SspecRev_Min
+                        && getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) <= SspecRev_Max)
+                     || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) == MCT430A_Sspec
+                     || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) == MCT430S_Sspec )
             {
-                if( getDynamicInfo(Keys::Key_MCT_LoadProfileInterval) != getLoadProfile().getLoadProfileDemandRate() )
+                if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval) != getLoadProfile().getLoadProfileDemandRate() )
                 {
                     OUTMESS *om = CTIDBG_new OUTMESS(*OutMessage);
 
                     //  send the intervals....
                     sendIntervals(om, outList);
                     //  then verify them - the ordering here does matter
-                    requestDynamicInfo(Keys::Key_MCT_LoadProfileInterval, OutMessage, outList);
+                    requestDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval, OutMessage, outList);
                 }
 
-                if( !hasDynamicInfo(Keys::Key_MCT_IEDLoadProfileInterval) )
+                if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_IEDLoadProfileInterval) )
                 {
                     //  as i understand it, we can only read this, not write it, so we'll never do a write-then-read confirmation
-                    requestDynamicInfo(Keys::Key_MCT_IEDLoadProfileInterval, OutMessage, outList);
+                    requestDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_IEDLoadProfileInterval, OutMessage, outList);
                 }
 
-                if( !hasDynamicInfo(Keys::Key_MCT_LoadProfileConfig) )
+                if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig) )
                 {
                     //  this will need to be changed to check for a match like LoadProfileInterval above -
                     //    if it doesn't match, then re-send and re-read
                     //    (which will happen when the 470 config is added)
-                    requestDynamicInfo(Keys::Key_MCT_LoadProfileConfig, OutMessage, outList);
+                    requestDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig, OutMessage, outList);
                 }
             }
             else
             {
-                if( getDynamicInfo(Keys::Key_MCT_LoadProfileInterval) != getLoadProfile().getLoadProfileDemandRate() )
+                if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval) != getLoadProfile().getLoadProfileDemandRate() )
                 {
-                    if( hasDynamicInfo(Keys::Key_MCT_LoadProfileInterval) )
+                    if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval) )
                     {
                         OUTMESS *om = CTIDBG_new CtiOutMessage(*OutMessage);
 
                         sendIntervals(om, outList);
                     }
 
-                    requestDynamicInfo(Keys::Key_MCT_LoadProfileInterval, OutMessage, outList);
+                    requestDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval, OutMessage, outList);
                 }
             }
 
@@ -1394,7 +1393,7 @@ INT CtiDeviceMCT470::executeGetValue( CtiRequestMsg        *pReq,
     {
         if( parse.isKeyValid("outage") )
         {
-            if( !hasDynamicInfo(Keys::Key_MCT_Configuration) )
+            if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) )
             {
                 //  we need to read the IED info byte out of the MCT
                 function = Emetcon::GetConfig_Model;
@@ -1422,7 +1421,7 @@ INT CtiDeviceMCT470::executeGetValue( CtiRequestMsg        *pReq,
         }
         else
         {
-            if( getDynamicInfo(Keys::Key_MCT_SSpecRevision) < SspecRev_IED_ZeroWriteMin )
+            if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < SspecRev_IED_ZeroWriteMin )
             {
                 //If we need to read out the time, do so.
                 function = Emetcon::GetConfig_IEDTime;
@@ -1696,7 +1695,7 @@ INT CtiDeviceMCT470::executeScan(CtiRequestMsg      *pReq,
             /*if( !options || (options && ( !stringCompareIgnoreCase(options->getValueFromKey(DemandMetersToScan), "all")
                           || !stringCompareIgnoreCase(options->getValueFromKey(DemandMetersToScan), "ied"))) )
             {*/
-                if( getDynamicInfo(Keys::Key_MCT_SSpecRevision) < SspecRev_IED_ZeroWriteMin )
+                if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < SspecRev_IED_ZeroWriteMin )
                 {
                     //If we need to read out the time, do so.
                     function = Emetcon::GetConfig_IEDTime;
@@ -1819,7 +1818,7 @@ INT CtiDeviceMCT470::executeGetConfig( CtiRequestMsg         *pReq,
         //  ACH:  add a dynamic info check to ensure that we're reading from Precanned Table 1
         if( parse.isKeyValid("time") )
         {
-            if( !hasDynamicInfo(Keys::Key_MCT_Configuration) )
+            if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) )
             {
                 //  we need to read the IED info byte out of the MCT
                 function = Emetcon::GetConfig_Model;
@@ -2319,7 +2318,7 @@ int CtiDeviceMCT470::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiC
         multiplier1 = deviceConfig->getFloatValueFromKey(MCTStrings::ChannelMultiplier1);
         multiplier2 = deviceConfig->getFloatValueFromKey(MCTStrings::ChannelMultiplier2);
 
-        spid = CtiDeviceBase::getDynamicInfo(Keys::Key_MCT_AddressServiceProviderID);
+        spid = CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_AddressServiceProviderID);
 
         if( spid == std::numeric_limits<long>::min() )
         {
@@ -2357,12 +2356,12 @@ int CtiDeviceMCT470::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiC
         else
         {
             if( parse.isKeyValid("force")
-                || CtiDeviceBase::getDynamicInfo(Keys::Key_MCT_LoadProfileChannelConfig1) != channel1
-                || CtiDeviceBase::getDynamicInfo(Keys::Key_MCT_LoadProfileChannelConfig2) != channel2
-                || CtiDeviceBase::getDynamicInfo(Keys::Key_MCT_LoadProfileMeterRatio1)    != ratio1
-                || CtiDeviceBase::getDynamicInfo(Keys::Key_MCT_LoadProfileMeterRatio2)    != ratio2
-                || CtiDeviceBase::getDynamicInfo(Keys::Key_MCT_LoadProfileKRatio1)        != kRatio1
-                || CtiDeviceBase::getDynamicInfo(Keys::Key_MCT_LoadProfileKRatio2)        != kRatio2 )
+                || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig1) != channel1
+                || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig2) != channel2
+                || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio1)    != ratio1
+                || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio2)    != ratio2
+                || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio1)        != kRatio1
+                || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio2)        != kRatio2 )
             {
                 if( !parse.isKeyValid("verify") )
                 {
@@ -2432,12 +2431,12 @@ int CtiDeviceMCT470::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiC
         else
         {
             if( parse.isKeyValid("force")
-                || CtiDeviceBase::getDynamicInfo(Keys::Key_MCT_LoadProfileChannelConfig3) != channel1
-                || CtiDeviceBase::getDynamicInfo(Keys::Key_MCT_LoadProfileChannelConfig4) != channel2
-                || CtiDeviceBase::getDynamicInfo(Keys::Key_MCT_LoadProfileMeterRatio3)    != ratio1
-                || CtiDeviceBase::getDynamicInfo(Keys::Key_MCT_LoadProfileMeterRatio4)    != ratio2
-                || CtiDeviceBase::getDynamicInfo(Keys::Key_MCT_LoadProfileKRatio3)        != kRatio1
-                || CtiDeviceBase::getDynamicInfo(Keys::Key_MCT_LoadProfileKRatio4)        != kRatio2 )
+                || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig3) != channel1
+                || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig4) != channel2
+                || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio3)    != ratio1
+                || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileMeterRatio4)    != ratio2
+                || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio3)        != kRatio1
+                || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileKRatio4)        != kRatio2 )
             {
                 if( !parse.isKeyValid("verify") )
                 {
@@ -3213,7 +3212,7 @@ int CtiDeviceMCT470::executePutConfigDNP(CtiRequestMsg *pReq, CtiCommandParser &
     return nRet;
 }
 */
-int CtiDeviceMCT470::sendDNPConfigMessages(int startMCTID, list< OUTMESS * > &outList, OUTMESS *&OutMessage, string &dataA, string &dataB, CtiTableDynamicPaoInfo::Keys key, bool force, bool verifyOnly)
+int CtiDeviceMCT470::sendDNPConfigMessages(int startMCTID, list< OUTMESS * > &outList, OUTMESS *&OutMessage, string &dataA, string &dataB, CtiTableDynamicPaoInfo::PaoInfoKeys key, bool force, bool verifyOnly)
 {
     int nRet = NORMAL;
     int valCount;
@@ -3458,7 +3457,7 @@ INT CtiDeviceMCT470::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
 INT CtiDeviceMCT470::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     int  status = NORMAL, i;
-    bool demand_defined;
+    bool demand_defined = false;
     point_info pi;
 
     INT ErrReturn = InMessage->EventCode & 0x3fff;
@@ -4009,42 +4008,40 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
             }
             else if( parse.isKeyValid("dnp_crc") )
             {
-                using CtiTableDynamicPaoInfo::Keys;
-
-                setDynamicInfo(Keys::Key_MCT_DNP_RealTime1CRC, InMessage->Buffer.DSt.Message[0]);
+				setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_RealTime1CRC, InMessage->Buffer.DSt.Message[0]);
                 resultString += "CRCs Returned: " + CtiNumStr(InMessage->Buffer.DSt.Message[0]);
 
-                setDynamicInfo(Keys::Key_MCT_DNP_RealTime2CRC, InMessage->Buffer.DSt.Message[1]);
+                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_RealTime2CRC, InMessage->Buffer.DSt.Message[1]);
                 resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[1]);
 
-                setDynamicInfo(Keys::Key_MCT_DNP_BinaryCRC, InMessage->Buffer.DSt.Message[2]);
+                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_BinaryCRC, InMessage->Buffer.DSt.Message[2]);
                 resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[2]);
 
-                setDynamicInfo(Keys::Key_MCT_DNP_AnalogCRC1, InMessage->Buffer.DSt.Message[3]);
+                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC1, InMessage->Buffer.DSt.Message[3]);
                 resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[3]);
 
-                setDynamicInfo(Keys::Key_MCT_DNP_AnalogCRC2, InMessage->Buffer.DSt.Message[4]);
+                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC2, InMessage->Buffer.DSt.Message[4]);
                 resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[4]);
 
-                setDynamicInfo(Keys::Key_MCT_DNP_AnalogCRC3, InMessage->Buffer.DSt.Message[5]);
+                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC3, InMessage->Buffer.DSt.Message[5]);
                 resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[5]);
 
-                setDynamicInfo(Keys::Key_MCT_DNP_AnalogCRC4, InMessage->Buffer.DSt.Message[6]);
+                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC4, InMessage->Buffer.DSt.Message[6]);
                 resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[6]);
 
-                setDynamicInfo(Keys::Key_MCT_DNP_AnalogCRC5, InMessage->Buffer.DSt.Message[7]);
+                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC5, InMessage->Buffer.DSt.Message[7]);
                 resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[7]);
 
-                setDynamicInfo(Keys::Key_MCT_DNP_AccumulatorCRC1, InMessage->Buffer.DSt.Message[8]);
+                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AccumulatorCRC1, InMessage->Buffer.DSt.Message[8]);
                 resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[8]);
 
-                setDynamicInfo(Keys::Key_MCT_DNP_AccumulatorCRC2, InMessage->Buffer.DSt.Message[9]);
+                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AccumulatorCRC2, InMessage->Buffer.DSt.Message[9]);
                 resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[9]);
 
-                setDynamicInfo(Keys::Key_MCT_DNP_AccumulatorCRC3, InMessage->Buffer.DSt.Message[10]);
+                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AccumulatorCRC3, InMessage->Buffer.DSt.Message[10]);
                 resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[10]);
 
-                setDynamicInfo(Keys::Key_MCT_DNP_AccumulatorCRC4, InMessage->Buffer.DSt.Message[11]);
+                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AccumulatorCRC4, InMessage->Buffer.DSt.Message[11]);
                 resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[11]);
             }
         }
@@ -4601,67 +4598,65 @@ INT CtiDeviceMCT470::decodeGetStatusDNP( INMESS *InMessage, CtiTime &TimeNow, li
     return status;
 }
 
+ INT CtiDeviceMCT470::decodeGetStatusFreeze( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+ {
+     INT status = NORMAL;
 
-INT CtiDeviceMCT470::decodeGetStatusFreeze( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
-{
-    INT status = NORMAL;
+     INT ErrReturn  = InMessage->EventCode & 0x3fff;
+     DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
-    INT ErrReturn  = InMessage->EventCode & 0x3fff;
-    DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+     {
+         // No error occured, we must do a real decode!
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
-    {
-        // No error occured, we must do a real decode!
+         string resultString;
+         unsigned long tmpTime;
+         CtiTime lpTime;
 
-        string resultString;
-        unsigned long tmpTime;
-        CtiTime lpTime;
+         CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+         CtiPointDataMsg      *pData = NULL;
 
-        CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-        CtiPointDataMsg      *pData = NULL;
+         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+         {
+             CtiLockGuard<CtiLogger> doubt_guard(dout);
+             dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+             return MEMORY;
+         }
 
-            return MEMORY;
-        }
+         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+         resultString += getName() + " / Freeze status:\n";
 
-        resultString += getName() + " / Freeze status:\n";
+         tmpTime = DSt->Message[0] << 24 |
+                   DSt->Message[1] << 16 |
+                   DSt->Message[2] <<  8 |
+                   DSt->Message[3];
 
-        tmpTime = DSt->Message[0] << 24 |
-                  DSt->Message[1] << 16 |
-                  DSt->Message[2] <<  8 |
-                  DSt->Message[3];
+         updateFreezeInfo(DSt->Message[4], tmpTime);
 
-        updateFreezeInfo(DSt->Message[4], tmpTime);
+         CtiTime lastFreeze(tmpTime);
+         if( lastFreeze.isValid() )
+         {
+             resultString += "Last freeze timestamp: " + lastFreeze.asString() + "\n";
+         }
+         else
+         {
+             resultString += "Last freeze timestamp: (no freeze recorded)\n";
+         }
 
-        CtiTime lastFreeze(tmpTime);
-        if( lastFreeze.isValid() )
-        {
-            resultString += "Last freeze timestamp: " + lastFreeze.asString() + "\n";
-        }
-        else
-        {
-            resultString += "Last freeze timestamp: (no freeze recorded)\n";
-        }
+         resultString += "Freeze counter: " + CtiNumStr(getCurrentFreeze()) + "\n";
+         resultString += "Next freeze expected: freeze ";
+         resultString += ((getCurrentFreeze() % 2)?("two"):("one"));
+         resultString += "\n";
 
-        resultString += "Freeze counter: " + CtiNumStr(getCurrentFreeze()) + "\n";
-        resultString += "Next freeze expected: freeze ";
-        resultString += ((getCurrentFreeze() % 2)?("two"):("one"));
-        resultString += "\n";
+         ReturnMsg->setResultString(resultString);
 
-        ReturnMsg->setResultString(resultString);
+         retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+     }
 
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
-    }
-
-    return status;
-}
-
+     return status;
+ }
 
 INT CtiDeviceMCT470::decodeGetConfigIntervals(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
@@ -4739,9 +4734,9 @@ string CtiDeviceMCT470::describeChannel(unsigned char channel_config) const
         {
             case 1:
             {
-                if( hasDynamicInfo(Keys::Key_MCT_Configuration) )
+                if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) )
                 {
-                    result_string += resolveIEDName(getDynamicInfo(Keys::Key_MCT_Configuration) >> 4) + " ";
+                    result_string += resolveIEDName(getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) >> 4) + " ";
                 }
                 else
                 {
@@ -4909,7 +4904,7 @@ INT CtiDeviceMCT470::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, l
         }
 
         //  this will need to be removed when we do this automatically
-        setDynamicInfo(Keys::Key_MCT_Configuration, InMessage->Buffer.DSt.Message[3]);
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration, InMessage->Buffer.DSt.Message[3]);
 
         options += "Connected Meter: " + resolveIEDName(DSt->Message[3] >> 4) + "\n";
 
@@ -5036,6 +5031,7 @@ void CtiDeviceMCT470::decodeDNPRealTimeRead(BYTE *buffer, int readNumber, string
             }
         }
 
+		int i;
         for( i = 0; i < 8; i++ )
         {
             if( !errorFlagSet )
@@ -5056,7 +5052,7 @@ void CtiDeviceMCT470::decodeDNPRealTimeRead(BYTE *buffer, int readNumber, string
         }
 
 
-        for( i = 0; i < 3; i++ )
+		for( i = 0; i < 3; i++ )
         {
             if( !errorFlagSet )
             {
@@ -5111,7 +5107,7 @@ void CtiDeviceMCT470::getBytesFromString(string &values, BYTE* buffer, int buffL
         CtiString anyNum;
         anyNum = "(([0-9]+) *|(0x[0-9a-f]+) *)+";
 
-        if(!(token = valueCopy.match(anyNum)).empty())
+        if(!(token = valueCopy.match( (const boost::regex &)anyNum)).empty())
         {
             CtiTokenizer cmdtok(token);
 

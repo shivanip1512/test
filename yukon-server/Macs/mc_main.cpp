@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_main.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2007/08/07 21:04:32 $
+* REVISION     :  $Revision: 1.12.12.2 $
+* DATE         :  $Date: 2008/11/21 20:56:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,6 +26,10 @@
 
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 1999
 ---------------------------------------------------------------------------*/
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
 
 #include <windows.h>
 

@@ -8,15 +8,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/port_tcpip.cpp-arc  $
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2008/10/28 19:21:43 $
+* REVISION     :  $Revision: 1.37.2.2 $
+* DATE         :  $Date: 2008/11/20 16:49:20 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-
-#include <windows.h>
 #include <iostream>
 
 
@@ -92,7 +90,7 @@ INT CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
 
     if( !isSimulated() )
     {
-        LockGuard grd( monitor() );
+        CtiLockGuard<CtiMutex> guard(_classMutex);
 
         if(_socket != INVALID_SOCKET)
         {
@@ -286,7 +284,7 @@ INT CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list< CtiMessa
     ULONG    Told, Tnew, Tmot;
     LONG     byteCount   = 0;
 
-    LockGuard gd(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
 
     BYTE     *Message    = Xfer.getInBuffer();      // Local alias for ease of use!
 
@@ -495,7 +493,7 @@ INT CtiPortTCPIPDirect::outMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list< CtiMess
     ULONG    StartWrite;
     ULONG    ReturnWrite;
 
-    LockGuard gd(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
 
     if(!isSimulated() && !isViable())
     {
@@ -609,7 +607,7 @@ INT CtiPortTCPIPDirect::outMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list< CtiMess
 
 INT CtiPortTCPIPDirect::shutdownClose(PCHAR Label, ULONG Line)
 {
-    LockGuard grd( monitor() );
+    CtiLockGuard<CtiMutex> guard(_classMutex);
 
     INT   iRet = 0;
 

@@ -6,15 +6,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/test.cpp-arc  $
-* REVISION     :  $Revision: 1.49 $
-* DATE         :  $Date: 2008/10/13 16:25:18 $
+* REVISION     :  $Revision: 1.49.2.1 $
+* DATE         :  $Date: 2008/11/13 17:23:49 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include <crtdbg.h>
-#include <windows.h>
 #include <iostream>
 
 #include <rw/thr/thrfunc.h>
@@ -1768,7 +1767,7 @@ void historyExecute(int argc, char **argv)
                     rdr >> val;
                     rdr >> milli;
 
-                    historyCol_t::_Pairib inspair = histCol.insert( historyCol_t::value_type( make_pair(ts.seconds(), milli), val) );
+                    historyCol_t::_Pairib inspair = histCol.insert( historyCol_t::value_type( make_pair((unsigned long) ts.seconds(), milli), val) );
 
                     if(inspair.second == false)
                     {

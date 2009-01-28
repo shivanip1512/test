@@ -15,8 +15,6 @@
 -----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-
-#include <windows.h>
 #include <iostream>
 #include <iomanip>
 

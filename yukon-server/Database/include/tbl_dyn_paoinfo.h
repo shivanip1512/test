@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2008/04/09 19:49:53 $
+* REVISION     :  $Revision: 1.22.6.2 $
+* DATE         :  $Date: 2008/11/19 15:21:28 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -36,7 +36,7 @@ class IM_EX_CTIYUKONDB CtiTableDynamicPaoInfo : public CtiMemDBObject
 {
 public:
 
-    enum Keys
+    enum PaoInfoKeys
     {
         //  this ordering can change without adverse effects - the strings are what the DB keys on
         Key_Invalid   =  -1,
@@ -309,7 +309,7 @@ protected:
     static const string _key_fmu_monitor_port_select_comm_config;
 
     typedef map<CtiApplication_t, const string *> owner_map_t;
-    typedef map<Keys,             const string *> key_map_t;
+    typedef map<PaoInfoKeys,             const string *> key_map_t;
 
     static const owner_map_t _owner_map;
     static const key_map_t   _key_map;
@@ -321,7 +321,7 @@ protected:
     long             _pao_id;
     CtiApplication_t _owner_id;
 
-    Keys   _key;
+    PaoInfoKeys   _key;
     string _value;
 
     static const string _empty_string;
@@ -334,7 +334,7 @@ public:
 
     CtiTableDynamicPaoInfo();
     CtiTableDynamicPaoInfo(const CtiTableDynamicPaoInfo &aRef);
-    CtiTableDynamicPaoInfo(long paoid, Keys k);  //  owner doesn't matter until the new row gets written to the DB
+    CtiTableDynamicPaoInfo(long paoid, PaoInfoKeys k);  //  owner doesn't matter until the new row gets written to the DB
 
     virtual ~CtiTableDynamicPaoInfo();
 
@@ -359,7 +359,7 @@ public:
     long             getPaoID()   const;
     long             getEntryID() const;
     CtiApplication_t getOwner()   const;
-    Keys             getKey()     const;
+    PaoInfoKeys      getKey()     const;
     string           getValue()   const;
 
     void             getValue(int           &destination) const;
@@ -371,7 +371,7 @@ public:
     CtiTableDynamicPaoInfo &setPaoID(long pao_id);
     CtiTableDynamicPaoInfo &setEntryID(long entry_id);
     CtiTableDynamicPaoInfo &setOwner(CtiApplication_t o);
-    CtiTableDynamicPaoInfo &setKey(Keys k);
+    CtiTableDynamicPaoInfo &setKey(PaoInfoKeys k);
 
     //  we actually want to limit the input conversions into setValue, because we
     //    need to be able to convert them from string form in the getValue functions

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_single.h-arc  $
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2008/10/28 19:21:44 $
+* REVISION     :  $Revision: 1.35.2.1 $
+* DATE         :  $Date: 2008/11/17 23:06:32 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -30,7 +30,6 @@
 #include "tbl_2way.h"
 #include "tbl_stats.h"
 #include "tbl_scanrate.h"
-// #include "rtdb.h"
 #include "yukon.h"
 #include "msg_pcrequest.h"
 #include "msg_pcreturn.h"
@@ -248,8 +247,8 @@ public:
     bool removeWindowType( int window_type = -1 );              // Default Argument removes ALL windows.
 
     int getGroupMessageCount(long userID, long comID);
-    incrementGroupMessageCount(long userID, long comID, int entries = 1);
-    decrementGroupMessageCount(long userID, long comID, int entries = 1);
+    void incrementGroupMessageCount(long userID, long comID, int entries = 1);
+    void decrementGroupMessageCount(long userID, long comID, int entries = 1);
 
 };
 

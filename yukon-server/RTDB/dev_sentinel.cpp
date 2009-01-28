@@ -149,7 +149,7 @@ INT CtiDeviceSentinel::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &parse
 
     BYTE *temp;
     temp = (BYTE *)pswdTemp.c_str();
-    for (aa = 0; aa < pswdTemp.length(); aa++)
+    for (int aa = 0; aa < pswdTemp.length(); aa++)
         password[aa] = *(temp + aa);
 
     // lazyness so I don't have to continually remember to update this
@@ -582,7 +582,7 @@ int CtiDeviceSentinel::buildScannerTableRequest (BYTE *aMsg, UINT flags)
 
     BYTE *temp;
     temp = (BYTE *)pswdTemp.c_str();
-    for (aa = 0; aa < pswdTemp.length(); aa++)
+    for (int aa = 0; aa < pswdTemp.length(); aa++)
         password[aa] = *(temp + aa);
 
     // currently defaulted at billing data only
@@ -694,7 +694,7 @@ int CtiDeviceSentinel::buildCommanderTableRequest (BYTE *aMsg, UINT flags)
 
     BYTE *temp;
     temp = (BYTE *)pswdTemp.c_str();
-    for (aa = 0; aa < pswdTemp.length(); aa++)
+    for (int aa = 0; aa < pswdTemp.length(); aa++)
         password[aa] = *(temp + aa);
 
     // currently defaulted at billing data only

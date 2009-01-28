@@ -12,7 +12,12 @@
  *
  */
 
+#include <boost/test/floating_point_comparison.hpp>
+
+#define BOOST_TEST_MAIN "Test CommandParse"
 #include <boost/test/unit_test.hpp>
+
+#include "boostutil.h"
 
 #include <string>
 
@@ -20,13 +25,10 @@
 #include "test_cmdparse_output.h"
 #include "cmdparse.h"
 
-#define BOOST_AUTO_TEST_MAIN "Test CommandParse"
-
-#include <boost/test/auto_unit_test.hpp>
 using boost::unit_test_framework::test_suite;
 
 
-BOOST_AUTO_UNIT_TEST(testParse)
+BOOST_AUTO_TEST_CASE(testString)
 {
     for( int i = 0; i < TEST_SIZE; i++ )
     {

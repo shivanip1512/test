@@ -44,6 +44,10 @@
         1-13-94     Changed potential * bug in WWV routines     TRH
 
    -------------------------------------------------------------------- */
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
+
 #include <windows.h>
 #include <process.h>
 #include <iostream>
@@ -835,7 +839,7 @@ VOID TimeSyncThread (PVOID Arg)
 }
 
 /* Routine called to load an XTIME message */
-LoadXTimeMessage (BYTE *Message)
+INT LoadXTimeMessage (BYTE *Message)
 {
     ULONG Mod8Time;
     struct timeb TimeB;
@@ -866,7 +870,7 @@ LoadXTimeMessage (BYTE *Message)
 }
 
 
-RefreshMCTTimeSync(OUTMESS *OutMessage)
+INT RefreshMCTTimeSync(OUTMESS *OutMessage)
 {
     struct timeb TimeB;
     struct tm TimeSt;
@@ -951,16 +955,16 @@ RefreshMCTTimeSync(OUTMESS *OutMessage)
     }
 
     //  lay it over the original message
-    C_Words(OutMessage->Buffer.OutMessage + PREIDLEN + PREAMLEN + BWORDLEN,
-            timesync_message,
-            length);
+    C_Words( (OutMessage->Buffer.OutMessage + PREIDLEN + PREAMLEN + BWORDLEN),
+              timesync_message,
+              length );
 
     return(NORMAL);
 }
 
 
 /* Routine to stuff the two byte header */
-ILEXHeader (PBYTE Header,          /* Pointer to message */
+INT ILEXHeader (PBYTE Header,          /* Pointer to message */
             USHORT Remote,          /* RTU Remote */
             USHORT Function,        /* Function code */
             USHORT SubFunction1,    /* High order sub function code */
@@ -979,7 +983,7 @@ ILEXHeader (PBYTE Header,          /* Pointer to message */
 }
 
 /* Routine to load up time for an ilex rtu */
-LoadILEXTimeMessage (BYTE *Message, USHORT MilliSecsSkew)
+INT LoadILEXTimeMessage (BYTE *Message, USHORT MilliSecsSkew)
 {
     ULONG MilliTime;
     struct timeb TimeB;
@@ -1024,7 +1028,7 @@ LoadILEXTimeMessage (BYTE *Message, USHORT MilliSecsSkew)
 
 
 /* Routine to load up time for a Welco rtu */
-LoadWelcoTimeMessage (BYTE *Message,
+INT LoadWelcoTimeMessage (BYTE *Message,
                       USHORT MilliSecsSkew)
 {
     struct timeb TimeB;
@@ -1061,7 +1065,7 @@ LoadWelcoTimeMessage (BYTE *Message,
 
 
 /* Routine to load up time for a Welco rtu */
-LoadSES92TimeMessage (BYTE *Message,
+INT LoadSES92TimeMessage (BYTE *Message,
                       USHORT MilliSecsSkew)
 {
     struct timeb TimeB;

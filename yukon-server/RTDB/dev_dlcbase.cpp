@@ -52,7 +52,7 @@ CtiDeviceDLCBase& CtiDeviceDLCBase::operator=(const CtiDeviceDLCBase& aRef)
     {
         Inherited::operator=(aRef);
 
-        LockGuard guard(monitor());
+        CtiLockGuard<CtiMutex> guard(_classMutex);
 
         DeviceRoutes = aRef.getDeviceRoute();
     }
@@ -65,13 +65,13 @@ CtiTableDeviceRoute  CtiDeviceDLCBase::getDeviceRoute() const
 }
 CtiTableDeviceRoute& CtiDeviceDLCBase::getDeviceRoute()
 {
-    LockGuard guard(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     return DeviceRoutes;
 }
 
 CtiDeviceDLCBase& CtiDeviceDLCBase::setDeviceRoute(const CtiTableDeviceRoute& aRoute)
 {
-    LockGuard guard(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     DeviceRoutes = aRoute;
     return *this;
 }
@@ -83,13 +83,13 @@ CtiTableDeviceCarrier  CtiDeviceDLCBase::getCarrierSettings() const
 
 CtiTableDeviceCarrier& CtiDeviceDLCBase::getCarrierSettings()
 {
-    LockGuard guard(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     return CarrierSettings;
 }
 
 CtiDeviceDLCBase& CtiDeviceDLCBase::setCarrierSettings( const CtiTableDeviceCarrier & aCarrierSettings )
 {
-    LockGuard guard(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     CarrierSettings = aCarrierSettings;
     return *this;
 }
@@ -116,7 +116,7 @@ void CtiDeviceDLCBase::DecodeDatabaseReader(RWDBReader &rdr)
         dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    LockGuard guard(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     CarrierSettings.DecodeDatabaseReader(rdr);
     DeviceRoutes.DecodeDatabaseReader(rdr);
 }

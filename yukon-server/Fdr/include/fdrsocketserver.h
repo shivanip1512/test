@@ -4,6 +4,11 @@
 #ifndef __FDRSOCKETSERVER_H__
 #define __FDRSOCKETSERVER_H__
 
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
+
 #include <windows.h>
 
 #include "dlldefs.h"

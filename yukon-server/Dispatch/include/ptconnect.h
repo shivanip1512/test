@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ptconnect.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2008/06/30 15:24:29 $
+* REVISION     :  $Revision: 1.8.4.1 $
+* DATE         :  $Date: 2008/11/20 20:37:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,7 +19,6 @@
 
 #include "ctitime.h"
 #include <rw/thr/recursiv.h>
-#include <rw/thr/monitor.h>
 #include <rw\thr\mutex.h>
 
 #include "dlldefs.h"
@@ -33,17 +32,19 @@ class CtiPointChange;
 class CtiConnectionManager;
 
 
-class IM_EX_CTIVANGOGH CtiPointConnection : public RWMonitor< RWRecursiveLock< RWMutexLock > >
+class IM_EX_CTIVANGOGH CtiPointConnection
 {
 protected:
 
    // Vector of managers who care about this point.
    typedef set< CtiServer::ptr_type > CollectionType;
    CollectionType ConnectionManagerCollection;
+   mutable CtiMutex _classMutex;
 
 public:
 
    CtiPointConnection();
+   CtiPointConnection(const CtiPointConnection& aRef);
    virtual ~CtiPointConnection();
    void AddConnectionManager(CtiServer::ptr_type cm);
    void RemoveConnectionManager(CtiServer::ptr_type cm);
@@ -54,6 +55,7 @@ public:
 
    CollectionType& getManagerList();
    CollectionType  getManagerList() const;
+    
 };
 
 #endif // __PTCONNECT_H__

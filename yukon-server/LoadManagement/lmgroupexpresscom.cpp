@@ -178,7 +178,7 @@ CtiRequestMsg* CtiLMGroupExpresscom::createTargetCycleRequestMsg(LONG percent, L
         CtiString temp;
         CtiString str_hexnum = "(0x[0-9a-f]+)";
         CtiString str_num = "([0-9]+)";
-        CtiString str_anynum = "(" + str_num + "|" + str_hexnum + ")";
+        CtiString str_anynum = CtiString ("(") + str_num + CtiString("|") + str_hexnum + CtiString(")");
         CtiString tempStr = "adjustments";
         tempStr += "( ";
         tempStr += str_anynum;

@@ -5,6 +5,11 @@
 #include <list>
 #include <utility>
 #include <ostream>
+
+#include "boostutil.h"
+
+#include <boost/assert.hpp>
+
 #include <boost/shared_ptr.hpp>
 
 #include "dlldefs.h"

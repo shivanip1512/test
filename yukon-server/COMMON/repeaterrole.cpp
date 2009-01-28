@@ -7,14 +7,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2005/02/10 23:23:45 $
+* REVISION     :  $Revision: 1.3.34.1 $
+* DATE         :  $Date: 2008/11/13 17:23:51 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-#include <windows.h>
 #include "repeaterrole.h"
 
 CtiDeviceRepeaterRole::CtiDeviceRepeaterRole() :

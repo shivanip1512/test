@@ -3,7 +3,11 @@
  *
  */
 
+#include <boost/test/floating_point_comparison.hpp>
+
+#define BOOST_TEST_MAIN "Test dev_ccu721"
 #include <boost/test/unit_test.hpp>
+
 
 #define _WIN32_WINNT 0x0400
 
@@ -12,7 +16,6 @@
 #include "prot_emetcon.h"
 
 #define BOOST_AUTO_TEST_MAIN "Test CCU-721 Device"
-#include <boost/test/auto_unit_test.hpp>
 using boost::unit_test_framework::test_suite;
 
 using namespace std;
@@ -30,7 +33,7 @@ public:
     }
 };
 
-BOOST_AUTO_UNIT_TEST(test_ccu721_bword)
+BOOST_AUTO_TEST_CASE(test_ccu721_bword)
 {
     Test_CCU721 dev;
 
@@ -80,6 +83,9 @@ BOOST_AUTO_UNIT_TEST(test_ccu721_bword)
 
     // copy(buf.begin(), buf.end(), ostream_iterator<int>(cout, " "));
 
-    BOOST_CHECK(!memcmp(buf.begin(), expected.begin(), 7 * 4));
+    BOOST_CHECK(!memcmp(&*buf.begin(), &*expected.begin(), 29));
+
+    BOOST_CHECK(!memcmp(&*buf.begin(), &*expected.begin(), 7 * 4));
+
 }
 

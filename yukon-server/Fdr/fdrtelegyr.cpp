@@ -15,8 +15,6 @@ Things to note about telegyr learned the hard way...
 ==============================================================================================================================*/
 #include "yukon.h"
 
-
-#include <windows.h>
 #include <math.h>
 #include <stdlib.h>
 #include <iostream>

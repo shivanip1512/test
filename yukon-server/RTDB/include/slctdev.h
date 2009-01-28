@@ -22,7 +22,6 @@
 
 #include "dlldefs.h"
 #include "dev_base.h"
-#include "rtdb.h"
 #include "rte_base.h"
 
 IM_EX_DEVDB CtiDeviceBase *DeviceFactory(RWDBReader &rdr);

@@ -82,6 +82,7 @@ macs.exe:     $(BASEOBJS) Makefile
 $(BASEOBJS) -link $(LIBS) $(RWLIBS) $(BOOSTLIBS) $(LINKFLAGS)
               @echo:
               -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+              mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
               -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
               -if exist ..\tcl\*.* copy ..\tcl\*.* $(YUKONOUTPUT)
               @%cd $(CWD)
@@ -90,6 +91,7 @@ $(BASEOBJS) -link $(LIBS) $(RWLIBS) $(BOOSTLIBS) $(LINKFLAGS)
 
 copy:       $(TARGS)
            -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+           mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
            -if exist bin\*.exe copy bin\*.exe $(YUKONOUTPUT)
            -if exist tcl\*.* copy tcl\*.* $(YUKONOUTPUT)
 

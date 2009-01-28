@@ -1538,7 +1538,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPhaseAValue(DOUBLE value, CtiTime tim
     _phaseAvalue = value;
     if( _RATE_OF_CHANGE && !getRecentlyControlledFlag() )
     {
-        regressionA.appendWithoutFill(std::make_pair(timestamp.seconds(),value));
+        regressionA.appendWithoutFill(std::make_pair((double)timestamp.seconds(),value));
         if(_CC_DEBUG & CC_DEBUG_RATE_OF_CHANGE)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1562,7 +1562,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPhaseBValue(DOUBLE value, CtiTime tim
     _phaseBvalue = value;
     if( _RATE_OF_CHANGE && !getRecentlyControlledFlag() )
     {
-        regressionB.appendWithoutFill(std::make_pair(timestamp.seconds(),value));
+        regressionB.appendWithoutFill(std::make_pair((double)timestamp.seconds(),value));
         if(_CC_DEBUG & CC_DEBUG_RATE_OF_CHANGE)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1588,7 +1588,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPhaseCValue(DOUBLE value, CtiTime tim
     _phaseCvalue = value;
     if( _RATE_OF_CHANGE && !getRecentlyControlledFlag() )
     {
-        regressionC.appendWithoutFill(std::make_pair(timestamp.seconds(),value));
+        regressionC.appendWithoutFill(std::make_pair((double)timestamp.seconds(),value));
         if(_CC_DEBUG & CC_DEBUG_RATE_OF_CHANGE)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1846,7 +1846,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVarLoadPointValue(DOUBLE value
     _currentvarloadpointvalue = value;
     if(_RATE_OF_CHANGE && !getRecentlyControlledFlag())
     {
-        regression.appendWithoutFill(std::make_pair(timestamp.seconds(),value));
+        regression.appendWithoutFill(std::make_pair((double)timestamp.seconds(),value));
         if(_CC_DEBUG & CC_DEBUG_RATE_OF_CHANGE)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -8388,7 +8388,7 @@ BOOL CtiCCSubstationBus::areAllMonitorPointsNewEnough(const CtiTime& currentDate
         if (retVal == TRUE)
         {
             BOOL scanInProgress = FALSE;
-            for (i = 0; i < _multipleMonitorPoints.size(); i++)
+            for (int i = 0; i < _multipleMonitorPoints.size(); i++)
             {
                 CtiCCMonitorPoint* point = (CtiCCMonitorPoint*)_multipleMonitorPoints[i];
                 if (point->getScanInProgress())
@@ -8604,7 +8604,7 @@ void CtiCCSubstationBus::analyzeMultiVoltBus1(const CtiTime& currentDateTime, Ct
                 }
             }
         }
-        for ( i = 0; i < _ccfeeders.size();i++)
+        for (int i = 0; i < _ccfeeders.size();i++)
         {
             CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)_ccfeeders[i];
             if (currentFeeder->getRecentlyControlledFlag())
@@ -8792,7 +8792,7 @@ BOOL CtiCCSubstationBus::analyzeBusForVarImprovement(CtiCCMonitorPoint* point, C
                     if( currentFeeder->getCurrentVarLoadPointValue() > lagLevel )
                     {
                         //select bank to open...make sure volt points stay in range though.
-                        vector <CtiCCMonitorPointPtr>& monPoints = currentFeeder->getMultipleMonitorPoints();
+                        std::vector <CtiCCMonitorPointPtr>& monPoints = currentFeeder->getMultipleMonitorPoints();
                         for (int i = 0; i < monPoints.size(); i++)
                         {
                             CtiCCMonitorPointPtr pt = monPoints[i];
@@ -8842,7 +8842,7 @@ BOOL CtiCCSubstationBus::analyzeBusForVarImprovement(CtiCCMonitorPoint* point, C
                     else if ( currentFeeder->getCurrentVarLoadPointValue() < leadLevel )
                     {
                         //select bank to open...make sure volt points stay in range though.
-                        vector <CtiCCMonitorPointPtr>& monPoints = currentFeeder->getMultipleMonitorPoints();
+                        std::vector <CtiCCMonitorPointPtr>& monPoints = currentFeeder->getMultipleMonitorPoints();
                         for (int i = 0; i < monPoints.size(); i++)
                         {
                             CtiCCMonitorPointPtr pt = monPoints[i];
@@ -8939,7 +8939,7 @@ BOOL CtiCCSubstationBus::analyzeBusForVarImprovement(CtiCCMonitorPoint* point, C
                 if( getCurrentVarLoadPointValue() > lagLevel )
                 {
                     //select bank to open...make sure volt points stay in range though.
-                    vector <CtiCCMonitorPointPtr>& monPoints = getMultipleMonitorPoints();
+                    std::vector <CtiCCMonitorPointPtr>& monPoints = getMultipleMonitorPoints();
                     for (int i = 0; i < monPoints.size(); i++)
                     {
                         CtiCCMonitorPointPtr pt = monPoints[i];
@@ -8987,7 +8987,7 @@ BOOL CtiCCSubstationBus::analyzeBusForVarImprovement(CtiCCMonitorPoint* point, C
                 else if ( getCurrentVarLoadPointValue() < leadLevel )
                 {
                     //select bank to open...make sure volt points stay in range though.
-                    vector <CtiCCMonitorPointPtr>& monPoints = getMultipleMonitorPoints();
+                    std::vector <CtiCCMonitorPointPtr>& monPoints = getMultipleMonitorPoints();
                     for (int i = 0; i < monPoints.size(); i++)
                     {
                         CtiCCMonitorPointPtr pt = monPoints[i];
@@ -9994,10 +9994,10 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededFallBackControl(
             while (iter != controlid_action_map.end())
             {
                 {
-                    int capCount = 0;
-                    CtiCCCapBankPtr bank = CtiCCSubstationBusStore::getInstance()->findCapBankByPointID(iter->first, capCount)->second;;
-                    if (bank != NULL)
+                    multimap< long, CtiCCCapBankPtr >::iterator bankIter, end;
+                    if (CtiCCSubstationBusStore::getInstance()->findCapBankByPointID(iter->first, bankIter, end))
                     {
+                        CtiCCCapBankPtr bank = bankIter->second;
                         CtiCCFeederPtr feed = CtiCCSubstationBusStore::getInstance()->findFeederByPAObjectID(bank->getParentId());
                         if (feed != NULL)
                         {

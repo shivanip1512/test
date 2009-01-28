@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/device_queue_interface.cpp-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2008/07/21 20:38:26 $
+* REVISION     :  $Revision: 1.2.4.1 $
+* DATE         :  $Date: 2008/11/20 16:49:20 $
 *
 * Copyright (c) 2007 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -68,7 +68,7 @@ void DeviceQueueInterface::cancelRequest(ULONG requestID, ULONG &count)
     }
 }
 
-void DeviceQueueInterface::retrieveQueueEntries(bool (*myFindFunc)(void*, PQUEUEENT), void *findParameter, list<void*>& entries)
+void DeviceQueueInterface::retrieveQueueEntries(bool (*myFindFunc)(void*, PQUEUEENT), void *findParameter, std::list<void*>& entries)
 {
     if( _p711Info != NULL )
     {
@@ -81,7 +81,7 @@ void DeviceQueueInterface::retrieveQueueEntries(bool (*myFindFunc)(void*, PQUEUE
 
 void DeviceQueueInterface::copyMessagesToList(void *listPtr, void* data)
 {
-    list<void*> *entryList = (list<void*>*)listPtr;
+    std::list<void*> *entryList = (std::list<void*>*)listPtr;
     
     entryList->push_back(data);
 }

@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.52 $
-* DATE         :  $Date: 2008/10/24 14:38:49 $
+* REVISION     :  $Revision: 1.52.2.1 $
+* DATE         :  $Date: 2008/11/17 19:46:17 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1628,7 +1628,8 @@ INT CtiProtocolExpresscom::schedulePoint(vector< BYTE > &schedule)
     {
         BYTE data[1024];
 
-        for(int i = 0; i < schedule.size() && i < 1024; i++)
+		int i;  // now must be defined outside of forloop
+        for(i = 0; i < schedule.size() && i < 1024; i++)
         {
             data[i] = schedule[i];
         }

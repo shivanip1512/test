@@ -12,7 +12,6 @@
 ---------------------------------------------------------------------------*/
 #include "yukon.h"
 
-#include <windows.h>
 #include <rw/toolpro/winsock.h>
 #include <rw/thr/thrutil.h>
 #include <rw/collstr.h>

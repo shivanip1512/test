@@ -28,6 +28,11 @@
 #ifndef __CTILOCKGUARD_H__
 #define __CTILOCKGUARD_H__
 
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
+
 #include <windows.h>
 #include <iostream>
 #include <string>
@@ -37,11 +42,14 @@
 
 //Includes to create a dump file
 //#include "dbghelp.h"
-#include "clrdump.h"
+extern "C"
+{
+	#include "clrdump.h"
+}
 
 #pragma pack(push, LockGuardPack, 8)
 template<class T>
-class IM_EX_CTIBASE CtiLockGuard
+class CtiLockGuard
 {
 public:
     CtiLockGuard(T& resource) :  _res(resource)
@@ -62,7 +70,7 @@ public:
                 _itow( _res.lastAcquiredByTID(), buff, 10);
                 file += buff;
                 file += L".DMP";
-                CreateDump(GetCurrentProcessId(), file.c_str(), 0, NULL, NULL); //I would like a MiniDumpWithDataSegs but I think it would be too large.
+                /// CreateDump(GetCurrentProcessId(), file.c_str(), (unsigned long) 0, (unsigned long) NULL, (EXCEPTION_POINTERS*) NULL); //I would like a MiniDumpWithDataSegs but I think it would be too large.
             }
         }
         #else
@@ -101,7 +109,7 @@ private:
 };
 
 template<class T>
-class IM_EX_CTIBASE CtiReadLockGuard
+class CtiReadLockGuard
 {
 public:
     CtiReadLockGuard(T& resource) :  _res(resource)
@@ -122,7 +130,7 @@ public:
                 _itow( _res.lastAcquiredByTID(), buff, 10);
                 file += buff;
                 file += L".DMP";
-                CreateDump(GetCurrentProcessId(), file.c_str(), 0, NULL, NULL); //I would like a MiniDumpWithDataSegs but I think it would be too large.
+                ///CreateDump(GetCurrentProcessId(), file.c_str(), (unsigned long) 0, (unsigned long) NULL, (EXCEPTION_POINTERS*) NULL); //I would like a MiniDumpWithDataSegs but I think it would be too large.
             }
         }
         #else

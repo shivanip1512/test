@@ -3,6 +3,11 @@
 #ifndef __QUEENT_H__
 #define __QUEENT_H__
 
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
+
 #include <windows.h>
 
 

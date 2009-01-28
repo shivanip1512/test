@@ -13,8 +13,6 @@
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-#include <windows.h>
-
 #include <iostream>
 #include <fstream>
 
@@ -171,7 +169,7 @@ ULONG WorkCountPointOffset = 0;
 
 struct isTAPTerm
 {
-    operator()(const CtiDeviceSPtr &devsptr)
+    bool operator()(const CtiDeviceSPtr &devsptr)
     {
         return devsptr->getType() == TYPE_TAPTERM;
     }
@@ -361,7 +359,7 @@ struct coldStartDevice
 
     coldStartDevice(long port_id_) : port_id(port_id_)  {  };
 
-    operator()(CtiDeviceSPtr &RemoteDevice)
+    void operator()(CtiDeviceSPtr &RemoteDevice)
     {
         if(port_id == RemoteDevice->getPortID() && !RemoteDevice->isInhibited() && RemoteDevice->getAddress() != CCUGLOBAL)
         {
@@ -553,7 +551,7 @@ void applyDeviceQueueReport(const long unusedid, CtiDeviceSPtr RemoteDevice, voi
                 if(QueWorkCnt > 0)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << " " << setw(8) << QueWorkCnt  << " queued commands. Evaluate next at " << ent << ". Transmitter: " << RemoteDevice->getName() << (ent < ent.now() ? ". *** PAST DUE *** " + CtiNumStr(ent.now().seconds() - ent.seconds()) : " seconds.") << endl;
+                    dout << " " << setw(8) << QueWorkCnt  << " queued commands. Evaluate next at " << ent << ". Transmitter: " << RemoteDevice->getName() << (ent < ent.now() ? ". *** PAST DUE *** " + CtiNumStr( (unsigned long) (ent.now().seconds() - ent.seconds()) ) : " seconds.") << endl;
                 }
             }
         }

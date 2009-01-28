@@ -3568,7 +3568,7 @@ void CtiCCCommandExecutor::AutoEnableOvUvByArea()
         CtiCCSubstationBusPtr currentSubstationBus = NULL;
         CtiCCFeederPtr currentFeeder = NULL;
 
-        std::list <long>::iterator subIter = NULL;
+        std::list<long>::iterator subIter;
         std::list<long>* stationList = NULL;
 
         if(isAreaFlag)
@@ -3763,7 +3763,7 @@ void CtiCCCommandExecutor::AutoDisableOvUvByArea()
         CtiCCFeederPtr currentFeeder = NULL;
 
 
-        std::list <long>::iterator subIter = NULL;
+        std::list <long>::iterator subIter;
         std::list<long>* stationList = NULL;
 
         if(isAreaFlag)
@@ -3944,7 +3944,7 @@ void CtiCCCommandExecutor::AutoControlOvUvBySubstation(BOOL disableFlag)
         }
 
 
-        std::list <long>::iterator busIter = NULL;
+        std::list <long>::iterator busIter;
         if (disableFlag)
             currentStation->setOvUvDisabledFlag(TRUE);
         else

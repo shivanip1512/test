@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.82 $
-* DATE         :  $Date: 2008/11/17 18:51:07 $
+* REVISION     :  $Revision: 1.81.2.1 $
+* DATE         :  $Date: 2008/11/21 20:56:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1797,7 +1797,7 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
             info += "\r\n command was originally submitted at: ";
             info += CtiTime(start).asString();
             info += "\r\n nothing was received from porter in the last ";
-            info += CtiNumStr(now.seconds() - lastReturnMessageReceived.seconds());
+            info += CtiNumStr( (unsigned long) ( now.seconds() - lastReturnMessageReceived.seconds() ) );
             info += " seconds.";
 
             WriteOutput(info.c_str());
@@ -2223,9 +2223,9 @@ void BuildRequestSet(Tcl_Interp* interp, string& cmd_line_b, RWSet& req_set)
         }
     }
 
-    boost::regex select_list_regex = ".*select[ ]+list[ ]+";
-    boost::regex select_id_regex = ".*select[ ]+[^ ]+[ ]+id";
-    boost::regex select_regex = ".*select[ ]+[^ ]+[ ]+";
+    boost::regex select_list_regex = boost::regex(".*select[ ]+list[ ]+");
+    boost::regex select_id_regex = boost::regex(".*select[ ]+[^ ]+[ ]+id");
+    boost::regex select_regex = boost::regex(".*select[ ]+[^ ]+[ ]+");
 
     if( cmd_line.index(select_list_regex, end_index) != string::npos )
     {
@@ -2233,8 +2233,8 @@ void BuildRequestSet(Tcl_Interp* interp, string& cmd_line_b, RWSet& req_set)
         Tcl_Obj* sel_str = Tcl_NewStringObj( cmd_line.c_str() + *end_index, -1 );
         Tcl_ListObjLength(interp, sel_str, &list_len );
 
-        boost::regex e1 = "\n";
-        boost::regex e2 = "select.*";
+        boost::regex e1 = boost::regex("\n");
+        boost::regex e2 = boost::regex("select.*");
         cmd_line = boost::regex_replace(cmd_line, e1, " ", boost::match_default | boost::format_all | boost::format_first_only);
         cmd_line = boost::regex_replace(cmd_line, e2, "", boost::match_default | boost::format_all | boost::format_first_only);
 

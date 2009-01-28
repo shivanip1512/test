@@ -105,3 +105,4 @@ yukon-client/yukon-web/work
 yukon-client/yukonappserver/bin
 yukon-client/yukonappserver/build
 yukon-install/build
+yukon-server/bin

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct31X.cpp-arc  $
-* REVISION     :  $Revision: 1.64 $
-* DATE         :  $Date: 2007/11/12 17:07:26 $
+* REVISION     :  $Revision: 1.64.10.2 $
+* DATE         :  $Date: 2008/11/20 17:17:12 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -126,7 +126,7 @@ bool CtiDeviceMCT31X::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 {
     bool found = false;
 
-    CommandSet::iterator itr = _commandStore.find( CommandStore( cmd ) );
+    CommandSet::const_iterator itr = _commandStore.find( CommandStore( cmd ) );
 
     //  the 318L is the only 31x that supports load profile that we're concerned about here, and it'd be silly to make another class for one function
     //    we want it to stop here, no matter what, no Inherited::anything...
@@ -644,7 +644,8 @@ INT CtiDeviceMCT31X::decodeGetStatusIED(INMESS *InMessage, CtiTime &TimeNow, lis
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        for( int i = 0; i < 12; i++ )
+        int i;
+        for( i = 0; i < 12; i++ )
         {
             //  break if any bytes are unequal or all zero (therefore, any
             //    zero is a break condition in addition to inequality)
@@ -927,7 +928,8 @@ INT CtiDeviceMCT31X::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, lis
         {
             case Emetcon::GetConfig_IEDTime:
             {
-                for( int i = 0; i < 12; i++ )
+                int i;
+                for( i = 0; i < 12; i++ )
                 {
                     //  break if any bytes are unequal or all zero (therefore, any
                     //    zero is a break condition in addition to inequality)
@@ -1194,7 +1196,8 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        for( int i = 0; i < 12; i++ )
+        int i;
+        for( i = 0; i < 12; i++ )
         {
             //  break if any bytes are unequal or all zero (therefore, any
             //    zero is a break condition in addition to inequality)
@@ -1295,7 +1298,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
 
                         exp  =  DSt->Message[2] & 0x0f;
 
-                        Value = tmp * pow(2, exp);
+                        Value = tmp * pow(2.0, (double) exp);
 
                         break;
                     }
@@ -1353,7 +1356,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                         tmp |= (DSt->Message[5] & 0xf0) >>  4;
                         exp  =  DSt->Message[5] & 0x0f;
 
-                        Value = tmp * pow(2, exp);
+                        Value = tmp * pow(2.0, (double) exp);
 
                         break;
                     }
@@ -1887,7 +1890,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                         tmp |= (DSt->Message[8] & 0xf0) >>  4;
                         exp  =  DSt->Message[8] & 0x0f;
 
-                        Value = tmp * pow(2, exp);
+                        Value = tmp * pow(2.0, (double) exp);
 
                         year        =   DSt->Message[ 9]         >> 1;
                         month       = ((DSt->Message[ 9] & 0x01) << 3) |

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pao.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2008/10/28 19:21:40 $
+* REVISION     :  $Revision: 1.3.2.1 $
+* DATE         :  $Date: 2008/11/13 17:23:49 $
 *
 * Copyright (c) 2008 Cooper Industries. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,6 +17,11 @@
 #pragma warning( disable : 4786)
 #ifndef __TBL_PAO_LITE_H__
 #define __TBL_PAO_LITE_H__
+
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
 
 #include <windows.h>
 #include <limits.h>

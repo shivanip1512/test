@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2006/05/23 17:17:43 $
+* REVISION     :  $Revision: 1.8.24.1 $
+* DATE         :  $Date: 2008/11/13 17:23:47 $
 *
 * AUTHOR: Ben Wallace
 *
@@ -49,7 +49,7 @@ From: winsvc.h
 
 /** include files **/
 #include <crtdbg.h>
-#include <windows.h>
+
 #include <iostream>
 
 #include <conio.h>

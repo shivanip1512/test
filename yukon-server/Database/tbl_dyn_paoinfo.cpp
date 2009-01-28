@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2008/04/09 19:49:53 $
+* REVISION     :  $Revision: 1.28.6.1 $
+* DATE         :  $Date: 2008/11/18 20:11:28 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -297,7 +297,7 @@ CtiTableDynamicPaoInfo::CtiTableDynamicPaoInfo(const CtiTableDynamicPaoInfo& aRe
 }
 
 
-CtiTableDynamicPaoInfo::CtiTableDynamicPaoInfo(long paoid, Keys k) :
+CtiTableDynamicPaoInfo::CtiTableDynamicPaoInfo(long paoid, PaoInfoKeys k) :
     _entry_id(-1),
     _pao_id(paoid),
     _owner_id(Application_Invalid),
@@ -631,7 +631,7 @@ CtiApplication_t CtiTableDynamicPaoInfo::getOwner() const
 {
     return _owner_id;
 }
-CtiTableDynamicPaoInfo::Keys CtiTableDynamicPaoInfo::getKey() const
+CtiTableDynamicPaoInfo::PaoInfoKeys CtiTableDynamicPaoInfo::getKey() const
 {
     return _key;
 }
@@ -697,7 +697,7 @@ CtiTableDynamicPaoInfo& CtiTableDynamicPaoInfo::setOwner(CtiApplication_t owner_
     setDirty();
     return *this;
 }
-CtiTableDynamicPaoInfo& CtiTableDynamicPaoInfo::setKey(Keys k)
+CtiTableDynamicPaoInfo& CtiTableDynamicPaoInfo::setKey(PaoInfoKeys k)
 {
     _key = k;
 

@@ -1,5 +1,5 @@
 #include "yukon.h"
-#include <windows.h>
+
 #include <string.h>
 #include <stdio.h>
 #include <iomanip>

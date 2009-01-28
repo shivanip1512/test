@@ -161,13 +161,13 @@ public:
 
     bool InsertCCEventLogInDB(CtiCCEventLogMsg* msg);
 
-    std::multimap< long, CtiCCSpecialPtr >::iterator findSpecialAreaByPointID(long point_id, int &saCount);
-    std::multimap< long, CtiCCAreaPtr >::iterator findAreaByPointID(long point_id, int &areaCount);
-    std::multimap< long, CtiCCSubstationBusPtr >::iterator findSubBusByPointID(long point_id, int &subCount);
-    std::multimap< long, CtiCCSubstationPtr >::iterator findSubstationByPointID(long point_id, int &subCount);
-    std::multimap< long, CtiCCFeederPtr >::iterator findFeederByPointID(long point_id, int &feedCount);
-    std::multimap< long, CtiCCCapBankPtr >::iterator findCapBankByPointID(long point_id, int &capCount);
-    int getNbrOfAreasWithPointID(long point_id);
+    bool findSpecialAreaByPointID(long point_id, std::multimap< long, CtiCCSpecialPtr >::iterator       &begin, std::multimap< long, CtiCCSpecialPtr >::iterator       &end);
+    bool findAreaByPointID       (long point_id, std::multimap< long, CtiCCAreaPtr >::iterator          &begin, std::multimap< long, CtiCCAreaPtr >::iterator          &end);
+    bool findSubBusByPointID     (long point_id, std::multimap< long, CtiCCSubstationBusPtr >::iterator &begin, std::multimap< long, CtiCCSubstationBusPtr >::iterator &end);
+    bool findSubstationByPointID (long point_id, std::multimap< long, CtiCCSubstationPtr >::iterator    &begin, std::multimap< long, CtiCCSubstationPtr >::iterator    &end);
+    bool findFeederByPointID     (long point_id, std::multimap< long, CtiCCFeederPtr >::iterator        &begin, std::multimap< long, CtiCCFeederPtr >::iterator        &end);
+    bool findCapBankByPointID    (long point_id, std::multimap< long, CtiCCCapBankPtr >::iterator       &begin, std::multimap< long, CtiCCCapBankPtr >::iterator       &end);
+    int getNbrOfAreasWithPointID (long point_id);
     int getNbrOfSpecialAreasWithPointID(long point_id) ;
     int getNbrOfSubBusesWithPointID(long point_id);
     int getNbrOfSubstationsWithPointID(long point_id);

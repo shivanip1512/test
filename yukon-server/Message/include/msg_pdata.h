@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/msg_pdata.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2007/10/30 17:59:39 $
+* REVISION     :  $Revision: 1.9.10.1 $
+* DATE         :  $Date: 2008/11/13 17:23:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,6 +17,11 @@
 
 #ifndef __MSG_PDATA_H__
 #define __MSG_PDATA_H__
+
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
 
 #include <windows.h>
 #include <rw/rwset.h>

@@ -3,21 +3,23 @@
  *
  */
 
-#include <boost/test/unit_test.hpp>
-
 #include "dev_mct4xx.h"
 
-#define BOOST_AUTO_TEST_MAIN "Test MCT_4xx Device"
-#include <boost/test/auto_unit_test.hpp>
-using boost::unit_test_framework::test_suite;
+#include <boost/test/floating_point_comparison.hpp>
+
+#define BOOST_TEST_MAIN "Test dev_mct4xx"
+#include <boost/test/unit_test.hpp>
 
 class test_CtiDeviceMCT4xx : public CtiDeviceMCT4xx
 {
     //  these virtuals should never be called in our testing, so the BOOST_CHECK(0) call is there to alert us if they are
-    virtual const read_key_store_t & getReadKeyStore(void) const                               {  BOOST_CHECK(0);  return read_key_store_t();  };
+    virtual const read_key_store_t & getReadKeyStore(void) const                               {  BOOST_CHECK(0);  return fake_key_store;  };
     virtual point_info getDemandData(unsigned char *buf, int len) const                        {  BOOST_CHECK(0);  return point_info();  };
     virtual point_info getLoadProfileData(unsigned channel, unsigned char *buf, unsigned len)  {  BOOST_CHECK(0);  return point_info();  };
     virtual long getLoadProfileInterval(unsigned channel)                                      {  BOOST_CHECK(0);  return 0;  };
+    virtual INT decodeGetStatusFreeze( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList ) {BOOST_CHECK(0);  return 0;};
+    //NOTE on above function:  This is a "BOGUS" function, that just is a place-holder, since it is declared pure-virtual in the base class.
+
 
 public:
     typedef CtiDeviceMCT4xx Inherited;
@@ -36,9 +38,12 @@ public:
     {
         return Inherited::getData(buf, len, static_cast<Inherited::ValueType4xx>(vt));
     }
+
+private:
+    read_key_store_t fake_key_store; 
 };
 
-BOOST_AUTO_UNIT_TEST(test_dev_mct4xx_getdata)
+BOOST_AUTO_TEST_CASE(test_dev_mct4xx_getdata)
 {
     unsigned char kwh_read[3] = { 0x00, 0x01, 0x00 };
 

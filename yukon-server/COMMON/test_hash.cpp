@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/INCLUDE/test_queue.cpp-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2007/12/03 22:22:11 $
+* REVISION     :  $Revision: 1.1.10.1 $
+* DATE         :  $Date: 2008/11/12 17:27:31 $
 *
 * Copyright (c) 2007 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -15,7 +15,6 @@
 
 #include <boost/thread/thread.hpp>
 #include <boost/test/unit_test.hpp>
-#include <boost/test/auto_unit_test.hpp>
 #include <boost/test/floating_point_comparison.hpp>
 #include "hashkey.h"
 
@@ -23,7 +22,7 @@ using namespace std;
 
 using boost::unit_test_framework::test_suite;
 
-BOOST_AUTO_UNIT_TEST(test_hash_integer_operators)
+BOOST_AUTO_TEST_CASE(test_hash_integer_operators)
 {
     CtiHashKey aHashKey = CtiHashKey(1);
     CtiHashKey bHashKey = CtiHashKey(2);
@@ -37,7 +36,7 @@ BOOST_AUTO_UNIT_TEST(test_hash_integer_operators)
     BOOST_CHECK(!(bHashKey < aHashKey));
 }
 
-BOOST_AUTO_UNIT_TEST(test_hash_string_operators)
+BOOST_AUTO_TEST_CASE(test_hash_string_operators)
 {
     CtiHashKey aHashKey = CtiHashKey("abc");
     CtiHashKey bHashKey = CtiHashKey("123");

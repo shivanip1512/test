@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_fileint.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2007/12/10 23:02:57 $
+* REVISION     :  $Revision: 1.10.10.1 $
+* DATE         :  $Date: 2008/11/21 20:56:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,6 +32,7 @@
 #include "ctidate.h"
 #include "rwutil.h"
 #include "utility.h"
+#include "errno.h"
                   
 #include <rw/re.h>
 
@@ -183,7 +184,7 @@ void CtiMCFileInterface::execute(const string& function, const string& name )
     //attempt to find the id of the schedule
     long id = -1;
     {
-        RWRecursiveLock<RWMutexLock>::LockGuard guard( _schedule_manager.getMux() );
+        CtiLockGuard<CtiMutex> guard( _schedule_manager.getMux() );
 
         id = _schedule_manager.getID( string( name.c_str() ));
 

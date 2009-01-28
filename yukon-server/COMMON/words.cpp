@@ -35,7 +35,6 @@
    -------------------------------------------------------------------- */
 #include "yukon.h"
 
-#include <windows.h>
 #include <process.h>
 #include "os2_2w32.h"
 #include "cticalls.h"
@@ -135,21 +134,20 @@ INT IM_EX_CTIBASE C_Word (PBYTE CWord,                        /* result */
 
 /* Routine to make multiple "C" words from Message */
 
-INT IM_EX_CTIBASE C_Words (PBYTE CWords,             /* results */
-                           const PBYTE Message,      /* Message to be converted */
-                           USHORT Length,            /* Length of Message */
-                           unsigned *cword_count)    /* number of c words generated */
+INT IM_EX_CTIBASE C_Words (unsigned char * CWords,             /* results */
+                           const unsigned char * Message,      /* Message to be converted */
+                           unsigned short Length,            /* Length of Message */
+                           unsigned int *cword_count)    /* number of c words generated */
 {
    unsigned i;
 
-   /* loop building full size c words till not enough data */
    for(i = 0; i < Length / 5; ++i)
-      C_Word (CWords + i * 7, Message + i * 5, 5);
+      C_Word ((unsigned char *) (CWords + i * 7), (const PBYTE)( Message + i * 5), (USHORT ) 5 );
 
    /* if partial word left go ahead and build it */
    if(i * 5 < Length)
    {
-      C_Word (CWords + i * 7, Message + i * 5, (USHORT)(Length - i * 5));
+      C_Word ((unsigned char *) (CWords + i * 7), (const PBYTE) (Message + i * 5), (USHORT ) (Length - i * 5));
       i++;
    }
 

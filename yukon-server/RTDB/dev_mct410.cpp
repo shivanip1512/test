@@ -8,14 +8,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.173 $
-* DATE         :  $Date: 2008/10/22 16:26:49 $
+* REVISION     :  $Revision: 1.173.2.2 $
+* DATE         :  $Date: 2008/11/20 16:49:23 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-#include <windows.h>
 #include <string>
 
 #include "logger.h"
@@ -90,63 +89,63 @@ CtiDeviceMCT410::read_key_store_t CtiDeviceMCT410::initReadKeyStore()
 
 //  these cannot be properly decoded by the dynamicPaoAddressing code
 //
-//    readKeyStore.insert(read_key_info_t(-1, Memory_SSpecPos,                 Memory_SSpecLen,                Keys::Key_MCT_SSpec));
-//    readKeyStore.insert(read_key_info_t(-1, Memory_RevisionPos,              Memory_RevisionLen,             Keys::Key_MCT_SSpecRevision));
+//    readKeyStore.insert(read_key_info_t(-1, Memory_SSpecPos,                 Memory_SSpecLen,                CtiTableDynamicPaoInfo::Key_MCT_SSpec));
+//    readKeyStore.insert(read_key_info_t(-1, Memory_RevisionPos,              Memory_RevisionLen,             CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision));
 //
-//    readKeyStore.insert(read_key_info_t(-1, Memory_DayOfScheduledFreezePos,  Memory_DayOfScheduledFreezeLen, Keys::Key_MCT_ScheduledFreezeDay));
+//    readKeyStore.insert(read_key_info_t(-1, Memory_DayOfScheduledFreezePos,  Memory_DayOfScheduledFreezeLen, CtiTableDynamicPaoInfo::Key_MCT_ScheduledFreezeDay));
 
-    readKeyStore.insert(read_key_info_t(-1, Memory_OptionsPos,               Memory_OptionsLen,              Keys::Key_MCT_Options));
-    readKeyStore.insert(read_key_info_t(-1, Memory_ConfigurationPos,         Memory_ConfigurationLen,        Keys::Key_MCT_Configuration));
+    readKeyStore.insert(read_key_info_t(-1, Memory_OptionsPos,               Memory_OptionsLen,              CtiTableDynamicPaoInfo::Key_MCT_Options));
+    readKeyStore.insert(read_key_info_t(-1, Memory_ConfigurationPos,         Memory_ConfigurationLen,        CtiTableDynamicPaoInfo::Key_MCT_Configuration));
 
-    readKeyStore.insert(read_key_info_t(-1, Memory_EventFlagsMask1Pos,       Memory_EventFlagsMask1Len,      Keys::Key_MCT_EventFlagsMask1));
-    readKeyStore.insert(read_key_info_t(-1, Memory_EventFlagsMask2Pos,       Memory_EventFlagsMask2Len,      Keys::Key_MCT_EventFlagsMask2));
-    readKeyStore.insert(read_key_info_t(-1, Memory_MeterAlarmMaskPos,        Memory_MeterAlarmMaskLen,       Keys::Key_MCT_MeterAlarmMask));
+    readKeyStore.insert(read_key_info_t(-1, Memory_EventFlagsMask1Pos,       Memory_EventFlagsMask1Len,      CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask1));
+    readKeyStore.insert(read_key_info_t(-1, Memory_EventFlagsMask2Pos,       Memory_EventFlagsMask2Len,      CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask2));
+    readKeyStore.insert(read_key_info_t(-1, Memory_MeterAlarmMaskPos,        Memory_MeterAlarmMaskLen,       CtiTableDynamicPaoInfo::Key_MCT_MeterAlarmMask));
 
-    readKeyStore.insert(read_key_info_t(-1, Memory_BronzeAddressPos,         Memory_BronzeAddressLen,        Keys::Key_MCT_AddressBronze));
-    readKeyStore.insert(read_key_info_t(-1, Memory_LeadAddressPos,           Memory_LeadAddressLen,          Keys::Key_MCT_AddressLead));
-    readKeyStore.insert(read_key_info_t(-1, Memory_CollectionAddressPos,     Memory_CollectionAddressLen,    Keys::Key_MCT_AddressCollection));
-    readKeyStore.insert(read_key_info_t(-1, Memory_SPIDAddressPos,           Memory_SPIDAddressLen,          Keys::Key_MCT_AddressServiceProviderID));
+    readKeyStore.insert(read_key_info_t(-1, Memory_BronzeAddressPos,         Memory_BronzeAddressLen,        CtiTableDynamicPaoInfo::Key_MCT_AddressBronze));
+    readKeyStore.insert(read_key_info_t(-1, Memory_LeadAddressPos,           Memory_LeadAddressLen,          CtiTableDynamicPaoInfo::Key_MCT_AddressLead));
+    readKeyStore.insert(read_key_info_t(-1, Memory_CollectionAddressPos,     Memory_CollectionAddressLen,    CtiTableDynamicPaoInfo::Key_MCT_AddressCollection));
+    readKeyStore.insert(read_key_info_t(-1, Memory_SPIDAddressPos,           Memory_SPIDAddressLen,          CtiTableDynamicPaoInfo::Key_MCT_AddressServiceProviderID));
 
-    readKeyStore.insert(read_key_info_t(-1, Memory_DemandIntervalPos,        Memory_DemandIntervalLen,       Keys::Key_MCT_DemandInterval));
-    readKeyStore.insert(read_key_info_t(-1, Memory_LoadProfileIntervalPos,   Memory_LoadProfileIntervalLen,  Keys::Key_MCT_LoadProfileInterval));
-    readKeyStore.insert(read_key_info_t(-1, Memory_VoltageDemandIntervalPos, Memory_VoltageDemandIntervalLen, Keys::Key_MCT_VoltageDemandInterval));
-    readKeyStore.insert(read_key_info_t(-1, Memory_VoltageLPIntervalPos,     Memory_VoltageLPIntervalLen,    Keys::Key_MCT_VoltageLPInterval));
+    readKeyStore.insert(read_key_info_t(-1, Memory_DemandIntervalPos,        Memory_DemandIntervalLen,       CtiTableDynamicPaoInfo::Key_MCT_DemandInterval));
+    readKeyStore.insert(read_key_info_t(-1, Memory_LoadProfileIntervalPos,   Memory_LoadProfileIntervalLen,  CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval));
+    readKeyStore.insert(read_key_info_t(-1, Memory_VoltageDemandIntervalPos, Memory_VoltageDemandIntervalLen, CtiTableDynamicPaoInfo::Key_MCT_VoltageDemandInterval));
+    readKeyStore.insert(read_key_info_t(-1, Memory_VoltageLPIntervalPos,     Memory_VoltageLPIntervalLen,    CtiTableDynamicPaoInfo::Key_MCT_VoltageLPInterval));
 
-    readKeyStore.insert(read_key_info_t(-1, Memory_OverVThresholdPos,        Memory_OverVThresholdLen,       Keys::Key_MCT_OverVoltageThreshold));
-    readKeyStore.insert(read_key_info_t(-1, Memory_UnderVThresholdPos,       Memory_UnderVThresholdLen,      Keys::Key_MCT_UnderVoltageThreshold));
+    readKeyStore.insert(read_key_info_t(-1, Memory_OverVThresholdPos,        Memory_OverVThresholdLen,       CtiTableDynamicPaoInfo::Key_MCT_OverVoltageThreshold));
+    readKeyStore.insert(read_key_info_t(-1, Memory_UnderVThresholdPos,       Memory_UnderVThresholdLen,      CtiTableDynamicPaoInfo::Key_MCT_UnderVoltageThreshold));
 
-    readKeyStore.insert(read_key_info_t(-1, Memory_OutageCyclesPos,          Memory_OutageCyclesLen,         Keys::Key_MCT_OutageCycles));
+    readKeyStore.insert(read_key_info_t(-1, Memory_OutageCyclesPos,          Memory_OutageCyclesLen,         CtiTableDynamicPaoInfo::Key_MCT_OutageCycles));
 
-    readKeyStore.insert(read_key_info_t(-1, Memory_TimeAdjustTolPos,         Memory_TimeAdjustTolLen,        Keys::Key_MCT_TimeAdjustTolerance));
+    readKeyStore.insert(read_key_info_t(-1, Memory_TimeAdjustTolPos,         Memory_TimeAdjustTolLen,        CtiTableDynamicPaoInfo::Key_MCT_TimeAdjustTolerance));
 
-    readKeyStore.insert(read_key_info_t(-1, Memory_DSTBeginPos,              Memory_DSTBeginLen,             Keys::Key_MCT_DSTStartTime));
-    readKeyStore.insert(read_key_info_t(-1, Memory_DSTEndPos,                Memory_DSTEndLen,               Keys::Key_MCT_DSTEndTime));
-    readKeyStore.insert(read_key_info_t(-1, Memory_TimeZoneOffsetPos,        Memory_TimeZoneOffsetLen,       Keys::Key_MCT_TimeZoneOffset));
+    readKeyStore.insert(read_key_info_t(-1, Memory_DSTBeginPos,              Memory_DSTBeginLen,             CtiTableDynamicPaoInfo::Key_MCT_DSTStartTime));
+    readKeyStore.insert(read_key_info_t(-1, Memory_DSTEndPos,                Memory_DSTEndLen,               CtiTableDynamicPaoInfo::Key_MCT_DSTEndTime));
+    readKeyStore.insert(read_key_info_t(-1, Memory_TimeZoneOffsetPos,        Memory_TimeZoneOffsetLen,       CtiTableDynamicPaoInfo::Key_MCT_TimeZoneOffset));
 
-    readKeyStore.insert(read_key_info_t(-1, Memory_TOUDayTablePos,           Memory_TOUDayTableLen,          Keys::Key_MCT_DayTable));
+    readKeyStore.insert(read_key_info_t(-1, Memory_TOUDayTablePos,           Memory_TOUDayTableLen,          CtiTableDynamicPaoInfo::Key_MCT_DayTable));
 
-    readKeyStore.insert(read_key_info_t(-1, Memory_Holiday1Pos,              Memory_Holiday1Len,             Keys::Key_MCT_Holiday1));
-    readKeyStore.insert(read_key_info_t(-1, Memory_Holiday2Pos,              Memory_Holiday2Len,             Keys::Key_MCT_Holiday2));
-    readKeyStore.insert(read_key_info_t(-1, Memory_Holiday3Pos,              Memory_Holiday3Len,             Keys::Key_MCT_Holiday3));
+    readKeyStore.insert(read_key_info_t(-1, Memory_Holiday1Pos,              Memory_Holiday1Len,             CtiTableDynamicPaoInfo::Key_MCT_Holiday1));
+    readKeyStore.insert(read_key_info_t(-1, Memory_Holiday2Pos,              Memory_Holiday2Len,             CtiTableDynamicPaoInfo::Key_MCT_Holiday2));
+    readKeyStore.insert(read_key_info_t(-1, Memory_Holiday3Pos,              Memory_Holiday3Len,             CtiTableDynamicPaoInfo::Key_MCT_Holiday3));
 
-    readKeyStore.insert(read_key_info_t(-1, Memory_CentronParametersPos,     Memory_CentronParametersLen,    Keys::Key_MCT_CentronParameters));
-    readKeyStore.insert(read_key_info_t(-1, Memory_CentronMultiplierPos,     Memory_CentronMultiplierLen,    Keys::Key_MCT_CentronRatio));
+    readKeyStore.insert(read_key_info_t(-1, Memory_CentronParametersPos,     Memory_CentronParametersLen,    CtiTableDynamicPaoInfo::Key_MCT_CentronParameters));
+    readKeyStore.insert(read_key_info_t(-1, Memory_CentronMultiplierPos,     Memory_CentronMultiplierLen,    CtiTableDynamicPaoInfo::Key_MCT_CentronRatio));
 
 //  function reads
 
-    readKeyStore.insert(read_key_info_t(FuncRead_TOUDaySchedulePos,    0, 2, Keys::Key_MCT_DayTable));
-    readKeyStore.insert(read_key_info_t(FuncRead_TOUDaySchedulePos,    2, 1, Keys::Key_MCT_DefaultTOURate));
-    readKeyStore.insert(read_key_info_t(FuncRead_TOUDaySchedulePos,   10, 1, Keys::Key_MCT_TimeZoneOffset));
+    readKeyStore.insert(read_key_info_t(FuncRead_TOUDaySchedulePos,    0, 2, CtiTableDynamicPaoInfo::Key_MCT_DayTable));
+    readKeyStore.insert(read_key_info_t(FuncRead_TOUDaySchedulePos,    2, 1, CtiTableDynamicPaoInfo::Key_MCT_DefaultTOURate));
+    readKeyStore.insert(read_key_info_t(FuncRead_TOUDaySchedulePos,   10, 1, CtiTableDynamicPaoInfo::Key_MCT_TimeZoneOffset));
 
-    readKeyStore.insert(read_key_info_t(FuncRead_LLPStatusPos,         4, 1, Keys::Key_MCT_LLPChannel1Len));
-    readKeyStore.insert(read_key_info_t(FuncRead_LLPStatusPos,         5, 1, Keys::Key_MCT_LLPChannel2Len));
-    readKeyStore.insert(read_key_info_t(FuncRead_LLPStatusPos,         6, 1, Keys::Key_MCT_LLPChannel3Len));
-    readKeyStore.insert(read_key_info_t(FuncRead_LLPStatusPos,         7, 1, Keys::Key_MCT_LLPChannel4Len));
+    readKeyStore.insert(read_key_info_t(FuncRead_LLPStatusPos,         4, 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel1Len));
+    readKeyStore.insert(read_key_info_t(FuncRead_LLPStatusPos,         5, 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel2Len));
+    readKeyStore.insert(read_key_info_t(FuncRead_LLPStatusPos,         6, 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel3Len));
+    readKeyStore.insert(read_key_info_t(FuncRead_LLPStatusPos,         7, 1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel4Len));
 
-    readKeyStore.insert(read_key_info_t(FuncRead_DisconnectConfigPos,  5, 2, Keys::Key_MCT_DemandThreshold));
-    readKeyStore.insert(read_key_info_t(FuncRead_DisconnectConfigPos,  7, 1, Keys::Key_MCT_ConnectDelay));
-    readKeyStore.insert(read_key_info_t(FuncRead_DisconnectConfigPos,  9, 1, Keys::Key_MCT_DisconnectMinutes));
-    readKeyStore.insert(read_key_info_t(FuncRead_DisconnectConfigPos, 10, 1, Keys::Key_MCT_ConnectMinutes));
+    readKeyStore.insert(read_key_info_t(FuncRead_DisconnectConfigPos,  5, 2, CtiTableDynamicPaoInfo::Key_MCT_DemandThreshold));
+    readKeyStore.insert(read_key_info_t(FuncRead_DisconnectConfigPos,  7, 1, CtiTableDynamicPaoInfo::Key_MCT_ConnectDelay));
+    readKeyStore.insert(read_key_info_t(FuncRead_DisconnectConfigPos,  9, 1, CtiTableDynamicPaoInfo::Key_MCT_DisconnectMinutes));
+    readKeyStore.insert(read_key_info_t(FuncRead_DisconnectConfigPos, 10, 1, CtiTableDynamicPaoInfo::Key_MCT_ConnectMinutes));
 
     return readKeyStore;
 }
@@ -215,7 +214,7 @@ int CtiDeviceMCT410::makeDynamicDemand(double input) const
 
         output = input / divisor;
 
-        if( fmod( input, divisor ) >= (divisor / 2.0) )
+        if( fmod( (double) input, (double) divisor ) >= (divisor / 2.0) )
         {
             output++;
         }
@@ -1366,7 +1365,7 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
     else if( parse.isKeyValid(str_daily_read) )
     {
         //  daily reads
-        if( InterlockedCompareExchange((PVOID *)&_daily_read_info.in_progress, (PVOID)true, (PVOID)false) )
+        if( InterlockedCompareExchange( &_daily_read_info.in_progress, true, false) )
         {
             int channel = 1;
 
@@ -1432,13 +1431,13 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
             function = Emetcon::GetValue_DailyRead;
             OutMessage->Buffer.BSt.IO = Emetcon::IO_Function_Read;
 
-            if( !hasDynamicInfo(Keys::Key_MCT_SSpecRevision) )
+            if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) )
             {
                 returnErrorMessage(NoMethod, OutMessage, retList, getName() + " / Daily read requires SSPEC rev 2.1 or higher - execute \"getconfig model\" to verify");
             }
-            else if( getDynamicInfo(Keys::Key_MCT_SSpecRevision) < SspecRev_DailyRead )
+            else if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < SspecRev_DailyRead )
             {
-                returnErrorMessage(NoMethod, OutMessage, retList, getName() + " / Daily read requires SSPEC rev 2.1 or higher, MCT reports " + CtiNumStr(getDynamicInfo(Keys::Key_MCT_SSpecRevision) / 10.0, 1));
+                returnErrorMessage(NoMethod, OutMessage, retList, getName() + " / Daily read requires SSPEC rev 2.1 or higher, MCT reports " + CtiNumStr(getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) / 10.0, 1));
             }
             else if( !time_begin.isValid() || !time_end.isValid() )
             {
@@ -1636,7 +1635,7 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
     }
     else if( parse.isKeyValid(str_outage) )  //  outages
     {
-        if( !hasDynamicInfo(Keys::Key_MCT_SSpec) )
+        if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) )
         {
             //  we need to set it to the requested interval
             CtiOutMessage *sspec_om = new CtiOutMessage(*OutMessage);
@@ -1749,7 +1748,7 @@ INT CtiDeviceMCT410::executeGetConfig( CtiRequestMsg              *pReq,
 
         OutMessage->Sequence = Emetcon::GetConfig_Disconnect;
 
-        if( getDynamicInfo(Keys::Key_MCT_SSpecRevision) >= SspecRev_Disconnect_ConfigReadEnhanced )
+        if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) >= SspecRev_Disconnect_ConfigReadEnhanced )
         {
             OutMessage->Buffer.BSt.Length += 2;
         }
@@ -1870,10 +1869,10 @@ INT CtiDeviceMCT410::executeGetConfig( CtiRequestMsg              *pReq,
             else
             {
                 if( parse.isKeyValid("force")
-                    || getDynamicInfo(Keys::Key_MCT_DemandInterval)        != demand
-                    || getDynamicInfo(Keys::Key_MCT_LoadProfileInterval)   != loadProfile
-                    || getDynamicInfo(Keys::Key_MCT_VoltageLPInterval)     != voltageDemand
-                    || getDynamicInfo(Keys::Key_MCT_VoltageDemandInterval) != voltageLoadProfile )
+                    || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DemandInterval)        != demand
+                    || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval)   != loadProfile
+                    || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_VoltageLPInterval)     != voltageDemand
+                    || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_VoltageDemandInterval) != voltageLoadProfile )
                 {
                     if( !parse.isKeyValid("verify") )
                     {
@@ -1935,7 +1934,7 @@ int CtiDeviceMCT410::executePutConfigDisconnect(CtiRequestMsg *pReq,CtiCommandPa
             delay = config->getLongValueFromKey(ConnectDelay);
             cycleDisconnectMinutes = config->getLongValueFromKey(CyclingDisconnectMinutes);
             cycleConnectMinutes = config->getLongValueFromKey(CyclingConnectMinutes);
-            long revision = getDynamicInfo(Keys::Key_MCT_SSpecRevision);
+            long revision = getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision);
 
             if( revision >= SspecRev_Disconnect_Min && revision < SspecRev_Disconnect_Cycle
                 && (cycleDisconnectMinutes | cycleConnectMinutes) != 0
@@ -1969,8 +1968,8 @@ int CtiDeviceMCT410::executePutConfigDisconnect(CtiRequestMsg *pReq,CtiCommandPa
             else
             {
                 if( parse.isKeyValid("force")
-                    || getDynamicInfo(Keys::Key_MCT_DemandThreshold) != threshold
-                    || getDynamicInfo(Keys::Key_MCT_ConnectDelay)    != delay )
+                    || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DemandThreshold) != threshold
+                    || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_ConnectDelay)    != delay )
                 {
                     if( !parse.isKeyValid("verify") )
                     {
@@ -2035,7 +2034,7 @@ int CtiDeviceMCT410::executePutConfigCentron(CtiRequestMsg *pReq,CtiCommandParse
             MCTCentronSPtr config = boost::static_pointer_cast< ConfigurationPart<MCTCentron> >(tempBasePtr);
             parameters = config->getLongValueFromKey(CentronParameters);
             ratio = config->getLongValueFromKey(CentronTransformerRatio);
-            spid = CtiDeviceBase::getDynamicInfo(Keys::Key_MCT_AddressServiceProviderID);
+            spid = CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_AddressServiceProviderID);
 
             if( spid == numeric_limits<long>::min() )
             {
@@ -2058,8 +2057,8 @@ int CtiDeviceMCT410::executePutConfigCentron(CtiRequestMsg *pReq,CtiCommandParse
             else
             {
                 if(parse.isKeyValid("force")
-                   || getDynamicInfo(Keys::Key_MCT_CentronParameters) != parameters
-                   || getDynamicInfo(Keys::Key_MCT_CentronRatio)      != ratio )
+                   || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_CentronParameters) != parameters
+                   || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_CentronRatio)      != ratio )
                 {
                     if( !parse.isKeyValid("verify") )
                     {
@@ -2145,11 +2144,11 @@ int CtiDeviceMCT410::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
             else
             {
                 if( parse.isKeyValid("force")
-                    || getDynamicInfo(Keys::Key_MCT_Options)         != options
-                    || getDynamicInfo(Keys::Key_MCT_EventFlagsMask1) != event1mask
-                    || getDynamicInfo(Keys::Key_MCT_EventFlagsMask2) != event2mask
-                    || getDynamicInfo(Keys::Key_MCT_MeterAlarmMask)  != meterAlarmMask
-                    || getDynamicInfo(Keys::Key_MCT_Configuration)   != configuration )
+                    || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Options)         != options
+                    || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask1) != event1mask
+                    || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask2) != event2mask
+                    || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_MeterAlarmMask)  != meterAlarmMask
+                    || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration)   != configuration )
                 {
                     if( !parse.isKeyValid("verify") )
                     {
@@ -2202,7 +2201,7 @@ int CtiDeviceMCT410::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
             else
             {
                 if( parse.isKeyValid("force")
-                    || getDynamicInfo(Keys::Key_MCT_OutageCycles) != outage )
+                    || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_OutageCycles) != outage )
                 {
                     if( !parse.isKeyValid("verify") )
                     {
@@ -2244,7 +2243,7 @@ int CtiDeviceMCT410::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
             else
             {
                 if( parse.isKeyValid("force")
-                    || getDynamicInfo(Keys::Key_MCT_TimeAdjustTolerance) != timeAdjustTolerance )
+                    || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_TimeAdjustTolerance) != timeAdjustTolerance )
                 {
                     if( !parse.isKeyValid("verify") )
                     {
@@ -2683,7 +2682,7 @@ INT CtiDeviceMCT410::decodeGetValueOutage( INMESS *InMessage, CtiTime &TimeNow, 
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        if( hasDynamicInfo(Keys::Key_MCT_SSpec) )
+        if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) )
         {
             outagenum = parse.getiValue("outage");
 
@@ -2718,8 +2717,8 @@ INT CtiDeviceMCT410::decodeGetValueOutage( INMESS *InMessage, CtiTime &TimeNow, 
 
                 pointString = getName() + " / Outage " + CtiNumStr(outagenum + i) + " : " + timeString + " for ";
 
-                if( getDynamicInfo(Keys::Key_MCT_SSpec)         == Sspec &&
-                    getDynamicInfo(Keys::Key_MCT_SSpecRevision) >= SspecRev_NewOutage_Min )
+                if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec)         == Sspec &&
+                    getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) >= SspecRev_NewOutage_Min )
                 {
                     /*
                     Units of outage:
@@ -3631,91 +3630,89 @@ INT CtiDeviceMCT410::decodeGetStatusLoadProfile( INMESS *InMessage, CtiTime &Tim
     return status;
 }
 
+ INT CtiDeviceMCT410::decodeGetStatusFreeze( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+ {
+     INT status = NORMAL;
 
-INT CtiDeviceMCT410::decodeGetStatusFreeze( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
-{
-    INT status = NORMAL;
+     INT ErrReturn  = InMessage->EventCode & 0x3fff;
+     DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
-    INT ErrReturn  = InMessage->EventCode & 0x3fff;
-    DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+     {
+         // No error occured, we must do a real decode!
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
-    {
-        // No error occured, we must do a real decode!
+         string resultString;
+         unsigned long tmpTime;
+         CtiTime lpTime;
 
-        string resultString;
-        unsigned long tmpTime;
-        CtiTime lpTime;
+         CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+         CtiPointDataMsg      *pData = NULL;
 
-        CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-        CtiPointDataMsg      *pData = NULL;
+         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+         {
+             CtiLockGuard<CtiLogger> doubt_guard(dout);
+             dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+             return MEMORY;
+         }
 
-            return MEMORY;
-        }
+         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+         resultString += getName() + " / Freeze status:\n";
 
-        resultString += getName() + " / Freeze status:\n";
+         tmpTime = DSt->Message[0] << 24 |
+                   DSt->Message[1] << 16 |
+                   DSt->Message[2] <<  8 |
+                   DSt->Message[3];
 
-        tmpTime = DSt->Message[0] << 24 |
-                  DSt->Message[1] << 16 |
-                  DSt->Message[2] <<  8 |
-                  DSt->Message[3];
+         updateFreezeInfo(DSt->Message[4], tmpTime);
 
-        updateFreezeInfo(DSt->Message[4], tmpTime);
+         CtiTime lastFreeze(tmpTime);
+         if( lastFreeze.isValid() )
+         {
+             resultString += "Last freeze timestamp: " + lastFreeze.asString() + "\n";
+         }
+         else
+         {
+             resultString += "Last freeze timestamp: (no freeze recorded)\n";
+         }
 
-        CtiTime lastFreeze(tmpTime);
-        if( lastFreeze.isValid() )
-        {
-            resultString += "Last freeze timestamp: " + lastFreeze.asString() + "\n";
-        }
-        else
-        {
-            resultString += "Last freeze timestamp: (no freeze recorded)\n";
-        }
+         resultString += "Freeze counter: " + CtiNumStr(getCurrentFreeze()) + "\n";
+         resultString += "Next freeze expected: freeze ";
+         resultString += ((getCurrentFreeze() % 2)?("two"):("one"));
+         resultString += "\n";
 
-        resultString += "Freeze counter: " + CtiNumStr(getCurrentFreeze()) + "\n";
-        resultString += "Next freeze expected: freeze ";
-        resultString += ((getCurrentFreeze() % 2)?("two"):("one"));
-        resultString += "\n";
+         tmpTime = DSt->Message[5] << 24 |
+                   DSt->Message[6] << 16 |
+                   DSt->Message[7] <<  8 |
+                   DSt->Message[8];
 
-        tmpTime = DSt->Message[5] << 24 |
-                  DSt->Message[6] << 16 |
-                  DSt->Message[7] <<  8 |
-                  DSt->Message[8];
+         //  we should eventually save the voltage freeze info as well
 
-        //  we should eventually save the voltage freeze info as well
+         CtiTime lastVoltageFreeze(tmpTime);
+         if( lastVoltageFreeze.isValid() )
+         {
+             resultString += "Last voltage freeze timestamp: " + lastVoltageFreeze.asString() + "\n";
+         }
+         else
+         {
+             resultString += "Last voltage freeze timestamp: (no freeze recorded)\n";
+         }
 
-        CtiTime lastVoltageFreeze(tmpTime);
-        if( lastVoltageFreeze.isValid() )
-        {
-            resultString += "Last voltage freeze timestamp: " + lastVoltageFreeze.asString() + "\n";
-        }
-        else
-        {
-            resultString += "Last voltage freeze timestamp: (no freeze recorded)\n";
-        }
+         resultString += "Voltage freeze counter: " + CtiNumStr(static_cast<unsigned>(DSt->Message[9])) + "\n";
+         resultString += "Next voltage freeze expected: freeze ";
+         resultString += ((DSt->Message[9] % 2)?("two"):("one"));
+         resultString += "\n";
 
-        resultString += "Voltage freeze counter: " + CtiNumStr(static_cast<unsigned>(DSt->Message[9])) + "\n";
-        resultString += "Next voltage freeze expected: freeze ";
-        resultString += ((DSt->Message[9] % 2)?("two"):("one"));
-        resultString += "\n";
+         resultString += "\n";
 
-        resultString += "\n";
+         ReturnMsg->setResultString(resultString);
 
-        ReturnMsg->setResultString(resultString);
+         retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+     }
 
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
-    }
-
-    return status;
-}
-
+     return status;
+ }
 
 INT CtiDeviceMCT410::decodeGetConfigIntervals(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
@@ -4007,16 +4004,16 @@ INT CtiDeviceMCT410::decodeGetConfigDisconnect(INMESS *InMessage, CtiTime &TimeN
 
         int config_byte = -1;
 
-        if( getDynamicInfo(Keys::Key_MCT_SSpecRevision) >= SspecRev_Disconnect_ConfigReadEnhanced )
+        if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) >= SspecRev_Disconnect_ConfigReadEnhanced )
         {
             config_byte = DSt->Message[11];
 
             //  threshhold is in units of Wh/minute, so we convert it into kW
             resultStr += "Disconnect verification threshhold: " + CtiNumStr((float)DSt->Message[12] / 16.667, 3) + string(" kW (" + CtiNumStr(DSt->Message[12]) + " Wh/minute)\n");
         }
-        else if( hasDynamicInfo(Keys::Key_MCT_Configuration) )
+        else if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) )
         {
-            config_byte = getDynamicInfo(Keys::Key_MCT_Configuration);
+            config_byte = getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration);
         }
 
         point_info demand_threshhold = getData(DSt->Message + 5, 2, ValueType_DynamicDemand);
@@ -4059,7 +4056,7 @@ INT CtiDeviceMCT410::decodeGetConfigDisconnect(INMESS *InMessage, CtiTime &TimeN
         }
 
         //  include the cycle information
-        if( getDynamicInfo(Keys::Key_MCT_SSpecRevision) >= SspecRev_Disconnect_Cycle )
+        if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) >= SspecRev_Disconnect_Cycle )
         {
             if( config_byte >= 0 )
             {
@@ -4173,8 +4170,8 @@ INT CtiDeviceMCT410::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, l
         descriptor += "\n";
 
         //  set the dynamic info for use later
-        setDynamicInfo(Keys::Key_MCT_SSpec,         (long)ssp);
-        setDynamicInfo(Keys::Key_MCT_SSpecRevision, (long)rev);
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec,         (long)ssp);
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, (long)rev);
 
         descriptor += getName() + " / Physical meter configuration:\n";
         descriptor += "Base meter: ";

@@ -10,7 +10,7 @@
 #include "yukon.h"
 #include "clientNexus.h"
 #include <iostream.h>
-#include <windows.h>
+
 #include <iostream>
 #include "numstr.h"
 #include "cticalls.h"

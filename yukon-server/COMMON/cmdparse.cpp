@@ -1,7 +1,6 @@
 #include "yukon.h"
 
 
-#include <windows.h>
 #include <stdlib.h>
 #include <iostream>
 
@@ -26,12 +25,12 @@ static const CtiString str_quoted_token("((\"[^\"]+\")|('[^']+'))");
 static const CtiString str_num     ("([0-9]+)");
 static const CtiString str_floatnum("([0-9]+(\\.[0-9]*)?)");
 static const CtiString str_hexnum  ("(0x[0-9a-f]+)");
-static const CtiString str_anynum  ("(" + str_num + "|" + str_hexnum + ")");
+static const CtiString str_anynum  ( CtiString("(") + str_num + CtiString("|") + str_hexnum + CtiString(")") );
 
 static const CtiString str_date("([0-9]+[/-][0-9]+[/-][0-9]+)");
 static const CtiString str_time("([0-9]+:[0-9]+(:[0-9]+)?)");
 
-static const CtiString str_daterange(str_date + " (" + str_date + ")?");
+static const CtiString str_daterange(str_date + CtiString(" (") + str_date + CtiString(")?") );
 
 static const boost::regex   re_num      (str_num);
 static const boost::regex   re_floatnum (str_floatnum);
@@ -143,7 +142,7 @@ void  CtiCommandParser::parse()
 
     if(CmdStr.contains(" serial"))
     {
-        static const boost::regex regexp("serial[= ]+" + str_anynum);
+        static const boost::regex regexp((CtiString)"serial[= ]+" + (CtiString)str_anynum);
 
         if(!(token = CmdStr.match(regexp)).empty())
         {
@@ -185,15 +184,15 @@ void  CtiCommandParser::parse()
 
     if(CmdStr.contains(" select"))
     {
-        static const boost::regex re_name   ("select name "        + str_quoted_token);
-        static const boost::regex re_id     ("select (device)?id " + str_num);
-        static const boost::regex re_grp    ("select group "       + str_quoted_token);
-        static const boost::regex re_altg   ("select altgroup "    + str_quoted_token);
-        static const boost::regex re_billg  ("select billgroup "   + str_quoted_token);
-        static const boost::regex re_rtename("select route *name " + str_quoted_token);
-        static const boost::regex re_rteid  ("select route *id "   + str_num);
-        static const boost::regex re_ptname ("select point *name " + str_quoted_token);
-        static const boost::regex re_ptid   ("select point *id "   + str_num);
+        static const boost::regex re_name   (CtiString("select name ")        + str_quoted_token);
+        static const boost::regex re_id     (CtiString("select (device)?id ") + str_num);
+        static const boost::regex re_grp    (CtiString("select group ")       + str_quoted_token);
+        static const boost::regex re_altg   (CtiString("select altgroup ")    + str_quoted_token);
+        static const boost::regex re_billg  (CtiString("select billgroup ")   + str_quoted_token);
+        static const boost::regex re_rtename(CtiString("select route *name ") + str_quoted_token);
+        static const boost::regex re_rteid  (CtiString("select route *id ")   + str_num);
+        static const boost::regex re_ptname (CtiString("select point *name ") + str_quoted_token);
+        static const boost::regex re_ptid   (CtiString("select point *id ")   + str_num);
 
         if(!(token = CmdStr.match(re_name)).empty())
         {
@@ -203,7 +202,7 @@ void  CtiCommandParser::parse()
 
             nstop += nstart;
 
-            if(!(token = token.match(str_quoted_token, nstop)).empty())   // get the value
+            if(!(token = token.match((const boost::regex)str_quoted_token, nstop)).empty())   // get the value
             {
                 _cmd["device"] = CtiParseValue(token.substr(1, token.length() - 2), -1 );
             }
@@ -229,7 +228,7 @@ void  CtiCommandParser::parse()
 
             nstop += nstart;
 
-            if(!(token = token.match(str_quoted_token, nstop)).empty())   // get the value
+            if(!(token = token.match((const boost::regex)str_quoted_token, nstop)).empty())   // get the value
             {
                 _cmd["group"] = CtiParseValue(token.substr(1, token.length() - 2), -1 );
             }
@@ -257,7 +256,7 @@ void  CtiCommandParser::parse()
 
             nstop += nstart;
 
-            if(!(token = token.match(str_quoted_token, nstop)).empty())   // get the value
+            if(!(token = token.match((const boost::regex)str_quoted_token, nstop)).empty())   // get the value
             {
                 _cmd["billgroup"] = CtiParseValue(token.substr(1, token.length() - 2), -1 );
             }
@@ -271,7 +270,7 @@ void  CtiCommandParser::parse()
 
             nstop += nstart;
 
-            if(!(token = token.match(str_quoted_token, nstop)).empty())   // get the value
+            if(!(token = token.match((const boost::regex)str_quoted_token, nstop)).empty())   // get the value
             {
                 _cmd["route"] = CtiParseValue(token.substr(1, token.length() - 2), -1 );
             }
@@ -295,7 +294,7 @@ void  CtiCommandParser::parse()
 
             nstop += nstart;
 
-            if(!(token = token.match(str_quoted_token, nstop)).empty())   // get the value
+            if(!(token = token.match((const boost::regex)str_quoted_token, nstop)).empty())   // get the value
             {
                 _cmd["point"] = CtiParseValue(token.substr(1, token.length() - 2), -1 );
             }
@@ -335,7 +334,7 @@ void  CtiCommandParser::parse()
     {
         _cmd["noqueue"] = CtiParseValue("true");
     }
-    if(!(token = CmdStr.match(" protocol_priority " + str_num)).empty())
+    if(!(token = CmdStr.match( (const boost::regex) (CtiString("protocol_priority ") + str_num))   ).empty())
     {
         if(!(strnum = token.match(re_num)).empty())
         {
@@ -426,26 +425,26 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
     //  getvalue lp channel 2 12/13/2005             //  grabs the whole day
     //  getvalue lp channel 2 12/13/2005 12/15/2005  //  this wil do range of entire days
     //  getvalue lp channel 2 12/13/2005 12:00 12/15/2005  //  this grabs the second half of 13th, and all of the 14th and 15th
-    static const boost::regex  re_lp("lp channel " + str_num + " " + str_date + "( " + str_time + ")?( " + str_date + "( " + str_time + ")?)?");
+    static const boost::regex  re_lp(CtiString("lp channel ") + str_num + CtiString(" ") + str_date + CtiString("( ") + str_time + CtiString(")?( ") + str_date + CtiString("( ") + str_time + CtiString(")?)?") );
 
     //  getvalue lp peak daily channel 2 9/30/04 30
     //  getvalue lp peak hour channel 3 10-15-2003 15
-    static const boost::regex  re_lp_peak("lp peak (day|hour|interval) channel " + str_num + " " + str_date + " " + str_num);
+    static const boost::regex  re_lp_peak(CtiString("lp peak (day|hour|interval) channel ") + str_num + CtiString(" ") + str_date + CtiString(" ") + str_num);
 
     //  getvalue daily read 12/12/2007 12/27/2007
     //  getvalue daily read channel n 12/12/2007
-    static const boost::regex  re_dailyread("daily read (channel " + str_num + " )?" + str_daterange);
+    static const boost::regex  re_dailyread(CtiString("daily read (channel ") + str_num + CtiString(" )?") + str_daterange);
 
-    static const boost::regex  re_outage("outage " + str_num);
+    static const boost::regex  re_outage(CtiString("outage ") + str_num);
 
-    static const boost::regex  re_offset("off(set)? *" + str_num);
-    static const boost::regex  re_channel("channel " + str_num);
+    static const boost::regex  re_offset(CtiString("off(set)? *") + str_num);
+    static const boost::regex  re_channel(CtiString("channel ") + str_num);
 
 
-    static const boost::regex   re_dnp_collection("dnp collection " + str_num);
-    static const boost::regex   re_dnp_analog("dnp analog " + str_num);
+    static const boost::regex   re_dnp_collection(CtiString("dnp collection ") + str_num);
+    static const boost::regex   re_dnp_analog(CtiString("dnp analog ") + str_num);
     static const boost::regex   re_dnp_status("dnp status");
-    static const boost::regex   re_dnp_accumulator("dnp accumulator " + str_num);
+    static const boost::regex   re_dnp_accumulator(CtiString("dnp accumulator ") + str_num);
 
     CtiTokenizer   tok(CmdStr);
 
@@ -764,10 +763,10 @@ void  CtiCommandParser::doParseGetStatus(const string &_CmdStr)
     CtiString   temp2;
     CtiString   token;
 
-    static const boost::regex   re_lp("lp( channel " + str_num + ")?");
+    static const boost::regex   re_lp( CtiString("lp( channel ") + str_num + CtiString(")?") );
     static const boost::regex   re_eventlog("eventlog(s)?");
 
-    static const boost::regex   re_offset("off(set)? *" + str_num);
+    static const boost::regex   re_offset(CtiString("off(set)? *") + str_num);
 
     static const boost::regex   re_sele("select");
 
@@ -879,7 +878,7 @@ void  CtiCommandParser::doParseControl(const string &_CmdStr)
         {
             CtiString   valStr;
 
-            if(!(temp2 = CmdStr.match(" delay ?time " + str_num)).empty())
+            if(!(temp2 = CmdStr.match((const boost::regex) (CtiString(" delay ?time ") + str_num))).empty())
             {
                 if(!(valStr = temp2.match(re_num)).empty())
                 {
@@ -955,7 +954,7 @@ void  CtiCommandParser::doParseControl(const string &_CmdStr)
         {
             flag |= CMD_FLAG_CTL_SHED;
 
-            if(!(token = CmdStr.match("shed *" + str_floatnum + " *[hms]?( |$)")).empty())      // Sourcing from CmdStr, which is the entire command string.
+			if(!(token = CmdStr.match( (const boost::regex) (CtiString("shed *") + str_floatnum + CtiString(" *[hms]?( |$)")))).empty())      // Sourcing from CmdStr, which is the entire command string.
             {
                 DOUBLE mult = 60.0;
 
@@ -983,7 +982,7 @@ void  CtiCommandParser::doParseControl(const string &_CmdStr)
                     _snprintf(tbuf2, sizeof(tbuf2),"SHED %d", (INT)dValue);
                 }
 
-                if(!(temp2 = token.match(str_floatnum + " *[hs]")).empty())
+                if(!(temp2 = CmdStr.match((const boost::regex) CtiString(str_floatnum + CtiString(" *[hs]")))).empty())
                 {
                     /*
                      *  Minutes is the assumed entry format, but we return the number in seconds... so
@@ -1012,7 +1011,7 @@ void  CtiCommandParser::doParseControl(const string &_CmdStr)
                 _snprintf(tbuf, sizeof(tbuf), "SHED");
             }
 
-            if(!(token = CmdStr.match(" rand(om)? *" + str_num)).empty())
+            if(!(token = CmdStr.match( (const boost::regex) ( CtiString(" rand(om)? *") + str_num))).empty())
             {
                 if(!(temp2 = token.match(re_num)).empty())
                 {
@@ -1021,7 +1020,7 @@ void  CtiCommandParser::doParseControl(const string &_CmdStr)
                 }
             }
         }
-        else if(!(token = CmdStr.match(" cycle " + str_num)).empty())      // Sourcing from CmdStr, which is the entire command string.
+        else if(!(token = CmdStr.match( (const boost::regex) ( CtiString(" cycle ") + str_num)) ).empty())      // Sourcing from CmdStr, which is the entire command string.
         {
             flag |= CMD_FLAG_CTL_CYCLE;
 
@@ -1039,7 +1038,7 @@ void  CtiCommandParser::doParseControl(const string &_CmdStr)
                 iValue = 50;
             }
 
-            if(!(token = CmdStr.match(" period " + str_num)).empty())
+            if(!(token = CmdStr.match( (const boost::regex) ( CtiString(" period ") + str_num) ) ).empty())
             {
                 if(!(temp2 = token.match(re_num)).empty())
                 {
@@ -1048,7 +1047,7 @@ void  CtiCommandParser::doParseControl(const string &_CmdStr)
                 }
             }
 
-            if(!(token = CmdStr.match(" count " + str_num)).empty())
+            if(!(token = CmdStr.match( (const boost::regex)  ( CtiString(" count ") + str_num) ) ).empty())
             {
                 if(!(temp2 = token.match(re_num)).empty())
                 {
@@ -1099,7 +1098,7 @@ void  CtiCommandParser::doParseControl(const string &_CmdStr)
 
         if(flag) _actionItems.push_back(tbuf);                      // If anything was set, make sure someone can be informed
 
-        if(!(token = CmdStr.match("off(set)? *" + str_num)).empty())            // Sourcing from CmdStr, which is the entire command string.
+        if(!(token = CmdStr.match((const boost::regex) (CtiString("off(set)? *") + str_num))).empty() )            // Sourcing from CmdStr, which is the entire command string.
         {
             flag |= CMD_FLAG_OFFSET;
 
@@ -1262,9 +1261,9 @@ void  CtiCommandParser::doParsePutValue(const string &_CmdStr)
 
     char *p;
 
-    static const boost::regex   re_reading("reading " + str_floatnum);
-    static const boost::regex   re_kyzoffset("kyz *" + str_num);   //  if there's a kyz offset specified
-    static const boost::regex   re_analog("analog " + str_num + " -?" + str_num);
+    static const boost::regex   re_reading(CtiString("reading ") + str_floatnum);
+    static const boost::regex   re_kyzoffset(CtiString("kyz *") + str_num);   //  if there's a kyz offset specified
+    static const boost::regex   re_analog(CtiString("analog ") + str_num + CtiString(" -?") + str_num);
 
 
     CtiTokenizer   tok(CmdStr);
@@ -1345,7 +1344,7 @@ void  CtiCommandParser::doParsePutStatus(const string &_CmdStr)
     CtiString   temp2;
     CtiString   token;
     unsigned int flag = 0;
-    static const boost::regex   re_offsetvalue("offset " + str_num + " value -?" + str_num);
+    static const boost::regex   re_offsetvalue(CtiString("offset ") + str_num + CtiString(" value -?") + str_num);
 
     CtiTokenizer   tok(CmdStr);
 
@@ -1432,16 +1431,16 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
     CtiString   temp2;
     CtiString   token;
     UINT        flag   = 0;
-    static const boost::regex    re_rolenum("role *" + str_num);
-    static const boost::regex    re_rawcmd("raw (func(tion)? )?start ?= ?" + str_hexnum + "( " + str_num + ")?");
+    static const boost::regex    re_rolenum(CtiString("role *") + str_num);
+    static const boost::regex    re_rawcmd(CtiString("raw (func(tion)? )?start ?= ?") + str_hexnum + CtiString("( ") + str_num + CtiString(")?"));
     static const boost::regex    re_interval("interval(s| lp| li)");  //  match "intervals", "interval lp", and "interval li"
     static const boost::regex    re_time("time( |$)");  //  only match "time" as a single word
-    static const boost::regex    re_multiplier("mult(iplier)?( kyz *" + str_num + ")?");
+    static const boost::regex    re_multiplier(CtiString("mult(iplier)?( kyz *") + str_num + CtiString(")?"));
     static const boost::regex    re_address("address (group|uniq)");
-    static const boost::regex    re_lp_channel(" lp channel " + str_num);
+    static const boost::regex    re_lp_channel(CtiString(" lp channel ") + str_num);
     static const boost::regex    re_centron("centron (ratio|parameters)");
     static const boost::regex    re_tou_schedule("tou schedule [0-9]");
-    static const boost::regex    re_dnp("dnp " + str_num);
+    static const boost::regex    re_dnp( CtiString("dnp ") +  str_num);
 
     char *p;
 
@@ -1697,7 +1696,7 @@ void  CtiCommandParser::doParsePutConfig(const string &_CmdStr)
         }
 
         // Template should be global.
-        if(!(token = CmdStr.match("template " + str_quoted_token)).empty())
+        if(!(token = CmdStr.match( (const boost::regex)   ( CtiString("template ") + str_quoted_token)  )).empty())
         {
             size_t nstart;
             size_t nstop;
@@ -1705,7 +1704,7 @@ void  CtiCommandParser::doParsePutConfig(const string &_CmdStr)
 
             nstop += nstart;
 
-            if(!(token = token.match(str_quoted_token, nstop)).empty())   // get the template name...
+            if(!(token = token.match((const boost::regex)  str_quoted_token, nstop)).empty())   // get the template name...
             {
                 _cmd["template"] = CtiParseValue(token.substr(1, token.length() - 2));
             }
@@ -2044,27 +2043,27 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
                              " [0-9]+" \
                              " [0-9]+");
     static const boost::regex  re_interval("interval(s| lp| li)");  //  match "intervals", "interval lp" and "interval li"
-    static const boost::regex  re_thresholds("(outage|voltage) threshold " + str_num);
+    static const boost::regex  re_thresholds(CtiString("(outage|voltage) threshold ") + str_num);
     static const boost::regex  re_multiplier("mult(iplier)? kyz *[0-9]+ [0-9]+(\\.[0-9]+)?");  //  match "mult kyz # #(.###)
     static const boost::regex  re_ied_class("ied class [0-9]+ [0-9]+");
     static const boost::regex  re_ied_scan ("ied scan [0-9]+ [0-9]+");
     static const boost::regex  re_ied_config ("ied configure( +[a-zA-Z0-9]+)+");
-    static const boost::regex  re_ied_mask (" alarmmask " + str_anynum + " " + str_anynum);
+    static const boost::regex  re_ied_mask (CtiString(" alarmmask " )+ str_anynum + CtiString(" ") + str_anynum);
     static const boost::regex  re_group_address("group (enable|disable)");
     static const boost::regex  re_address("address ((uniq(ue)? [0-9]+)|(gold [0-9]+ silver [0-9]+)|(bronze [0-9]+)|(lead meter [0-9]+ load [0-9]+))");
     static const boost::regex  re_centron_config("centron( ratio [0-9]+)?( display( [0-9]x[0-9]+)?( test [0-9]+s?)?( errors)?)?");
     static const boost::regex  re_centron_reading("centron reading [0-9]+( [0-9]+)?");
 
-    static const boost::regex  re_loadlimit("load limit " + str_floatnum + " " + str_num);
-    static const boost::regex  re_cycle("cycle " + str_num + " " + str_num);
+    static const boost::regex  re_loadlimit(CtiString("load limit ") + str_floatnum + CtiString(" ") + str_num);
+    static const boost::regex  re_cycle(CtiString("cycle ") + str_num + CtiString(" ") + str_num);
 
-    static const boost::regex  re_freeze_day("freeze day " + str_num);
+    static const boost::regex  re_freeze_day(CtiString("freeze day ") + str_num);
 
-    static const boost::regex  re_holiday("holiday " + str_num + "( " + str_date + ")+");
-    static const boost::regex  re_channel("channel " + str_num + " (ied|2-wire|3-wire|none)( input " + str_num + ")?( multiplier " + str_floatnum + ")?");
+    static const boost::regex  re_holiday(CtiString("holiday ") + str_num + CtiString("( ") + str_date + CtiString(")+") );
+    static const boost::regex  re_channel(CtiString("channel ") + str_num + CtiString(" (ied|2-wire|3-wire|none)( input ") + str_num + CtiString(")?( multiplier ") + str_floatnum + CtiString(")?") );
 
     //  matches any of AKT, HT, PT, MT, CT, ET, the standard/daylight versions of each, and whole/fractional hour offsets
-    static const boost::regex  re_timezone("timezone (((ak|h|p|m|c|e)[ds]?t)|(-?" + str_floatnum + "))");
+    static const boost::regex  re_timezone(CtiString("timezone (((ak|h|p|m|c|e)[ds]?t)|(-?") + str_floatnum + CtiString("))"));
 
     char *p;
 
@@ -3878,27 +3877,27 @@ void CtiCommandParser::doParseExpresscomAddressing(const string &_CmdStr)
 {
     CtiString CmdStr(_CmdStr);
 
-    static const boost::regex re_serial  ("serial "   + str_num);
-    static const boost::regex re_spid    ("spid "     + str_num);
-    static const boost::regex re_geo     ("geo "      + str_num);
-    static const boost::regex re_sub     ("sub "      + str_num);
-    static const boost::regex re_feeder  ("feeder "   + str_num);
-    static const boost::regex re_zip     ("zip "      + str_num);
-    static const boost::regex re_uda     ("uda "      + str_num);
-    static const boost::regex re_program ("program "  + str_num);
-    static const boost::regex re_splinter("splinter " + str_num);
+    static const boost::regex re_serial  (CtiString("serial ")   + str_num);
+    static const boost::regex re_spid    (CtiString("spid ")     + str_num);
+    static const boost::regex re_geo     (CtiString("geo ")      + str_num);
+    static const boost::regex re_sub     (CtiString("sub ")      + str_num);
+    static const boost::regex re_feeder  (CtiString("feeder ")   + str_num);
+    static const boost::regex re_zip     (CtiString("zip ")      + str_num);
+    static const boost::regex re_uda     (CtiString("uda ")      + str_num);
+    static const boost::regex re_program (CtiString("program ")  + str_num);
+    static const boost::regex re_splinter(CtiString("splinter ") + str_num);
 
     CtiString temp;
 
-    if( !(temp = CmdStr.match(re_serial)).empty() )   _cmd["xc_serial"]   = atoi(temp.match(str_num).data());
-    if( !(temp = CmdStr.match(re_spid)).empty() )     _cmd["xc_spid"]     = atoi(temp.match(str_num).data());
-    if( !(temp = CmdStr.match(re_geo)).empty() )      _cmd["xc_geo"]      = atoi(temp.match(str_num).data());
-    if( !(temp = CmdStr.match(re_sub)).empty() )      _cmd["xc_sub"]      = atoi(temp.match(str_num).data());
-    if( !(temp = CmdStr.match(re_feeder)).empty() )   _cmd["xc_feeder"]   = atoi(temp.match(str_num).data());
-    if( !(temp = CmdStr.match(re_zip)).empty() )      _cmd["xc_zip"]      = atoi(temp.match(str_num).data());
-    if( !(temp = CmdStr.match(re_uda)).empty() )      _cmd["xc_uda"]      = atoi(temp.match(str_num).data());
-    if( !(temp = CmdStr.match(re_program)).empty() )  _cmd["xc_program"]  = atoi(temp.match(str_num).data());
-    if( !(temp = CmdStr.match(re_splinter)).empty() ) _cmd["xc_splinter"] = atoi(temp.match(str_num).data());
+    if( !(temp = CmdStr.match(re_serial)).empty() )   _cmd["xc_serial"]   = atoi(temp.match((const boost::regex)str_num).data());
+    if( !(temp = CmdStr.match(re_spid)).empty() )     _cmd["xc_spid"]     = atoi(temp.match((const boost::regex)str_num).data());
+    if( !(temp = CmdStr.match(re_geo)).empty() )      _cmd["xc_geo"]      = atoi(temp.match((const boost::regex)str_num).data());
+    if( !(temp = CmdStr.match(re_sub)).empty() )      _cmd["xc_sub"]      = atoi(temp.match((const boost::regex)str_num).data());
+    if( !(temp = CmdStr.match(re_feeder)).empty() )   _cmd["xc_feeder"]   = atoi(temp.match((const boost::regex)str_num).data());
+    if( !(temp = CmdStr.match(re_zip)).empty() )      _cmd["xc_zip"]      = atoi(temp.match((const boost::regex)str_num).data());
+    if( !(temp = CmdStr.match(re_uda)).empty() )      _cmd["xc_uda"]      = atoi(temp.match((const boost::regex)str_num).data());
+    if( !(temp = CmdStr.match(re_program)).empty() )  _cmd["xc_program"]  = atoi(temp.match((const boost::regex)str_num).data());
+    if( !(temp = CmdStr.match(re_splinter)).empty() ) _cmd["xc_splinter"] = atoi(temp.match((const boost::regex)str_num).data());
 }
 
 
@@ -4186,7 +4185,7 @@ void  CtiCommandParser::doParseControlExpresscom(const string &_CmdStr)
             }
         }
 
-        if(!(temp = CmdStr.match("ctrl temp " + str_num)).empty())
+        if(!(temp = CmdStr.match( (const boost::regex)  ( CtiString("ctrl temp ") +  str_num  ) )).empty())
         {
             if(!(valStr = temp.match(re_num)).empty())
             {
@@ -4195,7 +4194,7 @@ void  CtiCommandParser::doParseControlExpresscom(const string &_CmdStr)
             }
         }
 
-        if(!(temp = CmdStr.match(" limit " + str_num)).empty())
+        if(!(temp = CmdStr.match( (const boost::regex)  ( CtiString(" limit ") + str_num ) )).empty())
         {
             if(!(valStr = temp.match(re_num)).empty())
             {
@@ -4204,7 +4203,7 @@ void  CtiCommandParser::doParseControlExpresscom(const string &_CmdStr)
             }
 
             // We need to look for the fallback %
-            if(!(temp = CmdStr.match(" afallback " + str_num)).empty())
+            if(!(temp = CmdStr.match( (const boost::regex)  ( CtiString(" afallback ") + str_num ) )).empty())
             {
                 if(!(valStr = temp.match(re_num)).empty())
                 {
@@ -4214,7 +4213,7 @@ void  CtiCommandParser::doParseControlExpresscom(const string &_CmdStr)
             }
         }
 
-        if(!(temp = CmdStr.match(" maxrate " + str_num)).empty())
+        if(!(temp = CmdStr.match( (const boost::regex)   ( CtiString(" maxrate ") + str_num ) )).empty())
         {
             if(!(valStr = temp.match(re_num)).empty())
             {
@@ -4223,7 +4222,7 @@ void  CtiCommandParser::doParseControlExpresscom(const string &_CmdStr)
             }
 
             // We need to look for the fallback %
-            if(!(temp = CmdStr.match(" bfallback " + str_num)).empty())
+            if(!(temp = CmdStr.match( (const boost::regex)  ( (const CtiString &)  " bfallback " + str_num ) )).empty())
             {
                 if(!(valStr = temp.match(re_num)).empty())
                 {
@@ -4247,7 +4246,7 @@ void  CtiCommandParser::doParseControlExpresscom(const string &_CmdStr)
         }
 
 
-        if(!(temp = CmdStr.match(" min " + str_num)).empty())
+        if(!(temp = CmdStr.match( (const boost::regex)  (CtiString(" min ") + str_num) )).empty())
         {
             if(!(valStr = temp.match(re_num)).empty())
             {
@@ -4256,7 +4255,7 @@ void  CtiCommandParser::doParseControlExpresscom(const string &_CmdStr)
             }
         }
 
-        if(!(temp = CmdStr.match(" max " + str_num)).empty())
+        if(!(temp = CmdStr.match( (const boost::regex)  (CtiString(" max ") + str_num)  )).empty())
         {
             if(!(valStr = temp.match(re_num)).empty())
             {
@@ -4265,7 +4264,7 @@ void  CtiCommandParser::doParseControlExpresscom(const string &_CmdStr)
             }
         }
 
-        if(!(temp = CmdStr.match(" tr " + str_num)).empty())
+        if(!(temp = CmdStr.match( (const boost::regex)  ((const CtiString &)  " tr " + str_num ) )).empty())
         {
             if(!(valStr = temp.match(re_num)).empty())
             {
@@ -4274,7 +4273,7 @@ void  CtiCommandParser::doParseControlExpresscom(const string &_CmdStr)
             }
         }
 
-        if(!(temp = CmdStr.match(" ta " + str_num)).empty())
+        if(!(temp = CmdStr.match( (const boost::regex)  ( (const CtiString &)  " ta " + str_num ) )).empty())
         {
             if(!(valStr = temp.match(re_num)).empty())
             {
@@ -4283,7 +4282,7 @@ void  CtiCommandParser::doParseControlExpresscom(const string &_CmdStr)
             }
         }
 
-        if(!(temp = CmdStr.match(" tb " + str_num)).empty() && CmdStr.contains(" dsb"))
+        if(!(temp = CmdStr.match( (const boost::regex)   ( CtiString(" tb ") + str_num ) )).empty() && CmdStr.contains(" dsb"))
         {
             if(!(valStr = temp.match(re_num)).empty())
             {
@@ -4301,7 +4300,7 @@ void  CtiCommandParser::doParseControlExpresscom(const string &_CmdStr)
             }
         }
 
-        if(!(temp = CmdStr.match(" tc " + str_num)).empty())
+        if(!(temp = CmdStr.match( (const boost::regex)  ( (const CtiString &)  " tc " + str_num ) )).empty())
         {
             if(!(valStr = temp.match(re_num)).empty())
             {
@@ -4310,7 +4309,7 @@ void  CtiCommandParser::doParseControlExpresscom(const string &_CmdStr)
             }
         }
 
-        if(!(temp = CmdStr.match(" td " + str_num)).empty() && CmdStr.contains(" dsd"))
+        if(!(temp = CmdStr.match( (const boost::regex)  ( CtiString(" td ") + str_num ) )).empty() && CmdStr.contains(" dsd"))
         {
             if(!(valStr = temp.match(re_num)).empty())
             {
@@ -4328,7 +4327,7 @@ void  CtiCommandParser::doParseControlExpresscom(const string &_CmdStr)
             }
         }
 
-        if(!(temp = CmdStr.match(" te " + str_num)).empty())
+        if(!(temp = CmdStr.match( (const boost::regex)  ( CtiString(" te ") + str_num ) )).empty())
         {
             if(!(valStr = temp.match(re_num)).empty())
             {
@@ -4337,7 +4336,7 @@ void  CtiCommandParser::doParseControlExpresscom(const string &_CmdStr)
             }
         }
 
-        if(!(temp = CmdStr.match(" tf " + str_num)).empty() && CmdStr.contains(" dsf"))
+        if(!(temp = CmdStr.match( (const boost::regex)  ((const CtiString &)  " tf " + str_num ) )).empty() && CmdStr.contains(" dsf"))
         {
             if(!(valStr = temp.match(re_num)).empty())
             {
@@ -4354,7 +4353,7 @@ void  CtiCommandParser::doParseControlExpresscom(const string &_CmdStr)
                 }
             }
         }
-        if(!(temp = CmdStr.match(" stage " + str_num)).empty())
+        if(!(temp = CmdStr.match( (const boost::regex)  ( CtiString(" stage ") + str_num ) )).empty())
         {
             if(!(valStr = temp.match(re_num)).empty())
             {
@@ -4366,11 +4365,11 @@ void  CtiCommandParser::doParseControlExpresscom(const string &_CmdStr)
         _actionItems.push_back("SETPOINT");
     }
 
-    if(!(token = CmdStr.match(" targetcycle " + str_floatnum)).empty())
+    if(!(token = CmdStr.match( (const boost::regex)  ( CtiString(" targetcycle ") + str_floatnum ) )).empty())
     {
         _cmd["xctargetcycle"] = CtiParseValue( TRUE );
 
-        if(!(temp = token.match(str_floatnum)).empty())
+        if(!(temp = token.match((const boost::regex) str_floatnum)).empty())
         {
             dValue = atof(temp.c_str());
         }
@@ -4390,7 +4389,7 @@ void  CtiCommandParser::doParseControlExpresscom(const string &_CmdStr)
         tempStr += str_anynum;
         tempStr += ")+";
 
-        if(!(token = CmdStr.match(tempStr)).empty())
+        if(!(token = CmdStr.match((const boost::regex)  tempStr)).empty())
         {
             CtiTokenizer cmdtok(token);
             cmdtok(); //go past adjustment
@@ -4412,25 +4411,25 @@ void  CtiCommandParser::doParseControlExpresscom(const string &_CmdStr)
     if(!(token = CmdStr.match(" backlight ")).empty())
     {
         _cmd["xcbacklight"] = CtiParseValue(TRUE);
-        if(!(temp = CmdStr.match(" cycles " + str_num)).empty())
+        if(!(temp = CmdStr.match( (const boost::regex) ( CtiString(" cycles ") + str_num ))).empty())
         {
             iValue = atoi(valStr.c_str());
             _cmd["xcbacklightcycle"] = CtiParseValue( iValue );
         }
-        if(!(temp = CmdStr.match(" duty " + str_num)).empty())
+        if(!(temp = CmdStr.match( (const boost::regex)  ( CtiString(" duty ") + str_num ) )).empty())
         {
             iValue = atoi(valStr.c_str());
             if (iValue == 100)
                 iValue = 0;
             _cmd["xcbacklightduty"] = CtiParseValue( iValue );
         }
-        if(!(temp = CmdStr.match(" bperiod " + str_num)).empty())
+        if(!(temp = CmdStr.match( (const boost::regex)  ( CtiString(" bperiod ") + str_num ) )).empty())
         {
             iValue = atoi(valStr.c_str());
             _cmd["xcbacklightperiod"] = CtiParseValue( iValue );
         }
     }
-    if(!(token = CmdStr.match(" priority " + str_num)).empty())
+    if(!(token = CmdStr.match( (const boost::regex)  ( CtiString(" priority ") + str_num ) )).empty())
     {
         if(!(temp = token.match(re_num)).empty())
         {
@@ -4484,7 +4483,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
             _cmd["xcholdprog"] = CtiParseValue( TRUE );
         }
 
-        if(!(temp = CmdStr.match(" timeout " + str_num)).empty())         // assume minutes input.
+        if(!(temp = CmdStr.match( (const boost::regex)  ( CtiString(" timeout ") + str_num ) )).empty())         // assume minutes input.
         {
             if(!(valStr = temp.match(re_num)).empty())
             {
@@ -4537,7 +4536,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
                 }
             }
 
-            if(!(temp = CmdStr.match(" cooltemp " + str_num)).empty())
+            if(!(temp = CmdStr.match( (const boost::regex)  ( CtiString(" cooltemp ") + str_num ) )).empty())
             {
                 if(!(valStr = temp.match(re_num)).empty())
                 {
@@ -4545,7 +4544,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
                     _cmd["xcsetcooltemp"] = CtiParseValue( iValue );
                 }
             }
-            if(!(temp = CmdStr.match(" heattemp " + str_num)).empty())
+            if(!(temp = CmdStr.match((const boost::regex)   ( CtiString(" heattemp ") + str_num ) )).empty())
             {
                 if(!(valStr = temp.match(re_num)).empty())
                 {
@@ -4596,7 +4595,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
                 }
             }
 
-            if(!(temp = CmdStr.match(" temp " + str_num)).empty())
+            if(!(temp = CmdStr.match((const boost::regex)  ( CtiString(" temp ") + str_num ) )).empty())
             {
                 if(!(valStr = temp.match(re_num)).empty())
                 {
@@ -4648,14 +4647,14 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
             _cmd["xcdata"] = CtiParseValue( str );
         }
     }
-    if(!(token = CmdStr.match("data " + str_quoted_token)).empty())
+    if(!(token = CmdStr.match( (const boost::regex)  ( CtiString("data ") + str_quoted_token ) )).empty())
     {
         _cmd["xcascii"] = CtiParseValue(TRUE);
-        if(!(str = token.match(str_quoted_token)).empty())
+        if(!(str = token.match((const boost::regex) str_quoted_token)).empty() )
         {
             _cmd["xcdata"] = CtiParseValue(str.substr(1, str.length() - 2));
         }
-        if(!(temp = CmdStr.match("port " + str_num)).empty())
+        if(!(temp = CmdStr.match((const boost::regex) ( CtiString("port ") + str_num) ) ).empty())
         {
             if(!(valStr = temp.match(re_num)).empty())
             {
@@ -4663,7 +4662,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
                 _cmd["xcdataport"] = CtiParseValue( iValue );
             }
         }
-        if(!(temp = CmdStr.match(" msgpriority " + str_num)).empty())
+        if(!(temp = CmdStr.match((const boost::regex) ( CtiString(" msgpriority ") + str_num ) )).empty())
         {
             if(!(valStr = temp.match(re_num)).empty())
             {
@@ -4675,7 +4674,8 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
         {
             _cmd["xcdeletable"] = CtiParseValue( TRUE );
         }
-        if(!(temp = CmdStr.match("timeout " + str_num)).empty())
+
+        if(!(temp = CmdStr.match( (const boost::regex)((CtiString("timeout ") + str_num)))).empty() )
         {
             if(!(valStr = temp.match(re_num)).empty())
             {
@@ -4851,7 +4851,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
                 bitL = 1;
             }
 
-            if(!(token = CmdStr.match(" offhours " + str_num)).empty())
+            if(!(token = CmdStr.match((const boost::regex)  (CtiString(" offhours ") + str_num) )).empty())
             {
                 str = token.match(re_num);
                 offtime = atoi(str.c_str());
@@ -4879,7 +4879,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
                 _snprintf(tbuf, sizeof(tbuf), "SERVICE DISABLE");
             }
 
-            if(!(str = token.match("(relay|load) " + str_num)).empty())
+            if(!(str = token.match(((const boost::regex) (CtiString("(relay|load) ") + str_num ) ))).empty() )
             {
                 CtiTokenizer   tok2(str);
                 tok2();  // hop over relay | load.
@@ -4930,7 +4930,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
     else if (CmdStr.contains("thermo config"))
     {
         _cmd["xcconfig"] = TRUE;
-        if(!(token = CmdStr.match("thermo config " + str_num)).empty())
+        if(!(token = CmdStr.match( (const boost::regex) (CtiString("thermo config ") + str_num ) )).empty())
         {
             str = token.match(re_num);
             int config = atoi(str.c_str()) & 0xFF;
@@ -4941,32 +4941,32 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
     else if (CmdStr.contains("extended tier"))
     {
         _cmd["xcextier"] = TRUE;
-        if(!(token = CmdStr.match(" tier " + str_num)).empty())
+        if(!(token = CmdStr.match( (const boost::regex) (CtiString(" tier ") + str_num) )).empty())
         {
             str = token.match(re_num);
             int tier = atoi(str.c_str());
             _cmd["xcextierlevel"] = CtiParseValue(tier);
 
-            if(!(token = CmdStr.match(" rate " + str_num)).empty())
+            if(!(token = CmdStr.match((const boost::regex) (CtiString(" rate ") + str_num) )).empty())
             {
                 str = token.match(re_num);
                 int rate = atoi(str.c_str());
                 _cmd["xcextierrate"] = CtiParseValue(rate);
             }
 
-            if(!(token = CmdStr.match(" (cmd|command) " + str_num)).empty())
+            if(!(token = CmdStr.match((const boost::regex) (CtiString(" (cmd|command) ") + str_num) )).empty())
             {
                 str = token.match(re_num);
                 int command = atoi(str.c_str());
                 _cmd["xcextiercmd"] = CtiParseValue(command);
             }
-            if(!(token = CmdStr.match(" display " + str_num)).empty())
+            if(!(token = CmdStr.match((const boost::regex) ( CtiString(" display ") + str_num ) )).empty())
             {
                 str = token.match(re_num);
                 int display = atoi(str.c_str());
                 _cmd["xcextierdisp"] = CtiParseValue(display);
             }
-            if(!(temp = CmdStr.match(" timeout " + str_num)).empty())         // assume minutes input.
+            if(!(temp = CmdStr.match((const boost::regex) ( CtiString(" timeout ") + str_num ) )).empty())         // assume minutes input.
             {
                 if(!(valStr = temp.match(re_num)).empty())
                 {
@@ -4974,7 +4974,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
                     _cmd["xctiertimeout"] = CtiParseValue( iValue );            // In minutes
                 }
             }
-            if(!(temp = CmdStr.match(" delay " + str_num)).empty())         // assume minutes input.
+            if(!(temp = CmdStr.match( (const boost::regex) ( CtiString(" delay ") + str_num ) )).empty())         // assume minutes input.
             {
                 if(!(valStr = temp.match(re_num)).empty())
                 {
@@ -4996,13 +4996,13 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
             else
                 _cmd["xclcddisplay"] = CtiParseValue(FALSE);
         }
-        else if(!(token = CmdStr.match(" display " + str_num + " " + str_quoted_token)).empty())
+        else if(!(token = CmdStr.match((const boost::regex) ( CtiString(" display ") + str_num + CtiString(" ") + str_quoted_token ) )).empty())
         {
             str = token.match(re_num);
             int msgid = atoi(str.c_str());
             _cmd["xcdisplaymessageid"]  = CtiParseValue(msgid );
 
-            if(!(str = token.match(str_quoted_token)).empty())
+            if(!(str = token.match((const boost::regex)str_quoted_token)).empty())
             {
                 _cmd["xcdisplaymessage"] = CtiParseValue(str.substr(1, str.length() - 2));
             }
@@ -5012,7 +5012,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
     {
         _cmd["xcutilinfo"] = TRUE;
 
-        if(!(token = CmdStr.match("chan " + str_num)).empty())
+        if(!(token = CmdStr.match( (const boost::regex)  (CtiString("chan ") + str_num) )).empty())
         {
             str = token.match(re_num);
             int chan = atoi(str.c_str()) - 1;
@@ -5034,9 +5034,9 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
         {
             _cmd["xcchargecents"] = CtiParseValue(TRUE);
         }
-        if(!(token = CmdStr.match(str_quoted_token)).empty())
+        if(!(token = CmdStr.match((const boost::regex) str_quoted_token)).empty())
         {
-            if(!(str = token.match(str_quoted_token)).empty())
+            if(!(str = token.match((const boost::regex) str_quoted_token)).empty())
             {
                 _cmd["xcoptionalstring"] = CtiParseValue(str.substr(1, str.length() - 2));
             }
@@ -5298,7 +5298,7 @@ INT CtiCommandParser::isTokenThermostatScheduleDOW(string &token)
     return dow;
 }
 
-void CtiCommandParser::doParsePutConfigThermostatScheduleDOW(CtiTokenizer &tok, INT &key)
+void CtiCommandParser::doParsePutConfigThermostatScheduleDOW(CtiTokenizer &tok, int &key)
 {
     CtiString token;
     INT currentkey = key;   // The key which got us here.
@@ -5424,7 +5424,7 @@ void CtiCommandParser::doParseControlSA(const string &_CmdStr)
     // Needed for serial commands.
     if(CmdStr.contains(" utility"))
     {
-        if(!(temp = CmdStr.match(" utility " + str_num)).empty())
+        if(!(temp = CmdStr.match( (const boost::regex)( CtiString(" utility ") + str_num ) )).empty())
         {
             if(!(valStr = temp.match(re_num)).empty())
             {
@@ -5449,7 +5449,7 @@ void CtiCommandParser::doParseControlSA(const string &_CmdStr)
     //  042005 CGP:  NOT TO BE USED FOR SA205.  Used for LED FLASHing on SA305
     if(CmdStr.contains(" ledrepeats"))
     {
-        if(!(temp = CmdStr.match(" ledrepeats " + str_num)).empty())
+        if(!(temp = CmdStr.match( (const boost::regex)( CtiString(" ledrepeats ") + str_num )  )).empty())
         {
             if(!(valStr = temp.match(re_num)).empty())
             {
@@ -5469,7 +5469,7 @@ void CtiCommandParser::doParseControlSA(const string &_CmdStr)
                 _cmd["sa_function"] = CtiParseValue(iValue);
             }
         }
-        else if(!(temp = CmdStr.match(" function " + str_num)).empty())
+        else if(!(temp = CmdStr.match((const boost::regex) ( CtiString(" function ") + str_num ))).empty())
         {
             if(!(valStr = temp.match(re_num)).empty())
             {
@@ -5549,7 +5549,7 @@ void CtiCommandParser::doParsePutConfigSA(const string &_CmdStr)
 
     if(CmdStr.contains(" utility"))
     {
-        if(!(temp = CmdStr.match(" utility " + str_num)).empty())
+        if(!(temp = CmdStr.match( (const boost::regex)( CtiString(" utility ") + str_num)  )).empty())
         {
             if(!(valStr = temp.match(re_num)).empty())
             {
@@ -5573,14 +5573,17 @@ void CtiCommandParser::doParsePutConfigSA(const string &_CmdStr)
 
     if(CmdStr.contains(" tamper"))
     {
-        if(!(token = CmdStr.match("tamper[ a-z_]*" \
-                                  "( *f[12][ =]*" + str_num + ")" \
-                                  "( *f[12][ =]*" + str_num + ")?")).empty())
+		CtiString to_be_matched_CtiString = (const CtiString &)  "tamper[ a-z_]*" + (const CtiString &)  "( *f[12][ =]*" 
+			                                 + str_num + (const CtiString &)  ")" 
+			                                 + (const CtiString &)  "( *f[12][ =]*" + str_num 
+			                                 + (const CtiString &)  ")?";
+
+        if(!(token = CmdStr.match(((const boost::regex)to_be_matched_CtiString))).empty())
         {
             // dout << token << endl;
             _cmd["sa_tamper"] = TRUE;
 
-            if(!(strnum = token.match("f1[ =]*" + str_num)).empty())
+            if(!(strnum = token.match( (const boost::regex)( CtiString("f1[ =]*") + str_num )  )).empty())
             {
                 strnum.replace(0, 2, " "); // Blank the r1 to prevent matches on the 1
                 _num = atoi(strnum.match("[0-9]+").c_str());
@@ -5589,7 +5592,7 @@ void CtiCommandParser::doParsePutConfigSA(const string &_CmdStr)
                 _snprintf(tbuf, sizeof(tbuf), "CONFIG TAMPER COUNT R1 = %d", _num);
                 _actionItems.push_back(tbuf);
             }
-            if(!(strnum = token.match("f2[ =]*" + str_num)).empty())
+            if(!(strnum = token.match( (const boost::regex)(CtiString("f2[ =]*") + str_num) ) ).empty())
             {
                 strnum.replace(0, 2, " "); // Blank the r1 to prevent matches on the 1
                 _num = atoi(strnum.match("[0-9]+").c_str());
@@ -5601,7 +5604,9 @@ void CtiCommandParser::doParsePutConfigSA(const string &_CmdStr)
         }
     }
 
-    if(!(temp = CmdStr.match(" override " + str_num)).empty())
+	temp = CmdStr.match((const boost::regex) ((const CtiString &) " override " + str_num) );
+
+    if(!temp.empty())
     {
         _cmd["sa_f1bit"] = 0;
         _cmd["sa_f0bit"] = 0;
@@ -5613,7 +5618,7 @@ void CtiCommandParser::doParsePutConfigSA(const string &_CmdStr)
             _cmd["sa_strategy"] = CtiParseValue(62);        // This is the defined strategy.
         }
     }
-    else if(!(temp = CmdStr.match(" setled " + str_num)).empty())
+    else if(!(temp = CmdStr.match((const boost::regex) ( CtiString(" setled ") + str_num) )).empty())
     {
         _cmd["sa_f1bit"] = 0;
         _cmd["sa_f0bit"] = 1;
@@ -5625,7 +5630,7 @@ void CtiCommandParser::doParsePutConfigSA(const string &_CmdStr)
             _cmd["sa_strategy"] = CtiParseValue(63);
         }
     }
-    else if(!(temp = CmdStr.match(" flashled " + str_num)).empty())
+    else if(!(temp = CmdStr.match( (const boost::regex)(CtiString(" flashled ") + str_num) )).empty())
     {
         _cmd["sa_f1bit"] = 0;
         _cmd["sa_f0bit"] = 1;
@@ -5669,12 +5674,12 @@ void CtiCommandParser::doParsePutConfigSA(const string &_CmdStr)
             _cmd["sa_f0bit"] = 1;
             _cmd["sa_assign"] = TRUE;
 
-            if(!isKeyValid("sa_utility") &&  !(valStr = CmdStr.match(" u[ =]*" + str_num)).empty())  // Must be included (either way is ok)
+            if(!isKeyValid("sa_utility") &&  !(valStr = CmdStr.match( (const boost::regex)( CtiString(" u[ =]*") + str_num))).empty())  // Must be included (either way is ok)
             {
                 _num = strtol(valStr.match(re_num).c_str(), &p, 0);
                 _cmd["sa_utility"] = CtiParseValue( _num );
             }
-            if(!(valStr = CmdStr.match(" g[ =]*" + str_num)).empty())
+            if(!(valStr = CmdStr.match( (const boost::regex) (CtiString(" g[ =]*") + str_num ) )).empty())
             {
                 _num = strtol(valStr.match(re_num).c_str(), &p, 0);
                 _cmd["sa_group"] = CtiParseValue( _num );
@@ -5682,7 +5687,7 @@ void CtiCommandParser::doParsePutConfigSA(const string &_CmdStr)
                 _snprintf(tbuf, sizeof(tbuf), "CONFIG GROUP = %d", _num);
                 _actionItems.push_back(tbuf);
             }
-            if(!(valStr = CmdStr.match(" d[ =]*" + str_num)).empty())
+            if(!(valStr = CmdStr.match((const boost::regex)  (CtiString(" d[ =]*") + str_num) )).empty())
             {
                 _num = strtol(valStr.match(re_num).c_str(), &p, 0);
                 _cmd["sa_division"] = CtiParseValue( _num );
@@ -5690,7 +5695,7 @@ void CtiCommandParser::doParsePutConfigSA(const string &_CmdStr)
                 _snprintf(tbuf, sizeof(tbuf), "CONFIG DIVISION = %d", _num);
                 _actionItems.push_back(tbuf);
             }
-            if(!(valStr = CmdStr.match(" s[ =]*" + str_num)).empty())
+            if(!(valStr = CmdStr.match((const boost::regex)  (CtiString(" s[ =]*") + str_num) )).empty())
             {
                 _num = strtol(valStr.match(re_num).c_str(), &p, 0);
                 _cmd["sa_substation"] = CtiParseValue( _num );
@@ -5698,7 +5703,7 @@ void CtiCommandParser::doParsePutConfigSA(const string &_CmdStr)
                 _snprintf(tbuf, sizeof(tbuf), "CONFIG SUBSTATION = %d", _num);
                 _actionItems.push_back(tbuf);
             }
-            if(!(valStr = CmdStr.match(" [pr][ =]*" + str_num)).empty())
+            if(!(valStr = CmdStr.match( (const boost::regex) (CtiString(" [pr][ =]*") + str_num) )).empty())
             {
                 _num = strtol(valStr.match(re_num).c_str(), &p, 0);
                 _cmd["sa_package"] = CtiParseValue( _num );
@@ -5708,7 +5713,7 @@ void CtiCommandParser::doParsePutConfigSA(const string &_CmdStr)
             }
             else
             {
-                if(!(valStr = CmdStr.match(" f[ =]*" + str_num)).empty())
+                if(!(valStr = CmdStr.match((const boost::regex)  (CtiString(" f[ =]*") + str_num) )).empty())
                 {
                     _num = strtol(valStr.match(re_num).c_str(), &p, 0);
                     _cmd["sa_family"] = CtiParseValue( _num );
@@ -5716,7 +5721,7 @@ void CtiCommandParser::doParsePutConfigSA(const string &_CmdStr)
                     _snprintf(tbuf, sizeof(tbuf), "CONFIG FAMILY = %d", _num);
                     _actionItems.push_back(tbuf);
                 }
-                if(!(valStr = CmdStr.match(" m[ =]*" + str_num)).empty())
+                if(!(valStr = CmdStr.match((const boost::regex)  (CtiString(" m[ =]*") + str_num) )).empty())
                 {
                     _num = strtol(valStr.match(re_num).c_str(), &p, 0);
                     _cmd["sa_member"] = CtiParseValue( _num );
@@ -5733,7 +5738,7 @@ void CtiCommandParser::doParsePutConfigSA(const string &_CmdStr)
             {
                 _cmd["sa_coldload"] = TRUE;
                 // Assume seconds is the input here!
-                if(!(temp = CmdStr.match(" f1[ =]+" + str_num)).empty())
+                if(!(temp = CmdStr.match((const boost::regex)  (CtiString(" f1[ =]+") + str_num) )).empty())
                 {
                     temp.replace(" f1[ =]+", "");
                     if(!(valStr = temp.match(re_num)).empty())
@@ -5742,7 +5747,7 @@ void CtiCommandParser::doParsePutConfigSA(const string &_CmdStr)
                         _cmd["sa_clpf1"] = CtiParseValue(iValue);
                     }
                 }
-                if(!(temp = CmdStr.match(" f2[ =]+" + str_num)).empty())
+                if(!(temp = CmdStr.match((const boost::regex)  (CtiString(" f2[ =]+") + str_num) )).empty())
                 {
                     temp.replace(" f2[ =]+", "");
                     if(!(valStr = temp.match(re_num)).empty())
@@ -5751,7 +5756,7 @@ void CtiCommandParser::doParsePutConfigSA(const string &_CmdStr)
                         _cmd["sa_clpf2"] = CtiParseValue(iValue);
                     }
                 }
-                if(!(temp = CmdStr.match(" f3[ =]+" + str_num)).empty())
+                if(!(temp = CmdStr.match((const boost::regex)  (CtiString(" f3[ =]+") + str_num) )).empty())
                 {
                     temp.replace(" f3[ =]+", "");
                     if(!(valStr = temp.match(re_num)).empty())
@@ -5760,7 +5765,7 @@ void CtiCommandParser::doParsePutConfigSA(const string &_CmdStr)
                         _cmd["sa_clpf3"] = CtiParseValue(iValue);
                     }
                 }
-                if(!(temp = CmdStr.match(" f4[ =]+" + str_num)).empty())
+                if(!(temp = CmdStr.match( (const boost::regex)  (CtiString(" f4[ =]+") + str_num) )).empty())
                 {
                     temp.replace(" f4[ =]+", "");
                     if(!(valStr = temp.match(re_num)).empty())
@@ -5769,7 +5774,7 @@ void CtiCommandParser::doParsePutConfigSA(const string &_CmdStr)
                         _cmd["sa_clpf4"] = CtiParseValue(iValue);
                     }
                 }
-                if(!(temp = CmdStr.match(" all[ =]+" + str_num)).empty())
+                if(!(temp = CmdStr.match( (const boost::regex)  (CtiString(" all[ =]+") + str_num) )).empty())
                 {
                     if(!(valStr = temp.match(re_num)).empty())
                     {
@@ -5778,7 +5783,7 @@ void CtiCommandParser::doParsePutConfigSA(const string &_CmdStr)
                     }
                 }
             }
-            else if(!(temp = CmdStr.match(" lorm0[ =]+" + str_num)).empty())
+            else if(!(temp = CmdStr.match((const boost::regex)  (CtiString(" lorm0[ =]+") + str_num) )).empty())
             {
                 temp.replace(" lorm0[ =]+", "");
                 if(!(valStr = temp.match(re_num)).empty())
@@ -5787,7 +5792,7 @@ void CtiCommandParser::doParsePutConfigSA(const string &_CmdStr)
                     _cmd["sa_lorm0"] = CtiParseValue(iValue);
                 }
             }
-            else if(!(temp = CmdStr.match(" horm0[ =]+" + str_num)).empty())
+            else if(!(temp = CmdStr.match((const boost::regex)  (CtiString(" horm0[ =]+") + str_num) )).empty())
             {
                 temp.replace(" horm0[ =]+", "");
                 if(!(valStr = temp.match(re_num)).empty())
@@ -5796,7 +5801,7 @@ void CtiCommandParser::doParsePutConfigSA(const string &_CmdStr)
                     _cmd["sa_horm0"] = CtiParseValue(iValue);
                 }
             }
-            else if(!(temp = CmdStr.match(" lorm1[ =]+" + str_num)).empty())
+            else if(!(temp = CmdStr.match( (const boost::regex)  (CtiString(" lorm1[ =]+") + str_num)  )).empty())
             {
                 temp.replace(" lorm1[ =]+", "");
                 if(!(valStr = temp.match(re_num)).empty())
@@ -5805,7 +5810,7 @@ void CtiCommandParser::doParsePutConfigSA(const string &_CmdStr)
                     _cmd["sa_lorm1"] = CtiParseValue(iValue);
                 }
             }
-            else if(!(temp = CmdStr.match(" horm1[ =]+" + str_num)).empty())
+            else if(!(temp = CmdStr.match( (const boost::regex)  ( CtiString(" horm1[ =]+") + str_num ) )).empty())
             {
                 temp.replace(" horm1[ =]+", "");
                 if(!(valStr = temp.match(re_num)).empty())
@@ -5846,7 +5851,7 @@ void CtiCommandParser::doParsePutConfigSA(const string &_CmdStr)
             {
                 _cmd["sa_frequency"] = 1;
             }
-            else if(!(temp = CmdStr.match(" rawdata " + str_num + " " + str_num)).empty())
+            else if(!(temp = CmdStr.match( (const boost::regex) ( CtiString(" rawdata ") + str_num + CtiString(" ") + str_num ) )).empty())
             {
                 CtiTokenizer   tok2(temp);
                 temp = tok2(); // Get the rawdata into the hopper....
@@ -5964,7 +5969,7 @@ void  CtiCommandParser::doParsePutConfigCBC(const string &_CmdStr)
     {
         int ov = 0, uv = 0, timer = 0;
 
-        if(!(token = CmdStr.match(" uv[ =]+" + str_num)).empty())
+        if(!(token = CmdStr.match((const boost::regex)  (CtiString(" uv[ =]+") + str_num) )).empty())
         {
             str = token.match(re_num);
             uv = atoi(str.c_str());
@@ -5974,7 +5979,7 @@ void  CtiCommandParser::doParsePutConfigCBC(const string &_CmdStr)
             _actionItems.push_back(valStr);
         }
 
-        if(!(token = CmdStr.match(" ov[ =]+" + str_num)).empty())
+        if(!(token = CmdStr.match( (const boost::regex)  (CtiString(" ov[ =]+") + str_num) )).empty())
         {
             str = token.match(re_num);
             ov = atoi(str.c_str());
@@ -5984,7 +5989,7 @@ void  CtiCommandParser::doParsePutConfigCBC(const string &_CmdStr)
             _actionItems.push_back(valStr);
         }
 
-        if(!(token = CmdStr.match(" timer[ =]+" + str_num)).empty())
+        if(!(token = CmdStr.match((const boost::regex)   (CtiString(" timer[ =]+") + str_num )  )).empty())
         {
             str = token.match(re_num);
             timer = atoi(str.c_str());
@@ -6007,7 +6012,7 @@ void  CtiCommandParser::doParsePutConfigCBC(const string &_CmdStr)
             }
         }
     }
-    else if(!(token = CmdStr.match(" ovuv control trigger time[ =]+" + str_num)).empty())
+    else if(!(token = CmdStr.match( (const boost::regex)  (CtiString(" ovuv control trigger time[ =]+") + str_num )  )).empty())
     {
         int random = 0;
         str = token.match(re_num);
@@ -6015,7 +6020,7 @@ void  CtiCommandParser::doParsePutConfigCBC(const string &_CmdStr)
         iValue = limitValue(iValue, 0, 0xffff);
         _cmd["cbc_ovuv_control_trigger_time"] = CtiParseValue( iValue );
 
-        if(!(token = CmdStr.match(" random[ =]+" + str_num)).empty())
+        if(!(token = CmdStr.match( (const boost::regex)  (CtiString(" random[ =]+") + str_num )  )).empty())
         {
             str = token.match(re_num);
             random = atoi(str.c_str());
@@ -6028,7 +6033,7 @@ void  CtiCommandParser::doParsePutConfigCBC(const string &_CmdStr)
         xcraw += "0x0b 0x" + CtiNumStr(HIBYTE(iValue)).hex() + " 0x" + CtiNumStr(LOBYTE(iValue)).hex() + " 0x" + CtiNumStr(random).hex();
         _cmd["xcrawconfig"] = xcraw;
     }
-    else if(!(token = CmdStr.match(" daily auto control limit[ =]+" + str_num)).empty())
+    else if(!(token = CmdStr.match( (const boost::regex)   (CtiString(" daily auto control limit[ =]+") + str_num )  )).empty())
     {
         str = token.match(re_num);
         iValue = atoi(str.c_str());
@@ -6085,7 +6090,7 @@ void  CtiCommandParser::doParsePutConfigCBC(const string &_CmdStr)
 
         xcraw += "0x23 0x" + CtiNumStr(action).hex();
 
-        if(!(token = CmdStr.match(" time[ =]+" + str_num)).empty())    // Ignored if the action == 0.
+        if(!(token = CmdStr.match( (const boost::regex)  (CtiString(" time[ =]+") + str_num) )).empty())    // Ignored if the action == 0.
         {
             str = token.match(re_num);
             commlosstime = atoi(str.c_str());
@@ -6094,9 +6099,9 @@ void  CtiCommandParser::doParsePutConfigCBC(const string &_CmdStr)
         }
         xcraw += " 0x" + CtiNumStr(HIBYTE(commlosstime)).hex() + " 0x" + CtiNumStr(LOBYTE(commlosstime)).hex();
 
-        if(!(token = CmdStr.match(" (ov|uv)[ =]+" + str_num + ".*(ov|uv)[ =]+" + str_num)).empty())
+        if(!(token = CmdStr.match((const boost::regex)   ( CtiString(" (ov|uv)[ =]+") + str_num + CtiString(".*(ov|uv)[ =]+") + str_num)  )).empty())
         {
-            if(!(token = CmdStr.match(" uv[ =]+" + str_num)).empty())    // Ignored if the action == 0.
+            if(!(token = CmdStr.match( (const boost::regex)  (CtiString(" uv[ =]+") + str_num) )).empty())    // Ignored if the action == 0.
             {
                 str = token.match(re_num);
                 uvclval = atoi(str.c_str());
@@ -6106,7 +6111,7 @@ void  CtiCommandParser::doParsePutConfigCBC(const string &_CmdStr)
                 xcraw += " 0x" + CtiNumStr(uvclval).hex();
             }
 
-            if(!(token = CmdStr.match(" ov[ =]+" + str_num)).empty())    // Ignored if the action == 0.
+            if(!(token = CmdStr.match( (const boost::regex)  ( CtiString(" ov[ =]+") + str_num  )  )).empty())    // Ignored if the action == 0.
             {
                 str = token.match(re_num);
                 ovclval = atoi(str.c_str());
@@ -6159,7 +6164,7 @@ void  CtiCommandParser::doParsePutConfigCBC(const string &_CmdStr)
     }
     else
     {
-        if(!(token = CmdStr.match(" uv[ =]+" + str_num)).empty())
+        if(!(token = CmdStr.match((const boost::regex)  ( CtiString(" uv[ =]+") + str_num )  )).empty())
         {
             str = token.match(re_num);
             iValue = atoi(str.c_str());
@@ -6171,7 +6176,7 @@ void  CtiCommandParser::doParsePutConfigCBC(const string &_CmdStr)
             xcraw += "0x09 0x" + CtiNumStr(iValue).hex();
             _cmd["xcrawconfig"] = xcraw;
         }
-        else if(!(token = CmdStr.match(" ov[ =]+" + str_num)).empty())
+        else if(!(token = CmdStr.match( (const boost::regex)  (CtiString(" ov[ =]+") + str_num  )  )).empty())
         {
             str = token.match(re_num);
             iValue = atoi(str.c_str());

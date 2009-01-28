@@ -13,8 +13,6 @@
 #define __CMDPARSE_H__
 #pragma warning( disable : 4786)
 
-
-#include <windows.h>
 #include <iomanip>
 #include <functional>
 #include <string>
@@ -92,7 +90,7 @@ private:
 public:
 
    typedef std::map< string, CtiParseValue > map_type;
-   typedef std::map< string, CtiParseValue >::iterator  map_itr_type;
+   typedef std::map< string, CtiParseValue >::const_iterator  map_itr_type;
 
    CtiCommandParser(const string str);
 
@@ -122,10 +120,10 @@ public:
    UINT   getOffset()  const;
    bool   isKeyValid(const string &key) const;
    INT    getiValue (const string &key, INT valifnotfound = INT_MIN) const;
-   DOUBLE getdValue (const string &key, DOUBLE valifnotfound = 0.0) const;
+   double getdValue (const string &key, double valifnotfound = 0.0) const;
    string getsValue (const string &key) const;
    CtiCommandParser& setValue(const string &key, INT val);
-   CtiCommandParser& setValue(const string &key, DOUBLE val);
+   CtiCommandParser& setValue(const string &key, double val);
    CtiCommandParser& setValue(const string &key, string val);
 
 

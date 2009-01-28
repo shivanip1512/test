@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.125 $
-* DATE         :  $Date: 2008/11/20 21:23:21 $
+* REVISION     :  $Revision: 1.122.2.2 $
+* DATE         :  $Date: 2008/11/21 16:14:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -15,7 +15,6 @@
 #pragma warning( disable : 4786 )
 
 
-#include <windows.h>
 #include <iomanip>
 #include <iostream>
 #include <vector>
@@ -1760,7 +1759,7 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
                 //  if it's not a new-style group, convert it
                 if( groupname.find_first_of('/') == string::npos )
                 {
-                    groupname = "/Meters/Collection/" + groupname;
+                    groupname = CtiString("/Meters/Collection/") + groupname;
                 }
 
                 //  this catches any old-style group names with embedded slashes
@@ -2062,7 +2061,7 @@ static bool findRestoreDeviceGroupControl(const long key, CtiDeviceSPtr otherdev
  *  2. The parse is of type control, putvalue, putconfig, or putstatus.
  *  3. Username will be acquired from pExecReq first, and then pReqOrig if not specified.
  */
-int CtiPILServer::reportClientRequests(CtiDeviceSPtr &Dev, const CtiCommandParser &parse, const CtiRequestMsg *&pReqOrig, const CtiRequestMsg *&pExecReq, list< CtiMessage* > &vgList, list< CtiMessage* > &retList)
+int CtiPILServer::reportClientRequests(CtiDeviceSPtr &Dev, const CtiCommandParser &parse, const CtiRequestMsg * pReqOrig, const CtiRequestMsg *pExecReq, list< CtiMessage* > &vgList, list< CtiMessage* > &retList)
 {
     int status = NORMAL;
 

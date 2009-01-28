@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/dllbase.h-arc  $
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2008/10/29 20:49:42 $
+* REVISION     :  $Revision: 1.37.2.1 $
+* DATE         :  $Date: 2008/11/13 17:23:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -16,6 +16,11 @@
 #pragma warning( disable : 4786)
 
 
+
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
 
 #include <windows.h>
 #include <lmcons.h>

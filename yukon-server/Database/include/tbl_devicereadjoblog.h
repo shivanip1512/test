@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/Database/Include/tbl_devicereadjoblog.h-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2007/03/08 21:57:26 $
+* REVISION     :  $Revision: 1.1.22.1 $
+* DATE         :  $Date: 2008/11/13 17:23:49 $
 *
 * Copyright (c) 2007 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -16,6 +16,11 @@
 #pragma warning( disable : 4786)
 #ifndef __TBL_DEVICEREADJOBLOG_H__
 #define __TBL_DEVICEREADJOBLOG_H__
+
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
 
 #include <windows.h>
 #include "ctitime.h"

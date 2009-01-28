@@ -26,7 +26,7 @@ class IM_EX_DEVDB CtiDeviceRepeater800 : public CtiDeviceRepeater900
 {
 private:
 
-    typedef CtiDeviceRepeater900 Inherited;
+   typedef CtiDeviceRepeater900 Inherited;
 
    static const CommandSet _commandStore;
    static CommandSet initCommandStore();

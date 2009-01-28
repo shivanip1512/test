@@ -17,6 +17,11 @@
 #ifndef __FDRWABASH_H__
 #define __FDRWABASH_H__
 
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
+
 #include <windows.h>    
 #include "dlldefs.h"
 #include "fdrinterface.h"

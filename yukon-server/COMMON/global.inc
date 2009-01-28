@@ -2,8 +2,8 @@
 #                                                         #
 #       Makefile Template for CTI Apps                    #
 #                                                         #
-#       $Revision: 1.18 $                               #
-#       $Date: 2008/10/29 21:59:25 $                  #
+#       $Revision: 1.18.2.4 $                             #
+#       $Date: 2008/11/12 17:27:30 $                      #
 #                                                         #
 # Definitions                                             #
 ###########################################################
@@ -54,6 +54,16 @@ SRC             = .
 
 %ENDIF
 
+# SOURCEBASE:
+#       This is one level above the compile base.
+#       This is set by the build batch file.
+#
+%IF( "$(COMPILEBASE)" == "" )
+
+   SOURCEBASE = ..
+
+%ENDIF
+
 #
 # Reference directories.
 #
@@ -79,14 +89,12 @@ R_SIGNAL         = $(REFPATH)\dbsignal
 R_RTDB           = $(REFPATH)\rtdb
 R_DEVICECONFIGURATION = $(REFPATH)\DeviceConfiguration
 
-
 #
 # Working directories.
 #
 
 LOADMANAGEMENT  = $(COMPILEBASE)\loadmanagement
 FDR             = $(COMPILEBASE)\fdr
-BOOST           = $(COMPILEBASE)\boost_1_31_0
 CALC            = $(COMPILEBASE)\calc
 CAPCONTROL      = $(COMPILEBASE)\capcontrol
 COMMON          = $(COMPILEBASE)\common
@@ -109,9 +117,28 @@ DEVICECONFIGURATION = $(COMPILEBASE)\deviceconfiguration
 TCLINC          = $(COMPILEBASE)\tcl\include
 XERCESINC       = $(COMPILEBASE)\xerces\include
 
-BOOSTLIBS = $(BOOST)\stage\lib\libboost_date_time-vc6-mt-gd-1_31.lib $(BOOST)\stage\lib\boost_thread-vc6-mt-gd-1_31.lib $(BOOST)\stage\lib\libboost_regex-vc6-mt-gd-1_31.lib
-BOOSTTHREAD = $(BOOST)\stage\lib\boost_thread-vc6-mt-gd-1_31.lib
-BOOSTTESTLIBS = $(BOOST)\stage\lib\libboost_unit_test_framework-vc6-mt-gd-1_31.lib
+BOOST           = $(SOURCEBASE)\yukon-3rdparty\boost
+
+BOOST_ALL_DYN_LINK = 1
+
+!IFDEF DEBUG
+#echo using debug boost libs
+BOOSTLIBS = $(BOOST)\lib\libboost_date_time-vc90-mt-gd-1_37.lib \
+            $(BOOST)\lib\libboost_thread-vc90-mt-gd-1_37.lib   \
+	    $(BOOST)\lib\libboost_regex-vc90-mt-gd-1_37.lib
+BOOSTTHREAD = $(BOOST)\lib\boost_thread-vc90-mt-gd-1_37.lib
+BOOSTTESTLIBS = $(BOOST)\lib\\libboost_unit_test_framework-vc90-mt-gd-1_37.lib
+MICROSOFTDLL = d
+#echo $(BOOSTLIBS)
+!ELSE
+#echo using non-debug boost libs
+BOOSTLIBS = $(BOOST)\lib\libboost_date_time-vc90-mt-1_37.lib \
+            $(BOOST)\lib\libboost_thread-vc90-mt-1_37.lib   \
+	    $(BOOST)\lib\libboost_regex-vc90-mt-1_37.lib
+BOOSTTHREAD = $(BOOST)\lib\boost_thread-vc90-mt-1_37.lib
+BOOSTTESTLIBS = $(BOOST)\lib\\libboost_unit_test_framework-vc90-mt-1_37.lib
+#echo $(BOOSTLIBS)
+!ENDIF
 
 %IF( "$(BUILD_VERSION)" != "" )
 
@@ -128,15 +155,24 @@ BOOSTTESTLIBS = $(BOOST)\stage\lib\libboost_unit_test_framework-vc6-mt-gd-1_31.l
 D_BOOST_ENABLE_ASSERT_HANDLER = /DBOOST_ENABLE_ASSERT_HANDLER
 
 !IFDEF DEBUG
-CFLAGS  = /nologo /EHsc- /Zi /Yd /Od /MDd /Zm200 /FD $(D_VERSION) $(D_VERSION_DETAILS) $(D_BOOST_ENABLE_ASSERT_HANDLER)
-DLLFLAGS= /nologo /EHsc- /Zi /Yd /Od /GD /LD /MDd /Zm200 /FD $(D_VERSION) $(D_VERSION_DETAILS) $(D_BOOST_ENABLE_ASSERT_HANDLER)
-LINKFLAGS = /link /FORCE
+#note on above:  apparently the "!" is not a NOT -- hence this part is the DEBUG SECTION
+#echo debug build used 
+CFLAGS  = /nologo /Zc:wchar_t- /Zi /Od /EHa     /MDd /Zm200 /FD /D_DEBUG  $(D_VERSION) $(D_VERSION_DETAILS) $(D_BOOST_ENABLE_ASSERT_HANDLER)
+DLLFLAGS= /nologo /Zc:wchar_t- /Zi /Od /EHa /LD /MDd /Zm200 /FD /D_DEBUG  $(D_VERSION) $(D_VERSION_DETAILS) $(D_BOOST_ENABLE_ASSERT_HANDLER)
+#LINKFLAGS = /link
+#LINKFLAGS = /link /FORCE /NODEFAULTLIB:MSVCRT.lib 
+#LINKFLAGS = /link /VERBOSE:LIB 
 TCL_LIB = tcl81d
 XERCES_LIB = xerces-c_1D
 XERCES_DLL = xerces-c_1_7_0D
 !ELSE
-CFLAGS  = /nologo /EHsc- /O2 /MD /Zm200 /FD $(D_VERSION) $(D_VERSION_DETAILS) $(D_BOOST_ENABLE_ASSERT_HANDLER)
-DLLFLAGS= /nologo /EHsc- /O2 /GD /LD /MD /Zm200 /FD $(D_VERSION) $(D_VERSION_DETAILS) $(D_BOOST_ENABLE_ASSERT_HANDLER)
+#This part is the non-debug section a/k/a release or retail build
+#echo non-debug build used 
+CFLAGS  = /nologo /Zc:wchar_t- /Zi /O2 /Oy- /EHa      /MD /Zm200 /FD $(VERSION) $(VERSION_DETAILS) $(BOOST_ENABLE_ASSERT_HANDLER)
+DLLFLAGS= /nologo /Zc:wchar_t- /Zi /O2 /Oy- /EHa /LD /MD /Zm200 /FD $(VERSION) $(VERSION_DETAILS) $(BOOST_ENABLE_ASSERT_HANDLER)
+#LINKFLAGS = /link /NODEFAULTLIB:MSVCRTD.lib 
+#LINKFLAGS = /link /FORCE /NODEFAULTLIB:MSVCRTD.lib 
+#LINKFLAGS = /link /VERBOSE:LIB  
 TCL_LIB = tcl81
 XERCES_LIB = xerces-c_1
 XERCES_DLL = xerces-c_1_7_0

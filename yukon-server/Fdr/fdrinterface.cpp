@@ -1776,7 +1776,7 @@ void CtiFDRInterface::cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint
 /**
  * Return the 'dout' logger and prepend the current time and the interface name.
  */
-std::ostream CtiFDRInterface::logNow() {
-  return dout << CtiTime::now() << " FDR-" << getInterfaceName() << ": ";
+std::ostream& CtiFDRInterface::logNow() {
+  return dout <<  CtiTime::now()  << string(" FDR-") << getInterfaceName() << string(": ");
 }
 

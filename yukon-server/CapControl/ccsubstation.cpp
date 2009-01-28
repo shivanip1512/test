@@ -876,7 +876,7 @@ void CtiCCSubstation::checkForAndStopVerificationOnChildSubBuses(CtiMultiMsg_vec
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
     CtiCCSubstationBusPtr currentSubstationBus = NULL;
-    std::list <long>::iterator busIter = NULL;
+    std::list <long>::iterator busIter;
 
 
     busIter = getCCSubIds()->begin();
@@ -917,7 +917,7 @@ CtiCCSubstation& CtiCCSubstation::checkAndUpdateRecentlyControlledFlag()
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
     CtiCCSubstationBusPtr currentSubstationBus = NULL;
-    std::list <long>::iterator busIter = NULL;
+    std::list <long>::iterator busIter;
 
     int numberOfSubBusesPending = 0;
 
@@ -949,7 +949,7 @@ CtiCCSubstation& CtiCCSubstation::checkAndUpdateChildVoltReductionFlags()
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
     CtiCCSubstationBusPtr currentSubstationBus = NULL;
-    std::list <long>::iterator busIter = NULL;
+    std::list <long>::iterator busIter;
 
     int numberOfSubBusesVoltReducting = 0;
 

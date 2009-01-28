@@ -73,6 +73,7 @@ macs:      $(MACSTESTOBJS) maketest.mak
 
 copy:
            -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+           mt.exe -manifest $(BIN)\$(@B).exe.manifest -outputresource:$(BIN)\$(@B).exe;1
            -@if exist bin\*.exe copy bin\*.exe $(YUKONOUTPUT)
 
 
@@ -98,6 +99,7 @@ deps:
 	.\obj\$(@B).obj -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOSTLIBS) $(MACSBASEOBJS) $(BOOSTTESTLIBS) $(RWLIBS) $(LIBS) $(LINKFLAGS)
 
 	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+	mt.exe -manifest $(BIN)\$(@B).exe.manifest -outputresource:$(BIN)\$(@B).exe;1
 	-copy $(BIN)\$(@B).exe $(YUKONOUTPUT)
 	-@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
 	-if exist $(BIN)\$(@B).lib copy $(BIN)\$(@B).lib $(COMPILEBASE)\lib

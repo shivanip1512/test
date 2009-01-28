@@ -21,9 +21,12 @@
 #define __FDRLODESTARINFO_H__
 
 /** include files **/
-#include <windows.h>    //  NOTE:  if porting this to non-WIN32, make sure to replace this
-                        //         with ctitypes.h...  i only put this in here because
-                        //         the compiler was having fits with BOOL.
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
+
+#include <windows.h>    
 #include <string>
 #include "dlldefs.h"
 #include "fdr.h"

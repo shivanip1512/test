@@ -1,9 +1,13 @@
+/* REVISION     :  $Revision: 1.16.10.2 $
+* DATE         :  $Date: 2008/11/17 23:06:32 $
+*
+* Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
+*-----------------------------------------------------------------------------*/
 #ifndef __DEV_CCU_H__
 #define __DEV_CCU_H__
 
 #include <windows.h>
 
-#include "ctitypes.h"
 #include "types.h"
 #include "os2_2w32.h"
 #include "dsm2.h"

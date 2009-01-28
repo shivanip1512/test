@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2008/10/28 19:21:40 $
+* REVISION     :  $Revision: 1.7.2.1 $
+* DATE         :  $Date: 2008/11/12 17:27:31 $
 *
 * Copyright (c) 2007 Cannon Technologies. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,13 +28,12 @@
 #define BOOST_AUTO_TEST_MAIN "Test Resolvers"
 
 #include <boost/test/unit_test.hpp>
-#include <boost/test/auto_unit_test.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 using boost::unit_test_framework::test_suite;
 using namespace std;
 
-BOOST_AUTO_UNIT_TEST(test_resolveRouteType)
+BOOST_AUTO_TEST_CASE(test_resolveRouteType)
 {
     BOOST_CHECK_EQUAL(resolveRouteType("fakeDevice"), RouteTypeInvalid);
 
@@ -53,7 +52,7 @@ BOOST_AUTO_UNIT_TEST(test_resolveRouteType)
     BOOST_CHECK_EQUAL(resolveRouteType("foreign porter"), RouteTypeForeignPorter);
 }
 
-BOOST_AUTO_UNIT_TEST(test_resolveAmpUseType)
+BOOST_AUTO_TEST_CASE(test_resolveAmpUseType)
 {
     string tempName = "noname";
     int amptype = RouteAmpDefault2Fail1;
@@ -79,7 +78,7 @@ BOOST_AUTO_UNIT_TEST(test_resolveAmpUseType)
     BOOST_CHECK_EQUAL(resolveAmpUseType(tempName), amptype);
 }
 
-BOOST_AUTO_UNIT_TEST(test_resolvePointType)
+BOOST_AUTO_TEST_CASE(test_resolvePointType)
 {
     string tempName = "amp 2";
     int pointType = InvalidPointType;
@@ -130,7 +129,7 @@ BOOST_AUTO_UNIT_TEST(test_resolvePointType)
     BOOST_CHECK_EQUAL(resolvePointType(tempName), pointType);
 }
 
-BOOST_AUTO_UNIT_TEST(test_resolveDeviceType)
+BOOST_AUTO_TEST_CASE(test_resolveDeviceType)
 {
     string tempName;
     int devType = 0;

@@ -22,6 +22,11 @@
 #define __CTITHREAD_H__
 
 #ifdef _WINDOWS
+    
+    #if !defined (NOMINMAX)
+    #define NOMINMAX
+    #endif
+
     #include <windows.h>
 #endif
 

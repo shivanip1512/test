@@ -16,7 +16,10 @@
 
 // IM_EX_YUKONDB
 
-#include <windows.h>
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
 
 class CtiDeviceBase;
 

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT410.h-arc  $
-* REVISION     :  $Revision: 1.71 $
-* DATE         :  $Date: 2008/08/15 13:08:05 $
+* REVISION     :  $Revision: 1.71.2.1 $
+* DATE         :  $Date: 2008/11/20 16:49:28 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -48,7 +48,7 @@ private:
 
         unsigned channel;
 
-        long in_progress;
+        volatile long in_progress;
         bool retry;
         bool failed;
 

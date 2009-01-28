@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2007/11/02 20:13:40 $
+* REVISION     :  $Revision: 1.16.10.1 $
+* DATE         :  $Date: 2008/11/13 17:23:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -36,6 +36,11 @@
          12-16-99    Stolen from portpipe.cpp                     CGP
 
    -------------------------------------------------------------------- */
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
+
 #include <windows.h>
 #include <iostream>
 

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2008/10/28 19:21:41 $
+* REVISION     :  $Revision: 1.11.2.1 $
+* DATE         :  $Date: 2008/11/18 20:11:28 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -35,7 +35,7 @@ CtiDeviceCarrier &CtiDeviceCarrier::operator=(const CtiDeviceCarrier &aRef)
     {
         Inherited::operator=(aRef);
 
-        LockGuard guard(monitor());
+        CtiLockGuard<CtiMutex> guard(_classMutex);
 
         CarrierSettings   = aRef.getCarrierSettings();
     }
@@ -50,13 +50,13 @@ CtiTableDeviceLoadProfile CtiDeviceCarrier::getLoadProfile() const
 
 CtiTableDeviceLoadProfile &CtiDeviceCarrier::getLoadProfile()
 {
-    LockGuard guard(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     return LoadProfile;
 }
 
 CtiDeviceCarrier &CtiDeviceCarrier::setLoadProfile( const CtiTableDeviceLoadProfile &aLoadProfile )
 {
-    LockGuard guard(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     LoadProfile = aLoadProfile;
     return *this;
 }

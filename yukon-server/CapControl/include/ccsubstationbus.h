@@ -402,7 +402,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     void setStrategyValues(CtiCCStrategyPtr strategy);
     void setTODControls(CtiCCStrategyPtr strategy);
 
-    vector <CtiCCMonitorPointPtr>& getMultipleMonitorPoints() {return _multipleMonitorPoints;};
+    std::vector <CtiCCMonitorPointPtr>& getMultipleMonitorPoints() {return _multipleMonitorPoints;};
 
 
     CtiCCOperationStats& getOperationStats();

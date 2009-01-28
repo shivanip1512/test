@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2008/07/17 20:22:29 $
+* REVISION     :  $Revision: 1.26.4.1 $
+* DATE         :  $Date: 2008/11/13 17:23:51 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002, 2003, 2004 Cannon Technologies Inc. All rights reserved.
 *---------------------------------------------------------------------------------------------*/
@@ -514,7 +514,7 @@ int CtiThreadMonitor::getPointIDFromOffset(int offset)
     if(_pointIDList.empty())
     {
         PointIDList tempList;
-        for(int i=PointOffsets::FirstPoint;i<PointOffsets::LastPoint;i++)//note this inserts in the same order as
+        for(int i=FirstPoint;i<LastPoint;i++)//note this inserts in the same order as
         {
             //the enumerated list!
             tempList.push_back(GetPIDFromDeviceAndOffset(0,i));
@@ -538,7 +538,7 @@ CtiThreadMonitor::PointIDList CtiThreadMonitor::getPointIDList(void)
     if(_pointIDList.empty())
     {
         PointIDList tempList;
-        for(int i=PointOffsets::FirstPoint;i<PointOffsets::LastPoint;i++)//note this inserts in the same order as
+        for(int i=FirstPoint;i<LastPoint;i++)//note this inserts in the same order as
         {
             //the enumerated list!
             tempList.push_back(GetPIDFromDeviceAndOffset(0,i));
@@ -555,7 +555,7 @@ CtiThreadMonitor::PointIDList CtiThreadMonitor::getPointIDList(void)
 void CtiThreadMonitor::recalculatePointIDList(void)
 {
     PointIDList tempList;
-    for(int i=PointOffsets::FirstPoint;i<PointOffsets::LastPoint;i++)//note this inserts in the same order as
+    for(int i=FirstPoint;i<LastPoint;i++)//note this inserts in the same order as
     {
         //the enumerated list!
         tempList.push_back(GetPIDFromDeviceAndOffset(0,i));

@@ -8,10 +8,15 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2008/04/24 19:41:51 $
+* REVISION     :  $Revision: 1.14.6.1 $
+* DATE         :  $Date: 2008/11/20 20:37:42 $
 * HISTORY      :
 * $Log: pendingOpThread.h,v $
+* Revision 1.14.6.1  2008/11/20 20:37:42  jmarks
+* [YUKRV-525] Comment: YUK-5273 Upgrade Yukon tool chain to Visual Studio 2005/2008
+* * Builds through "Dispatch" subdirectory
+* * A few new lines commented out to link successfully
+*
 * Revision 1.14  2008/04/24 19:41:51  jotteson
 * YUK-4897 Load management implementation of Expresscom priorities
 * Moved the handling of control status points to Dispatch.
@@ -89,8 +94,8 @@ class CtiPendingOpThread : public CtiThread
 {
 public:
 
-    typedef set< CtiPendingPointOperations >  CtiPendingOpSet_t;
-    typedef map< long, CtiTableLMControlHistory >  CtiICLMControlHistMap_t;       // Contains the intial conditions for controls history and control state.
+    typedef std::set< CtiPendingPointOperations >  CtiPendingOpSet_t;
+    typedef std::map< long, CtiTableLMControlHistory >  CtiICLMControlHistMap_t;       // Contains the intial conditions for controls history and control state.
 
 private:
 

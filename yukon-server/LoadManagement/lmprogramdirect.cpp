@@ -3543,7 +3543,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                                 CtiDate tempDate = now.date();
                                 CtiTime tomorrow(tempDate,0,0,0);
                                 tomorrow.addDays(1);
-                                shed_time = ::min(tomorrow.seconds() - now.seconds(), getDirectStopTime().seconds() - now.seconds());
+                                shed_time = std::min(tomorrow.seconds() - now.seconds(), getDirectStopTime().seconds() - now.seconds());
                             }
                         }
 
@@ -4533,7 +4533,7 @@ BOOL CtiLMProgramDirect::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg*
         else if( getProgramState() ==  CtiLMProgramBase::GearChangeState )
         {
             //This is a bit ugly, but this is where we record a gear change when a manual gear change message came through.
-            recordHistory(CtiTableLMProgramHistory::LMHistoryActions::GearChange, CtiTime::now());
+            recordHistory(CtiTableLMProgramHistory::GearChange, CtiTime::now());
         }
     }
 
@@ -5252,7 +5252,8 @@ int CtiLMProgramDirect::operator!=(const CtiLMProgramDirect& right) const
 ---------------------------------------------------------------------------*/
 CtiLMProgramBaseSPtr CtiLMProgramDirect::replicate() const
 {
-    return(CTIDBG_new CtiLMProgramDirect(*this));
+    CtiLMProgramBaseSPtr retVal = CtiLMProgramBaseSPtr(CTIDBG_new CtiLMProgramDirect(*this));
+    return retVal;
 }
 
 /*---------------------------------------------------------------------------
@@ -5998,7 +5999,7 @@ bool CtiLMProgramDirect::recordHistory(CtiTableLMProgramHistory::LMHistoryAction
 
     CtiLMProgramDirectGear* gear = getCurrentGearObject();
 
-    if( action == CtiTableLMProgramHistory::LMHistoryActions::Start )
+    if( action == CtiTableLMProgramHistory::Start )
     {
         programLogID = SynchronizedIdGen("LMProgramHistoryID", 1); // Both of the ID gens here are not necessary.
         setCurrentLogEventID(programLogID);
@@ -6032,7 +6033,7 @@ CtiLMProgramBase& CtiLMProgramDirect::setProgramState(LONG newState)
         if( isAControlState(newState) && !isAControlState(currentState) )
         {
             //It is a start
-            recordHistory(CtiTableLMProgramHistory::LMHistoryActions::Start, CtiTime::now());
+            recordHistory(CtiTableLMProgramHistory::Start, CtiTime::now());
         }
         else if( isAStopState(newState) && currentState != CtiLMProgramBase::ScheduledState )
         {
@@ -6042,7 +6043,7 @@ CtiLMProgramBase& CtiLMProgramDirect::setProgramState(LONG newState)
             {
                 recordTime = recordTime.now();
             }
-            recordHistory(CtiTableLMProgramHistory::LMHistoryActions::Stop, recordTime);
+            recordHistory(CtiTableLMProgramHistory::Stop, recordTime);
         }
     }
 

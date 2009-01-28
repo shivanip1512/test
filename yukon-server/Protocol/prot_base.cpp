@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2008/01/21 20:41:49 $
+* REVISION     :  $Revision: 1.11.6.1 $
+* DATE         :  $Date: 2008/11/17 19:46:17 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -47,8 +47,8 @@ Interface &Interface::operator=(const Interface &aRef)
 int Interface::generate( CtiXfer &xfer )              {   return NoMethod;   }
 int Interface::decode( CtiXfer &xfer, int status )    {   return NoMethod;   }
 
-int Interface::sendCommRequest( OUTMESS *&OutMessage, list< OUTMESS* > &outList )   {   return NoMethod;    }
-int Interface::recvCommResult ( INMESS *InMessage,    list< OUTMESS* > &outList )   {   return NoMethod;    }
+int Interface::sendCommRequest( OUTMESS *&OutMessage, std::list< OUTMESS* > &outList )   {   return NoMethod;    }
+int Interface::recvCommResult ( INMESS *InMessage,    std::list< OUTMESS* > &outList )   {   return NoMethod;    }
 
 int Interface::recvCommRequest( OUTMESS  *OutMessage )   {   return NoMethod;    }
 int Interface::sendCommResult ( INMESS   *InMessage  )   {   return NoMethod;    }

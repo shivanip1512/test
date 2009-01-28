@@ -10,16 +10,8 @@ all:
 
 
 clean:
-        -del \
-*.pdb \
-$(OBJ)\*.obj \
-$(BIN)\*.pdb \
-$(BIN)\*.pch \
-$(BIN)\*.ilk \
-$(BIN)\*.exp \
-$(BIN)\*.lib \
-$(BIN)\*.dll \
-$(BIN)\*.exe
+         @$(MAKE) -nologo -f .\DLL\makedll.mak $@
+         @$(MAKE) -nologo -f makebase.mak $@
 
 allclean:   clean all
 

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2008/08/15 19:01:04 $
+* REVISION     :  $Revision: 1.3.2.1 $
+* DATE         :  $Date: 2008/11/12 17:27:31 $
 *
 * Copyright (c) 2007 Cannon Technologies. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,7 +22,6 @@
 #define BOOST_AUTO_TEST_MAIN "Test NumStr"
 
 #include <boost/test/unit_test.hpp>
-#include <boost/test/auto_unit_test.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 using boost::unit_test_framework::test_suite;
@@ -137,7 +136,7 @@ void numstr_test_helper(T value, int precision, int padding, const string &base,
 
 
 
-BOOST_AUTO_UNIT_TEST(test_char)
+BOOST_AUTO_TEST_CASE(test_char)
 {
     char c;
     unsigned char uc;
@@ -212,7 +211,7 @@ BOOST_AUTO_UNIT_TEST(test_char)
 }
 
 
-BOOST_AUTO_UNIT_TEST(test_short)
+BOOST_AUTO_TEST_CASE(test_short)
 {
     short s;
     unsigned short us;
@@ -311,7 +310,7 @@ BOOST_AUTO_UNIT_TEST(test_short)
 }
 
 
-BOOST_AUTO_UNIT_TEST(test_int)
+BOOST_AUTO_TEST_CASE(test_int)
 {
     int i;
     unsigned int ui;
@@ -359,7 +358,7 @@ BOOST_AUTO_UNIT_TEST(test_int)
 }
 
 
-BOOST_AUTO_UNIT_TEST(test_long)
+BOOST_AUTO_TEST_CASE(test_long)
 {
     long l;
     unsigned long ul;
@@ -407,7 +406,7 @@ BOOST_AUTO_UNIT_TEST(test_long)
 }
 
 
-BOOST_AUTO_UNIT_TEST(test_float)
+BOOST_AUTO_TEST_CASE(test_float)
 {
     float f;
     double d;
@@ -502,7 +501,7 @@ BOOST_AUTO_UNIT_TEST(test_float)
 }
 
 
-BOOST_AUTO_UNIT_TEST(test_operators)
+BOOST_AUTO_TEST_CASE(test_operators)
 {
     string s;
     int i;
@@ -526,7 +525,7 @@ BOOST_AUTO_UNIT_TEST(test_operators)
     BOOST_CHECK_EQUAL(s, "Test string 2736");
 }
 
-BOOST_AUTO_UNIT_TEST(test_limits)
+BOOST_AUTO_TEST_CASE(test_limits)
 {
     double d;
 

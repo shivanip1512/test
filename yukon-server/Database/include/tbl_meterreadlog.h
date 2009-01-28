@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/Database/Include/tbl_meterreadlog.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2008/09/15 17:59:18 $
+* REVISION     :  $Revision: 1.3.2.1 $
+* DATE         :  $Date: 2008/11/13 17:23:49 $
 *
 * Copyright (c) 2007 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -16,6 +16,11 @@
 #pragma warning( disable : 4786)
 #ifndef __TBL_METERREADLOG_H__
 #define __TBL_METERREADLOG_H__
+
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
 
 #include <windows.h>
 #include "ctitime.h"

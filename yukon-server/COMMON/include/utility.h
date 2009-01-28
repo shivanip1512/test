@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/utility.h-arc  $
-* REVISION     :  $Revision: 1.61 $
-* DATE         :  $Date: 2008/10/30 19:54:27 $
+* REVISION     :  $Revision: 1.61.2.5 $
+* DATE         :  $Date: 2008/11/20 16:49:26 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -228,7 +228,7 @@ IM_EX_CTIBASE void testSA305CRC(char* testData);
 
 IM_EX_CTIBASE LONG GetPAOIdOfEnergyPro(long devicesn);
 
-IM_EX_CTIBASE vector<int> getPointIdsOnPao(long paoid);
+IM_EX_CTIBASE std::vector<int> getPointIdsOnPao(long paoid);
 IM_EX_CTIBASE std::vector< std::vector<string> > getLmXmlParametersByGroupId(long groupId);
 IM_EX_CTIBASE string getEncodingTypeForPort(long portId);
 IM_EX_CTIBASE string getEncodingKeyForPort(long portId);
@@ -365,7 +365,7 @@ inline bool list_contains( const std::list<T> &V, T x )
 //    ...
 //  std::copy(source.begin(), source.end(), csv_itr);
 template <class Numeric, class Stream>
-struct csv_output_iterator
+struct csv_output_iterator : public std::_Outit 
 {
     Stream &s;
     bool first;

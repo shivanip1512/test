@@ -19,7 +19,12 @@
 #define __FDRDSM2IMPORT_H__
 
 
-#include <windows.h>    //  NOTE:  if porting this to non-WIN32, make sure to replace this
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
+
+#include <windows.h>    
 
 #include "dlldefs.h"
 #include "fdrasciiimportbase.h"

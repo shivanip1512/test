@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2008/01/25 22:29:23 $
+* REVISION     :  $Revision: 1.1.8.1 $
+* DATE         :  $Date: 2008/11/12 17:27:31 $
 *
 * Copyright (c) 2008 Cannon Technologies. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,17 +20,16 @@
 
 #include "ctistring.h"
 
-#define BOOST_AUTO_TEST_MAIN "Test NumStr"
+#define BOOST_AUTO_TEST_MAIN "Test CtiString"
 
 #include <boost/test/unit_test.hpp>
-#include <boost/test/auto_unit_test.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 using boost::unit_test_framework::test_suite;
 using namespace std;
 
 
-BOOST_AUTO_UNIT_TEST(test_spad_zpad)
+BOOST_AUTO_TEST_CASE(test_spad_zpad)
 {
     CtiString testString = "test";
 

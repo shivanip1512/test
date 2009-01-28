@@ -22,8 +22,8 @@
 #include "rwutil.h"
 
 CtiTableRippleLoadGroup::CtiTableRippleLoadGroup() :
-_controlBits((char)0, (size_t)7),      // 7 zeros
-_restoreBits((char)0, (size_t)7),      // 7 zeros
+_controlBits((size_t)7, (char)0),      // 7 zeros
+_restoreBits((size_t)7, (char)0),      // 7 zeros
 _routeID(-1)
 {}
 

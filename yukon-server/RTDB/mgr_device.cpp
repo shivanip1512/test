@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.102 $
-* DATE         :  $Date: 2008/11/17 17:34:40 $
+* REVISION     :  $Revision: 1.101.2.1 $
+* DATE         :  $Date: 2008/11/21 17:55:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -640,12 +640,18 @@ void CtiDeviceManager::refresh(LONG paoID, string category, string devicetype)
         }
 
         // We were given an id.  We can use that to reduce our workload.
-        refreshList(id_range_t(paoID), type);
+        vector<long> paoid_vector;
+
+        paoid_vector.push_back(paoID);
+
+        refreshList(id_range_t(paoid_vector.begin(), paoid_vector.end()), type);
     }
     else
     {
+        vector<long> stub;
+
         // we were given no id.  There must be no dbchange info.
-        refreshList();
+        refreshList(id_range_t(stub.begin(), stub.end()));
     }
 }
 
@@ -2085,7 +2091,8 @@ CtiDeviceManager &CtiDeviceManager::addPortExclusion( LONG paoID )
 
 bool CtiDeviceManager::refreshPointGroups()
 {
-    return refreshPointGroups(id_range_t());
+    vector<long> stub;
+    return refreshPointGroups(id_range_t(stub.begin(), stub.end()));
 }
 
 bool CtiDeviceManager::refreshPointGroups(id_range_t &paoids)

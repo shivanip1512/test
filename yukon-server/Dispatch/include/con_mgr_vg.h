@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/con_mgr_vg.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2007/10/24 14:51:29 $
+* REVISION     :  $Revision: 1.8.10.1 $
+* DATE         :  $Date: 2008/11/13 17:23:48 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -15,7 +15,6 @@
 #define __CON_MGR_VG_H__
 #pragma warning( disable : 4786)
 
-#include <windows.h>
 #include <limits.h>
 
 #include <rw/thr/mutex.h>

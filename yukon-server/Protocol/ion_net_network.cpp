@@ -13,7 +13,6 @@
  *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-#include "ctitypes.h"
 #include "guard.h"
 #include "logger.h"
 

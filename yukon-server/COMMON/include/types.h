@@ -1,3 +1,4 @@
+
 //should this be here?
 #define STANDNAMLEN 20
 #ifndef  NORMAL

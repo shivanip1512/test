@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2008/02/12 04:15:29 $
+* REVISION     :  $Revision: 1.5.6.1 $
+* DATE         :  $Date: 2008/11/13 17:23:50 $
 * HISTORY      :
 * $Log: regression.h,v $
 * Revision 1.5  2008/02/12 04:15:29  jrichter
@@ -37,6 +37,11 @@
 #pragma warning( disable : 4786)
 #ifndef __REGRESSION_H__
 #define __REGRESSION_H__
+
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
 
 #include <windows.h>
 #include <iostream>

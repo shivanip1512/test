@@ -131,7 +131,7 @@ class IM_EX_FDRBASE CtiFDRInterface
               ConnectionOkWriteOk};
         int attemptSend( CtiMessage *aMessage );
 
-        std::ostream logNow();
+        std::ostream& logNow();
 
     protected:
 

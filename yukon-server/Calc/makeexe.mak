@@ -100,7 +100,6 @@ $(COMPILEBASE)\lib\ctidbsrc.lib \
 $(COMPILEBASE)\lib\service.lib \
 $(COMPILEBASE)\lib\cticparms.lib \
 $(COMPILEBASE)\lib\ctiholidaydb.lib \
-$(COMPILEBASE)\lib\clrdump.lib \
 advapi32.lib
 
 
@@ -111,20 +110,22 @@ calc_logic.exe:  $(CALCOBJS) makeexe.mak
         @echo:
         @echo Compiling ..\$@
         @%cd $(OBJ)
-        $(RWCPPINVOKE) /Fm $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) -o ..\$@ \
+        $(RWCPPINVOKE) /Fm $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
                 $(CALCOBJS) -link $(RWLIBS) $(BOOSTLIBS) $(CALCLIBS) $(LINKFLAGS)
            -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+           mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
            -copy ..\$@ $(YUKONOUTPUT)
         @%cd $(CWD)
-
+        #mt.exe –manifest MyApp.exe.manifest -outputresource:MyApp.exe;1 
 #--  START TEST APPLICATIONS
 lurk.exe:       $(LURKOBJS) makeexe.mak
         @echo:
         @echo Compiling ..\$@
         @%cd $(OBJ)
-        $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) -o ..\$@ \
+        $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
 $(LURKOBJS) -link $(RWLIBS) $(BOOSTLIBS) $(TESTLIBS)
            -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+           mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
            -copy ..\$@ $(YUKONOUTPUT)
         @%cd $(CWD)
 
@@ -132,9 +133,10 @@ log.exe:        $(LOGOBJS) makeexe.mak
         @echo:
         @echo Compiling ..\$@
         @%cd $(OBJ)
-        $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) -o ..\$@ \
+        $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
 $(LOGOBJS) -link $(RWLIBS) $(BOOSTLIBS) $(TESTLIBS)
            -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+           mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
            -copy ..\$@ $(YUKONOUTPUT)
         @%cd $(CWD)
 
@@ -142,9 +144,10 @@ newval.exe:     $(NEWVALOBJS) makeexe.mak
         @echo:
         @echo Compiling ..\$@
         @%cd $(OBJ)
-        $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) -o ..\$@ \
+        $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
 $(NEWVALOBJS) -link $(RWLIBS) $(BOOSTLIBS) $(TESTLIBS)
            -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+           mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
            -copy ..\$@ $(YUKONOUTPUT)
         @%cd $(CWD)
 
@@ -152,15 +155,17 @@ newvalrng.exe:     $(NEWVALRNGOBJS) makeexe.mak
         @echo:
         @echo Compiling ..\$@
         @%cd $(OBJ)
-        $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) -o ..\$@ \
+        $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
 $(NEWVALRNGOBJS) -link $(RWLIBS) $(BOOSTLIBS) $(TESTLIBS)
            -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+           mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
            -copy ..\$@ $(YUKONOUTPUT)
         @%cd $(CWD)
 #--  END TEST APPLICATIONS
 
 copy:
            -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
+           mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
            -@if exist bin\*.exe copy bin\*.exe $(YUKONOUTPUT)
 
 
@@ -306,3 +311,5 @@ test_calc.obj:	yukon.h precompiled.h ctidbgmem.h calc.h ctiqueues.h \
 		regression.h tbl_pt_limit.h dbmemobject.h dbaccess.h sema.h \
 		resolvers.h pointtypes.h db_entry_defines.h desolvers.h
 #ENDUPDATE#
+
+

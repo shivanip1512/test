@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2008/10/24 21:26:05 $
+* REVISION     :  $Revision: 1.36.2.2 $
+* DATE         :  $Date: 2008/11/21 16:14:53 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1671,7 +1671,7 @@ namespace Porter
                         vector<unsigned char> cipher;
                         _encodingFilter->encode((unsigned char *)dr->work.xfer.getOutBuffer(),dr->work.xfer.getOutCount(),cipher);
 
-                        int err = sendto(_udp_socket, (char*)cipher.begin(), cipher.size(), 0, (sockaddr *)&to, sizeof(to));
+                    int err = sendto(_udp_socket, (const char*) &*cipher.begin(), cipher.size(), 0, (sockaddr *)&to, sizeof(to));
 
                         if( SOCKET_ERROR == err )
                         {
@@ -2751,7 +2751,7 @@ namespace Porter
                 _encFilter->decode(recv_buf,recv_len,pText);
 
                 p->data = CTIDBG_new unsigned char[pText.size()];
-                memcpy(p->data,pText.begin(),pText.size());
+                memcpy(p->data,(const char*) &*pText.begin(),pText.size());
                 p->len = pText.size();
 
                 if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
@@ -2976,7 +2976,7 @@ namespace Porter
     }
 
 
-    UDPInterface::push_back(CtiMessage *msg)
+void UDPInterface::push_back(CtiMessage *msg)
     {
         _message_queue.putQueue(msg);
     }

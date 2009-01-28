@@ -57,9 +57,9 @@ public:
     {
     #ifdef _WINDOWS
         InitializeCriticalSection(&_critical_section);
-    #ifdef _DEBUG
+    /// #ifdef _DEBUG
         _threadID = 0;
-    #endif
+    /// #endif
     #endif
     }
 
@@ -75,9 +75,9 @@ public:
     {
     #ifdef _WINDOWS
         EnterCriticalSection(&_critical_section);
-    #ifdef _DEBUG
+    /// #ifdef _DEBUG
         _threadID = (int) _critical_section.OwningThread;
-    #endif
+    /// #endif
         return true;
     #endif
     }
@@ -87,26 +87,26 @@ public:
     #ifdef _WINDOWS
         LeaveCriticalSection(&_critical_section);
 
-    #ifdef _DEBUG
+    /// #ifdef _DEBUG
         _threadID = 0;
-    #endif
+    /// #endif
     #endif
     }
 
-#ifdef _DEBUG
+/// #ifdef _DEBUG
     DWORD lastAcquiredByTID() const
     {
         return _threadID;
     }
-#endif
+/// #endif
 
 private:
 
 #ifdef _WINDOWS
     CRITICAL_SECTION _critical_section;
-#ifdef _DEBUG
+/// #ifdef _DEBUG
     DWORD  _threadID;
-#endif
+/// #endif
 #endif
 };
 

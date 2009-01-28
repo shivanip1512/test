@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2008/01/14 20:09:35 $
+* REVISION     :  $Revision: 1.28.6.1 $
+* DATE         :  $Date: 2008/11/17 23:06:31 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -625,7 +625,7 @@ bool CtiTransdataTracker::grabChannels( BYTE *data, int bytes )
 
       while( !foundCorrectCommand )
       {
-         char *temp = strstr( ( const char*)ptr, "DC" );
+         char *temp = (char*) strstr( ( const char*)ptr, "DC" );
 
          if( temp != NULL )
          {
@@ -649,7 +649,7 @@ bool CtiTransdataTracker::grabChannels( BYTE *data, int bytes )
             //
          for( int index = 0; index < 8; index++ )
          {
-            ptr = strstr( ( const char*)ptr, " " );
+            ptr = (char*) strstr( ( const char*)ptr, " " );
 
             if( ptr != NULL )
             {
@@ -682,7 +682,7 @@ bool CtiTransdataTracker::grabFormat( BYTE *data, int bytes )
 
       for( ;; )
       {
-         char *temp = strstr( ( const char*)ptr, "IS" );
+         char *temp = (char*) strstr( ( const char*)ptr, "IS" );
 
          if( temp != NULL )
          {
@@ -699,7 +699,7 @@ bool CtiTransdataTracker::grabFormat( BYTE *data, int bytes )
       {
          for( int index = 0; index < 3; index++ )
          {
-            ptr = strstr( ( const char*)ptr, "\n" );
+            ptr = (char*) strstr( ( const char*)ptr, "\n" );
 
             if( ptr != NULL )
             {
@@ -743,7 +743,7 @@ bool CtiTransdataTracker::grabTime( BYTE *data, int bytes )
       //make this a general thing and run everybody through it...!
       for( ;; )
       {
-         char *temp = strstr( ( const char*)ptr, "GT" );
+         char *temp = (char*) strstr( ( const char*)ptr, "GT" );
 
          if( temp != NULL )
          {
@@ -760,7 +760,7 @@ bool CtiTransdataTracker::grabTime( BYTE *data, int bytes )
       {
          for( int index = 0; index < 6; index++ )
          {
-            ptr = strstr( ( const char*)ptr, "\n" );
+            ptr = (char*) strstr( ( const char*)ptr, "\n" );
 
             if( ptr != NULL )
             {

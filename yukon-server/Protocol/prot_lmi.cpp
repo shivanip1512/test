@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.55 $
-* DATE         :  $Date: 2008/04/25 21:45:14 $
+* REVISION     :  $Revision: 1.55.6.1 $
+* DATE         :  $Date: 2008/11/17 23:06:31 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -138,7 +138,7 @@ void CtiProtocolLMI::setDeadbands( const vector<unsigned> &points, const vector<
 }
 
 
-int CtiProtocolLMI::sendCommRequest( OUTMESS *&OutMessage, list< OUTMESS* > &outList )
+int CtiProtocolLMI::sendCommRequest( OUTMESS *&OutMessage, std::list< OUTMESS* > &outList )
 {
     int retVal = NoError;
     OUTMESS seriesv_outmess;
@@ -170,7 +170,7 @@ int CtiProtocolLMI::sendCommRequest( OUTMESS *&OutMessage, list< OUTMESS* > &out
 }
 
 
-int CtiProtocolLMI::recvCommResult( INMESS *InMessage, list< OUTMESS* > &outList )
+int CtiProtocolLMI::recvCommResult( INMESS *InMessage, std::list< OUTMESS* > &outList )
 {
     int offset = 0;
     lmi_inmess_struct &lmi_in = *((lmi_inmess_struct *)InMessage->Buffer.InMessage);
@@ -210,7 +210,7 @@ bool CtiProtocolLMI::hasInboundData( void )
 }
 
 
-void CtiProtocolLMI::getInboundData( list< CtiPointDataMsg* > &pointList, string &info )
+void CtiProtocolLMI::getInboundData( std::list< CtiPointDataMsg* > &pointList, string &info )
 {
     int i = 0;
     CtiPointDataMsg *pdm;

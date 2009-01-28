@@ -6,15 +6,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/vangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2008/10/02 18:27:29 $
+* REVISION     :  $Revision: 1.13.2.3 $
+* DATE         :  $Date: 2008/11/17 19:46:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 
-#include <windows.h>
 #include <iomanip>
 #include <iostream>
 
@@ -74,7 +73,7 @@ int DispatchMainFunction(int argc, char **argv)
         {
             std::wstring file = L"Dispatch";
             file += L".DMP";
-            CreateDump(GetCurrentProcessId(), file.c_str(), 0, NULL, NULL);
+            ///CreateDump(GetCurrentProcessId(), file.c_str(), (unsigned long) 0, (unsigned long)NULL, (EXCEPTION_POINTERS*) NULL);
             cerr << "***** EXCEPTION ******* Terminating Dispatch" << endl;
             VanGogh.terminate();
         }

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/DSM2.H-arc  $
-* REVISION     :  $Revision: 1.49 $
-* DATE         :  $Date: 2008/10/29 20:06:27 $
+* REVISION     :  $Revision: 1.49.2.4 $
+* DATE         :  $Date: 2008/11/19 15:21:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -15,6 +15,11 @@
 #define DSM2_H
 #pragma warning( disable : 4786)
 
+
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
 
 #include <windows.h>
 
@@ -911,9 +916,9 @@ public:
 } OUTMESS;
 
 // This will be used to sort these things in a CtiQueue.
-namespace std
+namespace std // eventually this needs to be removed, but for now we'll keep this the way it is.
 {
-  struct greater<CtiOutMessage*>
+  template <> struct greater<CtiOutMessage*>
   {
     bool operator()(CtiOutMessage const* p1, CtiOutMessage const* p2)
     {
@@ -992,7 +997,8 @@ struct collect_inmess_target_device
 
     collect_inmess_target_device(std::set<long> &c_) : c(c_)  { };
 
-    operator()(INMESS *im)  {  if( im ) c.insert(im->TargetID?im->TargetID:im->DeviceID);  };
+    void operator()(INMESS *im)  {  if( im ) c.insert(im->TargetID?im->TargetID:im->DeviceID);  };
+
 };
 
 
@@ -1097,7 +1103,7 @@ int   IM_EX_CTIBASE DecodeDialupData(INMESS *InMessage, DIALUPSTRUCT *DUPst);
 int   IM_EX_CTIBASE A_Word  (PBYTE, const ASTRUCT &, BOOL Double = FALSE);
 int   IM_EX_CTIBASE B_Word  (PBYTE, const BSTRUCT &, unsigned wordCount, BOOL Double = FALSE);
 int   IM_EX_CTIBASE C_Word  (PBYTE, const PBYTE, USHORT);
-int   IM_EX_CTIBASE C_Words (PBYTE, const PBYTE, USHORT, unsigned *cword_count = 0);
+int   IM_EX_CTIBASE C_Words (unsigned char *, const unsigned char *, unsigned short, unsigned int *cword_count = 0);
 int   IM_EX_CTIBASE D1_Word (PBYTE, PBYTE, PUSHORT, PULONG, PUSHORT, PUSHORT);
 int   IM_EX_CTIBASE D23_Word(PBYTE, PBYTE, PUSHORT, PUSHORT);
 int   IM_EX_CTIBASE D_Words (PBYTE, USHORT, USHORT, DSTRUCT *);

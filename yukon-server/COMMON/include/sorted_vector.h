@@ -42,21 +42,21 @@ namespace codeproject{
 public:
 	typedef sorted_vector<K,bNoDuplicates,Pr,A> Myt_;
     typedef std::vector<K,A>		Cont;
-	typedef Cont::allocator_type	allocator_type;
-	typedef Cont::size_type			size_type;
-	typedef Cont::difference_type	difference_type;
-	typedef Cont::reference			reference;
-	typedef Cont::const_reference	const_reference;
-	typedef Cont::value_type		value_type;
+	typedef typename Cont::allocator_type	allocator_type;
+	typedef typename Cont::size_type			size_type;
+	typedef typename Cont::difference_type	difference_type;
+	typedef typename Cont::reference			reference;
+	typedef typename Cont::const_reference	const_reference;
+	typedef typename Cont::value_type		value_type;
     typedef K						key_type;
-	typedef Cont::iterator			iterator;
-	typedef Cont::const_iterator	const_iterator;
+	typedef typename Cont::iterator			iterator;
+	typedef typename Cont::const_iterator	const_iterator;
     typedef Pr						key_compare;
     typedef Pr						value_compare;
 
-	typedef Cont::const_reverse_iterator
+	typedef typename Cont::const_reverse_iterator
 									const_reverse_iterator;
-	typedef Cont::reverse_iterator	reverse_iterator;
+	typedef typename Cont::reverse_iterator	reverse_iterator;
 
     typedef std::pair<iterator, iterator> Pairii_;
 	typedef std::pair<const_iterator, const_iterator> Paircc_;

@@ -11,10 +11,27 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/ansi_application.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2008/04/25 21:45:14 $
+* REVISION     :  $Revision: 1.17.6.1 $
+* DATE         :  $Date: 2008/11/17 23:06:31 $
 *    History:
       $Log: ansi_application.cpp,v $
+      Revision 1.17.6.1  2008/11/17 23:06:31  jmarks
+      YUK-5273 Upgrade Yukon tool chain to Visual Studio 2005/2008
+      **************************************************************************************************************
+      Removed "CTITYPES.H" from every file in the project, so far there were no
+      known side-effects or even compile errors, however, they could still happen.
+
+      Also, made many other changes for compiling.
+
+      The project now apparently compiles until reching the database
+      subdirectory, however, I have seen cases where there is apparent
+      regressing and need to re-work things.
+
+      However, enough changes have happened, that I felt it was good to
+      committ.
+      **************************************************************************************************************
+      Possibly other misc. changes since last commit.
+      *******************************************************
       Revision 1.17  2008/04/25 21:45:14  mfisher
       YUK-5743 isTransactionComplete() changes not propagated to all protocols
       changed isTransactionComplete() to const
@@ -1466,7 +1483,7 @@ int CtiANSIApplication::encryptDataMethod()
         _iniAuthVector = NULL;
     }
     _iniAuthVector = new BYTE[8];
-    for (i = 0; i < 8; i++)
+    for (int i = 0; i < 8; i++)
     {
         _iniAuthVector[i] = (data[(i*8)+0] & 0x01) |
                             ((data[(i*8)+1] & 0x01) << 1) |

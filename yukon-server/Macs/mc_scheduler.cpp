@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_scheduler.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2008/08/01 17:58:38 $
+* REVISION     :  $Revision: 1.14.4.1 $
+* DATE         :  $Date: 2008/11/21 20:56:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,7 +29,7 @@ CtiTime CtiMCScheduler::_invalid_time((unsigned long) 0);
 
 void CtiMCScheduler::initEvents(const CtiTime& now)
 {
-    RWRecursiveLock<class RWMutexLock>::LockGuard guard(_schedule_manager.getMux() );
+    CtiLockGuard<CtiMutex> guard(_schedule_manager.getMux() );
 
     CtiRTDB< CtiMCSchedule >::MapIterator itr = _schedule_manager.getMap().begin();
     CtiMCSchedule* sched;
@@ -139,7 +139,7 @@ void CtiMCScheduler::getEvents(const CtiTime& now, set< ScheduledEvent >& events
    // and add any new events if necessary
    {
 
-        RWRecursiveLock<RWMutexLock>::LockGuard guard( _schedule_manager.getMux() );
+        CtiLockGuard<CtiMutex> guard( _schedule_manager.getMux() );
         CtiMCSchedule* schedule = NULL;
 
         for( std::set< ScheduledEvent >::iterator iter = events.begin();
@@ -342,7 +342,7 @@ void CtiMCScheduler::handleEvent(const ScheduledEvent& event)
 {
     {
 
-       RWRecursiveLock<RWMutexLock>::LockGuard guard( _schedule_manager.getMux() );
+       CtiLockGuard<CtiMutex> guard( _schedule_manager.getMux() );
        CtiMCSchedule* schedule = _schedule_manager.findSchedule( event.sched_id );
 
        if( schedule == NULL )
@@ -671,7 +671,7 @@ void CtiMCScheduler::calcDateTimeStart(const CtiTime& now, const CtiMCSchedule& 
     }
     else if( tempTime < now )
     {
-        start_time = CtiTime(CtiTime::specialvalues::not_a_time);
+        start_time = CtiTime(CtiTime::not_a_time);
     }
     else
     {

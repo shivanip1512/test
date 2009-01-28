@@ -1,6 +1,5 @@
 #include "yukon.h"
 
-#include <windows.h>
 #include "wordbuilder.h"
 
 INT BuildVersacomWord( UINT Address,

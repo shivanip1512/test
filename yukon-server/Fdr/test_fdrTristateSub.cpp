@@ -11,7 +11,6 @@
 #define BOOST_AUTO_TEST_MAIN "Test FdrSanMiguel"
 
 #include <boost/test/unit_test.hpp>
-#include <boost/test/auto_unit_test.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 #include <string>
@@ -29,7 +28,7 @@
 using boost::unit_test_framework::test_suite;
 using namespace std;
 
-BOOST_AUTO_UNIT_TEST( test_readInFile_goodData )
+BOOST_AUTO_TEST_CASE( test_readInFile_goodData )
 {   //example cases from an actual data file.
     FDRTriStateSub sm;
     string caseOne   = "\"20070516101500\",\"Nucla 115/69 Xfmr.\",\"MW\",4.326";
@@ -53,7 +52,7 @@ BOOST_AUTO_UNIT_TEST( test_readInFile_goodData )
     BOOST_CHECK_EQUAL( listItr == stringList.end(),true ); 
 }
 
-BOOST_AUTO_UNIT_TEST( test_readInFile_emptyFile )
+BOOST_AUTO_TEST_CASE( test_readInFile_emptyFile )
 {//a file with nothing in it. should return an empty list.
     FDRTriStateSub sm;
 
@@ -71,7 +70,7 @@ BOOST_AUTO_UNIT_TEST( test_readInFile_emptyFile )
 
 }
 
-BOOST_AUTO_UNIT_TEST( test_readInFile_emptyLine )
+BOOST_AUTO_TEST_CASE( test_readInFile_emptyLine )
 {
     FDRTriStateSub sm;
 
@@ -89,7 +88,7 @@ BOOST_AUTO_UNIT_TEST( test_readInFile_emptyLine )
 
 }
 
-BOOST_AUTO_UNIT_TEST( test_readInFile_badData )
+BOOST_AUTO_TEST_CASE( test_readInFile_badData )
 { //Bad data will have to be handled while processing, This is just to see if it will do what is expected.
     FDRTriStateSub sm;
     string caseOne = " ";
@@ -109,7 +108,7 @@ BOOST_AUTO_UNIT_TEST( test_readInFile_badData )
 
 }
 
-BOOST_AUTO_UNIT_TEST( test_processData_emptyInput )
+BOOST_AUTO_TEST_CASE( test_processData_emptyInput )
 {
     FDRTriStateSub sm;
 
@@ -121,7 +120,7 @@ BOOST_AUTO_UNIT_TEST( test_processData_emptyInput )
     BOOST_CHECK_EQUAL(msgList.size(),stringList.size());
 }
 
-BOOST_AUTO_UNIT_TEST( test_processData_goodInput  )
+BOOST_AUTO_TEST_CASE( test_processData_goodInput  )
 {
     FDRTriStateSub sm;
     string caseOne   = "\"20070516101500\",\"Nucla 115/69 Xfmr.\",\"MW\",4.326";
@@ -155,7 +154,7 @@ BOOST_AUTO_UNIT_TEST( test_processData_goodInput  )
     }
 }
 
-BOOST_AUTO_UNIT_TEST( test_processData_badInput   )
+BOOST_AUTO_TEST_CASE( test_processData_badInput   )
 {
     FDRTriStateSub sm;
     string caseOne   = "\"20070516101500\",\"Nucla 115/69 Xfmr.\",\"MW\",4.326";
@@ -165,7 +164,7 @@ BOOST_AUTO_UNIT_TEST( test_processData_badInput   )
     BOOST_CHECK_EQUAL(1,1);
 }
 
-BOOST_AUTO_UNIT_TEST( test_generateMessage_badInput )
+BOOST_AUTO_TEST_CASE( test_generateMessage_badInput )
 {
     FDRTriStateSub sm;
     StringMessageContainer msg;
@@ -227,7 +226,7 @@ BOOST_AUTO_UNIT_TEST( test_generateMessage_badInput )
     }
 }
 
-BOOST_AUTO_UNIT_TEST( test_generateMessage_goodInput )
+BOOST_AUTO_TEST_CASE( test_generateMessage_goodInput )
 {
     FDRTriStateSub sm;
     StringMessageContainer msg;

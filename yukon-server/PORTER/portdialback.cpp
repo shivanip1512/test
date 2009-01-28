@@ -7,11 +7,46 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2007/04/11 14:37:55 $
+* REVISION     :  $Revision: 1.6.20.2 $
+* DATE         :  $Date: 2008/11/17 23:06:33 $
 *
 * HISTORY      :
 * $Log: portdialback.cpp,v $
+* Revision 1.6.20.2  2008/11/17 23:06:33  jmarks
+* YUK-5273 Upgrade Yukon tool chain to Visual Studio 2005/2008
+* **************************************************************************************************************
+* Removed "CTITYPES.H" from every file in the project, so far there were no
+* known side-effects or even compile errors, however, they could still happen.
+*
+* Also, made many other changes for compiling.
+*
+* The project now apparently compiles until reching the database
+* subdirectory, however, I have seen cases where there is apparent
+* regressing and need to re-work things.
+*
+* However, enough changes have happened, that I felt it was good to
+* committ.
+* **************************************************************************************************************
+* Possibly other misc. changes since last commit.
+* *******************************************************
+*
+*
+* Revision 1.6.20.1  2008/11/13 17:23:43  jmarks
+* YUK-5273 Upgrade Yukon tool chain to Visual Studio 2005/2008
+*
+* Responded to reviewer comments again.
+*
+* I eliminated excess references to windows.h .
+*
+* This still left over 100 references to it where "yukon.h" or "precompiled.h" was not obviously included.  Some other chaining of references could still be going on, and of course it is potentially possible that not all the files in the project that include windows.h actually need it - I didn't check for that.
+*
+* None-the-less, I than added the NOMINMAX define right before each place where windows.h is still included.
+* Special note:  std::min<LONG>(TimeOut, 500); is still required for compilation.
+*
+* In this process I occasionally deleted a few empty lines, and when creating the define, also added some.
+*
+* This may not have affected every file in the project, but while mega-editing it certainly seemed like it did.
+*
 * Revision 1.6  2007/04/11 14:37:55  jotteson
 * Fix for problems related to boost.
 *
@@ -47,7 +82,6 @@
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-#include <windows.h>
 #include <process.h>
 #include <iostream>
 #include <iomanip>
@@ -58,7 +92,7 @@
 #include <rw\thr\mutex.h>
 
 #include "cticalls.h"
-#include "ctitypes.h"
+
 #include "cparms.h"
 #include "dsm2.h"
 #include "connection.h"

@@ -72,7 +72,7 @@ protected:
 public:
 
    CtiDeviceWctpTerminal();
-   CtiDeviceWctpTeminal(const CtiDeviceWctpTerminal& aRef);
+   CtiDeviceWctpTerminal(const CtiDeviceWctpTerminal& aRef);
    virtual ~CtiDeviceWctpTerminal();
 
    CtiDeviceWctpTerminal& operator=(const CtiDeviceWctpTerminal& aRef);

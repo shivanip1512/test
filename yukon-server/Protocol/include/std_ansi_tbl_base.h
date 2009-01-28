@@ -14,10 +14,28 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/std_ansi_tbl_base.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2008/10/07 18:16:45 $
+* REVISION     :  $Revision: 1.7.2.1 $
+* DATE         :  $Date: 2008/11/17 23:06:33 $
 *    History:
       $Log: std_ansi_tbl_base.h,v $
+      Revision 1.7.2.1  2008/11/17 23:06:33  jmarks
+      YUK-5273 Upgrade Yukon tool chain to Visual Studio 2005/2008
+      **************************************************************************************************************
+      Removed "CTITYPES.H" from every file in the project, so far there were no
+      known side-effects or even compile errors, however, they could still happen.
+
+      Also, made many other changes for compiling.
+
+      The project now apparently compiles until reching the database
+      subdirectory, however, I have seen cases where there is apparent
+      regressing and need to re-work things.
+
+      However, enough changes have happened, that I felt it was good to
+      committ.
+      **************************************************************************************************************
+      Possibly other misc. changes since last commit.
+      *******************************************************
+      
       Revision 1.7  2008/10/07 18:16:45  mfisher
       YUK-6504 Server-side point management is naive
       cleaned up a few dsm2.h dependencies
@@ -46,7 +64,6 @@
 *----------------------------------------------------------------------------------*/
 
 #include "dlldefs.h"
-#include "ctitypes.h"
 #include "types.h"
 
 typedef union

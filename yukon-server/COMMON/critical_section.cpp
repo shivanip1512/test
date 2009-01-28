@@ -16,9 +16,9 @@ CtiCriticalSection::CtiCriticalSection()
 {
 #ifdef _WINDOWS
     InitializeCriticalSection(&_critical_section);
-#ifdef _DEBUG
+/// #ifdef _DEBUG
     _threadID = 0;
-#endif
+/// #endif
 #endif
 }
 
@@ -38,9 +38,9 @@ bool CtiCriticalSection::acquire()
 {
 #ifdef _WINDOWS
     EnterCriticalSection(&_critical_section);
-#ifdef _DEBUG
+/// #ifdef _DEBUG
     _threadID = (int) _critical_section.OwningThread;
-#endif
+/// #endif
     return true;
 #endif
 }
@@ -65,16 +65,16 @@ bool CtiCriticalSection::acquire(unsigned long ignored_arg_millis)
 bool CtiCriticalSection::tryAcquire()
 {
 #ifdef _WINDOWS
-#ifdef _DEBUG
+/// #ifdef _DEBUG
     if( TryEnterCriticalSection(&_critical_section) )
     {
         _threadID = (int) _critical_section.OwningThread;
         return true;
     }
     return false;
-#else
-    return TryEnterCriticalSection(&_critical_section);
-#endif
+/// #else
+///     return TryEnterCriticalSection(&_critical_section);
+/// #endif
 #endif
 }
 
@@ -89,16 +89,16 @@ void CtiCriticalSection::release()
 #ifdef _WINDOWS
     LeaveCriticalSection(&_critical_section);
 
-#ifdef _DEBUG
+/// #ifdef _DEBUG
     _threadID = 0;
-#endif
+/// #endif
 #endif
 }
 
-#ifdef _DEBUG
+/// #ifdef _DEBUG
 DWORD CtiCriticalSection::lastAcquiredByTID() const
 {
     return _threadID;
 }
-#endif
+/// #endif
 

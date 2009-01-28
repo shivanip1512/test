@@ -18,7 +18,12 @@
 #ifndef __FDRSTEC_H__
 #define __FDRSTEC_H__
 
-#include <windows.h>    //  NOTE:  if porting this to non-WIN32, make sure to replace this
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
+
+#include <windows.h>    
 
 #include "dlldefs.h"
 #include "fdrftpinterface.h"

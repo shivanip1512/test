@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/include/device_queue_interface.h-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2008/07/21 20:38:26 $
+* REVISION     :  $Revision: 1.2.4.1 $
+* DATE         :  $Date: 2008/11/20 16:49:27 $
 *
 * Copyright (c) 2007 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -36,7 +36,7 @@ public:
     void getQueueRequestInfo(ULONG requestID, ULONG &count, ULONG &priority);
     void cancelRequest(ULONG requestID, ULONG &count);
     void set711Info(CtiTransmitter711Info *pInfo);
-    void retrieveQueueEntries(bool (*myFindFunc)(void*, PQUEUEENT), void *findParameter, list<void*>& entries);
+    void retrieveQueueEntries( bool (*myFindFunc)(void*, PQUEUEENT) , void *findParameter, std::list<void*>& entries);
 
 };
 

@@ -25,7 +25,7 @@
    -------------------------------------------------------------------- */
 #include "yukon.h"
 
-#include <windows.h>       // These next few are required for Win32
+// These next few are required for Win32
 #include "os2_2w32.h"
 #include "cticalls.h"
 
@@ -40,7 +40,7 @@
 
 
 /* Routine to build the mastercomm header */
-MasterHeader (PBYTE Message, USHORT Remote, USHORT Command, USHORT Length)
+int MasterHeader (PBYTE Message, USHORT Remote, USHORT Command, USHORT Length)
 {
    /* Start Byte */
    Message[0] = MASTERHEADER;
@@ -63,7 +63,7 @@ MasterHeader (PBYTE Message, USHORT Remote, USHORT Command, USHORT Length)
 
 
 /* Routine to tack CRC onto a Mastercom message */
-PreMaster (PBYTE Message, USHORT Length)
+int PreMaster (PBYTE Message, USHORT Length)
 {
    USHORT CRC;
 
@@ -78,7 +78,7 @@ PreMaster (PBYTE Message, USHORT Length)
 
 /* Routine to check out the first 4 bytes of a mastercom reply */
 
-PostMaster (PBYTE  Message, USHORT Remote, PULONG   Length)
+int PostMaster (PBYTE  Message, USHORT Remote, PULONG   Length)
 {
    if(Message[0] != 0x01)
       return(FRAMEERR);
@@ -93,7 +93,7 @@ PostMaster (PBYTE  Message, USHORT Remote, PULONG   Length)
 
 
 /* Routine to check the CRC on the master reply message */
-MasterReply (PBYTE Message,
+int MasterReply (PBYTE Message,
              USHORT Length)
 
 {

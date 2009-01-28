@@ -36,6 +36,11 @@
 #define __CTILOGGER_HPP__
 
 #ifdef _WINDOWS
+    
+    #if !defined (NOMINMAX)
+    #define NOMINMAX
+    #endif
+
     #include <windows.h>
 #endif
 
@@ -109,9 +114,9 @@ public:
     char fill(char cfill);
     char fill() const;
 
-#ifdef _DEBUG
+/// #ifdef _DEBUG
     DWORD lastAcquiredByTID() const;
-#endif
+/// #endif
 
 protected:
     void run();

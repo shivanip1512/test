@@ -32,6 +32,11 @@
         10-1-93     Moved Millitime here from pport.c       WRO
 
    -------------------------------------------------------------------- */
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
+
 #include <windows.h>       // These next few are required for Win32
 #include <iostream>
 using namespace std;

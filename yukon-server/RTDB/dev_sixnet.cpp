@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_sixnet.cpp-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2008/08/14 15:57:40 $
+* REVISION     :  $Revision: 1.23.2.1 $
+* DATE         :  $Date: 2008/11/20 16:49:20 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -327,7 +327,7 @@ CtiSxlRecord& CtiSxlRecord::setValue(const double& val)
 //
 int CtiDeviceSixnet::assembleSetTail(uint32 tail)
 {
-    LockGuard gd(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     return getSixnetProtocol().DlMOVETAILGenerate(tail);
 }
 
@@ -344,13 +344,13 @@ int CtiDeviceSixnet::assembleSetTail(uint32 tail)
 //
 int CtiDeviceSixnet::assembleGetRecords(uint32 first, int n)
 {
-    LockGuard gd(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     return getSixnetProtocol().DlGETRECSGenerate(first, n);
 }
 
 int CtiDeviceSixnet::processGetRecords(int &recProcessed)
 {
-    LockGuard gd(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     // Someone has record data out there...
 
 
@@ -391,7 +391,7 @@ int CtiDeviceSixnet::processGetRecords(int &recProcessed)
 
 time_t CtiDeviceSixnet::getFirstRecordTime()
 {
-    LockGuard gd(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     time_t tstamp = 0;
     // Someone has record data out there...
 
@@ -419,13 +419,13 @@ time_t CtiDeviceSixnet::getFirstRecordTime()
 //
 int CtiDeviceSixnet::assembleGetFields()
 {
-    LockGuard gd(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     return getSixnetProtocol().FsREADGenerate(SXL_FIELDS, 8 * _fieldCnt);
 }
 
 int CtiDeviceSixnet::processGetFields()
 {
-    LockGuard gd(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     bool bOk = ( getSixnetProtocol().getByteBuffer().size() == 8 * _fieldCnt );
 
     _registerCnt = 0;
@@ -493,7 +493,7 @@ int CtiDeviceSixnet::processGetFields()
 //
 int CtiDeviceSixnet::assembleGetHeaderInfo()
 {
-    LockGuard gd(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     return getSixnetProtocol().FsREADGenerate(SXL_HDR, SXL_HDR_SIZE);
 }
 
@@ -503,7 +503,7 @@ int CtiDeviceSixnet::assembleGetHeaderInfo()
  */
 int CtiDeviceSixnet::processGetHeaderInfo()
 {
-    LockGuard gd(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     int status = NORMAL;
 
 
@@ -563,13 +563,13 @@ int CtiDeviceSixnet::processGetHeaderInfo()
 //
 int CtiDeviceSixnet::assembleGetHeadTail()
 {
-    LockGuard gd(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     return getSixnetProtocol().FsREADGenerate(SXL_HEAD, 8);
 }
 
 int CtiDeviceSixnet::processGetHeadTail()
 {
-    LockGuard gd(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     bool bOk = getSixnetProtocol().getByteBuffer().size() == 8;
 
     // first make sure the header is for file format I recognize
@@ -624,7 +624,7 @@ int CtiDeviceSixnet::fetchRecords(bool resetFetch)
 //
 int CtiDeviceSixnet::assembleGetAlias()
 {
-    LockGuard gd(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     if (_recordData.size()) _recordData.clear();
 
     // Fill out the request message and return the number of bytes to be sent into the world.
@@ -633,7 +633,7 @@ int CtiDeviceSixnet::assembleGetAlias()
 
 bool CtiDeviceSixnet::processGetAlias()
 {
-    LockGuard gd(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     // Return value is zero for success.
 
     return getSixnetProtocol().validAlias();
@@ -645,7 +645,7 @@ bool CtiDeviceSixnet::processGetAlias()
 
 CtiDeviceSixnet::CtiDeviceSixnet()
 {
-    LockGuard gd(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
 
     _msStationNum = CtiProtocolSixnet::ANY_STATION;
     _targetStationNum = CtiProtocolSixnet::ANY_STATION;
@@ -664,7 +664,7 @@ CtiDeviceSixnet::CtiDeviceSixnet()
 
 CtiDeviceSixnet::~CtiDeviceSixnet()
 {
-    LockGuard gd(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     flushVectors();
     destroyBuffers();
     _fields.clear();
@@ -688,7 +688,7 @@ CtiDeviceSixnet& CtiDeviceSixnet::operator=(const CtiDeviceSixnet& aRef)
 
 CtiProtocolSixnet& CtiDeviceSixnet::getSixnetProtocol()
 {
-    LockGuard gd(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     if (_protocol == NULL)
     {
         /*
@@ -706,7 +706,7 @@ CtiProtocolSixnet& CtiDeviceSixnet::getSixnetProtocol()
 
 UCHAR* CtiDeviceSixnet::getTxBuffer()
 {
-    LockGuard gd(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
 
     if (_txBuffer == NULL)
     {
@@ -721,7 +721,7 @@ UCHAR* CtiDeviceSixnet::getTxBuffer()
 
 UCHAR* CtiDeviceSixnet::getRxBuffer()
 {
-    LockGuard gd(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
 
     if (_rxBuffer == NULL)
     {
@@ -739,7 +739,7 @@ INT CtiDeviceSixnet::allocateDataBins (OUTMESS *OutMessage)
 {
     INT status = NORMAL;
 
-    LockGuard gd(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     // They are self allocating... But we want to clear these out.
     flushVectors();
 
@@ -753,7 +753,7 @@ INT CtiDeviceSixnet::allocateDataBins (OUTMESS *OutMessage)
 
 void CtiDeviceSixnet::flushVectors()
 {
-    LockGuard gd(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     try
     {
         if (_recordData.size()) _recordData.clear();
@@ -767,7 +767,7 @@ void CtiDeviceSixnet::flushVectors()
 
 void CtiDeviceSixnet::destroyBuffers()
 {
-    LockGuard gd(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
 
     try
     {
@@ -805,7 +805,7 @@ INT CtiDeviceSixnet::freeDataBins()
 INT CtiDeviceSixnet::generateCommandHandshake(CtiXfer  &Transfer, list< CtiMessage* > &traceList)
 {
 
-    LockGuard gd(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     setCurrentState( CtiDeviceIED::StateHandshakeInitialize );
     INT status = NORMAL;
     INT bytesread = (INT) (Transfer.getInCountActual());
@@ -871,7 +871,7 @@ INT CtiDeviceSixnet::generateCommandHandshake(CtiXfer  &Transfer, list< CtiMessa
 }
 INT CtiDeviceSixnet::decodeResponseHandshake(CtiXfer &Transfer, INT commReturnValue, list< CtiMessage* > &traceList)
 {
-    LockGuard gd(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     INT status = NORMAL;
     INT bytesread = (INT) (Transfer.getInCountActual());
     INT protocolreturn;
@@ -1441,7 +1441,7 @@ INT CtiDeviceSixnet::copyLoadProfileData(BYTE *aInMessBuffer, ULONG &aBytesRecei
     INT status = NORMAL;
     INT remainder = _registerCnt + _demAccumCnt;
 
-    LockGuard gd(monitor());
+    CtiLockGuard<CtiMutex> guard(_classMutex);
     UINT numLeft = _recordData.size();
 
 

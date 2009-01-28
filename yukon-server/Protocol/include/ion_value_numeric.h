@@ -14,8 +14,6 @@
 #pragma warning( disable : 4786 )
 
 
-#include "ctitypes.h"
-
 class CtiIONNumeric
 {
 private:

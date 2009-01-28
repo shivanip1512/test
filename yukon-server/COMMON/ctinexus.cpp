@@ -1,6 +1,5 @@
 #include "yukon.h"
 
-#include <windows.h>
 #include <iostream>
 using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
@@ -557,7 +556,7 @@ INT CTINEXUS::CTINexusRead(VOID *buf, ULONG len, PULONG BRead, LONG TimeOut)
             {
                 if( TimeOut > 0 )
                 {
-                    tv.tv_usec = std::min(TimeOut, 500000);
+                    tv.tv_usec = std::min(TimeOut, 500000L);
                 }
                 else
                 {
@@ -602,7 +601,7 @@ INT CTINEXUS::CTINexusRead(VOID *buf, ULONG len, PULONG BRead, LONG TimeOut)
                     unsigned insert_position = read_buffer.size();
                     read_buffer.insert(read_buffer.end(), bytes_available, 0);
 
-                    bytes_read = recv(sockt, read_buffer.begin() + insert_position, bytes_available, 0);
+                    bytes_read = recv(sockt, (char *) ( &* (read_buffer.begin() + insert_position)), bytes_available, 0);
 
                     if( bytes_read <= 0 )
                     {
@@ -624,7 +623,7 @@ INT CTINEXUS::CTINexusRead(VOID *buf, ULONG len, PULONG BRead, LONG TimeOut)
 
             if( TimeOut )
             {
-                if( TimeOut > 0 )   TimeOut -= std::min(elapsed.delta(), TimeOut);
+                if( TimeOut > 0 )   TimeOut -= min( (LONG) elapsed.delta(), TimeOut);
 
                 try
                 {
@@ -661,8 +660,8 @@ INT CTINEXUS::CTINexusRead(VOID *buf, ULONG len, PULONG BRead, LONG TimeOut)
     {
         unsigned long to_copy = std::min(len, static_cast<unsigned long>(read_buffer.size()));
 
-        memcpy(buf, read_buffer.begin(), to_copy);
-        read_buffer.erase(read_buffer.begin(), read_buffer.begin() + to_copy);
+        memcpy(buf, reinterpret_cast<const void *>(&*read_buffer.begin()), to_copy);
+        read_buffer.erase(read_buffer.begin(), read_buffer.begin() + to_copy   );
 
         *BRead += to_copy;
     }

@@ -21,6 +21,11 @@
 #pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 
 
+
+#if !defined (NOMINMAX)
+#define NOMINMAX
+#endif
+
 #include <windows.h>
 #include <iostream>
 #include <functional>
@@ -30,8 +35,10 @@
 #include <rw/tphdict.h>
 
 #include <rw/thr/recursiv.h>
-#include <rw/thr/monitor.h>
+
 #include <rw\thr\mutex.h>
+
+#include <boost/utility.hpp>
 
 #include "dlldefs.h"
 #include "hashkey.h"
@@ -54,8 +61,10 @@ struct my_hash
 };
 
 template < class T >
-class IM_EX_CTIBASE CtiRTDB : public RWMonitor< RWRecursiveLock< RWMutexLock > >
+class CtiRTDB : public boost::noncopyable
 {
+private:
+    mutable CtiMutex _classMutex;
 protected:
 
    // This is a keyed Mapping which does not allow duplicates!
@@ -67,15 +76,15 @@ protected:
 
 public:
 
-   typedef std::map< long, T* >::value_type       val_pair;
-   typedef std::map< long, T* >::iterator       MapIterator;
+   typedef typename std::map< long, T* >::value_type       val_pair;
+   typedef typename std::map< long, T* >::iterator       MapIterator;
 
 
    CtiRTDB() {}
 
    virtual ~CtiRTDB()
    {
-      LockGuard guard(monitor());
+      CtiLockGuard<CtiMutex> guard(_classMutex);
       delete_container(_orphans);
       _orphans.clear();       // Clean up the leftovers if there are any.
       //deletes memory pointed to in the value pointer
@@ -94,13 +103,13 @@ public:
        T* temp = NULL;
        MapIterator itr;
 
-       LockGuard  gaurd(monitor());
+       CtiLockGuard<CtiMutex> guard(_classMutex);
        //CtiHashKey key(id);
 
        itr = Map.find( id );
        if ( itr != Map.end() ) {
-           long foundKey = (*itr).first
-           temp = (*itr).second
+           long foundKey = (*itr).first;
+           temp = (*itr).second;
 
            Map.erase( id );
        }else
@@ -113,22 +122,11 @@ public:
        }
        else
        {
-           cout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+           std::cout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
        }
 
        return status;
    }
-    template<class _II, class _Fn> inline
-    void ts_for_each(_II _F, _II _L, _Fn _Op, void* d)
-    {
-        for (; _F != _L; ++_F)
-            _Op(*_F, d);
-    }
-    void apply(void (*applyFun)(const long, T*&, void*), void* d)
-    {
-        LockGuard  gaurd(monitor());
-        ts_for_each( Map.begin(), Map.end(), applyFun, d );
-    }
 
    /*
     *  This operation will return a value to us by
@@ -140,7 +138,7 @@ public:
 
    T* find(bool (*testFun)(T*, void*),void* d)
    {
-      LockGuard  gaurd(monitor());
+      CtiLockGuard<CtiMutex> guard(_classMutex);
 
       MapIterator   itr = Map.begin();
 
@@ -156,9 +154,9 @@ public:
    T* remove(bool (*testFun)(T*, void*), void* d)
    {
       T* temp = NULL;
-      LockGuard  gaurd(monitor());
+      CtiLockGuard<CtiMutex> guard(_classMutex);
 
-      MapIterator   itr Map.begin();
+      MapIterator   itr = Map.begin();
 
       for( ; itr != Map.end() ; ++itr )
       {
@@ -180,10 +178,10 @@ public:
        int count = 0;
 
        list< long >       deleteKeys;
-       list< CtiDeviceBase* >    deleteObjs;
+       list< T* >    deleteObjs;
 
        MapIterator mapitr = Map.begin();
-       CtiDeviceBase   *pdev = 0;
+       T   *pdev = 0;
        long             pkey = 0;
 
        for(; mapitr != Map.end() ; ++mapitr )
@@ -198,11 +196,12 @@ public:
                deleteObjs.push_back(pdev);
            }
        }
-       std::list<long>::iterator itr = deleteKeys.begin();
+       std::list<long>::const_iterator itr = deleteKeys.begin();
        while( itr != deleteKeys.end() )
        //for(int kpos = 0; kpos < deleteKeys.entries(); kpos++)
        {
-           itr = Map.erase(*itr);
+           Map.erase(*itr);
+           itr++;
        }//TSFLAG
 
        delete_container(deleteObjs);
@@ -214,12 +213,12 @@ public:
 
    size_t entries() const
    {
-      LockGuard guard(monitor());
+      CtiLockGuard<CtiMutex> guard(_classMutex);
       return Map.size();
    }
 
    map<long , T* > & getMap()      { return Map; }
-   RWRecursiveLock<RWMutexLock> &      getMux()       { return mutex(); }
+   CtiMutex &      getMux()       { return _classMutex; }
 
    int getErrorCode() const { return _dberrorcode; };
    int setErrorCode(int ec)

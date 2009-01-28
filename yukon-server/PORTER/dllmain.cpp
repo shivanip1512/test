@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/dllmain.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2007/07/10 21:00:20 $
+* REVISION     :  $Revision: 1.9.14.2 $
+* DATE         :  $Date: 2008/11/20 16:49:26 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,7 +17,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <process.h>
-#include <windows.h>
+
 #include <winbase.h>
 #include <winsock.h>
 #include "os2_2w32.h"

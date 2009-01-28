@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_kv2.h-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2008/10/29 18:16:48 $
+* REVISION     :  $Revision: 1.15.2.1 $
+* DATE         :  $Date: 2008/11/17 23:06:32 $
 *
 
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
@@ -24,7 +24,7 @@
 #include "dlldefs.h"
 #include "prot_ansi_sentinel.h"
 #include "dsm2.h"
-#include "ctitypes.h"
+
 #include "types.h"
 #include "dllyukon.h"
 
