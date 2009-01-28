@@ -58,7 +58,7 @@ SRC             = .
 #       This is one level above the compile base.
 #       This is set by the build batch file.
 #
-%IF( "$(COMPILEBASE)" == "" )
+%IF( "$(SOURCEBASE)" == "" )
 
    SOURCEBASE = ..
 
