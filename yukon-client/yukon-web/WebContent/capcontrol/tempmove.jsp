@@ -28,7 +28,7 @@
 
 <%@include file="cbc_inc.jspf"%>
 
-<c:url var="executeURL" value="/spring/capcontrol/commandexecutor?action=executeCommandTier"/>
+<cti:url var="executeURL" value="/spring/capcontrol/commandexecutor?action=executeCommandTier"/>
 
 <%
     FilterCacheFactory cacheFactory = YukonSpringHook.getBean("filterCacheFactory", FilterCacheFactory.class);
@@ -62,7 +62,7 @@
     path += paoDao.getYukonPAOName(capControlCache.getSubstation(capControlCache.getSubBus(capControlCache.getFeeder(capBank.getParentID()).getParentID()).getParentID()).getParentID());
 %>
 
-<c:url var="controlOrderPage" value="/capcontrol/feederBankInfo.jsp"/>
+<cti:url var="controlOrderPage" value="/capcontrol/feederBankInfo.jsp"/>
 <script type="text/javascript"> 
 function updateFeederBankInfo()
 {

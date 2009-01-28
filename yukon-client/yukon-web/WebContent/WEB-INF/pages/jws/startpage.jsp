@@ -8,7 +8,7 @@
 <tr>
 <td>
 <a href="${jnlp.path}">
-  <img src="<c:url value="${jnlp.appIcon}" />" border="0">
+  <img src="<cti:url value="${jnlp.appIcon}" />" border="0">
 </a> 
 </td>
 

@@ -1,9 +1,9 @@
 <%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<c:url var="moveOutFormUrl"
+<cti:url var="moveOutFormUrl"
     value="/WEB-INF/pages/amr/meter/moveOutForm.jsp" />
-<c:url var="moveOutResultsUrl"
+<cti:url var="moveOutResultsUrl"
     value="/WEB-INF/pages/amr/meter/moveOutResults.jsp" />
 
 <cti:standardPage title="Move Out Page" module="amr">

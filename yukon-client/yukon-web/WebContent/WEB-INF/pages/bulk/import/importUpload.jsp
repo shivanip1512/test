@@ -4,7 +4,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:msg var="pageTitle" key="yukon.common.device.bulk.importUpload.pageTitle"/>
-<c:url var="check" value="/WebConfig/yukon/Icons/check.gif"/>
+<cti:url var="check" value="/WebConfig/yukon/Icons/check.gif"/>
 
 <cti:standardPage title="${pageTitle}" module="amr">
 
@@ -96,10 +96,10 @@
                     <%-- sample files --%>
                     <div class="small">
                         <div class="normalBoldLabel" style="display:inline;"><cti:msg key="yukon.common.device.bulk.importUpload.sampleFilesLabel"/>:</div>
-                        <a href="<c:url value="/WebConfig/custom/sample_bulk_files/Sample_Bulk_Import_File1.csv"/>">File 1</a>, 
-                        <a href="<c:url value="/WebConfig/custom/sample_bulk_files/Sample_Bulk_Import_File2.csv"/>">File 2</a>, 
-                        <a href="<c:url value="/WebConfig/custom/sample_bulk_files/Sample_Bulk_Import_File3.csv"/>">File 3</a>, 
-                        <a href="<c:url value="/WebConfig/custom/sample_bulk_files/Sample_Bulk_Import_File4.csv"/>">File 4</a>
+                        <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/Sample_Bulk_Import_File1.csv"/>">File 1</a>, 
+                        <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/Sample_Bulk_Import_File2.csv"/>">File 2</a>, 
+                        <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/Sample_Bulk_Import_File3.csv"/>">File 3</a>, 
+                        <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/Sample_Bulk_Import_File4.csv"/>">File 4</a>
                     </div>
                     
                 </td>
@@ -117,7 +117,7 @@
                 <%-- methods --%>
                 <c:forEach var="method" items="${importMethods}">
                 
-                    <c:url var="methodImg" value="/WebConfig/yukon/Icons/import_by_${method.name}.gif"/>
+                    <cti:url var="methodImg" value="/WebConfig/yukon/Icons/import_by_${method.name}.gif"/>
                 
                     <td>
                         <table class="miniResultsTable" style="font-size:11px;">

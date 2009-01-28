@@ -2,7 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<c:url var="submitUrl" value="/spring/macsscheduler/schedules" />
+<cti:url var="submitUrl" value="/spring/macsscheduler/schedules" />
 <cti:standardPage title="Scheduled Scripts" module="amr">
     <cti:standardMenu />
    	<cti:breadCrumbs>

@@ -10,19 +10,19 @@ Grid:
 
 <!-- Add the device collection parameters to the data and edit urls so the 
      device collection can be recreated on the server side -->
-<c:url var="dataUrl" value="/spring/bulk/action">
-    <c:param name="action" value="gridData" />
+<cti:url var="dataUrl" value="/spring/bulk/action">
+    <cti:param name="action" value="gridData" />
     <c:forEach var="entry" items="${deviceCollection.collectionParameters}">
-	    <c:param name="${entry.key}" value="${entry.value}" />
+	    <cti:param name="${entry.key}" value="${entry.value}" />
     </c:forEach>
-</c:url>
+</cti:url>
 
-<c:url var="editUrl" value="/spring/bulk/action">
-    <c:param name="action" value="saveEdit" />
+<cti:url var="editUrl" value="/spring/bulk/action">
+    <cti:param name="action" value="saveEdit" />
     <c:forEach var="entry" items="${deviceCollection.collectionParameters}">
-	    <c:param name="${entry.key}" value="${entry.value}" />
+	    <cti:param name="${entry.key}" value="${entry.value}" />
     </c:forEach>
-</c:url>
+</cti:url>
 
 <tags:extEditorGrid metaObject="${metaObject}" dataUrl="${dataUrl}" editUrl="${editUrl}" />
 

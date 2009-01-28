@@ -34,7 +34,7 @@
                         </cti:paoPicker>
                             </span>
                           <span class="widgetAction_waiting" style="display:none">
-                          <img src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" alt="waiting" >
+                          <img src="<cti:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" alt="waiting" >
                           </span>
                           </span>
             <input id="${newPaoId}" name="newPaoId" type="hidden">

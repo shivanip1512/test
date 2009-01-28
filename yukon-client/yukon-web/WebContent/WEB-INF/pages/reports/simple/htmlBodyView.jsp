@@ -16,19 +16,19 @@
 
 <%-- CSV URL --%>
 <cti:simpleReportUrlFromNameTag var="csvUrlBase" viewType="csvView" definitionName="${definitionName}" htmlOutput="true" />
-<c:url var="csvUrl" value="${csvUrlBase}">
+<cti:url var="csvUrl" value="${csvUrlBase}">
     <c:forEach var="input" items="${inputMap}">
-        <c:param name="${input.key}" value="${input.value}"/>
+        <cti:param name="${input.key}" value="${input.value}"/>
     </c:forEach>
-</c:url>
+</cti:url>
 
 <%-- PDF URL --%>
 <cti:simpleReportUrlFromNameTag var="pdfUrlBase" viewType="pdfView" definitionName="${definitionName}" htmlOutput="true" />
-<c:url var="pdfUrl" value="${pdfUrlBase}">
+<cti:url var="pdfUrl" value="${pdfUrlBase}">
     <c:forEach var="input" items="${inputMap}">
-        <c:param name="${input.key}" value="${input.value}"/>
+        <cti:param name="${input.key}" value="${input.value}"/>
     </c:forEach>
-</c:url>
+</cti:url>
 
 
 <%-- REPORT TABLE --%>

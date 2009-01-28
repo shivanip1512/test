@@ -207,7 +207,7 @@
                                 <br>
                                 <input id="editGroupNameSaveButton" type="button" value="${changeNameButtonText}" 
                                         onclick="checkAndSubmitNewName('newGroupName', 'editGroupNameForm', 'editGroupNameSaveButton', 'editGroupNameWaitImg');">
-                                <img id="editGroupNameWaitImg" src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" style="display:none;">
+                                <img id="editGroupNameWaitImg" src="<cti:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" style="display:none;">
                             
                             </form>
                             
@@ -291,7 +291,7 @@
                                     <br>
                                     <input id="addSubGroupSaveButton" type="button" value="${subgroupNameSaveText}" 
                                            onclick="checkAndSubmitNewName('childGroupName', 'addSubGroupForm', 'addSubGroupSaveButton', 'addSubGroupWaitImg');">
-                                    <img id="addSubGroupWaitImg" src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" style="display:none;">
+                                    <img id="addSubGroupWaitImg" src="<cti:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" style="display:none;">
                                 
                                 </form>
                                 
@@ -307,9 +307,9 @@
                     <br>
                     <c:choose>
                         <c:when test="${groupModifiable}">
-                            <c:url var="addByDeviceCollectionUrl" value="/spring/group/editor/showAddDevicesByCollection">
-                                <c:param name="groupName" value="${group.fullName}" />
-                            </c:url>
+                            <cti:url var="addByDeviceCollectionUrl" value="/spring/group/editor/showAddDevicesByCollection">
+                                <cti:param name="groupName" value="${group.fullName}" />
+                            </cti:url>
                             <a title="Click to add multiple devices" href="${addByDeviceCollectionUrl}">
                                 <cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.addDevicesText" />
                             </a>
@@ -359,10 +359,10 @@
                     <%--########################################################################--%>
                     <h4><cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.generateReportsLabel"/></h4>
                     
-                    <c:url value="/spring/amr/reports/groupDevicesReport" var="htmlUrl">
-                        <c:param name="def" value="groupDevicesDefinition"/>
-                        <c:param name="groupName" value="${group.fullName}"/>
-                    </c:url>
+                    <cti:url value="/spring/amr/reports/groupDevicesReport" var="htmlUrl">
+                        <cti:param name="def" value="groupDevicesDefinition"/>
+                        <cti:param name="groupName" value="${group.fullName}"/>
+                    </cti:url>
                     <c:choose>
                         <c:when test="${deviceCount > 0}">
                             <a href="${htmlUrl}">HTML</a>
@@ -459,9 +459,9 @@
                                 <c:forEach var="subGroup" items="${subGroups}">
                                     <tr class="<tags:alternateRow odd="" even="altRow"/>">
                                         <td style="border: none;">
-                                            <c:url var="homeUrl" value="/spring/group/editor/home">
-                                                <c:param name="groupName" value="${subGroup.fullName}" />
-                                            </c:url>
+                                            <cti:url var="homeUrl" value="/spring/group/editor/home">
+                                                <cti:param name="groupName" value="${subGroup.fullName}" />
+                                            </cti:url>
                                         
                                             <span title="${fn:escapeXml(subGroup.fullName)}">
                                                 <a href="${homeUrl}"><c:out value="${subGroup.name}"/></a>
@@ -479,12 +479,12 @@
                                                         <form style="display: inline;" id="${subId}removeSubGroupForm" action="/spring/group/editor/removeGroup" method="post">
                                                             <input type="hidden" name="removeGroupName" value="${fn:escapeXml(subGroup.fullName)}">
                                                             <input type="hidden" name="groupName" value="${fn:escapeXml(group.fullName)}">
-                                                            <input type="image" title="Delete Group" class="cssicon" src="<c:url value="/WebConfig/yukon/Icons/clearbits/close.gif"/>" onClick="return removeGroup()">
+                                                            <input type="image" title="Delete Group" class="cssicon" src="<cti:url value="/WebConfig/yukon/Icons/clearbits/close.gif"/>" onClick="return removeGroup()">
                                                         </form>
                                                     </c:when>
                                                     <c:otherwise>
                                                         <cti:msg var="cannotDeleteGroupLinkTitle" key="yukon.web.deviceGroups.editor.membersContainer.cannotDeleteGroupLinkTitle"/>
-                                                        <img class="graycssicon" title="${cannotDeleteGroupLinkTitle}" src="<c:url value="/WebConfig/yukon/Icons/clearbits/close.gif"/>" >
+                                                        <img class="graycssicon" title="${cannotDeleteGroupLinkTitle}" src="<cti:url value="/WebConfig/yukon/Icons/clearbits/close.gif"/>" >
                                                     </c:otherwise>
                                                 </c:choose>
                                             </td>
@@ -519,7 +519,7 @@
                                                          
                                                 <cti:msg var="showDeviceslabel" key="yukon.web.deviceGroups.editor.membersContainer.showDeviceslabel"/>         
                                                 <input id="showDevicesButton" type="button" onclick="showDevices()" value="${showDeviceslabel}" title="${showDevicesLimitText}">
-                                                <img id="showDevicesWaitImg" src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" style="display:none;">       
+                                                <img id="showDevicesWaitImg" src="<cti:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" style="display:none;">       
                                             </c:if>
                                         </td>
                                     </tr>

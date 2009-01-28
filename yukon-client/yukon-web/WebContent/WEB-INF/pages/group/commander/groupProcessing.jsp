@@ -46,7 +46,7 @@
     	<br>
     	<div style="width: 700px;">
         
-            <form id="groupCommanderForm" action="<c:url value="/spring/group/commander/executeGroupCommand" />" method="post">
+            <form id="groupCommanderForm" action="<cti:url value="/spring/group/commander/executeGroupCommand" />" method="post">
         
             <%-- SELECT COMMAND --%>
             <div class="largeBoldLabel">Select Command:</div>
@@ -96,7 +96,7 @@
                   
             <%-- EXECUTE BUTTON --%>
             <cti:msg var="noGroupSelectedAlertText" key="yukon.common.device.bulk.deviceSelection.selectDevicesByGroupTree.noGroupSelectedAlertText" />
-            <c:url var="waitImgUrl" value="/WebConfig/yukon/Icons/indicator_arrows.gif" />
+            <cti:url var="waitImgUrl" value="/WebConfig/yukon/Icons/indicator_arrows.gif" />
             
             <input type="button" id="submitGroupCommanderButton" value="Execute" onclick="return validateGroupIsSelected(this, '${cti:escapeJavaScript(noGroupSelectedAlertText)}');">
             <img id="waitImg" src="${waitImgUrl}" style="display:none;">

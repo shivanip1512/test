@@ -68,7 +68,7 @@
             <%-- SUBMIT BUTTONS --%>
             <cti:msg var="importButton" key="yukon.common.device.bulk.importConfirm.importButton"/>
             <cti:msg var="cancelButton" key="yukon.common.device.bulk.importConfirm.cancelButton"/>
-            <c:url var="cancelUrl" value="/spring/bulk/import/upload"/>
+            <cti:url var="cancelUrl" value="/spring/bulk/import/upload"/>
             
             <br>
             <input type="button" id="cancelButton" value="${cancelButton}" onclick="window.location='${cancelUrl}'">

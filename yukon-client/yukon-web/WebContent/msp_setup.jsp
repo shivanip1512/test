@@ -19,9 +19,9 @@
 	</cti:breadCrumbs>
 	<cti:standardMenu menuSelection="multispeak|interfaces"/>
 
-	<c:url var="setupUrl" value="/msp_setup.jsp">
-	    <c:param name="init" value="" />
-	</c:url>
+	<cti:url var="setupUrl" value="/msp_setup.jsp">
+	    <cti:param name="init" value="" />
+	</cti:url>
 	
 	<c:set var="arrayLength" value="<%=MultispeakDefines.MSP_INTERFACE_ARRAY.length%>" />
 
@@ -78,7 +78,7 @@
 	<div style="width:800px;">
 		<tags:boxContainer title="MultiSpeak Interface Setup" hideEnabled="false">
 		
-			<form name="form1" method="post" action="<c:url value="/servlet/MultispeakServlet"/>">
+			<form name="form1" method="post" action="<cti:url value="/servlet/MultispeakServlet"/>">
 				<input type="hidden" name="ACTION" value="updateMSP">
 				<input type="hidden" name="actionEndpoint">
 				<input type="hidden" name="actionService">
@@ -239,9 +239,9 @@
 				      <input type="submit" name="Save" value="Save" onclick="document.form1.ACTION.value='Save';">
 				      <input type="submit" name="Delete" value="Delete" onclick="document.form1.ACTION.value='Delete';">
 				      
-				      <c:url var="setupNewUrl" value="/msp_setup_new.jsp">
-						<c:param name="init" value="" />
-					  </c:url>
+				      <cti:url var="setupNewUrl" value="/msp_setup_new.jsp">
+						<cti:param name="init" value="" />
+					  </cti:url>
 				      <input type="button" name="New" value="New" onclick="javascript:window.location='${setupNewUrl}'">
 				    </td>
 				  </tr>

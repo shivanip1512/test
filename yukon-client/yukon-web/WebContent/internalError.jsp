@@ -11,6 +11,7 @@
 <jsp:directive.page import="org.apache.commons.lang.BooleanUtils"/>
 <jsp:directive.page import="com.cannontech.web.util.ErrorHelperFilter"/>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@page isErrorPage="true" %>
 
 <%
@@ -53,7 +54,7 @@ String friendlyExceptionMessage = ErrorHelperFilter.getFriendlyExceptionMessage(
 <html>
 <head>
 <title>Yukon Error Page</title>
-<link rel="stylesheet" href="<c:url value="/WebConfig/yukon/StandardStyles.css"/>" type="text/css">
+<link rel="stylesheet" href="<cti:url value="/WebConfig/yukon/StandardStyles.css"/>" type="text/css">
 
 <style type="text/css">
 
@@ -89,7 +90,7 @@ String friendlyExceptionMessage = ErrorHelperFilter.getFriendlyExceptionMessage(
   
 </style>
 
-<script type="text/javascript" src="<c:url value="/JavaScript/prototype.js"/>"></script>
+<script type="text/javascript" src="<cti:url value="/JavaScript/prototype.js"/>"></script>
 <script type="text/javascript">
 function showStack( chkBox ) {
 	var elem = $('stackTrace');

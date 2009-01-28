@@ -79,7 +79,7 @@
                     </div>
 
                     <form name="form1" method="post"
-                        action="<c:url value="/servlet/LoginController"/>">
+                        action="<cti:url value="/servlet/LoginController"/>">
                         <table class="loginTable">
                             <tr>
                                 <td align="right">
@@ -113,7 +113,7 @@
                         <cti:checkGlobalProperty value="AuthenticationRole.ENABLE_PASSWORD_RECOVERY">
 	                        <cti:isStarsExist>
 	                            <div class="loginHelp">
-	                                <a href="<c:url value="/pwordreq.jsp"/>">
+	                                <a href="<cti:url value="/pwordreq.jsp"/>">
 				                        <cti:msg key="yukon.web.login.forgotPassword"></cti:msg>
 	                                </a>
 	                            </div>

@@ -19,7 +19,7 @@
 
 <script type="text/javascript">
 
-    <c:url var="refreshUrl" value="/spring/amr/bulkimporter/refreshResults" />
+    <cti:url var="refreshUrl" value="/spring/amr/bulkimporter/refreshResults" />
     
     setupRefreshStuff("${refreshUrl}", "${refreshRate}");
     
@@ -123,21 +123,21 @@
             
             <tags:nameValue name="Tabular Data">
                 <div id="failed_reports">
-                        <a href="<c:url value="/spring/amr/reports/bulkImportResultsReport?def=bulkImportResultsDefinition&reportType=FAILURES" />">HTML</a>
+                        <a href="<cti:url value="/spring/amr/reports/bulkImportResultsReport?def=bulkImportResultsDefinition&reportType=FAILURES" />">HTML</a>
                         |
                         <cti:simpleReportLinkFromNameTag definitionName="bulkImportResultsDefinition" viewType="csvView" reportType="FAILURES">CSV</cti:simpleReportLinkFromNameTag>
                         |
                         <cti:simpleReportLinkFromNameTag definitionName="bulkImportResultsDefinition" viewType="pdfView" reportType="FAILURES">PDF</cti:simpleReportLinkFromNameTag>
                     </div>
                     <div id="pendingComm_reports" style="display:none;">
-                        <a href="<c:url value="/spring/amr/reports/bulkImportResultsReport?def=bulkImportResultsDefinition&reportType=PENDING_COMMS" />">HTML</a>
+                        <a href="<cti:url value="/spring/amr/reports/bulkImportResultsReport?def=bulkImportResultsDefinition&reportType=PENDING_COMMS" />">HTML</a>
                         |
                         <cti:simpleReportLinkFromNameTag definitionName="bulkImportResultsDefinition" viewType="csvView" reportType="PENDING_COMMS">CSV</cti:simpleReportLinkFromNameTag>
                         |
                         <cti:simpleReportLinkFromNameTag definitionName="bulkImportResultsDefinition" viewType="pdfView" reportType="PENDING_COMMS">PDF</cti:simpleReportLinkFromNameTag>
                     </div>
                     <div id="failedComm_reports" style="display:none;">
-                        <a href="<c:url value="/spring/amr/reports/bulkImportResultsReport?def=bulkImportResultsDefinition&reportType=FAILED_COMMS" />">HTML</a>
+                        <a href="<cti:url value="/spring/amr/reports/bulkImportResultsReport?def=bulkImportResultsDefinition&reportType=FAILED_COMMS" />">HTML</a>
                         |
                         <cti:simpleReportLinkFromNameTag definitionName="bulkImportResultsDefinition" viewType="csvView" reportType="FAILED_COMMS">CSV</cti:simpleReportLinkFromNameTag>
                         |

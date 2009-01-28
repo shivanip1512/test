@@ -189,7 +189,7 @@
 		
 		<% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 	  	<br>
-	  	<form name='DeviceForm' method='post' action="<c:url value="/servlet/SOAPClient"/>">
+	  	<form name='DeviceForm' method='post' action="<cti:url value="/servlet/SOAPClient"/>">
 	    	<input id="redirect" type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>">
 			<input id="referrer" type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>">
 	    	<input type='hidden' name='action' value='SelectDevice'>

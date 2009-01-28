@@ -4,7 +4,7 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
 
-<c:url var="completeHistoryUrl" value="/spring/stars/consumer/controlhistory/completeHistoryView"/>
+<cti:url var="completeHistoryUrl" value="/spring/stars/consumer/controlhistory/completeHistoryView"/>
 
 <cti:standardPage module="consumer" page="controlhistory">
     <cti:standardMenu />

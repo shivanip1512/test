@@ -87,7 +87,7 @@
         <tags:boxContainer title="${recentBulkOperationsHeaderTitle}" id="recentBulkOperationsContainer" hideEnabled="false">
         
             <cti:msg var="performNewActionLinkTitle" key="yukon.common.device.bulk.bulkHome.recentBulkOperations.performNewActionLinkTitle"/>
-            <c:url var="downloadImg" value="/WebConfig/yukon/Icons/download_file.gif"/>
+            <cti:url var="downloadImg" value="/WebConfig/yukon/Icons/download_file.gif"/>
             
             <div style="width:75%">
             <table class="compactResultsTable" style="vertial-align:bottom;">
@@ -205,9 +205,9 @@
                         <%-- DEATIL LINK --%>
                         <c:choose>
                             <c:when test="${detailViewable}">
-                                <c:url var="resultDetailUrl" value="/spring/bulk/${b.bulkOperationType.pathValue}/${b.bulkOperationType.pathValue}Results">
-                                    <c:param name="resultsId" value="${b.resultsId}" />
-                                </c:url>
+                                <cti:url var="resultDetailUrl" value="/spring/bulk/${b.bulkOperationType.pathValue}/${b.bulkOperationType.pathValue}Results">
+                                    <cti:param name="resultsId" value="${b.resultsId}" />
+                                </cti:url>
                                 <td>
                                     <a href="${resultDetailUrl}"><cti:msg key="yukon.common.device.bulk.bulkHome.recentBulkOperations.detailLink"/></a>
                                 </td>

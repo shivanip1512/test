@@ -64,7 +64,7 @@
 	                        	
 					    		<input type="button" id="searchButton" value="Search" onclick="doSearch();">
 					    		<input type="button" id="addButton" value="Set New Mapping" onclick="paoPicker.showPicker();">
-					    		<img src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" style="display:none;" id="waitImg">
+					    		<img src="<cti:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" style="display:none;" id="waitImg">
 	                        
 					    	</tags:nameValue>
 					    	
@@ -81,7 +81,7 @@
 		<tags:sectionContainer title="All Mappings" id="allMappingsSection">
 		
 			<div id="allMappingsTableDiv">
-				<c:url var="allMappingsTableUrl" value="/WEB-INF/pages/multispeak/setup/lmMappings/allMappingsTable.jsp" />
+				<cti:url var="allMappingsTableUrl" value="/WEB-INF/pages/multispeak/setup/lmMappings/allMappingsTable.jsp" />
     			<jsp:include page="${allMappingsTableUrl}"/>
     		</div>
 					    		

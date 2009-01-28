@@ -170,9 +170,9 @@
 
 			<c:if test="${isMCT4XX}">
 			<div class="sideMenuLink">
-						<c:url var="meterDetailsUrl" value="/spring/meter/home">
-							<c:param name="deviceId" value="${deviceId}" />
-						</c:url>
+						<cti:url var="meterDetailsUrl" value="/spring/meter/home">
+							<cti:param name="deviceId" value="${deviceId}" />
+						</cti:url>
 						<a href="${meterDetailsUrl}" class="Link1">Meter Details</a>
 			</div>
 			</c:if>

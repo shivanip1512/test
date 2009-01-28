@@ -51,6 +51,11 @@ public class YukonTagSupport extends SimpleTagSupport {
         return (HttpServletRequest) pageContext.getRequest();
     }
     
+    protected PageContext getPageContext() {
+        PageContext pageContext = (PageContext) this.getJspContext();
+        return pageContext;
+    }
+    
     protected MessageSourceAccessor getMessageSource() {
     	HttpServletRequest request = getRequest();
 		Theme theme = RequestContextUtils.getTheme(request);

@@ -83,11 +83,11 @@
 	<%	
 		if( starsExists ) { 
 	%>
-						"<c:url value="/servlet/StarsPWordRequest"/>">
+						"<cti:url value="/servlet/StarsPWordRequest"/>">
 	<%	
 		} else { 
 	%>
-						"<c:url value="/servlet/PWordRequest"/>">
+						"<cti:url value="/servlet/PWordRequest"/>">
 	<% 
 		}
 	%>

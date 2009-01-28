@@ -34,9 +34,9 @@
             
             <c:forEach items="${resultList}" var="result">
             
-                <c:url var="resultDetailUrl" value="/spring/group/commander/resultDetail">
-                    <c:param name="resultKey" value="${result.key}" />
-                </c:url>
+                <cti:url var="resultDetailUrl" value="/spring/group/commander/resultDetail">
+                    <cti:param name="resultKey" value="${result.key}" />
+                </cti:url>
             
                 <tr>
                     <td>${result.command}</td>

@@ -47,7 +47,7 @@
 		
 		<%--RESULTS--%>
 		<div id="${widgetParameters.widgetId}_results">
-		    <c:url var="peakSummaryReportResultUrl" value="/WEB-INF/pages/widget/peakReportWidget/peakSummaryReportResult.jsp" />
+		    <cti:url var="peakSummaryReportResultUrl" value="/WEB-INF/pages/widget/peakReportWidget/peakSummaryReportResult.jsp" />
 		    <jsp:include page="${peakSummaryReportResultUrl}" />
 		</div>
 	</c:when>

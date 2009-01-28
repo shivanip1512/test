@@ -1,5 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<c:url var="url" value="/spring/stars/hardware/deviceactivation" />
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<cti:url var="url" value="/spring/stars/hardware/deviceactivation" />
 
 <script language="JavaScript" type="text/javascript" src="/JavaScript/prototype.js"></script>
 <script language="JavaScript">

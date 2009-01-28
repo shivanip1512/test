@@ -2,8 +2,8 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
 
-<c:url var="controlHistoryView" value="/spring/stars/consumer/controlhistory"/>
-<c:url var="innerViewUrl" value="${controlHistoryView}/innerCompleteHistoryView"/>
+<cti:url var="controlHistoryView" value="/spring/stars/consumer/controlhistory"/>
+<cti:url var="innerViewUrl" value="${controlHistoryView}/innerCompleteHistoryView"/>
 
 <cti:standardPage module="consumer" page="completecontrolhistory">
     <cti:standardMenu />

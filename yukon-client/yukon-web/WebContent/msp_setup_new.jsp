@@ -49,7 +49,7 @@
 
 	<div style="width:800px;">
 		<tags:boxContainer title="MultiSpeak Interface Setup" hideEnabled="false">
-			<form name="form1" method="post" action="<c:url value="/servlet/MultispeakServlet"/>">
+			<form name="form1" method="post" action="<cti:url value="/servlet/MultispeakServlet"/>">
 				<input type="hidden" name="ACTION" value="updateMSP">
 				<input type="hidden" name="REDIRECT" value='<c:out value="${pageContext.request.requestURI}"/>' >
 				<input type="hidden" name="actionEndpoint">

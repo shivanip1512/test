@@ -46,7 +46,7 @@
             <div class="formErrorSummary">${errorMsg}</div><br>
         </c:if>
         
-        <form id="executeLocateForm" action="<c:url value="/spring/bulk/routeLocate/executeRouteLocation" />">
+        <form id="executeLocateForm" action="<cti:url value="/spring/bulk/routeLocate/executeRouteLocation" />">
         
             <%-- DEVICE COLLECTION --%>
             <cti:deviceCollection deviceCollection="${deviceCollection}" />
@@ -140,9 +140,9 @@
                         
                         
                         <%-- DEATIL LINK --%>
-                        <c:url var="resultDetailUrl" value="/spring/bulk/routeLocate/results">
-                            <c:param name="resultId" value="${b.resultId}" />
-                        </c:url>
+                        <cti:url var="resultDetailUrl" value="/spring/bulk/routeLocate/results">
+                            <cti:param name="resultId" value="${b.resultId}" />
+                        </cti:url>
                 
                         <td align="right">
                             <a href="${resultDetailUrl}"><cti:msg key="yukon.web.modules.amr.routeLocateHome.recentRouteLocateResults.detailLink"/></a>

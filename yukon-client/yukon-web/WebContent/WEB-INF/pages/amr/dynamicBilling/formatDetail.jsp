@@ -17,12 +17,12 @@
 </script>
 
 <ct:simplePopup id="valueHelper" title="Format Help" onClose="toggleHelperPopup('valueHelper');">
-    <c:url var="valueHelperUrl" value="/WEB-INF/pages/amr/dynamicBilling/valueHelper.jsp"/>
+    <cti:url var="valueHelperUrl" value="/WEB-INF/pages/amr/dynamicBilling/valueHelper.jsp"/>
     <jsp:include page="${valueHelperUrl}"/>
 </ct:simplePopup>
 
 <ct:simplePopup id="timestampHelper" title="Format Help" onClose="toggleHelperPopup('timestampHelper');">
-    <c:url var="timestampHelperUrl" value="/WEB-INF/pages/amr/dynamicBilling/timestampHelper.jsp"/>
+    <cti:url var="timestampHelperUrl" value="/WEB-INF/pages/amr/dynamicBilling/timestampHelper.jsp"/>
     <jsp:include page="${timestampHelperUrl}"/>
 </ct:simplePopup>
         

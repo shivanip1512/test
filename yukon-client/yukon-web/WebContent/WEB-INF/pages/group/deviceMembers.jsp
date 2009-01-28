@@ -25,7 +25,7 @@
                             <cti:msg var="confirmRemoveText" key="yukon.web.deviceGroups.editor.membersContainer.confirmRemoveText" javaScriptEscape="true"/>
                             
                             <input id="removeAllDevicesButton" type="button" onclick="removeAllDevices('${confirmRemoveText}')" value="${removeAllDevicesFromGroupLabel}" title="${removeAllDevicesFromGroupDescription}">
-                            <img id="removeAllDevicesWaitImg" src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" style="display:none;">       
+                            <img id="removeAllDevicesWaitImg" src="<cti:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" style="display:none;">       
                         </td>
                     </tr>
                 </c:if>
@@ -46,9 +46,9 @@
 				<c:forEach var="device" items="${deviceList}">
 					<tr class="<tags:alternateRow odd="" even="altRow"/>">
 						<td style="border: none;">
-                           <c:url value="/spring/meter/home" var="meterHomeUrl">
-                             <c:param name="deviceId" value="${device.deviceId}"/>
-                           </c:url>
+                           <cti:url value="/spring/meter/home" var="meterHomeUrl">
+                             <cti:param name="deviceId" value="${device.deviceId}"/>
+                           </cti:url>
             
 							<a href="${meterHomeUrl}"><cti:deviceName device="${device}" /></a>
 						</td>
@@ -63,11 +63,11 @@
 										<input type="hidden" name="deviceId" value="${device.deviceId}" />
 										<input type="hidden" name="groupName" value="${fn:escapeXml(group.fullName)}" />
 										<input type="hidden" name="showDevices" value="true" />
-										<input type="image" title="Remove device from group" class="cssicon" src="<c:url value="/WebConfig/yukon/Icons/clearbits/close.gif"/>" />
+										<input type="image" title="Remove device from group" class="cssicon" src="<cti:url value="/WebConfig/yukon/Icons/clearbits/close.gif"/>" />
 									</form>
 								</c:when>
 								<c:otherwise>
-									<img class="graycssicon" title="Cannot remove device from group" src="<c:url value="/WebConfig/yukon/Icons/clearbits/close.gif"/>" />
+									<img class="graycssicon" title="Cannot remove device from group" src="<cti:url value="/WebConfig/yukon/Icons/clearbits/close.gif"/>" />
 								</c:otherwise>
 							</c:choose>
 						</td>

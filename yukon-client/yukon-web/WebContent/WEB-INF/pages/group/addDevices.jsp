@@ -7,9 +7,9 @@
 <cti:standardPage title="Add multiple devices to group" module="amr">
 <cti:standardMenu menuSelection="devicegroups|commander"/>
    	
-   	<c:url var="homeUrl" value="/spring/group/editor/home">
-		<c:param name="groupName" value="${group.fullName}" />
-	</c:url>
+   	<cti:url var="homeUrl" value="/spring/group/editor/home">
+		<cti:param name="groupName" value="${group.fullName}" />
+	</cti:url>
    	
    	<cti:breadCrumbs>
 	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />

@@ -8,27 +8,27 @@
 <title><c:out value="${info.title}" /></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
         <!-- Layout CSS files -->
-        <link rel="stylesheet" type="text/css" href="<c:url value="/WebConfig/yukon/CannonStyle.css"/>" >
-        <link rel="stylesheet" type="text/css" href="<c:url value="/WebConfig/yukon/PurpleHeaderBar.css"/>" >
-        <c:url var="webClientRoleStyleSheet">
+        <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/CannonStyle.css"/>" >
+        <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/PurpleHeaderBar.css"/>" >
+        <cti:url var="webClientRoleStyleSheet">
           <jsp:attribute name="value" trim="true">/WebConfig/<cti:getProperty property="WebClientRole.STYLE_SHEET" /></jsp:attribute>
-        </c:url>
+        </cti:url>
         <link rel="stylesheet" type="text/css" href="${webClientRoleStyleSheet}" >
 
         <!-- Module CSS files from module_config.xml -->
-        <c:forEach items="${moduleConfigCss}" var="file"><link rel="stylesheet" type="text/css" href="<c:url value="${file}"/>" >
+        <c:forEach items="${moduleConfigCss}" var="file"><link rel="stylesheet" type="text/css" href="<cti:url value="${file}"/>" >
         </c:forEach>
         
         <!-- Individual files from includeCss tag on the request page -->
-        <c:forEach items="${innerContentCss}" var="file"><link rel="stylesheet" type="text/css" href="<c:url value="${file}"/>" >
+        <c:forEach items="${innerContentCss}" var="file"><link rel="stylesheet" type="text/css" href="<cti:url value="${file}"/>" >
         </c:forEach>
         
         <!-- Login Group specific style sheets (WebClientRole.STD_PAGE_STYLE_SHEET)-->
-        <c:forEach items="${loginGroupCss}" var="file"><link rel="stylesheet" type="text/css" href="<c:url value="${file}"/>" >
+        <c:forEach items="${loginGroupCss}" var="file"><link rel="stylesheet" type="text/css" href="<cti:url value="${file}"/>" >
         </c:forEach>
         
         <!-- Consolidated Script Files -->
-        <c:forEach items="${javaScriptFiles}" var="file"><script type="text/javascript" src="<c:url value="${file}"/>"></script>
+        <c:forEach items="${javaScriptFiles}" var="file"><script type="text/javascript" src="<cti:url value="${file}"/>"></script>
         </c:forEach>
 </head>
 

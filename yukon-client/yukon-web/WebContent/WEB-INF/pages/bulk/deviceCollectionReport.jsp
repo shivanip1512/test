@@ -32,11 +32,11 @@
     <h2>${pageTitle}</h2>
     <br>
     
-    <c:url var="dataUrl" value="/spring/bulk/deviceCollectionReportJsonData">
+    <cti:url var="dataUrl" value="/spring/bulk/deviceCollectionReportJsonData">
         <c:forEach var="p" items="${deviceCollection.collectionParameters}">
-            <c:param name="${p.key}" value="${p.value}"/>
+            <cti:param name="${p.key}" value="${p.value}"/>
         </c:forEach>
-    </c:url>
+    </cti:url>
     <tags:extBasicGrid height="350" width="1000" columnInfo="${columnInfo}" dataUrl="${dataUrl}" />
 
 </cti:standardPage>

@@ -33,7 +33,7 @@
 <!-- Consolidated Script Files -->
 <script type="text/javascript" src="/JavaScript/prototype.js" ></script>
 
-<c:url var="commentsURL" value="/spring/capcontrol/comments?action="/>
+<cti:url var="commentsURL" value="/spring/capcontrol/comments?action="/>
 
 <%
     FilterCacheFactory cacheFactory = YukonSpringHook.getBean("filterCacheFactory", FilterCacheFactory.class);

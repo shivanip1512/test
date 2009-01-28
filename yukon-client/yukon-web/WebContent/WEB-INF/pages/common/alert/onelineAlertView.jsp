@@ -31,7 +31,7 @@
                 <td>
                     <input type="hidden" name="alertId" value="${alert.id}">
                     <img style="cursor: pointer;" title="Click to clear the alert"
-                         src="<c:url value="/WebConfig/yukon/Icons/accept.gif"/>"
+                         src="<cti:url value="/WebConfig/yukon/Icons/accept.gif"/>"
                          onclick="javascript:alert_clearAlert(${alert.id});">
                 </td>
             </tr>

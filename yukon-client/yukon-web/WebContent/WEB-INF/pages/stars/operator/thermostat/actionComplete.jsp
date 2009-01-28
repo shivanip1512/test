@@ -12,7 +12,7 @@
             <cti:msg key="${message}" />
         </div>
         
-        <c:url var="viewUrl" value="${viewUrl}"></c:url>
+        <cti:url var="viewUrl" value="${viewUrl}"></cti:url>
         <br><br>
         <a href="${viewUrl}"><cti:msg key="yukon.dr.operator.actionComplete.ok" /></a>
     </div>

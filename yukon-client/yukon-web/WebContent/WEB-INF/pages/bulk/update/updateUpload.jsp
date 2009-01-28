@@ -3,7 +3,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:msg var="pageTitle" key="yukon.common.device.bulk.updateUpload.pageTitle"/>
-<c:url var="check" value="/WebConfig/yukon/Icons/check.gif"/>
+<cti:url var="check" value="/WebConfig/yukon/Icons/check.gif"/>
 
 <cti:standardPage title="${pageTitle}" module="amr">
 
@@ -90,7 +90,7 @@
                 
                 <%-- INSTRUCTIONS --%>
                 <td>
-                    <c:url var="check" value="/WebConfig/yukon/Icons/check.gif"/>
+                    <cti:url var="check" value="/WebConfig/yukon/Icons/check.gif"/>
                     
                     <%-- header --%>
                     <div class="normalBoldLabel">Instructions:</div>
@@ -103,10 +103,10 @@
                     <%-- sample files --%>
                     <div class="small">
                         <div class="normalBoldLabel" style="display:inline;"><cti:msg key="yukon.common.device.bulk.updateUpload.sampleFilesLabel"/>:</div>
-                        <a href="<c:url value="/WebConfig/custom/sample_bulk_files/Sample_Bulk_Update_File1.csv"/>">File 1</a>, 
-                        <a href="<c:url value="/WebConfig/custom/sample_bulk_files/Sample_Bulk_Update_File2.csv"/>">File 2</a>, 
-                        <a href="<c:url value="/WebConfig/custom/sample_bulk_files/Sample_Bulk_Update_File3.csv"/>">File 3</a>, 
-                        <a href="<c:url value="/WebConfig/custom/sample_bulk_files/Sample_Bulk_Update_File4.csv"/>">File 4</a>
+                        <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/Sample_Bulk_Update_File1.csv"/>">File 1</a>, 
+                        <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/Sample_Bulk_Update_File2.csv"/>">File 2</a>, 
+                        <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/Sample_Bulk_Update_File3.csv"/>">File 3</a>, 
+                        <a href="<cti:url value="/WebConfig/custom/sample_bulk_files/Sample_Bulk_Update_File4.csv"/>">File 4</a>
                     </div>
                     <br>
                     

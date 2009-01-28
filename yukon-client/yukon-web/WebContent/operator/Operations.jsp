@@ -81,7 +81,7 @@
 		<!-- Customer search form -->
 		<c:if test="${showStarsList}">
 			<div class="sectionForm">
-				<form name="custSearchForm" method="POST" action="<c:url value="/servlet/SOAPClient"/>">
+				<form name="custSearchForm" method="POST" action="<cti:url value="/servlet/SOAPClient"/>">
 					<input type="hidden" name="action" value="SearchCustAccount" />
 					<div class="sectionFormLabel">Search for existing customer:</div>
 					<div>
@@ -92,7 +92,7 @@
 						</select>
 			
 						<input type="text" name="SearchValue" size="15" value=''>
-						<img class="cssicon" src="<c:url value="/WebConfig/yukon/Icons/clearbits/search.gif"/>" alt="search" onClick="Javascript:document.custSearchForm.submit();"> 
+						<img class="cssicon" src="<cti:url value="/WebConfig/yukon/Icons/clearbits/search.gif"/>" alt="search" onClick="Javascript:document.custSearchForm.submit();"> 
 					</div>
 				</form>
 			</div>
@@ -118,13 +118,13 @@
         </cti:checkRole>
         <cti:checkMultiRole roles="operator.MeteringRole.ROLEID,application.BillingRole.ROLEID,SchedulerRole.ROLEID,CommanderRole.ROLEID">
 			<tags:sectionLink>
-    	    	<a href="<c:url value="/spring/meter/search"/>">Metering</a>
+    	    	<a href="<cti:url value="/spring/meter/search"/>">Metering</a>
 	        </tags:sectionLink>
         </cti:checkMultiRole>
         
         <cti:checkRole role="operator.DeviceActionsRole.ROLEID">
         <tags:sectionLink>
-            <a href="<c:url value="/spring/bulk/bulkHome"/>">Bulk Operations</a>
+            <a href="<cti:url value="/spring/bulk/bulkHome"/>">Bulk Operations</a>
         </tags:sectionLink>
         </cti:checkRole>
         
@@ -150,7 +150,7 @@
 		</cti:checkRole>
 		<cti:checkRole role="CICurtailmentRole.ROLEID"> 
             <tags:sectionLink>
-            	<a href="<c:url value="/cc/programSelect.jsf"/>"><cti:getProperty property="com.cannontech.roles.operator.CICurtailmentRole.CURTAILMENT_LABEL"/></a>
+            	<a href="<cti:url value="/cc/programSelect.jsf"/>"><cti:getProperty property="com.cannontech.roles.operator.CICurtailmentRole.CURTAILMENT_LABEL"/></a>
             </tags:sectionLink>
 		</cti:checkRole>
 		<cti:checkRole role="OddsForControlRole.ROLEID"> 
@@ -196,9 +196,9 @@
         <!-- Hardware search form -->
         <c:if test="${showStarsList}">
 			<div class="sectionForm">
-				<form name="invSearchForm" method="POST" action="<c:url value="/servlet/InventoryManager"/>">
+				<form name="invSearchForm" method="POST" action="<cti:url value="/servlet/InventoryManager"/>">
 					<input type="hidden" name="action" value="SearchInventory">
-					<input type="hidden" name="REDIRECT" value="<c:url value="/operator/Hardware/ResultSet.jsp"/>">
+					<input type="hidden" name="REDIRECT" value="<cti:url value="/operator/Hardware/ResultSet.jsp"/>">
 					<div class="sectionFormLabel">Search for existing hardware:</div>
 					<div>
 						<select name="SearchBy" onchange="document.invSearchForm.SearchValue.value=''">
@@ -208,7 +208,7 @@
 						</select>
 			
 						<input type="text" name="SearchValue" size="15" value="">
-						<img class="cssicon" src="<c:url value="/WebConfig/yukon/Icons/clearbits/search.gif"/>" alt="search" onclick="Javascript:document.invSearchForm.submit();" >
+						<img class="cssicon" src="<cti:url value="/WebConfig/yukon/Icons/clearbits/search.gif"/>" alt="search" onclick="Javascript:document.invSearchForm.submit();" >
 					</div>
 				</form>
 			</div>
@@ -230,9 +230,9 @@
 		<!-- Service order search form -->
 		<c:if test="${showStarsList}">
 			<div class="sectionForm">
-				<form name="soSearchForm" method="post" action="<c:url value="/servlet/WorkOrderManager"/>">
+				<form name="soSearchForm" method="post" action="<cti:url value="/servlet/WorkOrderManager"/>">
 					<input type="hidden" name="action" value="SearchWorkOrder">
-					<input type="hidden" name="REDIRECT" value="<c:url value="/operator/WorkOrder/SearchResults.jsp"/>">
+					<input type="hidden" name="REDIRECT" value="<cti:url value="/operator/WorkOrder/SearchResults.jsp"/>">
 					
 					<div class="sectionFormLabel">Search for existing service order:</div>
 					<div>
@@ -243,7 +243,7 @@
 						</select>
 			
 						<input type="text" name="SearchValue" size="15" value="">
-						<img class="cssicon" src="<c:url value="/WebConfig/yukon/Icons/clearbits/search.gif"/>" alt="search" onClick="Javascript:document.soSearchForm.submit();" >
+						<img class="cssicon" src="<cti:url value="/WebConfig/yukon/Icons/clearbits/search.gif"/>" alt="search" onClick="Javascript:document.soSearchForm.submit();" >
 					</div>
 				</form>
 			</div>
@@ -291,9 +291,9 @@
 	            </tags:sectionLink>
 			</cti:checkProperty> 
 			<cti:checkProperty property="operator.AdministratorRole.ADMIN_DELETE_ENERGY_COMPANY"> 
-	        	<form name="DeleteForm" method="post" action="<c:url value="/servlet/StarsAdmin"/>">
+	        	<form name="DeleteForm" method="post" action="<cti:url value="/servlet/StarsAdmin"/>">
 	            	<input type="hidden" name="action" value="DeleteEnergyCompany">
-	            	<input type="hidden" name="REDIRECT" value="<c:url value="/servlet/LoginController?ACTION=LOGOUT"/>">
+	            	<input type="hidden" name="REDIRECT" value="<cti:url value="/servlet/LoginController?ACTION=LOGOUT"/>">
             		<tags:sectionLink>
               			<a href="javascript:confirmDelete()">Delete Energy Company</a>
 	            	</tags:sectionLink>
@@ -331,7 +331,7 @@
 			</cti:checkProperty>
                    <cti:checkProperty property="AdministratorRole.ADMIN_VIEW_CONFIG"> 
 	               <tags:sectionLink>
-		   	    	<a href="<c:url value="/spring/deviceConfiguration?home"/>">Device Configuration</a>
+		   	    	<a href="<cti:url value="/spring/deviceConfiguration?home"/>">Device Configuration</a>
 		        </tags:sectionLink>
 	        </cti:checkProperty>
 	</tags:operationSection>

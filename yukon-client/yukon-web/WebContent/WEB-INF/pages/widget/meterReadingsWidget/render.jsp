@@ -1,7 +1,7 @@
 <%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<c:url var="previousReadingOptionsUrl"
+<cti:url var="previousReadingOptionsUrl"
     value="/WEB-INF/pages/point/previousReadingsOptions.jsp" />
 
 <ct:nameValueContainer altRowOn="true">

@@ -3,9 +3,9 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
 
-<c:url var="actionUrl" value="/spring/login/changelogin"/>
-<c:url var="usernameActionUrl" value="${actionUrl}/updateusername"/>
-<c:url var="passwordActionUrl" value="${actionUrl}/updatepassword"/>
+<cti:url var="actionUrl" value="/spring/login/changelogin"/>
+<cti:url var="usernameActionUrl" value="${actionUrl}/updateusername"/>
+<cti:url var="passwordActionUrl" value="${actionUrl}/updatepassword"/>
 
 <div id="changeLogin">
 

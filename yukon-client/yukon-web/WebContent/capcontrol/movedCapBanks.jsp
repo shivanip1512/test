@@ -18,7 +18,7 @@
 <%@ page import="java.util.Iterator" %>
 <%@ page import="com.cannontech.cbc.util.CBCDisplay" %>
 
-<c:url var="movedCapBanksUrl" value="/capcontrol/movedCapBanks.jsp"/>
+<cti:url var="movedCapBanksUrl" value="/capcontrol/movedCapBanks.jsp"/>
 
 <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value=""/>
 <!-- necessary DIV element for the OverLIB popup library -->

@@ -118,11 +118,11 @@
             <div class="smallBoldLabel" style="display:inline;">End Date: </div><tags:dateInputCalendar fieldName="getReportStopDate" fieldValue="${formattedStopDate}"/>
             
             <c:if test="${readable}">
-                <c:url var="getReportUrl" value="/spring/meter/highBill/getReport"/>
-                <c:url var="hbcRedirectUrl" value="/spring/meter/highBill/view"/>
+                <cti:url var="getReportUrl" value="/spring/meter/highBill/getReport"/>
+                <cti:url var="hbcRedirectUrl" value="/spring/meter/highBill/view"/>
                 
                 <input type="button" id="getReportButton" value="Get Report" onclick="getReport('${getReportUrl}', '${hbcRedirectUrl}');" value="click me">
-                <img id="getReportProcessImg" style="display:none;" src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>">
+                <img id="getReportProcessImg" style="display:none;" src="<cti:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>">
             </c:if>
                     
             <%-- PROFILE PEAK REPORT(S) --%>
@@ -133,12 +133,12 @@
                         <c:when test="${not empty preResult && !preResult.noData && preResult.deviceError == ''}">
                         <c:set var="reportHeader">
                             <jsp:attribute name="value">
-                                <c:url var="analyzeThisDataUrl" value="/spring/meter/highBill/view">
-                                    <c:param name="deviceId" value="${deviceId}"/>
-                                    <c:param name="analyze" value="true"/>
-                                    <c:param name="getReportStartDate" value="${formattedStartDate}"/>
-                                    <c:param name="getReportStopDate" value="${formattedStopDate}"/>
-                                </c:url>
+                                <cti:url var="analyzeThisDataUrl" value="/spring/meter/highBill/view">
+                                    <cti:param name="deviceId" value="${deviceId}"/>
+                                    <cti:param name="analyze" value="true"/>
+                                    <cti:param name="getReportStartDate" value="${formattedStartDate}"/>
+                                    <cti:param name="getReportStopDate" value="${formattedStopDate}"/>
+                                </cti:url>
                                 Previous Reports: <a href="${analyzeThisDataUrl}">Expand Available Report</a>
                             </jsp:attribute>
                         </c:set>
@@ -192,28 +192,28 @@
         <c:if test="${analyze}">
         <tags:sectionContainer title="Step 3: Analyze Profile Data" id="hbcStep3">  
             
-            <c:url var="chartUrlPrefix" value="/spring/meter/highBill/view">
-                <c:param name="deviceId" value="${deviceId}"/>
-                <c:param name="analyze" value="true"/>
-                <c:param name="getReportStartDate" value="${formattedStartDate}"/>
-                <c:param name="getReportStopDate" value="${formattedStopDate}"/>
-            </c:url>
+            <cti:url var="chartUrlPrefix" value="/spring/meter/highBill/view">
+                <cti:param name="deviceId" value="${deviceId}"/>
+                <cti:param name="analyze" value="true"/>
+                <cti:param name="getReportStartDate" value="${formattedStartDate}"/>
+                <cti:param name="getReportStopDate" value="${formattedStopDate}"/>
+            </cti:url>
         
             <%-- PRE CHART  --%>
             <c:if test="${!preResult.noData && preResult.deviceError == ''}">
                 
                 <%-- range links --%>
-                <c:url var="prePeakDayChartUrl" value="${chartUrlPrefix}">
-                    <c:param name="chartRange" value="PEAK"/>
-                </c:url>
+                <cti:url var="prePeakDayChartUrl" value="${chartUrlPrefix}">
+                    <cti:param name="chartRange" value="PEAK"/>
+                </cti:url>
                 
-                <c:url var="prePeakPlusMinus3ChartUrl" value="${chartUrlPrefix}">
-                    <c:param name="chartRange" value="PEAKPLUSMINUS3"/>
-                </c:url>
+                <cti:url var="prePeakPlusMinus3ChartUrl" value="${chartUrlPrefix}">
+                    <cti:param name="chartRange" value="PEAKPLUSMINUS3"/>
+                </cti:url>
                 
-                <c:url var="preEntireRangeChartUrl" value="${chartUrlPrefix}">
-                    <c:param name="chartRange" value="ENTIRE"/>
-                </c:url>
+                <cti:url var="preEntireRangeChartUrl" value="${chartUrlPrefix}">
+                    <cti:param name="chartRange" value="ENTIRE"/>
+                </cti:url>
                 
                 <div class="smallBoldLabel" style="display:inline;">Chart Range: </div>
                 <c:if test="${chartRange == 'PEAK'}"><div style="display:inline;">Peak Day</div></c:if> 
@@ -248,19 +248,19 @@
                 <%-- tabular data links --%>
                 <div class="smallBoldLabel" style="display:inline;">Tabular Data: </div>
                 
-                <c:url var="preHbcArchivedDataReportUrl" value="/spring/amr/reports/hbcArchivedDataReport">
-                    <c:param name="def" value="rawPointHistoryDefinition"/>
-                    <c:param name="pointId" value="${pointId}"/>
-                    <c:param name="startDate" value="${preChartStartDateMillis}"/>
-                    <c:param name="stopDate" value="${preChartStopDateMillis}"/>
-                    <c:param name="def" value="rawPointHistoryDefinition"/>
+                <cti:url var="preHbcArchivedDataReportUrl" value="/spring/amr/reports/hbcArchivedDataReport">
+                    <cti:param name="def" value="rawPointHistoryDefinition"/>
+                    <cti:param name="pointId" value="${pointId}"/>
+                    <cti:param name="startDate" value="${preChartStartDateMillis}"/>
+                    <cti:param name="stopDate" value="${preChartStopDateMillis}"/>
+                    <cti:param name="def" value="rawPointHistoryDefinition"/>
                     
-                    <c:param name="analyze" value="true"/>
-                    <c:param name="deviceId" value="${deviceId}"/>
-                    <c:param name="getReportStartDate" value="${formattedStartDate}"/>
-                    <c:param name="getReportStopDate" value="${formattedStopDate}"/>
-                    <c:param name="chartRange" value="${chartRange}"/>
-                </c:url>
+                    <cti:param name="analyze" value="true"/>
+                    <cti:param name="deviceId" value="${deviceId}"/>
+                    <cti:param name="getReportStartDate" value="${formattedStartDate}"/>
+                    <cti:param name="getReportStopDate" value="${formattedStopDate}"/>
+                    <cti:param name="chartRange" value="${chartRange}"/>
+                </cti:url>
 
                 <a href="${preHbcArchivedDataReportUrl}"/>HTML</a>
                 |
@@ -305,19 +305,19 @@
                 <%-- tabular data links --%>
                 <div class="smallBoldLabel" style="display:inline;">Tabular Data: </div>
                 
-                <c:url var="postHbcArchivedDataReportUrl" value="/spring/amr/reports/hbcArchivedDataReport">
-                    <c:param name="def" value="rawPointHistoryDefinition"/>
-                    <c:param name="pointId" value="${pointId}"/>
-                    <c:param name="startDate" value="${postChartStartDateMillis}"/>
-                    <c:param name="stopDate" value="${postChartStopDateMillis}"/>
-                    <c:param name="def" value="rawPointHistoryDefinition"/>
+                <cti:url var="postHbcArchivedDataReportUrl" value="/spring/amr/reports/hbcArchivedDataReport">
+                    <cti:param name="def" value="rawPointHistoryDefinition"/>
+                    <cti:param name="pointId" value="${pointId}"/>
+                    <cti:param name="startDate" value="${postChartStartDateMillis}"/>
+                    <cti:param name="stopDate" value="${postChartStopDateMillis}"/>
+                    <cti:param name="def" value="rawPointHistoryDefinition"/>
                     
-                    <c:param name="analyze" value="true"/>
-                    <c:param name="deviceId" value="${deviceId}"/>
-                    <c:param name="getReportStartDate" value="${formattedStartDate}"/>
-                    <c:param name="getReportStopDate" value="${formattedStopDate}"/>
-                    <c:param name="chartRange" value="${chartRange}"/>
-                </c:url>
+                    <cti:param name="analyze" value="true"/>
+                    <cti:param name="deviceId" value="${deviceId}"/>
+                    <cti:param name="getReportStartDate" value="${formattedStartDate}"/>
+                    <cti:param name="getReportStopDate" value="${formattedStopDate}"/>
+                    <cti:param name="chartRange" value="${chartRange}"/>
+                </cti:url>
                 
                 <a href="${postHbcArchivedDataReportUrl}"/>HTML</a>
                 |
@@ -344,10 +344,10 @@
         <%-- CREATE LM POINT --%>
         <c:otherwise>
         
-            <c:url var="highBillUrl" value="/spring/meter/highBill/view">
-                <c:param name="deviceId" value="${deviceId}" />
-                <c:param name="createLPPoint" value="true" />
-            </c:url>
+            <cti:url var="highBillUrl" value="/spring/meter/highBill/view">
+                <cti:param name="deviceId" value="${deviceId}" />
+                <cti:param name="createLPPoint" value="true" />
+            </cti:url>
             <cti:deviceName deviceId="${deviceId}"></cti:deviceName> is not configured for 
             High Bill Processing. <input type="button" value="Configure Now" onclick="javascript:createLPPoint('${highBillUrl}')"></input>
             

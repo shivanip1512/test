@@ -10,7 +10,7 @@
     &gt; Meters
 </cti:breadCrumbs>
 
-<c:url value="/spring/meter/home" var="meterHomeUrl"/>
+<cti:url value="/spring/meter/home" var="meterHomeUrl"/>
 
 <script language="JavaScript">
 

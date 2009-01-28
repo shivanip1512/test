@@ -52,14 +52,14 @@
                     <!-- Actions: High Bill Complaint -->
                     <c:choose>
                         <c:when test="${moveSupported}">
-                            <c:url var="moveInUrl" value="/spring/meter/moveIn">
-                                <c:param name="deviceId" value="${deviceId}" />
-                            </c:url>
+                            <cti:url var="moveInUrl" value="/spring/meter/moveIn">
+                                <cti:param name="deviceId" value="${deviceId}" />
+                            </cti:url>
                             <a href="${moveInUrl}">Move In</a> <br />
 
-                            <c:url var="moveOutUrl" value="/spring/meter/moveOut">
-                                <c:param name="deviceId" value="${deviceId}" />
-                            </c:url>
+                            <cti:url var="moveOutUrl" value="/spring/meter/moveOut">
+                                <cti:param name="deviceId" value="${deviceId}" />
+                            </cti:url>
                             <a href="${moveOutUrl}">Move Out</a> <br />
                         </c:when>
                         <c:otherwise>
@@ -72,9 +72,9 @@
                     <cti:checkProperty property="operator.MeteringRole.HIGH_BILL_COMPLAINT">
                     <c:choose>
                         <c:when test="${highBillSupported}">
-                            <c:url var="highBillUrl" value="/spring/meter/highBill/view">
-                                <c:param name="deviceId" value="${deviceId}" />
-                            </c:url>
+                            <cti:url var="highBillUrl" value="/spring/meter/highBill/view">
+                                <cti:param name="deviceId" value="${deviceId}" />
+                            </cti:url>
                             <a href="${highBillUrl}">High Bill Complaint</a>
                         </c:when>
                         <c:otherwise>
@@ -88,9 +88,9 @@
                         <!-- Actions: Profile -->
                         <c:choose>
                             <c:when test="${lpSupported && (profileCollection || profileCollectionScanning)}">
-        						<c:url var="profileUrl" value="/spring/amr/profile/home">
-        							<c:param name="deviceId" value="${deviceId}" />
-        						</c:url>
+        						<cti:url var="profileUrl" value="/spring/amr/profile/home">
+        							<cti:param name="deviceId" value="${deviceId}" />
+        						</cti:url>
                                 <a href="${profileUrl}">Profile</a><br/>
                             </c:when>
                             <c:when test="${not (profileCollection || profileCollectionScanning)}">
@@ -105,9 +105,9 @@
 						<!-- Actions: Voltage & TOU -->
                         <c:choose>
                             <c:when test="${isMCT4XX && voltageSupported}">
-        						<c:url var="voltageTouUrl" value="/spring/amr/voltageAndTou/home">
-        							<c:param name="deviceId" value="${deviceId}" />
-        						</c:url>
+        						<cti:url var="voltageTouUrl" value="/spring/amr/voltageAndTou/home">
+        							<cti:param name="deviceId" value="${deviceId}" />
+        						</cti:url>
         						<a href="${voltageTouUrl}">Voltage &amp; TOU</a>
                             </c:when>
                             <c:otherwise>
@@ -118,34 +118,34 @@
                         
                         <!-- Actions: >Manual Commander -->
 						<cti:checkRole role="CommanderRole.ROLEID">
-							<c:url var="commanderUrl" value="/spring/amr/manualCommand/home">
-								<c:param name="deviceId" value="${deviceId}" />
-							</c:url>
+							<cti:url var="commanderUrl" value="/spring/amr/manualCommand/home">
+								<cti:param name="deviceId" value="${deviceId}" />
+							</cti:url>
 							<a href="${commanderUrl}">Manual Commander</a>
 							<br>
 						</cti:checkRole>
                         
                         <!-- Actions: Locate Route -->
                         <cti:checkProperty property="operator.DeviceActionsRole.LOCATE_ROUTE">
-                        <c:url var="routeLocateUrl" value="/spring/bulk/routeLocate/home">
-                            <c:param name="collectionType" value="idList" />
-                            <c:param name="idList.ids" value="${deviceId}" />
-                        </c:url>
+                        <cti:url var="routeLocateUrl" value="/spring/bulk/routeLocate/home">
+                            <cti:param name="collectionType" value="idList" />
+                            <cti:param name="idList.ids" value="${deviceId}" />
+                        </cti:url>
                         <a href="${routeLocateUrl}">Locate Route</a>
                         <br>
                         </cti:checkProperty>
 
 
                     <!-- Actions: Other Collection actions -->
-                    <c:url var="collectionActionsUrl" value="/spring/bulk/collectionActions">
-                        <c:param name="collectionType" value="idList" />
-                        <c:param name="idList.ids" value="${deviceId}" />
-                    </c:url>
+                    <cti:url var="collectionActionsUrl" value="/spring/bulk/collectionActions">
+                        <cti:param name="collectionType" value="idList" />
+                        <cti:param name="idList.ids" value="${deviceId}" />
+                    </cti:url>
                     <a href="${collectionActionsUrl}">Other Actions...</a>
                         
-                    <c:url var="commanderUrl" value="/spring/moveInMoveOut/moveInMoveOut">
-                        <c:param name="deviceId" value="${deviceId}" />
-                    </c:url>
+                    <cti:url var="commanderUrl" value="/spring/moveInMoveOut/moveInMoveOut">
+                        <cti:param name="deviceId" value="${deviceId}" />
+                    </cti:url>
                     <br />
                     
 				</ct:boxContainer>

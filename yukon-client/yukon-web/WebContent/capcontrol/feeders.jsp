@@ -13,7 +13,7 @@
 <%@ page import="com.cannontech.clientutils.CTILogger" %>
 
 <%@page import="org.springframework.web.bind.ServletRequestUtils"%>
-<c:url var="onelineCBCServlet" value="/capcontrol/oneline/OnelineCBCServlet"/>
+<cti:url var="onelineCBCServlet" value="/capcontrol/oneline/OnelineCBCServlet"/>
 
 <cti:standardPage title="Feeders" module="capcontrol">
 

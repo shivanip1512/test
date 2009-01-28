@@ -2,7 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 
-<c:url var="generalUrl" value="/spring/stars/consumer/general"/>
+<cti:url var="generalUrl" value="/spring/stars/consumer/general"/>
 
 <cti:standardPage module="consumer" page="optout">
     <cti:standardMenu />

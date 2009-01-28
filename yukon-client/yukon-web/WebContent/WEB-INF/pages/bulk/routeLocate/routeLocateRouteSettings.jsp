@@ -29,16 +29,16 @@
         <tags:collectionActionsCrumbLink deviceCollection="${result.deviceCollection}" />
         
         <%-- locate route --%>
-        <c:url var="routeLocateHomeUrl" value="/spring/bulk/routeLocate/home">
+        <cti:url var="routeLocateHomeUrl" value="/spring/bulk/routeLocate/home">
             <cti:mapParam value="${result.deviceCollection.collectionParameters}"/>
-        </c:url>
+        </cti:url>
         <cti:msg var="routeLocateHomePageTitle" key="yukon.web.modules.amr.routeLocateHome.pageTitle"/>
         <cti:crumbLink url="${routeLocateHomeUrl}" title="${routeLocateHomePageTitle}" />
         
         <%-- results --%>
-        <c:url var="routeLocateResultsUrl" value="/spring/bulk/routeLocate/results">
-            <c:param name="resultId" value="${resultId}" />
-        </c:url>
+        <cti:url var="routeLocateResultsUrl" value="/spring/bulk/routeLocate/results">
+            <cti:param name="resultId" value="${resultId}" />
+        </cti:url>
         <cti:msg var="routeLocateResultsPageTitle" key="yukon.web.modules.amr.routeLocateResults.pageTitle"/>
         <cti:crumbLink url="${routeLocateResultsUrl}" title="${routeLocateResultsPageTitle}" />
         
@@ -140,7 +140,7 @@
                         <c:otherwise>
                             <div id="${d.id}">
                                 <input type="button" value="${updateButtonText}" onclick="setRoute(${d.device.deviceId}, ${d.routeId}, '${resultId}', ${d.id}, '${d.id}', this);">
-                                <img id="waitImg${d.id}" src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" style="display:none;">
+                                <img id="waitImg${d.id}" src="<cti:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" style="display:none;">
                             </div>
                         </c:otherwise>
                     </c:choose>

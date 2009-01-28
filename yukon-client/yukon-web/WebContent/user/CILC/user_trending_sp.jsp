@@ -80,7 +80,7 @@ if( gData != null )
       <% }
       else // "graph" is default
       {%>
-        <img id = "theGraph" src="<c:url value="/servlet/GraphGenerator?action=EncodeGraph"/>">					
+        <img id = "theGraph" src="<cti:url value="/servlet/GraphGenerator?action=EncodeGraph"/>">					
       <%}%>
       <br><font size="-1"><cti:getProperty propertyid="<%= TrendingRole.TRENDING_DISCLAIMER%>"/></font>                	
       </center>

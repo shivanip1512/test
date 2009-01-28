@@ -9,9 +9,9 @@
     &gt; User/Group Editor
 </cti:breadCrumbs>
 
-<c:url var="removeURL" value="/picker/userlm/removePao"/> 
-<c:url var="submitUserURL" value="/picker/userlm/submitUserChanges"/>
-<c:url var="submitGroupURL" value="/picker/userlm/submitGroupChanges"/>
+<cti:url var="removeURL" value="/picker/userlm/removePao"/> 
+<cti:url var="submitUserURL" value="/picker/userlm/submitUserChanges"/>
+<cti:url var="submitGroupURL" value="/picker/userlm/submitGroupChanges"/>
 
 <script language="JavaScript">
 

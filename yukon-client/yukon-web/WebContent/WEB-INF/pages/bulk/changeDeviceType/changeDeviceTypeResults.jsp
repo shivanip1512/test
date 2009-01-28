@@ -25,11 +25,11 @@
         <tags:collectionActionsCrumbLink deviceCollection="${deviceCollection}" />
         
         <%-- choose change type --%>
-        <c:url var="changeDeviceTypeUrl" value="/spring/bulk/changeDeviceType/chooseDeviceType">
+        <cti:url var="changeDeviceTypeUrl" value="/spring/bulk/changeDeviceType/chooseDeviceType">
             <c:forEach var="deviceCollectionParam" items="${deviceCollection.collectionParameters}">
-                <c:param name="${deviceCollectionParam.key}" value="${deviceCollectionParam.value}"/>
+                <cti:param name="${deviceCollectionParam.key}" value="${deviceCollectionParam.value}"/>
             </c:forEach>
-        </c:url>
+        </cti:url>
         <cti:msg var="changeDeviceTypePageTitle" key="yukon.common.device.bulk.changeDeviceTypeChoose.pageTitle"/>
         <cti:crumbLink url="${changeDeviceTypeUrl}" title="${changeDeviceTypePageTitle}" />
         

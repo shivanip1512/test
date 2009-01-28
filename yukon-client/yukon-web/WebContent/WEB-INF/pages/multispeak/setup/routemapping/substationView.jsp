@@ -1,7 +1,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<c:url var="routeUrl"
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<cti:url var="routeUrl"
     value="/spring/multispeak/setup/routemapping/route" />
-<c:url var="subUrl"
+<cti:url var="subUrl"
     value="/spring/multispeak/setup/routemapping/substation" />
 
 Substation Name

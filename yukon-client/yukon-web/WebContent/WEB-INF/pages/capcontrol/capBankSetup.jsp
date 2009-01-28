@@ -1,11 +1,12 @@
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h" %>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x" %>
 <%@ page import="com.cannontech.web.util.*" %>
 <%@ page import="com.cannontech.web.editor.CapControlForm" %>
-<c:url var="orphanURL" value="/spring/capcontrol/tier/cceditorpopup"/>
+<cti:url var="orphanURL" value="/spring/capcontrol/tier/cceditorpopup"/>
 <%
 	CapControlForm capControlForm = (CapControlForm)JSFParamUtil.getJSFVar( "capControlForm" );
 	String itemid = JSFParamUtil.getJSFReqParam("itemid");

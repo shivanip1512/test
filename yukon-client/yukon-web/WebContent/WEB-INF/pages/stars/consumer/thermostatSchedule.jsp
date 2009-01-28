@@ -152,9 +152,9 @@
 
             <c:set var="multipleThermostatsSelected" value="${fn:length(fn:split(thermostatIds, ',')) > 1}"></c:set>
             <c:if test="${multipleThermostatsSelected}">
-                <c:url var="allUrl" value="/spring/stars/consumer/thermostat/view/all">
-                    <c:param name="thermostatIds" value="${thermostatIds}"></c:param>
-                </c:url>
+                <cti:url var="allUrl" value="/spring/stars/consumer/thermostat/view/all">
+                    <cti:param name="thermostatIds" value="${thermostatIds}"></cti:param>
+                </cti:url>
                 <a href="${allUrl}"><cti:msg key="yukon.dr.consumer.thermostatSchedule.changeSelected" /></a><br><br>
             </c:if>
             

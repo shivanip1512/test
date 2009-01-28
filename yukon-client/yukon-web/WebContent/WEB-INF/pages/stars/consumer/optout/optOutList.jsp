@@ -4,7 +4,7 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
 
-<c:url var="actionUrl" value="/spring/stars/consumer/optout/confirm"/>
+<cti:url var="actionUrl" value="/spring/stars/consumer/optout/confirm"/>
 
 <cti:standardPage module="consumer" page="optout">
     <cti:standardMenu />

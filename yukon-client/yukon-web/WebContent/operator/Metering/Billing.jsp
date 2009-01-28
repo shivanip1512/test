@@ -29,7 +29,7 @@
     
     <tags:boxContainer title="Settings:" id="billingContainer" hideEnabled="false">
 
-	<form name = "MForm" action="<c:url value="/servlet/BillingServlet" />" method="post">
+	<form name = "MForm" action="<cti:url value="/servlet/BillingServlet" />" method="post">
 	
 			<tags:nameValueContainer>
 				<tags:nameValue name="File Format" nameColumnWidth="250px">

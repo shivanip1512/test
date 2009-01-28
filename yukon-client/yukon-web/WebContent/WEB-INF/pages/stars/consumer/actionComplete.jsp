@@ -15,9 +15,9 @@
             <cti:msg key="${message}" />
         </div>
         
-        <c:url var="viewUrl" value="${viewUrl}">
-            <c:param name="thermostatIds" value="${thermostatIds}" />
-        </c:url>
+        <cti:url var="viewUrl" value="${viewUrl}">
+            <cti:param name="thermostatIds" value="${thermostatIds}" />
+        </cti:url>
         <br><br>
         <a href="${viewUrl}"><cti:msg key="yukon.dr.consumer.actionComplete.ok" /></a>
     </div>

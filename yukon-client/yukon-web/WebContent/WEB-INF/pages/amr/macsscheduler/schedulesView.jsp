@@ -2,10 +2,10 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 
-<c:url var="controlUrl" value="/spring/macsscheduler/schedules/controlView"/>
-<c:url var="toggleUrl" value="/spring/macsscheduler/schedules/toggleUrl"/>
-<c:url var="viewUrl" value="/spring/macsscheduler/schedules/view" />
-<c:url var="toggleUrl" value="/spring/macsscheduler/schedules/toggleState" />
+<cti:url var="controlUrl" value="/spring/macsscheduler/schedules/controlView"/>
+<cti:url var="toggleUrl" value="/spring/macsscheduler/schedules/toggleUrl"/>
+<cti:url var="viewUrl" value="/spring/macsscheduler/schedules/view" />
+<cti:url var="toggleUrl" value="/spring/macsscheduler/schedules/toggleState" />
 
     <h2>Scheduled Scripts</h2><BR>
     <div id="schedules">

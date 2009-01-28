@@ -54,9 +54,9 @@
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
 		
-		      <c:url var="thermostatUrl" value="/spring/stars/operator/thermostat/schedule/view/saved">
-                <c:param name="thermostatIds" value="${thermostatIds}" />
-              </c:url>	  
+		      <cti:url var="thermostatUrl" value="/spring/stars/operator/thermostat/schedule/view/saved">
+                <cti:param name="thermostatIds" value="${thermostatIds}" />
+              </cti:url>	  
 			  <jsp:include page="${thermostatUrl}" />
 			  
               <p align="center" class="MainText">&nbsp; </p>

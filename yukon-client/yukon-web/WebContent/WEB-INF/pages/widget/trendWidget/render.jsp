@@ -121,7 +121,7 @@
                 <td class="label"><b>${rawTabularDataLabel}:</b></td>
                 
                 <td>
-                    <a href="<c:url value="/spring/amr/reports/${tabularDataViewer}?def=rawPointHistoryDefinition&pointId=${pointId}&startDate=${startDateMillis}&stopDate=${stopDateMillis}" />">HTML</a>
+                    <a href="<cti:url value="/spring/amr/reports/${tabularDataViewer}?def=rawPointHistoryDefinition&pointId=${pointId}&startDate=${startDateMillis}&stopDate=${stopDateMillis}" />">HTML</a>
                     |
                     <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="csvView" pointId="${pointId}" startDate="${startDateMillis}" stopDate="${stopDateMillis}">CSV</cti:simpleReportLinkFromNameTag>
                     |
@@ -134,7 +134,7 @@
     	            <td class="label"><b>Normalized Usage Data:</b></td>
     	            
     	            <td>
-    	                <a href="<c:url value="/spring/amr/reports/${tabularDataViewer}?def=normalizedUsageDefinition&pointId=${pointId}&startDate=${startDateMillis}&stopDate=${stopDateMillis}" />">HTML</a>
+    	                <a href="<cti:url value="/spring/amr/reports/${tabularDataViewer}?def=normalizedUsageDefinition&pointId=${pointId}&startDate=${startDateMillis}&stopDate=${stopDateMillis}" />">HTML</a>
     	                |
     	                <cti:simpleReportLinkFromNameTag definitionName="normalizedUsageDefinition" viewType="csvView" pointId="${pointId}" startDate="${startDateMillis}" stopDate="${stopDateMillis}">CSV</cti:simpleReportLinkFromNameTag>
     	                |

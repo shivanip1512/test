@@ -27,9 +27,9 @@
         <tags:collectionActionsCrumbLink deviceCollection="${result.deviceCollection}" />
         
         <%-- locate route --%>
-        <c:url var="routeLocateHomeUrl" value="/spring/bulk/routeLocate/home">
+        <cti:url var="routeLocateHomeUrl" value="/spring/bulk/routeLocate/home">
             <cti:mapParam value="${result.deviceCollection.collectionParameters}"/>
-        </c:url>
+        </cti:url>
         <cti:msg var="routeLocateHomePageTitle" key="yukon.web.modules.amr.routeLocateHome.pageTitle"/>
         <cti:crumbLink url="${routeLocateHomeUrl}" title="${routeLocateHomePageTitle}" />
         
@@ -77,7 +77,7 @@
                                 
             <%-- set/view routes --%>
             <br>
-            <form id="routeLocateSettingsForm" action="<c:url value="/spring/bulk/routeLocate/routeSettings" />" method="get">
+            <form id="routeLocateSettingsForm" action="<cti:url value="/spring/bulk/routeLocate/routeSettings" />" method="get">
                 <input type="hidden" name="resultId" value="${resultId}">
                 
                 <c:choose>
@@ -90,7 +90,7 @@
                         <input type="button" id="setViewRoutesButton" value="${setRoutesButtonLabel}" onclick="slowInput(this,'routeLocateSettingsForm');" <c:if test="${not result.complete}">disabled</c:if>>
                     </c:otherwise>
                 </c:choose>
-                <img id="waitImg" src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" style="display:none;">
+                <img id="waitImg" src="<cti:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" style="display:none;">
             </form>
                                 
         </tags:bulkResultProgress>

@@ -15,7 +15,7 @@
                 <h3><cti:msg key="yukon.web.modules.dr.optOut.title" /></h3>
             </td>
             <td align="right">
-	            <form name="custSearchForm" method="POST" action="<c:url value="/servlet/SOAPClient"/>">
+	            <form name="custSearchForm" method="POST" action="<cti:url value="/servlet/SOAPClient"/>">
 		            <input type="hidden" name="action" value="SearchCustAccount" />
 		            <cti:msg key="yukon.web.modules.dr.optOut.search" />
 		            <div>
@@ -26,7 +26,7 @@
 		                </select>
 		    
 		                <input type="text" name="SearchValue" size="15" value=''>
-		                <img class="cssicon" src="<c:url value="/WebConfig/yukon/Icons/clearbits/search.gif"/>" alt="search" onClick="Javascript:document.custSearchForm.submit();">
+		                <img class="cssicon" src="<cti:url value="/WebConfig/yukon/Icons/clearbits/search.gif"/>" alt="search" onClick="Javascript:document.custSearchForm.submit();">
 		            </div> 
 	           </form>
             </td>

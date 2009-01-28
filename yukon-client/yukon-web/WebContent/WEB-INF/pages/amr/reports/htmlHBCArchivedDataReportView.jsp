@@ -15,13 +15,13 @@
             <cti:deviceName deviceId="${deviceId}"></cti:deviceName>
         </cti:crumbLink>
         
-        <c:url var="hbcUrl" value="/spring/meter/highBill/view">
-            <c:param name="deviceId" value="${deviceId}"/>
-            <c:param name="analyze" value="${analyze}"/>
-            <c:param name="getReportStartDate" value="${getReportStartDate}"/>
-            <c:param name="getReportStopDate" value="${getReportStopDate}"/>
-            <c:param name="chartRange" value="${chartRange}"/>
-        </c:url>
+        <cti:url var="hbcUrl" value="/spring/meter/highBill/view">
+            <cti:param name="deviceId" value="${deviceId}"/>
+            <cti:param name="analyze" value="${analyze}"/>
+            <cti:param name="getReportStartDate" value="${getReportStartDate}"/>
+            <cti:param name="getReportStopDate" value="${getReportStopDate}"/>
+            <cti:param name="chartRange" value="${chartRange}"/>
+        </cti:url>
         
         <cti:crumbLink url="${hbcUrl}">High Bill Complaint</cti:crumbLink>
         <cti:crumbLink>${reportTitle}</cti:crumbLink>

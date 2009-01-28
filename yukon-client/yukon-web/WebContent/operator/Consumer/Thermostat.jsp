@@ -66,9 +66,9 @@
               <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
     		  <td width="657" valign="top" bgcolor="#FFFFFF" bordercolor="#333399"> 
                 <div style="margin: 5px 5px;">
-                  <c:url var="thermostatUrl" value="/spring/stars/operator/thermostat/view">
-                    <c:param name="thermostatIds" value="${thermostatIds}" />
-                  </c:url>
+                  <cti:url var="thermostatUrl" value="/spring/stars/operator/thermostat/view">
+                    <cti:param name="thermostatIds" value="${thermostatIds}" />
+                  </cti:url>
                   <jsp:include page="${thermostatUrl}" />
                 </div> 
               </td>

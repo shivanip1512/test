@@ -19,9 +19,9 @@
                 
                     <tr class="<tags:alternateRow odd="" even="altRow"/>">
                         <td style="border: none">
-                           <c:url value="/spring/group/editor/home" var="groupEditorUrl">
-                             <c:param name="groupName" value="${group.fullName}"/>
-                           </c:url>
+                           <cti:url value="/spring/group/editor/home" var="groupEditorUrl">
+                             <cti:param name="groupName" value="${group.fullName}"/>
+                           </cti:url>
             
                             <a href="${groupEditorUrl}">${fn:escapeXml(group.fullName)}</a>
                         </td>
@@ -32,11 +32,11 @@
                                 <c:choose>
                                     <c:when test="${group.modifiable}">
                                     <tags:widgetLink method="remove" title="Remove" labelBusy="Removing" groupId="${group.id}" container="currentGroups">
-                                        <img class="cssicon" src="<c:url value="/WebConfig/yukon/Icons/clearbits/close.gif"/>">
+                                        <img class="cssicon" src="<cti:url value="/WebConfig/yukon/Icons/clearbits/close.gif"/>">
                                     </tags:widgetLink>
                                     </c:when>
                                     <c:otherwise>
-                                        <img class="graycssicon" title="Cannot remove device from group" src="<c:url value="/WebConfig/yukon/Icons/clearbits/close.gif"/>">
+                                        <img class="graycssicon" title="Cannot remove device from group" src="<cti:url value="/WebConfig/yukon/Icons/clearbits/close.gif"/>">
                                     </c:otherwise>
                                 </c:choose>
                             </td>

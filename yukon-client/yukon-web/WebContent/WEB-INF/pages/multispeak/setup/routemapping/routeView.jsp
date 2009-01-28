@@ -1,5 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<c:url var="routeUrl"
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<cti:url var="routeUrl"
     value="/spring/multispeak/setup/routemapping/route" />
 
 Assigned Routes

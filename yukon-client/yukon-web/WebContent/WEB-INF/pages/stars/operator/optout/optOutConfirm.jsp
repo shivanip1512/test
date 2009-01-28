@@ -5,8 +5,8 @@
 
 <link rel="stylesheet" href="../../WebConfig/yukon/styles/YukonGeneralStyles.css" type="text/css">
 
-<c:url var="optOutUrl" value="/spring/stars/operator/optout" />
-<c:url var="actionUrl" value="${optOutUrl}/update" />
+<cti:url var="optOutUrl" value="/spring/stars/operator/optout" />
+<cti:url var="actionUrl" value="${optOutUrl}/update" />
 
 <script type="text/javascript">
 function createJSON() {

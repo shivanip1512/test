@@ -124,7 +124,7 @@
 									<form style="display: inline;" id="${unassignId}unassignForm" action="/spring/deviceConfiguration" method="post">
 										<input type="hidden" name="deviceId" value="${device.deviceId}" />
 										<input type="hidden" id="configuration" name="configuration" value="${configuration.id}" />
-										<input name="unassignConfigForDevice" type="image" alt="Unassign Configuration" title="Unassign Configuration" class="cssicon" src="<c:url value="/WebConfig/yukon/Icons/clearbits/close.gif"/>" onClick="return unassignConfig()" />
+										<input name="unassignConfigForDevice" type="image" alt="Unassign Configuration" title="Unassign Configuration" class="cssicon" src="<cti:url value="/WebConfig/yukon/Icons/clearbits/close.gif"/>" onClick="return unassignConfig()" />
 									</form>
 									</td>
 								</tr>

@@ -10,7 +10,7 @@
 	<tags:operationSection sectionName="Client Launcher" sectionImageName="ClientLauncherLogo">
 	    <c:forEach items="${jnlpList}" var="jnlp">
 	        <tags:sectionLink>
-	            <a href="javascript:jwsLaunch('<c:url value="/jws/${jnlp.path}"/>')">${jnlp.appTitle}</a>
+	            <a href="javascript:jwsLaunch('<cti:url value="/jws/${jnlp.path}"/>')">${jnlp.appTitle}</a>
 	        </tags:sectionLink>
 	    </c:forEach>
 	</tags:operationSection>
@@ -30,7 +30,7 @@ application.
 <div id="javaWebStartLinks" style="text-align:center;padding: 15px;">
 <c:choose>
     <c:when test='${jreInstaller != null}'>
-        <a href="<c:url value="/spring/static/jre/${jreInstaller}"/>" onclick="jwsClosePopup()">Install Java</a>    
+        <a href="<cti:url value="/spring/static/jre/${jreInstaller}"/>" onclick="jwsClosePopup()">Install Java</a>    
     </c:when>
     <c:otherwise>
         <a href="http://www.java.com/getjava/" onclick="jwsClosePopup()">Install Java</a>
