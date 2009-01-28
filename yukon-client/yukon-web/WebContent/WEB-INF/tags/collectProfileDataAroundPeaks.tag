@@ -20,8 +20,10 @@
 
 <cti:formatDate var="preStartDate" value="${preResult.rangeStartDate}" type="DATE" />
 <cti:formatDate var="preStopDate" value="${preResult.rangeStopDate}" type="DATE_MIDNIGHT_PREV" />
-<cti:formatDate var="postStartDate" value="${postResult.rangeStartDate}" type="DATE" />
-<cti:formatDate var="postStopDate" value="${postResult.rangeStopDate}" type="DATE_MIDNIGHT_PREV" />
+<c:if test="${postResult != null}">
+	<cti:formatDate var="postStartDate" value="${postResult.rangeStartDate}" type="DATE" />
+	<cti:formatDate var="postStopDate" value="${postResult.rangeStopDate}" type="DATE_MIDNIGHT_PREV" />
+</c:if>
 
 <input type="hidden" id="${id}_deviceId" value="${deviceId}">
 <input type="hidden" id="${id}_startDate" value="${preStartDate}">

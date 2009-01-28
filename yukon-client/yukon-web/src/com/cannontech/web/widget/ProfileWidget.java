@@ -344,13 +344,17 @@ public class ProfileWidget extends WidgetControllerBase {
                 
                 // determine pointId in order to build report URL
                 Attribute attribute = null;
+                String channelName = "";
                 if(channel == 1){
                     attribute = BuiltInAttribute.LOAD_PROFILE;
+                    channelName = BuiltInAttribute.LOAD_PROFILE.getDescription();
                 }
                 else if(channel == 4) {
                     attribute = BuiltInAttribute.VOLTAGE_PROFILE;
+                    channelName = BuiltInAttribute.VOLTAGE_PROFILE.getDescription();
                 }
                 LitePoint litePoint = attributeService.getPointForAttribute(deviceDao.getYukonDevice(device), attribute);
+                msgData.put("channelName", channelName);
                 
                 Map<String, Object> inputValues = new HashMap<String, Object>();
                 inputValues.put("startDate", startDate.getTime());

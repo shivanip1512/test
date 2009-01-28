@@ -36,8 +36,8 @@ public class LoadProfileServiceEmailCompletionCallbackImpl implements LoadProfil
     
     private final String baseSubjectFormat = "Profile data collection for {formattedDeviceName} from {startDate|DATE} - {stopDate|DATE} {status}";
 
-    private String base_template_plain = "{statusMsg}\n\n" + "Device Summary\n" + "Device Name: {deviceName}\n" + "Meter Number: {meterNumber}\n" + "Physical Address: {physAddress}\n\n" + "Request Range: {startDate|DATE} to {stopDate|DATE}\n" + "Total Requested Days: {totalDays} \n\n";
-    private String base_template_html  = "{statusMsg}<br/><br/>" + "Device Summary<br/>" + "Device Name: {deviceName}<br/>" + "Meter Number: {meterNumber}<br/>" + "Physical Address: {physAddress}<br/><br/>" + "Request Range: {startDate|DATE} to {stopDate|DATE}<br/>" + "Total Requested Days: {totalDays}<br/><br/>";
+    private String base_template_plain = "{statusMsg}\n\n" + "Device Summary\n" + "Device Name: {deviceName}\n" + "Meter Number: {meterNumber}\n" + "Physical Address: {physAddress}\n\n" + "Channel: {channelName}\n" +  "Request Range: {startDate|DATE} to {stopDate|DATE}\n" + "Total Requested Days: {totalDays} \n\n";
+    private String base_template_html  = "{statusMsg}<br/><br/>" + "Device Summary<br/>" + "Device Name: {deviceName}<br/>" + "Meter Number: {meterNumber}<br/>" + "Physical Address: {physAddress}<br/><br/>" + "Channel: {channelName}<br/>" +  "Request Range: {startDate|DATE} to {stopDate|DATE}<br/>" + "Total Requested Days: {totalDays}<br/><br/>";
     
     private final String success_template_plain = base_template_plain + "Data is now available online.\n\nHTML\n{reportHtmlUrl}\n\nCSV\n{reportCsvUrl}\n\nPDF\n{reportPdfUrl}\n\n";
     private final String failure_template_plain = base_template_plain + "Partial data may be available online.\n\nHTML\n{reportHtmlUrl}\n\nCSV\n{reportCsvUrl}\n\nPDF\n{reportPdfUrl}\n\n";

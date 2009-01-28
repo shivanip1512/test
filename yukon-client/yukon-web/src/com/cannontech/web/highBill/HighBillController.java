@@ -486,6 +486,7 @@ public class HighBillController extends MultiActionController {
             msgData.put("stopDate", stopDate);
             long numDays = (stopDate.getTime() - startDate.getTime()) / MS_IN_A_DAY;
             msgData.put("totalDays", Long.toString(numDays));
+            msgData.put("channelName", BuiltInAttribute.LOAD_PROFILE.getDescription());
             
             // determine pointId in order to build report URL
             LitePoint litePoint = attributeService.getPointForAttribute(deviceDao.getYukonDevice(device), BuiltInAttribute.LOAD_PROFILE);
