@@ -225,10 +225,27 @@ public class ThermostatServiceImpl implements ThermostatService {
         }
 
         HardwareType type = thermostat.getType();
+        int routeId = thermostat.getRouteId();
+
+        // We have to update the schedule mode for Utility Pro thermostats every
+        // time we update the schedule
         if(HardwareType.UTILITY_PRO.equals(type)) {
-        	// TODO add code to send initial command with schedule mode to Utility pro only
+        	try {
+	        	if(ThermostatScheduleMode.WEEKDAY_SAT_SUN.equals(scheduleMode) ||
+	        			ThermostatScheduleMode.ALL.equals(scheduleMode)) {
+	        		// Schedule mode ALL is considered 5-1-1 by the stat
+	        		commandRequestExecutor.execute(
+	    					routeId, "putconfig xcom raw 0x2b 0x08 0x03", yukonUser);
+	        	} else if(ThermostatScheduleMode.WEEKDAY_WEEKEND.equals(scheduleMode)) {
+	        		commandRequestExecutor.execute(
+	    					routeId, "putconfig xcom raw 0x2b 0x08 0x02", yukonUser);
+	        	}
+        	} catch (CommandCompletionException e) {
+        		logger.error("Failed to update thermostat schedule mode.", e);
+        		return ThermostatScheduleUpdateResult.CONSUMER_UPDATE_SCHEDULE_ERROR;
+        	}
+        	
         }
-        
         
         // Build the command to send to the thermostat
         String updateScheduleCommand = this.buildUpdateScheduleCommand(thermostat,
@@ -239,7 +256,6 @@ public class ThermostatServiceImpl implements ThermostatService {
         // Send command to thermostat
         CommandResultHolder resultHolder;
         try {
-            int routeId = thermostat.getRouteId();
 			resultHolder = commandRequestExecutor.execute(
 					routeId, updateScheduleCommand, yukonUser);
         } catch (CommandCompletionException e) {
