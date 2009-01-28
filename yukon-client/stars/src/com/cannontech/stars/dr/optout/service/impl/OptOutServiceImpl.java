@@ -373,6 +373,10 @@ public class OptOutServiceImpl implements OptOutService {
 				// Update event state
 				event.setState(OptOutEventState.CANCEL_SENT);
 				event.setStopDate(new Date());
+				
+				// Update the count state to don't count since we force-canceled this opt out
+				event.setEventCounts(OptOutCounts.DONT_COUNT);
+				
 				optOutEventDao.save(event, OptOutAction.CANCEL, user);
 				
 				this.cancelLMHardwareControlGroupOptOut(inventoryId, customerAccount, event, user);
@@ -876,7 +880,11 @@ public class OptOutServiceImpl implements OptOutService {
 		
 		// Send the command
 		String commandString = cmd.toString();
+		try {
 		commandRequestRouteExecutor.execute(inventory.getRouteID(), commandString, user);
+		}catch (Exception e) {
+			// TODO: handle exception
+		}
 		
 	}
 	
@@ -932,7 +940,11 @@ public class OptOutServiceImpl implements OptOutService {
 		
 		// Send the command
 		String commandString = cmd.toString();
+		try {
 		commandRequestRouteExecutor.execute(inventory.getRouteID(), commandString, user);
+		}catch (Exception e) {
+			// TODO: handle exception
+		}
 	}
 	
 	@Autowired

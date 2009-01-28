@@ -39,8 +39,7 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
 			optOutCounts = optOutTemporaryOverrideDao.getOptOutCounts(energyCompany);
 		} catch (NoTemporaryOverrideException e) {
 			// Opt out counts is not temporarily overridden today - get role property value
-			optOutCounts = 
-				authDao.checkRoleProperty(user.getUserID(), ConfigurationRole.OPT_OUTS_COUNT);
+			optOutCounts = roleDao.checkGlobalRoleProperty(ConfigurationRole.OPT_OUTS_COUNT);
 		}
 		
 		return optOutCounts;
@@ -75,7 +74,7 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
 
 					String enabled = roleDao.getRolePropValueGroup(
 							group,
-							ConfigurationRole.OPT_OUTS_COUNT,
+							ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_OPT_OUT,
 							new Boolean(false).toString());
 
 					optOutEnabled = !CtiUtilities.isFalse(enabled);
@@ -83,7 +82,6 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
 
 			} else {
 				// Residential user - check role prop value
-
 				optOutEnabled = authDao.checkRoleProperty(
 											user.getUserID(), 
 											ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_OPT_OUT);

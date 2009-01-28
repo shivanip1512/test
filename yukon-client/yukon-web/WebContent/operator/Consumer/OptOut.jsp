@@ -74,8 +74,9 @@
               </table>
 			  <br>
 			  
-            <jsp:include page="/spring/stars/operator/optout" />
-
+              <jsp:include page="/spring/stars/operator/optout" />
+            
+            </div>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
         </tr>
