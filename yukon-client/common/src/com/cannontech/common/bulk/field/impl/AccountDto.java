@@ -17,7 +17,7 @@ public class AccountDto {
     private String password;
     private String loginGroup;
     private SiteInformation siteInfo = new SiteInformation(); 
-    private String mapNumber; // translates to SiteNumber in AccountSite
+    private String mapNumber; // This is the SiteNumber column in AccountSite table
     private String altTrackingNumber;
     private Boolean isCommercial;
 

@@ -161,31 +161,33 @@ public class AccountServiceImpl implements AccountService {
         }
             
         /*
-         * Create the address if supplied
+         * Create the address
          */
-        LiteAddress liteAddress = null;
+        LiteAddress liteAddress = new LiteAddress();
         if(streetAddress != null && StringUtils.isNotBlank(streetAddress.getLocationAddress1())) {
-            liteAddress = new LiteAddress();
             setAddressFieldsFromDTO(liteAddress, streetAddress);
-            addressDao.add(liteAddress);
+        }else {
+            setAddressDefaults(liteAddress);
         }
+        addressDao.add(liteAddress);
             
         /*
-         * Create billing address if supplied
+         * Create billing address
          */
-        LiteAddress liteBillingAddress = null;
+        LiteAddress liteBillingAddress = new LiteAddress();
         if(billingAddress != null && StringUtils.isNotBlank(billingAddress.getLocationAddress1())) {
-            liteBillingAddress = new LiteAddress();
             setAddressFieldsFromDTO(liteBillingAddress, billingAddress);
-            addressDao.add(liteBillingAddress);
+        }else {
+            setAddressDefaults(liteBillingAddress);
         }
+        addressDao.add(liteBillingAddress);
             
         /*
          * Create the contact
          */
         LiteContact liteContact = new LiteContact(-1); //  contactDao.saveContact will insert for -1, otherwise update
-        liteContact.setContFirstName(accountDto.getFirstName());
-        liteContact.setContLastName(accountDto.getLastName());
+        liteContact.setContFirstName(StringUtils.isBlank(accountDto.getFirstName()) ? "" : accountDto.getFirstName());
+        liteContact.setContLastName(StringUtils.isBlank(accountDto.getLastName()) ? "" : accountDto.getLastName());
         liteContact.setLoginID(user == null ? UserUtils.USER_DEFAULT_ID : user.getUserID());
         contactDao.saveContact(liteContact);
         dbPersistantDao.processDBChange(new DBChangeMsg(liteContact.getLiteID(),
@@ -324,7 +326,6 @@ public class AccountServiceImpl implements AccountService {
         log.info("Account: " + accountNumber + " added successfully.");
     }
 
-    
     // DELETE ACCOUNT
     @Override
     @Transactional
@@ -791,6 +792,15 @@ public class AccountServiceImpl implements AccountService {
             
             dbPersistantDao.processDBChange(changeMsg);
         }
+    }
+    
+    private void setAddressDefaults(LiteAddress liteAddress) {
+        liteAddress.setLocationAddress1(CtiUtilities.STRING_NONE);
+        liteAddress.setLocationAddress2(CtiUtilities.STRING_NONE);
+        liteAddress.setCityName(CtiUtilities.STRING_NONE);
+        liteAddress.setCounty(CtiUtilities.STRING_NONE);
+        liteAddress.setStateCode("MN");
+        liteAddress.setZipCode(CtiUtilities.STRING_NONE);
     }
     
     private void setAddressFieldsFromDTO(LiteAddress lite, Address address) {

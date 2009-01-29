@@ -12,6 +12,7 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import com.cannontech.common.bulk.field.impl.UpdatableAccount;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.exception.AccountNumberUnavailableException;
+import com.cannontech.stars.dr.account.exception.InvalidAccountNumberException;
 import com.cannontech.stars.dr.account.exception.InvalidLoginGroupException;
 import com.cannontech.stars.dr.account.exception.UserNameUnavailableException;
 import com.cannontech.stars.dr.account.service.AccountService;
@@ -47,6 +48,9 @@ public class NewAccountsRequestEndpoint {
             try {
                 accountService.addAccount(account, user);
                 newAccountResult.addContent(new Element("success", ns));
+            } catch(InvalidAccountNumberException e) {
+                Element fe = XMLFailureGenerator.generateFailure(newAccountsRequest, e, "InvalidAccountNumber", e.getMessage());
+                newAccountResult.addContent(fe);
             } catch(AccountNumberUnavailableException e) {
                 Element fe = XMLFailureGenerator.generateFailure(newAccountsRequest, e, "AccountNumberUnavailable", e.getMessage());
                 newAccountResult.addContent(fe);
