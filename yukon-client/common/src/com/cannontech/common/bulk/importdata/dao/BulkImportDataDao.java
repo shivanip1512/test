@@ -8,6 +8,8 @@ import com.cannontech.database.db.importer.ImportPendingComm;
 import com.cannontech.user.YukonUserContext;
 
 public interface BulkImportDataDao {
+	
+	public abstract int getImportDataCount();
 
     // GET FAILS, PENDING
     public abstract List<ImportFail> getAllDataFailures();

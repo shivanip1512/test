@@ -14,6 +14,7 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.db.importer.FailType;
+import com.cannontech.database.db.importer.ImportData;
 import com.cannontech.database.db.importer.ImportFail;
 import com.cannontech.database.db.importer.ImportPendingComm;
 import com.cannontech.user.YukonUserContext;
@@ -22,6 +23,16 @@ public class BulkImportDataDaoImpl implements BulkImportDataDao {
 
     private SimpleJdbcOperations jdbcTemplate;
     private DateFormattingService dateFormattingService;
+    
+    public int getImportDataCount() {
+    	
+    	SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT COUNT(*) ");
+        sql.append("FROM " + ImportData.TABLE_NAME);
+        
+        int count = jdbcTemplate.queryForInt(sql.toString());
+        return count;
+    }
     
     // GETS
     public List<ImportFail> getAllDataFailures() {

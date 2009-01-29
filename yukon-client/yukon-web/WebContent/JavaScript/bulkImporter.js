@@ -83,6 +83,7 @@ function setupRefreshStuff(url, refreshPeriod) {
         var json = content.evalJSON();
         
         // SET COUNTS
+        $('importDataCount').innerHTML = json.importDataCount;
         $('failureCount').innerHTML = json.failureCount;
         $('pendingCommsCount').innerHTML = json.pendingCommsCount;
         $('failedCommsCount').innerHTML = json.failedCommsCount;
@@ -97,6 +98,11 @@ function setupRefreshStuff(url, refreshPeriod) {
         var failedComm_table = $('failedComm_table');
         
         // FANCY HIGHLIGHTING
+        if (Integer.parseInt(json.importDataCount) != Integer.parseInt($('prevImportDataCount').value)) {
+        	new Effect.Highlight($('importDataCount'), {'duration': 2, 'startcolor': '#FFE900'});
+        }
+        $('prevImportDataCount').value = json.importDataCount;
+        
         if (json.failureCount > failed_table.rows.length - 1) {
             new Effect.Highlight($('failureCount'), {'duration': 2, 'startcolor': '#FFE900'});
         }

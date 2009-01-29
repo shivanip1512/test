@@ -113,6 +113,11 @@
     <td>
         <tags:nameValueContainer>
             
+            <tags:nameValue name="Import Data Count">
+            	<input id="prevImportDataCount" type="hidden" value="0">
+                <div id="importDataCount"></div>
+            </tags:nameValue>
+            
             <tags:nameValue name="Previous Import">
                 <div id="lastImportAttempt"></div>
             </tags:nameValue>

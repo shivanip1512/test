@@ -51,11 +51,13 @@ public class BulkImporterRefreshController implements Controller  {
         jsonUpdates.put("nextImportAttempt", nextImportTimeStr);
         
         // get raw data
+        int importDataCount = bulkImportDataDao.getImportDataCount();
         List<ImportFail> failuresList = bulkImportDataDao.getAllDataFailures();
         List<ImportPendingComm> pendingCommsList = bulkImportDataDao.getAllPending();
         List<ImportFail> failedCommsList = bulkImportDataDao.getAllCommunicationFailures();
         
         // add counts to JSON
+        jsonUpdates.put("importDataCount", importDataCount);
         jsonUpdates.put("failureCount", failuresList.size());
         jsonUpdates.put("pendingCommsCount", pendingCommsList.size());
         jsonUpdates.put("failedCommsCount", failedCommsList.size());
