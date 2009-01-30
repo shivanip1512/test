@@ -803,6 +803,8 @@
                 <value>ALLOW|/remote/**|DBEditorRole,TDCRole,CommanderRole,EsubEditorRole,TrendingRole</value>
 
                 <value>ALLOW|/spring/stars/consumer/**|ResidentialCustomerRole</value>
+                <value>ALLOW|/spring/login/changelogin/updateusername|ResidentialCustomerRole</value>
+                <value>ALLOW|/spring/login/changelogin/updatepassword|ResidentialCustomerRole</value>                                
                 <!-- Allow for Trending -->
                 <value>ALLOW|/servlet/GraphGenerator|ResidentialCustomerRole</value>
                 <value>ALLOW|/servlet/Download|ResidentialCustomerRole</value>
