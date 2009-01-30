@@ -318,7 +318,7 @@ INT resolveDeviceType(const string& _rwsTemp)
     {
         nRet = TYPEMCT410;
     }
-    else if(rwsTemp == "mct-470" || rwsTemp == "mct-430a"
+    else if(rwsTemp == "mct-470" || rwsTemp == "mct-430a"  || rwsTemp == "mct-430a3"
                                  || rwsTemp == "mct-430s4" || rwsTemp == "mct-430sl")
     {
         nRet = TYPEMCT470;
