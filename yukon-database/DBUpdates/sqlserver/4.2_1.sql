@@ -8,6 +8,11 @@ WHERE GroupId IN (-1, -2, -303, -100)
 AND RoleId = -400;
 /* End YUK-6863 */
 
+/* Start YUK-6878 */
+INSERT INTO YukonRoleProperty 
+VALUES(-1603,-7,'Msp LM Interface Mapping Setup','false','Controls access to setup the MultiSpeak LM interface mappings.');
+/* End YUK-6878 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
