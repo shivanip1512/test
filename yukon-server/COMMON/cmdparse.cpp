@@ -665,8 +665,9 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
                 //  getvalue daily read 12/12/2007 12/27/2007
                 //  getvalue daily read 12/12/2007
                 //  getvalue daily read channel n 12/12/2007
+                //  getvalue daily read
                 //
-                //  "daily read (channel " + str_num + " )?" + str_date + " (" + str_date + ")?"
+                //  "daily read (channel " + str_num + " )?" + "(" + str_date + " (" + str_date + ")?" + ")?"
 
                 _cmd["daily_read"] = true;
 
