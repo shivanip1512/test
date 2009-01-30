@@ -437,7 +437,7 @@ CtiDeviceMCTBroadcast::CommandSet CtiDeviceMCTBroadcast::initCommandStore()
 {
     CommandSet cs;
 
-    cs.insert(CommandStore(Emetcon::PutStatus_Reset,            Emetcon::IO_Function_Write, MCTBCAST_ResetPF, MCTBCAST_ResetPFLen));
+    cs.insert(CommandStore(Emetcon::PutStatus_Reset,            Emetcon::IO_Write, MCTBCAST_ResetPF, MCTBCAST_ResetPFLen));
 
     //  Do these need an ARMS for the 200- and 300-series meters?
     cs.insert(CommandStore(Emetcon::PutStatus_FreezeOne,        Emetcon::IO_Write, CtiDeviceMCT::Command_FreezeOne, 0));
