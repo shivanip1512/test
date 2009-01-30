@@ -49,13 +49,13 @@ void CtiDeviceGroupXml::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelec
 
 void CtiDeviceGroupXml::getParametersSelector(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
 {
-    RWDBTable tbl = db.table("LMGroupXMLParameter");
-    selector << tbl["LMGroupXMLParameterId"]
-             << tbl["lmgroupid"]
-             << tbl["parametername"]
-             << tbl["parametervalue"];
-    selector.from(tbl);
-    selector.orderBy(tbl["lmgroupid"]);
+    keyTable = db.table("LMGroupXMLParameter");
+    selector << keyTable["LMGroupXMLParameterId"]
+             << keyTable["lmgroupid"]
+             << keyTable["parametername"]
+             << keyTable["parametervalue"];
+    selector.from(keyTable);
+    selector.orderBy(keyTable["lmgroupid"]);
 }
 
 

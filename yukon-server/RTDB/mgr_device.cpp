@@ -173,6 +173,11 @@ inline bool isDeviceNotUpdated(CtiDeviceSPtr &pDevice, void* d)
     return !pDevice->getUpdatedFlag();
 }
 
+static void applyDeviceClearParameters(const long unusedkey, CtiDeviceSPtr Device, void* d)
+{
+    Device->clearParameters();
+    return;
+}
 
 static void applyDeviceResetUpdated(const long unusedkey, CtiDeviceSPtr Device, void* d)
 {
@@ -1277,14 +1282,24 @@ void CtiDeviceManager::refreshDeviceParameters(id_range_t &paoids, int type)
 {
     if(!type || type == TYPE_LMGROUP_XML)
     {
+        //Clear devices listed in paoids. if none, clear ALL
+        if (!paoids.empty())
+        {
+            id_range_t::const_iterator itr = paoids.begin();
+            for ( itr = paoids.begin(); itr != paoids.end(); itr++)
+            {
+                getDeviceByID(*itr)->clearParameters();
+            }
+        }
+        else
+        {
+            //clear all devices.
+            apply(applyDeviceClearParameters, NULL);
+        }
+
         //When there are more devices, move these outside of the if.
         RWDBConnection conn = getConnection();
         RWDBDatabase db = getDatabase();
-
-        if(DebugLevel & 0x00020000)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for XML Parameters for type " << endl;
-        }
 
         CtiDeviceGroupXml xmlDevice;
 
@@ -1292,6 +1307,10 @@ void CtiDeviceManager::refreshDeviceParameters(id_range_t &paoids, int type)
         RWDBTable keyTable;
 
         xmlDevice.getParametersSelector(db,keyTable,selector);
+
+        //Add in PAO id specifics if there are any
+        addIDClause(selector, keyTable["lmgroupid"], paoids);
+
         RWDBReader rdr = selector.reader(conn);
 
         if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
@@ -1311,9 +1330,6 @@ void CtiDeviceManager::refreshDeviceParameters(id_range_t &paoids, int type)
                 {
                     prevDev = deviceId;
                     device = getDeviceByID(deviceId);
-                    //If the list is not ordered, this will be unpredictable in outcome.
-                    //It might clear half of the already built up list.
-                    device->clearParameters();
                     if (!device)
                     {
                         continue;
