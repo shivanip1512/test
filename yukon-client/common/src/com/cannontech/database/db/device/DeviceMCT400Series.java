@@ -307,7 +307,7 @@ public void deleteAnAddress(Integer mctID)
 		conn = com.cannontech.database.PoolManager.getInstance().getConnection("yukon");
 	
 		deleteAnAddress(mctID, conn);
-		conn.commit();	
+		
 		conn.close();
 	}
 	catch( java.sql.SQLException e2 )

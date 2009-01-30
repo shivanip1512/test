@@ -103,21 +103,9 @@ public static boolean deleteAMapping(Integer mctID, java.sql.Connection conn)
 public void deleteAMapping(Integer mctID)
 {
 	java.sql.Connection conn = null;
-	try
-	{
-	
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection("yukon");
-	
-		deleteAMapping(mctID, conn);
-		conn.commit();	
-	}
-	catch( java.sql.SQLException e2 )
-	{
-		com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );
-	}	
-	finally{
-		SqlUtils.close(conn );
-	}
+	conn = com.cannontech.database.PoolManager.getInstance().getConnection("yukon");
+
+	SqlUtils.close(conn );
 }
 /**
  * This method was created by Cannon Technologies Inc.
