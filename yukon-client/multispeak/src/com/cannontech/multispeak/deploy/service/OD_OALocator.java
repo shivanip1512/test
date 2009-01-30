@@ -22,7 +22,7 @@ public class OD_OALocator extends org.apache.axis.client.Service implements com.
     }
 
     // Use to get a proxy class for OD_OASoap
-    private java.lang.String OD_OASoap_address = "http://localhost/MultiSpeakWebServiceV30u/5_OD_OA.asmx";
+    private java.lang.String OD_OASoap_address = "http://localhost/MultiSpeakWebServicesV30v/5_OD_OA.asmx";
 
     public java.lang.String getOD_OASoapAddress() {
         return OD_OASoap_address;

@@ -1025,4 +1025,10 @@ public interface CB_ServerSoap_PortType extends java.rmi.Remote {
      * errorObject.
      */
     public com.cannontech.multispeak.deploy.service.ErrorObject returnGeneratedNumber(com.cannontech.multispeak.deploy.service.RequestedNumber requestedNum) throws java.rmi.RemoteException;
+
+    /**
+     * Publisher notifies CB that history comment(s) should be written
+     * to a customer account. CB returns failed transactions using an errorObject.
+     */
+    public com.cannontech.multispeak.deploy.service.ErrorObject[] writeAccountHistoryComments(com.cannontech.multispeak.deploy.service.HistoryComment[] comments) throws java.rmi.RemoteException;
 }

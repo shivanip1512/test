@@ -9,8 +9,8 @@
 <undeployment
     xmlns="http://xml.apache.org/axis/wsdd/">
 
-  <!-- Services from OD_OA WSDL service -->
+  <!-- Services from SCADA_Server WSDL service -->
 
-  <service name="OD_OASoap12"/>
-  <service name="OD_OASoap"/>
+  <service name="SCADA_ServerSoap"/>
+  <service name="SCADA_ServerSoap12"/>
 </undeployment>

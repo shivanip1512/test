@@ -161,32 +161,40 @@ public class LM_ServerSoap_BindingStub extends org.apache.axis.client.Stub imple
         _operations[10] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
-        oper.setName("IntiateLoadManagementEvent");
+        oper.setName("InitiateLoadManagementEvent");
         param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "theLMEvent"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "loadManagementEvent"), com.cannontech.multispeak.deploy.service.LoadManagementEvent.class, false, false);
         param.setOmittable(true);
         oper.addParameter(param);
-        oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
+        oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "errorObject"));
+        oper.setReturnClass(com.cannontech.multispeak.deploy.service.ErrorObject.class);
+        oper.setReturnQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "InitiateLoadManagementEventResult"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
         _operations[11] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
-        oper.setName("IntiateLoadManagementEvents");
+        oper.setName("InitiateLoadManagementEvents");
         param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "theLMEvents"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfLoadManagementEvent"), com.cannontech.multispeak.deploy.service.LoadManagementEvent[].class, false, false);
         param.setItemQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "loadManagementEvent"));
         param.setOmittable(true);
         oper.addParameter(param);
-        oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
+        oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ArrayOfErrorObject"));
+        oper.setReturnClass(com.cannontech.multispeak.deploy.service.ErrorObject[].class);
+        oper.setReturnQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "InitiateLoadManagementEventsResult"));
+        param = oper.getReturnParamDesc();
+        param.setItemQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "errorObject"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
         _operations[12] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
-        oper.setName("IntiatePowerFactorManagementEvent");
+        oper.setName("InitiatePowerFactorManagementEvent");
         param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "thePFMEvent"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "powerFactorManagementEvent"), com.cannontech.multispeak.deploy.service.PowerFactorManagementEvent.class, false, false);
         param.setOmittable(true);
         oper.addParameter(param);
-        oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
+        oper.setReturnType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "errorObject"));
+        oper.setReturnClass(com.cannontech.multispeak.deploy.service.ErrorObject.class);
+        oper.setReturnQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "InitiatePowerFactorManagementEventResult"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
         _operations[13] = oper;
@@ -830,44 +838,44 @@ public class LM_ServerSoap_BindingStub extends org.apache.axis.client.Stub imple
             cachedSerFactories.add(enumsf);
             cachedDeserFactories.add(enumdf);
 
-            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">IntiateLoadManagementEvent");
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">InitiateLoadManagementEvent");
             cachedSerQNames.add(qName);
-            cls = com.cannontech.multispeak.deploy.service.IntiateLoadManagementEvent.class;
+            cls = com.cannontech.multispeak.deploy.service.InitiateLoadManagementEvent.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
-            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">IntiateLoadManagementEventResponse");
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">InitiateLoadManagementEventResponse");
             cachedSerQNames.add(qName);
-            cls = com.cannontech.multispeak.deploy.service.IntiateLoadManagementEventResponse.class;
+            cls = com.cannontech.multispeak.deploy.service.InitiateLoadManagementEventResponse.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
-            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">IntiateLoadManagementEvents");
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">InitiateLoadManagementEvents");
             cachedSerQNames.add(qName);
-            cls = com.cannontech.multispeak.deploy.service.IntiateLoadManagementEvents.class;
+            cls = com.cannontech.multispeak.deploy.service.InitiateLoadManagementEvents.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
-            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">IntiateLoadManagementEventsResponse");
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">InitiateLoadManagementEventsResponse");
             cachedSerQNames.add(qName);
-            cls = com.cannontech.multispeak.deploy.service.IntiateLoadManagementEventsResponse.class;
+            cls = com.cannontech.multispeak.deploy.service.InitiateLoadManagementEventsResponse.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
-            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">IntiatePowerFactorManagementEvent");
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">InitiatePowerFactorManagementEvent");
             cachedSerQNames.add(qName);
-            cls = com.cannontech.multispeak.deploy.service.IntiatePowerFactorManagementEvent.class;
+            cls = com.cannontech.multispeak.deploy.service.InitiatePowerFactorManagementEvent.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
-            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">IntiatePowerFactorManagementEventResponse");
+            qName = new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">InitiatePowerFactorManagementEventResponse");
             cachedSerQNames.add(qName);
-            cls = com.cannontech.multispeak.deploy.service.IntiatePowerFactorManagementEventResponse.class;
+            cls = com.cannontech.multispeak.deploy.service.InitiatePowerFactorManagementEventResponse.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
@@ -4540,19 +4548,19 @@ public class LM_ServerSoap_BindingStub extends org.apache.axis.client.Stub imple
 }
     }
 
-    public void intiateLoadManagementEvent(com.cannontech.multispeak.deploy.service.LoadManagementEvent theLMEvent) throws java.rmi.RemoteException {
+    public com.cannontech.multispeak.deploy.service.ErrorObject initiateLoadManagementEvent(com.cannontech.multispeak.deploy.service.LoadManagementEvent theLMEvent) throws java.rmi.RemoteException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
         _call.setOperation(_operations[11]);
         _call.setUseSOAPAction(true);
-        _call.setSOAPActionURI("http://www.multispeak.org/Version_3.0/IntiateLoadManagementEvent");
+        _call.setSOAPActionURI("http://www.multispeak.org/Version_3.0/InitiateLoadManagementEvent");
         _call.setEncodingStyle(null);
         _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
         _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
         _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
-        _call.setOperationName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "IntiateLoadManagementEvent"));
+        _call.setOperationName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "InitiateLoadManagementEvent"));
 
         setRequestHeaders(_call);
         setAttachments(_call);
@@ -4561,25 +4569,32 @@ public class LM_ServerSoap_BindingStub extends org.apache.axis.client.Stub imple
         if (_resp instanceof java.rmi.RemoteException) {
             throw (java.rmi.RemoteException)_resp;
         }
-        extractAttachments(_call);
+        else {
+            extractAttachments(_call);
+            try {
+                return (com.cannontech.multispeak.deploy.service.ErrorObject) _resp;
+            } catch (java.lang.Exception _exception) {
+                return (com.cannontech.multispeak.deploy.service.ErrorObject) org.apache.axis.utils.JavaUtils.convert(_resp, com.cannontech.multispeak.deploy.service.ErrorObject.class);
+            }
+        }
   } catch (org.apache.axis.AxisFault axisFaultException) {
   throw axisFaultException;
 }
     }
 
-    public void intiateLoadManagementEvents(com.cannontech.multispeak.deploy.service.LoadManagementEvent[] theLMEvents) throws java.rmi.RemoteException {
+    public com.cannontech.multispeak.deploy.service.ErrorObject[] initiateLoadManagementEvents(com.cannontech.multispeak.deploy.service.LoadManagementEvent[] theLMEvents) throws java.rmi.RemoteException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
         _call.setOperation(_operations[12]);
         _call.setUseSOAPAction(true);
-        _call.setSOAPActionURI("http://www.multispeak.org/Version_3.0/IntiateLoadManagementEvents");
+        _call.setSOAPActionURI("http://www.multispeak.org/Version_3.0/InitiateLoadManagementEvents");
         _call.setEncodingStyle(null);
         _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
         _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
         _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
-        _call.setOperationName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "IntiateLoadManagementEvents"));
+        _call.setOperationName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "InitiateLoadManagementEvents"));
 
         setRequestHeaders(_call);
         setAttachments(_call);
@@ -4588,25 +4603,32 @@ public class LM_ServerSoap_BindingStub extends org.apache.axis.client.Stub imple
         if (_resp instanceof java.rmi.RemoteException) {
             throw (java.rmi.RemoteException)_resp;
         }
-        extractAttachments(_call);
+        else {
+            extractAttachments(_call);
+            try {
+                return (com.cannontech.multispeak.deploy.service.ErrorObject[]) _resp;
+            } catch (java.lang.Exception _exception) {
+                return (com.cannontech.multispeak.deploy.service.ErrorObject[]) org.apache.axis.utils.JavaUtils.convert(_resp, com.cannontech.multispeak.deploy.service.ErrorObject[].class);
+            }
+        }
   } catch (org.apache.axis.AxisFault axisFaultException) {
   throw axisFaultException;
 }
     }
 
-    public void intiatePowerFactorManagementEvent(com.cannontech.multispeak.deploy.service.PowerFactorManagementEvent thePFMEvent) throws java.rmi.RemoteException {
+    public com.cannontech.multispeak.deploy.service.ErrorObject initiatePowerFactorManagementEvent(com.cannontech.multispeak.deploy.service.PowerFactorManagementEvent thePFMEvent) throws java.rmi.RemoteException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
         _call.setOperation(_operations[13]);
         _call.setUseSOAPAction(true);
-        _call.setSOAPActionURI("http://www.multispeak.org/Version_3.0/IntiatePowerFactorManagementEvent");
+        _call.setSOAPActionURI("http://www.multispeak.org/Version_3.0/InitiatePowerFactorManagementEvent");
         _call.setEncodingStyle(null);
         _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
         _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
         _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
-        _call.setOperationName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "IntiatePowerFactorManagementEvent"));
+        _call.setOperationName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "InitiatePowerFactorManagementEvent"));
 
         setRequestHeaders(_call);
         setAttachments(_call);
@@ -4615,7 +4637,14 @@ public class LM_ServerSoap_BindingStub extends org.apache.axis.client.Stub imple
         if (_resp instanceof java.rmi.RemoteException) {
             throw (java.rmi.RemoteException)_resp;
         }
-        extractAttachments(_call);
+        else {
+            extractAttachments(_call);
+            try {
+                return (com.cannontech.multispeak.deploy.service.ErrorObject) _resp;
+            } catch (java.lang.Exception _exception) {
+                return (com.cannontech.multispeak.deploy.service.ErrorObject) org.apache.axis.utils.JavaUtils.convert(_resp, com.cannontech.multispeak.deploy.service.ErrorObject.class);
+            }
+        }
   } catch (org.apache.axis.AxisFault axisFaultException) {
   throw axisFaultException;
 }

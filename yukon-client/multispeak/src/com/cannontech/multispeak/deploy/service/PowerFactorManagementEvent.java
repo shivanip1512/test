@@ -12,6 +12,8 @@ public class PowerFactorManagementEvent  extends com.cannontech.multispeak.deplo
 
     private com.cannontech.multispeak.deploy.service.ControlEventType controlEventType;
 
+    private java.lang.String affectedRelay;
+
     public PowerFactorManagementEvent() {
     }
 
@@ -25,7 +27,8 @@ public class PowerFactorManagementEvent  extends com.cannontech.multispeak.deplo
            java.lang.String comments,
            com.cannontech.multispeak.deploy.service.ExtensionsItem[] extensionsList,
            java.lang.String switchID,
-           com.cannontech.multispeak.deploy.service.ControlEventType controlEventType) {
+           com.cannontech.multispeak.deploy.service.ControlEventType controlEventType,
+           java.lang.String affectedRelay) {
         super(
             objectID,
             verb,
@@ -37,6 +40,7 @@ public class PowerFactorManagementEvent  extends com.cannontech.multispeak.deplo
             extensionsList);
         this.switchID = switchID;
         this.controlEventType = controlEventType;
+        this.affectedRelay = affectedRelay;
     }
 
 
@@ -79,6 +83,26 @@ public class PowerFactorManagementEvent  extends com.cannontech.multispeak.deplo
         this.controlEventType = controlEventType;
     }
 
+
+    /**
+     * Gets the affectedRelay value for this PowerFactorManagementEvent.
+     * 
+     * @return affectedRelay
+     */
+    public java.lang.String getAffectedRelay() {
+        return affectedRelay;
+    }
+
+
+    /**
+     * Sets the affectedRelay value for this PowerFactorManagementEvent.
+     * 
+     * @param affectedRelay
+     */
+    public void setAffectedRelay(java.lang.String affectedRelay) {
+        this.affectedRelay = affectedRelay;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof PowerFactorManagementEvent)) return false;
@@ -96,7 +120,10 @@ public class PowerFactorManagementEvent  extends com.cannontech.multispeak.deplo
               this.switchID.equals(other.getSwitchID()))) &&
             ((this.controlEventType==null && other.getControlEventType()==null) || 
              (this.controlEventType!=null &&
-              this.controlEventType.equals(other.getControlEventType())));
+              this.controlEventType.equals(other.getControlEventType()))) &&
+            ((this.affectedRelay==null && other.getAffectedRelay()==null) || 
+             (this.affectedRelay!=null &&
+              this.affectedRelay.equals(other.getAffectedRelay())));
         __equalsCalc = null;
         return _equals;
     }
@@ -113,6 +140,9 @@ public class PowerFactorManagementEvent  extends com.cannontech.multispeak.deplo
         }
         if (getControlEventType() != null) {
             _hashCode += getControlEventType().hashCode();
+        }
+        if (getAffectedRelay() != null) {
+            _hashCode += getAffectedRelay().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -135,6 +165,13 @@ public class PowerFactorManagementEvent  extends com.cannontech.multispeak.deplo
         elemField.setFieldName("controlEventType");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "controlEventType"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "controlEventType"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("affectedRelay");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "affectedRelay"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

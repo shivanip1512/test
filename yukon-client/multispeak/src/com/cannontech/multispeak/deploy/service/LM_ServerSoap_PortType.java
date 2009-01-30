@@ -101,7 +101,7 @@ public interface LM_ServerSoap_PortType extends java.rmi.Remote {
      * system. If this transaction should fail, LM returns information about
      * the failure using a SOAPFault.
      */
-    public void intiateLoadManagementEvent(com.cannontech.multispeak.deploy.service.LoadManagementEvent theLMEvent) throws java.rmi.RemoteException;
+    public com.cannontech.multispeak.deploy.service.ErrorObject initiateLoadManagementEvent(com.cannontech.multispeak.deploy.service.LoadManagementEvent theLMEvent) throws java.rmi.RemoteException;
 
     /**
      * Publisher calls this LM service to initiate an array of load
@@ -112,7 +112,7 @@ public interface LM_ServerSoap_PortType extends java.rmi.Remote {
      * spread over the entire system. If this transaction should fail, LM
      * returns information about the failure using a SOAPFault.
      */
-    public void intiateLoadManagementEvents(com.cannontech.multispeak.deploy.service.LoadManagementEvent[] theLMEvents) throws java.rmi.RemoteException;
+    public com.cannontech.multispeak.deploy.service.ErrorObject[] initiateLoadManagementEvents(com.cannontech.multispeak.deploy.service.LoadManagementEvent[] theLMEvents) throws java.rmi.RemoteException;
 
     /**
      * Publisher calls this LM service to initiate a power factor
@@ -120,7 +120,7 @@ public interface LM_ServerSoap_PortType extends java.rmi.Remote {
      * transaction should fail, LM returns information about the failure
      * using a SOAPFault.
      */
-    public void intiatePowerFactorManagementEvent(com.cannontech.multispeak.deploy.service.PowerFactorManagementEvent thePFMEvent) throws java.rmi.RemoteException;
+    public com.cannontech.multispeak.deploy.service.ErrorObject initiatePowerFactorManagementEvent(com.cannontech.multispeak.deploy.service.PowerFactorManagementEvent thePFMEvent) throws java.rmi.RemoteException;
 
     /**
      * Publisher notifies LM of a change in the Customer object(s)

@@ -10,20 +10,20 @@ package com.cannontech.multispeak.deploy.service;
 public class MspSwitchDeviceList  implements java.io.Serializable {
     private com.cannontech.multispeak.deploy.service.MspSwitchingDevice mspSwitchingDevice;
 
-    private com.cannontech.multispeak.deploy.service.MspSwitchingDevice _switch;
-
     private com.cannontech.multispeak.deploy.service.MspOverCurrentDevice mspOverCurrentDevice;
+
+    private com.cannontech.multispeak.deploy.service.MspSwitchingDevice _switch;
 
     public MspSwitchDeviceList() {
     }
 
     public MspSwitchDeviceList(
            com.cannontech.multispeak.deploy.service.MspSwitchingDevice mspSwitchingDevice,
-           com.cannontech.multispeak.deploy.service.MspSwitchingDevice _switch,
-           com.cannontech.multispeak.deploy.service.MspOverCurrentDevice mspOverCurrentDevice) {
+           com.cannontech.multispeak.deploy.service.MspOverCurrentDevice mspOverCurrentDevice,
+           com.cannontech.multispeak.deploy.service.MspSwitchingDevice _switch) {
            this.mspSwitchingDevice = mspSwitchingDevice;
-           this._switch = _switch;
            this.mspOverCurrentDevice = mspOverCurrentDevice;
+           this._switch = _switch;
     }
 
 
@@ -48,26 +48,6 @@ public class MspSwitchDeviceList  implements java.io.Serializable {
 
 
     /**
-     * Gets the _switch value for this MspSwitchDeviceList.
-     * 
-     * @return _switch
-     */
-    public com.cannontech.multispeak.deploy.service.MspSwitchingDevice get_switch() {
-        return _switch;
-    }
-
-
-    /**
-     * Sets the _switch value for this MspSwitchDeviceList.
-     * 
-     * @param _switch
-     */
-    public void set_switch(com.cannontech.multispeak.deploy.service.MspSwitchingDevice _switch) {
-        this._switch = _switch;
-    }
-
-
-    /**
      * Gets the mspOverCurrentDevice value for this MspSwitchDeviceList.
      * 
      * @return mspOverCurrentDevice
@@ -86,6 +66,26 @@ public class MspSwitchDeviceList  implements java.io.Serializable {
         this.mspOverCurrentDevice = mspOverCurrentDevice;
     }
 
+
+    /**
+     * Gets the _switch value for this MspSwitchDeviceList.
+     * 
+     * @return _switch
+     */
+    public com.cannontech.multispeak.deploy.service.MspSwitchingDevice get_switch() {
+        return _switch;
+    }
+
+
+    /**
+     * Sets the _switch value for this MspSwitchDeviceList.
+     * 
+     * @param _switch
+     */
+    public void set_switch(com.cannontech.multispeak.deploy.service.MspSwitchingDevice _switch) {
+        this._switch = _switch;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof MspSwitchDeviceList)) return false;
@@ -101,12 +101,12 @@ public class MspSwitchDeviceList  implements java.io.Serializable {
             ((this.mspSwitchingDevice==null && other.getMspSwitchingDevice()==null) || 
              (this.mspSwitchingDevice!=null &&
               this.mspSwitchingDevice.equals(other.getMspSwitchingDevice()))) &&
-            ((this._switch==null && other.get_switch()==null) || 
-             (this._switch!=null &&
-              this._switch.equals(other.get_switch()))) &&
             ((this.mspOverCurrentDevice==null && other.getMspOverCurrentDevice()==null) || 
              (this.mspOverCurrentDevice!=null &&
-              this.mspOverCurrentDevice.equals(other.getMspOverCurrentDevice())));
+              this.mspOverCurrentDevice.equals(other.getMspOverCurrentDevice()))) &&
+            ((this._switch==null && other.get_switch()==null) || 
+             (this._switch!=null &&
+              this._switch.equals(other.get_switch())));
         __equalsCalc = null;
         return _equals;
     }
@@ -121,11 +121,11 @@ public class MspSwitchDeviceList  implements java.io.Serializable {
         if (getMspSwitchingDevice() != null) {
             _hashCode += getMspSwitchingDevice().hashCode();
         }
-        if (get_switch() != null) {
-            _hashCode += get_switch().hashCode();
-        }
         if (getMspOverCurrentDevice() != null) {
             _hashCode += getMspOverCurrentDevice().hashCode();
+        }
+        if (get_switch() != null) {
+            _hashCode += get_switch().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -145,16 +145,16 @@ public class MspSwitchDeviceList  implements java.io.Serializable {
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("_switch");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "switch"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "mspSwitchingDevice"));
+        elemField.setFieldName("mspOverCurrentDevice");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "mspOverCurrentDevice"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "mspOverCurrentDevice"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("mspOverCurrentDevice");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "mspOverCurrentDevice"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "mspOverCurrentDevice"));
+        elemField.setFieldName("_switch");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "switch"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "mspSwitchingDevice"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

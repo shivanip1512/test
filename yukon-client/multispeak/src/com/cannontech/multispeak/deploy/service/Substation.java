@@ -56,10 +56,10 @@ public class Substation  extends com.cannontech.multispeak.deploy.service.MspEle
            java.lang.String facilityID,
            com.cannontech.multispeak.deploy.service.GraphicSymbol[] graphicSymbol,
            com.cannontech.multispeak.deploy.service.GenericAnnotationFeature[] annotationList,
+           com.cannontech.multispeak.deploy.service.NodeIdentifier toNodeID,
            com.cannontech.multispeak.deploy.service.NodeIdentifier fromNodeID,
            com.cannontech.multispeak.deploy.service.ObjectRef parentSectionID,
            java.lang.String sectionID,
-           com.cannontech.multispeak.deploy.service.NodeIdentifier toNodeID,
            com.cannontech.multispeak.deploy.service.PhaseCd phaseCode,
            com.cannontech.multispeak.deploy.service.MspLoadGroup load,
            java.lang.String zMin,
@@ -92,10 +92,10 @@ public class Substation  extends com.cannontech.multispeak.deploy.service.MspEle
             facilityID,
             graphicSymbol,
             annotationList,
+            toNodeID,
             fromNodeID,
             parentSectionID,
             sectionID,
-            toNodeID,
             phaseCode,
             load);
         this.zMin = zMin;

@@ -60,21 +60,21 @@ public class LM_ServerSoap_BindingImpl implements com.cannontech.multispeak.depl
         return lm_server.getMethods();
     }
 
-    public void intiateLoadManagementEvent(LoadManagementEvent theLMEvent)
-            throws RemoteException {
-        lm_server.intiateLoadManagementEvent(theLMEvent);
+    public ErrorObject initiateLoadManagementEvent(
+    		LoadManagementEvent theLMEvent) throws RemoteException {
+    	return lm_server.initiateLoadManagementEvent(theLMEvent);
     }
 
-    public void intiateLoadManagementEvents(LoadManagementEvent[] theLMEvents)
-            throws RemoteException {
-        lm_server.intiateLoadManagementEvents(theLMEvents);
+    public ErrorObject[] initiateLoadManagementEvents(
+    		LoadManagementEvent[] theLMEvents) throws RemoteException {
+    	return lm_server.initiateLoadManagementEvents(theLMEvents);
     }
 
-    public void intiatePowerFactorManagementEvent(
-            PowerFactorManagementEvent thePFMEvent) throws RemoteException {
-        lm_server.intiatePowerFactorManagementEvent(thePFMEvent);
+    public ErrorObject initiatePowerFactorManagementEvent(
+    		PowerFactorManagementEvent thePFMEvent) throws RemoteException {
+    	return lm_server.initiatePowerFactorManagementEvent(thePFMEvent);
     }
-
+    
     public boolean isLoadManagementActive(String servLoc)
             throws RemoteException {
         return lm_server.isLoadManagementActive(servLoc);
