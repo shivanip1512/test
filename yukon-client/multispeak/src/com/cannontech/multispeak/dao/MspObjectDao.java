@@ -1,5 +1,7 @@
 package com.cannontech.multispeak.dao;
 
+import java.util.List;
+
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.deploy.service.Customer;
@@ -75,7 +77,7 @@ public interface MspObjectDao {
      * @param errorMessage The error message.
      * @return
      */
-    public ErrorObject getErrorObject(String objectID, String errorMessage, String nounType);
+    public ErrorObject getErrorObject(String objectID, String errorMessage, String nounType, String method, String userName);
 
     /**
      * Creates a new (MSP) ErrorObject 
@@ -84,5 +86,20 @@ public interface MspObjectDao {
      * @param notFoundObjectType The objectID type
      * @return
      */
-    public ErrorObject getNotFoundErrorObject(String objectID, String notFoundObjectType, String nounType);
+    public ErrorObject getNotFoundErrorObject(String objectID, String notFoundObjectType, String nounType, String method, String userName);
+
+    /**
+     * Creates and ErrorObject array from errorObjects List
+     * @param errorObjects
+     * @return
+     */
+    public ErrorObject[] toErrorObject(List<ErrorObject> errorObjects);
+    
+    /**
+     * Creates an entry in the System log and prints a debug statement.
+     * @param method
+     * @param description
+     * @param userName
+     */
+    public void logMSPActivity(String method, String description, String userName);
 }

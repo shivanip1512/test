@@ -17,15 +17,18 @@ import org.apache.axis.message.PrefixedQName;
 import org.apache.axis.message.SOAPEnvelope;
 import org.apache.axis.message.SOAPHeader;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.exception.BadAuthenticationException;
+import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.RoleDao;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.deploy.service.Customer;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
@@ -43,19 +46,7 @@ public class MultispeakFuncs
     public MultispeakDao multispeakDao;
     public RoleDao roleDao;
     public DeviceGroupService deviceGroupService;
-
-    @Required
-    public void setMultispeakDao(MultispeakDao multispeakDao) {
-        this.multispeakDao = multispeakDao;
-    }
-    @Required
-    public void setRoleDao(RoleDao roleDao) {
-        this.roleDao = roleDao;
-    }
-    @Required
-    public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
-        this.deviceGroupService = deviceGroupService;
-    }
+    public AuthenticationService authenticationService;
 
     public void logStrings(String intfaceName, String methodName, String[] strings)
 	{
@@ -165,6 +156,19 @@ public class MultispeakFuncs
     {
         return getAtributeFromSOAPHeader("appname");
     }    
+
+    public LiteYukonUser authenticateMsgHeader() throws java.rmi.RemoteException {
+        try {
+            String username = getAtributeFromSOAPHeader("userID");
+            String password = getAtributeFromSOAPHeader("pwd");
+            //TEMPORARY FOR TESTING
+            username = "yukon";
+            password = "yukon";
+        	return authenticationService.login(username, password);
+        } catch(BadAuthenticationException e) {
+        	throw new RemoteException(e.getMessage());
+        }
+    }
     
     public MultispeakVendor getMultispeakVendorFromHeader() throws RemoteException {
         String companyName = getCompanyNameFromSOAPHeader();
@@ -285,4 +289,22 @@ public class MultispeakFuncs
         StoredDeviceGroup deviceGroup = (StoredDeviceGroup)deviceGroupService.resolveGroupName(systemGroupEnum.getFullPath());
         return deviceGroup;
     }
+    
+    @Autowired
+    public void setMultispeakDao(MultispeakDao multispeakDao) {
+        this.multispeakDao = multispeakDao;
+    }
+    @Autowired
+    public void setRoleDao(RoleDao roleDao) {
+        this.roleDao = roleDao;
+    }
+    @Autowired
+    public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
+        this.deviceGroupService = deviceGroupService;
+    }
+    @Autowired
+    public void setAuthenticationService(
+			AuthenticationService authenticationService) {
+		this.authenticationService = authenticationService;
+	}
 }

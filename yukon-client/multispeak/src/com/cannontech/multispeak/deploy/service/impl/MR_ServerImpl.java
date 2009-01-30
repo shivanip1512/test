@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.amr.meter.dao.MeterDao;
@@ -23,7 +24,6 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.multispeak.block.Block;
 import com.cannontech.multispeak.block.FormattedBlockService;
-import com.cannontech.multispeak.client.Multispeak;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
@@ -52,11 +52,12 @@ import com.cannontech.multispeak.deploy.service.MeterRead;
 import com.cannontech.multispeak.deploy.service.PhaseCd;
 import com.cannontech.multispeak.deploy.service.ServiceLocation;
 import com.cannontech.multispeak.service.MspValidationService;
+import com.cannontech.multispeak.service.MultispeakMeterService;
 import com.cannontech.yukon.BasicServerConnection;
 
 public class MR_ServerImpl implements MR_ServerSoap_PortType{
 
-    private Multispeak multispeak;
+    private MultispeakMeterService multispeakMeterService;
     private MspMeterDao mspMeterDao;
     private MultispeakFuncs multispeakFuncs;
     private MspRawPointHistoryDao mspRawPointHistoryDao;
@@ -65,46 +66,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     public Map<String, FormattedBlockService> readingTypesMap;
     public MspMeterReadDao mspMeterReadDao;
     public MeterDao meterDao;
-    
-    @Required
-    public void setMspMeterDao(MspMeterDao mspMeterDao) {
-        this.mspMeterDao = mspMeterDao;
-    }
-    @Required
-    public void setMultispeak(Multispeak multispeak) {
-        this.multispeak = multispeak;
-    }
-    @Required
-    public void setMultispeakFuncs(MultispeakFuncs multispeakFuncs) {
-        this.multispeakFuncs = multispeakFuncs;
-    }
-    @Required
-    public void setMspRawPointHistoryDao(MspRawPointHistoryDao mspRawPointHistoryDao) {
-        this.mspRawPointHistoryDao = mspRawPointHistoryDao;
-    }
-    @Required
-    public void setPorterConnection(BasicServerConnection porterConnection) {
-        this.porterConnection = porterConnection;
-    }
-    @Required
-    public void setMspValidationService(
-            MspValidationService mspValidationService) {
-        this.mspValidationService = mspValidationService;
-    }
-    @Required
-    public void setReadingTypesMap(
-            Map<String, FormattedBlockService> readingTypesMap) {
-        this.readingTypesMap = readingTypesMap;
-    }
-    @Required
-    public void setMspMeterReadDao(MspMeterReadDao mspMeterReadDao) {
-        this.mspMeterReadDao = mspMeterReadDao;
-    }
-    @Required
-    public void setMeterDao(MeterDao meterDao) {
-        this.meterDao = meterDao;
-    }
-    
+
     private void init() throws RemoteException {
         multispeakFuncs.init();
     }
@@ -233,7 +195,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
         
         //Custom hack put in only for SEDC.  Performs an actual meter read instead of simply replying from the database.
         if ( vendor.getCompanyName().equalsIgnoreCase("SEDC") ) {
-        	return multispeak.getLatestReadingInterrogate(vendor, meter, null);
+        	return multispeakMeterService.getLatestReadingInterrogate(vendor, meter, null);
         } else	{ //THIS SHOULD BE WHERE EVERYONE ELSE GOES!!!
             try {
     	        ReadableDevice device = MeterReadFactory.createMeterReadObject(meter);
@@ -302,7 +264,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     public ErrorObject[] initiateUsageMonitoring(String[] meterNos) throws java.rmi.RemoteException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        ErrorObject[] errorObject = multispeak.initiateUsageMonitoringStatus(vendor, meterNos);
+        ErrorObject[] errorObject = multispeakMeterService.initiateUsageMonitoringStatus(vendor, meterNos);
         return errorObject;
     }
     
@@ -310,7 +272,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     public ErrorObject[] cancelUsageMonitoring(String[] meterNos) throws java.rmi.RemoteException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        ErrorObject[] errorObject = multispeak.cancelUsageMonitoringStatus(vendor, meterNos);
+        ErrorObject[] errorObject = multispeakMeterService.cancelUsageMonitoringStatus(vendor, meterNos);
         return errorObject;
     }
     
@@ -318,7 +280,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     public ErrorObject[] initiateDisconnectedStatus(String[] meterNos) throws java.rmi.RemoteException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        ErrorObject[] errorObject = multispeak.initiateDisconnectedStatus(vendor, meterNos);
+        ErrorObject[] errorObject = multispeakMeterService.initiateDisconnectedStatus(vendor, meterNos);
         return errorObject;
     }
     
@@ -326,7 +288,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     public ErrorObject[] cancelDisconnectedStatus(String[] meterNos) throws java.rmi.RemoteException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        ErrorObject[] errorObject = multispeak.cancelDisconnectedStatus(vendor, meterNos);
+        ErrorObject[] errorObject = multispeakMeterService.cancelDisconnectedStatus(vendor, meterNos);
         return errorObject;
     }
 
@@ -345,7 +307,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
             throw new RemoteException(message);
         }
 
-        errorObjects = multispeak.MeterReadEvent(vendor, meterNos, transactionID);
+        errorObjects = multispeakMeterService.MeterReadEvent(vendor, meterNos, transactionID);
 
         multispeakFuncs.logErrorObjects(MultispeakDefines.MR_CB_STR, "initiateMeterReadByMeterNumberRequest", errorObjects);
         return errorObjects;
@@ -361,7 +323,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     public ErrorObject[] serviceLocationChangedNotification(ServiceLocation[] changedServiceLocations) throws java.rmi.RemoteException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        ErrorObject[] errorObject = multispeak.updateServiceLocation(vendor, changedServiceLocations);
+        ErrorObject[] errorObject = multispeakMeterService.updateServiceLocation(vendor, changedServiceLocations);
         return errorObject;
     }
     
@@ -369,7 +331,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     public ErrorObject[] meterChangedNotification(Meter[] changedMeters) throws java.rmi.RemoteException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        ErrorObject[] errorObject = multispeak.changeMeterObject(vendor, changedMeters);
+        ErrorObject[] errorObject = multispeakMeterService.changeMeterObject(vendor, changedMeters);
         return errorObject;
     }
     
@@ -377,7 +339,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     public ErrorObject[] meterRemoveNotification(Meter[] removedMeters) throws java.rmi.RemoteException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        ErrorObject[] errorObject = multispeak.removeMeterObject(vendor, removedMeters);
+        ErrorObject[] errorObject = multispeakMeterService.removeMeterObject(vendor, removedMeters);
         return errorObject;
     }
     
@@ -385,7 +347,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     public ErrorObject[] meterAddNotification(Meter[] addedMeters) throws java.rmi.RemoteException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        ErrorObject[] errorObject = multispeak.addMeterObject(vendor, addedMeters);
+        ErrorObject[] errorObject = multispeakMeterService.addMeterObject(vendor, addedMeters);
         return errorObject;
     }
 
@@ -610,7 +572,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
         FormattedBlockService<Block> formattedBlockServ = 
             mspValidationService.isValidBlockReadingType(readingTypesMap, readingType);
         
-        errorObjects = multispeak.BlockMeterReadEvent(vendor, meterNo, 
+        errorObjects = multispeakMeterService.BlockMeterReadEvent(vendor, meterNo, 
                                                       formattedBlockServ, transactionID);
 
         multispeakFuncs.logErrorObjects(MultispeakDefines.MR_CB_STR, "initiateMeterReadByMeterNumberRequest", errorObjects);
@@ -635,5 +597,45 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
             MeterConnectivity[] newConnectivity) throws RemoteException {
         init();
         return null;
+    }
+    
+    @Autowired
+    public void setMspMeterDao(MspMeterDao mspMeterDao) {
+        this.mspMeterDao = mspMeterDao;
+    }
+    @Autowired
+    public void setMultispeakMeterService(
+			MultispeakMeterService multispeakMeterService) {
+		this.multispeakMeterService = multispeakMeterService;
+	}
+    @Autowired
+    public void setMultispeakFuncs(MultispeakFuncs multispeakFuncs) {
+        this.multispeakFuncs = multispeakFuncs;
+    }
+    @Autowired
+    public void setMspRawPointHistoryDao(MspRawPointHistoryDao mspRawPointHistoryDao) {
+        this.mspRawPointHistoryDao = mspRawPointHistoryDao;
+    }
+    @Required
+    public void setPorterConnection(BasicServerConnection porterConnection) {
+        this.porterConnection = porterConnection;
+    }
+    @Autowired
+    public void setMspValidationService(
+            MspValidationService mspValidationService) {
+        this.mspValidationService = mspValidationService;
+    }
+    @Required
+    public void setReadingTypesMap(
+            Map<String, FormattedBlockService> readingTypesMap) {
+        this.readingTypesMap = readingTypesMap;
+    }
+    @Autowired
+    public void setMspMeterReadDao(MspMeterReadDao mspMeterReadDao) {
+        this.mspMeterReadDao = mspMeterReadDao;
+    }
+    @Autowired
+    public void setMeterDao(MeterDao meterDao) {
+        this.meterDao = meterDao;
     }
 }

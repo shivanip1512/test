@@ -54,8 +54,9 @@
       <sequence name="eventid">
         <table name="EventBase" identitycolumn="EVENTID" initsequence="true"/>
       </sequence>
-      <sequence name="vendorid">
+      <sequence name="MSP">
         <table name="MSPVendor" identitycolumn="VENDORID" initsequence="true"/>
+        <table name="MSPLMInterfaceMapping" identitycolumn="MspLMInterfaceMappingId" initsequence="true"/>
       </sequence>      
       <sequence name="configurationid">
         <table name="DCConfiguration" identitycolumn="CONFIGID" initsequence="true"/>

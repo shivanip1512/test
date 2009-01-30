@@ -5,8 +5,10 @@ package com.cannontech.loadcontrol;
  * LoadControl.  Specifically it registers LoadControl specific 'Collectable' messages, otherwise
  * the base class does all the work.
  */
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
@@ -212,6 +214,20 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
     	}
     }
     
+    public List<LMProgramBase> getProgramsForProgramIds(List<Integer> programIds) {
+        
+        List<LMProgramBase> programs = new ArrayList<LMProgramBase>(programIds.size());
+        for (int programId : programIds) {
+            LMProgramBase program = getProgram(programId);
+            if (program != null) {
+                programs.add(program);
+            }
+        }
+        
+        return programs;
+    }
+
+
     private synchronized void handleLMControlArea(LMControlArea controlArea) {
     	CTILogger.debug( " ---> Received a control area named " + controlArea.getYukonName() );
     

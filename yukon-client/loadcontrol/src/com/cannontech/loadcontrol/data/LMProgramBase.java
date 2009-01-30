@@ -606,4 +606,20 @@ public boolean isRampingOut()
     
     return false;
 }
+
+	/**
+	 * Returns true when programStatus is in an ACTIVE state
+	 * @return
+	 */
+	public boolean isActive() {
+	switch (programStatus) {
+		case STATUS_ACTIVE:
+		case STATUS_FULL_ACTIVE:
+		case STATUS_MANUAL_ACTIVE:
+		case STATUS_TIMED_ACTIVE:
+			return true;		
+		default:
+			return false;
+		}
+	}
 }

@@ -3,7 +3,9 @@ package com.cannontech.stars.dr.enrollment.dao.impl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
@@ -11,6 +13,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.util.Pair;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
@@ -174,6 +177,41 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
 				startDate);
 
 		return history;
+	}
+	
+	@Override
+	public Map<Integer,Integer> getActiveEnrollmentExcludeOptOutCount(Date startDate, Date stopDate) {
+
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		sql.append(" SELECT COUNT(DISTINCT lmhcg.InventoryId), pdg.DeviceId ");
+		sql.append(" FROM LMHardwareControlGroup lmhcg");
+		sql.append(" JOIN LMProgramDirectGroup pdg ON pdg.LMGroupDeviceId = lmhcg.LMGroupId");
+		sql.append("	WHERE lmhcg.Type = ").appendArgument(LMHardwareControlGroup.ENROLLMENT_ENTRY);
+        sql.append("	AND NOT LMHCG.groupEnrollStart IS NULL");
+        sql.append("	AND LMHCG.groupEnrollStop IS NULL");
+		sql.append("	AND lmhcg.InventoryId not in ");
+		sql.append("		(SELECT DISTINCT lmhcg2.InventoryId ");
+		sql.append("		FROM LMHardwareControlGroup lmhcg2");
+		sql.append("		JOIN LMProgramDirectGroup pdg2 ON pdg2.LMGroupDeviceId = lmhcg2.LMGroupId");
+		sql.append("			WHERE lmhcg2.Type = ").appendArgument(LMHardwareControlGroup.OPT_OUT_ENTRY);
+		sql.append("			AND lmhcg2.OptOutStart <= ").appendArgument(stopDate);
+		sql.append("			AND (lmhcg2.OptOutStop IS NULL OR lmhcg2.OptOutStop >= ").appendArgument(startDate);
+		sql.append("		) )");
+		sql.append(" GROUP BY pdg.DeviceId");
+		
+		List<Pair<Integer,Integer>> programIdCountList = simpleJdbcTemplate.query(sql.toString(), new ParameterizedRowMapper<Pair<Integer, Integer>>() {
+		    @Override
+		    public Pair<Integer,Integer> mapRow(ResultSet rs, int rowNum) throws SQLException {
+		        Integer inventoryCount = new Integer(rs.getInt(1));
+		        Integer programId = new Integer(rs.getInt(2));
+		        return new Pair<Integer, Integer>(programId, inventoryCount);
+		    }
+		}, sql.getArguments());
+		Map<Integer, Integer> programIdCountMap = new HashMap<Integer, Integer>();
+		for (Pair<Integer, Integer> pair : programIdCountList) {
+			programIdCountMap.put(pair.first, pair.second);
+		}
+		return programIdCountMap;
 	}
     
     private static final ParameterizedRowMapper<ProgramEnrollment> enrollmentRowMapper() {

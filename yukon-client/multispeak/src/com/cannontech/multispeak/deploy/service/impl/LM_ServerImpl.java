@@ -1,13 +1,15 @@
 package com.cannontech.multispeak.deploy.service.impl;
 
 import java.rmi.RemoteException;
+import java.util.Vector;
 
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.multispeak.client.Multispeak;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
-import com.cannontech.multispeak.dao.MspMeterDao;
+import com.cannontech.multispeak.dao.MspObjectDao;
+import com.cannontech.multispeak.db.MspLoadControl;
 import com.cannontech.multispeak.deploy.service.Customer;
 import com.cannontech.multispeak.deploy.service.DomainMember;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
@@ -22,33 +24,18 @@ import com.cannontech.multispeak.deploy.service.ScadaStatus;
 import com.cannontech.multispeak.deploy.service.ServiceLocation;
 import com.cannontech.multispeak.deploy.service.SubstationLoadControlStatus;
 import com.cannontech.multispeak.service.MspValidationService;
+import com.cannontech.multispeak.service.MultispeakLMService;
 
 public class LM_ServerImpl implements LM_ServerSoap_PortType
 {
-    public Multispeak multispeak;
     public MultispeakFuncs multispeakFuncs;
-    public MspMeterDao mspMeterDao;
+    public MultispeakLMService multispeakLMService;
+    public MspObjectDao mspObjectDao;
     public MspValidationService mspValidationService;
-
-    @Required
-    public void setMultispeak(Multispeak multispeak) {
-        this.multispeak = multispeak;
-    }
-    @Required
-    public void setMultispeakFuncs(MultispeakFuncs multispeakFuncs) {
-        this.multispeakFuncs = multispeakFuncs;
-    }
-    @Required
-    public void setMspMeterDao(MspMeterDao mspMeterDao) {
-        this.mspMeterDao = mspMeterDao;
-    }
-    @Required
-    public void setMspValidationService(
-            MspValidationService mspValidationService) {
-        this.mspValidationService = mspValidationService;
-    }
-    private void init() throws RemoteException{
+    
+    private LiteYukonUser init() throws RemoteException{
         multispeakFuncs.init();
+        return multispeakFuncs.authenticateMsgHeader();
     }
     
     @Override
@@ -110,8 +97,19 @@ public class LM_ServerImpl implements LM_ServerSoap_PortType
     @Override
     public ErrorObject[] SCADAAnalogChangedNotification(
             ScadaAnalog[] scadaAnalogs) throws RemoteException {
-        init();
-        return null;
+        LiteYukonUser liteYukonUser = init();
+
+        Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
+        for (ScadaAnalog scadaAnalog : scadaAnalogs) {
+        	ErrorObject errorObject = mspValidationService.isValidScadaAnalog(scadaAnalog);
+        	if( errorObject == null) {
+        		errorObject = multispeakLMService.writeAnalogPointData(scadaAnalog, liteYukonUser);
+        	} 
+        	if (errorObject != null) {
+        		errorObjects.add(errorObject);
+        	}
+		}
+        return mspObjectDao.toErrorObject(errorObjects);
     }
     @Override
     public void SCADAAnalogChangedNotificationByPointID(ScadaAnalog scadaAnalog)
@@ -177,7 +175,7 @@ public class LM_ServerImpl implements LM_ServerSoap_PortType
     public SubstationLoadControlStatus[] getAllSubstationLoadControlStatuses()
             throws RemoteException {
         init();
-        return null;
+        return multispeakLMService.getActiveLoadControlStatus();
     }
     @Override
     public float getAmountOfControllableLoad() throws RemoteException {
@@ -202,22 +200,43 @@ public class LM_ServerImpl implements LM_ServerSoap_PortType
         return null;
     }
     @Override
-    public void intiateLoadManagementEvent(LoadManagementEvent theLMEvent)
+    public ErrorObject initiateLoadManagementEvent(LoadManagementEvent theLMEvent)
             throws RemoteException {
-        init();
+
+        LiteYukonUser liteYukonUser = init();
+        ErrorObject errorObject = mspValidationService.isValidLoadManagementEvent(theLMEvent);
+    	if (errorObject == null) {
+            MspLoadControl mspLoadControl = multispeakLMService.buildMspLoadControl(theLMEvent);
+            errorObject = multispeakLMService.control(mspLoadControl, liteYukonUser);
+    	} 
+        return errorObject;
+    }
+    
+    @Override
+    public ErrorObject[] initiateLoadManagementEvents(LoadManagementEvent[] theLMEvents)
+            throws RemoteException {
+        LiteYukonUser liteYukonUser = init();
         
+        Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
+        
+    	//Need to figure out some transactional way of thinking about this.  Rollbacks on starting control?
+        for (LoadManagementEvent loadManagementEvent : theLMEvents) {
+        	ErrorObject errorObject = mspValidationService.isValidLoadManagementEvent(loadManagementEvent);
+        	if (errorObject == null) {
+	            MspLoadControl mspLoadControl = multispeakLMService.buildMspLoadControl(loadManagementEvent);
+	            errorObject = multispeakLMService.control(mspLoadControl, liteYukonUser);
+        	} 
+        	if (errorObject != null) {
+           		errorObjects.add(errorObject);
+           	}
+		}
+        return mspObjectDao.toErrorObject(errorObjects);
     }
     @Override
-    public void intiateLoadManagementEvents(LoadManagementEvent[] theLMEvents)
-            throws RemoteException {
-        init();
-        
-    }
-    @Override
-    public void intiatePowerFactorManagementEvent(
+    public ErrorObject initiatePowerFactorManagementEvent(
             PowerFactorManagementEvent thePFMEvent) throws RemoteException {
         init();
-        
+        return null;
     }
     @Override
     public boolean isLoadManagementActive(String servLoc)
@@ -232,4 +251,21 @@ public class LM_ServerImpl implements LM_ServerSoap_PortType
         return null;
     }
     
+    @Autowired
+    public void setMultispeakFuncs(MultispeakFuncs multispeakFuncs) {
+        this.multispeakFuncs = multispeakFuncs;
+    }
+    @Autowired
+    public void setMultispeakLMService(MultispeakLMService multispeakLMService) {
+		this.multispeakLMService = multispeakLMService;
+	}
+    @Autowired
+    public void setMspObjectDao(MspObjectDao mspObjectDao) {
+		this.mspObjectDao = mspObjectDao;
+	}
+    @Autowired
+    public void setMspValidationService(
+			MspValidationService mspValidationService) {
+		this.mspValidationService = mspValidationService;
+	}
 }

@@ -3,7 +3,8 @@ package com.cannontech.multispeak.deploy.service.impl;
 import java.rmi.RemoteException;
 import java.util.Calendar;
 
-import com.cannontech.multispeak.client.Multispeak;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
@@ -18,20 +19,13 @@ import com.cannontech.multispeak.deploy.service.OutageDetectDeviceType;
 import com.cannontech.multispeak.deploy.service.OutageDetectionDevice;
 import com.cannontech.multispeak.deploy.service.PhaseCd;
 import com.cannontech.multispeak.deploy.service.ServiceLocation;
+import com.cannontech.multispeak.service.MultispeakMeterService;
 
 public class OD_ServerImpl implements OD_ServerSoap_PortType
 {
-    public Multispeak multispeak;
+    public MultispeakMeterService multispeakMeterService;
     public MultispeakFuncs multispeakFuncs;
     
-    public void setMultispeak(Multispeak multispeak) {
-        this.multispeak = multispeak;
-    }
-
-    public void setMultispeakFuncs(MultispeakFuncs multispeakFuncs) {
-        this.multispeakFuncs = multispeakFuncs;
-    }
-
     private void init() throws RemoteException {
         multispeakFuncs.init();
     }
@@ -102,7 +96,7 @@ public class OD_ServerImpl implements OD_ServerSoap_PortType
         
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
 
-        errorObjects = multispeak.ODEvent(vendor, meterNos, transactionID);
+        errorObjects = multispeakMeterService.ODEvent(vendor, meterNos, transactionID);
         multispeakFuncs.logErrorObjects(MultispeakDefines.OD_OA_STR, "initiateOutageDetectionEventRequest", errorObjects);
         return errorObjects;
     }
@@ -168,5 +162,15 @@ public class OD_ServerImpl implements OD_ServerSoap_PortType
             ServiceLocation[] changedServiceLocations) throws RemoteException {
         init();
         return null;
+    }
+    
+    @Autowired
+    public void setMultispeakMeterService(
+			MultispeakMeterService multispeakMeterService) {
+		this.multispeakMeterService = multispeakMeterService;
+	}
+    @Autowired
+    public void setMultispeakFuncs(MultispeakFuncs multispeakFuncs) {
+        this.multispeakFuncs = multispeakFuncs;
     }
 }

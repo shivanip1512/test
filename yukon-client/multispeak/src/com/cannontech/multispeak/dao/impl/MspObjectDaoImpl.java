@@ -2,9 +2,13 @@ package com.cannontech.multispeak.dao.impl;
 
 import java.rmi.RemoteException;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.db.point.SystemLog;
+import com.cannontech.message.dispatch.message.SystemLogHelper;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MspObjectDao;
@@ -16,10 +20,19 @@ import com.cannontech.multispeak.deploy.service.impl.MultispeakPortFactory;
 
 public class MspObjectDaoImpl implements MspObjectDao {
 
-    public Customer getMspCustomer(Meter meter, MultispeakVendor mspVendor) {
-        return getMspCustomer(meter.getMeterNumber(), mspVendor);
+    private SystemLogHelper _systemLogHelper = null;
+
+    private SystemLogHelper getSystemLogHelper() {
+        if (_systemLogHelper == null)
+            _systemLogHelper = new SystemLogHelper(PointTypes.SYS_PID_MULTISPEAK);
+        return _systemLogHelper;
     }
     
+    @Override
+	public Customer getMspCustomer(Meter meter, MultispeakVendor mspVendor) {
+        return getMspCustomer(meter.getMeterNumber(), mspVendor);
+    }
+    @Override
     public Customer getMspCustomer(String meterNumber, MultispeakVendor mspVendor) {
 
         Customer mspCustomer = new Customer();
@@ -38,11 +51,11 @@ public class MspObjectDaoImpl implements MspObjectDao {
         }
         return mspCustomer;
     }
-
+    @Override
     public ServiceLocation getMspServiceLocation(Meter meter, MultispeakVendor mspVendor) {
         return getMspServiceLocation(meter.getMeterNumber(), mspVendor);
     }
-    
+    @Override
     public ServiceLocation getMspServiceLocation(String meterNumber, MultispeakVendor mspVendor) {
         ServiceLocation mspServiceLocation = new ServiceLocation();
         try {
@@ -60,11 +73,11 @@ public class MspObjectDaoImpl implements MspObjectDao {
        }
        return mspServiceLocation;
     }
-    
+    @Override
     public com.cannontech.multispeak.deploy.service.Meter getMspMeter(Meter meter, MultispeakVendor mspVendor) {
         return getMspMeter(meter.getMeterNumber(), mspVendor);
     }
-    
+    @Override
     public com.cannontech.multispeak.deploy.service.Meter getMspMeter(String meterNumber, MultispeakVendor mspVendor) {
         com.cannontech.multispeak.deploy.service.Meter mspMeter = new com.cannontech.multispeak.deploy.service.Meter();
         try {
@@ -82,20 +95,42 @@ public class MspObjectDaoImpl implements MspObjectDao {
        }
        return mspMeter;
     }
-    
-    public ErrorObject getErrorObject(String objectID, String errorMessage, String nounType){
-        ErrorObject err = new ErrorObject();
-        err.setEventTime(new GregorianCalendar());
-        err.setObjectID(objectID);
-        err.setErrorString(errorMessage);
-        err.setNounType(nounType);
-        return err;
+    @Override
+    public ErrorObject getErrorObject(String objectID, String errorMessage, String nounType, String method, String userName){
+        ErrorObject errorObject = new ErrorObject();
+        errorObject.setEventTime(new GregorianCalendar());
+        errorObject.setObjectID(objectID);
+        errorObject.setErrorString(errorMessage);
+        errorObject.setNounType(nounType);
+        
+        String description = "ErrorObject: (ObjId:" + errorObject.getObjectID() +
+        					" Noun:" + errorObject.getNounType() +
+        					" Message:" + errorObject.getErrorString() +")";
+        logMSPActivity(method, description, userName);
+        return errorObject;
     }
-   
-    public ErrorObject getNotFoundErrorObject(String objectID, String notFoundObjectType, String nounType ) {
-        ErrorObject err = getErrorObject(objectID, 
+    @Override
+    public ErrorObject getNotFoundErrorObject(String objectID, String notFoundObjectType, String nounType, String method, String userName) {
+        ErrorObject errorObject = getErrorObject(objectID, 
                                          notFoundObjectType + ": " + objectID + " - Was NOT found in Yukon.",
-                                         nounType);
-        return err;
-    }    
+                                         nounType,
+                                         method,
+                                         userName);
+        return errorObject;
+    }
+    @Override
+    public ErrorObject[] toErrorObject(List<ErrorObject> errorObjects) {
+
+        if( !errorObjects.isEmpty()) {
+            ErrorObject[] errors = new ErrorObject[errorObjects.size()];
+            errorObjects.toArray(errors);
+            return errors;
+        }
+        return new ErrorObject[0];
+    }
+    @Override
+    public void logMSPActivity(String method, String description, String userName) {
+        getSystemLogHelper().log(PointTypes.SYS_PID_MULTISPEAK, method, description, userName, SystemLog.TYPE_MULTISPEAK);
+        CTILogger.debug("MSP Activity (Method: " + method +  " - " + description + ")");
+    }
 }

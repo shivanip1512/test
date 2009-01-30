@@ -2,6 +2,7 @@ package com.cannontech.stars.dr.enrollment.dao;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.dr.program.model.Program;
@@ -52,5 +53,13 @@ public interface EnrollmentDao {
      */
 	public List<Program> getEnrolledProgramIdsByInventory(Integer inventoryId,
 			Date startTime, Date stopTime);
-        
+
+	/**
+	 * Method to get a map of all programIds and their count of all inventory that is actively enrolled 
+	 *  but is not opted out for the given time period
+	 * @param startDate
+	 * @param stopDate
+	 * @return
+	 */
+	public Map<Integer, Integer> getActiveEnrollmentExcludeOptOutCount(Date startDate, Date stopDate);
 }

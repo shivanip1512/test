@@ -151,7 +151,7 @@ public class LoadControlServiceImpl implements LoadControlService {
         List<Integer> programIds = loadControlProgramDao.getProgramIdsByScenarioId(scenarioId);
         
         List<ProgramStatus> programStatuses = new ArrayList<ProgramStatus>();
-        List<LMProgramBase> programs = getProgramsForProgramIds(programIds);
+        List<LMProgramBase> programs = loadControlClientConnection.getProgramsForProgramIds(programIds);
         for (LMProgramBase program : programs) {
                 
             int startingGearNumber = loadControlProgramDao.getStartingGearForScenarioAndProgram(ProgramUtils.getProgramId(program), scenarioId);
@@ -175,7 +175,7 @@ public class LoadControlServiceImpl implements LoadControlService {
         List<Integer> programIds = loadControlProgramDao.getProgramIdsByScenarioId(scenarioId);
         
         List<ProgramStatus> programStatuses = new ArrayList<ProgramStatus>();
-        List<LMProgramBase> programs = getProgramsForProgramIds(programIds);
+        List<LMProgramBase> programs = loadControlClientConnection.getProgramsForProgramIds(programIds);
         for (LMProgramBase program : programs) {
             
             int startingGearNumber = loadControlProgramDao.getStartingGearForScenarioAndProgram(ProgramUtils.getProgramId(program), scenarioId);
@@ -211,19 +211,6 @@ public class LoadControlServiceImpl implements LoadControlService {
     //==============================================================================================
     // PRIVATE HELPER METHODS
     ///=============================================================================================
-    
-    private List<LMProgramBase> getProgramsForProgramIds(List<Integer> programIds) {
-        
-        List<LMProgramBase> programs = new ArrayList<LMProgramBase>(programIds.size());
-        for (int programId : programIds) {
-            LMProgramBase program = loadControlClientConnection.getProgram(programId);
-            if (program != null) {
-                programs.add(program);
-            }
-        }
-        
-        return programs;
-    }
     
     /**
      * Helper method to create a new ProgramStatus object for given Program, creates a start request

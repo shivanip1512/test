@@ -6,6 +6,9 @@ import java.util.Map;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.multispeak.block.Block;
 import com.cannontech.multispeak.block.FormattedBlockService;
+import com.cannontech.multispeak.deploy.service.ErrorObject;
+import com.cannontech.multispeak.deploy.service.LoadManagementEvent;
+import com.cannontech.multispeak.deploy.service.ScadaAnalog;
 
 public interface MspValidationService {
 
@@ -22,4 +25,20 @@ public interface MspValidationService {
      * Throws a RemoteException if the meterNumber is not found in Yukon. 
      */
     public Meter isYukonMeterNumber(String meterNumber) throws RemoteException;
+    
+    /**
+     * Returns an ErrorObject when the scadaAnalog does not have all required information
+     * to create a Yukon point translation.
+     * @param scadaAnalog
+     * @return
+     */
+    public ErrorObject isValidScadaAnalog(ScadaAnalog scadaAnalog);
+    
+    /**
+     * Returns an ErrorObject when the LoadMangementEvent does not have all required information
+     * to process in Yukon.
+     * @param loadManagementEvent
+     * @return
+     */
+    public ErrorObject isValidLoadManagementEvent(LoadManagementEvent loadManagementEvent);
 }

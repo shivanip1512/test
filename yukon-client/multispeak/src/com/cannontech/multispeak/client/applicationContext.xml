@@ -19,13 +19,7 @@
 	</bean>
 	
   <bean id="mr_server" class="com.cannontech.multispeak.deploy.service.impl.MR_ServerImpl">
-  	<property name="multispeakFuncs" ref="multispeakFuncs"/>
-    <property name="mspMeterDao" ref="mspMeterDao"/>
-  	<property name="multispeak" ref="multispeak"/>
-  	<property name="mspRawPointHistoryDao" ref="mspRawPointHistoryDao"/>
   	<property name="porterConnection" ref="porterConnection"/>
-  	<property name="mspValidationService" ref="mspValidationService"/>
-    <property name="mspMeterReadDao" ref="mspMeterReadDao"/>
     <property name="readingTypesMap">
         <map>
           <entry key="Load" value-ref="loadFormattedBlock"/>
@@ -34,56 +28,29 @@
           <entry key="BillingTOU" value-ref="billingTOUFormattedBlock"/> -->
         </map>    
     </property>
-    <property name="meterDao" ref="meterDao"/>
   </bean>
+
   <bean id="cd_server" class="com.cannontech.multispeak.deploy.service.impl.CD_ServerImpl">
-  	<property name="multispeakFuncs" ref="multispeakFuncs"/>
-    <property name="mspMeterDao" ref="mspMeterDao"/>
-  	<property name="multispeak" ref="multispeak"/>
-  	<property name="mspValidationService" ref="mspValidationService"/>
   </bean>
+  
   <bean id="od_server" class="com.cannontech.multispeak.deploy.service.impl.OD_ServerImpl">
-  	<property name="multispeakFuncs" ref="multispeakFuncs"/>
-  	<property name="multispeak" ref="multispeak"/>
   </bean>
+  
   <bean id="lm_server" class="com.cannontech.multispeak.deploy.service.impl.LM_ServerImpl">
-    <property name="multispeakFuncs" ref="multispeakFuncs"/>
-    <property name="mspMeterDao" ref="mspMeterDao"/>
-    <property name="multispeak" ref="multispeak"/>
-    <property name="mspValidationService" ref="mspValidationService"/>
-  </bean>
-  <bean id="scada_server" class="com.cannontech.multispeak.deploy.service.impl.SCADA_ServerImpl">
-    <property name="multispeakFuncs" ref="multispeakFuncs"/>
-    <property name="mspMeterDao" ref="mspMeterDao"/>
-    <property name="multispeak" ref="multispeak"/>
-    <property name="mspValidationService" ref="mspValidationService"/>
   </bean>
 
   <bean id="multispeakFuncs" class="com.cannontech.multispeak.client.MultispeakFuncs">
-    <property name="multispeakDao" ref="multispeakDao"/>
-    <property name="roleDao" ref="roleDao"/>
-    <property name="deviceGroupService" ref="deviceGroupService"/>
   </bean>
   
-  <bean id="multispeak" class="com.cannontech.multispeak.client.Multispeak" init-method="initialize">
-  	<property name="multispeakFuncs" ref="multispeakFuncs"/>
+  <bean id="mspLMInterfaceMappingDao" class="com.cannontech.multispeak.dao.impl.MspLMInterfaceMappingDaoImpl">
+  </bean>
+  
+  <bean id="multispeakMeterService" class="com.cannontech.multispeak.service.impl.MultispeakMeterServiceImpl" init-method="initialize">
   	<property name="porterConnection" ref="porterConnection"/>
-    <property name="mspMeterDao" ref="mspMeterDao"/>
-    <property name="dbPersistentDao" ref="dbPersistentDao"/>
-    <property name="paoDao" ref="paoDao"/>
-	<property name="deviceGroupMemberEditorDao" ref="deviceGroupMemberEditorDao"/>
-    <property name="deviceGroupEditorDao" ref="deviceGroupEditorDao"/>
-    <property name="meterDao" ref="meterDao"/>
-    <property name="mspObjectDao" ref="mspObjectDao"/>
-    <property name="transactionTemplate" ref="transactionTemplate"/>
-    <property name="deviceDefinitionDao" ref="deviceDefinitionDao"/>
-    <property name="deviceDefinitionService" ref="deviceService"/>
-    <property name="deviceCreationService" ref="deviceCreationService"/>
-    <property name="deviceUpdateService" ref="deviceUpdateService" />
-    <property name="substationDao" ref="substationDao" />
-    <property name="substationToRouteMappingDao" ref="substationToRouteMappingDao" />
-    
-  </bean>   
+  </bean>
+     
+  <bean id="multispeakLMService" class="com.cannontech.multispeak.service.impl.MultispeakLMServiceImpl">
+  </bean>
   
   <bean id="multispeakDao" class="com.cannontech.multispeak.dao.impl.MultispeakDaoImpl">
     <property name="jdbcOps" ref="jdbcTemplate"/> 
@@ -96,13 +63,8 @@
 
   <bean id="mspObjectDao" class="com.cannontech.multispeak.dao.impl.MspObjectDaoImpl">
   </bean>
-  
-  <bean id="mspLMInterfaceMappingDao" class="com.cannontech.multispeak.dao.impl.MspLMInterfaceMappingDaoImpl">
-  </bean>
 
   <bean id="mspValidationService" class="com.cannontech.multispeak.service.impl.MspValidationServiceImpl">
-  	<property name="mr_server" ref="mr_server"/>
-  	<property name="meterDao" ref="meterDao"/>
   </bean>
   
   <bean id="mspAccountInfoDao" class="com.cannontech.multispeak.dao.impl.MspAccountInfoDaoImpl">

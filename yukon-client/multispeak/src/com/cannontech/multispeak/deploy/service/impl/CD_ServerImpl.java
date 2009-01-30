@@ -5,11 +5,10 @@ import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.multispeak.client.Multispeak;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
@@ -24,31 +23,15 @@ import com.cannontech.multispeak.deploy.service.ErrorObject;
 import com.cannontech.multispeak.deploy.service.LoadActionCode;
 import com.cannontech.multispeak.deploy.service.Meter;
 import com.cannontech.multispeak.service.MspValidationService;
+import com.cannontech.multispeak.service.MultispeakMeterService;
 
 public class CD_ServerImpl implements CD_ServerSoap_PortType
 {
-    public Multispeak multispeak;
+    public MultispeakMeterService multispeakMeterService;
     public MultispeakFuncs multispeakFuncs;
     public MspMeterDao mspMeterDao;
     public MspValidationService mspValidationService;
 
-    @Required
-    public void setMultispeak(Multispeak multispeak) {
-        this.multispeak = multispeak;
-    }
-    @Required
-    public void setMultispeakFuncs(MultispeakFuncs multispeakFuncs) {
-        this.multispeakFuncs = multispeakFuncs;
-    }
-    @Required
-    public void setMspMeterDao(MspMeterDao mspMeterDao) {
-        this.mspMeterDao = mspMeterDao;
-    }
-    @Required
-    public void setMspValidationService(
-            MspValidationService mspValidationService) {
-        this.mspValidationService = mspValidationService;
-    }
     private void init() throws RemoteException{
         multispeakFuncs.init();
     }
@@ -117,7 +100,7 @@ public class CD_ServerImpl implements CD_ServerSoap_PortType
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
 
         com.cannontech.amr.meter.model.Meter meter = mspValidationService.isYukonMeterNumber(meterNo);
-        LoadActionCode loadActionCode = multispeak.CDMeterState(vendor, meter, null);
+        LoadActionCode loadActionCode = multispeakMeterService.CDMeterState(vendor, meter, null);
         
         return loadActionCode;
     }
@@ -130,7 +113,7 @@ public class CD_ServerImpl implements CD_ServerSoap_PortType
         ErrorObject[] errorObjects = new ErrorObject[0];
         
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        errorObjects = multispeak.CDEvent(vendor, cdEvents, transactionID);
+        errorObjects = multispeakMeterService.CDEvent(vendor, cdEvents, transactionID);
         
         multispeakFuncs.logErrorObjects(MultispeakDefines.CD_CB_STR, "initiateConnectDisconnect", errorObjects);
         return errorObjects;
@@ -179,5 +162,24 @@ public class CD_ServerImpl implements CD_ServerSoap_PortType
     public ErrorObject[] CDDeviceRetireNotification(CDDevice[] retiredCDDs) throws RemoteException {
         init();
         return null;
+    }
+
+    @Autowired
+    public void setMultispeakMeterService(
+			MultispeakMeterService multispeakMeterService) {
+		this.multispeakMeterService = multispeakMeterService;
+	}
+    @Autowired
+    public void setMultispeakFuncs(MultispeakFuncs multispeakFuncs) {
+        this.multispeakFuncs = multispeakFuncs;
+    }
+    @Autowired
+    public void setMspMeterDao(MspMeterDao mspMeterDao) {
+        this.mspMeterDao = mspMeterDao;
+    }
+    @Autowired
+    public void setMspValidationService(
+            MspValidationService mspValidationService) {
+        this.mspValidationService = mspValidationService;
     }
 }
