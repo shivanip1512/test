@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -75,7 +76,10 @@ public class CapControlVarChangeModel extends BareDatedReportModelBase<CapContro
                 row.bankSize = rs.getInt("bankSize");
                 row.kvarChange = rs.getInt("kvarChange");
                 row.percentChange = rs.getDouble("percentChange");
-                row.dateTime = rs.getString("dateTime");
+                
+                Date date = rs.getTimestamp("dateTime");
+                row.dateTime = getColumnTimeFormat().format(date);
+                
                 row.area = rs.getString("area");
                 row.substation = rs.getString("substation");
                 row.subbus = rs.getString("subbus");

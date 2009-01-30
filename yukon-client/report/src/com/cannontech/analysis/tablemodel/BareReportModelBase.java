@@ -1,6 +1,7 @@
 package com.cannontech.analysis.tablemodel;
 
 import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -22,9 +23,14 @@ public abstract class BareReportModelBase<T> implements BareReportModel, Loadabl
     private List<Field> columnData = null;
     private Logger log = YukonLogManager.getLogger(this.getClass());
     private Date loadDate = null;
-
+    private SimpleDateFormat columnTimeFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+    
     public BareReportModelBase() {
         super();
+    }
+    
+    protected SimpleDateFormat getColumnTimeFormat() {
+    	return columnTimeFormat;
     }
     
     /**

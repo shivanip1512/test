@@ -3,6 +3,7 @@ package com.cannontech.analysis.tablemodel;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -89,7 +90,10 @@ public class VarImbalanceOnExecutionModel extends BareReportModelBase<VarImbalan
                 row.feeder = rs.getString("feeder");
                 row.capbank = rs.getString("capbank");
                 row.capbankstate = rs.getString("capbankstateinfo");
-                row.opTime = rs.getString("opTime");
+                
+                Date opTime = rs.getTimestamp("opTime");
+                row.opTime = getColumnTimeFormat().format(opTime);
+                
                 row.operation = rs.getString("operation");
                 row.avar = rs.getString("aVarAtExecution");
                 row.bvar = rs.getString("bVarAtExecution");

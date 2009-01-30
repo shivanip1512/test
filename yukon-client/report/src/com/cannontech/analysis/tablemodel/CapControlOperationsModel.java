@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -33,9 +34,9 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
     static public class ModelRow {
         public String cbcName;
         public String bankName;
-        public Timestamp opTime;
+        public String opTime;
         public String operation;
-        public Timestamp confTime;
+        public String confTime;
         public String confStatus;
         public String bankStatusQuality;
         public String feederName;
@@ -74,11 +75,15 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
                 
                 CapControlOperationsModel.ModelRow row = new CapControlOperationsModel.ModelRow();
 
+                Date opTime =  rs.getTimestamp("opTime");
+                Date confTime = rs.getTimestamp("confTime");
+
+                row.opTime = getColumnTimeFormat().format(opTime);
+                row.confTime = getColumnTimeFormat().format(confTime);
+                
                 row.cbcName = rs.getString("cbcName");
                 row.bankName = rs.getString("bankName");
-                row.opTime = rs.getTimestamp("opTime");
                 row.operation = rs.getString("operation");
-                row.confTime = rs.getTimestamp("confTime");
                 row.confStatus = rs.getString("confStatus");
                 row.bankStatusQuality = rs.getString("bankStatusQuality");
                 row.feederName = rs.getString("feederName");

@@ -212,8 +212,7 @@ public class CapBankListModel extends ReportModelBase
 	@Override
 	public String getDateRangeString()
 	{
-		java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("MMM dd, yyyy");		
-		return format.format(new java.util.Date());
+		return getDateFormat().format(new java.util.Date());
 	}
 
 	/* (non-Javadoc)

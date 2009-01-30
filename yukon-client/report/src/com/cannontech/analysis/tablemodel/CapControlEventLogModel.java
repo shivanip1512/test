@@ -237,13 +237,13 @@ public class CapControlEventLogModel extends ReportModelBase
 						Integer subBusPaoID = new Integer(rset.getInt(1));
 						Integer feederPaoID = new Integer(rset.getInt(2));
 						String pointName = new String(rset.getString(4));
-						java.sql.Timestamp changedateTime = rset.getTimestamp(5);
+						Date changedateTime = rset.getTimestamp(5);
 						String eventText = new String(rset.getString(6));
 						Integer controlStatus = new Integer(rset.getInt(7));
 						Integer eventType = new Integer(rset.getInt(9));
 						
 									
-						ccStatusData= new CapControlStatusData( new Integer(capBankPaoID), subBusPaoID, feederPaoID, pointName, new Date(changedateTime.getTime()), eventText, controlStatus, eventType);
+						ccStatusData= new CapControlStatusData( new Integer(capBankPaoID), subBusPaoID, feederPaoID, pointName, changedateTime, eventText, controlStatus, eventType);
 						tempObjects.add(ccStatusData);
 					}
 					catch(java.sql.SQLException e)
@@ -384,7 +384,7 @@ public class CapControlEventLogModel extends ReportModelBase
 				new ColumnProperties(0, 1, 160, null),
 				new ColumnProperties(0, 1, 130, null),
 				new ColumnProperties(130, 1, 130, null),
-				new ColumnProperties(260, 1, 100, "MM/dd/yyyy HH:mm:ss"),
+				new ColumnProperties(260, 1, 100, columnDateTimeFormat),
 				new ColumnProperties(360, 1, 90, null),
 				new ColumnProperties(450, 1, 260, null)
 			};

@@ -153,7 +153,7 @@ public class CapControlCurrentStatusModel extends ReportModelBase
 			Integer subBusPaoID = new Integer(rset.getInt(2));
 			Integer feederPaoID = new Integer(rset.getInt(3));
 			Integer controlStatus = new Integer(rset.getInt(4));
-			java.sql.Timestamp lastChangedateTime = rset.getTimestamp(5);
+			Date lastChangedateTime = rset.getTimestamp(5);
             String operationalState = rset.getString(6);
             if(operationalState.equalsIgnoreCase("Fixed") && user != null) {
                 operationalState = authDao.getRolePropertyValue(user, CBCOnelineSettingsRole.CAP_BANK_FIXED_TEXT);
@@ -164,7 +164,7 @@ public class CapControlCurrentStatusModel extends ReportModelBase
 			
 			CapControlStatusData ccStatusData= new CapControlStatusData(
 			        capBankPaoID, subBusPaoID, feederPaoID,
-			        controlStatus, new Date(lastChangedateTime.getTime()), operationalState, disableFlag, controlOrder);
+			        controlStatus, lastChangedateTime, operationalState, disableFlag, controlOrder);
 			getData().add(ccStatusData);
 		}
 		catch(java.sql.SQLException e)
@@ -374,7 +374,7 @@ public class CapControlCurrentStatusModel extends ReportModelBase
 				new ColumnProperties(120, 1, 120, null),
 				new ColumnProperties(240, 1, 120, null),
 				new ColumnProperties(360, 1, 100, null),
-				new ColumnProperties(460, 1, 120, null),
+				new ColumnProperties(460, 1, 120, columnDateTimeFormat),
                 new ColumnProperties(580, 1, 80, null),
                 new ColumnProperties(660, 1, 50, null)
 			};

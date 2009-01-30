@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -72,7 +73,10 @@ public class CapBankMaxOpsExceededModel extends BareDatedReportModelBase<CapBank
                 row.subBusName = rs.getString("subBus");
                 row.feederName = rs.getString("feederName");
                 row.capBankName = rs.getString("capBankName");
-                row.dateTime = rs.getString("datetime");
+                
+                Date date = rs.getTimestamp("datetime");
+                row.dateTime = getColumnTimeFormat().format(date);
+                
                 data.add(row);
             }
         });

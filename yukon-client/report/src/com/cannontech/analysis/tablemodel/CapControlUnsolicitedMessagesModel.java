@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -73,7 +74,10 @@ public class CapControlUnsolicitedMessagesModel extends BareDatedReportModelBase
                         row.feeder = rs.getString("feeder");
                         row.capbank = rs.getString("capbank");
                         row.cbc = rs.getString("cbc");
-                        row.datetime = rs.getString("datetime");
+                        
+                        Date date = rs.getTimestamp("datetime");
+                        
+                        row.datetime = getColumnTimeFormat().format(date);
                         String rc = rs.getString("reason");
                         String reason = rc.substring(rc.indexOf("-")+1, rc.indexOf("!"));
                         row.reason = reason;

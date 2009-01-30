@@ -3,6 +3,7 @@ package com.cannontech.analysis.tablemodel;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -104,8 +105,12 @@ public class CapControlScheduleDetailModel extends BareDatedReportModelBase<CapC
                 row.subName = rs.getString("substationbus");
                 row.feederName = rs.getString("feeder");
                 row.outgoingCommand = rs.getString("outgoingcommand");
-                row.lastRunTime = rs.getString("lastruntime");
-                row.nextRunTime = rs.getString("nextruntime");
+                
+                Date last = rs.getTimestamp("lastruntime");
+                Date next = rs.getTimestamp("nextruntime");
+                row.lastRunTime = getColumnTimeFormat().format(last);
+                row.nextRunTime = getColumnTimeFormat().format(next);
+                
                 int seconds = rs.getInt("interval");
                 String interval = TIME_INTERVAL.get(seconds);
                 row.interval = interval;

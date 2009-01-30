@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -36,8 +37,8 @@ public class CapControlStateComparisonModel extends BareReportModelBase<CapContr
         public String cbcName;
         public String capBankStatus;
         public String cbcStatus;
-        public Timestamp cbcChangeTime;
-        public Timestamp capBankChangeTime;
+        public String cbcChangeTime;
+        public String capBankChangeTime;
     }
     
     @Override
@@ -72,8 +73,13 @@ public class CapControlStateComparisonModel extends BareReportModelBase<CapContr
                     row.cbcName = rs.getString("cbcName");
                     row.capBankStatus = rs.getString("capBankStatus");
                     row.cbcStatus = rs.getString("cbcStatus");
-                    row.cbcChangeTime = rs.getTimestamp("capBankChangeTime");
-                    row.capBankChangeTime = rs.getTimestamp("cbcChangeTime");
+                    
+                    Date capDate = rs.getTimestamp("capBankChangeTime");
+                    Date cbcDate = rs.getTimestamp("cbcChangeTime");
+                    
+                    row.cbcChangeTime = getColumnTimeFormat().format(cbcDate);
+                    row.capBankChangeTime = getColumnTimeFormat().format(capDate);
+                    
                     data.add(row);
             }
         });

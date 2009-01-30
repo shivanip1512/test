@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -116,9 +117,14 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
                     }
                     row.deviceParent = parent;
                     
-                    String time = rs.getString("commenttime");
-                    if(time == null || time.length() < 1) {
+                    Date date = rs.getTimestamp("commenttime"); 
+                    
+                    String time;
+                    
+                    if (date == null) {
                         time = "---";
+                    } else {
+                    	time  = getColumnTimeFormat().format(date);
                     }
                     row.dateTime = time;
                     

@@ -314,7 +314,7 @@ public class CapControlNewActivityModel extends ReportModelBase {
 				//posX, posY, width, height, numberFormatString
 				new ColumnProperties(0, 1, 200, null),
 				new ColumnProperties(0, 1, 180, null),
-				new ColumnProperties(0, 1, 100, "MM/dd/yyyy  HH:mm:ss"),
+				new ColumnProperties(0, 1, 100, columnDateTimeFormat),
 				new ColumnProperties(100, 1, 80, null),
 				new ColumnProperties(180, 1, 80, null),
 				new ColumnProperties(260, 1, 100, null),
