@@ -361,22 +361,26 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
     }
     
     @Override
+    @Transactional
     public void addCustomer(LiteCustomer liteCustomer) throws DataAccessException {
         liteCustomerTemplate.insert(liteCustomer);
     }
     
     @Override
+    @Transactional
     public void addCICustomer(LiteCICustomer customer) throws DataAccessException {
         liteCICustomerTemplate.insert(customer);
         energyCompanyDao.addEnergyCompanyCustomerListEntry(customer.getCustomerID(), customer.getEnergyCompanyID());
     }
     
     @Override
+    @Transactional
     public void updateCustomer(LiteCustomer customer) {
         liteCustomerTemplate.update(customer);
     }
     
     @Override
+    @Transactional
     public void updateCICustomer(LiteCICustomer customer) {
         liteCICustomerTemplate.update(customer);
     }

@@ -250,6 +250,8 @@ public class AccountServiceImpl implements AccountService {
             LiteAddress companyAddress = new LiteAddress();
             if(streetAddress != null && StringUtils.isNotBlank(streetAddress.getLocationAddress1())) {
                 setAddressFieldsFromDTO(companyAddress, streetAddress);
+            }else {
+                setAddressDefaults(companyAddress);
             }
             addressDao.add(companyAddress);
             

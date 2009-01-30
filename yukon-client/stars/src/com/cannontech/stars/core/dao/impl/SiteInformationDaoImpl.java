@@ -106,17 +106,20 @@ public class SiteInformationDaoImpl implements SiteInformationDao, InitializingB
     
     
     @Override
+    @Transactional
     public void add(LiteSiteInformation liteSiteInformation) {
         siteInfoTemplate.insert(liteSiteInformation);
     }
 
     @Override
+    @Transactional
     public void delete(LiteSiteInformation liteSiteInformation) {
         // TODO Auto-generated method stub
 
     }
 
     @Override
+    @Transactional
     public void update(LiteSiteInformation liteSiteInformation) {
         siteInfoTemplate.update(liteSiteInformation);
     }

@@ -144,6 +144,7 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao,
     }
 
     @Override
+    @Transactional
     public void saveNotification(LiteContactNotification notification) {
 
         int notificationId = notification.getLiteID();
