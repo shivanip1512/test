@@ -63,7 +63,7 @@ public class ExecServerUnitTests extends Task {
     private void runTest(final File file) throws BuildException {
         try {
             Process p = Runtime.getRuntime().exec(file.getAbsolutePath() + " " + INPUT_ARGS);
-            
+
             String stdout = toString(p.getInputStream());
             processInputStream(p.getErrorStream(), stdout, file);
 
@@ -83,13 +83,12 @@ public class ExecServerUnitTests extends Task {
         Document doc = new SAXBuilder().build(input);
         Element root = doc.getRootElement();
         Element testSuiteElement = root.getChild("TestSuite");
-        Element assertions = testSuiteElement.getChild("Asssertions");
 
         String testName = testSuiteElement.getAttributeValue("name");
         String testResult = testSuiteElement.getAttributeValue("result");
-        String testPassed = assertions.getAttributeValue("passed");
-        String testFailed = assertions.getAttributeValue("failed");
-        
+        String testPassed = testSuiteElement.getAttributeValue("assertions_passed");
+        String testFailed = testSuiteElement.getAttributeValue("assertions_failed");
+
         Document newDoc = buildDocument(stdout, testName, testResult, testPassed, testFailed);
         writeDocument(newDoc, file.getName());
     }

@@ -9,6 +9,41 @@ rem  3)  The buildable subdirectories contain a Makefile.
 rem  4)  Other subdirectories exist that contain no Makefiles - if this script is invoked inside them,
 rem        it should check the parent directory only
 
+setlocal
+
+rem Get build toolset into the PATH.
+
+pushd ..\yukon-build\server-build
+set path=%cd%;%path%
+popd
+
+set compilebase=%cd%
+pushd ..
+set sourcebase=%cd%
+popd
+
+rem Make Visual Studio 2008 toolset available.
+
+if exist "C:\Program Files\Microsoft Visual Studio 9.0\VC\bin\vcvars32.bat" (
+        call "C:\Program Files\Microsoft Visual Studio 9.0\VC\bin\vcvars32.bat"
+) else (
+        if exist "C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\bin\vcvars32.bat" (
+                call "C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\bin\vcvars32.bat"
+        ) else (
+                echo Couldn't locate Visual Studio 2008 toolset.
+        )
+)
+
+rem Other configuration settings.
+
+set rw=
+
+rem Builds in debug mode by default.
+
+set debug=true
+
+rem Begin pre-visual studio 2008 part.
+
 set cwd=%cd%
 echo.
 echo +---------------------------------------

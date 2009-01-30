@@ -204,13 +204,16 @@ clean:
         @$(MAKE) -nologo  $@
         @%cd $(COMPILEBASE)\macs
         @$(MAKE) -nologo  $@
+        @%cd $(COMPILEBASE)\logic
+        @$(MAKE) -nologo  $@
         @%cd $(COMPILEBASE)\capcontrol
         @$(MAKE) -nologo  $@
         @%cd $(COMPILEBASE)\loadmanagement
         @$(MAKE) -nologo  $@
-        @%cd $(CWD)
-	@%cd $(COMPILEBASE)\lib
+        @%cd $(COMPILEBASE)\lib
        -del *.obj *.dll *.ilk *.pdb *.lib *.exp
+        @%cd $(COMPILEBASE)\bin
+       -del *.dll *.lib *.exe *.xml *.tcl
         @%cd $(CWD)
 
 deps:

@@ -107,7 +107,7 @@
     <target name="build" depends="init,clean,svn-info-build,buildTarget,build-dist" />
     <target name="buildTarget" depends="build-client,build-server,build-install" />
     
-    <target name="build-client">
+    <target name="build-client" depends="init,clean,svn-info-build">
         <echo message="building module yukon-client" />
         <mkdir dir="${log.dir}" />
 
@@ -141,10 +141,16 @@
 
     </target>
     
-    <target name="build-server">
+    <target name="build-server" depends="init,clean,svn-info-build">
         <echo message="building module yukon-server" />
         <mkdir dir="${log.dir}" />
 
+        <!-- clean out the old object files, etc -->
+        <exec failonerror="false" dir="${basedir}/yukon-server/" executable="cmd.exe" error="${log.dir}/server-error.log" output="${log.dir}/server-output.log" resultproperty="errorcode">
+            <arg line='/c ${basedir}\yukon-server\b.cmd clean' />
+        </exec>
+
+        <!-- build it -->
         <exec failonerror="false" dir="${basedir}/yukon-server/" executable="cmd.exe" error="${log.dir}/server-error.log" output="${log.dir}/server-output.log" resultproperty="errorcode">
             <arg line='/c ${basedir}\yukon-build\buildhere.cmd /exit /basedir "${basedir}" /labels "${yukon.build.label}" "${yukon.build.details}"' />
         </exec>
@@ -179,7 +185,7 @@
         <customexec failonerror="true" dir="${basedir}/yukon-server/bin" todir="${basedir}/yukon-server/bin/unittests"/>
         
     </target>
-    
+
     <target name="build-install">
         <echo message="building module yukon-install" />
         <mkdir dir="${log.dir}" />

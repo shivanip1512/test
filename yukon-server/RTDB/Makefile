@@ -38,6 +38,8 @@ deps:
 clean:
         -del \
 *.pdb \
+*.obj \
+*.idb \
 $(OBJ)\*.obj \
 $(BIN)\*.pdb \
 $(BIN)\*.pch \
@@ -45,6 +47,8 @@ $(BIN)\*.ilk \
 $(BIN)\*.exp \
 $(BIN)\*.lib \
 $(BIN)\*.dll \
+$(BIN)\*.map \
+$(BIN)\*.manifest \
 $(BIN)\*.exe
 
 allclean:   clean all
