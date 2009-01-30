@@ -1413,6 +1413,13 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
 
                 time_begin = CtiTime(CtiDate(day, month, year));
             }
+            else
+            {
+                // If the date is not specified, we use yesterday (last full day)
+                CtiDate readDate; // Today
+                --readDate;
+                time_begin = CtiTime(readDate);
+            }
 
             //  grab the end date
             if( parse.isKeyValid("daily_read_date_end") )

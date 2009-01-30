@@ -434,6 +434,7 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
     //  getvalue daily read 12/12/2007 12/27/2007
     //  getvalue daily read channel n 12/12/2007
     static const boost::regex  re_dailyread(CtiString("daily read (channel ") + str_num + CtiString(" )?") + str_daterange);
+    static const boost::regex  re_dailyread_no_date(CtiString("daily read (channel ") + str_num + CtiString(")?"));
 
     static const boost::regex  re_outage(CtiString("outage ") + str_num);
 
@@ -681,6 +682,12 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
                         _cmd["daily_read_date_end"] = temp;
                     }
                 }
+            }
+            else if( !(temp = CmdStr.match(re_dailyread_no_date)).empty() )
+            {
+                // getvalue daily read channel 1
+                // getvalue daily read
+                _cmd["daily_read"] = true;
             }
         }
         else
