@@ -3,6 +3,7 @@ package com.cannontech.common.util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
@@ -136,6 +137,23 @@ public class SimpleTemplateProcessor {
     
     protected CharSequence formatValue(Object value, String extra) {
         CharSequence result;
+        
+        try {
+            // see if custom format method exists
+            // split extra on last "."
+        	int endIndex = extra.lastIndexOf(".");
+        	String className = extra.substring(0, endIndex);
+            Class<?> theClassPart = getClass().forName(className);
+            String methodName = extra.substring(endIndex+1);
+            Method method = theClassPart.getMethod(methodName, value.getClass());
+            Object formattedOuput = method.invoke(null, value);
+            result = formattedOuput.toString();
+            
+            return result;
+        } catch (Exception e) {
+            // who cares
+        }
+        
         if (value instanceof Boolean) {
             boolean showFirst = (Boolean) value;
             // split extra on the | character

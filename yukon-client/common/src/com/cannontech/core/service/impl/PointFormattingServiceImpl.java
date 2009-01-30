@@ -25,6 +25,7 @@ import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LitePointUnit;
 import com.cannontech.database.data.lite.LiteState;
+import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -69,7 +70,6 @@ public class PointFormattingServiceImpl implements PointFormattingService {
         PointFormattingService impl = new PointFormattingService() {
             
             private Map<Integer, LitePoint> litePointCache = new HashMap<Integer, LitePoint>();
-            private Map<Integer, LiteState> stateCache = new HashMap<Integer, LiteState>();
             private Map<Integer, LiteUnitMeasure> unitCache = new HashMap<Integer, LiteUnitMeasure>();
             private Map<Integer, LitePointUnit> pointUnitCache = new HashMap<Integer, LitePointUnit>();
             
@@ -85,21 +85,16 @@ public class PointFormattingServiceImpl implements PointFormattingService {
                 Boolean statusPoint = (data.getType() == PointTypes.STATUS_POINT || data.getType() == PointTypes.CALCULATED_STATUS_POINT);
                 if (statusPoint) {
                     
-                    // lite point
+                    //LitePoint
                     LitePoint litePoint = litePointCache.get(data.getId());
                     if (litePoint == null) {
                         litePoint = pointDao.getLitePoint(data.getId());
                         litePointCache.put(data.getId(), litePoint);
                     }
                     
-                    // state group
-                    LiteState liteState = stateCache.get((int) data.getValue());
-                    if (liteState == null) {
-                        int stateGroupId = litePoint.getStateGroupID();
-                        liteState = stateDao.getLiteState(stateGroupId, (int) data.getValue());
-                        stateCache.put((int) data.getValue(), liteState);
-                    }
-                    
+                    //State
+                    LiteState liteState = stateDao.getLiteState(litePoint.getStateGroupID(),(int)data.getValue());
+
                     state = liteState.getStateText();
                     stateColor = Colors.getColor(liteState.getFgColor());
                     value = liteState.getStateText();

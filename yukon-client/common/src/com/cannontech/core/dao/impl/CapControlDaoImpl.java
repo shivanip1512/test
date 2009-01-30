@@ -2,7 +2,6 @@ package com.cannontech.core.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -16,41 +15,23 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 import com.cannontech.capcontrol.CBCPointGroup;
 import com.cannontech.capcontrol.OrphanCBC;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.clientutils.CommonUtils;
-import com.cannontech.common.device.YukonDevice;
-import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
-import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.util.MapQueue;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.CapControlDao;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.core.dao.StateDao;
-import com.cannontech.core.dynamic.DynamicDataSource;
-import com.cannontech.core.dynamic.PointValueHolder;
-import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
-import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.YukonPAObject;
-import com.cannontech.database.data.point.CBCPointTimestampParams;
-import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.database.data.point.ScalarPoint;
-import com.cannontech.message.dispatch.message.PointData;
 
 public class CapControlDaoImpl  implements CapControlDao{
 
     private PointDao pointDao;
     private PaoDao paoDao;
     private AuthDao authDao;
-    private StateDao stateDao;
-    private DynamicDataSource dynamicDataSource;
     private JdbcTemplate jdbcOps;
-    private DeviceDefinitionDao deviceDefinitionDao = null;
     List<OrphanCBC> cbcList;
     
     private static MapQueue<CBCPointGroup, String> pointGroupConfig = new MapQueue<CBCPointGroup, String>();
@@ -125,157 +106,91 @@ public class CapControlDaoImpl  implements CapControlDao{
         super();
     }
     
-    public Map<String, List<CBCPointTimestampParams>> getSortedCBCPointTimeStamps(
-            Integer cbcId) {
+    public Map<String, List<LitePoint>> getSortedCBCPointTimeStamps (Integer cbcId) {
 
-        LiteYukonPAObject liteCbc = paoDao.getLiteYukonPAO(cbcId);
-        YukonDevice device = new YukonDevice(cbcId, liteCbc.getType());
-
-        Map<String, CBCPointTimestampParams> nameToParamsMap = new HashMap<String, CBCPointTimestampParams>();
         List<LitePoint> allPoints = pointDao.getLitePointsByPaObjectId(cbcId);
-        for (LitePoint point : allPoints) {
-
-            // Get default point name from device definition
-            int offset = point.getPointOffset();
-            int pointType = point.getPointType();
-
-            String defaultName = null;
-            try {
-	            PointTemplate pointTemplate = deviceDefinitionDao.getPointTemplateByTypeAndOffset(device,
-	                                                                                              offset,
-	                                                                                              pointType);
-				defaultName = pointTemplate.getName();
-            } catch (NotFoundException e) {
-            	// point not in deviceDefinition.xml
-            	defaultName = point.getPointName();
-            }
-            
-            // Convert point to CBCPointTimestampParams
-            CBCPointTimestampParams convertedPoint = this.convertLitePointToCBCPointTimestampParams(point);
-
-            nameToParamsMap.put(defaultName, convertedPoint);
-
+        
+        Map<String,LitePoint> pointNameMap = new HashMap<String,LitePoint>();
+        for (LitePoint point: allPoints) {
+        	pointNameMap.put(point.getPointName(), point);
         }
+        
+        Map<String, List<LitePoint>> returnMap = new HashMap<String, List<LitePoint>>();
 
-        // Create return MapQueue
-        Map<String, List<CBCPointTimestampParams>> returnMap = new HashMap<String, List<CBCPointTimestampParams>>();
-
-        // Add Analog group point timestamp params
-        List<CBCPointTimestampParams> analogList = new ArrayList<CBCPointTimestampParams>();
+        // Add Analog group points
+        List<LitePoint> analogList = new ArrayList<LitePoint>();
         for (String pointName : pointGroupConfig.get(CBCPointGroup.ANALOG)) {
-            CBCPointTimestampParams pointTimestampParams = nameToParamsMap.get(pointName);
-            nameToParamsMap.remove(pointName);
-            analogList.add(pointTimestampParams);
+            LitePoint point = pointNameMap.get(pointName);
+            if(point != null) {
+            	pointNameMap.remove(pointName);
+            	analogList.add(point);
+            }
         }
         returnMap.put(CBCPointGroup.ANALOG.toString(), analogList);
         
-        // Add Accumulator group point timestamp params
-        List<CBCPointTimestampParams> accumulatorList = new ArrayList<CBCPointTimestampParams>();
+        // Add Accumulator group points
+        List<LitePoint> accumulatorList = new ArrayList<LitePoint>();
         for (String pointName : pointGroupConfig.get(CBCPointGroup.ACCUMULATOR)) {
-            CBCPointTimestampParams pointTimestampParams = nameToParamsMap.get(pointName);
-            nameToParamsMap.remove(pointName);
-            accumulatorList.add(pointTimestampParams);
+        	LitePoint point = pointNameMap.get(pointName);
+        	if(point != null) {
+        		pointNameMap.remove(pointName);
+        		accumulatorList.add(point);
+        	}
         }
         returnMap.put(CBCPointGroup.ACCUMULATOR.toString(), accumulatorList);
 
-        // Add Status group point timestamp params
-        List<CBCPointTimestampParams> statusList = new ArrayList<CBCPointTimestampParams>();
+        // Add Status group points
+        List<LitePoint> statusList = new ArrayList<LitePoint>();
         for (String pointName : pointGroupConfig.get(CBCPointGroup.STATUS)) {
-            CBCPointTimestampParams pointTimestampParams = nameToParamsMap.get(pointName);
-            nameToParamsMap.remove(pointName);
-            statusList.add(pointTimestampParams);
+        	LitePoint point = pointNameMap.get(pointName);
+        	if(point != null) {
+        		pointNameMap.remove(pointName);
+            	statusList.add(point);
+        	}
         }
         returnMap.put(CBCPointGroup.STATUS.toString(), statusList);
 
-        // Add Configurable Parameters group point timestamp params
-        List<CBCPointTimestampParams> configList = new ArrayList<CBCPointTimestampParams>();
+        // Add Configurable Parameters group points
+        List<LitePoint> configList = new ArrayList<LitePoint>();
         for (String pointName : pointGroupConfig.get(CBCPointGroup.CONFIGURABLE_PARAMETERS)) {
-            CBCPointTimestampParams pointTimestampParams = nameToParamsMap.get(pointName);
-            nameToParamsMap.remove(pointName);
-            configList.add(pointTimestampParams);
+        	LitePoint point = pointNameMap.get(pointName);
+        	if(point != null) {
+        		pointNameMap.remove(pointName);
+            	configList.add(point);
+        	}
         }
         returnMap.put(CBCPointGroup.CONFIGURABLE_PARAMETERS.toString(), configList);
         
-        // Add all other point timestamp params to misc group
-        List<CBCPointTimestampParams> miscList = new ArrayList<CBCPointTimestampParams>();
-        miscList.addAll(nameToParamsMap.values());
+        // Add all other points
+        List<LitePoint> miscList = new ArrayList<LitePoint>();
+        miscList.addAll(pointNameMap.values());
         returnMap.put(CBCPointGroup.MISC.toString(), miscList);
 
         return returnMap;
     }
-
-    /**
-	 * Helper method to create a CBCPointTimestampParams from a LitePoint
-	 * 
-	 * @param point - LitePoint to be converted
-	 * @return Converted point
-	 */
-	private CBCPointTimestampParams convertLitePointToCBCPointTimestampParams(
-			LitePoint point) {
-
-		if (point == null) {
-			return null;
-		}
-
-		CBCPointTimestampParams pointTimestamp = new CBCPointTimestampParams();
-		pointTimestamp.setPointId(new Integer(point.getLiteID()));
-		pointTimestamp.setPointName(point.getPointName());
-
-		// wait for the point data to initialize
-		PointValueHolder pointData = new PointData();
-		try {
-			pointData = dynamicDataSource.getPointValue(point.getLiteID());
-		} catch (DynamicDataAccessException ddae) {
-			// Should this code really just use a default pointdata if one
-			// couldn't be found for this point id??
-		}
-
-		if (pointData.getType() == PointTypes.STATUS_POINT) {
-			LiteState currentState = stateDao.getLiteState(point
-					.getStateGroupID(), (int) pointData.getValue());
-			String stateText = currentState.getStateText();
-			pointTimestamp.setValue(stateText);
-		} else {
-			if (point.getPointOffset() != 20001 && point.getPointOffset() != 10010) {
-				Double analogVal = new Double(pointData.getValue());
-
-				ScalarPoint persPoint = (ScalarPoint) LiteFactory
-						.convertLiteToDBPers(point);
-				Integer decimalPlaces = persPoint.getPointUnit()
-						.getDecimalPlaces();
-
-				DecimalFormat formater = new DecimalFormat();
-				formater.setMaximumFractionDigits(decimalPlaces);
-				String format = formater.format(analogVal.doubleValue());
-				pointTimestamp.setValue(format);
-			} else if (point.getPointOffset() == 20001 ){
-				// handle ip address differently
-				Double pvalue = new Double(pointData.getValue());
-				Long plong = 0l;
-				plong = new Long(pvalue.longValue());
-				String ipaddress = convertToOctalIp(plong);
-				pointTimestamp.setValue(ipaddress);
-			}  else if (point.getPointOffset() == 10010 ){
-                // handle neutral current differently
-                Integer pvalue = (int) pointData.getValue();
-                String neutralCurrent = "No";
-                if ((pvalue & 0x08) == 0x08){
-                    neutralCurrent = "Yes";
-                }
-                pointTimestamp.setValue(neutralCurrent);
-            }
-		}
-
-		if (!pointData.getPointDataTimeStamp().equals(
-				CommonUtils.getDefaultStartTime())) {
-			pointTimestamp.setTimestamp(pointData.getPointDataTimeStamp());
-		}
-
-		return pointTimestamp;
-	}
-   
-    public String convertToOctalIp(long ipvalue){
+	
+	static public String convertNeutralCurrent(String strValue) {
+        //Grab the number before the decimal
+		int index = strValue.indexOf(".");
+        String val = strValue.substring(0,index);
         
+		Integer pvalue = Integer.valueOf(val);
+        String neutralCurrent = "No";
+        
+        if ((pvalue & 0x08) == 0x08){
+            neutralCurrent = "Yes";
+        }
+		
+        return neutralCurrent;
+	}
+	
+    static public String convertToOctalIp(String strValue) {
+    	
+    	//remove commas
+    	strValue = strValue.replace(",","");
+    	Double d = Double.valueOf(strValue);
+    	Long ipvalue = new Long(d.longValue());
+
         StringBuilder sb = new StringBuilder();
         int temp = (int) ((ipvalue >> 24) & 0xFF);
         sb.append(Integer.toString(temp, 10) + ".");
@@ -317,28 +232,14 @@ public class CapControlDaoImpl  implements CapControlDao{
     public void setPointDao(PointDao pointDao) {
         this.pointDao = pointDao;
     }
-    
-    public void setStateDao(StateDao stateDao) {
-        this.stateDao = stateDao;
-    }
-    
-    public void setDynamicDataSource(DynamicDataSource dynamicDataSource) {
-        this.dynamicDataSource = dynamicDataSource;
-    }
 
     public void setJdbcOps(JdbcTemplate jdbcOps) {
         this.jdbcOps = jdbcOps;
     }
 
-
-
     public List<LitePoint> getPaoPoints(YukonPAObject pao) {
         return  pointDao.getLitePointsByPaObjectId(pao.getPAObjectID());
     }
-
-    public void setDeviceDefinitionDao(DeviceDefinitionDao deviceDefinitionDao) {
-		this.deviceDefinitionDao = deviceDefinitionDao;
-	}
 
     public Integer getParentForController(int id) {
         String sql = "select deviceid from capbank where controldeviceid = ?";

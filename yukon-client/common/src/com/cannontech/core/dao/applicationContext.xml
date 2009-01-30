@@ -30,10 +30,7 @@
     <property name="pointDao" ref="pointDao" />
     <property name="paoDao" ref="paoDao" />
     <property name="authDao" ref="authDao" />
-    <property name="stateDao" ref="stateDao" />
-    <property name="dynamicDataSource" ref="dynamicDataSource" />
     <property name="jdbcOps" ref="jdbcTemplate"/> 
-    <property name="deviceDefinitionDao" ref="deviceDefinitionDao" />
  </bean>
     <bean id="macScheduleDao" class="com.cannontech.core.dao.impl.MACScheduleDaoImpl" >
         <property name="jdbcOps" ref="jdbcTemplate"/> 

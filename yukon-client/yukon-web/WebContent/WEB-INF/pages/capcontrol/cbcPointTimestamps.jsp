@@ -42,10 +42,20 @@
 						${point.pointName}
 					</td>
 					<td>
-						${point.value}
+					<c:choose>
+						<c:when test="${point.pointName == 'IP Address'}">
+							<cti:pointValue pointId="${point.pointID}" format="{default|com.cannontech.core.dao.impl.CapControlDaoImpl.convertToOctalIp}"/>
+						</c:when>
+						<c:when test="${point.pointName == 'Neutral Current Sensor'}">
+							<cti:pointValue pointId="${point.pointID}" format="{default|com.cannontech.core.dao.impl.CapControlDaoImpl.convertNeutralCurrent}"/>
+						</c:when>
+						<c:when test="${1==1}">
+							<cti:pointValue pointId="${point.pointID}" format="VALUE"/>
+						</c:when>
+					</c:choose>
 					</td>
 					<td>
-						${point.timestamp}
+						<cti:pointValue pointId="${point.pointID}" format="DATE"/>
 					</td>
 				</tr>
 			</c:forEach>
@@ -61,10 +71,10 @@
 						${point.pointName}
 					</td>
 					<td>
-						${point.value}
+						<cti:pointValue pointId="${point.pointID}" format="VALUE"/>
 					</td>
 					<td>
-						${point.timestamp}
+						<cti:pointValue pointId="${point.pointID}" format="DATE"/>
 					</td>
 				</tr>
 			</c:forEach>
@@ -80,10 +90,10 @@
 						${point.pointName}
 					</td>
 					<td>
-						${point.value}
+						<cti:pointValue pointId="${point.pointID}" format="VALUE"/>
 					</td>
 					<td>
-						${point.timestamp}
+						<cti:pointValue pointId="${point.pointID}" format="DATE"/>
 					</td>
 				</tr>
 			</c:forEach>
@@ -99,10 +109,10 @@
 						${point.pointName}
 					</td>
 					<td>
-						${point.value}
+						<cti:pointValue pointId="${point.pointID}" format="VALUE"/>
 					</td>
 					<td>
-						${point.timestamp}
+						<cti:pointValue pointId="${point.pointID}" format="DATE"/>
 					</td>
 				</tr>
 			</c:forEach>
@@ -119,10 +129,10 @@
 							${point.pointName}
 						</td>
 						<td>
-							${point.value}
+							<cti:pointValue pointId="${point.pointID}" format="VALUE"/>
 						</td>
 						<td>
-							${point.timestamp}
+							<cti:pointValue pointId="${point.pointID}" format="DATE"/>
 						</td>
 					</tr>
 				</c:forEach>

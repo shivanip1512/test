@@ -8,11 +8,10 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.YukonPAObject;
-import com.cannontech.database.data.point.CBCPointTimestampParams;
 
 public interface CapControlDao {
     
-    public Map<String, List<CBCPointTimestampParams>> getSortedCBCPointTimeStamps (Integer cbcID);
+    public Map<String, List<LitePoint>> getSortedCBCPointTimeStamps (Integer cbcID);
 
     public  List<LiteYukonPAObject> getAllSubsForUser(LiteYukonUser user);
 

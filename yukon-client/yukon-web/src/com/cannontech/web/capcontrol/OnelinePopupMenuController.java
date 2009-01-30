@@ -26,6 +26,7 @@ import com.cannontech.cbc.web.CapControlType;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.CapControlDao;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.CBCPointTimestampParams;
@@ -410,7 +411,7 @@ public class OnelinePopupMenuController extends MultiActionController {
         String paoName = cbc.getPaoName();
         mav.addObject("paoName", paoName);
         
-        Map<String, List<CBCPointTimestampParams>> pointTimestamps = cbcDao.getSortedCBCPointTimeStamps(cbcId);
+        Map<String, List<LitePoint>> pointTimestamps = cbcDao.getSortedCBCPointTimeStamps(cbcId);
         mav.addObject("pointMap", pointTimestamps);
         
         // Hack to change jsp content for oneline popup
