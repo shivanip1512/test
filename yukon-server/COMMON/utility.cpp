@@ -2743,35 +2743,6 @@ void GetPseudoPointIDs(std::vector<unsigned long> &pointIDs)
     }
 }
 
-long getPaoIdForPoint(long pointid)
-{
-    string sql("SELECT paobjectid FROM point WHERE pointid = ");
-    sql += CtiNumStr(pointid);
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBReader rdr = ExecuteQuery(conn, sql);
-
-    if(rdr.isValid() && rdr())
-    {
-        long paoid;
-
-        rdr["pointid"] >> paoid;
-
-        return paoid;
-    }
-
-    if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << " " << sql << endl;
-    }
-
-    return numeric_limits<long>::min();
-}
-
 string getEncodingTypeForPort(long portId)
 {
     string sql("SELECT encodingtype FROM portterminalserver WHERE portid = ");

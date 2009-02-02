@@ -233,8 +233,6 @@ IM_EX_CTIBASE std::vector< std::vector<string> > getLmXmlParametersByGroupId(lon
 IM_EX_CTIBASE string getEncodingTypeForPort(long portId);
 IM_EX_CTIBASE string getEncodingKeyForPort(long portId);
 
-IM_EX_CTIBASE long getPaoIdForPoint(long pointid);
-
 //String Functions
 inline void CtiToLower( std::string& str)
 {
@@ -365,7 +363,7 @@ inline bool list_contains( const std::list<T> &V, T x )
 //    ...
 //  std::copy(source.begin(), source.end(), csv_itr);
 template <class Numeric, class Stream>
-struct csv_output_iterator : public std::_Outit 
+struct csv_output_iterator : public std::_Outit
 {
     Stream &s;
     bool first;

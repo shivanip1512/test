@@ -1254,9 +1254,9 @@ void LoadScannableDevices(void *ptr)
     {
         if( (pChg->getTypeOfChange() == ChangeTypeAdd) || (pChg->getTypeOfChange() == ChangeTypeUpdate) )
         {
-            LONG paoDeviceID = getPaoIdForPoint(pChg->getId());
+            LONG paoDeviceID = GetPAOIdOfPoint(pChg->getId());
 
-            if( paoDeviceID != numeric_limits<long>::min() )
+            if( paoDeviceID )
             {
                 CtiDeviceSPtr pBase = ScannerDeviceManager.getDeviceByID(paoDeviceID);
 
