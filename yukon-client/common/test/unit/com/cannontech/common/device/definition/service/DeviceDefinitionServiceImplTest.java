@@ -259,14 +259,6 @@ public class DeviceDefinitionServiceImplTest {
                                                     0,
                                                     true));
 
-        expectedTemplates.add(new PointTemplate("pulse2",
-									                2,
-									                4,
-									                1.0,
-									                1,
-									                0,
-									                true));
-
         // Demand Accumulators
         expectedTemplates.add(new PointTemplate("demand1",
                                                     3,
@@ -322,6 +314,14 @@ public class DeviceDefinitionServiceImplTest {
                                                     0,
                                                     true));
 
+        expectedTemplates.add(new PointTemplate("pulse2",
+                2,
+                4,
+                1.0,
+                1,
+                0,
+                false));
+        
         Set<PointTemplate> actualTemplates = service.getPointTemplatesToTransfer(device,
                                                                                  new DeviceDefinitionImpl(1022,
                                                                                                           "Device2",
@@ -365,6 +365,14 @@ public class DeviceDefinitionServiceImplTest {
 											        1,
 											        0,
 											        false));
+        
+        expectedTemplates.add(new PointTemplate("pulse2",
+                2,
+                3,
+                0.1,
+                1,
+                0,
+                false));
 
         Set<PointTemplate> actualTemplates = service.getNewPointTemplatesForTransfer(device,
                                                                                      new DeviceDefinitionImpl(DeviceTypes.MCT370,
