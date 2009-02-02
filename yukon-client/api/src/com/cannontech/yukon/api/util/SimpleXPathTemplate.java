@@ -143,11 +143,11 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
      * @return
      * @throws XPathException
      */
-    public Boolean evaluateAsBooleanWithDefault(String expression) throws XPathException {
+    public Boolean evaluateAsBooleanWithDefault(String expression, boolean bool) throws XPathException {
         //XPathConstants.BOOLEAN looks for presence/absence of element,
         //so retrieve the NODE and its text-value
         Node result = evaluateAsNode(expression);
-        return result == null ? Boolean.FALSE : Boolean.valueOf(result.getTextContent());        
+        return result == null ? new Boolean(bool) : Boolean.valueOf(result.getTextContent());        
     }
 
     public Node evaluateAsNode(String expression) throws XPathException {

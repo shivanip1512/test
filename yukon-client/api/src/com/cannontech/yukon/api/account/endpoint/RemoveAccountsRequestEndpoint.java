@@ -18,6 +18,7 @@ import com.cannontech.yukon.api.util.NodeToElementMapperWrapper;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlUtils;
+import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.cannontech.yukon.api.util.YukonXml;
 
 @Endpoint
@@ -28,6 +29,7 @@ public class RemoveAccountsRequestEndpoint {
     
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="removeAccountsRequest")
     public Element invoke(Element removeAccountsRequest, LiteYukonUser user) throws Exception {
+        XmlVersionUtils.verifyYukonMessageVersion(removeAccountsRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         SimpleXPathTemplate requestTemplate = XmlUtils.getXPathTemplateForElement(removeAccountsRequest);
         
         List<String> accountNumbers = requestTemplate.evaluate("//y:accountsList/y:accountNumber", 

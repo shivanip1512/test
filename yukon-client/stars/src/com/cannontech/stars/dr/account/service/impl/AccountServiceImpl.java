@@ -324,7 +324,6 @@ public class AccountServiceImpl implements AccountService {
         ecToAccountMapping.setEnergyCompanyId(energyCompany.getEnergyCompanyID());
         ecToAccountMapping.setAccountId(customerAccount.getAccountId());
         ecMappingDao.addECToAccountMapping(ecToAccountMapping);
-        
         log.info("Account: " + accountNumber + " added successfully.");
     }
 

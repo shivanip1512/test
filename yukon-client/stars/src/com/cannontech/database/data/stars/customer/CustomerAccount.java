@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.customer.Customer;
@@ -134,7 +135,9 @@ public class CustomerAccount extends DBPersistent {
         
         getCustomerAccount().delete();
         getAccountSite().delete();
-        getBillingAddress().delete();
+        if(getBillingAddress().getAddressID() != CtiUtilities.NONE_ZERO_ID) {
+            getBillingAddress().delete();
+        }
 		
 		// TODO: In the future, a CICustomer may not be deleted when its account is deleted
 		if (getCustomer() != null) getCustomer().delete();

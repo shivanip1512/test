@@ -22,6 +22,7 @@ import com.cannontech.yukon.api.util.NodeToElementMapperWrapper;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlUtils;
+import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.cannontech.yukon.api.util.YukonXml;
 
 @Endpoint
@@ -33,7 +34,10 @@ public class UpdateAccountsRequestEndpoint {
     
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="updateAccountsRequest")
     public Element invoke(Element updateAccountsRequest, LiteYukonUser user) throws Exception {
+        XmlVersionUtils.verifyYukonMessageVersion(updateAccountsRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0,XmlVersionUtils.YUKON_MSG_VERSION_1_1);
         SimpleXPathTemplate requestTemplate = XmlUtils.getXPathTemplateForElement(updateAccountsRequest);
+        
+        Boolean add = requestTemplate.evaluateAsBooleanWithDefault("//y:updateAccountsRequest/@addOnFail", true);
         
         List<UpdatableAccount> customerAccounts = requestTemplate.evaluate("//y:accountsList/y:customerAccount", 
                               new NodeToElementMapperWrapper<UpdatableAccount>(new AccountsRequestMapper()));
@@ -52,24 +56,29 @@ public class UpdateAccountsRequestEndpoint {
                 accountService.updateAccount(filledAccount, user);
                 updateAccountResult.addContent(new Element("success", ns));
             } catch(InvalidAccountNumberException e) {
-                // Update didn't work, try to add it.
-                try {
-                    accountService.addAccount(account, user);
-                    updateAccountResult.addContent(new Element("success", ns));
-                } catch(InvalidAccountNumberException ex) {
-                    Element fe = XMLFailureGenerator.generateFailure(updateAccountsRequest, ex, "InvalidAccountNumber", ex.getMessage());
-                    updateAccountResult.addContent(fe);
-                } catch(AccountNumberUnavailableException ex) {
-                    Element fe = XMLFailureGenerator.generateFailure(updateAccountsRequest, ex, "AccountNumberUnavailable", ex.getMessage());
-                    updateAccountResult.addContent(fe);
-                } catch(UserNameUnavailableException ex) {
-                    Element fe = XMLFailureGenerator.generateFailure(updateAccountsRequest, ex, "UserNameUnavailable", ex.getMessage());
-                    updateAccountResult.addContent(fe);
-                } catch(InvalidLoginGroupException ex) {
-                    Element fe = XMLFailureGenerator.generateFailure(updateAccountsRequest, ex, "InvalidLoginGroup", ex.getMessage());
-                    updateAccountResult.addContent(fe);
-                } catch(InvalidSubstationNameException ex) {
-                    Element fe = XMLFailureGenerator.generateFailure(updateAccountsRequest, ex, "InvalidSubstationName", ex.getMessage());
+                if(add) {
+                    // Update didn't work, try to add it.
+                    try {
+                        accountService.addAccount(account, user);
+                        updateAccountResult.addContent(new Element("success", ns));
+                    } catch(InvalidAccountNumberException ex) {
+                        Element fe = XMLFailureGenerator.generateFailure(updateAccountsRequest, ex, "InvalidAccountNumber", ex.getMessage());
+                        updateAccountResult.addContent(fe);
+                    } catch(AccountNumberUnavailableException ex) {
+                        Element fe = XMLFailureGenerator.generateFailure(updateAccountsRequest, ex, "AccountNumberUnavailable", ex.getMessage());
+                        updateAccountResult.addContent(fe);
+                    } catch(UserNameUnavailableException ex) {
+                        Element fe = XMLFailureGenerator.generateFailure(updateAccountsRequest, ex, "UserNameUnavailable", ex.getMessage());
+                        updateAccountResult.addContent(fe);
+                    } catch(InvalidLoginGroupException ex) {
+                        Element fe = XMLFailureGenerator.generateFailure(updateAccountsRequest, ex, "InvalidLoginGroup", ex.getMessage());
+                        updateAccountResult.addContent(fe);
+                    } catch(InvalidSubstationNameException ex) {
+                        Element fe = XMLFailureGenerator.generateFailure(updateAccountsRequest, ex, "InvalidSubstationName", ex.getMessage());
+                        updateAccountResult.addContent(fe);
+                    }
+                } else {
+                    Element fe = XMLFailureGenerator.generateFailure(updateAccountsRequest, e, "InvalidAccountNumber", e.getMessage());
                     updateAccountResult.addContent(fe);
                 }
             } catch(InvalidSubstationNameException e) {

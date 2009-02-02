@@ -8,6 +8,7 @@ public class XmlVersionUtils {
 
     // Request constants
     public static final String YUKON_MSG_VERSION_1_0 = "1.0";
+    public static final String YUKON_MSG_VERSION_1_1 = "1.1";
     
     static final String versionStr = "version";
 

@@ -21,6 +21,7 @@ import com.cannontech.yukon.api.util.NodeToElementMapperWrapper;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlUtils;
+import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.cannontech.yukon.api.util.YukonXml;
 
 @Endpoint
@@ -31,6 +32,7 @@ public class NewAccountsRequestEndpoint {
     
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="newAccountsRequest")
     public Element invoke(Element newAccountsRequest, LiteYukonUser user) throws Exception {
+        XmlVersionUtils.verifyYukonMessageVersion(newAccountsRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         SimpleXPathTemplate requestTemplate = XmlUtils.getXPathTemplateForElement(newAccountsRequest);
         
         List<UpdatableAccount> customerAccounts = requestTemplate.evaluate("//y:accountsList/y:customerAccount", 
