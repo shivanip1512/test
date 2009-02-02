@@ -105,8 +105,8 @@
     
     <bean class="com.cannontech.web.jws.JnlpController" parent="jnlpTemplate">
         <property name="path" value="esub.jnlp"/>
-        <property name="appTitle" value="Esubstation Editor"/>
-        <property name="appDescription" value="Allows users to create, modify, and save Esubstation drawings."/>
+        <property name="appTitle" value="eSubstation Editor"/>
+        <property name="appDescription" value="Allows users to create, modify, and save eSubstation drawings."/>
         <property name="appMainClass" value="com.cannontech.esub.editor.Editor"/>
         <property name="appMainClassJar" value="esub-editor.jar"/>
         <property name="appIcon" value="/WebConfig/yukon/Icons/Esubstation64.gif" />

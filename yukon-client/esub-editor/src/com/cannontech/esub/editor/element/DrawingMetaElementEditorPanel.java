@@ -344,7 +344,7 @@ public class DrawingMetaElementEditorPanel extends DataInputPanel {
                 LiteYukonRole sysRole = DaoFactory.getAuthDao().getRole(SystemRole.ROLEID);
                 ivjYukonRoleComboBox.addItem(sysRole);
 
-                Iterator i = DaoFactory.getAuthDao().getRoles("Esubstation").iterator();
+                Iterator i = DaoFactory.getAuthDao().getRoles("eSubstation").iterator();
                 while(i.hasNext()) {
                     LiteYukonRole r = (LiteYukonRole) i.next();
                     ivjYukonRoleComboBox.addItem(r);

@@ -77,7 +77,7 @@ import com.loox.jloox.LxView;
  */
 public class Editor extends JPanel {
 	
-	private static final String APPLICATION_NAME = "Esubstation Editor";
+	private static final String APPLICATION_NAME = "eSubstation Editor";
 	private static final Dimension defaultSize = new Dimension(800, 600);
 	
     public static final URL ESUBEDITOR_IMG_16 = Editor.class.getResource("/Esubstation16.gif");
@@ -716,13 +716,13 @@ public class Editor extends JPanel {
 	public void setFrameTitle(String title) {
 		Frame pFrame = CtiUtilities.getParentFrame(this);
 		if (pFrame != null) {
-			pFrame.setTitle(title + " - Esubstation Editor");
+			pFrame.setTitle(title + " - eSubstation Editor");
 			return;
 		}
 
 		JInternalFrame piFrame = CtiUtilities.getParentInternalFrame(this);
 		if (piFrame != null) {
-			piFrame.setTitle(title + " - Esubstation Editor");
+			piFrame.setTitle(title + " - eSubstation Editor");
 			return;
 		}
 	}
@@ -731,7 +731,7 @@ public class Editor extends JPanel {
 	 * Displays the about dialog
 	 */
 	public void showAboutDialog() {
-		AboutDialog aboutDialog = new AboutDialog(CtiUtilities.getParentFrame(getDrawing().getLxView()), "About Esubstation Editor", true);		
+		AboutDialog aboutDialog = new AboutDialog(CtiUtilities.getParentFrame(getDrawing().getLxView()), "About eSubstation Editor", true);		
 		aboutDialog.setLocationRelativeTo(getDrawing().getLxView());
 		aboutDialog.setVisible(true);
 		aboutDialog.dispose();
