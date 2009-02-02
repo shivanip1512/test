@@ -197,7 +197,7 @@ public class SimpleDeviceDefinitionServiceImpl implements SimpleDeviceDefinition
     	Set<PointTemplate> templates = new HashSet<PointTemplate>();
         for (PointTemplate template1 : set1) {
             for (PointTemplate template2 : set2) {
-                if (template1.compareTo(template2) == 0) {
+            	if (template1.getName().equals(template2.getName())) {
                     templates.add(template1);
                 }
             }
@@ -220,8 +220,7 @@ public class SimpleDeviceDefinitionServiceImpl implements SimpleDeviceDefinition
     	
     	for (LitePoint litePoint : existingPoints) {
 			for (PointTemplate template : existingTemplates) {
-				if (litePoint.getPointName().equals(template.getName()) &&
-						litePoint.getPointOffset() == template.getOffset() &&
+				if (litePoint.getPointOffset() == template.getOffset() &&
 						litePoint.getPointType() == template.getType())
 					templates.add(template);
 			}

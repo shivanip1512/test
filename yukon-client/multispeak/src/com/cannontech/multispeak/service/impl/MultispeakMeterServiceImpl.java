@@ -1491,7 +1491,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             }
         } catch (NotFoundException e) {
             //No template found to compare to
-            CTILogger.warn("No TemplateName found in Yukon for ChangeDeviceType method, Device Type not checked.");
+            CTILogger.warn(e.getMessage() + "No TemplateName found in Yukon for ChangeDeviceType method, Device Type not checked.");
         }
     }
     /**

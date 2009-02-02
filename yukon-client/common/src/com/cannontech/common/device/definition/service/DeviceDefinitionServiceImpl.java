@@ -386,8 +386,7 @@ public class DeviceDefinitionServiceImpl implements DeviceDefinitionService {
     private PointTemplate getTemplateForLitePoint(LitePoint litePoint, Set<PointTemplate> templates) {
 
         for (PointTemplate template : templates) {
-			if (litePoint.getPointName().equals(template.getName()) &&
-					litePoint.getPointOffset() == template.getOffset() &&
+			if (litePoint.getPointOffset() == template.getOffset() &&
 					litePoint.getPointType() == template.getType())
 				return template;
 		}
