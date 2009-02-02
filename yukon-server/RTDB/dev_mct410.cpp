@@ -2948,7 +2948,7 @@ INT CtiDeviceMCT410::decodeGetValueLoadProfilePeakReport(INMESS *InMessage, CtiT
             result_string = "Peak timestamp (" + CtiTime(max_demand_timestamp).asString() + ") outside of requested range - retry report";
             _llpPeakInterest.time = 0;
             _llpPeakInterest.period = 0;
-            status = NOTNORMAL;
+            status = ErrorInvalidTimestamp;
             InMessage->Return.MacroOffset = 0;  //  stop the retries!
         }
         else
