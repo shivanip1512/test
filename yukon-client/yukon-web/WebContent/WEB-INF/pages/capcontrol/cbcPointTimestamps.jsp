@@ -44,14 +44,14 @@
 					<td>
 					<c:choose>
 						<c:when test="${point.pointName == 'IP Address'}">
-							<cti:pointValue pointId="${point.pointID}" format="{default|com.cannontech.core.dao.impl.CapControlDaoImpl.convertToOctalIp}"/>
+							<cti:pointValue pointId="${point.pointID}" format="{rawValue|com.cannontech.core.dao.impl.CapControlDaoImpl.convertToOctalIp}"/>
 						</c:when>
 						<c:when test="${point.pointName == 'Neutral Current Sensor'}">
-							<cti:pointValue pointId="${point.pointID}" format="{default|com.cannontech.core.dao.impl.CapControlDaoImpl.convertNeutralCurrent}"/>
+							<cti:pointValue pointId="${point.pointID}" format="{rawValue|com.cannontech.core.dao.impl.CapControlDaoImpl.convertNeutralCurrent}"/>
 						</c:when>
-						<c:when test="${1==1}">
+						<c:otherwise>
 							<cti:pointValue pointId="${point.pointID}" format="VALUE"/>
-						</c:when>
+						</c:otherwise>
 					</c:choose>
 					</td>
 					<td>

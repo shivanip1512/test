@@ -151,7 +151,7 @@ public class SimpleTemplateProcessor {
             
             return result;
         } catch (Exception e) {
-            // who cares
+            //Not a valid method name, fall through to type-based formatters
         }
         
         if (value instanceof Boolean) {
