@@ -1,5 +1,6 @@
 package com.cannontech.database.db.state;
 
+import java.sql.Blob;
 import java.sql.SQLException;
 
 import com.cannontech.database.SqlUtils;
@@ -174,7 +175,8 @@ public class YukonImage extends DBPersistent implements com.cannontech.database.
       {
          setImageCategory( (String) results[0] );
          setImageName( (String) results[1] );
-         setImageValue( (byte[]) results[2] );
+         Blob tempBlob = (Blob)results[2];
+         setImageValue( tempBlob.getBytes(1, (int)tempBlob.length()) );
       }
       else
          throw new Error( getClass() + "::retrieve - Incorrect number of results" );
@@ -275,6 +277,7 @@ public class YukonImage extends DBPersistent implements com.cannontech.database.
 	{
 		this.imageValue = imageValue;
 	}
+
 
 
 	/**
