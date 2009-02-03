@@ -8,6 +8,9 @@
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
 
+    <bean id="authenticationTimeoutHelper" class="com.cannontech.core.authentication.service.impl.AuthenticationTimeoutHelperImpl"
+            scope="prototype" />
+            
     <bean id="authenticationService" class="com.cannontech.core.authentication.service.impl.AuthenticationServiceImpl">
       <property name="providerMap">
         <map>
@@ -20,6 +23,7 @@
         </map>
       </property>
       <property name="yukonUserDao" ref="yukonUserDao"/>
+      <property name="authenticationTimeoutHelper" ref="authenticationTimeoutHelper"/>
     </bean>
     
     <bean id="yukonUserPasswordDao" class="com.cannontech.core.authentication.dao.impl.YukonUserPasswordDaoImpl">

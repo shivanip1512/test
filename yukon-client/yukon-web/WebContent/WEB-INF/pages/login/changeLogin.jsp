@@ -92,6 +92,12 @@
 
     <c:if test="${not empty loginError}">
         <br>
-        <div id="changeLoginErrorDiv"><cti:msg key="${loginError}"/></div>
+        <div id="changeLoginErrorDiv">
+            <cti:msg key="${loginError}"/>
+            <c:if test="${!empty param.authTimeoutSeconds}">
+                <br/>
+                <cti:msg key="yukon.web.changelogin.error.AUTH_TIMEOUT" argument="${param.authTimeoutSeconds}"></cti:msg>
+            </c:if>            
+        </div>
     </c:if>
 <div>

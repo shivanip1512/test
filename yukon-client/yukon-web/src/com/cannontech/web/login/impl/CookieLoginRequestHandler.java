@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.LoginController;
+import com.cannontech.common.exception.AuthenticationTimeoutException;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.login.AbstractLoginRequestHandler;
 import com.cannontech.web.login.LoginCookieHelper;
@@ -38,6 +39,8 @@ public class CookieLoginRequestHandler extends AbstractLoginRequestHandler {
                 }
                 
                 log.info("Remember Me login failed");
+            } catch (AuthenticationTimeoutException e) {
+                log.error("AuthenticationTimeout: " + e.getTimeoutSeconds(), e);
             } catch (GeneralSecurityException e) {
                 log.error("Unable to decrypt cookie value", e);
             }

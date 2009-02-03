@@ -65,6 +65,10 @@
                     <c:if test="${!empty param.failed}">
                         <div class="loginErrorMsg">
                            <cti:msg key="yukon.web.login.invalidLogin"></cti:msg>
+		                   <c:if test="${!empty param.authTimeoutSeconds}">
+		                      <br/>
+	                          <cti:msg key="yukon.web.login.authTimeout" argument="${param.authTimeoutSeconds}"></cti:msg>
+		                   </c:if>
                         </div>
                     </c:if>
 

@@ -8,6 +8,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.common.constants.LoginController;
+import com.cannontech.common.exception.AuthenticationTimeoutException;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.application.WebClientRole;
@@ -34,7 +35,13 @@ public class YukonLoginController extends MultiActionController {
 
         String redirect;
 
-        boolean success = loginService.login(request, username, password);
+        boolean success = false;
+        long timeoutSeconds = 0;
+        try {
+            success = loginService.login(request, username, password);
+        } catch (AuthenticationTimeoutException e) {
+            timeoutSeconds = e.getTimeoutSeconds();
+        }
         if (success) {
             LiteYukonUser user = ServletUtil.getYukonUser(request);
 
@@ -58,19 +65,41 @@ public class YukonLoginController extends MultiActionController {
             ServletUtil.deleteAllCookies(request, response);
 
             String referer = request.getHeader("Referer");
-            referer = (referer != null) ? referer : LoginController.INVALID_URI;
+            referer = (referer != null) ? referer : LoginController.LOGIN_URL;
             
             redirect = ServletUtil.createSafeRedirectUrl(request, referer);
-            
-            if(redirect.contains("?")){
-            	redirect = redirect + "&" + LoginController.FAILED_LOGIN_PARAM;
-            } else {
-            	redirect = redirect + "?" + LoginController.FAILED_LOGIN_PARAM;
-            }
+            redirect = appendParams(redirect, timeoutSeconds);
         }
         return new ModelAndView("redirect:" + redirect);
     }
 
+    // appends params to the baseUrl provided
+    private String appendParams(String baseUrl, long timeoutSeconds) {
+        String result = baseUrl;
+
+        // build query string
+        StringBuilder queryParams = new StringBuilder(LoginController.FAILED_LOGIN_PARAM);
+        if (timeoutSeconds > 0) {
+            queryParams.append("&")
+                       .append(LoginController.AUTH_TIMEOUT_SECONDS_PARAM)
+                       .append("=")
+                       .append(timeoutSeconds);
+        }
+
+        // insert these parameters into the URL as appropriate
+        if (queryParams.length() > 0) {
+            int questionMark = baseUrl.indexOf('?');
+            if (questionMark == -1) {
+                result = (baseUrl + "?" + queryParams);
+            } else {
+                StringBuffer workingUrl = new StringBuffer(baseUrl);
+                workingUrl.insert(questionMark + 1, (queryParams + "&"));
+                result = workingUrl.toString();
+            }
+        }
+        return result;
+    }
+    
     public ModelAndView logout(HttpServletRequest request, HttpServletResponse response) throws Exception {
         loginService.logout(request, response);
         return null;

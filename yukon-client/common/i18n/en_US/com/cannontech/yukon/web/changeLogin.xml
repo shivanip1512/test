@@ -17,6 +17,7 @@
     <entry key="yukon.web.changelogin.error.NO_PASSWORDMATCH">&lt;i&gt;** Passwords did not match&lt;/i&gt;</entry>
     <entry key="yukon.web.changelogin.error.REQUIRED_FIELDS_MISSING">&lt;i&gt;** Required fields missing&lt;/i&gt;</entry>
     <entry key="yukon.web.changelogin.error.INVALID_CREDENTIALS">&lt;i&gt;** Invalid Credentials&lt;/i&gt;</entry>
+    <entry key="yukon.web.changelogin.error.AUTH_TIMEOUT">Please retry after {0} seconds</entry>
     <entry key="yukon.web.changelogin.error.USER_EXISTS">&lt;i&gt;** Username already exists&lt;/i&gt;</entry>
     <entry key="yukon.web.changelogin.error.PASSWORD_CHANGE_NOT_SUPPORTED">&lt;i&gt;** Password changes are not supported&lt;/i&gt;</entry>
     

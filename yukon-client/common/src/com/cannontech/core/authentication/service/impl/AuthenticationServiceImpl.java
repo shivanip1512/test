@@ -6,11 +6,13 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.exception.AuthenticationTimeoutException;
 import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authentication.service.AuthType;
 import com.cannontech.core.authentication.service.AuthenticationProvider;
 import com.cannontech.core.authentication.service.AuthenticationService;
+import com.cannontech.core.authentication.service.AuthenticationTimeoutHelper;
 import com.cannontech.core.authentication.service.PasswordChangeProvider;
 import com.cannontech.core.authentication.service.PasswordRecoveryProvider;
 import com.cannontech.core.authentication.service.PasswordSetProvider;
@@ -21,8 +23,15 @@ public class AuthenticationServiceImpl implements AuthenticationService  {
     private static Logger log = YukonLogManager.getLogger(AuthenticationServiceImpl.class);
     private Map<AuthType, AuthenticationProvider> providerMap;
     private YukonUserDao yukonUserDao;
+    private AuthenticationTimeoutHelper authenticationTimeoutHelper;
 
     public LiteYukonUser login(String username, String password) throws BadAuthenticationException {
+        // see if user is in timeout
+        long timeoutSeconds = authenticationTimeoutHelper.getAuthenticationTimeoutDuration(username);
+        if (timeoutSeconds > 0) {
+            throw new AuthenticationTimeoutException(timeoutSeconds);
+        }
+
         // find user in database
         LiteYukonUser liteYukonUser = yukonUserDao.getLiteYukonUser(username);
         if (liteYukonUser == null) {
@@ -39,16 +48,23 @@ public class AuthenticationServiceImpl implements AuthenticationService  {
         
         AuthenticationProvider provider = getProvder(liteYukonUser);
         
-        // attempt login
+        // attempt login; remove timeout if login successful
         if (provider.login(liteYukonUser, password)) {
             log.debug("Authentication succeeded: username=" + username);
+            authenticationTimeoutHelper.removeAuthenticationTimeout(username);
             return liteYukonUser;
         }
         
         // login must have failed
         log.info("Authentication failed (auth failed): username=" + username + ", id=" +
                  liteYukonUser.getUserID());
-        throw new BadAuthenticationException();
+        // add Authentication timeout and return timeout duration
+        timeoutSeconds = authenticationTimeoutHelper.addAuthenticationTimeout(username);
+        if (timeoutSeconds > 0) {
+            throw new AuthenticationTimeoutException(timeoutSeconds);
+        } else {
+            throw new BadAuthenticationException();
+        }
     }
 
     private AuthenticationProvider getProvder(LiteYukonUser user) {
@@ -112,6 +128,17 @@ public class AuthenticationServiceImpl implements AuthenticationService  {
     @Required
     public void setYukonUserDao(YukonUserDao yukonUserDao) {
         this.yukonUserDao = yukonUserDao;
+    }
+
+    @Required
+    public void setAuthenticationTimeoutHelper(
+            AuthenticationTimeoutHelper authenticationTimeoutHelper) {
+        this.authenticationTimeoutHelper = authenticationTimeoutHelper;
+    }
+
+    //provides access to helper for cleanup/reset etc
+    public AuthenticationTimeoutHelper getAuthenticationTimeoutHelper() {
+        return authenticationTimeoutHelper;
     }
 }
 

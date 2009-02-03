@@ -13,6 +13,7 @@ import org.springframework.web.bind.ServletRequestUtils;
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.LoginController;
+import com.cannontech.common.exception.AuthenticationTimeoutException;
 import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.exception.NotLoggedInException;
 import com.cannontech.common.util.Pair;
@@ -55,13 +56,18 @@ public class LoginServiceImpl implements LoginService {
 
 
     @Override
-    public boolean login(HttpServletRequest request, String username, String password) {
+    public boolean login(HttpServletRequest request, String username, String password) 
+        throws AuthenticationTimeoutException {
         try {
             final LiteYukonUser user = authenticationService.login(username, password);
             createSession(request, user);
 
             ActivityLogger.logEvent(user.getUserID(), LOGIN_WEB_ACTIVITY_ACTION, "User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged in from " + request.getRemoteAddr());
             return true;
+        } catch (AuthenticationTimeoutException e) {
+            ActivityLogger.logEvent(LOGIN_FAILED_ACTIVITY_LOG,
+                                    "Login attempt as " + username + " failed from " + request.getRemoteAddr() + ", timeoutSeconds=" + e.getTimeoutSeconds());
+            throw e;
         } catch (BadAuthenticationException e) {
             ActivityLogger.logEvent(LOGIN_FAILED_ACTIVITY_LOG, "Login attempt as " + username + " failed from " + request.getRemoteAddr());
             return false;

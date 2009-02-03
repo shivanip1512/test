@@ -55,6 +55,7 @@ public interface LoginController {
 	
 	public static final String FAILED_LOGIN_PARAM = "failed=true";
 	public static final String INVALID_URL_ACCESS_PARAM = "invalid=true";
+    public static final String AUTH_TIMEOUT_SECONDS_PARAM = "authTimeoutSeconds";	
 	
 	public static final String INVALID_URI = "/login.jsp?" + FAILED_LOGIN_PARAM;
 	public static final String LOGIN_URL = "/login.jsp";
